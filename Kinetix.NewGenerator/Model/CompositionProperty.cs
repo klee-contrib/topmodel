@@ -7,6 +7,7 @@
         public string Kind { get; set; }
         public string Comment { get; set; }
 
+        public string Label => Name;
         public bool PrimaryKey => false;
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Kinetix.NewGenerator.Model
 {
-    public class RegularProperty : IProperty
+    public class RegularProperty : IFieldProperty
     {
         public string Name { get; set; }
         public string Label { get; set; }

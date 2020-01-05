@@ -2,8 +2,8 @@
 {
     public interface IProperty
     {
-        public string Name { get; }
-
-        public bool PrimaryKey { get; }
+        string Name { get; }
+        string Label { get; }
+        bool PrimaryKey { get; }
     }
 }

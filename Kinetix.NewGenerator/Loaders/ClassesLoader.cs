@@ -42,6 +42,7 @@ namespace Kinetix.NewGenerator.Loaders
             }
 
             var classesToResolve = new List<(object, string)>();
+            var ns = new Namespace { Module = descriptor.Module, Kind = descriptor.Kind };
 
             while (parser.TryConsume<DocumentStart>(out _))
             {
@@ -54,7 +55,7 @@ namespace Kinetix.NewGenerator.Loaders
 
                 parser.Consume<MappingStart>();
 
-                var classe = new Class();
+                var classe = new Class { Namespace = ns };
 
                 while (!(parser.Current is Scalar { Value: "properties" }))
                 {
@@ -118,6 +119,10 @@ namespace Kinetix.NewGenerator.Loaders
                                         break;
                                     case "primaryKey":
                                         rp.PrimaryKey = value == "true";
+                                        if (rp.PrimaryKey) 
+                                        {
+                                            rp.Required = true;
+                                        }
                                         break;
                                     case "required":
                                         rp.Required = value == "true";
@@ -153,6 +158,9 @@ namespace Kinetix.NewGenerator.Loaders
                                         break;
                                     case "role":
                                         ap.Role = value;
+                                        break;
+                                    case "label":
+                                        ap.Label = value;
                                         break;
                                     case "required":
                                         ap.Required = value == "true";
@@ -275,7 +283,7 @@ namespace Kinetix.NewGenerator.Loaders
                         break;
                     case AliasProperty alp:
                         var aliasConf = className.Split("|");
-                        alp.Property = classes[aliasConf[1]].Properties.Single(p => p.Name == aliasConf[0]);
+                        alp.Property = (IFieldProperty)classes[aliasConf[1]].Properties.Single(p => p.Name == aliasConf[0]);
                         break;
                 }
             }

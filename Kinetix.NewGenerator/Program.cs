@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using Kinetix.NewGenerator.Config;
+using Kinetix.NewGenerator.Javascript;
 using Kinetix.NewGenerator.Loaders;
 using Kinetix.NewGenerator.Model;
 using YamlDotNet.Serialization;
@@ -40,6 +41,21 @@ namespace Kinetix.NewGenerator
             foreach(var (_, (descriptor, parser)) in classFiles)
             {
                 ClassesLoader.LoadClasses(descriptor, parser, classes, classFiles, domains, deserializer);
+            }
+
+            if (config.Javascript != null)
+            {
+                if (config.Javascript.ModelOutputDirectory != null)
+                {
+                    config.Javascript.ModelOutputDirectory = Path.Combine(configFile.DirectoryName, config.Javascript.ModelOutputDirectory);
+                }
+                if (config.Javascript.ResourceOutputDirectory != null)
+                {
+                    config.Javascript.ResourceOutputDirectory = Path.Combine(configFile.DirectoryName, config.Javascript.ResourceOutputDirectory);
+                }
+
+                TypescriptDefinitionGenerator.Generate(config.Javascript, classes.Values.ToList());
+                JavascriptResourceGenerator.Generate(config.Javascript, classes.Values.ToList());
             }
         }        
     }

@@ -13,5 +13,6 @@ namespace Kinetix.NewGenerator.Model
         public string DefaultProperty { get; set; }
         public string Comment { get; set; }
         public IList<IProperty> Properties { get; } = new List<IProperty>();
+        public Namespace Namespace { get; set; }
     }
 }
