@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Kinetix.NewGenerator.FileModel;
 using Kinetix.NewGenerator.Model;
 using YamlDotNet.Core;
@@ -21,7 +22,7 @@ namespace Kinetix.NewGenerator.Loaders
             return (descriptor, parser);
         }
 
-        public static void LoadClasses(FileDescriptor descriptor, Parser parser, Dictionary<string, Class> classes, Dictionary<(string Module, string Kind, string File), (FileDescriptor descriptor, Parser parser)> classFiles, IDeserializer deserializer)
+        public static void LoadClasses(FileDescriptor descriptor, Parser parser, Dictionary<string, Class> classes, Dictionary<(string Module, string Kind, string File), (FileDescriptor descriptor, Parser parser)> classFiles, IDictionary<string, Domain> domains, IDeserializer deserializer)
         {
             if (descriptor.Loaded)
             {
@@ -35,10 +36,12 @@ namespace Kinetix.NewGenerator.Loaders
                     foreach (var depFile in dep.Files)
                     {
                         var (a, b) = classFiles[(dep.Module, dep.Kind, depFile.File)];
-                        LoadClasses(a, b, classes, classFiles, deserializer);
+                        LoadClasses(a, b, classes, classFiles, domains, deserializer);
                     }
                 }
             }
+
+            var classesToResolve = new List<(object, string)>();
 
             while (parser.TryConsume<DocumentStart>(out _))
             {
@@ -53,37 +56,230 @@ namespace Kinetix.NewGenerator.Loaders
 
                 var classe = new Class();
 
-                while (!(parser.Current is Scalar { Value: "properties" } propScalar))
+                while (!(parser.Current is Scalar { Value: "properties" }))
                 {
                     var prop = parser.Consume<Scalar>().Value;
                     var value = parser.Consume<Scalar>().Value;
 
-                    object _ = prop switch
+                    switch (prop)
                     {
-                        "trigram" => classe.Trigram = value,
-                        "name" => classe.Name = value,
-                        "extends" => classe.Extends = classes[value],
-                        "label" => classe.Label = value,
-                        "stereotype" => classe.Stereotype = value,
-                        "orderProperty" => classe.OrderProperty = value,
-                        "defaultProperty" => classe.DefaultProperty = value,
-                        "comment" => classe.Comment = value,
-                        _ => throw new Exception($"Propriété ${prop} inconnue pour une classe")
-                    };
+                        case "trigram":
+                            classe.Trigram = value;
+                            break;
+                        case "name":
+                            classe.Name = value;
+                            break;
+                        case "extends":
+                            classesToResolve.Add((classe, value));
+                            break;
+                        case "label":
+                            classe.Label = value;
+                            break;
+                        case "stereotype":
+                            classe.Stereotype = value;
+                            break;
+                        case "orderProperty":
+                            classe.OrderProperty = value;
+                            break;
+                        case "defaultProperty":
+                            classe.DefaultProperty = value;
+                            break;
+                        case "comment":
+                            classe.Comment = value;
+                            break;
+                        default:
+                            throw new Exception($"Propriété ${prop} inconnue pour une classe");
+                    }
                 }
 
                 parser.Consume<Scalar>();
+                parser.Consume<SequenceStart>();
 
-                // TODO : Parser les propriétés
-                parser.SkipThisAndNestedEvents();
+                while (!(parser.Current is SequenceEnd))
+                {
+                    parser.Consume<MappingStart>();
+                    switch (parser.Current)
+                    {
+                        case Scalar { Value: "name" }:
+                            var rp = new RegularProperty();
 
+                            while (!(parser.Current is MappingEnd))
+                            {
+                                var prop = parser.Consume<Scalar>().Value;
+                                var value = parser.Consume<Scalar>().Value;
+
+                                switch (prop)
+                                {
+                                    case "name":
+                                        rp.Name = value;
+                                        break;
+                                    case "label":
+                                        rp.Label = value;
+                                        break;
+                                    case "primaryKey":
+                                        rp.PrimaryKey = value == "true";
+                                        break;
+                                    case "required":
+                                        rp.Required = value == "true";
+                                        break;
+                                    case "domain":
+                                        rp.Domain = domains[value];
+                                        break;
+                                    case "defaultValue":
+                                        rp.DefaultValue = value;
+                                        break;
+                                    case "comment":
+                                        rp.Comment = value;
+                                        break;
+                                    default:
+                                        throw new Exception($"Propriété ${prop} inconnue pour une propriété");
+                                }
+                            }
+
+                            classe.Properties.Add(rp);
+                            break;
+                        case Scalar { Value: "association" }:
+                            var ap = new AssociationProperty();
+
+                            while (!(parser.Current is MappingEnd))
+                            {
+                                var prop = parser.Consume<Scalar>().Value;
+                                var value = parser.Consume<Scalar>().Value;
+
+                                switch (prop)
+                                {
+                                    case "association":
+                                        classesToResolve.Add((ap, value));
+                                        break;
+                                    case "role":
+                                        ap.Role = value;
+                                        break;
+                                    case "required":
+                                        ap.Required = value == "true";
+                                        break;
+                                    case "comment":
+                                        ap.Comment = value;
+                                        break;
+                                    default:
+                                        throw new Exception($"Propriété ${prop} inconnue pour une propriété");
+                                }
+                            }
+
+                            classe.Properties.Add(ap);
+                            break;
+                        case Scalar { Value: "composition" }:
+                            var cp = new CompositionProperty();
+
+                            while (!(parser.Current is MappingEnd))
+                            {
+                                var prop = parser.Consume<Scalar>().Value;
+                                var value = parser.Consume<Scalar>().Value;
+
+                                switch (prop)
+                                {
+                                    case "composition":
+                                        classesToResolve.Add((cp, value));
+                                        break;
+                                    case "name":
+                                        cp.Name = value;
+                                        break;
+                                    case "kind":
+                                        cp.Kind = value;
+                                        break;
+                                    case "comment":
+                                        cp.Comment = value;
+                                        break;
+                                    default:
+                                        throw new Exception($"Propriété ${prop} inconnue pour une propriété");
+                                }
+                            }
+
+                            classe.Properties.Add(cp);
+                            break;
+                        case Scalar { Value: "alias" }:
+                            var alp = new AliasProperty();
+
+                            parser.Consume<Scalar>();
+                            parser.Consume<MappingStart>();
+
+                            string aliasProp = null;
+                            string aliasClass = null;
+                            while (!(parser.Current is MappingEnd))
+                            {
+                                var prop = parser.Consume<Scalar>().Value;
+                                var value = parser.Consume<Scalar>().Value;
+
+                                switch (prop)
+                                {
+                                    case "property":
+                                        aliasProp = value;
+                                        break;
+                                    case "class":
+                                        aliasClass = value;
+                                        break;
+                                    default:
+                                        throw new Exception($"Propriété ${prop} inconnue pour un alias");
+                                }
+                            }
+
+                            classesToResolve.Add((alp, aliasProp + "|" + aliasClass));
+                            parser.Consume<MappingEnd>();
+
+                            while (!(parser.Current is MappingEnd))
+                            {
+                                var prop = parser.Consume<Scalar>().Value;
+                                var value = parser.Consume<Scalar>().Value;
+
+                                switch (prop)
+                                {
+                                    case "prefix":
+                                        alp.Prefix = value;
+                                        break;
+                                    case "suffix":
+                                        alp.Suffix = value;
+                                        break;
+                                    default:
+                                        throw new Exception($"Propriété ${prop} inconnue pour une propriété");
+                                }
+                            }
+
+                            classe.Properties.Add(alp);
+                            break;
+                        default:
+                            throw new Exception($"Erreur lors du parsing des propriétés de la classe {classe.Name}");
+                    }
+
+                    parser.Consume<MappingEnd>();
+                }
+
+                parser.Consume<SequenceEnd>();
                 parser.Consume<MappingEnd>();
                 parser.Consume<MappingEnd>();
                 parser.Consume<DocumentEnd>();
 
                 classes.Add(classe.Name, classe);
             }
-            
+
+            foreach (var (obj, className) in classesToResolve)
+            {
+                switch (obj)
+                {
+                    case Class classe:
+                        classe.Extends = classes[className];
+                        break;
+                    case AssociationProperty ap:
+                        ap.Association = classes[className];
+                        break;
+                    case CompositionProperty cp:
+                        cp.Composition = classes[className];
+                        break;
+                    case AliasProperty alp:
+                        var aliasConf = className.Split("|");
+                        alp.Property = classes[aliasConf[1]].Properties.Single(p => p.Name == aliasConf[0]);
+                        break;
+                }
+            }
+
             descriptor.Loaded = true;
         }
     }

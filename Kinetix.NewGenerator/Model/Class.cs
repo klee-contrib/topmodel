@@ -12,6 +12,6 @@ namespace Kinetix.NewGenerator.Model
         public string OrderProperty { get; set; }
         public string DefaultProperty { get; set; }
         public string Comment { get; set; }
-        public IList<IProperty> Properties { get; set; }
+        public IList<IProperty> Properties { get; } = new List<IProperty>();
     }
 }

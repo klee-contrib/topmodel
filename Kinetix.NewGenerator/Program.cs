@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Kinetix.NewGenerator.Config;
 using Kinetix.NewGenerator.Loaders;
 using Kinetix.NewGenerator.Model;
 using YamlDotNet.Serialization;
@@ -10,24 +11,25 @@ namespace Kinetix.NewGenerator
 {
     public static class Program
     {
-
         public static void Main(string[] args)
         {
-            var rootDir = args[0];
             var deserializer = new DeserializerBuilder()
                .WithNamingConvention(CamelCaseNamingConvention.Instance)
                .Build();
 
-            var files = Directory.GetFiles(rootDir, "*.yml", SearchOption.AllDirectories);
-            var domainFiles = files.Where(f => f.Split(@"\").Last() == "domains.yml");
-            var modelFiles = files.Where(f => f.Split(@"\").Last() != "domains.yml");
+            var configFile = new FileInfo(args[0]);
+            var config = deserializer.Deserialize<RootConfig>(configFile.OpenText().ReadToEnd());
+            config.ModelRoot = Path.Combine(configFile.DirectoryName, config.ModelRoot ?? string.Empty);
+            config.Domains = Path.Combine(configFile.DirectoryName, config.Domains ?? "domains.yml");
 
-            var domains = domainFiles
-                .SelectMany(file => DomainsLoader.LoadDomains(file, deserializer))
+            var files = Directory.EnumerateFiles(config.ModelRoot, "*.yml", SearchOption.AllDirectories)
+                .Where(f => f != config.Domains && f != configFile.FullName);
+
+            var domains = DomainsLoader.LoadDomains(config.Domains, deserializer)
                 .ToLookup(f => f.Name, f => f)
                 .ToDictionary(f => f.Key, f => f.First());
 
-            var classFiles = modelFiles
+            var classFiles = files
                 .Select(file => ClassesLoader.GetFileDescriptor(file, deserializer))
                 .ToDictionary(
                     file => (file.descriptor.Module, file.descriptor.Kind, file.descriptor.File),
@@ -37,7 +39,7 @@ namespace Kinetix.NewGenerator
 
             foreach(var (_, (descriptor, parser)) in classFiles)
             {
-                ClassesLoader.LoadClasses(descriptor, parser, classes, classFiles, deserializer);
+                ClassesLoader.LoadClasses(descriptor, parser, classes, classFiles, domains, deserializer);
             }
         }        
     }
