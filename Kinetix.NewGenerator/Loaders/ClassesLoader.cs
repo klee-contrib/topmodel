@@ -19,10 +19,22 @@ namespace Kinetix.NewGenerator.Loaders
 
             var descriptor = deserializer.Deserialize<FileDescriptor>(parser);
 
-            return (descriptor, parser);
+            if (
+                descriptor == null ||
+                descriptor.App == null || 
+                descriptor.Module == null ||
+                descriptor.File == null || 
+                descriptor.Uses != null && (
+                    descriptor.Uses.Any(use => use.Module == null || use.Files == null) ||
+                    descriptor.Uses.Any(use => use.Files != null && use.Files.Any(f => f.File == null || f.Classes == null))))
+            {
+                throw new Exception($"FileDescriptor de {filePath} incomplet.");
+            }
+
+            return (descriptor!, parser);
         }
 
-        public static void LoadClasses(FileDescriptor descriptor, Parser parser, Dictionary<string, Class> classes, Dictionary<(string Module, string Kind, string File), (FileDescriptor descriptor, Parser parser)> classFiles, IDictionary<string, Domain> domains, IDeserializer deserializer)
+        public static void LoadClasses(FileDescriptor descriptor, Parser parser, Dictionary<string, Class> classes, Dictionary<(string Module, Kind Kind, string File), (FileDescriptor descriptor, Parser parser)> classFiles, IDictionary<string, Domain> domains, IDeserializer deserializer)
         {
             if (descriptor.Loaded)
             {
@@ -77,7 +89,11 @@ namespace Kinetix.NewGenerator.Loaders
                             classe.Label = value;
                             break;
                         case "stereotype":
-                            classe.Stereotype = value;
+                            classe.Stereotype = value == "Statique" 
+                                ? Stereotype.Statique 
+                                : value == "Reference" 
+                                ? Stereotype.Reference 
+                                : throw new Exception($"Stereotype inconnu: {value}");
                             break;
                         case "orderProperty":
                             classe.OrderProperty = value;
@@ -91,6 +107,16 @@ namespace Kinetix.NewGenerator.Loaders
                         default:
                             throw new Exception($"Propriété ${prop} inconnue pour une classe");
                     }
+                }
+
+                if (classe.Name == null)
+                {
+                    throw new Exception("Tout classe doit avoir une propriété 'name'");
+                }
+
+                if (classe.Comment == null)
+                {
+                    throw new Exception($"La classe {classe.Name} n'a pas de commentaire.");
                 }
 
                 parser.Consume<Scalar>();
@@ -141,6 +167,11 @@ namespace Kinetix.NewGenerator.Loaders
                                 }
                             }
 
+                            if (rp.Domain == null || rp.Comment == null || rp.Label == null)
+                            {
+                                throw new Exception($"Les propriétés 'domain', 'label' et 'comment' sont obligatoires sur la propriété {rp.Name} de la classe {classe.Name}");
+                            }
+
                             classe.Properties.Add(rp);
                             break;
                         case Scalar { Value: "association" }:
@@ -173,6 +204,11 @@ namespace Kinetix.NewGenerator.Loaders
                                 }
                             }
 
+                            if (ap.Comment == null || ap.Label == null)
+                            {
+                                throw new Exception($"Les propriétés 'label' et 'comment' sont obligatoires sur les associations de la classe {classe.Name}");
+                            }
+
                             classe.Properties.Add(ap);
                             break;
                         case Scalar { Value: "composition" }:
@@ -202,6 +238,11 @@ namespace Kinetix.NewGenerator.Loaders
                                 }
                             }
 
+                            if (cp.Comment == null || cp.Name == null || cp.Kind == null)
+                            {
+                                throw new Exception($"Les propriétés 'name', 'kind' et 'comment' sont obligatoires sur les compositions de la classe {classe.Name}");
+                            }
+
                             classe.Properties.Add(cp);
                             break;
                         case Scalar { Value: "alias" }:
@@ -210,8 +251,8 @@ namespace Kinetix.NewGenerator.Loaders
                             parser.Consume<Scalar>();
                             parser.Consume<MappingStart>();
 
-                            string aliasProp = null;
-                            string aliasClass = null;
+                            string? aliasProp = null;
+                            string? aliasClass = null;
                             while (!(parser.Current is MappingEnd))
                             {
                                 var prop = parser.Consume<Scalar>().Value;
@@ -264,6 +305,11 @@ namespace Kinetix.NewGenerator.Loaders
                 parser.Consume<MappingEnd>();
                 parser.Consume<MappingEnd>();
                 parser.Consume<DocumentEnd>();
+
+                foreach (var prop in classe.Properties)
+                {
+                    prop.Class = classe;
+                }
 
                 classes.Add(classe.Name, classe);
             }

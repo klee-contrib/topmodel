@@ -4,9 +4,11 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Kinetix.NewGenerator</RootNamespace>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="YamlDotNet" Version="8.0.0" />
   </ItemGroup>
 

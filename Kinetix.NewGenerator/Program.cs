@@ -22,6 +22,12 @@ namespace Kinetix.NewGenerator
             var config = deserializer.Deserialize<RootConfig>(configFile.OpenText().ReadToEnd());
             config.ModelRoot = Path.Combine(configFile.DirectoryName, config.ModelRoot ?? string.Empty);
             config.Domains = Path.Combine(configFile.DirectoryName, config.Domains ?? "domains.yml");
+            config.StaticLists = config.StaticLists != null ? 
+                Path.Combine(configFile.DirectoryName, config.StaticLists)
+                : null;
+            config.ReferenceLists = config.ReferenceLists != null ?
+                Path.Combine(configFile.DirectoryName, config.ReferenceLists)
+                : null;
 
             var files = Directory.EnumerateFiles(config.ModelRoot, "*.yml", SearchOption.AllDirectories)
                 .Where(f => f != config.Domains && f != configFile.FullName);
@@ -41,6 +47,24 @@ namespace Kinetix.NewGenerator
             foreach(var (_, (descriptor, parser)) in classFiles)
             {
                 ClassesLoader.LoadClasses(descriptor, parser, classes, classFiles, domains, deserializer);
+            }
+
+            if (config.StaticLists != null) 
+            {
+                var staticLists = ReferenceListsLoader.LoadReferenceLists(config.StaticLists);
+                foreach (var (className, referenceValues) in staticLists)
+                {
+                    ReferenceListsLoader.AddReferenceValues(classes[className], referenceValues);
+                }
+            }
+
+            if (config.ReferenceLists != null)
+            {
+                var referenceLists = ReferenceListsLoader.LoadReferenceLists(config.ReferenceLists);
+                foreach (var (className, referenceValues) in referenceLists)
+                {
+                    ReferenceListsLoader.AddReferenceValues(classes[className], referenceValues);
+                }
             }
 
             if (config.Javascript != null)

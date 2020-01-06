@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Kinetix.Tools.Common;
+﻿using Kinetix.Tools.Common;
 
 namespace Kinetix.NewGenerator.Model
 {
@@ -9,25 +8,32 @@ namespace Kinetix.NewGenerator.Model
         Domain Domain { get; }
         string Comment { get; }
 
-        string GetTSType() { 
-            switch (Domain.CsharpType)
+        string TSType
+        {
+            get
             {
-                case "ICollection<string>":
-                    return "string[]";
-                case "ICollection<int>":
-                    return "number[]";
-            }
+                if (Domain.CsharpType == "string")
+                {
+                    var prop = this is AliasProperty alp ? alp.Property : this;
 
-            if (Domain.CsharpType == "string" && this is AssociationProperty ap && ap.Association.Stereotype == "Statique")
-            {
-                return $"{ap.Association.Name}Code";
-            }
-            else if (Domain.CsharpType == "string" && (Domain.SqlType?.Contains("json") ?? false))
-            {
-                return "{}";
-            }
+                    if (prop is AssociationProperty ap && ap.Association.Stereotype == Stereotype.Statique)
+                    {
+                        return $"{ap.Association.Name}{ap.Association.PrimaryKey!.Name}";
+                    }
 
-            return TSUtils.CSharpToTSType(Domain.CsharpType);
+                    if (prop.Class.Stereotype == Stereotype.Statique)
+                    {
+                        return $"{prop.Class.Name}{prop.Name}";
+                    }
+
+                    if (Domain.SqlType?.Contains("json") ?? false)
+                    {
+                        return "{}";
+                    }
+                }
+
+                return TSUtils.CSharpToTSType(Domain.CsharpType);
+            }
         }
     }
 }

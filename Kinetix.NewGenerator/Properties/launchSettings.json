@@ -2,7 +2,7 @@
   "profiles": {
     "Kinetix.NewGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\Damien\\Documents\\Projets\\NOUBA\\Model\\yaml\\modgen.yml"
+      "commandLineArgs": "C:\\Users\\Damien\\Documents\\Projets\\BIRD\\Model\\yaml\\referentiel.yml"
     }
   }
 }

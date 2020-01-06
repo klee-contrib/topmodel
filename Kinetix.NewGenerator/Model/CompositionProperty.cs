@@ -1,4 +1,5 @@
-﻿namespace Kinetix.NewGenerator.Model
+﻿#nullable disable
+namespace Kinetix.NewGenerator.Model
 {
     public class CompositionProperty : IProperty
     {
@@ -6,6 +7,7 @@
         public string Name { get; set; }
         public string Kind { get; set; }
         public string Comment { get; set; }
+        public Class Class { get; set; }
 
         public string Label => Name;
         public bool PrimaryKey => false;

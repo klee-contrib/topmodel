@@ -10,10 +10,12 @@ namespace Kinetix.NewGenerator.Javascript
     /// </summary>
     public partial class TypescriptTemplate : TemplateBase
     {
-        /// <summary>
-        /// Objet de modèle.
-        /// </summary>
-        public Class Class { get; set; }
+        private readonly Class _class;
+
+        public TypescriptTemplate(Class @class)
+        {
+            _class = @class;
+        }
 
         /// <summary>
         /// Create the template output
@@ -43,27 +45,27 @@ namespace Kinetix.NewGenerator.Javascript
             }
 
             Write("\r\nexport type ");
-            Write(Class.Name);
+            Write(_class.Name);
             Write(" = EntityToType<typeof ");
-            Write(Class.Name);
+            Write(_class.Name);
             Write("Entity>;\r\nexport type ");
-            Write(Class.Name);
+            Write(_class.Name);
             Write("Node = StoreNode<typeof ");
-            Write(Class.Name);
+            Write(_class.Name);
             Write("Entity>;\r\n\r\n");
 
             Write("export const ");
-            Write(Class.Name);
+            Write(_class.Name);
             Write("Entity = {\r\n");
 
-            if (Class.Extends != null)
+            if (_class.Extends != null)
             {
                 Write("        ...");
-                Write(Class.Extends.Name);
+                Write(_class.Extends.Name);
                 Write("Entity,\r\n");
             }
 
-            foreach (var property in Class.Properties)
+            foreach (var property in _class.Properties)
             {
                 Write("    ");
                 Write(property.Name.ToFirstLower());
@@ -74,7 +76,7 @@ namespace Kinetix.NewGenerator.Javascript
                 {
                     if (cp.Kind == "list")
                     {
-                        if (cp.Composition.Name == Class.Name)
+                        if (cp.Composition.Name == _class.Name)
                         {
                             Write("\"recursive-list\"");
                         }
@@ -100,27 +102,15 @@ namespace Kinetix.NewGenerator.Javascript
                     Write("        name: \"");
                     Write(field.Name.ToFirstLower());
                     Write("\",\r\n        fieldType: ");
-                    var propType = field.GetTSType();
-                    if (propType == "string")
+                    Write(field.TSType switch
                     {
-                        Write("\"string\"");
-                    }
-                    else if (propType == "boolean")
-                    {
-                        Write("\"boolean\"");
-                    }
-                    else if (propType == "number")
-                    {
-                        Write("\"number\"");
-                    }
-                    else if (propType.EndsWith("Code"))
-                    {
-                        Write($"\"string\" as {propType}");
-                    }
-                    else
-                    {
-                        Write($"{{}} as {propType}");
-                    }
+                        "{}" => "{}",
+                        string t when t != "string" && field.Domain.CsharpType == "string" => $"\"string\" as {field.TSType}",
+                        "string" => "\"string\"",
+                        "number" => "\"number\"",
+                        "boolean" => "\"boolean\"",
+                        string t => $"{{}} as {t}"
+                    });
 
                     Write(",\r\n");
                     Write("        domain: ");
@@ -128,9 +118,9 @@ namespace Kinetix.NewGenerator.Javascript
                     Write(",\r\n        isRequired: ");
                     Write((field.Required && (!field.PrimaryKey || field.Domain.CsharpType != "int?")).ToString().ToFirstLower());
                     Write(",\r\n        label: \"");
-                    Write(TSUtils.ToNamespace(Class.Namespace.Module));
+                    Write(TSUtils.ToNamespace(_class.Namespace.Module));
                     Write(".");
-                    Write(Class.Name.ToFirstLower());
+                    Write(_class.Name.ToFirstLower());
                     Write(".");
                     Write(property.Name.ToFirstLower());
                     Write("\"\r\n");
@@ -145,7 +135,7 @@ namespace Kinetix.NewGenerator.Javascript
 
                 Write("    }");
 
-                if (property != Class.Properties.Last())
+                if (property != _class.Properties.Last())
                 {
                     Write(",");
                 }
@@ -155,16 +145,16 @@ namespace Kinetix.NewGenerator.Javascript
 
             Write("} as const;\r\n");
 
-            if (Class.Stereotype == "Reference")
+            if (_class.Stereotype == Stereotype.Reference)
             {
                 Write("\r\nexport const ");
-                Write(Class.Name.ToFirstLower());
+                Write(_class.Name.ToFirstLower());
                 Write(" = {type: {} as ");
-                Write(Class.Name);
+                Write(_class.Name);
                 Write(", valueKey: \"");
-                Write(Class.Properties.Single(p => p.PrimaryKey).Name.ToFirstLower());
+                Write(_class.PrimaryKey!.Name.ToFirstLower());
                 Write("\", labelKey: \"");
-                Write(Class.DefaultProperty?.ToFirstLower() ?? "libelle");
+                Write(_class.DefaultProperty?.ToFirstLower() ?? "libelle");
                 Write("\"} as const;\r\n");
             }
 
@@ -173,7 +163,7 @@ namespace Kinetix.NewGenerator.Javascript
 
         private IEnumerable<string> GetDomainList()
         {
-            return Class.Properties
+            return _class.Properties
                 .OfType<IFieldProperty>()
                 .Select(property => property.Domain.Name)
                 .Distinct()
@@ -186,16 +176,16 @@ namespace Kinetix.NewGenerator.Javascript
         /// <returns>La liste d'imports (type, chemin du module, nom du fichier).</returns>
         private IEnumerable<(string import, string path)> GetImportList()
         {
-            var types = Class.Properties
+            var types = _class.Properties
                 .OfType<CompositionProperty>()
                 .Select(property => property.Composition);
 
-            if (Class.Extends != null)
+            if (_class.Extends != null)
             {
-                types = types.Concat(new[] { Class.Extends });
+                types = types.Concat(new[] { _class.Extends });
             }
 
-            var currentModule = Class.Namespace.Module;
+            var currentModule = _class.Namespace.Module;
 
             var imports = types.Select(type =>
             {
@@ -211,10 +201,12 @@ namespace Kinetix.NewGenerator.Javascript
                     path: $"{module}/{name.ToDashCase()}");
             }).Distinct().ToList();
 
-            var references = Class.Properties
-                .OfType<AssociationProperty>()
-                .Where(property => property.Association.Stereotype == "Statique")
-                .Select(property => (Code: $"{property.Association.Name}Code", property.Association.Namespace.Module))
+            var references = _class.Properties
+                .Select(p => p is AliasProperty alp ? alp.Property : p)
+                .OfType<IFieldProperty>()
+                .Select(prop => (prop, classe: prop is AssociationProperty ap ? ap.Association : prop.Class))
+                .Where(pc => pc.classe.Stereotype == Stereotype.Statique)
+                .Select(pc => (Code: pc.prop.TSType, pc.classe.Namespace.Module))
                 .Distinct();
 
             if (references.Any())

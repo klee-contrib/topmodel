@@ -34,7 +34,7 @@ namespace Kinetix.NewGenerator.Javascript
             {
                 foreach (var model in entry.Value)
                 {
-                    if (model.Stereotype != "Statique")
+                    if (model.Stereotype != Stereotype.Statique)
                     {
                         if (!config.IsGenerateEntities && model.Trigram != null)
                         {
@@ -55,7 +55,7 @@ namespace Kinetix.NewGenerator.Javascript
                             Directory.CreateDirectory(directoryInfo.FullName);
                         }
 
-                        var template = new TypescriptTemplate { Class = model };
+                        var template = new TypescriptTemplate(model);
                         var result = template.TransformText();
                         File.WriteAllText(fileName, result, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
                     }
@@ -70,7 +70,7 @@ namespace Kinetix.NewGenerator.Javascript
             }
         }
 
-        private static void GenerateReferenceLists(JavascriptConfig parameters, IList<Class> staticLists, string namespaceName = null)
+        private static void GenerateReferenceLists(JavascriptConfig parameters, IList<Class> staticLists, string namespaceName)
         {
             if (staticLists.Any())
             {
@@ -90,7 +90,7 @@ namespace Kinetix.NewGenerator.Javascript
                     Directory.CreateDirectory(directoryInfo.FullName);
                 }
 
-                var template = new ReferenceTemplate { References = staticLists.OrderBy(r => r.Name) };
+                var template = new ReferenceTemplate(staticLists.OrderBy(r => r.Name));
                 var result = template.TransformText();
                 File.WriteAllText(fileName, result, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
             }

@@ -5,5 +5,6 @@
         string Name { get; }
         string Label { get; }
         bool PrimaryKey { get; }
+        Class Class { get; set; }
     }
 }

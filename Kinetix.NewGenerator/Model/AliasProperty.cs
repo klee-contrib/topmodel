@@ -2,9 +2,12 @@
 {
     public class AliasProperty : IFieldProperty
     {
+#nullable disable
         public IFieldProperty Property { get; set; }
-        public string Prefix { get; set; }
-        public string Suffix { get; set; }
+        public Class Class { get; set; }
+#nullable enable
+        public string? Prefix { get; set; }
+        public string? Suffix { get; set; }
 
         public string Name => (Prefix ?? string.Empty) + Property.Name + (Suffix ?? string.Empty);
         public string Label => Property.Label;

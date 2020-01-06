@@ -116,7 +116,7 @@ namespace Kinetix.NewGenerator.Javascript
             writerJs.WriteLine($"export const {FirstToLower(namespaceName)} = {{");
             
             var i = 1;
-            foreach (var classe in classes)
+            foreach (var classe in classes.OrderBy(c => c.Name))
             {
                 WriteClasseNode(writerJs, classe, classes.Count == i++);
             }

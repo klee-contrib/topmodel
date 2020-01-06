@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 
+#nullable disable
 namespace Kinetix.NewGenerator.FileModel
 {
     public class DependencyFileDescriptor

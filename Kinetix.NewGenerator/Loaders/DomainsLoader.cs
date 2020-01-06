@@ -24,7 +24,19 @@ namespace Kinetix.NewGenerator.Loaders
                     throw new Exception("Seuls des domaines peuvent être définis dans le fichier de domaines");
                 }
 
-                yield return deserializer.Deserialize<Domain>(parser);
+                var domain = deserializer.Deserialize<Domain>(parser);
+
+                if (domain.Name == null)
+                {
+                    throw new Exception("Un domaine doit avoir un nom.");
+                }
+
+                if (domain.Label == null || domain.CsharpType == null)
+                {
+                    throw new Exception($"Les propriétés 'label' et 'csharpType' sont obligatoires sur le domaine {domain.Name}");
+                }
+
+                yield return domain;
 
                 parser.Consume<MappingEnd>();
                 parser.Consume<DocumentEnd>();

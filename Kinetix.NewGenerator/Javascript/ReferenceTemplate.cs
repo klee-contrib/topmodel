@@ -11,10 +11,12 @@ namespace Kinetix.NewGenerator.Javascript
     /// </summary>
     public partial class ReferenceTemplate : TemplateBase
     {
-        /// <summary>
-        /// Références.
-        /// </summary>
-        public IEnumerable<Class> References { get; set; }
+        public readonly IEnumerable<Class> _references;
+
+        public ReferenceTemplate(IEnumerable<Class> references)
+        {
+            _references = references;
+        }
 
         /// <summary>
         /// Create the template output
@@ -23,12 +25,14 @@ namespace Kinetix.NewGenerator.Javascript
         {
             Write("/*\r\n    Ce fichier a été généré automatiquement.\r\n    Toute modification sera perdue.\r\n*/\r\n");
 
-            foreach (var reference in References)
+            foreach (var reference in _references)
             {
                 Write("\r\nexport type ");
                 Write(reference.Name);
                 Write("Code = ");
-                Write(GetConstValues(reference));
+                Write(reference.ReferenceValues != null
+                    ? string.Join(" | ", reference.ReferenceValues.Select(r => r.Value.code).OrderBy(x => x))
+                    : "string");
                 Write(";\r\nexport interface ");
                 Write(reference.Name);
                 Write(" {\r\n");
@@ -49,25 +53,13 @@ namespace Kinetix.NewGenerator.Javascript
                 Write(reference.Name.ToFirstLower());
                 Write(" = {type: {} as ");
                 Write(reference.Name);
-                Write(", valueKey: \""); 
-                Write(reference.Properties.Single(p => p.PrimaryKey).Name.ToFirstLower());
+                Write(", valueKey: \"");
+                Write(reference.PrimaryKey!.Name.ToFirstLower());
                 Write("\", labelKey: \"");
                 Write(reference.DefaultProperty?.ToFirstLower() ?? "libelle");
                 Write("\"} as const;\r\n");
             }
             return GenerationEnvironment.ToString();
-        }
-
-        /// <summary>
-        /// Transforme une liste de constantes en type Typescript.
-        /// </summary>
-        /// <param name="reference">La liste de constantes.</param>
-        /// <returns>Le type de sorte.</returns>
-        private string GetConstValues(Class reference)
-        {
-            //var constValues = string.Join(" | ", reference.ConstValues.Values.Select(value => value.Code));
-            //return constValues == string.Empty ? "string" : constValues;
-            return "string";
         }
 
         /// <summary>
