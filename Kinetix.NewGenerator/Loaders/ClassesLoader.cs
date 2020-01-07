@@ -21,9 +21,9 @@ namespace Kinetix.NewGenerator.Loaders
 
             if (
                 descriptor == null ||
-                descriptor.App == null || 
+                descriptor.App == null ||
                 descriptor.Module == null ||
-                descriptor.File == null || 
+                descriptor.File == null ||
                 descriptor.Uses != null && (
                     descriptor.Uses.Any(use => use.Module == null || use.Files == null) ||
                     descriptor.Uses.Any(use => use.Files != null && use.Files.Any(f => f.File == null || f.Classes == null))))
@@ -89,10 +89,10 @@ namespace Kinetix.NewGenerator.Loaders
                             classe.Label = value;
                             break;
                         case "stereotype":
-                            classe.Stereotype = value == "Statique" 
-                                ? Stereotype.Statique 
-                                : value == "Reference" 
-                                ? Stereotype.Reference 
+                            classe.Stereotype = value == "Statique"
+                                ? Stereotype.Statique
+                                : value == "Reference"
+                                ? Stereotype.Reference
                                 : throw new Exception($"Stereotype inconnu: {value}");
                             break;
                         case "orderProperty":
@@ -145,7 +145,7 @@ namespace Kinetix.NewGenerator.Loaders
                                         break;
                                     case "primaryKey":
                                         rp.PrimaryKey = value == "true";
-                                        if (rp.PrimaryKey) 
+                                        if (rp.PrimaryKey)
                                         {
                                             rp.Required = true;
                                         }
@@ -188,7 +188,7 @@ namespace Kinetix.NewGenerator.Loaders
                                         classesToResolve.Add((ap, value));
                                         break;
                                     case "role":
-                                        ap.Role = value;
+                                        ap.Role = value.Replace(" ", string.Empty);
                                         break;
                                     case "label":
                                         ap.Label = value;
