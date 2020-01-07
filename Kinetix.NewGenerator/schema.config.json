@@ -1,0 +1,38 @@
+{
+  "$id": "modgen.config.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "Fichier de config du générateur",
+  "properties": {
+    "modelRoot": {
+      "type": "string",
+      "description": "Chemin du dossier racine qui contient tous les fichiers YML du modèle, qui seront chargés par le générateur (à l'exception du fichier de domaines qui est chargé à part). Si non renseigné, le dossier contenant le fichier de config sera utilisé."
+    },
+    "domains": {
+      "type": "string",
+      "description": "Chemin du fichier de domaines. Si non renseigné, 'domains.yml' sera utilisé."
+    },
+    "staticLists": {
+      "type": "string",
+      "description": "Chemin du fichier contenant les initialisations de listes statiques."
+    },
+    "referenceLists": {
+      "type": "string",
+      "description": "Chemin du fichier contenant les initialisations de listes de références."
+    },
+    "javascript": {
+      "type": "object",
+      "description": "Configuration de la génération de Typescript. Si non renseigné, alors le Typescript ne sera pas généré.",
+      "properties": {
+        "modelOutputDirectory": {
+          "type": "string",
+          "description": "Chemin vers le dossier racine vers lequel générer les fichiers de modèle. Si non renseigné, aucun modèle ne sera généré."
+        },
+        "resourceOutputDirectory": {
+          "type": "string",
+          "description": "Chemin vers le dossier racine vers lequel générer les fichiers de ressources i18n. Si non renseigné, aucun fichier de sera généré."
+        }
+      }
+    }
+  }
+}

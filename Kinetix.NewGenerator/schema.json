@@ -1,0 +1,283 @@
+{
+  "$id": "modgen.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "oneOf": [
+    {
+      "type": "object",
+      "description": "Définition d'un fichier.",
+      "required": ["app", "module", "kind", "file"],
+      "properties": {
+        "app": {
+          "type": "string",
+          "description": "Nom de l'application."
+        },
+        "module": {
+          "type": "string",
+          "description": "Nom du module contenant ce fichier."
+        },
+        "kind": {
+          "type": "string",
+          "description": "Data (persistant) ou Metier (DTOs).",
+          "enum": ["Data", "Metier"]
+        },
+        "file": {
+          "type": "string",
+          "description": "Nom du fichier courant."
+        },
+        "uses": {
+          "type": "array",
+          "description": "Dépendances du fichier courant. Il est nécessaire de spécifier l'intégralité des fichiers existants utilisés dans de fichier, et d'en lister toutes les classes référencées.",
+          "items": {
+            "type": "object",
+            "description": "Détail d'une dépendance.",
+            "required": ["module", "kind", "files"],
+            "properties": {
+              "module": {
+                "type": "string",
+                "description": "Nom du module référencé."
+              },
+              "kind": {
+                "type": "string",
+                "description": "Data (persistant) ou Metier (DTOs).",
+                "enum": ["Data", "Metier"]
+              },
+              "files": {
+                "type": "array",
+                "description": "Liste des fichiers du module à référencer.",
+                "items": {
+                  "type": "object",
+                  "description": "Détail d'un fichier référencé.",
+                  "required": ["file", "classes"],
+                  "properties": {
+                    "file": {
+                      "type": "string",
+                      "description": "Nom du fichier référencé."
+                    },
+                    "classes": {
+                      "type": "array",
+                      "description": "Liste des classes référencées dans ce fichier.",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "description": "Définition d'un domaine.",
+      "required": ["domain"],
+      "properties": {
+        "domain": {
+          "type": "object",
+          "description": "Domaine.",
+          "required": ["name", "label", "csharpType"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Nom (ou code) du domaine."
+            },
+            "label": {
+              "type": "string",
+              "description": "Libellé du domaine."
+            },
+            "csharpType": {
+              "type": "string",
+              "description": "Type correspondant au domaine en C#. Sera utilisé pour déterminer le type TS."
+            },
+            "sqlType": {
+              "type": "string",
+              "description": "Type correspondant au domaine en SQL. Si le domaine n'est jamais lié à une donnée persistée alors il n'a pas besoin de type SQL."
+            },
+            "customAnnotation": {
+              "type": "string",
+              "description": "Annotation à ajouter sur toutes les propriétés C# de ce domaine (par exemple pour aider l'ORM a mapper le type correctement)."
+            },
+            "customUsings": {
+              "type": "string",
+              "description": "Usings, séparés par des virgules, à ajouter à toute classe C# qui possède une propriété de ce domaine. Par exemple pour ajouter un using pour des types de collections."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "description": "Définition d'une classe.",
+      "required": ["class"],
+      "properties": {
+        "class": {
+          "type": "object",
+          "description": "Définition d'une classe.",
+          "required": ["name", "comment", "properties"],
+          "properties": {
+            "trigram": {
+              "type": "string",
+              "description": "Le trigramme qui préfixera toutes les propriétés de la classe en SQL. Doit faire exactement 3 lettres.",
+              "minLength": 3,
+              "maxLength": 3
+            },
+            "name": {
+              "type": "string",
+              "description": "Nom C#/TS de la classe. Sera converti en SQL en SNAKE_CASE."
+            },
+            "extends": {
+              "type": "string",
+              "description": "Nom de la classe parente de cette classe. Doit être référencée dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier."
+            },
+            "label": {
+              "type": "string",
+              "description": "Un libellé qui décrit la classe. N'est utilisé nulle part."
+            },
+            "stereotype": {
+              "type": "string",
+              "description": "Stereotype de la classe, pour une classe de référence. Statique ou Reference.",
+              "enum": ["Statique", "Reference"]
+            },
+            "defaultProperty": {
+              "type": "string",
+              "description": "Nom de la propriété de la classe qui sera utilisée comme libellé pour les listes de référence. Si non renseignée, la propriété 'Libelle' sera utilisée (en espérant qu'elle existe)."
+            },
+            "orderProperty": {
+              "type": "string",
+              "description": "Nom de la propriété de la classe qui sera utilisée pour trier la liste de référence. Si non renseignée, le tri par défaut de la base de données sera utilisé (par clé primaire, ordre d'insertion...)."
+            },
+            "comment": {
+              "type": "string",
+              "description": "Description de la classe."
+            },
+            "properties": {
+              "type": "array",
+              "description": "Liste des propriétés de la classe. Cette propriété DOIT être en DERNIER.",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "description": "Propriété standard.",
+                    "required": ["name", "label", "domain", "comment"],
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Nom de la propriété C#/TS. Sera converti en SQL en TRIGRAM_{{SNAKE_CASE}}. Cette propriété DOIT être en PREMIER."
+                      },
+                      "label": {
+                        "type": "string",
+                        "description": "Libellé de la propriété. Sera utilisé comme libellé pour le champ dans Focus."
+                      },
+                      "primaryKey": {
+                        "type": "boolean",
+                        "description": "Précise si la propriété est la clé primaire de la table associée à la classe."
+                      },
+                      "required": {
+                        "type": "boolean",
+                        "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."
+                      },
+                      "domain": {
+                        "type": "string",
+                        "description": "Le domaine lié à la propriété. Doit référencer un domaine défini dans le fichier de domaines."
+                      },
+                      "comment": {
+                        "type": "string",
+                        "description": "Description de la propriété."
+                      },
+                      "defaultValue": {
+                        "type": ["string", "number", "boolean"],
+                        "description": "Valeur par défaut de la propriété, dans la base de données."
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "description": "Propriété d'association (clé étrangère).",
+                    "required": ["association", "label", "comment"],
+                    "properties": {
+                      "association": {
+                        "type": "string",
+                        "description": "Nom de la classe référencée par cette propriété. Doit être référencée dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier. Cette propriété DOIT être en PREMIER."
+                      },
+                      "label": {
+                        "type": "string",
+                        "description": "Libellé de la propriété. Sera utilisé comme libellé pour le champ dans Focus."
+                      },
+                      "role": {
+                        "type": "string",
+                        "description": "Suffixe de l'association, utile pour distinguer deux associations vers une même classe par exemple."
+                      },
+                      "required": {
+                        "type": "boolean",
+                        "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."
+                      },
+                      "comment": {
+                        "type": "string",
+                        "description": "Description de la propriété."
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "description": "Alias vers un champ existant.",
+                    "required": ["alias"],
+                    "properties": {
+                      "alias": {
+                        "type": "object",
+                        "description": "Définition de la propriété aliasée. Cette propriété DOIT être en PREMIER.",
+                        "required": ["property", "class"],
+                        "properties": {
+                          "property": {
+                            "type": "string",
+                            "description": "Propriété de l'alias. Elle doit être définie sur la classe cible."
+                          },
+                          "class": {
+                            "type": "string",
+                            "description": "Nom de la classe comportant la propriété aliasée. Doit être référencée dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier."
+                          }
+                        }
+                      },
+                      "prefix": {
+                        "type": "string",
+                        "description": "Préfixe à ajouter au nom de la propriété aliasée."
+                      },
+                      "suffix": {
+                        "type": "string",
+                        "description": "Suffixe à ajouter au nom de la propriété aliasée."
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "description": "Propriété de composition d'une sous classe ou d'une sous liste de classe. Ne peut être utilisé que dans les modules métier.",
+                    "required": ["composition", "name", "kind", "comment"],
+                    "properties": {
+                      "composition": {
+                        "type": "string",
+                        "description": "Nom de la classe à composer. Doit être référencée dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier. Cette propriété DOIT être en PREMIER."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Nom de la propriété."
+                      },
+                      "kind": {
+                        "type": "string",
+                        "description": "'object' ou 'list', respectivement pour un sous objet et une sous liste.",
+                        "enum": ["object", "list"]
+                      },
+                      "comment": {
+                        "type": "string",
+                        "description": "Description de la propriété."
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}
