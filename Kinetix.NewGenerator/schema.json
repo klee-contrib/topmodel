@@ -173,6 +173,10 @@
                         "type": "boolean",
                         "description": "Précise si la propriété est la clé primaire de la table associée à la classe."
                       },
+                      "unique": {
+                        "type": "boolean",
+                        "description": "Précise si la propriété possède une contrainte d'unicité (utile si ce n'est pas une clé primaire). Doit être renseigné pour une classe de référence non statique."
+                      },
                       "required": {
                         "type": "boolean",
                         "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."
@@ -186,7 +190,7 @@
                         "description": "Description de la propriété."
                       },
                       "defaultValue": {
-                        "type": ["string", "number", "boolean"],
+                        "type": [ "string", "number", "boolean" ],
                         "description": "Valeur par défaut de la propriété, dans la base de données."
                       }
                     }

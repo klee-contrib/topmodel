@@ -116,7 +116,7 @@ namespace Kinetix.NewGenerator.Javascript
                     Write("        domain: ");
                     Write(field.Domain.Name);
                     Write(",\r\n        isRequired: ");
-                    Write((field.Required && (!field.PrimaryKey || field.Domain.CsharpType != "int?")).ToString().ToFirstLower());
+                    Write((field.Required && !field.PrimaryKey).ToString().ToFirstLower());
                     Write(",\r\n        label: \"");
                     Write(TSUtils.ToNamespace(_class.Namespace.Module));
                     Write(".");
@@ -125,7 +125,7 @@ namespace Kinetix.NewGenerator.Javascript
                     Write(property.Name.ToFirstLower());
                     Write("\"\r\n");
                 }
-                else if (property is CompositionProperty cp2)
+                else if (property is CompositionProperty cp2 && cp2.Composition.Name != _class.Name)
                 {
                     Write("        entity: ");
                     Write(cp2.Composition.Name);
@@ -178,7 +178,8 @@ namespace Kinetix.NewGenerator.Javascript
         {
             var types = _class.Properties
                 .OfType<CompositionProperty>()
-                .Select(property => property.Composition);
+                .Select(property => property.Composition)
+                .Where(c => c.Name != _class.Name);
 
             if (_class.Extends != null)
             {
@@ -194,7 +195,7 @@ namespace Kinetix.NewGenerator.Javascript
 
                 module = module == currentModule
                     ? $"."
-                    : $"../{module}";
+                    : $"../{module.ToLower()}";
 
                 return (
                     import: $"{name}Entity",
@@ -205,7 +206,7 @@ namespace Kinetix.NewGenerator.Javascript
                 .Select(p => p is AliasProperty alp ? alp.Property : p)
                 .OfType<IFieldProperty>()
                 .Select(prop => (prop, classe: prop is AssociationProperty ap ? ap.Association : prop.Class))
-                .Where(pc => pc.classe.Stereotype == Stereotype.Statique)
+                .Where(pc => pc.prop.TSType != pc.prop.Domain.CsharpType && pc.prop.Domain.CsharpType == "string" && pc.classe.Stereotype == Stereotype.Statique)
                 .Select(pc => (Code: pc.prop.TSType, pc.classe.Namespace.Module))
                 .Distinct();
 
@@ -216,7 +217,7 @@ namespace Kinetix.NewGenerator.Javascript
                 {
                     var module = refModule.Key == currentModule
                     ? $"."
-                    : $"../{refModule.Key}";
+                    : $"../{refModule.Key.ToLower()}";
 
                     imports.Add((string.Join(", ", refModule.Select(r => r.Code).OrderBy(x => x)), $"{module}/references"));
                 }

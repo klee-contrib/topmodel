@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Kinetix.NewGenerator.Config;
@@ -22,7 +23,7 @@ namespace Kinetix.NewGenerator
             var config = deserializer.Deserialize<RootConfig>(configFile.OpenText().ReadToEnd());
             config.ModelRoot = Path.Combine(configFile.DirectoryName, config.ModelRoot ?? string.Empty);
             config.Domains = Path.Combine(configFile.DirectoryName, config.Domains ?? "domains.yml");
-            config.StaticLists = config.StaticLists != null ? 
+            config.StaticLists = config.StaticLists != null ?
                 Path.Combine(configFile.DirectoryName, config.StaticLists)
                 : null;
             config.ReferenceLists = config.ReferenceLists != null ?
@@ -44,12 +45,21 @@ namespace Kinetix.NewGenerator
 
             var classes = new Dictionary<string, Class>();
 
-            foreach(var (_, (descriptor, parser)) in classFiles)
+            foreach (var (_, (descriptor, parser)) in classFiles)
             {
                 ClassesLoader.LoadClasses(descriptor, parser, classes, classFiles, domains, deserializer);
             }
 
-            if (config.StaticLists != null) 
+            foreach (var kvp in classes)
+            {
+                var classe = kvp.Value;
+                if (classe.Properties.Count(p => p.PrimaryKey) > 1)
+                {
+                    throw new Exception($"La classe {classe.Name} doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvés)");
+                }
+            }
+
+            if (config.StaticLists != null)
             {
                 var staticLists = ReferenceListsLoader.LoadReferenceLists(config.StaticLists);
                 foreach (var (className, referenceValues) in staticLists)
@@ -81,6 +91,6 @@ namespace Kinetix.NewGenerator
                 TypescriptDefinitionGenerator.Generate(config.Javascript, classes.Values.ToList());
                 JavascriptResourceGenerator.Generate(config.Javascript, classes.Values.ToList());
             }
-        }        
+        }
     }
 }

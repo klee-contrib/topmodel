@@ -21,7 +21,7 @@ namespace Kinetix.NewGenerator.Model
                         return $"{ap.Association.Name}{ap.Association.PrimaryKey!.Name}";
                     }
 
-                    if (prop.Class.Stereotype == Stereotype.Statique)
+                    if (prop.PrimaryKey && prop.Class.Stereotype == Stereotype.Statique)
                     {
                         return $"{prop.Class.Name}{prop.Name}";
                     }

@@ -145,10 +145,9 @@ namespace Kinetix.NewGenerator.Loaders
                                         break;
                                     case "primaryKey":
                                         rp.PrimaryKey = value == "true";
-                                        if (rp.PrimaryKey)
-                                        {
-                                            rp.Required = true;
-                                        }
+                                        break;
+                                    case "unique":
+                                        rp.Unique = value == "true";
                                         break;
                                     case "required":
                                         rp.Required = value == "true";
@@ -170,6 +169,12 @@ namespace Kinetix.NewGenerator.Loaders
                             if (rp.Domain == null || rp.Comment == null || rp.Label == null)
                             {
                                 throw new Exception($"Les propriétés 'domain', 'label' et 'comment' sont obligatoires sur la propriété {rp.Name} de la classe {classe.Name}");
+                            }
+
+                            if (rp.PrimaryKey)
+                            {
+                                rp.Required = true;
+                                rp.Unique = false;
                             }
 
                             classe.Properties.Add(rp);

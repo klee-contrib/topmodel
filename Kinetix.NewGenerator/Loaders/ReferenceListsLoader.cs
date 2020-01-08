@@ -27,10 +27,30 @@ namespace Kinetix.NewGenerator.Loaders
             classe.ReferenceValues = values.ToDictionary(
                 v => v.Name,
                 v => {
-                    if (!v.Bean.TryGetValue(classe.PrimaryKey!.Name, out var code))
+                    object? code = null;
+                    switch (classe.Stereotype)
                     {
-                        throw new Exception($"L'initialisation de {classe.Name} pour {v.Name} n'a pas de clé primaire ({classe.PrimaryKey!.Name})");
+                        case null:
+                            throw new Exception($"La classe {classe.Name} n'est pas une classe de référence");
+                        case Stereotype.Statique:
+                            if (!v.Bean.TryGetValue(classe.PrimaryKey!.Name, out code))
+                            {
+                                throw new Exception($"L'initialisation de {classe.Name} pour {v.Name} n'a pas de clé primaire ({classe.PrimaryKey!.Name})");
+                            }
+                            break;
+                        case Stereotype.Reference:
+                            var uniqueKey = classe.Properties.OfType<RegularProperty>().FirstOrDefault(p => p.Unique);
+                            if (uniqueKey == null)
+                            {
+                                throw new Exception($"La classe {classe.Name} de stéréotype 'Reference' n'a pas de propriété unique.");
+                            }
+                            if (!v.Bean.TryGetValue(uniqueKey.Name, out code))
+                            {
+                                throw new Exception($"L'initialisation de {classe.Name} pour {v.Name} n'a pas de propriété unique ({uniqueKey.Name})");
+                            }
+                            break;
                     }
+        
                     var label = v.Name;
                     if (classe.LabelProperty != null)
                     {
@@ -39,7 +59,7 @@ namespace Kinetix.NewGenerator.Loaders
                             label = (string)trueLabel;
                         }
                     }
-                    if (code.GetType() == typeof(string))
+                    if (code!.GetType() == typeof(string))
                     {
                         code = "\"" + code + "\"";
                     }
