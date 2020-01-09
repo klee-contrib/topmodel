@@ -40,9 +40,12 @@ namespace Kinetix.NewGenerator.Model
             get
             {
                 var prop = this is AliasProperty alp ? alp.Property : this;
-                return prop is AssociationProperty ap
-                    ? ap.Association.PrimaryKey!.SqlName + (ap.Role != null ? $"_{ap.Role.ToUpper()}" : string.Empty)
-                    : $"{Class.Trigram}_{TSUtils.ConvertCsharp2Bdd(Name)}";
+
+                return prop.Class.Extends != null && prop.PrimaryKey
+                    ? $"{Class.Trigram}_{TSUtils.ConvertCsharp2Bdd(Name).Replace(prop.Class.SqlName + "_", string.Empty)}"
+                    : prop is AssociationProperty ap
+                    ? ap.Association.PrimaryKey!.SqlName + (ap.Role != null ? $"_{ap.Role.Replace(" ", "_").ToUpper()}" : string.Empty)
+                    : $"{prop.Class.Trigram}_{TSUtils.ConvertCsharp2Bdd(prop.Name)}";
             }
         }
     }

@@ -28,7 +28,7 @@
         /// <summary>
         /// Version de kinetix utilisée: Core, Framework ou Fmk.
         /// </summary>
-        public KinetixVersion? Kinetix { get; set; }
+        public KinetixVersion Kinetix { get; set; }
 
         /// <summary>
         /// Définit un mode legacy pour Identité en .NET Framework

@@ -193,7 +193,7 @@ namespace Kinetix.NewGenerator.Loaders
                                         classesToResolve.Add((ap, value));
                                         break;
                                     case "role":
-                                        ap.Role = value.Replace(" ", string.Empty);
+                                        ap.Role = value;
                                         break;
                                     case "label":
                                         ap.Label = value;

@@ -271,6 +271,15 @@ namespace Kinetix.NewGenerator.CSharp
             w.WriteLine(3, "}");
             w.WriteLine();
 
+            var initd = new List<string>();
+
+            foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => t.Domain.CsharpType.Contains("ICollection")))
+            {
+                initd.Add(property.Name);
+                var strip = property.Domain.CsharpType.Replace("ICollection<", string.Empty).Replace(">", string.Empty);
+                w.WriteLine(3, property.Name + " = new List<" + strip + ">(bean." + property.Name + ");");
+            }
+
             foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == Composition.Object))
             {
                 w.WriteLine(3, property.Name + " = new " + property.Composition.Name + "(bean." + property.Name + ");");
@@ -281,7 +290,7 @@ namespace Kinetix.NewGenerator.CSharp
                 w.WriteLine(3, property.Name + " = new List<" + property.Composition.Name + ">(bean." + property.Name + ");");
             }
 
-            foreach (var property in item.Properties.Where(p => !(p is CompositionProperty)))
+            foreach (var property in item.Properties.Where(p => !(p is CompositionProperty) && !initd.Contains(p.Name)))
             {
                 w.WriteLine(3, property.Name + " = bean." + property.Name + ";");
             }
@@ -308,18 +317,28 @@ namespace Kinetix.NewGenerator.CSharp
 
             w.WriteLine(2, "{");
 
-            if (item.Properties.OfType<CompositionProperty>().Any())
+            var line = false;
+            foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => t.Domain.CsharpType.Contains("ICollection")))
             {
-                foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == Composition.Object))
-                {
-                    w.WriteLine(3, LoadPropertyInit(property.Name, property.Composition.Name));
-                }
+                line = true;
+                var strip = property.Domain.CsharpType.Replace("ICollection<", string.Empty).Replace(">", string.Empty);
+                w.WriteLine(3, LoadPropertyInit(property.Name, "List<" + strip + ">"));
+            }
 
-                foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == Composition.List))
-                {
-                    w.WriteLine(3, LoadPropertyInit(property.Name, "List<" + property.Composition.Name + ">"));
-                }
+            foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == Composition.Object))
+            {
+                line = true;
+                w.WriteLine(3, LoadPropertyInit(property.Name, property.Composition.Name));
+            }
 
+            foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == Composition.List))
+            {
+                line = true;
+                w.WriteLine(3, LoadPropertyInit(property.Name, "List<" + property.Composition.Name + ">"));
+            }
+
+            if (line)
+            {
                 w.WriteLine();
             }
 
@@ -390,6 +409,10 @@ namespace Kinetix.NewGenerator.CSharp
                 {
                     w.WriteAttribute(2, "ReferencedType", $"typeof({ap.Association.Name})");
                 }
+                else if (fp is AliasProperty alp2 && !alp2.PrimaryKey && alp2.Property.PrimaryKey)
+                {
+                    w.WriteAttribute(2, "ReferencedType", $"typeof({alp2.Property.Class.Name})");
+                }
 
                 w.WriteAttribute(2, "Domain", $@"""{prop.Domain.Name}""");
 
@@ -416,10 +439,10 @@ namespace Kinetix.NewGenerator.CSharp
             switch (property)
             {
                 case CompositionProperty { Kind: Composition.Object } ocp:
-                    w.WriteLine(2, $"public {ocp.Class.Name} {property.Name} {{ get; set; }}");
+                    w.WriteLine(2, $"public {ocp.Composition.Name} {property.Name} {{ get; set; }}");
                     break;
                 case CompositionProperty { Kind: Composition.List } lcp:
-                    w.WriteLine(2, $"public ICollection<{lcp.Class.Name}> {property.Name} {{ get; set; }}");
+                    w.WriteLine(2, $"public ICollection<{lcp.Composition.Name}> {property.Name} {{ get; set; }}");
                     break;
                 case IFieldProperty ifp:
                     w.WriteLine(2, $"public {ifp.Domain.CsharpType} {property.Name} {{ get; set; }}");
@@ -448,12 +471,17 @@ namespace Kinetix.NewGenerator.CSharp
 
             if (item.Properties.OfType<IFieldProperty>()
                 .Select(p => p is AliasProperty alp ? alp.Property : p)
-                .Any(p => p.Class.Trigram != null && p.Required || p.PrimaryKey))
+                .Any(p => p.Required || p.PrimaryKey))
             {
                 usings.Add("System.ComponentModel.DataAnnotations");
             }
 
-            if (item.Properties.OfType<IFieldProperty>().Any())
+            if (item.Properties.Any(p => p is CompositionProperty) ||
+                item.Properties.OfType<IFieldProperty>().Any(fp =>
+            {
+                var prop = fp is AliasProperty alp ? alp.Property : fp;
+                return (!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.Trigram != null;
+            }))
             {
                 usings.Add("System.ComponentModel.DataAnnotations.Schema");
             }
@@ -479,20 +507,27 @@ namespace Kinetix.NewGenerator.CSharp
                 usings.Add("Kinetix.ComponentModel.Entity");
             }
 
-            foreach (var property in item.Properties.OfType<IFieldProperty>())
+            foreach (var property in item.Properties)
             {
-                if (!string.IsNullOrEmpty(property.Domain.CustomUsings))
+                if (property is IFieldProperty fp && !string.IsNullOrEmpty(fp.Domain.CustomUsings))
                 {
-                    usings.AddRange(property.Domain.CustomUsings.Split(',').Select(u => u.Trim()));
+                    usings.AddRange(fp.Domain.CustomUsings.Split(',').Select(u => u.Trim()));
                 }
 
-                if (property is AssociationProperty ap)
+                switch (property)
                 {
-                    usings.Add($"{_rootNamespace}.{ap.Association.Namespace.CSharpName}");
-                }
-                else if (property is AliasProperty { Property: AssociationProperty ap2 })
-                {
-                    usings.Add($"{_rootNamespace}.{ap2.Association.Namespace.CSharpName}");
+                    case AssociationProperty ap:
+                        usings.Add($"{_rootNamespace}.{ap.Association.Namespace.CSharpName}");
+                        break;
+                    case AliasProperty { Property: AssociationProperty ap2 }:
+                        usings.Add($"{_rootNamespace}.{ap2.Association.Namespace.CSharpName}");
+                        break;
+                    case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp }:
+                        usings.Add($"{_rootNamespace}.{rp.Class.Namespace.CSharpName}");
+                        break;
+                    case CompositionProperty cp:
+                        usings.Add($"{_rootNamespace}.{cp.Composition.Namespace.CSharpName}");
+                        break;
                 }
             }
 
