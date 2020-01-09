@@ -233,7 +233,7 @@ namespace Kinetix.NewGenerator.Loaders
                                         cp.Name = value;
                                         break;
                                     case "kind":
-                                        cp.Kind = value;
+                                        cp.Kind = value == "list" ? Composition.List : Composition.Object;
                                         break;
                                     case "comment":
                                         cp.Comment = value;
@@ -243,9 +243,9 @@ namespace Kinetix.NewGenerator.Loaders
                                 }
                             }
 
-                            if (cp.Comment == null || cp.Name == null || cp.Kind == null)
+                            if (cp.Comment == null || cp.Name == null)
                             {
-                                throw new Exception($"Les propriétés 'name', 'kind' et 'comment' sont obligatoires sur les compositions de la classe {classe.Name}");
+                                throw new Exception($"Les propriétés 'name' et 'comment' sont obligatoires sur les compositions de la classe {classe.Name}");
                             }
 
                             classe.Properties.Add(cp);

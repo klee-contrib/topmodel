@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Kinetix.Tools.Common;
 
 namespace Kinetix.NewGenerator.Model
 {
@@ -22,7 +23,9 @@ namespace Kinetix.NewGenerator.Model
 
         public IFieldProperty? PrimaryKey => Properties.OfType<IFieldProperty>().SingleOrDefault(p => p.PrimaryKey);
         public IFieldProperty? LabelProperty => Properties.OfType<IFieldProperty>().SingleOrDefault(p => p.Name == (DefaultProperty ?? "Libelle"));
-    
+
         public IDictionary<string, (string code, string label)>? ReferenceValues { get; set; }
+
+        public string SqlName => TSUtils.ConvertCsharp2Bdd(Name);
     }
 }

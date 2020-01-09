@@ -20,6 +20,49 @@
       "type": "string",
       "description": "Chemin du fichier contenant les initialisations de listes de références."
     },
+    "csharp": {
+      "type": "object",
+      "description": "Configuration de la génération de C#. Si non renseigné, alors le C# ne sera pas généré.",
+      "properties": {
+        "outputDirectory": {
+          "type": "string",
+          "description": "Répertoire de génération"
+        },
+        "dbContextProjectPath": {
+          "type": "string",
+          "description": "Nom du projet dans lequel mettre le DbContext."
+        },
+        "useTypeSafeConstValues": {
+          "type": "boolean",
+          "description": "Utilise des types spécifiques pour les valeurs de listes statiques, au lieu de string."
+        },
+        "dbSchema": {
+          "type": "string",
+          "description": "Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo')."
+        },
+        "kinetix": {
+          "type": "string",
+          "description": "Version de kinetix utilisée: Core, Framework ou Fmk.",
+          "enum": [ "Core", "Framework", "Fmk" ]
+        },
+        "legacyIdentity": {
+          "type": "boolean",
+          "description": "Définit un mode legacy pour Identité en .NET Framework."
+        },
+        "noColumnOnAlias": {
+          "type": "boolean",
+          "description": "Retire les attributs de colonnes sur les alias."
+        },
+        "isWithEntityInterface": {
+          "type": "boolean",
+          "description": "Définit si les interfaces IEntity sont ajoutée à la génération."
+        },
+        "legacyProjectPaths": {
+          "type": "boolean",
+          "description": "Utilise la structure de projet legacy."
+        }
+      }
+    },
     "javascript": {
       "type": "object",
       "description": "Configuration de la génération de Typescript. Si non renseigné, alors le Typescript ne sera pas généré.",

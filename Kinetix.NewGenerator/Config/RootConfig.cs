@@ -7,5 +7,6 @@
         public string? StaticLists { get; set; }
         public string? ReferenceLists { get; set; }
         public JavascriptConfig? Javascript { get; set; }
+        public CSharpConfig? Csharp { get; set; }
     }
 }

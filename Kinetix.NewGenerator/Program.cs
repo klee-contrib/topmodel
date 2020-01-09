@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Kinetix.NewGenerator.Config;
+using Kinetix.NewGenerator.CSharp;
 using Kinetix.NewGenerator.Javascript;
 using Kinetix.NewGenerator.Loaders;
 using Kinetix.NewGenerator.Model;
@@ -43,6 +44,13 @@ namespace Kinetix.NewGenerator
                     file => (file.descriptor.Module, file.descriptor.Kind, file.descriptor.File),
                     file => file);
 
+            var apps = classFiles.Select(f => f.Value.descriptor.App).Distinct();
+            if (apps.Count() != 1)
+            {
+                throw new Exception("Tous les fichiers doivent être liés à la même 'app'.");
+            }
+            var rootNamespace = apps.Single();
+
             var classes = new Dictionary<string, Class>();
 
             foreach (var (_, (descriptor, parser)) in classFiles)
@@ -75,6 +83,16 @@ namespace Kinetix.NewGenerator
                 {
                     ReferenceListsLoader.AddReferenceValues(classes[className], referenceValues);
                 }
+            }
+
+            if (config.Csharp != null)
+            {
+                if (config.Csharp.OutputDirectory != null)
+                {
+                    config.Csharp.OutputDirectory = Path.Combine(configFile.DirectoryName, config.Csharp.OutputDirectory);
+                }
+
+                CSharpCodeGenerator.Generate(rootNamespace, config.Csharp, classes.Values);
             }
 
             if (config.Javascript != null)

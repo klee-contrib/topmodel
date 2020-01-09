@@ -5,7 +5,7 @@ namespace Kinetix.NewGenerator.Model
     {
         public Class Composition { get; set; }
         public string Name { get; set; }
-        public string Kind { get; set; }
+        public Composition Kind { get; set; }
         public string Comment { get; set; }
         public Class Class { get; set; }
 

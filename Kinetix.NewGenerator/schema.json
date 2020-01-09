@@ -5,7 +5,7 @@
     {
       "type": "object",
       "description": "Définition d'un fichier.",
-      "required": ["app", "module", "kind", "file"],
+      "required": [ "app", "module", "kind", "file" ],
       "properties": {
         "app": {
           "type": "string",
@@ -18,7 +18,7 @@
         "kind": {
           "type": "string",
           "description": "Data (persistant) ou Metier (DTOs).",
-          "enum": ["Data", "Metier"]
+          "enum": [ "Data", "Metier" ]
         },
         "file": {
           "type": "string",
@@ -30,7 +30,7 @@
           "items": {
             "type": "object",
             "description": "Détail d'une dépendance.",
-            "required": ["module", "kind", "files"],
+            "required": [ "module", "kind", "files" ],
             "properties": {
               "module": {
                 "type": "string",
@@ -39,7 +39,7 @@
               "kind": {
                 "type": "string",
                 "description": "Data (persistant) ou Metier (DTOs).",
-                "enum": ["Data", "Metier"]
+                "enum": [ "Data", "Metier" ]
               },
               "files": {
                 "type": "array",
@@ -47,7 +47,7 @@
                 "items": {
                   "type": "object",
                   "description": "Détail d'un fichier référencé.",
-                  "required": ["file", "classes"],
+                  "required": [ "file", "classes" ],
                   "properties": {
                     "file": {
                       "type": "string",
@@ -71,12 +71,12 @@
     {
       "type": "object",
       "description": "Définition d'un domaine.",
-      "required": ["domain"],
+      "required": [ "domain" ],
       "properties": {
         "domain": {
           "type": "object",
           "description": "Domaine.",
-          "required": ["name", "label", "csharpType"],
+          "required": [ "name", "label", "csharpType" ],
           "properties": {
             "name": {
               "type": "string",
@@ -101,6 +101,10 @@
             "customUsings": {
               "type": "string",
               "description": "Usings, séparés par des virgules, à ajouter à toute classe C# qui possède une propriété de ce domaine. Par exemple pour ajouter un using pour des types de collections."
+            },
+            "useTypeName": {
+              "type": "boolean",
+              "description": "Ajoute la propriété 'TypeName' dans l'annotation 'Column' en C# pour préciser le type SQL."
             }
           }
         }
@@ -109,12 +113,12 @@
     {
       "type": "object",
       "description": "Définition d'une classe.",
-      "required": ["class"],
+      "required": [ "class" ],
       "properties": {
         "class": {
           "type": "object",
           "description": "Définition d'une classe.",
-          "required": ["name", "comment", "properties"],
+          "required": [ "name", "comment", "properties" ],
           "properties": {
             "trigram": {
               "type": "string",
@@ -137,7 +141,7 @@
             "stereotype": {
               "type": "string",
               "description": "Stereotype de la classe, pour une classe de référence. Statique ou Reference.",
-              "enum": ["Statique", "Reference"]
+              "enum": [ "Statique", "Reference" ]
             },
             "defaultProperty": {
               "type": "string",
@@ -159,7 +163,7 @@
                   {
                     "type": "object",
                     "description": "Propriété standard.",
-                    "required": ["name", "label", "domain", "comment"],
+                    "required": [ "name", "label", "domain", "comment" ],
                     "properties": {
                       "name": {
                         "type": "string",
@@ -198,7 +202,7 @@
                   {
                     "type": "object",
                     "description": "Propriété d'association (clé étrangère).",
-                    "required": ["association", "label", "comment"],
+                    "required": [ "association", "label", "comment" ],
                     "properties": {
                       "association": {
                         "type": "string",
@@ -225,12 +229,12 @@
                   {
                     "type": "object",
                     "description": "Alias vers un champ existant.",
-                    "required": ["alias"],
+                    "required": [ "alias" ],
                     "properties": {
                       "alias": {
                         "type": "object",
                         "description": "Définition de la propriété aliasée. Cette propriété DOIT être en PREMIER.",
-                        "required": ["property", "class"],
+                        "required": [ "property", "class" ],
                         "properties": {
                           "property": {
                             "type": "string",
@@ -255,7 +259,7 @@
                   {
                     "type": "object",
                     "description": "Propriété de composition d'une sous classe ou d'une sous liste de classe. Ne peut être utilisé que dans les modules métier.",
-                    "required": ["composition", "name", "kind", "comment"],
+                    "required": [ "composition", "name", "kind", "comment" ],
                     "properties": {
                       "composition": {
                         "type": "string",
@@ -268,7 +272,7 @@
                       "kind": {
                         "type": "string",
                         "description": "'object' ou 'list', respectivement pour un sous objet et une sous liste.",
-                        "enum": ["object", "list"]
+                        "enum": [ "object", "list" ]
                       },
                       "comment": {
                         "type": "string",

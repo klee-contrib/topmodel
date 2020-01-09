@@ -74,7 +74,7 @@ namespace Kinetix.NewGenerator.Javascript
 
                 if (property is CompositionProperty cp)
                 {
-                    if (cp.Kind == "list")
+                    if (cp.Kind == Composition.List)
                     {
                         if (cp.Composition.Name == _class.Name)
                         {

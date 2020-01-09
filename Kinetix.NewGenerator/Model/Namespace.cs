@@ -6,5 +6,6 @@ namespace Kinetix.NewGenerator.Model
     {
         public string Module { get; set; }
         public Kind Kind { get; set; }
+        public string CSharpName => Module + (Kind == Kind.Data ? "DataContract" : "Contract");
     }
 }
