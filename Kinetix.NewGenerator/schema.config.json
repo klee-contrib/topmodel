@@ -3,6 +3,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "description": "Fichier de config du générateur",
+  "additionalProperties": false,
   "properties": {
     "modelRoot": {
       "type": "string",
@@ -23,6 +24,7 @@
     "proceduralSql": {
       "type": "object",
       "description": "Config pour la génération de SQL 'procédurale' (sans SSDT)",
+      "additionalProperties": false,
       "properties": {
         "targetDBMS": {
           "type": "string",
@@ -59,9 +61,53 @@
         }
       }
     },
+    "ssdt": {
+      "type": "object",
+      "description": "Config pour la génération SSDT",
+      "additionalProperties": false,
+      "properties": {
+        "tableScriptFolder": {
+          "type": "string",
+          "description": "Dossier du projet pour les scripts de déclaration de table."
+        },
+        "tableTypeScriptFolder": {
+          "type": "string",
+          "description": " Dossier du projet pour les scripts de déclaration de type table."
+        },
+        "initReferenceListScriptFolder": {
+          "type": "string",
+          "description": "Dossier du projet pour les scripts d'initialisation des listes de références administrables."
+        },
+        "initStaticListScriptFolder": {
+          "type": "string",
+          "description": "Dossier du projet pour les scripts d'initialisation des listes statiques."
+        },
+        "initReferenceListMainScriptName": {
+          "type": "string",
+          "description": "Fichier du projet référençant les scripts d'initialisation de références administrables."
+        },
+        "initStaticListMainScriptName": {
+          "type": "string",
+          "description": "Fichier du projet référençant les scripts d'initialisation des listes statiques."
+        },
+        "logScriptTableName": {
+          "type": "string",
+          "description": "Nom de la table où stocker l'historique de passage des scripts."
+        },
+        "logScriptVersionField": {
+          "type": "string",
+          "description": "Nom du champ où stocker le nom des scripts exécutés."
+        },
+        "logScriptDateField": {
+          "type": "string",
+          "description": "Nom du champ où stocker la date d'exécution des scripts."
+        }
+      }
+    },
     "csharp": {
       "type": "object",
       "description": "Configuration de la génération de C#. Si non renseigné, alors le C# ne sera pas généré.",
+      "additionalProperties": false,
       "properties": {
         "outputDirectory": {
           "type": "string",
@@ -105,6 +151,7 @@
     "javascript": {
       "type": "object",
       "description": "Configuration de la génération de Typescript. Si non renseigné, alors le Typescript ne sera pas généré.",
+      "additionalProperties": false,
       "properties": {
         "modelOutputDirectory": {
           "type": "string",

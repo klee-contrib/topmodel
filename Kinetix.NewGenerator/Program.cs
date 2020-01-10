@@ -10,6 +10,7 @@ using Kinetix.NewGenerator.Javascript;
 using Kinetix.NewGenerator.Loaders;
 using Kinetix.NewGenerator.Model;
 using Kinetix.NewGenerator.ProceduralSql;
+using Kinetix.NewGenerator.Ssdt;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -125,6 +126,45 @@ namespace Kinetix.NewGenerator
                     schemaGenerator.GenerateListInitScript(
                         referenceLists.ToDictionary(s => classes[s.className], s => s.values),
                         isStatic: false);
+                }
+            }
+
+            if (config.Ssdt != null)
+            {
+                CombinePath(config.Ssdt, c => c.InitReferenceListScriptFolder);
+                CombinePath(config.Ssdt, c => c.InitStaticListScriptFolder);
+                CombinePath(config.Ssdt, c => c.TableScriptFolder);
+                CombinePath(config.Ssdt, c => c.TableTypeScriptFolder);
+
+                if (config.Ssdt.TableScriptFolder != null && config.Ssdt.TableTypeScriptFolder != null)
+                {
+                    // Génération pour déploiement SSDT.
+                    new SqlServerSsdtSchemaGenerator().GenerateSchemaScript(
+                        classes.Values,
+                        config.Ssdt.TableScriptFolder,
+                        config.Ssdt.TableTypeScriptFolder);
+                }
+
+                var ssdtInsertGenerator = new SqlServerSsdtInsertGenerator(config.Ssdt);
+
+                if (staticLists != null && config.Ssdt.InitStaticListMainScriptName != null && config.Ssdt.InitStaticListScriptFolder != null)
+                {
+                    ssdtInsertGenerator.GenerateListInitScript(
+                       staticLists.ToDictionary(s => classes[s.className], s => s.values),
+                       config.Ssdt.InitStaticListScriptFolder,
+                       config.Ssdt.InitStaticListMainScriptName,
+                       "delta_static_lists.sql",
+                       true);
+                }
+
+                if (referenceLists != null && config.Ssdt.InitReferenceListMainScriptName != null && config.Ssdt.InitReferenceListScriptFolder != null)
+                {
+                    ssdtInsertGenerator.GenerateListInitScript(
+                       referenceLists.ToDictionary(s => classes[s.className], s => s.values),
+                       config.Ssdt.InitReferenceListScriptFolder,
+                       config.Ssdt.InitReferenceListMainScriptName,
+                       "delta_reference_lists.sql",
+                       false);
                 }
             }
 

@@ -6,6 +6,7 @@
       "type": "object",
       "description": "Définition d'un fichier.",
       "required": [ "app", "module", "kind", "file" ],
+      "additionalProperties": false,
       "properties": {
         "app": {
           "type": "string",
@@ -31,6 +32,7 @@
             "type": "object",
             "description": "Détail d'une dépendance.",
             "required": [ "module", "kind", "files" ],
+            "additionalProperties": false,
             "properties": {
               "module": {
                 "type": "string",
@@ -48,6 +50,7 @@
                   "type": "object",
                   "description": "Détail d'un fichier référencé.",
                   "required": [ "file", "classes" ],
+                  "additionalProperties": false,
                   "properties": {
                     "file": {
                       "type": "string",
@@ -72,11 +75,13 @@
       "type": "object",
       "description": "Définition d'un domaine.",
       "required": [ "domain" ],
+      "additionalProperties": false,
       "properties": {
         "domain": {
           "type": "object",
           "description": "Domaine.",
           "required": [ "name", "label", "csharpType" ],
+          "additionalProperties": false,
           "properties": {
             "name": {
               "type": "string",
@@ -114,11 +119,13 @@
       "type": "object",
       "description": "Définition d'une classe.",
       "required": [ "class" ],
+      "additionalProperties": false,
       "properties": {
         "class": {
           "type": "object",
           "description": "Définition d'une classe.",
           "required": [ "name", "comment", "properties" ],
+          "additionalProperties": false,
           "properties": {
             "trigram": {
               "type": "string",
@@ -168,6 +175,7 @@
                     "type": "object",
                     "description": "Propriété standard.",
                     "required": [ "name", "label", "domain", "comment" ],
+                    "additionalProperties": false,
                     "properties": {
                       "name": {
                         "type": "string",
@@ -207,6 +215,7 @@
                     "type": "object",
                     "description": "Propriété d'association (clé étrangère).",
                     "required": [ "association", "label", "comment" ],
+                    "additionalProperties": false,
                     "properties": {
                       "association": {
                         "type": "string",
@@ -238,11 +247,13 @@
                     "type": "object",
                     "description": "Alias vers un champ existant.",
                     "required": [ "alias" ],
+                    "additionalProperties": false,
                     "properties": {
                       "alias": {
                         "type": "object",
                         "description": "Définition de la propriété aliasée. Cette propriété DOIT être en PREMIER.",
                         "required": [ "property", "class" ],
+                        "additionalProperties": false,
                         "properties": {
                           "property": {
                             "type": "string",
@@ -268,6 +279,7 @@
                     "type": "object",
                     "description": "Propriété de composition d'une sous classe ou d'une sous liste de classe. Ne peut être utilisé que dans les modules métier.",
                     "required": [ "composition", "name", "kind", "comment" ],
+                    "additionalProperties": false,
                     "properties": {
                       "composition": {
                         "type": "string",

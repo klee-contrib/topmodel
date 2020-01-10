@@ -122,6 +122,8 @@ namespace Kinetix.NewGenerator.Loaders
                     throw new Exception($"La classe {classe.Name} n'a pas de commentaire.");
                 }
 
+                classe.Label ??= classe.Name;
+
                 parser.Consume<Scalar>();
                 parser.Consume<SequenceStart>();
 

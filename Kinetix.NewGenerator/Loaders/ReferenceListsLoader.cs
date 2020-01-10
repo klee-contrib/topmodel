@@ -22,7 +22,6 @@ namespace Kinetix.NewGenerator.Loaders
                     reference.Key,
                     reference.Value
                         .Select(item => new ReferenceValue { Name = item.Key, Bean = item.Value })
-                        .OrderBy(item => item.Name)
                         .AsEnumerable()))
                 .OrderBy(r => r.Key);
         }
