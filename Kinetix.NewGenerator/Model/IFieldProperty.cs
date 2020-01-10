@@ -6,6 +6,7 @@ namespace Kinetix.NewGenerator.Model
     {
         bool Required { get; }
         Domain Domain { get; }
+        string? DefaultValue { get; }
 
         string TSType
         {

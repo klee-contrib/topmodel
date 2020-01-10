@@ -20,6 +20,45 @@
       "type": "string",
       "description": "Chemin du fichier contenant les initialisations de listes de références."
     },
+    "proceduralSql": {
+      "type": "object",
+      "description": "Config pour la génération de SQL 'procédurale' (sans SSDT)",
+      "properties": {
+        "targetDBMS": {
+          "type": "string",
+          "description": "SGBD cible ('postgre' ou 'sqlserver').",
+          "enum": [ "sqlserver", "postgre" ]
+        },
+        "crebasFile": {
+          "type": "string",
+          "description": "Emplacement du fichier de création de base."
+        },
+        "ukFile": {
+          "type": "string",
+          "description": "Emplacement du fichier de création des index uniques."
+        },
+        "indexFKFile": {
+          "type": "string",
+          "description": "Emplacement du fichier de création des clés étrangères."
+        },
+        "typeFile": {
+          "type": "string",
+          "description": "Emplacement du fichier de création des types."
+        },
+        "staticListFile": {
+          "type": "string",
+          "description": "Emplacement du script d'insertion des données des listes statiques."
+        },
+        "referenceListFile": {
+          "type": "string",
+          "description": "Emplacement du script d'insertion des données des listes administrables."
+        },
+        "disableIdentity": {
+          "type": "boolean",
+          "description": "Désactive les colonnes d'identité."
+        }
+      }
+    },
     "csharp": {
       "type": "object",
       "description": "Configuration de la génération de C#. Si non renseigné, alors le C# ne sera pas généré.",

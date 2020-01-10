@@ -15,5 +15,6 @@
         public bool Required => Property.Required;
         public Domain Domain => Property.Domain;
         public string Comment => Property.Comment;
+        public string? DefaultValue => null;
     }
 }

@@ -82,6 +82,9 @@ namespace Kinetix.NewGenerator.Loaders
                         case "name":
                             classe.Name = value;
                             break;
+                        case "sqlName":
+                            classe.SqlName = value;
+                            break;
                         case "extends":
                             classesToResolve.Add((classe, value));
                             break;
@@ -200,6 +203,9 @@ namespace Kinetix.NewGenerator.Loaders
                                         break;
                                     case "required":
                                         ap.Required = value == "true";
+                                        break;
+                                    case "defaultValue":
+                                        ap.DefaultValue = value;
                                         break;
                                     case "comment":
                                         ap.Comment = value;

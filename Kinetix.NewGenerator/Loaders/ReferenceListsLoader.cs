@@ -9,12 +9,17 @@ namespace Kinetix.NewGenerator.Loaders
 {
     public static class ReferenceListsLoader
     {
-        public static IEnumerable<(string className, IEnumerable<ReferenceValue> values)> LoadReferenceLists(string referenceListsFile)
+        public static IEnumerable<(string className, IEnumerable<ReferenceValue> values)>? LoadReferenceLists(string? referenceListsFile)
         {
+            if (referenceListsFile == null)
+            {
+                return null;
+            }
+
             var file = File.ReadAllText(referenceListsFile);
             return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, object>>>>(file)
                 .Select(reference => (
-                    reference.Key, 
+                    reference.Key,
                     reference.Value
                         .Select(item => new ReferenceValue { Name = item.Key, Bean = item.Value })
                         .OrderBy(item => item.Name)
@@ -26,7 +31,8 @@ namespace Kinetix.NewGenerator.Loaders
         {
             classe.ReferenceValues = values.ToDictionary(
                 v => v.Name,
-                v => {
+                v =>
+                {
                     object? code = null;
                     switch (classe.Stereotype)
                     {
@@ -50,7 +56,7 @@ namespace Kinetix.NewGenerator.Loaders
                             }
                             break;
                     }
-        
+
                     var label = v.Name;
                     if (classe.LabelProperty != null)
                     {
@@ -66,7 +72,7 @@ namespace Kinetix.NewGenerator.Loaders
                     return (
                         code.ToString()!,
                         label);
-                    });
+                });
         }
     }
 }

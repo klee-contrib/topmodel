@@ -6,6 +6,8 @@ namespace Kinetix.NewGenerator.Model
 {
     public class Class
     {
+        private string? _sqlName;
+
         public string? Trigram { get; set; }
 
 #nullable disable
@@ -26,6 +28,12 @@ namespace Kinetix.NewGenerator.Model
 
         public IDictionary<string, (string code, string label)>? ReferenceValues { get; set; }
 
-        public string SqlName => TSUtils.ConvertCsharp2Bdd(Name);
+        public string SqlName
+        {
+            get => _sqlName ?? TSUtils.ConvertCsharp2Bdd(Name);
+            set => _sqlName = value;
+        }
+
+        public string TrigramPrefix => string.IsNullOrEmpty(Trigram) ? string.Empty : $"{Trigram}_";
     }
 }

@@ -6,6 +6,7 @@
         public string? Domains { get; set; }
         public string? StaticLists { get; set; }
         public string? ReferenceLists { get; set; }
+        public ProceduralSqlConfig? ProceduralSql { get; set; }
         public JavascriptConfig? Javascript { get; set; }
         public CSharpConfig? Csharp { get; set; }
     }

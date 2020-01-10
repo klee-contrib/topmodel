@@ -13,6 +13,7 @@ namespace Kinetix.NewGenerator.Model
 
         public string? Role { get; set; }
         public bool Required { get; set; }
+        public string? DefaultValue { get; set; }
 
         public string Name => (Association.Extends == null ? Association.Name : string.Empty) + Association.Properties.Single(p => p.PrimaryKey).Name + (Role?.Replace(" ", string.Empty) ?? string.Empty);
         public Domain Domain => Association.Properties.OfType<IFieldProperty>().Single(p => p.PrimaryKey).Domain;

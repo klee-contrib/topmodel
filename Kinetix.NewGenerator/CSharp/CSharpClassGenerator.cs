@@ -421,7 +421,7 @@ namespace Kinetix.NewGenerator.CSharp
                     w.WriteLine(2, prop.Domain.CustomAnnotation);
                 }
 
-                if (property is RegularProperty rp && rp.DefaultValue != null)
+                if (fp.DefaultValue != null)
                 {
                     w.WriteAttribute(2, "DatabaseGenerated", "DatabaseGeneratedOption.Identity");
                 }

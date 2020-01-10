@@ -130,6 +130,10 @@
               "type": "string",
               "description": "Nom C#/TS de la classe. Sera converti en SQL en SNAKE_CASE."
             },
+            "sqlName": {
+              "type": "string",
+              "description": "Nom SQL de la classe. Sera généré à partir du nom standard si non renseigné."
+            },
             "extends": {
               "type": "string",
               "description": "Nom de la classe parente de cette classe. Doit être référencée dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier."
@@ -219,6 +223,10 @@
                       "required": {
                         "type": "boolean",
                         "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."
+                      },
+                      "defaultValue": {
+                        "type": [ "string", "number", "boolean" ],
+                        "description": "Valeur par défaut de la propriété, dans la base de données."
                       },
                       "comment": {
                         "type": "string",

@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Kinetix.NewGenerator.Config;
 using Kinetix.NewGenerator.CSharp;
 using Kinetix.NewGenerator.Javascript;
 using Kinetix.NewGenerator.Loaders;
 using Kinetix.NewGenerator.Model;
+using Kinetix.NewGenerator.ProceduralSql;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -22,14 +25,23 @@ namespace Kinetix.NewGenerator
 
             var configFile = new FileInfo(args[0]);
             var config = deserializer.Deserialize<RootConfig>(configFile.OpenText().ReadToEnd());
-            config.ModelRoot = Path.Combine(configFile.DirectoryName, config.ModelRoot ?? string.Empty);
-            config.Domains = Path.Combine(configFile.DirectoryName, config.Domains ?? "domains.yml");
-            config.StaticLists = config.StaticLists != null ?
-                Path.Combine(configFile.DirectoryName, config.StaticLists)
-                : null;
-            config.ReferenceLists = config.ReferenceLists != null ?
-                Path.Combine(configFile.DirectoryName, config.ReferenceLists)
-                : null;
+            config.ModelRoot ??= string.Empty;
+            config.Domains ??= "domains.yml";
+
+            void CombinePath<T>(T classe, Expression<Func<T, string?>> getter)
+            {
+                var property = (PropertyInfo)((MemberExpression)getter.Body).Member;
+
+                if (property.GetValue(classe) != null)
+                {
+                    property.SetValue(classe, Path.Combine(configFile.DirectoryName, (string)property.GetValue(classe)!));
+                }
+            }
+
+            CombinePath(config, c => c.ModelRoot);
+            CombinePath(config, c => c.Domains);
+            CombinePath(config, c => c.StaticLists);
+            CombinePath(config, c => c.ReferenceLists);
 
             var files = Directory.EnumerateFiles(config.ModelRoot, "*.yml", SearchOption.AllDirectories)
                 .Where(f => f != config.Domains && f != configFile.FullName);
@@ -67,45 +79,65 @@ namespace Kinetix.NewGenerator
                 }
             }
 
-            if (config.StaticLists != null)
+            var staticLists = ReferenceListsLoader.LoadReferenceLists(config.StaticLists);
+            var referenceLists = ReferenceListsLoader.LoadReferenceLists(config.ReferenceLists);
+
+            if (staticLists != null)
             {
-                var staticLists = ReferenceListsLoader.LoadReferenceLists(config.StaticLists);
                 foreach (var (className, referenceValues) in staticLists)
                 {
                     ReferenceListsLoader.AddReferenceValues(classes[className], referenceValues);
                 }
             }
 
-            if (config.ReferenceLists != null)
+            if (referenceLists != null)
             {
-                var referenceLists = ReferenceListsLoader.LoadReferenceLists(config.ReferenceLists);
                 foreach (var (className, referenceValues) in referenceLists)
                 {
                     ReferenceListsLoader.AddReferenceValues(classes[className], referenceValues);
                 }
             }
 
-            if (config.Csharp != null)
+            if (config.ProceduralSql != null)
             {
-                if (config.Csharp.OutputDirectory != null)
+                CombinePath(config.ProceduralSql, c => c.CrebasFile);
+                CombinePath(config.ProceduralSql, c => c.IndexFKFile);
+                CombinePath(config.ProceduralSql, c => c.ReferenceListFile);
+                CombinePath(config.ProceduralSql, c => c.StaticListFile);
+                CombinePath(config.ProceduralSql, c => c.TypeFile);
+                CombinePath(config.ProceduralSql, c => c.UKFile);
+
+                var schemaGenerator = config.ProceduralSql.TargetDBMS == TargetDBMS.Postgre
+                    ? new PostgreSchemaGenerator(rootNamespace, config.ProceduralSql)
+                    : (AbstractSchemaGenerator)new SqlServerSchemaGenerator(rootNamespace, config.ProceduralSql);
+
+                schemaGenerator.GenerateSchemaScript(classes.Values);
+
+                if (staticLists != null)
                 {
-                    config.Csharp.OutputDirectory = Path.Combine(configFile.DirectoryName, config.Csharp.OutputDirectory);
+                    schemaGenerator.GenerateListInitScript(
+                        staticLists.ToDictionary(s => classes[s.className], s => s.values),
+                        isStatic: true);
                 }
 
+                if (referenceLists != null)
+                {
+                    schemaGenerator.GenerateListInitScript(
+                        referenceLists.ToDictionary(s => classes[s.className], s => s.values),
+                        isStatic: false);
+                }
+            }
+
+            if (config.Csharp != null)
+            {
+                CombinePath(config.Csharp, c => c.OutputDirectory);
                 CSharpCodeGenerator.Generate(rootNamespace, config.Csharp, classes.Values);
             }
 
             if (config.Javascript != null)
             {
-                if (config.Javascript.ModelOutputDirectory != null)
-                {
-                    config.Javascript.ModelOutputDirectory = Path.Combine(configFile.DirectoryName, config.Javascript.ModelOutputDirectory);
-                }
-                if (config.Javascript.ResourceOutputDirectory != null)
-                {
-                    config.Javascript.ResourceOutputDirectory = Path.Combine(configFile.DirectoryName, config.Javascript.ResourceOutputDirectory);
-                }
-
+                CombinePath(config.Javascript, c => c.ModelOutputDirectory);
+                CombinePath(config.Javascript, c => c.ResourceOutputDirectory);
                 TypescriptDefinitionGenerator.Generate(config.Javascript, classes.Values.ToList());
                 JavascriptResourceGenerator.Generate(config.Javascript, classes.Values.ToList());
             }
