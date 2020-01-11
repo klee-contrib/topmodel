@@ -36,16 +36,6 @@ namespace TopModel.Generator.Ssdt.Scripter
         }
 
         /// <summary>
-        /// Indique si l'item doit générer un script.
-        /// </summary>
-        /// <param name="item">Item candidat.</param>
-        /// <returns><code>True</code> si un script doit être généré.</returns>
-        public bool IsScriptGenerated(ReferenceClass item)
-        {
-            return true;
-        }
-
-        /// <summary>
         /// Ecrit dans un flux le script pour l'item.
         /// </summary>
         /// <param name="writer">Flux d'écriture.</param>

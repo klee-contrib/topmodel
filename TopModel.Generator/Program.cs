@@ -6,7 +6,6 @@ using TopModel.Generator.ProceduralSql;
 using TopModel.Generator.Ssdt;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 
 namespace TopModel.Generator
 {

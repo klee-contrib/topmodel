@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using TopModel.Core.Config;
 using TopModel.Core.FileModel;
-using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.CSharp
 {

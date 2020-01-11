@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using TopModel.Core;
 
 #nullable disable
 namespace TopModel.Generator.Ssdt.Dto

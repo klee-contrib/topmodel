@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Linq;
-using TopModel.Core;
 using TopModel.Core.Config;
 using TopModel.Core.FileModel;
 using Microsoft.Extensions.Logging;
