@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TopModel.Core;
 using TopModel.Core.Config;
 using TopModel.Core.FileModel;
+using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.CSharp
 {
@@ -12,13 +12,15 @@ namespace TopModel.Generator.CSharp
 
     public class DbContextGenerator
     {
-        private readonly string _rootNamespace;
         private readonly CSharpConfig _config;
+        private readonly ILogger<CSharpGenerator> _logger;
+        private readonly string _rootNamespace;
 
-        public DbContextGenerator(string rootNamespace, CSharpConfig config)
+        public DbContextGenerator(string rootNamespace, CSharpConfig config, ILogger<CSharpGenerator> logger)
         {
-            _rootNamespace = rootNamespace;
             _config = config;
+            _logger = logger;
+            _rootNamespace = rootNamespace;
         }
 
         /// <summary>
@@ -33,7 +35,7 @@ namespace TopModel.Generator.CSharp
                 return;
             }
 
-            Console.WriteLine("Generating DbContext");
+            _logger.LogInformation("Génération du DbContext...");
 
             var projectName = _config.DbContextProjectPath.Split('/').Last();
             var strippedProjectName = RemoveDots(_rootNamespace);
@@ -168,6 +170,8 @@ namespace TopModel.Generator.CSharp
 
             w.WriteLine(1, "}");
             w.WriteLine("}");
+
+            _logger.LogInformation("Génération du DbContext terminée.");
         }
     }
 }

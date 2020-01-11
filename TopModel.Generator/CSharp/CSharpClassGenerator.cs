@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TopModel.Core;
 using TopModel.Core.Config;
 using TopModel.Core.FileModel;
+using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.CSharp
 {
@@ -12,13 +12,13 @@ namespace TopModel.Generator.CSharp
 
     public class CSharpClassGenerator
     {
-        private readonly string _rootNamespace;
         private readonly CSharpConfig _config;
+        private readonly string _rootNamespace;
 
         public CSharpClassGenerator(string rootNamespace, CSharpConfig config)
         {
-            _rootNamespace = rootNamespace;
             _config = config;
+            _rootNamespace = rootNamespace;
         }
 
         /// <summary>
@@ -35,8 +35,6 @@ namespace TopModel.Generator.CSharp
             var fileName = Path.Combine(GetDirectoryForModelClass(_config.LegacyProjectPaths, _config.OutputDirectory, item.Namespace.Kind == Kind.Data, _rootNamespace, item.Namespace.CSharpName), item.Name + ".cs");
 
             using var w = new CSharpWriter(fileName);
-
-            Console.WriteLine("Generating class " + item.Namespace.CSharpName + "." + item.Name);
 
             GenerateUsings(w, item);
             w.WriteLine();

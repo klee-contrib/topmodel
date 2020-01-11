@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using TopModel.Generator.Ssdt.Contract;
+using TopModel.Generator.Ssdt.Scripter;
 
 namespace TopModel.Generator.Ssdt
 {
     /// <summary>
     /// Moteur permettant d'écrire une série de scripts SQL dans un dossier à partir d'une liste d'items et d'un scripter.
     /// </summary>
-    public class SqlScriptEngine : ISqlScriptEngine
+    public static class SqlScriptEngine
     {
         /// <summary>
         /// Ecrit les fichiers pour une liste d'items dans un dossier donné à l'aide du scripter.
@@ -17,7 +17,7 @@ namespace TopModel.Generator.Ssdt
         /// <param name="itemList">Liste des items.</param>
         /// <param name="folderPath">Dossier cible pour les scripts.</param>
         /// <typeparam name="T">Type de l'item à scripter.</typeparam>
-        public void Write<T>(ISqlScripter<T> scripter, IList<T> itemList, string folderPath)
+        public static void Write<T>(ISqlScripter<T> scripter, IList<T> itemList, string folderPath)
         {
             if (scripter == null)
             {
@@ -47,7 +47,7 @@ namespace TopModel.Generator.Ssdt
         /// <param name="item">Item.</param>
         /// <param name="folderPath">Dossier cible pour le script.</param>
         /// <typeparam name="T">Type de l'item à scripter.</typeparam>
-        public void Write<T>(ISqlScripter<T> scripter, T item, string folderPath)
+        public static void Write<T>(ISqlScripter<T> scripter, T item, string folderPath)
         {
             if (scripter == null)
             {
@@ -74,14 +74,8 @@ namespace TopModel.Generator.Ssdt
         /// <param name="item">Item.</param>
         /// <param name="folderPath">Dossier cible pour le script.</param>
         /// <typeparam name="T">Type de l'item à scripter.</typeparam>
-        private void WriteCore<T>(ISqlScripter<T> scripter, T item, string folderPath)
+        private static void WriteCore<T>(ISqlScripter<T> scripter, T item, string folderPath)
         {
-            // Filtrage des items à scripter.
-            if (!scripter.IsScriptGenerated(item))
-            {
-                return;
-            }
-
             // Génére le nom du fichier.
             var scriptName = scripter.GetScriptName(item);
 

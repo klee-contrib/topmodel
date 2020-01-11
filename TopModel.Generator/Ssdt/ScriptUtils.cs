@@ -1,5 +1,4 @@
 ﻿using System;
-using TopModel.Core;
 
 namespace TopModel.Generator.Ssdt
 {
@@ -8,6 +7,8 @@ namespace TopModel.Generator.Ssdt
     /// </summary>
     public static class ScriptUtils
     {
+        public const string InsertKeyName = "InsertKey";
+
         /// <summary>
         /// Retourne le nom du type de table SQL correspondant à la classe.
         /// </summary>

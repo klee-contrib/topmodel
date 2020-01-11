@@ -5,6 +5,7 @@ using System.Linq;
 using TopModel.Core.Config;
 using TopModel.Core.FileModel;
 using TopModel.Core.Loaders;
+using Microsoft.Extensions.Logging;
 using YamlDotNet.Core;
 using YamlDotNet.Serialization;
 
@@ -14,6 +15,7 @@ namespace TopModel.Core
     {
         private readonly RootConfig _config;
         private readonly IDeserializer _deserializer;
+        private readonly ILogger<ModelStore> _logger;
 
         private IDictionary<string, Class>? _classes;
         private IDictionary<(string Module, Kind Kind, string File), (FileDescriptor descriptor, Parser parser)>? _classFiles;
@@ -22,10 +24,11 @@ namespace TopModel.Core
         private IEnumerable<(string className, IEnumerable<ReferenceValue> values)>? _referenceLists;
         private IEnumerable<(string className, IEnumerable<ReferenceValue> values)>? _staticLists;
 
-        public ModelStore(RootConfig config, IDeserializer deserializer)
+        public ModelStore(RootConfig config, IDeserializer deserializer, ILogger<ModelStore> logger)
         {
             _config = config;
             _deserializer = deserializer;
+            _logger = logger;
         }
 
         public IEnumerable<Class> Classes
@@ -35,6 +38,8 @@ namespace TopModel.Core
                 if (_classes == null)
                 {
                     _classes = new Dictionary<string, Class>();
+
+                    _logger.LogInformation("Chargement des classes...");
 
                     foreach (var (_, (descriptor, parser)) in ClassFiles)
                     {
@@ -50,6 +55,9 @@ namespace TopModel.Core
                         }
                     }
 
+                    _logger.LogInformation($"{_classes.Count} classes chargées.");
+                    _logger.LogInformation("Chargement des listes de référence...");
+
                     foreach (var (className, referenceValues) in StaticLists)
                     {
                         ReferenceListsLoader.AddReferenceValues(_classes[className], referenceValues);
@@ -59,6 +67,8 @@ namespace TopModel.Core
                     {
                         ReferenceListsLoader.AddReferenceValues(_classes[className], referenceValues);
                     }
+
+                    _logger.LogInformation($"{StaticLists.Count()} listes statiques et {ReferenceLists.Count()} listes de références chargées.");
                 }
 
                 return _classes.Values;
@@ -69,9 +79,16 @@ namespace TopModel.Core
         {
             get
             {
-                _domains ??= DomainsLoader.LoadDomains(_config.Domains, _deserializer)
-                    .ToLookup(f => f.Name, f => f)
-                    .ToDictionary(f => f.Key, f => f.First());
+                if (_domains == null)
+                {
+                    _logger.LogInformation("Chargement des domaines...");
+
+                    _domains = DomainsLoader.LoadDomains(_config.Domains, _deserializer)
+                        .ToLookup(f => f.Name, f => f)
+                        .ToDictionary(f => f.Key, f => f.First());
+
+                    _logger.LogInformation($"{_domains.Count} domaines chargés.");
+                }             
 
                 return _domains;
             }

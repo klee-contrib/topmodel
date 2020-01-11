@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using TopModel.Core;
 using TopModel.Core.Config;
+using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.ProceduralSql
 {
@@ -9,8 +9,8 @@ namespace TopModel.Generator.ProceduralSql
     /// </summary>
     public class SqlServerSchemaGenerator : AbstractSchemaGenerator
     {
-        public SqlServerSchemaGenerator(string appName, ProceduralSqlConfig config)
-            : base(appName, config)
+        public SqlServerSchemaGenerator(string appName, ProceduralSqlConfig config, ILogger<ProceduralSqlGenerator> logger)
+            : base(appName, config, logger)
         {
         }
 

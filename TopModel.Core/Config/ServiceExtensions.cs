@@ -73,7 +73,7 @@ namespace TopModel.Core.Config
 
                 if (property.GetValue(classe) != null)
                 {
-                    property.SetValue(classe, Path.Combine(configFile.DirectoryName, (string)property.GetValue(classe)!));
+                    property.SetValue(classe, Path.GetFullPath(Path.Combine(configFile.DirectoryName, (string)property.GetValue(classe)!)));
                 }
             }
 

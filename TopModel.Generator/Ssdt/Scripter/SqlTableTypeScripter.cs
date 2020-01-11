@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using TopModel.Core;
-using TopModel.Generator.Ssdt.Contract;
 
 namespace TopModel.Generator.Ssdt.Scripter
 {
@@ -13,8 +11,6 @@ namespace TopModel.Generator.Ssdt.Scripter
     /// </summary>
     public class SqlTableTypeScripter : ISqlScripter<Class>
     {
-        private const string InsertKeyName = "InsertKey";
-
         /// <summary>
         /// Calcule le nom du script pour l'item.
         /// </summary>
@@ -28,21 +24,6 @@ namespace TopModel.Generator.Ssdt.Scripter
             }
 
             return item.GetTableTypeName() + ".sql";
-        }
-
-        /// <summary>
-        /// Indique si l'item doit générer un script.
-        /// </summary>
-        /// <param name="item">Item candidat.</param>
-        /// <returns><code>True</code> si un script doit être généré.</returns>
-        public bool IsScriptGenerated(Class item)
-        {
-            if (item == null)
-            {
-                throw new ArgumentNullException("item");
-            }
-
-            return item.Properties.Where(p => p.Name == InsertKeyName).Count() > 0;
         }
 
         /// <summary>
@@ -144,7 +125,7 @@ namespace TopModel.Generator.Ssdt.Scripter
             // Colonnes
             foreach (var property in table.Properties.OfType<IFieldProperty>())
             {
-                if ((!property.PrimaryKey || property.Domain.CsharpType == "string") && property.Name != InsertKeyName)
+                if ((!property.PrimaryKey || property.Domain.CsharpType == "string") && property.Name != ScriptUtils.InsertKeyName)
                 {
                     sb.Clear();
                     WriteColumn(sb, property);

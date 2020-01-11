@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using TopModel.Core;
 using TopModel.Core.Config;
+using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.Javascript
 {
@@ -13,13 +14,19 @@ namespace TopModel.Generator.Javascript
     public class JavascriptResourceGenerator : IGenerator
     {
         private readonly JavascriptConfig? _config;
+        private readonly ILogger<JavascriptResourceGenerator> _logger;
         private readonly ModelStore _modelStore;
 
-        public JavascriptResourceGenerator(ModelStore modelStore, JavascriptConfig? config = null)
+        public JavascriptResourceGenerator(ModelStore modelStore, ILogger<JavascriptResourceGenerator> logger, JavascriptConfig? config = null)
         {
             _config = config;
+            _logger = logger;
             _modelStore = modelStore;
         }
+
+        public bool CanGenerate => _config?.ResourceOutputDirectory != null;
+
+        public string Name => "des ressources Typescript";
 
         /// <summary>
         /// Génère le code des classes.
@@ -38,8 +45,9 @@ namespace TopModel.Generator.Javascript
                 var dirInfo = Directory.CreateDirectory(_config.ResourceOutputDirectory);
                 var fileName = FirstToLower(entry.Key);
 
-                Console.WriteLine($"Ecriture du fichier de ressource du module {entry.Key}.");
+                _logger.LogInformation($"Génération du fichier de ressources pour le module {entry.Key}...");
                 WriteNameSpaceNode(dirInfo.FullName + "/" + fileName + ".ts", entry.Key, entry.Value);
+                _logger.LogInformation($"{entry.Value.Count} classes ajoutées dans le fichier de ressources.");
             }
         }
 

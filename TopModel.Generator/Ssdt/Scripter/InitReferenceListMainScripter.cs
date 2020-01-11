@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using TopModel.Generator.Ssdt.Contract;
 using TopModel.Generator.Ssdt.Dto;
 
 namespace TopModel.Generator.Ssdt.Scripter

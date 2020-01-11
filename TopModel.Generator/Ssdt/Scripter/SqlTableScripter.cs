@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using TopModel.Generator.Ssdt.Contract;
-using TopModel.Core;
 
 namespace TopModel.Generator.Ssdt.Scripter
 {
@@ -31,11 +29,6 @@ namespace TopModel.Generator.Ssdt.Scripter
             }
 
             return item.SqlName + ".sql";
-        }
-
-        public bool IsScriptGenerated(Class item)
-        {
-            return true;
         }
 
         /// <summary>

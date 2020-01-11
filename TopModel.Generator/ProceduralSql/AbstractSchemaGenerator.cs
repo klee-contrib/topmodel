@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using TopModel.Core;
 using TopModel.Core.Config;
+using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.ProceduralSql
 {
@@ -20,11 +20,13 @@ namespace TopModel.Generator.ProceduralSql
 
         private readonly string _appName;
         private readonly ProceduralSqlConfig _config;
+        private readonly ILogger<ProceduralSqlGenerator> _logger;
 
-        public AbstractSchemaGenerator(string appName, ProceduralSqlConfig config)
+        public AbstractSchemaGenerator(string appName, ProceduralSqlConfig config, ILogger<ProceduralSqlGenerator> logger)
         {
             _appName = appName;
             _config = config;
+            _logger = logger;
         }
 
         /// <summary>
@@ -67,7 +69,8 @@ namespace TopModel.Generator.ProceduralSql
                 return;
             }
 
-            Console.WriteLine("Generating init script " + outputFileName);
+            _logger.LogInformation($"Génération du script d'initialisation {outputFileName}...");
+
             DeleteFileIfExists(outputFileName);
 
             using var writerInsert = File.CreateText(outputFileName);
@@ -86,6 +89,8 @@ namespace TopModel.Generator.ProceduralSql
                     WriteInsert(writerInsert, initDictionary[modelClass], modelClass, isStatic);
                 }
             }
+
+            _logger.LogInformation($"Génération du script terminée.");
         }
 
         /// <summary>
@@ -105,7 +110,7 @@ namespace TopModel.Generator.ProceduralSql
                 return;
             }
 
-            Console.WriteLine("Generating schema script");
+            _logger.LogInformation($"Génération des scripts de création de la base SQL...");
 
             DeleteFileIfExists(outputFileNameCrebas);
             DeleteFileIfExists(outputFileNameIndex);
@@ -172,6 +177,8 @@ namespace TopModel.Generator.ProceduralSql
                 GenerateIndexForeignKey(writer, fkProperty);
                 GenerateConstraintForeignKey(fkProperty, writer);
             }
+
+            _logger.LogInformation($"Génération des scripts terminée.");
         }
 
         /// <summary>
@@ -252,15 +259,7 @@ namespace TopModel.Generator.ProceduralSql
 
             if (File.Exists(outputFileName))
             {
-                try
-                {
-                    File.Delete(outputFileName);
-                }
-                catch (IOException e)
-                {
-                    Console.Error.WriteLine("Le fichier " + outputFileName + " existe déja, erreur lors de la suppression : " + e.Message);
-                    Environment.Exit(-1);
-                }
+                File.Delete(outputFileName);
             }
         }
 

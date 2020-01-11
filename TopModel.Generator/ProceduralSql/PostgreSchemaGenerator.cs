@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using TopModel.Core.Config;
+using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.ProceduralSql
 {
@@ -8,8 +9,8 @@ namespace TopModel.Generator.ProceduralSql
     /// </summary>
     public class PostgreSchemaGenerator : AbstractSchemaGenerator
     {
-        public PostgreSchemaGenerator(string appName, ProceduralSqlConfig config)
-            : base(appName, config)
+        public PostgreSchemaGenerator(string appName, ProceduralSqlConfig config, ILogger<ProceduralSqlGenerator> logger)
+            : base(appName, config, logger)
         {
         }
 

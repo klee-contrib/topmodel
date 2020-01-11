@@ -1,45 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TopModel.Core;
 using TopModel.Core.Config;
-using TopModel.Generator.Ssdt.Contract;
 using TopModel.Generator.Ssdt.Dto;
 using TopModel.Generator.Ssdt.Scripter;
+using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.Ssdt
 {
+    using static SqlScriptEngine;
+
     /// <summary>
     /// Générateur de Transact-SQL (insertions de données) visant une structure de fichiers SSDT.
     /// </summary>
-    public class SqlServerSsdtInsertGenerator : ISqlServerSsdtInsertGenerator
+    public static class SsdtInsertGenerator
     {
-        private readonly ISqlScriptEngine _engine;
-        private readonly SsdtConfig _config;
-
-        public SqlServerSsdtInsertGenerator(SsdtConfig config)
-        {
-            _config = config;
-            _engine = new SqlScriptEngine();
-        }
-
         /// <summary>
         /// Génère le script SQL d'initialisation des listes reference.
         /// </summary>
+        /// <param name="config">Config.</param>
+        /// <param name="logger">Logger.</param>
         /// <param name="initDictionary">Dictionnaire des initialisations.</param>
         /// <param name="insertScriptFolderPath">Chemin du dossier contenant les scripts.</param>        
         /// <param name="insertMainScriptName">Nom du script principal.</param>
-        /// <param name="outputDeltaFileName">Nom du fichier de delta généré.</param>
         /// <param name="isStatic">True if generation for static list.</param>
-        public void GenerateListInitScript(IDictionary<Class, IEnumerable<ReferenceValue>> initDictionary, string insertScriptFolderPath, string insertMainScriptName, string outputDeltaFileName, bool isStatic)
+        public static void GenerateListInitScript(SsdtConfig config, ILogger<SsdtGenerator> logger, IDictionary<Class, IEnumerable<ReferenceValue>> initDictionary, string insertScriptFolderPath, string insertMainScriptName, bool isStatic)
         {
             if (!initDictionary.Any())
             {
                 return;
             }
 
-            Console.Out.WriteLine("Generating init script " + insertScriptFolderPath);
+            logger.LogInformation($"Génération des scripts d'initialisation du répertoire {insertScriptFolderPath.Split("\\").Last()}...");
             Directory.CreateDirectory(insertScriptFolderPath);
 
             // Construit la liste des Reference Class ordonnée.
@@ -58,12 +50,12 @@ namespace TopModel.Generator.Ssdt
             };
 
             // Script un fichier par classe.            
-            _engine.Write(new InitReferenceListScripter(_config), referenceClassList, insertScriptFolderPath);
+            Write(new InitReferenceListScripter(config), referenceClassList, insertScriptFolderPath);
 
             // Script le fichier appelant les fichiers dans le bon ordre.
-            _engine.Write(new InitReferenceListMainScripter(), referenceClassSet, insertScriptFolderPath);
+            Write(new InitReferenceListMainScripter(), referenceClassSet, insertScriptFolderPath);
 
-            // TODO : delta ?
+            logger.LogInformation($"{referenceClassList.Count} scripts d'initialisation générés.");
         }
 
         /// <summary>

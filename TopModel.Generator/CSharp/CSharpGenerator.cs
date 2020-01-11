@@ -3,6 +3,7 @@ using System.Linq;
 using TopModel.Core;
 using TopModel.Core.Config;
 using TopModel.Core.FileModel;
+using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.CSharp
 {
@@ -14,13 +15,19 @@ namespace TopModel.Generator.CSharp
     public class CSharpGenerator : IGenerator
     {
         private readonly CSharpConfig? _config;
+        private readonly ILogger<CSharpGenerator> _logger;
         private readonly ModelStore _modelStore;
 
-        public CSharpGenerator(ModelStore modelStore, CSharpConfig? config = null)
+        public CSharpGenerator(ModelStore modelStore, ILogger<CSharpGenerator> logger, CSharpConfig? config = null)
         {
-            _modelStore = modelStore;
             _config = config;
+            _logger = logger;
+            _modelStore = modelStore;
         }
+
+        public bool CanGenerate => _config != null;
+
+        public string Name => "du modèle C#";
 
         /// <summary>
         /// Génère le code des classes.
@@ -40,7 +47,7 @@ namespace TopModel.Generator.CSharp
 
             if (_config.DbContextProjectPath != null)
             {
-                new DbContextGenerator(rootNamespace, _config).Generate(classes);
+                new DbContextGenerator(rootNamespace, _config, _logger).Generate(classes);
             }
 
             if (_config.OutputDirectory == null)
@@ -54,6 +61,7 @@ namespace TopModel.Generator.CSharp
             {
                 if (!Directory.Exists(ns.Key.CSharpName))
                 {
+                    _logger.LogInformation($"Génération des classes pour le module {ns.Key.CSharpName}...");
                     var directoryForModelClass = GetDirectoryForModelClass(_config.LegacyProjectPaths, _config.OutputDirectory, ns.Key.Kind == Kind.Data, rootNamespace, ns.Key.CSharpName);
                     var projectDirectory = GetDirectoryForProject(_config.LegacyProjectPaths, _config.OutputDirectory, ns.Key.Kind == Kind.Data, rootNamespace, ns.Key.CSharpName);
 
@@ -63,10 +71,12 @@ namespace TopModel.Generator.CSharp
                         Directory.CreateDirectory(currentDirectory);
                         classGenerator.Generate(item);
                     }
+
+                    _logger.LogInformation($"{ns.Count()} classes générées.");
                 }
             }
 
-            new ReferenceAccessorGenerator(rootNamespace, _config).Generate(classes);
+            new ReferenceAccessorGenerator(rootNamespace, _config, _logger).Generate(classes);
         }
     }
 }

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TopModel.Core;
 using TopModel.Core.Config;
 using TopModel.Core.FileModel;
+using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.CSharp
 {
@@ -12,13 +12,15 @@ namespace TopModel.Generator.CSharp
 
     public class ReferenceAccessorGenerator
     {
-        private readonly string _rootNamespace;
         private readonly CSharpConfig _config;
+        private readonly ILogger<CSharpGenerator> _logger;
+        private readonly string _rootNamespace;
 
-        public ReferenceAccessorGenerator(string rootNamespace, CSharpConfig config)
+        public ReferenceAccessorGenerator(string rootNamespace, CSharpConfig config, ILogger<CSharpGenerator> logger)
         {
-            _rootNamespace = rootNamespace;
             _config = config;
+            _logger = logger;
+            _rootNamespace = rootNamespace;
         }
 
         /// <summary>
@@ -50,8 +52,12 @@ namespace TopModel.Generator.CSharp
                 return;
             }
 
+            _logger.LogInformation($"Génération des accesseurs de référence pour le module {ns.Module}...");
+            
             GenerateReferenceAccessorsInterface(classList, ns.CSharpName);
             GenerateReferenceAccessorsImplementation(classList, ns.CSharpName);
+
+            _logger.LogInformation($"{classList.Count()} accesseurs ajoutés.");
         }
 
         /// <summary>
@@ -86,7 +92,6 @@ namespace TopModel.Generator.CSharp
 
             var interfaceName = $"I{implementationName}";
 
-            Console.WriteLine("Generating class " + implementationName + " implementing " + interfaceName);
             var implementationFileName = Path.Combine(projectDir, _config.DbContextProjectPath == null ? "generated" : "generated\\Reference", $"{implementationName}.cs");
 
             using var w = new CSharpWriter(implementationFileName);
@@ -208,7 +213,6 @@ namespace TopModel.Generator.CSharp
                 interfaceName = $"IService{nameSpacePrefix}Accessors";
             }
 
-            Console.WriteLine("Generating interface " + interfaceName + " containing reference accessors for namespace " + nameSpaceName);
             var interfaceFileName = Path.Combine(projectDir, _config.DbContextProjectPath == null ? "generated" : "generated\\Reference", $"{interfaceName}.cs");
 
             using var w = new CSharpWriter(interfaceFileName);
