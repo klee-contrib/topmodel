@@ -1,6 +1,6 @@
 ﻿namespace TopModel.Core.Config
 {
-    public class Config : RootConfig
+    public class FullConfig : RootConfig
     {
         public ProceduralSqlConfig? ProceduralSql { get; set; }
         public SsdtConfig? Ssdt { get; set; }

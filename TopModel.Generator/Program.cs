@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using TopModel.Core.Config;
 using TopModel.Generator.CSharp;
 using TopModel.Generator.Javascript;
 using TopModel.Generator.ProceduralSql;
@@ -14,8 +13,7 @@ namespace TopModel.Generator
         public static void Main(string[] args)
         {
             using var provider = new ServiceCollection()
-                .AddConfig(args[0])
-                .AddSingleton<ModelStore>()
+                .AddModelStore(args[0])
                 .AddSingleton<IGenerator, SsdtGenerator>()
                 .AddSingleton<IGenerator, ProceduralSqlGenerator>()
                 .AddSingleton<IGenerator, CSharpGenerator>()

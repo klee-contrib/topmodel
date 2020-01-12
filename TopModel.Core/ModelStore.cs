@@ -15,19 +15,20 @@ namespace TopModel.Core
     {
         private readonly RootConfig _config;
         private readonly IDeserializer _deserializer;
+        private readonly FileChecker _fileChecker;
         private readonly ILogger<ModelStore> _logger;
 
         private IDictionary<string, Class>? _classes;
         private IDictionary<(string Module, Kind Kind, string File), (FileDescriptor descriptor, Parser parser)>? _classFiles;
         private IDictionary<string, Domain>? _domains;
-        private IEnumerable<string>? _files;
         private IEnumerable<(string className, IEnumerable<ReferenceValue> values)>? _referenceLists;
         private IEnumerable<(string className, IEnumerable<ReferenceValue> values)>? _staticLists;
 
-        public ModelStore(IDeserializer deserializer, ILogger<ModelStore> logger, RootConfig? config = null)
+        public ModelStore(IDeserializer deserializer, FileChecker fileChecker, ILogger<ModelStore> logger, RootConfig? config = null)
         {
             _config = config!;
             _deserializer = deserializer;
+            _fileChecker = fileChecker;
             _logger = logger;
         }
 
@@ -73,7 +74,7 @@ namespace TopModel.Core
 
                 return _classes.Values;
             }
-        }        
+        }
 
         public IDictionary<string, Domain> Domains
         {
@@ -83,12 +84,14 @@ namespace TopModel.Core
                 {
                     _logger.LogInformation("Chargement des domaines...");
 
+                    _fileChecker.CheckDomainFile(_config.Domains);
+
                     _domains = DomainsLoader.LoadDomains(_config.Domains, _deserializer)
                         .ToLookup(f => f.Name, f => f)
                         .ToDictionary(f => f.Key, f => f.First());
 
                     _logger.LogInformation($"{_domains.Count} domaines chargés.");
-                }             
+                }
 
                 return _domains;
             }
@@ -135,24 +138,24 @@ namespace TopModel.Core
         {
             get
             {
-                _classFiles ??= Files
-                   .Select(file => ClassesLoader.GetFileDescriptor(file, _deserializer))
-                   .ToDictionary(
-                       file => (file.descriptor.Module, file.descriptor.Kind, file.descriptor.File),
-                       file => file);
+                if (_classFiles == null)
+                {
+                    var files = Directory.EnumerateFiles(_config.ModelRoot, "*.yml", SearchOption.AllDirectories)
+                        .Where(f => f != _config.Domains);
+
+                    foreach (var file in files)
+                    {
+                        _fileChecker.CheckModelFile(file);
+                    }
+
+                    _classFiles = files
+                       .Select(file => ClassesLoader.GetFileDescriptor(file, _deserializer))
+                       .ToDictionary(
+                           file => (file.descriptor.Module, file.descriptor.Kind, file.descriptor.File),
+                           file => file);
+                }
 
                 return _classFiles;
-            }
-        }
-
-        private IEnumerable<string> Files
-        {
-            get
-            {
-                _files ??= Directory.EnumerateFiles(_config.ModelRoot, "*.yml", SearchOption.AllDirectories)
-                    .Where(f => f != _config.Domains);
-
-                return _files;
             }
         }
 

@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace TopModel.Generator
 {
@@ -11,20 +9,14 @@ namespace TopModel.Generator
     {
         public static void Main(string[] args)
         {
-            var fileName = args[0];
-            var deserializer = new DeserializerBuilder()
-               .WithNamingConvention(CamelCaseNamingConvention.Instance)
-               .Build();
-
             using var provider = new ServiceCollection()
-                .AddSingleton(deserializer)
-                .AddSingleton<ModelStore>()
+                .AddModelStore()
                 .AddLogging()
                 .BuildServiceProvider();
 
             var modelStore = provider.GetService<ModelStore>();
 
-            var classes = modelStore.GetClassesFromFile(fileName, out var classesToResolve);
+            var classes = modelStore.GetClassesFromFile(args[0], out var classesToResolve);
 
             var sb = new StringBuilder();
             foreach (var classe in classes)
