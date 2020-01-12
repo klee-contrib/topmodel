@@ -24,9 +24,9 @@ namespace TopModel.Core
         private IEnumerable<(string className, IEnumerable<ReferenceValue> values)>? _referenceLists;
         private IEnumerable<(string className, IEnumerable<ReferenceValue> values)>? _staticLists;
 
-        public ModelStore(RootConfig config, IDeserializer deserializer, ILogger<ModelStore> logger)
+        public ModelStore(IDeserializer deserializer, ILogger<ModelStore> logger, RootConfig? config = null)
         {
-            _config = config;
+            _config = config!;
             _deserializer = deserializer;
             _logger = logger;
         }
@@ -112,6 +112,23 @@ namespace TopModel.Core
 
                 return apps.Single();
             }
+        }
+
+        public IEnumerable<Class> GetClassesFromFile(string filePath, out IDictionary<object, string> classesToResolve)
+        {
+            var (descriptor, parser) = ClassesLoader.GetFileDescriptor(filePath, _deserializer);
+
+            var toResolve = new List<(object, string)>();
+
+            var classes = new List<Class>();
+
+            foreach (var classe in ClassesLoader.LoadClasses(parser, toResolve))
+            {
+                classes.Add(classe);
+            }
+
+            classesToResolve = toResolve.ToDictionary(c => c.Item1, c => c.Item2);
+            return classes;
         }
 
         private IDictionary<(string Module, Kind Kind, string File), (FileDescriptor descriptor, Parser parser)> ClassFiles

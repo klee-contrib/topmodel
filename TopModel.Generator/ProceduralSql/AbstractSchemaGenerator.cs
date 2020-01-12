@@ -69,7 +69,7 @@ namespace TopModel.Generator.ProceduralSql
                 return;
             }
 
-            _logger.LogInformation($"Génération du script d'initialisation {outputFileName}...");
+            _logger.LogInformation($"Génération du script d'initialisation {outputFileName.Split("\\").Last()}...");
 
             DeleteFileIfExists(outputFileName);
 
@@ -77,7 +77,7 @@ namespace TopModel.Generator.ProceduralSql
 
             writerInsert.WriteLine("-- =========================================================================================== ");
             writerInsert.WriteLine($"--   Application Name	:	{_appName} ");
-            writerInsert.WriteLine("--   Script Name		:	" + outputFileName.Split("/").Last());
+            writerInsert.WriteLine("--   Script Name		:	" + outputFileName.Split("\\").Last());
             writerInsert.WriteLine("--   Description		:	Script d'insertion des données de références" + (!isStatic ? " non " : " ") + "statiques. ");
             writerInsert.WriteLine("-- ===========================================================================================");
 
@@ -134,19 +134,19 @@ namespace TopModel.Generator.ProceduralSql
 
             writerCrebas.WriteLine("-- =========================================================================================== ");
             writerCrebas.WriteLine($"--   Application Name	:	{_appName} ");
-            writerCrebas.WriteLine("--   Script Name		:	" + outputFileNameCrebas.Split("/").Last());
+            writerCrebas.WriteLine("--   Script Name		:	" + outputFileNameCrebas.Split("\\").Last());
             writerCrebas.WriteLine("--   Description		:	Script de création des tables.");
             writerCrebas.WriteLine("-- =========================================================================================== ");
 
             writerUk?.WriteLine("-- =========================================================================================== ");
             writerUk?.WriteLine($"--   Application Name	:	{_appName} ");
-            writerUk?.WriteLine("--   Script Name		:	" + outputFileNameUK?.Split("/").Last());
+            writerUk?.WriteLine("--   Script Name		:	" + outputFileNameUK?.Split("\\").Last());
             writerUk?.WriteLine("--   Description		:	Script de création des indexs uniques.");
             writerUk?.WriteLine("-- =========================================================================================== ");
 
             writerType?.WriteLine("-- =========================================================================================== ");
             writerType?.WriteLine($"--   Application Name	:	{_appName} ");
-            writerType?.WriteLine("--   Script Name		:	" + outputFileNameType?.Split("/").Last());
+            writerType?.WriteLine("--   Script Name		:	" + outputFileNameType?.Split("\\").Last());
             writerType?.WriteLine("--   Description		:	Script de création des types. ");
             writerType?.WriteLine("-- =========================================================================================== ");
 
@@ -168,7 +168,7 @@ namespace TopModel.Generator.ProceduralSql
 
             writer.WriteLine("-- =========================================================================================== ");
             writer.WriteLine($"--   Application Name	:	{_appName} ");
-            writer.WriteLine("--   Script Name		:	" + outputFileNameIndex.Split("/").Last());
+            writer.WriteLine("--   Script Name		:	" + outputFileNameIndex.Split("\\").Last());
             writer.WriteLine("--   Description		:	Script de création des indexes et des clef étrangères. ");
             writer.WriteLine("-- =========================================================================================== ");
 

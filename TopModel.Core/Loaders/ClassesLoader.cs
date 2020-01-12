@@ -17,19 +17,6 @@ namespace TopModel.Core.Loaders
             parser.Consume<StreamStart>();
 
             var descriptor = deserializer.Deserialize<FileDescriptor>(parser);
-
-            if (
-                descriptor == null ||
-                descriptor.App == null ||
-                descriptor.Module == null ||
-                descriptor.File == null ||
-                descriptor.Uses != null && (
-                    descriptor.Uses.Any(use => use.Module == null || use.Files == null) ||
-                    descriptor.Uses.Any(use => use.Files != null && use.Files.Any(f => f.File == null || f.Classes == null))))
-            {
-                throw new Exception($"FileDescriptor de {filePath} incomplet.");
-            }
-
             return (descriptor!, parser);
         }
 
@@ -55,6 +42,39 @@ namespace TopModel.Core.Loaders
             var classesToResolve = new List<(object, string)>();
             var ns = new Namespace { Module = descriptor.Module, Kind = descriptor.Kind };
 
+            foreach (var classe in LoadClasses(parser, classesToResolve, ns))
+            {
+                classes.Add(classe.Name, classe);
+            }           
+
+            foreach (var (obj, className) in classesToResolve)
+            {
+                switch (obj)
+                {
+                    case Class classe:
+                        classe.Extends = classes[className];
+                        break;
+                    case RegularProperty rp:
+                        rp.Domain = domains[className];
+                        break;
+                    case AssociationProperty ap:
+                        ap.Association = classes[className];
+                        break;
+                    case CompositionProperty cp:
+                        cp.Composition = classes[className];
+                        break;
+                    case AliasProperty alp:
+                        var aliasConf = className.Split("|");
+                        alp.Property = (IFieldProperty)classes[aliasConf[1]].Properties.Single(p => p.Name == aliasConf[0]);
+                        break;
+                }
+            }
+
+            descriptor.Loaded = true;
+        }
+
+        public static IEnumerable<Class> LoadClasses(Parser parser, List<(object, string)> classesToResolve, Namespace ns = default)
+        {
             while (parser.TryConsume<DocumentStart>(out _))
             {
                 parser.Consume<MappingStart>();
@@ -111,16 +131,6 @@ namespace TopModel.Core.Loaders
                     }
                 }
 
-                if (classe.Name == null)
-                {
-                    throw new Exception("Tout classe doit avoir une propriété 'name'");
-                }
-
-                if (classe.Comment == null)
-                {
-                    throw new Exception($"La classe {classe.Name} n'a pas de commentaire.");
-                }
-
                 classe.Label ??= classe.Name;
 
                 parser.Consume<Scalar>();
@@ -157,7 +167,7 @@ namespace TopModel.Core.Loaders
                                         rp.Required = value == "true";
                                         break;
                                     case "domain":
-                                        rp.Domain = domains[value];
+                                        classesToResolve.Add((rp, value));
                                         break;
                                     case "defaultValue":
                                         rp.DefaultValue = value;
@@ -168,11 +178,6 @@ namespace TopModel.Core.Loaders
                                     default:
                                         throw new Exception($"Propriété ${prop} inconnue pour une propriété");
                                 }
-                            }
-
-                            if (rp.Domain == null || rp.Comment == null || rp.Label == null)
-                            {
-                                throw new Exception($"Les propriétés 'domain', 'label' et 'comment' sont obligatoires sur la propriété {rp.Name} de la classe {classe.Name}");
                             }
 
                             if (rp.PrimaryKey)
@@ -216,11 +221,6 @@ namespace TopModel.Core.Loaders
                                 }
                             }
 
-                            if (ap.Comment == null || ap.Label == null)
-                            {
-                                throw new Exception($"Les propriétés 'label' et 'comment' sont obligatoires sur les associations de la classe {classe.Name}");
-                            }
-
                             classe.Properties.Add(ap);
                             break;
                         case Scalar { Value: "composition" }:
@@ -248,11 +248,6 @@ namespace TopModel.Core.Loaders
                                     default:
                                         throw new Exception($"Propriété ${prop} inconnue pour une propriété");
                                 }
-                            }
-
-                            if (cp.Comment == null || cp.Name == null)
-                            {
-                                throw new Exception($"Les propriétés 'name' et 'comment' sont obligatoires sur les compositions de la classe {classe.Name}");
                             }
 
                             classe.Properties.Add(cp);
@@ -323,30 +318,8 @@ namespace TopModel.Core.Loaders
                     prop.Class = classe;
                 }
 
-                classes.Add(classe.Name, classe);
+                yield return classe;
             }
-
-            foreach (var (obj, className) in classesToResolve)
-            {
-                switch (obj)
-                {
-                    case Class classe:
-                        classe.Extends = classes[className];
-                        break;
-                    case AssociationProperty ap:
-                        ap.Association = classes[className];
-                        break;
-                    case CompositionProperty cp:
-                        cp.Composition = classes[className];
-                        break;
-                    case AliasProperty alp:
-                        var aliasConf = className.Split("|");
-                        alp.Property = (IFieldProperty)classes[aliasConf[1]].Properties.Single(p => p.Name == aliasConf[0]);
-                        break;
-                }
-            }
-
-            descriptor.Loaded = true;
         }
     }
 }
