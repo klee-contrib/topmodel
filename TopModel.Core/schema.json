@@ -47,23 +47,8 @@
                 "type": "array",
                 "description": "Liste des fichiers du module à référencer.",
                 "items": {
-                  "type": "object",
-                  "description": "Détail d'un fichier référencé.",
-                  "required": [ "file", "classes" ],
-                  "additionalProperties": false,
-                  "properties": {
-                    "file": {
-                      "type": "string",
-                      "description": "Nom du fichier référencé."
-                    },
-                    "classes": {
-                      "type": "array",
-                      "description": "Liste des classes référencées dans ce fichier.",
-                      "items": {
-                        "type": "string"
-                      }
-                    }
-                  }
+                  "type": "string",
+                  "description": "Nom du fichier référencé."
                 }
               }
             }
