@@ -53,7 +53,7 @@ namespace TopModel.Generator.CSharp
             }
 
             _logger.LogInformation($"Génération des accesseurs de référence pour le module {ns.Module}...");
-            
+
             GenerateReferenceAccessorsInterface(classList, ns.CSharpName);
             GenerateReferenceAccessorsImplementation(classList, ns.CSharpName);
 
@@ -118,7 +118,7 @@ namespace TopModel.Generator.CSharp
                         ? "Kinetix.Broker"
                         : "Fmk.Broker");
 
-                    if (classList.Any(classe => classe.OrderProperty != null))
+                    if (classList.Any(classe => classe.OrderProperty != null || classe.LabelProperty != null && classe.LabelProperty.Name != "Libelle"))
                     {
                         usings.Add(_config.Kinetix == KinetixVersion.Framework
                             ? "Kinetix.Data.SqlClient"
