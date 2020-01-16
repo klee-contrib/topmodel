@@ -209,12 +209,12 @@ namespace TopModel.Generator.ProceduralSql
         protected Dictionary<string, string> CreatePropertyValueDictionary(Class modelClass, ReferenceValue initItem, bool isPrimaryKeyIncluded)
         {
             var nameValueDict = new Dictionary<string, string>();
-            var definition = initItem.Bean;
+            var definition = initItem.Value;
             foreach (var property in modelClass.Properties.OfType<IFieldProperty>())
             {
                 if (!property.PrimaryKey || isPrimaryKeyIncluded)
                 {
-                    var propertyValue = definition[property.Name];
+                    var propertyValue = definition[property];
                     var propertyValueStr = propertyValue == null ? "null" : propertyValue.ToString()!;
                     nameValueDict[property.SqlName] = propertyValue != null && propertyValue.GetType() == typeof(string)
                         ? "'" + propertyValueStr.Replace("'", "''") + "'"

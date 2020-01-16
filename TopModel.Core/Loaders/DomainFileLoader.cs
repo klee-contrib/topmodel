@@ -7,10 +7,21 @@ using YamlDotNet.Serialization;
 
 namespace TopModel.Core.Loaders
 {
-    public static class DomainsLoader
+    public class DomainFileLoader
     {
-        public static IEnumerable<Domain> LoadDomains(string domainFilePath, IDeserializer deserializer)
+        private readonly IDeserializer _deserializer;
+        private readonly FileChecker _fileChecker;
+
+        public DomainFileLoader(IDeserializer deserializer, FileChecker fileChecker)
         {
+            _deserializer = deserializer;
+            _fileChecker = fileChecker;
+        }
+
+        public IEnumerable<Domain> LoadDomains(string domainFilePath)
+        {
+            _fileChecker.CheckDomainFile(domainFilePath);
+
             var parser = new Parser(new StringReader(File.ReadAllText(domainFilePath)));
             parser.Consume<StreamStart>();
 
@@ -23,7 +34,7 @@ namespace TopModel.Core.Loaders
                     throw new Exception("Seuls des domaines peuvent être définis dans le fichier de domaines");
                 }
 
-                yield return deserializer.Deserialize<Domain>(parser);
+                yield return _deserializer.Deserialize<Domain>(parser);
 
                 parser.Consume<MappingEnd>();
                 parser.Consume<DocumentEnd>();

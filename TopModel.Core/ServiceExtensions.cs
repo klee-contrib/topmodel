@@ -24,6 +24,8 @@ namespace TopModel.Core
             services
                 .AddSingleton(deserializer)
                 .AddSingleton(fileChecker)
+                .AddSingleton<ModelFileLoader>()
+                .AddSingleton<DomainFileLoader>()
                 .AddSingleton<ModelStore>();
 
             if (configFilePath != null)

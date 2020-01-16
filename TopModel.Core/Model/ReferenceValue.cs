@@ -6,6 +6,6 @@ namespace TopModel.Core
     public class ReferenceValue
     {
         public string Name { get; set; }
-        public IDictionary<string, object> Bean { get; set; }
+        public IDictionary<IFieldProperty, object> Value { get; set; }
     }
 }

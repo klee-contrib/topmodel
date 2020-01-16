@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using TopModel.Core.Loaders;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace TopModel.Generator
@@ -14,9 +15,8 @@ namespace TopModel.Generator
                 .AddLogging()
                 .BuildServiceProvider();
 
-            var modelStore = provider.GetService<ModelStore>();
-
-            var classes = modelStore.GetClassesFromFile(args[0], out var classesToResolve);
+            var modelFile = provider.GetService<ModelFileLoader>().LoadModelFile(args[0]);
+            var relationships = modelFile.Relationships.ToDictionary(r => r.source, r => r.target);
 
             var sb = new StringBuilder();
             sb.Append(@$"digraph ""{args[0].Split("\\").Last()}"" {{
@@ -24,7 +24,7 @@ namespace TopModel.Generator
   edge [fontname = ""Segoe UI"" fontsize = 8]
 
 ");
-            foreach (var classe in classes)
+            foreach (var classe in modelFile.Classes)
             {
                 sb.Append("  ");
                 sb.Append(classe.Name);
@@ -43,12 +43,12 @@ namespace TopModel.Generator
 
                     if (prop is AliasProperty alp)
                     {
-                        var alias = classesToResolve[alp].Split("|");
+                        var alias = relationships[alp].Split("|");
                         sb.Append($"<tr><td align=\"left\"><b>{alp.Prefix ?? ""}{alias[0]}{alp.Suffix ?? ""}          </b></td><td align=\"left\"><i>[{alias[1]}]     </i></td></tr>");
                     }
                     else
                     {
-                        sb.Append($"<tr><td align=\"left\"><b>{prop.Name}{(prop.Required ? "?" : string.Empty)}          </b></td><td align=\"left\"><i>{classesToResolve[prop]}     </i></td></tr>");
+                        sb.Append($"<tr><td align=\"left\"><b>{prop.Name}{(prop.Required ? "?" : string.Empty)}          </b></td><td align=\"left\"><i>{relationships[prop]}     </i></td></tr>");
                     }
                 }
 
@@ -56,12 +56,12 @@ namespace TopModel.Generator
 
                 foreach (var prop in classe.Properties.OfType<AssociationProperty>())
                 {
-                    sb.Append($"  {classe.Name}->{classesToResolve[prop]}[color=\"#101088\" fontcolor=\"#101088\" arrowhead=empty headlabel=\"  {(prop.Required ? "1..1" : "0..1")}{(prop.Role != null ? $" {prop.Role}" : string.Empty)}   \"]\r\n");
+                    sb.Append($"  {classe.Name}->{relationships[prop]}[color=\"#101088\" fontcolor=\"#101088\" arrowhead=empty headlabel=\"  {(prop.Required ? "1..1" : "0..1")}{(prop.Role != null ? $" {prop.Role}" : string.Empty)}   \"]\r\n");
                 }
 
                 foreach (var prop in classe.Properties.OfType<CompositionProperty>())
                 {
-                    sb.Append($"  {classe.Name}->{classesToResolve[prop]}[color=\"#101088\" fontcolor=\"#101088\" arrowhead=empty arrowtail=odiamond dir=both headlabel=\"  {(prop.Kind == Composition.Object ? "1..1" : "0..n")}  \"]\r\n");
+                    sb.Append($"  {classe.Name}->{relationships[prop]}[color=\"#101088\" fontcolor=\"#101088\" arrowhead=empty arrowtail=odiamond dir=both headlabel=\"  {(prop.Kind == Composition.Object ? "1..1" : "0..n")}  \"]\r\n");
                 }
 
                 sb.Append("\r\n");

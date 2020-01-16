@@ -152,10 +152,15 @@ namespace TopModel.Generator.CSharp
             if (item.ReferenceValues?.Any() ?? false)
             {
                 var i = 0;
-                foreach (var constFieldName in item.ReferenceValues.Keys.OrderBy(x => x, StringComparer.Ordinal))
+                foreach (var refValue in item.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal))
                 {
                     ++i;
-                    var (code, label) = item.ReferenceValues[constFieldName];
+                    var code = item.Stereotype == Stereotype.Statique
+                        ? (string)refValue.Value[item.PrimaryKey]
+                        : (string)refValue.Value[item.Properties.OfType<RegularProperty>().Single(rp => rp.Unique)];
+                    var label = item.LabelProperty != null
+                        ? (string)refValue.Value[item.LabelProperty] 
+                        : refValue.Name;
                     IFieldProperty? property = null;
                     if (item.Stereotype == Stereotype.Reference)
                     {
@@ -177,11 +182,11 @@ namespace TopModel.Generator.CSharp
 
                     if (_config.UseTypeSafeConstValues)
                     {
-                        w.WriteLine(2, string.Format("public readonly {2}Code {0} = new {2}Code({1});", constFieldName, code, item.Name));
+                        w.WriteLine(2, string.Format("public readonly {2}Code {0} = new {2}Code({1});", refValue.Name, code, item.Name));
                     }
                     else
                     {
-                        w.WriteLine(2, string.Format("public const string {0} = {1};", constFieldName, code));
+                        w.WriteLine(2, string.Format("public const string {0} = \"{1}\";", refValue.Name, code));
                     }
 
                     w.WriteLine();

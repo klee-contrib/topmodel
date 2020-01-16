@@ -73,13 +73,13 @@ namespace TopModel.Generator.Ssdt.Scripter
         private static string GetInsertLine(Class modelClass, ReferenceValue initItem, bool siPrimaryKeyIncluded)
         {
             // Remplissage d'un dictionnaire nom de colonne => valeur.
-            var definition = initItem.Bean;
+            var definition = initItem.Value;
             var nameValueDict = new Dictionary<string, string?>();
             foreach (var property in modelClass.Properties.OfType<IFieldProperty>())
             {
                 if (!property.PrimaryKey || siPrimaryKeyIncluded || property.Domain.Name == "DO_CD")
                 {
-                    var propertyValue = definition[property.Name];
+                    var propertyValue = definition[property];
                     var propertyValueStr = propertyValue == null ? "NULL" : propertyValue.ToString();
                     nameValueDict[property.SqlName] = property.Domain.CsharpType == "byte[]"
                         ? propertyValueStr

@@ -6,108 +6,100 @@ using TopModel.Core.Config;
 using TopModel.Core.FileModel;
 using TopModel.Core.Loaders;
 using Microsoft.Extensions.Logging;
-using YamlDotNet.Core;
-using YamlDotNet.Serialization;
 
 namespace TopModel.Core
 {
     public class ModelStore
     {
         private readonly RootConfig _config;
-        private readonly IDeserializer _deserializer;
-        private readonly FileChecker _fileChecker;
+        private readonly DomainFileLoader _domainFileLoader;
         private readonly ILogger<ModelStore> _logger;
+        private readonly ModelFileLoader _modelFileLoader;
 
-        private IDictionary<string, Class>? _classes;
-        private IDictionary<(string Module, Kind Kind, string File), (FileDescriptor descriptor, Parser parser)>? _classFiles;
-        private IDictionary<string, Domain>? _domains;
-        private IEnumerable<(string className, IEnumerable<ReferenceValue> values)>? _referenceLists;
-        private IEnumerable<(string className, IEnumerable<ReferenceValue> values)>? _staticLists;
+        private readonly IDictionary<string, Domain> _domains = new Dictionary<string, Domain>();
+        private readonly IDictionary<FileName, ModelFile> _modelFiles = new Dictionary<FileName, ModelFile>();
 
-        public ModelStore(IDeserializer deserializer, FileChecker fileChecker, ILogger<ModelStore> logger, RootConfig? config = null)
+        public ModelStore(DomainFileLoader domainFileLoader, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, RootConfig config)
         {
-            _config = config!;
-            _deserializer = deserializer;
-            _fileChecker = fileChecker;
+            _config = config;
+            _domainFileLoader = domainFileLoader;
             _logger = logger;
+            _modelFileLoader = modelFileLoader;
         }
 
         public IEnumerable<Class> Classes
         {
             get
             {
-                if (_classes == null)
-                {
-                    _classes = new Dictionary<string, Class>();
-
-                    _logger.LogInformation("Chargement des classes...");
-
-                    foreach (var (_, (descriptor, parser)) in ClassFiles)
-                    {
-                        ClassesLoader.LoadClasses(descriptor, parser, _classes, ClassFiles, Domains, _deserializer);
-                    }
-
-                    foreach (var kvp in _classes)
-                    {
-                        var classe = kvp.Value;
-                        if (classe.Properties.Count(p => p.PrimaryKey) > 1)
-                        {
-                            throw new Exception($"La classe {classe.Name} doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvés)");
-                        }
-                    }
-
-                    _logger.LogInformation($"{_classes.Count} classes chargées.");
-                    _logger.LogInformation("Chargement des listes de référence...");
-
-                    foreach (var (className, referenceValues) in StaticLists)
-                    {
-                        ReferenceListsLoader.AddReferenceValues(_classes[className], referenceValues);
-                    }
-
-                    foreach (var (className, referenceValues) in ReferenceLists)
-                    {
-                        ReferenceListsLoader.AddReferenceValues(_classes[className], referenceValues);
-                    }
-
-                    _logger.LogInformation($"{StaticLists.Count()} listes statiques et {ReferenceLists.Count()} listes de références chargées.");
-                }
-
-                return _classes.Values;
-            }
-        }
-
-        public IDictionary<string, Domain> Domains
-        {
-            get
-            {
-                if (_domains == null)
+                if (!_modelFiles.Any())
                 {
                     _logger.LogInformation("Chargement des domaines...");
 
-                    _fileChecker.CheckDomainFile(_config.Domains);
-
-                    _domains = DomainsLoader.LoadDomains(_config.Domains, _deserializer)
-                        .ToLookup(f => f.Name, f => f)
-                        .ToDictionary(f => f.Key, f => f.First());
+                    foreach (var domain in _domainFileLoader.LoadDomains(_config.Domains))
+                    {
+                        _domains.TryAdd(domain.Name, domain);
+                    }
 
                     _logger.LogInformation($"{_domains.Count} domaines chargés.");
+                    _logger.LogInformation("Chargement des classes...");
+
+                    var files = Directory.EnumerateFiles(_config.ModelRoot, "*.yml", SearchOption.AllDirectories)
+                       .Where(f => f != _config.Domains);
+
+                    foreach (var file in files)
+                    {
+                        var modelFile = _modelFileLoader.LoadModelFile(file);
+                        _modelFiles.Add(new FileName { Module = modelFile.Descriptor.Module, Kind = modelFile.Descriptor.Kind, File = modelFile.Descriptor.File }, modelFile);
+                    }
+
+                    foreach (var modelFile in _modelFiles)
+                    {
+                        ResolveRelationships(modelFile.Value);
+                    }
+
+                    _logger.LogInformation($"{_modelFiles.SelectMany(mf => mf.Value.Classes).Count()} classes chargées.");
+                    _logger.LogInformation("Chargement des listes de référence...");
+
+                    var staticLists = ReferenceListsLoader.LoadReferenceLists(_config.StaticLists);
+                    var referenceLists = ReferenceListsLoader.LoadReferenceLists(_config.ReferenceLists);
+
+                    var classMap = _modelFiles.SelectMany(mf => mf.Value.Classes)
+                        .ToDictionary(c => c.Name, c => c);
+
+                    foreach (var (className, referenceValues) in staticLists.Concat(referenceLists))
+                    {
+                        if (classMap.TryGetValue(className, out var classe))
+                        {
+                            ReferenceListsLoader.AddReferenceValues(classe, referenceValues);
+                        } 
+                        else
+                        {
+                            throw new Exception($"Une liste de référence pour la classe {className} a été définie, alors que cette classe est introuvable.");
+                        }
+                    }
+
+                    _logger.LogInformation($"{staticLists.Count()} listes statiques et {referenceLists.Count()} listes de références chargées.");
                 }
 
-                return _domains;
+                return _modelFiles.SelectMany(mf => mf.Value.Classes);
             }
         }
 
-        public IDictionary<Class, IEnumerable<ReferenceValue>> StaticListsMap =>
-            StaticLists.ToDictionary(s => _classes![s.className], s => s.values);
-
         public IDictionary<Class, IEnumerable<ReferenceValue>> ReferenceListsMap =>
-            ReferenceLists.ToDictionary(s => _classes![s.className], s => s.values);
+            _modelFiles.SelectMany(mf => mf.Value.Classes)
+                .Where(c => c.ReferenceValues != null && c.Stereotype == Stereotype.Reference)
+                .ToDictionary(c => c, c => c.ReferenceValues!);
+
+        public IDictionary<Class, IEnumerable<ReferenceValue>> StaticListsMap =>
+            _modelFiles.SelectMany(mf => mf.Value.Classes)
+                .Where(c => c.ReferenceValues != null && c.Stereotype == Stereotype.Statique)
+                .ToDictionary(c => c, c => c.ReferenceValues!);
 
         public string RootNamespace
         {
             get
             {
-                var apps = ClassFiles.Select(f => f.Value.descriptor.App).Distinct();
+                var apps = _modelFiles.Select(f => f.Value.Descriptor.App).Distinct();
                 if (apps.Count() != 1)
                 {
                     throw new Exception("Tous les fichiers doivent être liés à la même 'app'.");
@@ -117,63 +109,79 @@ namespace TopModel.Core
             }
         }
 
-        public IEnumerable<Class> GetClassesFromFile(string filePath, out IDictionary<object, string> classesToResolve)
+        private void ResolveRelationships(ModelFile modelFile)
         {
-            var (descriptor, parser) = ClassesLoader.GetFileDescriptor(filePath, _deserializer);
-
-            var toResolve = new List<(object, string)>();
-
-            var classes = new List<Class>();
-
-            foreach (var classe in ClassesLoader.LoadClasses(parser, toResolve))
+            if (!modelFile.Relationships.Any())
             {
-                classes.Add(classe);
+                return;
             }
 
-            classesToResolve = toResolve.ToDictionary(c => c.Item1, c => c.Item2);
-            return classes;
-        }
-
-        private IDictionary<(string Module, Kind Kind, string File), (FileDescriptor descriptor, Parser parser)> ClassFiles
-        {
-            get
+            foreach (var dep in modelFile.Dependencies)
             {
-                if (_classFiles == null)
+                ResolveRelationships(_modelFiles[dep]);
+            }
+
+            var referencedClasses = modelFile.Dependencies
+                .SelectMany(d => _modelFiles[d].Classes)
+                .Concat(modelFile.Classes)
+                .ToDictionary(c => c.Name, c => c);
+
+            foreach (var (obj, className) in modelFile.Relationships)
+            {
+                switch (obj)
                 {
-                    var files = Directory.EnumerateFiles(_config.ModelRoot, "*.yml", SearchOption.AllDirectories)
-                        .Where(f => f != _config.Domains);
-
-                    foreach (var file in files)
-                    {
-                        _fileChecker.CheckModelFile(file);
-                    }
-
-                    _classFiles = files
-                       .Select(file => ClassesLoader.GetFileDescriptor(file, _deserializer))
-                       .ToDictionary(
-                           file => (file.descriptor.Module, file.descriptor.Kind, file.descriptor.File),
-                           file => file);
+                    case Class classe:
+                        if (!referencedClasses.TryGetValue(className, out var extends))
+                        {
+                            throw new Exception($"La classe {className}, référencée par {classe.Name}, est introuvable dans les dépendances du fichier {modelFile}.");
+                        }
+                        classe.Extends = extends;
+                        break;
+                    case RegularProperty rp:
+                        if (!_domains.TryGetValue(className, out var domain))
+                        {
+                            throw new Exception($"Le domaine {className}, référencé par la propriété {rp.Name} de la classe {rp.Class.Name}, est introuvable.");
+                        }
+                        rp.Domain = domain;
+                        break;
+                    case AssociationProperty ap:
+                        if (!referencedClasses.TryGetValue(className, out var association))
+                        {
+                            throw new Exception($"La classe {className}, référencée sur une association de la classe {ap.Class.Name}, est introuvable dans les dépendances du fichier {modelFile}.");
+                        }
+                        ap.Association = association;
+                        break;
+                    case CompositionProperty cp:
+                        if (!referencedClasses.TryGetValue(className, out var composition))
+                        {
+                            throw new Exception($"La classe {className}, référencée sur une composition de la classe {cp.Class.Name}, est introuvable dans les dépendances du fichier {modelFile}.");
+                        }
+                        cp.Composition = composition;
+                        break;
+                    case AliasProperty alp:
+                        var aliasConf = className.Split("|");
+                        if (!referencedClasses.TryGetValue(aliasConf[1], out var aliasedClass))
+                        {
+                            throw new Exception($"La classe {aliasConf[1]}, référencée sur un alias de la classe {alp.Class.Name}, est introuvable dans les dépendances du fichier {modelFile}.");
+                        }
+                        var aliasedProperty = aliasedClass.Properties.SingleOrDefault(p => p.Name == aliasConf[0]);
+                        if (aliasedProperty == null)
+                        {
+                            throw new Exception($"La propriété {aliasConf[0]} est introuvable sur la classe {aliasedClass.Name}, référencée comme alias de la classe {alp.Class.Name} dans le fichier {modelFile}.");
+                        }
+                        alp.Property = (IFieldProperty)aliasedProperty;
+                        break;
                 }
-
-                return _classFiles;
             }
-        }
 
-        private IEnumerable<(string className, IEnumerable<ReferenceValue> values)> StaticLists
-        {
-            get
-            {
-                _staticLists ??= ReferenceListsLoader.LoadReferenceLists(_config.StaticLists);
-                return _staticLists;
-            }
-        }
+            modelFile.Relationships.Clear();
 
-        private IEnumerable<(string className, IEnumerable<ReferenceValue> values)> ReferenceLists
-        {
-            get
+            foreach (var classe in modelFile.Classes)
             {
-                _referenceLists ??= ReferenceListsLoader.LoadReferenceLists(_config.ReferenceLists);
-                return _referenceLists;
+                if (classe.Properties.Count(p => p.PrimaryKey) > 1)
+                {
+                    throw new Exception($"La classe {classe.Name} du fichier {modelFile} doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvées)");
+                }
             }
         }
     }

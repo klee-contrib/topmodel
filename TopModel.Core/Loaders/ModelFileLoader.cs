@@ -9,71 +9,39 @@ using YamlDotNet.Serialization;
 
 namespace TopModel.Core.Loaders
 {
-    public static class ClassesLoader
+    public class ModelFileLoader
     {
-        public static (FileDescriptor descriptor, Parser parser) GetFileDescriptor(string filePath, IDeserializer deserializer)
+        private readonly IDeserializer _deserializer;
+        private readonly FileChecker _fileChecker;
+
+        public ModelFileLoader(IDeserializer deserializer, FileChecker fileChecker)
         {
+            _deserializer = deserializer;
+            _fileChecker = fileChecker;
+        }
+
+        public ModelFile LoadModelFile(string filePath)
+        {
+            _fileChecker.CheckModelFile(filePath);
+
             var parser = new Parser(new StringReader(File.ReadAllText(filePath)));
             parser.Consume<StreamStart>();
 
-            var descriptor = deserializer.Deserialize<FileDescriptor>(parser);
-            return (descriptor!, parser);
-        }
+            var descriptor = _deserializer.Deserialize<FileDescriptor>(parser);
 
-        public static void LoadClasses(FileDescriptor descriptor, Parser parser, IDictionary<string, Class> classes, IDictionary<(string Module, Kind Kind, string File), (FileDescriptor descriptor, Parser parser)> classFiles, IDictionary<string, Domain> domains, IDeserializer deserializer)
-        {
-            if (descriptor.Loaded)
-            {
-                return;
-            }
-
-            if (descriptor.Uses != null)
-            {
-                foreach (var dep in descriptor.Uses)
-                {
-                    foreach (var depFile in dep.Files)
-                    {
-                        var (a, b) = classFiles[(dep.Module, dep.Kind, depFile)];
-                        LoadClasses(a, b, classes, classFiles, domains, deserializer);
-                    }
-                }
-            }
-
-            var classesToResolve = new List<(object, string)>();
+            var relationships = new List<(object, string)>(); 
             var ns = new Namespace { Module = descriptor.Module, Kind = descriptor.Kind };
+            var classes = LoadClasses(parser, relationships, ns).ToList();
 
-            foreach (var classe in LoadClasses(parser, classesToResolve, ns))
+            return new ModelFile
             {
-                classes.Add(classe.Name, classe);
-            }           
+                Descriptor = descriptor,
+                Classes = classes,
+                Relationships = relationships
+            };
+        }        
 
-            foreach (var (obj, className) in classesToResolve)
-            {
-                switch (obj)
-                {
-                    case Class classe:
-                        classe.Extends = classes[className];
-                        break;
-                    case RegularProperty rp:
-                        rp.Domain = domains[className];
-                        break;
-                    case AssociationProperty ap:
-                        ap.Association = classes[className];
-                        break;
-                    case CompositionProperty cp:
-                        cp.Composition = classes[className];
-                        break;
-                    case AliasProperty alp:
-                        var aliasConf = className.Split("|");
-                        alp.Property = (IFieldProperty)classes[aliasConf[1]].Properties.Single(p => p.Name == aliasConf[0]);
-                        break;
-                }
-            }
-
-            descriptor.Loaded = true;
-        }
-
-        public static IEnumerable<Class> LoadClasses(Parser parser, List<(object, string)> classesToResolve, Namespace ns = default)
+        private IEnumerable<Class> LoadClasses(Parser parser, List<(object, string)> relationships, Namespace ns)
         {
             while (parser.TryConsume<DocumentStart>(out _))
             {
@@ -105,7 +73,7 @@ namespace TopModel.Core.Loaders
                             classe.SqlName = value;
                             break;
                         case "extends":
-                            classesToResolve.Add((classe, value));
+                            relationships.Add((classe, value));
                             break;
                         case "label":
                             classe.Label = value;
@@ -167,7 +135,7 @@ namespace TopModel.Core.Loaders
                                         rp.Required = value == "true";
                                         break;
                                     case "domain":
-                                        classesToResolve.Add((rp, value));
+                                        relationships.Add((rp, value));
                                         break;
                                     case "defaultValue":
                                         rp.DefaultValue = value;
@@ -199,7 +167,7 @@ namespace TopModel.Core.Loaders
                                 switch (prop)
                                 {
                                     case "association":
-                                        classesToResolve.Add((ap, value));
+                                        relationships.Add((ap, value));
                                         break;
                                     case "role":
                                         ap.Role = value;
@@ -234,7 +202,7 @@ namespace TopModel.Core.Loaders
                                 switch (prop)
                                 {
                                     case "composition":
-                                        classesToResolve.Add((cp, value));
+                                        relationships.Add((cp, value));
                                         break;
                                     case "name":
                                         cp.Name = value;
@@ -278,7 +246,7 @@ namespace TopModel.Core.Loaders
                                 }
                             }
 
-                            classesToResolve.Add((alp, aliasProp + "|" + aliasClass));
+                            relationships.Add((alp, aliasProp + "|" + aliasClass));
                             parser.Consume<MappingEnd>();
 
                             while (!(parser.Current is MappingEnd))

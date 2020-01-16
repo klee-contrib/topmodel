@@ -11,6 +11,5 @@ namespace TopModel.Core.FileModel
         public string File { get; set; }
 #nullable enable
         public IList<DependencyDescriptor>? Uses { get; set; }
-        public bool Loaded { get; set; }
     }
 }

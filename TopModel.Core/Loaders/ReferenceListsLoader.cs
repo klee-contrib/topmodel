@@ -8,69 +8,38 @@ namespace TopModel.Core.Loaders
 {
     public static class ReferenceListsLoader
     {
-        public static IEnumerable<(string className, IEnumerable<ReferenceValue> values)> LoadReferenceLists(string? referenceListsFile)
+        public static IEnumerable<(string className, IEnumerable<(string key, IDictionary<string, object> values)>)> LoadReferenceLists(string? referenceListsFile)
         {
             if (referenceListsFile == null)
             {
-                return new List<(string, IEnumerable<ReferenceValue>)>();
+                return new List<(string, IEnumerable<(string, IDictionary<string, object>)>)>();
             }
 
             var file = File.ReadAllText(referenceListsFile);
-            return JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, object>>>>(file)
-                .Select(reference => (
-                    reference.Key,
-                    reference.Value
-                        .Select(item => new ReferenceValue { Name = item.Key, Bean = item.Value })
-                        .AsEnumerable()))
+            return JsonConvert.DeserializeObject<IDictionary<string, IDictionary<string, IDictionary<string, object>>>>(file)
+                .Select(classe => (
+                    classe.Key,
+                    classe.Value
+                        .Select(item => (item.Key, item.Value))))
                 .OrderBy(r => r.Key);
         }
 
-        public static void AddReferenceValues(Class classe, IEnumerable<ReferenceValue> values)
+        public static void AddReferenceValues(Class classe, IEnumerable<(string key, IDictionary<string, object> values)> values)
         {
-            classe.ReferenceValues = values.ToDictionary(
-                v => v.Name,
-                v =>
+            classe.ReferenceValues = values.Select(reference => new ReferenceValue
+            {
+                Name = reference.key,
+                Value = classe.Properties.OfType<IFieldProperty>().Select(prop =>
                 {
-                    object? code = null;
-                    switch (classe.Stereotype)
+                    reference.values.TryGetValue(prop.Name, out var propValue);
+                    if (propValue == null && prop.Required && (!prop.PrimaryKey || prop.Domain.CsharpType == "string"))
                     {
-                        case null:
-                            throw new Exception($"La classe {classe.Name} n'est pas une classe de référence");
-                        case Stereotype.Statique:
-                            if (!v.Bean.TryGetValue(classe.PrimaryKey!.Name, out code))
-                            {
-                                throw new Exception($"L'initialisation de {classe.Name} pour {v.Name} n'a pas de clé primaire ({classe.PrimaryKey!.Name})");
-                            }
-                            break;
-                        case Stereotype.Reference:
-                            var uniqueKey = classe.Properties.OfType<RegularProperty>().FirstOrDefault(p => p.Unique);
-                            if (uniqueKey == null)
-                            {
-                                throw new Exception($"La classe {classe.Name} de stéréotype 'Reference' n'a pas de propriété unique.");
-                            }
-                            if (!v.Bean.TryGetValue(uniqueKey.Name, out code))
-                            {
-                                throw new Exception($"L'initialisation de {classe.Name} pour {v.Name} n'a pas de propriété unique ({uniqueKey.Name})");
-                            }
-                            break;
+                        throw new Exception($"L'initilisation {reference.key} de la classe {classe.Name} n'initialise pas la propriété obligatoire {prop.Name}.");
                     }
 
-                    var label = v.Name;
-                    if (classe.LabelProperty != null)
-                    {
-                        if (v.Bean.TryGetValue(classe.LabelProperty.Name, out var trueLabel))
-                        {
-                            label = (string)trueLabel;
-                        }
-                    }
-                    if (code!.GetType() == typeof(string))
-                    {
-                        code = "\"" + code + "\"";
-                    }
-                    return (
-                        code.ToString()!,
-                        label);
-                });
+                    return (prop, propValue);
+                }).ToDictionary(v => v.prop, v => v.propValue)
+            });
         }
     }
 }
