@@ -27,14 +27,13 @@ namespace TopModel.Generator.ProceduralSql
                 return;
             }
 
-            var classes = _modelStore.Classes;
             var rootNamespace = _modelStore.RootNamespace;
 
             var schemaGenerator = _config.TargetDBMS == TargetDBMS.Postgre
                 ? new PostgreSchemaGenerator(rootNamespace, _config, _logger)
                 : (AbstractSchemaGenerator)new SqlServerSchemaGenerator(rootNamespace, _config, _logger);
 
-            schemaGenerator.GenerateSchemaScript(classes);
+            schemaGenerator.GenerateSchemaScript(_modelStore.Classes);
             schemaGenerator.GenerateListInitScript(_modelStore.StaticListsMap, isStatic: true);
             schemaGenerator.GenerateListInitScript(_modelStore.ReferenceListsMap, isStatic: false);
         }

@@ -27,63 +27,60 @@ namespace TopModel.Core
             _modelFileLoader = modelFileLoader;
         }
 
-        public IEnumerable<Class> Classes
+        public void LoadFromConfig()
         {
-            get
+            _domains.Clear();
+            _modelFiles.Clear();
+
+            _logger.LogInformation("Chargement des domaines...");
+
+            foreach (var domain in _domainFileLoader.LoadDomains(_config.Domains))
             {
-                if (!_modelFiles.Any())
-                {
-                    _logger.LogInformation("Chargement des domaines...");
-
-                    foreach (var domain in _domainFileLoader.LoadDomains(_config.Domains))
-                    {
-                        _domains.TryAdd(domain.Name, domain);
-                    }
-
-                    _logger.LogInformation($"{_domains.Count} domaines chargés.");
-                    _logger.LogInformation("Chargement des classes...");
-
-                    var files = Directory.EnumerateFiles(_config.ModelRoot, "*.yml", SearchOption.AllDirectories)
-                       .Where(f => f != _config.Domains);
-
-                    foreach (var file in files)
-                    {
-                        var modelFile = _modelFileLoader.LoadModelFile(file);
-                        _modelFiles.Add(new FileName { Module = modelFile.Descriptor.Module, Kind = modelFile.Descriptor.Kind, File = modelFile.Descriptor.File }, modelFile);
-                    }
-
-                    foreach (var modelFile in _modelFiles)
-                    {
-                        ResolveRelationships(modelFile.Value);
-                    }
-
-                    _logger.LogInformation($"{_modelFiles.SelectMany(mf => mf.Value.Classes).Count()} classes chargées.");
-                    _logger.LogInformation("Chargement des listes de référence...");
-
-                    var staticLists = ReferenceListsLoader.LoadReferenceLists(_config.StaticLists);
-                    var referenceLists = ReferenceListsLoader.LoadReferenceLists(_config.ReferenceLists);
-
-                    var classMap = _modelFiles.SelectMany(mf => mf.Value.Classes)
-                        .ToDictionary(c => c.Name, c => c);
-
-                    foreach (var (className, referenceValues) in staticLists.Concat(referenceLists))
-                    {
-                        if (classMap.TryGetValue(className, out var classe))
-                        {
-                            ReferenceListsLoader.AddReferenceValues(classe, referenceValues);
-                        } 
-                        else
-                        {
-                            throw new Exception($"Une liste de référence pour la classe {className} a été définie, alors que cette classe est introuvable.");
-                        }
-                    }
-
-                    _logger.LogInformation($"{staticLists.Count()} listes statiques et {referenceLists.Count()} listes de références chargées.");
-                }
-
-                return _modelFiles.SelectMany(mf => mf.Value.Classes);
+                _domains.TryAdd(domain.Name, domain);
             }
+
+            _logger.LogInformation($"{_domains.Count} domaines chargés.");
+            _logger.LogInformation("Chargement des classes...");
+
+            var files = Directory.EnumerateFiles(_config.ModelRoot, "*.yml", SearchOption.AllDirectories)
+               .Where(f => f != _config.Domains);
+
+            foreach (var file in files)
+            {
+                var modelFile = _modelFileLoader.LoadModelFile(file);
+                _modelFiles.Add(new FileName { Module = modelFile.Descriptor.Module, Kind = modelFile.Descriptor.Kind, File = modelFile.Descriptor.File }, modelFile);
+            }
+
+            foreach (var modelFile in _modelFiles)
+            {
+                ResolveRelationships(modelFile.Value);
+            }
+
+            _logger.LogInformation($"{_modelFiles.SelectMany(mf => mf.Value.Classes).Count()} classes chargées.");
+            _logger.LogInformation("Chargement des listes de référence...");
+
+            var staticLists = ReferenceListsLoader.LoadReferenceLists(_config.StaticLists);
+            var referenceLists = ReferenceListsLoader.LoadReferenceLists(_config.ReferenceLists);
+
+            var classMap = _modelFiles.SelectMany(mf => mf.Value.Classes)
+                .ToDictionary(c => c.Name, c => c);
+
+            foreach (var (className, referenceValues) in staticLists.Concat(referenceLists))
+            {
+                if (classMap.TryGetValue(className, out var classe))
+                {
+                    ReferenceListsLoader.AddReferenceValues(classe, referenceValues);
+                }
+                else
+                {
+                    throw new Exception($"Une liste de référence pour la classe {className} a été définie, alors que cette classe est introuvable.");
+                }
+            }
+
+            _logger.LogInformation($"{staticLists.Count()} listes statiques et {referenceLists.Count()} listes de références chargées.");
         }
+
+        public IEnumerable<Class> Classes =>_modelFiles.SelectMany(mf => mf.Value.Classes);
 
         public IDictionary<Class, IEnumerable<ReferenceValue>> ReferenceListsMap =>
             _modelFiles.SelectMany(mf => mf.Value.Classes)
@@ -118,7 +115,12 @@ namespace TopModel.Core
 
             foreach (var dep in modelFile.Dependencies)
             {
-                ResolveRelationships(_modelFiles[dep]);
+                if (!_modelFiles.TryGetValue(dep, out var depFile))
+                {
+                    throw new Exception($"Le fichier {dep}, référencé dans le fichier {modelFile}, est introuvable.");
+                }
+
+                ResolveRelationships(depFile);
             }
 
             var referencedClasses = modelFile.Dependencies
@@ -140,7 +142,7 @@ namespace TopModel.Core
                     case RegularProperty rp:
                         if (!_domains.TryGetValue(className, out var domain))
                         {
-                            throw new Exception($"Le domaine {className}, référencé par la propriété {rp.Name} de la classe {rp.Class.Name}, est introuvable.");
+                            throw new Exception($"Le domaine {className}, référencé par la propriété {rp.Name} de la classe {rp.Class.Name} du fichier {modelFile}, est introuvable.");
                         }
                         rp.Domain = domain;
                         break;

@@ -26,6 +26,11 @@ namespace TopModel.Generator
 
             logger.LogInformation("Début de la génération...");
 
+            logger.LogInformation(string.Empty);
+            logger.LogInformation("Chargement du modèle...");
+            provider.GetService<ModelStore>().LoadFromConfig();
+            logger.LogInformation("Chargement du modèle terminé.");
+
             foreach (var generator in provider.GetServices<IGenerator>().Where(g => g.CanGenerate))
             {
                 logger.LogInformation(string.Empty);
