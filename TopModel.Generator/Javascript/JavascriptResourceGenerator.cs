@@ -38,6 +38,14 @@ namespace TopModel.Generator.Javascript
             {
                 GenerateForModule(module);
             }
+
+            _modelStore.FilesChanged += (o, files) =>
+            {
+                foreach (var module in files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct())
+                {
+                    GenerateForModule(_modelStore.Classes.GroupBy(c => c.Namespace.Module).Single(g => g.Key == module));
+                }
+            };
         }
 
         public void GenerateFromFile(ModelFile file)

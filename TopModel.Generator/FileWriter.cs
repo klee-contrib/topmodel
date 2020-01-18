@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -77,6 +78,13 @@ namespace TopModel.Generator
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
+
+#pragma warning disable CS0618
+            if (Marshal.GetExceptionCode() != 0)
+#pragma warning restore CS0618
+            {
+                return;
+            }
 
             string? currentContent = null;
             var fileExists = File.Exists(_fileName);

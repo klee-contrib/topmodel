@@ -39,7 +39,7 @@ namespace TopModel.Core.Loaders
 
                     return (prop, propValue);
                 }).ToDictionary(v => v.prop, v => v.propValue)
-            });
+            }).ToList();
         }
     }
 }

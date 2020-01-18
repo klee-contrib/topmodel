@@ -47,6 +47,19 @@ namespace TopModel.Generator.Javascript
             }
 
             _logger.LogInformation($"{count} fichiers de références générés.");
+
+            _modelStore.FilesChanged += (o, files) =>
+            {
+                foreach (var file in files)
+                {
+                    GenerateFromFile(file);
+                }
+
+                foreach (var module in files.SelectMany(f => f.Classes).Where(c => c.Stereotype == Stereotype.Statique).GroupBy(c => c.Namespace.Module))
+                {
+                    GenerateReferenceLists(_modelStore.Classes.GroupBy(c => c.Namespace.Module).Single(g => g.Key == module.Key));
+                }
+            };
         }
 
         public void GenerateFromFile(ModelFile file)

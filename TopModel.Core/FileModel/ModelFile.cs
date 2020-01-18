@@ -17,6 +17,8 @@ namespace TopModel.Core.FileModel
             u.Files.Select(f => new FileName { Module = u.Module, Kind = u.Kind, File = f }))
             ?? new FileName[0];
 
+        public FileName Name => new FileName { Module = Descriptor.Module, Kind = Descriptor.Kind, File = Descriptor.File };
+
         public override string ToString()
         {
             return $"{Descriptor.Module}/{Descriptor.Kind}/{Descriptor.File}";

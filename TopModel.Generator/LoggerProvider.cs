@@ -28,10 +28,20 @@ namespace TopModel.Generator
                 {
                     return;
                 }
+                Console.ForegroundColor = logLevel switch
+                {
+                    LogLevel.Error => ConsoleColor.Red,
+                    LogLevel.Warning => ConsoleColor.Yellow,
+                    _ => ConsoleColor.White
+                };
 
-                var category = _categoryName.Split(".").Last().Replace("Generator", string.Empty);
+                var message = formatter(state, exception);
+
+                var category = message == string.Empty ? "I" : _categoryName.Split(".").Last().Replace("Generator", string.Empty);
                 category = category == "I" ? string.Empty : $"{category}: ";
-                Console.WriteLine($"{category}{formatter(state, exception)}");
+
+                Console.WriteLine($"{category}{message}");
+                Console.ForegroundColor = ConsoleColor.White;
             }
 
             public bool IsEnabled(LogLevel logLevel)

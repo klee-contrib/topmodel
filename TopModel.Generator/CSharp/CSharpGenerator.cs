@@ -52,6 +52,19 @@ namespace TopModel.Generator.CSharp
             {
                 GenerateForReferences(ns);
             }
+
+            _modelStore.FilesChanged += (o, files) =>
+            {
+                foreach (var file in files)
+                {
+                    GenerateFromFile(file);
+                }
+
+                foreach (var ns in files.SelectMany(f => f.Classes).Where(c => c.Stereotype != null).GroupBy(c => c.Namespace))
+                {
+                    GenerateForReferences(_modelStore.Classes.GroupBy(c => c.Namespace).Single(g => g.Key.Equals(ns.Key)));
+                }
+            };
         }
 
         private void GenerateDbContext()

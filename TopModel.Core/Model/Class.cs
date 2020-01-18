@@ -25,7 +25,7 @@ namespace TopModel.Core
         public IFieldProperty? PrimaryKey => Properties.OfType<IFieldProperty>().SingleOrDefault(p => p.PrimaryKey);
         public IFieldProperty? LabelProperty => Properties.OfType<IFieldProperty>().SingleOrDefault(p => p.Name == (DefaultProperty ?? "Libelle"));
 
-        public IEnumerable<ReferenceValue>? ReferenceValues { get; set; }
+        public IList<ReferenceValue>? ReferenceValues { get; set; }
 
         public string SqlName
         {

@@ -42,6 +42,24 @@ namespace TopModel.Generator.Ssdt
 
             GenerateListInitScript(Stereotype.Statique);
             GenerateListInitScript(Stereotype.Reference);
+
+            _modelStore.FilesChanged += (o, files) =>
+            {
+                foreach (var file in files)
+                {
+                    GenerateFromFile(file);
+                }
+
+                if (files.SelectMany(f => f.Classes).Any(c => c.Stereotype == Stereotype.Statique))
+                {
+                    GenerateListInitScript(Stereotype.Statique);
+                }
+
+                if (files.SelectMany(f => f.Classes).Any(c => c.Stereotype == Stereotype.Reference))
+                {
+                    GenerateListInitScript(Stereotype.Reference);
+                }
+            };
         }
 
         public void GenerateFromFile(ModelFile file)

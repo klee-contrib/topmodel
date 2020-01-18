@@ -11,7 +11,7 @@ namespace TopModel.Generator.ProceduralSql
         private readonly ModelStore _modelStore;
         private readonly ILogger<ProceduralSqlGenerator> _logger;
 
-        private readonly AbstractSchemaGenerator _schemaGenerator;
+        private readonly AbstractSchemaGenerator? _schemaGenerator;
 
         public ProceduralSqlGenerator(ModelStore modelStore, ILogger<ProceduralSqlGenerator> logger, ProceduralSqlConfig? config = null)
         {
@@ -21,9 +21,12 @@ namespace TopModel.Generator.ProceduralSql
 
             var rootNamespace = _modelStore.RootNamespace;
 
-            _schemaGenerator = _config.TargetDBMS == TargetDBMS.Postgre
-                ? new PostgreSchemaGenerator(rootNamespace, _config, _logger)
-                : (AbstractSchemaGenerator)new SqlServerSchemaGenerator(rootNamespace, _config, _logger);
+            if (_config != null)
+            {
+                _schemaGenerator = _config.TargetDBMS == TargetDBMS.Postgre
+                    ? new PostgreSchemaGenerator(rootNamespace, _config, _logger)
+                    : (AbstractSchemaGenerator)new SqlServerSchemaGenerator(rootNamespace, _config, _logger);
+            }
         }
 
         public bool CanGenerate => _config != null;
@@ -32,7 +35,7 @@ namespace TopModel.Generator.ProceduralSql
 
         public void GenerateAll()
         {
-            _schemaGenerator.GenerateSchemaScript(_modelStore.Classes);
+            _schemaGenerator?.GenerateSchemaScript(_modelStore.Classes);
             GenerateListInitScript(Stereotype.Statique);
             GenerateListInitScript(Stereotype.Reference);
         }
@@ -47,7 +50,7 @@ namespace TopModel.Generator.ProceduralSql
             var classes = _modelStore.Classes.Where(c => c.Stereotype == stereotype && c.ReferenceValues != null);
             if (classes.Any())
             {
-                _schemaGenerator.GenerateListInitScript(classes, stereotype == Stereotype.Statique);
+                _schemaGenerator?.GenerateListInitScript(classes, stereotype == Stereotype.Statique);
             }
         }
     }
