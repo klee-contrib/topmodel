@@ -58,13 +58,13 @@ namespace TopModel.Generator.ProceduralSql
         /// <summary>
         /// Génère le script SQL d'initialisation des listes reference.
         /// </summary>
-        /// <param name="initDictionary">Dictionnaire des initialisations.</param>
+        /// <param name="classes">Classes avec des initialisations de listes de référence.</param>
         /// <param name="isStatic">True if generation for static list.</param>
-        public void GenerateListInitScript(IDictionary<Class, IEnumerable<ReferenceValue>> initDictionary, bool isStatic)
+        public void GenerateListInitScript(IEnumerable<Class> classes, bool isStatic)
         {
             var outputFileName = isStatic ? _config.StaticListFile : _config.ReferenceListFile;
 
-            if (outputFileName == null || !initDictionary.Any())
+            if (outputFileName == null || !classes.Any())
             {
                 return;
             }
@@ -81,13 +81,15 @@ namespace TopModel.Generator.ProceduralSql
             writerInsert.WriteLine("--   Description		:	Script d'insertion des données de références" + (!isStatic ? " non " : " ") + "statiques. ");
             writerInsert.WriteLine("-- ===========================================================================================");
 
-            if (initDictionary != null)
+            // Construit la liste des Reference Class ordonnée.
+            var orderList = ModelUtils.Sort(classes, c => c.Properties
+                .OfType<AssociationProperty>()
+                .Select(a => a.Association)
+                .Where(a => a.Stereotype == c.Stereotype));
+
+            foreach (var classe in orderList)
             {
-                var orderList = OrderStaticTableList(initDictionary);
-                foreach (var modelClass in orderList)
-                {
-                    WriteInsert(writerInsert, initDictionary[modelClass], modelClass, isStatic);
-                }
+                WriteInsert(writerInsert, classe.ReferenceValues!, classe, isStatic);
             }
 
             _logger.LogInformation($"Génération du script terminée.");
@@ -261,50 +263,7 @@ namespace TopModel.Generator.ProceduralSql
             {
                 File.Delete(outputFileName);
             }
-        }
-
-        /// <summary>
-        /// Retourne un tableau ordonné des ModelClass pour gérer les FK entre les listes statiques.
-        /// </summary>
-        /// <param name="dictionnary">Dictionnaire des couples (ModelClass, StaticTableInit) correspondant aux tables de listes statiques. </param>
-        /// <returns>ModelClass[] ordonné.</returns>
-        private static IEnumerable<Class> OrderStaticTableList(IDictionary<Class, IEnumerable<ReferenceValue>> dictionnary)
-        {
-            var nbTable = dictionnary.Count;
-            var orderedList = new Class[nbTable];
-            dictionnary.Keys.CopyTo(orderedList, 0);
-
-            var i = 0;
-            while (i < nbTable)
-            {
-                var canIterate = true;
-                var currentModelClass = orderedList[i];
-
-                // On récupère les ModelClass des tables pointées par la table
-                var pointedTableSet = new HashSet<Class>(
-                    currentModelClass.Properties.OfType<AssociationProperty>()
-                        .Select(p => p.Association));
-
-                for (var j = i; j < nbTable; j++)
-                {
-                    if (pointedTableSet.Contains(orderedList[j]))
-                    {
-                        var sauvegarde = orderedList[i];
-                        orderedList[i] = orderedList[j];
-                        orderedList[j] = sauvegarde;
-                        canIterate = false;
-                        break;
-                    }
-                }
-
-                if (canIterate)
-                {
-                    i++;
-                }
-            }
-
-            return orderedList;
-        }
+        }      
 
         /// <summary>
         /// Génère la contrainte de clef étrangère.

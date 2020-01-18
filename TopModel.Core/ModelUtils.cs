@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -9,7 +11,7 @@ namespace TopModel.Core
     /// Regroupe quelques utilitaires pour la génération TS.
     /// </summary>
     public static class ModelUtils
-    {      
+    {
         /// <summary>
         /// Transforme le type en type Typescript.
         /// </summary>
@@ -74,7 +76,7 @@ namespace TopModel.Core
         public static string ToFirstUpper(this string text)
         {
             return char.ToUpper(text[0]) + text.Substring(1);
-        }     
+        }
 
         /// <summary>
         /// Convertit un nom avec la syntaxe C#.
@@ -122,6 +124,46 @@ namespace TopModel.Core
             }
 
             return sb.ToString();
+        }
+
+        public static IList<T> Sort<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
+            where T : notnull
+        {
+            var sorted = new List<T>();
+            var visited = new Dictionary<T, bool>();
+
+            foreach (var item in source)
+            {
+                Visit(item, getDependencies, sorted, visited);
+            }
+
+            return sorted;
+        }
+
+        private static void Visit<T>(T item, Func<T, IEnumerable<T>> getDependencies, List<T> sorted, Dictionary<T, bool> visited)
+            where T : notnull
+        {
+            var alreadyVisited = visited.TryGetValue(item, out var inProcess);
+
+            if (alreadyVisited)
+            {
+                if (inProcess)
+                {
+                    throw new Exception($"Dépendance circulaire détectée : {visited.Last().Key} ne peut pas référencer {item}.");
+                }
+            }
+            else
+            {
+                visited[item] = true;
+
+                foreach (var dependency in getDependencies(item))
+                {
+                    Visit(dependency, getDependencies, sorted, visited);
+                }
+
+                visited[item] = false;
+                sorted.Add(item);
+            }
         }
     }
 }

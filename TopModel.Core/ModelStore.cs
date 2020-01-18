@@ -51,9 +51,9 @@ namespace TopModel.Core
                 _modelFiles.Add(new FileName { Module = modelFile.Descriptor.Module, Kind = modelFile.Descriptor.Kind, File = modelFile.Descriptor.File }, modelFile);
             }
 
-            foreach (var modelFile in _modelFiles)
+            foreach (var modelFile in ModelUtils.Sort(_modelFiles.Values, GetDependencies))
             {
-                ResolveRelationships(modelFile.Value);
+                ResolveRelationships(modelFile);
             }
 
             _logger.LogInformation($"{_modelFiles.SelectMany(mf => mf.Value.Classes).Count()} classes chargées.");
@@ -80,17 +80,7 @@ namespace TopModel.Core
             _logger.LogInformation($"{staticLists.Count()} listes statiques et {referenceLists.Count()} listes de références chargées.");
         }
 
-        public IEnumerable<Class> Classes =>_modelFiles.SelectMany(mf => mf.Value.Classes);
-
-        public IDictionary<Class, IEnumerable<ReferenceValue>> ReferenceListsMap =>
-            _modelFiles.SelectMany(mf => mf.Value.Classes)
-                .Where(c => c.ReferenceValues != null && c.Stereotype == Stereotype.Reference)
-                .ToDictionary(c => c, c => c.ReferenceValues!);
-
-        public IDictionary<Class, IEnumerable<ReferenceValue>> StaticListsMap =>
-            _modelFiles.SelectMany(mf => mf.Value.Classes)
-                .Where(c => c.ReferenceValues != null && c.Stereotype == Stereotype.Statique)
-                .ToDictionary(c => c, c => c.ReferenceValues!);
+        public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes);
 
         public string RootNamespace
         {
@@ -106,25 +96,24 @@ namespace TopModel.Core
             }
         }
 
+        private IEnumerable<ModelFile> GetDependencies(ModelFile modelFile)
+        {
+            return modelFile.Dependencies
+               .Select(dep =>
+               {
+                   if (!_modelFiles.TryGetValue(dep, out var depFile))
+                   {
+                       throw new Exception($"Le fichier {dep}, référencé dans le fichier {modelFile}, est introuvable.");
+                   }
+
+                   return depFile;
+               });
+        }
+
         private void ResolveRelationships(ModelFile modelFile)
         {
-            if (!modelFile.Relationships.Any())
-            {
-                return;
-            }
-
-            foreach (var dep in modelFile.Dependencies)
-            {
-                if (!_modelFiles.TryGetValue(dep, out var depFile))
-                {
-                    throw new Exception($"Le fichier {dep}, référencé dans le fichier {modelFile}, est introuvable.");
-                }
-
-                ResolveRelationships(depFile);
-            }
-
-            var referencedClasses = modelFile.Dependencies
-                .SelectMany(d => _modelFiles[d].Classes)
+            var referencedClasses = GetDependencies(modelFile)
+                .SelectMany(m => m.Classes)
                 .Concat(modelFile.Classes)
                 .ToDictionary(c => c.Name, c => c);
 
@@ -175,8 +164,6 @@ namespace TopModel.Core
                         break;
                 }
             }
-
-            modelFile.Relationships.Clear();
 
             foreach (var classe in modelFile.Classes)
             {

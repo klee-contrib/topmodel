@@ -20,13 +20,13 @@ namespace TopModel.Generator.Ssdt
         /// </summary>
         /// <param name="config">Config.</param>
         /// <param name="logger">Logger.</param>
-        /// <param name="initDictionary">Dictionnaire des initialisations.</param>
+        /// <param name="classes">Classes avec des initilisations de listes statiques.</param>
         /// <param name="insertScriptFolderPath">Chemin du dossier contenant les scripts.</param>        
         /// <param name="insertMainScriptName">Nom du script principal.</param>
         /// <param name="isStatic">True if generation for static list.</param>
-        public static void GenerateListInitScript(SsdtConfig config, ILogger<SsdtGenerator> logger, IDictionary<Class, IEnumerable<ReferenceValue>> initDictionary, string insertScriptFolderPath, string insertMainScriptName, bool isStatic)
+        public static void GenerateListInitScript(SsdtConfig config, ILogger<SsdtGenerator> logger, IEnumerable<Class> classes, string insertScriptFolderPath, string insertMainScriptName, bool isStatic)
         {
-            if (!initDictionary.Any())
+            if (!classes.Any())
             {
                 return;
             }
@@ -35,12 +35,16 @@ namespace TopModel.Generator.Ssdt
             Directory.CreateDirectory(insertScriptFolderPath);
 
             // Construit la liste des Reference Class ordonnée.
-            var orderList = OrderStaticTableList(initDictionary).ToArray();
+            var orderList = ModelUtils.Sort(classes, c => c.Properties
+                .OfType<AssociationProperty>()
+                .Select(a => a.Association)
+                .Where(a  => a.Stereotype == c.Stereotype));
+
             var referenceClassList =
                 orderList.Select(x => new ReferenceClass
                 {
                     Class = x,
-                    Values = initDictionary[x],
+                    Values = x.ReferenceValues,
                     IsStatic = isStatic
                 }).ToList();
             var referenceClassSet = new ReferenceClassSet
@@ -56,50 +60,6 @@ namespace TopModel.Generator.Ssdt
             Write(new InitReferenceListMainScripter(), referenceClassSet, insertScriptFolderPath);
 
             logger.LogInformation($"{referenceClassList.Count} scripts d'initialisation générés.");
-        }
-
-        /// <summary>
-        /// Retourne un tableau ordonné des ModelClass pour gérer les FK entre les listes statiques.
-        /// </summary>
-        /// <param name="dictionnary">Dictionnaire des couples (ModelClass, StaticTableInit) correspondant aux tables de listes statiques. </param>
-        /// <returns>ModelClass[] ordonné.</returns>
-        private static Class[] OrderStaticTableList(IDictionary<Class, IEnumerable<ReferenceValue>> dictionnary)
-        {
-            var nbTable = dictionnary.Count;
-            var orderedList = new Class[nbTable];
-            dictionnary.Keys.CopyTo(orderedList, 0);
-
-            var i = 0;
-            while (i < nbTable)
-            {
-                var canIterate = true;
-                var currentModelClass = orderedList[i];
-
-                // On récupère les ModelClass des tables pointées par la table
-                // On récupère les ModelClass des tables pointées par la table
-                var pointedTableSet = new HashSet<Class>(
-                    currentModelClass.Properties.OfType<AssociationProperty>()
-                        .Select(p => p.Association));
-
-                for (var j = i + 1; j < nbTable; j++)
-                {
-                    if (pointedTableSet.Contains(orderedList[j]))
-                    {
-                        var sauvegarde = orderedList[i];
-                        orderedList[i] = orderedList[j];
-                        orderedList[j] = sauvegarde;
-                        canIterate = false;
-                        break;
-                    }
-                }
-
-                if (canIterate)
-                {
-                    i++;
-                }
-            }
-
-            return orderedList;
-        }
+        }       
     }
 }

@@ -1,4 +1,5 @@
-﻿using TopModel.Core.Config;
+﻿using System.Linq;
+using TopModel.Core.Config;
 using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.Ssdt
@@ -42,7 +43,7 @@ namespace TopModel.Generator.Ssdt
                 SsdtInsertGenerator.GenerateListInitScript(
                     _config,
                     _logger,
-                    _modelStore.StaticListsMap,
+                    _modelStore.Classes.Where(c => c.Stereotype == Stereotype.Statique && c.ReferenceValues != null),
                     _config.InitStaticListScriptFolder,
                     _config.InitStaticListMainScriptName,
                     true);
@@ -53,7 +54,7 @@ namespace TopModel.Generator.Ssdt
                 SsdtInsertGenerator.GenerateListInitScript(
                     _config,
                     _logger,
-                    _modelStore.ReferenceListsMap,
+                    _modelStore.Classes.Where(c => c.Stereotype == Stereotype.Reference && c.ReferenceValues != null),
                     _config.InitReferenceListScriptFolder,
                     _config.InitReferenceListMainScriptName,
                     false);

@@ -1,4 +1,5 @@
-﻿using TopModel.Core.Config;
+﻿using System.Linq;
+using TopModel.Core.Config;
 using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.ProceduralSql
@@ -34,8 +35,8 @@ namespace TopModel.Generator.ProceduralSql
                 : (AbstractSchemaGenerator)new SqlServerSchemaGenerator(rootNamespace, _config, _logger);
 
             schemaGenerator.GenerateSchemaScript(_modelStore.Classes);
-            schemaGenerator.GenerateListInitScript(_modelStore.StaticListsMap, isStatic: true);
-            schemaGenerator.GenerateListInitScript(_modelStore.ReferenceListsMap, isStatic: false);
+            schemaGenerator.GenerateListInitScript(_modelStore.Classes.Where(c => c.Stereotype == Stereotype.Statique && c.ReferenceValues != null), isStatic: true);
+            schemaGenerator.GenerateListInitScript(_modelStore.Classes.Where(c => c.Stereotype == Stereotype.Reference && c.ReferenceValues != null), isStatic: false);
         }
     }
 }
