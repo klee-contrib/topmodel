@@ -35,7 +35,7 @@ namespace TopModel.Generator
             {
                 logger.LogInformation(string.Empty);
                 logger.LogInformation($"Lancement de la génération {generator.Name}...");
-                generator.Generate();
+                generator.GenerateAll();
                 logger.LogInformation($"Génération {generator.Name} terminée.");
             }
 

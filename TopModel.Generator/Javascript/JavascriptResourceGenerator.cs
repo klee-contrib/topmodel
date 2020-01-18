@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using TopModel.Core;
 using TopModel.Core.Config;
+using TopModel.Core.FileModel;
 using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.Javascript
@@ -31,24 +32,32 @@ namespace TopModel.Generator.Javascript
         /// <summary>
         /// Génère le code des classes.
         /// </summary>
-        public void Generate()
+        public void GenerateAll()
+        {
+            foreach (var module in _modelStore.Classes.GroupBy(c => c.Namespace.Module))
+            {
+                GenerateForModule(module);
+            }
+        }
+
+        public void GenerateFromFile(ModelFile file)
+        {
+            // Pas de génération unitaire.
+        }
+
+        private void GenerateForModule(IGrouping<string, Class> module)
         {
             if (_config?.ResourceOutputDirectory == null)
             {
                 return;
             }
 
-            var nameSpaceMap = _modelStore.Classes.GroupBy(c => c.Namespace.Module).ToDictionary(g => g.Key, g => g.ToList());
+            var dirInfo = Directory.CreateDirectory(_config.ResourceOutputDirectory);
+            var fileName = FirstToLower(module.Key);
 
-            foreach (var entry in nameSpaceMap)
-            {
-                var dirInfo = Directory.CreateDirectory(_config.ResourceOutputDirectory);
-                var fileName = FirstToLower(entry.Key);
-
-                _logger.LogInformation($"Génération du fichier de ressources pour le module {entry.Key}...");
-                WriteNameSpaceNode(dirInfo.FullName + "/" + fileName + ".ts", entry.Key, entry.Value);
-                _logger.LogInformation($"{entry.Value.Count} classes ajoutées dans le fichier de ressources.");
-            }
+            _logger.LogInformation($"Génération du fichier de ressources pour le module {module.Key}...");
+            WriteNameSpaceNode(dirInfo.FullName + "/" + fileName + ".ts", module.Key, module);
+            _logger.LogInformation($"{module.Count()} classes ajoutées dans le fichier de ressources.");
         }
 
         /// <summary>
@@ -123,16 +132,16 @@ namespace TopModel.Generator.Javascript
         /// <param name="outputFileNameJavascript">Nom du fichier de sortie..</param>
         /// <param name="namespaceName">Nom du namespace.</param>
         /// <param name="classes">Liste des classe du namespace.</param>
-        private static void WriteNameSpaceNode(string outputFileNameJavascript, string namespaceName, IList<Class> classes)
+        private static void WriteNameSpaceNode(string outputFileNameJavascript, string namespaceName, IEnumerable<Class> classes)
         {
             using var writerJs = new FileWriter(outputFileNameJavascript, encoderShouldEmitUTF8Identifier: false);
-           
+
             writerJs.WriteLine($"export const {FirstToLower(namespaceName)} = {{");
-            
+
             var i = 1;
             foreach (var classe in classes.OrderBy(c => c.Name))
             {
-                WriteClasseNode(writerJs, classe, classes.Count == i++);
+                WriteClasseNode(writerJs, classe, classes.Count() == i++);
             }
 
             writerJs.WriteLine("};");

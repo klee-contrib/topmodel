@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TopModel.Core.Config;
+using TopModel.Core.FileModel;
 using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.Javascript
@@ -30,67 +31,73 @@ namespace TopModel.Generator.Javascript
         /// <summary>
         /// Génère les définitions Typescript.
         /// </summary>
-        public void Generate()
+        public void GenerateAll()
+        {
+            foreach (var file in _modelStore.Files)
+            {
+                GenerateFromFile(file);
+            }
+
+            _logger.LogInformation($"Génération des listes de références statiques...");
+
+            var count = 0;
+            foreach (var module in _modelStore.Classes.GroupBy(c => c.Namespace.Module))
+            {
+                count += GenerateReferenceLists(module) ? 1 : 0;
+            }
+
+            _logger.LogInformation($"{count} fichiers de références générés.");
+        }
+
+        public void GenerateFromFile(ModelFile file)
         {
             if (_config?.ModelOutputDirectory == null)
             {
                 return;
             }
 
-            var nameSpaceMap = _modelStore.Classes.GroupBy(c => c.Namespace.Module).ToDictionary(g => g.Key, g => g.ToList());
+            _logger.LogInformation($"Génération des modèles pour le fichier {file}...");
 
-            var staticLists = new List<Class>();
-
-            foreach (var entry in nameSpaceMap)
+            var count = 0;
+            foreach (var classe in file.Classes)
             {
-                _logger.LogInformation($"Génération du modèle pour le module {entry.Key}...");
-
-                var count = 0;
-                foreach (var model in entry.Value)
+                if (classe.Stereotype != Stereotype.Statique)
                 {
-                    if (model.Stereotype != Stereotype.Statique)
+                    if ((_config?.IsGenerateEntities ?? true) == false && classe.Trigram != null)
                     {
-                        if (!_config.IsGenerateEntities && model.Trigram != null)
-                        {
-                            continue;
-                        }
-
-                        var fileName = model.Name.ToDashCase();
-
-                        fileName = $"{_config.ModelOutputDirectory}/{entry.Key.ToDashCase()}/{fileName}.ts";
-                        var fileInfo = new FileInfo(fileName);
-
-                        var isNewFile = !fileInfo.Exists;
-
-                        var directoryInfo = fileInfo.Directory;
-                        if (!directoryInfo.Exists)
-                        {
-                            Directory.CreateDirectory(directoryInfo.FullName);
-                        }
-
-                        GenerateClassFile(fileName, model);
-                        count++;
+                        continue;
                     }
-                    else
+
+                    var fileName = classe.Name.ToDashCase();
+
+                    fileName = $"{_config!.ModelOutputDirectory}/{file.Descriptor.Module.ToDashCase()}/{fileName}.ts";
+                    var fileInfo = new FileInfo(fileName);
+
+                    var isNewFile = !fileInfo.Exists;
+
+                    var directoryInfo = fileInfo.Directory;
+                    if (!directoryInfo.Exists)
                     {
-                        staticLists.Add(model);
+                        Directory.CreateDirectory(directoryInfo.FullName);
                     }
+
+                    GenerateClassFile(fileName, classe);
+                    count++;
                 }
-
-                GenerateReferenceLists(_config, staticLists, entry.Key);
-
-                _logger.LogInformation($"{count + (staticLists.Any() ? 1 : 0)} fichiers de modèle générés.");
-                staticLists.Clear();
             }
+
+            _logger.LogInformation($"{count} fichiers de modèle générés.");
         }
 
-        private void GenerateReferenceLists(JavascriptConfig parameters, IList<Class> staticLists, string namespaceName)
+        private bool GenerateReferenceLists(IGrouping<string, Class> module)
         {
-            if (staticLists.Any())
+            var classes = module.Where(c => c.Stereotype == Stereotype.Statique);
+
+            if (_config?.ModelOutputDirectory != null && classes.Any())
             {
-                var fileName = namespaceName != null
-                    ? $"{parameters.ModelOutputDirectory}/{namespaceName.ToDashCase()}/references.ts"
-                    : $"{parameters.ModelOutputDirectory}/references.ts";
+                var fileName = module.Key != null
+                    ? $"{_config.ModelOutputDirectory}/{module.Key.ToDashCase()}/references.ts"
+                    : $"{_config.ModelOutputDirectory}/references.ts";
 
                 var fileInfo = new FileInfo(fileName);
 
@@ -102,8 +109,11 @@ namespace TopModel.Generator.Javascript
                     Directory.CreateDirectory(directoryInfo.FullName);
                 }
 
-                GenerateReferenceFile(fileName, staticLists.OrderBy(r => r.Name));
+                GenerateReferenceFile(fileName, classes.OrderBy(r => r.Name));
+                return true;
             }
+
+            return false;
         }
 
         private void GenerateClassFile(string fileName, Class classe)

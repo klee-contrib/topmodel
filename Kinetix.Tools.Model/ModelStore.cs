@@ -81,6 +81,7 @@ namespace TopModel.Core
         }
 
         public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes);
+        public IEnumerable<ModelFile> Files => _modelFiles.Values;
 
         public string RootNamespace
         {

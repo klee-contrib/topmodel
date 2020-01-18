@@ -21,5 +21,20 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// <param name="writer">Flux d'écriture.</param>
         /// <param name="item">Table à scripter.</param>
         void WriteItemScript(TextWriter writer, T item);
+
+        void Write(T item, string folderPath)
+        {
+            // Génére le nom du fichier.
+            var scriptName = GetScriptName(item);
+
+            // Chemin complet du fichier.
+            var scriptPath = Path.Combine(folderPath, scriptName);
+
+            // Utilisation du flux spécial qui ne checkout le fichier que s'il est modifié.
+            using var tw = new SqlFileWriter(scriptPath);
+
+            /*  Génére le script de l'item */
+            WriteItemScript(tw, item);
+        }
     }
 }

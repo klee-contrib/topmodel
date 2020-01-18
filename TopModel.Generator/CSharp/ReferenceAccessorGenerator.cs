@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TopModel.Core.Config;
-using TopModel.Core.FileModel;
 using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.CSharp
@@ -24,25 +23,12 @@ namespace TopModel.Generator.CSharp
         }
 
         /// <summary>
-        /// Génère les ReferenceAccessor.
-        /// </summary>
-        /// <param name="classes">Liste de classes.</param>
-        public void Generate(IEnumerable<Class> classes)
-        {
-            foreach (var ns in classes.GroupBy(c => c.Namespace).Where(n => n.Key.Kind == Kind.Data))
-            {
-                GenerateReferenceAccessor(ns.Key, ns);
-            }
-        }
-
-        /// <summary>
         /// Génère les ReferenceAccessor pour un namespace.
         /// </summary>
-        /// <param name="ns">Namespace.</param>
-        /// <param name="classes">Classes.</param>
-        private void GenerateReferenceAccessor(Namespace ns, IEnumerable<Class> classes)
+        /// <param name="module">Classes.</param>
+        public void Generate(IGrouping<Namespace, Class> module)
         {
-            var classList = classes
+            var classList = module
                 .Where(x => x.Stereotype == Stereotype.Reference || x.Stereotype == Stereotype.Statique)
                 .OrderBy(x => Pluralize(x.Name), StringComparer.Ordinal)
                 .ToList();
@@ -52,10 +38,10 @@ namespace TopModel.Generator.CSharp
                 return;
             }
 
-            _logger.LogInformation($"Génération des accesseurs de référence pour le module {ns.Module}...");
+            _logger.LogInformation($"Génération des accesseurs de référence pour le module {module.Key.Module}...");
 
-            GenerateReferenceAccessorsInterface(classList, ns.CSharpName);
-            GenerateReferenceAccessorsImplementation(classList, ns.CSharpName);
+            GenerateReferenceAccessorsInterface(classList, module.Key.CSharpName);
+            GenerateReferenceAccessorsImplementation(classList, module.Key.CSharpName);
 
             _logger.LogInformation($"{classList.Count()} accesseurs ajoutés.");
         }
