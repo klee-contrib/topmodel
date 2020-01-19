@@ -115,7 +115,8 @@ namespace TopModel.Core
                {
                    if (!_modelFiles.TryGetValue(dep, out var depFile))
                    {
-                       throw new Exception($"Le fichier {dep}, référencé dans le fichier {modelFile}, est introuvable.");
+                       _logger.LogError($"{modelFile.Path}[6,0] - Le fichier référencé '{dep}' est introuvable.");
+                       throw new Exception($"Erreur lors de la résolution des dépendances");
                    }
 
                    return depFile;
@@ -217,53 +218,52 @@ namespace TopModel.Core
                 .Concat(modelFile.Classes)
                 .ToDictionary(c => c.Name, c => c);
 
-            foreach (var (obj, className) in modelFile.Relationships)
+            foreach (var (obj, relation) in modelFile.Relationships)
             {
                 switch (obj)
                 {
                     case Class classe:
-                        if (!referencedClasses.TryGetValue(className, out var extends))
+                        if (!referencedClasses.TryGetValue(relation.Value, out var extends))
                         {
-                            yield return $"La classe {className}, référencée par {classe.Name}, est introuvable dans les dépendances du fichier {modelFile}.";
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'un de ses dépendances. ({modelFile}/{classe.Name})";
                             break;
                         }
                         classe.Extends = extends;
                         break;
                     case RegularProperty rp:
-                        if (!_domains.TryGetValue(className, out var domain))
+                        if (!_domains.TryGetValue(relation.Value, out var domain))
                         {
-                            yield return $"Le domaine {className}, référencé par la propriété {rp.Name} de la classe {rp.Class.Name} du fichier {modelFile}, est introuvable.";
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - Le domaine '{relation.Value}' est introuvable. ({modelFile}/{rp.Class.Name}/{rp.Name})";
                             break;
                         }
                         rp.Domain = domain;
                         break;
                     case AssociationProperty ap:
-                        if (!referencedClasses.TryGetValue(className, out var association))
+                        if (!referencedClasses.TryGetValue(relation.Value, out var association))
                         {
-                            yield return $"La classe {className}, référencée sur une association de la classe {ap.Class.Name}, est introuvable dans les dépendances du fichier {modelFile}.";
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{ap.Class.Name}/{{association}})";
                             break;
                         }
                         ap.Association = association;
                         break;
                     case CompositionProperty cp:
-                        if (!referencedClasses.TryGetValue(className, out var composition))
+                        if (!referencedClasses.TryGetValue(relation.Value, out var composition))
                         {
-                            yield return $"La classe {className}, référencée sur une composition de la classe {cp.Class.Name}, est introuvable dans les dépendances du fichier {modelFile}.";
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{cp.Class.Name}/{{composition}})";
                             break;
                         }
                         cp.Composition = composition;
                         break;
                     case AliasProperty alp:
-                        var aliasConf = className.Split("|");
-                        if (!referencedClasses.TryGetValue(aliasConf[1], out var aliasedClass))
+                        if (!referencedClasses.TryGetValue(relation.Peer!.Value, out var aliasedClass))
                         {
-                            yield return $"La classe {aliasConf[1]}, référencée sur un alias de la classe {alp.Class.Name}, est introuvable dans les dépendances du fichier {modelFile}.";
+                            yield return $"{modelFile.Path}[{relation.Peer.Start.Line},{relation.Peer.Start.Column}] - La classe '{relation.Peer!.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{alp.Class.Name}/{{alias}})";
                             break;
                         }
-                        var aliasedProperty = aliasedClass.Properties.SingleOrDefault(p => p.Name == aliasConf[0]);
+                        var aliasedProperty = aliasedClass.Properties.SingleOrDefault(p => p.Name == relation.Value);
                         if (aliasedProperty == null)
                         {
-                            yield return $"La propriété {aliasConf[0]} est introuvable sur la classe {aliasedClass.Name}, référencée comme alias de la classe {alp.Class.Name} dans le fichier {modelFile}.";
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La propriété '{relation.Value}' est introuvable sur la classe '{aliasedClass.Name}'. ({modelFile}/{alp.Class.Name}/{{alias}})";
                             break;
                         }
                         alp.Property = (IFieldProperty)aliasedProperty;
