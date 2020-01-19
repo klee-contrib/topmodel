@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -12,6 +15,16 @@ namespace TopModel.Core
     /// </summary>
     public static class ModelUtils
     {
+        public static void CombinePath<T>(string directoryName, T classe, Expression<Func<T, string?>> getter)
+        {
+            var property = (PropertyInfo)((MemberExpression)getter.Body).Member;
+
+            if (property.GetValue(classe) != null)
+            {
+                property.SetValue(classe, Path.GetFullPath(Path.Combine(directoryName, (string)property.GetValue(classe)!)));
+            }
+        }
+
         /// <summary>
         /// Transforme le type en type Typescript.
         /// </summary>
@@ -126,6 +139,16 @@ namespace TopModel.Core
             return sb.ToString();
         }
 
+        public static string ToRelative(this string path)
+        {
+            var relative = Path.GetRelativePath(Directory.GetCurrentDirectory(), path);
+            if (!relative.StartsWith("."))
+            {
+                relative = $".\\{relative}";
+            }
+            return relative;
+        }
+            
         public static IList<T> Sort<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
             where T : notnull
         {

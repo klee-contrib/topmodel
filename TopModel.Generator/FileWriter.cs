@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator
 {
@@ -19,15 +20,17 @@ namespace TopModel.Generator
 
         private readonly StringBuilder _sb;
         private readonly string _fileName;
+        private readonly ILogger _logger;
 
         /// <summary>
         /// Crée une nouvelle instance.
         /// </summary>
         /// <param name="fileName">Nom du fichier à écrire.</param>
-        public FileWriter(string fileName, bool encoderShouldEmitUTF8Identifier = true)
+        public FileWriter(string fileName, ILogger logger, bool encoderShouldEmitUTF8Identifier = true)
             : base(CultureInfo.InvariantCulture)
         {
             _fileName = fileName ?? throw new ArgumentNullException("fileName");
+            _logger = logger;
             _sb = new StringBuilder();
             Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier);
         }
@@ -134,6 +137,8 @@ namespace TopModel.Generator
             {
                 FinishFile(_fileName);
             }
+
+            _logger.LogInformation($"Fichier {_fileName.ToRelative()} généré avec succès.");
         }
 
         /// <summary>

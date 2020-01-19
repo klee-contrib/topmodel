@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TopModel.Core;
-using TopModel.Core.Config;
 using TopModel.Core.FileModel;
 using Microsoft.Extensions.Logging;
 
@@ -14,15 +11,16 @@ namespace TopModel.Generator.Javascript
     /// </summary>
     public class JavascriptResourceGenerator : IModelWatcher
     {
-        private readonly JavascriptConfig? _config;
+        private readonly JavascriptConfig _config;
         private readonly ILogger<JavascriptResourceGenerator> _logger;
         private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
 
-        public JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> logger, JavascriptConfig? config = null)
+        public JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> logger, JavascriptConfig config)
         {
             _config = config;
             _logger = logger;
         }
+        public string Name => nameof(JavascriptResourceGenerator);
 
         public void OnFilesChanged(IEnumerable<ModelFile> files)
         {
@@ -41,7 +39,7 @@ namespace TopModel.Generator.Javascript
 
         private void GenerateModule(string module)
         {
-            if (_config?.ResourceOutputDirectory == null)
+            if (_config.ResourceOutputDirectory == null)
             {
                 return;
             }
@@ -50,9 +48,7 @@ namespace TopModel.Generator.Javascript
             var dirInfo = Directory.CreateDirectory(_config.ResourceOutputDirectory);
             var fileName = FirstToLower(module);
 
-            _logger.LogInformation($"Génération du fichier de ressources pour le module {module}...");
             WriteNameSpaceNode(dirInfo.FullName + "/" + fileName + ".ts", module, classes);
-            _logger.LogInformation($"{module.Count()} classes ajoutées dans le fichier de ressources.");
         }
 
         /// <summary>
@@ -127,9 +123,9 @@ namespace TopModel.Generator.Javascript
         /// <param name="outputFileNameJavascript">Nom du fichier de sortie..</param>
         /// <param name="namespaceName">Nom du namespace.</param>
         /// <param name="classes">Liste des classe du namespace.</param>
-        private static void WriteNameSpaceNode(string outputFileNameJavascript, string namespaceName, IEnumerable<Class> classes)
+        private void WriteNameSpaceNode(string outputFileNameJavascript, string namespaceName, IEnumerable<Class> classes)
         {
-            using var writerJs = new FileWriter(outputFileNameJavascript, encoderShouldEmitUTF8Identifier: false);
+            using var writerJs = new FileWriter(outputFileNameJavascript, _logger, encoderShouldEmitUTF8Identifier: false);
 
             writerJs.WriteLine($"export const {FirstToLower(namespaceName)} = {{");
 

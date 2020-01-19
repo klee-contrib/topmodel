@@ -16,4 +16,10 @@
     <ProjectReference Include="..\TopModel.Core\TopModel.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="schema.config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

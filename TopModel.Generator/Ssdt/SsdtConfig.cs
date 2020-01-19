@@ -1,4 +1,4 @@
-﻿namespace TopModel.Core.Config
+﻿namespace TopModel.Generator.Ssdt
 {
     /// <summary>
     /// Paramètres pour la génération SSDT.

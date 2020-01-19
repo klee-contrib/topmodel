@@ -5,6 +5,7 @@ namespace TopModel.Core
 {
     public interface IModelWatcher
     {
+        string Name { get; }
         void OnFilesChanged(IEnumerable<ModelFile> files);
     }
 }

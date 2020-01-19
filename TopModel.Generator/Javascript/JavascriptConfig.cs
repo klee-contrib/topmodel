@@ -1,4 +1,4 @@
-﻿namespace TopModel.Core.Config
+﻿namespace TopModel.Generator.Javascript
 {
     /// <summary>
     /// Paramètres pour la génération du Javascript.

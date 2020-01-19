@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using TopModel.Core.Config;
 using TopModel.Core.FileModel;
 using TopModel.Core.Loaders;
 using Microsoft.Extensions.Caching.Memory;
@@ -16,7 +15,7 @@ namespace TopModel.Core
 {
     public class ModelStore
     {
-        private readonly RootConfig _config;
+        private readonly ModelConfig _config;
         private readonly DomainFileLoader _domainFileLoader;
         private readonly IMemoryCache _fsCache;
         private readonly ILogger<ModelStore> _logger;
@@ -30,7 +29,7 @@ namespace TopModel.Core
 
         private bool loaded = false;
 
-        public ModelStore(DomainFileLoader domainFileLoader, IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, RootConfig config, IEnumerable<IModelWatcher> modelWatchers)
+        public ModelStore(DomainFileLoader domainFileLoader, IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers)
         {
             _config = config;
             _domainFileLoader = domainFileLoader;
@@ -66,7 +65,6 @@ namespace TopModel.Core
                 _domains.TryAdd(domain.Name, domain);
             }
 
-            _logger.LogInformation($"{_domains.Count} domaines chargés.");
             _logger.LogInformation("Chargement des classes...");
 
             var files = Directory.EnumerateFiles(_config.ModelRoot, "*.yml", SearchOption.AllDirectories)
@@ -92,14 +90,18 @@ namespace TopModel.Core
                 throw new Exception("Erreur lors de la lecture du modèle.");
             }
 
-            _logger.LogInformation($"{_modelFiles.SelectMany(mf => mf.Value.Classes).Count()} classes chargées.");
-
+            _logger.LogInformation("Chargement des listes de référence...");
             LoadReferenceLists();
 
+            _logger.LogInformation("Modèle chargé avec succès.");
+
+            _logger.LogInformation($"Watchers enregistrés : {string.Join(", ", _modelWatchers.Select(mw => mw.Name))}");
             foreach (var modelWatcher in _modelWatchers)
             {
                 modelWatcher.OnFilesChanged(Files);
             }
+
+            _logger.LogInformation("Génération initiale terminée avec succès.");
 
             loaded = true;
         }    
@@ -120,9 +122,7 @@ namespace TopModel.Core
         }
 
         private void LoadReferenceLists()
-        {
-            _logger.LogInformation("Chargement des listes de référence...");
-
+        { 
             var staticLists = ReferenceListsLoader.LoadReferenceLists(_config.StaticLists);
             var referenceLists = ReferenceListsLoader.LoadReferenceLists(_config.ReferenceLists);
 
@@ -140,8 +140,6 @@ namespace TopModel.Core
                     throw new Exception($"Une liste de référence pour la classe {className} a été définie, alors que cette classe est introuvable.");
                 }
             }
-
-            _logger.LogInformation($"{staticLists.Count()} listes statiques et {referenceLists.Count()} listes de références chargées.");
         }
 
         private void OnFSChangedEvent(object sender, FileSystemEventArgs e)
@@ -163,7 +161,7 @@ namespace TopModel.Core
             try
             {
                 _logger.LogInformation(string.Empty);
-                _logger.LogInformation($"Fichier {filePath} modifié...");
+                _logger.LogInformation($"Fichier {filePath.ToRelative()} modifié...");
 
                 if (!loaded)
                 {
@@ -215,7 +213,7 @@ namespace TopModel.Core
                     modelWatcher.OnFilesChanged(filesToGenerate);
                 }
 
-                _logger.LogInformation($"Génération terminée avec succès.");
+                _logger.LogInformation($"Mise à jour terminée avec succès.");
 
                 _pendingUpdates.Clear();
             }

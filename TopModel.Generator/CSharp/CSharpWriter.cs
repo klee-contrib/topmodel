@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.CSharp
 {
@@ -14,9 +15,9 @@ namespace TopModel.Generator.CSharp
 
         private readonly FileWriter _writer;
 
-        public CSharpWriter(string name)
+        public CSharpWriter(string name, ILogger logger)
         {
-            _writer = new FileWriter(name);
+            _writer = new FileWriter(name, logger);
         }
 
         /// <inheritdoc cref="IDisposable.Dispose" />

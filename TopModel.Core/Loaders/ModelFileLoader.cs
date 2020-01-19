@@ -5,18 +5,15 @@ using System.Linq;
 using TopModel.Core.FileModel;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
-using YamlDotNet.Serialization;
 
 namespace TopModel.Core.Loaders
 {
     public class ModelFileLoader
     {
-        private readonly IDeserializer _deserializer;
         private readonly FileChecker _fileChecker;
 
-        public ModelFileLoader(IDeserializer deserializer, FileChecker fileChecker)
+        public ModelFileLoader(FileChecker fileChecker)
         {
-            _deserializer = deserializer;
             _fileChecker = fileChecker;
         }
 
@@ -27,20 +24,20 @@ namespace TopModel.Core.Loaders
             var parser = new Parser(new StringReader(File.ReadAllText(filePath)));
             parser.Consume<StreamStart>();
 
-            var descriptor = _deserializer.Deserialize<FileDescriptor>(parser);
+            var descriptor = _fileChecker.Deserialize<FileDescriptor>(parser);
 
-            var relationships = new List<(object, Relation)>(); 
+            var relationships = new List<(object, Relation)>();
             var ns = new Namespace { App = descriptor.App, Module = descriptor.Module, Kind = descriptor.Kind };
             var classes = LoadClasses(parser, relationships, ns).ToList();
 
             return new ModelFile
             {
-                Path = filePath.Replace(Directory.GetCurrentDirectory() + "\\", string.Empty),
+                Path = filePath.ToRelative(),
                 Descriptor = descriptor,
                 Classes = classes,
                 Relationships = relationships
             };
-        }        
+        }
 
         private IEnumerable<Class> LoadClasses(Parser parser, List<(object, Relation)> relationships, Namespace ns)
         {

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using TopModel.Core.Config;
 using TopModel.Core.FileModel;
 using Microsoft.Extensions.Logging;
 
@@ -14,22 +13,16 @@ namespace TopModel.Generator.ProceduralSql
 
         private readonly AbstractSchemaGenerator? _schemaGenerator;
 
-        public ProceduralSqlGenerator(ILogger<ProceduralSqlGenerator> logger, ProceduralSqlConfig? config = null)
+        public ProceduralSqlGenerator(ILogger<ProceduralSqlGenerator> logger, ProceduralSqlConfig config)
         {
-            _config = config!;
+            _config = config;
             _logger = logger;
-
-            if (_config != null)
-            {
-                _schemaGenerator = _config.TargetDBMS == TargetDBMS.Postgre
-                    ? new PostgreSchemaGenerator(_config, _logger)
-                    : (AbstractSchemaGenerator)new SqlServerSchemaGenerator(_config, _logger);
-            }
+            _schemaGenerator = _config.TargetDBMS == TargetDBMS.Postgre
+                ? new PostgreSchemaGenerator(_config, _logger)
+                : (AbstractSchemaGenerator)new SqlServerSchemaGenerator(_config, _logger);
         }
 
-        public bool CanGenerate => _config != null;
-
-        public string Name => "des scripts de création SQL";
+        public string Name => nameof(ProceduralSqlGenerator);
 
         public void OnFilesChanged(IEnumerable<ModelFile> files)
         {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TopModel.Core.Config;
 using TopModel.Core.FileModel;
 using Microsoft.Extensions.Logging;
 
@@ -32,8 +31,6 @@ namespace TopModel.Generator.CSharp
                 return;
             }
 
-            _logger.LogInformation("Génération du DbContext...");
-
             var rootNamespace = classes.First().Namespace.App;
 
             var projectName = _config.DbContextProjectPath.Split('/').Last();
@@ -51,7 +48,7 @@ namespace TopModel.Generator.CSharp
             Directory.CreateDirectory(destDirectory);
 
             var targetFileName = Path.Combine(destDirectory, "generated", $"{dbContextName}.cs");
-            using var w = new CSharpWriter(targetFileName);
+            using var w = new CSharpWriter(targetFileName, _logger);
 
             var usings = new List<string>();
             if (_config.Kinetix == KinetixVersion.Core)
@@ -169,8 +166,6 @@ namespace TopModel.Generator.CSharp
 
             w.WriteLine(1, "}");
             w.WriteLine("}");
-
-            _logger.LogInformation("Génération du DbContext terminée.");
         }
     }
 }

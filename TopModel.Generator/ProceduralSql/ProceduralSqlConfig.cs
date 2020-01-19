@@ -1,4 +1,4 @@
-﻿namespace TopModel.Core.Config
+﻿namespace TopModel.Generator.ProceduralSql
 {
     /// <summary>
     /// Paramètres pour la génération de SQL procédural.

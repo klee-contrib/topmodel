@@ -1,6 +1,6 @@
-﻿namespace TopModel.Core.Config
+﻿namespace TopModel.Core
 {
-    public class RootConfig
+    public class ModelConfig
     {
 #nullable disable
         public string ModelRoot { get; set; }

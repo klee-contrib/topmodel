@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TopModel.Core.Config;
 using TopModel.Core.FileModel;
 using TopModel.Generator.Ssdt.Dto;
 using TopModel.Generator.Ssdt.Scripter;
@@ -20,13 +19,14 @@ namespace TopModel.Generator.Ssdt
         private readonly ISqlScripter<ReferenceClass> _initReferenceListScript;
         private readonly ISqlScripter<ReferenceClassSet> _initReferenceListMainScripter = new InitReferenceListMainScripter();
 
-        public SsdtGenerator(ILogger<SsdtGenerator> logger, SsdtConfig? config = null)
+        public SsdtGenerator(ILogger<SsdtGenerator> logger, SsdtConfig config)
         {
-            _config = config!;
+            _config = config;
             _logger = logger;
 
             _initReferenceListScript = new InitReferenceListScripter(_config);
         }
+        public string Name => nameof(SsdtGenerator);
 
         public void OnFilesChanged(IEnumerable<ModelFile> files)
         {
@@ -51,8 +51,6 @@ namespace TopModel.Generator.Ssdt
         {
             if (file.Descriptor.Kind == Kind.Data && _config.TableScriptFolder != null && _config.TableTypeScriptFolder != null)
             {
-                _logger.LogInformation($"Génération des scripts de tables du fichier {file}...");
-
                 var tableCount = 0;
                 var tableTypeCount = 0;
                 foreach (var classe in file.Classes)
@@ -60,17 +58,15 @@ namespace TopModel.Generator.Ssdt
                     if (classe.Trigram != null)
                     {
                         tableCount++;
-                        _tableScripter.Write(classe, _config.TableScriptFolder);
+                        _tableScripter.Write(classe, _config.TableScriptFolder, _logger);
 
                         if (classe.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName))
                         {
                             tableTypeCount++;
-                            _tableTypeScripter.Write(classe, _config.TableTypeScriptFolder);
+                            _tableTypeScripter.Write(classe, _config.TableTypeScriptFolder, _logger);
                         }
                     }
                 }
-
-                _logger.LogInformation($"{tableCount} scripts de tables et {tableTypeCount} scripts de types de tables générés.");
             }
         }
 
@@ -89,7 +85,6 @@ namespace TopModel.Generator.Ssdt
                 return;
             }
 
-            _logger.LogInformation($"Génération des scripts d'initialisation du répertoire {insertScriptFolderPath.Split("\\").Last()}...");
             Directory.CreateDirectory(insertScriptFolderPath);
 
             // Construit la liste des Reference Class ordonnée.
@@ -114,13 +109,11 @@ namespace TopModel.Generator.Ssdt
             // Script un fichier par classe.        
             foreach (var referenceClass in referenceClassList)
             {
-                _initReferenceListScript.Write(referenceClass, insertScriptFolderPath);
+                _initReferenceListScript.Write(referenceClass, insertScriptFolderPath, _logger);
             }
 
             // Script le fichier appelant les fichiers dans le bon ordre.
-            _initReferenceListMainScripter.Write(referenceClassSet, insertScriptFolderPath);
-
-            _logger.LogInformation($"{referenceClassList.Count} scripts d'initialisation générés.");
+            _initReferenceListMainScripter.Write(referenceClassSet, insertScriptFolderPath, _logger);
         }
     }
 }

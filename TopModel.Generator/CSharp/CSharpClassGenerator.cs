@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TopModel.Core.Config;
 using TopModel.Core.FileModel;
+using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.CSharp
 {
@@ -12,10 +12,12 @@ namespace TopModel.Generator.CSharp
     public class CSharpClassGenerator
     {
         private readonly CSharpConfig _config;
+        private readonly ILogger _logger;
 
-        public CSharpClassGenerator(CSharpConfig config)
+        public CSharpClassGenerator(CSharpConfig config, ILogger logger)
         {
             _config = config;
+            _logger = logger;
         }
 
         /// <summary>
@@ -31,7 +33,7 @@ namespace TopModel.Generator.CSharp
 
             var fileName = Path.Combine(GetDirectoryForModelClass(_config.LegacyProjectPaths, _config.OutputDirectory, item.Namespace.Kind == Kind.Data, item.Namespace.App, item.Namespace.CSharpName), item.Name + ".cs");
 
-            using var w = new CSharpWriter(fileName);
+            using var w = new CSharpWriter(fileName, _logger);
 
             GenerateUsings(w, item);
             w.WriteLine();
@@ -157,7 +159,7 @@ namespace TopModel.Generator.CSharp
                         ? (string)refValue.Value[item.PrimaryKey]
                         : (string)refValue.Value[item.Properties.OfType<RegularProperty>().Single(rp => rp.Unique)];
                     var label = item.LabelProperty != null
-                        ? (string)refValue.Value[item.LabelProperty] 
+                        ? (string)refValue.Value[item.LabelProperty]
                         : refValue.Name;
                     IFieldProperty? property = null;
                     if (item.Stereotype == Stereotype.Reference)

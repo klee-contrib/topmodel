@@ -8,6 +8,7 @@ using Newtonsoft.Json.Schema;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace TopModel.Core.Loaders
 {
@@ -16,14 +17,24 @@ namespace TopModel.Core.Loaders
         private readonly IDeserializer _deserializer;
         private readonly ISerializer _serialiazer;
 
-        private readonly JSchema _configSchema = JSchema.Parse(File.ReadAllText(
-            Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "schema.config.json")));
-        private readonly JSchema _modelSchema = JSchema.Parse(File.ReadAllText(
-            Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "schema.json")));
+        private readonly JSchema? _configSchema;
+        private readonly JSchema _modelSchema;
 
-        public FileChecker(IDeserializer deserializer)
+        public FileChecker(string? configSchemaPath = null)
         {
-            _deserializer = deserializer;
+            if (configSchemaPath != null)
+            {
+                _configSchema = JSchema.Parse(File.ReadAllText(
+                    Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, configSchemaPath)));
+            }
+
+            _modelSchema = JSchema.Parse(File.ReadAllText(
+                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "schema.json")));
+
+            _deserializer = new DeserializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .WithNodeTypeResolver(new InferTypeFromValueResolver())
+                .Build();
             _serialiazer = new SerializerBuilder()
                 .JsonCompatible()
                 .Build();
@@ -31,7 +42,10 @@ namespace TopModel.Core.Loaders
 
         public void CheckConfigFile(string fileName)
         {
-            CheckCore(fileName, _configSchema);
+            if (_configSchema != null)
+            {
+                CheckCore(fileName, _configSchema);
+            }
         }
 
         public void CheckDomainFile(string fileName)
@@ -42,6 +56,16 @@ namespace TopModel.Core.Loaders
         public void CheckModelFile(string fileName)
         {
             CheckCore(fileName, _modelSchema, true);
+        }
+
+        public T Deserialize<T>(string yaml)
+        {
+            return _deserializer.Deserialize<T>(yaml);
+        }
+
+        public T Deserialize<T>(IParser parser)
+        {
+            return _deserializer.Deserialize<T>(parser);
         }
 
         private void CheckCore(string fileName, JSchema schema, bool isModel = false)
@@ -55,7 +79,7 @@ namespace TopModel.Core.Loaders
                 var yaml = _deserializer.Deserialize(parser);
                 if (yaml == null)
                 {
-                    throw new Exception($"Impossible de lire le fichier {fileName}.");
+                    throw new Exception($"Impossible de lire le fichier {fileName.ToRelative()}.");
                 }
 
                 var jsonYaml = _serialiazer.Serialize(yaml);
@@ -65,12 +89,12 @@ namespace TopModel.Core.Loaders
 
                 if (!json.IsValid(schema, out IList<ValidationError> errors))
                 {
-                    throw new Exception($@"Erreur dans le fichier {fileName} :
+                    throw new Exception($@"Erreur dans le fichier {fileName.ToRelative()} :
 {string.Join("\r\n", errors.Select(e => $"[{e.LinePosition}]: {e.Message}"))}.");
                 }
 
                 firstObject = false;
             }
         }
-    }   
+    }
 }

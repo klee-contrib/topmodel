@@ -1,4 +1,4 @@
-﻿namespace TopModel.Core.Config
+﻿namespace TopModel.Generator.CSharp
 {
     public enum KinetixVersion
     {

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using TopModel.Core.Config;
+﻿using TopModel.Generator.Ssdt;
 using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.ProceduralSql
@@ -22,7 +21,7 @@ namespace TopModel.Generator.ProceduralSql
         /// Gère l'auto-incrémentation des clés primaires en ajoutant identity à la colonne.
         /// </summary>
         /// <param name="writerCrebas">Flux d'écriture création bases.</param>
-        protected override void WriteIdentityColumn(StreamWriter writerCrebas)
+        protected override void WriteIdentityColumn(SqlFileWriter writerCrebas)
         {
             writerCrebas.Write(" identity(1, 1)");
         }
@@ -32,7 +31,7 @@ namespace TopModel.Generator.ProceduralSql
         /// </summary>
         /// <param name="classe">Classe.</param>
         /// <param name="writerType">Writer.</param>
-        protected override void WriteType(Class classe, StreamWriter? writerType)
+        protected override void WriteType(Class classe, SqlFileWriter? writerType)
         {
             var typeName = classe.SqlName + "_TABLE_TYPE";
             writerType?.WriteLine("/**");

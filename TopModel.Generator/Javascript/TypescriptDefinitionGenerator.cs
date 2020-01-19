@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TopModel.Core.Config;
 using TopModel.Core.FileModel;
 using Microsoft.Extensions.Logging;
 
@@ -13,22 +12,24 @@ namespace TopModel.Generator.Javascript
     /// </summary>
     public class TypescriptDefinitionGenerator : IModelWatcher
     {
-        private readonly JavascriptConfig? _config;
+        private readonly JavascriptConfig _config;
         private readonly ILogger<TypescriptDefinitionGenerator> _logger;
         private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
 
-        public TypescriptDefinitionGenerator(ILogger<TypescriptDefinitionGenerator> logger, JavascriptConfig? config = null)
+        public TypescriptDefinitionGenerator(ILogger<TypescriptDefinitionGenerator> logger, JavascriptConfig config)
         {
             _config = config;
             _logger = logger;
         }
+
+        public string Name => nameof(TypescriptDefinitionGenerator);
 
         /// <summary>
         /// Génère les définitions Typescript.
         /// </summary>
         public void OnFilesChanged(IEnumerable<ModelFile> files)
         {
-            if (_config?.ModelOutputDirectory == null)
+            if (_config.ModelOutputDirectory == null)
             {
                 return;
             }
@@ -49,26 +50,24 @@ namespace TopModel.Generator.Javascript
 
         public void GenerateClasses(ModelFile file)
         {
-            if (_config?.ModelOutputDirectory == null)
+            if (_config.ModelOutputDirectory == null)
             {
                 return;
             }
-
-            _logger.LogInformation($"Génération des modèles pour le fichier {file}...");
 
             var count = 0;
             foreach (var classe in file.Classes)
             {
                 if (classe.Stereotype != Stereotype.Statique)
                 {
-                    if ((_config?.IsGenerateEntities ?? true) == false && classe.Trigram != null)
+                    if (_config.IsGenerateEntities == false && classe.Trigram != null)
                     {
                         continue;
                     }
 
                     var fileName = classe.Name.ToDashCase();
 
-                    fileName = $"{_config!.ModelOutputDirectory}/{file.Descriptor.Module.ToDashCase()}/{fileName}.ts";
+                    fileName = $"{_config.ModelOutputDirectory}/{file.Descriptor.Module.ToDashCase()}/{fileName}.ts";
                     var fileInfo = new FileInfo(fileName);
 
                     var isNewFile = !fileInfo.Exists;
@@ -83,15 +82,13 @@ namespace TopModel.Generator.Javascript
                     count++;
                 }
             }
-
-            _logger.LogInformation($"{count} fichiers de modèle générés.");
         }
 
         private void GenerateReferences(string module)
         {
             var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.Namespace.Module == module && c.Stereotype == Stereotype.Statique);
 
-            if (_config?.ModelOutputDirectory != null && classes.Any())
+            if (_config.ModelOutputDirectory != null && classes.Any())
             {
                 var fileName = module != null
                     ? $"{_config.ModelOutputDirectory}/{module.ToDashCase()}/references.ts"
@@ -113,7 +110,7 @@ namespace TopModel.Generator.Javascript
 
         private void GenerateClassFile(string fileName, Class classe)
         {
-            using var fw = new FileWriter(fileName, false);
+            using var fw = new FileWriter(fileName, _logger, false);
 
             fw.Write("import {EntityToType, StoreNode} from \"@focus4/stores\";");
             fw.Write("\r\nimport {");
@@ -319,7 +316,7 @@ namespace TopModel.Generator.Javascript
         /// </summary>
         private void GenerateReferenceFile(string fileName, IEnumerable<Class> references)
         {
-            using var fw = new FileWriter(fileName, false);
+            using var fw = new FileWriter(fileName, _logger, false);
 
             var first = true;
             foreach (var reference in references)

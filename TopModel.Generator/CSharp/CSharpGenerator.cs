@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TopModel.Core.Config;
 using TopModel.Core.FileModel;
 using Microsoft.Extensions.Logging;
 
@@ -23,32 +21,29 @@ namespace TopModel.Generator.CSharp
         private readonly DbContextGenerator _dbContextGenerator;
         private readonly ReferenceAccessorGenerator _referenceAccessorGenerator;
 
-        public CSharpGenerator(ILogger<CSharpGenerator> logger, CSharpConfig? config = null)
+        public CSharpGenerator(ILogger<CSharpGenerator> logger, CSharpConfig config)
         {
-            _config = config!;
+            _config = config;
             _logger = logger;
 
-            _classGenerator = new CSharpClassGenerator(_config);
+            _classGenerator = new CSharpClassGenerator(_config, _logger);
             _dbContextGenerator = new DbContextGenerator(_config, _logger);
             _referenceAccessorGenerator = new ReferenceAccessorGenerator(_config, _logger);
         }
 
+        public string Name => nameof(CSharpGenerator);
+
         public void OnFilesChanged(IEnumerable<ModelFile> files)
         {
-            if (_config == null)
+            foreach (var file in files)
             {
-                return;
+                _files[file.Name] = file;
+                GenerateClasses(file);
             }
 
             if (files.SelectMany(f => f.Classes).Any(c => c.Trigram != null))
             {
                 GenerateDbContext();
-            }
-
-            foreach (var file in files)
-            {
-                _files[file.Name] = file;
-                GenerateClasses(file);
             }
 
             var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace)).Distinct();
@@ -73,8 +68,6 @@ namespace TopModel.Generator.CSharp
                 return;
             }
 
-            _logger.LogInformation($"Génération des classes pour le fichier {file}...");
-
             var currentDirectory = GetDirectoryForModelClass(
                 _config.LegacyProjectPaths,
                 _config.OutputDirectory,
@@ -87,8 +80,6 @@ namespace TopModel.Generator.CSharp
             {
                 _classGenerator.Generate(classe);
             }
-
-            _logger.LogInformation($"{file.Classes.Count()} classes générées.");
         }
 
         private void GenerateReferences(Namespace ns)

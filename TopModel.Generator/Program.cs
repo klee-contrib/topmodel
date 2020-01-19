@@ -1,15 +1,18 @@
 ﻿using System;
-using System.Linq;
+using System.IO;
 using System.Threading;
 using TopModel.Generator.CSharp;
 using TopModel.Generator.Javascript;
 using TopModel.Generator.ProceduralSql;
 using TopModel.Generator.Ssdt;
+using TopModel.Core.Loaders;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator
 {
+    using static ModelUtils;
+
     public static class Program
     {
         public static void Main(string[] args)
@@ -40,16 +43,62 @@ namespace TopModel.Generator
                 throw new ArgumentException("Arguments invalides. Seuls 'watch', '-w' ou '--watch' peuvent être passés en plus de la config.");
             }
 
-            using var provider = new ServiceCollection()
-                .AddModelStore(args[0])
-                .AddSingleton<IModelWatcher, SsdtGenerator>()
-                .AddSingleton<IModelWatcher, ProceduralSqlGenerator>()
-                .AddSingleton<IModelWatcher, CSharpGenerator>()
-                .AddSingleton<IModelWatcher, TypescriptDefinitionGenerator>()
-                .AddSingleton<IModelWatcher, JavascriptResourceGenerator>()
-                .AddLogging(builder => builder.AddProvider(new LoggerProvider()))
-                .BuildServiceProvider();
+            var fileChecker = new FileChecker("schema.config.json");
+            var configFile = new FileInfo(configFileName);
+            var config = fileChecker.Deserialize<FullConfig>(configFile.OpenText().ReadToEnd());
+            var dn = configFile.DirectoryName;
 
+            var services = new ServiceCollection()
+                .AddModelStore(fileChecker, config, dn)
+                .AddLogging(builder => builder.AddProvider(new LoggerProvider()));
+
+            if (config.ProceduralSql != null)
+            {
+                CombinePath(dn, config.ProceduralSql, c => c.CrebasFile);
+                CombinePath(dn, config.ProceduralSql, c => c.IndexFKFile);
+                CombinePath(dn, config.ProceduralSql, c => c.ReferenceListFile);
+                CombinePath(dn, config.ProceduralSql, c => c.StaticListFile);
+                CombinePath(dn, config.ProceduralSql, c => c.TypeFile);
+                CombinePath(dn, config.ProceduralSql, c => c.UKFile);
+
+                services
+                    .AddSingleton(config.ProceduralSql)
+                    .AddSingleton<IModelWatcher, ProceduralSqlGenerator>();
+            }
+
+            if (config.Ssdt != null)
+            {
+                CombinePath(dn, config.Ssdt, c => c.InitReferenceListScriptFolder);
+                CombinePath(dn, config.Ssdt, c => c.InitStaticListScriptFolder);
+                CombinePath(dn, config.Ssdt, c => c.TableScriptFolder);
+                CombinePath(dn, config.Ssdt, c => c.TableTypeScriptFolder);
+
+                services
+                    .AddSingleton(config.Ssdt)
+                    .AddSingleton<IModelWatcher, SsdtGenerator>();
+            }
+
+            if (config.Csharp != null)
+            {
+                CombinePath(dn, config.Csharp, c => c.OutputDirectory);
+
+                services
+                    .AddSingleton(config.Csharp)
+                    .AddSingleton<IModelWatcher, CSharpGenerator>();
+            }
+
+            if (config.Javascript != null)
+            {
+                CombinePath(dn, config.Javascript, c => c.ModelOutputDirectory);
+                CombinePath(dn, config.Javascript, c => c.ResourceOutputDirectory);
+
+                services
+                    .AddSingleton(config.Javascript)
+                    .AddSingleton<IModelWatcher, TypescriptDefinitionGenerator>()
+                    .AddSingleton<IModelWatcher, JavascriptResourceGenerator>();
+            }
+
+            using var provider = services.BuildServiceProvider();
             var modelStore = provider.GetService<ModelStore>();
 
             if (watch)
@@ -58,7 +107,7 @@ namespace TopModel.Generator
             }
 
             modelStore.LoadFromConfig();
-            
+
             if (watch)
             {
                 var autoResetEvent = new AutoResetEvent(false);

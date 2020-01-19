@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TopModel.Core.Config;
 using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.CSharp
@@ -37,12 +36,8 @@ namespace TopModel.Generator.CSharp
 
             var ns = classList.First().Namespace;
 
-            _logger.LogInformation($"Génération des accesseurs de référence pour le module {ns.Module}...");
-
             GenerateReferenceAccessorsInterface(classList, ns.CSharpName);
             GenerateReferenceAccessorsImplementation(classList, ns.CSharpName);
-
-            _logger.LogInformation($"{classList.Count()} accesseurs ajoutés.");
         }
 
         /// <summary>
@@ -80,7 +75,7 @@ namespace TopModel.Generator.CSharp
 
             var implementationFileName = Path.Combine(projectDir, _config.DbContextProjectPath == null ? "generated" : "generated\\Reference", $"{implementationName}.cs");
 
-            using var w = new CSharpWriter(implementationFileName);
+            using var w = new CSharpWriter(implementationFileName, _logger);
 
             var usings = new[]
             {
@@ -202,7 +197,7 @@ namespace TopModel.Generator.CSharp
 
             var interfaceFileName = Path.Combine(projectDir, _config.DbContextProjectPath == null ? "generated" : "generated\\Reference", $"{interfaceName}.cs");
 
-            using var w = new CSharpWriter(interfaceFileName);
+            using var w = new CSharpWriter(interfaceFileName, _logger);
 
             if (_config.Kinetix == KinetixVersion.Core)
             {

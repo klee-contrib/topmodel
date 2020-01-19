@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using TopModel.Core.Config;
 using TopModel.Generator.Ssdt.Dto;
 
 namespace TopModel.Generator.Ssdt.Scripter

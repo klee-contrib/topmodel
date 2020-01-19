@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
-using YamlDotNet.Serialization;
 
 namespace TopModel.Core.Loaders
 {
     public class DomainFileLoader
     {
-        private readonly IDeserializer _deserializer;
         private readonly FileChecker _fileChecker;
 
-        public DomainFileLoader(IDeserializer deserializer, FileChecker fileChecker)
+        public DomainFileLoader(FileChecker fileChecker)
         {
-            _deserializer = deserializer;
             _fileChecker = fileChecker;
         }
 
@@ -34,7 +31,7 @@ namespace TopModel.Core.Loaders
                     throw new Exception("Seuls des domaines peuvent être définis dans le fichier de domaines");
                 }
 
-                yield return _deserializer.Deserialize<Domain>(parser);
+                yield return _fileChecker.Deserialize<Domain>(parser);
 
                 parser.Consume<MappingEnd>();
                 parser.Consume<DocumentEnd>();

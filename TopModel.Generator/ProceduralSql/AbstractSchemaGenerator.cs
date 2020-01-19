@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
-using TopModel.Core.Config;
+using TopModel.Generator.Ssdt;
 using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.ProceduralSql
@@ -67,11 +66,7 @@ namespace TopModel.Generator.ProceduralSql
                 return;
             }
 
-            _logger.LogInformation($"Génération du script d'initialisation {outputFileName.Split("\\").Last()}...");
-
-            DeleteFileIfExists(outputFileName);
-
-            using var writerInsert = File.CreateText(outputFileName);
+            using var writerInsert = new SqlFileWriter(outputFileName, _logger);
 
             writerInsert.WriteLine("-- =========================================================================================== ");
             writerInsert.WriteLine($"--   Application Name	:	{classes.First().Namespace.App} ");
@@ -89,8 +84,6 @@ namespace TopModel.Generator.ProceduralSql
             {
                 WriteInsert(writerInsert, classe.ReferenceValues!, classe, isStatic);
             }
-
-            _logger.LogInformation($"Génération du script terminée.");
         }
 
         /// <summary>
@@ -110,26 +103,19 @@ namespace TopModel.Generator.ProceduralSql
                 return;
             }
 
-            _logger.LogInformation($"Génération des scripts de création de la base SQL...");
+            using var writerCrebas = new SqlFileWriter(outputFileNameCrebas, _logger);
 
-            DeleteFileIfExists(outputFileNameCrebas);
-            DeleteFileIfExists(outputFileNameIndex);
-            DeleteFileIfExists(outputFileNameType);
-            DeleteFileIfExists(outputFileNameUK);
-
-            using var writerCrebas = File.CreateText(outputFileNameCrebas);
-
-            StreamWriter? writerType = null;
-            StreamWriter? writerUk = null;
+            SqlFileWriter? writerType = null;
+            SqlFileWriter? writerUk = null;
 
             if (outputFileNameType != null)
             {
-                writerType = File.CreateText(outputFileNameType);
+                writerType = new SqlFileWriter(outputFileNameType, _logger);
             }
 
             if (outputFileNameUK != null)
             {
-                writerUk = File.CreateText(outputFileNameUK);
+                writerUk = new SqlFileWriter(outputFileNameUK, _logger);
             }
 
             var appName = classes.First().Namespace.App;
@@ -166,7 +152,7 @@ namespace TopModel.Generator.ProceduralSql
                 writerUk.Dispose();
             }
 
-            using var writer = File.CreateText(outputFileNameIndex);
+            using var writer = new SqlFileWriter(outputFileNameIndex, _logger);
 
             writer.WriteLine("-- =========================================================================================== ");
             writer.WriteLine($"--   Application Name	:	{appName} ");
@@ -179,8 +165,6 @@ namespace TopModel.Generator.ProceduralSql
                 GenerateIndexForeignKey(writer, fkProperty);
                 GenerateConstraintForeignKey(fkProperty, writer);
             }
-
-            _logger.LogInformation($"Génération des scripts terminée.");
         }
 
         /// <summary>
@@ -231,46 +215,23 @@ namespace TopModel.Generator.ProceduralSql
         /// Gère l'auto-incrémentation des clés primaires.
         /// </summary>
         /// <param name="writerCrebas">Flux d'écriture création bases.</param>
-        protected abstract void WriteIdentityColumn(StreamWriter writerCrebas);
+        protected abstract void WriteIdentityColumn(SqlFileWriter writerCrebas);
 
         /// <summary>
         /// Ecrit dans le writer le script de création du type.
         /// </summary>
         /// <param name="classe">Classe.</param>
         /// <param name="writerType">Writer.</param>
-        protected virtual void WriteType(Class classe, StreamWriter? writerType)
+        protected virtual void WriteType(Class classe, SqlFileWriter? writerType)
         {
         }
-
-        /// <summary>
-        /// Supprime le fichier s'il existe déja.
-        /// </summary>
-        /// <param name="outputFileName">Nom du fichier.</param>
-        private static void DeleteFileIfExists(string? outputFileName)
-        {
-            if (outputFileName == null)
-            {
-                return;
-            }
-
-            var dir = new FileInfo(outputFileName).DirectoryName;
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
-
-            if (File.Exists(outputFileName))
-            {
-                File.Delete(outputFileName);
-            }
-        }      
 
         /// <summary>
         /// Génère la contrainte de clef étrangère.
         /// </summary>
         /// <param name="property">Propriété portant la clef étrangère.</param>
         /// <param name="writer">Flux d'écriture.</param>
-        private void GenerateConstraintForeignKey(AssociationProperty property, StreamWriter writer)
+        private void GenerateConstraintForeignKey(AssociationProperty property, SqlFileWriter writer)
         {
             var tableName = property.Class.SqlName;
             var propertyName = ((IFieldProperty)property).SqlName;
@@ -295,7 +256,7 @@ namespace TopModel.Generator.ProceduralSql
         /// </summary>
         /// <param name="writer">Flux d'écriture.</param>
         /// <param name="property">Propriété cible de l'index.</param>
-        private void GenerateIndexForeignKey(StreamWriter writer, AssociationProperty property)
+        private void GenerateIndexForeignKey(SqlFileWriter writer, AssociationProperty property)
         {
             var tableName = Quote(property.Class.SqlName);
             var propertyName = ((IFieldProperty)property).SqlName;
@@ -369,7 +330,7 @@ namespace TopModel.Generator.ProceduralSql
         /// <param name="staticTable">Classe de reference statique.</param>
         /// <param name="modelClass">Modele de la classe.</param>
         /// <param name="isStatic">True if generation for static list.</param>
-        private void WriteInsert(StreamWriter writer, IEnumerable<ReferenceValue> staticTable, Class modelClass, bool isStatic)
+        private void WriteInsert(SqlFileWriter writer, IEnumerable<ReferenceValue> staticTable, Class modelClass, bool isStatic)
         {
             writer.WriteLine("/**\t\tInitialisation de la table " + modelClass.Name + "\t\t**/");
             foreach (var initItem in staticTable)
@@ -385,7 +346,7 @@ namespace TopModel.Generator.ProceduralSql
         /// </summary>
         /// <param name="writerCrebas">Writer.</param>
         /// <param name="classe">Classe.</param>
-        private void WritePrimaryKeyConstraint(StreamWriter writerCrebas, Class classe)
+        private void WritePrimaryKeyConstraint(SqlFileWriter writerCrebas, Class classe)
         {
             var pkCount = 0;
             writerCrebas.Write("\tconstraint " + Quote("PK_" + classe.SqlName) + " primary key ");
@@ -426,7 +387,7 @@ namespace TopModel.Generator.ProceduralSql
         /// <param name="writerUk">Flux d'écriture Unique Key.</param>
         /// <param name="writerType">Flux d'écritures des types.</param>
         /// <returns>Liste des propriétés étrangères persistentes.</returns>
-        private IEnumerable<AssociationProperty> WriteTableDeclaration(Class classe, StreamWriter writerCrebas, StreamWriter? writerUk, StreamWriter? writerType)
+        private IEnumerable<AssociationProperty> WriteTableDeclaration(Class classe, SqlFileWriter writerCrebas, SqlFileWriter? writerUk, SqlFileWriter? writerType)
         {
             var fkPropertiesList = new List<AssociationProperty>();
 
@@ -539,7 +500,7 @@ namespace TopModel.Generator.ProceduralSql
         /// </summary>
         /// <param name="classe">Classe.</param>
         /// <param name="writerUk">Writer.</param>
-        private void WriteUniqueMultipleProperties(Class classe, StreamWriter? writerUk)
+        private void WriteUniqueMultipleProperties(Class classe, SqlFileWriter? writerUk)
         {
             writerUk?.Write("alter table " + classe.SqlName + " add constraint UK_" + classe.SqlName + "_MULTIPLE unique (");
             var i = 0;

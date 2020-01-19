@@ -11,7 +11,7 @@ namespace TopModel.Generator
         public static void Main(string[] args)
         {
             using var provider = new ServiceCollection()
-                .AddModelStore()
+                .AddModelStore(new FileChecker())
                 .AddLogging()
                 .BuildServiceProvider();
 
@@ -32,7 +32,7 @@ namespace TopModel.Generator
                 sb.Append($@"tooltip = ""{classe.Comment ?? string.Empty}"" label =");
                 sb.Append(@"<<table border = ""0"" cellspacing = ""0"">");
                 sb.Append(@$"<tr><td colspan=""2""><u><b>{classe.Name}</b></u></td></tr>");
-                sb.Append(@"<tr><td colspan=""2""></td></tr>");                
+                sb.Append(@"<tr><td colspan=""2""></td></tr>");
 
                 foreach (var prop in classe.Properties.OfType<IFieldProperty>())
                 {

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.Ssdt.Scripter
 {
@@ -22,7 +23,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// <param name="item">Table à scripter.</param>
         void WriteItemScript(TextWriter writer, T item);
 
-        void Write(T item, string folderPath)
+        void Write(T item, string folderPath, ILogger logger)
         {
             // Génére le nom du fichier.
             var scriptName = GetScriptName(item);
@@ -31,7 +32,7 @@ namespace TopModel.Generator.Ssdt.Scripter
             var scriptPath = Path.Combine(folderPath, scriptName);
 
             // Utilisation du flux spécial qui ne checkout le fichier que s'il est modifié.
-            using var tw = new SqlFileWriter(scriptPath);
+            using var tw = new SqlFileWriter(scriptPath, logger);
 
             /*  Génére le script de l'item */
             WriteItemScript(tw, item);

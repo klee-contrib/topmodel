@@ -1,4 +1,4 @@
-﻿namespace TopModel.Core.Config
+﻿namespace TopModel.Generator.CSharp
 {
     /// <summary>
     /// Paramètres pour la génération du C#.
