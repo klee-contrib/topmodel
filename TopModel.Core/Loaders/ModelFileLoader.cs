@@ -30,7 +30,7 @@ namespace TopModel.Core.Loaders
             var descriptor = _deserializer.Deserialize<FileDescriptor>(parser);
 
             var relationships = new List<(object, Relation)>(); 
-            var ns = new Namespace { Module = descriptor.Module, Kind = descriptor.Kind };
+            var ns = new Namespace { App = descriptor.App, Module = descriptor.Module, Kind = descriptor.Kind };
             var classes = LoadClasses(parser, relationships, ns).ToList();
 
             return new ModelFile

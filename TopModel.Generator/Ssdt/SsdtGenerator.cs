@@ -9,60 +9,45 @@ using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.Ssdt
 {
-    public class SsdtGenerator : IGenerator
+    public class SsdtGenerator : IModelWatcher
     {
         private readonly SsdtConfig _config;
         private readonly ILogger<SsdtGenerator> _logger;
-        private readonly ModelStore _modelStore;
+        private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
 
         private readonly ISqlScripter<Class> _tableScripter = new SqlTableScripter();
         private readonly ISqlScripter<Class> _tableTypeScripter = new SqlTableTypeScripter();
         private readonly ISqlScripter<ReferenceClass> _initReferenceListScript;
         private readonly ISqlScripter<ReferenceClassSet> _initReferenceListMainScripter = new InitReferenceListMainScripter();
 
-        public SsdtGenerator(ModelStore modelStore, ILogger<SsdtGenerator> logger, SsdtConfig? config = null)
+        public SsdtGenerator(ILogger<SsdtGenerator> logger, SsdtConfig? config = null)
         {
             _config = config!;
             _logger = logger;
-            _modelStore = modelStore;
 
             _initReferenceListScript = new InitReferenceListScripter(_config);
         }
 
-        public bool CanGenerate => _config != null;
-
-        public string Name => "du modèle SSDT";
-
-        public void GenerateAll()
+        public void OnFilesChanged(IEnumerable<ModelFile> files)
         {
-            foreach (var file in _modelStore.Files)
+            foreach (var file in files)
             {
-                GenerateFromFile(file);
+                _files[file.Name] = file;
+                GenerateClasses(file);
             }
 
-            GenerateListInitScript(Stereotype.Statique);
-            GenerateListInitScript(Stereotype.Reference);
-
-            _modelStore.FilesChanged += (o, files) =>
+            if (files.SelectMany(f => f.Classes).Any(c => c.Stereotype == Stereotype.Statique))
             {
-                foreach (var file in files)
-                {
-                    GenerateFromFile(file);
-                }
+                GenerateListInitScript(Stereotype.Statique);
+            }
 
-                if (files.SelectMany(f => f.Classes).Any(c => c.Stereotype == Stereotype.Statique))
-                {
-                    GenerateListInitScript(Stereotype.Statique);
-                }
-
-                if (files.SelectMany(f => f.Classes).Any(c => c.Stereotype == Stereotype.Reference))
-                {
-                    GenerateListInitScript(Stereotype.Reference);
-                }
-            };
+            if (files.SelectMany(f => f.Classes).Any(c => c.Stereotype == Stereotype.Reference))
+            {
+                GenerateListInitScript(Stereotype.Reference);
+            }
         }
 
-        public void GenerateFromFile(ModelFile file)
+        private void GenerateClasses(ModelFile file)
         {
             if (file.Descriptor.Kind == Kind.Data && _config.TableScriptFolder != null && _config.TableTypeScriptFolder != null)
             {
@@ -91,7 +76,7 @@ namespace TopModel.Generator.Ssdt
 
         private void GenerateListInitScript(Stereotype stereotype)
         {
-            var classes = _modelStore.Classes.Where(c => c.Stereotype == stereotype && c.ReferenceValues != null);
+            var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.Stereotype == stereotype && c.ReferenceValues != null);
             var insertScriptFolderPath = stereotype == Stereotype.Statique
                 ? _config.InitStaticListScriptFolder
                 : _config.InitReferenceListScriptFolder;

@@ -11,58 +11,43 @@ namespace TopModel.Generator.Javascript
     /// <summary>
     /// Générateur de définitions Typescript.
     /// </summary>
-    public class TypescriptDefinitionGenerator : IGenerator
+    public class TypescriptDefinitionGenerator : IModelWatcher
     {
         private readonly JavascriptConfig? _config;
         private readonly ILogger<TypescriptDefinitionGenerator> _logger;
-        private readonly ModelStore _modelStore;
+        private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
 
-        public TypescriptDefinitionGenerator(ModelStore modelStore, ILogger<TypescriptDefinitionGenerator> logger, JavascriptConfig? config = null)
+        public TypescriptDefinitionGenerator(ILogger<TypescriptDefinitionGenerator> logger, JavascriptConfig? config = null)
         {
             _config = config;
             _logger = logger;
-            _modelStore = modelStore;
         }
-
-        public bool CanGenerate => _config?.ModelOutputDirectory != null;
-
-        public string Name => "du modèle Typescript";
 
         /// <summary>
         /// Génère les définitions Typescript.
         /// </summary>
-        public void GenerateAll()
+        public void OnFilesChanged(IEnumerable<ModelFile> files)
         {
-            foreach (var file in _modelStore.Files)
+            if (_config?.ModelOutputDirectory == null)
             {
-                GenerateFromFile(file);
+                return;
             }
 
-            _logger.LogInformation($"Génération des listes de références statiques...");
-
-            var count = 0;
-            foreach (var module in _modelStore.Classes.GroupBy(c => c.Namespace.Module))
+            foreach (var file in files)
             {
-                count += GenerateReferenceLists(module) ? 1 : 0;
+                _files[file.Name] = file;
+                GenerateClasses(file);
             }
 
-            _logger.LogInformation($"{count} fichiers de références générés.");
+            var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
 
-            _modelStore.FilesChanged += (o, files) =>
+            foreach (var module in modules)
             {
-                foreach (var file in files)
-                {
-                    GenerateFromFile(file);
-                }
-
-                foreach (var module in files.SelectMany(f => f.Classes).Where(c => c.Stereotype == Stereotype.Statique).GroupBy(c => c.Namespace.Module))
-                {
-                    GenerateReferenceLists(_modelStore.Classes.GroupBy(c => c.Namespace.Module).Single(g => g.Key == module.Key));
-                }
-            };
+                GenerateReferences(module);
+            }
         }
 
-        public void GenerateFromFile(ModelFile file)
+        public void GenerateClasses(ModelFile file)
         {
             if (_config?.ModelOutputDirectory == null)
             {
@@ -102,14 +87,14 @@ namespace TopModel.Generator.Javascript
             _logger.LogInformation($"{count} fichiers de modèle générés.");
         }
 
-        private bool GenerateReferenceLists(IGrouping<string, Class> module)
+        private void GenerateReferences(string module)
         {
-            var classes = module.Where(c => c.Stereotype == Stereotype.Statique);
+            var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.Namespace.Module == module && c.Stereotype == Stereotype.Statique);
 
             if (_config?.ModelOutputDirectory != null && classes.Any())
             {
-                var fileName = module.Key != null
-                    ? $"{_config.ModelOutputDirectory}/{module.Key.ToDashCase()}/references.ts"
+                var fileName = module != null
+                    ? $"{_config.ModelOutputDirectory}/{module.ToDashCase()}/references.ts"
                     : $"{_config.ModelOutputDirectory}/references.ts";
 
                 var fileInfo = new FileInfo(fileName);
@@ -123,10 +108,7 @@ namespace TopModel.Generator.Javascript
                 }
 
                 GenerateReferenceFile(fileName, classes.OrderBy(r => r.Name));
-                return true;
             }
-
-            return false;
         }
 
         private void GenerateClassFile(string fileName, Class classe)

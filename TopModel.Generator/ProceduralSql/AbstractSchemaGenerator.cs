@@ -18,13 +18,11 @@ namespace TopModel.Generator.ProceduralSql
         /// </summary>
         protected const string InsertKeyName = "InsertKey";
 
-        private readonly string _appName;
         private readonly ProceduralSqlConfig _config;
         private readonly ILogger<ProceduralSqlGenerator> _logger;
 
-        public AbstractSchemaGenerator(string appName, ProceduralSqlConfig config, ILogger<ProceduralSqlGenerator> logger)
+        public AbstractSchemaGenerator(ProceduralSqlConfig config, ILogger<ProceduralSqlGenerator> logger)
         {
-            _appName = appName;
             _config = config;
             _logger = logger;
         }
@@ -76,7 +74,7 @@ namespace TopModel.Generator.ProceduralSql
             using var writerInsert = File.CreateText(outputFileName);
 
             writerInsert.WriteLine("-- =========================================================================================== ");
-            writerInsert.WriteLine($"--   Application Name	:	{_appName} ");
+            writerInsert.WriteLine($"--   Application Name	:	{classes.First().Namespace.App} ");
             writerInsert.WriteLine("--   Script Name		:	" + outputFileName.Split("\\").Last());
             writerInsert.WriteLine("--   Description		:	Script d'insertion des données de références" + (!isStatic ? " non " : " ") + "statiques. ");
             writerInsert.WriteLine("-- ===========================================================================================");
@@ -134,20 +132,22 @@ namespace TopModel.Generator.ProceduralSql
                 writerUk = File.CreateText(outputFileNameUK);
             }
 
+            var appName = classes.First().Namespace.App;
+
             writerCrebas.WriteLine("-- =========================================================================================== ");
-            writerCrebas.WriteLine($"--   Application Name	:	{_appName} ");
+            writerCrebas.WriteLine($"--   Application Name	:	{appName} ");
             writerCrebas.WriteLine("--   Script Name		:	" + outputFileNameCrebas.Split("\\").Last());
             writerCrebas.WriteLine("--   Description		:	Script de création des tables.");
             writerCrebas.WriteLine("-- =========================================================================================== ");
 
             writerUk?.WriteLine("-- =========================================================================================== ");
-            writerUk?.WriteLine($"--   Application Name	:	{_appName} ");
+            writerUk?.WriteLine($"--   Application Name	:	{appName} ");
             writerUk?.WriteLine("--   Script Name		:	" + outputFileNameUK?.Split("\\").Last());
             writerUk?.WriteLine("--   Description		:	Script de création des indexs uniques.");
             writerUk?.WriteLine("-- =========================================================================================== ");
 
             writerType?.WriteLine("-- =========================================================================================== ");
-            writerType?.WriteLine($"--   Application Name	:	{_appName} ");
+            writerType?.WriteLine($"--   Application Name	:	{appName} ");
             writerType?.WriteLine("--   Script Name		:	" + outputFileNameType?.Split("\\").Last());
             writerType?.WriteLine("--   Description		:	Script de création des types. ");
             writerType?.WriteLine("-- =========================================================================================== ");
@@ -169,7 +169,7 @@ namespace TopModel.Generator.ProceduralSql
             using var writer = File.CreateText(outputFileNameIndex);
 
             writer.WriteLine("-- =========================================================================================== ");
-            writer.WriteLine($"--   Application Name	:	{_appName} ");
+            writer.WriteLine($"--   Application Name	:	{appName} ");
             writer.WriteLine("--   Script Name		:	" + outputFileNameIndex.Split("\\").Last());
             writer.WriteLine("--   Description		:	Script de création des indexes et des clef étrangères. ");
             writer.WriteLine("-- =========================================================================================== ");

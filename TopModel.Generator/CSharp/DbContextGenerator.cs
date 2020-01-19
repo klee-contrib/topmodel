@@ -14,13 +14,10 @@ namespace TopModel.Generator.CSharp
     {
         private readonly CSharpConfig _config;
         private readonly ILogger<CSharpGenerator> _logger;
-        private readonly string _rootNamespace;
-
-        public DbContextGenerator(string rootNamespace, CSharpConfig config, ILogger<CSharpGenerator> logger)
+        public DbContextGenerator(CSharpConfig config, ILogger<CSharpGenerator> logger)
         {
             _config = config;
             _logger = logger;
-            _rootNamespace = rootNamespace;
         }
 
         /// <summary>
@@ -37,8 +34,10 @@ namespace TopModel.Generator.CSharp
 
             _logger.LogInformation("Génération du DbContext...");
 
+            var rootNamespace = classes.First().Namespace.App;
+
             var projectName = _config.DbContextProjectPath.Split('/').Last();
-            var strippedProjectName = RemoveDots(_rootNamespace);
+            var strippedProjectName = RemoveDots(rootNamespace);
 
             var dbContextName = $"{strippedProjectName}DbContext";
             var schema = _config.DbSchema;
@@ -71,7 +70,7 @@ namespace TopModel.Generator.CSharp
                 .Select(cl => cl.Namespace.CSharpName)
                 .Distinct())
             {
-                usings.Add($"{_rootNamespace}.{ns}");
+                usings.Add($"{rootNamespace}.{ns}");
             }
 
             w.WriteUsings(usings.ToArray());

@@ -29,50 +29,38 @@ namespace TopModel.Generator
             {
                 watch = true;
                 configFileName = args[1];
-            } else if (args[1] == "watch" || args[1] == "-w" || args[1] == "--watch")
+            }
+            else if (args[1] == "watch" || args[1] == "-w" || args[1] == "--watch")
             {
                 watch = true;
                 configFileName = args[0];
-            } else
+            }
+            else
             {
                 throw new ArgumentException("Arguments invalides. Seuls 'watch', '-w' ou '--watch' peuvent être passés en plus de la config.");
             }
 
-                using var provider = new ServiceCollection()
+            using var provider = new ServiceCollection()
                 .AddModelStore(args[0])
-                .AddSingleton<IGenerator, SsdtGenerator>()
-                .AddSingleton<IGenerator, ProceduralSqlGenerator>()
-                .AddSingleton<IGenerator, CSharpGenerator>()
-                .AddSingleton<IGenerator, TypescriptDefinitionGenerator>()
-                .AddSingleton<IGenerator, JavascriptResourceGenerator>()
+                .AddSingleton<IModelWatcher, SsdtGenerator>()
+                .AddSingleton<IModelWatcher, ProceduralSqlGenerator>()
+                .AddSingleton<IModelWatcher, CSharpGenerator>()
+                .AddSingleton<IModelWatcher, TypescriptDefinitionGenerator>()
+                .AddSingleton<IModelWatcher, JavascriptResourceGenerator>()
                 .AddLogging(builder => builder.AddProvider(new LoggerProvider()))
                 .BuildServiceProvider();
 
-            var logger = provider.GetService<ILogger<IGenerator>>();
             var modelStore = provider.GetService<ModelStore>();
-
-            logger.LogInformation("Début de la génération...");
-
-            logger.LogInformation(string.Empty);
-            logger.LogInformation("Chargement du modèle...");
-            modelStore.LoadFromConfig();
-            logger.LogInformation("Chargement du modèle terminé.");
-
-            foreach (var generator in provider.GetServices<IGenerator>().Where(g => g.CanGenerate))
-            {
-                logger.LogInformation(string.Empty);
-                logger.LogInformation($"Lancement de la génération {generator.Name}...");
-                generator.GenerateAll();
-                logger.LogInformation($"Génération {generator.Name} terminée.");
-            }
-
-            logger.LogInformation(string.Empty);
-            logger.LogInformation("Génération terminée.");
 
             if (watch)
             {
                 modelStore.BeginWatch();
+            }
 
+            modelStore.LoadFromConfig();
+            
+            if (watch)
+            {
                 var autoResetEvent = new AutoResetEvent(false);
                 Console.CancelKeyPress += (sender, eventArgs) =>
                 {

@@ -12,12 +12,10 @@ namespace TopModel.Generator.CSharp
     public class CSharpClassGenerator
     {
         private readonly CSharpConfig _config;
-        private readonly string _rootNamespace;
 
-        public CSharpClassGenerator(string rootNamespace, CSharpConfig config)
+        public CSharpClassGenerator(CSharpConfig config)
         {
             _config = config;
-            _rootNamespace = rootNamespace;
         }
 
         /// <summary>
@@ -31,13 +29,13 @@ namespace TopModel.Generator.CSharp
                 return;
             }
 
-            var fileName = Path.Combine(GetDirectoryForModelClass(_config.LegacyProjectPaths, _config.OutputDirectory, item.Namespace.Kind == Kind.Data, _rootNamespace, item.Namespace.CSharpName), item.Name + ".cs");
+            var fileName = Path.Combine(GetDirectoryForModelClass(_config.LegacyProjectPaths, _config.OutputDirectory, item.Namespace.Kind == Kind.Data, item.Namespace.App, item.Namespace.CSharpName), item.Name + ".cs");
 
             using var w = new CSharpWriter(fileName);
 
             GenerateUsings(w, item);
             w.WriteLine();
-            w.WriteNamespace($"{_rootNamespace}.{item.Namespace.CSharpName}");
+            w.WriteNamespace($"{item.Namespace.App}.{item.Namespace.CSharpName}");
             w.WriteSummary(1, item.Comment);
             GenerateClassDeclaration(w, item);
             w.WriteLine("}");
@@ -519,22 +517,22 @@ namespace TopModel.Generator.CSharp
                 switch (property)
                 {
                     case AssociationProperty ap:
-                        usings.Add($"{_rootNamespace}.{ap.Association.Namespace.CSharpName}");
+                        usings.Add($"{item.Namespace.App}.{ap.Association.Namespace.CSharpName}");
                         break;
                     case AliasProperty { Property: AssociationProperty ap2 }:
-                        usings.Add($"{_rootNamespace}.{ap2.Association.Namespace.CSharpName}");
+                        usings.Add($"{item.Namespace.App}.{ap2.Association.Namespace.CSharpName}");
                         break;
                     case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp }:
-                        usings.Add($"{_rootNamespace}.{rp.Class.Namespace.CSharpName}");
+                        usings.Add($"{item.Namespace.App}.{rp.Class.Namespace.CSharpName}");
                         break;
                     case CompositionProperty cp:
-                        usings.Add($"{_rootNamespace}.{cp.Composition.Namespace.CSharpName}");
+                        usings.Add($"{item.Namespace.App}.{cp.Composition.Namespace.CSharpName}");
                         break;
                 }
             }
 
             w.WriteUsings(usings
-                .Where(u => u != $"{_rootNamespace}.{item.Namespace.CSharpName}")
+                .Where(u => u != $"{item.Namespace.App}.{item.Namespace.CSharpName}")
                 .Distinct()
                 .ToArray());
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TopModel.Core.Config;
@@ -12,70 +13,60 @@ namespace TopModel.Generator.CSharp
     /// <summary>
     /// Générateur de code C#.
     /// </summary>
-    public class CSharpGenerator : IGenerator
+    public class CSharpGenerator : IModelWatcher
     {
         private readonly CSharpConfig _config;
         private readonly ILogger<CSharpGenerator> _logger;
-        private readonly ModelStore _modelStore;
+        private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
 
-        private readonly string _rootNamespace;
         private readonly CSharpClassGenerator _classGenerator;
         private readonly DbContextGenerator _dbContextGenerator;
         private readonly ReferenceAccessorGenerator _referenceAccessorGenerator;
 
-        public CSharpGenerator(ModelStore modelStore, ILogger<CSharpGenerator> logger, CSharpConfig? config = null)
+        public CSharpGenerator(ILogger<CSharpGenerator> logger, CSharpConfig? config = null)
         {
             _config = config!;
             _logger = logger;
-            _modelStore = modelStore;
 
-            _rootNamespace = _modelStore.RootNamespace;
-            _classGenerator = new CSharpClassGenerator(_rootNamespace, _config);
-            _dbContextGenerator = new DbContextGenerator(_rootNamespace, _config, _logger);
-            _referenceAccessorGenerator = new ReferenceAccessorGenerator(_rootNamespace, _config, _logger);
+            _classGenerator = new CSharpClassGenerator(_config);
+            _dbContextGenerator = new DbContextGenerator(_config, _logger);
+            _referenceAccessorGenerator = new ReferenceAccessorGenerator(_config, _logger);
         }
 
-        public bool CanGenerate => _config != null;
-
-        public string Name => "du modèle C#";
-
-        public void GenerateAll()
+        public void OnFilesChanged(IEnumerable<ModelFile> files)
         {
-            GenerateDbContext();
-
-            foreach (var file in _modelStore.Files)
+            if (_config == null)
             {
-                GenerateFromFile(file);
+                return;
             }
 
-            foreach (var ns in _modelStore.Classes.GroupBy(c => c.Namespace))
+            if (files.SelectMany(f => f.Classes).Any(c => c.Trigram != null))
             {
-                GenerateForReferences(ns);
+                GenerateDbContext();
             }
 
-            _modelStore.FilesChanged += (o, files) =>
+            foreach (var file in files)
             {
-                foreach (var file in files)
-                {
-                    GenerateFromFile(file);
-                }
+                _files[file.Name] = file;
+                GenerateClasses(file);
+            }
 
-                foreach (var ns in files.SelectMany(f => f.Classes).Where(c => c.Stereotype != null).GroupBy(c => c.Namespace))
-                {
-                    GenerateForReferences(_modelStore.Classes.GroupBy(c => c.Namespace).Single(g => g.Key.Equals(ns.Key)));
-                }
-            };
+            var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace)).Distinct();
+            foreach (var module in modules)
+            {
+                GenerateReferences(module);
+            }
         }
 
         private void GenerateDbContext()
         {
             if (_config.DbContextProjectPath != null)
             {
-                _dbContextGenerator.Generate(_modelStore.Classes);
+                _dbContextGenerator.Generate(_files.Values.SelectMany(f => f.Classes));
             }
         }
 
-        public void GenerateFromFile(ModelFile file)
+        private void GenerateClasses(ModelFile file)
         {
             if (_config.OutputDirectory == null)
             {
@@ -88,7 +79,7 @@ namespace TopModel.Generator.CSharp
                 _config.LegacyProjectPaths,
                 _config.OutputDirectory,
                 file.Descriptor.Kind == Kind.Data,
-                _rootNamespace,
+                file.Descriptor.App,
                 file.Descriptor.Namespace.CSharpName);
 
             Directory.CreateDirectory(currentDirectory);
@@ -100,9 +91,11 @@ namespace TopModel.Generator.CSharp
             _logger.LogInformation($"{file.Classes.Count()} classes générées.");
         }
 
-        private void GenerateForReferences(IGrouping<Namespace, Class> module)
+        private void GenerateReferences(Namespace ns)
         {
-            _referenceAccessorGenerator.Generate(module);
+            _referenceAccessorGenerator.Generate(
+                _files.Values.SelectMany(f => f.Classes)
+                    .Where(c => c.Stereotype != null && c.Namespace.Equals(ns)));
         }
     }
 }

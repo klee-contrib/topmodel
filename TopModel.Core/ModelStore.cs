@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using TopModel.Core.Config;
 using TopModel.Core.FileModel;
 using TopModel.Core.Loaders;
@@ -20,39 +21,27 @@ namespace TopModel.Core
         private readonly IMemoryCache _fsCache;
         private readonly ILogger<ModelStore> _logger;
         private readonly ModelFileLoader _modelFileLoader;
+        private readonly IEnumerable<IModelWatcher> _modelWatchers;
 
         private readonly IDictionary<string, Domain> _domains = new Dictionary<string, Domain>();
         private readonly IDictionary<FileName, ModelFile> _modelFiles = new Dictionary<FileName, ModelFile>();
 
         private readonly ConcurrentDictionary<FileName, ModelFile> _pendingUpdates = new ConcurrentDictionary<FileName, ModelFile>();
 
-        public ModelStore(DomainFileLoader domainFileLoader, IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, RootConfig config)
+        private bool loaded = false;
+
+        public ModelStore(DomainFileLoader domainFileLoader, IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, RootConfig config, IEnumerable<IModelWatcher> modelWatchers)
         {
             _config = config;
             _domainFileLoader = domainFileLoader;
             _fsCache = fsCache;
             _logger = logger;
             _modelFileLoader = modelFileLoader;
+            _modelWatchers = modelWatchers;
         }
-
-        public event ModelFileChangeEventHandler? FilesChanged;
-
+        
         public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes);
-        public IEnumerable<ModelFile> Files => _modelFiles.Values;
-
-        public string RootNamespace
-        {
-            get
-            {
-                var apps = _modelFiles.Select(f => f.Value.Descriptor.App).Distinct();
-                if (apps.Count() != 1)
-                {
-                    throw new Exception("Tous les fichiers doivent être liés à la même 'app'.");
-                }
-
-                return apps.Single();
-            }
-        }
+        public IEnumerable<ModelFile> Files => _modelFiles.Values;        
 
         public IDisposable BeginWatch()
         {
@@ -106,6 +95,13 @@ namespace TopModel.Core
             _logger.LogInformation($"{_modelFiles.SelectMany(mf => mf.Value.Classes).Count()} classes chargées.");
 
             LoadReferenceLists();
+
+            foreach (var modelWatcher in _modelWatchers)
+            {
+                modelWatcher.OnFilesChanged(Files);
+            }
+
+            loaded = true;
         }    
 
         private IEnumerable<ModelFile> GetDependencies(ModelFile modelFile)
@@ -152,20 +148,35 @@ namespace TopModel.Core
         {
             _fsCache.Set(e.FullPath, e, new MemoryCacheEntryOptions()
                 .AddExpirationToken(new CancellationChangeToken(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token))
-                .RegisterPostEvictionCallback((k, v, r, a) => OnModelFileChange((string)k, r)));
+                .RegisterPostEvictionCallback((k, v, r, a) =>
+                {
+                    if (r != EvictionReason.TokenExpired)
+                    {
+                        return;
+                    }
+                    OnModelFileChange((string)k);
+                }));
         }
 
-        private void OnModelFileChange(string filePath, EvictionReason reason)
-        {
-            if (reason != EvictionReason.TokenExpired)
-            {
-                return;
-            }
-
+        private void OnModelFileChange(string filePath)
+        {           
             try
             {
                 _logger.LogInformation(string.Empty);
                 _logger.LogInformation($"Fichier {filePath} modifié...");
+
+                if (!loaded)
+                {
+                    _logger.LogInformation("Attente de la fin de la génération initiale pour continuer...");
+                    var waitTask = Task.Run(async () =>
+                    {
+                        while (!loaded)
+                        {
+                            await Task.Delay(500);
+                        }
+                    });
+                    waitTask.Wait();
+                }
 
                 var file = _modelFileLoader.LoadModelFile(filePath);
 
@@ -199,7 +210,10 @@ namespace TopModel.Core
                     LoadReferenceLists();
                 }
 
-                FilesChanged?.Invoke(this, filesToGenerate);
+                foreach (var modelWatcher in _modelWatchers)
+                {
+                    modelWatcher.OnFilesChanged(filesToGenerate);
+                }
 
                 _logger.LogInformation($"Génération terminée avec succès.");
 

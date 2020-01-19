@@ -9,8 +9,8 @@ namespace TopModel.Generator.ProceduralSql
     /// </summary>
     public class PostgreSchemaGenerator : AbstractSchemaGenerator
     {
-        public PostgreSchemaGenerator(string appName, ProceduralSqlConfig config, ILogger<ProceduralSqlGenerator> logger)
-            : base(appName, config, logger)
+        public PostgreSchemaGenerator(ProceduralSqlConfig config, ILogger<ProceduralSqlGenerator> logger)
+            : base(config, logger)
         {
         }
 

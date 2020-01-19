@@ -9,8 +9,8 @@ namespace TopModel.Generator.ProceduralSql
     /// </summary>
     public class SqlServerSchemaGenerator : AbstractSchemaGenerator
     {
-        public SqlServerSchemaGenerator(string appName, ProceduralSqlConfig config, ILogger<ProceduralSqlGenerator> logger)
-            : base(appName, config, logger)
+        public SqlServerSchemaGenerator(ProceduralSqlConfig config, ILogger<ProceduralSqlGenerator> logger)
+            : base(config, logger)
         {
         }
 

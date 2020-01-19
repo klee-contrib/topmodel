@@ -12,59 +12,46 @@ namespace TopModel.Generator.Javascript
     /// <summary>
     /// Générateur des objets de traduction javascripts.
     /// </summary>
-    public class JavascriptResourceGenerator : IGenerator
+    public class JavascriptResourceGenerator : IModelWatcher
     {
         private readonly JavascriptConfig? _config;
         private readonly ILogger<JavascriptResourceGenerator> _logger;
-        private readonly ModelStore _modelStore;
+        private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
 
-        public JavascriptResourceGenerator(ModelStore modelStore, ILogger<JavascriptResourceGenerator> logger, JavascriptConfig? config = null)
+        public JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> logger, JavascriptConfig? config = null)
         {
             _config = config;
             _logger = logger;
-            _modelStore = modelStore;
         }
 
-        public bool CanGenerate => _config?.ResourceOutputDirectory != null;
-
-        public string Name => "des ressources Typescript";
-
-        /// <summary>
-        /// Génère le code des classes.
-        /// </summary>
-        public void GenerateAll()
+        public void OnFilesChanged(IEnumerable<ModelFile> files)
         {
-            foreach (var module in _modelStore.Classes.GroupBy(c => c.Namespace.Module))
+            foreach (var file in files)
             {
-                GenerateForModule(module);
+                _files[file.Name] = file;
             }
 
-            _modelStore.FilesChanged += (o, files) =>
+            var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
+
+            foreach (var module in modules)
             {
-                foreach (var module in files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct())
-                {
-                    GenerateForModule(_modelStore.Classes.GroupBy(c => c.Namespace.Module).Single(g => g.Key == module));
-                }
-            };
+                GenerateModule(module);
+            }
         }
 
-        public void GenerateFromFile(ModelFile file)
-        {
-            // Pas de génération unitaire.
-        }
-
-        private void GenerateForModule(IGrouping<string, Class> module)
+        private void GenerateModule(string module)
         {
             if (_config?.ResourceOutputDirectory == null)
             {
                 return;
             }
 
+            var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.Namespace.Module == module);
             var dirInfo = Directory.CreateDirectory(_config.ResourceOutputDirectory);
-            var fileName = FirstToLower(module.Key);
+            var fileName = FirstToLower(module);
 
-            _logger.LogInformation($"Génération du fichier de ressources pour le module {module.Key}...");
-            WriteNameSpaceNode(dirInfo.FullName + "/" + fileName + ".ts", module.Key, module);
+            _logger.LogInformation($"Génération du fichier de ressources pour le module {module}...");
+            WriteNameSpaceNode(dirInfo.FullName + "/" + fileName + ".ts", module, classes);
             _logger.LogInformation($"{module.Count()} classes ajoutées dans le fichier de ressources.");
         }
 
