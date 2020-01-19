@@ -7,15 +7,21 @@ namespace TopModel.Core
     {
 #nullable disable
         public string Name { get; set; }
+
         public string Label { get; set; }
+
         public string CsharpType { get; set; }
+
 #nullable enable
         public string? SqlType { get; set; }
+
         public string? CustomAnnotation { get; set; }
+
         public string? CustomUsings { get; set; }
+
         public bool UseTypeName { get; set; }
 
-        public (int length, int precision)? SqlTypePrecision
+        public (int Length, int Precision)? SqlTypePrecision
         {
             get
             {

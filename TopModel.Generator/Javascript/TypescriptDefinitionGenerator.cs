@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,9 +24,6 @@ namespace TopModel.Generator.Javascript
 
         public string Name => nameof(TypescriptDefinitionGenerator);
 
-        /// <summary>
-        /// Génère les définitions Typescript.
-        /// </summary>
         public void OnFilesChanged(IEnumerable<ModelFile> files)
         {
             if (_config.ModelOutputDirectory == null)
@@ -121,11 +118,12 @@ namespace TopModel.Generator.Javascript
             foreach (var import in imports)
             {
                 fw.Write("\r\nimport {");
-                fw.Write(import.import);
+                fw.Write(import.Import);
                 fw.Write("} from \"");
-                fw.Write(import.path);
+                fw.Write(import.Path);
                 fw.Write("\";");
             }
+
             if (imports.Any())
             {
                 fw.Write("\r\n");
@@ -259,7 +257,7 @@ namespace TopModel.Generator.Javascript
         /// Récupère la liste d'imports de types pour les services.
         /// </summary>
         /// <returns>La liste d'imports (type, chemin du module, nom du fichier).</returns>
-        private IEnumerable<(string import, string path)> GetImportList(Class classe)
+        private IEnumerable<(string Import, string Path)> GetImportList(Class classe)
         {
             var types = classe.Properties
                 .OfType<CompositionProperty>()

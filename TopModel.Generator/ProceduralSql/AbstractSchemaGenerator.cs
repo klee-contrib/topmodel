@@ -90,7 +90,6 @@ namespace TopModel.Generator.ProceduralSql
         /// Génère le script SQL.
         /// </summary>
         /// <param name="classes">Classes.</param>
-
         public void GenerateSchemaScript(IEnumerable<Class> classes)
         {
             var outputFileNameCrebas = _config.CrebasFile;

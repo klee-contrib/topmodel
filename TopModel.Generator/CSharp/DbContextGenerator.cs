@@ -13,6 +13,7 @@ namespace TopModel.Generator.CSharp
     {
         private readonly CSharpConfig _config;
         private readonly ILogger<CSharpGenerator> _logger;
+
         public DbContextGenerator(CSharpConfig config, ILogger<CSharpGenerator> logger)
         {
             _config = config;
@@ -91,7 +92,7 @@ namespace TopModel.Generator.CSharp
             }
             else
             {
-                var inheritance = _config.LegacyIdentity ? "" : " : DbContext";
+                var inheritance = _config.LegacyIdentity ? string.Empty : " : DbContext";
 
                 w.WriteSummary(1, "DbContext généré pour Entity Framework 6.");
                 w.WriteLine(1, $"public partial class {dbContextName}{inheritance}");
@@ -111,7 +112,6 @@ namespace TopModel.Generator.CSharp
                 w.WriteLine(2, "{");
                 w.WriteLine(2, "}");
             }
-
 
             foreach (var classe in classes.Where(c => c.Trigram != null).OrderBy(c => c.Name))
             {
@@ -144,12 +144,12 @@ namespace TopModel.Generator.CSharp
                     {
                         if (property.Domain.SqlTypePrecision.HasValue)
                         {
-                            w.WriteLine(3, string.Format("modelBuilder.Entity<{0}>().Property(x => x.{1}).HasPrecision({2}, {3});",
+                            w.WriteLine(3, string.Format(
+                                "modelBuilder.Entity<{0}>().Property(x => x.{1}).HasPrecision({2}, {3});",
                                 classe.Name,
                                 property.Name,
-                                property.Domain.SqlTypePrecision.Value.length,
-                                property.Domain.SqlTypePrecision.Value.precision
-                            ));
+                                property.Domain.SqlTypePrecision.Value.Length,
+                                property.Domain.SqlTypePrecision.Value.Precision));
                         }
                     }
                 }

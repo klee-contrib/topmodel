@@ -27,7 +27,7 @@ namespace TopModel.Core
 
         private readonly ConcurrentDictionary<FileName, ModelFile> _pendingUpdates = new ConcurrentDictionary<FileName, ModelFile>();
 
-        private bool loaded = false;
+        private bool _loaded = false;
 
         public ModelStore(DomainFileLoader domainFileLoader, IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers)
         {
@@ -38,9 +38,10 @@ namespace TopModel.Core
             _modelFileLoader = modelFileLoader;
             _modelWatchers = modelWatchers;
         }
-        
+
         public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes);
-        public IEnumerable<ModelFile> Files => _modelFiles.Values;        
+
+        public IEnumerable<ModelFile> Files => _modelFiles.Values;
 
         public IDisposable BeginWatch()
         {
@@ -81,12 +82,14 @@ namespace TopModel.Core
             {
                 relationshipErrors.AddRange(ResolveRelationships(modelFile));
             }
+
             if (relationshipErrors.Any())
             {
                 foreach (var error in relationshipErrors)
                 {
                     _logger.LogError(error);
                 }
+
                 throw new Exception("Erreur lors de la lecture du modèle.");
             }
 
@@ -103,8 +106,8 @@ namespace TopModel.Core
 
             _logger.LogInformation("Génération initiale terminée avec succès.");
 
-            loaded = true;
-        }    
+            _loaded = true;
+        }
 
         private IEnumerable<ModelFile> GetDependencies(ModelFile modelFile)
         {
@@ -122,7 +125,7 @@ namespace TopModel.Core
         }
 
         private void LoadReferenceLists()
-        { 
+        {
             var staticLists = ReferenceListsLoader.LoadReferenceLists(_config.StaticLists);
             var referenceLists = ReferenceListsLoader.LoadReferenceLists(_config.ReferenceLists);
 
@@ -152,23 +155,24 @@ namespace TopModel.Core
                     {
                         return;
                     }
+
                     OnModelFileChange((string)k);
                 }));
         }
 
         private void OnModelFileChange(string filePath)
-        {           
+        {
             try
             {
                 _logger.LogInformation(string.Empty);
                 _logger.LogInformation($"Fichier {filePath.ToRelative()} modifié...");
 
-                if (!loaded)
+                if (!_loaded)
                 {
                     _logger.LogInformation("Attente de la fin de la génération initiale pour continuer...");
                     var waitTask = Task.Run(async () =>
                     {
-                        while (!loaded)
+                        while (!_loaded)
                         {
                             await Task.Delay(500);
                         }
@@ -200,6 +204,7 @@ namespace TopModel.Core
                     {
                         _logger.LogError(error);
                     }
+
                     throw new Exception("Erreur lors de la lecture du modèle.");
                 }
 
@@ -240,6 +245,7 @@ namespace TopModel.Core
                             yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'un de ses dépendances. ({modelFile}/{classe.Name})";
                             break;
                         }
+
                         classe.Extends = extends;
                         break;
                     case RegularProperty rp:
@@ -248,6 +254,7 @@ namespace TopModel.Core
                             yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - Le domaine '{relation.Value}' est introuvable. ({modelFile}/{rp.Class.Name}/{rp.Name})";
                             break;
                         }
+
                         rp.Domain = domain;
                         break;
                     case AssociationProperty ap:
@@ -256,6 +263,7 @@ namespace TopModel.Core
                             yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{ap.Class.Name}/{{association}})";
                             break;
                         }
+
                         ap.Association = association;
                         break;
                     case CompositionProperty cp:
@@ -264,6 +272,7 @@ namespace TopModel.Core
                             yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{cp.Class.Name}/{{composition}})";
                             break;
                         }
+
                         cp.Composition = composition;
                         break;
                     case AliasProperty alp:
@@ -272,12 +281,14 @@ namespace TopModel.Core
                             yield return $"{modelFile.Path}[{relation.Peer.Start.Line},{relation.Peer.Start.Column}] - La classe '{relation.Peer!.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{alp.Class.Name}/{{alias}})";
                             break;
                         }
+
                         var aliasedProperty = aliasedClass.Properties.SingleOrDefault(p => p.Name == relation.Value);
                         if (aliasedProperty == null)
                         {
                             yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La propriété '{relation.Value}' est introuvable sur la classe '{aliasedClass.Name}'. ({modelFile}/{alp.Class.Name}/{{alias}})";
                             break;
                         }
+
                         alp.Property = (IFieldProperty)aliasedProperty;
                         break;
                 }

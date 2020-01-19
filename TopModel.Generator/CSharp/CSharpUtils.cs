@@ -15,7 +15,7 @@ namespace TopModel.Generator.CSharp
         /// Retourne le nom du module métier depuis un namespace.
         /// </summary>
         /// <param name="nameSpace">Le namespace</param>
-        /// <returns></returns>
+        /// <returns>Module métier</returns>
         public static string ExtractModuleMetier(string nameSpace)
         {
             const string DataContractSuffix = "DataContract";
@@ -102,28 +102,9 @@ namespace TopModel.Generator.CSharp
         }
 
         /// <summary>
-        /// Retourne le répertoire dans lequel générer les contrats.
-        /// </summary>
-        /// <param name="projectName">Nom du projet.</param>
-        /// <returns>Répertoire dans lequel générer les contrats.</returns>
-        private static string GetContractDirectoryName(string outDir, string projectName)
-        {
-            return Path.Combine(outDir, projectName + ".Contract");
-        }
-
-        /// <summary>
         /// Retourne le répertoire dans lequel générer les objets persistants.
         /// </summary>
-        /// <param name="projectName">Nom du projet.</param>
-        /// <returns>Répertoire dans lequel générer les objets persistants.</returns>
-        private static string GetDataContractDirectoryName(string outDir, string projectName)
-        {
-            return Path.Combine(outDir, projectName + ".DataContract");
-        }
-
-        /// <summary>
-        /// Retourne le répertoire dans lequel générer les objets persistants.
-        /// </summary>
+        /// <param name="outDir">Répertoire sortant.</param>
         /// <param name="projectName">Nom du projet.</param>
         /// <returns>Répertoire dans lequel générer les objets persistants.</returns>
         public static string GetImplementationDirectoryName(string outDir, string projectName)
@@ -172,7 +153,7 @@ namespace TopModel.Generator.CSharp
         /// Mets au pluriel le nom.
         /// </summary>
         /// <param name="className">Le nom de la classe.</param>
-        /// <returns></returns>
+        /// <returns>Au pluriel.</returns>
         public static string Pluralize(string className)
         {
             return className.EndsWith("s") ? className : className + "s";
@@ -188,6 +169,26 @@ namespace TopModel.Generator.CSharp
             return string.IsNullOrEmpty(dottedString)
                 ? dottedString
                 : dottedString.Replace(".", string.Empty);
+        }
+
+        /// <summary>
+        /// Retourne le répertoire dans lequel générer les contrats.
+        /// </summary>
+        /// <param name="projectName">Nom du projet.</param>
+        /// <returns>Répertoire dans lequel générer les contrats.</returns>
+        private static string GetContractDirectoryName(string outDir, string projectName)
+        {
+            return Path.Combine(outDir, projectName + ".Contract");
+        }
+
+        /// <summary>
+        /// Retourne le répertoire dans lequel générer les objets persistants.
+        /// </summary>
+        /// <param name="projectName">Nom du projet.</param>
+        /// <returns>Répertoire dans lequel générer les objets persistants.</returns>
+        private static string GetDataContractDirectoryName(string outDir, string projectName)
+        {
+            return Path.Combine(outDir, projectName + ".DataContract");
         }
 
         /// <summary>

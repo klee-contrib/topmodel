@@ -111,6 +111,7 @@ namespace TopModel.Generator.Ssdt.Scripter
             {
                 sb.Append(" identity");
             }
+
             if (property.Required && !property.PrimaryKey)
             {
                 sb.Append(" not null");
@@ -133,7 +134,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// Génère la contrainte de clef étrangère.
         /// </summary>
         /// <param name="sb">Flux d'écriture.</param>
-        /// <param name="property">Propriété portant la clef étrangère.</param>        
+        /// <param name="property">Propriété portant la clef étrangère.</param>
         private static void WriteConstraintForeignKey(StringBuilder sb, AssociationProperty property)
         {
             var tableName = property.Class.SqlName;
@@ -231,12 +232,12 @@ namespace TopModel.Generator.Ssdt.Scripter
                 definitions.Add(sb.ToString());
             }
 
-            // Primary Key            
+            // Primary Key
             sb.Clear();
             WritePkLine(sb, table);
             definitions.Add(sb.ToString());
 
-            // Foreign key constraints            
+            // Foreign key constraints
             var fkList = properties.OfType<AssociationProperty>().ToList();
             foreach (var property in fkList)
             {
@@ -259,7 +260,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// Ecrit la ligne de création de la PK.
         /// </summary>
         /// <param name="sb">Flux.</param>
-        /// <param name="classe">Classe.</param>        
+        /// <param name="classe">Classe.</param>
         private static void WritePkLine(StringBuilder sb, Class classe)
         {
             sb.Append("constraint [PK_").Append(classe.SqlName).Append("] primary key clustered (");
@@ -280,12 +281,11 @@ namespace TopModel.Generator.Ssdt.Scripter
 
         /// <summary>
         /// Calcule la liste des déclarations de contraintes d'unicité.
-        /// </summary>        
+        /// </summary>
         /// <param name="classe">Classe de la table.</param>
         /// <returns>Liste des déclarations de contraintes d'unicité.</returns>
         private static IList<string> WriteUniqueConstraint(Class classe)
         {
-
             var constraintList = new List<string>();
 
             var uniqueCount = classe.Properties.OfType<RegularProperty>().Count(p => p.Unique);

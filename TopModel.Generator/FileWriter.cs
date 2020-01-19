@@ -94,7 +94,7 @@ namespace TopModel.Generator
             if (fileExists)
             {
                 using var reader = new StreamReader(_fileName, Encoding);
-                
+
                 if (EnableHeader)
                 {
                     for (var i = 0; i < LinesInHeader; i++)

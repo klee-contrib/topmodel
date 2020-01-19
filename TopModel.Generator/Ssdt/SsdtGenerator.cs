@@ -26,6 +26,7 @@ namespace TopModel.Generator.Ssdt
 
             _initReferenceListScript = new InitReferenceListScripter(_config);
         }
+
         public string Name => nameof(SsdtGenerator);
 
         public void OnFilesChanged(IEnumerable<ModelFile> files)
@@ -106,7 +107,7 @@ namespace TopModel.Generator.Ssdt
                 ScriptName = insertMainScriptName
             };
 
-            // Script un fichier par classe.        
+            // Script un fichier par classe.
             foreach (var referenceClass in referenceClassList)
             {
                 _initReferenceListScript.Write(referenceClass, insertScriptFolderPath, _logger);

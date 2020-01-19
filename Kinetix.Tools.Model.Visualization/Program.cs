@@ -16,7 +16,7 @@ namespace TopModel.Generator
                 .BuildServiceProvider();
 
             var modelFile = provider.GetService<ModelFileLoader>().LoadModelFile(args[0]);
-            var relationships = modelFile.Relationships.ToDictionary(r => r.source, r => r.target);
+            var relationships = modelFile.Relationships.ToDictionary(r => r.Source, r => r.Target);
 
             var sb = new StringBuilder();
             sb.Append(@$"digraph ""{args[0].Split("\\").Last()}"" {{
@@ -44,7 +44,7 @@ namespace TopModel.Generator
                     if (prop is AliasProperty alp)
                     {
                         var alias = relationships[alp];
-                        sb.Append($"<tr><td align=\"left\"><b>{alp.Prefix ?? ""}{alias.Value}{alp.Suffix ?? ""}          </b></td><td align=\"left\"><i>[{alias.Peer!.Value}]     </i></td></tr>");
+                        sb.Append($"<tr><td align=\"left\"><b>{alp.Prefix ?? string.Empty}{alias.Value}{alp.Suffix ?? string.Empty}          </b></td><td align=\"left\"><i>[{alias.Peer!.Value}]     </i></td></tr>");
                     }
                     else
                     {

@@ -39,7 +39,7 @@ namespace TopModel.Core.Loaders
             };
         }
 
-        private IEnumerable<Class> LoadClasses(Parser parser, List<(object, Relation)> relationships, Namespace ns)
+        private IEnumerable<Class> LoadClasses(Parser parser, List<(object Source, Relation Target)> relationships, Namespace ns)
         {
             while (parser.TryConsume<DocumentStart>(out _))
             {

@@ -160,7 +160,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="writer">Flux.</param>
         /// <param name="item">Liste de références.</param>
-        private static void WriteInsertLines(TextWriter writer, ReferenceClass item)
+        private void WriteInsertLines(TextWriter writer, ReferenceClass item)
         {
             foreach (var initItem in item.Values)
             {

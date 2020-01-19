@@ -241,6 +241,7 @@ namespace TopModel.Generator.CSharp
                 {
                     w.WriteLine(2, "[OperationContract]");
                 }
+
                 w.WriteLine(2, "ICollection<" + classe.Name + "> Load" + (_config.DbContextProjectPath == null ? $"{classe.Name}List" : Pluralize(classe.Name)) + "();");
 
                 if (count != classList.Count())
@@ -257,7 +258,7 @@ namespace TopModel.Generator.CSharp
         /// Retourne le code associé au cors de l'implémentation d'un service de type ReferenceAccessor.
         /// </summary>
         /// <param name="isBroker">Broker.</param>
-        /// <param name="classFiles">Type chargé par le ReferenceAccessor.</param>
+        /// <param name="classe">Type chargé par le ReferenceAccessor.</param>
         /// <returns>Code généré.</returns>
         private string LoadReferenceAccessorBody(bool isBroker, Class classe)
         {

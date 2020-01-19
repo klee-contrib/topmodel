@@ -8,7 +8,7 @@ namespace TopModel.Core.Loaders
 {
     public static class ReferenceListsLoader
     {
-        public static IEnumerable<(string className, IEnumerable<(string key, IDictionary<string, object> values)>)> LoadReferenceLists(string? referenceListsFile)
+        public static IEnumerable<(string ClassName, IEnumerable<(string Key, IDictionary<string, object> Values)> Items)> LoadReferenceLists(string? referenceListsFile)
         {
             if (referenceListsFile == null)
             {
@@ -24,17 +24,17 @@ namespace TopModel.Core.Loaders
                 .OrderBy(r => r.Key);
         }
 
-        public static void AddReferenceValues(Class classe, IEnumerable<(string key, IDictionary<string, object> values)> values)
+        public static void AddReferenceValues(Class classe, IEnumerable<(string Key, IDictionary<string, object> Values)> values)
         {
             classe.ReferenceValues = values.Select(reference => new ReferenceValue
             {
-                Name = reference.key,
+                Name = reference.Key,
                 Value = classe.Properties.OfType<IFieldProperty>().Select(prop =>
                 {
-                    reference.values.TryGetValue(prop.Name, out var propValue);
+                    reference.Values.TryGetValue(prop.Name, out var propValue);
                     if (propValue == null && prop.Required && (!prop.PrimaryKey || prop.Domain.CsharpType == "string"))
                     {
-                        throw new Exception($"L'initilisation {reference.key} de la classe {classe.Name} n'initialise pas la propriété obligatoire {prop.Name}.");
+                        throw new Exception($"L'initilisation {reference.Key} de la classe {classe.Name} n'initialise pas la propriété obligatoire {prop.Name}.");
                     }
 
                     return (prop, propValue);

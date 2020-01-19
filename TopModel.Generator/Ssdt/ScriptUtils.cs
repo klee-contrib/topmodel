@@ -31,8 +31,8 @@ namespace TopModel.Generator.Ssdt
         /// <returns>La chaîne de caractère équivalente, mise au format SQL.</returns>
         public static string PrepareDataToSqlDisplay(string? raw)
         {
-            return string.IsNullOrEmpty(raw) 
-                ? string.Empty 
+            return string.IsNullOrEmpty(raw)
+                ? string.Empty
                 : raw.Replace("'", "''");
         }
     }

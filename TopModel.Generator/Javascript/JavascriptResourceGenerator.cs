@@ -20,6 +20,7 @@ namespace TopModel.Generator.Javascript
             _config = config;
             _logger = logger;
         }
+
         public string Name => nameof(JavascriptResourceGenerator);
 
         public void OnFilesChanged(IEnumerable<ModelFile> files)
@@ -56,7 +57,7 @@ namespace TopModel.Generator.Javascript
         /// </summary>
         /// <param name="value">String to edit.</param>
         /// <returns>Parser string.</returns>
-        private static string FirstToLower(string value)
+        private string FirstToLower(string value)
         {
             return value.Substring(0, 1).ToLowerInvariant() + value.Substring(1);
         }
@@ -66,7 +67,7 @@ namespace TopModel.Generator.Javascript
         /// </summary>
         /// <param name="name">Nom a formatter.</param>
         /// <returns>Nom formatté.</returns>
-        private static string FormatJsName(string name)
+        private string FormatJsName(string name)
         {
             return FirstToLower(name);
         }
@@ -76,7 +77,7 @@ namespace TopModel.Generator.Javascript
         /// </summary>
         /// <param name="name">Nom a formatter.</param>
         /// <returns>Nom formatté.</returns>
-        private static string FormatJsPropertyName(string name)
+        private string FormatJsPropertyName(string name)
         {
             return name.Substring(0, 1).ToLowerInvariant() + name.Substring(1);
         }
@@ -87,7 +88,7 @@ namespace TopModel.Generator.Javascript
         /// <param name="writer">Flux de sortie.</param>
         /// <param name="classe">Classe.</param>
         /// <param name="isLast">True s'il s'agit de al dernière classe du namespace.</param>
-        private static void WriteClasseNode(TextWriter writer, Class classe, bool isLast)
+        private void WriteClasseNode(TextWriter writer, Class classe, bool isLast)
         {
             writer.WriteLine("    " + FormatJsName(classe.Name) + ": {");
             var i = 1;
@@ -106,7 +107,7 @@ namespace TopModel.Generator.Javascript
         /// <param name="writer">Flux de sortie.</param>
         /// <param name="indentionLevel">Idention courante.</param>
         /// <param name="isLast">Si true, on n'ajoute pas de virgule à la fin.</param>
-        private static void WriteCloseBracket(TextWriter writer, int indentionLevel, bool isLast)
+        private void WriteCloseBracket(TextWriter writer, int indentionLevel, bool isLast)
         {
             for (var i = 0; i < indentionLevel; i++)
             {
@@ -144,7 +145,7 @@ namespace TopModel.Generator.Javascript
         /// <param name="writer">Flux de sortie.</param>
         /// <param name="property">Propriété.</param>
         /// <param name="isLast">True s'il s'agit du dernier noeud de la classe.</param>
-        private static void WritePropertyNode(TextWriter writer, IProperty property, bool isLast)
+        private void WritePropertyNode(TextWriter writer, IProperty property, bool isLast)
         {
             writer.WriteLine("        " + FormatJsPropertyName(property.Name) + @": """ + property.Label + @"""" + (isLast ? string.Empty : ","));
         }

@@ -3,7 +3,9 @@
     public interface IFieldProperty : IProperty
     {
         bool Required { get; }
+
         Domain Domain { get; }
+
         string? DefaultValue { get; }
 
         string TSType
