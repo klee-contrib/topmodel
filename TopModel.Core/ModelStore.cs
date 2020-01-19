@@ -186,16 +186,10 @@ namespace TopModel.Core
                 _pendingUpdates.AddOrUpdate(file.Name, file, (_, __) => file);
 
                 var relationshipErrors = new List<string>();
-                var filesToGenerate = new List<ModelFile>();
-                foreach (var update in _pendingUpdates.Values)
+                var affectedFiles = _pendingUpdates.Values.SelectMany(pf => _modelFiles.Values.Where(f => f.Name.Equals(pf.Name) || f.Dependencies.Any(d => d.Equals(pf.Name)))).Distinct();
+                foreach (var affectedFile in ModelUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name.Equals(d.Name)))))
                 {
-                    relationshipErrors.AddRange(ResolveRelationships(update));
-                    filesToGenerate.Add(update);
-                    foreach (var dep in _modelFiles.Values.Where(f => f.Dependencies.Any(d => d.Equals(update.Name))))
-                    {
-                        relationshipErrors.AddRange(ResolveRelationships(dep));
-                        filesToGenerate.Add(dep);
-                    }
+                    relationshipErrors.AddRange(ResolveRelationships(affectedFile));
                 }
 
                 if (relationshipErrors.Any())
@@ -215,7 +209,7 @@ namespace TopModel.Core
 
                 foreach (var modelWatcher in _modelWatchers)
                 {
-                    modelWatcher.OnFilesChanged(filesToGenerate);
+                    modelWatcher.OnFilesChanged(affectedFiles);
                 }
 
                 _logger.LogInformation($"Mise à jour terminée avec succès.");
@@ -242,7 +236,7 @@ namespace TopModel.Core
                     case Class classe:
                         if (!referencedClasses.TryGetValue(relation.Value, out var extends))
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'un de ses dépendances. ({modelFile}/{classe.Name})";
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'un de ses dépendances. ({modelFile}/{classe})";
                             break;
                         }
 
@@ -251,7 +245,7 @@ namespace TopModel.Core
                     case RegularProperty rp:
                         if (!_domains.TryGetValue(relation.Value, out var domain))
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - Le domaine '{relation.Value}' est introuvable. ({modelFile}/{rp.Class.Name}/{rp.Name})";
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - Le domaine '{relation.Value}' est introuvable. ({modelFile}/{rp.Class}/{rp.Name})";
                             break;
                         }
 
@@ -260,7 +254,7 @@ namespace TopModel.Core
                     case AssociationProperty ap:
                         if (!referencedClasses.TryGetValue(relation.Value, out var association))
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{ap.Class.Name}/{{association}})";
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{ap.Class}/{{association}})";
                             break;
                         }
 
@@ -269,7 +263,7 @@ namespace TopModel.Core
                     case CompositionProperty cp:
                         if (!referencedClasses.TryGetValue(relation.Value, out var composition))
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{cp.Class.Name}/{{composition}})";
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{cp.Class}/{{composition}})";
                             break;
                         }
 
@@ -278,14 +272,14 @@ namespace TopModel.Core
                     case AliasProperty alp:
                         if (!referencedClasses.TryGetValue(relation.Peer!.Value, out var aliasedClass))
                         {
-                            yield return $"{modelFile.Path}[{relation.Peer.Start.Line},{relation.Peer.Start.Column}] - La classe '{relation.Peer!.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{alp.Class.Name}/{{alias}})";
+                            yield return $"{modelFile.Path}[{relation.Peer.Start.Line},{relation.Peer.Start.Column}] - La classe '{relation.Peer!.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{alp.Class}/{{alias}})";
                             break;
                         }
 
                         var aliasedProperty = aliasedClass.Properties.SingleOrDefault(p => p.Name == relation.Value);
                         if (aliasedProperty == null)
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La propriété '{relation.Value}' est introuvable sur la classe '{aliasedClass.Name}'. ({modelFile}/{alp.Class.Name}/{{alias}})";
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La propriété '{relation.Value}' est introuvable sur la classe '{aliasedClass}'. ({modelFile}/{alp.Class}/{{alias}})";
                             break;
                         }
 
