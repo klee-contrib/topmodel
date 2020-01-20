@@ -371,10 +371,12 @@ namespace TopModel.Generator.CSharp
         /// <param name="item">La classe générée.</param>
         private void GenerateProperties(CSharpWriter w, Class item)
         {
+            var sameColumnSet = new HashSet<string>(item.Properties.OfType<IFieldProperty>()
+                .GroupBy(g => g.SqlName).Where(g => g.Count() > 1).Select(g => g.Key));
             foreach (var property in item.Properties)
             {
                 w.WriteLine();
-                GenerateProperty(w, property);
+                GenerateProperty(w, property, sameColumnSet);
             }
         }
 
@@ -383,14 +385,15 @@ namespace TopModel.Generator.CSharp
         /// </summary>
         /// <param name="w">Writer.</param>
         /// <param name="property">La propriété générée.</param>
-        private void GenerateProperty(CSharpWriter w, IProperty property)
+        /// <param name="sameColumnSet">Sets des propriétés avec le même nom de colonne, pour ne pas les gérerer (genre alias).</param>
+        private void GenerateProperty(CSharpWriter w, IProperty property, HashSet<string> sameColumnSet)
         {
             w.WriteSummary(2, property.Comment);
 
             if (property is IFieldProperty fp)
             {
                 var prop = fp is AliasProperty alp ? alp.Property : fp;
-                if ((!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.Trigram != null)
+                if ((!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.Trigram != null && !sameColumnSet.Contains(prop.SqlName))
                 {
                     if (prop.Domain.UseTypeName)
                     {
