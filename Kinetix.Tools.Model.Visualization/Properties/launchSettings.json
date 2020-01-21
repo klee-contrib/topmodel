@@ -1,8 +1,0 @@
-﻿{
-  "profiles": {
-    "TopModel.Core.Visualization": {
-      "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\Damien\\Documents\\Projets\\NOUBA\\Model\\Projet\\Data\\12_Mouvements_Financiers.yml"
-    }
-  }
-}

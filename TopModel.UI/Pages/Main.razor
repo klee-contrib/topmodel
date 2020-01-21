@@ -1,0 +1,73 @@
+﻿@page "/{Module}/{Kind}/{File}"
+@inject IModelWatcher _handler
+
+<h4>@Module > @Kind > @File</h4>
+
+@((MarkupString)Svg)
+
+@code {
+#nullable disable
+    [Parameter]
+    public string Module { get; set; }
+
+    [Parameter]
+    public string Kind { get; set; }
+
+    [Parameter]
+    public string File { get; set; }
+
+    public FileName FileName => new FileName { Module = Module, Kind = Kind == "Data" ? FileModel.Kind.Data : FileModel.Kind.Metier, File = File };
+
+    string Svg { get; set; }
+#nullable enable
+
+    protected override void OnInitialized()
+    {
+        var handler = (ModelWatcherHandler)_handler;
+        if (handler.Files.ContainsKey(FileName))
+        {
+            Read();
+        }
+
+        handler.FilesChanged += (_, files) =>
+        {
+            if (files.ContainsKey(FileName))
+            {
+                Read();
+                InvokeAsync(StateHasChanged);
+            }
+        };
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (((ModelWatcherHandler)_handler).Files.ContainsKey(FileName))
+        {
+            Read();
+        }
+    }
+
+    private void Read()
+    {
+        var svg = string.Empty;
+        var dotFile = ModelFileToDot.ToDot(((ModelWatcherHandler)_handler).Files[FileName]);
+        var process = new Process();
+        process.StartInfo.FileName = "dot.exe";
+        process.StartInfo.Arguments = $"-Tsvg";
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardInput = true;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.RedirectStandardError = true;
+        //* Set your output and error (asynchronous) handlers
+        process.OutputDataReceived += (_, d) => svg += d.Data;
+        process.ErrorDataReceived += (_, d) => svg += d.Data;
+        //* Start process and handlers
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+        process.StandardInput.Write(dotFile);
+        process.StandardInput.Close();
+        process.WaitForExit();
+        Svg = svg;
+    }
+}

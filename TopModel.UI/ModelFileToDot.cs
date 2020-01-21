@@ -1,29 +1,20 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
-using TopModel.Core.Loaders;
-using Microsoft.Extensions.DependencyInjection;
+using TopModel.Core.FileModel;
 
-namespace TopModel.Generator
+namespace TopModel.UI
 {
-    public static class Program
+    public static class ModelFileToDot
     {
-        public static void Main(string[] args)
+        public static string ToDot(ModelFile modelFile)
         {
-            using var provider = new ServiceCollection()
-                .AddModelStore(new FileChecker())
-                .AddLogging()
-                .BuildServiceProvider();
-
-            var modelFile = provider.GetService<ModelFileLoader>().LoadModelFile(args[0]);
-            var relationships = modelFile.Relationships.ToDictionary(r => r.Source, r => r.Target);
-
             var sb = new StringBuilder();
-            sb.Append(@$"digraph ""{args[0].Split("\\").Last()}"" {{
+            sb.Append(@$"digraph ""{modelFile}"" {{
   node [fontname = ""Segoe UI"" fontsize = 8 shape = record]
   edge [fontname = ""Segoe UI"" fontsize = 8]
 
 ");
+            var relationships = modelFile.Relationships.ToDictionary(r => r.Source, r => r.Target);
             foreach (var classe in modelFile.Classes)
             {
                 sb.Append("  ");
@@ -69,7 +60,7 @@ namespace TopModel.Generator
 
             sb.Append("}");
 
-            Console.WriteLine(sb.ToString());
+            return sb.ToString();
         }
     }
 }

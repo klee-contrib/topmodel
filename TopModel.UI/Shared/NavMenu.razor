@@ -1,0 +1,27 @@
+﻿@inject IModelWatcher _handler
+
+<ul>
+    @foreach (var file in Files)
+    {
+        <li>
+            <NavLink class="nav-link" href=@{$"/{file}"}>
+                <span class="oi oi-file" aria-hidden="true"></span> @file
+            </NavLink>
+        </li>
+    }
+</ul>
+
+
+@code {
+    IEnumerable<ModelFile> Files { get; set; } = new List<ModelFile>();
+
+    protected override void OnInitialized()
+    {
+        Files = ((ModelWatcherHandler)_handler).Files.Values;
+        ((ModelWatcherHandler)_handler).FilesChanged += (_, files) =>
+        {
+            Files = files.Values.OrderBy(x => x.ToString()).ToList();
+            InvokeAsync(StateHasChanged);
+        };
+    }
+}
