@@ -30,13 +30,20 @@ namespace TopModel.Core.Loaders
             var ns = new Namespace { App = descriptor.App, Module = descriptor.Module, Kind = descriptor.Kind };
             var classes = LoadClasses(parser, relationships, ns).ToList();
 
-            return new ModelFile
+            var file = new ModelFile
             {
                 Path = filePath.ToRelative(),
                 Descriptor = descriptor,
                 Classes = classes,
                 Relationships = relationships
             };
+
+            foreach (var classe in classes)
+            {
+                classe.ModelFile = file;
+            }
+
+            return file;
         }
 
         private IEnumerable<Class> LoadClasses(Parser parser, List<(object Source, Relation Target)> relationships, Namespace ns)

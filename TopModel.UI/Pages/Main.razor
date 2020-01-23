@@ -1,7 +1,7 @@
 ﻿@page "/{Module}/{Kind}/{File}"
 @inject IModelWatcher _handler
 
-<h4>@Module > @Kind > @File</h4>
+<h4>@FileName</h4>
 
 @((MarkupString)Svg)
 
@@ -16,7 +16,7 @@
     [Parameter]
     public string File { get; set; }
 
-    public FileName FileName => new FileName { Module = Module, Kind = Kind == "Data" ? FileModel.Kind.Data : FileModel.Kind.Metier, File = File };
+    public FileName FileName => new FileName { Module = Module, Kind = Kind == "Data" ? FileModel.Kind.Data : FileModel.Kind.Metier, File = File.Replace("+", " ") };
 
     string Svg { get; set; }
 #nullable enable
@@ -55,6 +55,8 @@
         process.StartInfo.FileName = "dot.exe";
         process.StartInfo.Arguments = $"-Tsvg";
         process.StartInfo.UseShellExecute = false;
+        process.StartInfo.StandardInputEncoding = new UTF8Encoding(false);
+        process.StartInfo.StandardOutputEncoding = new UTF8Encoding(false);
         process.StartInfo.RedirectStandardInput = true;
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.RedirectStandardError = true;
@@ -65,7 +67,7 @@
         process.Start();
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
-        process.StandardInput.Write(dotFile);
+        process.StandardInput.Write(Encoding.UTF8.GetString(Encoding.Default.GetBytes(dotFile)));
         process.StandardInput.Close();
         process.WaitForExit();
         Svg = svg;

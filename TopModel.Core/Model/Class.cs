@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TopModel.Core.FileModel;
 
 namespace TopModel.Core
 {
@@ -13,6 +14,8 @@ namespace TopModel.Core
         public string Name { get; set; }
 
         public string Comment { get; set; }
+
+        public ModelFile ModelFile { get; set; }
 
 #nullable enable
         public Class? Extends { get; set; }
