@@ -50,7 +50,7 @@
     private void Read()
     {
         var svg = string.Empty;
-        var dotFile = ModelFileToDot.ToDot(((ModelWatcherHandler)_handler).Files[FileName]);
+        var dotFile = new Digraph(((ModelWatcherHandler)_handler).Files[FileName]).ToString();
         var process = new Process();
         process.StartInfo.FileName = "dot.exe";
         process.StartInfo.Arguments = $"-Tsvg";

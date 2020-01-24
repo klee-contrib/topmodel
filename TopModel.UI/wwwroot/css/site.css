@@ -65,6 +65,14 @@ app {
     height: 100vh
 }
 
+g[id^="edge"]:hover path, g[id^="edge"]:hover polygon {
+    stroke: dodgerblue;
+}
+
+g[id^="edge"]:hover text {
+    fill: dodgerblue;
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;

@@ -4,7 +4,7 @@
     @foreach (var file in Files)
     {
         <li>
-            <NavLink class="nav-link" href=@{$"/{file}"}>
+            <NavLink class="nav-link" href=@{$"/{file.ToString().Replace(" ", "+")}"}>
                 <span class="oi oi-file" aria-hidden="true"></span> @file
             </NavLink>
         </li>
