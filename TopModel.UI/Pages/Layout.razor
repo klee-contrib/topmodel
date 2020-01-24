@@ -1,0 +1,33 @@
+﻿@inherits LayoutComponentBase
+@inject ModelFileProvider _provider
+
+<div class="sidebar">
+    @foreach (var ns in Files.GroupBy(f => f.Descriptor.Namespace))
+    {
+        <h5>@ns.Key.Module (@ns.Key.Kind)</h5>
+        <ul>
+            @foreach (var file in ns)
+            {
+                <li>
+                    <NavLink href=@{$"/{file.ToString().Replace(" ", "+")}"}>
+                        <span class="oi oi-file" aria-hidden="true"></span> @file.Descriptor.File
+                    </NavLink>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@Body
+
+@code {
+    IEnumerable<ModelFile> Files => _provider.Files.Values.OrderBy(x => x.ToString());
+
+    protected override void OnInitialized()
+    {
+        _provider.FilesChanged += (_, __) =>
+        {
+            InvokeAsync(StateHasChanged);
+        };
+    }
+}

@@ -1,9 +1,12 @@
 ﻿@page "/{Module}/{Kind}/{File}"
-@inject IModelWatcher _handler
+@inject ModelFileProvider _provider
 
-<h4>@FileName</h4>
-
-@((MarkupString)Svg)
+<div class="main">
+    <h4>@FileName.Module > @FileName.Kind > @FileName.File</h4>
+    <div class="diagram">
+        @((MarkupString)Svg)
+    </div>
+</div>
 
 @code {
 #nullable disable
@@ -18,58 +21,17 @@
 
     public FileName FileName => new FileName { Module = Module, Kind = Kind == "Data" ? FileModel.Kind.Data : FileModel.Kind.Metier, File = File.Replace("+", " ") };
 
-    string Svg { get; set; }
+    string Svg => _provider.GetSvgForFile(FileName);
 #nullable enable
 
     protected override void OnInitialized()
     {
-        var handler = (ModelWatcherHandler)_handler;
-        if (handler.Files.ContainsKey(FileName))
+        _provider.FileChanged += (_, name) =>
         {
-            Read();
-        }
-
-        handler.FilesChanged += (_, files) =>
-        {
-            if (files.ContainsKey(FileName))
+            if (name.Equals(FileName))
             {
-                Read();
                 InvokeAsync(StateHasChanged);
             }
         };
-    }
-
-    protected override void OnParametersSet()
-    {
-        if (((ModelWatcherHandler)_handler).Files.ContainsKey(FileName))
-        {
-            Read();
-        }
-    }
-
-    private void Read()
-    {
-        var svg = string.Empty;
-        var dotFile = new Digraph(((ModelWatcherHandler)_handler).Files[FileName]).ToString();
-        var process = new Process();
-        process.StartInfo.FileName = "dot.exe";
-        process.StartInfo.Arguments = $"-Tsvg";
-        process.StartInfo.UseShellExecute = false;
-        process.StartInfo.StandardInputEncoding = new UTF8Encoding(false);
-        process.StartInfo.StandardOutputEncoding = new UTF8Encoding(false);
-        process.StartInfo.RedirectStandardInput = true;
-        process.StartInfo.RedirectStandardOutput = true;
-        process.StartInfo.RedirectStandardError = true;
-        //* Set your output and error (asynchronous) handlers
-        process.OutputDataReceived += (_, d) => svg += d.Data;
-        process.ErrorDataReceived += (_, d) => svg += d.Data;
-        //* Start process and handlers
-        process.Start();
-        process.BeginOutputReadLine();
-        process.BeginErrorReadLine();
-        process.StandardInput.Write(Encoding.UTF8.GetString(Encoding.Default.GetBytes(dotFile)));
-        process.StandardInput.Close();
-        process.WaitForExit();
-        Svg = svg;
     }
 }
