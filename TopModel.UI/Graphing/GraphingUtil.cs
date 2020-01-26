@@ -14,7 +14,7 @@ namespace TopModel.UI.Graphing
 
         public static string ForTooltip(this string source)
         {
-            return source.Replace("\"", "\\\"") ?? string.Empty;
+            return source?.Replace("\"", "\\\"").Replace(">", "&gt;").Replace("<", "&lt;") ?? string.Empty;
         }
     }
 }

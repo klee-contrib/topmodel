@@ -5,7 +5,8 @@
 <div class="main">
     <button id="stop-pan" @onclick="() => panning = false" />
     <h4>@FileName.Module > @FileName.Kind > @FileName.File</h4>
-    <svg @onmousewheel="Zoom"
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+         @onmousewheel="Zoom"
          @onmousemove="Pan"
          @onmousedown="() => panning = true">
         <g transform=" matrix(@Transform)">

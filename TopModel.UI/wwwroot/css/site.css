@@ -1,4 +1,5 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+@namespace xlink "http://www.w3.org/1999/xlink";
 
 html, body {
     font-family: "Segoe UI";
@@ -45,10 +46,13 @@ svg {
     cursor: move;
 }
 
-text, title {
-    pointer-events: none;
+text, title, path {
+    cursor: help;
 }
 
+a[xlink|href] > text, a[xlink|href] > title {
+    cursor: pointer;
+}
 
 g[id^="edge"]:hover path, g[id^="edge"]:hover polygon {
     stroke: dodgerblue;

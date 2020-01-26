@@ -60,7 +60,7 @@ namespace TopModel.UI.Graphing
             {
                 foreach (var cell in cells)
                 {
-                    _sb.Append($"<td align=\"left\" href=\"{cell.Href?.GetURL()}\" tooltip=\"{cell.Tooltip.Replace("\"", "\\\"")}\">{cell.Label}</td>");
+                    _sb.Append($"<td align=\"left\" href=\"{cell.Href?.GetURL()}\" tooltip=\"{cell.Tooltip.ForTooltip()}\">{cell.Label}</td>");
                 }
             }
 
