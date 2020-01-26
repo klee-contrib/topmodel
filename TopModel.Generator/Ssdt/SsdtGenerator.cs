@@ -89,7 +89,7 @@ namespace TopModel.Generator.Ssdt
             Directory.CreateDirectory(insertScriptFolderPath);
 
             // Construit la liste des Reference Class ordonnée.
-            var orderList = ModelUtils.Sort(classes, c => c.Properties
+            var orderList = ModelUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
                 .OfType<AssociationProperty>()
                 .Select(a => a.Association)
                 .Where(a => a.Stereotype == c.Stereotype));

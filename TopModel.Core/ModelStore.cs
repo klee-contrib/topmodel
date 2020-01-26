@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using TopModel.Core.FileModel;
 using TopModel.Core.Loaders;
 using Microsoft.Extensions.Caching.Memory;
@@ -25,9 +23,8 @@ namespace TopModel.Core
         private readonly IDictionary<string, Domain> _domains = new Dictionary<string, Domain>();
         private readonly IDictionary<FileName, ModelFile> _modelFiles = new Dictionary<FileName, ModelFile>();
 
-        private readonly ConcurrentDictionary<FileName, ModelFile> _pendingUpdates = new ConcurrentDictionary<FileName, ModelFile>();
-
-        private bool _loaded = false;
+        private readonly object _puLock = new object();
+        private readonly HashSet<FileName> _pendingUpdates = new HashSet<FileName>();
 
         public ModelStore(DomainFileLoader domainFileLoader, IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers)
         {
@@ -43,21 +40,24 @@ namespace TopModel.Core
 
         public IEnumerable<ModelFile> Files => _modelFiles.Values;
 
-        public IDisposable BeginWatch()
+        public IDisposable? LoadFromConfig(bool watch = false)
         {
-            _logger.LogInformation("Lancement du mode watch...");
-            var fsWatcher = new FileSystemWatcher(_config.ModelRoot, "*.yml");
-            fsWatcher.Changed += OnFSChangedEvent;
-            fsWatcher.Created += OnFSChangedEvent;
-            fsWatcher.IncludeSubdirectories = true;
-            fsWatcher.EnableRaisingEvents = true;
-            return fsWatcher;
-        }
+            _logger.LogInformation($"Watchers enregistrés : {string.Join(", ", _modelWatchers.Select(mw => mw.Name))}");
 
-        public void LoadFromConfig()
-        {
+            FileSystemWatcher? fsWatcher = null;
+            if (watch)
+            {
+                _logger.LogInformation("Lancement du mode watch...");
+                fsWatcher = new FileSystemWatcher(_config.ModelRoot, "*.yml");
+                fsWatcher.Changed += OnFSChangedEvent;
+                fsWatcher.Created += OnFSChangedEvent;
+                fsWatcher.IncludeSubdirectories = true;
+                fsWatcher.EnableRaisingEvents = true;
+            }
+
             _domains.Clear();
             _modelFiles.Clear();
+            _pendingUpdates.Clear();
 
             _logger.LogInformation("Chargement des domaines...");
 
@@ -71,42 +71,17 @@ namespace TopModel.Core
             var files = Directory.EnumerateFiles(_config.ModelRoot, "*.yml", SearchOption.AllDirectories)
                .Where(f => f != _config.Domains);
 
-            foreach (var file in files)
+            lock (_puLock)
             {
-                var modelFile = _modelFileLoader.LoadModelFile(file);
-                _modelFiles.Add(modelFile.Name, modelFile);
-            }
-
-            var relationshipErrors = new List<string>();
-            foreach (var modelFile in ModelUtils.Sort(_modelFiles.Values, GetDependencies))
-            {
-                relationshipErrors.AddRange(ResolveRelationships(modelFile));
-            }
-
-            if (relationshipErrors.Any())
-            {
-                foreach (var error in relationshipErrors)
+                foreach (var file in files)
                 {
-                    _logger.LogError(error);
+                    LoadFile(file);
                 }
-
-                throw new Exception("Erreur lors de la lecture du modèle.");
             }
 
-            _logger.LogInformation("Chargement des listes de référence...");
-            LoadReferenceLists();
+            TryApplyUpdates();
 
-            _logger.LogInformation("Modèle chargé avec succès.");
-
-            _logger.LogInformation($"Watchers enregistrés : {string.Join(", ", _modelWatchers.Select(mw => mw.Name))}");
-            foreach (var modelWatcher in _modelWatchers)
-            {
-                modelWatcher.OnFilesChanged(Files);
-            }
-
-            _logger.LogInformation("Génération initiale terminée avec succès.");
-
-            _loaded = true;
+            return fsWatcher;
         }
 
         private IEnumerable<ModelFile> GetDependencies(ModelFile modelFile)
@@ -162,63 +137,78 @@ namespace TopModel.Core
 
         private void OnModelFileChange(string filePath)
         {
+            _logger.LogInformation(string.Empty);
+            _logger.LogInformation($"Fichier {filePath.ToRelative()} modifié...");
+
+            lock (_puLock)
+            {
+                LoadFile(filePath);
+            }
+
+            TryApplyUpdates();
+        }
+
+        private void LoadFile(string filePath)
+        {
             try
             {
-                _logger.LogInformation(string.Empty);
-                _logger.LogInformation($"Fichier {filePath.ToRelative()} modifié...");
-
-                if (!_loaded)
-                {
-                    _logger.LogInformation("Attente de la fin de la génération initiale pour continuer...");
-                    var waitTask = Task.Run(async () =>
-                    {
-                        while (!_loaded)
-                        {
-                            await Task.Delay(500);
-                        }
-                    });
-                    waitTask.Wait();
-                }
-
                 var file = _modelFileLoader.LoadModelFile(filePath);
-
                 _modelFiles[file.Name] = file;
-                _pendingUpdates.AddOrUpdate(file.Name, file, (_, __) => file);
-
-                var relationshipErrors = new List<string>();
-                var affectedFiles = _pendingUpdates.Values.SelectMany(pf => _modelFiles.Values.Where(f => f.Name.Equals(pf.Name) || f.Dependencies.Any(d => d.Equals(pf.Name)))).Distinct();
-                foreach (var affectedFile in ModelUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name.Equals(d.Name)))))
-                {
-                    relationshipErrors.AddRange(ResolveRelationships(affectedFile));
-                }
-
-                if (relationshipErrors.Any())
-                {
-                    foreach (var error in relationshipErrors)
-                    {
-                        _logger.LogError(error);
-                    }
-
-                    throw new Exception("Erreur lors de la lecture du modèle.");
-                }
-
-                if (_pendingUpdates.Values.SelectMany(f => f.Classes).Any(c => c.Stereotype != null))
-                {
-                    LoadReferenceLists();
-                }
-
-                foreach (var modelWatcher in _modelWatchers)
-                {
-                    modelWatcher.OnFilesChanged(affectedFiles);
-                }
-
-                _logger.LogInformation($"Mise à jour terminée avec succès.");
-
-                _pendingUpdates.Clear();
+                _pendingUpdates.Add(file.Name);
             }
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
+            }
+        }
+
+        private void TryApplyUpdates()
+        {
+            if (!_pendingUpdates.Any())
+            {
+                return;
+            }
+
+            lock (_puLock)
+            {
+                try
+                {
+                    var relationshipErrors = new List<string>();
+
+                    var affectedFiles = _modelFiles.Values.Where(f => _pendingUpdates.Contains(f.Name)).SelectMany(pf => _modelFiles.Values.Where(f => f.Name.Equals(pf.Name) || f.Dependencies.Any(d => d.Equals(pf.Name)))).Distinct();
+                    foreach (var affectedFile in ModelUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name.Equals(d.Name)))))
+                    {
+                        relationshipErrors.AddRange(ResolveRelationships(affectedFile));
+                    }
+
+                    if (relationshipErrors.Any())
+                    {
+                        foreach (var error in relationshipErrors)
+                        {
+                            _logger.LogError(error);
+                        }
+
+                        throw new Exception("Erreur lors de la lecture du modèle.");
+                    }
+
+                    if (affectedFiles.SelectMany(f => f.Classes).Any(c => c.Stereotype != null))
+                    {
+                        LoadReferenceLists();
+                    }
+
+                    foreach (var modelWatcher in _modelWatchers)
+                    {
+                        modelWatcher.OnFilesChanged(affectedFiles);
+                    }
+
+                    _logger.LogInformation($"Mise à jour terminée avec succès.");
+
+                    _pendingUpdates.Clear();
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e.Message);
+                }
             }
         }
 

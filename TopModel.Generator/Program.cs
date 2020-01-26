@@ -101,12 +101,7 @@ namespace TopModel.Generator
             using var provider = services.BuildServiceProvider();
             var modelStore = provider.GetService<ModelStore>();
 
-            if (watch)
-            {
-                modelStore.BeginWatch();
-            }
-
-            modelStore.LoadFromConfig();
+            modelStore.LoadFromConfig(watch);
 
             if (watch)
             {
