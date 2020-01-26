@@ -1,14 +1,33 @@
 ﻿@page "/{Module}/{Kind}/{File}"
 @inject ModelFileProvider _provider
+@inject IJSRuntime _jsRuntime;
 
 <div class="main">
+    <button id="stop-pan" @onclick="() => panning = false" />
     <h4>@FileName.Module > @FileName.Kind > @FileName.File</h4>
-    <div class="diagram">
-        @((MarkupString)Svg)
-    </div>
+    <svg @onmousewheel="Zoom"
+         @onmousemove="Pan"
+         @onmousedown="() => panning = true">
+        <g transform=" matrix(@Transform)">
+            @((MarkupString)Diagram.Svg)
+        </g>
+    </svg>
+    <button style="position: absolute;bottom:5px;right:75px" @onclick="OnParametersSet">
+        <span class="oi oi-reload" />
+    </button>
+    <button style="position: absolute;bottom:5px;right:40px" @onclick="() => Zoom(true, size.Width / 2, size.Height / 2)">
+        <span class="oi oi-zoom-in" />
+    </button>
+    <button style="position: absolute;bottom:5px;right:5px" @onclick="() => Zoom(false, size.Width / 2, size.Height / 2)">
+        <span class="oi oi-zoom-out" />
+    </button>
 </div>
 
 @code {
+    double scale = 1;
+    bool panning = false;
+    (double X, double Y) t = (0, 0);
+
 #nullable disable
     [Parameter]
     public string Module { get; set; }
@@ -18,11 +37,13 @@
 
     [Parameter]
     public string File { get; set; }
+#nullable enable
 
     public FileName FileName => new FileName { Module = Module, Kind = Kind == "Data" ? FileModel.Kind.Data : FileModel.Kind.Metier, File = File.Replace("+", " ") };
 
-    string Svg => _provider.GetSvgForFile(FileName);
-#nullable enable
+    (string Svg, double Width, double Height) Diagram => _provider.GetSvgForFile(FileName);
+
+    string Transform => $"{scale.ToString(CultureInfo.InvariantCulture)} 0 0 {scale.ToString(CultureInfo.InvariantCulture)} {t.X.ToString(CultureInfo.InvariantCulture)} {t.Y.ToString(CultureInfo.InvariantCulture)}";
 
     protected override void OnInitialized()
     {
@@ -30,8 +51,59 @@
         {
             if (name.Equals(FileName))
             {
+                OnParametersSet();
                 InvokeAsync(StateHasChanged);
             }
         };
+    }
+
+    protected override void OnParametersSet()
+    {
+        scale = 1;
+        t.X = size.Width / 2 - Diagram.Width / 2;
+        t.Y = size.Height / 2 - Diagram.Height / 2;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var newSize = await _jsRuntime.InvokeAsync<Size>("getSvgSize");
+        if (size.Width == 0)
+        {
+            t.X = newSize.Width / 2 - Diagram.Width / 2;
+            t.Y = newSize.Height / 2 - Diagram.Height / 2;
+            await InvokeAsync(StateHasChanged);
+        }
+
+        size = newSize;
+    }
+
+    double prevX = 0;
+    double prevY = 0;
+    void Pan(MouseEventArgs e)
+    {
+        if (panning && prevX != 0 && prevY != 0)
+        {
+            t.X -= prevX - e.ClientX;
+            t.Y -= prevY - e.ClientY;
+        }
+
+        prevX = e.ClientX;
+        prevY = e.ClientY;
+    }
+
+    struct Size { public double Width { get; set; } public double Height { get; set; } }
+    Size size;
+
+    void Zoom(WheelEventArgs e)
+    {
+        Zoom(e.DeltaY < 0, e.ScreenX, e.ScreenY);
+    }
+
+    void Zoom(bool inwards, double centerX, double centerY)
+    {
+        var zoom = inwards ? 1.1f : 0.9f;
+        scale *= zoom;
+        t.X -= (centerX - t.X) * zoom - (centerX - t.X);
+        t.Y -= (centerY - t.Y) * zoom - (centerY - t.Y);
     }
 }

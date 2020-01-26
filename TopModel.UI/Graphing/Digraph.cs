@@ -23,6 +23,7 @@ namespace TopModel.UI.Graphing
             foreach (var classe in modelFile.Classes)
             {
                 AddNode(classe, n => n.AddLabel());
+                AddExtendsEdge(classe, modelFile.Classes);
                 foreach (var prop in classe.Properties)
                 {
                     AddEdge(classe, prop, modelFile.Classes);
@@ -64,7 +65,7 @@ namespace TopModel.UI.Graphing
                         .AddProp("tooltip", prop.Comment.ForTooltip())
                         .AddProp("color", "#101088")
                         .AddProp("fontcolor", "#101088")
-                        .AddProp("arrowhead", "empty");
+                        .AddProp("arrowhead", "vee");
 
                     if (prop is AssociationProperty ap)
                     {
@@ -78,6 +79,27 @@ namespace TopModel.UI.Graphing
                            .AddProp("headlabel", $"  {(cp.Kind == Composition.Object ? "1..1" : "0..n")}  ");
                     }
                 });
+            }
+
+            return this;
+        }
+
+        private Digraph AddExtendsEdge(Class classe, IEnumerable<Class> classes)
+        {
+            if (classe.Extends != null)
+            {
+                if (!classes.Any(c => c.Name == classe.Extends.Name))
+                {
+                    AddNode(classe.Extends, n => n
+                        .AddProp("label", $"{classe.Extends}\\n({classe.Extends.ModelFile})")
+                        .AddProp("URL", classe.Extends.ModelFile.GetURL()));
+                }
+
+                AddNode($"{classe}->{classe.Extends}", n => n
+                    .AddProp("color", "#101088")
+                    .AddProp("fontcolor", "#101088")
+                    .AddProp("arrowhead", "onormal")
+                    .AddProp("arrowsize", "2"));
             }
 
             return this;

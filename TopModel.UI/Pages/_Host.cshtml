@@ -17,7 +17,7 @@
 </head>
 <body>
     <app>
-        <component type="typeof(App)" render-mode="ServerPrerendered" />
+        <component type="typeof(App)" render-mode="Server" />
     </app>
 
     <div id="blazor-error-ui">
@@ -31,6 +31,21 @@
         <a class="dismiss">🗙</a>
     </div>
 
+    <script type="text/javascript">
+        function stopPan() {
+            var stopPanButton = document.getElementById("stop-pan");
+            if (stopPanButton) {
+                stopPanButton.click();
+            }
+        }
+        document.addEventListener("mouseup", stopPan);
+        window.getSvgSize = function () {
+            var svg = document.getElementsByTagName("svg")[0]
+            if (svg) {
+                return { width: svg.clientWidth, height: svg.clientHeight };
+            }
+        }
+    </script>
     <script src="_framework/blazor.server.js"></script>
 </body>
 </html>

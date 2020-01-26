@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using TopModel.Core.FileModel;
 using TopModel.UI.Graphing;
 using Microsoft.Extensions.Caching.Memory;
@@ -37,21 +40,38 @@ namespace TopModel.UI
             FilesChanged?.Invoke(this, new EventArgs());
         }
 
-        public string GetSvgForFile(FileName name)
+        public (string Svg, double Width, double Height) GetSvgForFile(FileName name)
         {
             return _svgCache.GetOrCreate(name, _ =>
             {
                 var svg = string.Empty;
+
+                var delay = 0;
+                while (!Files.ContainsKey(name))
+                {
+                    Thread.Sleep(100);
+                    delay += 100;
+                    if (delay > 10_000)
+                    {
+                        throw new KeyNotFoundException(name.ToString());
+                    }
+                }
+
                 var dotFile = new Digraph(Files[name]).ToString();
-                var process = new Process();
-                process.StartInfo.FileName = "dot.exe";
-                process.StartInfo.Arguments = $"-Tsvg";
-                process.StartInfo.UseShellExecute = false;
-                process.StartInfo.StandardInputEncoding = new UTF8Encoding(false);
-                process.StartInfo.StandardOutputEncoding = new UTF8Encoding(false);
-                process.StartInfo.RedirectStandardInput = true;
-                process.StartInfo.RedirectStandardOutput = true;
-                process.StartInfo.RedirectStandardError = true;
+                var process = new Process()
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "dot.exe",
+                        Arguments = $"-Tsvg",
+                        UseShellExecute = false,
+                        StandardInputEncoding = new UTF8Encoding(false),
+                        StandardOutputEncoding = new UTF8Encoding(false),
+                        RedirectStandardInput = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                    }
+                };
                 process.OutputDataReceived += (_, d) => svg += d.Data;
                 process.ErrorDataReceived += (_, d) => svg += d.Data;
                 process.Start();
@@ -60,7 +80,9 @@ namespace TopModel.UI
                 process.StandardInput.Write(Encoding.UTF8.GetString(Encoding.Default.GetBytes(dotFile)));
                 process.StandardInput.Close();
                 process.WaitForExit();
-                return svg;
+                var g = Regex.Match(svg, "<g");
+                var size = Regex.Match(svg, "viewBox=\"([\\d \\.]+)\"").Groups[1].Value.Split(" ");
+                return (Svg: svg[g.Index..^6], Width: double.Parse(size[2], CultureInfo.InvariantCulture), Height: double.Parse(size[3], CultureInfo.InvariantCulture));
             });
         }
     }

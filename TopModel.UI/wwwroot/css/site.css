@@ -2,6 +2,7 @@
 
 html, body {
     font-family: "Segoe UI";
+    user-select: none;
 }
 
 app {
@@ -38,10 +39,14 @@ h4 {
     background: whitesmoke;
 }
 
-.diagram {
-    overflow: auto;
+svg {
+    width: 100%;
     height: calc(100vh - 50px);
-    padding: 20px;
+    cursor: move;
+}
+
+text, title {
+    pointer-events: none;
 }
 
 
@@ -51,6 +56,10 @@ g[id^="edge"]:hover path, g[id^="edge"]:hover polygon {
 
 g[id^="edge"]:hover text {
     fill: dodgerblue;
+}
+
+#stop-pan {
+    display: none;
 }
 
 #blazor-error-ui {
