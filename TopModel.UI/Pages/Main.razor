@@ -97,7 +97,7 @@
 
     void Zoom(WheelEventArgs e)
     {
-        Zoom(e.DeltaY < 0, e.ScreenX, e.ScreenY);
+        Zoom(e.DeltaY < 0, e.ClientX, e.ClientY);
     }
 
     void Zoom(bool inwards, double centerX, double centerY)
