@@ -67,6 +67,11 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            await _jsRuntime.InvokeVoidAsync("stopPropagationOnLink");
+        }
+
         var newSize = await _jsRuntime.InvokeAsync<Size>("getSvgSize");
         if (size.Width == 0)
         {
@@ -76,6 +81,7 @@
         }
 
         size = newSize;
+
     }
 
     double prevX = 0;

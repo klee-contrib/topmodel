@@ -45,6 +45,20 @@
                 return { width: svg.clientWidth, height: svg.clientHeight };
             }
         }
+        window.stopPropagationOnLink = function () {
+            var svg = document.getElementsByTagName("svg")[0]
+            if (svg) {
+                svg.addEventListener("mousedown", e => {
+                    var parent = e.target.parentNode;
+                    while (parent) {
+                        if (parent.attributes && parent.attributes["xlink:href"]) {
+                            e.stopPropagation();
+                        }
+                        parent = parent.parentNode;
+                    }
+                })
+            }
+        }
     </script>
     <script src="_framework/blazor.server.js"></script>
 </body>
