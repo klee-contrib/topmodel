@@ -12,7 +12,7 @@ namespace TopModel.Core.FileModel
 
         public IList<Class> Classes { get; set; }
 
-        public IList<(object Source, Relation Target)> Relationships { get; set; }
+        public IDictionary<object, Relation> Relationships { get; set; }
 
         public IEnumerable<FileName> Dependencies => Descriptor.Uses?.SelectMany(u =>
             u.Files.Select(f => new FileName { Module = u.Module, Kind = u.Kind, File = f }))

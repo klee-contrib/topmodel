@@ -56,33 +56,30 @@ namespace TopModel.Generator.ProceduralSql
         /// Génère le script SQL d'initialisation des listes reference.
         /// </summary>
         /// <param name="classes">Classes avec des initialisations de listes de référence.</param>
-        /// <param name="isStatic">True if generation for static list.</param>
-        public void GenerateListInitScript(IEnumerable<Class> classes, bool isStatic)
+        public void GenerateListInitScript(IEnumerable<Class> classes)
         {
-            var outputFileName = isStatic ? _config.StaticListFile : _config.ReferenceListFile;
-
-            if (outputFileName == null || !classes.Any())
+            if (_config.StaticListFile == null || !classes.Any())
             {
                 return;
             }
 
-            using var writerInsert = new SqlFileWriter(outputFileName, _logger);
+            using var writerInsert = new SqlFileWriter(_config.StaticListFile, _logger);
 
             writerInsert.WriteLine("-- =========================================================================================== ");
             writerInsert.WriteLine($"--   Application Name	:	{classes.First().Namespace.App} ");
-            writerInsert.WriteLine("--   Script Name		:	" + outputFileName.Split("\\").Last());
-            writerInsert.WriteLine("--   Description		:	Script d'insertion des données de références" + (!isStatic ? " non " : " ") + "statiques. ");
+            writerInsert.WriteLine("--   Script Name		:	" + _config.StaticListFile.Split("\\").Last());
+            writerInsert.WriteLine("--   Description		:	Script d'insertion des données de références");
             writerInsert.WriteLine("-- ===========================================================================================");
 
             // Construit la liste des Reference Class ordonnée.
             var orderList = ModelUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
                 .OfType<AssociationProperty>()
                 .Select(a => a.Association)
-                .Where(a => a.Stereotype == c.Stereotype));
+                .Where(a => a.Reference));
 
             foreach (var classe in orderList)
             {
-                WriteInsert(writerInsert, classe.ReferenceValues!, classe, isStatic);
+                WriteInsert(writerInsert, classe.ReferenceValues!, classe);
             }
         }
 
@@ -189,15 +186,14 @@ namespace TopModel.Generator.ProceduralSql
         /// </summary>
         /// <param name="modelClass">Modele de la classe.</param>
         /// <param name="initItem">Item a insérer.</param>
-        /// <param name="isPrimaryKeyIncluded">True si le script d'insert doit comporter la clef primaire.</param>
         /// <returns>Dictionnaire contenant { nom de la propriété => valeur }.</returns>
-        protected Dictionary<string, string> CreatePropertyValueDictionary(Class modelClass, ReferenceValue initItem, bool isPrimaryKeyIncluded)
+        protected Dictionary<string, string> CreatePropertyValueDictionary(Class modelClass, ReferenceValue initItem)
         {
             var nameValueDict = new Dictionary<string, string>();
             var definition = initItem.Value;
             foreach (var property in modelClass.Properties.OfType<IFieldProperty>())
             {
-                if (!property.PrimaryKey || isPrimaryKeyIncluded)
+                if (!property.PrimaryKey || property.Domain.Name != "DO_ID")
                 {
                     var propertyValue = definition[property];
                     var propertyValueStr = propertyValue == null ? "null" : propertyValue.ToString()!;
@@ -314,11 +310,10 @@ namespace TopModel.Generator.ProceduralSql
         /// </summary>
         /// <param name="modelClass">Modele de la classe.</param>
         /// <param name="initItem">Item a insérer.</param>
-        /// <param name="isPrimaryKeyIncluded">True si le script d'insert doit comporter la clef primaire.</param>
         /// <returns>Requête.</returns>
-        private string GetInsertLine(Class modelClass, ReferenceValue initItem, bool isPrimaryKeyIncluded)
+        private string GetInsertLine(Class modelClass, ReferenceValue initItem)
         {
-            var propertyValueDict = CreatePropertyValueDictionary(modelClass, initItem, isPrimaryKeyIncluded);
+            var propertyValueDict = CreatePropertyValueDictionary(modelClass, initItem);
             return GetInsertLine(modelClass.SqlName, propertyValueDict);
         }
 
@@ -328,13 +323,12 @@ namespace TopModel.Generator.ProceduralSql
         /// <param name="writer">Writer.</param>
         /// <param name="staticTable">Classe de reference statique.</param>
         /// <param name="modelClass">Modele de la classe.</param>
-        /// <param name="isStatic">True if generation for static list.</param>
-        private void WriteInsert(SqlFileWriter writer, IEnumerable<ReferenceValue> staticTable, Class modelClass, bool isStatic)
+        private void WriteInsert(SqlFileWriter writer, IEnumerable<ReferenceValue> staticTable, Class modelClass)
         {
             writer.WriteLine("/**\t\tInitialisation de la table " + modelClass.Name + "\t\t**/");
             foreach (var initItem in staticTable)
             {
-                writer.WriteLine(GetInsertLine(modelClass, initItem, isStatic));
+                writer.WriteLine(GetInsertLine(modelClass, initItem));
             }
 
             writer.WriteLine();

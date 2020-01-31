@@ -102,12 +102,11 @@ namespace TopModel.Core
         private void LoadReferenceLists()
         {
             var staticLists = ReferenceListsLoader.LoadReferenceLists(_config.StaticLists);
-            var referenceLists = ReferenceListsLoader.LoadReferenceLists(_config.ReferenceLists);
 
             var classMap = _modelFiles.SelectMany(mf => mf.Value.Classes)
                 .ToDictionary(c => c.Name, c => c);
 
-            foreach (var (className, referenceValues) in staticLists.Concat(referenceLists))
+            foreach (var (className, referenceValues) in staticLists)
             {
                 if (classMap.TryGetValue(className, out var classe))
                 {
@@ -191,7 +190,7 @@ namespace TopModel.Core
                         throw new Exception("Erreur lors de la lecture du modèle.");
                     }
 
-                    if (affectedFiles.SelectMany(f => f.Classes).Any(c => c.Stereotype != null))
+                    if (affectedFiles.SelectMany(f => f.Classes).Any(c => c.Reference))
                     {
                         LoadReferenceLists();
                     }

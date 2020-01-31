@@ -16,19 +16,9 @@
         public string? TableTypeScriptFolder { get; set; }
 
         /// <summary>
-        /// Dossier du projet pour les scripts d'initialisation des listes de références administrables.
-        /// </summary>
-        public string? InitReferenceListScriptFolder { get; set; }
-
-        /// <summary>
         /// Dossier du projet pour les scripts d'initialisation des listes statiques.
         /// </summary>
         public string? InitStaticListScriptFolder { get; set; }
-
-        /// <summary>
-        /// Fichier du projet référençant les scripts d'initialisation de références administrables.
-        /// </summary>
-        public string? InitReferenceListMainScriptName { get; set; }
 
         /// <summary>
         /// Fichier du projet référençant les scripts d'initialisation des listes statiques.

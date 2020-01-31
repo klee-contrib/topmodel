@@ -16,12 +16,12 @@
                 {
                     var prop = this is AliasProperty alp ? alp.Property : this;
 
-                    if (prop is AssociationProperty ap && ap.Association.Stereotype == Stereotype.Statique)
+                    if (prop is AssociationProperty ap && ap.Association.Reference && ap.Association.PrimaryKey!.Domain.Name != "DO_ID")
                     {
                         return $"{ap.Association.Name}{ap.Association.PrimaryKey!.Name}";
                     }
 
-                    if (prop.PrimaryKey && prop.Class.Stereotype == Stereotype.Statique)
+                    if (prop.PrimaryKey && prop.Class.Reference && prop.Class.PrimaryKey!.Domain.Name != "DO_ID")
                     {
                         return $"{prop.Class.Name}{prop.Name}";
                     }

@@ -22,7 +22,7 @@ namespace TopModel.Core
 
         public string? Label { get; set; }
 
-        public Stereotype? Stereotype { get; set; }
+        public bool Reference { get; set; }
 
         public string? OrderProperty { get; set; }
 

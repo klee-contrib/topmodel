@@ -36,11 +36,6 @@
         public string? StaticListFile { get; set; }
 
         /// <summary>
-        /// Retourne ou définit l'emplacement du script d'insertion des données des listes administrables (SQL).
-        /// </summary>
-        public string? ReferenceListFile { get; set; }
-
-        /// <summary>
         /// Désactive les colonnes d'identité.
         /// </summary>
         public bool DisableIdentity { get; set; }

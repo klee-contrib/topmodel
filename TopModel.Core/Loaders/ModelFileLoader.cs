@@ -26,7 +26,7 @@ namespace TopModel.Core.Loaders
 
             var descriptor = _fileChecker.Deserialize<FileDescriptor>(parser);
 
-            var relationships = new List<(object, Relation)>();
+            var relationships = new Dictionary<object, Relation>();
             var ns = new Namespace { App = descriptor.App, Module = descriptor.Module, Kind = descriptor.Kind };
             var path = filePath.ToRelative();
             var classes = LoadClasses(parser, relationships, ns, path).ToList();
@@ -47,7 +47,7 @@ namespace TopModel.Core.Loaders
             return file;
         }
 
-        private IEnumerable<Class> LoadClasses(Parser parser, List<(object Source, Relation Target)> relationships, Namespace ns, string filePath)
+        private IEnumerable<Class> LoadClasses(Parser parser, IDictionary<object, Relation> relationships, Namespace ns, string filePath)
         {
             while (parser.TryConsume<DocumentStart>(out _))
             {
@@ -79,17 +79,13 @@ namespace TopModel.Core.Loaders
                             classe.SqlName = value.Value;
                             break;
                         case "extends":
-                            relationships.Add((classe, new Relation(value)));
+                            relationships.Add(classe, new Relation(value));
                             break;
                         case "label":
                             classe.Label = value.Value;
                             break;
-                        case "stereotype":
-                            classe.Stereotype = value.Value == "Statique"
-                                ? Stereotype.Statique
-                                : value.Value == "Reference"
-                                ? Stereotype.Reference
-                                : throw new Exception($"Stereotype inconnu: {value}");
+                        case "reference":
+                            classe.Reference = value.Value == "true";
                             break;
                         case "orderProperty":
                             classe.OrderProperty = value.Value;
@@ -141,7 +137,7 @@ namespace TopModel.Core.Loaders
                                         rp.Required = value.Value == "true";
                                         break;
                                     case "domain":
-                                        relationships.Add((rp, new Relation(value)));
+                                        relationships.Add(rp, new Relation(value));
                                         break;
                                     case "defaultValue":
                                         rp.DefaultValue = value.Value;
@@ -173,7 +169,7 @@ namespace TopModel.Core.Loaders
                                 switch (prop)
                                 {
                                     case "association":
-                                        relationships.Add((ap, new Relation(value)));
+                                        relationships.Add(ap, new Relation(value));
                                         break;
                                     case "role":
                                         ap.Role = value.Value;
@@ -208,7 +204,7 @@ namespace TopModel.Core.Loaders
                                 switch (prop)
                                 {
                                     case "composition":
-                                        relationships.Add((cp, new Relation(value)));
+                                        relationships.Add(cp, new Relation(value));
                                         break;
                                     case "name":
                                         cp.Name = value.Value;
@@ -252,7 +248,7 @@ namespace TopModel.Core.Loaders
                                 }
                             }
 
-                            relationships.Add((alp, new Relation(aliasProp!) { Peer = new Relation(aliasClass!) }));
+                            relationships.Add(alp, new Relation(aliasProp!) { Peer = new Relation(aliasClass!) });
                             parser.Consume<MappingEnd>();
 
                             while (!(parser.Current is MappingEnd))
@@ -297,11 +293,11 @@ namespace TopModel.Core.Loaders
                                 prop switch
                                 {
                                     RegularProperty rp => rp.Name,
-                                    AssociationProperty ap => $"{relationships.Single(r => r.Source == ap).Target.Value}{ap.Role ?? string.Empty}",
+                                    AssociationProperty ap => $"{relationships[ap].Value}{ap.Role ?? string.Empty}",
                                     _ => throw new Exception($"{filePath}: Type de propriété non géré pour initialisation.")
                                 },
                                 out var propValue);
-                            if (propValue == null && prop.Required && (!prop.PrimaryKey || classe.Stereotype == Stereotype.Statique))
+                            if (propValue == null && prop.Required && (!prop.PrimaryKey || relationships[prop].Value != "DO_ID"))
                             {
                                 throw new Exception($"{filePath}: L'initilisation {reference.Key} de la classe {classe.Name} n'initialise pas la propriété obligatoire '{prop.Name}'.");
                             }

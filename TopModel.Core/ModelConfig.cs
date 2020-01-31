@@ -9,7 +9,5 @@
 
 #nullable enable
         public string? StaticLists { get; set; }
-
-        public string? ReferenceLists { get; set; }
     }
 }

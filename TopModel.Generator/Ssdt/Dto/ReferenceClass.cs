@@ -26,14 +26,5 @@ namespace TopModel.Generator.Ssdt.Dto
             get;
             set;
         }
-
-        /// <summary>
-        /// Indique si la liste de référence est statique.
-        /// </summary>
-        public bool IsStatic
-        {
-            get;
-            set;
-        }
     }
 }

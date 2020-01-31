@@ -134,10 +134,9 @@
               "type": "string",
               "description": "Un libellé qui décrit la classe. N'est utilisé nulle part."
             },
-            "stereotype": {
-              "type": "string",
-              "description": "Stereotype de la classe, pour une classe de référence. Statique ou Reference.",
-              "enum": [ "Statique", "Reference" ]
+            "reference": {
+              "type": "boolean",
+              "description": "Précise si la classe est une liste de référence (pour mise en cache dans 'ReferenceManager' ou 'referenceStore'."
             },
             "defaultProperty": {
               "type": "string",

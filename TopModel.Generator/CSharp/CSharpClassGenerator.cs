@@ -70,13 +70,16 @@ namespace TopModel.Generator.CSharp
         /// <param name="item">Classe à générer.</param>
         private void GenerateClassDeclaration(CSharpWriter w, Class item)
         {
-            if (item.Stereotype == Stereotype.Reference)
+            if (item.Reference)
             {
-                w.WriteAttribute(1, "Reference");
-            }
-            else if (item.Stereotype == Stereotype.Statique)
-            {
-                w.WriteAttribute(1, "Reference", "true");
+                if (item.PrimaryKey!.Domain.Name == "DO_ID")
+                {
+                    w.WriteAttribute(1, "Reference");
+                }
+                else
+                {
+                    w.WriteAttribute(1, "Reference", "true");
+                }
             }
 
             if (!string.IsNullOrEmpty(item.DefaultProperty))
@@ -155,28 +158,12 @@ namespace TopModel.Generator.CSharp
                 foreach (var refValue in item.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal))
                 {
                     ++i;
-                    var code = item.Stereotype == Stereotype.Statique
+                    var code = item.PrimaryKey!.Domain.Name != "DO_ID"
                         ? (string)refValue.Value[item.PrimaryKey]
                         : (string)refValue.Value[item.Properties.OfType<RegularProperty>().Single(rp => rp.Unique)];
                     var label = item.LabelProperty != null
                         ? (string)refValue.Value[item.LabelProperty]
                         : refValue.Name;
-                    IFieldProperty? property = null;
-                    if (item.Stereotype == Stereotype.Reference)
-                    {
-                        foreach (var prop in item.Properties.OfType<RegularProperty>())
-                        {
-                            if (prop.Unique)
-                            {
-                                property = prop;
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        property = item.PrimaryKey;
-                    }
 
                     w.WriteSummary(2, label);
 

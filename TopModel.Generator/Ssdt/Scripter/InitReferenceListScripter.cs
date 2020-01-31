@@ -67,16 +67,15 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="modelClass">Modele de la classe.</param>
         /// <param name="initItem">Item a insérer.</param>
-        /// <param name="siPrimaryKeyIncluded">True si le script d'insert doit comporter la clef primaire.</param>
         /// <returns>Requête.</returns>
-        private static string GetInsertLine(Class modelClass, ReferenceValue initItem, bool siPrimaryKeyIncluded)
+        private static string GetInsertLine(Class modelClass, ReferenceValue initItem)
         {
             // Remplissage d'un dictionnaire nom de colonne => valeur.
             var definition = initItem.Value;
             var nameValueDict = new Dictionary<string, string?>();
             foreach (var property in modelClass.Properties.OfType<IFieldProperty>())
             {
-                if (!property.PrimaryKey || siPrimaryKeyIncluded || property.Domain.Name == "DO_CD")
+                if (!property.PrimaryKey || property.Domain.Name != "DO_ID")
                 {
                     var propertyValue = definition[property];
                     nameValueDict[property.SqlName] = definition[property] switch
@@ -166,7 +165,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         {
             foreach (var initItem in item.Values)
             {
-                writer.WriteLine(GetInsertLine(item.Class, initItem, item.IsStatic));
+                writer.WriteLine(GetInsertLine(item.Class, initItem));
             }
 
             writer.WriteLine();

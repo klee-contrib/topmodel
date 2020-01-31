@@ -56,7 +56,6 @@ namespace TopModel.Generator
             {
                 CombinePath(dn, config.ProceduralSql, c => c.CrebasFile);
                 CombinePath(dn, config.ProceduralSql, c => c.IndexFKFile);
-                CombinePath(dn, config.ProceduralSql, c => c.ReferenceListFile);
                 CombinePath(dn, config.ProceduralSql, c => c.StaticListFile);
                 CombinePath(dn, config.ProceduralSql, c => c.TypeFile);
                 CombinePath(dn, config.ProceduralSql, c => c.UKFile);
@@ -68,7 +67,6 @@ namespace TopModel.Generator
 
             if (config.Ssdt != null)
             {
-                CombinePath(dn, config.Ssdt, c => c.InitReferenceListScriptFolder);
                 CombinePath(dn, config.Ssdt, c => c.InitStaticListScriptFolder);
                 CombinePath(dn, config.Ssdt, c => c.TableScriptFolder);
                 CombinePath(dn, config.Ssdt, c => c.TableTypeScriptFolder);

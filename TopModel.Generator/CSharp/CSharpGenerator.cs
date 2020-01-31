@@ -86,7 +86,7 @@ namespace TopModel.Generator.CSharp
         {
             _referenceAccessorGenerator.Generate(
                 _files.Values.SelectMany(f => f.Classes)
-                    .Where(c => c.Stereotype != null && c.Namespace.Equals(ns)));
+                    .Where(c => c.Reference && c.Namespace.Equals(ns)));
         }
     }
 }

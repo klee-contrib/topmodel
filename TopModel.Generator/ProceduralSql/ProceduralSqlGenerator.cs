@@ -32,16 +32,15 @@ namespace TopModel.Generator.ProceduralSql
             }
 
             _schemaGenerator?.GenerateSchemaScript(_files.Values.SelectMany(f => f.Classes));
-            GenerateListInitScript(Stereotype.Statique);
-            GenerateListInitScript(Stereotype.Reference);
+            GenerateListInitScript();
         }
 
-        private void GenerateListInitScript(Stereotype stereotype)
+        private void GenerateListInitScript()
         {
-            var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.Stereotype == stereotype && c.ReferenceValues != null);
+            var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues != null);
             if (classes.Any())
             {
-                _schemaGenerator?.GenerateListInitScript(classes, stereotype == Stereotype.Statique);
+                _schemaGenerator?.GenerateListInitScript(classes);
             }
         }
     }

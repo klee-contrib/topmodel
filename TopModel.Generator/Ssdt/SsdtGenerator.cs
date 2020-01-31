@@ -37,15 +37,7 @@ namespace TopModel.Generator.Ssdt
                 GenerateClasses(file);
             }
 
-            if (files.SelectMany(f => f.Classes).Any(c => c.Stereotype == Stereotype.Statique))
-            {
-                GenerateListInitScript(Stereotype.Statique);
-            }
-
-            if (files.SelectMany(f => f.Classes).Any(c => c.Stereotype == Stereotype.Reference))
-            {
-                GenerateListInitScript(Stereotype.Reference);
-            }
+            GenerateListInitScript();
         }
 
         private void GenerateClasses(ModelFile file)
@@ -71,50 +63,43 @@ namespace TopModel.Generator.Ssdt
             }
         }
 
-        private void GenerateListInitScript(Stereotype stereotype)
+        private void GenerateListInitScript()
         {
-            var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.Stereotype == stereotype && c.ReferenceValues != null);
-            var insertScriptFolderPath = stereotype == Stereotype.Statique
-                ? _config.InitStaticListScriptFolder
-                : _config.InitReferenceListScriptFolder;
-            var insertMainScriptName = stereotype == Stereotype.Statique
-                ? _config.InitStaticListMainScriptName
-                : _config.InitReferenceListMainScriptName;
+            var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues != null);
 
-            if (!classes.Any() || insertMainScriptName == null || insertScriptFolderPath == null)
+            if (!classes.Any() || _config.InitStaticListMainScriptName == null || _config.InitStaticListScriptFolder == null)
             {
                 return;
             }
 
-            Directory.CreateDirectory(insertScriptFolderPath);
+            Directory.CreateDirectory(_config.InitStaticListScriptFolder);
 
             // Construit la liste des Reference Class ordonnée.
             var orderList = ModelUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
                 .OfType<AssociationProperty>()
                 .Select(a => a.Association)
-                .Where(a => a.Stereotype == c.Stereotype));
+                .Where(a => a.Reference));
 
             var referenceClassList =
                 orderList.Select(x => new ReferenceClass
                 {
                     Class = x,
-                    Values = x.ReferenceValues,
-                    IsStatic = stereotype == Stereotype.Statique
+                    Values = x.ReferenceValues
                 }).ToList();
             var referenceClassSet = new ReferenceClassSet
             {
                 ClassList = orderList.ToList(),
-                ScriptName = insertMainScriptName
+                ScriptName = _config.InitStaticListMainScriptName
             };
 
             // Script un fichier par classe.
             foreach (var referenceClass in referenceClassList)
             {
-                _initReferenceListScript.Write(referenceClass, insertScriptFolderPath, _logger);
+                _initReferenceListScript.Write(referenceClass, _config.InitStaticListScriptFolder, _logger);
             }
 
             // Script le fichier appelant les fichiers dans le bon ordre.
-            _initReferenceListMainScripter.Write(referenceClassSet, insertScriptFolderPath, _logger);
+            _initReferenceListMainScripter.Write(referenceClassSet, _config.InitStaticListScriptFolder, _logger);
         }
     }
 }

@@ -15,10 +15,6 @@
     },
     "staticLists": {
       "type": "string",
-      "description": "Chemin du fichier contenant les initialisations de listes statiques."
-    },
-    "referenceLists": {
-      "type": "string",
       "description": "Chemin du fichier contenant les initialisations de listes de références."
     },
     "proceduralSql": {
@@ -51,10 +47,6 @@
           "type": "string",
           "description": "Emplacement du script d'insertion des données des listes statiques."
         },
-        "referenceListFile": {
-          "type": "string",
-          "description": "Emplacement du script d'insertion des données des listes administrables."
-        },
         "disableIdentity": {
           "type": "boolean",
           "description": "Désactive les colonnes d'identité."
@@ -74,17 +66,9 @@
           "type": "string",
           "description": " Dossier du projet pour les scripts de déclaration de type table."
         },
-        "initReferenceListScriptFolder": {
-          "type": "string",
-          "description": "Dossier du projet pour les scripts d'initialisation des listes de références administrables."
-        },
         "initStaticListScriptFolder": {
           "type": "string",
           "description": "Dossier du projet pour les scripts d'initialisation des listes statiques."
-        },
-        "initReferenceListMainScriptName": {
-          "type": "string",
-          "description": "Fichier du projet référençant les scripts d'initialisation de références administrables."
         },
         "initStaticListMainScriptName": {
           "type": "string",

@@ -55,7 +55,7 @@ namespace TopModel.Generator.Javascript
             var count = 0;
             foreach (var classe in file.Classes)
             {
-                if (classe.Stereotype != Stereotype.Statique)
+                if (!classe.Reference || classe.PrimaryKey!.Domain.Name == "DO_ID")
                 {
                     if (_config.IsGenerateEntities == false && classe.Trigram != null)
                     {
@@ -83,7 +83,7 @@ namespace TopModel.Generator.Javascript
 
         private void GenerateReferences(string module)
         {
-            var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.Namespace.Module == module && c.Stereotype == Stereotype.Statique);
+            var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.Namespace.Module == module && c.Reference && c.PrimaryKey!.Domain.Name != "DO_ID");
 
             if (_config.ModelOutputDirectory != null && classes.Any())
             {
@@ -230,7 +230,7 @@ namespace TopModel.Generator.Javascript
 
             fw.Write("} as const;\r\n");
 
-            if (classe.Stereotype == Stereotype.Reference)
+            if (classe.Reference)
             {
                 fw.Write("\r\nexport const ");
                 fw.Write(classe.Name.ToFirstLower());
@@ -289,7 +289,7 @@ namespace TopModel.Generator.Javascript
                 .Select(p => p is AliasProperty alp ? alp.Property : p)
                 .OfType<IFieldProperty>()
                 .Select(prop => (prop, classe: prop is AssociationProperty ap ? ap.Association : prop.Class))
-                .Where(pc => pc.prop.TSType != pc.prop.Domain.CsharpType && pc.prop.Domain.CsharpType == "string" && pc.classe.Stereotype == Stereotype.Statique)
+                .Where(pc => pc.prop.TSType != pc.prop.Domain.CsharpType && pc.prop.Domain.CsharpType == "string" && pc.classe.Reference)
                 .Select(pc => (Code: pc.prop.TSType, pc.classe.Namespace.Module))
                 .Distinct();
 
