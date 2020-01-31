@@ -20,9 +20,11 @@
 
   <ItemGroup>
     <None Update="schema.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties schema_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>
   

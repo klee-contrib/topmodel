@@ -79,12 +79,14 @@ namespace TopModel.Generator.Ssdt.Scripter
                 if (!property.PrimaryKey || siPrimaryKeyIncluded || property.Domain.Name == "DO_CD")
                 {
                     var propertyValue = definition[property];
-                    var propertyValueStr = propertyValue == null ? "NULL" : propertyValue.ToString();
-                    nameValueDict[property.SqlName] = property.Domain.CsharpType == "byte[]"
-                        ? propertyValueStr
-                        : propertyValue != null && propertyValue.GetType() == typeof(string)
-                            ? "N'" + ScriptUtils.PrepareDataToSqlDisplay(propertyValueStr) + "'"
-                            : propertyValueStr;
+                    nameValueDict[property.SqlName] = definition[property] switch
+                    {
+                        null => "NULL",
+                        bool b => b ? "N'true'" : "N'false'",
+                        string bs when property.Domain.SqlType == "bit" => $"N'{bs}'",
+                        string s when property.Domain.SqlType!.Contains("varchar") => $"N'{ScriptUtils.PrepareDataToSqlDisplay(s)}'",
+                        object v => v.ToString()
+                    };
                 }
             }
 

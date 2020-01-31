@@ -153,7 +153,7 @@
             },
             "properties": {
               "type": "array",
-              "description": "Liste des propriétés de la classe. Cette propriété DOIT être en DERNIER.",
+              "description": "Liste des propriétés de la classe. Cette propriété DOIT être en DERNIER (ou juste avant 'values' si renseigné).",
               "items": {
                 "oneOf": [
                   {
@@ -287,6 +287,10 @@
                   }
                 ]
               }
+            },
+            "values": {
+              "type": "object",
+              "description": "Liste des valeurs de la table à insérer à la création de la base de données. DOIT être placé en DERNIER. Il doit d'agir d'un objet ayant pour clés un nom de ligne (qui sera utilisé pour identifier la clé en C#), et pour valeurs un objet de type JSON qui renseigne les valeurs des différentes propriétés."
             }
           }
         }

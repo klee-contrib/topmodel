@@ -10,12 +10,7 @@ namespace TopModel.Core.Loaders
         {
             if (nodeEvent is Scalar scalar)
             {
-                if (int.TryParse(scalar.Value, out var _))
-                {
-                    currentType = typeof(int);
-                    return true;
-                }
-                else if (bool.TryParse(scalar.Value, out var _))
+                if (bool.TryParse(scalar.Value, out var _))
                 {
                     currentType = typeof(bool);
                     return true;

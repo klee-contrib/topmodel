@@ -28,11 +28,12 @@ namespace TopModel.Core.Loaders
 
             var relationships = new List<(object, Relation)>();
             var ns = new Namespace { App = descriptor.App, Module = descriptor.Module, Kind = descriptor.Kind };
-            var classes = LoadClasses(parser, relationships, ns).ToList();
+            var path = filePath.ToRelative();
+            var classes = LoadClasses(parser, relationships, ns, path).ToList();
 
             var file = new ModelFile
             {
-                Path = filePath.ToRelative(),
+                Path = path,
                 Descriptor = descriptor,
                 Classes = classes,
                 Relationships = relationships
@@ -46,7 +47,7 @@ namespace TopModel.Core.Loaders
             return file;
         }
 
-        private IEnumerable<Class> LoadClasses(Parser parser, List<(object Source, Relation Target)> relationships, Namespace ns)
+        private IEnumerable<Class> LoadClasses(Parser parser, List<(object Source, Relation Target)> relationships, Namespace ns, string filePath)
         {
             while (parser.TryConsume<DocumentStart>(out _))
             {
@@ -282,6 +283,34 @@ namespace TopModel.Core.Loaders
                 }
 
                 parser.Consume<SequenceEnd>();
+
+                if (parser.Current is Scalar { Value: "values" })
+                {
+                    parser.Consume<Scalar>();
+                    var references = _fileChecker.Deserialize<IDictionary<string, IDictionary<string, object>>>(parser);
+                    classe.ReferenceValues = references.Select(reference => new ReferenceValue
+                    {
+                        Name = reference.Key,
+                        Value = classe.Properties.OfType<IFieldProperty>().Select(prop =>
+                        {
+                            reference.Value.TryGetValue(
+                                prop switch
+                                {
+                                    RegularProperty rp => rp.Name,
+                                    AssociationProperty ap => $"{relationships.Single(r => r.Source == ap).Target.Value}{ap.Role ?? string.Empty}",
+                                    _ => throw new Exception($"{filePath}: Type de propriété non géré pour initialisation.")
+                                },
+                                out var propValue);
+                            if (propValue == null && prop.Required && (!prop.PrimaryKey || classe.Stereotype == Stereotype.Statique))
+                            {
+                                throw new Exception($"{filePath}: L'initilisation {reference.Key} de la classe {classe.Name} n'initialise pas la propriété obligatoire '{prop.Name}'.");
+                            }
+
+                            return (prop, propValue);
+                        }).ToDictionary(v => v.prop, v => v.propValue)
+                    }).ToList();
+                }
+
                 parser.Consume<MappingEnd>();
                 parser.Consume<MappingEnd>();
                 parser.Consume<DocumentEnd>();
