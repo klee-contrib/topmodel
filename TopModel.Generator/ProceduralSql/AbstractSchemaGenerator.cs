@@ -58,16 +58,16 @@ namespace TopModel.Generator.ProceduralSql
         /// <param name="classes">Classes avec des initialisations de listes de référence.</param>
         public void GenerateListInitScript(IEnumerable<Class> classes)
         {
-            if (_config.StaticListFile == null || !classes.Any())
+            if (_config.InitListFile == null || !classes.Any())
             {
                 return;
             }
 
-            using var writerInsert = new SqlFileWriter(_config.StaticListFile, _logger);
+            using var writerInsert = new SqlFileWriter(_config.InitListFile, _logger);
 
             writerInsert.WriteLine("-- =========================================================================================== ");
             writerInsert.WriteLine($"--   Application Name	:	{classes.First().Namespace.App} ");
-            writerInsert.WriteLine("--   Script Name		:	" + _config.StaticListFile.Split("\\").Last());
+            writerInsert.WriteLine("--   Script Name		:	" + _config.InitListFile.Split("\\").Last());
             writerInsert.WriteLine("--   Description		:	Script d'insertion des données de références");
             writerInsert.WriteLine("-- ===========================================================================================");
 
@@ -79,7 +79,7 @@ namespace TopModel.Generator.ProceduralSql
 
             foreach (var classe in orderList)
             {
-                WriteInsert(writerInsert, classe.ReferenceValues!, classe);
+                WriteInsert(writerInsert, classe);
             }
         }
 
@@ -321,12 +321,11 @@ namespace TopModel.Generator.ProceduralSql
         /// Ecrit dans le writer le script d'insertion dans la table staticTable ayant pour model modelClass.
         /// </summary>
         /// <param name="writer">Writer.</param>
-        /// <param name="staticTable">Classe de reference statique.</param>
         /// <param name="modelClass">Modele de la classe.</param>
-        private void WriteInsert(SqlFileWriter writer, IEnumerable<ReferenceValue> staticTable, Class modelClass)
+        private void WriteInsert(SqlFileWriter writer, Class modelClass)
         {
             writer.WriteLine("/**\t\tInitialisation de la table " + modelClass.Name + "\t\t**/");
-            foreach (var initItem in staticTable)
+            foreach (var initItem in modelClass.ReferenceValues!)
             {
                 writer.WriteLine(GetInsertLine(modelClass, initItem));
             }

@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using TopModel.Generator.Ssdt.Dto;
 
 namespace TopModel.Generator.Ssdt.Scripter
 {
     /// <summary>
     /// Scripter permettant d'écrire les scripts d'initialisation des valeurs de listes de référence.
     /// </summary>
-    public class InitReferenceListScripter : ISqlScripter<ReferenceClass>
+    public class InitReferenceListScripter : ISqlScripter<Class>
     {
         private readonly SsdtConfig _config;
 
@@ -24,14 +23,14 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="item">Item à scripter.</param>
         /// <returns>Nom du fichier de script.</returns>
-        public string GetScriptName(ReferenceClass item)
+        public string GetScriptName(Class item)
         {
             if (item == null)
             {
                 throw new ArgumentNullException("item");
             }
 
-            return item.Class.SqlName + ".insert.sql";
+            return item.SqlName + ".insert.sql";
         }
 
         /// <summary>
@@ -39,7 +38,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="writer">Flux d'écriture.</param>
         /// <param name="item">Table à scripter.</param>
-        public void WriteItemScript(TextWriter writer, ReferenceClass item)
+        public void WriteItemScript(TextWriter writer, Class item)
         {
             if (writer == null)
             {
@@ -51,7 +50,7 @@ namespace TopModel.Generator.Ssdt.Scripter
                 throw new ArgumentNullException("item");
             }
 
-            var tableName = item.Class.SqlName;
+            var tableName = item.SqlName;
 
             // Entête du fichier.
             WriteHeader(writer, tableName);
@@ -161,11 +160,11 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="writer">Flux.</param>
         /// <param name="item">Liste de références.</param>
-        private void WriteInsertLines(TextWriter writer, ReferenceClass item)
+        private void WriteInsertLines(TextWriter writer, Class item)
         {
-            foreach (var initItem in item.Values)
+            foreach (var initItem in item.ReferenceValues!)
             {
-                writer.WriteLine(GetInsertLine(item.Class, initItem));
+                writer.WriteLine(GetInsertLine(item, initItem));
             }
 
             writer.WriteLine();

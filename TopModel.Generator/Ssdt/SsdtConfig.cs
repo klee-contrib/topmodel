@@ -18,12 +18,12 @@
         /// <summary>
         /// Dossier du projet pour les scripts d'initialisation des listes statiques.
         /// </summary>
-        public string? InitStaticListScriptFolder { get; set; }
+        public string? InitListScriptFolder { get; set; }
 
         /// <summary>
         /// Fichier du projet référençant les scripts d'initialisation des listes statiques.
         /// </summary>
-        public string? InitStaticListMainScriptName { get; set; }
+        public string? InitListMainScriptName { get; set; }
 
         /// <summary>
         /// Obtient ou définit le nom de la table où stocker l'historique de passage des scripts.

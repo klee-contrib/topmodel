@@ -280,30 +280,30 @@ namespace TopModel.Core.Loaders
 
                 parser.Consume<SequenceEnd>();
 
-                if (parser.Current is Scalar { Value: "values" })
+                if (parser.Current is Scalar { Value: "values" } vs)
                 {
+                    var pos = $"[{vs.Start.Line},{vs.Start.Column}]";
                     parser.Consume<Scalar>();
                     var references = _fileChecker.Deserialize<IDictionary<string, IDictionary<string, object>>>(parser);
                     classe.ReferenceValues = references.Select(reference => new ReferenceValue
                     {
                         Name = reference.Key,
-                        Value = classe.Properties.OfType<IFieldProperty>().Select(prop =>
+                        Value = classe.Properties.OfType<IFieldProperty>().Select<IFieldProperty, (IFieldProperty Prop, object PropValue)>(prop =>
                         {
-                            reference.Value.TryGetValue(
-                                prop switch
-                                {
-                                    RegularProperty rp => rp.Name,
-                                    AssociationProperty ap => $"{relationships[ap].Value}{ap.Role ?? string.Empty}",
-                                    _ => throw new Exception($"{filePath}: Type de propriété non géré pour initialisation.")
-                                },
-                                out var propValue);
+                            var propName = prop switch
+                            {
+                                RegularProperty rp => rp.Name,
+                                AssociationProperty ap => $"{relationships[ap].Value}{ap.Role ?? string.Empty}",
+                                _ => throw new Exception($"{filePath}{pos}: Type de propriété non géré pour initialisation.")
+                            };
+                            reference.Value.TryGetValue(propName, out var propValue);
                             if (propValue == null && prop.Required && (!prop.PrimaryKey || relationships[prop].Value != "DO_ID"))
                             {
-                                throw new Exception($"{filePath}: L'initilisation {reference.Key} de la classe {classe.Name} n'initialise pas la propriété obligatoire '{prop.Name}'.");
+                                throw new Exception($"{filePath}{pos}: L'initilisation {reference.Key} de la classe {classe.Name} n'initialise pas la propriété obligatoire '{propName}'.");
                             }
 
-                            return (prop, propValue);
-                        }).ToDictionary(v => v.prop, v => v.propValue)
+                            return (prop, propValue!);
+                        }).ToDictionary(v => v.Prop, v => v.PropValue)
                     }).ToList();
                 }
 

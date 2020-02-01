@@ -31,9 +31,9 @@
         public string? TypeFile { get; set; }
 
         /// <summary>
-        /// Retourne ou définit l'emplacement du script d'insertion des données des listes statiques (SQL).
+        /// Retourne ou définit l'emplacement du script d'insertion des données des listes de référence (SQL).
         /// </summary>
-        public string? StaticListFile { get; set; }
+        public string? InitListFile { get; set; }
 
         /// <summary>
         /// Désactive les colonnes d'identité.

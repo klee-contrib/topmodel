@@ -13,7 +13,7 @@
       "type": "string",
       "description": "Chemin du fichier de domaines. Si non renseigné, 'domains.yml' sera utilisé."
     },
-    "staticLists": {
+    "initLists": {
       "type": "string",
       "description": "Chemin du fichier contenant les initialisations de listes de références."
     },
@@ -43,9 +43,9 @@
           "type": "string",
           "description": "Emplacement du fichier de création des types."
         },
-        "staticListFile": {
+        "initListFile": {
           "type": "string",
-          "description": "Emplacement du script d'insertion des données des listes statiques."
+          "description": "Emplacement du script d'insertion des données des listes de référence."
         },
         "disableIdentity": {
           "type": "boolean",
@@ -66,13 +66,13 @@
           "type": "string",
           "description": " Dossier du projet pour les scripts de déclaration de type table."
         },
-        "initStaticListScriptFolder": {
+        "initListScriptFolder": {
           "type": "string",
-          "description": "Dossier du projet pour les scripts d'initialisation des listes statiques."
+          "description": "Dossier du projet pour les scripts d'initialisation des listes de références."
         },
-        "initStaticListMainScriptName": {
+        "initListMainScriptName": {
           "type": "string",
-          "description": "Fichier du projet référençant les scripts d'initialisation des listes statiques."
+          "description": "Fichier du projet référençant les scripts d'initialisation des listes de références."
         },
         "logScriptTableName": {
           "type": "string",

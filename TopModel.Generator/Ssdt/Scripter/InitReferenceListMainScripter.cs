@@ -1,37 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using TopModel.Generator.Ssdt.Dto;
 
 namespace TopModel.Generator.Ssdt.Scripter
 {
     /// <summary>
     /// Scripter écrivant un script qui ordonnance l'appel aux scripts d'insertions de valeurs de listes de références.
     /// </summary>
-    public class InitReferenceListMainScripter : ISqlScripter<ReferenceClassSet>
+    public class InitReferenceListMainScripter : ISqlScripter<IEnumerable<Class>>
     {
+        private readonly SsdtConfig _config;
+
+        public InitReferenceListMainScripter(SsdtConfig config)
+        {
+            _config = config;
+        }
+
         /// <summary>
         /// Calcule le nom du script pour l'item.
         /// </summary>
         /// <param name="item">Item à scripter.</param>
         /// <returns>Nom du fichier de script.</returns>
-        public string GetScriptName(ReferenceClassSet item)
+        public string GetScriptName(IEnumerable<Class> item)
         {
-            if (item == null)
-            {
-                throw new ArgumentNullException("item");
-            }
-
-            return item.ScriptName;
-        }
-
-        /// <summary>
-        /// Indique si l'item doit générer un script.
-        /// </summary>
-        /// <param name="item">Item candidat.</param>
-        /// <returns><code>True</code> si un script doit être généré.</returns>
-        public bool IsScriptGenerated(ReferenceClassSet item)
-        {
-            return true;
+            return _config.InitListMainScriptName!;
         }
 
         /// <summary>
@@ -39,7 +31,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="writer">Flux d'écriture.</param>
         /// <param name="item">Table à scripter.</param>
-        public void WriteItemScript(TextWriter writer, ReferenceClassSet item)
+        public void WriteItemScript(TextWriter writer, IEnumerable<Class> item)
         {
             if (writer == null)
             {
@@ -75,9 +67,9 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="writer">Flux.</param>
         /// <param name="classSet">Ensemble des listes de référence.</param>
-        private static void WriteScriptCalls(TextWriter writer, ReferenceClassSet classSet)
+        private static void WriteScriptCalls(TextWriter writer, IEnumerable<Class> classSet)
         {
-            foreach (var classe in classSet.ClassList)
+            foreach (var classe in classSet)
             {
                 var subscriptName = classe.SqlName + ".insert.sql";
                 writer.WriteLine("/* Insertion dans la table " + classe.SqlName + ". */");

@@ -8,6 +8,6 @@
         public string Domains { get; set; }
 
 #nullable enable
-        public string? StaticLists { get; set; }
+        public string? InitLists { get; set; }
     }
 }

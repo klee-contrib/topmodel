@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using TopModel.Core.FileModel;
-using TopModel.Generator.Ssdt.Dto;
 using TopModel.Generator.Ssdt.Scripter;
 using Microsoft.Extensions.Logging;
 
@@ -16,8 +15,8 @@ namespace TopModel.Generator.Ssdt
 
         private readonly ISqlScripter<Class> _tableScripter = new SqlTableScripter();
         private readonly ISqlScripter<Class> _tableTypeScripter = new SqlTableTypeScripter();
-        private readonly ISqlScripter<ReferenceClass> _initReferenceListScript;
-        private readonly ISqlScripter<ReferenceClassSet> _initReferenceListMainScripter = new InitReferenceListMainScripter();
+        private readonly ISqlScripter<Class> _initReferenceListScript;
+        private readonly ISqlScripter<IEnumerable<Class>> _initReferenceListMainScripter;
 
         public SsdtGenerator(ILogger<SsdtGenerator> logger, SsdtConfig config)
         {
@@ -25,6 +24,7 @@ namespace TopModel.Generator.Ssdt
             _logger = logger;
 
             _initReferenceListScript = new InitReferenceListScripter(_config);
+            _initReferenceListMainScripter = new InitReferenceListMainScripter(_config);
         }
 
         public string Name => nameof(SsdtGenerator);
@@ -67,12 +67,12 @@ namespace TopModel.Generator.Ssdt
         {
             var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues != null);
 
-            if (!classes.Any() || _config.InitStaticListMainScriptName == null || _config.InitStaticListScriptFolder == null)
+            if (!classes.Any() || _config.InitListMainScriptName == null || _config.InitListScriptFolder == null)
             {
                 return;
             }
 
-            Directory.CreateDirectory(_config.InitStaticListScriptFolder);
+            Directory.CreateDirectory(_config.InitListScriptFolder);
 
             // Construit la liste des Reference Class ordonnée.
             var orderList = ModelUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
@@ -80,26 +80,14 @@ namespace TopModel.Generator.Ssdt
                 .Select(a => a.Association)
                 .Where(a => a.Reference));
 
-            var referenceClassList =
-                orderList.Select(x => new ReferenceClass
-                {
-                    Class = x,
-                    Values = x.ReferenceValues
-                }).ToList();
-            var referenceClassSet = new ReferenceClassSet
-            {
-                ClassList = orderList.ToList(),
-                ScriptName = _config.InitStaticListMainScriptName
-            };
-
             // Script un fichier par classe.
-            foreach (var referenceClass in referenceClassList)
+            foreach (var referenceClass in orderList)
             {
-                _initReferenceListScript.Write(referenceClass, _config.InitStaticListScriptFolder, _logger);
+                _initReferenceListScript.Write(referenceClass, _config.InitListScriptFolder, _logger);
             }
 
             // Script le fichier appelant les fichiers dans le bon ordre.
-            _initReferenceListMainScripter.Write(referenceClassSet, _config.InitStaticListScriptFolder, _logger);
+            _initReferenceListMainScripter.Write(orderList, _config.InitListScriptFolder, _logger);
         }
     }
 }
