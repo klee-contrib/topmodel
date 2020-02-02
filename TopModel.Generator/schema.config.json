@@ -13,10 +13,6 @@
       "type": "string",
       "description": "Chemin du fichier de domaines. Si non renseigné, 'domains.yml' sera utilisé."
     },
-    "initLists": {
-      "type": "string",
-      "description": "Chemin du fichier contenant les initialisations de listes de références."
-    },
     "proceduralSql": {
       "type": "object",
       "description": "Config pour la génération de SQL 'procédurale' (sans SSDT)",

@@ -187,19 +187,21 @@ namespace TopModel.Generator.ProceduralSql
         /// <param name="modelClass">Modele de la classe.</param>
         /// <param name="initItem">Item a insérer.</param>
         /// <returns>Dictionnaire contenant { nom de la propriété => valeur }.</returns>
-        protected Dictionary<string, string> CreatePropertyValueDictionary(Class modelClass, ReferenceValue initItem)
+        protected Dictionary<string, string?> CreatePropertyValueDictionary(Class modelClass, ReferenceValue initItem)
         {
-            var nameValueDict = new Dictionary<string, string>();
+            var nameValueDict = new Dictionary<string, string?>();
             var definition = initItem.Value;
             foreach (var property in modelClass.Properties.OfType<IFieldProperty>())
             {
                 if (!property.PrimaryKey || property.Domain.Name != "DO_ID")
                 {
-                    var propertyValue = definition[property];
-                    var propertyValueStr = propertyValue == null ? "null" : propertyValue.ToString()!;
-                    nameValueDict[property.SqlName] = propertyValue != null && propertyValue.GetType() == typeof(string)
-                        ? "'" + propertyValueStr.Replace("'", "''") + "'"
-                        : propertyValueStr;
+                    nameValueDict[property.SqlName] = definition[property] switch
+                    {
+                        null => "null",
+                        bool b => b ? "true" : "false",
+                        string s when property.Domain.SqlType!.Contains("varchar") || property.Domain.SqlType!.Contains("timestamp") => $"'{ScriptUtils.PrepareDataToSqlDisplay(s)}'",
+                        object v => v.ToString()
+                    };
                 }
             }
 
@@ -271,7 +273,7 @@ namespace TopModel.Generator.ProceduralSql
         /// <param name="tableName">Nom de la table dans laquelle ajouter la ligne.</param>
         /// <param name="propertyValuePairs">Dictionnaire au format {nom de la propriété => valeur}.</param>
         /// <returns>La requête "INSERT INTO ..." générée.</returns>
-        private string GetInsertLine(string tableName, Dictionary<string, string> propertyValuePairs)
+        private string GetInsertLine(string tableName, Dictionary<string, string?> propertyValuePairs)
         {
             var sb = new StringBuilder();
             sb.Append("INSERT INTO " + Quote(tableName) + "(");

@@ -99,26 +99,6 @@ namespace TopModel.Core
                });
         }
 
-        private void LoadReferenceLists()
-        {
-            var staticLists = ReferenceListsLoader.LoadReferenceLists(_config.InitLists);
-
-            var classMap = _modelFiles.SelectMany(mf => mf.Value.Classes)
-                .ToDictionary(c => c.Name, c => c);
-
-            foreach (var (className, referenceValues) in staticLists)
-            {
-                if (classMap.TryGetValue(className, out var classe))
-                {
-                    ReferenceListsLoader.AddReferenceValues(classe, referenceValues);
-                }
-                else
-                {
-                    throw new Exception($"Une liste de référence pour la classe {className} a été définie, alors que cette classe est introuvable.");
-                }
-            }
-        }
-
         private void OnFSChangedEvent(object sender, FileSystemEventArgs e)
         {
             _fsCache.Set(e.FullPath, e, new MemoryCacheEntryOptions()
@@ -188,11 +168,6 @@ namespace TopModel.Core
                         }
 
                         throw new Exception("Erreur lors de la lecture du modèle.");
-                    }
-
-                    if (affectedFiles.SelectMany(f => f.Classes).Any(c => c.Reference))
-                    {
-                        LoadReferenceLists();
                     }
 
                     foreach (var modelWatcher in _modelWatchers)

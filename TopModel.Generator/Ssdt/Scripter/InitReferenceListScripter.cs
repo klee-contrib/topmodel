@@ -76,7 +76,6 @@ namespace TopModel.Generator.Ssdt.Scripter
             {
                 if (!property.PrimaryKey || property.Domain.Name != "DO_ID")
                 {
-                    var propertyValue = definition[property];
                     nameValueDict[property.SqlName] = definition[property] switch
                     {
                         null => "NULL",
