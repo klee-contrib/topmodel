@@ -78,7 +78,7 @@ namespace TopModel.Generator.Ssdt
             var orderList = ModelUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
                 .OfType<AssociationProperty>()
                 .Select(a => a.Association)
-                .Where(a => a.Reference));
+                .Where(a => a.ReferenceValues != null));
 
             // Script un fichier par classe.
             foreach (var referenceClass in orderList)
