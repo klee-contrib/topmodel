@@ -334,7 +334,26 @@ namespace TopModel.Generator.Javascript
                 fw.Write(reference.ReferenceValues != null
                     ? string.Join(" | ", reference.ReferenceValues.Select(r => $@"""{r.Value[reference.PrimaryKey]}""").OrderBy(x => x))
                     : "string");
-                fw.Write(";\r\nexport interface ");
+                fw.WriteLine(";");
+
+                if (reference.FlagProperty != null && reference.ReferenceValues != null)
+                {
+                    fw.Write($"export enum {reference.Name}Flag {{\r\n");
+
+                    foreach (var refValue in reference.ReferenceValues)
+                    {
+                        var flag = int.Parse((string)refValue.Value[reference.Properties.OfType<IFieldProperty>().Single(rp => rp.Name == reference.FlagProperty)]);
+                        fw.Write($"    {refValue.Name} = 0b{Convert.ToString(flag, 2)}");
+                        if (reference.ReferenceValues.IndexOf(refValue) != reference.ReferenceValues.Count - 1)
+                        {
+                            fw.WriteLine(",");
+                        }
+                    }
+
+                    fw.WriteLine("\r\n}");
+                }
+
+                fw.Write("export interface ");
                 fw.Write(reference.Name);
                 fw.Write(" {\r\n");
 

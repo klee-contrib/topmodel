@@ -135,6 +135,15 @@ namespace TopModel.Generator.CSharp
                 w.WriteLine(2, "#endregion");
             }
 
+            if (item.FlagProperty != null && item.ReferenceValues != null)
+            {
+                w.WriteLine();
+                w.WriteLine(2, "#region Flags");
+                GenerateFlags(w, item);
+                w.WriteLine();
+                w.WriteLine(2, "#endregion");
+            }
+
             GenerateProperties(w, item);
             GenerateExtensibilityMethods(w, item);
             w.WriteLine(1, "}");
@@ -577,6 +586,36 @@ namespace TopModel.Generator.CSharp
                 w.WriteSummary(3, "Nom de la colonne en base associée à la propriété " + property.Name + ".");
                 w.WriteLine(3, $"{property.SqlName},");
                 if (cols.IndexOf(property) != cols.Count - 1)
+                {
+                    w.WriteLine();
+                }
+            }
+
+            w.WriteLine(2, "}");
+        }
+
+        /// <summary>
+        /// Génère les flags d'une liste de référence statique.
+        /// </summary>
+        /// <param name="w">Writer.</param>
+        /// <param name="item">La classe générée.</param>
+        private void GenerateFlags(CSharpWriter w, Class item)
+        {
+            w.WriteLine();
+            w.WriteSummary(2, "Flags");
+            w.WriteLine(2, "public enum Flags");
+            w.WriteLine(2, "{");
+
+            foreach (var refValue in item.ReferenceValues!)
+            {
+                var flag = int.Parse((string)refValue.Value[item.Properties.OfType<IFieldProperty>().Single(rp => rp.Name == item.FlagProperty)]);
+                var label = item.LabelProperty != null
+                    ? (string)refValue.Value[item.LabelProperty]
+                    : refValue.Name;
+
+                w.WriteSummary(3, label);
+                w.WriteLine(3, $"{refValue.Name} = 0b{Convert.ToString(flag, 2)},");
+                if (item.ReferenceValues.IndexOf(refValue) != item.ReferenceValues.Count - 1)
                 {
                     w.WriteLine();
                 }

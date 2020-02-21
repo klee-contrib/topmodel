@@ -93,6 +93,9 @@ namespace TopModel.Core.Loaders
                         case "defaultProperty":
                             classe.DefaultProperty = value.Value;
                             break;
+                        case "flagProperty":
+                            classe.FlagProperty = value.Value;
+                            break;
                         case "comment":
                             classe.Comment = value.Value;
                             break;

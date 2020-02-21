@@ -146,6 +146,10 @@
               "type": "string",
               "description": "Nom de la propriété de la classe qui sera utilisée pour trier la liste de référence. Si non renseignée, le tri par défaut de la base de données sera utilisé (par clé primaire, ordre d'insertion...)."
             },
+            "flagProperty": {
+              "type": "string",
+              "description": "Nom de la propriété de la classe qui sera utilisée comme flag binaire, en plus du code dans une liste de référence statique."
+            },
             "comment": {
               "type": "string",
               "description": "Description de la classe."

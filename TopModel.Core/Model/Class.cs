@@ -28,6 +28,8 @@ namespace TopModel.Core
 
         public string? DefaultProperty { get; set; }
 
+        public string? FlagProperty { get; set; }
+
         public IList<IProperty> Properties { get; } = new List<IProperty>();
 
         public Namespace Namespace { get; set; }
