@@ -24,7 +24,7 @@ namespace TopModel.UI.Graphing
                 }
 
                 AddRow(
-                    ($"<b>{prop.Name}{(prop.Required ? "?" : string.Empty)}</b>", prop.Comment, null),
+                    ($"<b>{prop.Name}{(!prop.Required ? "?" : string.Empty)}</b>", prop.Comment, null),
                     prop is AliasProperty alp ? ($"<i>[{alp.Property.Class}]</i>", prop.Class.Comment, alp.Property.Class.ModelFile) : ($"<i>{prop.Domain.Name}</i>", prop.Domain.Label, null));
             }
         }
