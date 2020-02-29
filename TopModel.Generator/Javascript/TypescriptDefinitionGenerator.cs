@@ -186,19 +186,14 @@ namespace TopModel.Generator.Javascript
                 {
                     fw.Write("        name: \"");
                     fw.Write(field.Name.ToFirstLower());
-                    fw.Write("\",\r\n        fieldType: ");
-                    fw.Write(field.TSType switch
+                    fw.Write("\"");
+                    if (field.TSType != "string" && field.TSType != "number" && field.TSType != "boolean")
                     {
-                        "{}" => "{}",
-                        string t when t != "string" && field.Domain.CsharpType == "string" => $"\"string\" as {field.TSType}",
-                        "string" => "\"string\"",
-                        "number" => "\"number\"",
-                        "boolean" => "\"boolean\"",
-                        string t => $"{{}} as {t}"
-                    });
+                        fw.Write(",\r\n        fieldType: ");
+                        fw.Write(field.TSType == "{}" ? "{}" : $"{{}} as {field.TSType}");
+                    }
 
-                    fw.Write(",\r\n");
-                    fw.Write("        domain: ");
+                    fw.Write(",\r\n        domain: ");
                     fw.Write(field.Domain.Name);
                     fw.Write(",\r\n        isRequired: ");
                     fw.Write((field.Required && !field.PrimaryKey).ToString().ToFirstLower());
