@@ -145,7 +145,7 @@ namespace TopModel.Generator.Javascript
 
             if (classe.Extends != null)
             {
-                fw.Write("        ...");
+                fw.Write("    ...");
                 fw.Write(classe.Extends.Name);
                 fw.Write("Entity,\r\n");
             }
@@ -167,20 +167,20 @@ namespace TopModel.Generator.Javascript
                         }
                         else
                         {
-                            fw.Write("\"list\"");
+                            fw.Write("\"list\",");
                         }
                     }
                     else
                     {
-                        fw.Write("\"object\"");
+                        fw.Write("\"object\",");
                     }
                 }
                 else
                 {
-                    fw.Write("\"field\"");
+                    fw.Write("\"field\",");
                 }
 
-                fw.Write(",\r\n");
+                fw.Write("\r\n");
 
                 if (property is IFieldProperty field)
                 {

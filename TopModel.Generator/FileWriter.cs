@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Logging;
 
@@ -26,6 +25,8 @@ namespace TopModel.Generator
         /// Crée une nouvelle instance.
         /// </summary>
         /// <param name="fileName">Nom du fichier à écrire.</param>
+        /// <param name="logger">Logger.</param>
+        /// <param name="encoderShouldEmitUTF8Identifier">UTF8 avec BOM</param>
         public FileWriter(string fileName, ILogger logger, bool encoderShouldEmitUTF8Identifier = true)
             : base(CultureInfo.InvariantCulture)
         {
@@ -107,7 +108,6 @@ namespace TopModel.Generator
             }
 
             var newContent = _sb.ToString();
-            var hash = Sha1Hash(newContent);
             if (newContent.Equals(currentContent))
             {
                 return;
@@ -125,7 +125,7 @@ namespace TopModel.Generator
                 if (EnableHeader)
                 {
                     sw.WriteLine(StartCommentToken);
-                    sw.WriteLine(StartCommentToken + " ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT (" + hash + ") !");
+                    sw.WriteLine(StartCommentToken + " ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !");
                     sw.WriteLine(StartCommentToken);
                     sw.WriteLine();
                 }
@@ -147,18 +147,6 @@ namespace TopModel.Generator
         /// <param name="fileName">Nom du fichier.</param>
         protected virtual void FinishFile(string fileName)
         {
-        }
-
-        /// <summary>
-        /// Calcul une empreinte SHA1 du contenu du fichier.
-        /// </summary>
-        /// <param name="content">Contenu.</param>
-        /// <returns>Hash.</returns>
-        private static string Sha1Hash(string content)
-        {
-            var encoding = new ASCIIEncoding();
-            SHA1 sha = new SHA1CryptoServiceProvider();
-            return BitConverter.ToString(sha.ComputeHash(encoding.GetBytes(content))).Replace("-", string.Empty);
         }
     }
 }
