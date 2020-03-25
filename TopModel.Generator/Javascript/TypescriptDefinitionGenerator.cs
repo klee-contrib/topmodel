@@ -109,7 +109,29 @@ namespace TopModel.Generator.Javascript
         {
             using var fw = new FileWriter(fileName, _logger, false);
 
-            fw.Write("import {EntityToType, StoreNode} from \"@focus4/stores\";");
+            fw.Write("import {EntityToType, ");
+
+            if (classe.Properties.Any(p => p is IFieldProperty))
+            {
+                fw.Write("FieldEntry2, ");
+            }
+
+            if (classe.Properties.Any(p => p is CompositionProperty { Kind: Composition.List } cp && cp.Class == classe))
+            {
+                fw.Write("ListEntry, ");
+            }
+
+            if (classe.Properties.Any(p => p is CompositionProperty { Kind: Composition.Object }))
+            {
+                fw.Write("ObjectEntry, ");
+            }
+
+            if (classe.Properties.Any(p => p is CompositionProperty { Kind: Composition.List } cp && cp.Composition == classe))
+            {
+                fw.Write("RecursiveListEntry, ");
+            }
+
+            fw.Write("StoreNode} from \"@focus4/stores\";");
             fw.Write("\r\nimport {");
             fw.Write(string.Join(", ", GetDomainList(classe)));
             fw.Write("} from \"../../domains\";\r\n");
@@ -131,17 +153,61 @@ namespace TopModel.Generator.Javascript
 
             fw.Write("\r\nexport type ");
             fw.Write(classe.Name);
-            fw.Write(" = EntityToType<typeof ");
+            fw.Write(" = EntityToType<");
             fw.Write(classe.Name);
-            fw.Write("Entity>;\r\nexport type ");
+            fw.Write("EntityType>;\r\nexport type ");
             fw.Write(classe.Name);
-            fw.Write("Node = StoreNode<typeof ");
+            fw.Write("Node = StoreNode<");
             fw.Write(classe.Name);
-            fw.Write("Entity>;\r\n\r\n");
+            fw.Write("EntityType>;\r\n");
 
-            fw.Write("export const ");
-            fw.Write(classe.Name);
-            fw.Write("Entity = {\r\n");
+            fw.Write($"export interface {classe.Name}EntityType ");
+
+            if (classe.Extends != null)
+            {
+                fw.Write($"extends {classe.Extends.Name}EntityType ");
+            }
+
+            fw.Write("{\r\n");
+
+            foreach (var property in classe.Properties)
+            {
+                fw.Write($"    {property.Name.ToFirstLower()}: ");
+
+                if (property is CompositionProperty cp)
+                {
+                    if (cp.Kind == Composition.List)
+                    {
+                        if (cp.Composition.Name == classe.Name)
+                        {
+                            fw.Write($"RecursiveListEntry");
+                        }
+                        else
+                        {
+                            fw.Write($"ListEntry<{cp.Composition.Name}EntityType>");
+                        }
+                    }
+                    else
+                    {
+                        fw.Write($"ObjectEntry<{cp.Composition.Name}EntityType>");
+                    }
+                }
+                else if (property is IFieldProperty field)
+                {
+                    fw.Write($"FieldEntry2<typeof {field.Domain.Name}, {field.TSType}>");
+                }
+
+                if (property != classe.Properties.Last())
+                {
+                    fw.Write(",");
+                }
+
+                fw.Write("\r\n");
+            }
+
+            fw.Write("}\r\n\r\n");
+
+            fw.Write($"export const {classe.Name}Entity: {classe.Name}EntityType = {{\r\n");
 
             if (classe.Extends != null)
             {
@@ -187,12 +253,6 @@ namespace TopModel.Generator.Javascript
                     fw.Write("        name: \"");
                     fw.Write(field.Name.ToFirstLower());
                     fw.Write("\"");
-                    if (field.TSType != "string" && field.TSType != "number" && field.TSType != "boolean")
-                    {
-                        fw.Write(",\r\n        fieldType: ");
-                        fw.Write(field.TSType == "{}" ? "{}" : $"{{}} as {field.TSType}");
-                    }
-
                     fw.Write(",\r\n        domain: ");
                     fw.Write(field.Domain.Name);
                     fw.Write(",\r\n        isRequired: ");
@@ -223,7 +283,7 @@ namespace TopModel.Generator.Javascript
                 fw.Write("\r\n");
             }
 
-            fw.Write("} as const;\r\n");
+            fw.Write("}\r\n");
 
             if (classe.Reference)
             {
@@ -276,7 +336,7 @@ namespace TopModel.Generator.Javascript
                     : $"../{module.ToLower()}";
 
                 return (
-                    import: $"{name}Entity",
+                    import: $"{name}Entity, {name}EntityType",
                     path: $"{module}/{name.ToDashCase()}");
             }).Distinct().ToList();
 
