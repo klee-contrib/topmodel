@@ -46,6 +46,12 @@ namespace TopModel.Generator
             var fileChecker = new FileChecker("schema.config.json");
             var configFile = new FileInfo(configFileName);
             var config = fileChecker.Deserialize<FullConfig>(configFile.OpenText().ReadToEnd());
+
+            if (config.AllowCompositePrimaryKey && config.Csharp != null)
+            {
+                throw new ArgumentException("Impossible de spécifier 'allowCompositePrimaryKey' avec 'csharp'.");
+            }
+
             var dn = configFile.DirectoryName;
 
             var services = new ServiceCollection()
@@ -58,7 +64,7 @@ namespace TopModel.Generator
                 CombinePath(dn, config.ProceduralSql, c => c.IndexFKFile);
                 CombinePath(dn, config.ProceduralSql, c => c.InitListFile);
                 CombinePath(dn, config.ProceduralSql, c => c.TypeFile);
-                CombinePath(dn, config.ProceduralSql, c => c.UKFile);
+                CombinePath(dn, config.ProceduralSql, c => c.UniqueKeysFile);
 
                 services
                     .AddSingleton(config.ProceduralSql)

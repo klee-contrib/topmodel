@@ -46,8 +46,6 @@ namespace TopModel.Core
             set => _sqlName = value;
         }
 
-        public string TrigramPrefix => string.IsNullOrEmpty(Trigram) ? string.Empty : $"{Trigram}_";
-
         public override string ToString()
         {
             return Name;

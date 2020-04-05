@@ -46,7 +46,9 @@
                     ? $"{Class.Trigram}_{ModelUtils.ConvertCsharp2Bdd(Name).Replace(prop.Class.SqlName + "_", string.Empty)}"
                     : prop is AssociationProperty ap
                     ? ap.Association.PrimaryKey!.SqlName + (ap.Role != null ? $"_{ap.Role.Replace(" ", "_").ToUpper()}" : string.Empty)
-                    : $"{prop.Class.Trigram}_{ModelUtils.ConvertCsharp2Bdd(prop.Name)}";
+                    : prop.Class.Trigram != null
+                    ? $"{prop.Class.Trigram}_{ModelUtils.ConvertCsharp2Bdd(prop.Name)}"
+                    : ModelUtils.ConvertCsharp2Bdd(prop.Name);
             }
         }
     }

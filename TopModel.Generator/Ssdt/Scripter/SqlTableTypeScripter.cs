@@ -108,7 +108,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// <param name="classe">Classe.</param>
         private static void WriteInsertKeyLine(StringBuilder sb, Class classe)
         {
-            sb.Append("[").Append(classe.TrigramPrefix + "INSERT_KEY] int null");
+            sb.Append("[").Append(classe.Trigram + "_INSERT_KEY] int null");
         }
 
         /// <summary>

@@ -252,11 +252,14 @@ namespace TopModel.Core
                 }
             }
 
-            foreach (var classe in modelFile.Classes)
+            if (!_config.AllowCompositePrimaryKey)
             {
-                if (classe.Properties.Count(p => p.PrimaryKey) > 1)
+                foreach (var classe in modelFile.Classes)
                 {
-                    throw new Exception($"La classe {classe.Name} du fichier {modelFile} doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvées)");
+                    if (classe.Properties.Count(p => p.PrimaryKey) > 1)
+                    {
+                        throw new Exception($"La classe {classe.Name} du fichier {modelFile} doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvées)");
+                    }
                 }
             }
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TopModel.Core.FileModel;
 using TopModel.Generator.Ssdt;
 using Microsoft.Extensions.Logging;
 
@@ -92,7 +93,7 @@ namespace TopModel.Generator.ProceduralSql
             var outputFileNameCrebas = _config.CrebasFile;
             var outputFileNameIndex = _config.IndexFKFile;
             var outputFileNameType = _config.TypeFile;
-            var outputFileNameUK = _config.UKFile;
+            var outputFileNameUK = _config.UniqueKeysFile;
 
             if (outputFileNameCrebas == null || outputFileNameIndex == null)
             {
@@ -125,7 +126,7 @@ namespace TopModel.Generator.ProceduralSql
             writerUk?.WriteLine("-- =========================================================================================== ");
             writerUk?.WriteLine($"--   Application Name	:	{appName} ");
             writerUk?.WriteLine("--   Script Name		:	" + outputFileNameUK?.Split("\\").Last());
-            writerUk?.WriteLine("--   Description		:	Script de création des indexs uniques.");
+            writerUk?.WriteLine("--   Description		:	Script de création des index uniques.");
             writerUk?.WriteLine("-- =========================================================================================== ");
 
             writerType?.WriteLine("-- =========================================================================================== ");
@@ -135,8 +136,9 @@ namespace TopModel.Generator.ProceduralSql
             writerType?.WriteLine("-- =========================================================================================== ");
 
             var foreignKeys = classes
-                .Where(c => c.Trigram != null)
-                .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType));
+                .Where(c => c.Namespace.Kind == Kind.Data)
+                .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType))
+                .ToList();
 
             if (writerType != null)
             {
@@ -236,7 +238,7 @@ namespace TopModel.Generator.ProceduralSql
             writer.WriteLine("  * Génération de la contrainte de clef étrangère pour " + tableName + "." + propertyName);
             writer.WriteLine(" **/");
             writer.WriteLine("alter table " + Quote(tableName));
-            var constraintName = Quote("FK_" + property.Class.TrigramPrefix + propertyName);
+            var constraintName = Quote("FK_" + (property.Class.Trigram ?? property.Class.SqlName) + "_" + propertyName);
 
             writer.WriteLine("\tadd constraint " + constraintName + " foreign key (" + Quote(propertyName) + ")");
             writer.Write("\t\treferences " + Quote(property.Association.SqlName) + " (");
@@ -260,7 +262,7 @@ namespace TopModel.Generator.ProceduralSql
             writer.WriteLine("/**");
             writer.WriteLine("  * Création de l'index de clef étrangère pour " + tableName + "." + propertyName);
             writer.WriteLine(" **/");
-            writer.WriteLine("create index " + Quote("IDX_" + property.Class.TrigramPrefix + propertyName + "_FK") + " on " + tableName + " (");
+            writer.WriteLine("create index " + Quote("IDX_" + (property.Class.Trigram ?? property.Class.SqlName) + "_" + propertyName + "_FK") + " on " + tableName + " (");
             writer.WriteLine("\t" + Quote(propertyName) + " ASC");
             writer.WriteLine(")");
             writer.WriteLine(BatchSeparator);
@@ -350,8 +352,6 @@ namespace TopModel.Generator.ProceduralSql
             }
 
             writerCrebas.Write("(");
-            writerCrebas.Write(Quote(classe.PrimaryKey!.SqlName));
-            writerCrebas.WriteLine(")");
 
             if (classe.Properties.All(p => p is AssociationProperty))
             {
@@ -368,6 +368,11 @@ namespace TopModel.Generator.ProceduralSql
                         writerCrebas.WriteLine(")");
                     }
                 }
+            }
+            else
+            {
+                writerCrebas.Write(string.Join(", ", classe.Properties.OfType<IFieldProperty>().Where(p => p.PrimaryKey).Select(p => Quote(p.SqlName))));
+                writerCrebas.WriteLine(")");
             }
 
             writerCrebas.WriteLine(")");
@@ -453,7 +458,7 @@ namespace TopModel.Generator.ProceduralSql
                 {
                     if (writerUk == null)
                     {
-                        throw new ArgumentNullException(nameof(_config.UKFile));
+                        throw new ArgumentNullException(nameof(_config.UniqueKeysFile));
                     }
 
                     writerUk.WriteLine("alter table " + Quote(classe.SqlName) + " add constraint " + Quote(CheckIdentifierLength("UK_" + classe.SqlName + '_' + property.Name.ToUpperInvariant())) + " unique (" + Quote(property.SqlName) + ")");
@@ -473,17 +478,22 @@ namespace TopModel.Generator.ProceduralSql
 
             if (isContainsInsertKey)
             {
-                if (t > 0)
+                if (writerType == null)
                 {
-                    writerType?.Write(',');
-                    writerType?.WriteLine();
+                    throw new ArgumentNullException(nameof(_config.TypeFile));
                 }
 
-                writerType?.WriteLine('\t' + classe.TrigramPrefix + "INSERT_KEY int");
-                writerType?.WriteLine();
-                writerType?.WriteLine(")");
-                writerType?.WriteLine(BatchSeparator);
-                writerType?.WriteLine();
+                if (t > 0)
+                {
+                    writerType.Write(',');
+                    writerType.WriteLine();
+                }
+
+                writerType.WriteLine('\t' + classe.Trigram + "_INSERT_KEY int");
+                writerType.WriteLine();
+                writerType.WriteLine(")");
+                writerType.WriteLine(BatchSeparator);
+                writerType.WriteLine();
             }
 
             return fkPropertiesList;

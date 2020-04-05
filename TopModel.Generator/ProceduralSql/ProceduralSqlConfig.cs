@@ -18,7 +18,7 @@
         /// <summary>
         /// Retourne ou définit l'emplacement du fichier de création des index uniques (SQL).
         /// </summary>
-        public string? UKFile { get; set; }
+        public string? UniqueKeysFile { get; set; }
 
         /// <summary>
         /// Retourne ou définit l'emplacement du fichier de création des clés étrangères (SQL).
