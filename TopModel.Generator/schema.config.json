@@ -73,18 +73,6 @@
         "initListMainScriptName": {
           "type": "string",
           "description": "Fichier du projet référençant les scripts d'initialisation des listes de références."
-        },
-        "logScriptTableName": {
-          "type": "string",
-          "description": "Nom de la table où stocker l'historique de passage des scripts."
-        },
-        "logScriptVersionField": {
-          "type": "string",
-          "description": "Nom du champ où stocker le nom des scripts exécutés."
-        },
-        "logScriptDateField": {
-          "type": "string",
-          "description": "Nom du champ où stocker la date d'exécution des scripts."
         }
       }
     },

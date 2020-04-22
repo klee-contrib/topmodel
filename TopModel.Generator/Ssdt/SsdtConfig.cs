@@ -24,20 +24,5 @@
         /// Fichier du projet référençant les scripts d'initialisation des listes statiques.
         /// </summary>
         public string? InitListMainScriptName { get; set; }
-
-        /// <summary>
-        /// Obtient ou définit le nom de la table où stocker l'historique de passage des scripts.
-        /// </summary>
-        public string LogScriptTableName { get; set; } = "SCRIPT_HISTORIQUE";
-
-        /// <summary>
-        /// Obtient ou définit le nom du champ où stocker le nom des scripts exécutés.
-        /// </summary>
-        public string LogScriptVersionField { get; set; } = "SHI_VERSION";
-
-        /// <summary>
-        /// Obtient ou définit le nom du champ où stocker la date d'exécution des scripts.
-        /// </summary>
-        public string LogScriptDateField { get; set; } = "SHI_DATE";
     }
 }

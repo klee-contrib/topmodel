@@ -11,13 +11,6 @@ namespace TopModel.Generator.Ssdt.Scripter
     /// </summary>
     public class InitReferenceListScripter : ISqlScripter<Class>
     {
-        private readonly SsdtConfig _config;
-
-        public InitReferenceListScripter(SsdtConfig config)
-        {
-            _config = config;
-        }
-
         /// <summary>
         /// Calcule le nom du script pour l'item.
         /// </summary>
@@ -89,7 +82,7 @@ namespace TopModel.Generator.Ssdt.Scripter
 
             // Création de la requête.
             var sb = new StringBuilder();
-            sb.Append("\tINSERT INTO " + modelClass.SqlName + "(");
+            sb.Append("INSERT INTO " + modelClass.SqlName + "(");
             var isFirst = true;
             foreach (var columnName in nameValueDict.Keys)
             {
@@ -126,9 +119,6 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// <param name="writer">Flux.</param>
         private void WriteFooter(TextWriter writer)
         {
-            writer.WriteLine("\tINSERT INTO " + _config.LogScriptTableName + "(" + _config.LogScriptVersionField + ", " + _config.LogScriptDateField + ") VALUES (@SCRIPT_NAME, GETDATE());");
-            writer.WriteLine("\tCOMMIT TRANSACTION");
-            writer.WriteLine("END");
             writer.WriteLine("GO");
         }
 
@@ -143,15 +133,6 @@ namespace TopModel.Generator.Ssdt.Scripter
             writer.WriteLine("--   Description		:	Insertion des valeurs de la table " + tableName + ".");
             writer.WriteLine("-- ===========================================================================================");
             writer.WriteLine();
-            writer.WriteLine("DECLARE @SCRIPT_NAME varchar(100)");
-            writer.WriteLine();
-            writer.WriteLine("SET @SCRIPT_NAME = '" + tableName + ".insert'");
-            writer.WriteLine("IF not exists(Select 1 From " + _config.LogScriptTableName + " WHERE " + _config.LogScriptVersionField + " = @SCRIPT_NAME)");
-            writer.WriteLine("BEGIN");
-            writer.WriteLine("\tPRINT 'Appling script ' + @SCRIPT_NAME;");
-            writer.WriteLine("\tSET XACT_ABORT ON");
-            writer.WriteLine("\tBEGIN TRANSACTION");
-            writer.WriteLine();
         }
 
         /// <summary>
@@ -165,8 +146,6 @@ namespace TopModel.Generator.Ssdt.Scripter
             {
                 writer.WriteLine(GetInsertLine(item, initItem));
             }
-
-            writer.WriteLine();
         }
     }
 }

@@ -23,7 +23,7 @@ namespace TopModel.Generator.Ssdt
             _config = config;
             _logger = logger;
 
-            _initReferenceListScript = new InitReferenceListScripter(_config);
+            _initReferenceListScript = new InitReferenceListScripter();
             _initReferenceListMainScripter = new InitReferenceListMainScripter(_config);
         }
 
