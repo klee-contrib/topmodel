@@ -21,7 +21,16 @@
       "type": "object",
       "description": "Config pour la génération de SQL 'procédurale' (sans SSDT)",
       "additionalProperties": false,
+      "required": [ "kinds" ],
       "properties": {
+        "kinds": {
+          "type": "array",
+          "description": "Précise les catégories de fichier que le générateur doit lire",
+          "items": {
+            "type": "string",
+            "description": "Catégorie de fichier que le générateur doit lire."
+          }
+        },
         "targetDBMS": {
           "type": "string",
           "description": "SGBD cible ('postgre' ou 'sqlserver').",
@@ -57,7 +66,16 @@
       "type": "object",
       "description": "Config pour la génération SSDT",
       "additionalProperties": false,
+      "required": [ "kinds" ],
       "properties": {
+        "kinds": {
+          "type": "array",
+          "description": "Précise les catégories de fichier que le générateur doit lire",
+          "items": {
+            "type": "string",
+            "description": "Catégorie de fichier que le générateur doit lire."
+          }
+        },
         "tableScriptFolder": {
           "type": "string",
           "description": "Dossier du projet pour les scripts de déclaration de table."
@@ -80,7 +98,16 @@
       "type": "object",
       "description": "Configuration de la génération de C#. Si non renseigné, alors le C# ne sera pas généré.",
       "additionalProperties": false,
+      "required": [ "kinds" ],
       "properties": {
+        "kinds": {
+          "type": "array",
+          "description": "Précise les catégories de fichier que le générateur doit lire",
+          "items": {
+            "type": "string",
+            "description": "Catégorie de fichier que le générateur doit lire."
+          }
+        },
         "outputDirectory": {
           "type": "string",
           "description": "Répertoire de génération"
@@ -124,7 +151,16 @@
       "type": "object",
       "description": "Configuration de la génération de Typescript. Si non renseigné, alors le Typescript ne sera pas généré.",
       "additionalProperties": false,
+      "required": [ "kinds" ],
       "properties": {
+        "kinds": {
+          "type": "array",
+          "description": "Précise les catégories de fichier que le générateur doit lire",
+          "items": {
+            "type": "string",
+            "description": "Catégorie de fichier que le générateur doit lire."
+          }
+        },
         "modelOutputDirectory": {
           "type": "string",
           "description": "Chemin vers le dossier racine vers lequel générer les fichiers de modèle. Si non renseigné, aucun modèle ne sera généré."

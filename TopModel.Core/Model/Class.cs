@@ -46,6 +46,8 @@ namespace TopModel.Core
             set => _sqlName = value;
         }
 
+        public string CSharpNamepace => Trigram != null ? $"{Namespace.Module}DataContract" : $"{Namespace.Module}Contract";
+
         public override string ToString()
         {
             return Name;

@@ -233,8 +233,12 @@ namespace TopModel.Generator.Ssdt.Scripter
             }
 
             // Primary Key
-            sb.Clear();
-            WritePkLine(sb, table);
+            if (table.PrimaryKey != null)
+            {
+                sb.Clear();
+                WritePkLine(sb, table);
+            }
+
             definitions.Add(sb.ToString());
 
             // Foreign key constraints

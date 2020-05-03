@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using TopModel.Core.FileModel;
 using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.CSharp
 {
-    using static CSharpUtils;
-
     /// <summary>
     /// Générateur de code C#.
     /// </summary>
-    public class CSharpGenerator : IModelWatcher
+    public class CSharpGenerator : GeneratorBase
     {
         private readonly CSharpConfig _config;
         private readonly ILogger<CSharpGenerator> _logger;
@@ -22,6 +19,7 @@ namespace TopModel.Generator.CSharp
         private readonly ReferenceAccessorGenerator _referenceAccessorGenerator;
 
         public CSharpGenerator(ILogger<CSharpGenerator> logger, CSharpConfig config)
+            : base(config)
         {
             _config = config;
             _logger = logger;
@@ -31,9 +29,9 @@ namespace TopModel.Generator.CSharp
             _referenceAccessorGenerator = new ReferenceAccessorGenerator(_config, _logger);
         }
 
-        public string Name => nameof(CSharpGenerator);
+        public override string Name => nameof(CSharpGenerator);
 
-        public void OnFilesChanged(IEnumerable<ModelFile> files)
+        protected override void HandleFiles(IEnumerable<ModelFile> files)
         {
             foreach (var file in files)
             {
@@ -46,10 +44,10 @@ namespace TopModel.Generator.CSharp
                 GenerateDbContext();
             }
 
-            var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace)).Distinct();
-            foreach (var module in modules)
+            var namespaces = files.SelectMany(f => f.Classes.Select(c => c.CSharpNamepace)).Distinct();
+            foreach (var ns in namespaces)
             {
-                GenerateReferences(module);
+                GenerateReferences(ns);
             }
         }
 
@@ -68,25 +66,17 @@ namespace TopModel.Generator.CSharp
                 return;
             }
 
-            var currentDirectory = GetDirectoryForModelClass(
-                _config.LegacyProjectPaths,
-                _config.OutputDirectory,
-                file.Descriptor.Kind == Kind.Data,
-                file.Descriptor.App,
-                file.Descriptor.Namespace.CSharpName);
-
-            Directory.CreateDirectory(currentDirectory);
             foreach (var classe in file.Classes)
             {
                 _classGenerator.Generate(classe);
             }
         }
 
-        private void GenerateReferences(Namespace ns)
+        private void GenerateReferences(string ns)
         {
             _referenceAccessorGenerator.Generate(
                 _files.Values.SelectMany(f => f.Classes)
-                    .Where(c => c.Reference && c.Namespace.Equals(ns)));
+                    .Where(c => c.Reference && c.CSharpNamepace == ns));
         }
     }
 }

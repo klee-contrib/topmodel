@@ -1,6 +1,4 @@
-﻿using TopModel.Core.FileModel;
-
-namespace TopModel.Core
+﻿namespace TopModel.Core
 {
     public struct Namespace
     {
@@ -8,8 +6,6 @@ namespace TopModel.Core
 
         public string Module { get; set; }
 
-        public Kind Kind { get; set; }
-
-        public string CSharpName => Module + (Kind == Kind.Data ? "DataContract" : "Contract");
+        public string Kind { get; set; }
     }
 }

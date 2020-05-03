@@ -40,7 +40,7 @@
     public string File { get; set; }
 #nullable enable
 
-    public FileName FileName => new FileName { Module = Module, Kind = Kind == "Data" ? FileModel.Kind.Data : FileModel.Kind.Metier, File = File.Replace("+", " ") };
+    public FileName FileName => new FileName { Module = Module, Kind = Kind, File = File.Replace("+", " ") };
 
     (string Svg, double Width, double Height) Diagram => _provider.GetSvgForFile(FileName);
 

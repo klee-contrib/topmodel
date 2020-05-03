@@ -3,7 +3,7 @@
     /// <summary>
     /// Paramètres pour la génération SSDT.
     /// </summary>
-    public class SsdtConfig
+    public class SsdtConfig : GeneratorConfigBase
     {
         /// <summary>
         /// Dossier du projet pour les scripts de déclaration de table.

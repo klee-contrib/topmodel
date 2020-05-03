@@ -34,10 +34,10 @@ namespace TopModel.Generator.CSharp
                 return;
             }
 
-            var ns = classList.First().Namespace;
+            var ns = classList.First().CSharpNamepace;
 
-            GenerateReferenceAccessorsInterface(classList, ns.CSharpName);
-            GenerateReferenceAccessorsImplementation(classList, ns.CSharpName);
+            GenerateReferenceAccessorsInterface(classList, ns);
+            GenerateReferenceAccessorsImplementation(classList, ns);
         }
 
         /// <summary>

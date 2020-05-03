@@ -10,21 +10,22 @@ namespace TopModel.Generator.Javascript
     /// <summary>
     /// Générateur de définitions Typescript.
     /// </summary>
-    public class TypescriptDefinitionGenerator : IModelWatcher
+    public class TypescriptDefinitionGenerator : GeneratorBase
     {
         private readonly JavascriptConfig _config;
         private readonly ILogger<TypescriptDefinitionGenerator> _logger;
         private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
 
         public TypescriptDefinitionGenerator(ILogger<TypescriptDefinitionGenerator> logger, JavascriptConfig config)
+            : base(config)
         {
             _config = config;
             _logger = logger;
         }
 
-        public string Name => nameof(TypescriptDefinitionGenerator);
+        public override string Name => nameof(TypescriptDefinitionGenerator);
 
-        public void OnFilesChanged(IEnumerable<ModelFile> files)
+        protected override void HandleFiles(IEnumerable<ModelFile> files)
         {
             if (_config.ModelOutputDirectory == null)
             {
@@ -45,7 +46,7 @@ namespace TopModel.Generator.Javascript
             }
         }
 
-        public void GenerateClasses(ModelFile file)
+        private void GenerateClasses(ModelFile file)
         {
             if (_config.ModelOutputDirectory == null)
             {
@@ -57,11 +58,6 @@ namespace TopModel.Generator.Javascript
             {
                 if (!classe.Reference || classe.PrimaryKey!.Domain.Name == "DO_ID")
                 {
-                    if (_config.IsGenerateEntities == false && classe.Trigram != null)
-                    {
-                        continue;
-                    }
-
                     var fileName = classe.Name.ToDashCase();
 
                     fileName = $"{_config.ModelOutputDirectory}/{file.Descriptor.Module.ToDashCase()}/{fileName}.ts";

@@ -18,8 +18,7 @@
         },
         "kind": {
           "type": "string",
-          "description": "Data (persistant) ou Metier (DTOs).",
-          "enum": [ "Data", "Metier" ]
+          "description": "Catégorie de fichier, pour déterminer quels générateurs doivent lire tel fichier."
         },
         "file": {
           "type": "string",

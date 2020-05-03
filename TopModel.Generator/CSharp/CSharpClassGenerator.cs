@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TopModel.Core.FileModel;
 using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.CSharp
@@ -31,13 +30,16 @@ namespace TopModel.Generator.CSharp
                 return;
             }
 
-            var fileName = Path.Combine(GetDirectoryForModelClass(_config.LegacyProjectPaths, _config.OutputDirectory, item.Namespace.Kind == Kind.Data, item.Namespace.App, item.Namespace.CSharpName), item.Name + ".cs");
+            var directory = GetDirectoryForModelClass(_config.LegacyProjectPaths, _config.OutputDirectory, item.Trigram != null, item.Namespace.App, item.CSharpNamepace);
+            Directory.CreateDirectory(directory);
+
+            var fileName = Path.Combine(directory, item.Name + ".cs");
 
             using var w = new CSharpWriter(fileName, _logger);
 
             GenerateUsings(w, item);
             w.WriteLine();
-            w.WriteNamespace($"{item.Namespace.App}.{item.Namespace.CSharpName}");
+            w.WriteNamespace($"{item.Namespace.App}.{item.CSharpNamepace}");
             w.WriteSummary(1, item.Comment);
             GenerateClassDeclaration(w, item);
             w.WriteLine("}");
@@ -87,7 +89,7 @@ namespace TopModel.Generator.CSharp
                 w.WriteAttribute(1, "DefaultProperty", $@"""{item.DefaultProperty}""");
             }
 
-            if (item.Namespace.Kind == Kind.Data)
+            if (item.Trigram != null)
             {
                 if (_config.DbSchema != null)
                 {
@@ -101,7 +103,7 @@ namespace TopModel.Generator.CSharp
 
             ICollection<string> interfaces = new List<string>();
 
-            if (_config.IsWithEntityInterface && item.Namespace.Kind == Kind.Data)
+            if (_config.IsWithEntityInterface && item.Trigram != null)
             {
                 if (item.PrimaryKey != null)
                 {
@@ -126,7 +128,7 @@ namespace TopModel.Generator.CSharp
             GenerateConstProperties(w, item);
             GenerateConstructors(w, item);
 
-            if (_config.DbContextProjectPath == null && item.Namespace.Kind == Kind.Data)
+            if (_config.DbContextProjectPath == null && item.Trigram != null)
             {
                 w.WriteLine();
                 w.WriteLine(2, "#region Meta données");
@@ -518,22 +520,22 @@ namespace TopModel.Generator.CSharp
                 switch (property)
                 {
                     case AssociationProperty ap:
-                        usings.Add($"{item.Namespace.App}.{ap.Association.Namespace.CSharpName}");
+                        usings.Add($"{item.Namespace.App}.{ap.Association.CSharpNamepace}");
                         break;
                     case AliasProperty { Property: AssociationProperty ap2 }:
-                        usings.Add($"{item.Namespace.App}.{ap2.Association.Namespace.CSharpName}");
+                        usings.Add($"{item.Namespace.App}.{ap2.Association.CSharpNamepace}");
                         break;
                     case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp }:
-                        usings.Add($"{item.Namespace.App}.{rp.Class.Namespace.CSharpName}");
+                        usings.Add($"{item.Namespace.App}.{rp.Class.CSharpNamepace}");
                         break;
                     case CompositionProperty cp:
-                        usings.Add($"{item.Namespace.App}.{cp.Composition.Namespace.CSharpName}");
+                        usings.Add($"{item.Namespace.App}.{cp.Composition.CSharpNamepace}");
                         break;
                 }
             }
 
             w.WriteUsings(usings
-                .Where(u => u != $"{item.Namespace.App}.{item.Namespace.CSharpName}")
+                .Where(u => u != $"{item.Namespace.App}.{item.CSharpNamepace}")
                 .Distinct()
                 .ToArray());
         }

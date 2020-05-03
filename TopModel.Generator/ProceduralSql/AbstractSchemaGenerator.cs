@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using TopModel.Core.FileModel;
 using TopModel.Generator.Ssdt;
 using Microsoft.Extensions.Logging;
 
@@ -136,7 +135,6 @@ namespace TopModel.Generator.ProceduralSql
             writerType?.WriteLine("-- =========================================================================================== ");
 
             var foreignKeys = classes
-                .Where(c => c.Namespace.Kind == Kind.Data)
                 .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType))
                 .ToList();
 

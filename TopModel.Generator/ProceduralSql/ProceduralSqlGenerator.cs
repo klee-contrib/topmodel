@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.ProceduralSql
 {
-    public class ProceduralSqlGenerator : IModelWatcher
+    public class ProceduralSqlGenerator : GeneratorBase
     {
         private readonly ProceduralSqlConfig _config;
         private readonly ILogger<ProceduralSqlGenerator> _logger;
@@ -14,6 +14,7 @@ namespace TopModel.Generator.ProceduralSql
         private readonly AbstractSchemaGenerator? _schemaGenerator;
 
         public ProceduralSqlGenerator(ILogger<ProceduralSqlGenerator> logger, ProceduralSqlConfig config)
+            : base(config)
         {
             _config = config;
             _logger = logger;
@@ -22,9 +23,9 @@ namespace TopModel.Generator.ProceduralSql
                 : (AbstractSchemaGenerator)new SqlServerSchemaGenerator(_config, _logger);
         }
 
-        public string Name => nameof(ProceduralSqlGenerator);
+        public override string Name => nameof(ProceduralSqlGenerator);
 
-        public void OnFilesChanged(IEnumerable<ModelFile> files)
+        protected override void HandleFiles(IEnumerable<ModelFile> files)
         {
             foreach (var file in files)
             {

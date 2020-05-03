@@ -3,7 +3,7 @@
     /// <summary>
     /// Paramètres pour la génération du Javascript.
     /// </summary>
-    public class JavascriptConfig
+    public class JavascriptConfig : GeneratorConfigBase
     {
         /// <summary>
         /// Dossier de sortie pour le modèle.
@@ -14,10 +14,5 @@
         /// Dossier de sortie pour les ressources.
         /// </summary>
         public string? ResourceOutputDirectory { get; set; }
-
-        /// <summary>
-        /// If should generate entities in JS.
-        /// </summary>
-        public bool IsGenerateEntities { get; set; } = true;
     }
 }

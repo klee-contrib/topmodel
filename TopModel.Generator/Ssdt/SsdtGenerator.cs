@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.Ssdt
 {
-    public class SsdtGenerator : IModelWatcher
+    public class SsdtGenerator : GeneratorBase
     {
         private readonly SsdtConfig _config;
         private readonly ILogger<SsdtGenerator> _logger;
@@ -19,6 +19,7 @@ namespace TopModel.Generator.Ssdt
         private readonly ISqlScripter<IEnumerable<Class>> _initReferenceListMainScripter;
 
         public SsdtGenerator(ILogger<SsdtGenerator> logger, SsdtConfig config)
+            : base(config)
         {
             _config = config;
             _logger = logger;
@@ -27,9 +28,9 @@ namespace TopModel.Generator.Ssdt
             _initReferenceListMainScripter = new InitReferenceListMainScripter(_config);
         }
 
-        public string Name => nameof(SsdtGenerator);
+        public override string Name => nameof(SsdtGenerator);
 
-        public void OnFilesChanged(IEnumerable<ModelFile> files)
+        protected override void HandleFiles(IEnumerable<ModelFile> files)
         {
             foreach (var file in files)
             {
@@ -42,22 +43,19 @@ namespace TopModel.Generator.Ssdt
 
         private void GenerateClasses(ModelFile file)
         {
-            if (file.Descriptor.Kind == Kind.Data && _config.TableScriptFolder != null && _config.TableTypeScriptFolder != null)
+            if (_config.TableScriptFolder != null && _config.TableTypeScriptFolder != null)
             {
                 var tableCount = 0;
                 var tableTypeCount = 0;
                 foreach (var classe in file.Classes)
                 {
-                    if (classe.Trigram != null)
-                    {
-                        tableCount++;
-                        _tableScripter.Write(classe, _config.TableScriptFolder, _logger);
+                    tableCount++;
+                    _tableScripter.Write(classe, _config.TableScriptFolder, _logger);
 
-                        if (classe.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName))
-                        {
-                            tableTypeCount++;
-                            _tableTypeScripter.Write(classe, _config.TableTypeScriptFolder, _logger);
-                        }
+                    if (classe.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName))
+                    {
+                        tableTypeCount++;
+                        _tableTypeScripter.Write(classe, _config.TableTypeScriptFolder, _logger);
                     }
                 }
             }

@@ -9,21 +9,22 @@ namespace TopModel.Generator.Javascript
     /// <summary>
     /// Générateur des objets de traduction javascripts.
     /// </summary>
-    public class JavascriptResourceGenerator : IModelWatcher
+    public class JavascriptResourceGenerator : GeneratorBase
     {
         private readonly JavascriptConfig _config;
         private readonly ILogger<JavascriptResourceGenerator> _logger;
         private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
 
         public JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> logger, JavascriptConfig config)
+            : base(config)
         {
             _config = config;
             _logger = logger;
         }
 
-        public string Name => nameof(JavascriptResourceGenerator);
+        public override string Name => nameof(JavascriptResourceGenerator);
 
-        public void OnFilesChanged(IEnumerable<ModelFile> files)
+        protected override void HandleFiles(IEnumerable<ModelFile> files)
         {
             foreach (var file in files)
             {

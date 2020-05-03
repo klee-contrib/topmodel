@@ -42,7 +42,7 @@
             {
                 var prop = this is AliasProperty alp ? alp.Property : this;
 
-                return prop.Class.Extends != null && prop.PrimaryKey
+                return prop.Class.Extends != null && prop.PrimaryKey && Class.Trigram != null
                     ? $"{Class.Trigram}_{ModelUtils.ConvertCsharp2Bdd(Name).Replace(prop.Class.SqlName + "_", string.Empty)}"
                     : prop is AssociationProperty ap
                     ? ap.Association.PrimaryKey!.SqlName + (ap.Role != null ? $"_{ap.Role.Replace(" ", "_").ToUpper()}" : string.Empty)

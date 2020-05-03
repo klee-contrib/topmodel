@@ -3,7 +3,7 @@
     /// <summary>
     /// Paramètres pour la génération du C#.
     /// </summary>
-    public class CSharpConfig
+    public class CSharpConfig : GeneratorConfigBase
     {
         /// <summary>
         /// Obtient ou définit le répertoire de génération.
