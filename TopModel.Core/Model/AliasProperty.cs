@@ -2,6 +2,9 @@
 {
     public class AliasProperty : IFieldProperty
     {
+        private string? _label;
+        private bool? _required;
+
 #nullable disable
         public IFieldProperty Property { get; set; }
 
@@ -14,11 +17,19 @@
 
         public string Name => (Prefix ?? string.Empty) + Property?.Name + (Suffix ?? string.Empty);
 
-        public string Label => Property.Label;
+        public string Label
+        {
+            get => _label ?? Property.Label;
+            set => _label = value;
+        }
 
         public bool PrimaryKey => (Property?.PrimaryKey ?? false) && Prefix == null && Suffix == null;
 
-        public bool Required => Property.Required;
+        public bool Required
+        {
+            get => _required ?? Property.Required;
+            set => _required = value;
+        }
 
         public Domain Domain => Property.Domain;
 

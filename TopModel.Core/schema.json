@@ -244,8 +244,20 @@
                         "additionalProperties": false,
                         "properties": {
                           "property": {
-                            "type": "string",
-                            "description": "Propriété de l'alias. Elle doit être définie sur la classe cible."
+                            "oneOf": [
+                              {
+                                "type": "string",
+                                "description": "Propriété de l'alias. Elle doit être définie sur la classe cible."
+                              },
+                              {
+                                "type": "array",
+                                "description": "Liste des propriétés à aliaser.",
+                                "items": {
+                                  "type": "string",
+                                  "description": "Propriété de l'alias. Elle doit être définie sur la classe cible.."
+                                }
+                              }
+                            ]
                           },
                           "class": {
                             "type": "string",
@@ -254,12 +266,36 @@
                         }
                       },
                       "prefix": {
-                        "type": "string",
-                        "description": "Préfixe à ajouter au nom de la propriété aliasée."
+                        "oneOf": [
+                          {
+                            "type": "string",
+                            "description": "Préfixe à ajouter au nom de la propriété aliasée."
+                          },
+                          {
+                            "type": "boolean",
+                            "description": "Ajoute le nom de la classe comme préfixe au nom de la propriété aliasée."
+                          }
+                        ]
                       },
                       "suffix": {
+                        "oneOf": [
+                          {
+                            "type": "string",
+                            "description": "Suffixe à ajouter au nom de la propriété aliasée."
+                          },
+                          {
+                            "type": "boolean",
+                            "description": "Ajoute le nom de la classe comme suffixe au nom de la propriété aliasée."
+                          }
+                        ]
+                      },
+                      "label": {
                         "type": "string",
-                        "description": "Suffixe à ajouter au nom de la propriété aliasée."
+                        "description": "Surcharge le libellé de la propriété aliasée."
+                      },
+                      "required": {
+                        "type": "boolean",
+                        "description": "Surcharge le caractère obligatoire de la propriété aliasée."
                       }
                     }
                   },

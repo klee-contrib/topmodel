@@ -226,32 +226,47 @@ namespace TopModel.Core.Loaders
                             classe.Properties.Add(cp);
                             break;
                         case Scalar { Value: "alias" }:
-                            var alp = new AliasProperty();
+                            var alps = new List<(AliasProperty Alp, Scalar AliasProp)>();
+                            Scalar? aliasClass = null;
 
                             parser.Consume<Scalar>();
                             parser.Consume<MappingStart>();
 
-                            Scalar? aliasProp = null;
-                            Scalar? aliasClass = null;
                             while (!(parser.Current is MappingEnd))
                             {
                                 var prop = parser.Consume<Scalar>().Value;
-                                var value = parser.Consume<Scalar>();
+                                var next = parser.Consume<ParsingEvent>();
 
-                                switch (prop)
+                                if (next is Scalar value)
                                 {
-                                    case "property":
-                                        aliasProp = value;
-                                        break;
-                                    case "class":
-                                        aliasClass = value;
-                                        break;
-                                    default:
-                                        throw new Exception($"Propriété ${prop} inconnue pour un alias");
+                                    switch (prop)
+                                    {
+                                        case "property":
+                                            alps.Add((new AliasProperty(), value));
+                                            break;
+                                        case "class":
+                                            aliasClass = value;
+                                            break;
+                                        default:
+                                            throw new Exception($"Propriété ${prop} inconnue pour un alias");
+                                    }
+                                }
+                                else if (next is SequenceStart)
+                                {
+                                    while (!(parser.Current is SequenceEnd))
+                                    {
+                                        alps.Add((new AliasProperty(), parser.Consume<Scalar>()));
+                                    }
+
+                                    parser.Consume<SequenceEnd>();
                                 }
                             }
 
-                            relationships.Add(alp, new Relation(aliasProp!) { Peer = new Relation(aliasClass!) });
+                            foreach (var (alp, aliasProp) in alps)
+                            {
+                                relationships.Add(alp, new Relation(aliasProp) { Peer = new Relation(aliasClass!) });
+                            }
+
                             parser.Consume<MappingEnd>();
 
                             while (!(parser.Current is MappingEnd))
@@ -259,20 +274,33 @@ namespace TopModel.Core.Loaders
                                 var prop = parser.Consume<Scalar>().Value;
                                 var value = parser.Consume<Scalar>().Value;
 
-                                switch (prop)
+                                foreach (var (alp, _) in alps)
                                 {
-                                    case "prefix":
-                                        alp.Prefix = value;
-                                        break;
-                                    case "suffix":
-                                        alp.Suffix = value;
-                                        break;
-                                    default:
-                                        throw new Exception($"Propriété ${prop} inconnue pour une propriété");
+                                    switch (prop)
+                                    {
+                                        case "prefix":
+                                            alp.Prefix = value == "true" ? aliasClass!.Value : value == "false" ? null : value;
+                                            break;
+                                        case "suffix":
+                                            alp.Suffix = value == "true" ? aliasClass!.Value : value == "false" ? null : value;
+                                            break;
+                                        case "label":
+                                            alp.Label = value;
+                                            break;
+                                        case "required":
+                                            alp.Required = value == "true";
+                                            break;
+                                        default:
+                                            throw new Exception($"Propriété ${prop} inconnue pour une propriété");
+                                    }
                                 }
                             }
 
-                            classe.Properties.Add(alp);
+                            foreach (var (alp, _) in alps)
+                            {
+                                classe.Properties.Add(alp);
+                            }
+
                             break;
                         default:
                             throw new Exception($"Erreur lors du parsing des propriétés de la classe {classe.Name}");
