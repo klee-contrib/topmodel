@@ -16,13 +16,13 @@ namespace TopModel.Generator.Javascript
         private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
 
         public JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> logger, JavascriptConfig config)
-            : base(config)
+            : base(logger, config)
         {
             _config = config;
             _logger = logger;
         }
 
-        public override string Name => nameof(JavascriptResourceGenerator);
+        public override string Name => "JSResourceGen";
 
         protected override void HandleFiles(IEnumerable<ModelFile> files)
         {

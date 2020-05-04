@@ -7,6 +7,10 @@ namespace TopModel.Core
     {
         string Name { get; }
 
+        int Number { get; set; }
+
+        string FullName => $"{Name}@{Number}";
+
         void OnFilesChanged(IEnumerable<ModelFile> files);
     }
 }

@@ -19,7 +19,7 @@ namespace TopModel.Generator.Ssdt
         private readonly ISqlScripter<IEnumerable<Class>> _initReferenceListMainScripter;
 
         public SsdtGenerator(ILogger<SsdtGenerator> logger, SsdtConfig config)
-            : base(config)
+            : base(logger, config)
         {
             _config = config;
             _logger = logger;
@@ -28,7 +28,7 @@ namespace TopModel.Generator.Ssdt
             _initReferenceListMainScripter = new InitReferenceListMainScripter(_config);
         }
 
-        public override string Name => nameof(SsdtGenerator);
+        public override string Name => "SsdtGen";
 
         protected override void HandleFiles(IEnumerable<ModelFile> files)
         {

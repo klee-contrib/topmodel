@@ -14,7 +14,7 @@ namespace TopModel.Generator.ProceduralSql
         private readonly AbstractSchemaGenerator? _schemaGenerator;
 
         public ProceduralSqlGenerator(ILogger<ProceduralSqlGenerator> logger, ProceduralSqlConfig config)
-            : base(config)
+            : base(logger, config)
         {
             _config = config;
             _logger = logger;
@@ -23,7 +23,7 @@ namespace TopModel.Generator.ProceduralSql
                 : (AbstractSchemaGenerator)new SqlServerSchemaGenerator(_config, _logger);
         }
 
-        public override string Name => nameof(ProceduralSqlGenerator);
+        public override string Name => "ProceduralSqlGen";
 
         protected override void HandleFiles(IEnumerable<ModelFile> files)
         {

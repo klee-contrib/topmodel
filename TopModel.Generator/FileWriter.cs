@@ -138,7 +138,7 @@ namespace TopModel.Generator
                 FinishFile(_fileName);
             }
 
-            _logger.LogInformation($"Fichier {_fileName.ToRelative()} généré avec succès.");
+            _logger.LogInformation($"Généré: {_fileName.ToRelative()}");
         }
 
         /// <summary>

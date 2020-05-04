@@ -42,7 +42,13 @@ namespace TopModel.Core
 
         public IDisposable? LoadFromConfig(bool watch = false)
         {
-            _logger.LogInformation($"Watchers enregistrés : {string.Join(", ", _modelWatchers.Select(mw => mw.Name))}");
+            foreach (var mw in _modelWatchers)
+            {
+                var sameGeneratorList = _modelWatchers.Where(m => m.Name == mw.Name).ToList();
+                mw.Number = sameGeneratorList.IndexOf(mw) + 1;
+            }
+
+            _logger.LogInformation($"Watchers enregistrés : {string.Join(", ", _modelWatchers.Select(mw => mw.FullName))}");
 
             FileSystemWatcher? fsWatcher = null;
             if (watch)
@@ -117,7 +123,7 @@ namespace TopModel.Core
         private void OnModelFileChange(string filePath)
         {
             _logger.LogInformation(string.Empty);
-            _logger.LogInformation($"Fichier {filePath.ToRelative()} modifié...");
+            _logger.LogInformation($"Modifié: {filePath.ToRelative()}");
 
             lock (_puLock)
             {

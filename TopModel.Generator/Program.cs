@@ -60,46 +60,56 @@ namespace TopModel.Generator
 
             if (config.ProceduralSql != null)
             {
-                CombinePath(dn, config.ProceduralSql, c => c.CrebasFile);
-                CombinePath(dn, config.ProceduralSql, c => c.IndexFKFile);
-                CombinePath(dn, config.ProceduralSql, c => c.InitListFile);
-                CombinePath(dn, config.ProceduralSql, c => c.TypeFile);
-                CombinePath(dn, config.ProceduralSql, c => c.UniqueKeysFile);
+                foreach (var pSqlConfig in config.ProceduralSql)
+                {
+                    CombinePath(dn, pSqlConfig, c => c.CrebasFile);
+                    CombinePath(dn, pSqlConfig, c => c.IndexFKFile);
+                    CombinePath(dn, pSqlConfig, c => c.InitListFile);
+                    CombinePath(dn, pSqlConfig, c => c.TypeFile);
+                    CombinePath(dn, pSqlConfig, c => c.UniqueKeysFile);
 
-                services
-                    .AddSingleton(config.ProceduralSql)
-                    .AddSingleton<IModelWatcher, ProceduralSqlGenerator>();
+                    services.AddSingleton<IModelWatcher>(p =>
+                        new ProceduralSqlGenerator(p.GetService<ILogger<ProceduralSqlGenerator>>(), pSqlConfig));
+                }
             }
 
             if (config.Ssdt != null)
             {
-                CombinePath(dn, config.Ssdt, c => c.InitListScriptFolder);
-                CombinePath(dn, config.Ssdt, c => c.TableScriptFolder);
-                CombinePath(dn, config.Ssdt, c => c.TableTypeScriptFolder);
+                foreach (var ssdtConfig in config.Ssdt)
+                {
+                    CombinePath(dn, ssdtConfig, c => c.InitListScriptFolder);
+                    CombinePath(dn, ssdtConfig, c => c.TableScriptFolder);
+                    CombinePath(dn, ssdtConfig, c => c.TableTypeScriptFolder);
 
-                services
-                    .AddSingleton(config.Ssdt)
-                    .AddSingleton<IModelWatcher, SsdtGenerator>();
+                    services.AddSingleton<IModelWatcher>(p =>
+                        new SsdtGenerator(p.GetService<ILogger<SsdtGenerator>>(), ssdtConfig));
+                }
             }
 
             if (config.Csharp != null)
             {
-                CombinePath(dn, config.Csharp, c => c.OutputDirectory);
+                foreach (var csharpConfig in config.Csharp)
+                {
+                    CombinePath(dn, csharpConfig, c => c.OutputDirectory);
 
-                services
-                    .AddSingleton(config.Csharp)
-                    .AddSingleton<IModelWatcher, CSharpGenerator>();
+                    services.AddSingleton<IModelWatcher>(p =>
+                        new CSharpGenerator(p.GetService<ILogger<CSharpGenerator>>(), csharpConfig));
+                }
             }
 
             if (config.Javascript != null)
             {
-                CombinePath(dn, config.Javascript, c => c.ModelOutputDirectory);
-                CombinePath(dn, config.Javascript, c => c.ResourceOutputDirectory);
+                foreach (var jsConfig in config.Javascript)
+                {
+                    CombinePath(dn, jsConfig, c => c.ModelOutputDirectory);
+                    CombinePath(dn, jsConfig, c => c.ResourceOutputDirectory);
 
-                services
-                    .AddSingleton(config.Javascript)
-                    .AddSingleton<IModelWatcher, TypescriptDefinitionGenerator>()
-                    .AddSingleton<IModelWatcher, JavascriptResourceGenerator>();
+                    services
+                        .AddSingleton<IModelWatcher>(p =>
+                            new TypescriptDefinitionGenerator(p.GetService<ILogger<TypescriptDefinitionGenerator>>(), jsConfig))
+                        .AddSingleton<IModelWatcher>(p =>
+                            new JavascriptResourceGenerator(p.GetService<ILogger<JavascriptResourceGenerator>>(), jsConfig));
+                }
             }
 
             using var provider = services.BuildServiceProvider();

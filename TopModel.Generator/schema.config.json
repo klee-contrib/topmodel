@@ -18,156 +18,172 @@
       "description": "Autorise les clés primaires composites (incompatible avec une génération de C#)."
     },
     "proceduralSql": {
-      "type": "object",
-      "description": "Config pour la génération de SQL 'procédurale' (sans SSDT)",
-      "additionalProperties": false,
-      "required": [ "kinds" ],
-      "properties": {
-        "kinds": {
-          "type": "array",
-          "description": "Précise les catégories de fichier que le générateur doit lire",
-          "items": {
+      "type": "array",
+      "description": "Liste de configs pour la génération de SQL 'procédurale' (sans SSDT)",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de SQL 'procédurale' (sans SSDT)",
+        "additionalProperties": false,
+        "required": [ "kinds" ],
+        "properties": {
+          "kinds": {
+            "type": "array",
+            "description": "Précise les catégories de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "targetDBMS": {
             "type": "string",
-            "description": "Catégorie de fichier que le générateur doit lire."
+            "description": "SGBD cible ('postgre' ou 'sqlserver').",
+            "enum": [ "sqlserver", "postgre" ]
+          },
+          "crebasFile": {
+            "type": "string",
+            "description": "Emplacement du fichier de création de base."
+          },
+          "uniqueKeysFile": {
+            "type": "string",
+            "description": "Emplacement du fichier de création des index uniques."
+          },
+          "indexFKFile": {
+            "type": "string",
+            "description": "Emplacement du fichier de création des clés étrangères."
+          },
+          "typeFile": {
+            "type": "string",
+            "description": "Emplacement du fichier de création des types."
+          },
+          "initListFile": {
+            "type": "string",
+            "description": "Emplacement du script d'insertion des données des listes de référence."
+          },
+          "disableIdentity": {
+            "type": "boolean",
+            "description": "Désactive les colonnes d'identité."
           }
-        },
-        "targetDBMS": {
-          "type": "string",
-          "description": "SGBD cible ('postgre' ou 'sqlserver').",
-          "enum": [ "sqlserver", "postgre" ]
-        },
-        "crebasFile": {
-          "type": "string",
-          "description": "Emplacement du fichier de création de base."
-        },
-        "uniqueKeysFile": {
-          "type": "string",
-          "description": "Emplacement du fichier de création des index uniques."
-        },
-        "indexFKFile": {
-          "type": "string",
-          "description": "Emplacement du fichier de création des clés étrangères."
-        },
-        "typeFile": {
-          "type": "string",
-          "description": "Emplacement du fichier de création des types."
-        },
-        "initListFile": {
-          "type": "string",
-          "description": "Emplacement du script d'insertion des données des listes de référence."
-        },
-        "disableIdentity": {
-          "type": "boolean",
-          "description": "Désactive les colonnes d'identité."
         }
       }
     },
     "ssdt": {
-      "type": "object",
-      "description": "Config pour la génération SSDT",
-      "additionalProperties": false,
-      "required": [ "kinds" ],
-      "properties": {
-        "kinds": {
-          "type": "array",
-          "description": "Précise les catégories de fichier que le générateur doit lire",
-          "items": {
+      "type": "array",
+      "description": "Liste de configs pour la génération SSDT",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération SSDT",
+        "additionalProperties": false,
+        "required": [ "kinds" ],
+        "properties": {
+          "kinds": {
+            "type": "array",
+            "description": "Précise les catégories de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "tableScriptFolder": {
             "type": "string",
-            "description": "Catégorie de fichier que le générateur doit lire."
+            "description": "Dossier du projet pour les scripts de déclaration de table."
+          },
+          "tableTypeScriptFolder": {
+            "type": "string",
+            "description": " Dossier du projet pour les scripts de déclaration de type table."
+          },
+          "initListScriptFolder": {
+            "type": "string",
+            "description": "Dossier du projet pour les scripts d'initialisation des listes de références."
+          },
+          "initListMainScriptName": {
+            "type": "string",
+            "description": "Fichier du projet référençant les scripts d'initialisation des listes de références."
           }
-        },
-        "tableScriptFolder": {
-          "type": "string",
-          "description": "Dossier du projet pour les scripts de déclaration de table."
-        },
-        "tableTypeScriptFolder": {
-          "type": "string",
-          "description": " Dossier du projet pour les scripts de déclaration de type table."
-        },
-        "initListScriptFolder": {
-          "type": "string",
-          "description": "Dossier du projet pour les scripts d'initialisation des listes de références."
-        },
-        "initListMainScriptName": {
-          "type": "string",
-          "description": "Fichier du projet référençant les scripts d'initialisation des listes de références."
         }
       }
     },
     "csharp": {
-      "type": "object",
-      "description": "Configuration de la génération de C#. Si non renseigné, alors le C# ne sera pas généré.",
-      "additionalProperties": false,
-      "required": [ "kinds" ],
-      "properties": {
-        "kinds": {
-          "type": "array",
-          "description": "Précise les catégories de fichier que le générateur doit lire",
-          "items": {
+      "type": "array",
+      "description": "Liste de configs pour la génération de C#",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de C#.",
+        "additionalProperties": false,
+        "required": [ "kinds" ],
+        "properties": {
+          "kinds": {
+            "type": "array",
+            "description": "Précise les catégories de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "outputDirectory": {
             "type": "string",
-            "description": "Catégorie de fichier que le générateur doit lire."
+            "description": "Répertoire de génération"
+          },
+          "dbContextProjectPath": {
+            "type": "string",
+            "description": "Nom du projet dans lequel mettre le DbContext."
+          },
+          "useTypeSafeConstValues": {
+            "type": "boolean",
+            "description": "Utilise des types spécifiques pour les valeurs de listes statiques, au lieu de string."
+          },
+          "dbSchema": {
+            "type": "string",
+            "description": "Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo')."
+          },
+          "kinetix": {
+            "type": "string",
+            "description": "Version de kinetix utilisée: Core, Framework ou Fmk.",
+            "enum": [ "Core", "Framework", "Fmk" ]
+          },
+          "legacyIdentity": {
+            "type": "boolean",
+            "description": "Définit un mode legacy pour Identité en .NET Framework."
+          },
+          "noColumnOnAlias": {
+            "type": "boolean",
+            "description": "Retire les attributs de colonnes sur les alias."
+          },
+          "isWithEntityInterface": {
+            "type": "boolean",
+            "description": "Définit si les interfaces IEntity sont ajoutée à la génération."
+          },
+          "legacyProjectPaths": {
+            "type": "boolean",
+            "description": "Utilise la structure de projet legacy."
           }
-        },
-        "outputDirectory": {
-          "type": "string",
-          "description": "Répertoire de génération"
-        },
-        "dbContextProjectPath": {
-          "type": "string",
-          "description": "Nom du projet dans lequel mettre le DbContext."
-        },
-        "useTypeSafeConstValues": {
-          "type": "boolean",
-          "description": "Utilise des types spécifiques pour les valeurs de listes statiques, au lieu de string."
-        },
-        "dbSchema": {
-          "type": "string",
-          "description": "Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo')."
-        },
-        "kinetix": {
-          "type": "string",
-          "description": "Version de kinetix utilisée: Core, Framework ou Fmk.",
-          "enum": [ "Core", "Framework", "Fmk" ]
-        },
-        "legacyIdentity": {
-          "type": "boolean",
-          "description": "Définit un mode legacy pour Identité en .NET Framework."
-        },
-        "noColumnOnAlias": {
-          "type": "boolean",
-          "description": "Retire les attributs de colonnes sur les alias."
-        },
-        "isWithEntityInterface": {
-          "type": "boolean",
-          "description": "Définit si les interfaces IEntity sont ajoutée à la génération."
-        },
-        "legacyProjectPaths": {
-          "type": "boolean",
-          "description": "Utilise la structure de projet legacy."
         }
       }
     },
     "javascript": {
-      "type": "object",
-      "description": "Configuration de la génération de Typescript. Si non renseigné, alors le Typescript ne sera pas généré.",
-      "additionalProperties": false,
-      "required": [ "kinds" ],
-      "properties": {
-        "kinds": {
-          "type": "array",
-          "description": "Précise les catégories de fichier que le générateur doit lire",
-          "items": {
+      "type": "array",
+      "description": "Liste de configs pour la génération de Typescript (Focus4).",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de Typescript (Focus4).",
+        "additionalProperties": false,
+        "required": [ "kinds" ],
+        "properties": {
+          "kinds": {
+            "type": "array",
+            "description": "Précise les catégories de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "modelOutputDirectory": {
             "type": "string",
-            "description": "Catégorie de fichier que le générateur doit lire."
+            "description": "Chemin vers le dossier racine vers lequel générer les fichiers de modèle. Si non renseigné, aucun modèle ne sera généré."
+          },
+          "resourceOutputDirectory": {
+            "type": "string",
+            "description": "Chemin vers le dossier racine vers lequel générer les fichiers de ressources i18n. Si non renseigné, aucun fichier de sera généré."
           }
-        },
-        "modelOutputDirectory": {
-          "type": "string",
-          "description": "Chemin vers le dossier racine vers lequel générer les fichiers de modèle. Si non renseigné, aucun modèle ne sera généré."
-        },
-        "resourceOutputDirectory": {
-          "type": "string",
-          "description": "Chemin vers le dossier racine vers lequel générer les fichiers de ressources i18n. Si non renseigné, aucun fichier de sera généré."
         }
       }
     }

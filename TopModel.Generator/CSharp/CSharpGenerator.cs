@@ -19,7 +19,7 @@ namespace TopModel.Generator.CSharp
         private readonly ReferenceAccessorGenerator _referenceAccessorGenerator;
 
         public CSharpGenerator(ILogger<CSharpGenerator> logger, CSharpConfig config)
-            : base(config)
+            : base(logger, config)
         {
             _config = config;
             _logger = logger;
@@ -29,7 +29,7 @@ namespace TopModel.Generator.CSharp
             _referenceAccessorGenerator = new ReferenceAccessorGenerator(_config, _logger);
         }
 
-        public override string Name => nameof(CSharpGenerator);
+        public override string Name => "CSharpGen";
 
         protected override void HandleFiles(IEnumerable<ModelFile> files)
         {

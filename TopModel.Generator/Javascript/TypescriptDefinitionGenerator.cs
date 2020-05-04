@@ -17,13 +17,13 @@ namespace TopModel.Generator.Javascript
         private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
 
         public TypescriptDefinitionGenerator(ILogger<TypescriptDefinitionGenerator> logger, JavascriptConfig config)
-            : base(config)
+            : base(logger, config)
         {
             _config = config;
             _logger = logger;
         }
 
-        public override string Name => nameof(TypescriptDefinitionGenerator);
+        public override string Name => "TSDefinitionGen";
 
         protected override void HandleFiles(IEnumerable<ModelFile> files)
         {
