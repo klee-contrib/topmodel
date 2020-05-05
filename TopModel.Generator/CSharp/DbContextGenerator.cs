@@ -111,7 +111,7 @@ namespace TopModel.Generator.CSharp
                 w.WriteLine(2, "}");
             }
 
-            foreach (var classe in classes.Where(c => c.Trigram != null).OrderBy(c => c.Name))
+            foreach (var classe in classes.OrderBy(c => c.Name))
             {
                 w.WriteLine();
                 w.WriteSummary(2, "Accès à l'entité " + classe.Name);

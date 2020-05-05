@@ -55,7 +55,7 @@ namespace TopModel.Generator.CSharp
         {
             if (_config.DbContextProjectPath != null)
             {
-                _dbContextGenerator.Generate(_files.Values.SelectMany(f => f.Classes));
+                _dbContextGenerator.Generate(_files.Values.SelectMany(f => f.Classes).Where(c => c.Trigram != null));
             }
         }
 

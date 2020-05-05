@@ -39,8 +39,7 @@
               },
               "kind": {
                 "type": "string",
-                "description": "Data (persistant) ou Metier (DTOs).",
-                "enum": [ "Data", "Metier" ]
+                "description": "Catégorie de fichier."
               },
               "files": {
                 "type": "array",
