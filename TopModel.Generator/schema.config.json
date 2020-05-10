@@ -98,6 +98,10 @@
           "initListMainScriptName": {
             "type": "string",
             "description": "Fichier du projet référençant les scripts d'initialisation des listes de références."
+          },
+          "disableIdentity": {
+            "type": "boolean",
+            "description": "Désactive les colonnes d'identité."
           }
         }
       }

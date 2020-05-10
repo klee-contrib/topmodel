@@ -13,7 +13,7 @@ namespace TopModel.Generator.Ssdt
         private readonly ILogger<SsdtGenerator> _logger;
         private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
 
-        private readonly ISqlScripter<Class> _tableScripter = new SqlTableScripter();
+        private readonly ISqlScripter<Class> _tableScripter;
         private readonly ISqlScripter<Class> _tableTypeScripter = new SqlTableTypeScripter();
         private readonly ISqlScripter<Class> _initReferenceListScript;
         private readonly ISqlScripter<IEnumerable<Class>> _initReferenceListMainScripter;
@@ -23,6 +23,7 @@ namespace TopModel.Generator.Ssdt
         {
             _config = config;
             _logger = logger;
+            _tableScripter = new SqlTableScripter(config);
 
             _initReferenceListScript = new InitReferenceListScripter();
             _initReferenceListMainScripter = new InitReferenceListMainScripter(_config);
@@ -43,7 +44,7 @@ namespace TopModel.Generator.Ssdt
 
         private void GenerateClasses(ModelFile file)
         {
-            if (_config.TableScriptFolder != null && _config.TableTypeScriptFolder != null)
+            if (_config.TableScriptFolder != null)
             {
                 var tableCount = 0;
                 var tableTypeCount = 0;
@@ -52,7 +53,7 @@ namespace TopModel.Generator.Ssdt
                     tableCount++;
                     _tableScripter.Write(classe, _config.TableScriptFolder, _logger);
 
-                    if (classe.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName))
+                    if (classe.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName) && _config.TableTypeScriptFolder != null)
                     {
                         tableTypeCount++;
                         _tableTypeScripter.Write(classe, _config.TableTypeScriptFolder, _logger);

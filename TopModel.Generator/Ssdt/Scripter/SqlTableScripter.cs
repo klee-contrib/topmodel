@@ -16,6 +16,13 @@ namespace TopModel.Generator.Ssdt.Scripter
     /// </summary>
     public class SqlTableScripter : ISqlScripter<Class>
     {
+        private readonly SsdtConfig _config;
+
+        public SqlTableScripter(SsdtConfig config)
+        {
+            _config = config;
+        }
+
         /// <summary>
         /// Calcul le nom du script pour la table.
         /// </summary>
@@ -76,7 +83,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// <param name="writer">Flux d'écriture.</param>
         /// <param name="tableName">Nom de la table.</param>
         /// <param name="properties">Champs.</param>
-        private static void GenerateIndexForeignKey(TextWriter writer, string tableName, IList<IFieldProperty> properties)
+        private void GenerateIndexForeignKey(TextWriter writer, string tableName, IList<IFieldProperty> properties)
         {
             var fkList = properties.OfType<AssociationProperty>().ToList();
             foreach (var property in fkList)
@@ -103,11 +110,11 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="sb">Flux.</param>
         /// <param name="property">Propriété.</param>
-        private static void WriteColumn(StringBuilder sb, IFieldProperty property)
+        private void WriteColumn(StringBuilder sb, IFieldProperty property)
         {
             var persistentType = property.Domain.SqlType;
             sb.Append("[").Append(property.SqlName).Append("] ").Append(persistentType);
-            if (property.PrimaryKey && property.Domain.Name == "DO_ID")
+            if (property.PrimaryKey && property.Domain.Name == "DO_ID" && !_config.DisableIdentity)
             {
                 sb.Append(" identity");
             }
@@ -135,7 +142,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="sb">Flux d'écriture.</param>
         /// <param name="property">Propriété portant la clef étrangère.</param>
-        private static void WriteConstraintForeignKey(StringBuilder sb, AssociationProperty property)
+        private void WriteConstraintForeignKey(StringBuilder sb, AssociationProperty property)
         {
             var tableName = property.Class.SqlName;
 
@@ -156,7 +163,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// <param name="writer">Flux.</param>
         /// <param name="classe">Classe de la table.</param>
         /// <param name="useCompression">Indique si on utilise la compression.</param>
-        private static void WriteCreateTableClosing(TextWriter writer, Class classe, bool useCompression)
+        private void WriteCreateTableClosing(TextWriter writer, Class classe, bool useCompression)
         {
             if (writer == null)
             {
@@ -184,7 +191,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="writer">Flux.</param>
         /// <param name="table">Table.</param>
-        private static void WriteCreateTableOpening(TextWriter writer, Class table)
+        private void WriteCreateTableOpening(TextWriter writer, Class table)
         {
             writer.WriteLine("create table [dbo].[" + table.SqlName + "] (");
         }
@@ -194,7 +201,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="writer">Flux.</param>
         /// <param name="tableName">Nom de la table.</param>
-        private static void WriteHeader(TextWriter writer, string tableName)
+        private void WriteHeader(TextWriter writer, string tableName)
         {
             writer.WriteLine("-- ===========================================================================================");
             writer.WriteLine("--   Description		:	Création de la table " + tableName + ".");
@@ -207,7 +214,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="writer">Flux.</param>
         /// <param name="table">Table.</param>
-        private static IList<IFieldProperty> WriteInsideInstructions(TextWriter writer, Class table)
+        private IList<IFieldProperty> WriteInsideInstructions(TextWriter writer, Class table)
         {
             // Construction d'une liste de toutes les instructions.
             var definitions = new List<string>();
@@ -233,11 +240,8 @@ namespace TopModel.Generator.Ssdt.Scripter
             }
 
             // Primary Key
-            if (table.PrimaryKey != null)
-            {
-                sb.Clear();
-                WritePkLine(sb, table);
-            }
+            sb.Clear();
+            WritePkLine(sb, table);
 
             definitions.Add(sb.ToString());
 
@@ -265,11 +269,32 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="sb">Flux.</param>
         /// <param name="classe">Classe.</param>
-        private static void WritePkLine(StringBuilder sb, Class classe)
+        private void WritePkLine(StringBuilder sb, Class classe)
         {
+            var pkCount = 0;
             sb.Append("constraint [PK_").Append(classe.SqlName).Append("] primary key clustered (");
-            sb.Append("[").Append(classe.PrimaryKey!.SqlName).Append("] ASC");
-            sb.Append(")");
+
+            if (classe.Properties.All(p => p is AssociationProperty))
+            {
+                foreach (var fkProperty in classe.Properties.OfType<IFieldProperty>())
+                {
+                    ++pkCount;
+                    sb.Append($"[{fkProperty.SqlName}] ASC");
+                    if (pkCount < classe.Properties.Count)
+                    {
+                        sb.Append(",");
+                    }
+                    else
+                    {
+                        sb.Append(")");
+                    }
+                }
+            }
+            else
+            {
+                sb.Append(string.Join(", ", classe.Properties.OfType<IFieldProperty>().Where(p => p.PrimaryKey).Select(p => $"[{p.SqlName}] ASC")));
+                sb.Append(")");
+            }
         }
 
         /// <summary>
@@ -277,7 +302,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="writer">Writer.</param>
         /// <param name="classe">Classe de la table.</param>
-        private static void WriteTableDescriptionProperty(TextWriter writer, Class classe)
+        private void WriteTableDescriptionProperty(TextWriter writer, Class classe)
         {
             writer.WriteLine("/* Description property. */");
             writer.WriteLine("EXECUTE sp_addextendedproperty 'Description', '" + ScriptUtils.PrepareDataToSqlDisplay(classe.Label) + "', 'SCHEMA', 'dbo', 'TABLE', '" + classe.SqlName + "';");
@@ -288,7 +313,7 @@ namespace TopModel.Generator.Ssdt.Scripter
         /// </summary>
         /// <param name="classe">Classe de la table.</param>
         /// <returns>Liste des déclarations de contraintes d'unicité.</returns>
-        private static IList<string> WriteUniqueConstraint(Class classe)
+        private IList<string> WriteUniqueConstraint(Class classe)
         {
             var constraintList = new List<string>();
 

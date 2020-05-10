@@ -24,5 +24,10 @@
         /// Fichier du projet référençant les scripts d'initialisation des listes statiques.
         /// </summary>
         public string? InitListMainScriptName { get; set; }
+
+        /// <summary>
+        /// Désactive les colonnes d'identité.
+        /// </summary>
+        public bool DisableIdentity { get; set; }
     }
 }
