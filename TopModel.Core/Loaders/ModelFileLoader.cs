@@ -174,6 +174,9 @@ namespace TopModel.Core.Loaders
                                     case "association":
                                         relationships.Add(ap, new Relation(value));
                                         break;
+                                    case "asAlias":
+                                        ap.AsAlias = value.Value == "true";
+                                        break;
                                     case "role":
                                         ap.Role = value.Value;
                                         break;

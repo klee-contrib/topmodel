@@ -408,7 +408,7 @@ namespace TopModel.Generator.CSharp
                     w.WriteAttribute(2, "Required");
                 }
 
-                if (prop is AssociationProperty ap)
+                if (prop is AssociationProperty ap && !ap.AsAlias)
                 {
                     w.WriteAttribute(2, "ReferencedType", $"typeof({ap.Association.Name})");
                 }
@@ -519,7 +519,7 @@ namespace TopModel.Generator.CSharp
 
                 switch (property)
                 {
-                    case AssociationProperty ap:
+                    case AssociationProperty ap when !ap.AsAlias:
                         usings.Add($"{item.Namespace.App}.{ap.Association.CSharpNamepace}");
                         break;
                     case AliasProperty { Property: AssociationProperty ap2 }:
