@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using TopModel.Generator.CSharp;
 using TopModel.Generator.Javascript;
+using TopModel.Generator.Kasper;
 using TopModel.Generator.ProceduralSql;
 using TopModel.Generator.Ssdt;
 using TopModel.Core.Loaders;
@@ -109,6 +110,17 @@ namespace TopModel.Generator
                             new TypescriptDefinitionGenerator(p.GetService<ILogger<TypescriptDefinitionGenerator>>(), jsConfig))
                         .AddSingleton<IModelWatcher>(p =>
                             new JavascriptResourceGenerator(p.GetService<ILogger<JavascriptResourceGenerator>>(), jsConfig));
+                }
+            }
+
+            if (config.Kasper != null)
+            {
+                foreach (var kasperConfig in config.Kasper)
+                {
+                    CombinePath(dn, kasperConfig, c => c.SourcesDirectory);
+
+                    services.AddSingleton<IModelWatcher>(p =>
+                        new KasperGenerator(p.GetService<ILogger<KasperGenerator>>(), kasperConfig));
                 }
             }
 

@@ -78,6 +78,10 @@
               "type": "string",
               "description": "Type correspondant au domaine en C#. Sera utilisé pour déterminer le type TS."
             },
+            "javaType": {
+              "type": "string",
+              "description": "Type correspondant au domaine en Java. N'est nécessaire que si on souhaite générer du Java."
+            },
             "sqlType": {
               "type": "string",
               "description": "Type correspondant au domaine en SQL. Si le domaine n'est jamais lié à une donnée persistée alors il n'a pas besoin de type SQL."

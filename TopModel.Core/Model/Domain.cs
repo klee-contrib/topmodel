@@ -13,6 +13,8 @@ namespace TopModel.Core
         public string CsharpType { get; set; }
 
 #nullable enable
+        public string? JavaType { get; set; }
+
         public string? SqlType { get; set; }
 
         public string? CustomAnnotation { get; set; }

@@ -26,14 +26,25 @@ namespace TopModel.Generator
         /// </summary>
         /// <param name="fileName">Nom du fichier à écrire.</param>
         /// <param name="logger">Logger.</param>
-        /// <param name="encoderShouldEmitUTF8Identifier">UTF8 avec BOM</param>
+        /// <param name="encoderShouldEmitUTF8Identifier">UTF8 avec BOM ?</param>
         public FileWriter(string fileName, ILogger logger, bool encoderShouldEmitUTF8Identifier = true)
+            : this(fileName, logger, new UTF8Encoding(encoderShouldEmitUTF8Identifier))
+        {
+        }
+
+        /// <summary>
+        /// Crée une nouvelle instance.
+        /// </summary>
+        /// <param name="fileName">Nom du fichier à écrire.</param>
+        /// <param name="logger">Logger.</param>
+        /// <param name="encoding">Encoding</param>
+        public FileWriter(string fileName, ILogger logger, Encoding encoding)
             : base(CultureInfo.InvariantCulture)
         {
             _fileName = fileName ?? throw new ArgumentNullException("fileName");
             _logger = logger;
             _sb = new StringBuilder();
-            Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier);
+            Encoding = encoding;
         }
 
         /// <summary>
@@ -73,6 +84,15 @@ namespace TopModel.Generator
         public override void Write(string? value)
         {
             _sb.Append(value);
+        }
+
+        /// <summary>
+        /// Ecrit un ligne dans le stream.
+        /// </summary>
+        /// <param name="value">Chaîne de caractère.</param>
+        public override void WriteLine(string? value)
+        {
+            _sb.Append(value + "\r\n");
         }
 
         /// <summary>
