@@ -39,7 +39,7 @@ namespace TopModel.Generator.CSharp
                 GenerateClasses(file);
             }
 
-            if (files.SelectMany(f => f.Classes).Any(c => c.Trigram != null))
+            if (files.SelectMany(f => f.Classes).Any(c => c.IsPersistent))
             {
                 GenerateDbContext();
             }
@@ -55,7 +55,7 @@ namespace TopModel.Generator.CSharp
         {
             if (_config.DbContextProjectPath != null)
             {
-                _dbContextGenerator.Generate(_files.Values.SelectMany(f => f.Classes).Where(c => c.Trigram != null));
+                _dbContextGenerator.Generate(_files.Values.SelectMany(f => f.Classes).Where(c => c.IsPersistent));
             }
         }
 

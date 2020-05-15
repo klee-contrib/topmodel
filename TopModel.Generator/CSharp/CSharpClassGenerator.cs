@@ -89,7 +89,7 @@ namespace TopModel.Generator.CSharp
                 w.WriteAttribute(1, "DefaultProperty", $@"""{item.DefaultProperty}""");
             }
 
-            if (item.Trigram != null)
+            if (item.IsPersistent)
             {
                 if (_config.DbSchema != null)
                 {
@@ -103,7 +103,7 @@ namespace TopModel.Generator.CSharp
 
             ICollection<string> interfaces = new List<string>();
 
-            if (_config.IsWithEntityInterface && item.Trigram != null)
+            if (_config.IsWithEntityInterface && item.IsPersistent)
             {
                 if (item.PrimaryKey != null)
                 {
@@ -128,7 +128,7 @@ namespace TopModel.Generator.CSharp
             GenerateConstProperties(w, item);
             GenerateConstructors(w, item);
 
-            if (_config.DbContextProjectPath == null && item.Trigram != null)
+            if (_config.DbContextProjectPath == null && item.IsPersistent)
             {
                 w.WriteLine();
                 w.WriteLine(2, "#region Meta données");
@@ -391,7 +391,7 @@ namespace TopModel.Generator.CSharp
             if (property is IFieldProperty fp)
             {
                 var prop = fp is AliasProperty alp ? alp.Property : fp;
-                if ((!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.Trigram != null && !sameColumnSet.Contains(prop.SqlName))
+                if ((!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.IsPersistent && !sameColumnSet.Contains(prop.SqlName))
                 {
                     if (prop.Domain.UseTypeName)
                     {
@@ -483,7 +483,7 @@ namespace TopModel.Generator.CSharp
                 item.Properties.OfType<IFieldProperty>().Any(fp =>
             {
                 var prop = fp is AliasProperty alp ? alp.Property : fp;
-                return (!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.Trigram != null;
+                return (!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.IsPersistent;
             }))
             {
                 usings.Add("System.ComponentModel.DataAnnotations.Schema");
@@ -505,7 +505,7 @@ namespace TopModel.Generator.CSharp
                 }
             }
 
-            if (_config.IsWithEntityInterface && item.Trigram != null)
+            if (_config.IsWithEntityInterface && item.IsPersistent)
             {
                 usings.Add("Kinetix.ComponentModel.Entity");
             }

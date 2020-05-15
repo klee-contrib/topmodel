@@ -58,8 +58,13 @@ namespace TopModel.Generator.Kasper
 
             fw.WriteDocStart(0, classe.Comment);
             fw.WriteDocEnd(0);
-            fw.WriteAttribute(0, "javax.persistence.MappedSuperclass");
-            fw.WriteAttribute(0, "javax.persistence.Inheritance", "strategy = javax.persistence.InheritanceType.TABLE_PER_CLASS");
+
+            if (classe.IsPersistent)
+            {
+                fw.WriteAttribute(0, "javax.persistence.MappedSuperclass");
+                fw.WriteAttribute(0, "javax.persistence.Inheritance", "strategy = javax.persistence.InheritanceType.TABLE_PER_CLASS");
+            }
+
             fw.WriteAttribute(
                 0,
                 "kasperx.annotation.DtDefinition",
@@ -144,14 +149,17 @@ namespace TopModel.Generator.Kasper
                 fw.WriteReturns(1, $"{property.Domain.JavaType} {property.JavaName.ToFirstLower()}");
                 fw.WriteDocEnd(1);
 
-                if (property.PrimaryKey)
+                if (classe.IsPersistent)
                 {
-                    fw.WriteAttribute(1, "javax.persistence.Id");
-                    fw.WriteAttribute(1, "javax.persistence.SequenceGenerator", @"name = ""sequence""", $@"sequenceName = ""SEQ_{classe.SqlName}""");
-                    fw.WriteAttribute(1, "javax.persistence.GeneratedValue", @"generator = ""sequence""");
-                }
+                    if (property.PrimaryKey)
+                    {
+                        fw.WriteAttribute(1, "javax.persistence.Id");
+                        fw.WriteAttribute(1, "javax.persistence.SequenceGenerator", @"name = ""sequence""", $@"sequenceName = ""SEQ_{classe.SqlName}""");
+                        fw.WriteAttribute(1, "javax.persistence.GeneratedValue", @"generator = ""sequence""");
+                    }
 
-                fw.WriteAttribute(1, "javax.persistence.Column", $@"name = ""{property.SqlName}""");
+                    fw.WriteAttribute(1, "javax.persistence.Column", $@"name = ""{property.SqlName}""");
+                }
 
                 var kasperFieldProps = new List<string>();
                 if (propType != "DATA")
