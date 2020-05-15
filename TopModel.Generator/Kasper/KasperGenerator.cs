@@ -90,7 +90,7 @@ namespace TopModel.Generator.Kasper
             {
                 fw.WriteDocStart(2, property.Comment);
                 fw.WriteDocEnd(2);
-                fw.WriteLine(2, $"{property.SqlName}{(properties.IndexOf(property) < properties.Count - 1 ? "," : string.Empty)}");
+                fw.WriteLine(2, $"{ModelUtils.ConvertCsharp2Bdd(property.JavaName)}{(properties.IndexOf(property) < properties.Count - 1 ? "," : string.Empty)}");
             }
 
             fw.WriteLine(1, "}");
@@ -178,7 +178,7 @@ namespace TopModel.Generator.Kasper
 
                 fw.WriteAttribute(1, "kasperx.annotation.Field", kasperFieldProps.ToArray());
                 fw.WriteLine(1, $"public final {property.Domain.JavaType} get{property.JavaName}() {{");
-                fw.WriteLine(2, $"return ({property.Domain.JavaType}) getValue({property.SqlName});");
+                fw.WriteLine(2, $"return ({property.Domain.JavaType}) getValue({ModelUtils.ConvertCsharp2Bdd(property.JavaName)});");
                 fw.WriteLine(1, "}");
 
                 fw.WriteLine();
@@ -186,7 +186,7 @@ namespace TopModel.Generator.Kasper
                 fw.WriteParam(property.JavaName.ToFirstLower(), property.Domain.JavaType);
                 fw.WriteDocEnd(1);
                 fw.WriteLine(1, $"public final void set{property.JavaName}({property.Domain.JavaType} {property.JavaName.ToFirstLower()}) {{");
-                fw.WriteLine(2, $"setValue({property.SqlName}, {property.JavaName.ToFirstLower()});");
+                fw.WriteLine(2, $"setValue({ModelUtils.ConvertCsharp2Bdd(property.JavaName)}, {property.JavaName.ToFirstLower()});");
                 fw.WriteLine(1, "}");
             }
 

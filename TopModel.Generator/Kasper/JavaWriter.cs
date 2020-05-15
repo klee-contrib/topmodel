@@ -34,15 +34,15 @@ namespace TopModel.Generator.Kasper
         public void WriteAttribute(int indentLevel, string attributeName, params string[] attributeParams)
         {
             var aParams = string.Empty;
-            if (attributeParams.Any())
-            {
-                aParams = $@"({string.Join(", ", attributeParams)})";
-            }
 
             if (attributeName.Contains("kasperx"))
             {
                 var ident = string.Join(IndentValue, Enumerable.Range(0, indentLevel).Select(v => string.Empty));
-                aParams = aParams.Replace(",", $",\n{ident}{IndentValue}").Replace("(", $" (\n {ident}{IndentValue}").Replace(")", $"\n{ident})");
+                aParams = $" (\r\n{ident}{IndentValue}{string.Join($",\r\n{ident}{IndentValue}", attributeParams)}\r\n{ident})";
+            }
+            else if (attributeParams.Any())
+            {
+                aParams = $@"({string.Join(", ", attributeParams)})";
             }
 
             WriteLine(indentLevel, $@"@{attributeName}{aParams}");
