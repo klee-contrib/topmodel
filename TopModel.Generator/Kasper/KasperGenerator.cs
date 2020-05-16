@@ -33,17 +33,27 @@ namespace TopModel.Generator.Kasper
             {
                 GenerateClasses(file);
             }
+
+            GenerateDtDefinitions();
+
+            var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
+
+            foreach (var module in modules)
+            {
+                GenerateDtResources(module);
+            }
         }
 
         private void GenerateClasses(ModelFile file)
         {
             foreach (var classe in file.Classes.Where(c => !c.Properties.All(p => p is AssociationProperty)))
             {
+                GenerateAbstractClass(classe);
                 GenerateClass(classe);
             }
         }
 
-        private void GenerateClass(Class classe)
+        private void GenerateAbstractClass(Class classe)
         {
             var destFolder = Path.Combine(_config.SourcesDirectory, Path.Combine(_config.PackageName.Split(".")), classe.Namespace.Module.ToLower());
 
@@ -71,7 +81,7 @@ namespace TopModel.Generator.Kasper
                 $@"name = ""DT_{classe.SqlName}""",
                 $@"javaClassName = ""{packageName}.{classe.Name}""",
                 $@"packageName = ""{packageName}""");
-            fw.WriteClassDeclaration($"{classe.Name}Abstract", $"{_config.PackageName}.DtObjectAbstract", true);
+            fw.WriteClassDeclaration($"{classe.Name}Abstract", "abstract", $"{_config.PackageName}.DtObjectAbstract");
 
             fw.WriteLine();
             fw.WriteDocStart(1, "Nom du DT.");
@@ -232,6 +242,142 @@ namespace TopModel.Generator.Kasper
             }
 
             fw.WriteLine("}");
+        }
+
+        private void GenerateClass(Class classe)
+        {
+            var destFolder = Path.Combine(_config.SourcesDirectory, Path.Combine(_config.PackageName.Split(".")), classe.Namespace.Module.ToLower());
+
+            var filePath = Path.Combine(destFolder, $"{classe.Name}.java");
+            if (File.Exists(filePath))
+            {
+                return;
+            }
+
+            using var fw = new JavaWriter(filePath, _logger);
+
+            var packageName = $"{_config.PackageName}.{classe.Namespace.Module.ToLower()}";
+            fw.WriteLine($"package {packageName};");
+
+            fw.WriteLine();
+            fw.WriteDocStart(0, $"Attention, cette classe n'est générée seulement que la première fois !\nObjet de données {classe}");
+            fw.WriteDocEnd(0);
+
+            if (classe.IsPersistent)
+            {
+                fw.WriteAttribute(0, "javax.persistence.Entity");
+                fw.WriteAttribute(0, "javax.persistence.Inheritance", "strategy = javax.persistence.InheritanceType.TABLE_PER_CLASS");
+            }
+
+            fw.WriteClassDeclaration(classe.Name, null, $"{classe.Name}Abstract");
+
+            fw.WriteLine();
+            fw.WriteDocStart(1, "SerialVersionUID");
+            fw.WriteDocEnd(1);
+            fw.WriteLine(1, $"private static final long serialVersionUID = {classe.Name}Abstract.getSerialVersionUID();");
+
+            fw.WriteLine("}");
+        }
+
+        private void GenerateDtDefinitions()
+        {
+            var destFolder = Path.Combine(_config.SourcesDirectory, Path.Combine(_config.PackageName.Split(".")));
+
+            using var fw = new JavaWriter(Path.Combine(destFolder, "DtDefinitions.java"), _logger);
+
+            fw.WriteLine($"package {_config.PackageName};");
+            fw.WriteLine();
+            fw.WriteLine("import java.util.Arrays;");
+            fw.WriteLine("import java.util.Collections;");
+            fw.WriteLine("import java.util.List;");
+            fw.WriteLine();
+            fw.WriteClassDeclaration("DtDefinitions", "final");
+
+            fw.WriteLine();
+            fw.WriteDocStart(1, "Liste des classes Java");
+            fw.WriteDocEnd(1);
+            fw.WriteLine(1, "public static final List<String> JAVA_CLASS_NAME_LIST =");
+            fw.WriteLine(2, "Collections.unmodifiableList(Arrays.asList(new String[] {");
+
+            var classes = _files.SelectMany(c => c.Value.Classes)
+                .Where(c => !c.Properties.All(p => p is AssociationProperty))
+                .Select(c => $"{_config.PackageName}.{c.Namespace.Module.ToLower()}.{c}")
+                .OrderBy(c => c).ToList();
+
+            foreach (var classe in classes)
+            {
+                fw.WriteLine(3, $@"""{classe}""{(classes.IndexOf(classe) < classes.Count - 1 ? "," : string.Empty)}");
+            }
+
+            fw.WriteLine(1, "}));");
+
+            fw.WriteLine();
+            fw.WriteDocStart(1, "Constructeur privé");
+            fw.WriteDocEnd(1);
+            fw.WriteLine(1, "private DtDefinitions() {");
+            fw.WriteLine(2, "super();");
+            fw.WriteLine(1, "}");
+
+            fw.WriteLine("}");
+        }
+
+        private void GenerateDtResources(string module)
+        {
+            var classes = _files.Values.SelectMany(f => f.Classes)
+                .Where(c => c.Namespace.Module == module && !c.Properties.All(p => p is AssociationProperty))
+                .OrderBy(c => c.Name)
+                .ToList();
+
+            var destFolder = Path.Combine(_config.SourcesDirectory, Path.Combine(_config.PackageName.Split(".")), module.ToLower());
+
+            using (var fw = new JavaWriter(Path.Combine(destFolder, "DtResources.java"), _logger))
+            {
+                fw.WriteLine($"package {_config.PackageName}.{module.ToLower()};");
+                fw.WriteLine();
+                fw.WriteLine("import kasper.resource.ResourceKey;");
+
+                fw.WriteLine();
+                fw.WriteDocStart(0, $"Resources du module {_config.PackageName}.{module.ToLower()}");
+                fw.WriteDocEnd(0);
+                fw.WriteLine("public enum DtResources implements ResourceKey {");
+
+                foreach (var classe in classes)
+                {
+                    fw.WriteLine();
+                    fw.WriteLine(1, "/***********************************************************");
+                    fw.WriteLine(1, $"/** {classe.SqlName}.");
+                    fw.WriteLine(1, "/***********************************************************");
+
+                    foreach (var property in classe.Properties.OfType<IFieldProperty>())
+                    {
+                        fw.WriteDocStart(1, property.Comment);
+                        fw.WriteDocEnd(1);
+                        fw.WriteLine(1, $"FLD{classe.SqlName}${ModelUtils.ConvertCsharp2Bdd(property.JavaName)},");
+                    }
+                }
+
+                fw.WriteLine("}");
+            }
+
+            using (var fw = new JavaPropertiesWriter(Path.Combine(destFolder, "DtResources.properties"), _logger))
+            {
+                fw.WriteLine("################################################################################");
+                fw.WriteLine($"# Resources du module {_config.PackageName}.{module.ToLower()}");
+                fw.WriteLine("################################################################################");
+                fw.WriteLine();
+
+                foreach (var classe in classes)
+                {
+                    foreach (var property in classe.Properties.OfType<IFieldProperty>())
+                    {
+                        fw.WriteLine($"FLD{classe.SqlName}${ModelUtils.ConvertCsharp2Bdd(property.JavaName)} ={property.Label}");
+                    }
+
+                    fw.WriteLine();
+                    fw.WriteLine("################################################################################");
+                    fw.WriteLine();
+                }
+            }
         }
     }
 }

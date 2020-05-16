@@ -52,9 +52,9 @@ namespace TopModel.Generator.Kasper
         /// Retourne le code associé à la déclaration.
         /// </summary>
         /// <param name="name">Nom de la classe.</param>
+        /// <param name="modifier">Modifier.</param>
         /// <param name="inheritedClass">Classe parente.</param>
-        /// <param name="isAbstract">isAbstract</param>
-        public void WriteClassDeclaration(string name, string? inheritedClass, bool isAbstract)
+        public void WriteClassDeclaration(string name, string? modifier, string? inheritedClass = null)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -63,7 +63,15 @@ namespace TopModel.Generator.Kasper
 
             var sb = new StringBuilder();
 
-            sb.Append($"public{(isAbstract ? " abstract" : string.Empty)} class ");
+            if (string.IsNullOrEmpty(modifier))
+            {
+                sb.Append($"public class ");
+            }
+            else
+            {
+                sb.Append($"public {modifier} class ");
+            }
+
             sb.Append(name);
             if (!string.IsNullOrEmpty(inheritedClass))
             {
