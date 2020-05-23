@@ -80,7 +80,6 @@ namespace TopModel.Generator.CSharp
             var usings = new[]
             {
                 "System.Collections.Generic",
-                "System.Linq",
                 $"{rootNamespace}.{nameSpaceName}"
             }.ToList();
 
@@ -91,21 +90,25 @@ namespace TopModel.Generator.CSharp
             else
             {
                 usings.Add("System.ServiceModel");
+            }
 
-                if (_config.DbContextProjectPath == null)
+            if (_config.DbContextProjectPath == null)
+            {
+                usings.Add($"{rootNamespace}.{nameSpacePrefix}Contract");
+                usings.Add(_config.Kinetix == KinetixVersion.Fmk
+                    ? "Fmk.Broker"
+                    : "Kinetix.Broker");
+
+                if (classList.Any(classe => classe.OrderProperty != null || classe.LabelProperty != null && classe.LabelProperty.Name != "Libelle"))
                 {
-                    usings.Add($"{rootNamespace}.{nameSpacePrefix}Contract");
-                    usings.Add(_config.Kinetix == KinetixVersion.Framework
-                        ? "Kinetix.Broker"
-                        : "Fmk.Broker");
-
-                    if (classList.Any(classe => classe.OrderProperty != null || classe.LabelProperty != null && classe.LabelProperty.Name != "Libelle"))
-                    {
-                        usings.Add(_config.Kinetix == KinetixVersion.Framework
-                            ? "Kinetix.Data.SqlClient"
-                            : "Fmk.Data.SqlClient");
-                    }
+                    usings.Add(_config.Kinetix == KinetixVersion.Fmk
+                        ? "Fmk.Data.SqlClient"
+                        : "Kinetix.Data.SqlClient");
                 }
+            }
+            else
+            {
+                usings.Add("System.Linq");
             }
 
             w.WriteUsings(usings.ToArray());
