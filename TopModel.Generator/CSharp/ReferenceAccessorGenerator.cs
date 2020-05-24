@@ -148,6 +148,18 @@ namespace TopModel.Generator.CSharp
                 w.WriteLine(2, "}");
                 w.WriteLine();
             }
+            else if (_config.Kinetix == KinetixVersion.Core)
+            {
+                w.WriteLine(2, $"private readonly BrokerManager _brokerManager;");
+                w.WriteLine();
+                w.WriteSummary(2, "Constructeur");
+                w.WriteParam("brokerManager", "BrokerManager");
+                w.WriteLine(2, $"public {implementationName}(BrokerManager brokerManager)");
+                w.WriteLine(2, "{");
+                w.WriteLine(3, "_brokerManager = brokerManager;");
+                w.WriteLine(2, "}");
+                w.WriteLine();
+            }
 
             foreach (var classe in classList)
             {
@@ -287,7 +299,9 @@ namespace TopModel.Generator.CSharp
                     queryParameter = "new QueryParameter(" + classe.Name + ".Cols." + defaultProperty.SqlName + ", SortOrder.Asc)";
                 }
 
-                return "return BrokerManager.GetStandardBroker<" + classe.Name + ">().GetAll(" + queryParameter + ");";
+                return _config.Kinetix == KinetixVersion.Core
+                    ? "return _brokerManager.GetBroker<" + classe.Name + ">().GetAll(" + queryParameter + ");"
+                    : "return BrokerManager.GetStandardBroker<" + classe.Name + ">().GetAll(" + queryParameter + ");";
             }
         }
     }
