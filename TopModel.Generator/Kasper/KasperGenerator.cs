@@ -208,6 +208,7 @@ namespace TopModel.Generator.Kasper
                 fw.WriteThrows(1, $"kasper.util.KSystemException Exception système");
                 fw.WriteDocEnd(1);
                 fw.WriteAttribute(1, "javax.persistence.Transient");
+                fw.WriteAttribute(1, "com.fasterxml.jackson.annotation.JsonIgnore");
                 fw.WriteAttribute(
                     1,
                     "kasperx.annotation.Association",
@@ -236,6 +237,7 @@ namespace TopModel.Generator.Kasper
                 fw.WriteThrows(1, $"kasper.util.KSystemException Exception système");
                 fw.WriteDocEnd(1);
                 fw.WriteAttribute(1, "javax.persistence.Transient");
+                fw.WriteAttribute(1, "com.fasterxml.jackson.annotation.JsonIgnore");
                 fw.WriteLine(1, $"public kasper.model.DtCollection<{_config.PackageName}.{target.Namespace.Module.ToLower()}.{target.Name}> get{target.Name}Collection() throws kasper.util.KSystemException {{");
                 fw.WriteLine(2, $@"return this.<{_config.PackageName}.{target.Namespace.Module.ToLower()}.{target.Name}> getCollection(""A_{nn.SqlName}"", ""{target.Name.ToFirstLower()}"");");
                 fw.WriteLine(1, "}");
