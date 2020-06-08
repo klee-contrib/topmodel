@@ -18,6 +18,8 @@ namespace TopModel.Core
 
         public bool Required { get; set; }
 
+        public bool Unique { get; set; }
+
         public string? DefaultValue { get; set; }
 
         public string Name => (Association?.Extends == null && !AsAlias ? Association?.Name : string.Empty) + Association?.Properties.Single(p => p.PrimaryKey).Name + (Role?.Replace(" ", string.Empty) ?? string.Empty);

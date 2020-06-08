@@ -227,6 +227,10 @@
                         "type": "boolean",
                         "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."
                       },
+                      "unique": {
+                        "type": "boolean",
+                        "description": "Précise si la propriété possède une contrainte d'unicité."
+                      },
                       "defaultValue": {
                         "type": [ "string", "number", "boolean" ],
                         "description": "Valeur par défaut de la propriété, dans la base de données."

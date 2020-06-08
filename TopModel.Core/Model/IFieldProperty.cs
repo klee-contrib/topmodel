@@ -4,6 +4,8 @@
     {
         bool Required { get; }
 
+        bool Unique { get; }
+
         Domain Domain { get; }
 
         string? DefaultValue { get; }

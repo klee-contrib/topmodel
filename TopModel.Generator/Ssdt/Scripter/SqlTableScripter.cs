@@ -272,6 +272,12 @@ namespace TopModel.Generator.Ssdt.Scripter
         private void WritePkLine(StringBuilder sb, Class classe)
         {
             var pkCount = 0;
+
+            if (!classe.Properties.Any(p => p.PrimaryKey) && !classe.Properties.All(p => p is AssociationProperty))
+            {
+                return;
+            }
+
             sb.Append("constraint [PK_").Append(classe.SqlName).Append("] primary key clustered (");
 
             if (classe.Properties.All(p => p is AssociationProperty))
@@ -317,23 +323,23 @@ namespace TopModel.Generator.Ssdt.Scripter
         {
             var constraintList = new List<string>();
 
-            var uniqueCount = classe.Properties.OfType<RegularProperty>().Count(p => p.Unique);
+            var uniqueCount = classe.Properties.OfType<IFieldProperty>().Count(p => p.Unique);
 
             // Contrainte d'unicité sur une seule colonne.
             if (uniqueCount == 1)
             {
                 foreach (var columnProperty in classe.Properties.OfType<IFieldProperty>())
                 {
-                    if (columnProperty is RegularProperty { Unique: true, PrimaryKey: false })
+                    if (columnProperty.Unique && !columnProperty.PrimaryKey)
                     {
-                        constraintList.Add("constraint [UK_" + classe.SqlName + '_' + columnProperty.Name.ToUpperInvariant() + "] unique nonclustered ([" + columnProperty.SqlName + "] ASC)");
+                        constraintList.Add("constraint [UK_" + classe.SqlName + '_' + columnProperty.SqlName + "] unique nonclustered ([" + columnProperty.SqlName + "] ASC)");
                     }
                 }
             }
             else
             {
                 // Contrainte d'unicité sur plusieurs colonnes.
-                var columnList = classe.Properties.OfType<RegularProperty>().Where(p => p.Unique);
+                var columnList = classe.Properties.OfType<IFieldProperty>().Where(p => p.Unique);
                 if (columnList.Any())
                 {
                     constraintList.Add("constraint [UK_" + classe.SqlName + "_MULTIPLE] unique (" + string.Join(", ", columnList.Select(x => "[" + ((IFieldProperty)x).SqlName + "]")) + ")");

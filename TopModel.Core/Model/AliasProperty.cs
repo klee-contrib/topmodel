@@ -31,6 +31,8 @@
             set => _required = value;
         }
 
+        public bool Unique => false;
+
         public Domain Domain => Property.Domain;
 
         public string Comment => Property.Comment;

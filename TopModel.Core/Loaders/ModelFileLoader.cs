@@ -186,6 +186,9 @@ namespace TopModel.Core.Loaders
                                     case "required":
                                         ap.Required = value.Value == "true";
                                         break;
+                                    case "unique":
+                                        ap.Unique = value.Value == "true";
+                                        break;
                                     case "defaultValue":
                                         ap.DefaultValue = value.Value;
                                         break;

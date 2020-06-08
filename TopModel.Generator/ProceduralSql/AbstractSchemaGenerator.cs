@@ -343,6 +343,12 @@ namespace TopModel.Generator.ProceduralSql
         private void WritePrimaryKeyConstraint(SqlFileWriter writerCrebas, Class classe)
         {
             var pkCount = 0;
+
+            if (!classe.Properties.Any(p => p.PrimaryKey) && !classe.Properties.All(p => p is AssociationProperty))
+            {
+                return;
+            }
+
             writerCrebas.Write("\tconstraint " + Quote("PK_" + classe.SqlName) + " primary key ");
             if (SupportsClusteredKey)
             {
@@ -404,7 +410,7 @@ namespace TopModel.Generator.ProceduralSql
             var nbPropertyCount = classe.Properties.Count;
             var t = 0;
 
-            var multipleUnique = classe.Properties.OfType<RegularProperty>().Count(p => p.Unique) > 1;
+            var multipleUnique = classe.Properties.OfType<IFieldProperty>().Count(p => p.Unique) > 1;
 
             foreach (var property in classe.Properties.OfType<IFieldProperty>())
             {
@@ -452,7 +458,7 @@ namespace TopModel.Generator.ProceduralSql
                     fkPropertiesList.Add(ap);
                 }
 
-                if (!multipleUnique && property is RegularProperty { Unique: true })
+                if (!multipleUnique && property.Unique)
                 {
                     if (writerUk == null)
                     {
@@ -506,14 +512,14 @@ namespace TopModel.Generator.ProceduralSql
         {
             writerUk?.Write("alter table " + classe.SqlName + " add constraint UK_" + classe.SqlName + "_MULTIPLE unique (");
             var i = 0;
-            foreach (var property in classe.Properties.OfType<RegularProperty>().Where(rp => rp.Unique))
+            foreach (var property in classe.Properties.OfType<IFieldProperty>().Where(rp => rp.Unique))
             {
                 if (i > 0)
                 {
                     writerUk?.Write(", ");
                 }
 
-                writerUk?.Write(((IFieldProperty)property).SqlName);
+                writerUk?.Write(property.SqlName);
                 ++i;
             }
 
