@@ -56,7 +56,7 @@ namespace TopModel.Generator.Javascript
             var count = 0;
             foreach (var classe in file.Classes)
             {
-                if (!classe.Reference || classe.PrimaryKey!.Domain.Name == "DO_ID")
+                if (!(classe.Reference || classe.ReferenceValues != null) || classe.PrimaryKey?.Domain.Name == "DO_ID")
                 {
                     var fileName = classe.Name.ToDashCase();
 
@@ -79,7 +79,7 @@ namespace TopModel.Generator.Javascript
 
         private void GenerateReferences(string module)
         {
-            var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.Namespace.Module == module && c.Reference && c.PrimaryKey!.Domain.Name != "DO_ID");
+            var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.Namespace.Module == module && (c.Reference || c.ReferenceValues != null) && c.PrimaryKey?.Domain.Name != "DO_ID");
 
             if (_config.ModelOutputDirectory != null && classes.Any())
             {
@@ -147,7 +147,8 @@ namespace TopModel.Generator.Javascript
                 fw.Write("\r\n");
             }
 
-            fw.Write("\r\nexport type ");
+            fw.Write("\r\n");
+            fw.Write("export type ");
             fw.Write(classe.Name);
             fw.Write(" = EntityToType<");
             fw.Write(classe.Name);
@@ -283,15 +284,8 @@ namespace TopModel.Generator.Javascript
 
             if (classe.Reference)
             {
-                fw.Write("\r\nexport const ");
-                fw.Write(classe.Name.ToFirstLower());
-                fw.Write(" = {type: {} as ");
-                fw.Write(classe.Name);
-                fw.Write(", valueKey: \"");
-                fw.Write(classe.PrimaryKey!.Name.ToFirstLower());
-                fw.Write("\", labelKey: \"");
-                fw.Write(classe.DefaultProperty?.ToFirstLower() ?? "libelle");
-                fw.Write("\"} as const;\r\n");
+                fw.WriteLine();
+                WriteReferenceDefinition(fw, classe);
             }
         }
 
@@ -383,7 +377,7 @@ namespace TopModel.Generator.Javascript
                 fw.Write(reference.Name);
                 fw.Write("Code = ");
                 fw.Write(reference.ReferenceValues != null
-                    ? string.Join(" | ", reference.ReferenceValues.Select(r => $@"""{r.Value[reference.PrimaryKey]}""").OrderBy(x => x))
+                    ? string.Join(" | ", reference.ReferenceValues.Select(r => $@"""{r.Value[reference.PrimaryKey ?? reference.Properties.OfType<IFieldProperty>().First()]}""").OrderBy(x => x))
                     : "string");
                 fw.WriteLine(";");
 
@@ -420,16 +414,21 @@ namespace TopModel.Generator.Javascript
 
                 fw.Write("}\r\n");
 
-                fw.Write("export const ");
-                fw.Write(reference.Name.ToFirstLower());
-                fw.Write(" = {type: {} as ");
-                fw.Write(reference.Name);
-                fw.Write(", valueKey: \"");
-                fw.Write(reference.PrimaryKey!.Name.ToFirstLower());
-                fw.Write("\", labelKey: \"");
-                fw.Write(reference.DefaultProperty?.ToFirstLower() ?? "libelle");
-                fw.Write("\"} as const;\r\n");
+                WriteReferenceDefinition(fw, reference);
             }
+        }
+
+        private void WriteReferenceDefinition(FileWriter fw, Class classe)
+        {
+            fw.Write("export const ");
+            fw.Write(classe.Name.ToFirstLower());
+            fw.Write(" = {type: {} as ");
+            fw.Write(classe.Name);
+            fw.Write(", valueKey: \"");
+            fw.Write((classe.PrimaryKey ?? classe.Properties.OfType<IFieldProperty>().First()).Name.ToFirstLower());
+            fw.Write("\", labelKey: \"");
+            fw.Write(classe.DefaultProperty?.ToFirstLower() ?? "libelle");
+            fw.Write("\"} as const;\r\n");
         }
 
         /// <summary>

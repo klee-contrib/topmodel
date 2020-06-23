@@ -169,8 +169,8 @@ namespace TopModel.Generator.CSharp
                 foreach (var refValue in item.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal))
                 {
                     ++i;
-                    var code = item.PrimaryKey!.Domain.Name != "DO_ID"
-                        ? (string)refValue.Value[item.PrimaryKey]
+                    var code = item.PrimaryKey?.Domain.Name != "DO_ID"
+                        ? (string)refValue.Value[item.PrimaryKey ?? item.Properties.OfType<IFieldProperty>().First()]
                         : (string)refValue.Value[item.Properties.OfType<IFieldProperty>().Single(rp => rp.Unique)];
                     var label = item.LabelProperty != null
                         ? (string)refValue.Value[item.LabelProperty]
