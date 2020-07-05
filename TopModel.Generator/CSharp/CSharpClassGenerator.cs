@@ -417,7 +417,14 @@ namespace TopModel.Generator.CSharp
                     w.WriteAttribute(2, "ReferencedType", $"typeof({alp2.Property.Class.Name})");
                 }
 
-                w.WriteAttribute(2, "Domain", $@"""{prop.Domain.Name}""");
+                if (_config.Kinetix == KinetixVersion.Core)
+                {
+                    w.WriteAttribute(2, "Domain", $@"Domains.{prop.Domain.CSharpName}");
+                }
+                else
+                {
+                    w.WriteAttribute(2, "Domain", $@"""{prop.Domain.Name}""");
+                }
 
                 if (!string.IsNullOrEmpty(prop.Domain.CustomAnnotation))
                 {
@@ -494,6 +501,7 @@ namespace TopModel.Generator.CSharp
                 if (_config.Kinetix == KinetixVersion.Core)
                 {
                     usings.Add("Kinetix.ComponentModel.Annotations");
+                    usings.Add($"{item.Namespace.App}.Common");
                 }
                 else if (_config.Kinetix == KinetixVersion.Framework)
                 {

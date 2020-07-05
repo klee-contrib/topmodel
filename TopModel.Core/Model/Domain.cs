@@ -23,6 +23,8 @@ namespace TopModel.Core
 
         public bool UseTypeName { get; set; }
 
+        public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCase();
+
         public (int Length, int Precision)? SqlTypePrecision
         {
             get
