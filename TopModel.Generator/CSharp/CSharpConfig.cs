@@ -16,6 +16,16 @@
         public string? DbContextProjectPath { get; set; }
 
         /// <summary>
+        /// Utilise les migrations EF pour créer/mettre à jour la base de données.
+        /// </summary>
+        public bool UseEFMigrations { get; set; }
+
+        /// <summary>
+        /// Utilise des noms de tables et de colonnes en lowercase.
+        /// </summary>
+        public bool UseLowerCaseSqlNames { get; set; }
+
+        /// <summary>
         /// Utilise des types spécifiques pour les valeurs de listes statiques, au lieu de string.
         /// </summary>
         public bool UseTypeSafeConstValues { get; set; }

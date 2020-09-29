@@ -126,7 +126,57 @@ namespace TopModel.Generator.CSharp
                 }
             }
 
-            if (_config.Kinetix == KinetixVersion.Framework)
+            if (_config.Kinetix == KinetixVersion.Core && _config.UseEFMigrations)
+            {
+                w.WriteLine();
+                w.WriteSummary(2, "Personalisation du modèle.");
+                w.WriteParam("modelBuilder", "L'objet de construction du modèle.");
+                w.WriteLine(2, "protected override void OnModelCreating(ModelBuilder modelBuilder)");
+                w.WriteLine(2, "{");
+
+                foreach (var prop in classes.SelectMany(c => c.Properties.OfType<AssociationProperty>()))
+                {
+                    w.WriteLine(3, $"modelBuilder.Entity<{prop.Class.Name}>().HasOne<{prop.Association}>().WithMany().HasForeignKey(p => p.{prop.Name});");
+                }
+
+                w.WriteLine();
+
+                foreach (var prop in classes.SelectMany(c => c.Properties.OfType<RegularProperty>()).Where(prop => prop.Unique))
+                {
+                    w.WriteLine(3, $"modelBuilder.Entity<{prop.Class.Name}>().HasIndex(p => p.{prop.Name}).IsUnique();");
+                }
+
+                w.WriteLine();
+
+                foreach (var classe in classes.Where(c => c.ReferenceValues != null).OrderBy(c => c.Name))
+                {
+                    w.WriteLine(3, $"modelBuilder.Entity<{classe.Name}>().HasData(");
+                    foreach (var refValue in classe.ReferenceValues!)
+                    {
+                        w.Write($"                new {classe.Name} {{");
+                        foreach (var prop in refValue.Value.ToList())
+                        {
+                            var value = prop.Key.Domain.CsharpType == "string" ? $"\"{prop.Value}\"" : prop.Value;
+                            w.Write($" {prop.Key.Name} = {value}");
+                            if (refValue.Value.ToList().IndexOf(prop) < refValue.Value.Count() - 1)
+                            {
+                                w.Write(",");
+                            }
+                        }
+
+                        w.Write(" }");
+                        if (classe.ReferenceValues.IndexOf(refValue) < classe.ReferenceValues.Count - 1)
+                        {
+                            w.Write(",\r\n");
+                        }
+                    }
+
+                    w.Write(");\r\n");
+                }
+
+                w.WriteLine(2, "}");
+            }
+            else if (_config.Kinetix == KinetixVersion.Framework)
             {
                 w.WriteLine();
                 w.WriteSummary(2, "Hook pour l'ajout de configuration su EF (précision des champs, etc).");

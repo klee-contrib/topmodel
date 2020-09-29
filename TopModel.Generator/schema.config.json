@@ -131,9 +131,17 @@
             "type": "string",
             "description": "Nom du projet dans lequel mettre le DbContext."
           },
+          "useEFMigrations": {
+            "type": "boolean",
+            "description": "Utilise les migrations EF pour créer/mettre à jour la base de données."
+          },
           "useTypeSafeConstValues": {
             "type": "boolean",
             "description": "Utilise des types spécifiques pour les valeurs de listes statiques, au lieu de string."
+          },
+          "useLowerCaseSqlNames": {
+            "type": "boolean",
+            "description": "Utilise des noms de tables et de colonnes en lowercase."
           },
           "dbSchema": {
             "type": "string",

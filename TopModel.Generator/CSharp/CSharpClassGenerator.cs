@@ -91,13 +91,14 @@ namespace TopModel.Generator.CSharp
 
             if (item.IsPersistent)
             {
+                var sqlName = _config.UseLowerCaseSqlNames ? item.SqlName.ToLower() : item.SqlName;
                 if (_config.DbSchema != null)
                 {
-                    w.WriteAttribute(1, "Table", $@"""{item.SqlName}""", $@"Schema = ""{_config.DbSchema}""");
+                    w.WriteAttribute(1, "Table", $@"""{sqlName}""", $@"Schema = ""{_config.DbSchema}""");
                 }
                 else
                 {
-                    w.WriteAttribute(1, "Table", $@"""{item.SqlName}""");
+                    w.WriteAttribute(1, "Table", $@"""{sqlName}""");
                 }
             }
 
@@ -393,13 +394,14 @@ namespace TopModel.Generator.CSharp
                 var prop = fp is AliasProperty alp ? alp.Property : fp;
                 if ((!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.IsPersistent && !sameColumnSet.Contains(prop.SqlName))
                 {
+                    var sqlName = _config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
                     if (prop.Domain.UseTypeName)
                     {
-                        w.WriteAttribute(2, "Column", $@"""{prop.SqlName}""", $@"TypeName = ""{prop.Domain.SqlType}""");
+                        w.WriteAttribute(2, "Column", $@"""{sqlName}""", $@"TypeName = ""{prop.Domain.SqlType}""");
                     }
                     else
                     {
-                        w.WriteAttribute(2, "Column", $@"""{prop.SqlName}""");
+                        w.WriteAttribute(2, "Column", $@"""{sqlName}""");
                     }
                 }
 

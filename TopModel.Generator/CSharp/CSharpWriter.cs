@@ -27,6 +27,15 @@ namespace TopModel.Generator.CSharp
         }
 
         /// <summary>
+        /// Ecrit du texte.
+        /// </summary>
+        /// <param name="text">Texte.</param>
+        public void Write(string text)
+        {
+            _writer.Write(text);
+        }
+
+        /// <summary>
         /// Ecrit un attribut de décoration.
         /// </summary>
         /// <param name="indentLevel">Indentation.</param>
