@@ -1,10 +1,10 @@
-﻿@page "/{Module}/{Kind}/{File}"
+﻿@page "/{File}"
 @inject ModelFileProvider _provider
 @inject IJSRuntime _jsRuntime;
 
 <div class="main">
     <button id="stop-pan" @onclick="() => panning = false" />
-    <h4>@FileName.Module > @FileName.Kind > @FileName.File</h4>
+    <h4>@File.Replace("+", " > ").Replace("_", " ")</h4>
     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
          @onmousewheel="Zoom"
          @onmousemove="Pan"
@@ -31,16 +31,10 @@
 
 #nullable disable
     [Parameter]
-    public string Module { get; set; }
-
-    [Parameter]
-    public string Kind { get; set; }
-
-    [Parameter]
     public string File { get; set; }
 #nullable enable
 
-    public FileName FileName => new FileName { Module = Module, Kind = Kind, File = File.Replace("+", " ") };
+    public string FileName => File.Replace("+", "/");
 
     (string Svg, double Width, double Height) Diagram => _provider.GetSvgForFile(FileName);
 
@@ -50,7 +44,7 @@
     {
         _provider.FileChanged += (_, name) =>
         {
-            if (name.Equals(FileName))
+            if (name == FileName)
             {
                 OnParametersSet();
                 InvokeAsync(StateHasChanged);

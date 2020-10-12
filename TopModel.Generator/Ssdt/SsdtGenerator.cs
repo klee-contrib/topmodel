@@ -11,7 +11,7 @@ namespace TopModel.Generator.Ssdt
     {
         private readonly SsdtConfig _config;
         private readonly ILogger<SsdtGenerator> _logger;
-        private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
+        private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
 
         private readonly ISqlScripter<Class> _tableScripter;
         private readonly ISqlScripter<Class> _tableTypeScripter = new SqlTableTypeScripter();

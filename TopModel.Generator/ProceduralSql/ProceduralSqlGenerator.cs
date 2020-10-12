@@ -9,7 +9,7 @@ namespace TopModel.Generator.ProceduralSql
     {
         private readonly ProceduralSqlConfig _config;
         private readonly ILogger<ProceduralSqlGenerator> _logger;
-        private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
+        private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
 
         private readonly AbstractSchemaGenerator? _schemaGenerator;
 

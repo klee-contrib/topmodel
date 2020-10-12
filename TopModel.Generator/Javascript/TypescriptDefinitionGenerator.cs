@@ -14,7 +14,7 @@ namespace TopModel.Generator.Javascript
     {
         private readonly JavascriptConfig _config;
         private readonly ILogger<TypescriptDefinitionGenerator> _logger;
-        private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
+        private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
 
         public TypescriptDefinitionGenerator(ILogger<TypescriptDefinitionGenerator> logger, JavascriptConfig config)
             : base(logger, config)
@@ -60,7 +60,7 @@ namespace TopModel.Generator.Javascript
                 {
                     var fileName = classe.Name.ToDashCase();
 
-                    fileName = $"{_config.ModelOutputDirectory}/{file.Descriptor.Module.ToDashCase()}/{fileName}.ts";
+                    fileName = $"{_config.ModelOutputDirectory}/{file.Module.ToDashCase()}/{fileName}.ts";
                     var fileInfo = new FileInfo(fileName);
 
                     var isNewFile = !fileInfo.Exists;

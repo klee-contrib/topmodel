@@ -3,6 +3,8 @@ namespace TopModel.Core
 {
     public class ModelConfig
     {
+        public string App { get; set; }
+
         public string ModelRoot { get; set; }
 
         public string Domains { get; set; }

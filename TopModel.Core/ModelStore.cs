@@ -21,10 +21,10 @@ namespace TopModel.Core
         private readonly IEnumerable<IModelWatcher> _modelWatchers;
 
         private readonly IDictionary<string, Domain> _domains = new Dictionary<string, Domain>();
-        private readonly IDictionary<FileName, ModelFile> _modelFiles = new Dictionary<FileName, ModelFile>();
+        private readonly IDictionary<string, ModelFile> _modelFiles = new Dictionary<string, ModelFile>();
 
         private readonly object _puLock = new object();
-        private readonly HashSet<FileName> _pendingUpdates = new HashSet<FileName>();
+        private readonly HashSet<string> _pendingUpdates = new HashSet<string>();
 
         public ModelStore(DomainFileLoader domainFileLoader, IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers)
         {
@@ -92,7 +92,7 @@ namespace TopModel.Core
 
         private IEnumerable<ModelFile> GetDependencies(ModelFile modelFile)
         {
-            return modelFile.Dependencies
+            return modelFile.Uses
                .Select(dep =>
                {
                    if (!_modelFiles.TryGetValue(dep, out var depFile))
@@ -160,7 +160,7 @@ namespace TopModel.Core
                 {
                     var relationshipErrors = new List<string>();
 
-                    var affectedFiles = _modelFiles.Values.Where(f => _pendingUpdates.Contains(f.Name)).SelectMany(pf => _modelFiles.Values.Where(f => f.Name.Equals(pf.Name) || f.Dependencies.Any(d => d.Equals(pf.Name)))).Distinct();
+                    var affectedFiles = _modelFiles.Values.Where(f => _pendingUpdates.Contains(f.Name)).SelectMany(pf => _modelFiles.Values.Where(f => f.Name.Equals(pf.Name) || f.Uses.Any(d => d.Equals(pf.Name)))).Distinct();
                     foreach (var affectedFile in ModelUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name.Equals(d.Name)))))
                     {
                         relationshipErrors.AddRange(ResolveRelationships(affectedFile));

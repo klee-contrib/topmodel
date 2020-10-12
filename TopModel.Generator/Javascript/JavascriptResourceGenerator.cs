@@ -13,7 +13,7 @@ namespace TopModel.Generator.Javascript
     {
         private readonly JavascriptConfig _config;
         private readonly ILogger<JavascriptResourceGenerator> _logger;
-        private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
+        private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
 
         public JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> logger, JavascriptConfig config)
             : base(logger, config)

@@ -5,6 +5,6 @@ namespace TopModel.Generator
 {
     public abstract class GeneratorConfigBase
     {
-        public IList<string> Kinds { get; set; }
+        public IList<string> Tags { get; set; }
     }
 }

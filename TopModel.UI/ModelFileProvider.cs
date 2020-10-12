@@ -22,9 +22,9 @@ namespace TopModel.UI
 
         public event EventHandler? FilesChanged;
 
-        public event EventHandler<FileName>? FileChanged;
+        public event EventHandler<string>? FileChanged;
 
-        public IDictionary<FileName, ModelFile> Files { get; set; } = new Dictionary<FileName, ModelFile>();
+        public IDictionary<string, ModelFile> Files { get; set; } = new Dictionary<string, ModelFile>();
 
         public string Name => "UI";
 
@@ -42,7 +42,7 @@ namespace TopModel.UI
             FilesChanged?.Invoke(this, new EventArgs());
         }
 
-        public (string Svg, double Width, double Height) GetSvgForFile(FileName name)
+        public (string Svg, double Width, double Height) GetSvgForFile(string name)
         {
             return _svgCache.GetOrCreate(name, _ =>
             {

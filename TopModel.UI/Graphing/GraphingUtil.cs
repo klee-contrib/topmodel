@@ -1,5 +1,4 @@
-﻿using System.Net;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 
 namespace TopModel.UI.Graphing
 {
@@ -9,7 +8,7 @@ namespace TopModel.UI.Graphing
         {
             return file == null
                 ? string.Empty
-                : $"{file.Descriptor.Module}/{file.Descriptor.Kind}/{WebUtility.UrlEncode(file.Descriptor.File)}";
+                : file.Name.Replace("/", "+");
         }
 
         public static string ForTooltip(this string source)

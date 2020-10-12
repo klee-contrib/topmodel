@@ -5,51 +5,25 @@
     {
       "type": "object",
       "description": "Définition d'un fichier.",
-      "required": [ "app", "module", "kind", "file" ],
+      "required": [ "module", "tags" ],
       "additionalProperties": false,
       "properties": {
-        "app": {
-          "type": "string",
-          "description": "Nom de l'application."
-        },
         "module": {
           "type": "string",
           "description": "Nom du module contenant ce fichier."
         },
-        "kind": {
-          "type": "string",
-          "description": "Catégorie de fichier, pour déterminer quels générateurs doivent lire tel fichier."
-        },
-        "file": {
-          "type": "string",
-          "description": "Nom du fichier courant."
+        "tags": {
+          "type": "array",
+          "description": "Tags de fichier, pour déterminer quels générateurs doivent lire tel fichier.",
+          "items": {
+            "type": "string"
+          }
         },
         "uses": {
           "type": "array",
           "description": "Dépendances du fichier courant. Il est nécessaire de spécifier l'intégralité des fichiers existants utilisés dans de fichier, et d'en lister toutes les classes référencées.",
           "items": {
-            "type": "object",
-            "description": "Détail d'une dépendance.",
-            "required": [ "module", "kind", "files" ],
-            "additionalProperties": false,
-            "properties": {
-              "module": {
-                "type": "string",
-                "description": "Nom du module référencé."
-              },
-              "kind": {
-                "type": "string",
-                "description": "Catégorie de fichier."
-              },
-              "files": {
-                "type": "array",
-                "description": "Liste des fichiers du module à référencer.",
-                "items": {
-                  "type": "string",
-                  "description": "Nom du fichier référencé."
-                }
-              }
-            }
+            "type": "string"
           }
         }
       }

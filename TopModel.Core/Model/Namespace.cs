@@ -5,7 +5,5 @@
         public string App { get; set; }
 
         public string Module { get; set; }
-
-        public string Kind { get; set; }
     }
 }

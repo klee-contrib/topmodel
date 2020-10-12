@@ -11,7 +11,7 @@ namespace TopModel.Generator.Kasper
     {
         private readonly KasperConfig _config;
         private readonly ILogger<KasperGenerator> _logger;
-        private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
+        private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
 
         public KasperGenerator(ILogger<KasperGenerator> logger, KasperConfig config)
             : base(logger, config)

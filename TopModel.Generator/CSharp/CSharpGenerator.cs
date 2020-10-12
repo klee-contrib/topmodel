@@ -12,7 +12,7 @@ namespace TopModel.Generator.CSharp
     {
         private readonly CSharpConfig _config;
         private readonly ILogger<CSharpGenerator> _logger;
-        private readonly IDictionary<FileName, ModelFile> _files = new Dictionary<FileName, ModelFile>();
+        private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
 
         private readonly CSharpClassGenerator _classGenerator;
         private readonly DbContextGenerator _dbContextGenerator;

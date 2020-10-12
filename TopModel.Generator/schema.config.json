@@ -4,7 +4,12 @@
   "type": "object",
   "description": "Fichier de config du générateur",
   "additionalProperties": false,
+  "required": [ "app" ],
   "properties": {
+    "app": {
+      "type": "string",
+      "description": "Nom de l'application."
+    },
     "modelRoot": {
       "type": "string",
       "description": "Chemin du dossier racine qui contient tous les fichiers YML du modèle, qui seront chargés par le générateur (à l'exception du fichier de domaines qui est chargé à part). Si non renseigné, le dossier contenant le fichier de config sera utilisé."
@@ -24,11 +29,11 @@
         "type": "object",
         "description": "Config pour la génération de SQL 'procédurale' (sans SSDT)",
         "additionalProperties": false,
-        "required": [ "kinds" ],
+        "required": [ "tags" ],
         "properties": {
-          "kinds": {
+          "tags": {
             "type": "array",
-            "description": "Précise les catégories de fichier que le générateur doit lire",
+            "description": "Précise les tags de fichier que le générateur doit lire",
             "items": {
               "type": "string",
               "description": "Catégorie de fichier que le générateur doit lire."
@@ -73,11 +78,11 @@
         "type": "object",
         "description": "Config pour la génération SSDT",
         "additionalProperties": false,
-        "required": [ "kinds" ],
+        "required": [ "tags" ],
         "properties": {
-          "kinds": {
+          "tags": {
             "type": "array",
-            "description": "Précise les catégories de fichier que le générateur doit lire",
+            "description": "Précise les tags de fichier que le générateur doit lire",
             "items": {
               "type": "string",
               "description": "Catégorie de fichier que le générateur doit lire."
@@ -113,11 +118,11 @@
         "type": "object",
         "description": "Config pour la génération de C#.",
         "additionalProperties": false,
-        "required": [ "kinds" ],
+        "required": [ "tags" ],
         "properties": {
-          "kinds": {
+          "tags": {
             "type": "array",
-            "description": "Précise les catégories de fichier que le générateur doit lire",
+            "description": "Précise les tags de fichier que le générateur doit lire",
             "items": {
               "type": "string",
               "description": "Catégorie de fichier que le générateur doit lire."
@@ -178,11 +183,11 @@
         "type": "object",
         "description": "Config pour la génération de Typescript (Focus4).",
         "additionalProperties": false,
-        "required": [ "kinds" ],
+        "required": [ "tags" ],
         "properties": {
-          "kinds": {
+          "tags": {
             "type": "array",
-            "description": "Précise les catégories de fichier que le générateur doit lire",
+            "description": "Précise les tags de fichier que le générateur doit lire",
             "items": {
               "type": "string",
               "description": "Catégorie de fichier que le générateur doit lire."
@@ -206,11 +211,11 @@
         "type": "object",
         "description": "Config pour la génération de Kasper.",
         "additionalProperties": false,
-        "required": [ "kinds", "sourcesDirectory", "packageName" ],
+        "required": [ "tags", "sourcesDirectory", "packageName" ],
         "properties": {
-          "kinds": {
+          "tags": {
             "type": "array",
-            "description": "Précise les catégories de fichier que le générateur doit lire",
+            "description": "Précise les tags de fichier que le générateur doit lire",
             "items": {
               "type": "string",
               "description": "Catégorie de fichier que le générateur doit lire."

@@ -11,9 +11,11 @@ namespace TopModel.Core.Loaders
     public class ModelFileLoader
     {
         private readonly FileChecker _fileChecker;
+        private readonly ModelConfig _config;
 
-        public ModelFileLoader(FileChecker fileChecker)
+        public ModelFileLoader(FileChecker fileChecker, ModelConfig config)
         {
+            _config = config;
             _fileChecker = fileChecker;
         }
 
@@ -24,30 +26,24 @@ namespace TopModel.Core.Loaders
             var parser = new Parser(new StringReader(File.ReadAllText(filePath)));
             parser.Consume<StreamStart>();
 
-            var descriptor = _fileChecker.Deserialize<FileDescriptor>(parser);
+            var file = _fileChecker.Deserialize<ModelFile>(parser);
+            file.Path = filePath.ToRelative();
+            file.Name = Path.GetRelativePath(Path.Combine(Directory.GetCurrentDirectory(), _config.ModelRoot), filePath)
+                .Replace(".yml", string.Empty)
+                .Replace("\\", "/");
+            file.Classes = LoadClasses(parser, file.Relationships, file.Path).ToList();
 
-            var relationships = new Dictionary<object, Relation>();
-            var ns = new Namespace { App = descriptor.App, Module = descriptor.Module, Kind = descriptor.Kind };
-            var path = filePath.ToRelative();
-            var classes = LoadClasses(parser, relationships, ns, path).ToList();
-
-            var file = new ModelFile
-            {
-                Path = path,
-                Descriptor = descriptor,
-                Classes = classes,
-                Relationships = relationships
-            };
-
-            foreach (var classe in classes)
+            var ns = new Namespace { App = _config.App, Module = file.Module };
+            foreach (var classe in file.Classes)
             {
                 classe.ModelFile = file;
+                classe.Namespace = ns;
             }
 
             return file;
         }
 
-        private IEnumerable<Class> LoadClasses(Parser parser, IDictionary<object, Relation> relationships, Namespace ns, string filePath)
+        private IEnumerable<Class> LoadClasses(Parser parser, IDictionary<object, Relation> relationships, string filePath)
         {
             while (parser.TryConsume<DocumentStart>(out _))
             {
@@ -60,7 +56,7 @@ namespace TopModel.Core.Loaders
 
                 parser.Consume<MappingStart>();
 
-                var classe = new Class { Namespace = ns };
+                var classe = new Class();
 
                 while (!(parser.Current is Scalar { Value: "properties" }))
                 {

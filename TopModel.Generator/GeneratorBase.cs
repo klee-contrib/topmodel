@@ -23,7 +23,7 @@ namespace TopModel.Generator
         public void OnFilesChanged(IEnumerable<ModelFile> files)
         {
             using var scope = _logger.BeginScope(((IModelWatcher)this).FullName);
-            HandleFiles(files.Where(file => _config.Kinds.Contains(file.Descriptor.Kind)));
+            HandleFiles(files.Where(file => _config.Tags.Intersect(file.Tags).Any()));
         }
 
         protected abstract void HandleFiles(IEnumerable<ModelFile> files);
