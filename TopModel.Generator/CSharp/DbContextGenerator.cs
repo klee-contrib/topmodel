@@ -141,7 +141,7 @@ namespace TopModel.Generator.CSharp
 
                 w.WriteLine();
 
-                foreach (var props in classes.SelectMany(c => c.Properties.OfType<RegularProperty>()).Where(prop => prop.Unique).GroupBy(prop => prop.Class))
+                foreach (var props in classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()).Where(prop => prop.Unique).GroupBy(prop => prop.Class))
                 {
                     var uk = props.Count() == 1 ? $"p.{props.Single().Name}" : $"new {{ {string.Join(", ", props.Select(p => $"p.{p.Name}"))} }}";
                     w.WriteLine(3, $"modelBuilder.Entity<{props.Key}>().HasIndex(p => {uk}).IsUnique();");
