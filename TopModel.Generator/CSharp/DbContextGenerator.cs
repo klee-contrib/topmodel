@@ -157,7 +157,7 @@ namespace TopModel.Generator.CSharp
                         w.Write($"                new {classe.Name} {{");
                         foreach (var prop in refValue.Value.ToList())
                         {
-                            var value = prop.Key.Domain.CsharpType == "string" ? $"\"{prop.Value}\"" : prop.Value;
+                            var value = prop.Key.Domain.CsharpType == "string" ? $"\"{prop.Value}\"" : prop.Value is bool b ? (b ? "true" : "false") : prop.Value;
                             w.Write($" {prop.Key.Name} = {value}");
                             if (refValue.Value.ToList().IndexOf(prop) < refValue.Value.Count() - 1)
                             {
