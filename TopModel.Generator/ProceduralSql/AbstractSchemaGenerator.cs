@@ -410,8 +410,6 @@ namespace TopModel.Generator.ProceduralSql
             var nbPropertyCount = classe.Properties.Count;
             var t = 0;
 
-            var multipleUnique = classe.Properties.OfType<IFieldProperty>().Count(p => p.Unique) > 1;
-
             foreach (var property in classe.Properties.OfType<IFieldProperty>())
             {
                 var persistentType = property.Domain.SqlType!;
@@ -457,25 +455,9 @@ namespace TopModel.Generator.ProceduralSql
                 {
                     fkPropertiesList.Add(ap);
                 }
-
-                if (!multipleUnique && property.Unique)
-                {
-                    if (writerUk == null)
-                    {
-                        throw new ArgumentNullException(nameof(_config.UniqueKeysFile));
-                    }
-
-                    writerUk.WriteLine("alter table " + Quote(classe.SqlName) + " add constraint " + Quote(CheckIdentifierLength("UK_" + classe.SqlName + '_' + property.Name.ToUpperInvariant())) + " unique (" + Quote(property.SqlName) + ")");
-                    writerUk.WriteLine(BatchSeparator);
-                    writerUk.WriteLine();
-                }
             }
 
-            if (multipleUnique)
-            {
-                WriteUniqueMultipleProperties(classe, writerUk);
-            }
-
+            WriteUniqueKeys(classe, writerUk);
             WritePrimaryKeyConstraint(writerCrebas, classe);
             writerCrebas.WriteLine(BatchSeparator);
             writerCrebas.WriteLine();
@@ -508,24 +490,17 @@ namespace TopModel.Generator.ProceduralSql
         /// </summary>
         /// <param name="classe">Classe.</param>
         /// <param name="writerUk">Writer.</param>
-        private void WriteUniqueMultipleProperties(Class classe, SqlFileWriter? writerUk)
+        private void WriteUniqueKeys(Class classe, SqlFileWriter? writerUk)
         {
-            writerUk?.Write("alter table " + classe.SqlName + " add constraint UK_" + classe.SqlName + "_MULTIPLE unique (");
-            var i = 0;
-            foreach (var property in classe.Properties.OfType<IFieldProperty>().Where(rp => rp.Unique))
+            if (classe.UniqueKeys != null)
             {
-                if (i > 0)
+                foreach (var uk in classe.UniqueKeys)
                 {
-                    writerUk?.Write(", ");
+                    writerUk?.Write($"alter table {classe.SqlName} add constraint {Quote($"UK_{classe.SqlName}_{string.Join("_", uk.Select(p => p.SqlName))}")} unique ({string.Join(", ", uk.Select(p => Quote(p.SqlName)))})");
+                    writerUk?.WriteLine(BatchSeparator);
+                    writerUk?.WriteLine();
                 }
-
-                writerUk?.Write(property.SqlName);
-                ++i;
             }
-
-            writerUk?.WriteLine(")");
-            writerUk?.WriteLine(BatchSeparator);
-            writerUk?.WriteLine();
         }
 
         private string Quote(string name)

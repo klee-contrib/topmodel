@@ -172,7 +172,7 @@ namespace TopModel.Generator.CSharp
                     ++i;
                     var code = item.PrimaryKey?.Domain.Name != "DO_ID"
                         ? (string)refValue.Value[item.PrimaryKey ?? item.Properties.OfType<IFieldProperty>().First()]
-                        : (string)refValue.Value[item.Properties.OfType<IFieldProperty>().Single(rp => rp.Unique)];
+                        : (string)refValue.Value[item.UniqueKeys.First().First()];
                     var label = item.LabelProperty != null
                         ? (string)refValue.Value[item.LabelProperty]
                         : refValue.Name;

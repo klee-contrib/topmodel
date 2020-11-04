@@ -132,7 +132,7 @@
             },
             "properties": {
               "type": "array",
-              "description": "Liste des propriétés de la classe. Cette propriété DOIT être en DERNIER (ou juste avant 'values' si renseigné).",
+              "description": "Liste des propriétés de la classe. Cette propriété DOIT être en DERNIER (ou juste avant 'unique' et 'values' si renseignés).",
               "items": {
                 "oneOf": [
                   {
@@ -152,10 +152,6 @@
                       "primaryKey": {
                         "type": "boolean",
                         "description": "Précise si la propriété est la clé primaire de la table associée à la classe."
-                      },
-                      "unique": {
-                        "type": "boolean",
-                        "description": "Précise si la propriété possède une contrainte d'unicité (utile si ce n'est pas une clé primaire). Doit être renseigné pour une classe de référence non statique."
                       },
                       "required": {
                         "type": "boolean",
@@ -200,10 +196,6 @@
                       "required": {
                         "type": "boolean",
                         "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."
-                      },
-                      "unique": {
-                        "type": "boolean",
-                        "description": "Précise si la propriété possède une contrainte d'unicité."
                       },
                       "defaultValue": {
                         "type": [ "string", "number", "boolean" ],
@@ -311,9 +303,20 @@
                 ]
               }
             },
+            "unique": {
+              "type": "array",
+              "description": "Liste des clés d'unicité sur la classe. DOIT être placé en APRES 'properties'. Chaque clé est un array des propriétés concernées (même s'il n'y en a qu'une).",
+              "items": {
+                "type": "array",
+                "items": {
+                  "description": "Nom de la propriété. Une association doit être décrite par le nom de la classe suivie par le rôle (si renseigné).",
+                  "type": "string"
+                }
+              }
+            },
             "values": {
               "type": "object",
-              "description": "Liste des valeurs de la table à insérer à la création de la base de données. DOIT être placé en DERNIER. Il doit d'agir d'un objet ayant pour clés un nom de ligne (qui sera utilisé pour identifier la clé en C#), et pour valeurs un objet de type JSON qui renseigne les valeurs des différentes propriétés."
+              "description": "Liste des valeurs de la table à insérer à la création de la base de données. DOIT être placé en APRES 'properties'. Il doit d'agir d'un objet ayant pour clés un nom de ligne (qui sera utilisé pour identifier la clé en C#), et pour valeurs un objet de type JSON qui renseigne les valeurs des différentes propriétés."
             }
           }
         }

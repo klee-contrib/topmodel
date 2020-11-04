@@ -129,9 +129,6 @@ namespace TopModel.Core.Loaders
                                     case "primaryKey":
                                         rp.PrimaryKey = value.Value == "true";
                                         break;
-                                    case "unique":
-                                        rp.Unique = value.Value == "true";
-                                        break;
                                     case "required":
                                         rp.Required = value.Value == "true";
                                         break;
@@ -152,7 +149,6 @@ namespace TopModel.Core.Loaders
                             if (rp.PrimaryKey)
                             {
                                 rp.Required = true;
-                                rp.Unique = false;
                             }
 
                             classe.Properties.Add(rp);
@@ -181,9 +177,6 @@ namespace TopModel.Core.Loaders
                                         break;
                                     case "required":
                                         ap.Required = value.Value == "true";
-                                        break;
-                                    case "unique":
-                                        ap.Unique = value.Value == "true";
                                         break;
                                     case "defaultValue":
                                         ap.DefaultValue = value.Value;
@@ -313,31 +306,60 @@ namespace TopModel.Core.Loaders
 
                 parser.Consume<SequenceEnd>();
 
-                if (parser.Current is Scalar { Value: "values" } vs)
+                while (!(parser.Current is MappingEnd))
                 {
-                    var pos = $"[{vs.Start.Line},{vs.Start.Column}]";
-                    parser.Consume<Scalar>();
-                    var references = _fileChecker.Deserialize<IDictionary<string, IDictionary<string, object>>>(parser);
-                    classe.ReferenceValues = references.Select(reference => new ReferenceValue
+                    var pos = $"[{parser.Current.Start.Line},{parser.Current.Start.Column}]";
+
+                    if (parser.Current is Scalar { Value: "unique" } uks)
                     {
-                        Name = reference.Key,
-                        Value = classe.Properties.OfType<IFieldProperty>().Select<IFieldProperty, (IFieldProperty Prop, object PropValue)>(prop =>
+                        parser.Consume<Scalar>();
+                        var uniqueKeys = _fileChecker.Deserialize<IList<IList<string>>>(parser);
+                        classe.UniqueKeys = uniqueKeys.Select(uk => (IList<IFieldProperty>)uk.Select(propName =>
                         {
-                            var propName = prop switch
+                            var regularProperty = classe.Properties.OfType<RegularProperty>().SingleOrDefault(rp => rp.Name == propName);
+                            if (regularProperty != null)
                             {
-                                RegularProperty rp => rp.Name,
-                                AssociationProperty ap => $"{relationships[ap].Value}{ap.Role ?? string.Empty}",
-                                _ => throw new Exception($"{filePath}{pos}: Type de propriété non géré pour initialisation.")
-                            };
-                            reference.Value.TryGetValue(propName, out var propValue);
-                            if (propValue == null && prop.Required && (!prop.PrimaryKey || relationships[prop].Value != "DO_ID"))
-                            {
-                                throw new Exception($"{filePath}{pos}: L'initilisation {reference.Key} de la classe {classe.Name} n'initialise pas la propriété obligatoire '{propName}'.");
+                                return regularProperty;
                             }
 
-                            return (prop, propValue!);
-                        }).ToDictionary(v => v.Prop, v => v.PropValue)
-                    }).ToList();
+                            var associationProperty = classe.Properties.OfType<AssociationProperty>().SingleOrDefault(ap => $"{relationships[ap].Value}{ap.Role ?? string.Empty}" == propName);
+                            if (associationProperty != null)
+                            {
+                                return (IFieldProperty)associationProperty;
+                            }
+
+                            throw new Exception($@"{filePath}{pos}: La propriété ""{propName}"" n'existe pas sur la classe {classe}.");
+                        }).ToList()).ToList();
+                    }
+                    else if (parser.Current is Scalar { Value: "values" } vs)
+                    {
+                        parser.Consume<Scalar>();
+                        var references = _fileChecker.Deserialize<IDictionary<string, IDictionary<string, object>>>(parser);
+                        classe.ReferenceValues = references.Select(reference => new ReferenceValue
+                        {
+                            Name = reference.Key,
+                            Value = classe.Properties.OfType<IFieldProperty>().Select<IFieldProperty, (IFieldProperty Prop, object PropValue)>(prop =>
+                            {
+                                var propName = prop switch
+                                {
+                                    RegularProperty rp => rp.Name,
+                                    AssociationProperty ap => $"{relationships[ap].Value}{ap.Role ?? string.Empty}",
+                                    _ => throw new Exception($"{filePath}{pos}: Type de propriété non géré pour initialisation.")
+                                };
+                                reference.Value.TryGetValue(propName, out var propValue);
+                                if (propValue == null && prop.Required && (!prop.PrimaryKey || relationships[prop].Value != "DO_ID"))
+                                {
+                                    throw new Exception($"{filePath}{pos}: L'initilisation {reference.Key} de la classe {classe.Name} n'initialise pas la propriété obligatoire '{propName}'.");
+                                }
+
+                                return (prop, propValue!);
+                            }).ToDictionary(v => v.Prop, v => v.PropValue)
+                        }).ToList();
+                    }
+                    else
+                    {
+                        throw new Exception($"Erreur dans la définition de la classe {classe.Name}.");
+                    }
                 }
 
                 parser.Consume<MappingEnd>();

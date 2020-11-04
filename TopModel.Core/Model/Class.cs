@@ -40,6 +40,8 @@ namespace TopModel.Core
 
         public IList<ReferenceValue>? ReferenceValues { get; set; }
 
+        public IList<IList<IFieldProperty>>? UniqueKeys { get; set; }
+
         public string SqlName
         {
             get => _sqlName ?? ModelUtils.ConvertCsharp2Bdd(Name);
