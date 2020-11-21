@@ -125,7 +125,7 @@ namespace TopModel.Generator.Ssdt.Scripter
             // Colonnes
             foreach (var property in table.Properties.OfType<IFieldProperty>())
             {
-                if ((!property.PrimaryKey || property.Domain.CsharpType == "string") && property.Name != ScriptUtils.InsertKeyName)
+                if ((!property.PrimaryKey || property.Domain.ShouldQuoteSqlValue) && property.Name != ScriptUtils.InsertKeyName)
                 {
                     sb.Clear();
                     WriteColumn(sb, property);

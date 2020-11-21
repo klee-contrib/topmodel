@@ -30,6 +30,11 @@ namespace TopModel.Generator.CSharp
                 return;
             }
 
+            if (item.Properties.OfType<IFieldProperty>().Any(p => p.Domain.CSharp == null))
+            {
+                throw new Exception($"Le type C# de tous les domaines des propriétés de {item.Name} doit être défini.");
+            }
+
             var directory = GetDirectoryForModelClass(_config.LegacyProjectPaths, _config.OutputDirectory, item.Trigram != null, item.Namespace.App, item.CSharpNamepace);
             Directory.CreateDirectory(directory);
 
@@ -109,7 +114,7 @@ namespace TopModel.Generator.CSharp
                 if (item.PrimaryKey != null)
                 {
                     var name = item.PrimaryKey.Name;
-                    var type = item.PrimaryKey.Domain.CsharpType;
+                    var type = item.PrimaryKey.Domain.CSharp!.Type;
 
                     if (name == "Id" && type == "int?")
                     {
@@ -274,10 +279,10 @@ namespace TopModel.Generator.CSharp
 
             var initd = new List<string>();
 
-            foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => t.Domain.CsharpType.Contains("ICollection")))
+            foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => t.Domain.CSharp!.Type.Contains("ICollection")))
             {
                 initd.Add(property.Name);
-                var strip = property.Domain.CsharpType.Replace("ICollection<", string.Empty).Replace(">", string.Empty);
+                var strip = property.Domain.CSharp!.Type.Replace("ICollection<", string.Empty).Replace(">", string.Empty);
                 w.WriteLine(3, property.Name + " = new List<" + strip + ">(bean." + property.Name + ");");
             }
 
@@ -319,10 +324,10 @@ namespace TopModel.Generator.CSharp
             w.WriteLine(2, "{");
 
             var line = false;
-            foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => t.Domain.CsharpType.Contains("ICollection")))
+            foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => t.Domain.CSharp!.Type.Contains("ICollection")))
             {
                 line = true;
-                var strip = property.Domain.CsharpType.Replace("ICollection<", string.Empty).Replace(">", string.Empty);
+                var strip = property.Domain.CSharp!.Type.Replace("ICollection<", string.Empty).Replace(">", string.Empty);
                 w.WriteLine(3, LoadPropertyInit(property.Name, "List<" + strip + ">"));
             }
 
@@ -395,7 +400,7 @@ namespace TopModel.Generator.CSharp
                 if ((!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.IsPersistent && !sameColumnSet.Contains(prop.SqlName))
                 {
                     var sqlName = _config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
-                    if (prop.Domain.UseTypeName)
+                    if (prop.Domain.CSharp!.UseSqlTypeName)
                     {
                         w.WriteAttribute(2, "Column", $@"""{sqlName}""", $@"TypeName = ""{prop.Domain.SqlType}""");
                     }
@@ -428,9 +433,9 @@ namespace TopModel.Generator.CSharp
                     w.WriteAttribute(2, "Domain", $@"""{prop.Domain.Name}""");
                 }
 
-                if (!string.IsNullOrEmpty(prop.Domain.CustomAnnotation))
+                foreach (var annotation in prop.Domain.CSharp!.Annotations)
                 {
-                    w.WriteLine(2, prop.Domain.CustomAnnotation);
+                    w.WriteLine(2, annotation);
                 }
 
                 if (fp.DefaultValue != null)
@@ -457,7 +462,7 @@ namespace TopModel.Generator.CSharp
                     w.WriteLine(2, $"public ICollection<{lcp.Composition.Name}> {property.Name} {{ get; set; }}");
                     break;
                 case IFieldProperty ifp:
-                    w.WriteLine(2, $"public {ifp.Domain.CsharpType} {property.Name} {{ get; set; }}");
+                    w.WriteLine(2, $"public {ifp.Domain.CSharp!.Type} {property.Name} {{ get; set; }}");
                     break;
             }
         }
@@ -522,9 +527,12 @@ namespace TopModel.Generator.CSharp
 
             foreach (var property in item.Properties)
             {
-                if (property is IFieldProperty fp && !string.IsNullOrEmpty(fp.Domain.CustomUsings))
+                if (property is IFieldProperty fp)
                 {
-                    usings.AddRange(fp.Domain.CustomUsings.Split(',').Select(u => u.Trim()));
+                    foreach (var @using in fp.Domain.CSharp!.Usings)
+                    {
+                        usings.Add(@using);
+                    }
                 }
 
                 switch (property)

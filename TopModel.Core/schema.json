@@ -37,7 +37,7 @@
         "domain": {
           "type": "object",
           "description": "Domaine.",
-          "required": [ "name", "label", "csharpType" ],
+          "required": [ "name", "label" ],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -48,29 +48,59 @@
               "type": "string",
               "description": "Libellé du domaine."
             },
-            "csharpType": {
-              "type": "string",
-              "description": "Type correspondant au domaine en C#. Sera utilisé pour déterminer le type TS."
+            "csharp": {
+              "type": "object",
+              "description": "Type correspondant au domaine en C#.",
+              "required": [ "type" ],
+              "additionalProperties": false,
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "Nom du type."
+                },
+                "annotations": {
+                  "type": "array",
+                  "description": "Annotations à ajouter sur toutes les propriétés C# de ce domaine (par exemple pour aider l'ORM a mapper le type correctement).",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "usings": {
+                  "type": "array",
+                  "description": "Usings à ajouter à toute classe C# qui possède une propriété de ce domaine. Par exemple pour ajouter un using pour des types de collections.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "useSqlTypeName": {
+                  "type": "boolean",
+                  "description": "Ajoute la propriété 'TypeName' dans l'annotation 'Column' en C# pour préciser le type SQL."
+                }
+              }
+            },
+            "ts": {
+              "type": "object",
+              "description": "Type correspondant au domaine en TS.",
+              "required": [ "type" ],
+              "additionalProperties": false,
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "Nom du type."
+                },
+                "import": {
+                  "type": "string",
+                  "description": "Import à ajouter à tout fichier TS qui utilise une propriété de ce domaine."
+                }
+              }
             },
             "javaType": {
               "type": "string",
-              "description": "Type correspondant au domaine en Java. N'est nécessaire que si on souhaite générer du Java."
+              "description": "Type correspondant au domaine en Java."
             },
             "sqlType": {
               "type": "string",
-              "description": "Type correspondant au domaine en SQL. Si le domaine n'est jamais lié à une donnée persistée alors il n'a pas besoin de type SQL."
-            },
-            "customAnnotation": {
-              "type": "string",
-              "description": "Annotation à ajouter sur toutes les propriétés C# de ce domaine (par exemple pour aider l'ORM a mapper le type correctement)."
-            },
-            "customUsings": {
-              "type": "string",
-              "description": "Usings, séparés par des virgules, à ajouter à toute classe C# qui possède une propriété de ce domaine. Par exemple pour ajouter un using pour des types de collections."
-            },
-            "useTypeName": {
-              "type": "boolean",
-              "description": "Ajoute la propriété 'TypeName' dans l'annotation 'Column' en C# pour préciser le type SQL."
+              "description": "Type correspondant au domaine en SQL."
             }
           }
         }

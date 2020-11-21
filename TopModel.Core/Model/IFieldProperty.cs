@@ -1,4 +1,7 @@
-﻿namespace TopModel.Core
+﻿using System;
+using TopModel.Core.Model.Types;
+
+namespace TopModel.Core
 {
     public interface IFieldProperty : IProperty
     {
@@ -8,31 +11,31 @@
 
         string? DefaultValue { get; }
 
-        string TSType
+        TSType TS
         {
             get
             {
-                if (Domain.CsharpType == "string")
+                if (Domain.TS == null)
+                {
+                    throw new Exception($"Le type Typescript du domaine {Domain.Name} doit être renseigné.");
+                }
+
+                var fixedType = new TSType { Type = Domain.TS.Type, Import = Domain.TS.Import };
+                if (Domain.TS.Type == "string")
                 {
                     var prop = this is AliasProperty alp ? alp.Property : this;
 
                     if (prop is AssociationProperty ap && ap.Association.Reference && ap.Association.PrimaryKey!.Domain.Name != "DO_ID")
                     {
-                        return $"{ap.Association.Name}{ap.Association.PrimaryKey!.Name}";
+                        fixedType.Type = $"{ap.Association.Name}{ap.Association.PrimaryKey!.Name}";
                     }
-
-                    if (prop.PrimaryKey && prop.Class.Reference && prop.Class.PrimaryKey!.Domain.Name != "DO_ID")
+                    else if (prop.PrimaryKey && prop.Class.Reference && prop.Class.PrimaryKey!.Domain.Name != "DO_ID")
                     {
-                        return $"{prop.Class.Name}{prop.Name}";
-                    }
-
-                    if (Domain.SqlType?.Contains("json") ?? false)
-                    {
-                        return "{}";
+                        fixedType.Type = $"{prop.Class.Name}{prop.Name}";
                     }
                 }
 
-                return ModelUtils.CSharpToTSType(Domain.CsharpType);
+                return fixedType;
             }
         }
 

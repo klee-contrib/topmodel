@@ -121,9 +121,9 @@ namespace TopModel.Generator.Ssdt.Scripter
                 sb.Append(" not null");
             }
 
-            if (property is { Domain: { CsharpType: var type }, DefaultValue: var dv } && !string.IsNullOrWhiteSpace(dv))
+            if (property is { Domain: var domain, DefaultValue: var dv } && !string.IsNullOrWhiteSpace(dv))
             {
-                if (type == "string")
+                if (domain.ShouldQuoteSqlValue)
                 {
                     sb.Append($" default '{dv}'");
                 }

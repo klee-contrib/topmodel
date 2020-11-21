@@ -26,37 +26,6 @@ namespace TopModel.Core
         }
 
         /// <summary>
-        /// Transforme le type en type Typescript.
-        /// </summary>
-        /// <param name="type">Le type d'entrée.</param>
-        /// <returns>Le type en sortie.</returns>
-        public static string CSharpToTSType(string type)
-        {
-            switch (type)
-            {
-                case "int":
-                case "int?":
-                case "decimal?":
-                case "short?":
-                    return "number";
-                case "DateTime?":
-                case "TimeSpan?":
-                case "Guid?":
-                case "string":
-                    return "string";
-                case "bool?":
-                    return "boolean";
-                default:
-                    if (type?.StartsWith("ICollection") ?? false)
-                    {
-                        return $"{CSharpToTSType(Regex.Replace(type, ".+<(.+)>", "$1"))}[]";
-                    }
-
-                    return "any";
-            }
-        }
-
-        /// <summary>
         /// Convertit un text en dash-case.
         /// </summary>
         /// <param name="text">Le texte en entrée.</param>

@@ -170,15 +170,9 @@ namespace TopModel.Generator.ProceduralSql
         /// <returns>Identifiant passé en paramètre.</returns>
         protected static string CheckIdentifierLength(string identifier)
         {
-            if (identifier.Length > IdentifierLengthLimit)
-            {
-                throw new ArgumentException(
-                    "Le nom " + identifier + " est trop long ("
-                    + identifier.Length + " caractères). Limite: "
-                    + IdentifierLengthLimit + " caractères.");
-            }
-
-            return identifier;
+            return identifier.Length > IdentifierLengthLimit
+                ? throw new ArgumentException($"Le nom {identifier} est trop long ({identifier.Length} caractères). Limite: {IdentifierLengthLimit} caractères.")
+                : identifier;
         }
 
         /// <summary>
@@ -436,9 +430,9 @@ namespace TopModel.Generator.ProceduralSql
                     writerCrebas.Write(" not null");
                 }
 
-                if (property is { Domain: { CsharpType: var type }, DefaultValue: var dv } && !string.IsNullOrWhiteSpace(dv))
+                if (property is { Domain: var domain, DefaultValue: var dv } && !string.IsNullOrWhiteSpace(dv))
                 {
-                    if (type == "string")
+                    if (domain.ShouldQuoteSqlValue)
                     {
                         writerCrebas.Write($" default '{dv}'");
                     }

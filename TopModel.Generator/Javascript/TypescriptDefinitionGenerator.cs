@@ -191,7 +191,7 @@ namespace TopModel.Generator.Javascript
                 }
                 else if (property is IFieldProperty field)
                 {
-                    fw.Write($"FieldEntry2<typeof {field.Domain.Name}, {field.TSType}>");
+                    fw.Write($"FieldEntry2<typeof {field.Domain.Name}, {field.TS.Type}>");
                 }
 
                 if (property != classe.Properties.Last())
@@ -334,8 +334,8 @@ namespace TopModel.Generator.Javascript
                 .Select(p => p is AliasProperty alp ? alp.Property : p)
                 .OfType<IFieldProperty>()
                 .Select(prop => (prop, classe: prop is AssociationProperty ap ? ap.Association : prop.Class))
-                .Where(pc => pc.prop.TSType != pc.prop.Domain.CsharpType && pc.prop.Domain.CsharpType == "string" && pc.classe.Reference)
-                .Select(pc => (Code: pc.prop.TSType, pc.classe.Namespace.Module))
+                .Where(pc => pc.prop.TS.Type != pc.prop.Domain.TS!.Type && pc.prop.Domain.TS.Type == "string" && pc.classe.Reference)
+                .Select(pc => (Code: pc.prop.TS.Type, pc.classe.Namespace.Module))
                 .Distinct();
 
             if (references.Any())
@@ -351,7 +351,13 @@ namespace TopModel.Generator.Javascript
                 }
             }
 
-            return imports.OrderBy(i => i.path);
+            imports.AddRange(
+                classe.Properties.OfType<IFieldProperty>()
+                    .Where(p => p.Domain.TS?.Import != null)
+                    .Select(p => (p.Domain.TS!.Type, p.Domain.TS.Import!))
+                    .Distinct());
+
+            return imports.OrderBy(i => i.path.StartsWith(".") ? i.path : $"...{i.path}");
         }
 
         /// <summary>
@@ -360,6 +366,27 @@ namespace TopModel.Generator.Javascript
         private void GenerateReferenceFile(string fileName, IEnumerable<Class> references)
         {
             using var fw = new FileWriter(fileName, _logger, false);
+
+            var imports = references
+                .SelectMany(classe => classe.Properties.OfType<IFieldProperty>().Select(fp => (fp.TS.Type, fp.TS.Import)))
+                .Where(type => type.Import != null)
+                .Distinct()
+                .OrderBy(fp => fp.Import)
+                .ToList();
+
+            foreach (var import in imports)
+            {
+                fw.Write("import {");
+                fw.Write(import.Type);
+                fw.Write("} from \"");
+                fw.Write(import.Import);
+                fw.Write("\";\r\n");
+            }
+
+            if (imports.Any())
+            {
+                fw.Write("\r\n");
+            }
 
             var first = true;
             foreach (var reference in references)
@@ -448,7 +475,7 @@ namespace TopModel.Generator.Javascript
                 return property.Name.ToFirstUpper();
             }
 
-            return ModelUtils.CSharpToTSType(property.Domain.CsharpType);
+            return property.TS?.Type ?? throw new Exception($"Le type Typescript du domaine {property.Domain.Name} doit être renseigné.");
         }
     }
 }
