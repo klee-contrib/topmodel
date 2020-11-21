@@ -119,7 +119,8 @@ Une fois les propriétés définies, il est possible de compléter la définitio
 Exemple d'utilisation de ces deux propriétés :
 
 ```yaml
-unique: [Libelle]
+unique:
+  - [Libelle]
 values:
   Valeur1: { Code: 1, Libelle: Valeur 1 }
   Valeur2: { Code: 2, Libelle: Valeur 2 }
@@ -148,7 +149,7 @@ class:
     ###
 ```
 
-\_Remarque : il est possible d'inverser `unique` et `values`.\_\_
+_Remarque : il est possible d'inverser `unique` et `values`._
 
 ### Fichier de configuration
 
