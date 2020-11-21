@@ -12,17 +12,15 @@ namespace TopModel.Core
             services
                 .AddMemoryCache()
                 .AddSingleton(fileChecker)
+                .AddSingleton<ClassLoader>()
                 .AddSingleton<ModelFileLoader>()
-                .AddSingleton<DomainFileLoader>()
                 .AddSingleton<ModelStore>();
 
             if (config != null && rootDir != null)
             {
                 config.ModelRoot ??= string.Empty;
-                config.Domains ??= "domains.yml";
 
                 CombinePath(rootDir, config, c => c.ModelRoot);
-                CombinePath(rootDir, config, c => c.Domains);
                 services.AddSingleton(config);
             }
 

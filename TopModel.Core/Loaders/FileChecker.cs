@@ -49,14 +49,9 @@ namespace TopModel.Core.Loaders
             }
         }
 
-        public void CheckDomainFile(string fileName)
-        {
-            CheckCore(fileName, _modelSchema.OneOf.ToList()[1]);
-        }
-
         public void CheckModelFile(string fileName)
         {
-            CheckCore(fileName, _modelSchema, true);
+            CheckCore(fileName, _modelSchema);
         }
 
         public T Deserialize<T>(string yaml)
@@ -69,7 +64,7 @@ namespace TopModel.Core.Loaders
             return _deserializer.Deserialize<T>(parser);
         }
 
-        private void CheckCore(string fileName, JsonSchema schema, bool isModel = false)
+        private void CheckCore(string fileName, JsonSchema schema)
         {
             var parser = new Parser(new StringReader(File.ReadAllText(fileName)));
             parser.Consume<StreamStart>();
@@ -84,7 +79,7 @@ namespace TopModel.Core.Loaders
                 }
 
                 var json = _serialiazer.Serialize(yaml);
-                var finalSchema = isModel ? firstObject ? schema.OneOf.First() : schema.OneOf.Last() : schema;
+                var finalSchema = firstObject ? schema.OneOf.First() : schema;
                 var errors = finalSchema.Validate(json);
 
                 if (errors.Any())

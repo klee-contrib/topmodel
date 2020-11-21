@@ -14,22 +14,19 @@ namespace TopModel.Core
     public class ModelStore
     {
         private readonly ModelConfig _config;
-        private readonly DomainFileLoader _domainFileLoader;
         private readonly IMemoryCache _fsCache;
         private readonly ILogger<ModelStore> _logger;
         private readonly ModelFileLoader _modelFileLoader;
         private readonly IEnumerable<IModelWatcher> _modelWatchers;
 
-        private readonly IDictionary<string, Domain> _domains = new Dictionary<string, Domain>();
         private readonly IDictionary<string, ModelFile> _modelFiles = new Dictionary<string, ModelFile>();
 
         private readonly object _puLock = new object();
         private readonly HashSet<string> _pendingUpdates = new HashSet<string>();
 
-        public ModelStore(DomainFileLoader domainFileLoader, IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers)
+        public ModelStore(IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers)
         {
             _config = config;
-            _domainFileLoader = domainFileLoader;
             _fsCache = fsCache;
             _logger = logger;
             _modelFileLoader = modelFileLoader;
@@ -37,6 +34,8 @@ namespace TopModel.Core
         }
 
         public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes);
+
+        public IDictionary<string, Domain> Domains => _modelFiles.SelectMany(mf => mf.Value.Domains).ToDictionary(d => d.Name, d => d);
 
         public IEnumerable<ModelFile> Files => _modelFiles.Values;
 
@@ -61,21 +60,12 @@ namespace TopModel.Core
                 fsWatcher.EnableRaisingEvents = true;
             }
 
-            _domains.Clear();
             _modelFiles.Clear();
             _pendingUpdates.Clear();
 
-            _logger.LogInformation("Chargement des domaines...");
+            _logger.LogInformation("Chargement du modèle...");
 
-            foreach (var domain in _domainFileLoader.LoadDomains(_config.Domains))
-            {
-                _domains.TryAdd(domain.Name, domain);
-            }
-
-            _logger.LogInformation("Chargement des classes...");
-
-            var files = Directory.EnumerateFiles(_config.ModelRoot, "*.yml", SearchOption.AllDirectories)
-               .Where(f => f != _config.Domains);
+            var files = Directory.EnumerateFiles(_config.ModelRoot, "*.yml", SearchOption.AllDirectories);
 
             lock (_puLock)
             {
@@ -160,7 +150,10 @@ namespace TopModel.Core
                 {
                     var relationshipErrors = new List<string>();
 
-                    var affectedFiles = _modelFiles.Values.Where(f => _pendingUpdates.Contains(f.Name)).SelectMany(pf => _modelFiles.Values.Where(f => f.Name.Equals(pf.Name) || f.Uses.Any(d => d.Equals(pf.Name)))).Distinct();
+                    var affectedFiles = _pendingUpdates.Select(pu => _modelFiles[pu]).Any(mf => mf.Domains.Any())
+                        ? _modelFiles.Values
+                        : _modelFiles.Values.Where(f => _pendingUpdates.Contains(f.Name)).SelectMany(pf => _modelFiles.Values.Where(f => f.Name.Equals(pf.Name) || f.Uses.Any(d => d.Equals(pf.Name)))).Distinct();
+
                     foreach (var affectedFile in ModelUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name.Equals(d.Name)))))
                     {
                         relationshipErrors.AddRange(ResolveRelationships(affectedFile));
@@ -213,7 +206,7 @@ namespace TopModel.Core
                         classe.Extends = extends;
                         break;
                     case RegularProperty rp:
-                        if (!_domains.TryGetValue(relation.Value, out var domain))
+                        if (!Domains.TryGetValue(relation.Value, out var domain))
                         {
                             yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - Le domaine '{relation.Value}' est introuvable. ({modelFile}/{rp.Class}/{rp.Name})";
                             break;

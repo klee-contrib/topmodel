@@ -7,8 +7,6 @@ namespace TopModel.Core
 
         public string ModelRoot { get; set; }
 
-        public string Domains { get; set; }
-
         public bool AllowCompositePrimaryKey { get; set; }
     }
 }

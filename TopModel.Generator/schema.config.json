@@ -14,10 +14,6 @@
       "type": "string",
       "description": "Chemin du dossier racine qui contient tous les fichiers YML du modèle, qui seront chargés par le générateur (à l'exception du fichier de domaines qui est chargé à part). Si non renseigné, le dossier contenant le fichier de config sera utilisé."
     },
-    "domains": {
-      "type": "string",
-      "description": "Chemin du fichier de domaines. Si non renseigné, 'domains.yml' sera utilisé."
-    },
     "allowCompositePrimaryKey": {
       "type": "boolean",
       "description": "Autorise les clés primaires composites (incompatible avec une génération de C#)."

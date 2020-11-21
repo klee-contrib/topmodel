@@ -12,70 +12,50 @@ On retrouve dans ce repository :
 
 `TopModel.Core` ne dispose pas d'un exécutable indépendant : il sera utilisé et exposé par les deux outils qui sont construits dessus.
 
+### Fichier de modèle
+
+Un fichier de modèle est un fichier YAML qui contient une suite de documents YAML (à l'inverse du JSON, il est possible d'avoir plusieurs documents dans un même fichier en YAML. Le séparateur de document est `---`).
+
+Le premier document YAML d'un fichier de modèle doit être le **descripteur du fichier**.
+Il doit impérativement se composer de :
+
+- Une propriété **`module`**, qui sert à identifier à quel module applicatif vont se rattacher les classes définies dans le fichier. Ce module sera utilisé par les différents générateurs pour déterminer à quel endroit chaque classe devra être générée.
+- Une propriété **`tags`**, qui est une liste de noms arbitraires. Les tags seront utilisés dans la configuration des générateurs : ils permettront de définir quel générateur devra traiter quel fichier (chaque générateur aura donc aussi sa liste de tags).
+
+De plus, si **des classes d'un fichier ont besoin de référencer des classes d'un autre fichier**, alors il faudra également **spécifier les dépendances aux autres fichiers**, via la propriété supplémentaire **`uses`**. C'est une liste de noms de fichiers. Un nom de fichier est déterminé comme étant **le chemin du fichier relatif à la racine du modèle**.
+
+Exemple :
+
+```yaml
+---
+module: Referentiel
+tags:
+  - Data
+  - Server
+uses:
+  - Referentiel/Data/File_01
+```
+
 ### Définition de domaines
 
-TopModel attend un fichier de déclaration de domaines, par défaut appelé `"domains.yml"`, qui doit contenir l'ensemble des domaines utilisés par les propriétés de classes du modèle.
+Un domaine se définit comme un document YAML, dans un fichier de modèle.
 
 Dans son expression la plus simple, il se présente sous la forme :
 
-```
+```yaml
 ---
 domain:
   name: DO_ID
   label: Identifiant
   csharpType: int?
   sqlType: int
----
-domain:
-  name: DO_CODE_10
-  label: Code à 10 caractères
-  csharpType: string
-  sqlType: nvarchar(10)
----
-# autres déclarations de domaines...
 ```
 
-Les types C# et SQL (si type persisté) doivent être renseignés explicitement pour chaque domaine, et seront utilisés tels quel par le générateur. D'autres options à la marge sont également disponibles.
+Il n'y a pas besoin de préciser les dépendances aux fichiers contenant des domaines dans `uses` : tous les domaines sont automatiquement accessibles dans tous les fichiers. En revanche, cela implique que tous les fichiers ont une dépendance implicite à tous les fichiers contenant des domaines, ce qui pourrait entraîner des dépendances circulaires entre fichiers (qui ne sont **pas** supportées) involontaires. Par conséquent, et également par soucis de clarté, **il est fortement conseillé de définir tous les domaines dans un unique fichier qui ne contient que ces définitions**.
 
 ### Définition de classes
 
-Les classes doivent être définies dans des fichiers de classes, qui doivent prendre la forme suivante :
-
-```yaml
----
-# descripteur du fichier
----
-# classe 1
----
-# classe 2
----
-# ...
-```
-
-Il est conseillé de regrouper les classes selon une thématique métier commune. TopModel considérera que tous les fichiers `*.yml` qu'il trouve, à l'exception du fichier de domaines, sont des fichiers de classes.
-
-Le descripteur du fichier doit contenir les propriétés suivantes :
-
-```yaml
-app: # Le nom de votre application. Devra être le même pour tous les fichiers de classes.
-module: # nom du module métier, par ex "Referentiel", "Structure", "Projet"...
-kind: # "Data" pour un fichier contenant des classes persistées, ou "Metier" pour un fichier contenant des DTOs
-file: # Nom du fichier. Ne doit pas nécessairement correspondre au nom du fichier dans le filesystem, mais c'est conseillé.
-uses: # La liste des dépendances du fichier courant à d'autres fichiers de classes.
-```
-
-Un élément de la liste `uses` se présente ainsi :
-
-```yaml
-module: # Nom du module
-kind: # Type de module
-files: # Liste des noms de fichier
-  - File1
-  - File2
-  # ...
-```
-
-**Toutes les dépendances doivent être listées**. De plus, il est donc **impossible d'avoir des dépendances circulaires** entre fichiers.
+Une classe se définit comme un document YAML, dans un fichier de modèle.
 
 Une classe se définit de la façon suivante :
 
@@ -83,11 +63,11 @@ Une classe se définit de la façon suivante :
 class:
   name: # Nom de la classe
   label: # Libellé de la classe
-  comment: # Description de la calsse
-  # Autres propriétés comme "trigram" (si persistant), "defaultProperty", "stereotype" pour les listes de références...
+  comment: # Description de la calasse
+  # Autres propriétés comme "trigram" (si persistant), "defaultProperty", "reference" pour les listes de références...
 
   properties:
-    # 4 types de propriétés (qui doivent être saisies en dernier)
+    # 4 types de propriétés (qui doivent être définies après tout ce qui est avant)
 
     # Propriété "classique", identifiée si "name" est en premier
     - name: MontantInitialPret
@@ -100,7 +80,7 @@ class:
     - alias:
         property: Id
         class: Ligne
-      prefix: Ligne
+      prefix: true
 
     # Une association (FK), identifiée si "association" est en premier
     - association: ClasseCible
@@ -114,14 +94,56 @@ class:
       comment: Yolo c'est une liste
 ```
 
-_Remarque : on ne gère pas de multiplicité sur les associations, elle ne se traduira directement que comme une foreign key, obligatoire ou non. Pas de n-n auto-générée non plus donc._
+Remarques :
+
+- Il ne pas oublier de spécifier les dépendances aux classes d'autres fichiers dans `uses`.
+- On ne gère pas de multiplicité sur les associations, elle ne se traduira directement que comme une foreign key, obligatoire ou non. Pas de n-n auto-générée non plus donc.
+- Une définition d'alias peut également prendre une liste de propriétés dans `property`, et il est possible de surcharger le `label` et le `required` des propriétés aliasées. Ne pas oublier en revanche que la configuration de l'alias (`prefix`, `suffix`, et donc `label` et `required`) vont s'appliquer à toutes les propriétés de la définition de l'alias.
+
+Une fois les propriétés définies, il est possible de compléter la définition de la classe par :
+
+- `unique`, qui est une liste de clés unique à créer sur la classe (en base de données à priori). Une clé unique se définit via la liste des propriétés qui composent la clé unique (qui peut donc contenir une ou plusieurs propriétés)
+- `values`, qui est un objet qui contient des valeurs "statiques" pour une classe que l'on veut avoir toujours disponible partout (en BDD, côté serveur, côté client). Il se définit comme une map dont les valeurs sont un objet "JSON" qui doit définir au moins toutes les propriétés obligatoires de la classe.
+
+Exemple d'utilisation de ces deux propriétés :
+
+```yaml
+unique: [Libelle]
+values:
+  Valeur1: { Code: 1, Libelle: Valeur 1 }
+  Valeur2: { Code: 2, Libelle: Valeur 2 }
+```
+
+_Remarque: Pour initialiser une valeur d'une association dans `values`, il faut utiliser le nom de la classe et non le nom de la propriété (`AutreClasse` au lieu de `AutreClasseCode` par exemple)._
+
+Pour conclure, un rappel sur l'ordre dans lequel il faut définir les différentes propriétés d'une classe:
+
+```yaml
+class:
+  ## Tout le reste ##
+
+  properties:
+    -  ###
+    -  ###
+    -  ###
+
+  unique:
+    -  ###
+    -  ###
+
+  values:
+    ###
+    ###
+    ###
+```
+
+\_Remarque : il est possible d'inverser `unique` et `values`.\_\_
 
 ### Fichier de configuration
 
-TopModel utilise un fichier de configuration, qui sera reconnu par une extension `*.yaml` (avec le "a", pour différencier des fichiers de domaines et classes). Il est partagé avec celui du générateur, qui le complètera avec de nombreuses options pour la génération. Dans son expression la plus pure, il nécessite 2 paramètres :
+TopModel utilise un fichier de configuration, qui sera reconnu par une extension `*.yaml` (avec le "a", pour différencier des fichiers de domaines et classes). Il est partagé avec celui du générateur, qui le complétera avec de nombreuses options pour la génération. Dans son expression la plus pure, il ne nécessite qu'un seul paramètre :
 
-- `modelRoot`, le répertoire dans lequel TopModel pourra trouver les fichiers de classes. Si non renseigné, le répertoire du fichier de config sera utilsé
-- `domains`, le chemin vers le fichier de domaines. `domains.yml` sera utilisé si non renseigné.
+- `modelRoot`, le répertoire dans lequel TopModel pourra trouver les fichiers de classes. Si non renseigné, le répertoire du fichier de config sera utilisé
 
 ### Utilisation en pratique
 
@@ -144,19 +166,25 @@ Néanmoins, certains de ces manquements sont compensés par...
 
 TopModel est capable de fonctionner en mode "watch", au même titre qu'un outil comme Webpack. Il surveillera toute modification de fichier et essaiera de "recompiler" le modèle à chaque fois. En cas d'erreur, cette dernière sera affichée dans la console avec sa localisation dans les fichiers sources. Si TopModel est ouvert dans la console intégrée de VSCode, alors les liens seront cliquables.
 
+_Remarque : il est peut être plus très à jour maintenant... Il faudra probablement y faire quelques corrections si vous voulez vous en servir..._
+
 ## TopModel.Generator
 
 **TopModel.Generator** (TMG) est le générateur de code basé sur `TopModel.Core` et l'application principale à travers laquelle vous pourrez valider et utiliser votre modélisation. C'est une application **.NET Core 3.1** qui nécessite donc d'avoir le **SDK installé** sur votre machine.
 
 Pour le lancer, il faudra utiliser la commande `dotnet run -p {chemin vers TMG} -- {chemin du fichier de config} (--watch)`.
 
-TMG dispose de 5 générateurs, qui seront instanciés si la section de configuration associée est renseignée dans le fichier de config. Si vous avez déjà enregistré le schéma JSON du fichier de config depuis la présentation de TopModel, vous devriez avoir les infos nécessaires pour configurer chacun des générateurs. Les 5 générateurs sont :
+TMG dispose de 5 générateurs, qui seront instanciés si la section de configuration associée est renseignée dans le fichier de config. Si vous avez déjà enregistré le schéma JSON du fichier de config depuis la présentation de `TopModel.Core`, vous devriez avoir les infos nécessaires pour configurer chacun des générateurs. Les 5 générateurs sont :
+
+TMG dispose de 6 générateurs, qui seront instanciés si la section de configuration associée est renseignée dans le fichier de config. Chaque section est en réalité une **liste** de sections, ce qui permet de spécifier **plusieurs fois le même générateur**, avec des configurations différentes, qui peuvent varier selon les **tags listés**.
+
+Si vous avez déjà enregistré le schéma JSON du fichier de config depuis la présentation de TopModel, vous devriez avoir les infos nécessaires pour configurer chacun des générateurs. Les 5 générateurs sont :
 
 - **Le générateur de modèle SSDT (`ssdt`)**, qui permet de générer :
   - Un fichier par table SQL (classes dans les fichiers `"Data"`, munies d'un `"trigram"`)
   - Un fichier par type de table SQL, pour les tables qui en ont besoin
   - Un fichier par liste de référence à initialiser
-  - Le fichier d'initialisation des listes de référence, qui appelle, dans l'ordre, tous les fichiers d'initilisation
+  - Le fichier d'initialisation des listes de référence, qui appelle, dans l'ordre, tous les fichiers d'initialisation
 - **Le générateur de SQL "procédural" (`proceduralSql`)**, qui permet de générer, pour postgre ou sqlserver :
   - Un fichier "crebas" qui contient toutes les créations de tables
   - Un fichier "index + fk" qui contient toutes les FKs et indexes
@@ -168,8 +196,9 @@ TMG dispose de 5 générateurs, qui seront instanciés si la section de configur
 - **Le générateur de modèle Focus4 (`typescriptDefinition`)**, qui permet de générer :
   - Un fichier par classe non statique
   - Un fichier de classes statiques par module
-- **Le générateur de ressources i18n (`javascriptResource`)**, qui permt de générer :
+- **Le générateur de ressources i18n (`javascriptResource`)**, qui permet de générer :
   - Un fichier i18n par module
+- **Le générateur Kasper (`kasper`)**, qui permet de générer toutes les différentes classes abstraites, fichiers de ressources... pour ceux qui sont encore coincés avec un Kasper qui a 10 ans sur un projet dans un coin...
 
 ## TopModel.UI
 
