@@ -286,12 +286,12 @@ namespace TopModel.Generator.CSharp
                 w.WriteLine(3, property.Name + " = new List<" + strip + ">(bean." + property.Name + ");");
             }
 
-            foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == Composition.Object))
+            foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
             {
                 w.WriteLine(3, property.Name + " = new " + property.Composition.Name + "(bean." + property.Name + ");");
             }
 
-            foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == Composition.List))
+            foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
             {
                 w.WriteLine(3, property.Name + " = new List<" + property.Composition.Name + ">(bean." + property.Name + ");");
             }
@@ -331,13 +331,13 @@ namespace TopModel.Generator.CSharp
                 w.WriteLine(3, LoadPropertyInit(property.Name, "List<" + strip + ">"));
             }
 
-            foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == Composition.Object))
+            foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
             {
                 line = true;
                 w.WriteLine(3, LoadPropertyInit(property.Name, property.Composition.Name));
             }
 
-            foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == Composition.List))
+            foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
             {
                 line = true;
                 w.WriteLine(3, LoadPropertyInit(property.Name, "List<" + property.Composition.Name + ">"));
@@ -455,11 +455,18 @@ namespace TopModel.Generator.CSharp
 
             switch (property)
             {
-                case CompositionProperty { Kind: Composition.Object } ocp:
+                case CompositionProperty { Kind: "object" } ocp:
                     w.WriteLine(2, $"public {ocp.Composition.Name} {property.Name} {{ get; set; }}");
                     break;
-                case CompositionProperty { Kind: Composition.List } lcp:
+                case CompositionProperty { Kind: "list" } lcp:
                     w.WriteLine(2, $"public ICollection<{lcp.Composition.Name}> {property.Name} {{ get; set; }}");
+                    break;
+                case CompositionProperty { DomainKind: var domain } lcp:
+                    if (domain?.CSharp?.Type != null)
+                    {
+                        w.WriteLine(2, $"public {domain.CSharp.Type}<{lcp.Composition.Name}> {property.Name} {{ get; set; }}");
+                    }
+
                     break;
                 case IFieldProperty ifp:
                     w.WriteLine(2, $"public {ifp.Domain.CSharp!.Type} {property.Name} {{ get; set; }}");
@@ -476,7 +483,7 @@ namespace TopModel.Generator.CSharp
         {
             var usings = new List<string> { "System" };
 
-            if (item.Properties.Any(p => p is CompositionProperty { Kind: Composition.List }) || _config.UseTypeSafeConstValues && (item.ReferenceValues?.Any() ?? false))
+            if (item.Properties.Any(p => p is CompositionProperty { Kind: "list" }) || _config.UseTypeSafeConstValues && (item.ReferenceValues?.Any() ?? false))
             {
                 usings.Add("System.Collections.Generic");
             }

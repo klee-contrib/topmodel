@@ -112,17 +112,17 @@ namespace TopModel.Generator.Javascript
                 fw.Write("FieldEntry2, ");
             }
 
-            if (classe.Properties.Any(p => p is CompositionProperty { Kind: Composition.List } cp && cp.Class == classe))
+            if (classe.Properties.Any(p => p is CompositionProperty { Kind: "list" } cp && cp.Class == classe))
             {
                 fw.Write("ListEntry, ");
             }
 
-            if (classe.Properties.Any(p => p is CompositionProperty { Kind: Composition.Object }))
+            if (classe.Properties.Any(p => p is CompositionProperty { Kind: "object" }))
             {
                 fw.Write("ObjectEntry, ");
             }
 
-            if (classe.Properties.Any(p => p is CompositionProperty { Kind: Composition.List } cp && cp.Composition == classe))
+            if (classe.Properties.Any(p => p is CompositionProperty { Kind: "list" } cp && cp.Composition == classe))
             {
                 fw.Write("RecursiveListEntry, ");
             }
@@ -173,7 +173,7 @@ namespace TopModel.Generator.Javascript
 
                 if (property is CompositionProperty cp)
                 {
-                    if (cp.Kind == Composition.List)
+                    if (cp.Kind == "list")
                     {
                         if (cp.Composition.Name == classe.Name)
                         {
@@ -184,9 +184,13 @@ namespace TopModel.Generator.Javascript
                             fw.Write($"ListEntry<{cp.Composition.Name}EntityType>");
                         }
                     }
-                    else
+                    else if (cp.Kind == "object")
                     {
                         fw.Write($"ObjectEntry<{cp.Composition.Name}EntityType>");
+                    }
+                    else
+                    {
+                        throw new Exception("Seuls les 'kinds' 'list' et 'object' sont gérées.");
                     }
                 }
                 else if (property is IFieldProperty field)
@@ -222,7 +226,7 @@ namespace TopModel.Generator.Javascript
 
                 if (property is CompositionProperty cp)
                 {
-                    if (cp.Kind == Composition.List)
+                    if (cp.Kind == "list")
                     {
                         if (cp.Composition.Name == classe.Name)
                         {

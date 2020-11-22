@@ -76,7 +76,7 @@ namespace TopModel.UI.Graphing
                         n
                            .AddProp("arrowtail", "odiamond")
                            .AddProp("dir", "both")
-                           .AddProp("headlabel", $"  {(cp.Kind == Composition.Object ? "1..1" : "0..n")}  ");
+                           .AddProp("headlabel", $"  {(cp.Kind == "object" ? "1..1" : "0..n")}  ");
                     }
                 });
             }

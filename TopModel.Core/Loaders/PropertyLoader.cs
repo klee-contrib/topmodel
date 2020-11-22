@@ -113,7 +113,12 @@ namespace TopModel.Core.Loaders
                                 cp.Name = value.Value;
                                 break;
                             case "kind":
-                                cp.Kind = value.Value == "list" ? Composition.List : Composition.Object;
+                                cp.Kind = value.Value;
+                                if (cp.Kind != "object" && cp.Kind != "list")
+                                {
+                                    relationships.Add((cp, "kind"), new Relation(value));
+                                }
+
                                 break;
                             case "comment":
                                 cp.Comment = value.Value;

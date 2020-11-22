@@ -68,7 +68,7 @@ namespace TopModel.Generator
                         }
                     }
 
-                    Console.WriteLine(split2[split2.Length - 1]);
+                    Console.WriteLine(split2[^1]);
                     Console.ForegroundColor = ConsoleColor.Gray;
                 }
             }

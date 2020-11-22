@@ -92,7 +92,19 @@ namespace TopModel.Generator.Javascript
                     }
                     else if (param is CompositionProperty cp)
                     {
-                        fw.Write($": {cp.Composition.Name}");
+                        fw.Write(": ");
+
+                        if (cp.DomainKind != null)
+                        {
+                            fw.Write($"{cp.DomainKind.TS!.Type}<");
+                        }
+
+                        fw.Write(cp.Composition.Name);
+
+                        if (cp.DomainKind != null)
+                        {
+                            fw.Write($">");
+                        }
                     }
 
                     fw.Write(", ");
@@ -109,7 +121,17 @@ namespace TopModel.Generator.Javascript
                 }
                 else if (endpoint.Returns is CompositionProperty cp)
                 {
+                    if (cp.DomainKind != null)
+                    {
+                        fw.Write($"{cp.DomainKind.TS!.Type}<");
+                    }
+
                     fw.Write(cp.Composition.Name);
+
+                    if (cp.DomainKind != null)
+                    {
+                        fw.Write($">");
+                    }
                 }
 
                 fw.WriteLine("> {");
@@ -192,6 +214,12 @@ namespace TopModel.Generator.Javascript
                 properties.OfType<IFieldProperty>()
                     .Where(p => p.Domain.TS?.Import != null)
                     .Select(p => (p.Domain.TS!.Type, p.Domain.TS.Import!))
+                    .Distinct());
+
+            imports.AddRange(
+                properties.OfType<CompositionProperty>()
+                    .Where(p => p.DomainKind != null)
+                    .Select(p => (p.DomainKind!.TS!.Type, p.DomainKind.TS.Import!))
                     .Distinct());
 
             return imports

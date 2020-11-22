@@ -160,8 +160,7 @@
             },
             "kind": {
               "type": "string",
-              "description": "'object' ou 'list', respectivement pour un sous objet et une sous liste.",
-              "enum": [ "object", "list" ]
+              "description": "'object' pour un sous objet, 'list' pour une sous-liste, ou un nom de domaine pour un autre conteneur générique."
             },
             "comment": {
               "type": "string",

@@ -232,6 +232,15 @@ namespace TopModel.Core
 
                         cp.Composition = composition;
                         break;
+                    case (CompositionProperty cp, string _):
+                        if (!Domains.TryGetValue(relation.Value, out var domainKind))
+                        {
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - Le domaine '{relation.Value}' est introuvable. ({modelFile}/{cp.Class?.Name ?? cp.Endpoint?.Name}/{cp.Name})";
+                            break;
+                        }
+
+                        cp.DomainKind = domainKind;
+                        break;
                     case AliasProperty alp:
                         if (!referencedClasses.TryGetValue(relation.Peer!.Value, out var aliasedClass))
                         {
