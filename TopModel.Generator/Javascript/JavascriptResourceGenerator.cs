@@ -148,7 +148,7 @@ namespace TopModel.Generator.Javascript
         /// <param name="isLast">True s'il s'agit du dernier noeud de la classe.</param>
         private void WritePropertyNode(TextWriter writer, IProperty property, bool isLast)
         {
-            writer.WriteLine("        " + FormatJsPropertyName(property.Name) + @": """ + property.Label + @"""" + (isLast ? string.Empty : ","));
+            writer.WriteLine("        " + FormatJsPropertyName(property.Name) + @": """ + (property.Label ?? property.Name) + @"""" + (isLast ? string.Empty : ","));
         }
     }
 }

@@ -168,7 +168,7 @@
                   {
                     "type": "object",
                     "description": "Propriété standard.",
-                    "required": [ "name", "label", "domain", "comment" ],
+                    "required": [ "name", "domain", "comment" ],
                     "additionalProperties": false,
                     "properties": {
                       "name": {
@@ -204,7 +204,7 @@
                   {
                     "type": "object",
                     "description": "Propriété d'association (clé étrangère).",
-                    "required": [ "association", "label", "comment" ],
+                    "required": [ "association", "comment" ],
                     "additionalProperties": false,
                     "properties": {
                       "association": {

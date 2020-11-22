@@ -17,7 +17,7 @@
 
         public string Name => (Prefix ?? string.Empty) + Property?.Name + (Suffix ?? string.Empty);
 
-        public string Label
+        public string? Label
         {
             get => _label ?? Property.Label;
             set => _label = value;

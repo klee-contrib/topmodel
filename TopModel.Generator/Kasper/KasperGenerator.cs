@@ -155,7 +155,7 @@ namespace TopModel.Generator.Kasper
                 fw.WriteLine();
 
                 var propType = property.PrimaryKey ? "PRIMARY_KEY" : associations.Contains(property) ? "FOREIGN_KEY" : "DATA";
-                fw.WriteDocStart(1, $"Champ : {propType}.\nRécupère la valeur de la propriété '{property.Label}'");
+                fw.WriteDocStart(1, $"Champ : {propType}.\nRécupère la valeur de la propriété '{property.Label ?? property.Name}'");
                 fw.WriteReturns(1, $"{property.Domain.JavaType} {property.JavaName.ToFirstLower()}");
                 fw.WriteDocEnd(1);
 
@@ -184,7 +184,7 @@ namespace TopModel.Generator.Kasper
                     kasperFieldProps.Add("notNull = true");
                 }
 
-                kasperFieldProps.Add($@"label = ""{property.Label}""");
+                kasperFieldProps.Add($@"label = ""{property.Label ?? property.Name}""");
 
                 fw.WriteAttribute(1, "kasperx.annotation.Field", kasperFieldProps.ToArray());
                 fw.WriteLine(1, $"public final {property.Domain.JavaType} get{property.JavaName}() {{");
@@ -372,7 +372,7 @@ namespace TopModel.Generator.Kasper
                 {
                     foreach (var property in classe.Properties.OfType<IFieldProperty>())
                     {
-                        fw.WriteLine($"FLD{classe.SqlName}${ModelUtils.ConvertCsharp2Bdd(property.JavaName)} ={property.Label}");
+                        fw.WriteLine($"FLD{classe.SqlName}${ModelUtils.ConvertCsharp2Bdd(property.JavaName)} ={property.Label ?? property.Name}");
                     }
 
                     fw.WriteLine();

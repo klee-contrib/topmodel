@@ -4,7 +4,7 @@
     {
         string Name { get; }
 
-        string Label { get; }
+        string? Label { get; }
 
         bool PrimaryKey { get; }
 
