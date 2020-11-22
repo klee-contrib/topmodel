@@ -141,6 +141,10 @@
             "required": {
               "type": "boolean",
               "description": "Surcharge le caractère obligatoire de la propriété aliasée."
+            },
+            "comment": {
+              "type": "string",
+              "description": "Surcharge le commentaire de la propriété aliasée."
             }
           }
         },
@@ -363,7 +367,7 @@
         "endpoint": {
           "type": "object",
           "description": "Définition d'un endpoint",
-          "required": [ "name", "method", "route", "description", "params" ],
+          "required": [ "name", "method", "route", "description" ],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -384,10 +388,6 @@
               "description": "Description du endpoint."
             },
             "returns": { "$ref": "#/definitions/property" },
-            "body": {
-              "type": "string",
-              "description": "Paramètre à forcer dans le body de la requête (une propriété 'composition' est automatiquement dans le body)."
-            },
             "params": {
               "type": "array",
               "description": "Les paramètres de l'endpoint. Un paramètre, selon son type et sa présence ou non dans la route, sera automatiquement classifié comme 'Route', 'Query' ou 'Body'",

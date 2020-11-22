@@ -8,7 +8,7 @@ namespace TopModel.Generator
     {
         public static IProperty? GetBodyParam(this Endpoint endpoint)
         {
-            var bodyParams = endpoint.Params.Where(param => param is CompositionProperty || endpoint.Body == param.Name);
+            var bodyParams = endpoint.Params.Where(param => param is CompositionProperty);
             return bodyParams.Count() > 1
                 ? throw new Exception($"L'endpoint '{endpoint.Name}' doit avoir une seule propriété dans le body. Propriétés trouvées : {string.Join(", ", bodyParams)}")
                 : bodyParams.SingleOrDefault();
@@ -26,7 +26,7 @@ namespace TopModel.Generator
 
         public static string GetParamName(this IProperty property)
         {
-            return !property.PrimaryKey || !(property is AliasProperty alp)
+            return !(property is AliasProperty alp) || !alp.Property.PrimaryKey
                 ? property.Name
                 : $"{alp.Property.Class.Trigram?.ToLower() ?? alp.Property.Class.Name.ToFirstLower()}{property.Name}";
         }

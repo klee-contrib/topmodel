@@ -78,7 +78,13 @@ namespace TopModel.Generator.Javascript
                     fw.WriteLine($" * @param {param.GetParamName()} {param.Comment}");
                 }
 
-                fw.WriteLine(" * @param options Options pour fetch.");
+                fw.WriteLine(" * @param options Options pour 'fetch'.");
+
+                if (endpoint.Returns != null)
+                {
+                    fw.WriteLine($" * @returns {endpoint.Returns.Comment}");
+                }
+
                 fw.WriteLine(" */");
                 fw.Write($"export function {endpoint.Name.ToFirstLower()}(");
 
@@ -93,18 +99,7 @@ namespace TopModel.Generator.Javascript
                     else if (param is CompositionProperty cp)
                     {
                         fw.Write(": ");
-
-                        if (cp.DomainKind != null)
-                        {
-                            fw.Write($"{cp.DomainKind.TS!.Type}<");
-                        }
-
-                        fw.Write(cp.Composition.Name);
-
-                        if (cp.DomainKind != null)
-                        {
-                            fw.Write($">");
-                        }
+                        WriteCompositionType(fw, cp);
                     }
 
                     fw.Write(", ");
@@ -121,17 +116,7 @@ namespace TopModel.Generator.Javascript
                 }
                 else if (endpoint.Returns is CompositionProperty cp)
                 {
-                    if (cp.DomainKind != null)
-                    {
-                        fw.Write($"{cp.DomainKind.TS!.Type}<");
-                    }
-
-                    fw.Write(cp.Composition.Name);
-
-                    if (cp.DomainKind != null)
-                    {
-                        fw.Write($">");
-                    }
+                    WriteCompositionType(fw, cp);
                 }
 
                 fw.WriteLine("> {");
@@ -169,6 +154,25 @@ namespace TopModel.Generator.Javascript
 
                 fw.WriteLine("}, options);");
                 fw.WriteLine("}");
+            }
+        }
+
+        private void WriteCompositionType(FileWriter fw, CompositionProperty cp)
+        {
+            if (cp.DomainKind != null)
+            {
+                fw.Write($"{cp.DomainKind.TS!.Type}<");
+            }
+
+            fw.Write(cp.Composition.Name);
+            if (cp.Kind == "list")
+            {
+                fw.Write("[]");
+            }
+
+            if (cp.DomainKind != null)
+            {
+                fw.Write($">");
             }
         }
 

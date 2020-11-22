@@ -2,6 +2,7 @@
 {
     public class AliasProperty : IFieldProperty
     {
+        private string? _comment;
         private string? _label;
         private bool? _required;
 
@@ -35,7 +36,11 @@
 
         public Domain Domain => Property.Domain;
 
-        public string Comment => Property.Comment;
+        public string Comment
+        {
+            get => _comment ?? Property.Comment;
+            set => _comment = value;
+        }
 
         public string? DefaultValue => null;
     }
