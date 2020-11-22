@@ -14,5 +14,15 @@
         /// Dossier de sortie pour les ressources.
         /// </summary>
         public string? ResourceOutputDirectory { get; set; }
+
+        /// <summary>
+        /// Dossier de sortie pour le client d'API.
+        /// </summary>
+        public string? ApiClientOutputDirectory { get; set; }
+
+        /// <summary>
+        /// Chemin vers un "fetch" personnalisé.
+        /// </summary>
+        public string? FetchImportPath { get; set; }
     }
 }

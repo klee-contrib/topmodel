@@ -16,6 +16,8 @@ namespace TopModel.Core
 #nullable enable
         public IProperty? Returns { get; set; }
 
+        public string? Body { get; set; }
+
 #nullable disable
         public IList<IProperty> Params { get; set; } = new List<IProperty>();
 #nullable enable

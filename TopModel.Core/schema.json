@@ -385,6 +385,10 @@
               "description": "Description du endpoint."
             },
             "returns": { "$ref": "#/definitions/property" },
+            "body": {
+              "type": "string",
+              "description": "Paramètre à forcer dans le body de la requête (une propriété 'composition' est automatiquement dans le body)."
+            },
             "params": {
               "type": "array",
               "description": "Les paramètres de l'endpoint. Un paramètre, selon son type et sa présence ou non dans la route, sera automatiquement classifié comme 'Route', 'Query' ou 'Body'",

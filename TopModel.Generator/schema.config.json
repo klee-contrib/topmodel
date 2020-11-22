@@ -196,6 +196,14 @@
           "resourceOutputDirectory": {
             "type": "string",
             "description": "Chemin vers le dossier racine vers lequel générer les fichiers de ressources i18n. Si non renseigné, aucun fichier de sera généré."
+          },
+          "apiClientOutputDirectory": {
+            "type": "string",
+            "description": "Chemin vers le dossier racine vers lequel générer les fichiers de client d'API. Si non renseigné, aucun fichier de sera généré."
+          },
+          "fetchImportPath": {
+            "type": "string",
+            "description": "Chemin vers un 'fetch' personnalisé."
           }
         }
       }
