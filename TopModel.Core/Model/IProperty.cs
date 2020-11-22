@@ -11,5 +11,7 @@
         string Comment { get; }
 
         Class Class { get; set; }
+
+        Endpoint Endpoint { get; set; }
     }
 }

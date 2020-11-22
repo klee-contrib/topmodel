@@ -14,6 +14,8 @@ namespace TopModel.Core
         public string Comment { get; set; }
 
         public Class Class { get; set; }
+
+        public Endpoint Endpoint { get; set; }
 #nullable enable
 
         public string? Role { get; set; }

@@ -208,7 +208,7 @@ namespace TopModel.Core
                     case RegularProperty rp:
                         if (!Domains.TryGetValue(relation.Value, out var domain))
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - Le domaine '{relation.Value}' est introuvable. ({modelFile}/{rp.Class}/{rp.Name})";
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - Le domaine '{relation.Value}' est introuvable. ({modelFile}/{rp.Class?.Name ?? rp.Endpoint?.Name}/{rp.Name})";
                             break;
                         }
 
@@ -217,7 +217,7 @@ namespace TopModel.Core
                     case AssociationProperty ap:
                         if (!referencedClasses.TryGetValue(relation.Value, out var association))
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{ap.Class}/{{association}})";
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{ap.Class?.Name ?? ap.Endpoint?.Name}/{{association}})";
                             break;
                         }
 
@@ -226,7 +226,7 @@ namespace TopModel.Core
                     case CompositionProperty cp:
                         if (!referencedClasses.TryGetValue(relation.Value, out var composition))
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{cp.Class}/{{composition}})";
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{cp.Class?.Name ?? cp.Endpoint?.Name}/{{composition}})";
                             break;
                         }
 
@@ -235,14 +235,14 @@ namespace TopModel.Core
                     case AliasProperty alp:
                         if (!referencedClasses.TryGetValue(relation.Peer!.Value, out var aliasedClass))
                         {
-                            yield return $"{modelFile.Path}[{relation.Peer.Start.Line},{relation.Peer.Start.Column}] - La classe '{relation.Peer!.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{alp.Class}/{{alias}})";
+                            yield return $"{modelFile.Path}[{relation.Peer.Start.Line},{relation.Peer.Start.Column}] - La classe '{relation.Peer!.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{alp.Class?.Name ?? alp.Endpoint?.Name}/{{alias}})";
                             break;
                         }
 
                         var aliasedProperty = aliasedClass.Properties.SingleOrDefault(p => p.Name == relation.Value);
                         if (aliasedProperty == null)
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La propriété '{relation.Value}' est introuvable sur la classe '{aliasedClass}'. ({modelFile}/{alp.Class}/{{alias}})";
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La propriété '{relation.Value}' est introuvable sur la classe '{aliasedClass}'. ({modelFile}/{alp.Class?.Name ?? alp.Endpoint?.Name}/{{alias}})";
                             break;
                         }
 

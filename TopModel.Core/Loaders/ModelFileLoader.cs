@@ -32,8 +32,9 @@ namespace TopModel.Core.Loaders
             file.Name = Path.GetRelativePath(Path.Combine(Directory.GetCurrentDirectory(), _config.ModelRoot), filePath)
                 .Replace(".yml", string.Empty)
                 .Replace("\\", "/");
-            file.Domains = new List<Domain>();
             file.Classes = new List<Class>();
+            file.Domains = new List<Domain>();
+            file.Endpoints = new List<Endpoint>();
 
             while (parser.TryConsume<DocumentStart>(out var _))
             {
@@ -47,6 +48,10 @@ namespace TopModel.Core.Loaders
                 else if (scalar.Value == "class")
                 {
                     file.Classes.Add(_classLoader.LoadClass(parser, file.Relationships, filePath));
+                }
+                else if (scalar.Value == "endpoint")
+                {
+                    file.Endpoints.Add(EndpointLoader.LoadEndpoint(parser, file.Relationships));
                 }
                 else
                 {

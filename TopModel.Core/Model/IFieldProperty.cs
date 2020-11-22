@@ -1,5 +1,5 @@
 ﻿using System;
-using TopModel.Core.Model.Types;
+using TopModel.Core.Types;
 
 namespace TopModel.Core
 {

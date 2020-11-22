@@ -1,4 +1,4 @@
-﻿namespace TopModel.Core.Model.Types
+﻿namespace TopModel.Core.Types
 {
     public class TSType
     {

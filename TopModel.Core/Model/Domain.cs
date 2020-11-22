@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Text.RegularExpressions;
-using TopModel.Core.Model.Types;
+using TopModel.Core.Types;
 using YamlDotNet.Serialization;
 
 namespace TopModel.Core

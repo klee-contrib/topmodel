@@ -10,6 +10,8 @@
 
         public Class Class { get; set; }
 
+        public Endpoint Endpoint { get; set; }
+
 #nullable enable
         public string? Prefix { get; set; }
 

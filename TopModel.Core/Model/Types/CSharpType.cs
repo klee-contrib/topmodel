@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace TopModel.Core.Model.Types
+namespace TopModel.Core.Types
 {
     public class CSharpType
     {
