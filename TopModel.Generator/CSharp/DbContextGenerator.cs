@@ -136,7 +136,7 @@ namespace TopModel.Generator.CSharp
 
                 foreach (var prop in classes.SelectMany(c => c.Properties.OfType<AssociationProperty>()))
                 {
-                    w.WriteLine(3, $"modelBuilder.Entity<{prop.Class.Name}>().HasOne<{prop.Association}>().WithMany().HasForeignKey(p => p.{prop.Name});");
+                    w.WriteLine(3, $"modelBuilder.Entity<{prop.Class.Name}>().HasOne<{prop.Association}>().WithMany().HasForeignKey(p => p.{prop.Name}).OnDelete(DeleteBehavior.Restrict);");
                 }
 
                 w.WriteLine();
