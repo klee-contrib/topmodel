@@ -175,7 +175,13 @@ namespace TopModel.Generator.CSharp
                     w.Write(");\r\n");
                 }
 
+                w.WriteLine();
+                w.WriteLine(3, "OnModelCreatingPartial(modelBuilder);");
+
                 w.WriteLine(2, "}");
+
+                w.WriteLine();
+                w.WriteLine(2, "partial void OnModelCreatingPartial(ModelBuilder modelBuilder);");
             }
             else if (_config.Kinetix == KinetixVersion.Framework)
             {
