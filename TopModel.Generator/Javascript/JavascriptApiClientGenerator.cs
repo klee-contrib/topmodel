@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using TopModel.Core.FileModel;
 using Microsoft.Extensions.Logging;
 
@@ -181,37 +180,33 @@ namespace TopModel.Generator.Javascript
 
             var types = properties.OfType<CompositionProperty>().Select(property => property.Composition);
 
+            var modelPath = Path.GetRelativePath(_config.ApiClientOutputDirectory!, _config.ModelOutputDirectory!).Replace("\\", "/");
+
             var imports = types.Select(type =>
             {
-                var module = type.Namespace.Module;
                 var name = type.Name;
-
-                var modelPath = Path.GetRelativePath(_config.ApiClientOutputDirectory!, _config.ModelOutputDirectory!).Replace("\\", "/");
-                module = $"{modelPath}/{module.ToLower()}";
-
+                var module = $"{modelPath}/{type.Namespace.Module.ToLower()}";
                 return (Import: name, Path: $"{module}/{name.ToDashCase()}");
             }).Distinct().ToList();
 
-            ////var references = classe.Properties
-            ////    .Select(p => p is AliasProperty alp ? alp.Property : p)
-            ////    .OfType<IFieldProperty>()
-            ////    .Select(prop => (prop, classe: prop is AssociationProperty ap ? ap.Association : prop.Class))
-            ////    .Where(pc => pc.prop.TS.Type != pc.prop.Domain.TS!.Type && pc.prop.Domain.TS.Type == "string" && pc.classe.Reference)
-            ////    .Select(pc => (Code: pc.prop.TS.Type, pc.classe.Namespace.Module))
-            ////    .Distinct();
+            var references = file.Endpoints.SelectMany(p => p.Params.Concat(new[] { p.Returns }).Where(p => p != null))
+                .Select(p => p is AliasProperty alp ? alp.Property : p)
+                .OfType<IFieldProperty>()
+                .Select(prop => (prop, classe: prop is AssociationProperty ap ? ap.Association : prop.Class))
+                .Where(pc => pc.prop.TS.Type != pc.prop.Domain.TS!.Type && pc.prop.Domain.TS.Type == "string" && pc.classe.Reference)
+                .Select(pc => (Code: pc.prop.TS.Type, pc.classe.Namespace.Module))
+                .Distinct();
 
-            ////if (references.Any())
-            ////{
-            ////    var referenceTypeMap = references.GroupBy(t => t.Module);
-            ////    foreach (var refModule in referenceTypeMap)
-            ////    {
-            ////        var module = refModule.Key == currentModule
-            ////        ? $"."
-            ////        : $"../{refModule.Key.ToLower()}";
+            if (references.Any())
+            {
+                var referenceTypeMap = references.GroupBy(t => t.Module);
+                foreach (var refModule in referenceTypeMap)
+                {
+                    var module = $"{modelPath}/{refModule.Key.ToLower()}";
 
-            ////        imports.Add((string.Join(", ", refModule.Select(r => r.Code).OrderBy(x => x)), $"{module}/references"));
-            ////    }
-            ////}
+                    imports.Add((string.Join(", ", refModule.Select(r => r.Code).OrderBy(x => x)), $"{module}/references"));
+                }
+            }
 
             imports.AddRange(
                 properties.OfType<IFieldProperty>()
