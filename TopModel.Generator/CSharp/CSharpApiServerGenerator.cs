@@ -107,7 +107,7 @@ namespace {_config.ApiNamespace}
                 }
             }
 
-            using var fw = new FileWriter(filePath, _logger, true) { EnableHeader = false };
+            using var fw = new FileWriter(filePath, _logger, true) { HeaderMessage = "ATTENTION, CE FICHIER EST PARTIELLEMENT GENERE AUTOMATIQUEMENT !" };
             fw.Write(syntaxTree.GetRoot().ReplaceNode(existingController, controller).ToString());
         }
 

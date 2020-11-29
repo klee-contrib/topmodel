@@ -55,7 +55,12 @@ namespace TopModel.Generator
         /// <summary>
         /// Active la lecture et l'écriture d'un entête avec un hash du fichier.
         /// </summary>
-        public virtual bool EnableHeader { get; set; } = true;
+        public virtual bool EnableHeader => true;
+
+        /// <summary>
+        /// Message à mettre dans le header.
+        /// </summary>
+        public string HeaderMessage { get; set; } = "ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !";
 
         /// <summary>
         /// Retourne le numéro de la ligne qui contient la version.
@@ -142,10 +147,10 @@ namespace TopModel.Generator
 
             using (var sw = new StreamWriter(_fileName, false, Encoding))
             {
-                if (EnableHeader)
+                if (EnableHeader && !newContent.StartsWith(StartCommentToken))
                 {
                     sw.WriteLine(StartCommentToken);
-                    sw.WriteLine(StartCommentToken + " ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !");
+                    sw.WriteLine($"{StartCommentToken} {HeaderMessage}");
                     sw.WriteLine(StartCommentToken);
                     sw.WriteLine();
                 }
