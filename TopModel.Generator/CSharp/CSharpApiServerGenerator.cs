@@ -54,9 +54,10 @@ namespace TopModel.Generator.CSharp
 
             var text = File.Exists(filePath)
                 ? File.ReadAllText(filePath)
-                : $@"using Microsoft.AspNetCore.Mvc;
+                : $@"using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Regis.Web
+namespace {_config.ApiNamespace}
 {{
     public class {className} : Controller
     {{
@@ -80,13 +81,29 @@ namespace Regis.Web
         public async Task{(endpoint.Returns != null ? $"<{GetPropertyTypeName(endpoint.Returns, true)}>" : string.Empty)} {endpoint.Name}({string.Join(", ", endpoint.Params.Select(GetParam))})
         {{
 
-        }}");
+        }}
+");
 
                 var existingMethod = controller.DescendantNodes().OfType<MethodDeclarationSyntax>().SingleOrDefault(method => method.Identifier.Text == endpoint.Name);
                 if (existingMethod != null)
                 {
                     method = method.WithBody(existingMethod.Body);
                     controller = controller.ReplaceNode(existingMethod, method);
+                }
+                else
+                {
+                    var index = file.Endpoints.IndexOf(endpoint);
+                    var firstMethod = controller.Members.OfType<MethodDeclarationSyntax>().FirstOrDefault();
+                    var start = firstMethod != null ? controller.Members.IndexOf(firstMethod) : 0;
+                    controller = controller.WithMembers(List(controller.Members.Take(start + index).Concat(new[] { method }).Concat(controller.Members.Skip(start + index))));
+                }
+            }
+
+            foreach (var method in controller.DescendantNodes().OfType<MethodDeclarationSyntax>())
+            {
+                if (method.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PublicKeyword)) && !file.Endpoints.Any(endpoint => endpoint.Name == method.Identifier.Text))
+                {
+                    controller = controller.WithMembers(List(controller.Members.Where(member => ((member as MethodDeclarationSyntax)?.Identifier.Text ?? string.Empty) != method.Identifier.Text)));
                 }
             }
 

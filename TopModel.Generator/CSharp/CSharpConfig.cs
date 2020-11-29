@@ -64,5 +64,10 @@
         /// Répertoire dans lequel générer le serveur d'API.
         /// </summary>
         public string? ServerApiOutputDirectory { get; set; }
+
+        /// <summary>
+        /// Namespace de l'API (client ou server).
+        /// </summary>
+        public string? ApiNamespace { get; set; }
     }
 }

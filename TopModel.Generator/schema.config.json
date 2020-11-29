@@ -169,6 +169,10 @@
             "type": "boolean",
             "description": "Utilise la structure de projet legacy."
           },
+          "apiNamespace": {
+            "type": "string",
+            "description": "Namespace de l'API (client ou server)."
+          },
           "serverApiOutputDirectory": {
             "type": "string",
             "description": "Répertoire dans lequel générer le serveur d'API."
