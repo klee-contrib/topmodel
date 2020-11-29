@@ -53,14 +53,14 @@ namespace TopModel.Generator
         public override Encoding Encoding { get; }
 
         /// <summary>
+        /// Active la lecture et l'écriture d'un entête avec un hash du fichier.
+        /// </summary>
+        public virtual bool EnableHeader { get; set; } = true;
+
+        /// <summary>
         /// Retourne le numéro de la ligne qui contient la version.
         /// </summary>
         protected virtual int VersionLine => 3;
-
-        /// <summary>
-        /// Active la lecture et l'écriture d'un entête avec un hash du fichier.
-        /// </summary>
-        protected virtual bool EnableHeader => true;
 
         /// <summary>
         /// Renvoie le token de début de ligne de commentaire dans le langage du fichier.

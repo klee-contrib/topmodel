@@ -44,10 +44,9 @@ namespace TopModel.Generator.Javascript
                 return;
             }
 
-            var fileSplit = file.Name.ToDashCase().Split("/");
-            var filePath = fileSplit.Length > 1
-                ? string.Join("/", fileSplit[1..])
-                : file.Name.ToDashCase();
+            var fileSplit = file.Name.Split("/");
+            var filePath = (fileSplit.Length > 1 ? string.Join("/", fileSplit[1..]) : file.Name)
+                .ToDashCase();
 
             var fileName = $"{_config.ApiClientOutputDirectory}/{filePath}.ts";
             using var fw = new FileWriter(fileName, _logger, false);
@@ -123,7 +122,7 @@ namespace TopModel.Generator.Javascript
 
                 /* TODO FormData ? */
 
-                fw.Write($@"    return {fetch}(""{endpoint.Method}"", `./{Regex.Replace(endpoint.Route.Replace("{", "${"), ":([a-z]+)", string.Empty)}`, {{");
+                fw.Write($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.Route.Replace("{", "${")}`, {{");
 
                 if (endpoint.GetBodyParam() != null)
                 {

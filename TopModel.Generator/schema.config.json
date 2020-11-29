@@ -168,6 +168,10 @@
           "legacyProjectPaths": {
             "type": "boolean",
             "description": "Utilise la structure de projet legacy."
+          },
+          "serverApiOutputDirectory": {
+            "type": "string",
+            "description": "Répertoire dans lequel générer le serveur d'API."
           }
         }
       }

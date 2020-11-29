@@ -92,9 +92,13 @@ namespace TopModel.Generator
                 foreach (var csharpConfig in config.Csharp)
                 {
                     CombinePath(dn, csharpConfig, c => c.OutputDirectory);
+                    CombinePath(dn, csharpConfig, c => c.ServerApiOutputDirectory);
 
-                    services.AddSingleton<IModelWatcher>(p =>
-                        new CSharpGenerator(p.GetService<ILogger<CSharpGenerator>>(), csharpConfig));
+                    services
+                        .AddSingleton<IModelWatcher>(p =>
+                            new CSharpGenerator(p.GetService<ILogger<CSharpGenerator>>(), csharpConfig))
+                        .AddSingleton<IModelWatcher>(p =>
+                            new CSharpApiServerGenerator(p.GetService<ILogger<CSharpApiServerGenerator>>(), csharpConfig));
                 }
             }
 

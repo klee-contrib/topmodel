@@ -59,5 +59,10 @@
         /// Utilise la structure de projet legacy.
         /// </summary>
         public bool LegacyProjectPaths { get; set; }
+
+        /// <summary>
+        /// Répertoire dans lequel générer le serveur d'API.
+        /// </summary>
+        public string? ServerApiOutputDirectory { get; set; }
     }
 }
