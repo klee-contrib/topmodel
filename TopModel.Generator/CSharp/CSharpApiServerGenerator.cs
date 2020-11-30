@@ -131,7 +131,6 @@ namespace {_config.ApiNamespace}
                     {
                         "int" => "int",
                         "int?" => "int",
-                        "string" => "string",
                         "Guid" => "guid",
                         "Guid?" => "guid",
                         _ => null
