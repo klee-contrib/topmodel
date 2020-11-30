@@ -147,7 +147,7 @@ namespace TopModel.Generator
 
             using (var sw = new StreamWriter(_fileName, false, Encoding))
             {
-                if (EnableHeader && !newContent.StartsWith(StartCommentToken))
+                if (EnableHeader && !newContent.StartsWith($"{StartCommentToken}{Environment.NewLine}"))
                 {
                     sw.WriteLine(StartCommentToken);
                     sw.WriteLine($"{StartCommentToken} {HeaderMessage}");
