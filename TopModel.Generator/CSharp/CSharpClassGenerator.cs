@@ -633,16 +633,18 @@ namespace TopModel.Generator.CSharp
             w.WriteLine(2, "public enum Flags");
             w.WriteLine(2, "{");
 
-            foreach (var refValue in item.ReferenceValues!)
+            var flagProperty = item.Properties.OfType<IFieldProperty>().Single(rp => rp.Name == item.FlagProperty);
+            var flagValues = item.ReferenceValues.Where(refValue => int.TryParse((string)refValue.Value[flagProperty], out var _)).ToList();
+            foreach (var refValue in flagValues)
             {
-                var flag = int.Parse((string)refValue.Value[item.Properties.OfType<IFieldProperty>().Single(rp => rp.Name == item.FlagProperty)]);
+                var flag = int.Parse((string)refValue.Value[flagProperty]);
                 var label = item.LabelProperty != null
                     ? (string)refValue.Value[item.LabelProperty]
                     : refValue.Name;
 
                 w.WriteSummary(3, label);
                 w.WriteLine(3, $"{refValue.Name} = 0b{Convert.ToString(flag, 2)},");
-                if (item.ReferenceValues.IndexOf(refValue) != item.ReferenceValues.Count - 1)
+                if (flagValues.IndexOf(refValue) != flagValues.Count - 1)
                 {
                     w.WriteLine();
                 }

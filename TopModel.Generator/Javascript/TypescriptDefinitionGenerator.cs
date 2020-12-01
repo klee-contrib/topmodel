@@ -416,11 +416,13 @@ namespace TopModel.Generator.Javascript
                 {
                     fw.Write($"export enum {reference.Name}Flag {{\r\n");
 
-                    foreach (var refValue in reference.ReferenceValues)
+                    var flagProperty = reference.Properties.OfType<IFieldProperty>().Single(rp => rp.Name == reference.FlagProperty);
+                    var flagValues = reference.ReferenceValues.Where(refValue => int.TryParse((string)refValue.Value[flagProperty], out var _)).ToList();
+                    foreach (var refValue in flagValues)
                     {
-                        var flag = int.Parse((string)refValue.Value[reference.Properties.OfType<IFieldProperty>().Single(rp => rp.Name == reference.FlagProperty)]);
+                        var flag = int.Parse((string)refValue.Value[flagProperty]);
                         fw.Write($"    {refValue.Name} = 0b{Convert.ToString(flag, 2)}");
-                        if (reference.ReferenceValues.IndexOf(refValue) != reference.ReferenceValues.Count - 1)
+                        if (flagValues.IndexOf(refValue) != flagValues.Count - 1)
                         {
                             fw.WriteLine(",");
                         }
