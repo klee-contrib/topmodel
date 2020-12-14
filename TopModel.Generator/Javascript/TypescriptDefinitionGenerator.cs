@@ -190,7 +190,7 @@ namespace TopModel.Generator.Javascript
                     }
                     else
                     {
-                        throw new Exception("Seuls les 'kinds' 'list' et 'object' sont gérées.");
+                        fw.Write($"FieldEntry2<typeof {cp.Kind}, {cp.DomainKind!.TS!.Type}>");
                     }
                 }
                 else if (property is IFieldProperty field)
@@ -237,9 +237,13 @@ namespace TopModel.Generator.Javascript
                             fw.Write("\"list\",");
                         }
                     }
-                    else
+                    else if (cp.Kind == "object")
                     {
                         fw.Write("\"object\",");
+                    }
+                    else
+                    {
+                        fw.Write("\"field\",");
                     }
                 }
                 else
