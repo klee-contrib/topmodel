@@ -101,36 +101,47 @@ namespace TopModel.Generator.Javascript
             }
         }
 
-        private void GenerateClassFile(string fileName, Class classe)
+        private IEnumerable<string> GetFocusStoresImports(Class classe)
         {
-            using var fw = new FileWriter(fileName, _logger, false);
-
-            fw.Write("import {EntityToType, ");
-
-            if (classe.Properties.Any(p => p is IFieldProperty))
+            if (classe.Properties.Any(p => p is IFieldProperty || p is CompositionProperty cp && cp.DomainKind != null))
             {
-                fw.Write("FieldEntry2, ");
+                yield return "FieldEntry2";
             }
 
             if (classe.Properties.Any(p => p is CompositionProperty { Kind: "list" } cp && cp.Class == classe))
             {
-                fw.Write("ListEntry, ");
+                yield return "ListEntry";
             }
 
             if (classe.Properties.Any(p => p is CompositionProperty { Kind: "object" }))
             {
-                fw.Write("ObjectEntry, ");
+                yield return "ObjectEntry";
             }
 
             if (classe.Properties.Any(p => p is CompositionProperty { Kind: "list" } cp && cp.Composition == classe))
             {
-                fw.Write("RecursiveListEntry, ");
+                yield return "RecursiveListEntry";
             }
 
-            fw.Write("StoreNode} from \"@focus4/stores\";");
-            fw.Write("\r\nimport {");
-            fw.Write(string.Join(", ", GetDomainList(classe)));
-            fw.Write("} from \"../../domains\";\r\n");
+            foreach (var p in classe.Properties.OfType<CompositionProperty>().Where(p => p.DomainKind?.TS?.Import == "@focus4/stores"))
+            {
+                yield return p.DomainKind!.TS!.Type;
+            }
+
+            yield return "EntityToType";
+            yield return "StoreNode";
+        }
+
+        private void GenerateClassFile(string fileName, Class classe)
+        {
+            using var fw = new FileWriter(fileName, _logger, false);
+
+            fw.WriteLine($"import {{{string.Join(", ", GetFocusStoresImports(classe).OrderBy(x => x))}}} from \"@focus4/stores\";");
+
+            if (GetDomainList(classe).Any())
+            {
+                fw.WriteLine($"import {{{string.Join(", ", GetDomainList(classe))}}} from \"../../domains\";");
+            }
 
             var imports = GetImportList(classe);
             foreach (var import in imports)
@@ -190,7 +201,7 @@ namespace TopModel.Generator.Javascript
                     }
                     else
                     {
-                        fw.Write($"FieldEntry2<typeof {cp.Kind}, {cp.DomainKind!.TS!.Type}>");
+                        fw.Write($"FieldEntry2<typeof {cp.Kind}, {cp.DomainKind!.TS!.Type}<{cp.Composition.Name}>>");
                     }
                 }
                 else if (property is IFieldProperty field)
@@ -270,6 +281,22 @@ namespace TopModel.Generator.Javascript
                     fw.Write(property.Name.ToFirstLower());
                     fw.Write("\"\r\n");
                 }
+                else if (property is CompositionProperty cp3 && cp3.DomainKind != null)
+                {
+                    fw.Write("        name: \"");
+                    fw.Write(cp3.Name.ToFirstLower());
+                    fw.Write("\"");
+                    fw.Write(",\r\n        domain: ");
+                    fw.Write(cp3.DomainKind.Name);
+                    fw.Write(",\r\n        isRequired: true");
+                    fw.Write(",\r\n        label: \"");
+                    fw.Write(classe.Namespace.Module.ToFirstLower());
+                    fw.Write(".");
+                    fw.Write(classe.Name.ToFirstLower());
+                    fw.Write(".");
+                    fw.Write(property.Name.ToFirstLower());
+                    fw.Write("\"\r\n");
+                }
                 else if (property is CompositionProperty cp2 && cp2.Composition.Name != classe.Name)
                 {
                     fw.Write("        entity: ");
@@ -302,6 +329,7 @@ namespace TopModel.Generator.Javascript
             return classe.Properties
                 .OfType<IFieldProperty>()
                 .Select(property => property.Domain.Name)
+                .Concat(classe.Properties.OfType<CompositionProperty>().Where(cp => cp.DomainKind != null).Select(cp => cp.DomainKind!.Name))
                 .Distinct()
                 .OrderBy(x => x);
         }
@@ -314,27 +342,27 @@ namespace TopModel.Generator.Javascript
         {
             var types = classe.Properties
                 .OfType<CompositionProperty>()
-                .Select(property => property.Composition)
-                .Where(c => c.Name != classe.Name);
+                .Select(property => (property.Composition, property.DomainKind))
+                .Where(c => c.Composition.Name != classe.Name);
 
             if (classe.Extends != null)
             {
-                types = types.Concat(new[] { classe.Extends });
+                types = types.Concat(new[] { (classe.Extends, (Domain?)null) });
             }
 
             var currentModule = classe.Namespace.Module;
 
             var imports = types.Select(type =>
             {
-                var module = type.Namespace.Module;
-                var name = type.Name;
+                var module = type.Composition.Namespace.Module;
+                var name = type.Composition.Name;
 
                 module = module == currentModule
                     ? $"."
                     : $"../{module.ToLower()}";
 
                 return (
-                    import: $"{name}Entity, {name}EntityType",
+                    import: type.DomainKind == null ? $"{name}Entity, {name}EntityType" : name,
                     path: $"{module}/{name.ToDashCase()}");
             }).Distinct().ToList();
 
@@ -365,7 +393,17 @@ namespace TopModel.Generator.Javascript
                     .Select(p => (p.Domain.TS!.Type, p.Domain.TS.Import!))
                     .Distinct());
 
-            return imports.OrderBy(i => i.path.StartsWith(".") ? i.path : $"...{i.path}");
+            imports.AddRange(
+                classe.Properties.OfType<CompositionProperty>()
+                    .Where(p => p.DomainKind != null && p.DomainKind.TS!.Import != "@focus4/stores")
+                    .Select(p => (p.DomainKind!.TS!.Type, p.DomainKind.TS.Import!))
+                    .Distinct());
+
+            return imports
+                .GroupBy(i => i.path)
+                .Select(i => (import: string.Join(", ", i.Select(l => l.import)), path: i.Key))
+                .OrderBy(i => i.path.StartsWith(".") ? i.path : $"...{i.path}")
+                .ToList();
         }
 
         /// <summary>

@@ -555,6 +555,11 @@ namespace TopModel.Generator.CSharp
                         break;
                     case CompositionProperty cp:
                         usings.Add($"{item.Namespace.App}.{cp.Composition.CSharpNamepace}");
+                        if (cp.DomainKind != null)
+                        {
+                            usings.AddRange(cp.DomainKind.CSharp!.Usings);
+                        }
+
                         break;
                 }
             }
