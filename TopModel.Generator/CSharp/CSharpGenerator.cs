@@ -44,7 +44,7 @@ namespace TopModel.Generator.CSharp
                 GenerateDbContext();
             }
 
-            var namespaces = files.SelectMany(f => f.Classes.Select(c => c.CSharpNamepace)).Distinct();
+            var namespaces = files.SelectMany(f => f.Classes.Select(_config.GetNamespace)).Distinct();
             foreach (var ns in namespaces)
             {
                 GenerateReferences(ns);
@@ -53,7 +53,7 @@ namespace TopModel.Generator.CSharp
 
         private void GenerateDbContext()
         {
-            if (_config.DbContextProjectPath != null)
+            if (_config.DbContextPath != null)
             {
                 _dbContextGenerator.Generate(_files.Values.SelectMany(f => f.Classes).Where(c => c.IsPersistent));
             }
@@ -76,7 +76,7 @@ namespace TopModel.Generator.CSharp
         {
             _referenceAccessorGenerator.Generate(
                 _files.Values.SelectMany(f => f.Classes)
-                    .Where(c => c.Reference && c.CSharpNamepace == ns));
+                    .Where(c => c.Reference && _config.GetNamespace(c) == ns));
         }
     }
 }

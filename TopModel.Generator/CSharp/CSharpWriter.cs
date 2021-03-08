@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
@@ -58,7 +57,7 @@ namespace TopModel.Generator.CSharp
         /// <param name="name">Nom de la classe.</param>
         /// <param name="inheritedClass">Classe parente.</param>
         /// <param name="ifList">Liste des interfaces implémentées.</param>
-        public void WriteClassDeclaration(string name, string? inheritedClass, ICollection<string> ifList)
+        public void WriteClassDeclaration(string name, string? inheritedClass, params string[] ifList)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -74,22 +73,22 @@ namespace TopModel.Generator.CSharp
 
             sb.Append("public partial class ");
             sb.Append(name);
-            if (!string.IsNullOrEmpty(inheritedClass) || ifList != null && ifList.Count > 0)
+            if (!string.IsNullOrEmpty(inheritedClass) || ifList != null && ifList.Length > 0)
             {
                 sb.Append(" : ");
                 if (!string.IsNullOrEmpty(inheritedClass))
                 {
                     sb.Append(inheritedClass);
-                    if (ifList.Count > 0)
+                    if (ifList.Length > 0)
                     {
                         sb.Append(", ");
                     }
                 }
 
-                if (ifList.Count > 0)
+                if (ifList.Length > 0)
                 {
                     var enumerator = ifList.GetEnumerator();
-                    for (var i = 0; i < ifList.Count; ++i)
+                    for (var i = 0; i < ifList.Length; ++i)
                     {
                         if (!enumerator.MoveNext())
                         {
@@ -97,7 +96,7 @@ namespace TopModel.Generator.CSharp
                         }
 
                         sb.Append(enumerator.Current);
-                        if (i < ifList.Count - 1)
+                        if (i < ifList.Length - 1)
                         {
                             sb.Append(", ");
                         }
@@ -186,7 +185,7 @@ namespace TopModel.Generator.CSharp
         /// <summary>
         /// Retourne le code associé à la déclaration d'un Using.
         /// </summary>
-        /// <param name="nsName">Nom de la classe/namespace à importer.</param>
+        /// <param name="nsNames">Nom de la classe/namespace à importer.</param>
         public void WriteUsings(params string[] nsNames)
         {
             var systemUsings = nsNames.Where(name => name.StartsWith("System"));

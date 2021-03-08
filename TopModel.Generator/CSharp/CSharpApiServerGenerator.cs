@@ -8,11 +8,10 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace TopModel.Generator.CSharp
 {
-    using static SyntaxFactory;
-
     public class CSharpApiServerGenerator : GeneratorBase
     {
         private readonly CSharpConfig _config;
@@ -29,7 +28,7 @@ namespace TopModel.Generator.CSharp
 
         protected override void HandleFiles(IEnumerable<ModelFile> files)
         {
-            if (_config.ServerApiOutputDirectory == null)
+            if (_config.ApiGeneration != ApiGeneration.Server)
             {
                 return;
             }
@@ -50,14 +49,15 @@ namespace TopModel.Generator.CSharp
             var fileSplit = file.Name.Split("/");
             var path = $"/{string.Join("/", fileSplit.Skip(fileSplit.Length > 1 ? 1 : 0).SkipLast(1))}";
             var className = $"{fileSplit.Last()}Controller";
-            var filePath = $"{_config.ServerApiOutputDirectory}{path}/{className}.cs";
+            var apiPath = _config.ApiPath.Replace("{app}", file.Endpoints.First().Namespace.App).Replace("{module}", file.Module);
+            var filePath = $"{_config.OutputDirectory}/{apiPath}{path}/Controllers/{className}.cs";
 
             var text = File.Exists(filePath)
                 ? File.ReadAllText(filePath)
                 : $@"using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace {_config.ApiNamespace}
+namespace {apiPath}
 {{
     public class {className} : Controller
     {{

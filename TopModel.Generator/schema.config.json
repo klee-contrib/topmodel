@@ -126,19 +126,32 @@
           },
           "outputDirectory": {
             "type": "string",
-            "description": "Répertoire de génération"
+            "description": "Racine du répertoire de génération."
           },
-          "dbContextProjectPath": {
+          "persistantModelPath": {
+            "type": "string",
+            "description": "Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {module}/{app}.{module}DataContract."
+          },
+          "nonPersistantModelPath": {
+            "type": "string",
+            "description": "Localisation du modèle non-persisté, relative au répertoire de génération. Par défaut : {module}/{app}.{module}Contract/Dto."
+          },
+          "apiPath": {
+            "type": "string",
+            "description": "Localisation du l'API générée (client ou serveur), relatif au répertoire de génération. Par défaut : {app}.{module}."
+          },
+          "apiGeneration": {
+            "type": "string",
+            "description": "Mode de génération de l'API ('Client' ou 'Server')",
+            "enum": [ "Client", "Server" ]
+          },
+          "dbContextPath": {
             "type": "string",
             "description": "Nom du projet dans lequel mettre le DbContext."
           },
           "useEFMigrations": {
             "type": "boolean",
             "description": "Utilise les migrations EF pour créer/mettre à jour la base de données."
-          },
-          "useTypeSafeConstValues": {
-            "type": "boolean",
-            "description": "Utilise des types spécifiques pour les valeurs de listes statiques, au lieu de string."
           },
           "useLowerCaseSqlNames": {
             "type": "boolean",
@@ -150,32 +163,12 @@
           },
           "kinetix": {
             "type": "string",
-            "description": "Version de kinetix utilisée: Core, Framework ou Fmk.",
-            "enum": [ "Core", "Framework", "Fmk" ]
-          },
-          "legacyIdentity": {
-            "type": "boolean",
-            "description": "Définit un mode legacy pour Identité en .NET Framework."
+            "description": "Version de kinetix utilisée: Core, Framework ou None.",
+            "enum": [ "Core", "Framework", "None" ]
           },
           "noColumnOnAlias": {
             "type": "boolean",
             "description": "Retire les attributs de colonnes sur les alias."
-          },
-          "isWithEntityInterface": {
-            "type": "boolean",
-            "description": "Définit si les interfaces IEntity sont ajoutée à la génération."
-          },
-          "legacyProjectPaths": {
-            "type": "boolean",
-            "description": "Utilise la structure de projet legacy."
-          },
-          "apiNamespace": {
-            "type": "string",
-            "description": "Namespace de l'API (client ou server)."
-          },
-          "serverApiOutputDirectory": {
-            "type": "string",
-            "description": "Répertoire dans lequel générer le serveur d'API."
           }
         }
       }

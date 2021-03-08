@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -26,25 +25,13 @@ namespace TopModel.Generator.CSharp
         /// <param name="classes">Classes.</param>
         public void Generate(IEnumerable<Class> classes)
         {
-            if (_config.DbContextProjectPath == null)
+            if (_config.OutputDirectory == null || _config.DbContextPath == null)
             {
                 return;
             }
 
-            var rootNamespace = classes.First().Namespace.App;
-
-            var projectName = _config.DbContextProjectPath.Split('/').Last();
-            var strippedProjectName = RemoveDots(rootNamespace);
-
-            var dbContextName = $"{strippedProjectName}DbContext";
-            var schema = _config.DbSchema;
-            if (schema != null)
-            {
-                dbContextName = $"{schema.First().ToString().ToUpper() + schema.Substring(1)}DbContext";
-            }
-
-            var destDirectory = $"{_config.OutputDirectory}\\{_config.DbContextProjectPath}";
-
+            var dbContextName = _config.GetDbContextName(classes.First().Namespace.App);
+            var destDirectory = Path.Combine(_config.OutputDirectory, _config.DbContextPath);
             Directory.CreateDirectory(destDirectory);
 
             var targetFileName = Path.Combine(destDirectory, "generated", $"{dbContextName}.cs");
@@ -62,17 +49,15 @@ namespace TopModel.Generator.CSharp
                 usings.Add("Kinetix.Data.SqlClient");
             }
 
-            foreach (var ns in classes
-                .Select(cl => cl.CSharpNamepace)
-                .Distinct())
+            foreach (var ns in classes.Select(_config.GetNamespace).Distinct())
             {
-                usings.Add($"{rootNamespace}.{ns}");
+                usings.Add(ns);
             }
 
             w.WriteUsings(usings.ToArray());
 
             w.WriteLine();
-            w.WriteLine($"namespace {projectName}");
+            w.WriteLine($"namespace {_config.DbContextPath.Split("/").Last()}");
             w.WriteLine("{");
 
             if (_config.Kinetix == KinetixVersion.Core)
@@ -90,10 +75,8 @@ namespace TopModel.Generator.CSharp
             }
             else
             {
-                var inheritance = _config.LegacyIdentity ? string.Empty : " : DbContext";
-
                 w.WriteSummary(1, "DbContext généré pour Entity Framework 6.");
-                w.WriteLine(1, $"public partial class {dbContextName}{inheritance}");
+                w.WriteLine(1, $"public partial class {dbContextName}DbContext");
                 w.WriteLine(1, "{");
 
                 w.WriteSummary(2, "Constructeur par défaut.");
@@ -115,15 +98,7 @@ namespace TopModel.Generator.CSharp
             {
                 w.WriteLine();
                 w.WriteSummary(2, "Accès à l'entité " + classe.Name);
-
-                if (_config.LegacyIdentity && new[] { "User", "Role" }.Contains(classe.Name))
-                {
-                    w.WriteLine(2, "public override IDbSet<" + classe.Name + "> " + Pluralize(classe.Name) + " { get; set; }");
-                }
-                else
-                {
-                    w.WriteLine(2, "public DbSet<" + classe.Name + "> " + Pluralize(classe.Name) + " { get; set; }");
-                }
+                w.WriteLine(2, "public DbSet<" + classe.Name + "> " + Pluralize(classe.Name) + " { get; set; }");
             }
 
             if (_config.Kinetix == KinetixVersion.Core && _config.UseEFMigrations)

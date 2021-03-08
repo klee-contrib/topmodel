@@ -3,21 +3,21 @@
     /// <summary>
     /// Version de Kinetix.
     /// </summary>
-    public enum KinetixVersion
+    public enum ApiGeneration
     {
         /// <summary>
-        /// Kinetix .NET Core (par défaut).
+        /// Pas de génération.
         /// </summary>
-        Core,
+        None,
 
         /// <summary>
-        /// Kinetix .NET Framework.
+        /// Génération d'un serveur.
         /// </summary>
-        Framework,
+        Server,
 
         /// <summary>
-        /// Pas de Kinetix
+        /// Gébération d'un client.
         /// </summary>
-        None
+        Client
     }
 }

@@ -34,53 +34,49 @@ namespace TopModel.Generator.CSharp
                 return;
             }
 
-            var ns = classList.First().CSharpNamepace;
-
-            GenerateReferenceAccessorsInterface(classList, ns);
-            GenerateReferenceAccessorsImplementation(classList, ns);
+            GenerateReferenceAccessorsInterface(classList);
+            GenerateReferenceAccessorsImplementation(classList);
         }
 
         /// <summary>
         /// Génère l'implémentation des ReferenceAccessors.
         /// </summary>
         /// <param name="classList">Liste de ModelClass.</param>
-        /// <param name="nameSpaceName">Namespace.</param>
-        private void GenerateReferenceAccessorsImplementation(List<Class> classList, string nameSpaceName)
+        private void GenerateReferenceAccessorsImplementation(List<Class> classList)
         {
             if (_config.OutputDirectory == null)
             {
                 return;
             }
 
-            var nameSpacePrefix = nameSpaceName.Replace("DataContract", string.Empty);
-            var rootNamespace = classList.First().Namespace.App;
+            var firstClass = classList.First();
 
             string projectDir;
             string projectName;
             string implementationName;
-            if (_config.DbContextProjectPath != null)
+            if (_config.DbContextPath != null)
             {
-                projectDir = $"{_config.OutputDirectory}\\{_config.DbContextProjectPath}";
-                projectName = _config.DbContextProjectPath.Split('/').Last();
-                implementationName = $"{nameSpacePrefix}AccessorsDal";
+                projectDir = $"{_config.OutputDirectory}\\{_config.DbContextPath}";
+                projectName = _config.DbContextPath.Split('/').Last();
+                implementationName = $"{firstClass.Namespace.Module}AccessorsDal";
             }
             else
             {
-                projectName = $"{rootNamespace}.{nameSpacePrefix}Implementation";
-                projectDir = Path.Combine(GetImplementationDirectoryName(_config.OutputDirectory, rootNamespace), rootNamespace + "." + nameSpacePrefix + "Implementation\\Service.Implementation");
-                implementationName = $"Service{nameSpacePrefix}Accessors";
+                projectName = $"{firstClass.Namespace.App}.{firstClass.Namespace.Module}Implementation";
+                projectDir = $"{_config.OutputDirectory}\\{firstClass.Namespace.App}.Implementation\\{projectName}\\Service.Implementation";
+                implementationName = $"Service{firstClass.Namespace.Module}Accessors";
             }
 
             var interfaceName = $"I{implementationName}";
 
-            var implementationFileName = Path.Combine(projectDir, _config.DbContextProjectPath == null ? "generated" : "generated\\Reference", $"{implementationName}.cs");
+            var implementationFileName = Path.Combine(projectDir, _config.DbContextPath == null ? "generated" : "generated\\Reference", $"{implementationName}.cs");
 
             using var w = new CSharpWriter(implementationFileName, _logger);
 
             var usings = new[]
             {
                 "System.Collections.Generic",
-                $"{rootNamespace}.{nameSpaceName}"
+                _config.GetNamespace(firstClass)
             }.ToList();
 
             if (_config.Kinetix == KinetixVersion.Core)
@@ -92,18 +88,14 @@ namespace TopModel.Generator.CSharp
                 usings.Add("System.ServiceModel");
             }
 
-            if (_config.DbContextProjectPath == null)
+            if (_config.DbContextPath == null)
             {
-                usings.Add($"{rootNamespace}.{nameSpacePrefix}Contract");
-                usings.Add(_config.Kinetix == KinetixVersion.Fmk
-                    ? "Fmk.Broker"
-                    : "Kinetix.Broker");
+                usings.Add(_config.GetNamespace(firstClass).Replace("DataContract", "Contract"));
+                usings.Add("Kinetix.Broker");
 
                 if (classList.Any(classe => classe.OrderProperty != null || classe.LabelProperty != null && classe.LabelProperty.Name != "Libelle"))
                 {
-                    usings.Add(_config.Kinetix == KinetixVersion.Fmk
-                        ? "Fmk.Data.SqlClient"
-                        : "Kinetix.Data.SqlClient");
+                    usings.Add("Kinetix.Data.SqlClient");
                 }
             }
             else
@@ -116,7 +108,7 @@ namespace TopModel.Generator.CSharp
             w.WriteLine();
             w.WriteNamespace(projectName);
 
-            w.WriteSummary(1, "This interface was automatically generated. It contains all the operations to load the reference lists declared in namespace " + nameSpaceName + ".");
+            w.WriteSummary(1, "This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + firstClass.Namespace.Module + ".");
 
             if (_config.Kinetix == KinetixVersion.Core)
             {
@@ -127,15 +119,15 @@ namespace TopModel.Generator.CSharp
                 w.WriteLine(1, "[ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerCall, IncludeExceptionDetailInFaults = true)]");
             }
 
-            w.WriteClassDeclaration(implementationName, null, new List<string> { interfaceName });
+            w.WriteClassDeclaration(implementationName, null, interfaceName);
 
-            if (_config.DbContextProjectPath != null)
+            if (_config.DbContextPath != null)
             {
-                var dbContextName = $"{rootNamespace}DbContext";
+                var dbContextName = _config.GetDbContextName(firstClass.Namespace.App);
                 var schema = _config.DbSchema;
                 if (schema != null)
                 {
-                    dbContextName = $"{schema.First().ToString().ToUpper() + schema.Substring(1)}DbContext";
+                    dbContextName = $"{schema.First().ToString().ToUpper() + schema[1..]}DbContext";
                 }
 
                 w.WriteLine(2, $"private readonly {dbContextName} _dbContext;");
@@ -163,10 +155,10 @@ namespace TopModel.Generator.CSharp
 
             foreach (var classe in classList)
             {
-                var serviceName = "Load" + (_config.DbContextProjectPath == null ? $"{classe.Name}List" : Pluralize(classe.Name));
+                var serviceName = "Load" + (_config.DbContextPath == null ? $"{classe.Name}List" : Pluralize(classe.Name));
                 w.WriteLine(2, "/// <inheritdoc cref=\"" + interfaceName + "." + serviceName + "\" />");
                 w.WriteLine(2, "public ICollection<" + classe.Name + "> " + serviceName + "()\r\n{");
-                w.WriteLine(3, LoadReferenceAccessorBody(_config.DbContextProjectPath == null, classe));
+                w.WriteLine(3, LoadReferenceAccessorBody(_config.DbContextPath == null, classe));
                 w.WriteLine(2, "}");
 
                 if (classList.IndexOf(classe) != classList.Count - 1)
@@ -183,34 +175,32 @@ namespace TopModel.Generator.CSharp
         /// Génère l'interface déclarant les ReferenceAccessors d'un namespace.
         /// </summary>
         /// <param name="classList">Liste de ModelClass.</param>
-        /// <param name="nameSpaceName">Namespace.</param>
-        private void GenerateReferenceAccessorsInterface(IEnumerable<Class> classList, string nameSpaceName)
+        private void GenerateReferenceAccessorsInterface(IEnumerable<Class> classList)
         {
             if (_config.OutputDirectory == null)
             {
                 return;
             }
 
-            var nameSpacePrefix = nameSpaceName.Replace("DataContract", string.Empty);
-            var rootNamespace = classList.First().Namespace.App;
+            var firstClass = classList.First();
 
             string projectDir;
             string projectName;
             string interfaceName;
-            if (_config.DbContextProjectPath != null)
+            if (_config.DbContextPath != null)
             {
-                projectDir = $"{_config.OutputDirectory}\\{_config.DbContextProjectPath}";
-                projectName = _config.DbContextProjectPath.Split('/').Last();
-                interfaceName = $"I{nameSpacePrefix}AccessorsDal";
+                projectDir = $"{_config.OutputDirectory}\\{_config.DbContextPath}";
+                projectName = _config.DbContextPath.Split('/').Last();
+                interfaceName = $"I{firstClass.Namespace.Module}AccessorsDal";
             }
             else
             {
-                projectName = $"{rootNamespace}.{nameSpacePrefix}Contract";
-                projectDir = Path.Combine(GetDirectoryForProject(_config.LegacyProjectPaths, _config.OutputDirectory, false, rootNamespace, $"{nameSpacePrefix}Contract"));
-                interfaceName = $"IService{nameSpacePrefix}Accessors";
+                projectName = _config.GetNamespace(firstClass).Replace("DataContract", "Contract");
+                projectDir = $"{_config.OutputDirectory}\\{_config.GetModelPath(firstClass).Replace("DataContract", "Contract")}";
+                interfaceName = $"IService{firstClass.Namespace.Module}Accessors";
             }
 
-            var interfaceFileName = Path.Combine(projectDir, _config.DbContextProjectPath == null ? "generated" : "generated\\Reference", $"{interfaceName}.cs");
+            var interfaceFileName = Path.Combine(projectDir, _config.DbContextPath == null ? "generated" : "generated\\Reference", $"{interfaceName}.cs");
 
             using var w = new CSharpWriter(interfaceFileName, _logger);
 
@@ -218,7 +208,7 @@ namespace TopModel.Generator.CSharp
             {
                 w.WriteUsings(
                     "System.Collections.Generic",
-                    $"{rootNamespace}.{nameSpaceName}",
+                    _config.GetNamespace(firstClass),
                     "Kinetix.Services.Annotations");
             }
             else
@@ -226,13 +216,13 @@ namespace TopModel.Generator.CSharp
                 w.WriteUsings(
                     "System.Collections.Generic",
                     "System.ServiceModel",
-                    $"{rootNamespace}.{nameSpaceName}",
-                    _config.Kinetix == KinetixVersion.Fmk ? "Fmk.ServiceModel" : "Kinetix.ServiceModel");
+                    _config.GetNamespace(firstClass),
+                    "Kinetix.ServiceModel");
             }
 
             w.WriteLine();
             w.WriteNamespace(projectName);
-            w.WriteSummary(1, "This interface was automatically generated. It contains all the operations to load the reference lists declared in namespace " + nameSpaceName + ".");
+            w.WriteSummary(1, "This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + firstClass.Namespace.Module + ".");
 
             if (_config.Kinetix == KinetixVersion.Core)
             {
@@ -257,7 +247,7 @@ namespace TopModel.Generator.CSharp
                     w.WriteLine(2, "[OperationContract]");
                 }
 
-                w.WriteLine(2, "ICollection<" + classe.Name + "> Load" + (_config.DbContextProjectPath == null ? $"{classe.Name}List" : Pluralize(classe.Name)) + "();");
+                w.WriteLine(2, "ICollection<" + classe.Name + "> Load" + (_config.DbContextPath == null ? $"{classe.Name}List" : Pluralize(classe.Name)) + "();");
 
                 if (count != classList.Count())
                 {

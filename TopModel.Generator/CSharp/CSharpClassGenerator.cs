@@ -35,7 +35,7 @@ namespace TopModel.Generator.CSharp
                 throw new Exception($"Le type C# de tous les domaines des propriétés de {item.Name} doit être défini.");
             }
 
-            var directory = GetDirectoryForModelClass(_config.LegacyProjectPaths, _config.OutputDirectory, item.Trigram != null, item.Namespace.App, item.CSharpNamepace);
+            var directory = Path.Combine(_config.OutputDirectory, _config.GetModelPath(item), "generated");
             Directory.CreateDirectory(directory);
 
             var fileName = Path.Combine(directory, item.Name + ".cs");
@@ -44,7 +44,7 @@ namespace TopModel.Generator.CSharp
 
             GenerateUsings(w, item);
             w.WriteLine();
-            w.WriteNamespace($"{item.Namespace.App}.{item.CSharpNamepace}");
+            w.WriteNamespace(_config.GetNamespace(item));
             w.WriteSummary(1, item.Comment);
             GenerateClassDeclaration(w, item);
             w.WriteLine("}");
@@ -107,34 +107,12 @@ namespace TopModel.Generator.CSharp
                 }
             }
 
-            ICollection<string> interfaces = new List<string>();
-
-            if (_config.IsWithEntityInterface && item.IsPersistent)
-            {
-                if (item.PrimaryKey != null)
-                {
-                    var name = item.PrimaryKey.Name;
-                    var type = item.PrimaryKey.Domain.CSharp!.Type;
-
-                    if (name == "Id" && type == "int?")
-                    {
-                        interfaces.Add("IIdEntity");
-                    }
-                    else if (name == "Code" && type == "string")
-                    {
-                        interfaces.Add("ICodeEntity");
-                    }
-                }
-
-                interfaces.Add("IEntity");
-            }
-
-            w.WriteClassDeclaration(item.Name, item.Extends?.Name, interfaces);
+            w.WriteClassDeclaration(item.Name, item.Extends?.Name);
 
             GenerateConstProperties(w, item);
             GenerateConstructors(w, item);
 
-            if (_config.DbContextProjectPath == null && item.IsPersistent)
+            if (_config.DbContextPath == null && item.IsPersistent)
             {
                 w.WriteLine();
                 w.WriteLine(2, "#region Meta données");
@@ -155,11 +133,6 @@ namespace TopModel.Generator.CSharp
             GenerateProperties(w, item);
             GenerateExtensibilityMethods(w, item);
             w.WriteLine(1, "}");
-
-            if (_config.UseTypeSafeConstValues)
-            {
-                GenerateConstPropertiesClass(w, item);
-            }
         }
 
         /// <summary>
@@ -183,57 +156,9 @@ namespace TopModel.Generator.CSharp
                         : refValue.Name;
 
                     w.WriteSummary(2, label);
-
-                    if (_config.UseTypeSafeConstValues)
-                    {
-                        w.WriteLine(2, string.Format("public readonly {2}Code {0} = new {2}Code({1});", refValue.Name, code, item.Name));
-                    }
-                    else
-                    {
-                        w.WriteLine(2, string.Format("public const string {0} = \"{1}\";", refValue.Name, code));
-                    }
-
+                    w.WriteLine(2, string.Format("public const string {0} = \"{1}\";", refValue.Name, code));
                     w.WriteLine();
                 }
-            }
-        }
-
-        /// <summary>
-        /// Génération des constantes statiques.
-        /// </summary>
-        /// <param name="w">Writer.</param>
-        /// <param name="item">La classe générée.</param>
-        private void GenerateConstPropertiesClass(CSharpWriter w, Class item)
-        {
-            if (item.ReferenceValues?.Any() ?? false)
-            {
-                w.WriteLine();
-                w.WriteLine("#pragma warning disable SA1402");
-                w.WriteLine();
-                w.WriteSummary(1, $"Type des valeurs pour {item.Name}");
-                w.WriteLine(1, $"public sealed class {item.Name}Code : TypeSafeEnum {{");
-                w.WriteLine();
-
-                w.WriteLine(2, $"private readonly Dictionary<string, {item.Name}Code> Instance = new Dictionary<string, {item.Name}Code>();");
-                w.WriteLine();
-
-                w.WriteSummary(2, "Constructeur");
-                w.WriteParam("value", "Valeur");
-                w.WriteLine(2, $"public {item.Name}Code(string value)");
-                w.WriteLine(3, ": base(value) {");
-                w.WriteLine(3, "Instance[value] = this;");
-                w.WriteLine(2, "}");
-                w.WriteLine();
-
-                w.WriteLine(2, $"public explicit operator {item.Name}Code(string value) {{");
-                w.WriteLine(3, $"System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof({item.Name}).TypeHandle);");
-                w.WriteLine(3, "if (Instance.TryGetValue(value, out var result)) {");
-                w.WriteLine(4, "return result;");
-                w.WriteLine(3, "} else {");
-                w.WriteLine(4, "throw new InvalidCastException();");
-                w.WriteLine(3, "}");
-                w.WriteLine(2, "}");
-                w.WriteLine(1, "}");
             }
         }
 
@@ -428,7 +353,7 @@ namespace TopModel.Generator.CSharp
                 {
                     w.WriteAttribute(2, "Domain", $@"Domains.{prop.Domain.CSharpName}");
                 }
-                else
+                else if (_config.Kinetix == KinetixVersion.Framework)
                 {
                     w.WriteAttribute(2, "Domain", $@"""{prop.Domain.Name}""");
                 }
@@ -483,7 +408,7 @@ namespace TopModel.Generator.CSharp
         {
             var usings = new List<string> { "System" };
 
-            if (item.Properties.Any(p => p is CompositionProperty { Kind: "list" }) || _config.UseTypeSafeConstValues && (item.ReferenceValues?.Any() ?? false))
+            if (item.Properties.Any(p => p is CompositionProperty { Kind: "list" }))
             {
                 usings.Add("System.Collections.Generic");
             }
@@ -521,15 +446,6 @@ namespace TopModel.Generator.CSharp
                 {
                     usings.Add("Kinetix.ComponentModel");
                 }
-                else
-                {
-                    usings.Add("Fmk.ComponentModel");
-                }
-            }
-
-            if (_config.IsWithEntityInterface && item.IsPersistent)
-            {
-                usings.Add("Kinetix.ComponentModel.Entity");
             }
 
             foreach (var property in item.Properties)
@@ -545,16 +461,16 @@ namespace TopModel.Generator.CSharp
                 switch (property)
                 {
                     case AssociationProperty ap when !ap.AsAlias:
-                        usings.Add($"{item.Namespace.App}.{ap.Association.CSharpNamepace}");
+                        usings.Add(_config.GetNamespace(ap.Association));
                         break;
                     case AliasProperty { Property: AssociationProperty ap2 }:
-                        usings.Add($"{item.Namespace.App}.{ap2.Association.CSharpNamepace}");
+                        usings.Add(_config.GetNamespace(ap2.Association));
                         break;
                     case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp }:
-                        usings.Add($"{item.Namespace.App}.{rp.Class.CSharpNamepace}");
+                        usings.Add(_config.GetNamespace(rp.Class));
                         break;
                     case CompositionProperty cp:
-                        usings.Add($"{item.Namespace.App}.{cp.Composition.CSharpNamepace}");
+                        usings.Add(_config.GetNamespace(cp.Composition));
                         if (cp.DomainKind != null)
                         {
                             usings.AddRange(cp.DomainKind.CSharp!.Usings);
@@ -565,7 +481,7 @@ namespace TopModel.Generator.CSharp
             }
 
             w.WriteUsings(usings
-                .Where(u => u != $"{item.Namespace.App}.{item.CSharpNamepace}")
+                .Where(u => u != _config.GetNamespace(item))
                 .Distinct()
                 .ToArray());
         }

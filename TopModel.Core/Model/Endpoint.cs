@@ -1,10 +1,15 @@
 ﻿using System.Collections.Generic;
+using TopModel.Core.FileModel;
 
 namespace TopModel.Core
 {
     public class Endpoint
     {
+        public Namespace Namespace { get; set; }
+
 #nullable disable
+        public ModelFile ModelFile { get; set; }
+
         public string Name { get; set; }
 
         public string Method { get; set; }

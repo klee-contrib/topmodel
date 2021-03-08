@@ -50,8 +50,6 @@ namespace TopModel.Core
 
         public bool IsPersistent => Properties.Any(p => !(p is AliasProperty) && p.PrimaryKey) || Properties.All(p => p is AssociationProperty);
 
-        public string CSharpNamepace => IsPersistent ? $"{Namespace.Module}DataContract" : $"{Namespace.Module}Contract";
-
         public override string ToString()
         {
             return Name;

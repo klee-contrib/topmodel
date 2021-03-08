@@ -69,6 +69,12 @@ namespace TopModel.Core.Loaders
                 classe.Namespace = ns;
             }
 
+            foreach (var endpoint in file.Endpoints)
+            {
+                endpoint.ModelFile = file;
+                endpoint.Namespace = ns;
+            }
+
             return file;
         }
     }

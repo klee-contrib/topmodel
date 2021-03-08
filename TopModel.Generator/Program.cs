@@ -9,11 +9,10 @@ using TopModel.Generator.Ssdt;
 using TopModel.Core.Loaders;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using static TopModel.Core.ModelUtils;
 
 namespace TopModel.Generator
 {
-    using static ModelUtils;
-
     public static class Program
     {
         public static void Main(string[] args)
@@ -92,7 +91,6 @@ namespace TopModel.Generator
                 foreach (var csharpConfig in config.Csharp)
                 {
                     CombinePath(dn, csharpConfig, c => c.OutputDirectory);
-                    CombinePath(dn, csharpConfig, c => c.ServerApiOutputDirectory);
 
                     services
                         .AddSingleton<IModelWatcher>(p =>
