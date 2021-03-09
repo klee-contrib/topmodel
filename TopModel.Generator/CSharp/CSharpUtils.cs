@@ -32,6 +32,23 @@ namespace TopModel.Generator.CSharp
             return res;
         }
 
+        public static string GetPropertyTypeName(IProperty prop, bool nonNullable = false)
+        {
+            var type = prop switch
+            {
+                IFieldProperty fp => fp.Domain.CSharp?.Type ?? string.Empty,
+                CompositionProperty cp => cp.Kind switch
+                {
+                    "object" => cp.Composition.Name,
+                    "list" => $"IEnumerable<{cp.Composition.Name}>",
+                    string _ => $"{cp.DomainKind!.CSharp!.Type}<{cp.Composition.Name}>"
+                },
+                _ => string.Empty
+            };
+
+            return nonNullable && type.EndsWith("?") ? type[0..^1] : type;
+        }
+
         /// <summary>
         /// Détermine si le type est un type de base C#.
         /// </summary>

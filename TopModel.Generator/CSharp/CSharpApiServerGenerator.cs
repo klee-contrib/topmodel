@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
+using static TopModel.Generator.CSharp.CSharpUtils;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace TopModel.Generator.CSharp
@@ -28,11 +29,6 @@ namespace TopModel.Generator.CSharp
 
         protected override void HandleFiles(IEnumerable<ModelFile> files)
         {
-            if (_config.ApiGeneration != ApiGeneration.Server)
-            {
-                return;
-            }
-
             foreach (var file in files)
             {
                 HandleFile(file);
@@ -143,23 +139,6 @@ namespace {apiPath}
             }
 
             return string.Join("/", split);
-        }
-
-        private string GetPropertyTypeName(IProperty prop, bool nonNullable = false)
-        {
-            var type = prop switch
-            {
-                IFieldProperty fp => fp.Domain.CSharp?.Type ?? string.Empty,
-                CompositionProperty cp => cp.Kind switch
-                {
-                    "object" => cp.Composition.Name,
-                    "list" => $"IEnumerable<{cp.Composition.Name}>",
-                    string _ => $"{cp.DomainKind!.CSharp!.Type}<{cp.Composition.Name}>"
-                },
-                _ => string.Empty
-            };
-
-            return nonNullable && type.EndsWith("?") ? type[0..^1] : type;
         }
 
         private string GetParam(IProperty param)

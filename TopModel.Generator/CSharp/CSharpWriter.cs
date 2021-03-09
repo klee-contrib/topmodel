@@ -144,7 +144,7 @@ namespace TopModel.Generator.CSharp
         }
 
         /// <summary>
-        /// Ecrit  le commentaire de parametre.
+        /// Ecrit le commentaire de paramètre.
         /// </summary>
         /// <param name="paramName">Nom du paramètre.</param>
         /// <param name="value">Valeur du paramètre.</param>
@@ -152,12 +152,12 @@ namespace TopModel.Generator.CSharp
         {
             if (!string.IsNullOrEmpty(paramName) && !string.IsNullOrEmpty(value))
             {
-                WriteLine(2, LoadParam(paramName, value));
+                WriteLine(2, LoadParam(paramName, value, "param"));
             }
         }
 
         /// <summary>
-        /// Ecrit  le commentaire de returns.
+        /// Ecrit le commentaire de returns.
         /// </summary>
         /// <param name="indentationLevel">Niveau d'indention.</param>
         /// <param name="value">Description du returns.</param>
@@ -183,6 +183,19 @@ namespace TopModel.Generator.CSharp
         }
 
         /// <summary>
+        /// Ecrit le commentaire de paramètre de type.
+        /// </summary>
+        /// <param name="paramName">Nom du paramètre.</param>
+        /// <param name="value">Valeur du paramètre.</param>
+        public void WriteTypeParam(string paramName, string value)
+        {
+            if (!string.IsNullOrEmpty(paramName) && !string.IsNullOrEmpty(value))
+            {
+                WriteLine(2, LoadParam(paramName, value, "typeparam"));
+            }
+        }
+
+        /// <summary>
         /// Retourne le code associé à la déclaration d'un Using.
         /// </summary>
         /// <param name="nsNames">Nom de la classe/namespace à importer.</param>
@@ -202,8 +215,9 @@ namespace TopModel.Generator.CSharp
         /// </summary>
         /// <param name="paramName">Nom du paramètre.</param>
         /// <param name="value">Description du paramètre.</param>
+        /// <param name="tag">Tag XML.</param>
         /// <returns>Code généré.</returns>
-        private static string LoadParam(string paramName, string value)
+        private static string LoadParam(string paramName, string value, string tag)
         {
             if (string.IsNullOrEmpty(paramName))
             {
@@ -216,7 +230,7 @@ namespace TopModel.Generator.CSharp
             }
 
             var sb = new StringBuilder();
-            sb.Append("/// <param name=\"");
+            sb.Append($"/// <{tag} name=\"");
             sb.Append(paramName);
             sb.Append("\">");
             sb.Append(value);
@@ -225,7 +239,7 @@ namespace TopModel.Generator.CSharp
                 sb.Append('.');
             }
 
-            sb.Append("</param>");
+            sb.Append($"</{tag}>");
             return sb.ToString();
         }
 

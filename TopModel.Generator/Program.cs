@@ -92,11 +92,19 @@ namespace TopModel.Generator
                 {
                     CombinePath(dn, csharpConfig, c => c.OutputDirectory);
 
-                    services
-                        .AddSingleton<IModelWatcher>(p =>
-                            new CSharpGenerator(p.GetService<ILogger<CSharpGenerator>>(), csharpConfig))
-                        .AddSingleton<IModelWatcher>(p =>
+                    services.AddSingleton<IModelWatcher>(p =>
+                        new CSharpGenerator(p.GetService<ILogger<CSharpGenerator>>(), csharpConfig));
+
+                    if (csharpConfig.ApiGeneration == ApiGeneration.Server)
+                    {
+                        services.AddSingleton<IModelWatcher>(p =>
                             new CSharpApiServerGenerator(p.GetService<ILogger<CSharpApiServerGenerator>>(), csharpConfig));
+                    }
+                    else if (csharpConfig.ApiGeneration == ApiGeneration.Client)
+                    {
+                        services.AddSingleton<IModelWatcher>(p =>
+                            new CSharpApiClientGenerator(p.GetService<ILogger<CSharpApiClientGenerator>>(), csharpConfig));
+                    }
                 }
             }
 
