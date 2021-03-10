@@ -77,7 +77,7 @@ namespace TopModel.Generator.CSharp
         /// <param name="item">Classe à générer.</param>
         private void GenerateClassDeclaration(CSharpWriter w, Class item)
         {
-            if (item.Reference)
+            if (item.Reference && _config.Kinetix != KinetixVersion.None)
             {
                 if (item.PrimaryKey!.Domain.Name == "DO_ID")
                 {
@@ -94,7 +94,7 @@ namespace TopModel.Generator.CSharp
                 w.WriteAttribute(1, "DefaultProperty", $@"""{item.DefaultProperty}""");
             }
 
-            if (item.IsPersistent)
+            if (item.IsPersistent && !_config.NoPersistance)
             {
                 var sqlName = _config.UseLowerCaseSqlNames ? item.SqlName.ToLower() : item.SqlName;
                 if (_config.DbSchema != null)
@@ -112,7 +112,7 @@ namespace TopModel.Generator.CSharp
             GenerateConstProperties(w, item);
             GenerateConstructors(w, item);
 
-            if (_config.DbContextPath == null && item.IsPersistent)
+            if (_config.DbContextPath == null && item.IsPersistent && !_config.NoPersistance)
             {
                 w.WriteLine();
                 w.WriteLine(2, "#region Meta données");
@@ -322,7 +322,7 @@ namespace TopModel.Generator.CSharp
             if (property is IFieldProperty fp)
             {
                 var prop = fp is AliasProperty alp ? alp.Property : fp;
-                if ((!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.IsPersistent && !sameColumnSet.Contains(prop.SqlName))
+                if ((!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.IsPersistent && !_config.NoPersistance && !sameColumnSet.Contains(prop.SqlName))
                 {
                     var sqlName = _config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
                     if (prop.Domain.CSharp!.UseSqlTypeName)
@@ -340,13 +340,16 @@ namespace TopModel.Generator.CSharp
                     w.WriteAttribute(2, "Required");
                 }
 
-                if (prop is AssociationProperty ap && !ap.AsAlias)
+                if (_config.Kinetix != KinetixVersion.None)
                 {
-                    w.WriteAttribute(2, "ReferencedType", $"typeof({ap.Association.Name})");
-                }
-                else if (fp is AliasProperty alp2 && !alp2.PrimaryKey && alp2.Property.PrimaryKey)
-                {
-                    w.WriteAttribute(2, "ReferencedType", $"typeof({alp2.Property.Class.Name})");
+                    if (prop is AssociationProperty ap && !ap.AsAlias)
+                    {
+                        w.WriteAttribute(2, "ReferencedType", $"typeof({ap.Association.Name})");
+                    }
+                    else if (fp is AliasProperty alp2 && !alp2.PrimaryKey && alp2.Property.PrimaryKey)
+                    {
+                        w.WriteAttribute(2, "ReferencedType", $"typeof({alp2.Property.Class.Name})");
+                    }
                 }
 
                 if (_config.Kinetix == KinetixVersion.Core)
@@ -429,7 +432,7 @@ namespace TopModel.Generator.CSharp
                 item.Properties.OfType<IFieldProperty>().Any(fp =>
             {
                 var prop = fp is AliasProperty alp ? alp.Property : fp;
-                return (!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.IsPersistent;
+                return (!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.IsPersistent && !_config.NoPersistance;
             }))
             {
                 usings.Add("System.ComponentModel.DataAnnotations.Schema");

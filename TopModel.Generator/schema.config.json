@@ -169,6 +169,10 @@
           "noColumnOnAlias": {
             "type": "boolean",
             "description": "Retire les attributs de colonnes sur les alias."
+          },
+          "noPersistance": {
+            "type": "boolean",
+            "description": "Considère tous les classes comme étant non-persistantes (= pas d'attribut SQL)."
           }
         }
       }

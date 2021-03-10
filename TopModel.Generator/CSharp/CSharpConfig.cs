@@ -64,6 +64,11 @@ namespace TopModel.Generator.CSharp
         public bool NoColumnOnAlias { get; set; }
 
         /// <summary>
+        /// Considère tous les classes comme étant non-persistantes (= pas d'attribut SQL).
+        /// </summary>
+        public bool NoPersistance { get; set; }
+
+        /// <summary>
         /// Récupère le nom du DbContext.
         /// </summary>
         /// <param name="appName">Nom de l'application.</param>
@@ -84,10 +89,8 @@ namespace TopModel.Generator.CSharp
         /// <returns>Chemin.</returns>
         public string GetModelPath(Class classe)
         {
-            var baseModelPath = classe.IsPersistent ? PersistantModelPath : NonPersistantModelPath;
-            return !baseModelPath.Contains("{app}") || !baseModelPath.Contains("{module}")
-                ? throw new Exception("Les localisations de modèle doivent contenir '{app}' et '{module}'.")
-                : baseModelPath.Replace("{app}", classe.Namespace.App).Replace("{module}", classe.Namespace.Module);
+            var baseModelPath = classe.IsPersistent && !NoPersistance ? PersistantModelPath : NonPersistantModelPath;
+            return baseModelPath.Replace("{app}", classe.Namespace.App).Replace("{module}", classe.Namespace.Module);
         }
 
         /// <summary>
@@ -97,11 +100,14 @@ namespace TopModel.Generator.CSharp
         /// <returns>Namespace.</returns>
         public string GetNamespace(Class classe)
         {
-            var ns = GetModelPath(classe).Replace("/", ".")
+            var baseModelPath = classe.IsPersistent && !NoPersistance ? PersistantModelPath : NonPersistantModelPath;
+            var ns = baseModelPath.Replace("/", ".")
                 .Replace(".Contract", string.Empty)
                 .Replace(".DataContract", string.Empty)
                 .Replace(".Dto", string.Empty);
-            return ns[ns.IndexOf(classe.Namespace.App)..];
+            return ns[Math.Max(0, ns.IndexOf("{app}"))..]
+                .Replace("{app}", classe.Namespace.App)
+                .Replace("{module}", classe.Namespace.Module);
         }
     }
 }

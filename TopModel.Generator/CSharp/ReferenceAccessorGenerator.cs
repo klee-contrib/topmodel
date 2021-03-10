@@ -29,7 +29,7 @@ namespace TopModel.Generator.CSharp
                 .OrderBy(x => Pluralize(x.Name), StringComparer.Ordinal)
                 .ToList();
 
-            if (!classList.Any())
+            if (!classList.Any() || _config.Kinetix == KinetixVersion.None)
             {
                 return;
             }
