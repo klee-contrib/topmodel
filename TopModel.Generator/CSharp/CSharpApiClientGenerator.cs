@@ -39,7 +39,7 @@ namespace TopModel.Generator.CSharp
 
             var fileSplit = file.Name.Split("/");
             var path = $"/{string.Join("/", fileSplit.Skip(fileSplit.Length > 1 ? 1 : 0).SkipLast(1))}";
-            var className = $"{file.Module}Client";
+            var className = $"{fileSplit.Last()}Client";
             var apiPath = _config.ApiPath.Replace("{app}", file.Endpoints.First().Namespace.App).Replace("{module}", file.Module);
             var filePath = $"{_config.OutputDirectory}/{apiPath}{path}/generated/{className}.cs";
 
@@ -70,9 +70,15 @@ namespace TopModel.Generator.CSharp
                         break;
                     case CompositionProperty cp:
                         usings.Add(_config.GetNamespace(cp.Composition));
+
                         if (cp.DomainKind != null)
                         {
                             usings.AddRange(cp.DomainKind.CSharp!.Usings);
+                        }
+
+                        if (cp.Kind == "list")
+                        {
+                            usings.Add("System.Collections.Generic");
                         }
 
                         break;
@@ -88,6 +94,7 @@ namespace TopModel.Generator.CSharp
             fw.WriteClassDeclaration(className, null);
 
             fw.WriteLine(2, "private readonly HttpClient _client;");
+            fw.WriteLine(2, "private readonly JsonSerializerOptions _jsOptions = new() { IgnoreNullValues = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };");
             fw.WriteLine();
 
             fw.WriteSummary(2, "Constructeur");
@@ -107,10 +114,7 @@ namespace TopModel.Generator.CSharp
                     fw.WriteParam(param.Name.ToFirstLower(), param.Comment);
                 }
 
-                if (endpoint.Returns != null)
-                {
-                    fw.WriteReturns(2, endpoint.Returns.Comment);
-                }
+                fw.WriteReturns(2, endpoint.Returns?.Comment ?? "Task.");
 
                 fw.Write("        public async Task");
 
@@ -123,7 +127,7 @@ namespace TopModel.Generator.CSharp
 
                 foreach (var param in endpoint.Params)
                 {
-                    fw.Write($"{GetPropertyTypeName(param)} {param.Name.ToFirstLower()}");
+                    fw.Write($"{GetPropertyTypeName(param, param.IsRouteParam())} {param.Name.ToFirstLower()}");
                     if (endpoint.Params.Last() != param)
                     {
                         fw.Write(", ");
@@ -134,9 +138,10 @@ namespace TopModel.Generator.CSharp
                 fw.WriteLine(2, "{");
 
                 var bodyParam = endpoint.GetBodyParam();
-                fw.WriteLine(3, $"var res = await _client.{endpoint.Method.ToLower().ToFirstUpper()}Async($\"{endpoint.Route}\"{(bodyParam != null ? $", GetBody({bodyParam.Name})" : string.Empty)});");
 
-                fw.WriteLine(3, $"await HandleErrors(res);");
+                fw.WriteLine(3, $"await EnsureAuthentication();");
+                fw.WriteLine(3, $"var res = await _client.{endpoint.Method.ToLower().ToFirstUpper()}Async($\"{endpoint.Route}\"{(bodyParam != null ? $", GetBody({bodyParam.Name})" : string.Empty)});");
+                fw.WriteLine(3, $"await EnsureSuccess(res);");
 
                 if (endpoint.Returns != null)
                 {
@@ -153,8 +158,18 @@ namespace TopModel.Generator.CSharp
             fw.WriteReturns(2, "Contenu.");
             fw.WriteLine(2, "private async Task<T> Deserialize<T>(HttpResponseMessage response)");
             fw.WriteLine(2, "{");
-            fw.WriteLine(3, "return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { IgnoreNullValues = true });");
+            fw.WriteLine(3, "var res = await response.Content.ReadAsStringAsync();");
+            fw.WriteLine(3, "return JsonSerializer.Deserialize<T>(res == string.Empty ? \"{}\" : res, _jsOptions);");
             fw.WriteLine(2, "}");
+
+            fw.WriteLine();
+            fw.WriteSummary(2, "Assure que l'authentification est configurée.");
+            fw.WriteLine(2, "private partial Task EnsureAuthentication();");
+
+            fw.WriteLine();
+            fw.WriteSummary(2, "Gère les erreurs éventuelles retournées par l'API appelée.");
+            fw.WriteParam("response", "Réponse HTTP");
+            fw.WriteLine(2, "private partial Task EnsureSuccess(HttpResponseMessage response);");
 
             fw.WriteLine();
             fw.WriteSummary(2, "Récupère le body d'une requête pour l'objet donné.");
@@ -163,13 +178,8 @@ namespace TopModel.Generator.CSharp
             fw.WriteReturns(2, "Contenu.");
             fw.WriteLine(2, "private StringContent GetBody<T>(T input)");
             fw.WriteLine(2, "{");
-            fw.WriteLine(3, "return new StringContent(JsonSerializer.Serialize(input, new JsonSerializerOptions { IgnoreNullValues = true }), Encoding.UTF8, \"application/json\");");
+            fw.WriteLine(3, "return new StringContent(JsonSerializer.Serialize(input, _jsOptions), Encoding.UTF8, \"application/json\");");
             fw.WriteLine(2, "}");
-
-            fw.WriteLine();
-            fw.WriteSummary(2, "Gère les erreurs éventuelles retournées par l'API appelée.");
-            fw.WriteParam("response", "Réponse HTTP");
-            fw.WriteLine(2, "private partial Task HandleErrors(HttpResponseMessage response);");
 
             fw.WriteLine(1, "}");
             fw.WriteLine("}");
