@@ -45,7 +45,11 @@ namespace TopModel.Generator.CSharp
 
             using var fw = new CSharpWriter(filePath, _logger);
 
-            var usings = new List<string> { "System.Net.Http", "System.Text", "System.Text.Json", "System.Threading.Tasks" };
+            var usings = new List<string> { "System.Net.Http", "System.Threading.Tasks" };
+            if (file.Endpoints.Any(e => e.Returns != null))
+            {
+                usings.AddRange(new[] { "System.Text", "System.Text.Json" });
+            }
 
             foreach (var property in file.Endpoints.SelectMany(e => e.Params.Concat(new[] { e.Returns }).Where(p => p != null)))
             {
@@ -94,9 +98,12 @@ namespace TopModel.Generator.CSharp
             fw.WriteClassDeclaration(className, null);
 
             fw.WriteLine(2, "private readonly HttpClient _client;");
-            fw.WriteLine(2, "private readonly JsonSerializerOptions _jsOptions = new() { IgnoreNullValues = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };");
-            fw.WriteLine();
+            if (file.Endpoints.Any(e => e.Returns != null))
+            {
+                fw.WriteLine(2, "private readonly JsonSerializerOptions _jsOptions = new() { IgnoreNullValues = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };");
+            }
 
+            fw.WriteLine();
             fw.WriteSummary(2, "Constructeur");
             fw.WriteParam("client", "HttpClient injecté.");
             fw.WriteLine(2, $"public {className}(HttpClient client)");
@@ -140,7 +147,7 @@ namespace TopModel.Generator.CSharp
                 var bodyParam = endpoint.GetBodyParam();
 
                 fw.WriteLine(3, $"await EnsureAuthentication();");
-                fw.WriteLine(3, $"var res = await _client.{endpoint.Method.ToLower().ToFirstUpper()}Async($\"{endpoint.Route}\"{(bodyParam != null ? $", GetBody({bodyParam.Name})" : string.Empty)});");
+                fw.WriteLine(3, $"var res = await _client.{endpoint.Method.ToLower().ToFirstUpper()}Async($\"{endpoint.Route}\"{(bodyParam != null ? $", GetBody({bodyParam.Name})" : endpoint.Method == "POST" ? ", new StringContent(string.Empty)" : string.Empty)});");
                 fw.WriteLine(3, $"await EnsureSuccess(res);");
 
                 if (endpoint.Returns != null)
@@ -151,16 +158,19 @@ namespace TopModel.Generator.CSharp
                 fw.WriteLine(2, "}");
             }
 
-            fw.WriteLine();
-            fw.WriteSummary(2, "Déserialize le contenu d'une réponse HTTP.");
-            fw.WriteTypeParam("T", "Type de destination.");
-            fw.WriteParam("response", "Réponse HTTP");
-            fw.WriteReturns(2, "Contenu.");
-            fw.WriteLine(2, "private async Task<T> Deserialize<T>(HttpResponseMessage response)");
-            fw.WriteLine(2, "{");
-            fw.WriteLine(3, "var res = await response.Content.ReadAsStringAsync();");
-            fw.WriteLine(3, "return JsonSerializer.Deserialize<T>(res == string.Empty ? \"{}\" : res, _jsOptions);");
-            fw.WriteLine(2, "}");
+            if (file.Endpoints.Any(e => e.Returns != null))
+            {
+                fw.WriteLine();
+                fw.WriteSummary(2, "Déserialize le contenu d'une réponse HTTP.");
+                fw.WriteTypeParam("T", "Type de destination.");
+                fw.WriteParam("response", "Réponse HTTP");
+                fw.WriteReturns(2, "Contenu.");
+                fw.WriteLine(2, "private async Task<T> Deserialize<T>(HttpResponseMessage response)");
+                fw.WriteLine(2, "{");
+                fw.WriteLine(3, "var res = await response.Content.ReadAsStringAsync();");
+                fw.WriteLine(3, "return JsonSerializer.Deserialize<T>(res == string.Empty ? \"{}\" : res, _jsOptions);");
+                fw.WriteLine(2, "}");
+            }
 
             fw.WriteLine();
             fw.WriteSummary(2, "Assure que l'authentification est configurée.");
@@ -171,15 +181,18 @@ namespace TopModel.Generator.CSharp
             fw.WriteParam("response", "Réponse HTTP");
             fw.WriteLine(2, "private partial Task EnsureSuccess(HttpResponseMessage response);");
 
-            fw.WriteLine();
-            fw.WriteSummary(2, "Récupère le body d'une requête pour l'objet donné.");
-            fw.WriteTypeParam("T", "Type source.");
-            fw.WriteParam("input", "Entrée");
-            fw.WriteReturns(2, "Contenu.");
-            fw.WriteLine(2, "private StringContent GetBody<T>(T input)");
-            fw.WriteLine(2, "{");
-            fw.WriteLine(3, "return new StringContent(JsonSerializer.Serialize(input, _jsOptions), Encoding.UTF8, \"application/json\");");
-            fw.WriteLine(2, "}");
+            if (file.Endpoints.Any(e => e.GetBodyParam() != null))
+            {
+                fw.WriteLine();
+                fw.WriteSummary(2, "Récupère le body d'une requête pour l'objet donné.");
+                fw.WriteTypeParam("T", "Type source.");
+                fw.WriteParam("input", "Entrée");
+                fw.WriteReturns(2, "Contenu.");
+                fw.WriteLine(2, "private StringContent GetBody<T>(T input)");
+                fw.WriteLine(2, "{");
+                fw.WriteLine(3, "return new StringContent(JsonSerializer.Serialize(input, _jsOptions), Encoding.UTF8, \"application/json\");");
+                fw.WriteLine(2, "}");
+            }
 
             fw.WriteLine(1, "}");
             fw.WriteLine("}");
