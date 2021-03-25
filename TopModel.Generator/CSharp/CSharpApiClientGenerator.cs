@@ -45,8 +45,10 @@ namespace TopModel.Generator.CSharp
 
             using var fw = new CSharpWriter(filePath, _logger);
 
+            var hasJson = file.Endpoints.Any(e => e.Returns != null) || file.Endpoints.Any(e => e.GetBodyParam() != null);
+
             var usings = new List<string> { "System.Net.Http", "System.Threading.Tasks" };
-            if (file.Endpoints.Any(e => e.Returns != null))
+            if (hasJson)
             {
                 usings.AddRange(new[] { "System.Text", "System.Text.Json" });
             }
@@ -98,7 +100,7 @@ namespace TopModel.Generator.CSharp
             fw.WriteClassDeclaration(className, null);
 
             fw.WriteLine(2, "private readonly HttpClient _client;");
-            if (file.Endpoints.Any(e => e.Returns != null))
+            if (hasJson)
             {
                 fw.WriteLine(2, "private readonly JsonSerializerOptions _jsOptions = new() { IgnoreNullValues = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };");
             }
