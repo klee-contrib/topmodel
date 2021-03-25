@@ -53,6 +53,11 @@ namespace TopModel.Generator.CSharp
                 usings.AddRange(new[] { "System.Text", "System.Text.Json" });
             }
 
+            if (file.Endpoints.Any(e => e.GetQueryParams().Any()))
+            {
+                usings.AddRange(new[] { "System.Collections.Generic", "System.Linq" });
+            }
+
             foreach (var property in file.Endpoints.SelectMany(e => e.Params.Concat(new[] { e.Returns }).Where(p => p != null)))
             {
                 if (property is IFieldProperty fp)
@@ -137,6 +142,12 @@ namespace TopModel.Generator.CSharp
                 foreach (var param in endpoint.Params)
                 {
                     fw.Write($"{GetPropertyTypeName(param, param.IsRouteParam())} {param.Name.ToFirstLower()}");
+
+                    if (param.IsQueryParam())
+                    {
+                        fw.Write(" = null");
+                    }
+
                     if (endpoint.Params.Last() != param)
                     {
                         fw.Write(", ");
@@ -149,7 +160,21 @@ namespace TopModel.Generator.CSharp
                 var bodyParam = endpoint.GetBodyParam();
 
                 fw.WriteLine(3, $"await EnsureAuthentication();");
-                fw.WriteLine(3, $"var res = await _client.{endpoint.Method.ToLower().ToFirstUpper()}Async($\"{endpoint.Route}\"{(bodyParam != null ? $", GetBody({bodyParam.Name})" : endpoint.Method == "POST" ? ", new StringContent(string.Empty)" : string.Empty)});");
+
+                if (endpoint.GetQueryParams().Any())
+                {
+                    fw.WriteLine(3, "var query = await new FormUrlEncodedContent(new Dictionary<string, string>");
+                    fw.WriteLine(3, "{");
+
+                    foreach (var queryParam in endpoint.GetQueryParams())
+                    {
+                        fw.WriteLine(4, $@"[""{queryParam.Name}""] = {queryParam.Name}?.ToString(),");
+                    }
+
+                    fw.WriteLine(3, "}.Where(kv => kv.Value != null)).ReadAsStringAsync();");
+                }
+
+                fw.WriteLine(3, $"var res = await _client.{endpoint.Method.ToLower().ToFirstUpper()}Async($\"{endpoint.Route}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"{(bodyParam != null ? $", GetBody({bodyParam.Name})" : endpoint.Method == "POST" || endpoint.Method == "PUT" ? ", new StringContent(string.Empty)" : string.Empty)});");
                 fw.WriteLine(3, $"await EnsureSuccess(res);");
 
                 if (endpoint.Returns != null)
