@@ -45,17 +45,29 @@ namespace TopModel.Generator.CSharp
 
             using var fw = new CSharpWriter(filePath, _logger);
 
-            var hasJson = file.Endpoints.Any(e => e.Returns != null) || file.Endpoints.Any(e => e.GetBodyParam() != null);
+            var hasBody = file.Endpoints.Any(e => e.GetBodyParam() != null);
+            var hasJson = file.Endpoints.Any(e => e.Returns != null) || hasBody;
 
             var usings = new List<string> { "System.Net.Http", "System.Threading.Tasks" };
+
+            if (hasBody)
+            {
+                usings.Add("System.Text");
+            }
+
             if (hasJson)
             {
-                usings.AddRange(new[] { "System.Text", "System.Text.Json" });
+                usings.Add("System.Text.Json");
             }
 
             if (file.Endpoints.Any(e => e.GetQueryParams().Any()))
             {
                 usings.AddRange(new[] { "System.Collections.Generic", "System.Linq" });
+
+                if (file.Endpoints.Any(e => e.GetQueryParams().Any(qp => GetPropertyTypeName(qp) != "string")))
+                {
+                    usings.Add("System.Globalization");
+                }
             }
 
             foreach (var property in file.Endpoints.SelectMany(e => e.Params.Concat(new[] { e.Returns }).Where(p => p != null)))
@@ -168,7 +180,13 @@ namespace TopModel.Generator.CSharp
 
                     foreach (var queryParam in endpoint.GetQueryParams())
                     {
-                        fw.WriteLine(4, $@"[""{queryParam.Name}""] = {queryParam.Name}?.ToString(),");
+                        var toString = GetPropertyTypeName(queryParam) switch
+                        {
+                            "string" => string.Empty,
+                            _ => $"?.ToString(CultureInfo.InvariantCulture)"
+                        };
+
+                        fw.WriteLine(4, $@"[""{queryParam.Name}""] = {queryParam.Name}{toString},");
                     }
 
                     fw.WriteLine(3, "}.Where(kv => kv.Value != null)).ReadAsStringAsync();");
@@ -208,7 +226,7 @@ namespace TopModel.Generator.CSharp
             fw.WriteParam("response", "Réponse HTTP");
             fw.WriteLine(2, "private partial Task EnsureSuccess(HttpResponseMessage response);");
 
-            if (file.Endpoints.Any(e => e.GetBodyParam() != null))
+            if (hasBody)
             {
                 fw.WriteLine();
                 fw.WriteSummary(2, "Récupère le body d'une requête pour l'objet donné.");
