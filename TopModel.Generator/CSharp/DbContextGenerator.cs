@@ -38,7 +38,7 @@ namespace TopModel.Generator.CSharp
             using var w = new CSharpWriter(targetFileName, _logger);
 
             var usings = new List<string>();
-            if (_config.Kinetix == KinetixVersion.Core)
+            if (_config.Kinetix != KinetixVersion.Framework)
             {
                 usings.Add("Microsoft.EntityFrameworkCore");
             }
@@ -60,7 +60,7 @@ namespace TopModel.Generator.CSharp
             w.WriteLine($"namespace {_config.DbContextPath.Split("/").Last()}");
             w.WriteLine("{");
 
-            if (_config.Kinetix == KinetixVersion.Core)
+            if (_config.Kinetix != KinetixVersion.Framework)
             {
                 w.WriteSummary(1, "DbContext généré pour Entity Framework Core.");
                 w.WriteLine(1, $"public partial class {dbContextName} : DbContext");
@@ -101,7 +101,7 @@ namespace TopModel.Generator.CSharp
                 w.WriteLine(2, "public DbSet<" + classe.Name + "> " + Pluralize(classe.Name) + " { get; set; }");
             }
 
-            if (_config.Kinetix == KinetixVersion.Core && _config.UseEFMigrations)
+            if (_config.Kinetix != KinetixVersion.Framework && _config.UseEFMigrations)
             {
                 w.WriteLine();
                 w.WriteSummary(2, "Personalisation du modèle.");
@@ -109,23 +109,35 @@ namespace TopModel.Generator.CSharp
                 w.WriteLine(2, "protected override void OnModelCreating(ModelBuilder modelBuilder)");
                 w.WriteLine(2, "{");
 
+                var hasFk = false;
                 foreach (var prop in classes.SelectMany(c => c.Properties.OfType<AssociationProperty>()))
                 {
+                    hasFk = true;
                     w.WriteLine(3, $"modelBuilder.Entity<{prop.Class.Name}>().HasOne<{prop.Association}>().WithMany().HasForeignKey(p => p.{prop.Name}).OnDelete(DeleteBehavior.Restrict);");
                 }
 
-                w.WriteLine();
+                if (hasFk)
+                {
+                    w.WriteLine();
+                }
 
+                var hasUk = false;
                 foreach (var uk in classes.SelectMany(c => c.UniqueKeys ?? new List<IList<IFieldProperty>>()))
                 {
+                    hasUk = true;
                     var expr = uk.Count == 1 ? $"p.{uk.Single().Name}" : $"new {{ {string.Join(", ", uk.Select(p => $"p.{p.Name}"))} }}";
                     w.WriteLine(3, $"modelBuilder.Entity<{uk.First().Class}>().HasIndex(p => {expr}).IsUnique();");
                 }
 
-                w.WriteLine();
+                if (hasUk)
+                {
+                    w.WriteLine();
+                }
 
+                var hasData = false;
                 foreach (var classe in classes.Where(c => c.ReferenceValues != null).OrderBy(c => c.Name))
                 {
+                    hasData = true;
                     w.WriteLine(3, $"modelBuilder.Entity<{classe.Name}>().HasData(");
                     foreach (var refValue in classe.ReferenceValues!)
                     {
@@ -150,7 +162,11 @@ namespace TopModel.Generator.CSharp
                     w.Write(");\r\n");
                 }
 
-                w.WriteLine();
+                if (hasData)
+                {
+                    w.WriteLine();
+                }
+
                 w.WriteLine(3, "OnModelCreatingPartial(modelBuilder);");
 
                 w.WriteLine(2, "}");
