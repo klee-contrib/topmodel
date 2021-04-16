@@ -26,9 +26,16 @@ namespace TopModel.Generator
 
         public static string GetParamName(this IProperty property)
         {
-            return !(property is AliasProperty alp) || !alp.Property.PrimaryKey
+            var param = property is not AliasProperty alp || !alp.Property.PrimaryKey
                 ? property.Name.ToFirstLower()
                 : $"{alp.Property.Class.Trigram?.ToLower() ?? alp.Property.Class.Name.ToFirstLower()}{property.Name}";
+
+            if (param.StartsWith("_"))
+            {
+                return param[1..];
+            }
+
+            return param;
         }
 
         public static bool IsBodyParam(this IProperty property)

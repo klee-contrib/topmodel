@@ -137,7 +137,7 @@ namespace TopModel.Generator.CSharp
 
                 foreach (var param in endpoint.Params)
                 {
-                    fw.WriteParam(param.Name.ToFirstLower(), param.Comment);
+                    fw.WriteParam(param.GetParamName(), param.Comment);
                 }
 
                 fw.WriteReturns(2, endpoint.Returns?.Comment ?? "Task.");
@@ -153,7 +153,7 @@ namespace TopModel.Generator.CSharp
 
                 foreach (var param in endpoint.Params)
                 {
-                    fw.Write($"{GetPropertyTypeName(param, param.IsRouteParam())} {param.Name.ToFirstLower()}");
+                    fw.Write($"{GetPropertyTypeName(param, param.IsRouteParam())} {param.GetParamName()}");
 
                     if (param.IsQueryParam())
                     {
@@ -186,7 +186,7 @@ namespace TopModel.Generator.CSharp
                             _ => $"?.ToString(CultureInfo.InvariantCulture)"
                         };
 
-                        fw.WriteLine(4, $@"[""{queryParam.Name}""] = {queryParam.Name}{toString},");
+                        fw.WriteLine(4, $@"[""{queryParam.GetParamName()}""] = {queryParam.GetParamName()}{toString},");
                     }
 
                     fw.WriteLine(3, "}.Where(kv => kv.Value != null)).ReadAsStringAsync();");
@@ -243,40 +243,6 @@ namespace TopModel.Generator.CSharp
             fw.WriteLine("}");
         }
 
-        private string GetRoute(Endpoint endpoint)
-        {
-            var split = endpoint.Route.Split("/");
-
-            for (var i = 0; i < split.Length; i++)
-            {
-                if (split[i].StartsWith("{"))
-                {
-                    var routeParamName = split[i][1..^1];
-                    var param = endpoint.Params.OfType<IFieldProperty>().SingleOrDefault(param => param.GetParamName() == routeParamName);
-
-                    if (param == null)
-                    {
-                        throw new Exception($"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.");
-                    }
-
-                    var paramType = param.Domain.CSharp!.Type switch
-                    {
-                        "int" => "int",
-                        "int?" => "int",
-                        "Guid" => "guid",
-                        "Guid?" => "guid",
-                        _ => null
-                    };
-                    if (paramType != null)
-                    {
-                        split[i] = $"{{{routeParamName}:{paramType}}}";
-                    }
-                }
-            }
-
-            return string.Join("/", split);
-        }
-
         private string GetPropertyTypeName(IProperty prop, bool nonNullable = false)
         {
             var type = prop switch
@@ -292,24 +258,6 @@ namespace TopModel.Generator.CSharp
             };
 
             return nonNullable && type.EndsWith("?") ? type[0..^1] : type;
-        }
-
-        private string GetParam(IProperty param)
-        {
-            var sb = new StringBuilder();
-            if (param.IsBodyParam())
-            {
-                sb.Append("[FromBody] ");
-            }
-
-            sb.Append($@"{GetPropertyTypeName(param, param.IsRouteParam())} {param.GetParamName()}");
-
-            if (param.IsQueryParam())
-            {
-                sb.Append(" = null");
-            }
-
-            return sb.ToString();
         }
     }
 }
