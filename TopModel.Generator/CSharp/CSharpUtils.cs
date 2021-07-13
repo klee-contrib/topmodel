@@ -41,12 +41,24 @@ namespace TopModel.Generator.CSharp
                 {
                     "object" => cp.Composition.Name,
                     "list" => $"IEnumerable<{cp.Composition.Name}>",
+                    "async-list" => $"IAsyncEnumerable<{cp.Composition.Name}>",
                     string _ => $"{cp.DomainKind!.CSharp!.Type}<{cp.Composition.Name}>"
                 },
                 _ => string.Empty
             };
 
             return nonNullable && type.EndsWith("?") ? type[0..^1] : type;
+        }
+
+        public static string GetReturnTypeName(IProperty? prop)
+        {
+            if (prop == null)
+            {
+                return "async Task";
+            }
+
+            var typeName = GetPropertyTypeName(prop, true);
+            return typeName.StartsWith("IAsyncEnumerable") ? typeName : $"async Task<{typeName}>";
         }
 
         /// <summary>

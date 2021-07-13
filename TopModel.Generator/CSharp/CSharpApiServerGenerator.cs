@@ -74,7 +74,7 @@ namespace {apiPath}
         /// </summary>{string.Join(Environment.NewLine, new[] { string.Empty }.Concat(endpoint.Params.Select(param => $@"        /// <param name=""{param.GetParamName()}"">{param.Comment}</param>")))}
         /// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>
         [Http{endpoint.Method.ToLower().ToFirstUpper()}(""{GetRoute(endpoint)}"")]
-        public async Task{(endpoint.Returns != null ? $"<{GetPropertyTypeName(endpoint.Returns, true)}>" : string.Empty)} {endpoint.Name}({string.Join(", ", endpoint.Params.Select(GetParam))})
+        public {GetReturnTypeName(endpoint.Returns)} {endpoint.Name}({string.Join(", ", endpoint.Params.Select(GetParam))})
         {{
 
         }}

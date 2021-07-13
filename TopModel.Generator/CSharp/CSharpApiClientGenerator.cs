@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using TopModel.Core.FileModel;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
+using static TopModel.Generator.CSharp.CSharpUtils;
 
 namespace TopModel.Generator.CSharp
 {
@@ -99,7 +98,7 @@ namespace TopModel.Generator.CSharp
                             usings.AddRange(cp.DomainKind.CSharp!.Usings);
                         }
 
-                        if (cp.Kind == "list")
+                        if (cp.Kind == "list" || cp.Kind == "async-list")
                         {
                             usings.Add("System.Collections.Generic");
                         }
@@ -144,9 +143,15 @@ namespace TopModel.Generator.CSharp
 
                 fw.Write("        public async Task");
 
-                if (endpoint.Returns != null)
+                var returnType = endpoint.Returns != null ? GetPropertyTypeName(endpoint.Returns) : null;
+                if (returnType?.StartsWith("IAsyncEnumerable") ?? false)
                 {
-                    fw.Write($"<{GetPropertyTypeName(endpoint.Returns)}>");
+                    returnType = returnType.Replace("IAsyncEnumerable", "IEnumerable");
+                }
+
+                if (returnType != null)
+                {
+                    fw.Write($"<{returnType}>");
                 }
 
                 fw.Write($" {endpoint.Name}(");
@@ -192,12 +197,12 @@ namespace TopModel.Generator.CSharp
                     fw.WriteLine(3, "}.Where(kv => kv.Value != null)).ReadAsStringAsync();");
                 }
 
-                fw.WriteLine(3, $"var res = await _client.{endpoint.Method.ToLower().ToFirstUpper()}Async($\"{endpoint.Route}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"{(bodyParam != null ? $", GetBody({bodyParam.Name})" : endpoint.Method == "POST" || endpoint.Method == "PUT" ? ", new StringContent(string.Empty)" : string.Empty)});");
+                fw.WriteLine(3, $"using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.{endpoint.Method.ToLower().ToFirstUpper()}, $\"{endpoint.Route}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = GetBody({bodyParam.Name}) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)});");
                 fw.WriteLine(3, $"await EnsureSuccess(res);");
 
-                if (endpoint.Returns != null)
+                if (returnType != null)
                 {
-                    fw.WriteLine(3, $"return await Deserialize<{GetPropertyTypeName(endpoint.Returns)}>(res);");
+                    fw.WriteLine(3, $"return await Deserialize<{returnType}>(res);");
                 }
 
                 fw.WriteLine(2, "}");
@@ -212,8 +217,8 @@ namespace TopModel.Generator.CSharp
                 fw.WriteReturns(2, "Contenu.");
                 fw.WriteLine(2, "private async Task<T> Deserialize<T>(HttpResponseMessage response)");
                 fw.WriteLine(2, "{");
-                fw.WriteLine(3, "var res = await response.Content.ReadAsStringAsync();");
-                fw.WriteLine(3, "return JsonSerializer.Deserialize<T>(res == string.Empty ? \"{}\" : res, _jsOptions);");
+                fw.WriteLine(3, "using var res = await response.Content.ReadAsStreamAsync();");
+                fw.WriteLine(3, "return await JsonSerializer.DeserializeAsync<T>(res, _jsOptions);");
                 fw.WriteLine(2, "}");
             }
 
@@ -241,23 +246,6 @@ namespace TopModel.Generator.CSharp
 
             fw.WriteLine(1, "}");
             fw.WriteLine("}");
-        }
-
-        private string GetPropertyTypeName(IProperty prop, bool nonNullable = false)
-        {
-            var type = prop switch
-            {
-                IFieldProperty fp => fp.Domain.CSharp?.Type ?? string.Empty,
-                CompositionProperty cp => cp.Kind switch
-                {
-                    "object" => cp.Composition.Name,
-                    "list" => $"IEnumerable<{cp.Composition.Name}>",
-                    string _ => $"{cp.DomainKind!.CSharp!.Type}<{cp.Composition.Name}>"
-                },
-                _ => string.Empty
-            };
-
-            return nonNullable && type.EndsWith("?") ? type[0..^1] : type;
         }
     }
 }

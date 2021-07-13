@@ -114,7 +114,7 @@ namespace TopModel.Core.Loaders
                                 break;
                             case "kind":
                                 cp.Kind = value.Value;
-                                if (cp.Kind != "object" && cp.Kind != "list")
+                                if (cp.Kind != "object" && cp.Kind != "list" && cp.Kind != "async-list")
                                 {
                                     relationships.Add((cp, "kind"), new Relation(value));
                                 }
