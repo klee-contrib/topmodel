@@ -45,13 +45,19 @@ namespace TopModel.Generator.CSharp
             using var fw = new CSharpWriter(filePath, _logger);
 
             var hasBody = file.Endpoints.Any(e => e.GetBodyParam() != null);
-            var hasJson = file.Endpoints.Any(e => e.Returns != null) || hasBody;
+            var hasReturn = file.Endpoints.Any(e => e.Returns != null);
+            var hasJson = hasReturn || hasBody;
 
             var usings = new List<string> { "System.Net.Http", "System.Threading.Tasks" };
 
             if (hasBody)
             {
                 usings.Add("System.Text");
+            }
+
+            if (hasReturn)
+            {
+                usings.Add("System.Net");
             }
 
             if (hasJson)
@@ -208,7 +214,7 @@ namespace TopModel.Generator.CSharp
                 fw.WriteLine(2, "}");
             }
 
-            if (file.Endpoints.Any(e => e.Returns != null))
+            if (hasReturn)
             {
                 fw.WriteLine();
                 fw.WriteSummary(2, "Déserialize le contenu d'une réponse HTTP.");
@@ -217,6 +223,11 @@ namespace TopModel.Generator.CSharp
                 fw.WriteReturns(2, "Contenu.");
                 fw.WriteLine(2, "private async Task<T> Deserialize<T>(HttpResponseMessage response)");
                 fw.WriteLine(2, "{");
+                fw.WriteLine(3, "if (response.StatusCode == HttpStatusCode.NoContent)");
+                fw.WriteLine(3, "{");
+                fw.WriteLine(4, "return default;");
+                fw.WriteLine(3, "}");
+                fw.WriteLine();
                 fw.WriteLine(3, "using var res = await response.Content.ReadAsStreamAsync();");
                 fw.WriteLine(3, "return await JsonSerializer.DeserializeAsync<T>(res, _jsOptions);");
                 fw.WriteLine(2, "}");
