@@ -135,7 +135,7 @@ namespace TopModel.Generator.CSharp
             fw.WriteLine(3, "_client = client;");
             fw.WriteLine(2, "}");
 
-            foreach (var endpoint in file.Endpoints)
+            foreach (var endpoint in file.Endpoints.OrderBy(endpoint => endpoint.Name))
             {
                 fw.WriteLine();
                 fw.WriteSummary(2, endpoint.Description);

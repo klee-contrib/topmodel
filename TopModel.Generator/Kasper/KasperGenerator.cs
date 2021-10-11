@@ -302,6 +302,7 @@ namespace TopModel.Generator.Kasper
             fw.WriteLine(2, "Collections.unmodifiableList(Arrays.asList(new String[] {");
 
             var classes = _files.SelectMany(c => c.Value.Classes)
+                .Distinct()
                 .Where(c => !c.Properties.All(p => p is AssociationProperty))
                 .Select(c => $"{_config.PackageName}.{c.Namespace.Module.ToLower()}.{c}")
                 .OrderBy(c => c).ToList();
@@ -325,7 +326,9 @@ namespace TopModel.Generator.Kasper
 
         private void GenerateDtResources(string module)
         {
-            var classes = _files.Values.SelectMany(f => f.Classes)
+            var classes = _files.Values
+                .SelectMany(f => f.Classes)
+                .Distinct()
                 .Where(c => c.Namespace.Module == module && !c.Properties.All(p => p is AssociationProperty))
                 .OrderBy(c => c.Name)
                 .ToList();

@@ -32,13 +32,17 @@ namespace TopModel.Generator.ProceduralSql
                 _files[file.Name] = file;
             }
 
-            _schemaGenerator?.GenerateSchemaScript(_files.Values.SelectMany(f => f.Classes));
+            _schemaGenerator?.GenerateSchemaScript(_files.Values.SelectMany(f => f.Classes).Distinct());
             GenerateListInitScript();
         }
 
         private void GenerateListInitScript()
         {
-            var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues != null);
+            var classes = _files.Values
+                .SelectMany(f => f.Classes)
+                .Distinct()
+                .Where(c => c.ReferenceValues != null);
+
             if (classes.Any())
             {
                 _schemaGenerator?.GenerateListInitScript(classes);

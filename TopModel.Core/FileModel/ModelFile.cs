@@ -23,6 +23,8 @@ namespace TopModel.Core.FileModel
 
         public IDictionary<object, Relation> Relationships { get; set; } = new Dictionary<object, Relation>();
 
+        public IList<Alias> Aliases { get; set; }
+
         public override string ToString()
         {
             return Name;

@@ -16,6 +16,7 @@ namespace TopModel.Generator.CSharp
     public class CSharpApiServerGenerator : GeneratorBase
     {
         private readonly CSharpConfig _config;
+        private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
         private readonly ILogger<CSharpApiServerGenerator> _logger;
 
         public CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, CSharpConfig config)
@@ -31,6 +32,7 @@ namespace TopModel.Generator.CSharp
         {
             foreach (var file in files)
             {
+                _files[file.Name] = file;
                 HandleFile(file);
             }
         }
@@ -66,7 +68,7 @@ namespace {apiPath}
 
             var controller = existingController;
 
-            foreach (var endpoint in file.Endpoints)
+            foreach (var endpoint in file.Endpoints.Where(endpoint => endpoint.ModelFile == file || !_files.ContainsKey(endpoint.ModelFile.Name)))
             {
                 var method = (MethodDeclarationSyntax)ParseMemberDeclaration($@"
         /// <summary>
@@ -97,7 +99,7 @@ namespace {apiPath}
 
             foreach (var method in controller.DescendantNodes().OfType<MethodDeclarationSyntax>())
             {
-                if (method.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PublicKeyword)) && !file.Endpoints.Any(endpoint => endpoint.Name == method.Identifier.Text))
+                if (method.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PublicKeyword)) && !file.Endpoints.Where(endpoint => endpoint.ModelFile == file || !_files.ContainsKey(endpoint.ModelFile.Name)).Any(endpoint => endpoint.Name == method.Identifier.Text))
                 {
                     controller = controller.WithMembers(List(controller.Members.Where(member => ((member as MethodDeclarationSyntax)?.Identifier.Text ?? string.Empty) != method.Identifier.Text)));
                 }

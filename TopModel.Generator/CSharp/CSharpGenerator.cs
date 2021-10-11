@@ -75,7 +75,9 @@ namespace TopModel.Generator.CSharp
         private void GenerateReferences(string ns)
         {
             _referenceAccessorGenerator.Generate(
-                _files.Values.SelectMany(f => f.Classes)
+                _files.Values
+                    .SelectMany(f => f.Classes)
+                    .Distinct()
                     .Where(c => c.Reference && _config.GetNamespace(c) == ns));
         }
     }

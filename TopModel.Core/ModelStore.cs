@@ -156,7 +156,7 @@ namespace TopModel.Core
 
                     foreach (var affectedFile in ModelUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name.Equals(d.Name)))))
                     {
-                        relationshipErrors.AddRange(ResolveRelationships(affectedFile));
+                        relationshipErrors.AddRange(ResolveRelationshipsAndAliases(affectedFile));
                     }
 
                     if (relationshipErrors.Any())
@@ -185,9 +185,11 @@ namespace TopModel.Core
             }
         }
 
-        private IEnumerable<string> ResolveRelationships(ModelFile modelFile)
+        private IEnumerable<string> ResolveRelationshipsAndAliases(ModelFile modelFile)
         {
-            var referencedClasses = GetDependencies(modelFile)
+            var dependencies = GetDependencies(modelFile).ToList();
+
+            var referencedClasses = dependencies
                 .SelectMany(m => m.Classes)
                 .Concat(modelFile.Classes)
                 .ToDictionary(c => c.Name, c => c);
@@ -257,6 +259,40 @@ namespace TopModel.Core
 
                         alp.Property = (IFieldProperty)aliasedProperty;
                         break;
+                }
+            }
+
+            foreach (var alias in modelFile.Aliases)
+            {
+                var referencedFile = dependencies.SingleOrDefault(dep => dep.Name == alias.File);
+                if (referencedFile == null)
+                {
+                    yield return $"{modelFile.Path} - Le fichier '{alias.File}' est introuvable dans les dépendances du fichier. ({modelFile}/{{alias}})";
+                    break;
+                }
+
+                foreach (var className in alias.Classes)
+                {
+                    var referencedClass = referencedFile.Classes.SingleOrDefault(classe => classe.Name == className);
+                    if (referencedClass == null)
+                    {
+                        yield return $"{modelFile.Path} - La classe '{className}' est introuvable dans le fichier '{alias.File}'. ({modelFile}/{{alias}})";
+                        break;
+                    }
+
+                    modelFile.Classes.Add(referencedClass);
+                }
+
+                foreach (var endpointName in alias.Endpoints)
+                {
+                    var referencedEndpoint = referencedFile.Endpoints.SingleOrDefault(endpoint => endpoint.Name == endpointName);
+                    if (referencedEndpoint == null)
+                    {
+                        yield return $"{modelFile.Path} - L'endpoint '{endpointName}' est introuvable dans le fichier '{alias.File}'. ({modelFile}/{{alias}})";
+                        break;
+                    }
+
+                    modelFile.Endpoints.Add(referencedEndpoint);
                 }
             }
 

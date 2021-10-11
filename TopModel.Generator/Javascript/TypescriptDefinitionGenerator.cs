@@ -79,7 +79,10 @@ namespace TopModel.Generator.Javascript
 
         private void GenerateReferences(string module)
         {
-            var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.Namespace.Module == module && (c.Reference || c.ReferenceValues != null) && c.PrimaryKey?.Domain.Name != "DO_ID");
+            var classes = _files.Values
+                .SelectMany(f => f.Classes)
+                .Distinct()
+                .Where(c => c.Namespace.Module == module && (c.Reference || c.ReferenceValues != null) && c.PrimaryKey?.Domain.Name != "DO_ID");
 
             if (_config.ModelOutputDirectory != null && classes.Any())
             {

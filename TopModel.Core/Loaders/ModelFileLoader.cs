@@ -35,6 +35,7 @@ namespace TopModel.Core.Loaders
             file.Classes = new List<Class>();
             file.Domains = new List<Domain>();
             file.Endpoints = new List<Endpoint>();
+            file.Aliases = new List<Alias>();
 
             while (parser.TryConsume<DocumentStart>(out var _))
             {
@@ -52,6 +53,10 @@ namespace TopModel.Core.Loaders
                 else if (scalar.Value == "endpoint")
                 {
                     file.Endpoints.Add(EndpointLoader.LoadEndpoint(parser, file.Relationships));
+                }
+                else if (scalar.Value == "alias")
+                {
+                    file.Aliases.Add(_fileChecker.Deserialize<Alias>(parser));
                 }
                 else
                 {
