@@ -154,7 +154,9 @@ namespace TopModel.Core
                         ? _modelFiles.Values
                         : _modelFiles.Values.Where(f => _pendingUpdates.Contains(f.Name)).SelectMany(pf => _modelFiles.Values.Where(f => f.Name.Equals(pf.Name) || f.Uses.Any(d => d.Equals(pf.Name)))).Distinct();
 
-                    foreach (var affectedFile in ModelUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name.Equals(d.Name)))))
+                    var sortedFiles = ModelUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name.Equals(d.Name))));
+
+                    foreach (var affectedFile in sortedFiles)
                     {
                         relationshipErrors.AddRange(ResolveRelationshipsAndAliases(affectedFile));
                     }
@@ -171,7 +173,7 @@ namespace TopModel.Core
 
                     foreach (var modelWatcher in _modelWatchers)
                     {
-                        modelWatcher.OnFilesChanged(affectedFiles);
+                        modelWatcher.OnFilesChanged(sortedFiles);
                     }
 
                     _logger.LogInformation($"Mise à jour terminée avec succès.");
