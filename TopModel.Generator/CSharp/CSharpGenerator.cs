@@ -44,10 +44,10 @@ namespace TopModel.Generator.CSharp
                 GenerateDbContext();
             }
 
-            var namespaces = files.SelectMany(f => f.Classes.Select(_config.GetNamespace)).Distinct();
-            foreach (var ns in namespaces)
+            var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
+            foreach (var module in modules)
             {
-                GenerateReferences(ns);
+                GenerateReferences(module);
             }
         }
 
@@ -72,13 +72,13 @@ namespace TopModel.Generator.CSharp
             }
         }
 
-        private void GenerateReferences(string ns)
+        private void GenerateReferences(string module)
         {
             _referenceAccessorGenerator.Generate(
                 _files.Values
                     .SelectMany(f => f.Classes)
                     .Distinct()
-                    .Where(c => c.Reference && _config.GetNamespace(c) == ns));
+                    .Where(c => c.Reference && c.Namespace.Module == module));
         }
     }
 }

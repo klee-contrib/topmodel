@@ -153,12 +153,12 @@ namespace TopModel.Generator.CSharp
                 w.WriteLine();
             }
 
-            foreach (var classe in classList)
+            foreach (var classe in classList.Where(c => c.IsPersistent || c.ReferenceValues != null))
             {
                 var serviceName = "Load" + (_config.DbContextPath == null ? $"{classe.Name}List" : Pluralize(classe.Name));
                 w.WriteLine(2, "/// <inheritdoc cref=\"" + interfaceName + "." + serviceName + "\" />");
                 w.WriteLine(2, "public ICollection<" + classe.Name + "> " + serviceName + "()\r\n{");
-                w.WriteLine(3, LoadReferenceAccessorBody(_config.DbContextPath == null, classe));
+                w.WriteLine(3, LoadReferenceAccessorBody(classe));
                 w.WriteLine(2, "}");
 
                 if (classList.IndexOf(classe) != classList.Count - 1)
@@ -260,20 +260,27 @@ namespace TopModel.Generator.CSharp
         }
 
         /// <summary>
-        /// Retourne le code associé au cors de l'implémentation d'un service de type ReferenceAccessor.
+        /// Retourne le code associé au corps de l'implémentation d'un service de type ReferenceAccessor.
         /// </summary>
-        /// <param name="isBroker">Broker.</param>
         /// <param name="classe">Type chargé par le ReferenceAccessor.</param>
         /// <returns>Code généré.</returns>
-        private string LoadReferenceAccessorBody(bool isBroker, Class classe)
+        private string LoadReferenceAccessorBody(Class classe)
         {
+            if (!classe.IsPersistent)
+            {
+                return $@"return new List<{classe.Name}>
+{{
+    {string.Join(",\r\n    ", classe.ReferenceValues.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.Name} = {(prop.Key.Domain.ShouldQuoteSqlValue ? $"\"{prop.Value}\"" : prop.Value is bool b ? (b ? "true" : "false") : prop.Value)}"))} }}"))}
+}};";
+            }
+
             var defaultProperty = classe.Properties.OfType<IFieldProperty>()
                 .SingleOrDefault(p => p.Name == classe.OrderProperty)
             ?? classe.Properties.OfType<IFieldProperty>()
                 .SingleOrDefault(p => p.Name == classe.DefaultProperty);
 
             var queryParameter = string.Empty;
-            if (!isBroker)
+            if (_config.DbContextPath != null)
             {
                 if (defaultProperty != null)
                 {

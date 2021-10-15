@@ -79,13 +79,14 @@ namespace TopModel.Generator.CSharp
         {
             if (item.Reference && _config.Kinetix != KinetixVersion.None)
             {
-                if (item.PrimaryKey!.Domain.Name == "DO_ID")
+                var primaryKey = item.PrimaryKey ?? item.Properties.OfType<IFieldProperty>().First();
+                if (primaryKey.Domain.CSharp?.Type == "string")
                 {
-                    w.WriteAttribute(1, "Reference");
+                    w.WriteAttribute(1, "Reference", "true");
                 }
                 else
                 {
-                    w.WriteAttribute(1, "Reference", "true");
+                    w.WriteAttribute(1, "Reference");
                 }
             }
 
