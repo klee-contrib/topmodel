@@ -64,6 +64,12 @@ namespace TopModel.Generator.Kasper
             fw.WriteLine();
             fw.WriteLine($"import static {packageName}.{classe.Name}Abstract.Fields.*;");
             fw.WriteLine("import kasper.model.DtField;");
+
+            foreach (var import in classe.Properties.OfType<IFieldProperty>().Where(p => p.Domain.Java?.Import != null).Select(p => $"{p.Domain.Java!.Import}.{p.Domain.Java!.Type}").Distinct().OrderBy(i => i))
+            {
+                fw.WriteLine($"import {import};");
+            }
+
             fw.WriteLine();
 
             fw.WriteDocStart(0, classe.Comment);
@@ -147,7 +153,7 @@ namespace TopModel.Generator.Kasper
 
             foreach (var property in properties)
             {
-                if (property.Domain.JavaType == null)
+                if (property.Domain.Java == null)
                 {
                     throw new Exception($"Le domaine {property.Domain.Name}, utilisé par la propriété {property.JavaName} de la classe {classe.Name}, doit avoir un type Java.");
                 }
@@ -156,7 +162,7 @@ namespace TopModel.Generator.Kasper
 
                 var propType = property.PrimaryKey ? "PRIMARY_KEY" : associations.Contains(property) ? "FOREIGN_KEY" : "DATA";
                 fw.WriteDocStart(1, $"Champ : {propType}.\nRécupère la valeur de la propriété '{property.Label ?? property.Name}'");
-                fw.WriteReturns(1, $"{property.Domain.JavaType} {property.JavaName.ToFirstLower()}");
+                fw.WriteReturns(1, $"{property.Domain.Java.Type} {property.JavaName.ToFirstLower()}");
                 fw.WriteDocEnd(1);
 
                 if (classe.IsPersistent)
@@ -187,15 +193,15 @@ namespace TopModel.Generator.Kasper
                 kasperFieldProps.Add($@"label = ""{property.Label ?? property.Name}""");
 
                 fw.WriteAttribute(1, "kasperx.annotation.Field", kasperFieldProps.ToArray());
-                fw.WriteLine(1, $"public final {property.Domain.JavaType} get{property.JavaName}() {{");
-                fw.WriteLine(2, $"return ({property.Domain.JavaType}) getValue({ModelUtils.ConvertCsharp2Bdd(property.JavaName)});");
+                fw.WriteLine(1, $"public final {property.Domain.Java.Type} get{property.JavaName}() {{");
+                fw.WriteLine(2, $"return ({property.Domain.Java.Type}) getValue({ModelUtils.ConvertCsharp2Bdd(property.JavaName)});");
                 fw.WriteLine(1, "}");
 
                 fw.WriteLine();
                 fw.WriteDocStart(1, $"Champ : {propType}.\nDéfinit la valeur de la propriété '{property.Label}'");
-                fw.WriteParam(property.JavaName.ToFirstLower(), property.Domain.JavaType);
+                fw.WriteParam(property.JavaName.ToFirstLower(), property.Domain.Java.Type);
                 fw.WriteDocEnd(1);
-                fw.WriteLine(1, $"public final void set{property.JavaName}({property.Domain.JavaType} {property.JavaName.ToFirstLower()}) {{");
+                fw.WriteLine(1, $"public final void set{property.JavaName}({property.Domain.Java.Type} {property.JavaName.ToFirstLower()}) {{");
                 fw.WriteLine(2, $"setValue({ModelUtils.ConvertCsharp2Bdd(property.JavaName)}, {property.JavaName.ToFirstLower()});");
                 fw.WriteLine(1, "}");
             }

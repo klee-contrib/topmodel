@@ -268,9 +268,21 @@
                 }
               }
             },
-            "javaType": {
-              "type": "string",
-              "description": "Type correspondant au domaine en Java."
+            "java": {
+              "type": "object",
+              "description": "Type correspondant au domaine en Java.",
+              "required": [ "type" ],
+              "additionalProperties": false,
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "Nom du type."
+                },
+                "import": {
+                  "type": "string",
+                  "description": "Import à ajouter à tout fichier Java qui utilise une propriété de ce domaine."
+                }
+              }
             },
             "sqlType": {
               "type": "string",

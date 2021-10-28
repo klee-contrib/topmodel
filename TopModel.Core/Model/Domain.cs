@@ -19,7 +19,7 @@ namespace TopModel.Core
         [YamlMember(Alias = "ts")]
         public TSType? TS { get; set; }
 
-        public string? JavaType { get; set; }
+        public JavaType? Java { get; set; }
 
         public string? SqlType { get; set; }
 
