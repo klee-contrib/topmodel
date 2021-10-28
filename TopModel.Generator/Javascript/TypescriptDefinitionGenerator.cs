@@ -27,11 +27,6 @@ namespace TopModel.Generator.Javascript
 
         protected override void HandleFiles(IEnumerable<ModelFile> files)
         {
-            if (_config.ModelOutputDirectory == null)
-            {
-                return;
-            }
-
             foreach (var file in files)
             {
                 _files[file.Name] = file;
@@ -48,15 +43,10 @@ namespace TopModel.Generator.Javascript
 
         private void GenerateClasses(ModelFile file)
         {
-            if (_config.ModelOutputDirectory == null)
-            {
-                return;
-            }
-
             var count = 0;
             foreach (var classe in file.Classes)
             {
-                if (!(classe.Reference || classe.ReferenceValues != null) || classe.PrimaryKey?.Domain.Name == "DO_ID")
+                if (!(classe.Reference || classe.ReferenceValues != null) || classe.PrimaryKey?.Domain.TS?.Type == "number")
                 {
                     var fileName = classe.Name.ToDashCase();
 
@@ -139,7 +129,10 @@ namespace TopModel.Generator.Javascript
         {
             using var fw = new FileWriter(fileName, _logger, false);
 
-            fw.WriteLine($"import {{{string.Join(", ", GetFocusStoresImports(classe).OrderBy(x => x))}}} from \"@focus4/stores\";");
+            if (_config.Focus)
+            {
+                fw.WriteLine($"import {{{string.Join(", ", GetFocusStoresImports(classe).OrderBy(x => x))}}} from \"@focus4/stores\";");
+            }
 
             if (GetDomainList(classe).Any())
             {
@@ -162,54 +155,93 @@ namespace TopModel.Generator.Javascript
             }
 
             fw.Write("\r\n");
-            fw.Write("export type ");
-            fw.Write(classe.Name);
-            fw.Write(" = EntityToType<");
-            fw.Write(classe.Name);
-            fw.Write("EntityType>;\r\nexport type ");
-            fw.Write(classe.Name);
-            fw.Write("Node = StoreNode<");
-            fw.Write(classe.Name);
-            fw.Write("EntityType>;\r\n");
 
-            fw.Write($"export interface {classe.Name}EntityType ");
-
-            if (classe.Extends != null)
+            if (_config.Focus)
             {
-                fw.Write($"extends {classe.Extends.Name}EntityType ");
+                fw.Write("export type ");
+                fw.Write(classe.Name);
+                fw.Write(" = EntityToType<");
+                fw.Write(classe.Name);
+                fw.Write("EntityType>;\r\nexport type ");
+                fw.Write(classe.Name);
+                fw.Write("Node = StoreNode<");
+                fw.Write(classe.Name);
+                fw.Write("EntityType>;\r\n");
+
+                fw.Write($"export interface {classe.Name}EntityType ");
+
+                if (classe.Extends != null)
+                {
+                    fw.Write($"extends {classe.Extends.Name}EntityType ");
+                }
+            }
+            else
+            {
+                fw.Write("export interface ");
+                fw.Write($"{classe.Name} ");
+
+                if (classe.Extends != null)
+                {
+                    fw.Write($"extends {classe.Extends.Name} ");
+                }
             }
 
             fw.Write("{\r\n");
 
             foreach (var property in classe.Properties)
             {
-                fw.Write($"    {property.Name.ToFirstLower()}: ");
+                fw.Write($"    {property.Name.ToFirstLower()}{(_config.Focus ? string.Empty : "?")}: ");
 
-                if (property is CompositionProperty cp)
+                if (_config.Focus)
                 {
-                    if (cp.Kind == "list")
+                    if (property is CompositionProperty cp)
                     {
-                        if (cp.Composition.Name == classe.Name)
+                        if (cp.Kind == "list")
                         {
-                            fw.Write($"RecursiveListEntry");
+                            if (cp.Composition.Name == classe.Name)
+                            {
+                                fw.Write($"RecursiveListEntry");
+                            }
+                            else
+                            {
+                                fw.Write($"ListEntry<{cp.Composition.Name}EntityType>");
+                            }
+                        }
+                        else if (cp.Kind == "object")
+                        {
+                            fw.Write($"ObjectEntry<{cp.Composition.Name}EntityType>");
                         }
                         else
                         {
-                            fw.Write($"ListEntry<{cp.Composition.Name}EntityType>");
+                            fw.Write($"FieldEntry2<typeof {cp.Kind}, {cp.DomainKind!.TS!.Type}<{cp.Composition.Name}>>");
                         }
                     }
-                    else if (cp.Kind == "object")
+                    else if (property is IFieldProperty field)
                     {
-                        fw.Write($"ObjectEntry<{cp.Composition.Name}EntityType>");
-                    }
-                    else
-                    {
-                        fw.Write($"FieldEntry2<typeof {cp.Kind}, {cp.DomainKind!.TS!.Type}<{cp.Composition.Name}>>");
+                        fw.Write($"FieldEntry2<typeof {field.Domain.Name}, {field.TS.Type}>");
                     }
                 }
-                else if (property is IFieldProperty field)
+                else
                 {
-                    fw.Write($"FieldEntry2<typeof {field.Domain.Name}, {field.TS.Type}>");
+                    if (property is CompositionProperty cp)
+                    {
+                        if (cp.Kind == "list")
+                        {
+                            fw.Write($"{cp.Composition.Name}[]");
+                        }
+                        else if (cp.Kind == "object")
+                        {
+                            fw.Write(cp.Composition.Name);
+                        }
+                        else
+                        {
+                            fw.Write($"{cp.DomainKind!.TS!.Type}<{cp.Composition.Name}>");
+                        }
+                    }
+                    else if (property is IFieldProperty field)
+                    {
+                        fw.Write(field.TS.Type);
+                    }
                 }
 
                 if (property != classe.Properties.Last())
@@ -222,7 +254,14 @@ namespace TopModel.Generator.Javascript
 
             fw.Write("}\r\n\r\n");
 
-            fw.Write($"export const {classe.Name}Entity: {classe.Name}EntityType = {{\r\n");
+            fw.Write($"export const {classe.Name}Entity");
+
+            if (_config.Focus)
+            {
+                fw.Write($": {classe.Name}EntityType");
+            }
+
+            fw.Write(" = {\r\n");
 
             if (classe.Extends != null)
             {
@@ -365,7 +404,7 @@ namespace TopModel.Generator.Javascript
                     : $"../{module.ToLower()}";
 
                 return (
-                    import: type.DomainKind == null ? $"{name}Entity, {name}EntityType" : name,
+                    import: type.DomainKind == null ? $"{name}Entity, {name}{(_config.Focus ? "EntityType" : string.Empty)}" : name,
                     path: $"{module}/{name.ToDashCase()}");
             }).Distinct().ToList();
 

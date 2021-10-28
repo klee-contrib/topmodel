@@ -41,11 +41,6 @@ namespace TopModel.Generator.Javascript
 
         private void GenerateModule(string module)
         {
-            if (_config.ResourceOutputDirectory == null)
-            {
-                return;
-            }
-
             var classes = _files.Values
                 .SelectMany(f => f.Classes)
                 .Distinct()
@@ -64,7 +59,7 @@ namespace TopModel.Generator.Javascript
         /// <returns>Parser string.</returns>
         private string FirstToLower(string value)
         {
-            return value.Substring(0, 1).ToLowerInvariant() + value.Substring(1);
+            return value[..1].ToLowerInvariant() + value[1..];
         }
 
         /// <summary>
@@ -84,7 +79,7 @@ namespace TopModel.Generator.Javascript
         /// <returns>Nom formatté.</returns>
         private string FormatJsPropertyName(string name)
         {
-            return name.Substring(0, 1).ToLowerInvariant() + name.Substring(1);
+            return name[..1].ToLowerInvariant() + name[1..];
         }
 
         /// <summary>

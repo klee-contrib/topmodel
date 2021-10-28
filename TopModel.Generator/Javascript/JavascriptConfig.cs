@@ -24,5 +24,10 @@
         /// Chemin vers un "fetch" personnalisé.
         /// </summary>
         public string? FetchImportPath { get; set; }
+
+        /// <summary>
+        /// Génère des modèles pour Focus (par défaut : true).
+        /// </summary>
+        public bool Focus { get; set; } = true;
     }
 }

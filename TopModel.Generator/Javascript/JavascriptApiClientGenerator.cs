@@ -25,11 +25,6 @@ namespace TopModel.Generator.Javascript
 
         protected override void HandleFiles(IEnumerable<ModelFile> files)
         {
-            if (_config.ApiClientOutputDirectory == null || _config.ModelOutputDirectory == null)
-            {
-                return;
-            }
-
             foreach (var file in files)
             {
                 GenerateClientFile(file);

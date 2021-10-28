@@ -116,13 +116,23 @@ namespace TopModel.Generator
                     CombinePath(dn, jsConfig, c => c.ResourceOutputDirectory);
                     CombinePath(dn, jsConfig, c => c.ApiClientOutputDirectory);
 
-                    services
-                        .AddSingleton<IModelWatcher>(p =>
-                            new TypescriptDefinitionGenerator(p.GetService<ILogger<TypescriptDefinitionGenerator>>(), jsConfig))
-                        .AddSingleton<IModelWatcher>(p =>
-                            new JavascriptResourceGenerator(p.GetService<ILogger<JavascriptResourceGenerator>>(), jsConfig))
-                        .AddSingleton<IModelWatcher>(p =>
-                            new JavascriptApiClientGenerator(p.GetService<ILogger<JavascriptApiClientGenerator>>(), jsConfig));
+                    if (jsConfig.ModelOutputDirectory != null)
+                    {
+                        services.AddSingleton<IModelWatcher>(p =>
+                            new TypescriptDefinitionGenerator(p.GetService<ILogger<TypescriptDefinitionGenerator>>(), jsConfig));
+
+                        if (jsConfig.ApiClientOutputDirectory != null)
+                        {
+                            services.AddSingleton<IModelWatcher>(p =>
+                                new JavascriptApiClientGenerator(p.GetService<ILogger<JavascriptApiClientGenerator>>(), jsConfig));
+                        }
+                    }
+
+                    if (jsConfig.ResourceOutputDirectory != null)
+                    {
+                        services.AddSingleton<IModelWatcher>(p =>
+                            new JavascriptResourceGenerator(p.GetService<ILogger<JavascriptResourceGenerator>>(), jsConfig));
+                    }
                 }
             }
 
