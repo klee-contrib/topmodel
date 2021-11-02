@@ -62,6 +62,11 @@
               "type": "string",
               "description": "Suffixe de l'association, utile pour distinguer deux associations vers une même classe par exemple."
             },
+            "type": {
+              "type": "string",
+              "description": "Type de l'association. La plupart des générateurs ignorent ce paramètre et considèrent qu'une associtation est toujours une FK simple. Par défaut: 'oneToMany'",
+              "enum": [ "oneToOne", "oneToMany", "manyToOne", "manyToMany" ]
+            },
             "required": {
               "type": "boolean",
               "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."

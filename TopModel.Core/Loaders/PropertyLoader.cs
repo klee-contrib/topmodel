@@ -16,7 +16,7 @@ namespace TopModel.Core.Loaders
                 case Scalar { Value: "name" }:
                     var rp = new RegularProperty();
 
-                    while (!(parser.Current is MappingEnd))
+                    while (parser.Current is not MappingEnd)
                     {
                         var prop = parser.Consume<Scalar>().Value;
                         var value = parser.Consume<Scalar>();
@@ -60,7 +60,7 @@ namespace TopModel.Core.Loaders
                 case Scalar { Value: "association" }:
                     var ap = new AssociationProperty();
 
-                    while (!(parser.Current is MappingEnd))
+                    while (parser.Current is not MappingEnd)
                     {
                         var prop = parser.Consume<Scalar>().Value;
                         var value = parser.Consume<Scalar>();
@@ -75,6 +75,15 @@ namespace TopModel.Core.Loaders
                                 break;
                             case "role":
                                 ap.Role = value.Value;
+                                break;
+                            case "type":
+                                ap.Type = value.Value switch
+                                {
+                                    "oneToOne" => AssociationType.OneToOne,
+                                    "manyToOne" => AssociationType.ManyToOne,
+                                    "manyToMany" => AssociationType.ManyToMany,
+                                    _ => AssociationType.OneToMany
+                                };
                                 break;
                             case "label":
                                 ap.Label = value.Value;
@@ -99,7 +108,7 @@ namespace TopModel.Core.Loaders
                 case Scalar { Value: "composition" }:
                     var cp = new CompositionProperty();
 
-                    while (!(parser.Current is MappingEnd))
+                    while (parser.Current is not MappingEnd)
                     {
                         var prop = parser.Consume<Scalar>().Value;
                         var value = parser.Consume<Scalar>();
@@ -138,7 +147,7 @@ namespace TopModel.Core.Loaders
                     parser.Consume<Scalar>();
                     parser.Consume<MappingStart>();
 
-                    while (!(parser.Current is MappingEnd))
+                    while (parser.Current is not MappingEnd)
                     {
                         var prop = parser.Consume<Scalar>().Value;
                         var next = parser.Consume<ParsingEvent>();
@@ -159,7 +168,7 @@ namespace TopModel.Core.Loaders
                         }
                         else if (next is SequenceStart)
                         {
-                            while (!(parser.Current is SequenceEnd))
+                            while (parser.Current is not SequenceEnd)
                             {
                                 alps.Add((new AliasProperty(), parser.Consume<Scalar>()));
                             }
@@ -175,7 +184,7 @@ namespace TopModel.Core.Loaders
 
                     parser.Consume<MappingEnd>();
 
-                    while (!(parser.Current is MappingEnd))
+                    while (parser.Current is not MappingEnd)
                     {
                         var prop = parser.Consume<Scalar>().Value;
                         var value = parser.Consume<Scalar>().Value;

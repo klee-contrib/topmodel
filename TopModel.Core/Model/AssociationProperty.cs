@@ -20,6 +20,8 @@ namespace TopModel.Core
 
         public string? Role { get; set; }
 
+        public AssociationType Type { get; set; }
+
         public bool Required { get; set; }
 
         public string? DefaultValue { get; set; }
