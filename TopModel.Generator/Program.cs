@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading;
 using TopModel.Generator.CSharp;
 using TopModel.Generator.Javascript;
+using TopModel.Generator.Jpa;
 using TopModel.Generator.Kasper;
 using TopModel.Generator.ProceduralSql;
 using TopModel.Generator.Ssdt;
@@ -132,6 +133,29 @@ namespace TopModel.Generator
                     {
                         services.AddSingleton<IModelWatcher>(p =>
                             new JavascriptResourceGenerator(p.GetRequiredService<ILogger<JavascriptResourceGenerator>>(), jsConfig));
+                    }
+                }
+            }
+
+            if (config.Jpa != null)
+            {
+                foreach (var jpaConfig in config.Jpa)
+                {
+                    CombinePath(dn, jpaConfig, c => c.ModelOutputDirectory);
+                    CombinePath(dn, jpaConfig, c => c.ApiOutputDirectory);
+
+                    services
+                        .AddSingleton<IModelWatcher>(p =>
+                            new JpaModelGenerator(p.GetRequiredService<ILogger<JpaModelGenerator>>(), jpaConfig));
+                    services
+                        .AddSingleton<IModelWatcher>(p =>
+                            new JpaDaoGenerator(p.GetRequiredService<ILogger<JpaDaoGenerator>>(), jpaConfig));
+
+                    if (jpaConfig.ApiOutputDirectory != null)
+                    {
+                        services
+                            .AddSingleton<IModelWatcher>(p =>
+                                new SpringApiGenerator(p.GetRequiredService<ILogger<SpringApiGenerator>>(), jpaConfig));
                     }
                 }
             }

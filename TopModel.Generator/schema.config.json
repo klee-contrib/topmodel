@@ -229,6 +229,42 @@
         }
       }
     },
+    "jpa": {
+      "type": "array",
+      "description": "Liste de configs pour la génération Jpa",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de Jpa.",
+        "additionalProperties": false,
+        "required": [ "tags", "modelOutputDirectory", "packageName" ],
+        "properties": {
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "apiOutputDirectory": {
+            "type": "string",
+            "description": "Dossier de sortie pour les Controllers."
+          },
+          "modelOutputDirectory": {
+            "type": "string",
+            "description": "Dossier de sortie pour le modèle."
+          },
+          "daoPackageName": {
+            "type": "string",
+            "description": "Précise le nom du package dans lequel générer les classes du modèle."
+          },
+          "apiPackageName": {
+            "type": "string",
+            "description": "Précise le nom du package dans lequel générer les controllers."
+          }
+        }
+      }
+    },
     "kasper": {
       "type": "array",
       "description": "Liste de configs pour la génération Kasper",

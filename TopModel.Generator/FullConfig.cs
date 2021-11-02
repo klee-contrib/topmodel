@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using TopModel.Generator.CSharp;
 using TopModel.Generator.Javascript;
+using TopModel.Generator.Jpa;
 using TopModel.Generator.Kasper;
 using TopModel.Generator.ProceduralSql;
 using TopModel.Generator.Ssdt;
@@ -18,5 +19,7 @@ namespace TopModel.Generator
         public IList<CSharpConfig>? Csharp { get; set; }
 
         public IList<KasperConfig>? Kasper { get; set; }
+
+        public IList<JpaConfig>? Jpa { get; set; }
     }
 }

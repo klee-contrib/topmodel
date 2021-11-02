@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 
-namespace TopModel.Generator.Kasper
+namespace TopModel.Generator
 {
     /// <summary>
     /// FileWriter avec des méthodes spécialisées pour écrire du CJava
@@ -14,9 +14,9 @@ namespace TopModel.Generator.Kasper
 
         private readonly FileWriter _writer;
 
-        public JavaWriter(string name, ILogger logger)
+        public JavaWriter(string name, ILogger logger, int? codePage = 1252)
         {
-            _writer = new FileWriter(name, logger, CodePagesEncodingProvider.Instance.GetEncoding(1252)!);
+            _writer = new FileWriter(name, logger, codePage != null ? CodePagesEncodingProvider.Instance.GetEncoding(codePage.Value)! : new UTF8Encoding(false));
         }
 
         /// <inheritdoc cref="IDisposable.Dispose" />
@@ -54,7 +54,8 @@ namespace TopModel.Generator.Kasper
         /// <param name="name">Nom de la classe.</param>
         /// <param name="modifier">Modifier.</param>
         /// <param name="inheritedClass">Classe parente.</param>
-        public void WriteClassDeclaration(string name, string? modifier, string? inheritedClass = null)
+        /// <param name="implementingInterfaces">Interfaces implémentées.</param>
+        public void WriteClassDeclaration(string name, string? modifier, string? inheritedClass = null, string? implementingInterfaces = null)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -76,6 +77,11 @@ namespace TopModel.Generator.Kasper
             if (!string.IsNullOrEmpty(inheritedClass))
             {
                 sb.Append($" extends {inheritedClass}");
+            }
+
+            if (!string.IsNullOrEmpty(implementingInterfaces))
+            {
+                sb.Append($" implements {implementingInterfaces}");
             }
 
             sb.Append(" {");
@@ -130,6 +136,7 @@ namespace TopModel.Generator.Kasper
         {
             if (!string.IsNullOrEmpty(value))
             {
+                WriteLine(indentationLevel, " *");
                 WriteLine(indentationLevel, LoadReturns(value));
             }
         }
@@ -166,6 +173,18 @@ namespace TopModel.Generator.Kasper
         }
 
         /// <summary>
+        /// Ajoute les imports
+        /// </summary>
+        /// <param name="imports">Nom des classes à importer.</param>
+        public void WriteImports(params string[] imports)
+        {
+            foreach (var import in imports.OrderBy(x => x))
+            {
+                WriteLine($"import {import};");
+            }
+        }
+
+        /// <summary>
         /// Retourne le commentaire du param formatté.
         /// </summary>
         /// <param name="paramName">Nom du paramètre.</param>
@@ -186,7 +205,7 @@ namespace TopModel.Generator.Kasper
             var sb = new StringBuilder();
             sb.Append(" * @param ");
             sb.Append(paramName);
-            sb.Append(" ");
+            sb.Append(' ');
             sb.Append(value);
             if (!value.EndsWith(".", StringComparison.OrdinalIgnoreCase))
             {
