@@ -19,10 +19,10 @@ namespace TopModel.Core
         private readonly ModelFileLoader _modelFileLoader;
         private readonly IEnumerable<IModelWatcher> _modelWatchers;
 
-        private readonly IDictionary<string, ModelFile> _modelFiles = new Dictionary<string, ModelFile>();
+        private readonly Dictionary<string, ModelFile> _modelFiles = new();
 
-        private readonly object _puLock = new object();
-        private readonly HashSet<string> _pendingUpdates = new HashSet<string>();
+        private readonly object _puLock = new();
+        private readonly HashSet<string> _pendingUpdates = new();
 
         public ModelStore(IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers)
         {
@@ -222,6 +222,12 @@ namespace TopModel.Core
                         if (!referencedClasses.TryGetValue(relation.Value, out var association))
                         {
                             yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{ap.Class?.Name ?? ap.Endpoint?.Name}/{{association}})";
+                            break;
+                        }
+
+                        if (association.PrimaryKey == null)
+                        {
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' doit avoir une clé primaire pour être référencée dans une association. ({modelFile}/{ap.Class?.Name ?? ap.Endpoint?.Name}/{{association}})";
                             break;
                         }
 
