@@ -331,7 +331,7 @@ namespace TopModel.Generator.CSharp
                 var domain = (fp as AliasProperty)?.ListDomain ?? fp.Domain;
 
                 var prop = fp is AliasProperty alp ? alp.Property : fp;
-                if ((!_config.NoColumnOnAlias || fp is not AliasProperty) && prop.Class.IsPersistent && !_config.NoPersistance && !sameColumnSet.Contains(prop.SqlName))
+                if ((!_config.NoColumnOnAlias || fp is not AliasProperty) && fp is not AliasProperty { ListDomain: not null } && prop.Class.IsPersistent && !_config.NoPersistance && !sameColumnSet.Contains(prop.SqlName))
                 {
                     var sqlName = _config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
                     if (domain.CSharp!.UseSqlTypeName)
