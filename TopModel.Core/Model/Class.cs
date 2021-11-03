@@ -48,7 +48,7 @@ namespace TopModel.Core
             set => _sqlName = value;
         }
 
-        public bool IsPersistent => Properties.Any(p => !(p is AliasProperty) && p.PrimaryKey) || Properties.All(p => p is AssociationProperty);
+        public bool IsPersistent => Properties.Any(p => p is not AliasProperty && p.PrimaryKey) || Properties.All(p => p is AssociationProperty);
 
         public override string ToString()
         {

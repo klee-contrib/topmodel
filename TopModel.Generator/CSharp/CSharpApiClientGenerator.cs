@@ -3,7 +3,6 @@ using System.Linq;
 using TopModel.Core.FileModel;
 using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Logging;
-using static TopModel.Generator.CSharp.CSharpUtils;
 
 namespace TopModel.Generator.CSharp
 {
@@ -69,7 +68,7 @@ namespace TopModel.Generator.CSharp
             {
                 usings.AddRange(new[] { "System.Collections.Generic", "System.Linq" });
 
-                if (file.Endpoints.Any(e => e.GetQueryParams().Any(qp => GetPropertyTypeName(qp) != "string")))
+                if (file.Endpoints.Any(e => e.GetQueryParams().Any(qp => _config.GetPropertyTypeName(qp) != "string")))
                 {
                     usings.Add("System.Globalization");
                 }
@@ -149,7 +148,7 @@ namespace TopModel.Generator.CSharp
 
                 fw.Write("        public async Task");
 
-                var returnType = endpoint.Returns != null ? GetPropertyTypeName(endpoint.Returns) : null;
+                var returnType = endpoint.Returns != null ? _config.GetPropertyTypeName(endpoint.Returns) : null;
                 if (returnType?.StartsWith("IAsyncEnumerable") ?? false)
                 {
                     returnType = returnType.Replace("IAsyncEnumerable", "IEnumerable");
@@ -164,7 +163,7 @@ namespace TopModel.Generator.CSharp
 
                 foreach (var param in endpoint.Params)
                 {
-                    fw.Write($"{GetPropertyTypeName(param, param.IsRouteParam())} {param.GetParamName()}");
+                    fw.Write($"{_config.GetPropertyTypeName(param, param.IsRouteParam())} {param.GetParamName()}");
 
                     if (param.IsQueryParam())
                     {
@@ -191,7 +190,7 @@ namespace TopModel.Generator.CSharp
 
                     foreach (var queryParam in endpoint.GetQueryParams())
                     {
-                        var toString = GetPropertyTypeName(queryParam) switch
+                        var toString = _config.GetPropertyTypeName(queryParam) switch
                         {
                             "string" => string.Empty,
                             _ => $"?.ToString(CultureInfo.InvariantCulture)"

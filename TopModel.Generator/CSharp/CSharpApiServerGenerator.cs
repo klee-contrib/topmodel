@@ -8,7 +8,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
-using static TopModel.Generator.CSharp.CSharpUtils;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace TopModel.Generator.CSharp
@@ -76,7 +75,7 @@ namespace {apiPath}
         /// </summary>{string.Join(Environment.NewLine, new[] { string.Empty }.Concat(endpoint.Params.Select(param => $@"        /// <param name=""{param.GetParamName()}"">{param.Comment}</param>")))}
         /// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>
         [Http{endpoint.Method.ToLower().ToFirstUpper()}(""{GetRoute(endpoint)}"")]
-        public {GetReturnTypeName(endpoint.Returns)} {endpoint.Name}({string.Join(", ", endpoint.Params.Select(GetParam))})
+        public {_config.GetReturnTypeName(endpoint.Returns)} {endpoint.Name}({string.Join(", ", endpoint.Params.Select(GetParam))})
         {{
 
         }}
@@ -151,7 +150,7 @@ namespace {apiPath}
                 sb.Append("[FromBody] ");
             }
 
-            sb.Append($@"{GetPropertyTypeName(param, param.IsRouteParam())} {param.GetParamName()}");
+            sb.Append($@"{_config.GetPropertyTypeName(param, param.IsRouteParam())} {param.GetParamName()}");
 
             if (param.IsQueryParam())
             {

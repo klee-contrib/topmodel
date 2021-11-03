@@ -56,8 +56,9 @@ namespace TopModel.Generator.CSharp
 
             w.WriteUsings(usings.ToArray());
 
+            var contextNs = _config.DbContextPath.Split("/").Last();
             w.WriteLine();
-            w.WriteLine($"namespace {_config.DbContextPath.Split("/").Last()}");
+            w.WriteLine($"namespace {contextNs}");
             w.WriteLine("{");
 
             if (_config.Kinetix != KinetixVersion.Framework)
@@ -109,6 +110,21 @@ namespace TopModel.Generator.CSharp
                 w.WriteLine(2, "protected override void OnModelCreating(ModelBuilder modelBuilder)");
                 w.WriteLine(2, "{");
 
+                var hasEnum = false;
+                foreach (var prop in classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
+                {
+                    if (prop.PrimaryKey && _config.CanClassUseEnums(prop.Class) || prop is AssociationProperty ap && _config.CanClassUseEnums(ap.Association))
+                    {
+                        hasEnum = true;
+                        w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().Property(p => p.{prop.Name}).HasConversion<string>();");
+                    }
+                }
+
+                if (hasEnum)
+                {
+                    w.WriteLine();
+                }
+
                 var hasFk = false;
                 foreach (var prop in classes.SelectMany(c => c.Properties.OfType<AssociationProperty>()))
                 {
@@ -144,7 +160,13 @@ namespace TopModel.Generator.CSharp
                         w.Write($"                new {classe.Name} {{");
                         foreach (var prop in refValue.Value.ToList())
                         {
-                            var value = prop.Key.Domain.ShouldQuoteSqlValue ? $"\"{prop.Value}\"" : prop.Value is bool b ? (b ? "true" : "false") : prop.Value;
+                            var value = _config.CanClassUseEnums(classe) && prop.Key.PrimaryKey
+                                ? $"{(classe.Name.EndsWith("s") ? $"{string.Join(".", _config.GetNamespace(classe).Split(".").Except(contextNs.Split(".")))}.{classe.Name}" : classe.Name)}.{classe.PrimaryKey!.Name}s.{prop.Value}"
+                                : prop.Key.Domain.ShouldQuoteSqlValue
+                                ? $"\"{prop.Value}\""
+                                : prop.Value is bool b
+                                ? (b ? "true" : "false")
+                                : prop.Value;
                             w.Write($" {prop.Key.Name} = {value}");
                             if (refValue.Value.ToList().IndexOf(prop) < refValue.Value.Count() - 1)
                             {

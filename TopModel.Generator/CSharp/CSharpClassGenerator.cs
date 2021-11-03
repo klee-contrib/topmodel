@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 
 namespace TopModel.Generator.CSharp
@@ -110,7 +111,11 @@ namespace TopModel.Generator.CSharp
 
             w.WriteClassDeclaration(item.Name, item.Extends?.Name);
 
-            GenerateConstProperties(w, item);
+            if (!_config.CanClassUseEnums(item) && (item.ReferenceValues?.Any() ?? false))
+            {
+                GenerateConstProperties(w, item);
+            }
+
             GenerateConstructors(w, item);
 
             if (_config.DbContextPath == null && item.IsPersistent && !_config.NoPersistance)
@@ -120,6 +125,12 @@ namespace TopModel.Generator.CSharp
                 GenerateEnumCols(w, item);
                 w.WriteLine();
                 w.WriteLine(2, "#endregion");
+            }
+
+            if (_config.CanClassUseEnums(item))
+            {
+                w.WriteLine();
+                GenerateEnumValues(w, item);
             }
 
             if (item.FlagProperty != null && item.ReferenceValues != null)
@@ -143,23 +154,18 @@ namespace TopModel.Generator.CSharp
         /// <param name="item">La classe générée.</param>
         private void GenerateConstProperties(CSharpWriter w, Class item)
         {
-            if (item.ReferenceValues?.Any() ?? false)
+            foreach (var refValue in item.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal))
             {
-                var i = 0;
-                foreach (var refValue in item.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal))
-                {
-                    ++i;
-                    var code = item.PrimaryKey?.Domain.Name != "DO_ID"
-                        ? (string)refValue.Value[item.PrimaryKey ?? item.Properties.OfType<IFieldProperty>().First()]
-                        : (string)refValue.Value[item.UniqueKeys.First().First()];
-                    var label = item.LabelProperty != null
-                        ? (string)refValue.Value[item.LabelProperty]
-                        : refValue.Name;
+                var code = item.PrimaryKey?.Domain.Name != "DO_ID"
+                    ? (string)refValue.Value[item.PrimaryKey ?? item.Properties.OfType<IFieldProperty>().First()]
+                    : (string)refValue.Value[item.UniqueKeys.First().First()];
+                var label = item.LabelProperty != null
+                    ? (string)refValue.Value[item.LabelProperty]
+                    : refValue.Name;
 
-                    w.WriteSummary(2, label);
-                    w.WriteLine(2, string.Format("public const string {0} = \"{1}\";", refValue.Name, code));
-                    w.WriteLine();
-                }
+                w.WriteSummary(2, label);
+                w.WriteLine(2, string.Format("public const string {0} = \"{1}\";", refValue.Name, code));
+                w.WriteLine();
             }
         }
 
@@ -222,7 +228,7 @@ namespace TopModel.Generator.CSharp
                 w.WriteLine(3, property.Name + " = new List<" + property.Composition.Name + ">(bean." + property.Name + ");");
             }
 
-            foreach (var property in item.Properties.Where(p => !(p is CompositionProperty) && !initd.Contains(p.Name)))
+            foreach (var property in item.Properties.Where(p => p is not CompositionProperty && !initd.Contains(p.Name)))
             {
                 w.WriteLine(3, property.Name + " = bean." + property.Name + ";");
             }
@@ -323,7 +329,7 @@ namespace TopModel.Generator.CSharp
             if (property is IFieldProperty fp)
             {
                 var prop = fp is AliasProperty alp ? alp.Property : fp;
-                if ((!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.IsPersistent && !_config.NoPersistance && !sameColumnSet.Contains(prop.SqlName))
+                if ((!_config.NoColumnOnAlias || fp is not AliasProperty) && prop.Class.IsPersistent && !_config.NoPersistance && !sameColumnSet.Contains(prop.SqlName))
                 {
                     var sqlName = _config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
                     if (prop.Domain.CSharp!.UseSqlTypeName)
@@ -382,25 +388,7 @@ namespace TopModel.Generator.CSharp
                 w.WriteAttribute(2, "Key");
             }
 
-            switch (property)
-            {
-                case CompositionProperty { Kind: "object" } ocp:
-                    w.WriteLine(2, $"public {ocp.Composition.Name} {property.Name} {{ get; set; }}");
-                    break;
-                case CompositionProperty { Kind: "list" } lcp:
-                    w.WriteLine(2, $"public ICollection<{lcp.Composition.Name}> {property.Name} {{ get; set; }}");
-                    break;
-                case CompositionProperty { DomainKind: var domain } lcp:
-                    if (domain?.CSharp?.Type != null)
-                    {
-                        w.WriteLine(2, $"public {domain.CSharp.Type}<{lcp.Composition.Name}> {property.Name} {{ get; set; }}");
-                    }
-
-                    break;
-                case IFieldProperty ifp:
-                    w.WriteLine(2, $"public {ifp.Domain.CSharp!.Type} {property.Name} {{ get; set; }}");
-                    break;
-            }
+            w.WriteLine(2, $"public {_config.GetPropertyTypeName(property, useIEnumerable: false)} {property.Name} {{ get; set; }}");
         }
 
         /// <summary>
@@ -433,7 +421,7 @@ namespace TopModel.Generator.CSharp
                 item.Properties.OfType<IFieldProperty>().Any(fp =>
             {
                 var prop = fp is AliasProperty alp ? alp.Property : fp;
-                return (!_config.NoColumnOnAlias || !(fp is AliasProperty)) && prop.Class.IsPersistent && !_config.NoPersistance;
+                return (!_config.NoColumnOnAlias || fp is not AliasProperty) && prop.Class.IsPersistent && !_config.NoPersistance;
             }))
             {
                 usings.Add("System.ComponentModel.DataAnnotations.Schema");
@@ -541,6 +529,42 @@ namespace TopModel.Generator.CSharp
                 {
                     w.WriteLine();
                 }
+            }
+
+            w.WriteLine(2, "}");
+        }
+
+        /// <summary>
+        /// Génère l'enum pour les valeurs statiques de références.
+        /// </summary>
+        /// <param name="w">Writer.</param>
+        /// <param name="item">La classe générée.</param>
+        private void GenerateEnumValues(CSharpWriter w, Class item)
+        {
+            w.WriteSummary(2, $"Valeurs possibles de la liste de référence {item}.");
+            w.WriteLine(2, $"public enum {item.PrimaryKey!.Name}s");
+            w.WriteLine(2, "{");
+
+            var refs = item.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
+            foreach (var refValue in refs)
+            {
+                var code = (string)refValue.Value[item.PrimaryKey];
+                if (Regex.IsMatch(code, "^\\d"))
+                {
+                    code = "_" + code;
+                }
+
+                var label = item.LabelProperty != null ? (string)refValue.Value[item.LabelProperty] : refValue.Name;
+
+                w.WriteSummary(3, label);
+                w.Write($"            {code}");
+
+                if (refs.IndexOf(refValue) != refs.Count - 1)
+                {
+                    w.WriteLine(",");
+                }
+
+                w.WriteLine();
             }
 
             w.WriteLine(2, "}");

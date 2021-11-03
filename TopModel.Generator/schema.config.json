@@ -173,6 +173,10 @@
           "noPersistance": {
             "type": "boolean",
             "description": "Considère tous les classes comme étant non-persistantes (= pas d'attribut SQL)."
+          },
+          "enumsForStaticReferences": {
+            "type": "boolean",
+            "description": "Utilise des enums au lieu de strings pour les PKs de listes de référence statiques."
           }
         }
       }

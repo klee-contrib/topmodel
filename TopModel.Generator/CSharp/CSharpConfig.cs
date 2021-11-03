@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace TopModel.Generator.CSharp
 {
@@ -67,6 +68,24 @@ namespace TopModel.Generator.CSharp
         /// Considère tous les classes comme étant non-persistantes (= pas d'attribut SQL).
         /// </summary>
         public bool NoPersistance { get; set; }
+
+        /// <summary>
+        /// Utilise des enums au lieu de strings pour les PKs de listes de référence statiques.
+        /// </summary>
+        public bool EnumsForStaticReferences { get; set; }
+
+        /// <summary>
+        /// Détermine si une classe utilise une enum pour sa clé primaire.
+        /// </summary>
+        /// <param name="classe">Classe.</param>
+        /// <returns>Oui/non.</returns>
+        public bool CanClassUseEnums(Class classe)
+        {
+            return EnumsForStaticReferences
+                && classe.PrimaryKey?.Domain.CSharp?.Type == "string"
+                && (classe.ReferenceValues?.Any() ?? false)
+                && classe.ReferenceValues.Any(r => !Regex.IsMatch(r.Value[classe.PrimaryKey].ToString(), "^\\d"));
+        }
 
         /// <summary>
         /// Récupère le nom du DbContext.

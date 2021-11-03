@@ -32,32 +32,36 @@ namespace TopModel.Generator.CSharp
             return res;
         }
 
-        public static string GetPropertyTypeName(IProperty prop, bool nonNullable = false)
+        public static string GetPropertyTypeName(this CSharpConfig config, IProperty prop, bool nonNullable = false, bool useIEnumerable = true)
         {
             var type = prop switch
             {
-                IFieldProperty fp => fp.Domain.CSharp?.Type ?? string.Empty,
                 CompositionProperty cp => cp.Kind switch
                 {
                     "object" => cp.Composition.Name,
-                    "list" => $"IEnumerable<{cp.Composition.Name}>",
+                    "list" => $"{(useIEnumerable ? "IEnumerable" : "ICollection")}<{cp.Composition.Name}>",
                     "async-list" => $"IAsyncEnumerable<{cp.Composition.Name}>",
                     string _ => $"{cp.DomainKind!.CSharp!.Type}<{cp.Composition.Name}>"
                 },
+                AssociationProperty { Association: var assoc } when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.PrimaryKey!.Name}s?",
+                AliasProperty { Property: AssociationProperty { Association: var assoc } } when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.PrimaryKey!.Name}s?",
+                RegularProperty { PrimaryKey: true } when config.CanClassUseEnums(prop.Class) => $"{prop.Name}s?",
+                AliasProperty { Property: RegularProperty { PrimaryKey: true, Class: var alClass } } when config.CanClassUseEnums(alClass) => $"{alClass}.{alClass.PrimaryKey!.Name}s?",
+                IFieldProperty fp => fp.Domain.CSharp?.Type ?? string.Empty,
                 _ => string.Empty
             };
 
             return nonNullable && type.EndsWith("?") ? type[0..^1] : type;
         }
 
-        public static string GetReturnTypeName(IProperty? prop)
+        public static string GetReturnTypeName(this CSharpConfig config, IProperty? prop)
         {
             if (prop == null)
             {
                 return "async Task";
             }
 
-            var typeName = GetPropertyTypeName(prop, true);
+            var typeName = GetPropertyTypeName(config, prop, true);
             return typeName.StartsWith("IAsyncEnumerable") ? typeName : $"async Task<{typeName}>";
         }
 
