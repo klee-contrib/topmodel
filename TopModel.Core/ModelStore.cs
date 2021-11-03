@@ -267,6 +267,15 @@ namespace TopModel.Core
 
                         alp.Property = (IFieldProperty)aliasedProperty;
                         break;
+                    case (AliasProperty alp, string _):
+                        if (!Domains.TryGetValue(relation.Value, out var listDomain))
+                        {
+                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - Le domaine '{relation.Value}' est introuvable. ({modelFile}/{alp.Class?.Name ?? alp.Endpoint?.Name}/{alp.Name})";
+                            break;
+                        }
+
+                        alp.ListDomain = listDomain;
+                        break;
                 }
             }
 

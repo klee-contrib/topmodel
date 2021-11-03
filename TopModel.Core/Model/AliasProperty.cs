@@ -43,5 +43,7 @@
         }
 
         public string? DefaultValue => null;
+
+        public Domain? ListDomain { get; set; }
     }
 }

@@ -187,26 +187,29 @@ namespace TopModel.Core.Loaders
                     while (parser.Current is not MappingEnd)
                     {
                         var prop = parser.Consume<Scalar>().Value;
-                        var value = parser.Consume<Scalar>().Value;
+                        var value = parser.Consume<Scalar>();
 
                         foreach (var (alp, _) in alps)
                         {
                             switch (prop)
                             {
                                 case "prefix":
-                                    alp.Prefix = value == "true" ? aliasClass!.Value : value == "false" ? null : value;
+                                    alp.Prefix = value.Value == "true" ? aliasClass!.Value : value.Value == "false" ? null : value.Value;
                                     break;
                                 case "suffix":
-                                    alp.Suffix = value == "true" ? aliasClass!.Value : value == "false" ? null : value;
+                                    alp.Suffix = value.Value == "true" ? aliasClass!.Value : value.Value == "false" ? null : value.Value;
                                     break;
                                 case "label":
-                                    alp.Label = value;
+                                    alp.Label = value.Value;
                                     break;
                                 case "required":
-                                    alp.Required = value == "true";
+                                    alp.Required = value.Value == "true";
                                     break;
                                 case "comment":
-                                    alp.Comment = value;
+                                    alp.Comment = value.Value;
+                                    break;
+                                case "asListWithDomain":
+                                    relationships.Add((alp, "listDomain"), new Relation(value));
                                     break;
                                 default:
                                     throw new Exception($"Propriété ${prop} inconnue pour une propriété");

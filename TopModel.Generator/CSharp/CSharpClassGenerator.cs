@@ -328,13 +328,15 @@ namespace TopModel.Generator.CSharp
 
             if (property is IFieldProperty fp)
             {
+                var domain = (fp as AliasProperty)?.ListDomain ?? fp.Domain;
+
                 var prop = fp is AliasProperty alp ? alp.Property : fp;
                 if ((!_config.NoColumnOnAlias || fp is not AliasProperty) && prop.Class.IsPersistent && !_config.NoPersistance && !sameColumnSet.Contains(prop.SqlName))
                 {
                     var sqlName = _config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
-                    if (prop.Domain.CSharp!.UseSqlTypeName)
+                    if (domain.CSharp!.UseSqlTypeName)
                     {
-                        w.WriteAttribute(2, "Column", $@"""{sqlName}""", $@"TypeName = ""{prop.Domain.SqlType}""");
+                        w.WriteAttribute(2, "Column", $@"""{sqlName}""", $@"TypeName = ""{domain.SqlType}""");
                     }
                     else
                     {
@@ -361,14 +363,14 @@ namespace TopModel.Generator.CSharp
 
                 if (_config.Kinetix == KinetixVersion.Core)
                 {
-                    w.WriteAttribute(2, "Domain", $@"Domains.{prop.Domain.CSharpName}");
+                    w.WriteAttribute(2, "Domain", $@"Domains.{domain.CSharpName}");
                 }
                 else if (_config.Kinetix == KinetixVersion.Framework)
                 {
-                    w.WriteAttribute(2, "Domain", $@"""{prop.Domain.Name}""");
+                    w.WriteAttribute(2, "Domain", $@"""{domain.Name}""");
                 }
 
-                foreach (var annotation in prop.Domain.CSharp!.Annotations)
+                foreach (var annotation in domain.CSharp!.Annotations)
                 {
                     w.WriteLine(2, annotation);
                 }
@@ -444,7 +446,7 @@ namespace TopModel.Generator.CSharp
             {
                 if (property is IFieldProperty fp)
                 {
-                    foreach (var @using in fp.Domain.CSharp!.Usings)
+                    foreach (var @using in (fp is AliasProperty { ListDomain: Domain ld } ? ld : fp.Domain).CSharp!.Usings)
                     {
                         usings.Add(@using);
                     }

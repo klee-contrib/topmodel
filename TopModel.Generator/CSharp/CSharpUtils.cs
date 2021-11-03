@@ -51,7 +51,11 @@ namespace TopModel.Generator.CSharp
                 _ => string.Empty
             };
 
-            return nonNullable && type.EndsWith("?") ? type[0..^1] : type;
+            var isListDomain = prop is AliasProperty { ListDomain: not null };
+
+            type = (nonNullable || isListDomain) && type.EndsWith("?") ? type[0..^1] : type;
+
+            return isListDomain ? $"{type}[]" : type;
         }
 
         public static string GetReturnTypeName(this CSharpConfig config, IProperty? prop)

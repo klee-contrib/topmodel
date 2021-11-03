@@ -218,7 +218,8 @@ namespace TopModel.Generator.Javascript
                     }
                     else if (property is IFieldProperty field)
                     {
-                        fw.Write($"FieldEntry2<typeof {field.Domain.Name}, {field.TS.Type}>");
+                        var domain = (field as AliasProperty)?.ListDomain ?? field.Domain;
+                        fw.Write($"FieldEntry2<typeof {domain.Name}, {field.TS.Type}>");
                     }
                 }
                 else
@@ -312,7 +313,8 @@ namespace TopModel.Generator.Javascript
                     fw.Write(field.Name.ToFirstLower());
                     fw.Write("\"");
                     fw.Write(",\r\n        domain: ");
-                    fw.Write(field.Domain.Name);
+                    var domain = (field as AliasProperty)?.ListDomain ?? field.Domain;
+                    fw.Write(domain.Name);
                     fw.Write(",\r\n        isRequired: ");
                     fw.Write((field.Required && !field.PrimaryKey).ToString().ToFirstLower());
                     fw.Write(",\r\n        label: \"");
@@ -370,7 +372,7 @@ namespace TopModel.Generator.Javascript
         {
             return classe.Properties
                 .OfType<IFieldProperty>()
-                .Select(property => property.Domain.Name)
+                .Select(property => property is AliasProperty { ListDomain: Domain ld } ? ld.Name : property.Domain.Name)
                 .Concat(classe.Properties.OfType<CompositionProperty>().Where(cp => cp.DomainKind != null).Select(cp => cp.DomainKind!.Name))
                 .Distinct()
                 .OrderBy(x => x);

@@ -150,6 +150,10 @@
             "comment": {
               "type": "string",
               "description": "Surcharge le commentaire de la propriété aliasée."
+            },
+            "asListWithDomain": {
+              "type": "string",
+              "description": "Crée un array pour la propriété aliasée, avec le domaine donné. Le type du champ sera un array du type de la propriété, indépendemment du type spécifié dans le domaine."
             }
           }
         },

@@ -35,6 +35,11 @@ namespace TopModel.Core
                     }
                 }
 
+                if (this is AliasProperty { ListDomain: not null })
+                {
+                    fixedType.Type += "[]";
+                }
+
                 return fixedType;
             }
         }
