@@ -102,25 +102,41 @@ namespace TopModel.Generator.CSharp
                 w.WriteLine(2, "public DbSet<" + classe.Name + "> " + Pluralize(classe.Name) + " { get; set; }");
             }
 
-            if (_config.Kinetix != KinetixVersion.Framework && _config.UseEFMigrations)
+            if (_config.UseEFMigrations)
             {
                 w.WriteLine();
                 w.WriteSummary(2, "Personalisation du modèle.");
                 w.WriteParam("modelBuilder", "L'objet de construction du modèle.");
-                w.WriteLine(2, "protected override void OnModelCreating(ModelBuilder modelBuilder)");
-                w.WriteLine(2, "{");
 
-                var hasEnum = false;
+                if (_config.Kinetix == KinetixVersion.Framework)
+                {
+                    w.WriteLine(2, "protected override void OnModelCreating(DbModelBuilder modelBuilder)");
+                    w.WriteLine(2, "{");
+                    w.WriteLine(3, "base.OnModelCreating(modelBuilder);");
+                }
+                else
+                {
+                    w.WriteLine(2, "protected override void OnModelCreating(ModelBuilder modelBuilder)");
+                    w.WriteLine(2, "{");
+                }
+
+                var hasPropConfig = false;
                 foreach (var prop in classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
                 {
                     if (prop.PrimaryKey && _config.CanClassUseEnums(prop.Class) || prop is AssociationProperty ap && _config.CanClassUseEnums(ap.Association))
                     {
-                        hasEnum = true;
-                        w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().Property(p => p.{prop.Name}).HasConversion<string>();");
+                        hasPropConfig = true;
+                        w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().Property(p => p.{prop.Name}).HasConversion<string>(){(prop.Domain.Length != null ? $".HasMaxLength({prop.Domain.Length})" : string.Empty)};");
+                    }
+
+                    if (prop.Domain.Length != null && prop.Domain.Scale != null)
+                    {
+                        hasPropConfig = true;
+                        w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().Property(x => x.{prop.Name}).HasPrecision({prop.Domain.Length}, {prop.Domain.Scale});");
                     }
                 }
 
-                if (hasEnum)
+                if (hasPropConfig)
                 {
                     w.WriteLine();
                 }
@@ -190,46 +206,10 @@ namespace TopModel.Generator.CSharp
                 }
 
                 w.WriteLine(3, "OnModelCreatingPartial(modelBuilder);");
-
                 w.WriteLine(2, "}");
 
                 w.WriteLine();
                 w.WriteLine(2, "partial void OnModelCreatingPartial(ModelBuilder modelBuilder);");
-            }
-            else if (_config.Kinetix == KinetixVersion.Framework)
-            {
-                w.WriteLine();
-                w.WriteSummary(2, "Hook pour l'ajout de configuration su EF (précision des champs, etc).");
-                w.WriteParam("modelBuilder", "L'objet de construction du modèle.");
-                w.WriteLine(2, "protected override void OnModelCreating(DbModelBuilder modelBuilder)");
-                w.WriteLine(2, "{");
-                w.WriteLine(3, "base.OnModelCreating(modelBuilder);");
-                w.WriteLine();
-
-                foreach (var classe in classes.Where(c => c.IsPersistent).OrderBy(c => c.Name))
-                {
-                    foreach (var property in classe.Properties.OfType<IFieldProperty>())
-                    {
-                        if (property.Domain.SqlTypePrecision.HasValue)
-                        {
-                            w.WriteLine(3, string.Format(
-                                "modelBuilder.Entity<{0}>().Property(x => x.{1}).HasPrecision({2}, {3});",
-                                classe.Name,
-                                property.Name,
-                                property.Domain.SqlTypePrecision.Value.Length,
-                                property.Domain.SqlTypePrecision.Value.Precision));
-                        }
-                    }
-                }
-
-                w.WriteLine();
-                w.WriteLine(3, "OnModelCreatingCustom(modelBuilder);");
-                w.WriteLine(2, "}");
-
-                w.WriteLine();
-                w.WriteSummary(2, "Hook pour l'ajout de configuration custom sur EF (view, etc).");
-                w.WriteParam("modelBuilder", "L'objet de construction du modèle");
-                w.WriteLine(2, "partial void OnModelCreatingCustom(DbModelBuilder modelBuilder);");
             }
 
             w.WriteLine(1, "}");

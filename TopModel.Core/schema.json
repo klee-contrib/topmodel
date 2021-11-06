@@ -231,6 +231,14 @@
               "type": "string",
               "description": "Libellé du domaine."
             },
+            "length": {
+              "type": "number",
+              "description": "Longueur du champ dans le domaine. Pour un type décimal, il s'agit de la précision."
+            },
+            "scale": {
+              "type": "number",
+              "description": "Pour un type décimal, nombre de chiffres après la virgule."
+            },
             "csharp": {
               "type": "object",
               "description": "Type correspondant au domaine en C#.",

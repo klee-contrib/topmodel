@@ -326,6 +326,8 @@ namespace TopModel.Generator.CSharp
         {
             w.WriteSummary(2, property.Comment);
 
+            var type = _config.GetPropertyTypeName(property, useIEnumerable: false);
+
             if (property is IFieldProperty fp)
             {
                 var domain = (fp as AliasProperty)?.ListDomain ?? fp.Domain;
@@ -370,6 +372,11 @@ namespace TopModel.Generator.CSharp
                     w.WriteAttribute(2, "Domain", $@"""{domain.Name}""");
                 }
 
+                if (type == "string" && domain.Length != null)
+                {
+                    w.WriteAttribute(2, "StringLength", $"{domain.Length}");
+                }
+
                 foreach (var annotation in domain.CSharp!.Annotations)
                 {
                     w.WriteLine(2, annotation);
@@ -390,7 +397,7 @@ namespace TopModel.Generator.CSharp
                 w.WriteAttribute(2, "Key");
             }
 
-            w.WriteLine(2, $"public {_config.GetPropertyTypeName(property, useIEnumerable: false)} {property.Name} {{ get; set; }}");
+            w.WriteLine(2, $"public {type} {property.Name} {{ get; set; }}");
         }
 
         /// <summary>

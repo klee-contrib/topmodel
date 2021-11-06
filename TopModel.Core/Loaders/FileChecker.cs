@@ -13,7 +13,7 @@ namespace TopModel.Core.Loaders
     public class FileChecker
     {
         private readonly IDeserializer _deserializer;
-        private readonly ISerializer _serialiazer;
+        private readonly ISerializer _serializer;
 
         private readonly JsonSchema? _configSchema;
         private readonly JsonSchema _modelSchema;
@@ -36,7 +36,7 @@ namespace TopModel.Core.Loaders
                 .WithNodeTypeResolver(new InferTypeFromValueResolver())
                 .IgnoreUnmatchedProperties()
                 .Build();
-            _serialiazer = new SerializerBuilder()
+            _serializer = new SerializerBuilder()
                 .JsonCompatible()
                 .Build();
         }
@@ -78,8 +78,16 @@ namespace TopModel.Core.Loaders
                     throw new Exception($"Impossible de lire le fichier {fileName.ToRelative()}.");
                 }
 
-                var json = _serialiazer.Serialize(yaml);
+                var json = _serializer.Serialize(yaml);
+
+                // La vérification du domaine ne marche pas à cause des nombres déserialisés en strings...
+                if (!firstObject && json.StartsWith("{\"domain\":"))
+                {
+                    continue;
+                }
+
                 var finalSchema = firstObject ? schema.OneOf.First() : schema;
+
                 var errors = finalSchema.Validate(json);
 
                 if (errors.Any())
