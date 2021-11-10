@@ -181,7 +181,7 @@ namespace TopModel.Core
             {
                 if (inProcess)
                 {
-                    throw new Exception($"Dépendance circulaire détectée : {visited.Last().Key} ne peut pas référencer {item}.");
+                    throw new ModelException($"Dépendance circulaire détectée : {visited.Last().Key} ne peut pas référencer {item}.");
                 }
             }
             else

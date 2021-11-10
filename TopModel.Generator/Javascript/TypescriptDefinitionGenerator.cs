@@ -55,7 +55,7 @@ namespace TopModel.Generator.Javascript
 
                     var isNewFile = !fileInfo.Exists;
 
-                    var directoryInfo = fileInfo.Directory;
+                    var directoryInfo = fileInfo.Directory!;
                     if (!directoryInfo.Exists)
                     {
                         Directory.CreateDirectory(directoryInfo.FullName);
@@ -84,7 +84,7 @@ namespace TopModel.Generator.Javascript
 
                 var isNewFile = !fileInfo.Exists;
 
-                var directoryInfo = fileInfo.Directory;
+                var directoryInfo = fileInfo.Directory!;
                 if (!directoryInfo.Exists)
                 {
                     Directory.CreateDirectory(directoryInfo.FullName);
@@ -494,7 +494,7 @@ namespace TopModel.Generator.Javascript
                 fw.Write(reference.Name);
                 fw.Write("Code = ");
                 fw.Write(reference.ReferenceValues != null
-                    ? string.Join(" | ", reference.ReferenceValues.Select(r => $@"""{r.Value[reference.PrimaryKey ?? reference.Properties.OfType<IFieldProperty>().First()]}""").OrderBy(x => x))
+                    ? string.Join(" | ", reference.ReferenceValues.Select(r => $@"""{r.Value[reference.PrimaryKey ?? reference.Properties.OfType<IFieldProperty>().First()]}""").OrderBy(x => x, StringComparer.Ordinal))
                     : "string");
                 fw.WriteLine(";");
 
@@ -567,7 +567,7 @@ namespace TopModel.Generator.Javascript
                 return property.Name.ToFirstUpper();
             }
 
-            return property.TS?.Type ?? throw new Exception($"Le type Typescript du domaine {property.Domain.Name} doit être renseigné.");
+            return property.TS?.Type ?? throw new ModelException($"Le type Typescript du domaine {property.Domain.Name} doit être renseigné.");
         }
     }
 }

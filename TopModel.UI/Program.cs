@@ -26,7 +26,7 @@ namespace TopModel.UI
                        .AddModelStore(fileChecker, config, dn)
                        .AddHostedService<ModelWatcherService>()
                        .AddSingleton<ModelFileProvider>()
-                       .AddSingleton<IModelWatcher>(p => p.GetService<ModelFileProvider>());
+                       .AddSingleton<IModelWatcher>(p => p.GetRequiredService<ModelFileProvider>());
                })
                .Build()
                .Run();

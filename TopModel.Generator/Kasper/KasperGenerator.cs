@@ -155,7 +155,7 @@ namespace TopModel.Generator.Kasper
             {
                 if (property.Domain.Java == null)
                 {
-                    throw new Exception($"Le domaine {property.Domain.Name}, utilisé par la propriété {property.JavaName} de la classe {classe.Name}, doit avoir un type Java.");
+                    throw new ModelException($"Le domaine {property.Domain.Name}, utilisé par la propriété {property.JavaName} de la classe {classe.Name}, doit avoir un type Java.");
                 }
 
                 fw.WriteLine();

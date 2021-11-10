@@ -10,7 +10,7 @@ namespace TopModel.Generator
         {
             var bodyParams = endpoint.Params.Where(param => param is CompositionProperty);
             return bodyParams.Count() > 1
-                ? throw new Exception($"L'endpoint '{endpoint.Name}' doit avoir une seule propriété dans le body. Propriétés trouvées : {string.Join(", ", bodyParams)}")
+                ? throw new ModelException($"L'endpoint '{endpoint.Name}' doit avoir une seule propriété dans le body. Propriétés trouvées : {string.Join(", ", bodyParams)}")
                 : bodyParams.SingleOrDefault();
         }
 

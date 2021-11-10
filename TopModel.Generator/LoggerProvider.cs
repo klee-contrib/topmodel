@@ -18,7 +18,7 @@ namespace TopModel.Generator
 
         public class ConsoleLogger : ILogger
         {
-            private static readonly object _lock = new object();
+            private static readonly object _lock = new();
 
             private readonly string _categoryName;
             private string? _generatorName;
@@ -28,7 +28,7 @@ namespace TopModel.Generator
                 _categoryName = categoryName;
             }
 
-            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+            public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
             {
                 if (!IsEnabled(logLevel))
                 {
@@ -69,6 +69,12 @@ namespace TopModel.Generator
                     }
 
                     Console.WriteLine(split2[^1]);
+
+                    if (exception is not null and not ModelException)
+                    {
+                        Console.WriteLine(exception.StackTrace);
+                    }
+
                     Console.ForegroundColor = ConsoleColor.Gray;
                 }
             }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Reflection;
 using NJsonSchema;
@@ -75,7 +74,7 @@ namespace TopModel.Core.Loaders
                 var yaml = _deserializer.Deserialize(parser);
                 if (yaml == null)
                 {
-                    throw new Exception($"Impossible de lire le fichier {fileName.ToRelative()}.");
+                    throw new ModelException($"Impossible de lire le fichier {fileName.ToRelative()}.");
                 }
 
                 var json = _serializer.Serialize(yaml);
@@ -92,7 +91,7 @@ namespace TopModel.Core.Loaders
 
                 if (errors.Any())
                 {
-                    throw new Exception($@"Erreur dans le fichier {fileName.ToRelative()} :
+                    throw new ModelException($@"Erreur dans le fichier {fileName.ToRelative()} :
 {string.Join("\r\n", errors.Select(e => $"[{e.LinePosition}]: {e.Kind} - {e.Path}"))}.");
                 }
 

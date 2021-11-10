@@ -41,15 +41,18 @@ namespace TopModel.Generator.Javascript
 
         private void GenerateModule(string module)
         {
-            var classes = _files.Values
-                .SelectMany(f => f.Classes)
-                .Distinct()
-                .Where(c => c.Namespace.Module == module);
+            if (_config.ResourceOutputDirectory != null)
+            {
+                var classes = _files.Values
+                    .SelectMany(f => f.Classes)
+                    .Distinct()
+                    .Where(c => c.Namespace.Module == module);
 
-            var dirInfo = Directory.CreateDirectory(_config.ResourceOutputDirectory);
-            var fileName = FirstToLower(module);
+                var dirInfo = Directory.CreateDirectory(_config.ResourceOutputDirectory);
+                var fileName = FirstToLower(module);
 
-            WriteNameSpaceNode(dirInfo.FullName + "/" + fileName + ".ts", module, classes);
+                WriteNameSpaceNode(dirInfo.FullName + "/" + fileName + ".ts", module, classes);
+            }
         }
 
         /// <summary>

@@ -52,7 +52,7 @@ namespace TopModel.Generator
                 throw new ArgumentException("Impossible de spécifier 'allowCompositePrimaryKey' avec 'csharp'.");
             }
 
-            var dn = configFile.DirectoryName;
+            var dn = configFile.DirectoryName!;
 
             var services = new ServiceCollection()
                 .AddModelStore(fileChecker, config, dn)
@@ -69,7 +69,7 @@ namespace TopModel.Generator
                     CombinePath(dn, pSqlConfig, c => c.UniqueKeysFile);
 
                     services.AddSingleton<IModelWatcher>(p =>
-                        new ProceduralSqlGenerator(p.GetService<ILogger<ProceduralSqlGenerator>>(), pSqlConfig));
+                        new ProceduralSqlGenerator(p.GetRequiredService<ILogger<ProceduralSqlGenerator>>(), pSqlConfig));
                 }
             }
 
@@ -82,7 +82,7 @@ namespace TopModel.Generator
                     CombinePath(dn, ssdtConfig, c => c.TableTypeScriptFolder);
 
                     services.AddSingleton<IModelWatcher>(p =>
-                        new SsdtGenerator(p.GetService<ILogger<SsdtGenerator>>(), ssdtConfig));
+                        new SsdtGenerator(p.GetRequiredService<ILogger<SsdtGenerator>>(), ssdtConfig));
                 }
             }
 
@@ -93,17 +93,17 @@ namespace TopModel.Generator
                     CombinePath(dn, csharpConfig, c => c.OutputDirectory);
 
                     services.AddSingleton<IModelWatcher>(p =>
-                        new CSharpGenerator(p.GetService<ILogger<CSharpGenerator>>(), csharpConfig));
+                        new CSharpGenerator(p.GetRequiredService<ILogger<CSharpGenerator>>(), csharpConfig));
 
                     if (csharpConfig.ApiGeneration == ApiGeneration.Server)
                     {
                         services.AddSingleton<IModelWatcher>(p =>
-                            new CSharpApiServerGenerator(p.GetService<ILogger<CSharpApiServerGenerator>>(), csharpConfig));
+                            new CSharpApiServerGenerator(p.GetRequiredService<ILogger<CSharpApiServerGenerator>>(), csharpConfig));
                     }
                     else if (csharpConfig.ApiGeneration == ApiGeneration.Client)
                     {
                         services.AddSingleton<IModelWatcher>(p =>
-                            new CSharpApiClientGenerator(p.GetService<ILogger<CSharpApiClientGenerator>>(), csharpConfig));
+                            new CSharpApiClientGenerator(p.GetRequiredService<ILogger<CSharpApiClientGenerator>>(), csharpConfig));
                     }
                 }
             }
@@ -119,19 +119,19 @@ namespace TopModel.Generator
                     if (jsConfig.ModelOutputDirectory != null)
                     {
                         services.AddSingleton<IModelWatcher>(p =>
-                            new TypescriptDefinitionGenerator(p.GetService<ILogger<TypescriptDefinitionGenerator>>(), jsConfig));
+                            new TypescriptDefinitionGenerator(p.GetRequiredService<ILogger<TypescriptDefinitionGenerator>>(), jsConfig));
 
                         if (jsConfig.ApiClientOutputDirectory != null)
                         {
                             services.AddSingleton<IModelWatcher>(p =>
-                                new JavascriptApiClientGenerator(p.GetService<ILogger<JavascriptApiClientGenerator>>(), jsConfig));
+                                new JavascriptApiClientGenerator(p.GetRequiredService<ILogger<JavascriptApiClientGenerator>>(), jsConfig));
                         }
                     }
 
                     if (jsConfig.ResourceOutputDirectory != null)
                     {
                         services.AddSingleton<IModelWatcher>(p =>
-                            new JavascriptResourceGenerator(p.GetService<ILogger<JavascriptResourceGenerator>>(), jsConfig));
+                            new JavascriptResourceGenerator(p.GetRequiredService<ILogger<JavascriptResourceGenerator>>(), jsConfig));
                     }
                 }
             }
@@ -143,12 +143,12 @@ namespace TopModel.Generator
                     CombinePath(dn, kasperConfig, c => c.SourcesDirectory);
 
                     services.AddSingleton<IModelWatcher>(p =>
-                        new KasperGenerator(p.GetService<ILogger<KasperGenerator>>(), kasperConfig));
+                        new KasperGenerator(p.GetRequiredService<ILogger<KasperGenerator>>(), kasperConfig));
                 }
             }
 
             using var provider = services.BuildServiceProvider();
-            var modelStore = provider.GetService<ModelStore>();
+            var modelStore = provider.GetRequiredService<ModelStore>();
 
             modelStore.LoadFromConfig(watch);
 

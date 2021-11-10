@@ -79,7 +79,7 @@ namespace {apiPath}
         {{
 
         }}
-");
+")!;
 
                 var existingMethod = controller.DescendantNodes().OfType<MethodDeclarationSyntax>().SingleOrDefault(method => method.Identifier.Text == endpoint.Name);
                 if (existingMethod != null)
@@ -121,7 +121,7 @@ namespace {apiPath}
 
                     if (param == null)
                     {
-                        throw new Exception($"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.");
+                        throw new ModelException($"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.");
                     }
 
                     var paramType = param.Domain.CSharp!.Type switch

@@ -84,7 +84,7 @@ namespace TopModel.Generator.CSharp
             return EnumsForStaticReferences
                 && classe.PrimaryKey?.Domain.CSharp?.Type == "string"
                 && (classe.ReferenceValues?.Any() ?? false)
-                && classe.ReferenceValues.Any(r => !Regex.IsMatch(r.Value[classe.PrimaryKey].ToString(), "^\\d"));
+                && classe.ReferenceValues.Any(r => !Regex.IsMatch(r.Value[classe.PrimaryKey].ToString() ?? string.Empty, "^\\d"));
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace TopModel.Generator.CSharp
         public string GetDbContextName(string appName)
         {
             return DbContextPath == null
-                ? throw new Exception("Le DbContext doit être renseigné.")
+                ? throw new ModelException("Le DbContext doit être renseigné.")
                 : DbSchema != null
                     ? $"{DbSchema.First().ToString().ToUpper() + DbSchema[1..]}DbContext"
                     : $"{appName.Replace(".", string.Empty)}DbContext";

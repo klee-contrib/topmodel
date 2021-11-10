@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TopModel.Core.FileModel;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
@@ -45,7 +44,7 @@ namespace TopModel.Core.Loaders
                                 rp.Comment = value.Value;
                                 break;
                             default:
-                                throw new Exception($"Propriété ${prop} inconnue pour une propriété");
+                                throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                         }
                     }
 
@@ -98,7 +97,7 @@ namespace TopModel.Core.Loaders
                                 ap.Comment = value.Value;
                                 break;
                             default:
-                                throw new Exception($"Propriété ${prop} inconnue pour une propriété");
+                                throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                         }
                     }
 
@@ -133,7 +132,7 @@ namespace TopModel.Core.Loaders
                                 cp.Comment = value.Value;
                                 break;
                             default:
-                                throw new Exception($"Propriété ${prop} inconnue pour une propriété");
+                                throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                         }
                     }
 
@@ -163,7 +162,7 @@ namespace TopModel.Core.Loaders
                                     aliasClass = value;
                                     break;
                                 default:
-                                    throw new Exception($"Propriété ${prop} inconnue pour un alias");
+                                    throw new ModelException($"Propriété ${prop} inconnue pour un alias");
                             }
                         }
                         else if (next is SequenceStart)
@@ -212,7 +211,7 @@ namespace TopModel.Core.Loaders
                                     relationships.Add((alp, "listDomain"), new Relation(value));
                                     break;
                                 default:
-                                    throw new Exception($"Propriété ${prop} inconnue pour une propriété");
+                                    throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                             }
                         }
                     }
@@ -225,7 +224,7 @@ namespace TopModel.Core.Loaders
                     break;
 
                 default:
-                    throw new Exception($"Type de propriété inconnu.");
+                    throw new ModelException($"Type de propriété inconnu.");
             }
 
             parser.Consume<MappingEnd>();

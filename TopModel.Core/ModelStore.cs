@@ -88,7 +88,7 @@ namespace TopModel.Core
                    if (!_modelFiles.TryGetValue(dep, out var depFile))
                    {
                        _logger.LogError($"{modelFile.Path}[6,0] - Le fichier référencé '{dep}' est introuvable.");
-                       throw new Exception($"Erreur lors de la résolution des dépendances");
+                       throw new ModelException($"Erreur lors de la résolution des dépendances");
                    }
 
                    return depFile;
@@ -133,7 +133,7 @@ namespace TopModel.Core
             }
             catch (Exception e)
             {
-                _logger.LogError(e.Message);
+                _logger.LogError(e, e.Message);
             }
         }
 
@@ -168,7 +168,7 @@ namespace TopModel.Core
                             _logger.LogError(error);
                         }
 
-                        throw new Exception("Erreur lors de la lecture du modèle.");
+                        throw new ModelException("Erreur lors de la lecture du modèle.");
                     }
 
                     foreach (var modelWatcher in _modelWatchers)
@@ -182,7 +182,7 @@ namespace TopModel.Core
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e.Message);
+                    _logger.LogError(e, e.Message);
                 }
             }
         }
@@ -319,7 +319,7 @@ namespace TopModel.Core
                 {
                     if (classe.Properties.Count(p => p.PrimaryKey) > 1)
                     {
-                        throw new Exception($"La classe {classe.Name} du fichier {modelFile} doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvées)");
+                        throw new ModelException($"La classe {classe.Name} du fichier {modelFile} doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvées)");
                     }
                 }
             }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using TopModel.Core.FileModel;
 using YamlDotNet.Core;
@@ -60,7 +59,7 @@ namespace TopModel.Core.Loaders
                         classe.Comment = value.Value;
                         break;
                     default:
-                        throw new Exception($"Propriété ${prop} inconnue pour une classe");
+                        throw new ModelException($"Propriété ${prop} inconnue pour une classe");
                 }
             }
 
@@ -99,7 +98,7 @@ namespace TopModel.Core.Loaders
 
                         return associationProperty != null
                             ? (IFieldProperty)associationProperty
-                            : throw new Exception($@"{filePath}{pos}: La propriété ""{propName}"" n'existe pas sur la classe {classe}.");
+                            : throw new ModelException($@"{filePath}{pos}: La propriété ""{propName}"" n'existe pas sur la classe {classe}.");
                     })
                     .ToList()).ToList();
                 }
@@ -116,12 +115,12 @@ namespace TopModel.Core.Loaders
                             {
                                 RegularProperty rp => rp.Name,
                                 AssociationProperty ap => $"{relationships[ap].Value}{ap.Role ?? string.Empty}",
-                                _ => throw new Exception($"{filePath}{pos}: Type de propriété non géré pour initialisation.")
+                                _ => throw new ModelException($"{filePath}{pos}: Type de propriété non géré pour initialisation.")
                             };
                             reference.Value.TryGetValue(propName, out var propValue);
 
                             return propValue == null && prop.Required && (!prop.PrimaryKey || relationships[prop].Value != "DO_ID")
-                                ? throw new Exception($"{filePath}{pos}: L'initilisation {reference.Key} de la classe {classe.Name} n'initialise pas la propriété obligatoire '{propName}'.")
+                                ? throw new ModelException($"{filePath}{pos}: L'initilisation {reference.Key} de la classe {classe.Name} n'initialise pas la propriété obligatoire '{propName}'.")
                                 : (prop, propValue!);
                         })
                         .ToDictionary(v => v.Prop, v => v.PropValue)
@@ -129,7 +128,7 @@ namespace TopModel.Core.Loaders
                 }
                 else
                 {
-                    throw new Exception($"Erreur dans la définition de la classe {classe.Name}.");
+                    throw new ModelException($"Erreur dans la définition de la classe {classe.Name}.");
                 }
             }
 

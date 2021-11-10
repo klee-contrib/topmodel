@@ -33,7 +33,7 @@ namespace TopModel.Generator.CSharp
 
             if (item.Properties.OfType<IFieldProperty>().Any(p => p.Domain.CSharp == null))
             {
-                throw new Exception($"Le type C# de tous les domaines des propriétés de {item.Name} doit être défini.");
+                throw new ModelException($"Le type C# de tous les domaines des propriétés de {item.Name} doit être défini.");
             }
 
             var directory = Path.Combine(_config.OutputDirectory, _config.GetModelPath(item), "generated");
@@ -56,7 +56,7 @@ namespace TopModel.Generator.CSharp
         /// </summary>
         /// <param name="w">Writer.</param>
         /// <param name="item">Classe générée.</param>
-        private void GenerateBaseCopyConstructor(CSharpWriter w, Class item)
+        private static void GenerateBaseCopyConstructor(CSharpWriter w, Class item)
         {
             if (item.Extends != null)
             {
@@ -72,100 +72,27 @@ namespace TopModel.Generator.CSharp
         }
 
         /// <summary>
-        /// Génération de la déclaration de la classe.
-        /// </summary>
-        /// <param name="w">Writer</param>
-        /// <param name="item">Classe à générer.</param>
-        private void GenerateClassDeclaration(CSharpWriter w, Class item)
-        {
-            if (item.Reference && _config.Kinetix != KinetixVersion.None)
-            {
-                var primaryKey = item.PrimaryKey ?? item.Properties.OfType<IFieldProperty>().First();
-                if (primaryKey.Domain.CSharp?.Type == "string")
-                {
-                    w.WriteAttribute(1, "Reference", "true");
-                }
-                else
-                {
-                    w.WriteAttribute(1, "Reference");
-                }
-            }
-
-            if (!string.IsNullOrEmpty(item.DefaultProperty))
-            {
-                w.WriteAttribute(1, "DefaultProperty", $@"""{item.DefaultProperty}""");
-            }
-
-            if (item.IsPersistent && !_config.NoPersistance)
-            {
-                var sqlName = _config.UseLowerCaseSqlNames ? item.SqlName.ToLower() : item.SqlName;
-                if (_config.DbSchema != null)
-                {
-                    w.WriteAttribute(1, "Table", $@"""{sqlName}""", $@"Schema = ""{_config.DbSchema}""");
-                }
-                else
-                {
-                    w.WriteAttribute(1, "Table", $@"""{sqlName}""");
-                }
-            }
-
-            w.WriteClassDeclaration(item.Name, item.Extends?.Name);
-
-            if (!_config.CanClassUseEnums(item) && (item.ReferenceValues?.Any() ?? false))
-            {
-                GenerateConstProperties(w, item);
-            }
-
-            GenerateConstructors(w, item);
-
-            if (_config.DbContextPath == null && item.IsPersistent && !_config.NoPersistance)
-            {
-                w.WriteLine();
-                w.WriteLine(2, "#region Meta données");
-                GenerateEnumCols(w, item);
-                w.WriteLine();
-                w.WriteLine(2, "#endregion");
-            }
-
-            if (_config.CanClassUseEnums(item))
-            {
-                w.WriteLine();
-                GenerateEnumValues(w, item);
-            }
-
-            if (item.FlagProperty != null && item.ReferenceValues != null)
-            {
-                w.WriteLine();
-                w.WriteLine(2, "#region Flags");
-                GenerateFlags(w, item);
-                w.WriteLine();
-                w.WriteLine(2, "#endregion");
-            }
-
-            GenerateProperties(w, item);
-            GenerateExtensibilityMethods(w, item);
-            w.WriteLine(1, "}");
-        }
-
-        /// <summary>
         /// Génération des constantes statiques.
         /// </summary>
         /// <param name="w">Writer.</param>
         /// <param name="item">La classe générée.</param>
-        private void GenerateConstProperties(CSharpWriter w, Class item)
+        private static void GenerateConstProperties(CSharpWriter w, Class item)
         {
-            foreach (var refValue in item.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal))
+            if (item.ReferenceValues?.Any() ?? false)
             {
-                var code = item.PrimaryKey?.Domain.Name != "DO_ID"
-                    ? (string)refValue.Value[item.PrimaryKey ?? item.Properties.OfType<IFieldProperty>().First()]
-                    : (string)refValue.Value[item.UniqueKeys.First().First()];
-                var label = item.LabelProperty != null
-                    ? (string)refValue.Value[item.LabelProperty]
-                    : refValue.Name;
+                foreach (var refValue in item.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal))
+                {
+                    var code = item.PrimaryKey == null || item.PrimaryKey.Domain.CSharp!.Type == "string"
+                        ? (string)refValue.Value[item.PrimaryKey ?? item.Properties.OfType<IFieldProperty>().First()]
+                        : (string)refValue.Value[item.UniqueKeys!.First().First()];
+                    var label = item.LabelProperty != null
+                        ? (string)refValue.Value[item.LabelProperty]
+                        : refValue.Name;
 
-                w.WriteSummary(2, label);
-                w.WriteLine(2, string.Format("public const string {0} = \"{1}\";", refValue.Name, code));
-                w.WriteLine();
+                    w.WriteSummary(2, label);
+                    w.WriteLine(2, string.Format("public const string {0} = \"{1}\";", refValue.Name, code));
+                    w.WriteLine();
+                }
             }
         }
 
@@ -174,7 +101,7 @@ namespace TopModel.Generator.CSharp
         /// </summary>
         /// <param name="w">Writer.</param>
         /// <param name="item">La classe générée.</param>
-        private void GenerateConstructors(CSharpWriter w, Class item)
+        private static void GenerateConstructors(CSharpWriter w, Class item)
         {
             GenerateDefaultConstructor(w, item);
             GenerateCopyConstructor(w, item);
@@ -186,7 +113,7 @@ namespace TopModel.Generator.CSharp
         /// </summary>
         /// <param name="w">Writer.</param>
         /// <param name="item">Classe générée.</param>
-        private void GenerateCopyConstructor(CSharpWriter w, Class item)
+        private static void GenerateCopyConstructor(CSharpWriter w, Class item)
         {
             w.WriteLine();
             w.WriteSummary(2, "Constructeur par recopie.");
@@ -243,7 +170,7 @@ namespace TopModel.Generator.CSharp
         /// </summary>
         /// <param name="w">Writer.</param>
         /// <param name="item">Classe générée.</param>
-        private void GenerateDefaultConstructor(CSharpWriter w, Class item)
+        private static void GenerateDefaultConstructor(CSharpWriter w, Class item)
         {
             w.WriteSummary(2, "Constructeur.");
             w.WriteLine(2, $@"public {item.Name}()");
@@ -289,7 +216,7 @@ namespace TopModel.Generator.CSharp
         /// </summary>
         /// <param name="w">Writer.</param>
         /// <param name="item">Classe générée.</param>
-        private void GenerateExtensibilityMethods(CSharpWriter w, Class item)
+        private static void GenerateExtensibilityMethods(CSharpWriter w, Class item)
         {
             w.WriteLine();
             w.WriteSummary(2, "Methode d'extensibilité possible pour les constructeurs.");
@@ -298,6 +225,205 @@ namespace TopModel.Generator.CSharp
             w.WriteSummary(2, "Methode d'extensibilité possible pour les constructeurs par recopie.");
             w.WriteParam("bean", "Source.");
             w.WriteLine(2, $"partial void OnCreated({item.Name} bean);");
+        }
+
+        /// <summary>
+        /// Retourne le code associé à l'instanciation d'une propriété.
+        /// </summary>
+        /// <param name="fieldName">Nom de la variable membre privée.</param>
+        /// <param name="dataType">Type de données.</param>
+        /// <returns>Code généré.</returns>
+        private static string LoadPropertyInit(string fieldName, string dataType)
+        {
+            var res = $"{fieldName} = ";
+            if (IsCSharpBaseType(dataType))
+            {
+                res += GetCSharpDefaultValueBaseType(dataType) + ";";
+            }
+            else
+            {
+                res += $"new {dataType}();";
+            }
+
+            return res;
+        }
+
+        /// <summary>
+        /// Génère le type énuméré présentant les colonnes persistentes.
+        /// </summary>
+        /// <param name="w">Writer.</param>
+        /// <param name="item">La classe générée.</param>
+        private static void GenerateEnumCols(CSharpWriter w, Class item)
+        {
+            w.WriteLine();
+            w.WriteSummary(2, "Type énuméré présentant les noms des colonnes en base.");
+
+            if (item.Extends == null)
+            {
+                w.WriteLine(2, "public enum Cols");
+            }
+            else
+            {
+                w.WriteLine(2, "public new enum Cols");
+            }
+
+            w.WriteLine(2, "{");
+
+            var cols = item.Properties.OfType<IFieldProperty>().ToList();
+            foreach (var property in cols)
+            {
+                w.WriteSummary(3, "Nom de la colonne en base associée à la propriété " + property.Name + ".");
+                w.WriteLine(3, $"{property.SqlName},");
+                if (cols.IndexOf(property) != cols.Count - 1)
+                {
+                    w.WriteLine();
+                }
+            }
+
+            w.WriteLine(2, "}");
+        }
+
+        /// <summary>
+        /// Génère l'enum pour les valeurs statiques de références.
+        /// </summary>
+        /// <param name="w">Writer.</param>
+        /// <param name="item">La classe générée.</param>
+        private static void GenerateEnumValues(CSharpWriter w, Class item)
+        {
+            w.WriteSummary(2, $"Valeurs possibles de la liste de référence {item}.");
+            w.WriteLine(2, $"public enum {item.PrimaryKey!.Name}s");
+            w.WriteLine(2, "{");
+
+            var refs = item.ReferenceValues!.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
+            foreach (var refValue in refs)
+            {
+                var code = (string)refValue.Value[item.PrimaryKey];
+                if (Regex.IsMatch(code, "^\\d"))
+                {
+                    code = "_" + code;
+                }
+
+                var label = item.LabelProperty != null ? (string)refValue.Value[item.LabelProperty] : refValue.Name;
+
+                w.WriteSummary(3, label);
+                w.Write($"            {code}");
+
+                if (refs.IndexOf(refValue) != refs.Count - 1)
+                {
+                    w.WriteLine(",");
+                }
+
+                w.WriteLine();
+            }
+
+            w.WriteLine(2, "}");
+        }
+
+        /// <summary>
+        /// Génère les flags d'une liste de référence statique.
+        /// </summary>
+        /// <param name="w">Writer.</param>
+        /// <param name="item">La classe générée.</param>
+        private static void GenerateFlags(CSharpWriter w, Class item)
+        {
+            if (item.FlagProperty != null && item.ReferenceValues != null)
+            {
+                w.WriteLine();
+                w.WriteLine(2, "#region Flags");
+                w.WriteLine();
+                w.WriteSummary(2, "Flags");
+                w.WriteLine(2, "public enum Flags");
+                w.WriteLine(2, "{");
+
+                var flagProperty = item.Properties.OfType<IFieldProperty>().Single(rp => rp.Name == item.FlagProperty);
+                var flagValues = item.ReferenceValues.Where(refValue => int.TryParse((string)refValue.Value[flagProperty], out var _)).ToList();
+                foreach (var refValue in flagValues)
+                {
+                    var flag = int.Parse((string)refValue.Value[flagProperty]);
+                    var label = item.LabelProperty != null
+                        ? (string)refValue.Value[item.LabelProperty]
+                        : refValue.Name;
+
+                    w.WriteSummary(3, label);
+                    w.WriteLine(3, $"{refValue.Name} = 0b{Convert.ToString(flag, 2)},");
+                    if (flagValues.IndexOf(refValue) != flagValues.Count - 1)
+                    {
+                        w.WriteLine();
+                    }
+                }
+
+                w.WriteLine(2, "}");
+                w.WriteLine();
+                w.WriteLine(2, "#endregion");
+            }
+        }
+
+        /// <summary>
+        /// Génération de la déclaration de la classe.
+        /// </summary>
+        /// <param name="w">Writer</param>
+        /// <param name="item">Classe à générer.</param>
+        private void GenerateClassDeclaration(CSharpWriter w, Class item)
+        {
+            if (item.Reference && _config.Kinetix != KinetixVersion.None)
+            {
+                var primaryKey = item.PrimaryKey ?? item.Properties.OfType<IFieldProperty>().First();
+                if (primaryKey.Domain.CSharp?.Type == "string")
+                {
+                    w.WriteAttribute(1, "Reference", "true");
+                }
+                else
+                {
+                    w.WriteAttribute(1, "Reference");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(item.DefaultProperty))
+            {
+                w.WriteAttribute(1, "DefaultProperty", $@"""{item.DefaultProperty}""");
+            }
+
+            if (item.IsPersistent && !_config.NoPersistance)
+            {
+                var sqlName = _config.UseLowerCaseSqlNames ? item.SqlName.ToLower() : item.SqlName;
+                if (_config.DbSchema != null)
+                {
+                    w.WriteAttribute(1, "Table", $@"""{sqlName}""", $@"Schema = ""{_config.DbSchema}""");
+                }
+                else
+                {
+                    w.WriteAttribute(1, "Table", $@"""{sqlName}""");
+                }
+            }
+
+            w.WriteClassDeclaration(item.Name, item.Extends?.Name);
+
+            if (!_config.CanClassUseEnums(item))
+            {
+                GenerateConstProperties(w, item);
+            }
+
+            GenerateConstructors(w, item);
+
+            if (_config.DbContextPath == null && item.IsPersistent && !_config.NoPersistance)
+            {
+                w.WriteLine();
+                w.WriteLine(2, "#region Meta données");
+                GenerateEnumCols(w, item);
+                w.WriteLine();
+                w.WriteLine(2, "#endregion");
+            }
+
+            if (_config.CanClassUseEnums(item))
+            {
+                w.WriteLine();
+                GenerateEnumValues(w, item);
+            }
+
+            GenerateFlags(w, item);
+            GenerateProperties(w, item);
+            GenerateExtensibilityMethods(w, item);
+            w.WriteLine(1, "}");
         }
 
         /// <summary>
@@ -428,10 +554,10 @@ namespace TopModel.Generator.CSharp
 
             if (item.Properties.Any(p => p is CompositionProperty) ||
                 item.Properties.OfType<IFieldProperty>().Any(fp =>
-            {
-                var prop = fp is AliasProperty alp ? alp.Property : fp;
-                return (!_config.NoColumnOnAlias || fp is not AliasProperty) && prop.Class.IsPersistent && !_config.NoPersistance;
-            }))
+                {
+                    var prop = fp is AliasProperty alp ? alp.Property : fp;
+                    return (!_config.NoColumnOnAlias || fp is not AliasProperty) && prop.Class.IsPersistent && !_config.NoPersistance;
+                }))
             {
                 usings.Add("System.ComponentModel.DataAnnotations.Schema");
             }
@@ -485,130 +611,6 @@ namespace TopModel.Generator.CSharp
                 .Where(u => u != _config.GetNamespace(item))
                 .Distinct()
                 .ToArray());
-        }
-
-        /// <summary>
-        /// Retourne le code associé à l'instanciation d'une propriété.
-        /// </summary>
-        /// <param name="fieldName">Nom de la variable membre privée.</param>
-        /// <param name="dataType">Type de données.</param>
-        /// <returns>Code généré.</returns>
-        private string LoadPropertyInit(string fieldName, string dataType)
-        {
-            var res = $"{fieldName} = ";
-            if (IsCSharpBaseType(dataType))
-            {
-                res += GetCSharpDefaultValueBaseType(dataType) + ";";
-            }
-            else
-            {
-                res += $"new {dataType}();";
-            }
-
-            return res;
-        }
-
-        /// <summary>
-        /// Génère le type énuméré présentant les colonnes persistentes.
-        /// </summary>
-        /// <param name="w">Writer.</param>
-        /// <param name="item">La classe générée.</param>
-        private void GenerateEnumCols(CSharpWriter w, Class item)
-        {
-            w.WriteLine();
-            w.WriteSummary(2, "Type énuméré présentant les noms des colonnes en base.");
-
-            if (item.Extends == null)
-            {
-                w.WriteLine(2, "public enum Cols");
-            }
-            else
-            {
-                w.WriteLine(2, "public new enum Cols");
-            }
-
-            w.WriteLine(2, "{");
-
-            var cols = item.Properties.OfType<IFieldProperty>().ToList();
-            foreach (var property in cols)
-            {
-                w.WriteSummary(3, "Nom de la colonne en base associée à la propriété " + property.Name + ".");
-                w.WriteLine(3, $"{property.SqlName},");
-                if (cols.IndexOf(property) != cols.Count - 1)
-                {
-                    w.WriteLine();
-                }
-            }
-
-            w.WriteLine(2, "}");
-        }
-
-        /// <summary>
-        /// Génère l'enum pour les valeurs statiques de références.
-        /// </summary>
-        /// <param name="w">Writer.</param>
-        /// <param name="item">La classe générée.</param>
-        private void GenerateEnumValues(CSharpWriter w, Class item)
-        {
-            w.WriteSummary(2, $"Valeurs possibles de la liste de référence {item}.");
-            w.WriteLine(2, $"public enum {item.PrimaryKey!.Name}s");
-            w.WriteLine(2, "{");
-
-            var refs = item.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
-            foreach (var refValue in refs)
-            {
-                var code = (string)refValue.Value[item.PrimaryKey];
-                if (Regex.IsMatch(code, "^\\d"))
-                {
-                    code = "_" + code;
-                }
-
-                var label = item.LabelProperty != null ? (string)refValue.Value[item.LabelProperty] : refValue.Name;
-
-                w.WriteSummary(3, label);
-                w.Write($"            {code}");
-
-                if (refs.IndexOf(refValue) != refs.Count - 1)
-                {
-                    w.WriteLine(",");
-                }
-
-                w.WriteLine();
-            }
-
-            w.WriteLine(2, "}");
-        }
-
-        /// <summary>
-        /// Génère les flags d'une liste de référence statique.
-        /// </summary>
-        /// <param name="w">Writer.</param>
-        /// <param name="item">La classe générée.</param>
-        private void GenerateFlags(CSharpWriter w, Class item)
-        {
-            w.WriteLine();
-            w.WriteSummary(2, "Flags");
-            w.WriteLine(2, "public enum Flags");
-            w.WriteLine(2, "{");
-
-            var flagProperty = item.Properties.OfType<IFieldProperty>().Single(rp => rp.Name == item.FlagProperty);
-            var flagValues = item.ReferenceValues.Where(refValue => int.TryParse((string)refValue.Value[flagProperty], out var _)).ToList();
-            foreach (var refValue in flagValues)
-            {
-                var flag = int.Parse((string)refValue.Value[flagProperty]);
-                var label = item.LabelProperty != null
-                    ? (string)refValue.Value[item.LabelProperty]
-                    : refValue.Name;
-
-                w.WriteSummary(3, label);
-                w.WriteLine(3, $"{refValue.Name} = 0b{Convert.ToString(flag, 2)},");
-                if (flagValues.IndexOf(refValue) != flagValues.Count - 1)
-                {
-                    w.WriteLine();
-                }
-            }
-
-            w.WriteLine(2, "}");
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using TopModel.Core.Types;
+﻿using TopModel.Core.Types;
 
 namespace TopModel.Core
 {
@@ -17,7 +16,7 @@ namespace TopModel.Core
             {
                 if (Domain.TS == null)
                 {
-                    throw new Exception($"Le type Typescript du domaine {Domain.Name} doit être renseigné.");
+                    throw new ModelException($"Le type Typescript du domaine {Domain.Name} doit être renseigné.");
                 }
 
                 var fixedType = new TSType { Type = Domain.TS.Type, Import = Domain.TS.Import };

@@ -41,7 +41,7 @@ namespace TopModel.Generator
         public FileWriter(string fileName, ILogger logger, Encoding encoding)
             : base(CultureInfo.InvariantCulture)
         {
-            _fileName = fileName ?? throw new ArgumentNullException("fileName");
+            _fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
             _logger = logger;
             _sb = new StringBuilder();
             Encoding = encoding;
@@ -133,13 +133,13 @@ namespace TopModel.Generator
             }
 
             var newContent = _sb.ToString();
-            if (newContent.Equals(currentContent))
+            if (newContent == currentContent)
             {
                 return;
             }
 
             /* Création du répertoire si inexistant. */
-            var dir = new FileInfo(_fileName).DirectoryName;
+            var dir = new FileInfo(_fileName).DirectoryName!;
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);

@@ -270,7 +270,7 @@ namespace TopModel.Generator.CSharp
             {
                 return $@"return new List<{classe.Name}>
 {{
-    {string.Join(",\r\n    ", classe.ReferenceValues.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.Name} = {(prop.Key.Domain.ShouldQuoteSqlValue ? $"\"{prop.Value}\"" : prop.Value is bool b ? (b ? "true" : "false") : prop.Value)}"))} }}"))}
+    {string.Join(",\r\n    ", classe.ReferenceValues!.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.Name} = {(prop.Key.Domain.ShouldQuoteSqlValue ? $"\"{prop.Value}\"" : prop.Value is bool b ? (b ? "true" : "false") : prop.Value)}"))} }}"))}
 }};";
             }
 
