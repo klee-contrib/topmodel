@@ -41,14 +41,13 @@ namespace TopModel.Generator.CSharp
 
             var fileName = Path.Combine(directory, item.Name + ".cs");
 
-            using var w = new CSharpWriter(fileName, _logger);
+            using var w = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
 
             GenerateUsings(w, item);
-            w.WriteLine();
             w.WriteNamespace(_config.GetNamespace(item));
             w.WriteSummary(1, item.Comment);
             GenerateClassDeclaration(w, item);
-            w.WriteLine("}");
+            w.WriteNamespaceEnd();
         }
 
         /// <summary>
@@ -533,11 +532,16 @@ namespace TopModel.Generator.CSharp
         /// <param name="item">Classe concernée.</param>
         private void GenerateUsings(CSharpWriter w, Class item)
         {
-            var usings = new List<string> { "System" };
+            var usings = new List<string>();
 
-            if (item.Properties.Any(p => p is CompositionProperty { Kind: "list" }))
+            if (!_config.UseLatestCSharp)
             {
-                usings.Add("System.Collections.Generic");
+                usings.Add("System");
+
+                if (item.Properties.Any(p => p is CompositionProperty { Kind: "list" }))
+                {
+                    usings.Add("System.Collections.Generic");
+                }
             }
 
             if (!string.IsNullOrEmpty(item.DefaultProperty))
@@ -611,6 +615,11 @@ namespace TopModel.Generator.CSharp
                 .Where(u => u != _config.GetNamespace(item))
                 .Distinct()
                 .ToArray());
+
+            if (usings.Any())
+            {
+                w.WriteLine();
+            }
         }
     }
 }

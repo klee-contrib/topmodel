@@ -35,7 +35,7 @@ namespace TopModel.Generator.CSharp
             Directory.CreateDirectory(destDirectory);
 
             var targetFileName = Path.Combine(destDirectory, "generated", $"{dbContextName}.cs");
-            using var w = new CSharpWriter(targetFileName, _logger);
+            using var w = new CSharpWriter(targetFileName, _logger, _config.UseLatestCSharp);
 
             var usings = new List<string>();
             if (_config.Kinetix != KinetixVersion.Framework)
@@ -58,8 +58,7 @@ namespace TopModel.Generator.CSharp
 
             var contextNs = _config.DbContextPath.Split("/").Last();
             w.WriteLine();
-            w.WriteLine($"namespace {contextNs}");
-            w.WriteLine("{");
+            w.WriteNamespace(contextNs);
 
             if (_config.Kinetix != KinetixVersion.Framework)
             {
@@ -173,7 +172,12 @@ namespace TopModel.Generator.CSharp
                     w.WriteLine(3, $"modelBuilder.Entity<{classe.Name}>().HasData(");
                     foreach (var refValue in classe.ReferenceValues!)
                     {
-                        w.Write($"                new {classe.Name} {{");
+                        if (!_config.UseLatestCSharp)
+                        {
+                            w.Write("    ");
+                        }
+
+                        w.Write($"            new {classe.Name} {{");
                         foreach (var prop in refValue.Value.ToList())
                         {
                             var value = _config.CanClassUseEnums(classe) && prop.Key.PrimaryKey
@@ -184,7 +188,7 @@ namespace TopModel.Generator.CSharp
                                 ? (b ? "true" : "false")
                                 : prop.Value;
                             w.Write($" {prop.Key.Name} = {value}");
-                            if (refValue.Value.ToList().IndexOf(prop) < refValue.Value.Count() - 1)
+                            if (refValue.Value.ToList().IndexOf(prop) < refValue.Value.Count - 1)
                             {
                                 w.Write(",");
                             }
@@ -213,7 +217,7 @@ namespace TopModel.Generator.CSharp
             }
 
             w.WriteLine(1, "}");
-            w.WriteLine("}");
+            w.WriteNamespaceEnd();
         }
     }
 }

@@ -41,13 +41,19 @@ namespace TopModel.Generator.CSharp
             var apiPath = _config.ApiPath.Replace("{app}", file.Endpoints.First().Namespace.App).Replace("{module}", file.Module);
             var filePath = $"{_config.OutputDirectory}/{apiPath}{path}/generated/{className}.cs";
 
-            using var fw = new CSharpWriter(filePath, _logger);
+            using var fw = new CSharpWriter(filePath, _logger, _config.UseLatestCSharp);
 
             var hasBody = file.Endpoints.Any(e => e.GetBodyParam() != null);
             var hasReturn = file.Endpoints.Any(e => e.Returns != null);
             var hasJson = hasReturn || hasBody;
 
-            var usings = new List<string> { "System.Net.Http", "System.Threading.Tasks" };
+            var usings = new List<string>();
+
+            if (!_config.UseLatestCSharp)
+            {
+                usings.Add("System.Net.Http");
+                usings.Add("System.Threading.Tasks");
+            }
 
             if (hasBody)
             {
@@ -66,7 +72,10 @@ namespace TopModel.Generator.CSharp
 
             if (file.Endpoints.Any(e => e.GetQueryParams().Any()))
             {
-                usings.AddRange(new[] { "System.Collections.Generic", "System.Linq" });
+                if (!_config.UseLatestCSharp)
+                {
+                    usings.AddRange(new[] { "System.Collections.Generic", "System.Linq" });
+                }
 
                 if (file.Endpoints.Any(e => e.GetQueryParams().Any(qp => _config.GetPropertyTypeName(qp) != "string")))
                 {
@@ -103,7 +112,7 @@ namespace TopModel.Generator.CSharp
                             usings.AddRange(cp.DomainKind.CSharp!.Usings);
                         }
 
-                        if (cp.Kind == "list" || cp.Kind == "async-list")
+                        if (!_config.UseLatestCSharp && (cp.Kind == "list" || cp.Kind == "async-list"))
                         {
                             usings.Add("System.Collections.Generic");
                         }
@@ -146,7 +155,12 @@ namespace TopModel.Generator.CSharp
 
                 fw.WriteReturns(2, endpoint.Returns?.Comment ?? "Task.");
 
-                fw.Write("        public async Task");
+                if (!_config.UseLatestCSharp)
+                {
+                    fw.Write("    ");
+                }
+
+                fw.Write("    public async Task");
 
                 var returnType = endpoint.Returns != null ? _config.GetPropertyTypeName(endpoint.Returns) : null;
                 if (returnType?.StartsWith("IAsyncEnumerable") ?? false)
@@ -255,7 +269,7 @@ namespace TopModel.Generator.CSharp
             }
 
             fw.WriteLine(1, "}");
-            fw.WriteLine("}");
+            fw.WriteNamespaceEnd();
         }
     }
 }

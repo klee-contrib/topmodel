@@ -161,6 +161,10 @@
             "type": "string",
             "description": "Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo')."
           },
+          "useLatestCSharp": {
+            "type": "boolean",
+            "description": "Utilise les features C# 10 dans la génération."
+          },
           "kinetix": {
             "type": "string",
             "description": "Version de kinetix utilisée: Core, Framework ou None.",

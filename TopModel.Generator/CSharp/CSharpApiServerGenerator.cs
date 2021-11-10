@@ -51,6 +51,15 @@ namespace TopModel.Generator.CSharp
 
             var text = File.Exists(filePath)
                 ? File.ReadAllText(filePath)
+                : _config.UseLatestCSharp
+                ? $@"using Microsoft.AspNetCore.Mvc;
+
+namespace {apiPath};
+
+public class {className} : Controller
+{{
+
+}}"
                 : $@"using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
@@ -67,18 +76,20 @@ namespace {apiPath}
 
             var controller = existingController;
 
+            var indent = _config.UseLatestCSharp ? "    " : "        ";
+
             foreach (var endpoint in file.Endpoints.Where(endpoint => endpoint.ModelFile == file || !_files.ContainsKey(endpoint.ModelFile.Name)))
             {
                 var method = (MethodDeclarationSyntax)ParseMemberDeclaration($@"
-        /// <summary>
-        /// {endpoint.Description}
-        /// </summary>{string.Join(Environment.NewLine, new[] { string.Empty }.Concat(endpoint.Params.Select(param => $@"        /// <param name=""{param.GetParamName()}"">{param.Comment}</param>")))}
-        /// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>
-        [Http{endpoint.Method.ToLower().ToFirstUpper()}(""{GetRoute(endpoint)}"")]
-        public {_config.GetReturnTypeName(endpoint.Returns)} {endpoint.Name}({string.Join(", ", endpoint.Params.Select(GetParam))})
-        {{
+{indent}/// <summary>
+{indent}/// {endpoint.Description}
+{indent}/// </summary>{string.Join(Environment.NewLine, new[] { string.Empty }.Concat(endpoint.Params.Select(param => $@"        /// <param name=""{param.GetParamName()}"">{param.Comment}</param>")))}
+{indent}/// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>
+{indent}[Http{endpoint.Method.ToLower().ToFirstUpper()}(""{GetRoute(endpoint)}"")]
+{indent}public {_config.GetReturnTypeName(endpoint.Returns)} {endpoint.Name}({string.Join(", ", endpoint.Params.Select(GetParam))})
+{indent}{{
 
-        }}
+{indent}}}
 ")!;
 
                 var existingMethod = controller.DescendantNodes().OfType<MethodDeclarationSyntax>().SingleOrDefault(method => method.Identifier.Text == endpoint.Name);

@@ -55,6 +55,11 @@ namespace TopModel.Generator.CSharp
         public string? DbSchema { get; set; }
 
         /// <summary>
+        /// Utilise les features C# 10 dans la génération.
+        /// </summary>
+        public bool UseLatestCSharp { get; set; }
+
+        /// <summary>
         /// Version de kinetix utilisée: Core, Framework ou None.
         /// </summary>
         public KinetixVersion Kinetix { get; set; }

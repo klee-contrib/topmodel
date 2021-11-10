@@ -71,13 +71,16 @@ namespace TopModel.Generator.CSharp
 
             var implementationFileName = Path.Combine(projectDir, _config.DbContextPath == null ? "generated" : "generated\\Reference", $"{implementationName}.cs");
 
-            using var w = new CSharpWriter(implementationFileName, _logger);
+            using var w = new CSharpWriter(implementationFileName, _logger, _config.UseLatestCSharp);
 
-            var usings = new[]
+            var usings = new List<string>();
+
+            if (!_config.UseLatestCSharp)
             {
-                "System.Collections.Generic",
-                _config.GetNamespace(firstClass)
-            }.ToList();
+                usings.Add("System.Collections.Generic");
+            }
+
+            usings.Add(_config.GetNamespace(firstClass));
 
             if (_config.Kinetix == KinetixVersion.Core)
             {
@@ -98,7 +101,7 @@ namespace TopModel.Generator.CSharp
                     usings.Add("Kinetix.Data.SqlClient");
                 }
             }
-            else
+            else if (!_config.UseLatestCSharp)
             {
                 usings.Add("System.Linq");
             }
@@ -168,7 +171,7 @@ namespace TopModel.Generator.CSharp
             }
 
             w.WriteLine(1, "}");
-            w.WriteLine("}");
+            w.WriteNamespaceEnd();
         }
 
         /// <summary>
@@ -202,14 +205,21 @@ namespace TopModel.Generator.CSharp
 
             var interfaceFileName = Path.Combine(projectDir, _config.DbContextPath == null ? "generated" : "generated\\Reference", $"{interfaceName}.cs");
 
-            using var w = new CSharpWriter(interfaceFileName, _logger);
+            using var w = new CSharpWriter(interfaceFileName, _logger, _config.UseLatestCSharp);
 
             if (_config.Kinetix == KinetixVersion.Core)
             {
-                w.WriteUsings(
-                    "System.Collections.Generic",
-                    _config.GetNamespace(firstClass),
-                    "Kinetix.Services.Annotations");
+                var usings = new List<string>();
+
+                if (!_config.UseLatestCSharp)
+                {
+                    usings.Add("System.Collections.Generic");
+                }
+
+                usings.Add(_config.GetNamespace(firstClass));
+                usings.Add("Kinetix.Services.Annotations");
+
+                w.WriteUsings(usings.ToArray());
             }
             else
             {
@@ -256,7 +266,7 @@ namespace TopModel.Generator.CSharp
             }
 
             w.WriteLine(1, "}");
-            w.WriteLine("}");
+            w.WriteNamespaceEnd();
         }
 
         /// <summary>

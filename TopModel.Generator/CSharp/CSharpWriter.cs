@@ -12,10 +12,12 @@ namespace TopModel.Generator.CSharp
     {
         private const string IndentValue = "    ";
 
+        private readonly bool _useLatestCSharp;
         private readonly FileWriter _writer;
 
-        public CSharpWriter(string name, ILogger logger)
+        public CSharpWriter(string name, ILogger logger, bool useLatestCSharp = false)
         {
+            _useLatestCSharp = useLatestCSharp;
             _writer = new FileWriter(name, logger);
         }
 
@@ -124,6 +126,11 @@ namespace TopModel.Generator.CSharp
         /// <param name="value">Valeur à écrire dans le flux.</param>
         public void WriteLine(int indentationLevel, string value)
         {
+            if (_useLatestCSharp && indentationLevel > 0)
+            {
+                indentationLevel--;
+            }
+
             var indentValue = string.Empty;
             for (var i = 0; i < indentationLevel; ++i)
             {
@@ -140,7 +147,28 @@ namespace TopModel.Generator.CSharp
         /// <param name="value">Valeur du namespace.</param>
         public void WriteNamespace(string value)
         {
-            WriteLine("namespace " + value + "\r\n{");
+            Write($"namespace {value}");
+            if (_useLatestCSharp)
+            {
+                WriteLine(";");
+                WriteLine();
+            }
+            else
+            {
+                WriteLine();
+                WriteLine("{");
+            }
+        }
+
+        /// <summary>
+        /// Retourne le code associé à la fin d'un namespace.
+        /// </summary>
+        public void WriteNamespaceEnd()
+        {
+            if (!_useLatestCSharp)
+            {
+                WriteLine("}");
+            }
         }
 
         /// <summary>
