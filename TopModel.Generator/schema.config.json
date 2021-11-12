@@ -145,13 +145,17 @@
             "description": "Mode de génération de l'API ('Client' ou 'Server')",
             "enum": [ "Client", "Server" ]
           },
+          "useEFMigrations": {
+            "type": "boolean",
+            "description": "Utilise les migrations EF pour créer/mettre à jour la base de données."
+          },
           "dbContextPath": {
             "type": "string",
             "description": "Nom du projet dans lequel mettre le DbContext."
           },
-          "useEFMigrations": {
+          "noAsyncControllers": {
             "type": "boolean",
-            "description": "Utilise les migrations EF pour créer/mettre à jour la base de données."
+            "description": "Génère des contrôleurs d'API synchrones."
           },
           "useLowerCaseSqlNames": {
             "type": "boolean",

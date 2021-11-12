@@ -62,11 +62,13 @@ namespace TopModel.Generator.CSharp
         {
             if (prop == null)
             {
-                return "async Task";
+                return config.NoAsyncControllers ? "void" : "async Task";
             }
 
             var typeName = GetPropertyTypeName(config, prop, true);
-            return typeName.StartsWith("IAsyncEnumerable") ? typeName : $"async Task<{typeName}>";
+            return typeName.StartsWith("IAsyncEnumerable") || config.NoAsyncControllers
+                ? typeName
+                : $"async Task<{typeName}>";
         }
 
         /// <summary>

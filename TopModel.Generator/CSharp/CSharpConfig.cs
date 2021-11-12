@@ -35,6 +35,11 @@ namespace TopModel.Generator.CSharp
         public ApiGeneration ApiGeneration { get; set; }
 
         /// <summary>
+        /// Génère des contrôleurs d'API synchrones.
+        /// </summary>
+        public bool NoAsyncControllers { get; set; }
+
+        /// <summary>
         /// Localisation du DbContext, relatif au répertoire de génération.
         /// </summary>
         public string? DbContextPath { get; set; }
