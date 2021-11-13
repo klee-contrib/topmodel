@@ -239,6 +239,10 @@
               "type": "number",
               "description": "Pour un type décimal, nombre de chiffres après la virgule."
             },
+            "bodyParam": {
+              "type": "boolean",
+              "description": "Passe un champ de ce domaine comme body param dans un endpoint."
+            },
             "csharp": {
               "type": "object",
               "description": "Type correspondant au domaine en C#.",

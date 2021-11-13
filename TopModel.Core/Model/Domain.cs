@@ -15,6 +15,8 @@ namespace TopModel.Core
 
         public int? Scale { get; set; }
 
+        public bool BodyParam { get; set; }
+
         [YamlMember(Alias = "csharp")]
         public CSharpType? CSharp { get; set; }
 
