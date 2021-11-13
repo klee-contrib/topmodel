@@ -83,7 +83,7 @@ namespace {apiPath}
                 var method = (MethodDeclarationSyntax)ParseMemberDeclaration($@"
 {indent}/// <summary>
 {indent}/// {endpoint.Description}
-{indent}/// </summary>{string.Join(Environment.NewLine, new[] { string.Empty }.Concat(endpoint.Params.Select(param => $@"        /// <param name=""{param.GetParamName()}"">{param.Comment}</param>")))}
+{indent}/// </summary>{string.Join(Environment.NewLine, new[] { string.Empty }.Concat(endpoint.Params.Select(param => $@"{indent}/// <param name=""{param.GetParamName()}"">{param.Comment}</param>")))}
 {indent}/// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>
 {indent}[Http{endpoint.Method.ToLower().ToFirstUpper()}(""{GetRoute(endpoint)}"")]
 {indent}public {_config.GetReturnTypeName(endpoint.Returns)} {endpoint.Name}({string.Join(", ", endpoint.Params.Select(GetParam))})
