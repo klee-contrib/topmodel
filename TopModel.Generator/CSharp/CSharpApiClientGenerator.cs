@@ -202,18 +202,45 @@ namespace TopModel.Generator.CSharp
                     fw.WriteLine(3, "var query = await new FormUrlEncodedContent(new Dictionary<string, string>");
                     fw.WriteLine(3, "{");
 
-                    foreach (var queryParam in endpoint.GetQueryParams())
+                    foreach (var qp in endpoint.GetQueryParams().Where(qp => !_config.GetPropertyTypeName(qp).Contains("[]")))
                     {
-                        var toString = _config.GetPropertyTypeName(queryParam) switch
+                        var toString = _config.GetPropertyTypeName(qp) switch
                         {
                             "string" => string.Empty,
                             _ => $"?.ToString(CultureInfo.InvariantCulture)"
                         };
 
-                        fw.WriteLine(4, $@"[""{queryParam.GetParamName()}""] = {queryParam.GetParamName()}{toString},");
+                        fw.WriteLine(4, $@"[""{qp.GetParamName()}""] = {qp.GetParamName()}{toString},");
                     }
 
-                    fw.WriteLine(3, "}.Where(kv => kv.Value != null)).ReadAsStringAsync();");
+                    var listQPs = endpoint.GetQueryParams().Where(qp => _config.GetPropertyTypeName(qp).Contains("[]")).ToList();
+
+                    if (listQPs.Count == 0)
+                    {
+                        fw.WriteLine(3, "}.Where(kv => kv.Value != null)).ReadAsStringAsync();");
+                    }
+                    else
+                    {
+                        if (!_config.UseLatestCSharp)
+                        {
+                            fw.Write("    ");
+                        }
+
+                        fw.Write("        }");
+                        foreach (var qp in listQPs)
+                        {
+                            var toString = _config.GetPropertyTypeName(qp) switch
+                            {
+                                "string" => string.Empty,
+                                _ => $".ToString(CultureInfo.InvariantCulture)"
+                            };
+
+                            var first = listQPs.IndexOf(qp) == 0;
+                            fw.WriteLine(first ? 0 : 3, $@"{(first ? string.Empty : " ")}.Concat({qp.Name}?.Select(i => new KeyValuePair<string, string>(""{qp.Name}"", i{toString})) ?? new Dictionary<string, string>())");
+                        }
+
+                        fw.WriteLine(3, " .Where(kv => kv.Value != null)).ReadAsStringAsync();");
+                    }
                 }
 
                 fw.WriteLine(3, $"using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.{endpoint.Method.ToLower().ToFirstUpper()}, $\"{endpoint.Route}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = GetBody({bodyParam.Name}) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)});");
