@@ -156,14 +156,24 @@ namespace {apiPath}
         private string GetParam(IProperty param)
         {
             var sb = new StringBuilder();
+
+            var hasForm = param.Endpoint.Params.Any(p => p is IFieldProperty { Domain.CSharp.Type: "IFormFile" });
+
             if (param.IsBodyParam())
             {
-                sb.Append("[FromBody] ");
+                if (hasForm)
+                {
+                    sb.Append("[FromForm] ");
+                }
+                else
+                {
+                    sb.Append("[FromBody] ");
+                }
             }
 
             sb.Append($@"{_config.GetPropertyTypeName(param, param.IsRouteParam())} {param.GetParamName()}");
 
-            if (param.IsQueryParam())
+            if (param.IsQueryParam() && !hasForm)
             {
                 sb.Append(" = null");
             }

@@ -81,9 +81,11 @@ namespace TopModel.Generator.Javascript
                 fw.WriteLine(" */");
                 fw.Write($"export function {endpoint.Name.ToFirstLower()}(");
 
+                var hasForm = endpoint.Params.Any(p => p is IFieldProperty { Domain.TS.Type: "File" });
+
                 foreach (var param in endpoint.Params)
                 {
-                    fw.Write($"{param.GetParamName()}{(param.IsQueryParam() ? "?" : string.Empty)}");
+                    fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm ? "?" : string.Empty)}");
 
                     if (param is IFieldProperty fp)
                     {
@@ -114,7 +116,25 @@ namespace TopModel.Generator.Javascript
 
                 fw.WriteLine("> {");
 
-                /* TODO FormData ? */
+                if (hasForm)
+                {
+                    fw.Write("    const body = new FormData();\r\n");
+                    foreach (var param in endpoint.Params)
+                    {
+                        if (param is IFieldProperty { Domain.TS.Type: "File" })
+                        {
+                            fw.Write($@"    body.append(""{param.Name}"", {param.Name});");
+                        }
+                        else
+                        {
+                            fw.Write($@"    for (const key in {param.Name}) {{
+        body.append(key, ({param.Name} as any)[key]);
+    }}");
+                        }
+
+                        fw.WriteLine();
+                    }
+                }
 
                 fw.Write($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.Route.Replace("{", "${")}`, {{");
 
