@@ -68,6 +68,11 @@ namespace TopModel.Generator.CSharp
             if (hasJson)
             {
                 usings.Add("System.Text.Json");
+
+                if (_config.UseLatestCSharp)
+                {
+                    usings.Add("System.Text.Json.Serialization");
+                }
             }
 
             if (file.Endpoints.Any(e => e.GetQueryParams().Any()))
@@ -132,7 +137,14 @@ namespace TopModel.Generator.CSharp
             fw.WriteLine(2, "private readonly HttpClient _client;");
             if (hasJson)
             {
-                fw.WriteLine(2, "private readonly JsonSerializerOptions _jsOptions = new() { IgnoreNullValues = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };");
+                if (_config.UseLatestCSharp)
+                {
+                    fw.WriteLine(2, "private readonly JsonSerializerOptions _jsOptions = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };");
+                }
+                else
+                {
+                    fw.WriteLine(2, "private readonly JsonSerializerOptions _jsOptions = new() { IgnoreNullValues = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };");
+                }
             }
 
             fw.WriteLine();

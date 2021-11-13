@@ -135,6 +135,7 @@ namespace TopModel.Generator.ProceduralSql
             writerType?.WriteLine("-- =========================================================================================== ");
 
             var foreignKeys = classes
+                .OrderBy(c => c.Name)
                 .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType))
                 .ToList();
 
