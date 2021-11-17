@@ -66,5 +66,20 @@
         internal string? Prefix { get; set; }
 
         internal string? Suffix { get; set; }
+
+        internal AliasProperty Clone(IFieldProperty prop)
+        {
+            var alp = new AliasProperty { Property = prop, Class = Class, Endpoint = Endpoint, Prefix = Prefix, Suffix = Suffix };
+            alp.Comment = _comment!;
+            alp.Label = _label;
+            alp.ListDomain = _listDomain;
+
+            if (_required.HasValue)
+            {
+                alp.Required = _required.Value;
+            }
+
+            return alp;
+        }
     }
 }

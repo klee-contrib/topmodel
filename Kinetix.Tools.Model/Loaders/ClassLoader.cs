@@ -15,7 +15,7 @@ namespace TopModel.Core.Loaders
             _fileChecker = fileChecker;
         }
 
-        public Class LoadClass(Parser parser, IDictionary<object, Relation> relationships, string filePath)
+        internal Class LoadClass(Parser parser, List<(object Target, Relation Relation)> relationships, string filePath)
         {
             parser.Consume<MappingStart>();
 
@@ -38,7 +38,7 @@ namespace TopModel.Core.Loaders
                         classe.SqlName = value.Value;
                         break;
                     case "extends":
-                        relationships.Add(classe, new Relation(value));
+                        relationships.Add((classe, new ClassRelation(value)));
                         break;
                     case "label":
                         classe.Label = value.Value;
@@ -68,7 +68,7 @@ namespace TopModel.Core.Loaders
             parser.Consume<Scalar>();
             parser.Consume<SequenceStart>();
 
-            while (!(parser.Current is SequenceEnd))
+            while (parser.Current is not SequenceEnd)
             {
                 foreach (var property in PropertyLoader.LoadProperty(parser, relationships))
                 {
@@ -78,7 +78,17 @@ namespace TopModel.Core.Loaders
 
             parser.Consume<SequenceEnd>();
 
-            while (!(parser.Current is MappingEnd))
+            string? GetAssociationKeyName(AssociationProperty ap)
+            {
+                return (relationships.Single(r => r.Target == ap).Relation as ClassRelation)?.Reference.Value;
+            }
+
+            string? GetPropertyDomainName(IFieldProperty p)
+            {
+                return (relationships.Single(r => r.Target == p).Relation as DomainRelation)?.Reference.Value;
+            }
+
+            while (parser.Current is not MappingEnd)
             {
                 var pos = $"[{parser.Current.Start.Line},{parser.Current.Start.Column}]";
 
@@ -94,7 +104,7 @@ namespace TopModel.Core.Loaders
                             return regularProperty;
                         }
 
-                        var associationProperty = classe.Properties.OfType<AssociationProperty>().SingleOrDefault(ap => $"{relationships[ap].Value}{ap.Role ?? string.Empty}" == propName);
+                        var associationProperty = classe.Properties.OfType<AssociationProperty>().SingleOrDefault(ap => $"{GetAssociationKeyName(ap)}{ap.Role ?? string.Empty}" == propName);
 
                         return associationProperty != null
                             ? (IFieldProperty)associationProperty
@@ -114,12 +124,12 @@ namespace TopModel.Core.Loaders
                             var propName = prop switch
                             {
                                 RegularProperty rp => rp.Name,
-                                AssociationProperty ap => $"{relationships[ap].Value}{ap.Role ?? string.Empty}",
+                                AssociationProperty ap => $"{GetAssociationKeyName(ap)}{ap.Role ?? string.Empty}",
                                 _ => throw new ModelException($"{filePath}{pos}: Type de propriété non géré pour initialisation.")
                             };
                             reference.Value.TryGetValue(propName, out var propValue);
 
-                            return propValue == null && prop.Required && (!prop.PrimaryKey || relationships[prop].Value != "DO_ID")
+                            return propValue == null && prop.Required && (!prop.PrimaryKey || GetPropertyDomainName(prop) != "DO_ID")
                                 ? throw new ModelException($"{filePath}{pos}: L'initilisation {reference.Key} de la classe {classe.Name} n'initialise pas la propriété obligatoire '{propName}'.")
                                 : (prop, propValue!);
                         })

@@ -89,29 +89,66 @@
           "properties": {
             "alias": {
               "type": "object",
-              "description": "Définition de la propriété aliasée. Cette propriété DOIT être en PREMIER.",
-              "required": [ "property", "class" ],
+              "description": "Définition de propriété(s) à recopier d'une autre classe. Cette propriété DOIT être en PREMIER.",
+              "required": [ "class" ],
+              "allOf": [
+                { "not": { "required": [ "property", "include" ] } },
+                { "not": { "required": [ "property", "exclude" ] } },
+                { "not": { "required": [ "include", "exclude" ] } }
+              ],
               "additionalProperties": false,
               "properties": {
+                "class": {
+                  "type": "string",
+                  "description": "Nom de la classe depuis laquelle on veut recopier des propriétés. Doit être référencée dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier."
+                },
                 "property": {
                   "oneOf": [
                     {
                       "type": "string",
-                      "description": "Propriété de l'alias. Elle doit être définie sur la classe cible."
+                      "description": "Propriété de la classe cible à recopier."
                     },
                     {
                       "type": "array",
-                      "description": "Liste des propriétés à aliaser.",
+                      "description": "Liste des propriétés à recopier.",
                       "items": {
                         "type": "string",
-                        "description": "Propriété de l'alias. Elle doit être définie sur la classe cible.."
+                        "description": "Propriété de la classe cible à recopier."
                       }
                     }
                   ]
                 },
-                "class": {
-                  "type": "string",
-                  "description": "Nom de la classe comportant la propriété aliasée. Doit être référencée dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier."
+                "include": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "description": "Propriété de la classe cible à recopier."
+                    },
+                    {
+                      "type": "array",
+                      "description": "Liste des propriétés à recopier.",
+                      "items": {
+                        "type": "string",
+                        "description": "Propriété de la classe cible à recopier."
+                      }
+                    }
+                  ]
+                },
+                "exclude": {
+                  "oneOf": [
+                    {
+                      "type": "string",
+                      "description": "Recopie toutes les propriétés de la classe cible, sauf celle ci."
+                    },
+                    {
+                      "type": "array",
+                      "description": "Recopie toutes les propriétés de la classe cible, sauf celles-ci.",
+                      "items": {
+                        "type": "string",
+                        "description": "Propriété de la classe cible à ignorer."
+                      }
+                    }
+                  ]
                 }
               }
             },

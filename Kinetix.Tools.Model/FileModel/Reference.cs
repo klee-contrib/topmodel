@@ -3,9 +3,9 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.FileModel
 {
-    public class Relation
+    internal class Reference
     {
-        public Relation(Scalar scalar)
+        public Reference(Scalar scalar)
         {
             Start = scalar.Start;
             End = scalar.End;
@@ -17,7 +17,5 @@ namespace TopModel.Core.FileModel
         public Mark End { get; }
 
         public string Value { get; }
-
-        public Relation? Peer { get; set; }
     }
 }

@@ -5,9 +5,9 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders
 {
-    public static class PropertyLoader
+    internal static class PropertyLoader
     {
-        public static IEnumerable<IProperty> LoadProperty(Parser parser, IDictionary<object, Relation> relationships)
+        public static IEnumerable<IProperty> LoadProperty(Parser parser, List<(object Target, Relation Relation)> relationships)
         {
             parser.Consume<MappingStart>();
             switch (parser.Current)
@@ -35,7 +35,7 @@ namespace TopModel.Core.Loaders
                                 rp.Required = value.Value == "true";
                                 break;
                             case "domain":
-                                relationships.Add(rp, new Relation(value));
+                                relationships.Add((rp, new DomainRelation(value)));
                                 break;
                             case "defaultValue":
                                 rp.DefaultValue = value.Value;
@@ -67,7 +67,7 @@ namespace TopModel.Core.Loaders
                         switch (prop)
                         {
                             case "association":
-                                relationships.Add(ap, new Relation(value));
+                                relationships.Add((ap, new ClassRelation(value)));
                                 break;
                             case "asAlias":
                                 ap.AsAlias = value.Value == "true";
@@ -115,7 +115,7 @@ namespace TopModel.Core.Loaders
                         switch (prop)
                         {
                             case "composition":
-                                relationships.Add(cp, new Relation(value));
+                                relationships.Add((cp, new ClassRelation(value)));
                                 break;
                             case "name":
                                 cp.Name = value.Value;
@@ -124,7 +124,7 @@ namespace TopModel.Core.Loaders
                                 cp.Kind = value.Value;
                                 if (cp.Kind != "object" && cp.Kind != "list" && cp.Kind != "async-list")
                                 {
-                                    relationships.Add((cp, "kind"), new Relation(value));
+                                    relationships.Add((cp, new DomainRelation(value)));
                                 }
 
                                 break;
@@ -140,8 +140,7 @@ namespace TopModel.Core.Loaders
                     break;
 
                 case Scalar { Value: "alias" }:
-                    var alps = new List<(AliasProperty Alp, Scalar AliasProp)>();
-                    Scalar? aliasClass = null;
+                    var aliasRelation = new AliasRelation();
 
                     parser.Consume<Scalar>();
                     parser.Consume<MappingStart>();
@@ -151,76 +150,74 @@ namespace TopModel.Core.Loaders
                         var prop = parser.Consume<Scalar>().Value;
                         var next = parser.Consume<ParsingEvent>();
 
-                        if (next is Scalar value)
+                        switch (prop)
                         {
-                            switch (prop)
-                            {
-                                case "property":
-                                    alps.Add((new AliasProperty(), value));
-                                    break;
-                                case "class":
-                                    aliasClass = value;
-                                    break;
-                                default:
-                                    throw new ModelException($"Propriété ${prop} inconnue pour un alias");
-                            }
-                        }
-                        else if (next is SequenceStart)
-                        {
-                            while (parser.Current is not SequenceEnd)
-                            {
-                                alps.Add((new AliasProperty(), parser.Consume<Scalar>()));
-                            }
+                            case "class":
+                                aliasRelation.Reference = new Reference((Scalar)next);
+                                break;
+                            case "include" or "property" when next is Scalar pValue:
+                                aliasRelation.AddInclude(pValue);
+                                break;
+                            case "exclude" when next is Scalar eValue:
+                                aliasRelation.AddExclude(eValue);
+                                break;
+                            case "include" or "property" when next is SequenceStart:
+                                while (parser.Current is not SequenceEnd)
+                                {
+                                    aliasRelation.AddInclude(parser.Consume<Scalar>());
+                                }
 
-                            parser.Consume<SequenceEnd>();
-                        }
-                    }
+                                parser.Consume<SequenceEnd>();
+                                break;
+                            case "exclude" when next is SequenceStart:
+                                while (parser.Current is not SequenceEnd)
+                                {
+                                    aliasRelation.AddExclude(parser.Consume<Scalar>());
+                                }
 
-                    foreach (var (alp, aliasProp) in alps)
-                    {
-                        relationships.Add(alp, new Relation(aliasProp) { Peer = new Relation(aliasClass!) });
+                                parser.Consume<SequenceEnd>();
+                                break;
+                            default:
+                                throw new ModelException($"Propriété '{prop}' inconnue pour un alias");
+                        }
                     }
 
                     parser.Consume<MappingEnd>();
+
+                    var alp = new AliasProperty();
 
                     while (parser.Current is not MappingEnd)
                     {
                         var prop = parser.Consume<Scalar>().Value;
                         var value = parser.Consume<Scalar>();
 
-                        foreach (var (alp, _) in alps)
+                        switch (prop)
                         {
-                            switch (prop)
-                            {
-                                case "prefix":
-                                    alp.Prefix = value.Value == "true" ? aliasClass!.Value : value.Value == "false" ? null : value.Value;
-                                    break;
-                                case "suffix":
-                                    alp.Suffix = value.Value == "true" ? aliasClass!.Value : value.Value == "false" ? null : value.Value;
-                                    break;
-                                case "label":
-                                    alp.Label = value.Value;
-                                    break;
-                                case "required":
-                                    alp.Required = value.Value == "true";
-                                    break;
-                                case "comment":
-                                    alp.Comment = value.Value;
-                                    break;
-                                case "asListWithDomain":
-                                    relationships.Add((alp, "listDomain"), new Relation(value));
-                                    break;
-                                default:
-                                    throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
-                            }
+                            case "prefix":
+                                alp.Prefix = value.Value == "true" ? aliasRelation.ReferenceName : value.Value == "false" ? null : value.Value;
+                                break;
+                            case "suffix":
+                                alp.Suffix = value.Value == "true" ? aliasRelation.ReferenceName : value.Value == "false" ? null : value.Value;
+                                break;
+                            case "label":
+                                alp.Label = value.Value;
+                                break;
+                            case "required":
+                                alp.Required = value.Value == "true";
+                                break;
+                            case "comment":
+                                alp.Comment = value.Value;
+                                break;
+                            case "asListWithDomain":
+                                relationships.Add((alp, new DomainRelation(value)));
+                                break;
+                            default:
+                                throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                         }
                     }
 
-                    foreach (var (alp, _) in alps)
-                    {
-                        yield return alp;
-                    }
-
+                    relationships.Add((alp, aliasRelation));
+                    yield return alp;
                     break;
 
                 default:

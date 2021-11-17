@@ -196,86 +196,130 @@ namespace TopModel.Core
                 .Concat(modelFile.Classes)
                 .ToDictionary(c => c.Name, c => c);
 
-            foreach (var (obj, relation) in modelFile.Relationships)
+            foreach (var value in modelFile.Relationships)
             {
-                switch (obj)
+                switch (value)
                 {
-                    case Class classe:
-                        if (!referencedClasses.TryGetValue(relation.Value, out var extends))
+                    case (Class classe, ClassRelation relation):
+                        if (!referencedClasses.TryGetValue(relation.ReferenceName, out var extends))
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'un de ses dépendances. ({modelFile}/{classe})";
+                            yield return $"{modelFile.Path}{relation.Position} - La classe '{relation.ReferenceName}' est introuvable dans le fichier ou l'un de ses dépendances. ({modelFile}/{classe})";
                             break;
                         }
 
                         classe.Extends = extends;
                         break;
-                    case RegularProperty rp:
-                        if (!Domains.TryGetValue(relation.Value, out var domain))
+                    case (RegularProperty rp, DomainRelation relation):
+                        if (!Domains.TryGetValue(relation.ReferenceName, out var domain))
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - Le domaine '{relation.Value}' est introuvable. ({modelFile}/{rp.Class?.Name ?? rp.Endpoint?.Name}/{rp.Name})";
+                            yield return $"{modelFile.Path}{relation.Position} - Le domaine '{relation.ReferenceName}' est introuvable. ({modelFile}/{rp.Class?.Name ?? rp.Endpoint?.Name}/{rp.Name})";
                             break;
                         }
 
                         rp.Domain = domain;
                         break;
-                    case AssociationProperty ap:
-                        if (!referencedClasses.TryGetValue(relation.Value, out var association))
+                    case (AssociationProperty ap, ClassRelation relation):
+                        if (!referencedClasses.TryGetValue(relation.ReferenceName, out var association))
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{ap.Class?.Name ?? ap.Endpoint?.Name}/{{association}})";
+                            yield return $"{modelFile.Path}{relation.Position} - La classe '{relation.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{ap.Class?.Name ?? ap.Endpoint?.Name}/{{association}})";
                             break;
                         }
 
                         if (association.PrimaryKey == null)
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' doit avoir une clé primaire pour être référencée dans une association. ({modelFile}/{ap.Class?.Name ?? ap.Endpoint?.Name}/{{association}})";
+                            yield return $"{modelFile.Path}{relation.Position} - La classe '{relation.ReferenceName}' doit avoir une clé primaire pour être référencée dans une association. ({modelFile}/{ap.Class?.Name ?? ap.Endpoint?.Name}/{{association}})";
                             break;
                         }
 
                         ap.Association = association;
                         break;
-                    case CompositionProperty cp:
-                        if (!referencedClasses.TryGetValue(relation.Value, out var composition))
+                    case (CompositionProperty cp, ClassRelation relation):
+                        if (!referencedClasses.TryGetValue(relation.ReferenceName, out var composition))
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La classe '{relation.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{cp.Class?.Name ?? cp.Endpoint?.Name}/{{composition}})";
+                            yield return $"{modelFile.Path}{relation.Position} - La classe '{relation.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{cp.Class?.Name ?? cp.Endpoint?.Name}/{{composition}})";
                             break;
                         }
 
                         cp.Composition = composition;
                         break;
-                    case (CompositionProperty cp, string _):
-                        if (!Domains.TryGetValue(relation.Value, out var domainKind))
+                    case (CompositionProperty cp, DomainRelation relation):
+                        if (!Domains.TryGetValue(relation.ReferenceName, out var domainKind))
                         {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - Le domaine '{relation.Value}' est introuvable. ({modelFile}/{cp.Class?.Name ?? cp.Endpoint?.Name}/{cp.Name})";
+                            yield return $"{modelFile.Path}{relation.Position} - Le domaine '{relation.ReferenceName}' est introuvable. ({modelFile}/{cp.Class?.Name ?? cp.Endpoint?.Name}/{cp.Name})";
                             break;
                         }
 
                         cp.DomainKind = domainKind;
                         break;
-                    case AliasProperty alp:
-                        if (!referencedClasses.TryGetValue(relation.Peer!.Value, out var aliasedClass))
+                    case (AliasProperty alp, DomainRelation relation):
+                        if (!Domains.TryGetValue(relation.ReferenceName, out var listDomain))
                         {
-                            yield return $"{modelFile.Path}[{relation.Peer.Start.Line},{relation.Peer.Start.Column}] - La classe '{relation.Peer!.Value}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{alp.Class?.Name ?? alp.Endpoint?.Name}/{{alias}})";
-                            break;
-                        }
-
-                        var aliasedProperty = aliasedClass.Properties.SingleOrDefault(p => p.Name == relation.Value);
-                        if (aliasedProperty == null)
-                        {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - La propriété '{relation.Value}' est introuvable sur la classe '{aliasedClass}'. ({modelFile}/{alp.Class?.Name ?? alp.Endpoint?.Name}/{{alias}})";
-                            break;
-                        }
-
-                        alp.Property = (IFieldProperty)aliasedProperty;
-                        break;
-                    case (AliasProperty alp, string _):
-                        if (!Domains.TryGetValue(relation.Value, out var listDomain))
-                        {
-                            yield return $"{modelFile.Path}[{relation.Start.Line},{relation.Start.Column}] - Le domaine '{relation.Value}' est introuvable. ({modelFile}/{alp.Class?.Name ?? alp.Endpoint?.Name}/{alp.Name})";
+                            yield return $"{modelFile.Path}{relation.Position} - Le domaine '{relation.ReferenceName}' est introuvable. ({modelFile}/{alp.Class?.Name ?? alp.Endpoint?.Name}/{alp.Name})";
                             break;
                         }
 
                         alp.ListDomain = listDomain;
                         break;
+                }
+            }
+
+            foreach (var value in modelFile.Relationships)
+            {
+                if (value is (AliasProperty alp, AliasRelation relation))
+                {
+                    if (!referencedClasses.TryGetValue(relation.ReferenceName, out var aliasedClass))
+                    {
+                        yield return $"{modelFile.Path}{relation.Position} - La classe '{relation.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{alp.Class?.Name ?? alp.Endpoint?.Name}/{{alias}})";
+                        break;
+                    }
+
+                    var shouldBreak = false;
+                    foreach (var property in relation.IncludeReferences.Concat(relation.ExcludeReferences))
+                    {
+                        var aliasedProperty = aliasedClass.Properties.SingleOrDefault(p => p.Name == property.Value);
+                        if (aliasedProperty == null)
+                        {
+                            yield return $"{modelFile.Path}[{property.Start.Line},{property.Start.Column}] - La propriété '{property.Value}' est introuvable sur la classe '{aliasedClass}'. ({modelFile}/{alp.Class?.Name ?? alp.Endpoint?.Name}/{{alias}})";
+                            shouldBreak = true;
+                        }
+                    }
+
+                    if (shouldBreak)
+                    {
+                        break;
+                    }
+
+                    var propertiesToAlias =
+                        (relation.IncludeReferences.Any()
+                            ? relation.IncludeReferences.Select(p => aliasedClass.Properties.Single(prop => prop.Name == p.Value))
+                            : aliasedClass.Properties.Where(prop => !relation.ExcludeReferences.Select(p => p.Value).Contains(prop.Name)))
+                        .Reverse();
+
+                    foreach (var property in propertiesToAlias)
+                    {
+                        var prop = alp.Clone((IFieldProperty)property);
+                        if (alp.Class != null)
+                        {
+                            alp.Class.Properties.Insert(alp.Class.Properties.IndexOf(alp) + 1, prop);
+                        }
+                        else if (alp.Endpoint?.Returns == alp)
+                        {
+                            alp.Endpoint.Returns = prop;
+                        }
+                        else if (alp.Endpoint?.Params.Contains(alp) ?? false)
+                        {
+                            alp.Endpoint.Params.Insert(alp.Endpoint.Params.IndexOf(alp) + 1, prop);
+                        }
+                    }
+
+                    if (alp.Class != null)
+                    {
+                        alp.Class.Properties.Remove(alp);
+                    }
+                    else if (alp.Endpoint?.Params.Contains(alp) ?? false)
+                    {
+                        alp.Endpoint.Params.Remove(alp);
+                    }
                 }
             }
 

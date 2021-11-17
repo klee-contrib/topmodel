@@ -6,15 +6,15 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders
 {
-    public static class EndpointLoader
+    internal static class EndpointLoader
     {
-        public static Endpoint LoadEndpoint(Parser parser, IDictionary<object, Relation> relationships)
+        public static Endpoint LoadEndpoint(Parser parser, List<(object Target, Relation Relation)> relationships)
         {
             parser.Consume<MappingStart>();
 
             var endpoint = new Endpoint();
 
-            while (!(parser.Current is MappingEnd))
+            while (parser.Current is not MappingEnd)
             {
                 var prop = parser.Consume<Scalar>().Value;
                 parser.TryConsume<Scalar>(out var value);
@@ -36,7 +36,7 @@ namespace TopModel.Core.Loaders
                     case "params":
                         parser.Consume<SequenceStart>();
 
-                        while (!(parser.Current is SequenceEnd))
+                        while (parser.Current is not SequenceEnd)
                         {
                             foreach (var property in PropertyLoader.LoadProperty(parser, relationships))
                             {
