@@ -55,7 +55,7 @@ namespace TopModel.Generator
         /// <summary>
         /// Active la lecture et l'écriture d'un entête avec un hash du fichier.
         /// </summary>
-        public virtual bool EnableHeader => true;
+        public bool EnableHeader { get; init; } = true;
 
         /// <summary>
         /// Message à mettre dans le header.

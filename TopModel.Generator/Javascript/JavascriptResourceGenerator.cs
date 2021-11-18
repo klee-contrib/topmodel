@@ -41,116 +41,111 @@ namespace TopModel.Generator.Javascript
 
         private void GenerateModule(string module)
         {
-            if (_config.ResourceOutputDirectory != null)
+            if (_config.ResourceOutputDirectory == null)
             {
-                var classes = _files.Values
-                    .SelectMany(f => f.Classes)
-                    .Distinct()
-                    .Where(c => c.Namespace.Module == module);
-
-                var dirInfo = Directory.CreateDirectory(_config.ResourceOutputDirectory);
-                var fileName = FirstToLower(module);
-
-                WriteNameSpaceNode(dirInfo.FullName + "/" + fileName + ".ts", module, classes);
+                return;
             }
-        }
 
-        /// <summary>
-        /// Set the first character to lower.
-        /// </summary>
-        /// <param name="value">String to edit.</param>
-        /// <returns>Parser string.</returns>
-        private string FirstToLower(string value)
-        {
-            return value[..1].ToLowerInvariant() + value[1..];
-        }
+            var classes = _files.Values
+                .SelectMany(f => f.Classes)
+                .Distinct()
+                .Where(c => c.Namespace.Module == module);
 
-        /// <summary>
-        /// Formate le nom en javascript.
-        /// </summary>
-        /// <param name="name">Nom a formatter.</param>
-        /// <returns>Nom formatté.</returns>
-        private string FormatJsName(string name)
-        {
-            return FirstToLower(name);
-        }
+            var dirInfo = Directory.CreateDirectory(_config.ResourceOutputDirectory);
+            var fileName = module.ToDashCase();
+            var filePath = dirInfo.FullName + "/" + fileName + (_config.ResourceMode == ResourceMode.JS ? ".ts" : ".json");
 
-        /// <summary>
-        /// Formate le nom en javascript.
-        /// </summary>
-        /// <param name="name">Nom a formatter.</param>
-        /// <returns>Nom formatté.</returns>
-        private string FormatJsPropertyName(string name)
-        {
-            return name[..1].ToLowerInvariant() + name[1..];
+            using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
+
+            if (_config.ResourceMode != ResourceMode.JS)
+            {
+                fw.WriteLine("{");
+
+                if (_config.ResourceMode == ResourceMode.Schema)
+                {
+                    fw.WriteLine($"  \"$id\": \"{module.ToDashCase()}_translation.json\",");
+                    fw.WriteLine("  \"$schema\": \"http://json-schema.org/draft-07/schema#\",");
+                    fw.WriteLine("  \"properties\": {");
+                }
+            }
+            else
+            {
+                fw.WriteLine($"export const {module.ToFirstLower()} = {{");
+            }
+
+            var i = 1;
+            foreach (var classe in classes.OrderBy(c => c.Name))
+            {
+                WriteClasseNode(fw, classe, classes.Count() == i++);
+            }
+
+            if (_config.ResourceMode == ResourceMode.Schema)
+            {
+                fw.WriteLine("  }");
+            }
+
+            if (_config.ResourceMode != ResourceMode.JS)
+            {
+                fw.WriteLine("}");
+            }
+            else
+            {
+                fw.WriteLine("};");
+            }
         }
 
         /// <summary>
         /// Générère le noeus de classe.
         /// </summary>
-        /// <param name="writer">Flux de sortie.</param>
+        /// <param name="fw">Flux de sortie.</param>
         /// <param name="classe">Classe.</param>
         /// <param name="isLast">True s'il s'agit de al dernière classe du namespace.</param>
-        private void WriteClasseNode(TextWriter writer, Class classe, bool isLast)
+        private void WriteClasseNode(FileWriter fw, Class classe, bool isLast)
         {
-            writer.WriteLine("    " + FormatJsName(classe.Name) + ": {");
+            fw.WriteLine($"    {Quote(classe.Name)}: {{");
+
+            if (_config.ResourceMode == ResourceMode.Schema)
+            {
+                fw.WriteLine("      \"type\": \"object\",");
+                fw.WriteLine($"      \"description\": \"{classe.Comment.Replace("\"", "\\\"")}\",");
+                fw.WriteLine("      \"properties\": {");
+            }
+
             var i = 1;
 
             foreach (var property in classe.Properties)
             {
-                WritePropertyNode(writer, property, classe.Properties.Count == i++);
+                fw.Write($"        {Quote(property.Name)}: ");
+
+                if (_config.ResourceMode == ResourceMode.Schema)
+                {
+                    fw.WriteLine("{");
+                    fw.WriteLine("          \"type\": \"string\",");
+                    fw.WriteLine($"          \"description\": \"{property.Comment.Replace("\"", "\\\"")}\"");
+                    fw.Write("        }");
+                }
+                else
+                {
+                    fw.Write($@"""{property.Label ?? property.Name}""");
+                }
+
+                fw.WriteLine(classe.Properties.Count == i++ ? string.Empty : ",");
             }
 
-            WriteCloseBracket(writer, 1, isLast);
-        }
-
-        /// <summary>
-        /// Ecrit dans le flux de sortie la fermeture du noeud courant.
-        /// </summary>
-        /// <param name="writer">Flux de sortie.</param>
-        /// <param name="indentionLevel">Idention courante.</param>
-        /// <param name="isLast">Si true, on n'ajoute pas de virgule à la fin.</param>
-        private void WriteCloseBracket(TextWriter writer, int indentionLevel, bool isLast)
-        {
-            for (var i = 0; i < indentionLevel; i++)
+            if (_config.ResourceMode == ResourceMode.Schema)
             {
-                writer.Write("    ");
+                fw.WriteLine("      }");
             }
 
-            writer.Write("}");
-            writer.WriteLine(!isLast ? "," : string.Empty);
+            fw.Write("    }");
+            fw.WriteLine(!isLast ? "," : string.Empty);
         }
 
-        /// <summary>
-        /// Générère le noeud de namespace.
-        /// </summary>
-        /// <param name="outputFileNameJavascript">Nom du fichier de sortie..</param>
-        /// <param name="namespaceName">Nom du namespace.</param>
-        /// <param name="classes">Liste des classe du namespace.</param>
-        private void WriteNameSpaceNode(string outputFileNameJavascript, string namespaceName, IEnumerable<Class> classes)
+        private string Quote(string name)
         {
-            using var writerJs = new FileWriter(outputFileNameJavascript, _logger, encoderShouldEmitUTF8Identifier: false);
-
-            writerJs.WriteLine($"export const {FirstToLower(namespaceName)} = {{");
-
-            var i = 1;
-            foreach (var classe in classes.OrderBy(c => c.Name))
-            {
-                WriteClasseNode(writerJs, classe, classes.Count() == i++);
-            }
-
-            writerJs.WriteLine("};");
-        }
-
-        /// <summary>
-        /// Génère le noeud de la proprité.
-        /// </summary>
-        /// <param name="writer">Flux de sortie.</param>
-        /// <param name="property">Propriété.</param>
-        /// <param name="isLast">True s'il s'agit du dernier noeud de la classe.</param>
-        private void WritePropertyNode(TextWriter writer, IProperty property, bool isLast)
-        {
-            writer.WriteLine("        " + FormatJsPropertyName(property.Name) + @": """ + (property.Label ?? property.Name) + @"""" + (isLast ? string.Empty : ","));
+            return _config.ResourceMode == ResourceMode.JS
+                ? name.ToFirstLower()
+                : $@"""{name.ToFirstLower()}""";
         }
     }
 }

@@ -29,5 +29,10 @@
         /// Génère des modèles pour Focus (par défaut : true).
         /// </summary>
         public bool Focus { get; set; } = true;
+
+        /// <summary>
+        /// Mode de génération (JS ou JSON Schema).
+        /// </summary>
+        public ResourceMode ResourceMode { get; set; }
     }
 }

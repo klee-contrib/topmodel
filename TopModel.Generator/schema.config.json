@@ -225,6 +225,11 @@
           "focus": {
             "type": "boolean",
             "description": "Génère des modèles pour Focus (par défaut : true)."
+          },
+          "resourceMode": {
+            "type": "string",
+            "description": "Mode de génération (JS, JSON ou JSON Schema).",
+            "enum": [ "js", "json", "schema" ]
           }
         }
       }
@@ -236,7 +241,7 @@
         "type": "object",
         "description": "Config pour la génération de Jpa.",
         "additionalProperties": false,
-        "required": [ "tags", "modelOutputDirectory", "packageName" ],
+        "required": [ "tags", "modelOutputDirectory", "daoPackageName" ],
         "properties": {
           "tags": {
             "type": "array",
