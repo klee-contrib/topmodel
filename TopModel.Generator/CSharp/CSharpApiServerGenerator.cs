@@ -44,10 +44,10 @@ namespace TopModel.Generator.CSharp
             }
 
             var fileSplit = file.Name.Split("/");
-            var path = $"/{string.Join("/", fileSplit.Skip(fileSplit.Length > 1 ? 1 : 0).SkipLast(1))}";
+            var path = string.Join("/", fileSplit.Skip(fileSplit.Length > 1 ? 1 : 0).SkipLast(1));
             var className = $"{fileSplit.Last()}Controller";
             var apiPath = _config.ApiPath.Replace("{app}", file.Endpoints.First().Namespace.App).Replace("{module}", file.Module);
-            var filePath = $"{_config.OutputDirectory}/{apiPath}{path}/Controllers/{className}.cs";
+            var filePath = $"{_config.OutputDirectory}/{apiPath}/Controllers{(!string.IsNullOrEmpty(path) ? "/" : string.Empty)}{path}/{className}.cs";
 
             var text = File.Exists(filePath)
                 ? File.ReadAllText(filePath)
