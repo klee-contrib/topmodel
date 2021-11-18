@@ -1,23 +1,22 @@
-﻿namespace TopModel.Generator.CSharp
+﻿namespace TopModel.Generator.CSharp;
+
+/// <summary>
+/// Version de Kinetix.
+/// </summary>
+public enum KinetixVersion
 {
     /// <summary>
-    /// Version de Kinetix.
+    /// Kinetix .NET Core (par défaut).
     /// </summary>
-    public enum KinetixVersion
-    {
-        /// <summary>
-        /// Kinetix .NET Core (par défaut).
-        /// </summary>
-        Core,
+    Core,
 
-        /// <summary>
-        /// Kinetix .NET Framework.
-        /// </summary>
-        Framework,
+    /// <summary>
+    /// Kinetix .NET Framework.
+    /// </summary>
+    Framework,
 
-        /// <summary>
-        /// Pas de Kinetix
-        /// </summary>
-        None
-    }
+    /// <summary>
+    /// Pas de Kinetix
+    /// </summary>
+    None
 }

@@ -1,30 +1,26 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
+﻿using TopModel.Core;
 
-namespace TopModel.UI
+namespace TopModel.UI;
+
+public class ModelWatcherService : IHostedService
 {
-    public class ModelWatcherService : IHostedService
+    private readonly ModelStore _modelStore;
+    private IDisposable? _watcher;
+
+    public ModelWatcherService(ModelStore modelStore)
     {
-        private readonly ModelStore _modelStore;
-        private IDisposable? _watcher;
+        _modelStore = modelStore;
+    }
 
-        public ModelWatcherService(ModelStore modelStore)
-        {
-            _modelStore = modelStore;
-        }
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        _watcher = _modelStore.LoadFromConfig(true);
+        return Task.CompletedTask;
+    }
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            _watcher = _modelStore.LoadFromConfig(true);
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _watcher?.Dispose();
-            return Task.CompletedTask;
-        }
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        _watcher?.Dispose();
+        return Task.CompletedTask;
     }
 }

@@ -1,92 +1,89 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using Microsoft.Extensions.Logging;
+using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Generator.Ssdt.Scripter;
-using Microsoft.Extensions.Logging;
 
-namespace TopModel.Generator.Ssdt
+namespace TopModel.Generator.Ssdt;
+
+public class SsdtGenerator : GeneratorBase
 {
-    public class SsdtGenerator : GeneratorBase
+    private readonly SsdtConfig _config;
+    private readonly ILogger<SsdtGenerator> _logger;
+    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
+
+    private readonly ISqlScripter<Class> _tableScripter;
+    private readonly ISqlScripter<Class> _tableTypeScripter = new SqlTableTypeScripter();
+    private readonly ISqlScripter<Class> _initReferenceListScript;
+    private readonly ISqlScripter<IEnumerable<Class>> _initReferenceListMainScripter;
+
+    public SsdtGenerator(ILogger<SsdtGenerator> logger, SsdtConfig config)
+        : base(logger, config)
     {
-        private readonly SsdtConfig _config;
-        private readonly ILogger<SsdtGenerator> _logger;
-        private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
+        _config = config;
+        _logger = logger;
+        _tableScripter = new SqlTableScripter(config);
 
-        private readonly ISqlScripter<Class> _tableScripter;
-        private readonly ISqlScripter<Class> _tableTypeScripter = new SqlTableTypeScripter();
-        private readonly ISqlScripter<Class> _initReferenceListScript;
-        private readonly ISqlScripter<IEnumerable<Class>> _initReferenceListMainScripter;
+        _initReferenceListScript = new InitReferenceListScripter();
+        _initReferenceListMainScripter = new InitReferenceListMainScripter(_config);
+    }
 
-        public SsdtGenerator(ILogger<SsdtGenerator> logger, SsdtConfig config)
-            : base(logger, config)
+    public override string Name => "SsdtGen";
+
+    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    {
+        foreach (var file in files)
         {
-            _config = config;
-            _logger = logger;
-            _tableScripter = new SqlTableScripter(config);
-
-            _initReferenceListScript = new InitReferenceListScripter();
-            _initReferenceListMainScripter = new InitReferenceListMainScripter(_config);
+            _files[file.Name] = file;
+            GenerateClasses(file);
         }
 
-        public override string Name => "SsdtGen";
+        GenerateListInitScript();
+    }
 
-        protected override void HandleFiles(IEnumerable<ModelFile> files)
+    private void GenerateClasses(ModelFile file)
+    {
+        if (_config.TableScriptFolder != null)
         {
-            foreach (var file in files)
+            var tableCount = 0;
+            var tableTypeCount = 0;
+            foreach (var classe in file.Classes)
             {
-                _files[file.Name] = file;
-                GenerateClasses(file);
-            }
+                tableCount++;
+                _tableScripter.Write(classe, _config.TableScriptFolder, _logger);
 
-            GenerateListInitScript();
-        }
-
-        private void GenerateClasses(ModelFile file)
-        {
-            if (_config.TableScriptFolder != null)
-            {
-                var tableCount = 0;
-                var tableTypeCount = 0;
-                foreach (var classe in file.Classes)
+                if (classe.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName) && _config.TableTypeScriptFolder != null)
                 {
-                    tableCount++;
-                    _tableScripter.Write(classe, _config.TableScriptFolder, _logger);
-
-                    if (classe.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName) && _config.TableTypeScriptFolder != null)
-                    {
-                        tableTypeCount++;
-                        _tableTypeScripter.Write(classe, _config.TableTypeScriptFolder, _logger);
-                    }
+                    tableTypeCount++;
+                    _tableTypeScripter.Write(classe, _config.TableTypeScriptFolder, _logger);
                 }
             }
         }
+    }
 
-        private void GenerateListInitScript()
+    private void GenerateListInitScript()
+    {
+        var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues != null);
+
+        if (!classes.Any() || _config.InitListMainScriptName == null || _config.InitListScriptFolder == null)
         {
-            var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues != null);
-
-            if (!classes.Any() || _config.InitListMainScriptName == null || _config.InitListScriptFolder == null)
-            {
-                return;
-            }
-
-            Directory.CreateDirectory(_config.InitListScriptFolder);
-
-            // Construit la liste des Reference Class ordonnée.
-            var orderList = ModelUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
-                .OfType<AssociationProperty>()
-                .Select(a => a.Association)
-                .Where(a => a.ReferenceValues != null));
-
-            // Script un fichier par classe.
-            foreach (var referenceClass in orderList)
-            {
-                _initReferenceListScript.Write(referenceClass, _config.InitListScriptFolder, _logger);
-            }
-
-            // Script le fichier appelant les fichiers dans le bon ordre.
-            _initReferenceListMainScripter.Write(orderList, _config.InitListScriptFolder, _logger);
+            return;
         }
+
+        Directory.CreateDirectory(_config.InitListScriptFolder);
+
+        // Construit la liste des Reference Class ordonnée.
+        var orderList = ModelUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
+            .OfType<AssociationProperty>()
+            .Select(a => a.Association)
+            .Where(a => a.ReferenceValues != null));
+
+        // Script un fichier par classe.
+        foreach (var referenceClass in orderList)
+        {
+            _initReferenceListScript.Write(referenceClass, _config.InitListScriptFolder, _logger);
+        }
+
+        // Script le fichier appelant les fichiers dans le bon ordre.
+        _initReferenceListMainScripter.Write(orderList, _config.InitListScriptFolder, _logger);
     }
 }

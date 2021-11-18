@@ -1,22 +1,20 @@
-﻿using System.Collections.Generic;
-using YamlDotNet.Core.Events;
+﻿using YamlDotNet.Core.Events;
 
-namespace TopModel.Core.FileModel
+namespace TopModel.Core.FileModel;
+
+internal class AliasRelation : ClassRelation
 {
-    internal class AliasRelation : ClassRelation
+    public List<Reference> IncludeReferences { get; } = new();
+
+    public List<Reference> ExcludeReferences { get; } = new();
+
+    public void AddInclude(Scalar scalar)
     {
-        public List<Reference> IncludeReferences { get; } = new();
+        IncludeReferences.Add(new Reference(scalar));
+    }
 
-        public List<Reference> ExcludeReferences { get; } = new();
-
-        public void AddInclude(Scalar scalar)
-        {
-            IncludeReferences.Add(new Reference(scalar));
-        }
-
-        public void AddExclude(Scalar scalar)
-        {
-            ExcludeReferences.Add(new Reference(scalar));
-        }
+    public void AddExclude(Scalar scalar)
+    {
+        ExcludeReferences.Add(new Reference(scalar));
     }
 }

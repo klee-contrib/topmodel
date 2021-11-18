@@ -1,8 +1,7 @@
-﻿namespace TopModel.Generator.ProceduralSql
+﻿namespace TopModel.Generator.ProceduralSql;
+
+public enum TargetDBMS
 {
-    public enum TargetDBMS
-    {
-        Sqlserver,
-        Postgre
-    }
+    Sqlserver,
+    Postgre
 }

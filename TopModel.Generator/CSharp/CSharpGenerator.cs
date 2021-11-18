@@ -1,84 +1,81 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.Extensions.Logging;
 using TopModel.Core.FileModel;
-using Microsoft.Extensions.Logging;
 
-namespace TopModel.Generator.CSharp
+namespace TopModel.Generator.CSharp;
+
+/// <summary>
+/// Générateur de code C#.
+/// </summary>
+public class CSharpGenerator : GeneratorBase
 {
-    /// <summary>
-    /// Générateur de code C#.
-    /// </summary>
-    public class CSharpGenerator : GeneratorBase
+    private readonly CSharpConfig _config;
+    private readonly ILogger<CSharpGenerator> _logger;
+    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
+
+    private readonly CSharpClassGenerator _classGenerator;
+    private readonly DbContextGenerator _dbContextGenerator;
+    private readonly ReferenceAccessorGenerator _referenceAccessorGenerator;
+
+    public CSharpGenerator(ILogger<CSharpGenerator> logger, CSharpConfig config)
+        : base(logger, config)
     {
-        private readonly CSharpConfig _config;
-        private readonly ILogger<CSharpGenerator> _logger;
-        private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
+        _config = config;
+        _logger = logger;
 
-        private readonly CSharpClassGenerator _classGenerator;
-        private readonly DbContextGenerator _dbContextGenerator;
-        private readonly ReferenceAccessorGenerator _referenceAccessorGenerator;
+        _classGenerator = new CSharpClassGenerator(_config, _logger);
+        _dbContextGenerator = new DbContextGenerator(_config, _logger);
+        _referenceAccessorGenerator = new ReferenceAccessorGenerator(_config, _logger);
+    }
 
-        public CSharpGenerator(ILogger<CSharpGenerator> logger, CSharpConfig config)
-            : base(logger, config)
+    public override string Name => "CSharpGen";
+
+    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    {
+        foreach (var file in files)
         {
-            _config = config;
-            _logger = logger;
-
-            _classGenerator = new CSharpClassGenerator(_config, _logger);
-            _dbContextGenerator = new DbContextGenerator(_config, _logger);
-            _referenceAccessorGenerator = new ReferenceAccessorGenerator(_config, _logger);
+            _files[file.Name] = file;
+            GenerateClasses(file);
         }
 
-        public override string Name => "CSharpGen";
-
-        protected override void HandleFiles(IEnumerable<ModelFile> files)
+        if (files.SelectMany(f => f.Classes).Any(c => c.IsPersistent))
         {
-            foreach (var file in files)
-            {
-                _files[file.Name] = file;
-                GenerateClasses(file);
-            }
-
-            if (files.SelectMany(f => f.Classes).Any(c => c.IsPersistent))
-            {
-                GenerateDbContext();
-            }
-
-            var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
-            foreach (var module in modules)
-            {
-                GenerateReferences(module);
-            }
+            GenerateDbContext();
         }
 
-        private void GenerateDbContext()
+        var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
+        foreach (var module in modules)
         {
-            if (_config.DbContextPath != null)
-            {
-                _dbContextGenerator.Generate(_files.Values.SelectMany(f => f.Classes).Where(c => c.IsPersistent));
-            }
+            GenerateReferences(module);
+        }
+    }
+
+    private void GenerateDbContext()
+    {
+        if (_config.DbContextPath != null)
+        {
+            _dbContextGenerator.Generate(_files.Values.SelectMany(f => f.Classes).Where(c => c.IsPersistent));
+        }
+    }
+
+    private void GenerateClasses(ModelFile file)
+    {
+        if (_config.OutputDirectory == null)
+        {
+            return;
         }
 
-        private void GenerateClasses(ModelFile file)
+        foreach (var classe in file.Classes)
         {
-            if (_config.OutputDirectory == null)
-            {
-                return;
-            }
-
-            foreach (var classe in file.Classes)
-            {
-                _classGenerator.Generate(classe);
-            }
+            _classGenerator.Generate(classe);
         }
+    }
 
-        private void GenerateReferences(string module)
-        {
-            _referenceAccessorGenerator.Generate(
-                _files.Values
-                    .SelectMany(f => f.Classes)
-                    .Distinct()
-                    .Where(c => c.Reference && c.Namespace.Module == module));
-        }
+    private void GenerateReferences(string module)
+    {
+        _referenceAccessorGenerator.Generate(
+            _files.Values
+                .SelectMany(f => f.Classes)
+                .Distinct()
+                .Where(c => c.Reference && c.Namespace.Module == module));
     }
 }

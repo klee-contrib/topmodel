@@ -1,85 +1,82 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using Microsoft.Extensions.Logging;
+using TopModel.Core;
 using TopModel.Core.FileModel;
-using Microsoft.Extensions.Logging;
 
-namespace TopModel.Generator.Jpa
+namespace TopModel.Generator.Jpa;
+
+/// <summary>
+/// Générateur de DAOs JPA.
+/// </summary>
+public class JpaDaoGenerator : GeneratorBase
 {
-    /// <summary>
-    /// Générateur de DAOs JPA.
-    /// </summary>
-    public class JpaDaoGenerator : GeneratorBase
+    private readonly JpaConfig _config;
+    private readonly ILogger<JpaDaoGenerator> _logger;
+    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
+
+    public JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, JpaConfig config)
+        : base(logger, config)
     {
-        private readonly JpaConfig _config;
-        private readonly ILogger<JpaDaoGenerator> _logger;
-        private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
+        _config = config;
+        _logger = logger;
+    }
 
-        public JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, JpaConfig config)
-            : base(logger, config)
+    public override string Name => "JpaDaoGen";
+
+    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    {
+        foreach (var file in files)
         {
-            _config = config;
-            _logger = logger;
+            _files[file.Name] = file;
         }
 
-        public override string Name => "JpaDaoGen";
+        var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
 
-        protected override void HandleFiles(IEnumerable<ModelFile> files)
+        foreach (var module in modules)
         {
-            foreach (var file in files)
-            {
-                _files[file.Name] = file;
-            }
-
-            var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
-
-            foreach (var module in modules)
-            {
-                GenerateModule(module);
-            }
+            GenerateModule(module);
         }
+    }
 
-        private void GenerateModule(string module)
+    private void GenerateModule(string module)
+    {
+        var classes = _files.Values
+            .SelectMany(f => f.Classes)
+            .Distinct()
+            .Where(c => c.Namespace.Module == module);
+
+        foreach (var classe in classes.Where(c => !c.Reference && c.IsPersistent))
         {
-            var classes = _files.Values
-                .SelectMany(f => f.Classes)
-                .Distinct()
-                .Where(c => c.Namespace.Module == module);
+            var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), "daos", classe.Namespace.Module.ToLower());
+            var dirInfo = Directory.CreateDirectory(destFolder);
+            var packageName = $"{_config.DaoPackageName}.daos.{classe.Namespace.Module.ToLower()}";
+            var fileName = $"{destFolder}/{classe.Name}DAO.java";
 
-            foreach (var classe in classes.Where(c => !c.Reference && c.IsPersistent))
+            var fileExists = File.Exists(fileName);
+
+            // Ne génère le DAO qu'une seule fois
+            if (fileExists)
             {
-                var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), "daos", classe.Namespace.Module.ToLower());
-                var dirInfo = Directory.CreateDirectory(destFolder);
-                var packageName = $"{_config.DaoPackageName}.daos.{classe.Namespace.Module.ToLower()}";
-                var fileName = $"{destFolder}/{classe.Name}DAO.java";
-
-                var fileExists = File.Exists(fileName);
-
-                // Ne génère le DAO qu'une seule fois
-                if (fileExists)
-                {
-                    continue;
-                }
-
-                using var fw = new JavaWriter(fileName, _logger, null);
-                fw.WriteLine($"package {packageName};");
-                fw.WriteLine();
-                WriteImports(fw, classe);
-                fw.WriteLine();
-                fw.WriteLine($"public interface {classe.Name}DAO extends PagingAndSortingRepository<{classe.Name}, Long> {{");
-                fw.WriteLine();
-                fw.WriteLine("}");
+                continue;
             }
-        }
 
-        private void WriteImports(JavaWriter fw, Class classe)
-        {
-            var imports = new List<string>
+            using var fw = new JavaWriter(fileName, _logger, null);
+            fw.WriteLine($"package {packageName};");
+            fw.WriteLine();
+            WriteImports(fw, classe);
+            fw.WriteLine();
+            fw.WriteLine($"public interface {classe.Name}DAO extends PagingAndSortingRepository<{classe.Name}, Long> {{");
+            fw.WriteLine();
+            fw.WriteLine("}");
+        }
+    }
+
+    private void WriteImports(JavaWriter fw, Class classe)
+    {
+        var imports = new List<string>
             {
                 "org.springframework.data.repository.PagingAndSortingRepository",
                 $"{_config.DaoPackageName}.entities.{classe.Namespace.Module.ToLower()}.{classe.Name}"
             };
-            fw.WriteImports(imports.Distinct().ToArray());
-        }
+        fw.WriteImports(imports.Distinct().ToArray());
     }
 }

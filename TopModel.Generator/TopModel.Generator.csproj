@@ -6,6 +6,7 @@
     <OutputType>Exe</OutputType>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
     <CodeAnalysisRuleSet>..\RuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 

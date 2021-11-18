@@ -1,23 +1,22 @@
-﻿namespace TopModel.Generator.CSharp
+﻿namespace TopModel.Generator.CSharp;
+
+/// <summary>
+/// Version de Kinetix.
+/// </summary>
+public enum ApiGeneration
 {
     /// <summary>
-    /// Version de Kinetix.
+    /// Pas de génération.
     /// </summary>
-    public enum ApiGeneration
-    {
-        /// <summary>
-        /// Pas de génération.
-        /// </summary>
-        None,
+    None,
 
-        /// <summary>
-        /// Génération d'un serveur.
-        /// </summary>
-        Server,
+    /// <summary>
+    /// Génération d'un serveur.
+    /// </summary>
+    Server,
 
-        /// <summary>
-        /// Gébération d'un client.
-        /// </summary>
-        Client
-    }
+    /// <summary>
+    /// Gébération d'un client.
+    /// </summary>
+    Client
 }

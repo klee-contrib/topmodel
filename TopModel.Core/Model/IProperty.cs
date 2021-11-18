@@ -1,17 +1,16 @@
-﻿namespace TopModel.Core
+﻿namespace TopModel.Core;
+
+public interface IProperty
 {
-    public interface IProperty
-    {
-        string Name { get; }
+    string Name { get; }
 
-        string? Label { get; }
+    string? Label { get; }
 
-        bool PrimaryKey { get; }
+    bool PrimaryKey { get; }
 
-        string Comment { get; }
+    string Comment { get; }
 
-        Class Class { get; set; }
+    Class Class { get; set; }
 
-        Endpoint Endpoint { get; set; }
-    }
+    Endpoint Endpoint { get; set; }
 }

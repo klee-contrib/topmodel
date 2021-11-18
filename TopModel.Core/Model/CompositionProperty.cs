@@ -1,26 +1,25 @@
 ﻿#nullable disable
-namespace TopModel.Core
+namespace TopModel.Core;
+
+public class CompositionProperty : IProperty
 {
-    public class CompositionProperty : IProperty
-    {
-        public Class Composition { get; set; }
+    public Class Composition { get; set; }
 
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public string Kind { get; set; }
+    public string Kind { get; set; }
 
 #nullable enable
-        public Domain? DomainKind { get; set; }
+    public Domain? DomainKind { get; set; }
 #nullable disable
 
-        public string Comment { get; set; }
+    public string Comment { get; set; }
 
-        public Class Class { get; set; }
+    public Class Class { get; set; }
 
-        public Endpoint Endpoint { get; set; }
+    public Endpoint Endpoint { get; set; }
 
-        public string Label => Name;
+    public string Label => Name;
 
-        public bool PrimaryKey => false;
-    }
+    public bool PrimaryKey => false;
 }

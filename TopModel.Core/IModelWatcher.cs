@@ -1,16 +1,14 @@
-﻿using System.Collections.Generic;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 
-namespace TopModel.Core
+namespace TopModel.Core;
+
+public interface IModelWatcher
 {
-    public interface IModelWatcher
-    {
-        string Name { get; }
+    string Name { get; }
 
-        int Number { get; set; }
+    int Number { get; set; }
 
-        string FullName => $"{Name}@{Number}";
+    string FullName => $"{Name}@{Number}";
 
-        void OnFilesChanged(IEnumerable<ModelFile> files);
-    }
+    void OnFilesChanged(IEnumerable<ModelFile> files);
 }

@@ -1,19 +1,16 @@
-﻿using System;
+﻿namespace TopModel.Core;
 
-namespace TopModel.Core
+/// <summary>
+/// Exception dans la lecture/parsing du modèle.
+/// </summary>
+public class ModelException : Exception
 {
     /// <summary>
-    /// Exception dans la lecture/parsing du modèle.
+    /// Constructeur.
     /// </summary>
-    public class ModelException : Exception
+    /// <param name="message">Message.</param>
+    public ModelException(string message)
+        : base(message)
     {
-        /// <summary>
-        /// Constructeur.
-        /// </summary>
-        /// <param name="message">Message.</param>
-        public ModelException(string message)
-            : base(message)
-        {
-        }
     }
 }

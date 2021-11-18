@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
+﻿#nullable disable
+namespace TopModel.Core;
 
-#nullable disable
-namespace TopModel.Core
+public class ReferenceValue
 {
-    public class ReferenceValue
-    {
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public IDictionary<IFieldProperty, object> Value { get; set; }
-    }
+    public IDictionary<IFieldProperty, object> Value { get; set; }
 }

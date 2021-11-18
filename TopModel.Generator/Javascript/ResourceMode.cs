@@ -1,23 +1,22 @@
-﻿namespace TopModel.Generator.Javascript
+﻿namespace TopModel.Generator.Javascript;
+
+/// <summary>
+/// Mode de génération du fichier de ressources.
+/// </summary>
+public enum ResourceMode
 {
     /// <summary>
-    /// Mode de génération du fichier de ressources.
+    /// Fichier javascript.
     /// </summary>
-    public enum ResourceMode
-    {
-        /// <summary>
-        /// Fichier javascript.
-        /// </summary>
-        JS,
+    JS,
 
-        /// <summary>
-        /// Fichier JSON.
-        /// </summary>
-        JSON,
+    /// <summary>
+    /// Fichier JSON.
+    /// </summary>
+    JSON,
 
-        /// <summary>
-        /// JSON Schema.
-        /// </summary>
-        Schema
-    }
+    /// <summary>
+    /// JSON Schema.
+    /// </summary>
+    Schema
 }
