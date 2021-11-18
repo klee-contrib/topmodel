@@ -341,7 +341,10 @@ namespace TopModel.Core
                         break;
                     }
 
-                    modelFile.Classes.Add(referencedClass);
+                    if (!modelFile.Classes.Any(classe => classe.Name == referencedClass.Name))
+                    {
+                        modelFile.Classes.Add(referencedClass);
+                    }
                 }
 
                 foreach (var endpointName in alias.Endpoints)
@@ -353,7 +356,10 @@ namespace TopModel.Core
                         break;
                     }
 
-                    modelFile.Endpoints.Add(referencedEndpoint);
+                    if (!modelFile.Endpoints.Any(endpoint => endpoint.Name == referencedEndpoint.Name))
+                    {
+                        modelFile.Endpoints.Add(referencedEndpoint);
+                    }
                 }
             }
 
