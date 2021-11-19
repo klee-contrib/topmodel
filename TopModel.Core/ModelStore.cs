@@ -295,15 +295,23 @@ public class ModelStore
                     var prop = alp.Clone((IFieldProperty)property);
                     if (alp.Class != null)
                     {
-                        alp.Class.Properties.Insert(alp.Class.Properties.IndexOf(alp) + 1, prop);
+                        var index = alp.Class.Properties.IndexOf(alp);
+                        if (index >= 0)
+                        {
+                            alp.Class.Properties.Insert(index + 1, prop);
+                        }
+                    }
+                    else if (alp.Endpoint?.Params.Contains(alp) ?? false)
+                    {
+                        var index = alp.Endpoint.Params.IndexOf(alp);
+                        if (index >= 0)
+                        {
+                            alp.Endpoint.Params.Insert(index + 1, prop);
+                        }
                     }
                     else if (alp.Endpoint?.Returns == alp)
                     {
                         alp.Endpoint.Returns = prop;
-                    }
-                    else if (alp.Endpoint?.Params.Contains(alp) ?? false)
-                    {
-                        alp.Endpoint.Params.Insert(alp.Endpoint.Params.IndexOf(alp) + 1, prop);
                     }
                 }
 
