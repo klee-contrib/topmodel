@@ -10,6 +10,16 @@
     <CodeAnalysisRuleSet>..\RuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackAsTool>true</PackAsTool>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
+    <ToolCommandName>modgen</ToolCommandName>
+    <Version>1.0.0-rc.1</Version>
+    <Authors>JabX</Authors>
+    <Description>Générateur de modèle pour TopModel.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
@@ -17,6 +27,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.21308.1" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
   </ItemGroup>
 
@@ -25,6 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="nupkg\**" />
     <None Update="schema.config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

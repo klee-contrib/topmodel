@@ -25,7 +25,5 @@
     </None>
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties schema_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
-
 </Project>
   
