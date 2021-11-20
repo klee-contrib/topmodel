@@ -32,12 +32,100 @@ public static class JpaExtensions
                 imports.Add("javax.persistence.JoinColumn");
                 imports.Add("javax.persistence.JoinTable");
                 break;
+            case AssociationType.OneToOne:
+                imports.Add("javax.persistence.FetchType");
+                break;
         }
         if (ap.Association.Namespace.Module != ap.Class.Namespace.Module)
         {
-            var entityDto = ap.Class.IsPersistent ? "entities" : "dtos";
-            var packageName = $"{_config.DaoPackageName}.{entityDto}.{ap.Association.Namespace.Module.ToLower()}";
-            imports.Add($"{packageName}.{ap.Association.Name}");
+            imports.Add(ap.Association.getImport(_config));
+        }
+        return imports;
+    }
+
+    public static List<string> getImports(this CompositionProperty cp, JpaConfig _config)
+    {
+        var imports = new List<string>();
+        if (cp.Composition.Namespace.Module != cp.Class.Namespace.Module)
+        {
+            imports.Add(cp.Composition.getImport(_config));
+        }
+        return imports;
+    }
+
+    public static List<string> getImports(this IFieldProperty rp, JpaConfig _config)
+    {
+        var imports = new List<string>();
+        if (rp.Domain.Java != null && rp.Domain.Java.Import != null)
+        {
+            imports.Add("javax.persistence.Column");
+            imports.Add($"{rp.Domain.Java.Import}.{rp.Class}");
+        }
+        if (rp.PrimaryKey)
+        {
+            imports.Add("javax.persistence.Id");
+            if (
+                           rp.Domain.Java!.Type == "Long"
+                       || rp.Domain.Java.Type == "long"
+                       || rp.Domain.Java.Type == "int"
+                       || rp.Domain.Java.Type == "Integer")
+            {
+                imports.Add("javax.persistence.GeneratedValue");
+                imports.Add("javax.persistence.SequenceGenerator");
+                imports.Add("javax.persistence.GenerationType");
+            }
+        }
+        return imports;
+    }
+
+    public static string getImport(this Class classe, JpaConfig _config)
+    {
+        var entityDto = classe.IsPersistent ? "entities" : "dtos";
+        var packageName = $"{_config.DaoPackageName}.{entityDto}.{classe.Namespace.Module.ToLower()}";
+        return $"{packageName}.{classe.Name}";
+    }
+    public static List<string> getImports(this Class classe, JpaConfig _config)
+    {
+        var imports = new List<string>
+            {
+                "lombok.NoArgsConstructor",
+                "lombok.Builder",
+                "lombok.Setter",
+                "lombok.ToString",
+                "lombok.EqualsAndHashCode",
+                "lombok.AllArgsConstructor",
+                "java.io.Serializable"
+            };
+        if (classe.IsPersistent)
+        {
+            imports.Add("javax.persistence.Entity");
+            imports.Add("javax.persistence.Table");
+        }
+        else
+        {
+            if (classe.Properties.Any(p => p is IFieldProperty { Required: true })
+                || classe.Properties.Any(p => p is AliasProperty { Required: true }))
+            {
+                imports.Add("javax.validation.constraints.NotNull");
+            }
+
+            imports.Sort();
+            return imports;
+        }
+        if (classe.Reference)
+        {
+            imports.Add("javax.persistence.Enumerated");
+            imports.Add("javax.persistence.EnumType");
+            imports.Add("org.hibernate.annotations.Cache");
+            imports.Add("org.hibernate.annotations.Cache");
+            imports.Add("org.hibernate.annotations.Immutable");
+            imports.Add("org.hibernate.annotations.CacheConcurrencyStrategy");
+            imports.Add($"{_config.DaoPackageName}.references.{classe.Namespace.Module.ToLower()}.{classe.Name}Code");
+        }
+
+        if (classe.UniqueKeys?.Count > 0)
+        {
+            imports.Add("javax.persistence.UniqueConstraint");
         }
         return imports;
     }

@@ -116,56 +116,18 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteImports(JavaWriter fw, Class classe)
     {
-        var imports = new List<string>
-            {
-                "lombok.NoArgsConstructor",
-                "lombok.Builder",
-                "lombok.Setter",
-                "lombok.ToString",
-                "lombok.EqualsAndHashCode",
-                "lombok.AllArgsConstructor",
-                "java.io.Serializable"
-            };
-        if (classe.IsPersistent)
-        {
-            imports.Add("javax.persistence.Entity");
-            imports.Add("javax.persistence.Table");
-        }
-
+        var imports = classe.getImports(_config);
         foreach (var property in classe.Properties.OfType<IFieldProperty>())
         {
-            if (property.Domain.Java!.Import != null)
-            {
-                imports.Add($"{property.Domain.Java!.Import}.{property.Domain.Java!.Type}");
-            }
+            imports.AddRange(property.getImports(_config));
         }
-
-        if (classe.Properties.Any(property => property is CompositionProperty))
+        foreach (var property in classe.Properties.OfType<CompositionProperty>())
         {
-            foreach (var cp in classe.Properties.OfType<CompositionProperty>())
-            {
-                var entityDto = classe.IsPersistent ? "entities" : "dtos";
-                var packageName = $"{_config.DaoPackageName}.{entityDto}.{cp.Composition.Namespace.Module.ToLower()}";
-                imports.Add($"{packageName}.{cp.Composition.Name}");
-            }
+            imports.AddRange(property.getImports(_config));
         }
-
-        if (!classe.IsPersistent)
+        foreach (var property in classe.Properties.OfType<AssociationProperty>())
         {
-            if (classe.Properties.Any(p => p is IFieldProperty { Required: true })
-                || classe.Properties.Any(p => p is AliasProperty { Required: true }))
-            {
-                imports.Add("javax.validation.constraints.NotNull");
-            }
-
-            imports.Sort();
-            fw.WriteImports(imports.Distinct().ToArray());
-            return;
-        }
-
-        if (classe.Properties.OfType<IFieldProperty>().Any())
-        {
-            imports.Add("javax.persistence.Column");
+            imports.AddRange(property.getImports(_config));
         }
 
         if (classe.Properties.Any(property =>
@@ -184,79 +146,6 @@ public class JpaModelGenerator : GeneratorBase
             imports.Add("org.springframework.data.annotation.LastModifiedDate");
             imports.Add("javax.persistence.EntityListeners");
             imports.Add("org.springframework.data.jpa.domain.support.AuditingEntityListener");
-        }
-
-        if (classe.PrimaryKey is not null)
-        {
-            imports.Add("javax.persistence.Id");
-            if (
-                classe.PrimaryKey.Domain.Java!.Type == "Long"
-            || classe.PrimaryKey.Domain.Java.Type == "long"
-            || classe.PrimaryKey.Domain.Java.Type == "int"
-            || classe.PrimaryKey.Domain.Java.Type == "Integer")
-            {
-                imports.Add("javax.persistence.GeneratedValue");
-                imports.Add("javax.persistence.SequenceGenerator");
-                imports.Add("javax.persistence.GenerationType");
-            }
-        }
-
-        if (classe.Properties.Any(property => property is AssociationProperty))
-        {
-            foreach (var ap in classe.Properties.OfType<AssociationProperty>())
-            {
-                imports.Add($"javax.persistence.{ap.Type}");
-                if (ap.Association.Namespace.Module != classe.Namespace.Module)
-                {
-                    var entityDto = classe.IsPersistent ? "entities" : "dtos";
-                    var packageName = $"{_config.DaoPackageName}.{entityDto}.{ap.Association.Namespace.Module.ToLower()}";
-                    imports.Add($"{packageName}.{ap.Association.Name}");
-                }
-            }
-
-            if (classe.Properties.Any(property => property is AssociationProperty { Type: AssociationType.OneToOne }))
-            {
-                imports.Add("javax.persistence.FetchType");
-            }
-
-            if (classe.Properties.Any(property => property is AssociationProperty { Type: AssociationType.OneToMany }))
-            {
-                imports.Add("java.util.Set");
-                imports.Add("java.util.HashSet");
-                imports.Add("javax.persistence.FetchType");
-                imports.Add("javax.persistence.CascadeType");
-            }
-
-            if (classe.Properties.Any(property => property is AssociationProperty { Type: AssociationType.ManyToOne }))
-            {
-                imports.Add("javax.persistence.FetchType");
-                imports.Add("javax.persistence.JoinColumn");
-            }
-
-            if (classe.Properties.Any(property => property is AssociationProperty { Type: AssociationType.ManyToMany }))
-            {
-                imports.Add("java.util.Set");
-                imports.Add("java.util.HashSet");
-                imports.Add("javax.persistence.FetchType");
-                imports.Add("javax.persistence.JoinColumn");
-                imports.Add("javax.persistence.JoinTable");
-            }
-        }
-
-        if (classe.Reference)
-        {
-            imports.Add("javax.persistence.Enumerated");
-            imports.Add("javax.persistence.EnumType");
-            imports.Add("org.hibernate.annotations.Cache");
-            imports.Add("org.hibernate.annotations.Cache");
-            imports.Add("org.hibernate.annotations.Immutable");
-            imports.Add("org.hibernate.annotations.CacheConcurrencyStrategy");
-            imports.Add($"{_config.DaoPackageName}.references.{classe.Namespace.Module.ToLower()}.{classe.Name}Code");
-        }
-
-        if (classe.UniqueKeys?.Count > 0)
-        {
-            imports.Add("javax.persistence.UniqueConstraint");
         }
 
         fw.WriteImports(imports.Distinct().ToArray());
