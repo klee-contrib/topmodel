@@ -205,7 +205,7 @@ public class JpaModelGenerator : GeneratorBase
         {
             foreach (var ap in classe.Properties.OfType<AssociationProperty>())
             {
-                imports.Add($"javax.persistence.{((AssociationProperty)ap).Type}");
+                imports.Add($"javax.persistence.{ap.Type}");
                 if (ap.Association.Namespace.Module != classe.Namespace.Module)
                 {
                     var entityDto = classe.IsPersistent ? "entities" : "dtos";
