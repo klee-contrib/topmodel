@@ -28,7 +28,6 @@ public static class JpaExtensions
             case AssociationType.ManyToMany:
                 imports.Add("java.util.Set");
                 imports.Add("java.util.HashSet");
-                imports.Add("javax.persistence.FetchType");
                 imports.Add("javax.persistence.JoinColumn");
                 imports.Add("javax.persistence.JoinTable");
                 break;
@@ -56,10 +55,23 @@ public static class JpaExtensions
     public static List<string> getImports(this IFieldProperty rp, JpaConfig _config)
     {
         var imports = new List<string>();
-        if (rp.Domain.Java != null && rp.Domain.Java.Import != null)
+        if (rp.Class.IsPersistent)
         {
             imports.Add("javax.persistence.Column");
-            imports.Add($"{rp.Domain.Java.Import}.{rp.Class}");
+        }
+        if (rp.Domain.Java != null)
+        {
+            if (rp.Domain.Java.Import != null)
+            {
+                imports.Add($"{rp.Domain.Java.Import}.{rp.Domain.Java.Type}");
+            }
+            if (rp.Domain.Java.Annotations != null)
+            {
+                foreach (var annotation in rp.Domain.Java.Annotations.Where(a => a.Imports is not null))
+                {
+                    imports.AddRange(annotation.Imports!);
+                }
+            }
         }
         if (rp.PrimaryKey)
         {

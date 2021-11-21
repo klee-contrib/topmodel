@@ -52,7 +52,6 @@ public class JpaModelGenerator : GeneratorBase
             var packageName = $"{_config.DaoPackageName}.{entityDto}.{classe.Namespace.Module.ToLower()}";
             using var fw = new JavaWriter($"{destFolder}/{classe.Name}.java", _logger, null);
             fw.WriteLine($"package {packageName};");
-            fw.WriteLine();
 
             WriteImports(fw, classe);
             fw.WriteLine();
@@ -130,24 +129,6 @@ public class JpaModelGenerator : GeneratorBase
             imports.AddRange(property.getImports(_config));
         }
 
-        if (classe.Properties.Any(property =>
-                property is IFieldProperty { Name: "CreatedDate" }
-            || property is IFieldProperty { Name: "createdDate" }))
-        {
-            imports.Add("org.springframework.data.annotation.CreatedDate");
-            imports.Add("javax.persistence.EntityListeners");
-            imports.Add("org.springframework.data.jpa.domain.support.AuditingEntityListener");
-        }
-
-        if (classe.Properties.Any(property =>
-              property is IFieldProperty { Name: "lastModifiedDate" }
-            || property is IFieldProperty { Name: "LastModifiedDate" }))
-        {
-            imports.Add("org.springframework.data.annotation.LastModifiedDate");
-            imports.Add("javax.persistence.EntityListeners");
-            imports.Add("org.springframework.data.jpa.domain.support.AuditingEntityListener");
-        }
-
         fw.WriteImports(imports.Distinct().ToArray());
     }
 
@@ -209,10 +190,7 @@ public class JpaModelGenerator : GeneratorBase
         }
 
         if (classe.Properties.Any(property =>
-                 property is IFieldProperty { Name: "CreatedDate" }
-             || property is IFieldProperty { Name: "createdDate" }
-             || property is IFieldProperty { Name: "updatedDate" }
-             || property is IFieldProperty { Name: "UpdatedDate" }))
+                 (property is IFieldProperty t && t.Domain.Java?.Annotations is not null && t.Domain.Java.Annotations.Any(a => a.Name == "@CreatedDate" || a.Name == "@UpdatedDate"))))
         {
             fw.WriteLine("@EntityListeners(AuditingEntityListener.class)");
         }
@@ -315,7 +293,12 @@ public class JpaModelGenerator : GeneratorBase
             }
             else if (property is IFieldProperty field)
             {
+                if (property is AliasProperty alp)
+                {
+                    fw.WriteLine(1, $" * Alias of {{@link {alp.Property.Class.getImport(_config)}#get{alp.Property.Name.ToFirstUpper()}() {alp.Property.Class.Name}#get{alp.Property.Name.ToFirstUpper()}()}} ");
+                }
                 fw.WriteReturns(1, $"value of {property.Name.ToFirstLower()}");
+
                 fw.WriteDocEnd(1);
                 if (field.PrimaryKey && classe.IsPersistent)
                 {
@@ -365,17 +348,14 @@ public class JpaModelGenerator : GeneratorBase
                     fw.WriteLine(1, "@Enumerated(EnumType.STRING)");
                 }
 
-                if (property.Name == "lastModifiedDate")
+                if (field.Domain.Java is not null && field.Domain.Java.Annotations is not null)
                 {
-                    fw.WriteLine(1, "@LastModifiedDate");
+                    foreach (var annotation in field.Domain.Java.Annotations)
+                    {
+                        fw.WriteLine(1, annotation.Name);
+                    }
                 }
-
-                if (property.Name == "createdDate")
-                {
-                    fw.WriteLine(1, "@CreatedDate");
-                }
-
-                fw.WriteLine(1, @$"public {(classe.Reference && field.PrimaryKey ? $"{classe.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type.Split('.').Last())} get{field.Name.ToFirstUpper()}() {{");
+                fw.WriteLine(1, @$"public {(classe.Reference && field.PrimaryKey ? $"{classe.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} get{field.Name.ToFirstUpper()}() {{");
                 fw.WriteLine(2, @$" return this.{property.Name.ToFirstLower()};");
             }
 
