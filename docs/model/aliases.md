@@ -67,4 +67,4 @@ alias:
 
 Cette fonctionnalité est utile lorsqu'on a plusieurs générateurs et que l'on veut qu'un d'entre eux n'ait accès qu'à une partie d'un fichier, sans avoir à revoir intégralement la structure des fichiers pour isoler la partie commune (ce qui peut être particulièrement embêtant lorsqu'il s'agit d'endpoints où un fichier correspond à un contrôleur ou un client).
 
-**Le fichier n'a pas besoin d'être référencé dans `uses`**. Il est déjà écrit dans la définition, donc on a pas besoin de le répéter.
+Le fichier référencé par l'alias doit être listé dans la section `uses`.
