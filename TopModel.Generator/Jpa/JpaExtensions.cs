@@ -87,6 +87,10 @@ public static class JpaExtensions
                 imports.Add("javax.persistence.GenerationType");
             }
         }
+        if (rp is AliasProperty alpr && alpr.Property is AssociationProperty asop)
+        {
+            imports.Add($"{asop.Association.getImport(_config)}Code");
+        }
         return imports;
     }
 

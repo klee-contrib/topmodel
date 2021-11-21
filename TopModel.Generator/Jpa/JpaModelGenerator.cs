@@ -213,8 +213,15 @@ public class JpaModelGenerator : GeneratorBase
             }
             else if (property is IFieldProperty field)
             {
-                var isRefCode = classe.Reference && field.PrimaryKey;
-                fw.WriteLine(1, $"private {(isRefCode ? $"{classe.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} {field.Name.ToFirstLower()};");
+                if (field is AliasProperty alop && alop.Property is AssociationProperty asop && asop.Association.Reference)
+                {
+                    fw.WriteLine(1, $"private {$"{asop.Association.Name.ToFirstUpper()}Code"} {field.Name.ToFirstLower()};");
+                }
+                else
+                {
+                    var isRefCode = classe.Reference && field.PrimaryKey;
+                    fw.WriteLine(1, $"private {(isRefCode ? $"{classe.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} {field.Name.ToFirstLower()};");
+                }
             }
             else if (property is CompositionProperty cp)
             {
@@ -355,7 +362,14 @@ public class JpaModelGenerator : GeneratorBase
                         fw.WriteLine(1, annotation.Name);
                     }
                 }
-                fw.WriteLine(1, @$"public {(classe.Reference && field.PrimaryKey ? $"{classe.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} get{field.Name.ToFirstUpper()}() {{");
+                if (field is AliasProperty alpr && alpr.Property is AssociationProperty asop)
+                {
+                    fw.WriteLine(1, @$"public {(asop.Association.Reference ? $"{asop.Association.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} get{field.Name.ToFirstUpper()}() {{");
+                }
+                else
+                {
+                    fw.WriteLine(1, @$"public {(field.Class.Reference && field.PrimaryKey ? $"{classe.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} get{field.Name.ToFirstUpper()}() {{");
+                }
                 fw.WriteLine(2, @$" return this.{property.Name.ToFirstLower()};");
             }
 
