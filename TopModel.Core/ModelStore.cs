@@ -288,11 +288,12 @@ public class ModelStore
                     (relation.IncludeReferences.Any()
                         ? relation.IncludeReferences.Select(p => aliasedClass.Properties.Single(prop => prop.Name == p.Value))
                         : aliasedClass.Properties.Where(prop => !relation.ExcludeReferences.Select(p => p.Value).Contains(prop.Name)))
-                    .Reverse();
+                    .Reverse()
+                    .OfType<IFieldProperty>();
 
                 foreach (var property in propertiesToAlias)
                 {
-                    var prop = alp.Clone((IFieldProperty)property);
+                    var prop = alp.Clone(property);
                     if (alp.Class != null)
                     {
                         var index = alp.Class.Properties.IndexOf(alp);

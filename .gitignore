@@ -3,3 +3,4 @@
 bin
 obj
 nupkg
+/TopModel.Generator/Properties/launchSettings.json

@@ -118,7 +118,7 @@ public class DbContextGenerator
             }
 
             var hasPropConfig = false;
-            foreach (var prop in classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
+            foreach (var prop in classes.OrderBy(c => c.Name).SelectMany(c => c.Properties.OfType<IFieldProperty>()))
             {
                 if (prop.PrimaryKey && _config.CanClassUseEnums(prop.Class) || prop is AssociationProperty ap && _config.CanClassUseEnums(ap.Association))
                 {
@@ -139,7 +139,7 @@ public class DbContextGenerator
             }
 
             var hasFk = false;
-            foreach (var prop in classes.SelectMany(c => c.Properties.OfType<AssociationProperty>()))
+            foreach (var prop in classes.OrderBy(c => c.Name).SelectMany(c => c.Properties.OfType<AssociationProperty>()))
             {
                 hasFk = true;
                 w.WriteLine(3, $"modelBuilder.Entity<{prop.Class.Name}>().HasOne<{prop.Association}>().WithMany().HasForeignKey(p => p.{prop.Name}).OnDelete(DeleteBehavior.Restrict);");
@@ -151,7 +151,7 @@ public class DbContextGenerator
             }
 
             var hasUk = false;
-            foreach (var uk in classes.SelectMany(c => c.UniqueKeys ?? new List<IList<IFieldProperty>>()))
+            foreach (var uk in classes.OrderBy(c => c.Name).SelectMany(c => c.UniqueKeys ?? new List<IList<IFieldProperty>>()))
             {
                 hasUk = true;
                 var expr = uk.Count == 1 ? $"p.{uk.Single().Name}" : $"new {{ {string.Join(", ", uk.Select(p => $"p.{p.Name}"))} }}";

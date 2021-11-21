@@ -468,7 +468,7 @@ public class CSharpClassGenerator
                 }
             }
 
-            if (fp.Required && !fp.PrimaryKey || fp is AliasProperty { Property: { PrimaryKey: true } })
+            if (fp.Required && !fp.PrimaryKey || fp is AliasProperty { PrimaryKey: true })
             {
                 w.WriteAttribute(2, "Required");
             }
