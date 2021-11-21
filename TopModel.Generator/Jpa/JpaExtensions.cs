@@ -73,7 +73,7 @@ public static class JpaExtensions
                 }
             }
         }
-        if (rp.PrimaryKey)
+        if (rp.PrimaryKey && rp.Class.IsPersistent)
         {
             imports.Add("javax.persistence.Id");
             if (
