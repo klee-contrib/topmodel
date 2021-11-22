@@ -176,7 +176,7 @@ public class JavaWriter : IDisposable
     /// <param name="imports">Nom des classes à importer.</param>
     public void WriteImports(params string[] imports)
     {
-        var currentPackage = "";
+        var currentPackage = string.Empty;
         foreach (var import in imports.Where(i => i.StartsWith("java") || i.StartsWith("org")).OrderBy(x => x))
         {
             var package = import.Split('.').First();
@@ -185,6 +185,7 @@ public class JavaWriter : IDisposable
                 WriteLine();
                 currentPackage = package;
             }
+
             WriteLine($"import {import};");
         }
 
@@ -196,6 +197,7 @@ public class JavaWriter : IDisposable
                 WriteLine();
                 currentPackage = package;
             }
+
             WriteLine($"import {import};");
         }
     }

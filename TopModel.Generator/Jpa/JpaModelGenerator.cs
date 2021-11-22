@@ -63,7 +63,7 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine("	/** Serial ID */");
             fw.WriteLine("    private static final long serialVersionUID = 1L;");
             fw.WriteLine();
-            WriteProperties(module, fw, classe);
+            WriteProperties(fw, classe);
             WriteGetters(fw, classe);
             fw.WriteLine("}");
         }
@@ -115,18 +115,20 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteImports(JavaWriter fw, Class classe)
     {
-        var imports = classe.getImports(_config);
+        var imports = classe.GetImports(_config);
         foreach (var property in classe.Properties.OfType<IFieldProperty>())
         {
-            imports.AddRange(property.getImports(_config));
+            imports.AddRange(property.GetImports(_config));
         }
+
         foreach (var property in classe.Properties.OfType<CompositionProperty>())
         {
-            imports.AddRange(property.getImports(_config));
+            imports.AddRange(property.GetImports(_config));
         }
+
         foreach (var property in classe.Properties.OfType<AssociationProperty>())
         {
-            imports.AddRange(property.getImports(_config));
+            imports.AddRange(property.GetImports(_config));
         }
 
         fw.WriteImports(imports.Distinct().ToArray());
@@ -190,13 +192,13 @@ public class JpaModelGenerator : GeneratorBase
         }
 
         if (classe.Properties.Any(property =>
-                 (property is IFieldProperty t && t.Domain.Java?.Annotations is not null && t.Domain.Java.Annotations.Any(a => a == "@CreatedDate" || a == "@UpdatedDate"))))
+                 property is IFieldProperty t && t.Domain.Java?.Annotations is not null && t.Domain.Java.Annotations.Any(a => a == "@CreatedDate" || a == "@UpdatedDate")))
         {
             fw.WriteLine("@EntityListeners(AuditingEntityListener.class)");
         }
     }
 
-    private void WriteProperties(string module, JavaWriter fw, Class classe)
+    private void WriteProperties(JavaWriter fw, Class classe)
     {
         foreach (var property in classe.Properties)
         {
@@ -302,8 +304,9 @@ public class JpaModelGenerator : GeneratorBase
             {
                 if (property is AliasProperty alp)
                 {
-                    fw.WriteLine(1, $" * Alias of {{@link {alp.Property.Class.getImport(_config)}#get{alp.Property.Name.ToFirstUpper()}() {alp.Property.Class.Name}#get{alp.Property.Name.ToFirstUpper()}()}} ");
+                    fw.WriteLine(1, $" * Alias of {{@link {alp.Property.Class.GetImport(_config)}#get{alp.Property.Name.ToFirstUpper()}() {alp.Property.Class.Name}#get{alp.Property.Name.ToFirstUpper()}()}} ");
                 }
+
                 fw.WriteReturns(1, $"value of {property.Name.ToFirstLower()}");
 
                 fw.WriteDocEnd(1);
@@ -362,6 +365,7 @@ public class JpaModelGenerator : GeneratorBase
                         fw.WriteLine(1, annotation);
                     }
                 }
+
                 if (field is AliasProperty alpr && alpr.Property is AssociationProperty asop)
                 {
                     fw.WriteLine(1, @$"public {(asop.Association.Reference ? $"{asop.Association.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} get{field.Name.ToFirstUpper()}() {{");
@@ -370,6 +374,7 @@ public class JpaModelGenerator : GeneratorBase
                 {
                     fw.WriteLine(1, @$"public {(field.Class.Reference && field.PrimaryKey ? $"{classe.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} get{field.Name.ToFirstUpper()}() {{");
                 }
+
                 fw.WriteLine(2, @$" return this.{property.Name.ToFirstLower()};");
             }
 
