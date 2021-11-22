@@ -62,7 +62,10 @@ public class KasperGenerator : GeneratorBase
         fw.WriteLine($"import static {packageName}.{classe.Name}Abstract.Fields.*;");
         fw.WriteLine("import kasper.model.DtField;");
 
-        foreach (var import in classe.Properties.OfType<IFieldProperty>().Where(p => p.Domain.Java?.Import != null).Select(p => $"{p.Domain.Java!.Import}.{p.Domain.Java!.Type}").Distinct().OrderBy(i => i))
+        foreach (var import in classe.Properties.OfType<IFieldProperty>()
+            .Where(p => p.Domain.Java?.Imports != null && p.Domain.Java?.Imports.Count() > 0)
+            .SelectMany(p => p.Domain.Java.Imports!)
+            .Select(p => p).Distinct().OrderBy(i => i))
         {
             fw.WriteLine($"import {import};");
         }

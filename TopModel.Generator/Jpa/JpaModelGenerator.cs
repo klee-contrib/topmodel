@@ -190,7 +190,7 @@ public class JpaModelGenerator : GeneratorBase
         }
 
         if (classe.Properties.Any(property =>
-                 (property is IFieldProperty t && t.Domain.Java?.Annotations is not null && t.Domain.Java.Annotations.Any(a => a.Name == "@CreatedDate" || a.Name == "@UpdatedDate"))))
+                 (property is IFieldProperty t && t.Domain.Java?.Annotations is not null && t.Domain.Java.Annotations.Any(a => a == "@CreatedDate" || a == "@UpdatedDate"))))
         {
             fw.WriteLine("@EntityListeners(AuditingEntityListener.class)");
         }
@@ -359,7 +359,7 @@ public class JpaModelGenerator : GeneratorBase
                 {
                     foreach (var annotation in field.Domain.Java.Annotations)
                     {
-                        fw.WriteLine(1, annotation.Name);
+                        fw.WriteLine(1, annotation);
                     }
                 }
                 if (field is AliasProperty alpr && alpr.Property is AssociationProperty asop)

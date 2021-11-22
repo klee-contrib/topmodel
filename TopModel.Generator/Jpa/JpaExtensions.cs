@@ -61,16 +61,9 @@ public static class JpaExtensions
         }
         if (rp.Domain.Java != null)
         {
-            if (rp.Domain.Java.Import != null)
+            if (rp.Domain.Java.Imports != null)
             {
-                imports.Add($"{rp.Domain.Java.Import}.{rp.Domain.Java.Type}");
-            }
-            if (rp.Domain.Java.Annotations != null)
-            {
-                foreach (var annotation in rp.Domain.Java.Annotations.Where(a => a.Imports is not null))
-                {
-                    imports.AddRange(annotation.Imports!);
-                }
+                imports.AddRange(rp.Domain.Java.Imports);
             }
         }
         if (rp.PrimaryKey && rp.Class.IsPersistent)
