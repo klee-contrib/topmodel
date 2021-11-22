@@ -7,7 +7,7 @@
         {
           "type": "object",
           "description": "Propriété standard.",
-          "required": [ "name", "domain", "comment" ],
+          "required": ["name", "domain", "comment"],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -35,7 +35,7 @@
               "description": "Description de la propriété."
             },
             "defaultValue": {
-              "type": [ "string", "number", "boolean" ],
+              "type": ["string", "number", "boolean"],
               "description": "Valeur par défaut de la propriété, dans la base de données."
             }
           }
@@ -43,7 +43,7 @@
         {
           "type": "object",
           "description": "Propriété d'association (clé étrangère).",
-          "required": [ "association", "comment" ],
+          "required": ["association", "comment"],
           "additionalProperties": false,
           "properties": {
             "association": {
@@ -65,14 +65,14 @@
             "type": {
               "type": "string",
               "description": "Type de l'association. La plupart des générateurs ignorent ce paramètre et considèrent qu'une associtation est toujours une FK simple. Par défaut: 'oneToMany'",
-              "enum": [ "oneToOne", "oneToMany", "manyToOne", "manyToMany" ]
+              "enum": ["oneToOne", "oneToMany", "manyToOne", "manyToMany"]
             },
             "required": {
               "type": "boolean",
               "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."
             },
             "defaultValue": {
-              "type": [ "string", "number", "boolean" ],
+              "type": ["string", "number", "boolean"],
               "description": "Valeur par défaut de la propriété, dans la base de données."
             },
             "comment": {
@@ -84,17 +84,29 @@
         {
           "type": "object",
           "description": "Alias vers un champ existant.",
-          "required": [ "alias" ],
+          "required": ["alias"],
           "additionalProperties": false,
           "properties": {
             "alias": {
               "type": "object",
               "description": "Définition de propriété(s) à recopier d'une autre classe. Cette propriété DOIT être en PREMIER.",
-              "required": [ "class" ],
+              "required": ["class"],
               "allOf": [
-                { "not": { "required": [ "property", "include" ] } },
-                { "not": { "required": [ "property", "exclude" ] } },
-                { "not": { "required": [ "include", "exclude" ] } }
+                {
+                  "not": {
+                    "required": ["property", "include"]
+                  }
+                },
+                {
+                  "not": {
+                    "required": ["property", "exclude"]
+                  }
+                },
+                {
+                  "not": {
+                    "required": ["include", "exclude"]
+                  }
+                }
               ],
               "additionalProperties": false,
               "properties": {
@@ -197,7 +209,7 @@
         {
           "type": "object",
           "description": "Propriété de composition d'une sous classe ou d'une sous liste de classe. Ne peut être utilisé que dans les modules métier.",
-          "required": [ "composition", "name", "kind", "comment" ],
+          "required": ["composition", "name", "kind", "comment"],
           "additionalProperties": false,
           "properties": {
             "composition": {
@@ -225,7 +237,7 @@
     {
       "type": "object",
       "description": "Définition d'un fichier.",
-      "required": [ "module", "tags" ],
+      "required": ["module", "tags"],
       "additionalProperties": false,
       "properties": {
         "module": {
@@ -251,13 +263,13 @@
     {
       "type": "object",
       "description": "Définition d'un domaine.",
-      "required": [ "domain" ],
+      "required": ["domain"],
       "additionalProperties": false,
       "properties": {
         "domain": {
           "type": "object",
           "description": "Domaine.",
-          "required": [ "name", "label" ],
+          "required": ["name", "label"],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -283,7 +295,7 @@
             "csharp": {
               "type": "object",
               "description": "Type correspondant au domaine en C#.",
-              "required": [ "type" ],
+              "required": ["type"],
               "additionalProperties": false,
               "properties": {
                 "type": {
@@ -313,7 +325,7 @@
             "ts": {
               "type": "object",
               "description": "Type correspondant au domaine en TS.",
-              "required": [ "type" ],
+              "required": ["type"],
               "additionalProperties": false,
               "properties": {
                 "type": {
@@ -329,23 +341,35 @@
             "java": {
               "type": "object",
               "description": "Type correspondant au domaine en Java.",
-              "required": [ "type" ],
+              "required": ["type"],
               "additionalProperties": false,
               "properties": {
                 "type": {
                   "type": "string",
                   "description": "Nom du type."
                 },
-                "import": {
-                  "type": "string",
-                  "description": "Import à ajouter à tout fichier Java qui utilise une propriété de ce domaine."
+                "imports": {
+                  "type": "array",
+                  "description": "Imports à ajouter pour utiliser cette annotation",
+                  "items": {
+                    "type": "string",
+                    "description": "Imports à ajouter à tout fichier Java qui utilise une propriété de ce domaine."
+                  }
+                },
+                "annotations": {
+                  "type": "array",
+                  "description": "Annotations à ajouter sur toutes les propriétés C# de ce domaine (par exemple pour aider l'ORM a mapper le type correctement).",
+                  "items": {
+                    "type": "string",
+                    "description": "Annotations à ajouter  (ex : `@CreatedDate`)"
+                  }
                 }
               }
-            },
-            "sqlType": {
-              "type": "string",
-              "description": "Type correspondant au domaine en SQL."
             }
+          },
+          "sqlType": {
+            "type": "string",
+            "description": "Type correspondant au domaine en SQL."
           }
         }
       }
@@ -353,13 +377,13 @@
     {
       "type": "object",
       "description": "Définition d'une classe.",
-      "required": [ "class" ],
+      "required": ["class"],
       "additionalProperties": false,
       "properties": {
         "class": {
           "type": "object",
           "description": "Définition d'une classe.",
-          "required": [ "name", "comment", "properties" ],
+          "required": ["name", "comment", "properties"],
           "additionalProperties": false,
           "properties": {
             "trigram": {
@@ -407,7 +431,9 @@
             "properties": {
               "type": "array",
               "description": "Liste des propriétés de la classe. Cette propriété DOIT être en DERNIER (ou juste avant 'unique' et 'values' si renseignés).",
-              "items": { "$ref": "#/definitions/property" }
+              "items": {
+                "$ref": "#/definitions/property"
+              }
             },
             "unique": {
               "type": "array",
@@ -431,13 +457,13 @@
     {
       "type": "object",
       "description": "Définition d'un endpoint",
-      "required": [ "endpoint" ],
+      "required": ["endpoint"],
       "additionalProperties": false,
       "properties": {
         "endpoint": {
           "type": "object",
           "description": "Définition d'un endpoint",
-          "required": [ "name", "method", "route", "description" ],
+          "required": ["name", "method", "route", "description"],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -447,7 +473,7 @@
             "method": {
               "type": "string",
               "description": "Méthode du endpoint.",
-              "enum": [ "GET", "POST", "PUT", "DELETE" ]
+              "enum": ["GET", "POST", "PUT", "DELETE"]
             },
             "route": {
               "type": "string",
@@ -457,11 +483,15 @@
               "type": "string",
               "description": "Description du endpoint."
             },
-            "returns": { "$ref": "#/definitions/property" },
+            "returns": {
+              "$ref": "#/definitions/property"
+            },
             "params": {
               "type": "array",
               "description": "Les paramètres de l'endpoint. Un paramètre, selon son type et sa présence ou non dans la route, sera automatiquement classifié comme 'Route', 'Query' ou 'Body'",
-              "items": { "$ref": "#/definitions/property" }
+              "items": {
+                "$ref": "#/definitions/property"
+              }
             }
           }
         }
@@ -470,13 +500,13 @@
     {
       "type": "object",
       "description": "Définition d'un alias",
-      "required": [ "alias" ],
+      "required": ["alias"],
       "additionalProperties": false,
       "properties": {
         "alias": {
           "type": "object",
           "description": "Définition d'un alias.",
-          "required": [ "file" ],
+          "required": ["file"],
           "additionalProperties": false,
           "properties": {
             "file": {

@@ -176,8 +176,26 @@ public class JavaWriter : IDisposable
     /// <param name="imports">Nom des classes à importer.</param>
     public void WriteImports(params string[] imports)
     {
-        foreach (var import in imports.OrderBy(x => x))
+        var currentPackage = "";
+        foreach (var import in imports.Where(i => i.StartsWith("java") || i.StartsWith("org")).OrderBy(x => x))
         {
+            var package = import.Split('.').First();
+            if (package != currentPackage)
+            {
+                WriteLine();
+                currentPackage = package;
+            }
+            WriteLine($"import {import};");
+        }
+
+        foreach (var import in imports.Where(i => !(i.StartsWith("java") || i.StartsWith("org"))).OrderBy(x => x))
+        {
+            var package = import.Split('.').First();
+            if (package != currentPackage)
+            {
+                WriteLine();
+                currentPackage = package;
+            }
             WriteLine($"import {import};");
         }
     }

@@ -42,7 +42,7 @@ public class SpringApiGenerator : GeneratorBase
         var fileSplit = file.Name.Split("/");
         var filePath = fileSplit.Length > 1 ? string.Join("/", fileSplit[1..]) : file.Name;
 
-        var fileName = $"Abstract{filePath.ToFirstUpper()}Controller.java";
+        var fileName = $"I{filePath.ToFirstUpper()}Controller.java";
 
         using var fw = new JavaWriter($"{destFolder}/{fileName}", _logger, null);
 
@@ -52,7 +52,7 @@ public class SpringApiGenerator : GeneratorBase
         fw.WriteLine();
         fw.WriteLine("@RestController");
         fw.WriteLine(@$"@RequestMapping(""{file.Module.ToLower()}"")");
-        fw.WriteLine($"public abstract class Abstract{filePath}Controller {{");
+        fw.WriteLine($"public interface I{filePath}Controller {{");
 
         fw.WriteLine();
 
@@ -100,7 +100,7 @@ public class SpringApiGenerator : GeneratorBase
 
         if (writeAnnotation)
         {
-            fw.WriteLine(1, @$"@{endpoint.Method.ToLower().ToFirstUpper()}Mapping(""{endpoint.Route.Replace(endpoint.ModelFile.Module.ToLower(), string.Empty).ToLower()}"")");
+            fw.WriteLine(1, @$"@{endpoint.Method.ToLower().ToFirstUpper()}Mapping(""{endpoint.Route.Replace(endpoint.ModelFile.Module.ToLower(), string.Empty)}"")");
         }
 
         var methodParams = string.Empty;
@@ -166,7 +166,7 @@ public class SpringApiGenerator : GeneratorBase
 
         if (writeAnnotation)
         {
-            fw.WriteLine(1, $"public  {returnType} {endpoint.Name.ToFirstLower()}{(writeAnnotation ? "Mapping" : string.Empty)}({methodParams}) {{");
+            fw.WriteLine(1, $"public default {returnType} {endpoint.Name.ToFirstLower()}{(writeAnnotation ? "Mapping" : string.Empty)}({methodParams}) {{");
         }
         else
         {

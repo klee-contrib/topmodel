@@ -6,5 +6,7 @@ public class JavaType
     public string Type { get; set; }
 #nullable enable
 
-    public string? Import { get; set; }
+    public List<string>? Imports { get; set; }
+
+    public List<string>? Annotations { get; set; }
 }

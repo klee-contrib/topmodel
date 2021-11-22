@@ -52,7 +52,6 @@ public class JpaModelGenerator : GeneratorBase
             var packageName = $"{_config.DaoPackageName}.{entityDto}.{classe.Namespace.Module.ToLower()}";
             using var fw = new JavaWriter($"{destFolder}/{classe.Name}.java", _logger, null);
             fw.WriteLine($"package {packageName};");
-            fw.WriteLine();
 
             WriteImports(fw, classe);
             fw.WriteLine();
@@ -116,147 +115,18 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteImports(JavaWriter fw, Class classe)
     {
-        var imports = new List<string>
-            {
-                "lombok.NoArgsConstructor",
-                "lombok.Builder",
-                "lombok.Setter",
-                "lombok.ToString",
-                "lombok.EqualsAndHashCode",
-                "lombok.AllArgsConstructor",
-                "java.io.Serializable"
-            };
-        if (classe.IsPersistent)
-        {
-            imports.Add("javax.persistence.Entity");
-            imports.Add("javax.persistence.Table");
-        }
-
+        var imports = classe.getImports(_config);
         foreach (var property in classe.Properties.OfType<IFieldProperty>())
         {
-            if (property.Domain.Java!.Import != null)
-            {
-                imports.Add($"{property.Domain.Java!.Import}.{property.Domain.Java!.Type}");
-            }
+            imports.AddRange(property.getImports(_config));
         }
-
-        if (classe.Properties.Any(property => property is CompositionProperty))
+        foreach (var property in classe.Properties.OfType<CompositionProperty>())
         {
-            foreach (var cp in classe.Properties.OfType<CompositionProperty>())
-            {
-                var entityDto = classe.IsPersistent ? "entities" : "dtos";
-                var packageName = $"{_config.DaoPackageName}.{entityDto}.{cp.Composition.Namespace.Module.ToLower()}";
-                imports.Add($"{packageName}.{cp.Composition.Name}");
-            }
+            imports.AddRange(property.getImports(_config));
         }
-
-        if (!classe.IsPersistent)
+        foreach (var property in classe.Properties.OfType<AssociationProperty>())
         {
-            if (classe.Properties.Any(p => p is IFieldProperty { Required: true })
-                || classe.Properties.Any(p => p is AliasProperty { Required: true }))
-            {
-                imports.Add("javax.validation.constraints.NotNull");
-            }
-
-            imports.Sort();
-            fw.WriteImports(imports.Distinct().ToArray());
-            return;
-        }
-
-        if (classe.Properties.OfType<IFieldProperty>().Any())
-        {
-            imports.Add("javax.persistence.Column");
-        }
-
-        if (classe.Properties.Any(property =>
-                property is IFieldProperty { Name: "CreatedDate" }
-            || property is IFieldProperty { Name: "createdDate" }))
-        {
-            imports.Add("org.springframework.data.annotation.CreatedDate");
-            imports.Add("javax.persistence.EntityListeners");
-            imports.Add("org.springframework.data.jpa.domain.support.AuditingEntityListener");
-        }
-
-        if (classe.Properties.Any(property =>
-              property is IFieldProperty { Name: "lastModifiedDate" }
-            || property is IFieldProperty { Name: "LastModifiedDate" }))
-        {
-            imports.Add("org.springframework.data.annotation.LastModifiedDate");
-            imports.Add("javax.persistence.EntityListeners");
-            imports.Add("org.springframework.data.jpa.domain.support.AuditingEntityListener");
-        }
-
-        if (classe.PrimaryKey is not null)
-        {
-            imports.Add("javax.persistence.Id");
-            if (
-                classe.PrimaryKey.Domain.Java!.Type == "Long"
-            || classe.PrimaryKey.Domain.Java.Type == "long"
-            || classe.PrimaryKey.Domain.Java.Type == "int"
-            || classe.PrimaryKey.Domain.Java.Type == "Integer")
-            {
-                imports.Add("javax.persistence.GeneratedValue");
-                imports.Add("javax.persistence.SequenceGenerator");
-                imports.Add("javax.persistence.GenerationType");
-            }
-        }
-
-        if (classe.Properties.Any(property => property is AssociationProperty))
-        {
-            foreach (var ap in classe.Properties.OfType<AssociationProperty>())
-            {
-                imports.Add($"javax.persistence.{((AssociationProperty)ap).Type}");
-                if (ap.Association.Namespace.Module != classe.Namespace.Module)
-                {
-                    var entityDto = classe.IsPersistent ? "entities" : "dtos";
-                    var packageName = $"{_config.DaoPackageName}.{entityDto}.{ap.Association.Namespace.Module.ToLower()}";
-                    imports.Add($"{packageName}.{ap.Association.Name}");
-                }
-            }
-
-            if (classe.Properties.Any(property => property is AssociationProperty { Type: AssociationType.OneToOne }))
-            {
-                imports.Add("javax.persistence.FetchType");
-            }
-
-            if (classe.Properties.Any(property => property is AssociationProperty { Type: AssociationType.OneToMany }))
-            {
-                imports.Add("java.util.Set");
-                imports.Add("java.util.HashSet");
-                imports.Add("javax.persistence.FetchType");
-                imports.Add("javax.persistence.CascadeType");
-            }
-
-            if (classe.Properties.Any(property => property is AssociationProperty { Type: AssociationType.ManyToOne }))
-            {
-                imports.Add("javax.persistence.FetchType");
-                imports.Add("javax.persistence.JoinColumn");
-            }
-
-            if (classe.Properties.Any(property => property is AssociationProperty { Type: AssociationType.ManyToMany }))
-            {
-                imports.Add("java.util.Set");
-                imports.Add("java.util.HashSet");
-                imports.Add("javax.persistence.FetchType");
-                imports.Add("javax.persistence.JoinColumn");
-                imports.Add("javax.persistence.JoinTable");
-            }
-        }
-
-        if (classe.Reference)
-        {
-            imports.Add("javax.persistence.Enumerated");
-            imports.Add("javax.persistence.EnumType");
-            imports.Add("org.hibernate.annotations.Cache");
-            imports.Add("org.hibernate.annotations.Cache");
-            imports.Add("org.hibernate.annotations.Immutable");
-            imports.Add("org.hibernate.annotations.CacheConcurrencyStrategy");
-            imports.Add($"{_config.DaoPackageName}.references.{classe.Namespace.Module.ToLower()}.{classe.Name}Code");
-        }
-
-        if (classe.UniqueKeys?.Count > 0)
-        {
-            imports.Add("javax.persistence.UniqueConstraint");
+            imports.AddRange(property.getImports(_config));
         }
 
         fw.WriteImports(imports.Distinct().ToArray());
@@ -320,10 +190,7 @@ public class JpaModelGenerator : GeneratorBase
         }
 
         if (classe.Properties.Any(property =>
-                 property is IFieldProperty { Name: "CreatedDate" }
-             || property is IFieldProperty { Name: "createdDate" }
-             || property is IFieldProperty { Name: "updatedDate" }
-             || property is IFieldProperty { Name: "UpdatedDate" }))
+                 (property is IFieldProperty t && t.Domain.Java?.Annotations is not null && t.Domain.Java.Annotations.Any(a => a == "@CreatedDate" || a == "@UpdatedDate"))))
         {
             fw.WriteLine("@EntityListeners(AuditingEntityListener.class)");
         }
@@ -346,8 +213,15 @@ public class JpaModelGenerator : GeneratorBase
             }
             else if (property is IFieldProperty field)
             {
-                var isRefCode = classe.Reference && field.PrimaryKey;
-                fw.WriteLine(1, $"private {(isRefCode ? $"{classe.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} {field.Name.ToFirstLower()};");
+                if (field is AliasProperty alop && alop.Property is AssociationProperty asop && asop.Association.Reference)
+                {
+                    fw.WriteLine(1, $"private {$"{asop.Association.Name.ToFirstUpper()}Code"} {field.Name.ToFirstLower()};");
+                }
+                else
+                {
+                    var isRefCode = classe.Reference && field.PrimaryKey;
+                    fw.WriteLine(1, $"private {(isRefCode ? $"{classe.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} {field.Name.ToFirstLower()};");
+                }
             }
             else if (property is CompositionProperty cp)
             {
@@ -426,7 +300,12 @@ public class JpaModelGenerator : GeneratorBase
             }
             else if (property is IFieldProperty field)
             {
+                if (property is AliasProperty alp)
+                {
+                    fw.WriteLine(1, $" * Alias of {{@link {alp.Property.Class.getImport(_config)}#get{alp.Property.Name.ToFirstUpper()}() {alp.Property.Class.Name}#get{alp.Property.Name.ToFirstUpper()}()}} ");
+                }
                 fw.WriteReturns(1, $"value of {property.Name.ToFirstLower()}");
+
                 fw.WriteDocEnd(1);
                 if (field.PrimaryKey && classe.IsPersistent)
                 {
@@ -476,17 +355,21 @@ public class JpaModelGenerator : GeneratorBase
                     fw.WriteLine(1, "@Enumerated(EnumType.STRING)");
                 }
 
-                if (property.Name == "lastModifiedDate")
+                if (field.Domain.Java is not null && field.Domain.Java.Annotations is not null)
                 {
-                    fw.WriteLine(1, "@LastModifiedDate");
+                    foreach (var annotation in field.Domain.Java.Annotations)
+                    {
+                        fw.WriteLine(1, annotation);
+                    }
                 }
-
-                if (property.Name == "createdDate")
+                if (field is AliasProperty alpr && alpr.Property is AssociationProperty asop)
                 {
-                    fw.WriteLine(1, "@CreatedDate");
+                    fw.WriteLine(1, @$"public {(asop.Association.Reference ? $"{asop.Association.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} get{field.Name.ToFirstUpper()}() {{");
                 }
-
-                fw.WriteLine(1, @$"public {(classe.Reference && field.PrimaryKey ? $"{classe.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type.Split('.').Last())} get{field.Name.ToFirstUpper()}() {{");
+                else
+                {
+                    fw.WriteLine(1, @$"public {(field.Class.Reference && field.PrimaryKey ? $"{classe.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} get{field.Name.ToFirstUpper()}() {{");
+                }
                 fw.WriteLine(2, @$" return this.{property.Name.ToFirstLower()};");
             }
 
