@@ -218,7 +218,7 @@ public class SpringApiGenerator : GeneratorBase
                     methodCallParams += $"{bodyParam.GetParamName()}";
                 }
             }
-            fw.WriteLine(2, @$"{(returnType == "void" ? "return " : "")}this.{endpoint.Name.ToFirstLower()}({methodCallParams});");
+            fw.WriteLine(2, @$"{(returnType != "void" ? "return " : "")}this.{endpoint.Name.ToFirstLower()}({methodCallParams});");
             fw.WriteLine(1, "}");
         }
     }
