@@ -170,7 +170,7 @@ public class SpringApiGenerator : GeneratorBase
         }
         else
         {
-            fw.WriteLine(1, $"public abstract {returnType} {endpoint.Name.ToFirstLower()}({methodParams});");
+            fw.WriteLine(1, $"public {returnType} {endpoint.Name.ToFirstLower()}({methodParams});");
         }
 
         if (writeAnnotation)
@@ -218,7 +218,8 @@ public class SpringApiGenerator : GeneratorBase
                     methodCallParams += $"{bodyParam.GetParamName()}";
                 }
             }
-            fw.WriteLine(2, @$"{(returnType != "void" ? "return " : "")}this.{endpoint.Name.ToFirstLower()}({methodCallParams});");
+            
+            fw.WriteLine(2, @$"{(returnType != "void" ? "return " : string.Empty)}this.{endpoint.Name.ToFirstLower()}({methodCallParams});");
             fw.WriteLine(1, "}");
         }
     }

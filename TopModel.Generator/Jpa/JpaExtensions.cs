@@ -124,13 +124,12 @@ public static class JpaExtensions
         }
         else
         {
-            if (classe.Properties.Any(p => p is IFieldProperty { Required: true })
-                || classe.Properties.Any(p => p is AliasProperty { Required: true }))
+            if (classe.Properties.Any(p => p is IFieldProperty { Required: true, PrimaryKey:false }) 
+                || classe.Properties.Any(p => p is AliasProperty { Required: true, PrimaryKey:false }))
             {
                 imports.Add("javax.validation.constraints.NotNull");
             }
 
-            imports.Sort();
             return imports;
         }
 
