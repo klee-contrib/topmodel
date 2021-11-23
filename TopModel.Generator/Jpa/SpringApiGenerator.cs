@@ -166,11 +166,11 @@ public class SpringApiGenerator : GeneratorBase
 
         if (writeAnnotation)
         {
-            fw.WriteLine(1, $"public default {returnType} {endpoint.Name.ToFirstLower()}{(writeAnnotation ? "Mapping" : string.Empty)}({methodParams}) {{");
+            fw.WriteLine(1, $"default {returnType} {endpoint.Name.ToFirstLower()}{(writeAnnotation ? "Mapping" : string.Empty)}({methodParams}) {{");
         }
         else
         {
-            fw.WriteLine(1, $"public {returnType} {endpoint.Name.ToFirstLower()}({methodParams});");
+            fw.WriteLine(1, $"{returnType} {endpoint.Name.ToFirstLower()}({methodParams});");
         }
 
         if (writeAnnotation)
