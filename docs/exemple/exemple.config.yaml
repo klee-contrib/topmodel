@@ -1,0 +1,14 @@
+---
+app: Exemple
+allowCompositePrimaryKey: false
+jpa:
+  - tags:
+      - "dto"
+      - "entity"
+    modelOutputDirectory: ./jpa/src/main/javagen
+    daoPackageName: topmodel.exemple.name.dao
+    apiOutputDirectory: ./jpa/src/main/javagen
+    apiPackageName: topmodel.exemple.name.api
+javascript:
+  - tags:
+      - "dto"

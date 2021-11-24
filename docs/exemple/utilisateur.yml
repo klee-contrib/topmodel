@@ -1,0 +1,53 @@
+---
+module: utilisateur
+uses:
+  - profil
+tags:
+  - entity
+---
+class:
+  name: Utilisateur
+  label: Utilisateur
+  comment: Utilisateur de l'application
+  properties:
+    - name: Id
+      label: Id technique
+      required: true
+      primaryKey: true
+      domain: DO_ID
+      comment: Id technique
+    - association: Profil
+      comment: Liste des profils
+      type: manyToMany
+    - name: dateCreation
+      comment: Date de création de la voiture
+      domain: DO_DATE_CREATION
+    - name: dateModification
+      comment: Date de création de la voiture
+      domain: DO_DATE_MODIFICATION
+    - name: email
+      comment: Email de l'utilisateur
+      domain: DO_EMAIL
+    - association: TypeUtilisateur
+      comment: Type d'utilisateur
+      type: manyToOne
+---
+class:
+  name: TypeUtilisateur
+  comment: Type d'utilisateur
+  reference: true
+  properties:
+    - name: Code
+      comment: Code du type d'utilisateur
+      primaryKey: true
+      required: true
+      domain: DO_CODE
+    - name: Libelle
+      comment: Libellé du type d'utilisateur
+      primaryKey: false
+      required: true
+      domain: DO_LIBELLE
+  values:
+    value1: { Code: ADM, Libelle: Administrateur }
+    value2: { Code: GES, Libelle: Gestionnaire }
+    value3: { Code: CLI, Libelle: Client }

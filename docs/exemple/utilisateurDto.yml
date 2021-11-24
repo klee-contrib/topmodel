@@ -1,0 +1,18 @@
+---
+module: Utilisateur
+uses:
+  - utilisateur
+tags:
+  - dto
+---
+class:
+  name: UtilisateurDto
+  label: Utilisateur
+  comment: Objet non persisté de communication avec le serveur
+  properties:
+    - alias:
+        class: Utilisateur
+        exclude:
+          - ProfilId
+          - dateCreation
+          - dateModification

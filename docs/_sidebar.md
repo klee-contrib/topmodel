@@ -9,5 +9,6 @@
   - [Alias](/model/aliases.md)
 
 - **[Génération](/generator.md)**
+  - [Jpa](/generator/jpa.md)
 
 - **[Visualisation](/ui.md)**

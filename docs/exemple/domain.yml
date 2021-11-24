@@ -1,0 +1,56 @@
+---
+module: Voiture
+tags:
+  - ""
+---
+domain:
+  name: DO_ID
+  label: ID technique
+  java:
+    type: long
+---
+domain:
+  name: DO_DATE_CREATION
+  label: Date de création
+  java:
+    type: DateTime
+    imports:
+      - java.util.DateTime
+      - org.springframework.data.annotation.CreatedDate
+      - org.springframework.data.jpa.domain.support.AuditingEntityListener
+    annotations:
+      - "@CreatedDate"
+---
+domain:
+  name: DO_DATE_MODIFICATION
+  label: Date de modification
+  java:
+    type: DateTime
+    imports:
+      - java.util.DateTime
+      - org.springframework.data.annotation.LastModifiedDate
+      - oorg.springframework.data.jpa.domain.support.AuditingEntityListener
+    annotations:
+      - "@LastModifiedDate"
+---
+domain:
+  name: DO_EMAIL
+  label: Email
+  java:
+    imports:
+      - "javax.validation.constraints.Email"
+    type: String
+    annotations:
+      - "@Email"
+---
+domain:
+  name: DO_CODE
+  label: Code
+  java:
+    type: String
+---
+domain:
+  name: DO_LIBELLE
+  label: Libellé
+  java:
+    type: String

@@ -1,0 +1,25 @@
+---
+module: Utilisateur
+tags: 
+  - dto
+uses: 
+  - utilisateurDto
+---
+endpoint:
+  name: GetUtilisateur
+  method: GET
+  route: api/utilisateur/{utiId}
+  description: Charge le détail d'un utilisateur
+
+  # Liste des paramètres du endpoint. Ce sont des propriétés de modèle comme pour les classes. Il peut ne pas y en avoir.
+  params:
+    - alias:
+        property: Id
+        class: UtilisateurDto
+
+  # Type de retour du endpoint. La aussi, c'est une propriété du modèle et il peut ne pas y en avoir.
+  returns:
+    composition: UtilisateurDto
+    name: detail # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
+    kind: object
+    comment: Le détail de l'utilisateur
