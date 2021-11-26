@@ -102,7 +102,7 @@ public class SpringApiGenerator : GeneratorBase
         }
         else if (endpoint.Returns is CompositionProperty cp)
         {
-            returnType = cp.Composition.Name;
+            returnType = cp.GetJavaType();
         }
 
         if (writeAnnotation)
@@ -165,6 +165,9 @@ public class SpringApiGenerator : GeneratorBase
                     )
                 {
                     paramType = ap.Property.Class.Name + "Code";
+                } else if(fpe is CompositionProperty cpr)
+                {
+                    paramType = cpr.GetJavaType();
                 }
                 methodParams += $"{paramType} {param.GetParamName()}";
             }
@@ -187,7 +190,7 @@ public class SpringApiGenerator : GeneratorBase
 
             if (bodyParam is CompositionProperty cp)
             {
-                methodParams += $"{cp.Composition.Name} {bodyParam.GetParamName()}";
+                methodParams += $"{cp.GetJavaType()} {bodyParam.GetParamName()}";
             }
         }
 
@@ -274,6 +277,17 @@ public class SpringApiGenerator : GeneratorBase
         }
         foreach (var e in file.Endpoints)
         {
+            if (e.Returns is not null)
+            {
+                if (e.Returns is CompositionProperty cp)
+                {
+                    imports.AddRange(cp.GetImports(_config));
+                }
+                else if (e.Returns is IFieldProperty fp)
+                {
+                    imports.AddRange(fp.GetImports(_config));
+                }
+            }
             foreach (var q in e.GetQueryParams().Concat(e.GetRouteParams()))
             {
                 if (q is AliasProperty ap

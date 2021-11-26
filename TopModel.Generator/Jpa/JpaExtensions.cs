@@ -9,6 +9,24 @@ public static class JpaExtensions
         return $"{ap.Association.Name.ToFirstLower()}{ap.Role?.ToFirstUpper() ?? string.Empty}{(ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "List" : string.Empty)}";
     }
 
+    public static string GetJavaType(this AssociationProperty ap, JpaConfig config)
+    {
+        return ap.Association.Name;
+    }
+
+    public static string GetJavaType(this CompositionProperty cp)
+    {
+        if (cp.Kind == "object")
+        {
+            return cp.Composition.Name;
+        }
+        else if (cp.Kind == "list")
+        {
+            return $"List<{cp.Composition.Name}>";
+        }
+        else return $"{cp.Kind}<{cp.Composition.Name}>";
+    }
+
     public static List<string> GetImports(this AssociationProperty ap, JpaConfig config)
     {
         var imports = new List<string>
@@ -50,9 +68,13 @@ public static class JpaExtensions
     public static List<string> GetImports(this CompositionProperty cp, JpaConfig config)
     {
         var imports = new List<string>();
-        if (cp.Composition.Namespace.Module != cp.Class.Namespace.Module)
+        if (cp.Composition.Namespace.Module != cp.Class?.Namespace.Module)
         {
             imports.Add(cp.Composition.GetImport(config));
+        }
+        if (cp.Kind == "list")
+        {
+            imports.Add("java.util.List");
         }
 
         return imports;
@@ -124,8 +146,8 @@ public static class JpaExtensions
         }
         else
         {
-            if (classe.Properties.Any(p => p is IFieldProperty { Required: true, PrimaryKey:false }) 
-                || classe.Properties.Any(p => p is AliasProperty { Required: true, PrimaryKey:false }))
+            if (classe.Properties.Any(p => p is IFieldProperty { Required: true, PrimaryKey: false })
+                || classe.Properties.Any(p => p is AliasProperty { Required: true, PrimaryKey: false }))
             {
                 imports.Add("javax.validation.constraints.NotNull");
             }
