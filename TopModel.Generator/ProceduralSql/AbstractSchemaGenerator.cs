@@ -73,7 +73,7 @@ public abstract class AbstractSchemaGenerator
         var orderList = ModelUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
             .OfType<AssociationProperty>()
             .Select(a => a.Association)
-            .Where(a => a.Reference));
+            .Where(a => a.ReferenceValues != null));
 
         foreach (var classe in orderList)
         {
