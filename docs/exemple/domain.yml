@@ -14,7 +14,7 @@ domain:
   label: Date de création
   java:
     type: DateTime
-    imports:
+    imports: 
       - java.util.DateTime
       - org.springframework.data.annotation.CreatedDate
       - org.springframework.data.jpa.domain.support.AuditingEntityListener

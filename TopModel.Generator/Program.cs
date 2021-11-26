@@ -10,6 +10,7 @@ using TopModel.Generator;
 using TopModel.Generator.CSharp;
 using TopModel.Generator.Javascript;
 using TopModel.Generator.Jpa;
+using TopModel.Generator.Markdown;
 using TopModel.Generator.Kasper;
 using TopModel.Generator.ProceduralSql;
 using TopModel.Generator.Ssdt;
@@ -158,6 +159,17 @@ if (config.Jpa != null)
                 .AddSingleton<IModelWatcher>(p =>
                     new SpringApiGenerator(p.GetRequiredService<ILogger<SpringApiGenerator>>(), jpaConfig));
         }
+    }
+}
+if (config.Markdown != null)
+{
+    foreach (var markdownConfig in config.Markdown)
+    {
+        CombinePath(dn, markdownConfig, c => c.DocOutputDirectory);
+
+        services
+            .AddSingleton<IModelWatcher>(p =>
+                new MarkdownGenerator(p.GetRequiredService<ILogger<MarkdownGenerator>>(), markdownConfig));
     }
 }
 

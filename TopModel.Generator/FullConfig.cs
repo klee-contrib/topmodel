@@ -2,6 +2,7 @@
 using TopModel.Generator.CSharp;
 using TopModel.Generator.Javascript;
 using TopModel.Generator.Jpa;
+using TopModel.Generator.Markdown;
 using TopModel.Generator.Kasper;
 using TopModel.Generator.ProceduralSql;
 using TopModel.Generator.Ssdt;
@@ -21,4 +22,5 @@ public class FullConfig : ModelConfig
     public IList<KasperConfig>? Kasper { get; set; }
 
     public IList<JpaConfig>? Jpa { get; set; }
+    public IList<MarkdownConfig>? Markdown { get; set; }
 }

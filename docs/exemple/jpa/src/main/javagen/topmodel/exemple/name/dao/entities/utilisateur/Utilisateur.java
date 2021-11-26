@@ -21,6 +21,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -48,7 +49,8 @@ import topmodel.exemple.name.dao.entities.securite.Profil;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "UTILISATEUR")
+@Table(name = "UTILISATEUR", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"ID"})})
 @EntityListeners(AuditingEntityListener.class)
 public class Utilisateur implements Serializable {
 	/** Serial ID */

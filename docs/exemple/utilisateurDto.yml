@@ -14,5 +14,5 @@ class:
         class: Utilisateur
         exclude:
           - ProfilId
-          - dateCreation
-          - dateModification
+          - DateCreation
+          - DateModification

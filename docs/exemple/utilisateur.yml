@@ -1,5 +1,5 @@
 ---
-module: utilisateur
+module: Utilisateur
 uses:
   - profil
 tags:
@@ -25,12 +25,14 @@ class:
     - name: dateModification
       comment: Date de modification de l'utilisateur 
       domain: DO_DATE_MODIFICATION
-    - name: email
+    - name: Email
       comment: Email de l'utilisateur
       domain: DO_EMAIL
     - association: TypeUtilisateur
       comment: Type d'utilisateur
       type: manyToOne
+  unique: 
+    - [Id]
 ---
 class:
   name: TypeUtilisateur

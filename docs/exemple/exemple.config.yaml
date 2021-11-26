@@ -12,3 +12,7 @@ jpa:
 javascript:
   - tags:
       - "dto"
+markdown: 
+  - tags: 
+      - "entity"
+    docOutputDirectory: ./markdown

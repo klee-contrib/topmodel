@@ -270,6 +270,34 @@
         }
       }
     },
+    "markdown": {
+      "type": "array",
+      "description": "Liste de configs pour la génération de documentation Markdown",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de génération de documentation Markdown.",
+        "additionalProperties": false,
+        "required": [ "tags", "modelOutputDirectory" ],
+        "properties": {
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "docOutputDirectory": {
+            "type": "string",
+            "description": "Dossier de sortie pour la documentation."
+          },
+          "generateNotPersisted": {
+            "type": "boolean",
+            "description": "Générer les classes non persistées"
+          }
+        }
+      }
+    },
     "kasper": {
       "type": "array",
       "description": "Liste de configs pour la génération Kasper",
