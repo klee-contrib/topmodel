@@ -54,3 +54,11 @@ domain:
   label: Libellé
   java:
     type: String
+---
+domain:
+  name: DO_PAGE
+  label: Page
+  java:
+    type: Page
+    imports: 
+      - org.springframework.data.domain.Page

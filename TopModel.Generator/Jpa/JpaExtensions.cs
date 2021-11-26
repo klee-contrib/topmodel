@@ -14,6 +14,52 @@ public static class JpaExtensions
         return ap.Association.Name;
     }
 
+    public static string GetJavaType(this AliasProperty ap, JpaConfig config)
+    {
+        if (
+            ap.Property.Class.IsPersistent
+            && ap.Property.Class.Reference
+            && ap.Property.PrimaryKey
+            && ap.Property.Domain.Name != "DO_ID"
+            )
+        {
+            return ap.Property.Class.Name + "Code";
+        }
+        else if (ap.Property is AssociationProperty apr
+          && apr.Association.IsPersistent
+          && apr.Association.Reference
+          && apr.Domain.Name != "DO_ID")
+        {
+            return apr.Association.Name + "Code";
+        }
+        return ap.Domain.Java!.Type;
+    }
+
+    public static List<string> GetImport(this AliasProperty ap, JpaConfig config)
+    {
+        var package = $"{config.DaoPackageName}.references.{ap.Property.Class.Namespace.Module.ToLower()}";
+        if (
+            ap.Property.Class.IsPersistent
+            && ap.Property.Class.Reference
+            && ap.Property.PrimaryKey
+            && ap.Property.Domain.Name != "DO_ID"
+            )
+        {
+            return new List<string>(){
+                package + "." + ap.Property.Class.Name + "Code"
+            };
+        }
+        else if (ap.Property is AssociationProperty apr
+          && apr.Association.IsPersistent
+          && apr.Association.Reference
+          && apr.Domain.Name != "DO_ID")
+        {
+            return new List<string>() { package + "." + apr.Association.Name + "Code" };
+        }
+        return ap.Domain.Java?.Imports ?? new List<string>();
+    }
+
+
     public static string GetJavaType(this CompositionProperty cp)
     {
         if (cp.Kind == "object")
@@ -24,7 +70,7 @@ public static class JpaExtensions
         {
             return $"List<{cp.Composition.Name}>";
         }
-        else return $"{cp.Kind}<{cp.Composition.Name}>";
+        else return $"{cp.DomainKind!.Java!.Type}<{cp.Composition.Name}>";
     }
 
     public static List<string> GetImports(this AssociationProperty ap, JpaConfig config)
@@ -61,7 +107,6 @@ public static class JpaExtensions
         {
             imports.Add(ap.Association.GetImport(config));
         }
-
         return imports;
     }
 
@@ -75,6 +120,10 @@ public static class JpaExtensions
         if (cp.Kind == "list")
         {
             imports.Add("java.util.List");
+        }
+        if (cp.DomainKind?.Java?.Imports != null)
+        {
+            imports.AddRange(cp.DomainKind.Java.Imports);
         }
 
         return imports;

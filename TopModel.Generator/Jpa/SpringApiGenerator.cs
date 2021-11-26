@@ -83,7 +83,7 @@ public class SpringApiGenerator : GeneratorBase
 
         if (endpoint.Returns != null)
         {
-            fw.WriteLine(1, $" * @returns {endpoint.Returns.Comment}");
+            fw.WriteLine(1, $" * @return {endpoint.Returns.Comment}");
         }
 
         fw.WriteLine(1, " */");
@@ -157,15 +157,11 @@ public class SpringApiGenerator : GeneratorBase
             if (param is IFieldProperty fpe)
             {
                 var paramType = fpe.Domain.Java!.Type;
-                if (fpe is AliasProperty ap
-                    && ap.Property.Class.IsPersistent
-                    && ap.Property.Class.Reference
-                    && ap.Property.PrimaryKey
-                    && ap.Property.Domain.Name != "DO_ID"
-                    )
+                if (fpe is AliasProperty ap)
                 {
-                    paramType = ap.Property.Class.Name + "Code";
-                } else if(fpe is CompositionProperty cpr)
+                    paramType = ap.GetJavaType(_config);
+                }
+                else if (fpe is CompositionProperty cpr)
                 {
                     paramType = cpr.GetJavaType();
                 }
@@ -290,15 +286,13 @@ public class SpringApiGenerator : GeneratorBase
             }
             foreach (var q in e.GetQueryParams().Concat(e.GetRouteParams()))
             {
-                if (q is AliasProperty ap
-                    && ap.Property.Class.IsPersistent
-                    && ap.Property.Class.Reference
-                    && ap.Property.PrimaryKey
-                    && ap.Property.Domain.Name != "DO_ID"
-                    )
+                if (q is AliasProperty ap)
                 {
-                    var package = $"{_config.DaoPackageName}.references.{ap.Property.Class.Namespace.Module.ToLower()}";
-                    imports.Add(package + "." + ap.Property.Class.Name + "Code");
+                    imports.AddRange(ap.GetImport(_config));
+                }
+                if (q is CompositionProperty cp)
+                {
+                    imports.AddRange(cp.GetImports(_config));
                 }
             }
             {
@@ -312,14 +306,14 @@ public class SpringApiGenerator : GeneratorBase
                     var package = $"{_config.DaoPackageName}.references.{ap.Property.Class.Namespace.Module.ToLower()}";
                     imports.Add(ap.Property.Class.Name + "Code");
                 }
+                if (e.GetBodyParam() is CompositionProperty cp)
+                {
+                    imports.AddRange(cp.GetImports(_config));
+                }
             }
         }
 
-        imports.Sort();
-        foreach (var import in imports.Distinct())
-        {
-            fw.WriteLine($"import {import};");
-        }
+        fw.WriteImports(imports.Distinct().ToArray());
     }
 
     private IEnumerable<string> GetTypeImports(ModelFile file)

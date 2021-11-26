@@ -87,7 +87,7 @@ public class Utilisateur implements Serializable {
     }
 
     /**
-     * Date de création de la voiture.
+     * Date de création de l'utilisateur.
      *
      * @return value of dateCreation.
      */
@@ -98,7 +98,7 @@ public class Utilisateur implements Serializable {
     }
 
     /**
-     * Date de création de la voiture.
+     * Date de modification de l'utilisateur.
      *
      * @return value of dateModification.
      */

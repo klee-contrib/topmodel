@@ -20,10 +20,10 @@ class:
       comment: Liste des profils
       type: manyToMany
     - name: dateCreation
-      comment: Date de création de la voiture
+      comment: Date de création de l'utilisateur
       domain: DO_DATE_CREATION
     - name: dateModification
-      comment: Date de création de la voiture
+      comment: Date de modification de l'utilisateur 
       domain: DO_DATE_MODIFICATION
     - name: email
       comment: Email de l'utilisateur
