@@ -69,12 +69,12 @@ public class MarkdownGenerator : GeneratorBase
             fw.WriteLine("");
             fw.WriteLine(@$"%% {classe.Comment}");
             fw.WriteLine(@$"class {classe.Name}{{");
-            if (classe.Reference)
+            if (classe.Reference && classe.ReferenceValues != null && classe.ReferenceValues.Count() > 0)
             {
                 fw.WriteLine("<<Enum>>");
                 foreach (var refValue in classe.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal))
                 {
-                    var code = classe.PrimaryKey == null || classe.PrimaryKey.Domain.Name == "DO_CODE"
+                    var code = classe.PrimaryKey == null || classe.PrimaryKey.Domain.Name != "DO_ID"
                         ? (string)refValue.Value[classe.PrimaryKey ?? classe.Properties.OfType<IFieldProperty>().First()]
                         : (string)refValue.Value[classe.UniqueKeys!.First().First()];
 
