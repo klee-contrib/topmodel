@@ -91,7 +91,14 @@ public class SpringApiGenerator : GeneratorBase
 
         if (endpoint.Returns is IFieldProperty fp)
         {
-            returnType = fp.Domain.Java!.Type;
+            if (fp is AliasProperty ap && ap.Property.Class.IsPersistent && ap.Property.Class.Reference && ap.Property.PrimaryKey)
+            {
+                returnType = ap.Class + "Code";
+            }
+            else
+            {
+                returnType = fp.Domain.Java!.Type;
+            }
         }
         else if (endpoint.Returns is CompositionProperty cp)
         {
@@ -119,7 +126,17 @@ public class SpringApiGenerator : GeneratorBase
 
             if (param is IFieldProperty fpe)
             {
-                methodParams += $"{fpe.Domain.Java!.Type} {param.GetParamName()}";
+                var paramType = fpe.Domain.Java!.Type;
+                if (fpe is AliasProperty ap
+                    && ap.Property.Class.IsPersistent
+                    && ap.Property.Class.Reference
+                    && ap.Property.PrimaryKey
+                    && ap.Property.Domain.Name != "DO_ID"
+                    )
+                {
+                    paramType = ap.Property.Class.Name + "Code";
+                }
+                methodParams += $"{paramType} {param.GetParamName()}";
             }
 
             isFirstMethodParam = false;
@@ -139,7 +156,17 @@ public class SpringApiGenerator : GeneratorBase
 
             if (param is IFieldProperty fpe)
             {
-                methodParams += $"{fpe.Domain.Java!.Type} {param.GetParamName()}";
+                var paramType = fpe.Domain.Java!.Type;
+                if (fpe is AliasProperty ap
+                    && ap.Property.Class.IsPersistent
+                    && ap.Property.Class.Reference
+                    && ap.Property.PrimaryKey
+                    && ap.Property.Domain.Name != "DO_ID"
+                    )
+                {
+                    paramType = ap.Property.Class.Name + "Code";
+                }
+                methodParams += $"{paramType} {param.GetParamName()}";
             }
 
             isFirstMethodParam = false;
@@ -218,7 +245,7 @@ public class SpringApiGenerator : GeneratorBase
                     methodCallParams += $"{bodyParam.GetParamName()}";
                 }
             }
-            
+
             fw.WriteLine(2, @$"{(returnType != "void" ? "return " : string.Empty)}this.{endpoint.Name.ToFirstLower()}({methodCallParams});");
             fw.WriteLine(1, "}");
         }
@@ -244,6 +271,34 @@ public class SpringApiGenerator : GeneratorBase
         {
             imports.Add("org.springframework.web.bind.annotation.RequestBody");
             imports.Add("javax.validation.Valid");
+        }
+        foreach (var e in file.Endpoints)
+        {
+            foreach (var q in e.GetQueryParams().Concat(e.GetRouteParams()))
+            {
+                if (q is AliasProperty ap
+                    && ap.Property.Class.IsPersistent
+                    && ap.Property.Class.Reference
+                    && ap.Property.PrimaryKey
+                    && ap.Property.Domain.Name != "DO_ID"
+                    )
+                {
+                    var package = $"{_config.DaoPackageName}.references.{ap.Property.Class.Namespace.Module.ToLower()}";
+                    imports.Add(package + "." + ap.Property.Class.Name + "Code");
+                }
+            }
+            {
+                if (e.GetBodyParam() is AliasProperty ap
+                        && ap.Property.Class.IsPersistent
+                        && ap.Property.Class.Reference
+                        && ap.Property.PrimaryKey
+                        && ap.Property.Domain.Name != "DO_ID"
+                        )
+                {
+                    var package = $"{_config.DaoPackageName}.references.{ap.Property.Class.Namespace.Module.ToLower()}";
+                    imports.Add(ap.Property.Class.Name + "Code");
+                }
+            }
         }
 
         imports.Sort();
