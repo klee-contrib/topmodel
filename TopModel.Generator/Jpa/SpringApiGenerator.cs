@@ -131,14 +131,9 @@ public class SpringApiGenerator : GeneratorBase
             if (param is IFieldProperty fpe)
             {
                 var paramType = fpe.Domain.Java!.Type;
-                if (fpe is AliasProperty ap
-                    && ap.Property.Class.IsPersistent
-                    && ap.Property.Class.Reference
-                    && ap.Property.PrimaryKey
-                    && ap.Property.Domain.Name != "DO_ID"
-                    )
+                if (fpe is AliasProperty ap)
                 {
-                    paramType = ap.Property.Class.Name + "Code";
+                    paramType = ap.GetJavaType(_config);
                 }
                 methodParams += $"{paramType} {param.GetParamName()}";
             }
@@ -300,15 +295,9 @@ public class SpringApiGenerator : GeneratorBase
                 }
             }
             {
-                if (e.GetBodyParam() is AliasProperty ap
-                        && ap.Property.Class.IsPersistent
-                        && ap.Property.Class.Reference
-                        && ap.Property.PrimaryKey
-                        && ap.Property.Domain.Name != "DO_ID"
-                        )
+                if (e.GetBodyParam() is AliasProperty ap)
                 {
-                    var package = $"{_config.DaoPackageName}.references.{ap.Property.Class.Namespace.Module.ToLower()}";
-                    imports.Add(ap.Property.Class.Name + "Code");
+                    imports.AddRange(ap.GetImports(_config));
                 }
                 if (e.GetBodyParam() is CompositionProperty cp)
                 {
@@ -323,13 +312,8 @@ public class SpringApiGenerator : GeneratorBase
     private IEnumerable<string> GetTypeImports(ModelFile file)
     {
         var properties = file.Endpoints.SelectMany(endpoint => endpoint.Params.Concat(new[] { endpoint.Returns }));
-        var types = properties.OfType<CompositionProperty>().Select(property => property.Composition);
-        return types.Select(type =>
-        {
-            var name = type.Name;
-            var import = $"{_config.DaoPackageName}.dtos.{type.Namespace.Module.ToLower()}.{name}";
-            return import;
-        }).Distinct();
+        return properties.OfType<CompositionProperty>().Select(property => property.Composition.GetImport(_config));
+
     }
     private void CheckEndpoint(Endpoint endpoint)
     {

@@ -28,7 +28,7 @@ endpoint:
   name: GetUtilisateurList
   method: GET
   route: utilisateur/list
-  description: Charge le détail d'un utilisateur
+  description: Charge une liste d'utilisateurs par leur type
   params:
     - alias:
         property: TypeUtilisateurCode

@@ -43,7 +43,7 @@ public interface IutilisateurController {
     UtilisateurDto getUtilisateur(long utilisateurId);
 
     /**
-     * Charge le détail d'un utilisateur.
+     * Charge une liste d'utilisateurs par leur type.
      * @param typeUtilisateurCode Type d'utilisateur
      * @return Liste des utilisateurs
      */
@@ -53,7 +53,7 @@ public interface IutilisateurController {
     }
 
     /**
-     * Charge le détail d'un utilisateur.
+     * Charge une liste d'utilisateurs par leur type.
      * @param typeUtilisateurCode Type d'utilisateur
      * @return Liste des utilisateurs
      */
