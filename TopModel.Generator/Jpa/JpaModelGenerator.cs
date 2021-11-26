@@ -231,37 +231,11 @@ public class JpaModelGenerator : GeneratorBase
         {
             if (property is AssociationProperty ap)
             {
-                if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
-                {
-                    fw.WriteLine(1, $"private Set<{ap.Association.Name}> {ap.GetAssociationName()};");
-                }
-                else
-                {
-                    fw.WriteLine(1, $"private {ap.Association.Name} {ap.GetAssociationName()};");
-                }
+                fw.WriteLine(1, $"private {property.GetJavaType()} {ap.GetAssociationName()};");
             }
-            else if (property is IFieldProperty field)
+            else
             {
-                if (field is AliasProperty alop && alop.Property is AssociationProperty asop && asop.Association.Reference)
-                {
-                    fw.WriteLine(1, $"private {$"{asop.Association.Name.ToFirstUpper()}Code"} {field.Name.ToFirstLower()};");
-                }
-                else
-                {
-                    var isRefCode = classe.Reference && field.PrimaryKey;
-                    fw.WriteLine(1, $"private {(isRefCode ? $"{classe.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} {field.Name.ToFirstLower()};");
-                }
-            }
-            else if (property is CompositionProperty cp)
-            {
-                if (cp.Kind == "List")
-                {
-                    fw.WriteLine(1, $"private Set<{cp.Composition.Name}> {cp.Name};");
-                }
-                else
-                {
-                    fw.WriteLine(1, $"private {cp.Composition.Name} {cp.Name};");
-                }
+                fw.WriteLine(1, $"private {property.GetJavaType()} {property.Name.ToFirstLower()};");
             }
         }
     }
@@ -298,14 +272,10 @@ public class JpaModelGenerator : GeneratorBase
                         break;
                 }
 
+                fw.WriteLine(1, @$"public {ap.GetJavaType()} get{ap.GetAssociationName().ToFirstUpper()}() {{");
                 if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
                 {
-                    fw.WriteLine(1, @$"public Set<{ap.Association.Name}> get{ap.GetAssociationName().ToFirstUpper()}() {{");
                     fw.WriteLine(2, @$"if({ap.GetAssociationName()} == null) this.{ap.GetAssociationName()}= new HashSet<>();");
-                }
-                else
-                {
-                    fw.WriteLine(1, @$"public {ap.Association.Name} get{ap.GetAssociationName().ToFirstUpper()}() {{");
                 }
 
                 fw.WriteLine(2, @$"return this.{ap.GetAssociationName()};");
@@ -314,15 +284,11 @@ public class JpaModelGenerator : GeneratorBase
             {
                 fw.WriteReturns(1, $"value of {cp.Composition.Name}");
                 fw.WriteDocEnd(1);
+                fw.WriteLine(1, @$"public {cp.GetJavaType()} get{cp.Composition.Name.ToFirstUpper()}() {{");
 
                 if (cp.Kind == "list")
                 {
-                    fw.WriteLine(1, @$"public Set<{cp.Composition.Name}> get{cp.Composition.Name.ToFirstUpper()}() {{");
-                    fw.WriteLine(2, @$"if({cp.Composition.Name.ToFirstUpper()} == null) this.{cp.Composition.Name.ToFirstUpper()}= new HashSet<>();");
-                }
-                else
-                {
-                    fw.WriteLine(1, @$"public {cp.Composition.Name.ToFirstUpper()} get{cp.Name.ToFirstUpper()}() {{");
+                    fw.WriteLine(2, @$"if({cp.Composition.Name.ToFirstUpper()} == null) this.{cp.Name.ToFirstUpper()} = new ArrayList<>();");
                 }
 
                 fw.WriteLine(2, @$"return this.{cp.Name};");
@@ -393,15 +359,7 @@ public class JpaModelGenerator : GeneratorBase
                     }
                 }
 
-                if (field is AliasProperty alpr && alpr.Property is AssociationProperty asop)
-                {
-                    fw.WriteLine(1, @$"public {(asop.Association.Reference ? $"{asop.Association.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} get{field.Name.ToFirstUpper()}() {{");
-                }
-                else
-                {
-                    fw.WriteLine(1, @$"public {(field.Class.Reference && field.PrimaryKey ? $"{classe.Name.ToFirstUpper()}Code" : field.Domain.Java!.Type)} get{field.Name.ToFirstUpper()}() {{");
-                }
-
+                fw.WriteLine(1, @$"public {field.GetJavaType()} get{field.Name.ToFirstUpper()}() {{");
                 fw.WriteLine(2, @$" return this.{property.Name.ToFirstLower()};");
             }
 

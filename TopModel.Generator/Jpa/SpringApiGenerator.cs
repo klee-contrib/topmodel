@@ -122,23 +122,14 @@ public class SpringApiGenerator : GeneratorBase
             {
                 methodParams += ", ";
             }
+            isFirstMethodParam = false;
 
             if (writeAnnotation)
             {
                 methodParams += @$"@PathVariable(""{param.GetParamName()}"") ";
             }
 
-            if (param is IFieldProperty fpe)
-            {
-                var paramType = fpe.Domain.Java!.Type;
-                if (fpe is AliasProperty ap)
-                {
-                    paramType = ap.GetJavaType(_config);
-                }
-                methodParams += $"{paramType} {param.GetParamName()}";
-            }
-
-            isFirstMethodParam = false;
+            methodParams += $"{param.GetJavaType()} {param.GetParamName()}";
         }
 
         foreach (var param in endpoint.GetQueryParams())
@@ -147,27 +138,15 @@ public class SpringApiGenerator : GeneratorBase
             {
                 methodParams += ", ";
             }
+            isFirstMethodParam = false;
 
             if (writeAnnotation)
             {
                 methodParams += @$"@RequestParam(""{param.GetParamName()}"") ";
             }
 
-            if (param is IFieldProperty fpe)
-            {
-                var paramType = fpe.Domain.Java!.Type;
-                if (fpe is AliasProperty ap)
-                {
-                    paramType = ap.GetJavaType(_config);
-                }
-                else if (fpe is CompositionProperty cpr)
-                {
-                    paramType = cpr.GetJavaType();
-                }
-                methodParams += $"{paramType} {param.GetParamName()}";
-            }
+            methodParams += $"{param.GetJavaType()} {param.GetParamName()}";
 
-            isFirstMethodParam = false;
         }
 
         var bodyParam = endpoint.GetBodyParam();
@@ -210,9 +189,9 @@ public class SpringApiGenerator : GeneratorBase
                     {
                         methodCallParams += ", ";
                     }
+                    isFirstParam = false;
 
                     methodCallParams += $"{param.GetParamName()}";
-                    isFirstParam = false;
                 }
             }
 

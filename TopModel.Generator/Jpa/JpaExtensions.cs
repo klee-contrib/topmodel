@@ -9,12 +9,23 @@ public static class JpaExtensions
         return $"{ap.Association.Name.ToFirstLower()}{ap.Role?.ToFirstUpper() ?? string.Empty}{(ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "List" : string.Empty)}";
     }
 
-    public static string GetJavaType(this AssociationProperty ap, JpaConfig config)
+    public static string GetJavaType(this AssociationProperty ap)
     {
+        if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
+        {
+            return $"Set<{ap.Association.Name}>";
+        }
         return ap.Association.Name;
     }
-
-    public static string GetJavaType(this AliasProperty ap, JpaConfig config)
+    public static string GetJavaType(this IProperty prop)
+    {
+        if (prop is AssociationProperty a) return a.GetJavaType();
+        if (prop is CompositionProperty c) return c.GetJavaType();
+        if (prop is AliasProperty l) return l.GetJavaType();
+        if (prop is RegularProperty r) return r.GetJavaType();
+        return "";
+    }
+    public static string GetJavaType(this AliasProperty ap)
     {
         if (
             ap.Property.Class.IsPersistent
@@ -33,6 +44,11 @@ public static class JpaExtensions
             return apr.Association.Name + "Code";
         }
         return ap.Domain.Java!.Type;
+    }
+
+    public static string GetJavaType(this RegularProperty rp)
+    {
+        return rp.Class.Reference && rp.PrimaryKey ? $"{rp.Class.Name.ToFirstUpper()}Code" : rp.Domain.Java!.Type;
     }
 
     public static List<string> GetImport(this AliasProperty ap, JpaConfig config)
