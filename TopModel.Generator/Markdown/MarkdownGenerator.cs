@@ -32,34 +32,38 @@ public class MarkdownGenerator : GeneratorBase
         var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
         var destFolder = Path.Combine(_config.DocOutputDirectory);
         var dirInfo = Directory.CreateDirectory(_config.DocOutputDirectory);
-        using var fw = new MarkdownFileWriter(destFolder + "/classDiagram" + ".md", _logger);
-        fw.writeTitle(1, "Documentation technique");
-        fw.WriteLine();
-        fw.writeTitle(1, "Diagramme de classe");
-        fw.WriteLine();
-        fw.WriteLine("```mermaid");
-        fw.WriteLine("classDiagram");
+
         foreach (var module in modules)
         {
+            var classes = _files.Values
+            .SelectMany(f => f.Classes)
+            .Distinct()
+            .Where(c => c.Namespace.Module == module && c.IsPersistent);
+            if (classes.Count() == 0) continue;
+            using var fw = new MarkdownFileWriter(destFolder + "/" + module + ".md", _logger);
+            fw.writeTitle(1, module);
+            fw.WriteLine();
+
             GenerateDiagramModule(module, fw);
-        }
-        fw.WriteLine("```");
-        fw.WriteLine();
-        foreach (var module in modules)
-        {
             GenerateDocModule(module, fw);
+            fw.WriteLine();
+            fw.Close();
         }
-        fw.Close();
 
     }
 
     private void GenerateDiagramModule(string module, MarkdownFileWriter fw)
     {
+
         var classes = _files.Values
             .SelectMany(f => f.Classes)
             .Distinct()
             .Where(c => c.Namespace.Module == module && (c.IsPersistent || _config.GenerateNotPersisted));
 
+        fw.writeTitle(2, "Diagramme de classe");
+        fw.WriteLine("```mermaid");
+        fw.WriteLine("classDiagram");
+        var notClasses = new List<Class>();
         foreach (var classe in classes)
         {
             fw.WriteLine("");
@@ -87,10 +91,11 @@ public class MarkdownGenerator : GeneratorBase
 
             foreach (var property in classe.Properties.OfType<AssociationProperty>())
             {
+                notClasses.Add(property.Association);
                 if (property.Type != null)
                 {
-                    var from = property.Type == AssociationType.ManyToOne || property.Type == AssociationType.ManyToMany ? "*" : property.Required ? "1" : "0";
-                    var to = property.Type == AssociationType.OneToOne || property.Type == AssociationType.ManyToOne ? property.Required ? "1" : "0" : "*";
+                    var from = property.Type == AssociationType.ManyToOne || property.Type == AssociationType.ManyToMany ? property.Required ? "1" : "0" : "*";
+                    var to = property.Type == AssociationType.OneToOne || property.Type == AssociationType.ManyToOne ? "*" : property.Required ? "1" : "0";
                     fw.WriteLine(@$"{property.Class.Name} ""{from}"" --> ""{to}"" {property.Association.Name}");
                 }
                 else
@@ -103,6 +108,18 @@ public class MarkdownGenerator : GeneratorBase
                 fw.WriteLine($"{property.Class.Name} --* {property.Composition.Name}");
             }
         }
+        foreach (var classe in notClasses)
+        {
+            fw.WriteLine("");
+            fw.WriteLine(@$"%% {classe.Comment}");
+            fw.WriteLine(@$"class {classe.Name}{{");
+            fw.WriteLine("<<Reference>>");
+            fw.WriteLine("}");
+            fw.WriteLine();
+            fw.WriteLine(@$"click {classe.Name} href ""./{classe.Namespace.Module}.md"" ""To {classe.Namespace.Module} module""");
+        }
+
+        fw.WriteLine("```");
     }
     private void GenerateDocModule(string module, MarkdownFileWriter fw)
     {
@@ -110,8 +127,8 @@ public class MarkdownGenerator : GeneratorBase
             .SelectMany(f => f.Classes)
             .Distinct()
             .Where(c => c.Namespace.Module == module && c.IsPersistent);
-
-        fw.writeTitle(2, module);
+        if (classes.Count() == 0) return;
+        fw.writeTitle(2, "Schéma");
         fw.WriteLine();
         foreach (var classe in classes)
         {
@@ -125,11 +142,11 @@ public class MarkdownGenerator : GeneratorBase
             }
             foreach (var property in classe.Properties.OfType<AssociationProperty>())
             {
-                fw.WriteLine($"| _{property.Name}_ | _{property.Comment}_ | _{property.Domain.Name}_ | {(property.Required ? ":heavy_check_mark:": "")}|");
+                fw.WriteLine($"| _{property.Name}_ | _{property.Comment}_ | _{property.Domain.Name}_ | {(property.Required ? ":heavy_check_mark:" : "")}|");
             }
             foreach (var property in classe.Properties.OfType<RegularProperty>().Where(p => !p.PrimaryKey))
             {
-                fw.WriteLine($"| {property.Name} | {property.Comment} | {property.Domain.Name} | {(property.Required ? ":heavy_check_mark:": "")}|");
+                fw.WriteLine($"| {property.Name} | {property.Comment} | {property.Domain.Name} | {(property.Required ? ":heavy_check_mark:" : "")}|");
             }
             if (classe.UniqueKeys != null && classe.UniqueKeys.Count > 0)
             {
