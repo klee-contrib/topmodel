@@ -91,12 +91,15 @@ public class MarkdownGenerator : GeneratorBase
 
             foreach (var property in classe.Properties.OfType<AssociationProperty>())
             {
-                notClasses.Add(property.Association);
+                if (property.Association.Namespace.Module != module)
+                {
+                    notClasses.Add(property.Association);
+                }
                 if (property.Type != null)
                 {
                     var from = property.Type == AssociationType.ManyToOne || property.Type == AssociationType.ManyToMany ? property.Required ? "1" : "0" : "*";
                     var to = property.Type == AssociationType.OneToOne || property.Type == AssociationType.ManyToOne ? "*" : property.Required ? "1" : "0";
-                    fw.WriteLine(@$"{property.Class.Name} ""{from}"" --> ""{to}"" {property.Association.Name}");
+                    fw.WriteLine(@$"{property.Class.Name} ""{from}"" --> ""{to}"" {property.Association.Name}{(property.Role != null ? " : " + property.Role : "")}");
                 }
                 else
                 {
