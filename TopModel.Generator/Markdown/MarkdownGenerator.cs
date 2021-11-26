@@ -117,19 +117,19 @@ public class MarkdownGenerator : GeneratorBase
         {
             fw.writeTitle(3, classe.Name);
             fw.WriteLine($"_{classe.Comment}_");
-            fw.WriteLine($"| Name | Comment  | Domain |");
-            fw.WriteLine($"| --- | --- | --- |");
+            fw.WriteLine($"| Name | Comment  | Domain | Required |");
+            fw.WriteLine($"| --- | --- | --- | --- |");
             if (classe.PrimaryKey != null)
             {
-                fw.WriteLine($"| **{classe.PrimaryKey.Name}** | **{classe.PrimaryKey.Comment}** | **{classe.PrimaryKey.Domain.Name}** |");
+                fw.WriteLine($"| **{classe.PrimaryKey.Name}** | **{classe.PrimaryKey.Comment}** | **{classe.PrimaryKey.Domain.Name}** | :heavy_check_mark: |");
             }
             foreach (var property in classe.Properties.OfType<AssociationProperty>())
             {
-                fw.WriteLine($"| _{property.Name}_ | _{property.Comment}_ | _{property.Domain.Name}_ |");
+                fw.WriteLine($"| _{property.Name}_ | _{property.Comment}_ | _{property.Domain.Name}_ | {(property.Required ? ":heavy_check_mark:": "")}|");
             }
             foreach (var property in classe.Properties.OfType<RegularProperty>().Where(p => !p.PrimaryKey))
             {
-                fw.WriteLine($"| {property.Name} | {property.Comment} | {property.Domain.Name} |");
+                fw.WriteLine($"| {property.Name} | {property.Comment} | {property.Domain.Name} | {(property.Required ? ":heavy_check_mark:": "")}|");
             }
             if (classe.UniqueKeys != null && classe.UniqueKeys.Count > 0)
             {

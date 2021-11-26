@@ -37,23 +37,23 @@ CLI
 
 ### Profil
 _Profil des utilisateurs_
-| Name | Comment  | Domain |
-| --- | --- | --- |
-| **Id** | **Id technique** | **DO_ID** |
+| Name | Comment  | Domain | Required |
+| --- | --- | --- | --- |
+| **Id** | **Id technique** | **DO_ID** | :heavy_check_mark: |
 
 ## Utilisateur
 
 
 ### Utilisateur
 _Utilisateur de l'application_
-| Name | Comment  | Domain |
-| --- | --- | --- |
-| **Id** | **Id technique** | **DO_ID** |
-| _ProfilId_ | _Liste des profils_ | _DO_ID_ |
-| _TypeUtilisateurCode_ | _Type d'utilisateur_ | _DO_CODE_ |
-| DateCreation | Date de création de la voiture | DO_DATE_CREATION |
-| DateModification | Date de création de la voiture | DO_DATE_MODIFICATION |
-| Email | Email de l'utilisateur | DO_EMAIL |
+| Name | Comment  | Domain | Required |
+| --- | --- | --- | --- |
+| **Id** | **Id technique** | **DO_ID** | :heavy_check_mark: |
+| _ProfilId_ | _Liste des profils_ | _DO_ID_ | |
+| _TypeUtilisateurCode_ | _Type d'utilisateur_ | _DO_CODE_ | |
+| DateCreation | Date de création de la voiture | DO_DATE_CREATION | |
+| DateModification | Date de création de la voiture | DO_DATE_MODIFICATION | |
+| Email | Email de l'utilisateur | DO_EMAIL | |
 
 #### Contraintes d'unicité
 >    Id (Id technique)
@@ -61,7 +61,7 @@ _Utilisateur de l'application_
 
 ### TypeUtilisateur
 _Type d'utilisateur_
-| Name | Comment  | Domain |
-| --- | --- | --- |
-| **Code** | **Code du type d'utilisateur** | **DO_CODE** |
-| Libelle | Libellé du type d'utilisateur | :heavy_check_mark: |
+| Name | Comment  | Domain | Required |
+| --- | --- | --- | --- |
+| **Code** | **Code du type d'utilisateur** | **DO_CODE** | :heavy_check_mark: |
+| Libelle | Libellé du type d'utilisateur | DO_LIBELLE | :heavy_check_mark:|
