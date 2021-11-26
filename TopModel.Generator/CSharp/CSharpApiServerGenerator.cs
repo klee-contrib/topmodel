@@ -129,7 +129,7 @@ namespace {apiPath}
 
                 if (param == null)
                 {
-                    throw new ModelException($"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.");
+                    throw new ModelException(endpoint.ModelFile, $"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.");
                 }
 
                 var paramType = param.Domain.CSharp!.Type switch

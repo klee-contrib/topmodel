@@ -373,7 +373,7 @@ public class ModelStore
             {
                 if (classe.Properties.Count(p => p.PrimaryKey) > 1)
                 {
-                    throw new ModelException($"La classe {classe.Name} du fichier {modelFile} doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvées)");
+                    throw new ModelException(classe.ModelFile, $"La classe {classe.Name} du fichier {modelFile} doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvées)");
                 }
             }
         }

@@ -35,6 +35,10 @@ public class SpringApiGenerator : GeneratorBase
         {
             return;
         }
+        foreach (var endpoint in file.Endpoints)
+        {
+            CheckEndpoint(endpoint);
+        }
 
         var destFolder = Path.Combine(_config.ApiOutputDirectory, Path.Combine(_config.ApiPackageName.Split(".")), "controller", file.Module.ToLower());
         Directory.CreateDirectory(destFolder);
@@ -326,5 +330,19 @@ public class SpringApiGenerator : GeneratorBase
             var import = $"{_config.DaoPackageName}.dtos.{type.Namespace.Module.ToLower()}.{name}";
             return import;
         }).Distinct();
+    }
+    private void CheckEndpoint(Endpoint endpoint)
+    {
+        foreach (var q in endpoint.GetQueryParams().Concat(endpoint.GetRouteParams()))
+        {
+            if (q is AssociationProperty ap)
+            {
+                throw new ModelException(endpoint.ModelFile, $"Le endpoint {endpoint.Route} ne peut pas contenir d'association");
+            }
+        }
+        if (endpoint.Returns != null && endpoint.Returns is AssociationProperty)
+        {
+            throw new ModelException(endpoint.ModelFile, $"Le retour du endpoint {endpoint.Route} ne peut pas être une association");
+        }
     }
 }

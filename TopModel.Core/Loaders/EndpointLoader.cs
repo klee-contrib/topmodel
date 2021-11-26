@@ -51,7 +51,7 @@ internal static class EndpointLoader
                     parser.Consume<MappingEnd>();
                     break;
                 default:
-                    throw new ModelException($"Propriété ${prop} inconnue pour un endpoint");
+                    throw new ModelException(endpoint.ModelFile, $"Propriété ${prop} inconnue pour un endpoint");
             }
         }
 

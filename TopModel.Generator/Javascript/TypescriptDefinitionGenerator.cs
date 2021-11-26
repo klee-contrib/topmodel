@@ -564,6 +564,6 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             return property.Name.ToFirstUpper();
         }
 
-        return property.TS?.Type ?? throw new ModelException($"Le type Typescript du domaine {property.Domain.Name} doit être renseigné.");
+        return property.TS?.Type ?? throw new ModelException(property.Class.ModelFile, $"Le type Typescript du domaine {property.Domain.Name} doit être renseigné.");
     }
 }

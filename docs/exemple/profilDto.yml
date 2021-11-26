@@ -1,0 +1,14 @@
+---
+module: Securite
+tags:
+  - dto
+uses:
+  - profil
+---
+class:
+  name: ProfilDto
+  label: ProfilDto
+  comment: Objet métier non persisté représentant Profil
+  properties:
+    - alias:
+        class: Profil
