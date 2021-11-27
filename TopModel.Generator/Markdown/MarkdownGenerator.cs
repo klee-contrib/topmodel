@@ -97,9 +97,25 @@ public class MarkdownGenerator : GeneratorBase
                 }
                 if (property.Type != null)
                 {
-                    var from = property.Type == AssociationType.ManyToOne || property.Type == AssociationType.ManyToMany ? property.Required ? "1" : "0" : "*";
-                    var to = property.Type == AssociationType.OneToOne || property.Type == AssociationType.ManyToOne ? "*" : property.Required ? "1" : "0";
-                    fw.WriteLine(@$"{property.Class.Name} ""{from}"" --> ""{to}"" {property.Association.Name}{(property.Role != null ? " : " + property.Role : "")}");
+                    string card;
+                    switch (property.Type)
+                    {
+                        case AssociationType.OneToOne:
+                            card = "*";
+                            break;
+                        case AssociationType.OneToMany:
+                            card = property.Required ? "1..*" : "0..n";
+                            break;
+                        case AssociationType.ManyToOne:
+                            card = property.Required ? "1" : "0..n";
+                            break;
+                        case AssociationType.ManyToMany:
+                        default:
+                            card = property.Required ? "1..*" : "0..n";
+                            break;
+                    }
+
+                    fw.WriteLine(@$"{property.Class.Name} --> ""{card}"" {property.Association.Name}{(property.Role != null ? " : " + property.Role : "")}");
                 }
                 else
                 {

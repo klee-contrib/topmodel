@@ -13,8 +13,8 @@ class Utilisateur{
  DO_DATE_MODIFICATION DateModification
  DO_EMAIL Email
 }
-Utilisateur "0" --> "0" Profil
-Utilisateur "0" --> "*" TypeUtilisateur
+Utilisateur --> "0..n" Profil
+Utilisateur --> "0..n" TypeUtilisateur
 
 %% Type d'utilisateur
 class TypeUtilisateur{
@@ -42,8 +42,8 @@ _Utilisateur de l'application_
 | **Id** | **Id technique** | **DO_ID** | :heavy_check_mark: |
 | _ProfilId_ | _Liste des profils_ | _DO_ID_ | |
 | _TypeUtilisateurCode_ | _Type d'utilisateur_ | _DO_CODE_ | |
-| DateCreation | Date de création de la voiture | DO_DATE_CREATION | |
-| DateModification | Date de création de la voiture | DO_DATE_MODIFICATION | |
+| DateCreation | Date de création de l'utilisateur | DO_DATE_CREATION | |
+| DateModification | Date de modification de l'utilisateur | DO_DATE_MODIFICATION | |
 | Email | Email de l'utilisateur | DO_EMAIL | |
 
 #### Contraintes d'unicité

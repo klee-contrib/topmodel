@@ -19,10 +19,10 @@ class:
     - association: Profil
       comment: Liste des profils
       type: manyToMany
-    - name: dateCreation
+    - name: DateCreation
       comment: Date de création de l'utilisateur
       domain: DO_DATE_CREATION
-    - name: dateModification
+    - name: DateModification
       comment: Date de modification de l'utilisateur 
       domain: DO_DATE_MODIFICATION
     - name: Email

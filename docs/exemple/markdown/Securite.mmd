@@ -1,0 +1,26 @@
+﻿classDiagram
+
+%% Utilisateur de l'application
+class Utilisateur{
+ DO_ID Id
+ DO_DATE_CREATION DateCreation
+ DO_DATE_MODIFICATION DateModification
+ DO_EMAIL Email
+}
+Utilisateur --> "0..*" Profil
+Utilisateur --> "0..1" TypeUtilisateur
+
+%% Type d'utilisateur
+class TypeUtilisateur{
+<<Enum>>
+ADM
+GES
+CLI
+}
+
+%% Profil des utilisateurs
+class Profil{
+<<Reference>>
+}
+
+click Profil href "./Securite.md" "To Securite module"
