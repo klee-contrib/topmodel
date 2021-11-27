@@ -1,6 +1,7 @@
 ﻿namespace TopModel.Core;
 
 using TopModel.Core.FileModel;
+
 /// <summary>
 /// Exception dans la lecture/parsing du modèle.
 /// </summary>
@@ -14,7 +15,8 @@ public class ModelException : Exception
         : base(message)
     {
     }
-        /// <summary>
+
+    /// <summary>
     /// Constructeur.
     /// </summary>
     /// <param name="message">Message.</param>
