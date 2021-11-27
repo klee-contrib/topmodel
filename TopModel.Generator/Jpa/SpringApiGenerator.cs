@@ -35,6 +35,7 @@ public class SpringApiGenerator : GeneratorBase
         {
             return;
         }
+
         foreach (var endpoint in file.Endpoints)
         {
             CheckEndpoint(endpoint);
@@ -93,20 +94,9 @@ public class SpringApiGenerator : GeneratorBase
         fw.WriteLine(1, " */");
         var returnType = "void";
 
-        if (endpoint.Returns is IFieldProperty fp)
+        if (endpoint.Returns != null)
         {
-            if (fp is AliasProperty ap && ap.Property.Class.IsPersistent && ap.Property.Class.Reference && ap.Property.PrimaryKey)
-            {
-                returnType = ap.Class + "Code";
-            }
-            else
-            {
-                returnType = fp.Domain.Java!.Type;
-            }
-        }
-        else if (endpoint.Returns is CompositionProperty cp)
-        {
-            returnType = cp.GetJavaType();
+            returnType = endpoint.Returns.GetJavaType();
         }
 
         if (writeAnnotation)
@@ -122,6 +112,7 @@ public class SpringApiGenerator : GeneratorBase
             {
                 methodParams += ", ";
             }
+
             isFirstMethodParam = false;
 
             if (writeAnnotation)
@@ -138,6 +129,7 @@ public class SpringApiGenerator : GeneratorBase
             {
                 methodParams += ", ";
             }
+
             isFirstMethodParam = false;
 
             if (writeAnnotation)
@@ -146,7 +138,6 @@ public class SpringApiGenerator : GeneratorBase
             }
 
             methodParams += $"{param.GetJavaType()} {param.GetParamName()}";
-
         }
 
         var bodyParam = endpoint.GetBodyParam();
@@ -189,6 +180,7 @@ public class SpringApiGenerator : GeneratorBase
                     {
                         methodCallParams += ", ";
                     }
+
                     isFirstParam = false;
 
                     methodCallParams += $"{param.GetParamName()}";
@@ -249,6 +241,7 @@ public class SpringApiGenerator : GeneratorBase
             imports.Add("org.springframework.web.bind.annotation.RequestBody");
             imports.Add("javax.validation.Valid");
         }
+
         foreach (var e in file.Endpoints)
         {
             if (e.Returns is not null)
@@ -262,22 +255,26 @@ public class SpringApiGenerator : GeneratorBase
                     imports.AddRange(fp.GetImports(_config));
                 }
             }
+
             foreach (var q in e.GetQueryParams().Concat(e.GetRouteParams()))
             {
                 if (q is AliasProperty ap)
                 {
                     imports.AddRange(ap.GetImports(_config));
                 }
+
                 if (q is CompositionProperty cp)
                 {
                     imports.AddRange(cp.GetImports(_config));
                 }
             }
+
             {
                 if (e.GetBodyParam() is AliasProperty ap)
                 {
                     imports.AddRange(ap.GetImports(_config));
                 }
+
                 if (e.GetBodyParam() is CompositionProperty cp)
                 {
                     imports.AddRange(cp.GetImports(_config));
@@ -292,8 +289,8 @@ public class SpringApiGenerator : GeneratorBase
     {
         var properties = file.Endpoints.SelectMany(endpoint => endpoint.Params.Concat(new[] { endpoint.Returns }));
         return properties.OfType<CompositionProperty>().Select(property => property.Composition.GetImport(_config));
-
     }
+
     private void CheckEndpoint(Endpoint endpoint)
     {
         foreach (var q in endpoint.GetQueryParams().Concat(endpoint.GetRouteParams()))
@@ -303,6 +300,7 @@ public class SpringApiGenerator : GeneratorBase
                 throw new ModelException(endpoint.ModelFile, $"Le endpoint {endpoint.Route} ne peut pas contenir d'association");
             }
         }
+
         if (endpoint.Returns != null && endpoint.Returns is AssociationProperty)
         {
             throw new ModelException(endpoint.ModelFile, $"Le retour du endpoint {endpoint.Route} ne peut pas être une association");

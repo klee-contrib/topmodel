@@ -28,12 +28,14 @@ public class JpaModelGenerator : GeneratorBase
         {
             _files[file.Name] = file;
         }
+
         foreach (var c in _files.Values
                     .SelectMany(f => f.Classes)
                     .Distinct())
         {
             this.CheckClass(c);
         }
+
         var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
 
         foreach (var module in modules)
@@ -121,17 +123,7 @@ public class JpaModelGenerator : GeneratorBase
     private void WriteImports(JavaWriter fw, Class classe)
     {
         var imports = classe.GetImports(_config);
-        foreach (var property in classe.Properties.OfType<IFieldProperty>())
-        {
-            imports.AddRange(property.GetImports(_config));
-        }
-
-        foreach (var property in classe.Properties.OfType<CompositionProperty>())
-        {
-            imports.AddRange(property.GetImports(_config));
-        }
-
-        foreach (var property in classe.Properties.OfType<AssociationProperty>())
+        foreach (var property in classe.Properties)
         {
             imports.AddRange(property.GetImports(_config));
         }
@@ -155,12 +147,14 @@ public class JpaModelGenerator : GeneratorBase
             {
                 throw new ModelException(classe.ModelFile, $"La classe {classe} est non persisté, elle ne peut donc pas être associée à {property.Association.Name}");
             }
+
             if (!property.Association.IsPersistent)
             {
                 throw new ModelException(classe.ModelFile, $"La classe {property.Association} est non persisté, elle ne peut donc pas être associée à {classe.Name}");
             }
         }
     }
+
     private void WriteAnnotations(string module, JavaWriter fw, Class classe)
     {
         fw.WriteDocStart(0, classe.Comment);

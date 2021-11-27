@@ -15,70 +15,79 @@ public static class JpaExtensions
         {
             return $"Set<{ap.Association.Name}>";
         }
+
         return ap.Association.Name;
     }
+
     public static string GetJavaType(this IProperty prop)
     {
-        if (prop is AssociationProperty a) return a.GetJavaType();
-        if (prop is CompositionProperty c) return c.GetJavaType();
-        if (prop is AliasProperty l) return l.GetJavaType();
-        if (prop is RegularProperty r) return r.GetJavaType();
-        return "";
-    }
-    public static string GetJavaType(this AliasProperty ap)
-    {
-        if (
-            ap.Property.Class.IsPersistent
-            && ap.Property.Class.Reference
-            && ap.Property.PrimaryKey
-            && ap.Property.Domain.Name != "DO_ID"
-            )
+        switch (prop)
         {
-            return ap.Property.Class.Name + "Code";
+            case AssociationProperty a: return a.GetJavaType();
+            case CompositionProperty c: return c.GetJavaType();
+            case AliasProperty l: return l.GetJavaType();
+            case RegularProperty r: return r.GetJavaType();
+            default: return string.Empty;
         }
-        else if (ap.Property is AssociationProperty apr
+    }
+
+    public static bool IsEnum(this RegularProperty rp)
+    {
+        return rp.Class != null
+                && rp.Class.IsPersistent
+                && rp.Class.Reference
+                && rp.PrimaryKey
+                && rp.Domain.Name != "DO_ID";
+    }
+
+    public static bool IsEnum(this AliasProperty ap)
+    {
+        return (ap.Property is RegularProperty rp) && rp.IsEnum();
+    }
+
+    public static bool IsAssociatedEnum(this AliasProperty ap)
+    {
+        return ap.Property is AssociationProperty apr
           && apr.Association.IsPersistent
           && apr.Association.Reference
-          && apr.Domain.Name != "DO_ID")
+          && apr.Domain.Name != "DO_ID";
+    }
+
+    public static string GetJavaType(this AliasProperty ap)
+    {
+        if (ap.IsEnum())
         {
-            return apr.Association.Name + "Code";
+            return ap.Property.GetJavaType();
         }
+        else if (ap.Property is AssociationProperty apr && ap.IsAssociatedEnum())
+        {
+            return apr.Association.PrimaryKey!.GetJavaType();
+        }
+
         return ap.Domain.Java!.Type;
     }
 
     public static string GetJavaType(this RegularProperty rp)
     {
-        return rp.Class != null && rp.Class.Reference && rp.PrimaryKey ? $"{rp.Class.Name.ToFirstUpper()}Code" : rp.Domain.Java!.Type;
+        return rp.IsEnum() ? $"{rp.Class.Name.ToFirstUpper()}Code" : rp.Domain.Java!.Type;
     }
 
     public static List<string> GetImports(this AliasProperty ap, JpaConfig config)
     {
-        var package = $"{config.DaoPackageName}.references.{ap.Property.Class.Namespace.Module.ToLower()}";
         var imports = new List<string>();
-        if (
-            ap.Property.Class.IsPersistent
-            && ap.Property.Class.Reference
-            && ap.Property.PrimaryKey
-            && ap.Property.Domain.Name != "DO_ID"
-            )
+        if (ap.IsEnum() || ap.IsAssociatedEnum())
         {
-            imports.Add(package + "." + ap.Property.Class.Name + "Code");
+            var package = $"{config.DaoPackageName}.references.{ap.Property.Class.Namespace.Module.ToLower()}";
+            imports.Add(package + "." + ap.GetJavaType());
         }
-        else if (ap.Property is AssociationProperty apr
-          && apr.Association.IsPersistent
-          && apr.Association.Reference
-          && apr.Domain.Name != "DO_ID")
-        {
-            imports.Add(package + "." + apr.Association.Name + "Code");
-        }
-        else if (ap.Domain.Java?.Imports != null)
+
+        if (ap.Domain.Java?.Imports != null)
         {
             imports.AddRange(ap.Domain.Java.Imports);
         }
 
         return imports;
     }
-
 
     public static string GetJavaType(this CompositionProperty cp)
     {
@@ -90,7 +99,10 @@ public static class JpaExtensions
         {
             return $"List<{cp.Composition.Name}>";
         }
-        else return $"{cp.DomainKind!.Java!.Type}<{cp.Composition.Name}>";
+        else
+        {
+            return $"{cp.DomainKind!.Java!.Type}<{cp.Composition.Name}>";
+        }
     }
 
     public static List<string> GetImports(this AssociationProperty ap, JpaConfig config)
@@ -127,6 +139,7 @@ public static class JpaExtensions
         {
             imports.Add(ap.Association.GetImport(config));
         }
+
         return imports;
     }
 
@@ -137,16 +150,28 @@ public static class JpaExtensions
         {
             imports.Add(cp.Composition.GetImport(config));
         }
+
         if (cp.Kind == "list")
         {
             imports.Add("java.util.List");
         }
-        if (cp.DomainKind?.Java?.Imports != null)
+        else if (cp.DomainKind?.Java?.Imports != null)
         {
             imports.AddRange(cp.DomainKind.Java.Imports);
         }
 
         return imports;
+    }
+
+    public static List<string> GetImports(this IProperty p, JpaConfig config)
+    {
+        switch (p)
+        {
+            case CompositionProperty cp: return cp.GetImports(config);
+            case AssociationProperty ap: return ap.GetImports(config);
+            case IFieldProperty fp: return fp.GetImports(config);
+            default: return new List<string>();
+        }
     }
 
     public static List<string> GetImports(this IFieldProperty rp, JpaConfig config)
@@ -157,12 +182,9 @@ public static class JpaExtensions
             imports.Add("javax.persistence.Column");
         }
 
-        if (rp.Domain.Java != null)
+        if (rp.Domain.Java?.Imports != null)
         {
-            if (rp.Domain.Java.Imports != null)
-            {
-                imports.AddRange(rp.Domain.Java.Imports);
-            }
+            imports.AddRange(rp.Domain.Java.Imports);
         }
 
         if (rp.PrimaryKey && rp.Class.IsPersistent)
@@ -174,9 +196,12 @@ public static class JpaExtensions
                        || rp.Domain.Java.Type == "int"
                        || rp.Domain.Java.Type == "Integer")
             {
-                imports.Add("javax.persistence.GeneratedValue");
-                imports.Add("javax.persistence.SequenceGenerator");
-                imports.Add("javax.persistence.GenerationType");
+                imports.AddRange(new List<string>
+                {
+                    "javax.persistence.GeneratedValue",
+                    "javax.persistence.SequenceGenerator",
+                    "javax.persistence.GenerationType"
+                });
             }
         }
 
@@ -215,8 +240,9 @@ public static class JpaExtensions
         }
         else
         {
-            if (classe.Properties.Any(p => p is IFieldProperty { Required: true, PrimaryKey: false })
-                || classe.Properties.Any(p => p is AliasProperty { Required: true, PrimaryKey: false }))
+            if (classe.Properties.Any(p =>
+                    p is IFieldProperty { Required: true, PrimaryKey: false }
+                || p is AliasProperty { Required: true, PrimaryKey: false }))
             {
                 imports.Add("javax.validation.constraints.NotNull");
             }
@@ -226,12 +252,15 @@ public static class JpaExtensions
 
         if (classe.Reference)
         {
-            imports.Add("javax.persistence.Enumerated");
-            imports.Add("javax.persistence.EnumType");
-            imports.Add("org.hibernate.annotations.Cache");
-            imports.Add("org.hibernate.annotations.Cache");
-            imports.Add("org.hibernate.annotations.Immutable");
-            imports.Add("org.hibernate.annotations.CacheConcurrencyStrategy");
+            imports.AddRange(new List<string>
+            {
+                "javax.persistence.Enumerated",
+                "javax.persistence.EnumType",
+                "org.hibernate.annotations.Cache",
+                "org.hibernate.annotations.Cache",
+                "org.hibernate.annotations.Immutable",
+                "org.hibernate.annotations.CacheConcurrencyStrategy"
+            });
             imports.Add($"{config.DaoPackageName}.references.{classe.Namespace.Module.ToLower()}.{classe.Name}Code");
         }
 
