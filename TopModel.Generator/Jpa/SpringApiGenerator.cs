@@ -104,118 +104,69 @@ public class SpringApiGenerator : GeneratorBase
             fw.WriteLine(1, @$"@{endpoint.Method.ToLower().ToFirstUpper()}Mapping(""{endpoint.Route.Replace(endpoint.ModelFile.Module.ToLower(), string.Empty)}"")");
         }
 
-        var methodParams = string.Empty;
-        var isFirstMethodParam = true;
+        var methodParams = new List<string>();
         foreach (var param in endpoint.GetRouteParams())
         {
-            if (!isFirstMethodParam)
-            {
-                methodParams += ", ";
-            }
-
-            isFirstMethodParam = false;
-
+            var ann = string.Empty;
             if (writeAnnotation)
             {
-                methodParams += @$"@PathVariable(""{param.GetParamName()}"") ";
+                ann += @$"@PathVariable(""{param.GetParamName()}"") ";
             }
 
-            methodParams += $"{param.GetJavaType()} {param.GetParamName()}";
+            methodParams.Add($"{ann}{param.GetJavaType()} {param.GetParamName()}");
         }
 
         foreach (var param in endpoint.GetQueryParams())
         {
-            if (!isFirstMethodParam)
-            {
-                methodParams += ", ";
-            }
-
-            isFirstMethodParam = false;
-
+            var ann = string.Empty;
             if (writeAnnotation)
             {
-                methodParams += @$"@RequestParam(""{param.GetParamName()}"") ";
+                ann += @$"@RequestParam(""{param.GetParamName()}"") ";
             }
 
-            methodParams += $"{param.GetJavaType()} {param.GetParamName()}";
+            methodParams.Add($"{ann}{param.GetJavaType()} {param.GetParamName()}");
         }
 
         var bodyParam = endpoint.GetBodyParam();
         if (bodyParam != null)
         {
-            if (!isFirstMethodParam)
-            {
-                methodParams += ", ";
-            }
-
+            var ann = string.Empty;
             if (writeAnnotation)
             {
-                methodParams += @$"@RequestBody @Valid ";
+                ann += @$"@RequestBody @Valid ";
             }
 
-            if (bodyParam is CompositionProperty cp)
-            {
-                methodParams += $"{cp.GetJavaType()} {bodyParam.GetParamName()}";
-            }
+            methodParams.Add($"{ann}{bodyParam.GetJavaType()} {bodyParam.GetParamName()}");
         }
 
         if (writeAnnotation)
         {
-            fw.WriteLine(1, $"default {returnType} {endpoint.Name.ToFirstLower()}{(writeAnnotation ? "Mapping" : string.Empty)}({methodParams}) {{");
+            fw.WriteLine(1, $"default {returnType} {endpoint.Name.ToFirstLower()}{(writeAnnotation ? "Mapping" : string.Empty)}({string.Join(", ", methodParams)}) {{");
         }
         else
         {
-            fw.WriteLine(1, $"{returnType} {endpoint.Name.ToFirstLower()}({methodParams});");
+            fw.WriteLine(1, $"{returnType} {endpoint.Name.ToFirstLower()}({string.Join(", ", methodParams)});");
         }
 
         if (writeAnnotation)
         {
-            var methodCallParams = string.Empty;
-            var isFirstParam = true;
-            foreach (var param in endpoint.GetRouteParams())
+            var methodCallParams = new List<string>();
+            foreach (var param in endpoint.GetRouteParams().OfType<IFieldProperty>())
             {
-                if (param is IFieldProperty fpe)
-                {
-                    if (!isFirstParam)
-                    {
-                        methodCallParams += ", ";
-                    }
-
-                    isFirstParam = false;
-
-                    methodCallParams += $"{param.GetParamName()}";
-                }
+                methodCallParams.Add($"{param.GetParamName()}");
             }
 
-            foreach (var param in endpoint.GetQueryParams())
+            foreach (var param in endpoint.GetQueryParams().OfType<IFieldProperty>())
             {
-                if (!isFirstParam)
-                {
-                    methodCallParams += ", ";
-                }
-
-                if (param is IFieldProperty fpe)
-                {
-                    methodCallParams += $"{param.GetParamName()}";
-                }
-
-                isFirstParam = false;
+                methodCallParams.Add($"{param.GetParamName()}");
             }
 
-            if (bodyParam != null)
+            if (bodyParam != null && bodyParam is CompositionProperty)
             {
-                if (!isFirstParam)
-                {
-                    methodCallParams += ", ";
-                }
-
-                if (bodyParam is CompositionProperty)
-                {
-                    methodCallParams += $"{bodyParam.GetParamName()}";
-                }
+                methodCallParams.Add($"{bodyParam.GetParamName()}");
             }
 
-            fw.WriteLine(2, @$"{(returnType != "void" ? "return " : string.Empty)}this.{endpoint.Name.ToFirstLower()}({methodCallParams});");
+            fw.WriteLine(2, @$"{(returnType != "void" ? "return " : string.Empty)}this.{endpoint.Name.ToFirstLower()}({string.Join(", ", methodCallParams)});");
             fw.WriteLine(1, "}");
         }
     }
@@ -242,53 +193,13 @@ public class SpringApiGenerator : GeneratorBase
             imports.Add("javax.validation.Valid");
         }
 
-        foreach (var e in file.Endpoints)
-        {
-            if (e.Returns is not null)
-            {
-                if (e.Returns is CompositionProperty cp)
-                {
-                    imports.AddRange(cp.GetImports(_config));
-                }
-                else if (e.Returns is IFieldProperty fp)
-                {
-                    imports.AddRange(fp.GetImports(_config));
-                }
-            }
-
-            foreach (var q in e.GetQueryParams().Concat(e.GetRouteParams()))
-            {
-                if (q is AliasProperty ap)
-                {
-                    imports.AddRange(ap.GetImports(_config));
-                }
-
-                if (q is CompositionProperty cp)
-                {
-                    imports.AddRange(cp.GetImports(_config));
-                }
-            }
-
-            {
-                if (e.GetBodyParam() is AliasProperty ap)
-                {
-                    imports.AddRange(ap.GetImports(_config));
-                }
-
-                if (e.GetBodyParam() is CompositionProperty cp)
-                {
-                    imports.AddRange(cp.GetImports(_config));
-                }
-            }
-        }
-
         fw.WriteImports(imports.Distinct().ToArray());
     }
 
     private IEnumerable<string> GetTypeImports(ModelFile file)
     {
-        var properties = file.Endpoints.SelectMany(endpoint => endpoint.Params.Concat(new[] { endpoint.Returns }));
-        return properties.OfType<CompositionProperty>().Select(property => property.Composition.GetImport(_config));
+        var properties = file.Endpoints.SelectMany(endpoint => endpoint.Params).Concat(file.Endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
+        return properties.SelectMany(property => property!.GetImports(_config));
     }
 
     private void CheckEndpoint(Endpoint endpoint)

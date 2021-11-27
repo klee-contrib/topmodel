@@ -18,7 +18,7 @@ public static class ImportsJpaExtensions
     public static List<string> GetImports(this IFieldProperty rp, JpaConfig config)
     {
         var imports = new List<string>();
-        if (rp.Class.IsPersistent)
+        if (rp.Class != null && rp.Class.IsPersistent)
         {
             imports.Add("javax.persistence.Column");
         }
@@ -28,7 +28,7 @@ public static class ImportsJpaExtensions
             imports.AddRange(rp.Domain.Java.Imports);
         }
 
-        if (rp.PrimaryKey && rp.Class.IsPersistent)
+        if (rp.Class != null && rp.PrimaryKey && rp.Class.IsPersistent)
         {
             imports.Add("javax.persistence.Id");
             if (
