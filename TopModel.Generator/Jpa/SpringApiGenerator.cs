@@ -266,7 +266,7 @@ public class SpringApiGenerator : GeneratorBase
             {
                 if (q is AliasProperty ap)
                 {
-                    imports.AddRange(ap.GetImport(_config));
+                    imports.AddRange(ap.GetImports(_config));
                 }
                 if (q is CompositionProperty cp)
                 {

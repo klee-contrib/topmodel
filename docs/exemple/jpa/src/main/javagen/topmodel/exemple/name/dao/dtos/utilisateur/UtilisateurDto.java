@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateurCode;
+import topmodel.exemple.name.dao.references.utilisateur.TypeUtilisateurCode;
 
 /**
  * Objet non persisté de communication avec le serveur.

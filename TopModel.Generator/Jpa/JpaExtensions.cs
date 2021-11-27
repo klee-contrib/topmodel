@@ -48,12 +48,13 @@ public static class JpaExtensions
 
     public static string GetJavaType(this RegularProperty rp)
     {
-        return rp.Class.Reference && rp.PrimaryKey ? $"{rp.Class.Name.ToFirstUpper()}Code" : rp.Domain.Java!.Type;
+        return rp.Class != null && rp.Class.Reference && rp.PrimaryKey ? $"{rp.Class.Name.ToFirstUpper()}Code" : rp.Domain.Java!.Type;
     }
 
-    public static List<string> GetImport(this AliasProperty ap, JpaConfig config)
+    public static List<string> GetImports(this AliasProperty ap, JpaConfig config)
     {
         var package = $"{config.DaoPackageName}.references.{ap.Property.Class.Namespace.Module.ToLower()}";
+        var imports = new List<string>();
         if (
             ap.Property.Class.IsPersistent
             && ap.Property.Class.Reference
@@ -61,18 +62,21 @@ public static class JpaExtensions
             && ap.Property.Domain.Name != "DO_ID"
             )
         {
-            return new List<string>(){
-                package + "." + ap.Property.Class.Name + "Code"
-            };
+            imports.Add(package + "." + ap.Property.Class.Name + "Code");
         }
         else if (ap.Property is AssociationProperty apr
           && apr.Association.IsPersistent
           && apr.Association.Reference
           && apr.Domain.Name != "DO_ID")
         {
-            return new List<string>() { package + "." + apr.Association.Name + "Code" };
+            imports.Add(package + "." + apr.Association.Name + "Code");
         }
-        return ap.Domain.Java?.Imports ?? new List<string>();
+        else if (ap.Domain.Java?.Imports != null)
+        {
+            imports.AddRange(ap.Domain.Java.Imports);
+        }
+
+        return imports;
     }
 
 
@@ -176,9 +180,9 @@ public static class JpaExtensions
             }
         }
 
-        if (rp is AliasProperty alpr && alpr.Property is AssociationProperty asop)
+        if (rp is AliasProperty apo)
         {
-            imports.Add($"{asop.Association.GetImport(config)}Code");
+            imports.AddRange(apo.GetImports(config));
         }
 
         return imports;
