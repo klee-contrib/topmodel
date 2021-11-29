@@ -41,7 +41,7 @@ public class SpringApiGenerator : GeneratorBase
             CheckEndpoint(endpoint);
         }
 
-        var destFolder = Path.Combine(_config.ApiOutputDirectory, Path.Combine(_config.ApiPackageName.Split(".")), "controller", file.Module.ToLower());
+        var destFolder = Path.Combine(_config.ApiOutputDirectory, Path.Combine(_config.ApiPackageName.Split(".")), "controller", file.Module.Replace('.', '/').ToLower());
         Directory.CreateDirectory(destFolder);
 
         var fileSplit = file.Name.Split("/");

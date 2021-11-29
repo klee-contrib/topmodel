@@ -54,7 +54,7 @@ public class JpaModelGenerator : GeneratorBase
         foreach (var classe in classes)
         {
             var entityDto = classe.IsPersistent ? "entities" : "dtos";
-            var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), entityDto, classe.Namespace.Module.ToLower());
+            var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), entityDto, classe.Namespace.Module.Replace(".", "/").ToLower());
             var dirInfo = Directory.CreateDirectory(destFolder);
             var packageName = $"{_config.DaoPackageName}.{entityDto}.{classe.Namespace.Module.ToLower()}";
             using var fw = new JavaWriter($"{destFolder}/{classe.Name}.java", _logger, null);
@@ -87,7 +87,7 @@ public class JpaModelGenerator : GeneratorBase
 
         foreach (var classe in classes.Where(c => c.ReferenceValues?.Any() ?? false))
         {
-            var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), "references", classe.Namespace.Module.ToLower());
+            var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), "references", classe.Namespace.Module.Replace('.', '/').ToLower());
             var dirInfo = Directory.CreateDirectory(destFolder);
             var packageName = $"{_config.DaoPackageName}.references.{classe.Namespace.Module.ToLower()}";
             using var fw = new JavaWriter($"{destFolder}/{classe.Name}Code.java", _logger, null);

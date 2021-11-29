@@ -46,7 +46,7 @@ public class JpaDaoGenerator : GeneratorBase
 
         foreach (var classe in classes.Where(c => !c.Reference && c.IsPersistent))
         {
-            var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), "daos", classe.Namespace.Module.ToLower());
+            var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), "daos", classe.Namespace.Module.Replace('.', '/').ToLower());
             var dirInfo = Directory.CreateDirectory(destFolder);
             var packageName = $"{_config.DaoPackageName}.daos.{classe.Namespace.Module.ToLower()}";
             var fileName = $"{destFolder}/{classe.Name}DAO.java";
