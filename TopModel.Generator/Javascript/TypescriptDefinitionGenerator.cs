@@ -47,7 +47,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             {
                 var fileName = classe.Name.ToDashCase();
 
-                fileName = $"{_config.ModelOutputDirectory}/{file.Module.ToDashCase()}/{fileName}.ts";
+                fileName = $"{_config.ModelOutputDirectory}/{file.Module.Replace(".", "/").ToDashCase()}/{fileName}.ts";
                 var fileInfo = new FileInfo(fileName);
 
                 var isNewFile = !fileInfo.Exists;
@@ -133,7 +133,8 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
         if (GetDomainList(classe).Any())
         {
-            fw.WriteLine($"import {{{string.Join(", ", GetDomainList(classe))}}} from \"../../domains\";");
+            var arbo = String.Join("/", classe.ModelFile.Module.Split(".").Select(e => ".."));
+            fw.WriteLine($"import {{{string.Join(", ", GetDomainList(classe))}}} from \"{arbo}/../domains\";");
         }
 
         var imports = GetImportList(classe);
