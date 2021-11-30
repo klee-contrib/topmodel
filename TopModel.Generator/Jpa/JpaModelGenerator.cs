@@ -33,7 +33,7 @@ public class JpaModelGenerator : GeneratorBase
                     .SelectMany(f => f.Classes)
                     .Distinct())
         {
-            this.CheckClass(c);
+            CheckClass(c);
         }
 
         var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
@@ -122,7 +122,7 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteImports(JavaWriter fw, Class classe)
     {
-        var imports = classe.GetImports(_config);
+        var imports = classe.GetImports();
         foreach (var property in classe.Properties)
         {
             imports.AddRange(property.GetImports(_config));

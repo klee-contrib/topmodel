@@ -6,14 +6,14 @@ public static class GetJavaTypeJpaExtensions
 {
     public static string GetJavaType(this IProperty prop)
     {
-        switch (prop)
+        return prop switch
         {
-            case AssociationProperty a: return a.GetJavaType();
-            case CompositionProperty c: return c.GetJavaType();
-            case AliasProperty l: return l.GetJavaType();
-            case RegularProperty r: return r.GetJavaType();
-            default: return string.Empty;
-        }
+            AssociationProperty a => a.GetJavaType(),
+            CompositionProperty c => c.GetJavaType(),
+            AliasProperty l => l.GetJavaType(),
+            RegularProperty r => r.GetJavaType(),
+            _ => string.Empty,
+        };
     }
 
     public static string GetJavaType(this AssociationProperty ap)
@@ -77,7 +77,7 @@ public static class GetJavaTypeJpaExtensions
 
     public static bool IsEnum(this AliasProperty ap)
     {
-        return (ap.Property is RegularProperty rp) && rp.IsEnum();
+        return ap.Property is RegularProperty rp && rp.IsEnum();
     }
 
     public static bool IsAssociatedEnum(this AliasProperty ap)

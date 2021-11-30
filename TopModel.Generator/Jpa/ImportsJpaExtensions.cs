@@ -6,13 +6,13 @@ public static class ImportsJpaExtensions
 {
     public static List<string> GetImports(this IProperty p, JpaConfig config)
     {
-        switch (p)
+        return p switch
         {
-            case CompositionProperty cp: return cp.GetImports(config);
-            case AssociationProperty ap: return ap.GetImports(config);
-            case IFieldProperty fp: return fp.GetImports(config);
-            default: return new List<string>();
-        }
+            CompositionProperty cp => cp.GetImports(config),
+            AssociationProperty ap => ap.GetImports(config),
+            IFieldProperty fp => fp.GetImports(config),
+            _ => new List<string>(),
+        };
     }
 
     public static List<string> GetImports(this IFieldProperty rp, JpaConfig config)
@@ -157,7 +157,7 @@ public static class ImportsJpaExtensions
         return $"{packageName}.{classe.Name}";
     }
 
-    public static List<string> GetImports(this Class classe, JpaConfig config)
+    public static List<string> GetImports(this Class classe)
     {
         var imports = new List<string>
             {
