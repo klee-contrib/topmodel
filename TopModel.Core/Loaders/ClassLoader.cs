@@ -57,7 +57,7 @@ public class ClassLoader
                     classe.Comment = value.Value;
                     break;
                 default:
-                    throw new ModelException(classe.ModelFile, $"Propriété ${prop} inconnue pour une classe");
+                    throw new ModelException(classe, $"Propriété ${prop} inconnue pour une classe");
             }
         }
 
@@ -126,7 +126,7 @@ public class ClassLoader
             }
             else
             {
-                throw new ModelException(classe.ModelFile, $"Erreur dans la définition de la classe {classe.Name}.");
+                throw new ModelException(classe, $"Erreur dans la définition de la classe {classe.Name}.");
             }
         }
 

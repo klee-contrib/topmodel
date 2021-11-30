@@ -42,6 +42,7 @@ public class ModelFileLoader
             if (scalar.Value == "domain")
             {
                 var domain = _fileChecker.Deserialize<Domain>(parser);
+                domain.ModelFile = file;
                 domain.Location = new Reference(scalar);
                 file.Domains.Add(domain);
             }

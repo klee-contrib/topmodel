@@ -36,5 +36,7 @@ public class Domain
         || CSharp?.Type == "string";
 
 #nullable disable
+    public ModelFile ModelFile { get; set; }
+
     internal Reference Location { get; set; }
 }

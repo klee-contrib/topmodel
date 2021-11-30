@@ -137,7 +137,7 @@ public class JpaModelGenerator : GeneratorBase
         {
             if (!classe.IsPersistent && property.Composition.IsPersistent)
             {
-                throw new ModelException(classe.ModelFile, $"La propriété ${property} persistée ne peut pas faire l'objet d'une composition dans la classe {classe.Name} car elle ne l'est pas");
+                throw new ModelException(property, $"La propriété ${property} persistée ne peut pas faire l'objet d'une composition dans la classe {classe.Name} car elle ne l'est pas");
             }
         }
 
@@ -145,12 +145,12 @@ public class JpaModelGenerator : GeneratorBase
         {
             if (!classe.IsPersistent)
             {
-                throw new ModelException(classe.ModelFile, $"La classe {classe} est non persisté, elle ne peut donc pas être associée à {property.Association.Name}");
+                throw new ModelException(classe, $"La classe {classe} est non persistée, elle ne peut donc pas être associée à {property.Association.Name}");
             }
 
             if (!property.Association.IsPersistent)
             {
-                throw new ModelException(classe.ModelFile, $"La classe {property.Association} est non persisté, elle ne peut donc pas être associée à {classe.Name}");
+                throw new ModelException(classe, $"La classe {property.Association} est non persistée, elle ne peut donc pas être associée à {classe.Name}");
             }
         }
     }

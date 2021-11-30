@@ -155,7 +155,7 @@ public class KasperGenerator : GeneratorBase
         {
             if (property.Domain.Java == null)
             {
-                throw new ModelException(property.Class.ModelFile, $"Le domaine {property.Domain.Name}, utilisé par la propriété {property.JavaName} de la classe {classe.Name}, doit avoir un type Java.");
+                throw new ModelException(property, $"Le domaine {property.Domain.Name}, utilisé par la propriété {property.JavaName} de la classe {classe.Name}, doit avoir un type Java.");
             }
 
             fw.WriteLine();

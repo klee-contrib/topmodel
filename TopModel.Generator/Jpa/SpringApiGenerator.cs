@@ -208,13 +208,13 @@ public class SpringApiGenerator : GeneratorBase
         {
             if (q is AssociationProperty ap)
             {
-                throw new ModelException(endpoint.ModelFile, $"Le endpoint {endpoint.Route} ne peut pas contenir d'association");
+                throw new ModelException(endpoint, $"Le endpoint {endpoint.Route} ne peut pas contenir d'association");
             }
         }
 
         if (endpoint.Returns != null && endpoint.Returns is AssociationProperty)
         {
-            throw new ModelException(endpoint.ModelFile, $"Le retour du endpoint {endpoint.Route} ne peut pas être une association");
+            throw new ModelException(endpoint, $"Le retour du endpoint {endpoint.Route} ne peut pas être une association");
         }
     }
 }

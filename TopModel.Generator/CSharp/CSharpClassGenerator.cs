@@ -30,7 +30,7 @@ public class CSharpClassGenerator
 
         if (item.Properties.OfType<IFieldProperty>().Any(p => p.Domain.CSharp == null))
         {
-            throw new ModelException(item.ModelFile, $"Le type C# de tous les domaines des propriétés de {item.Name} doit être défini.");
+            throw new ModelException(item, $"Le type C# de tous les domaines des propriétés de {item.Name} doit être défini.");
         }
 
         var directory = Path.Combine(_config.OutputDirectory, _config.GetModelPath(item), "generated");

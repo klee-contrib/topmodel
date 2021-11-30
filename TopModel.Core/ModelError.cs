@@ -24,6 +24,7 @@ internal class ModelError
         IProperty { Class: Class classe } => classe.ModelFile,
         IProperty { Endpoint: Endpoint endpoint } => endpoint.ModelFile,
         Alias alias => alias.ModelFile,
+        Domain domain => domain.ModelFile,
         _ => throw new ArgumentException("Type d'objet non supporté.")
     };
 
@@ -79,9 +80,13 @@ internal class ModelError
         {
             sb.Append($"/{Endpoint.Name}");
         }
-        else
+        else if (_objet is Alias)
         {
-            sb.Append("/{{alias}}");
+            sb.Append("/{alias}");
+        }
+        else if (_objet is Domain d)
+        {
+            sb.Append($"/{d.Name}");
         }
 
         switch (Property)
@@ -90,13 +95,13 @@ internal class ModelError
                 sb.Append($"/{rp.Name}");
                 break;
             case AssociationProperty rp:
-                sb.Append($"/{{association}}");
+                sb.Append("/{association}");
                 break;
             case AliasProperty rp:
-                sb.Append($"/{{alias}}");
+                sb.Append("/{alias}");
                 break;
             case CompositionProperty rp:
-                sb.Append($"/{{composition}}");
+                sb.Append("/{composition}");
                 break;
         }
 

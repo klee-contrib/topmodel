@@ -16,7 +16,7 @@ public interface IFieldProperty : IProperty
         {
             if (Domain.TS == null)
             {
-                throw new ModelException($"Le type Typescript du domaine {Domain.Name} doit être renseigné.");
+                throw new ModelException(Domain, $"Le type Typescript du domaine doit être renseigné.");
             }
 
             var fixedType = new TSType { Type = Domain.TS.Type, Import = Domain.TS.Import };
