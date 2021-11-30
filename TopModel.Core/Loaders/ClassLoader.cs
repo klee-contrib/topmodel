@@ -13,7 +13,7 @@ public class ClassLoader
         _fileChecker = fileChecker;
     }
 
-    internal Class LoadClass(Parser parser, List<(object Target, Relation Relation)> relationships, string filePath)
+    internal Class LoadClass(Parser parser, string filePath)
     {
         parser.Consume<MappingStart>();
 
@@ -36,7 +36,7 @@ public class ClassLoader
                     classe.SqlName = value.Value;
                     break;
                 case "extends":
-                    relationships.Add((classe, new ClassRelation(value)));
+                    classe.ExtendsRelation = new ClassRelation(value);
                     break;
                 case "label":
                     classe.Label = value.Value;
@@ -68,23 +68,13 @@ public class ClassLoader
 
         while (parser.Current is not SequenceEnd)
         {
-            foreach (var property in PropertyLoader.LoadProperty(parser, relationships))
+            foreach (var property in PropertyLoader.LoadProperty(parser))
             {
                 classe.Properties.Add(property);
             }
         }
 
         parser.Consume<SequenceEnd>();
-
-        string? GetAssociationKeyName(AssociationProperty ap)
-        {
-            return (relationships.Single(r => r.Target == ap).Relation as ClassRelation)?.Reference.Value;
-        }
-
-        string? GetPropertyDomainName(IFieldProperty p)
-        {
-            return (relationships.Single(r => r.Target == p).Relation as DomainRelation)?.Reference.Value;
-        }
 
         while (parser.Current is not MappingEnd)
         {
@@ -102,7 +92,7 @@ public class ClassLoader
                         return regularProperty;
                     }
 
-                    var associationProperty = classe.Properties.OfType<AssociationProperty>().SingleOrDefault(ap => $"{GetAssociationKeyName(ap)}{ap.Role ?? string.Empty}" == propName);
+                    var associationProperty = classe.Properties.OfType<AssociationProperty>().SingleOrDefault(ap => $"{ap.AssociationRelation.ReferenceName}{ap.Role ?? string.Empty}" == propName);
 
                     return associationProperty != null
                         ? (IFieldProperty)associationProperty
@@ -122,12 +112,12 @@ public class ClassLoader
                         var propName = prop switch
                         {
                             RegularProperty rp => rp.Name,
-                            AssociationProperty ap => $"{GetAssociationKeyName(ap)}{ap.Role ?? string.Empty}",
+                            AssociationProperty ap => $"{ap.AssociationRelation.ReferenceName}{ap.Role ?? string.Empty}",
                             _ => throw new ModelException($"{filePath}{pos}: Type de propriété non géré pour initialisation.")
                         };
                         reference.Value.TryGetValue(propName, out var propValue);
 
-                        return propValue == null && prop.Required && (!prop.PrimaryKey || GetPropertyDomainName(prop) != "DO_ID")
+                        return propValue == null && prop.Required && (!prop.PrimaryKey || (prop as RegularProperty)?.DomainRelation.ReferenceName != "DO_ID")
                             ? throw new ModelException($"{filePath}{pos}: L'initilisation {reference.Key} de la classe {classe.Name} n'initialise pas la propriété obligatoire '{propName}'.")
                             : (prop, propValue!);
                     })

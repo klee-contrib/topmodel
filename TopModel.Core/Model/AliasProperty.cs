@@ -1,4 +1,6 @@
-﻿namespace TopModel.Core;
+﻿using TopModel.Core.FileModel;
+
+namespace TopModel.Core;
 
 public class AliasProperty : IFieldProperty
 {
@@ -66,6 +68,12 @@ public class AliasProperty : IFieldProperty
     internal string? Prefix { get; set; }
 
     internal string? Suffix { get; set; }
+
+#nullable disable
+    internal AliasRelation? AliasRelation { get; set; }
+
+#nullable enable
+    internal DomainRelation? ListDomainRelation { get; set; }
 
     internal AliasProperty Clone(IFieldProperty prop)
     {

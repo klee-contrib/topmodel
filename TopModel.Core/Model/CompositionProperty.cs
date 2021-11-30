@@ -1,4 +1,6 @@
 ﻿#nullable disable
+using TopModel.Core.FileModel;
+
 namespace TopModel.Core;
 
 public class CompositionProperty : IProperty
@@ -22,4 +24,9 @@ public class CompositionProperty : IProperty
     public string Label => Name;
 
     public bool PrimaryKey => false;
+
+    internal ClassRelation CompositionRelation { get; set; }
+
+#nullable enable
+    internal DomainRelation? KindRelation { get; set; }
 }

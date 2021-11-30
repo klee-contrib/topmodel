@@ -45,11 +45,11 @@ public class ModelFileLoader
             }
             else if (scalar.Value == "class")
             {
-                file.Classes.Add(_classLoader.LoadClass(parser, file.Relationships, filePath));
+                file.Classes.Add(_classLoader.LoadClass(parser, filePath));
             }
             else if (scalar.Value == "endpoint")
             {
-                file.Endpoints.Add(EndpointLoader.LoadEndpoint(parser, file.Relationships));
+                file.Endpoints.Add(EndpointLoader.LoadEndpoint(parser));
             }
             else if (scalar.Value == "alias")
             {

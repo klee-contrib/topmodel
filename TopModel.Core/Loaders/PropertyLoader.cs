@@ -6,7 +6,7 @@ namespace TopModel.Core.Loaders;
 
 internal static class PropertyLoader
 {
-    public static IEnumerable<IProperty> LoadProperty(Parser parser, List<(object Target, Relation Relation)> relationships)
+    public static IEnumerable<IProperty> LoadProperty(Parser parser)
     {
         parser.Consume<MappingStart>();
         switch (parser.Current)
@@ -34,7 +34,7 @@ internal static class PropertyLoader
                             rp.Required = value.Value == "true";
                             break;
                         case "domain":
-                            relationships.Add((rp, new DomainRelation(value)));
+                            rp.DomainRelation = new DomainRelation(value);
                             break;
                         case "defaultValue":
                             rp.DefaultValue = value.Value;
@@ -66,7 +66,7 @@ internal static class PropertyLoader
                     switch (prop)
                     {
                         case "association":
-                            relationships.Add((ap, new ClassRelation(value)));
+                            ap.AssociationRelation = new ClassRelation(value);
                             break;
                         case "asAlias":
                             ap.AsAlias = value.Value == "true";
@@ -114,7 +114,7 @@ internal static class PropertyLoader
                     switch (prop)
                     {
                         case "composition":
-                            relationships.Add((cp, new ClassRelation(value)));
+                            cp.CompositionRelation = new ClassRelation(value);
                             break;
                         case "name":
                             cp.Name = value.Value;
@@ -123,7 +123,7 @@ internal static class PropertyLoader
                             cp.Kind = value.Value;
                             if (cp.Kind != "object" && cp.Kind != "list" && cp.Kind != "async-list")
                             {
-                                relationships.Add((cp, new DomainRelation(value)));
+                                cp.KindRelation = new DomainRelation(value);
                             }
 
                             break;
@@ -208,14 +208,14 @@ internal static class PropertyLoader
                             alp.Comment = value.Value;
                             break;
                         case "asListWithDomain":
-                            relationships.Add((alp, new DomainRelation(value)));
+                            alp.ListDomainRelation = new DomainRelation(value);
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                     }
                 }
 
-                relationships.Add((alp, aliasRelation));
+                alp.AliasRelation = aliasRelation;
                 yield return alp;
                 break;
 

@@ -19,7 +19,11 @@ public class ModelFile
 
     public IList<Endpoint> Endpoints { get; set; }
 
-    internal List<(object Target, Relation Relation)> Relationships { get; set; } = new();
+    public IList<IProperty> Properties => Classes.SelectMany(c => c.Properties)
+        .Concat(Endpoints.SelectMany(e => e.Params))
+        .Concat(Endpoints.Select(e => e.Returns))
+        .Where(p => p != null)
+        .ToList();
 
     internal IList<Alias> Aliases { get; set; }
 

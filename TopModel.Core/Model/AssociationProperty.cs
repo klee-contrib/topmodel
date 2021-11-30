@@ -1,4 +1,6 @@
-﻿namespace TopModel.Core;
+﻿using TopModel.Core.FileModel;
+
+namespace TopModel.Core;
 
 public class AssociationProperty : IFieldProperty
 {
@@ -31,4 +33,7 @@ public class AssociationProperty : IFieldProperty
     public bool PrimaryKey => false;
 
     public bool AsAlias { get; set; }
+
+#nullable disable
+    internal ClassRelation AssociationRelation { get; set; }
 }

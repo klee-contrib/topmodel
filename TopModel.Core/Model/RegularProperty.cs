@@ -1,4 +1,6 @@
-﻿namespace TopModel.Core;
+﻿using TopModel.Core.FileModel;
+
+namespace TopModel.Core;
 
 public class RegularProperty : IFieldProperty
 {
@@ -23,4 +25,7 @@ public class RegularProperty : IFieldProperty
 #nullable enable
 
     public string? DefaultValue { get; set; }
+
+#nullable disable
+    internal DomainRelation DomainRelation { get; set; }
 }

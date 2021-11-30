@@ -1,12 +1,11 @@
-﻿using TopModel.Core.FileModel;
-using YamlDotNet.Core;
+﻿using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
 internal static class EndpointLoader
 {
-    public static Endpoint LoadEndpoint(Parser parser, List<(object Target, Relation Relation)> relationships)
+    public static Endpoint LoadEndpoint(Parser parser)
     {
         parser.Consume<MappingStart>();
 
@@ -36,7 +35,7 @@ internal static class EndpointLoader
 
                     while (parser.Current is not SequenceEnd)
                     {
-                        foreach (var property in PropertyLoader.LoadProperty(parser, relationships))
+                        foreach (var property in PropertyLoader.LoadProperty(parser))
                         {
                             property.Endpoint = endpoint;
                             endpoint.Params.Add(property);
@@ -46,7 +45,7 @@ internal static class EndpointLoader
                     parser.Consume<SequenceEnd>();
                     break;
                 case "returns":
-                    endpoint.Returns = PropertyLoader.LoadProperty(parser, relationships).First();
+                    endpoint.Returns = PropertyLoader.LoadProperty(parser).First();
                     endpoint.Returns.Endpoint = endpoint;
                     parser.Consume<MappingEnd>();
                     break;
