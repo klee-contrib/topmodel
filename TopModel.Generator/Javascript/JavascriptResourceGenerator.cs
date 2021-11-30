@@ -51,7 +51,7 @@ public class JavascriptResourceGenerator : GeneratorBase
 
         var dirInfo = Directory.CreateDirectory(_config.ResourceOutputDirectory);
         var fileName = module.ToDashCase();
-        var filePath = dirInfo.FullName + "/" + fileName + (_config.ResourceMode == ResourceMode.JS ? ".ts" : ".json");
+        var filePath = dirInfo.FullName + "/" + fileName.Replace('.', '/') + (_config.ResourceMode == ResourceMode.JS ? ".ts" : ".json");
 
         using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
 
