@@ -69,16 +69,28 @@ public class AliasProperty : IFieldProperty
 
     internal string? Suffix { get; set; }
 
+#nullable disable
+    internal Reference Location { get; set; }
+#nullable enable
+
     internal AliasReference? Reference { get; set; }
 
     internal DomainReference? ListDomainReference { get; set; }
 
     internal AliasProperty Clone(IFieldProperty prop)
     {
-        var alp = new AliasProperty { Property = prop, Class = Class, Endpoint = Endpoint, Prefix = Prefix, Suffix = Suffix };
-        alp.Comment = _comment!;
-        alp.Label = _label;
-        alp.ListDomain = _listDomain;
+        var alp = new AliasProperty
+        {
+            Property = prop,
+            Location = Location,
+            Class = Class,
+            Endpoint = Endpoint,
+            Prefix = Prefix,
+            Suffix = Suffix,
+            Comment = _comment!,
+            Label = _label,
+            ListDomain = _listDomain
+        };
 
         if (_required.HasValue)
         {

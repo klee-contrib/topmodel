@@ -25,6 +25,8 @@ public class CompositionProperty : IProperty
 
     public bool PrimaryKey => false;
 
+    internal Reference Location { get; set; }
+
     internal ClassReference Reference { get; set; }
 
 #nullable enable

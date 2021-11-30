@@ -21,4 +21,8 @@ public class Endpoint
     public IProperty? Returns { get; set; }
 
     public IList<IProperty> Params { get; set; } = new List<IProperty>();
+
+#nullable disable
+    internal Reference Location { get; set; }
+#nullable enable
 }

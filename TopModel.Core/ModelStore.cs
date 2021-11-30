@@ -191,11 +191,11 @@ public class ModelStore
             .Concat(modelFile.Classes)
             .ToDictionary(c => c.Name, c => c);
 
-        foreach (var classe in modelFile.Classes.Where(c => c.ExtendsRelation != null))
+        foreach (var classe in modelFile.Classes.Where(c => c.ExtendsReference != null))
         {
-            if (!referencedClasses.TryGetValue(classe.ExtendsRelation!.ReferenceName, out var extends))
+            if (!referencedClasses.TryGetValue(classe.ExtendsReference!.ReferenceName, out var extends))
             {
-                yield return new ModelError(classe, "La classe '{0}' est introuvable dans le fichier ou l'un de ses dépendances.", classe.ExtendsRelation!);
+                yield return new ModelError(classe, "La classe '{0}' est introuvable dans le fichier ou l'un de ses dépendances.", classe.ExtendsReference!);
                 break;
             }
 
@@ -223,9 +223,9 @@ public class ModelStore
                         break;
                     }
 
-                    if (association.PrimaryKey == null)
+                    if (association.Properties.Count(p => p.PrimaryKey) != 1)
                     {
-                        yield return new ModelError(ap, "La classe '{0}' doit avoir une clé primaire pour être référencée dans une association.", ap.Reference);
+                        yield return new ModelError(ap, "La classe '{0}' doit avoir une (et une seule) clé primaire pour être référencée dans une association.", ap.Reference);
                         break;
                     }
 
@@ -378,7 +378,7 @@ public class ModelStore
             {
                 if (classe.Properties.Count(p => p.PrimaryKey) > 1)
                 {
-                    yield return new ModelError(classe, $"La classe {classe.Name} du fichier {modelFile} doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvées)");
+                    yield return new ModelError(classe, $"La classe '{classe.Name}' doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvées).");
                 }
             }
         }

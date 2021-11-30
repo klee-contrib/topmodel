@@ -41,6 +41,22 @@ internal class ModelError
         _ => null
     };
 
+    public string Position =>
+        _reference != null
+            ? _reference.Position
+            : _objet switch
+            {
+                Class c => c.Location.Position,
+                Endpoint e => e.Location.Position,
+                RegularProperty p => p.Location.Position,
+                AssociationProperty p => p.Location.Position,
+                CompositionProperty p => p.Location.Position,
+                AliasProperty p => p.Location.Position,
+                Alias a => a.Location.Position,
+                Domain d => d.Location.Position,
+                _ => string.Empty
+            };
+
     public IProperty? Property => _objet as IProperty;
 
     public override string ToString()
@@ -48,11 +64,7 @@ internal class ModelError
         var sb = new StringBuilder();
 
         sb.Append(File.Path);
-
-        if (_reference != null)
-        {
-            sb.Append(_reference.Position);
-        }
+        sb.Append(Position);
 
         sb.Append(" - ");
         sb.Append(string.Format(_message, _reference?.ReferenceName));

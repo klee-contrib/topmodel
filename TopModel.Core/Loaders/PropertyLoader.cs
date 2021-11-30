@@ -11,8 +11,11 @@ internal static class PropertyLoader
         parser.Consume<MappingStart>();
         switch (parser.Current)
         {
-            case Scalar { Value: "name" }:
-                var rp = new RegularProperty();
+            case Scalar { Value: "name" } s:
+                var rp = new RegularProperty
+                {
+                    Location = new Reference(s)
+                };
 
                 while (parser.Current is not MappingEnd)
                 {
@@ -55,8 +58,11 @@ internal static class PropertyLoader
                 yield return rp;
                 break;
 
-            case Scalar { Value: "association" }:
-                var ap = new AssociationProperty();
+            case Scalar { Value: "association" } s:
+                var ap = new AssociationProperty
+                {
+                    Location = new Reference(s)
+                };
 
                 while (parser.Current is not MappingEnd)
                 {
@@ -103,8 +109,11 @@ internal static class PropertyLoader
                 yield return ap;
                 break;
 
-            case Scalar { Value: "composition" }:
-                var cp = new CompositionProperty();
+            case Scalar { Value: "composition" } s:
+                var cp = new CompositionProperty
+                {
+                    Location = new Reference(s)
+                };
 
                 while (parser.Current is not MappingEnd)
                 {
@@ -138,7 +147,7 @@ internal static class PropertyLoader
                 yield return cp;
                 break;
 
-            case Scalar { Value: "alias" }:
+            case Scalar { Value: "alias" } s:
                 var aliasRelation = new AliasReference();
 
                 parser.Consume<Scalar>();
@@ -185,7 +194,10 @@ internal static class PropertyLoader
 
                 parser.Consume<MappingEnd>();
 
-                var alp = new AliasProperty();
+                var alp = new AliasProperty
+                {
+                    Location = new Reference(s)
+                };
 
                 while (parser.Current is not MappingEnd)
                 {

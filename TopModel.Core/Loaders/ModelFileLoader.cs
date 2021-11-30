@@ -41,20 +41,27 @@ public class ModelFileLoader
 
             if (scalar.Value == "domain")
             {
-                file.Domains.Add(_fileChecker.Deserialize<Domain>(parser));
+                var domain = _fileChecker.Deserialize<Domain>(parser);
+                domain.Location = new Reference(scalar);
+                file.Domains.Add(domain);
             }
             else if (scalar.Value == "class")
             {
-                file.Classes.Add(_classLoader.LoadClass(parser, filePath));
+                var classe = _classLoader.LoadClass(parser, filePath);
+                classe.Location = new Reference(scalar);
+                file.Classes.Add(classe);
             }
             else if (scalar.Value == "endpoint")
             {
-                file.Endpoints.Add(EndpointLoader.LoadEndpoint(parser));
+                var endpoint = EndpointLoader.LoadEndpoint(parser);
+                endpoint.Location = new Reference(scalar);
+                file.Endpoints.Add(endpoint);
             }
             else if (scalar.Value == "alias")
             {
                 var alias = _fileChecker.Deserialize<Alias>(parser);
                 alias.ModelFile = file;
+                alias.Location = new Reference(scalar);
                 file.Aliases.Add(alias);
             }
             else

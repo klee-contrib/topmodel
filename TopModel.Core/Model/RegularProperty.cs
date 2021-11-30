@@ -27,5 +27,7 @@ public class RegularProperty : IFieldProperty
     public string? DefaultValue { get; set; }
 
 #nullable disable
+    internal Reference Location { get; set; }
+
     internal DomainReference DomainReference { get; set; }
 }

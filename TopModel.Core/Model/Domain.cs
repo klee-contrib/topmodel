@@ -1,4 +1,5 @@
-﻿using TopModel.Core.Types;
+﻿using TopModel.Core.FileModel;
+using TopModel.Core.Types;
 using YamlDotNet.Serialization;
 
 namespace TopModel.Core;
@@ -33,4 +34,7 @@ public class Domain
         (SqlType ?? string.Empty).Contains("varchar")
         || SqlType == "text"
         || CSharp?.Type == "string";
+
+#nullable disable
+    internal Reference Location { get; set; }
 }

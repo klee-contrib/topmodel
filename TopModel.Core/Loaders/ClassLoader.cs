@@ -36,7 +36,7 @@ public class ClassLoader
                     classe.SqlName = value.Value;
                     break;
                 case "extends":
-                    classe.ExtendsRelation = new ClassReference(value);
+                    classe.ExtendsReference = new ClassReference(value);
                     break;
                 case "label":
                     classe.Label = value.Value;
