@@ -1,20 +1,28 @@
-﻿using YamlDotNet.Core;
+﻿#nullable disable
+
+using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.FileModel;
 
 internal class Reference
 {
+    public Reference()
+    {
+    }
+
     public Reference(Scalar scalar)
     {
         Start = scalar.Start;
         End = scalar.End;
-        Value = scalar.Value;
+        ReferenceName = scalar.Value;
     }
 
-    public Mark Start { get; }
+    public Mark Start { get; set; }
 
-    public Mark End { get; }
+    public Mark End { get; set; }
 
-    public string Value { get; }
+    public string ReferenceName { get; set; }
+
+    public string Position => $"[{Start.Line},{Start.Column}]";
 }

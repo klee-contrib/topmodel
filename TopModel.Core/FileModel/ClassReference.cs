@@ -2,13 +2,13 @@
 
 namespace TopModel.Core.FileModel;
 
-internal class ClassRelation : Relation
+internal class ClassReference : Reference
 {
-    public ClassRelation()
+    public ClassReference()
     {
     }
 
-    public ClassRelation(Scalar scalar)
+    public ClassReference(Scalar scalar)
         : base(scalar)
     {
     }

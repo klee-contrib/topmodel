@@ -143,7 +143,7 @@ public class ModelStore
         {
             try
             {
-                var relationshipErrors = new List<string>();
+                var referenceErrors = new List<ModelError>();
 
                 var affectedFiles = _pendingUpdates.Select(pu => _modelFiles[pu]).Any(mf => mf.Domains.Any())
                     ? _modelFiles.Values
@@ -153,14 +153,14 @@ public class ModelStore
 
                 foreach (var affectedFile in sortedFiles)
                 {
-                    relationshipErrors.AddRange(ResolveRelationshipsAndAliases(affectedFile));
+                    referenceErrors.AddRange(ResolveReferences(affectedFile));
                 }
 
-                if (relationshipErrors.Any())
+                if (referenceErrors.Any())
                 {
-                    foreach (var error in relationshipErrors)
+                    foreach (var error in referenceErrors)
                     {
-                        _logger.LogError(error);
+                        _logger.LogError(error.ToString());
                     }
 
                     throw new ModelException("Erreur lors de la lecture du modèle.");
@@ -182,7 +182,7 @@ public class ModelStore
         }
     }
 
-    private IEnumerable<string> ResolveRelationshipsAndAliases(ModelFile modelFile)
+    private IEnumerable<ModelError> ResolveReferences(ModelFile modelFile)
     {
         var dependencies = GetDependencies(modelFile).ToList();
 
@@ -195,7 +195,7 @@ public class ModelStore
         {
             if (!referencedClasses.TryGetValue(classe.ExtendsRelation!.ReferenceName, out var extends))
             {
-                yield return $"{modelFile.Path}{classe.ExtendsRelation.Position} - La classe '{classe.ExtendsRelation.ReferenceName}' est introuvable dans le fichier ou l'un de ses dépendances. ({modelFile}/{classe})";
+                yield return new ModelError(classe, "La classe '{0}' est introuvable dans le fichier ou l'un de ses dépendances.", classe.ExtendsRelation!);
                 break;
             }
 
@@ -207,9 +207,9 @@ public class ModelStore
             switch (prop)
             {
                 case RegularProperty rp:
-                    if (!Domains.TryGetValue(rp.DomainRelation.ReferenceName, out var domain))
+                    if (!Domains.TryGetValue(rp.DomainReference.ReferenceName, out var domain))
                     {
-                        yield return $"{modelFile.Path}{rp.DomainRelation.Position} - Le domaine '{rp.DomainRelation.ReferenceName}' est introuvable. ({modelFile}/{rp.Class?.Name ?? rp.Endpoint?.Name}/{rp.Name})";
+                        yield return new ModelError(rp, "Le domaine '{0}' est introuvable.", rp.DomainReference);
                         break;
                     }
 
@@ -217,15 +217,15 @@ public class ModelStore
                     break;
 
                 case AssociationProperty ap:
-                    if (!referencedClasses.TryGetValue(ap.AssociationRelation.ReferenceName, out var association))
+                    if (!referencedClasses.TryGetValue(ap.Reference.ReferenceName, out var association))
                     {
-                        yield return $"{modelFile.Path}{ap.AssociationRelation.Position} - La classe '{ap.AssociationRelation.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{ap.Class?.Name ?? ap.Endpoint?.Name}/{{association}})";
+                        yield return new ModelError(ap, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", ap.Reference);
                         break;
                     }
 
                     if (association.PrimaryKey == null)
                     {
-                        yield return $"{modelFile.Path}{ap.AssociationRelation.Position} - La classe '{ap.AssociationRelation.ReferenceName}' doit avoir une clé primaire pour être référencée dans une association. ({modelFile}/{ap.Class?.Name ?? ap.Endpoint?.Name}/{{association}})";
+                        yield return new ModelError(ap, "La classe '{0}' doit avoir une clé primaire pour être référencée dans une association.", ap.Reference);
                         break;
                     }
 
@@ -233,19 +233,19 @@ public class ModelStore
                     break;
 
                 case CompositionProperty cp:
-                    if (!referencedClasses.TryGetValue(cp.CompositionRelation.ReferenceName, out var composition))
+                    if (!referencedClasses.TryGetValue(cp.Reference.ReferenceName, out var composition))
                     {
-                        yield return $"{modelFile.Path}{cp.CompositionRelation.Position} - La classe '{cp.CompositionRelation.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{cp.Class?.Name ?? cp.Endpoint?.Name}/{{composition}})";
+                        yield return new ModelError(cp, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", cp.Reference);
                         break;
                     }
 
                     cp.Composition = composition;
 
-                    if (cp.KindRelation != null)
+                    if (cp.DomainKindReference != null)
                     {
-                        if (!Domains.TryGetValue(cp.KindRelation.ReferenceName, out var domainKind))
+                        if (!Domains.TryGetValue(cp.DomainKindReference.ReferenceName, out var domainKind))
                         {
-                            yield return $"{modelFile.Path}{cp.KindRelation.Position} - Le domaine '{cp.KindRelation.ReferenceName}' est introuvable. ({modelFile}/{cp.Class?.Name ?? cp.Endpoint?.Name}/{cp.Name})";
+                            yield return new ModelError(cp, "Le domaine '{0}' est introuvable.", cp.DomainKindReference);
                             break;
                         }
 
@@ -254,10 +254,10 @@ public class ModelStore
 
                     break;
 
-                case AliasProperty alp when alp.ListDomainRelation != null:
-                    if (!Domains.TryGetValue(alp.ListDomainRelation.ReferenceName, out var listDomain))
+                case AliasProperty alp when alp.ListDomainReference != null:
+                    if (!Domains.TryGetValue(alp.ListDomainReference.ReferenceName, out var listDomain))
                     {
-                        yield return $"{modelFile.Path}{alp.ListDomainRelation.Position} - Le domaine '{alp.ListDomainRelation.ReferenceName}' est introuvable. ({modelFile}/{alp.Class?.Name ?? alp.Endpoint?.Name}/{alp.Name})";
+                        yield return new ModelError(alp, "Le domaine '{0}' est introuvable.", alp.ListDomainReference);
                         break;
                     }
 
@@ -266,21 +266,21 @@ public class ModelStore
             }
         }
 
-        foreach (var alp in modelFile.Properties.OfType<AliasProperty>().Where(alp => alp.AliasRelation != null))
+        foreach (var alp in modelFile.Properties.OfType<AliasProperty>().Where(alp => alp.Reference != null))
         {
-            if (!referencedClasses.TryGetValue(alp.AliasRelation!.ReferenceName, out var aliasedClass))
+            if (!referencedClasses.TryGetValue(alp.Reference!.ReferenceName, out var aliasedClass))
             {
-                yield return $"{modelFile.Path}{alp.AliasRelation.Position} - La classe '{alp.AliasRelation.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances. ({modelFile}/{alp.Class?.Name ?? alp.Endpoint?.Name}/{{alias}})";
+                yield return new ModelError(alp, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", alp.Reference);
                 break;
             }
 
             var shouldBreak = false;
-            foreach (var property in alp.AliasRelation.IncludeReferences.Concat(alp.AliasRelation.ExcludeReferences))
+            foreach (var propReference in alp.Reference.IncludeReferences.Concat(alp.Reference.ExcludeReferences))
             {
-                var aliasedProperty = aliasedClass.Properties.SingleOrDefault(p => p.Name == property.Value);
+                var aliasedProperty = aliasedClass.Properties.SingleOrDefault(p => p.Name == propReference.ReferenceName);
                 if (aliasedProperty == null)
                 {
-                    yield return $"{modelFile.Path}[{property.Start.Line},{property.Start.Column}] - La propriété '{property.Value}' est introuvable sur la classe '{aliasedClass}'. ({modelFile}/{alp.Class?.Name ?? alp.Endpoint?.Name}/{{alias}})";
+                    yield return new ModelError(alp, $"La propriété '{{0}}' est introuvable sur la classe '{aliasedClass}'.", propReference);
                     shouldBreak = true;
                 }
             }
@@ -291,9 +291,9 @@ public class ModelStore
             }
 
             var propertiesToAlias =
-                (alp.AliasRelation.IncludeReferences.Any()
-                    ? alp.AliasRelation.IncludeReferences.Select(p => aliasedClass.Properties.Single(prop => prop.Name == p.Value))
-                    : aliasedClass.Properties.Where(prop => !alp.AliasRelation.ExcludeReferences.Select(p => p.Value).Contains(prop.Name)))
+                (alp.Reference.IncludeReferences.Any()
+                    ? alp.Reference.IncludeReferences.Select(p => aliasedClass.Properties.Single(prop => prop.Name == p.ReferenceName))
+                    : aliasedClass.Properties.Where(prop => !alp.Reference.ExcludeReferences.Select(p => p.ReferenceName).Contains(prop.Name)))
                 .Reverse()
                 .OfType<IFieldProperty>();
 
@@ -337,7 +337,7 @@ public class ModelStore
             var referencedFile = dependencies.SingleOrDefault(dep => dep.Name == alias.File);
             if (referencedFile == null)
             {
-                yield return $"{modelFile.Path} - Le fichier '{alias.File}' est introuvable dans les dépendances du fichier. ({modelFile}/{{alias}})";
+                yield return new ModelError(alias, $"Le fichier '{alias.File}' est introuvable dans les dépendances du fichier.");
                 break;
             }
 
@@ -346,7 +346,7 @@ public class ModelStore
                 var referencedClass = referencedFile.Classes.SingleOrDefault(classe => classe.Name == className);
                 if (referencedClass == null)
                 {
-                    yield return $"{modelFile.Path} - La classe '{className}' est introuvable dans le fichier '{alias.File}'. ({modelFile}/{{alias}})";
+                    yield return new ModelError(alias, $"La classe '{className}' est introuvable dans le fichier '{alias.File}'.");
                     break;
                 }
 
@@ -361,7 +361,7 @@ public class ModelStore
                 var referencedEndpoint = referencedFile.Endpoints.SingleOrDefault(endpoint => endpoint.Name == endpointName);
                 if (referencedEndpoint == null)
                 {
-                    yield return $"{modelFile.Path} - L'endpoint '{endpointName}' est introuvable dans le fichier '{alias.File}'. ({modelFile}/{{alias}})";
+                    yield return new ModelError(alias, $"L'endpoint '{endpointName}' est introuvable dans le fichier '{alias.File}'.");
                     break;
                 }
 
@@ -378,7 +378,7 @@ public class ModelStore
             {
                 if (classe.Properties.Count(p => p.PrimaryKey) > 1)
                 {
-                    throw new ModelException(classe.ModelFile, $"La classe {classe.Name} du fichier {modelFile} doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvées)");
+                    yield return new ModelError(classe, $"La classe {classe.Name} du fichier {modelFile} doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvées)");
                 }
             }
         }

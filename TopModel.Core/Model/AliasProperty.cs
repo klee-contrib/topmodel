@@ -69,11 +69,9 @@ public class AliasProperty : IFieldProperty
 
     internal string? Suffix { get; set; }
 
-#nullable disable
-    internal AliasRelation? AliasRelation { get; set; }
+    internal AliasReference? Reference { get; set; }
 
-#nullable enable
-    internal DomainRelation? ListDomainRelation { get; set; }
+    internal DomainReference? ListDomainReference { get; set; }
 
     internal AliasProperty Clone(IFieldProperty prop)
     {

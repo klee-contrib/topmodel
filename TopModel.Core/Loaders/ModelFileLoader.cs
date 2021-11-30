@@ -53,7 +53,9 @@ public class ModelFileLoader
             }
             else if (scalar.Value == "alias")
             {
-                file.Aliases.Add(_fileChecker.Deserialize<Alias>(parser));
+                var alias = _fileChecker.Deserialize<Alias>(parser);
+                alias.ModelFile = file;
+                file.Aliases.Add(alias);
             }
             else
             {

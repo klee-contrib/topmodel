@@ -34,7 +34,7 @@ internal static class PropertyLoader
                             rp.Required = value.Value == "true";
                             break;
                         case "domain":
-                            rp.DomainRelation = new DomainRelation(value);
+                            rp.DomainReference = new DomainReference(value);
                             break;
                         case "defaultValue":
                             rp.DefaultValue = value.Value;
@@ -66,7 +66,7 @@ internal static class PropertyLoader
                     switch (prop)
                     {
                         case "association":
-                            ap.AssociationRelation = new ClassRelation(value);
+                            ap.Reference = new ClassReference(value);
                             break;
                         case "asAlias":
                             ap.AsAlias = value.Value == "true";
@@ -114,7 +114,7 @@ internal static class PropertyLoader
                     switch (prop)
                     {
                         case "composition":
-                            cp.CompositionRelation = new ClassRelation(value);
+                            cp.Reference = new ClassReference(value);
                             break;
                         case "name":
                             cp.Name = value.Value;
@@ -123,7 +123,7 @@ internal static class PropertyLoader
                             cp.Kind = value.Value;
                             if (cp.Kind != "object" && cp.Kind != "list" && cp.Kind != "async-list")
                             {
-                                cp.KindRelation = new DomainRelation(value);
+                                cp.DomainKindReference = new DomainReference(value);
                             }
 
                             break;
@@ -139,7 +139,7 @@ internal static class PropertyLoader
                 break;
 
             case Scalar { Value: "alias" }:
-                var aliasRelation = new AliasRelation();
+                var aliasRelation = new AliasReference();
 
                 parser.Consume<Scalar>();
                 parser.Consume<MappingStart>();
@@ -152,7 +152,9 @@ internal static class PropertyLoader
                     switch (prop)
                     {
                         case "class":
-                            aliasRelation.Reference = new Reference((Scalar)next);
+                            aliasRelation.Start = ((Scalar)next).Start;
+                            aliasRelation.End = ((Scalar)next).End;
+                            aliasRelation.ReferenceName = ((Scalar)next).Value;
                             break;
                         case "include" or "property" when next is Scalar pValue:
                             aliasRelation.AddInclude(pValue);
@@ -208,14 +210,14 @@ internal static class PropertyLoader
                             alp.Comment = value.Value;
                             break;
                         case "asListWithDomain":
-                            alp.ListDomainRelation = new DomainRelation(value);
+                            alp.ListDomainReference = new DomainReference(value);
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                     }
                 }
 
-                alp.AliasRelation = aliasRelation;
+                alp.Reference = aliasRelation;
                 yield return alp;
                 break;
 

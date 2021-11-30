@@ -2,9 +2,9 @@
 
 namespace TopModel.Core.FileModel;
 
-internal class DomainRelation : Relation
+internal class DomainReference : Reference
 {
-    public DomainRelation(Scalar scalar)
+    public DomainReference(Scalar scalar)
         : base(scalar)
     {
     }

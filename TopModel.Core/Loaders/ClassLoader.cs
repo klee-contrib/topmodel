@@ -36,7 +36,7 @@ public class ClassLoader
                     classe.SqlName = value.Value;
                     break;
                 case "extends":
-                    classe.ExtendsRelation = new ClassRelation(value);
+                    classe.ExtendsRelation = new ClassReference(value);
                     break;
                 case "label":
                     classe.Label = value.Value;
@@ -92,7 +92,7 @@ public class ClassLoader
                         return regularProperty;
                     }
 
-                    var associationProperty = classe.Properties.OfType<AssociationProperty>().SingleOrDefault(ap => $"{ap.AssociationRelation.ReferenceName}{ap.Role ?? string.Empty}" == propName);
+                    var associationProperty = classe.Properties.OfType<AssociationProperty>().SingleOrDefault(ap => $"{ap.Reference.ReferenceName}{ap.Role ?? string.Empty}" == propName);
 
                     return associationProperty != null
                         ? (IFieldProperty)associationProperty
@@ -112,12 +112,12 @@ public class ClassLoader
                         var propName = prop switch
                         {
                             RegularProperty rp => rp.Name,
-                            AssociationProperty ap => $"{ap.AssociationRelation.ReferenceName}{ap.Role ?? string.Empty}",
+                            AssociationProperty ap => $"{ap.Reference.ReferenceName}{ap.Role ?? string.Empty}",
                             _ => throw new ModelException($"{filePath}{pos}: Type de propriété non géré pour initialisation.")
                         };
                         reference.Value.TryGetValue(propName, out var propValue);
 
-                        return propValue == null && prop.Required && (!prop.PrimaryKey || (prop as RegularProperty)?.DomainRelation.ReferenceName != "DO_ID")
+                        return propValue == null && prop.Required && (!prop.PrimaryKey || (prop as RegularProperty)?.DomainReference.ReferenceName != "DO_ID")
                             ? throw new ModelException($"{filePath}{pos}: L'initilisation {reference.Key} de la classe {classe.Name} n'initialise pas la propriété obligatoire '{propName}'.")
                             : (prop, propValue!);
                     })
