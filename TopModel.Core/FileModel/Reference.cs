@@ -5,13 +5,13 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.FileModel;
 
-internal class Reference
+public class Reference
 {
-    public Reference()
+    internal Reference()
     {
     }
 
-    public Reference(Scalar scalar)
+    internal Reference(Scalar scalar)
     {
         Start = scalar.Start;
         End = scalar.End;

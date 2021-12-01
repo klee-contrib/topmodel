@@ -3,13 +3,13 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.Core;
 
-internal class ModelError
+public class ModelError
 {
     private readonly string _message;
     private readonly object _objet;
     private readonly Reference? _reference;
 
-    public ModelError(object objet, string message, Reference? reference = null)
+    internal ModelError(object objet, string message, Reference? reference = null)
     {
         _message = message;
         _objet = objet;
@@ -42,33 +42,33 @@ internal class ModelError
         _ => null
     };
 
-    public string Position =>
-        _reference != null
-            ? _reference.Position
-            : _objet switch
-            {
-                Class c => c.Location.Position,
-                Endpoint e => e.Location.Position,
-                RegularProperty p => p.Location.Position,
-                AssociationProperty p => p.Location.Position,
-                CompositionProperty p => p.Location.Position,
-                AliasProperty p => p.Location.Position,
-                Alias a => a.Location.Position,
-                Domain d => d.Location.Position,
-                _ => string.Empty
-            };
+    public Reference? Location =>
+        _reference ?? _objet switch
+        {
+            Class c => c.Location,
+            Endpoint e => e.Location,
+            RegularProperty p => p.Location,
+            AssociationProperty p => p.Location,
+            CompositionProperty p => p.Location,
+            AliasProperty p => p.Location,
+            Alias a => a.Location,
+            Domain d => d.Location,
+            _ => null
+        };
 
     public IProperty? Property => _objet as IProperty;
+
+    public string Message => string.Format(_message, _reference?.ReferenceName);
 
     public override string ToString()
     {
         var sb = new StringBuilder();
 
         sb.Append(File.Path);
-        sb.Append(Position);
+        sb.Append(Location?.Position ?? string.Empty);
 
         sb.Append(" - ");
-        sb.Append(string.Format(_message, _reference?.ReferenceName));
+        sb.Append(Message);
         sb.Append(" (");
         sb.Append(File);
 

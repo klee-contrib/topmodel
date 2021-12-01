@@ -19,13 +19,15 @@ public class ModelFile
 
     public IList<Endpoint> Endpoints { get; set; }
 
-    public IList<IProperty> Properties => Classes.SelectMany(c => c.Properties)
-        .Concat(Endpoints.SelectMany(e => e.Params))
-        .Concat(Endpoints.Select(e => e.Returns))
+    public IList<IProperty> Properties => Classes.Where(c => !ResolvedAliases.Contains(c)).SelectMany(c => c.Properties)
+        .Concat(Endpoints.Where(e => !ResolvedAliases.Contains(e)).SelectMany(e => e.Params))
+        .Concat(Endpoints.Where(e => !ResolvedAliases.Contains(e)).Select(e => e.Returns))
         .Where(p => p != null)
         .ToList();
 
     internal IList<Alias> Aliases { get; set; }
+
+    internal List<object> ResolvedAliases { get; set; } = new();
 
     public override string ToString()
     {

@@ -42,13 +42,13 @@ public class FileChecker
     {
         if (_configSchema != null)
         {
-            CheckCore(fileName, _configSchema);
+            CheckCore(_configSchema, fileName);
         }
     }
 
-    public void CheckModelFile(string fileName)
+    public void CheckModelFile(string fileName, string? content = null)
     {
-        CheckCore(fileName, _modelSchema);
+        CheckCore(_modelSchema, fileName, content);
     }
 
     public T Deserialize<T>(string yaml)
@@ -61,9 +61,11 @@ public class FileChecker
         return _deserializer.Deserialize<T>(parser);
     }
 
-    private void CheckCore(string fileName, JsonSchema schema)
+    private void CheckCore(JsonSchema schema, string fileName, string? content = null)
     {
-        var parser = new Parser(new StringReader(File.ReadAllText(fileName)));
+        content ??= File.ReadAllText(fileName);
+
+        var parser = new Parser(new StringReader(content));
         parser.Consume<StreamStart>();
 
         var firstObject = true;

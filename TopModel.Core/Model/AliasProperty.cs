@@ -75,14 +75,17 @@ public class AliasProperty : IFieldProperty
 
     internal AliasReference? Reference { get; set; }
 
+    internal Reference? IncludeReference { get; set; }
+
     internal DomainReference? ListDomainReference { get; set; }
 
-    internal AliasProperty Clone(IFieldProperty prop)
+    internal AliasProperty Clone(IFieldProperty prop, Reference? includeReference)
     {
         var alp = new AliasProperty
         {
             Property = prop,
             Location = Location,
+            IncludeReference = includeReference,
             Class = Class,
             Endpoint = Endpoint,
             Prefix = Prefix,

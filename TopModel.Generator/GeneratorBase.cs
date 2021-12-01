@@ -19,6 +19,10 @@ public abstract class GeneratorBase : IModelWatcher
 
     public int Number { get; set; }
 
+    public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
+    {
+    }
+
     public void OnFilesChanged(IEnumerable<ModelFile> files)
     {
         using var scope = _logger.BeginScope(((IModelWatcher)this).FullName);

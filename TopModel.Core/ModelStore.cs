@@ -51,6 +51,7 @@ public class ModelStore
             fsWatcher = new FileSystemWatcher(_config.ModelRoot, "*.yml");
             fsWatcher.Changed += OnFSChangedEvent;
             fsWatcher.Created += OnFSChangedEvent;
+            fsWatcher.Deleted += OnFSChangedEvent;
             fsWatcher.IncludeSubdirectories = true;
             fsWatcher.EnableRaisingEvents = true;
         }
@@ -73,6 +74,95 @@ public class ModelStore
         TryApplyUpdates();
 
         return fsWatcher;
+    }
+
+    public void OnModelFileChange(string filePath, string? content = null)
+    {
+        _logger.LogInformation(string.Empty);
+        _logger.LogInformation($"Modifié: {filePath.ToRelative()}");
+
+        lock (_puLock)
+        {
+            LoadFile(filePath, content);
+        }
+
+        TryApplyUpdates();
+    }
+
+    public void TryApplyUpdates()
+    {
+        if (!_pendingUpdates.Any())
+        {
+            return;
+        }
+
+        lock (_puLock)
+        {
+            try
+            {
+                var referenceErrors = new List<ModelError>();
+
+                var affectedFiles = _pendingUpdates.Select(pu => _modelFiles.TryGetValue(pu, out var mf) ? mf : null).Any(mf => mf?.Domains.Any() ?? false)
+                    ? _modelFiles.Values
+                    : GetAffectedFiles(_pendingUpdates).Distinct();
+
+                var sortedFiles = ModelUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name == d.Name)));
+
+                foreach (var affectedFile in sortedFiles)
+                {
+                    referenceErrors.AddRange(ResolveReferences(affectedFile));
+                }
+
+                foreach (var modelWatcher in _modelWatchers)
+                {
+                    modelWatcher.OnErrors(sortedFiles
+                        .Select(file => (file, errors: referenceErrors.Where(error => error.File == file)))
+                        .ToDictionary(i => i.file, i => i.errors));
+                }
+
+                if (referenceErrors.Any())
+                {
+                    foreach (var error in referenceErrors)
+                    {
+                        _logger.LogError(error.ToString());
+                    }
+
+                    throw new ModelException("Erreur lors de la lecture du modèle.");
+                }
+
+                foreach (var modelWatcher in _modelWatchers)
+                {
+                    modelWatcher.OnFilesChanged(sortedFiles);
+                }
+
+                _logger.LogInformation($"Mise à jour terminée avec succès.");
+
+                _pendingUpdates.Clear();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+            }
+        }
+    }
+
+    private IEnumerable<ModelFile> GetAffectedFiles(IEnumerable<string> fileNames, HashSet<string>? foundFiles = null)
+    {
+        foundFiles ??= new();
+
+        foreach (var file in _modelFiles.Values.Where(f => fileNames.Contains(f.Name) || f.Uses.Any(d => fileNames.Contains(d))))
+        {
+            if (!foundFiles.Contains(file.Name))
+            {
+                foundFiles.Add(file.Name);
+                yield return file;
+
+                foreach (var use in GetAffectedFiles(new[] { file.Name }, foundFiles))
+                {
+                    yield return use;
+                }
+            }
+        }
     }
 
     private IEnumerable<ModelFile> GetDependencies(ModelFile modelFile)
@@ -105,26 +195,24 @@ public class ModelStore
             }));
     }
 
-    private void OnModelFileChange(string filePath)
-    {
-        _logger.LogInformation(string.Empty);
-        _logger.LogInformation($"Modifié: {filePath.ToRelative()}");
-
-        lock (_puLock)
-        {
-            LoadFile(filePath);
-        }
-
-        TryApplyUpdates();
-    }
-
-    private void LoadFile(string filePath)
+    private void LoadFile(string filePath, string? content = null)
     {
         try
         {
-            var file = _modelFileLoader.LoadModelFile(filePath);
-            _modelFiles[file.Name] = file;
-            _pendingUpdates.Add(file.Name);
+            if (File.Exists(filePath))
+            {
+                var file = _modelFileLoader.LoadModelFile(filePath, content);
+                _modelFiles[file.Name] = file;
+                _pendingUpdates.Add(file.Name);
+            }
+            else
+            {
+                var fileName = _config.GetFileName(filePath);
+                var file = _modelFiles[fileName];
+
+                _modelFiles.Remove(fileName);
+                _pendingUpdates.Add(fileName);
+            }
         }
         catch (Exception e)
         {
@@ -132,66 +220,17 @@ public class ModelStore
         }
     }
 
-    private void TryApplyUpdates()
-    {
-        if (!_pendingUpdates.Any())
-        {
-            return;
-        }
-
-        lock (_puLock)
-        {
-            try
-            {
-                var referenceErrors = new List<ModelError>();
-
-                var affectedFiles = _pendingUpdates.Select(pu => _modelFiles[pu]).Any(mf => mf.Domains.Any())
-                    ? _modelFiles.Values
-                    : _modelFiles.Values.Where(f => _pendingUpdates.Contains(f.Name)).SelectMany(pf => _modelFiles.Values.Where(f => f.Name.Equals(pf.Name) || f.Uses.Any(d => d.Equals(pf.Name)))).Distinct();
-
-                var sortedFiles = ModelUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name.Equals(d.Name))));
-
-                foreach (var affectedFile in sortedFiles)
-                {
-                    referenceErrors.AddRange(ResolveReferences(affectedFile));
-                }
-
-                if (referenceErrors.Any())
-                {
-                    foreach (var error in referenceErrors)
-                    {
-                        _logger.LogError(error.ToString());
-                    }
-
-                    throw new ModelException("Erreur lors de la lecture du modèle.");
-                }
-
-                foreach (var modelWatcher in _modelWatchers)
-                {
-                    modelWatcher.OnFilesChanged(sortedFiles);
-                }
-
-                _logger.LogInformation($"Mise à jour terminée avec succès.");
-
-                _pendingUpdates.Clear();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, e.Message);
-            }
-        }
-    }
-
     private IEnumerable<ModelError> ResolveReferences(ModelFile modelFile)
     {
         var dependencies = GetDependencies(modelFile).ToList();
 
+        var fileClasses = modelFile.Classes.Where(c => !modelFile.ResolvedAliases.Contains(c));
         var referencedClasses = dependencies
             .SelectMany(m => m.Classes)
-            .Concat(modelFile.Classes)
+            .Concat(fileClasses)
             .ToDictionary(c => c.Name, c => c);
 
-        foreach (var classe in modelFile.Classes.Where(c => c.ExtendsReference != null))
+        foreach (var classe in fileClasses.Where(c => c.ExtendsReference != null))
         {
             if (!referencedClasses.TryGetValue(classe.ExtendsReference!.ReferenceName, out var extends))
             {
@@ -266,6 +305,25 @@ public class ModelStore
             }
         }
 
+        foreach (var alp in modelFile.Properties.OfType<AliasProperty>().Where(alp => alp.Reference == null))
+        {
+            if (!referencedClasses.TryGetValue(alp.Property.Class.Name, out var aliasedClass))
+            {
+                yield return new ModelError(alp, $"La classe '{alp.Property.Class.Name}' est introuvable dans le fichier ou l'une de ses dépendances.");
+                break;
+            }
+
+            var propName = alp.IncludeReference?.ReferenceName ?? alp.Property.Name;
+            var aliasedProperty = aliasedClass.Properties.OfType<IFieldProperty>().SingleOrDefault(p => p.Name == propName);
+            if (aliasedProperty == null)
+            {
+                yield return new ModelError(alp, $"La propriété '{propName}' est introuvable sur la classe '{aliasedClass}'.", alp.IncludeReference);
+                break;
+            }
+
+            alp.Property = aliasedProperty;
+        }
+
         foreach (var alp in modelFile.Properties.OfType<AliasProperty>().Where(alp => alp.Reference != null))
         {
             if (!referencedClasses.TryGetValue(alp.Reference!.ReferenceName, out var aliasedClass))
@@ -299,7 +357,7 @@ public class ModelStore
 
             foreach (var property in propertiesToAlias)
             {
-                var prop = alp.Clone(property);
+                var prop = alp.Clone(property, alp.Reference.IncludeReferences.FirstOrDefault(ir => ir.ReferenceName == property.Name));
                 if (alp.Class != null)
                 {
                     var index = alp.Class.Properties.IndexOf(alp);
@@ -350,10 +408,18 @@ public class ModelStore
                     break;
                 }
 
-                if (!modelFile.Classes.Any(classe => classe.Name == referencedClass.Name))
+                var existingClasse = modelFile.Classes.SingleOrDefault(classe => classe.Name == referencedClass.Name);
+                if (existingClasse == null)
                 {
                     modelFile.Classes.Add(referencedClass);
                 }
+                else
+                {
+                    modelFile.Classes.Insert(modelFile.Classes.IndexOf(existingClasse), referencedClass);
+                    modelFile.Classes.Remove(existingClasse);
+                }
+
+                modelFile.ResolvedAliases.Add(referencedClass);
             }
 
             foreach (var endpointName in alias.Endpoints)
@@ -365,10 +431,18 @@ public class ModelStore
                     break;
                 }
 
-                if (!modelFile.Endpoints.Any(endpoint => endpoint.Name == referencedEndpoint.Name))
+                var existingEndpoint = modelFile.Endpoints.SingleOrDefault(endpoint => endpoint.Name == referencedEndpoint.Name);
+                if (existingEndpoint == null)
                 {
                     modelFile.Endpoints.Add(referencedEndpoint);
                 }
+                else
+                {
+                    modelFile.Endpoints.Insert(modelFile.Endpoints.IndexOf(existingEndpoint), referencedEndpoint);
+                    modelFile.Endpoints.Remove(existingEndpoint);
+                }
+
+                modelFile.ResolvedAliases.Add(referencedEndpoint);
             }
         }
 

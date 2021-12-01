@@ -10,5 +10,7 @@ public interface IModelWatcher
 
     string FullName => $"{Name}@{Number}";
 
+    void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors);
+
     void OnFilesChanged(IEnumerable<ModelFile> files);
 }

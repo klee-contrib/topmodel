@@ -85,4 +85,8 @@ public class ModelFileProvider : IModelWatcher
             return (Svg: svg[g.Index..^6], Width: double.Parse(size[2], CultureInfo.InvariantCulture), Height: double.Parse(size[3], CultureInfo.InvariantCulture));
         });
     }
+
+    public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
+    {
+    }
 }

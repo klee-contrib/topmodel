@@ -17,18 +17,18 @@ public class ModelFileLoader
         _fileChecker = fileChecker;
     }
 
-    public ModelFile LoadModelFile(string filePath)
+    public ModelFile LoadModelFile(string filePath, string? content = null)
     {
-        _fileChecker.CheckModelFile(filePath);
+        content ??= File.ReadAllText(filePath);
 
-        var parser = new Parser(new StringReader(File.ReadAllText(filePath)));
+        _fileChecker.CheckModelFile(filePath, content);
+
+        var parser = new Parser(new StringReader(content));
         parser.Consume<StreamStart>();
 
         var file = _fileChecker.Deserialize<ModelFile>(parser);
         file.Path = filePath.ToRelative();
-        file.Name = Path.GetRelativePath(Path.Combine(Directory.GetCurrentDirectory(), _config.ModelRoot), filePath)
-            .Replace(".yml", string.Empty)
-            .Replace("\\", "/");
+        file.Name = _config.GetFileName(filePath);
         file.Classes = new List<Class>();
         file.Domains = new List<Domain>();
         file.Endpoints = new List<Endpoint>();

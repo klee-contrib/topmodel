@@ -8,4 +8,11 @@ public class ModelConfig
     public string ModelRoot { get; set; }
 
     public bool AllowCompositePrimaryKey { get; set; }
+
+    public string GetFileName(string filePath)
+    {
+        return Path.GetRelativePath(Path.Combine(Directory.GetCurrentDirectory(), ModelRoot), filePath)
+            .Replace(".yml", string.Empty)
+            .Replace("\\", "/");
+    }
 }
