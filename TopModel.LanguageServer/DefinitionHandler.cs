@@ -4,18 +4,18 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 
-class HoverHandler : HoverHandlerBase
+class DefinitionHandler : DefinitionHandlerBase
 {
     private readonly ModelStore _modelStore;
     private readonly ILanguageServerFacade _facade;
 
-    public HoverHandler(ModelStore modelStore, ILanguageServerFacade facade)
+    public DefinitionHandler(ModelStore modelStore, ILanguageServerFacade facade)
     {
         _modelStore = modelStore;
         _facade = facade;
     }
 
-    public override Task<Hover?> Handle(HoverParams request, CancellationToken cancellationToken)
+    public override Task<LocationOrLocationLinks> Handle(DefinitionParams request, CancellationToken cancellationToken)
     {
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
@@ -27,30 +27,27 @@ class HoverHandler : HoverHandlerBase
             if (matchedReference != null)
             {
                 var objet = file.References[matchedReference];
-                return Task.FromResult<Hover?>(new Hover
+                var selectionRange = objet.GetLocation().ToRange()!;
+                return Task.FromResult<LocationOrLocationLinks>(new(new LocationLink
                 {
-                    Range = matchedReference.ToRange(),
-                    Contents = new(new MarkedString(objet switch
+                    OriginSelectionRange = matchedReference.ToRange(),
+                    TargetRange = objet switch
                     {
-                        Class c => c.Comment,
-                        Endpoint e => e.Description,
-                        RegularProperty p => p.Comment,
-                        AssociationProperty p => p.Comment,
-                        CompositionProperty p => p.Comment,
-                        AliasProperty p => p.Comment,
-                        Domain d => d.Label,
-                        _ => string.Empty
-                    }))
-                });
+                        Class or Endpoint or Domain => selectionRange with { End = new() { Line = selectionRange.Start.Line + 2, Character = 200 } },
+                        _ => selectionRange with { End = new() { Line = selectionRange.Start.Line, Character = 200 } }
+                    },
+                    TargetSelectionRange = selectionRange,
+                    TargetUri = _facade.GetFilePath(objet.GetFile())
+                }));
             }
         }
 
-        return Task.FromResult<Hover?>(null);
+        return Task.FromResult<LocationOrLocationLinks>(new());
     }
 
-    protected override HoverRegistrationOptions CreateRegistrationOptions(HoverCapability capability, ClientCapabilities clientCapabilities)
+    protected override DefinitionRegistrationOptions CreateRegistrationOptions(DefinitionCapability capability, ClientCapabilities clientCapabilities)
     {
-        return new HoverRegistrationOptions
+        return new DefinitionRegistrationOptions
         {
             DocumentSelector = DocumentSelector.ForLanguage("yaml")
         };
