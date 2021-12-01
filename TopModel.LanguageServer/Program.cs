@@ -26,6 +26,7 @@ var server = await LanguageServer.From(options =>
         .WithHandler<TextDocumentSyncHandler>()
         .WithHandler<HoverHandler>()
         .WithHandler<SemanticTokensHandler>()
+        .WithHandler<DefinitionHandler>()
         .OnInitialize((server, _, __) =>
         {
             server.Services.GetRequiredService<ModelStore>().LoadFromConfig();

@@ -16,17 +16,7 @@ public class ModelError
         _reference = reference;
     }
 
-    public ModelFile File => _objet switch
-    {
-        ModelFile file => file,
-        Class classe => classe.ModelFile,
-        Endpoint endpoint => endpoint.ModelFile,
-        IProperty { Class: Class classe } => classe.ModelFile,
-        IProperty { Endpoint: Endpoint endpoint } => endpoint.ModelFile,
-        Alias alias => alias.ModelFile,
-        Domain domain => domain.ModelFile,
-        _ => throw new ArgumentException("Type d'objet non supporté.")
-    };
+    public ModelFile File => _objet.GetFile();
 
     public Class? Class => _objet switch
     {
