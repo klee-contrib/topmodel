@@ -2,13 +2,13 @@
 
 namespace TopModel.Core.FileModel;
 
-internal class ClassReference : Reference
+public class ClassReference : Reference
 {
-    public ClassReference()
+    internal ClassReference()
     {
     }
 
-    public ClassReference(Scalar scalar)
+    internal ClassReference(Scalar scalar)
         : base(scalar)
     {
     }
