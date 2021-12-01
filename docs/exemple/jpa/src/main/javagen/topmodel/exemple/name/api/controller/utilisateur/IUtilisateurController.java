@@ -44,7 +44,7 @@ public interface IutilisateurController {
 
     /**
      * Charge une liste d'utilisateurs par leur type.
-     * @param typeUtilisateurCode Type d'utilisateur
+     * @param typeUtilisateurCode Type d'utilisateur en Many to one
      * @return Liste des utilisateurs
      */
     @GetMapping("/list")
@@ -54,7 +54,7 @@ public interface IutilisateurController {
 
     /**
      * Charge une liste d'utilisateurs par leur type.
-     * @param typeUtilisateurCode Type d'utilisateur
+     * @param typeUtilisateurCode Type d'utilisateur en Many to one
      * @return Liste des utilisateurs
      */
     List<UtilisateurDto> getUtilisateurList(TypeUtilisateurCode typeUtilisateurCode);
@@ -97,20 +97,22 @@ public interface IutilisateurController {
      * Recherche des utilisateurs.
      * @param utilisateurId Id technique
      * @param email Email de l'utilisateur
-     * @param typeUtilisateurCode Type d'utilisateur
+     * @param typeUtilisateurCode Type d'utilisateur en Many to one
+     * @param typeUtilisateurCodeOneToOneType Type d'utilisateur en one to one
      * @return Utilisateurs matchant les critères
      */
     @PostMapping("/search")
-    default Page<UtilisateurDto> searchMapping(@RequestParam("utilisateurId") long utilisateurId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode) {
-        return this.search(utilisateurId, email, typeUtilisateurCode);
+    default Page<UtilisateurDto> searchMapping(@RequestParam("utilisateurId") long utilisateurId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode, @RequestParam("typeUtilisateurCodeOneToOneType") TypeUtilisateurCode typeUtilisateurCodeOneToOneType) {
+        return this.search(utilisateurId, email, typeUtilisateurCode, typeUtilisateurCodeOneToOneType);
     }
 
     /**
      * Recherche des utilisateurs.
      * @param utilisateurId Id technique
      * @param email Email de l'utilisateur
-     * @param typeUtilisateurCode Type d'utilisateur
+     * @param typeUtilisateurCode Type d'utilisateur en Many to one
+     * @param typeUtilisateurCodeOneToOneType Type d'utilisateur en one to one
      * @return Utilisateurs matchant les critères
      */
-    Page<UtilisateurDto> search(long utilisateurId, String email, TypeUtilisateurCode typeUtilisateurCode);
+    Page<UtilisateurDto> search(long utilisateurId, String email, TypeUtilisateurCode typeUtilisateurCode, TypeUtilisateurCode typeUtilisateurCodeOneToOneType);
 }

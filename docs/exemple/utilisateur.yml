@@ -29,8 +29,12 @@ class:
       comment: Email de l'utilisateur
       domain: DO_EMAIL
     - association: TypeUtilisateur
-      comment: Type d'utilisateur
+      comment: Type d'utilisateur en Many to one
       type: manyToOne
+    - association: TypeUtilisateur
+      comment: Type d'utilisateur en one to one
+      type: oneToOne
+      role: OneToOneType
 ---
 class:
   name: TypeUtilisateur

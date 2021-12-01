@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -60,6 +61,7 @@ public class Utilisateur implements Serializable {
     private DateTime dateModification;
     private String email;
     private TypeUtilisateur typeUtilisateur;
+    private TypeUtilisateur typeUtilisateurOneToOneType;
 
     /**
      * Id technique.
@@ -120,7 +122,7 @@ public class Utilisateur implements Serializable {
     }
 
     /**
-     * Type d'utilisateur.
+     * Type d'utilisateur en Many to one.
      *
      * @return value of typeUtilisateur.
      */
@@ -128,5 +130,16 @@ public class Utilisateur implements Serializable {
     @JoinColumn(name = "CODE", referencedColumnName = "CODE")
     public TypeUtilisateur getTypeUtilisateur() {
         return this.typeUtilisateur;
+    }
+
+    /**
+     * Type d'utilisateur en one to one.
+     *
+     * @return value of typeUtilisateurOneToOneType.
+     */
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ONE_TO_ONE_TYPE_CODE", referencedColumnName = "CODE")
+    public TypeUtilisateur getTypeUtilisateurOneToOneType() {
+        return this.typeUtilisateurOneToOneType;
     }
 }

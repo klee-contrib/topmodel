@@ -33,6 +33,7 @@ public class UtilisateurDto implements Serializable {
     private long id;
     private String email;
     private TypeUtilisateurCode typeUtilisateurCode;
+    private TypeUtilisateurCode typeUtilisateurCodeOneToOneType;
 
     /**
      * Id technique.
@@ -56,12 +57,22 @@ public class UtilisateurDto implements Serializable {
     }
 
     /**
-     * Type d'utilisateur.
+     * Type d'utilisateur en Many to one.
      * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()} 
      *
      * @return value of typeUtilisateurCode.
      */
     public TypeUtilisateurCode getTypeUtilisateurCode() {
          return this.typeUtilisateurCode;
+    }
+
+    /**
+     * Type d'utilisateur en one to one.
+     * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getTypeUtilisateurCodeOneToOneType() Utilisateur#getTypeUtilisateurCodeOneToOneType()} 
+     *
+     * @return value of typeUtilisateurCodeOneToOneType.
+     */
+    public TypeUtilisateurCode getTypeUtilisateurCodeOneToOneType() {
+         return this.typeUtilisateurCodeOneToOneType;
     }
 }
