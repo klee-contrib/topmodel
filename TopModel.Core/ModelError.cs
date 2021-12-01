@@ -42,19 +42,7 @@ public class ModelError
         _ => null
     };
 
-    public Reference? Location =>
-        _reference ?? _objet switch
-        {
-            Class c => c.Location,
-            Endpoint e => e.Location,
-            RegularProperty p => p.Location,
-            AssociationProperty p => p.Location,
-            CompositionProperty p => p.Location,
-            AliasProperty p => p.Location,
-            Alias a => a.Location,
-            Domain d => d.Location,
-            _ => null
-        };
+    public Reference? Location => _reference ?? _objet.GetLocation();
 
     public IProperty? Property => _objet as IProperty;
 

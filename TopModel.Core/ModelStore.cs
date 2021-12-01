@@ -313,11 +313,11 @@ public class ModelStore
                 break;
             }
 
-            var propName = alp.IncludeReference?.ReferenceName ?? alp.Property.Name;
+            var propName = alp.PropertyReference?.ReferenceName ?? alp.Property.Name;
             var aliasedProperty = aliasedClass.Properties.OfType<IFieldProperty>().SingleOrDefault(p => p.Name == propName);
             if (aliasedProperty == null)
             {
-                yield return new ModelError(alp, $"La propriété '{propName}' est introuvable sur la classe '{aliasedClass}'.", alp.IncludeReference);
+                yield return new ModelError(alp, $"La propriété '{propName}' est introuvable sur la classe '{aliasedClass}'.", alp.PropertyReference);
                 break;
             }
 

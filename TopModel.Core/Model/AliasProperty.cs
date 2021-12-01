@@ -75,7 +75,9 @@ public class AliasProperty : IFieldProperty
 
     internal AliasReference? Reference { get; set; }
 
-    internal Reference? IncludeReference { get; set; }
+    internal Reference? ClassReference { get; set; }
+
+    internal Reference? PropertyReference { get; set; }
 
     internal DomainReference? ListDomainReference { get; set; }
 
@@ -85,7 +87,8 @@ public class AliasProperty : IFieldProperty
         {
             Property = prop,
             Location = Location,
-            IncludeReference = includeReference,
+            ClassReference = Reference,
+            PropertyReference = includeReference,
             Class = Class,
             Endpoint = Endpoint,
             Prefix = Prefix,
