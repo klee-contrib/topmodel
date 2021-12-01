@@ -23,8 +23,8 @@ public class ModelFile
         .Concat(Properties.OfType<RegularProperty>().Select(p => (p.DomainReference as Reference, p.Domain as object)))
         .Concat(Properties.OfType<AssociationProperty>().Select(p => (p.Reference as Reference, p.Association as object)))
         .Concat(Properties.OfType<CompositionProperty>().SelectMany(p => new (Reference, object)[] { (p.Reference, p.Composition), (p.DomainKindReference, p.DomainKind) }))
-        .Concat(Properties.OfType<AliasProperty>().SelectMany(p => new (Reference, object)[] { (p.ClassReference, p.Property.Class), (p.PropertyReference, p.Property), (p.ListDomainReference, p.ListDomain) }))
-        .Where(t => t.Item1 != null)
+        .Concat(Properties.OfType<AliasProperty>().SelectMany(p => new (Reference, object)[] { (p.ClassReference, p.Property?.Class), (p.PropertyReference, p.Property), (p.ListDomainReference, p.ListDomain) }))
+        .Where(t => t.Item1 != null && t.Item2 != null)
         .Distinct()
         .ToDictionary(t => t.Item1, t => t.Item2);
 

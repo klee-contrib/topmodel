@@ -75,7 +75,7 @@ public class AliasProperty : IFieldProperty
 
     internal AliasReference? Reference { get; set; }
 
-    internal Reference? ClassReference { get; set; }
+    internal ClassReference? ClassReference { get; set; }
 
     internal Reference? PropertyReference { get; set; }
 
