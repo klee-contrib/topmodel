@@ -6,6 +6,7 @@ package topmodel.exemple.name.dao.entities.securite;
 
 import java.io.Serializable;
 
+import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -30,6 +31,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
+@Generated("TopModel : https://github.com/JabX/topmodel")
 @Entity
 @Table(name = "PROFIL")
 public class Profil implements Serializable {

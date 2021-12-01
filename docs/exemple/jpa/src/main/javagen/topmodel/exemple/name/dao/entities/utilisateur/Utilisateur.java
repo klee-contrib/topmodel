@@ -9,6 +9,7 @@ import java.util.DateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -48,6 +49,7 @@ import topmodel.exemple.name.dao.entities.securite.Profil;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
+@Generated("TopModel : https://github.com/JabX/topmodel")
 @Entity
 @Table(name = "UTILISATEUR")
 @EntityListeners(AuditingEntityListener.class)

@@ -7,6 +7,8 @@ package topmodel.exemple.name.dao.dtos.securite;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.annotation.Generated;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -25,6 +27,7 @@ import topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
+@Generated("TopModel : https://github.com/JabX/topmodel")
 public class ProfilDto implements Serializable {
 	/** Serial ID */
     private static final long serialVersionUID = 1L;

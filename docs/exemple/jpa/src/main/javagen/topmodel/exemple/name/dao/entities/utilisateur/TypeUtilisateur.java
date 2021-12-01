@@ -6,6 +6,7 @@ package topmodel.exemple.name.dao.entities.utilisateur;
 
 import java.io.Serializable;
 
+import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
@@ -35,6 +36,7 @@ import topmodel.exemple.name.dao.references.utilisateur.TypeUtilisateurCode;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
+@Generated("TopModel : https://github.com/JabX/topmodel")
 @Entity
 @Table(name = "TYPE_UTILISATEUR")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)

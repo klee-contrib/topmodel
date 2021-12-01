@@ -6,6 +6,7 @@ package topmodel.exemple.name.dao.dtos.utilisateur;
 
 import java.io.Serializable;
 
+import javax.annotation.Generated;
 import javax.validation.constraints.Email;
 
 import lombok.AllArgsConstructor;
@@ -26,6 +27,7 @@ import topmodel.exemple.name.dao.references.utilisateur.TypeUtilisateurCode;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
+@Generated("TopModel : https://github.com/JabX/topmodel")
 public class UtilisateurDto implements Serializable {
 	/** Serial ID */
     private static final long serialVersionUID = 1L;

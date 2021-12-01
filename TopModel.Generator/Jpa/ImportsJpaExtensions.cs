@@ -168,7 +168,8 @@ public static class ImportsJpaExtensions
                 "lombok.ToString",
                 "lombok.EqualsAndHashCode",
                 "lombok.AllArgsConstructor",
-                "java.io.Serializable"
+                "java.io.Serializable",
+                "javax.annotation.Generated"
             };
 
         if (classe.IsPersistent)

@@ -64,6 +64,7 @@ public class JpaDaoGenerator : GeneratorBase
             fw.WriteLine();
             WriteImports(fw, classe);
             fw.WriteLine();
+            fw.WriteLine("@Generated(\"TopModel : https://github.com/JabX/topmodel\")");
             fw.WriteLine($"public interface {classe.Name}DAO extends PagingAndSortingRepository<{classe.Name}, Long> {{");
             fw.WriteLine();
             fw.WriteLine("}");
@@ -75,6 +76,7 @@ public class JpaDaoGenerator : GeneratorBase
         var imports = new List<string>
             {
                 "org.springframework.data.repository.PagingAndSortingRepository",
+                "javax.annotation.Generated",
                 $"{_config.DaoPackageName}.entities.{classe.Namespace.Module.ToLower()}.{classe.Name}"
             };
         fw.WriteImports(imports.Distinct().ToArray());

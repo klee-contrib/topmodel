@@ -6,6 +6,7 @@ package topmodel.exemple.name.api.controller.utilisateur;
 
 import java.util.List;
 
+import javax.annotation.Generated;
 import javax.validation.constraints.Email;
 import javax.validation.Valid;
 
@@ -21,6 +22,7 @@ import topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto;
 import topmodel.exemple.name.dao.references.utilisateur.TypeUtilisateurCode;
 
 @RestController
+@Generated("TopModel : https://github.com/JabX/topmodel")
 @RequestMapping("utilisateur")
 public interface IutilisateurController {
 

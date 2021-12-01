@@ -56,6 +56,7 @@ public class SpringApiGenerator : GeneratorBase
         WriteImports(file, fw);
         fw.WriteLine();
         fw.WriteLine("@RestController");
+        fw.WriteLine("@Generated(\"TopModel : https://github.com/JabX/topmodel\")");
         fw.WriteLine(@$"@RequestMapping(""{file.Module.ToLower()}"")");
         fw.WriteLine($"public interface I{filePath}Controller {{");
 
@@ -177,6 +178,7 @@ public class SpringApiGenerator : GeneratorBase
         imports.AddRange(GetTypeImports(file));
         imports.Add("org.springframework.web.bind.annotation.RequestMapping");
         imports.Add("org.springframework.web.bind.annotation.RestController");
+        imports.Add("javax.annotation.Generated");
         if (file.Endpoints.Any(e => e.GetRouteParams().Any()))
         {
             imports.Add("org.springframework.web.bind.annotation.PathVariable");
