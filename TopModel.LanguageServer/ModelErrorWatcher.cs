@@ -27,13 +27,13 @@ public class ModelErrorWatcher : IModelWatcher
 
             foreach (var error in fileErrors.Value)
             {
-                var loc = error.Location!;
+                var loc = error.Location;
                 diagnostics.Add(new()
                 {
                     Code = "000",
                     Severity = DiagnosticSeverity.Error,
                     Message = error.Message,
-                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(loc.Start.Line - 1, loc.Start.Column - 1, loc.End.Line - 1, loc.End.Column - 1),
+                    Range = loc.ToRange()!,
                     Source = "TopModel"
                 });
             }
@@ -41,7 +41,7 @@ public class ModelErrorWatcher : IModelWatcher
             _facade.TextDocument.PublishDiagnostics(new()
             {
                 Diagnostics = new Container<Diagnostic>(diagnostics.ToArray()),
-                Uri = new Uri(_facade.Workspace.ClientSettings.RootPath + fileErrors.Key.Path[1..])
+                Uri = new Uri(_facade.GetFilePath(fileErrors.Key))
             });
         }
     }

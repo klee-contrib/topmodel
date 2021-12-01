@@ -24,6 +24,7 @@ var server = await LanguageServer.From(options =>
                 .AddSingleton<IModelWatcher, ModelErrorWatcher>();
         })
         .WithHandler<TextDocumentSyncHandler>()
+        .WithHandler<HoverHandler>()
         .OnInitialize((server, _, __) =>
         {
             server.Services.GetRequiredService<ModelStore>().LoadFromConfig();
