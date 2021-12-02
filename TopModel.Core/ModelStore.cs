@@ -34,6 +34,12 @@ public class ModelStore
 
     public IEnumerable<ModelFile> Files => _modelFiles.Values;
 
+    public IEnumerable<Class> GetAvailableClasses(ModelFile file)
+    {
+        return GetDependencies(file).SelectMany(m => m.Classes)
+             .Concat(file.Classes.Where(c => !file.ResolvedAliases.Contains(c)));
+    }
+
     public IDisposable? LoadFromConfig(bool watch = false)
     {
         foreach (var mw in _modelWatchers)

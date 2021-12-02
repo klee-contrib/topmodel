@@ -18,4 +18,19 @@ public static class OmnisharpExtensions
     {
         return facade.Workspace.ClientSettings.RootPath + file.Path[1..];
     }
+
+    public static bool ShouldMatch(this string word, string otherword)
+    {
+        var currentIndex = 0;
+
+        foreach (var character in otherword.ToLower())
+        {
+            if ((currentIndex = word.ToLower().IndexOf(character, currentIndex)) == -1)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

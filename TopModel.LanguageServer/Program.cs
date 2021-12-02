@@ -21,12 +21,14 @@ var server = await LanguageServer.From(options =>
 
             services
                 .AddModelStore(fileChecker, config, dn)
-                .AddSingleton<IModelWatcher, ModelErrorWatcher>();
+                .AddSingleton<IModelWatcher, ModelErrorWatcher>()
+                .AddSingleton<ModelFileCache>();
         })
         .WithHandler<TextDocumentSyncHandler>()
         .WithHandler<HoverHandler>()
         .WithHandler<SemanticTokensHandler>()
         .WithHandler<DefinitionHandler>()
+        .WithHandler<CompletionHandler>()
         .OnInitialize((server, _, __) =>
         {
             server.Services.GetRequiredService<ModelStore>().LoadFromConfig();
