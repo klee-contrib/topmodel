@@ -11,10 +11,9 @@ let NEXT_TERM_ID = 1;
 export function activate(context: ExtensionContext) {
     createStatusBar();
     findConfFile().then((conf) => {
-        const config = ((conf as any).config) as TopModelConfig;
-        const configPath = (conf as any).configPath;
-        if (config) {
-            registerStatusBar(context, config);
+        if (conf) {
+            const config = ((conf as any).config) as TopModelConfig;
+            const configPath = (conf as any).configPath;
             startLanguageServer(context, configPath, config);
             registerCommands(context, configPath);
         } else {
@@ -31,9 +30,6 @@ function createStatusBar() {
     topModelStatusBar.text = '$(loading) Topmodel';
     topModelStatusBar.tooltip = 'Topmodel is loading configuration';
     topModelStatusBar.show();
-}
-
-function registerStatusBar(context: ExtensionContext, config: TopModelConfig) {
 }
 
 function registerCommands(context: ExtensionContext, configPath: any) {
@@ -80,22 +76,23 @@ function startLanguageServer(context: ExtensionContext, configPath: any, config:
     let serverExe = 'dotnet';
 
     const args = [context.asAbsolutePath("./net6.0/TopModel.LanguageServer.dll")];
-    args.push(configPath.split("/").pop());
+    const configRelativePath = workspace.asRelativePath(configPath);
+    args.push(configRelativePath);
     let serverOptions: ServerOptions = {
         run: { command: serverExe, args },
         debug: { command: serverExe, args }
     };
-    let configFolderA = configPath.split("/");
+    let configFolderA = configRelativePath.split("/");
     configFolderA.pop();
     const configFolder = configFolderA.join('/');
     let modelRoot = config.modelRoot || configFolder;
     // Options to control the language client
     let clientOptions: LanguageClientOptions = {
         // Register the server for plain text documents
-        documentSelector: [{ language: 'yaml' }, { pattern: `${modelRoot}/*.yml` }],
+        documentSelector: [{ language: 'yaml' }, { pattern: `${modelRoot}**/yml` }],
         synchronize: {
             configurationSection: 'topmodel',
-            fileEvents: workspace.createFileSystemWatcher(`${modelRoot}/*.yml`)
+            fileEvents: workspace.createFileSystemWatcher(`${modelRoot}**/*.yml`)
         },
     };
 
@@ -126,5 +123,5 @@ function handleLsReady(config: TopModelConfig, context: ExtensionContext): void 
 
 function handleNoConfigFound(): void {
     topModelStatusBar.text = "$(diff-review-close) TopModel";
-    topModelStatusBar.tooltip = "TopModel is not running"
+    topModelStatusBar.tooltip = "TopModel is not running";
 }
