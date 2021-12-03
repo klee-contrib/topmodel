@@ -110,7 +110,7 @@ function startModgen(watch: boolean, configPath: string) {
     const terminal = window.createTerminal(`Topmodel : #${NEXT_TERM_ID++}`);
     terminal.show();
     terminal.sendText(
-        `modgen ${configPath}` + (watch ? "--watch" : "")
+        `modgen ${configPath}` + (watch ? " --watch" : "")
     );
 }
 
