@@ -2,12 +2,20 @@
   "name": "topmodel",
   "displayName": "topmodel",
   "description": "Extension pour TopModel",
+  "publisher": "Jabx",
+  "contributors": [{"name": "gideruette"},{"name": "Jabx"}],
+  "icon":"logo.png",
+  "repository": {
+    "url": "https://github.com/JabX/topmodel",
+    "directory": "TopModel.VSCode",
+    "type": "Github"
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.62.0"
   },
   "categories": [
-    "Other"
+    "Programming Languages"
   ],
   "activationEvents": [
     "onLanguage:yaml"
