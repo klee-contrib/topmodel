@@ -1,6 +1,6 @@
 import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
 import { Trace } from 'vscode-jsonrpc';
-import { ExtensionContext, workspace, commands, window } from 'vscode';
+import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment } from 'vscode';
 import * as fs from "fs";
 import { TopModelConfig } from './types';
 
@@ -9,20 +9,31 @@ const yaml = require("js-yaml");
 let NEXT_TERM_ID = 1;
 
 export function activate(context: ExtensionContext) {
-
-
+    createStatusBar();
     findConfFile().then((conf) => {
         const config = ((conf as any).config) as TopModelConfig;
         const configPath = (conf as any).configPath;
         if (config) {
+            registerStatusBar(context, config);
             startLanguageServer(context, configPath, config);
-            // If the extension is launched in debug mode then the debug server options are used
-            // Otherwise the run options are used
             registerCommands(context, configPath);
         } else {
-            window.showWarningMessage("Topmodel : No configuration file found");
+            handleNoConfigFound();
         }
     });
+}
+
+let topModelStatusBar: StatusBarItem;
+
+
+function createStatusBar() {
+    topModelStatusBar = window.createStatusBarItem(StatusBarAlignment.Right, 100);
+    topModelStatusBar.text = '$(loading) Topmodel';
+    topModelStatusBar.tooltip = 'Topmodel is loading configuration';
+    topModelStatusBar.show();
+}
+
+function registerStatusBar(context: ExtensionContext, config: TopModelConfig) {
 }
 
 function registerCommands(context: ExtensionContext, configPath: any) {
@@ -65,7 +76,6 @@ async function findConfFile() {
 }
 
 function startLanguageServer(context: ExtensionContext, configPath: any, config: TopModelConfig) {
-    window.showInformationMessage("Starting TopModel Language Server");
     // The server is implemented in node
     let serverExe = 'dotnet';
 
@@ -78,7 +88,7 @@ function startLanguageServer(context: ExtensionContext, configPath: any, config:
     let configFolderA = configPath.split("/");
     configFolderA.pop();
     const configFolder = configFolderA.join('/');
-    const modelRoot = config.modelRoot || configFolder;
+    let modelRoot = config.modelRoot || configFolder;
     // Options to control the language client
     let clientOptions: LanguageClientOptions = {
         // Register the server for plain text documents
@@ -93,6 +103,7 @@ function startLanguageServer(context: ExtensionContext, configPath: any, config:
     const client = new LanguageClient('topmodel', 'TopModel', serverOptions, clientOptions);
     client.trace = Trace.Verbose;
     let disposable = client.start();
+    client.onReady().then(() => handleLsReady(config, context));
 
     // Push the disposable to the context's subscriptions so that the
     // client can be deactivated on extension deactivation
@@ -100,8 +111,20 @@ function startLanguageServer(context: ExtensionContext, configPath: any, config:
 }
 function startModgen(watch: boolean, configPath: string) {
     const terminal = window.createTerminal(`Topmodel : #${NEXT_TERM_ID++}`);
-    // Display a message box to the user
+    terminal.show();
     terminal.sendText(
         `modgen ${configPath}` + (watch ? "--watch" : "")
     );
+}
+
+function handleLsReady(config: TopModelConfig, context: ExtensionContext): void {
+    topModelStatusBar.text = "$(check-all) TopModel";
+    topModelStatusBar.tooltip = "TopModel is running for app " + config.app;
+    topModelStatusBar.command = "extension.topmodel";
+    context.subscriptions.push(topModelStatusBar);
+}
+
+function handleNoConfigFound(): void {
+    topModelStatusBar.text = "$(diff-review-close) TopModel";
+    topModelStatusBar.tooltip = "TopModel is not running"
 }
