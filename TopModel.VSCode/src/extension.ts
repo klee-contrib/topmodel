@@ -1,23 +1,45 @@
 import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
 import { Trace } from 'vscode-jsonrpc';
-import { ExtensionContext, workspace } from 'vscode';
+import { ExtensionContext, workspace, commands, window } from 'vscode';
 import * as fs from "fs";
 import { TopModelConfig } from './types';
 
 const yaml = require("js-yaml");
 
+let NEXT_TERM_ID = 1;
 
 export function activate(context: ExtensionContext) {
 
-    // If the extension is launched in debug mode then the debug server options are used
-    // Otherwise the run options are used
+
     findConfFile().then((conf) => {
         const config = ((conf as any).config) as TopModelConfig;
         const configPath = (conf as any).configPath;
         if (config) {
             startLanguageServer(context, configPath, config);
+            // If the extension is launched in debug mode then the debug server options are used
+            // Otherwise the run options are used
+            registerCommands(context, configPath);
+        } else {
+            window.showWarningMessage("Topmodel : No configuration file found");
         }
     });
+}
+
+function registerCommands(context: ExtensionContext, configPath: any) {
+    context.subscriptions.push(commands.registerCommand(
+        "extension.topmodel",
+        () => {
+            startModgen(false, configPath);
+        }
+    ));
+    context.subscriptions.push(commands.registerCommand(
+        "extension.topmodel.watch",
+        () => {
+            startModgen(true, configPath);
+
+        }
+    ));
+    return NEXT_TERM_ID;
 }
 
 async function findConfFile() {
@@ -43,7 +65,7 @@ async function findConfFile() {
 }
 
 function startLanguageServer(context: ExtensionContext, configPath: any, config: TopModelConfig) {
-    
+    window.showInformationMessage("Starting TopModel Language Server");
     // The server is implemented in node
     let serverExe = 'dotnet';
 
@@ -75,4 +97,11 @@ function startLanguageServer(context: ExtensionContext, configPath: any, config:
     // Push the disposable to the context's subscriptions so that the
     // client can be deactivated on extension deactivation
     context.subscriptions.push(disposable);
+}
+function startModgen(watch: boolean, configPath: string) {
+    const terminal = window.createTerminal(`Topmodel : #${NEXT_TERM_ID++}`);
+    // Display a message box to the user
+    terminal.sendText(
+        `modgen ${configPath}` + (watch ? "--watch" : "")
+    );
 }
