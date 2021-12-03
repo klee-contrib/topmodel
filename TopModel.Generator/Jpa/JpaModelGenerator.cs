@@ -283,7 +283,7 @@ public class JpaModelGenerator : GeneratorBase
 
                 if (cp.Kind == "list")
                 {
-                    fw.WriteLine(2, @$"if({cp.Composition.Name.ToFirstUpper()} == null) this.{cp.Name.ToFirstUpper()} = new ArrayList<>();");
+                    fw.WriteLine(2, @$"if({cp.Name.ToFirstLower()} == null) this.{cp.Name.ToFirstLower()} = new ArrayList<>();");
                 }
 
                 fw.WriteLine(2, @$"return this.{cp.Name};");

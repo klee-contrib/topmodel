@@ -142,6 +142,7 @@ public static class ImportsJpaExtensions
         if (cp.Kind == "list")
         {
             imports.Add("java.util.List");
+            imports.Add("java.util.ArrayList");
         }
         else if (cp.DomainKind?.Java?.Imports != null)
         {
