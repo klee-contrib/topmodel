@@ -50,8 +50,8 @@ public class JavascriptResourceGenerator : GeneratorBase
             .Where(c => c.Namespace.Module == module);
 
         var dirInfo = Directory.CreateDirectory(_config.ResourceOutputDirectory);
-        var fileName = module.ToDashCase();
-        var filePath = dirInfo.FullName + "/" + fileName.Replace('.', '/') + (_config.ResourceMode == ResourceMode.JS ? ".ts" : ".json");
+        var fileName = module.Split('.').Last().ToDashCase();
+        var filePath = dirInfo.FullName + "/" + module.Replace('.', '/') + (_config.ResourceMode == ResourceMode.JS ? ".ts" : ".json");
 
         using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
 
@@ -61,7 +61,7 @@ public class JavascriptResourceGenerator : GeneratorBase
 
             if (_config.ResourceMode == ResourceMode.Schema)
             {
-                fw.WriteLine($"  \"$id\": \"{module.ToDashCase()}_translation.json\",");
+                fw.WriteLine($"  \"$id\": \"{module.Replace('.', '/').ToDashCase()}_translation.json\",");
                 fw.WriteLine("  \"$schema\": \"http://json-schema.org/draft-07/schema#\",");
                 fw.WriteLine("  \"properties\": {");
             }
