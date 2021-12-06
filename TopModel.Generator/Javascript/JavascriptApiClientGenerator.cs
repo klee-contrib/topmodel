@@ -199,7 +199,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
         {
             var name = type.Name;
             var module = $"{modelPath}/{type.Namespace.Module.Replace(".", "/").ToLower()}";
-            return (Import: name, Path: $"{module}/{name.ToDashCase()}");
+            return (Import: name, Path: $"{module.Replace(".", "/")}/{name.ToDashCase()}");
         }).Distinct().ToList();
 
         var references = file.Endpoints.SelectMany(p => p.Params.Concat(new[] { p.Returns }).Where(p => p != null))
