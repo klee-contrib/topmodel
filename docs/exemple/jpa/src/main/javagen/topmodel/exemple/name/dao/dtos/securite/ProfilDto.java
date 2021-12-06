@@ -5,6 +5,7 @@
 package topmodel.exemple.name.dao.dtos.securite;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Generated;
@@ -17,6 +18,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto;
+import topmodel.exemple.name.dao.references.securite.TypeProfilCode;
 
 /**
  * Objet métier non persisté représentant Profil.
@@ -33,6 +35,7 @@ public class ProfilDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private long id;
+    private TypeProfilCode typeProfilCode;
     private List<UtilisateurDto> utilisateurs;
 
     /**
@@ -46,12 +49,22 @@ public class ProfilDto implements Serializable {
     }
 
     /**
+     * Type de profil.
+     * Alias of {@link topmodel.exemple.name.dao.entities.securite.Profil#getTypeProfilCode() Profil#getTypeProfilCode()} 
+     *
+     * @return value of typeProfilCode.
+     */
+    public TypeProfilCode getTypeProfilCode() {
+         return this.typeProfilCode;
+    }
+
+    /**
      * Liste paginée des utilisateurs de ce profil.
      *
      * @return value of UtilisateurDto.
      */
     public List<UtilisateurDto> getUtilisateurDto() {
-        if(UtilisateurDto == null) this.Utilisateurs = new ArrayList<>();
+        if(utilisateurs == null) this.utilisateurs = new ArrayList<>();
         return this.utilisateurs;
     }
 }

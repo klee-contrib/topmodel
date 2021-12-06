@@ -44,7 +44,7 @@ public class JpaDaoGenerator : GeneratorBase
             .Distinct()
             .Where(c => c.Namespace.Module == module);
 
-        foreach (var classe in classes.Where(c => !c.Reference && c.IsPersistent))
+        foreach (var classe in classes.Where(c => c.IsPersistent))
         {
             var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), "daos", classe.Namespace.Module.Replace('.', '/').ToLower());
             var dirInfo = Directory.CreateDirectory(destFolder);
@@ -64,7 +64,7 @@ public class JpaDaoGenerator : GeneratorBase
             fw.WriteLine();
             WriteImports(fw, classe);
             fw.WriteLine();
-            fw.WriteLine($"public interface {classe.Name}DAO extends PagingAndSortingRepository<{classe.Name}, Long> {{");
+            fw.WriteLine($"public interface {classe.Name}DAO extends {(classe.Reference ? "CrudRepository" : "PagingAndSortingRepository")}<{classe.Name}, Long> {{");
             fw.WriteLine();
             fw.WriteLine("}");
         }
@@ -74,9 +74,19 @@ public class JpaDaoGenerator : GeneratorBase
     {
         var imports = new List<string>
             {
-                "org.springframework.data.repository.PagingAndSortingRepository",
                 $"{_config.DaoPackageName}.entities.{classe.Namespace.Module.ToLower()}.{classe.Name}"
             };
+        if (classe.Reference)
+        {
+            imports.Add(
+            "org.springframework.data.repository.CrudRepository");
+        }
+        else
+        {
+            imports.Add(
+            "org.springframework.data.repository.PagingAndSortingRepository");
+        }
+
         fw.WriteImports(imports.Distinct().ToArray());
     }
 }

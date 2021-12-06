@@ -2,6 +2,7 @@
 module: Utilisateur
 uses:
   - utilisateur
+  - profil
 tags:
   - dto
 ---
@@ -16,3 +17,6 @@ class:
           - ProfilId
           - dateCreation
           - dateModification
+    - alias:
+        class: Profil
+      prefix: true

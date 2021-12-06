@@ -4,6 +4,7 @@
 
 package topmodel.exemple.name.api.controller.utilisateur;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Generated;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto;
+import topmodel.exemple.name.dao.references.securite.TypeProfilCode;
 import topmodel.exemple.name.dao.references.utilisateur.TypeUtilisateurCode;
 
 @RestController
@@ -101,11 +103,13 @@ public interface IutilisateurController {
      * @param email Email de l'utilisateur
      * @param typeUtilisateurCode Type d'utilisateur en Many to one
      * @param typeUtilisateurCodeOneToOneType Type d'utilisateur en one to one
+     * @param profilProfilId Id technique
+     * @param profilTypeProfilCode Type de profil
      * @return Utilisateurs matchant les critères
      */
     @PostMapping("/search")
-    default Page<UtilisateurDto> searchMapping(@RequestParam("utilisateurId") long utilisateurId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode, @RequestParam("typeUtilisateurCodeOneToOneType") TypeUtilisateurCode typeUtilisateurCodeOneToOneType) {
-        return this.search(utilisateurId, email, typeUtilisateurCode, typeUtilisateurCodeOneToOneType);
+    default Page<UtilisateurDto> searchMapping(@RequestParam("utilisateurId") long utilisateurId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode, @RequestParam("typeUtilisateurCodeOneToOneType") TypeUtilisateurCode typeUtilisateurCodeOneToOneType, @RequestParam("profilProfilId") long profilProfilId, @RequestParam("profilTypeProfilCode") TypeProfilCode profilTypeProfilCode) {
+        return this.search(utilisateurId, email, typeUtilisateurCode, typeUtilisateurCodeOneToOneType, profilProfilId, profilTypeProfilCode);
     }
 
     /**
@@ -114,7 +118,9 @@ public interface IutilisateurController {
      * @param email Email de l'utilisateur
      * @param typeUtilisateurCode Type d'utilisateur en Many to one
      * @param typeUtilisateurCodeOneToOneType Type d'utilisateur en one to one
+     * @param profilProfilId Id technique
+     * @param profilTypeProfilCode Type de profil
      * @return Utilisateurs matchant les critères
      */
-    Page<UtilisateurDto> search(long utilisateurId, String email, TypeUtilisateurCode typeUtilisateurCode, TypeUtilisateurCode typeUtilisateurCodeOneToOneType);
+    Page<UtilisateurDto> search(long utilisateurId, String email, TypeUtilisateurCode typeUtilisateurCode, TypeUtilisateurCode typeUtilisateurCodeOneToOneType, long profilProfilId, TypeProfilCode profilTypeProfilCode);
 }

@@ -5,13 +5,18 @@
 package topmodel.exemple.name.dao.entities.securite;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.annotation.Generated;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -39,6 +44,7 @@ public class Profil implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private long id;
+    private Set<TypeProfil> typeProfilList;
 
     /**
      * Id technique.
@@ -51,5 +57,16 @@ public class Profil implements Serializable {
     @Column(name = "ID", nullable = false)
     public long getId() {
          return this.id;
+    }
+
+    /**
+     * Type de profil.
+     *
+     * @return value of typeProfilList.
+     */
+    @OneToMany(cascade=CascadeType.ALL, mappedBy = "profil", orphanRemoval = true)
+    public Set<TypeProfil> getTypeProfilList() {
+        if(typeProfilList == null) this.typeProfilList= new HashSet<>();
+        return this.typeProfilList;
     }
 }

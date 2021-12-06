@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 import javax.annotation.Generated;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import topmodel.exemple.name.dao.references.securite.TypeProfilCode;
 import topmodel.exemple.name.dao.references.utilisateur.TypeUtilisateurCode;
 
 /**
@@ -36,6 +38,8 @@ public class UtilisateurDto implements Serializable {
     private String email;
     private TypeUtilisateurCode typeUtilisateurCode;
     private TypeUtilisateurCode typeUtilisateurCodeOneToOneType;
+    private long profilId;
+    private TypeProfilCode profilTypeProfilCode;
 
     /**
      * Id technique.
@@ -76,5 +80,26 @@ public class UtilisateurDto implements Serializable {
      */
     public TypeUtilisateurCode getTypeUtilisateurCodeOneToOneType() {
          return this.typeUtilisateurCodeOneToOneType;
+    }
+
+    /**
+     * Id technique.
+     * Alias of {@link topmodel.exemple.name.dao.entities.securite.Profil#getId() Profil#getId()} 
+     *
+     * @return value of profilId.
+     */
+    @NotNull
+    public long getProfilId() {
+         return this.profilId;
+    }
+
+    /**
+     * Type de profil.
+     * Alias of {@link topmodel.exemple.name.dao.entities.securite.Profil#getTypeProfilCode() Profil#getTypeProfilCode()} 
+     *
+     * @return value of profilTypeProfilCode.
+     */
+    public TypeProfilCode getProfilTypeProfilCode() {
+         return this.profilTypeProfilCode;
     }
 }

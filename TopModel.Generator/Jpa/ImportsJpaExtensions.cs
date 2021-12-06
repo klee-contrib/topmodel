@@ -62,9 +62,14 @@ public static class ImportsJpaExtensions
     public static List<string> GetImports(this AliasProperty ap, JpaConfig config)
     {
         var imports = new List<string>();
-        if (ap.IsEnum() || ap.IsAssociatedEnum())
+        if (ap.IsEnum())
         {
             var package = $"{config.DaoPackageName}.references.{ap.Property.Class.Namespace.Module.ToLower()}";
+            imports.Add(package + "." + ap.GetJavaType());
+        }
+        else if (ap.IsAssociatedEnum())
+        {
+            var package = $"{config.DaoPackageName}.references.{((AssociationProperty)ap.Property).Association.Namespace.Module.ToLower()}";
             imports.Add(package + "." + ap.GetJavaType());
         }
 
