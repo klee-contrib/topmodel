@@ -47,7 +47,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             {
                 var fileName = classe.Name.ToDashCase();
 
-                fileName = $"{_config.ModelOutputDirectory}/{file.Module.Replace(".", "/")}/{fileName}.ts";
+                fileName = $"{_config.ModelOutputDirectory}/{file.Module.Replace(".", "/").ToDashCase()}/{fileName}.ts";
                 var fileInfo = new FileInfo(fileName);
 
                 var isNewFile = !fileInfo.Exists;
@@ -401,7 +401,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
             module = module == currentModule
                 ? $"."
-                : $"../{module.Replace(".","/").ToLower()}";
+                : $"../{module.Replace(".", "/").ToDashCase()}";
 
             return (
                 import: type.DomainKind == null ? $"{name}Entity, {name}{(_config.Focus ? "EntityType" : string.Empty)}" : name,
@@ -423,7 +423,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             {
                 var module = refModule.Key == currentModule
                 ? $"."
-                : $"../{refModule.Key.ToLower().Replace(".","/")}";
+                : $"../{refModule.Key.Replace(".", "/").ToDashCase()}";
 
                 imports.Add((string.Join(", ", refModule.Select(r => r.Code).OrderBy(x => x)), $"{module}/references"));
             }
