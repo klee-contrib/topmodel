@@ -29,6 +29,7 @@
   "activationEvents": [
     "onLanguage:yaml"
   ],
+  
   "contributes": {
     "commands": [
       {
@@ -38,6 +39,16 @@
       {
         "command": "extension.topmodel.watch",
         "title": "TopModel : Start model generation (watch mode)"
+      }
+    ],
+    "jsonValidation": [
+      {
+        "fileMatch": "*.yaml",
+        "url": "./schema.config.json"
+      },
+      {
+        "fileMatch": "*.yml",
+        "url": "./schema.json"
       }
     ]
   },
