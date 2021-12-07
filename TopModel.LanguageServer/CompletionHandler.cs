@@ -42,7 +42,7 @@ class CompletionHandler : CompletionHandlerBase
                         Label = domain.Key
                     })));
         }
-        else if (currentLine.Contains("association: ") || currentLine.Contains("composition: "))
+        else if (currentLine.Contains("association: ") || currentLine.Contains("composition: ") || currentLine.Contains("    class:"))
         {
             var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
             if (file != null)
@@ -60,7 +60,7 @@ class CompletionHandler : CompletionHandlerBase
             }
         }
 
-        return Task.FromResult(new CompletionList(new[] { new CompletionItem { Label = "CLIC CLIC" } }));
+        return Task.FromResult(new CompletionList());
     }
 
     protected override CompletionRegistrationOptions CreateRegistrationOptions(CompletionCapability capability, ClientCapabilities clientCapabilities)
