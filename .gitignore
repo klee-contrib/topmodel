@@ -5,3 +5,5 @@ obj
 nupkg
 /TopModel.Generator/Properties/launchSettings.json
 *.user
+*.vsix
+package-lock.json

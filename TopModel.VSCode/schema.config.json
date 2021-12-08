@@ -1,0 +1,302 @@
+{
+  "$id": "modgen.config.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "Fichier de config du générateur",
+  "additionalProperties": false,
+  "required": [ "app" ],
+  "properties": {
+    "app": {
+      "type": "string",
+      "description": "Nom de l'application."
+    },
+    "modelRoot": {
+      "type": "string",
+      "description": "Chemin du dossier racine qui contient tous les fichiers YML du modèle, qui seront chargés par le générateur (à l'exception du fichier de domaines qui est chargé à part). Si non renseigné, le dossier contenant le fichier de config sera utilisé."
+    },
+    "allowCompositePrimaryKey": {
+      "type": "boolean",
+      "description": "Autorise les clés primaires composites (incompatible avec une génération de C#)."
+    },
+    "proceduralSql": {
+      "type": "array",
+      "description": "Liste de configs pour la génération de SQL 'procédurale' (sans SSDT)",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de SQL 'procédurale' (sans SSDT)",
+        "additionalProperties": false,
+        "required": [ "tags" ],
+        "properties": {
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "targetDBMS": {
+            "type": "string",
+            "description": "SGBD cible ('postgre' ou 'sqlserver').",
+            "enum": [ "sqlserver", "postgre" ]
+          },
+          "crebasFile": {
+            "type": "string",
+            "description": "Emplacement du fichier de création de base."
+          },
+          "uniqueKeysFile": {
+            "type": "string",
+            "description": "Emplacement du fichier de création des index uniques."
+          },
+          "indexFKFile": {
+            "type": "string",
+            "description": "Emplacement du fichier de création des clés étrangères."
+          },
+          "typeFile": {
+            "type": "string",
+            "description": "Emplacement du fichier de création des types."
+          },
+          "initListFile": {
+            "type": "string",
+            "description": "Emplacement du script d'insertion des données des listes de référence."
+          },
+          "disableIdentity": {
+            "type": "boolean",
+            "description": "Désactive les colonnes d'identité."
+          }
+        }
+      }
+    },
+    "ssdt": {
+      "type": "array",
+      "description": "Liste de configs pour la génération SSDT",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération SSDT",
+        "additionalProperties": false,
+        "required": [ "tags" ],
+        "properties": {
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "tableScriptFolder": {
+            "type": "string",
+            "description": "Dossier du projet pour les scripts de déclaration de table."
+          },
+          "tableTypeScriptFolder": {
+            "type": "string",
+            "description": " Dossier du projet pour les scripts de déclaration de type table."
+          },
+          "initListScriptFolder": {
+            "type": "string",
+            "description": "Dossier du projet pour les scripts d'initialisation des listes de références."
+          },
+          "initListMainScriptName": {
+            "type": "string",
+            "description": "Fichier du projet référençant les scripts d'initialisation des listes de références."
+          },
+          "disableIdentity": {
+            "type": "boolean",
+            "description": "Désactive les colonnes d'identité."
+          }
+        }
+      }
+    },
+    "csharp": {
+      "type": "array",
+      "description": "Liste de configs pour la génération de C#",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de C#.",
+        "additionalProperties": false,
+        "required": [ "tags" ],
+        "properties": {
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "outputDirectory": {
+            "type": "string",
+            "description": "Racine du répertoire de génération."
+          },
+          "persistantModelPath": {
+            "type": "string",
+            "description": "Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {module}/{app}.{module}DataContract."
+          },
+          "nonPersistantModelPath": {
+            "type": "string",
+            "description": "Localisation du modèle non-persisté, relative au répertoire de génération. Par défaut : {module}/{app}.{module}Contract/Dto."
+          },
+          "apiPath": {
+            "type": "string",
+            "description": "Localisation du l'API générée (client ou serveur), relatif au répertoire de génération. Par défaut : {app}.{module}."
+          },
+          "apiGeneration": {
+            "type": "string",
+            "description": "Mode de génération de l'API ('Client' ou 'Server')",
+            "enum": [ "Client", "Server" ]
+          },
+          "useEFMigrations": {
+            "type": "boolean",
+            "description": "Utilise les migrations EF pour créer/mettre à jour la base de données."
+          },
+          "dbContextPath": {
+            "type": "string",
+            "description": "Nom du projet dans lequel mettre le DbContext."
+          },
+          "noAsyncControllers": {
+            "type": "boolean",
+            "description": "Génère des contrôleurs d'API synchrones."
+          },
+          "useLowerCaseSqlNames": {
+            "type": "boolean",
+            "description": "Utilise des noms de tables et de colonnes en lowercase."
+          },
+          "dbSchema": {
+            "type": "string",
+            "description": "Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo')."
+          },
+          "useLatestCSharp": {
+            "type": "boolean",
+            "description": "Utilise les features C# 10 dans la génération."
+          },
+          "kinetix": {
+            "type": "string",
+            "description": "Version de kinetix utilisée: Core, Framework ou None.",
+            "enum": [ "Core", "Framework", "None" ]
+          },
+          "noColumnOnAlias": {
+            "type": "boolean",
+            "description": "Retire les attributs de colonnes sur les alias."
+          },
+          "noPersistance": {
+            "type": "boolean",
+            "description": "Considère tous les classes comme étant non-persistantes (= pas d'attribut SQL)."
+          },
+          "enumsForStaticReferences": {
+            "type": "boolean",
+            "description": "Utilise des enums au lieu de strings pour les PKs de listes de référence statiques."
+          }
+        }
+      }
+    },
+    "javascript": {
+      "type": "array",
+      "description": "Liste de configs pour la génération de Typescript.",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de Typescript.",
+        "additionalProperties": false,
+        "required": [ "tags" ],
+        "properties": {
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "modelOutputDirectory": {
+            "type": "string",
+            "description": "Chemin vers le dossier racine vers lequel générer les fichiers de modèle. Si non renseigné, aucun modèle ne sera généré."
+          },
+          "resourceOutputDirectory": {
+            "type": "string",
+            "description": "Chemin vers le dossier racine vers lequel générer les fichiers de ressources i18n. Si non renseigné, aucun fichier de sera généré."
+          },
+          "apiClientOutputDirectory": {
+            "type": "string",
+            "description": "Chemin vers le dossier racine vers lequel générer les fichiers de client d'API. Si non renseigné, aucun fichier de sera généré."
+          },
+          "fetchImportPath": {
+            "type": "string",
+            "description": "Chemin vers un 'fetch' personnalisé."
+          },
+          "focus": {
+            "type": "boolean",
+            "description": "Génère des modèles pour Focus (par défaut : true)."
+          },
+          "resourceMode": {
+            "type": "string",
+            "description": "Mode de génération (JS, JSON ou JSON Schema).",
+            "enum": [ "js", "json", "schema" ]
+          }
+        }
+      }
+    },
+    "jpa": {
+      "type": "array",
+      "description": "Liste de configs pour la génération Jpa",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de Jpa.",
+        "additionalProperties": false,
+        "required": [ "tags", "modelOutputDirectory", "daoPackageName" ],
+        "properties": {
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "apiOutputDirectory": {
+            "type": "string",
+            "description": "Dossier de sortie pour les Controllers."
+          },
+          "modelOutputDirectory": {
+            "type": "string",
+            "description": "Dossier de sortie pour le modèle."
+          },
+          "daoPackageName": {
+            "type": "string",
+            "description": "Précise le nom du package dans lequel générer les classes du modèle."
+          },
+          "apiPackageName": {
+            "type": "string",
+            "description": "Précise le nom du package dans lequel générer les controllers."
+          }
+        }
+      }
+    },
+    "kasper": {
+      "type": "array",
+      "description": "Liste de configs pour la génération Kasper",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de Kasper.",
+        "additionalProperties": false,
+        "required": [ "tags", "sourcesDirectory", "packageName" ],
+        "properties": {
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "sourcesDirectory": {
+            "type": "string",
+            "description": "Racine du répertoire où sont situées les sources Java."
+          },
+          "packageName": {
+            "type": "string",
+            "description": "Précise le nom du package dans lequel générer les classes."
+          }
+        }
+      }
+    }
+  }
+}
