@@ -19,7 +19,7 @@
     "directory": "TopModel.VSCode",
     "type": "git"
   },
-  "version": "0.0.1",
+  "version": "1.0.0-rc.5",
   "engines": {
     "vscode": "^1.62.0"
   },
@@ -29,7 +29,6 @@
   "activationEvents": [
     "onLanguage:yaml"
   ],
-  
   "contributes": {
     "commands": [
       {
@@ -81,6 +80,7 @@
     "vsce": "2.5.1"
   },
   "dependencies": {
+    "open": "^8.4.0",
     "vscode-jsonrpc": "^6.0.0",
     "vscode-languageclient": "^7.0.0"
   }

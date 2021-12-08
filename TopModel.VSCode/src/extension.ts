@@ -36,15 +36,15 @@ function createStatusBar() {
     topModelStatusBar.show();
 }
 
-function checkInstall(){
+function checkInstall() {
     function execute(command: string, callback: Function) {
         exec(command, function (error: string, stdout: string, stderr: string) { callback(stdout); });
     }
     execute('echo ;%PATH%; | find /C /I "dotnet"', async (dotnetIsInstalled: string) => {
         if (dotnetIsInstalled !== '1\r\n') {
-            const selection = await window.showInformationMessage('Dotnet is not installed', "Show download page")
+            const selection = await window.showInformationMessage('Dotnet is not installed', "Show download page");
             if (selection === "Show download page") {
-                open("https://dotnet.microsoft.com/download/dotnet/3.1");
+                open("https://dotnet.microsoft.com/download/dotnet/6.0");
             }
         } else {
             execute('dotnet tool list -g | find /C /I "topmodel"', async (result: string) => {
@@ -78,25 +78,29 @@ function registerCommands(context: ExtensionContext, configPath: any) {
     return NEXT_TERM_ID;
 }
 
-async function findConfFile() {
+async function findConfFile(): Promise<{ config?: TopModelConfig, configPath?: string }> {
     return workspace.findFiles("**/*.yaml").then((files) => {
-        let config;
-        let configPath;
+        let configs: TopModelConfig[] = [];
+        let configPaths: string[] = [];
         files.forEach((file) => {
             const doc = fs.readFileSync(file.path.replace("/c", "c"), "utf8");
             doc
                 .split("---")
-                .filter((e) => e)
+                .filter(e => e)
                 .map(yaml.load)
                 .map(e => e as TopModelConfig)
                 .forEach((e: TopModelConfig) => {
                     if (e.app) {
-                        config = e;
-                        configPath = file.path;
+                        configs.push(e);
+                        configPaths.push(file.path);
                     }
                 });
         });
-        return { config, configPath };
+        if (configs.length >= 1) {
+            window.showErrorMessage("Plusieurs fichiers de configuration trouvés. L'extension n'a pas démarré (coming soon)");
+            return { config: undefined, configPath: undefined }
+        }
+        return { config: configs[0], configPath: configPaths[0] };
     });
 }
 

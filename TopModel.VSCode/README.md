@@ -15,3 +15,4 @@ This extension provides a rich editing experience for TopModel `yml` files. Incl
 
 - Auto-import
 - Multi-config workspace
+- Alias properties completion
