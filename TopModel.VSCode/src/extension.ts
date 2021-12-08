@@ -3,13 +3,17 @@ import { Trace } from 'vscode-jsonrpc';
 import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment } from 'vscode';
 import * as fs from "fs";
 import { TopModelConfig } from './types';
+const open = require('open');
 
+var exec = require('child_process').exec;
 const yaml = require("js-yaml");
 
 let NEXT_TERM_ID = 1;
 
 export function activate(context: ExtensionContext) {
     createStatusBar();
+    checkInstall();
+
     findConfFile().then((conf) => {
         if (conf) {
             const config = ((conf as any).config) as TopModelConfig;
@@ -30,6 +34,31 @@ function createStatusBar() {
     topModelStatusBar.text = '$(loading) Topmodel';
     topModelStatusBar.tooltip = 'Topmodel is loading configuration';
     topModelStatusBar.show();
+}
+
+function checkInstall(){
+    function execute(command: string, callback: Function) {
+        exec(command, function (error: string, stdout: string, stderr: string) { callback(stdout); });
+    }
+    execute('echo ;%PATH%; | find /C /I "dotnet"', async (dotnetIsInstalled: string) => {
+        if (dotnetIsInstalled !== '1\r\n') {
+            const selection = await window.showInformationMessage('Dotnet is not installed', "Show download page")
+            if (selection === "Show download page") {
+                open("https://dotnet.microsoft.com/download/dotnet/3.1");
+            }
+        } else {
+            execute('dotnet tool list -g | find /C /I "topmodel"', async (result: string) => {
+                if (result !== '1\r\n') {
+                    const selection = await window.showInformationMessage('TopModel is not installed', "Install TopModel");
+                    if (selection === "Install TopModel") {
+                        const terminal = window.createTerminal("TopModel install");
+                        terminal.sendText("dotnet tool install --global TopModel.Generator --version 1.0.0-rc.5");
+                        terminal.show();
+                    }
+                }
+            });
+        }
+    });
 }
 
 function registerCommands(context: ExtensionContext, configPath: any) {

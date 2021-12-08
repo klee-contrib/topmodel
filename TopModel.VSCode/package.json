@@ -41,7 +41,7 @@
         "title": "TopModel : Start model generation (watch mode)"
       }
     ],
-    "jsonValidation": [
+    "yamlValidation": [
       {
         "fileMatch": "*.yaml",
         "url": "./schema.config.json"
