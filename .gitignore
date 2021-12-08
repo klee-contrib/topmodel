@@ -2,8 +2,9 @@
 .vscode
 bin
 obj
+out
+node_modules
 nupkg
-/TopModel.Generator/Properties/launchSettings.json
 *.user
 *.vsix
-package-lock.json
+launchSettings.json
