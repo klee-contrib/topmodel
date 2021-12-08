@@ -83,7 +83,7 @@ async function findConfFile(): Promise<{ config?: TopModelConfig, configPath?: s
         let configs: TopModelConfig[] = [];
         let configPaths: string[] = [];
         files.forEach((file) => {
-            const doc = fs.readFileSync(file.path.replace("/c", "c"), "utf8");
+            const doc = fs.readFileSync(file.path.substring(1), "utf8");
             doc
                 .split("---")
                 .filter(e => e)
@@ -96,7 +96,7 @@ async function findConfFile(): Promise<{ config?: TopModelConfig, configPath?: s
                     }
                 });
         });
-        if (configs.length >= 1) {
+        if (configs.length > 1) {
             window.showErrorMessage("Plusieurs fichiers de configuration trouvés. L'extension n'a pas démarré (coming soon)");
             return { config: undefined, configPath: undefined }
         }
