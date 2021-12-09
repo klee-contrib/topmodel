@@ -1,6 +1,6 @@
 # TopModel Language Service for VSCode
 
-![Features demo](https://github.com/JabX/topmodel/tree/language-server/TopModel.VSCode/demo.gif "Features demonstration")
+![Features demo](https://github.com/JabX/topmodel/blob/develop/TopModel.VSCode/demo.gif "Features demonstration")
 
 ## Features
 
