@@ -13,9 +13,8 @@ let NEXT_TERM_ID = 1;
 export function activate(context: ExtensionContext) {
     createStatusBar();
     checkInstall();
-
     findConfFile().then((conf) => {
-        if (conf) {
+        if (conf?.configPath) {
             const config = ((conf as any).config) as TopModelConfig;
             const configPath = (conf as any).configPath;
             startLanguageServer(context, configPath, config);
@@ -157,4 +156,5 @@ function handleLsReady(config: TopModelConfig, context: ExtensionContext): void 
 function handleNoConfigFound(): void {
     topModelStatusBar.text = "$(diff-review-close) TopModel";
     topModelStatusBar.tooltip = "TopModel is not running";
+    
 }
