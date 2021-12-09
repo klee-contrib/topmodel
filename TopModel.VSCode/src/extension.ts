@@ -98,7 +98,7 @@ async function findConfFile(): Promise<{ config?: TopModelConfig, configPath?: s
         });
         if (configs.length > 1) {
             window.showErrorMessage("Plusieurs fichiers de configuration trouvés. L'extension n'a pas démarré (coming soon)");
-            return { config: undefined, configPath: undefined }
+            return { config: undefined, configPath: undefined };
         }
         return { config: configs[0], configPath: configPaths[0] };
     });
@@ -108,7 +108,7 @@ function startLanguageServer(context: ExtensionContext, configPath: any, config:
     // The server is implemented in node
     let serverExe = 'dotnet';
 
-    const args = [context.asAbsolutePath("./net6.0/TopModel.LanguageServer.dll")];
+    const args = [context.asAbsolutePath("./language-server/TopModel.LanguageServer.dll")];
     const configRelativePath = workspace.asRelativePath(configPath);
     args.push(configRelativePath);
     let serverOptions: ServerOptions = {

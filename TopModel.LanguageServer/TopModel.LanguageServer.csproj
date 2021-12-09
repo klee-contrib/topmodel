@@ -5,6 +5,9 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PublishDir>../TopModel.VSCode/language-server</PublishDir>
+    <ResourceLanguages>en</ResourceLanguages>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,5 +18,9 @@
   <ItemGroup>
     <ProjectReference Include="..\TopModel.Core\TopModel.Core.csproj" />
   </ItemGroup>
+
+  <Target Name="PostPublish" AfterTargets="Publish">
+    <Delete Files="$(PublishDir)/System.Reactive.xml" />
+  </Target>
 
 </Project>

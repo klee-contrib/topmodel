@@ -37,9 +37,6 @@
 
   <ItemGroup>
     <None Remove="nupkg\**" />
-    <None Update="schema.config.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

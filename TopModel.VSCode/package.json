@@ -2,7 +2,7 @@
   "name": "topmodel",
   "displayName": "topmodel",
   "description": "Extension pour TopModel",
-  "publisher": "Jabx",
+  "publisher": "JabX",
   "contributors": [
     {
       "name": "gideruette"
@@ -19,7 +19,7 @@
     "directory": "TopModel.VSCode",
     "type": "git"
   },
-  "version": "1.0.0-rc.5",
+  "version": "1.0.0-beta.0",
   "engines": {
     "vscode": "^1.62.0"
   },
@@ -43,45 +43,37 @@
     "yamlValidation": [
       {
         "fileMatch": "*.yaml",
-        "url": "./schema.config.json"
+        "url": "./language-server/schema.config.json"
       },
       {
         "fileMatch": "*.yml",
-        "url": "./schema.json"
+        "url": "./language-server/schema.json"
       }
     ]
   },
   "main": "./out/main.js",
   "scripts": {
-    "vscode:prepublish": "npm run esbuild-base -- --minify",
-    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
-    "esbuild": "npm run esbuild-base -- --sourcemap",
-    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "package": "vsce package",
-    "pretest": "npm run compile && npm run lint",
+    "build": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
-  },
-  "devDependencies": {
-    "@types/glob": "^7.1.4",
-    "@types/mocha": "^9.0.0",
-    "@types/node": "14.x",
-    "@types/vscode": "^1.62.0",
-    "@typescript-eslint/eslint-plugin": "^5.1.0",
-    "@typescript-eslint/parser": "^5.1.0",
-    "@vscode/test-electron": "^1.6.2",
-    "esbuild": "^0.14.1",
-    "eslint": "^8.1.0",
-    "glob": "^7.1.7",
-    "mocha": "^9.1.3",
-    "typescript": "^4.4.4",
-    "vsce": "2.5.1"
+    "package": "vsce package",
+    "start": "npm run build -- --sourcemap --watch",
+    "vscode:prepublish": "npm run build -- --minify"
   },
   "dependencies": {
     "open": "^8.4.0",
     "vscode-jsonrpc": "^6.0.0",
     "vscode-languageclient": "^7.0.0"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.4",
+    "@types/node": "14.x",
+    "@types/vscode": "^1.62.0",
+    "@typescript-eslint/eslint-plugin": "^5.1.0",
+    "@typescript-eslint/parser": "^5.1.0",
+    "esbuild": "^0.14.1",
+    "eslint": "^8.1.0",
+    "glob": "^7.1.7",
+    "typescript": "^4.4.4",
+    "vsce": "2.5.1"
   }
 }

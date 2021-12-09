@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="schema.config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="schema.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

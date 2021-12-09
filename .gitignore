@@ -4,6 +4,7 @@ bin
 obj
 out
 node_modules
+language-server
 nupkg
 *.user
 *.vsix
