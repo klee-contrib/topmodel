@@ -63,7 +63,7 @@ public class ProfilDto implements Serializable {
      *
      * @return value of UtilisateurDto.
      */
-    public List<UtilisateurDto> getUtilisateursList() {
+    public List<UtilisateurDto> getUtilisateurs() {
         if(utilisateurs == null) this.utilisateurDto = new ArrayList<>();
         return this.utilisateurs;
     }
