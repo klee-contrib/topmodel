@@ -52,7 +52,7 @@ public class Profil implements Serializable {
      * @return value of id.
      */
     @Id
-    @SequenceGenerator(name = "SEQ_PROFIL", sequenceName = "SEQ_PROFIL", allocationSize = 1)
+    @SequenceGenerator(name = "SEQ_PROFIL", sequenceName = "SEQ_PROFIL",  initialValue = 1000, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PROFIL")
     @Column(name = "ID", nullable = false)
     public long getId() {

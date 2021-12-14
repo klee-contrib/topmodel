@@ -20,3 +20,7 @@ class:
     - alias:
         class: Profil
       prefix: true
+    - composition: UtilisateurDto
+      name: UtilisateurParent
+      comment: UtilisateurParent
+      kind: object

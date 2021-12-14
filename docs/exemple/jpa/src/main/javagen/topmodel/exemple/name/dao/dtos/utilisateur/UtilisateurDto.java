@@ -40,6 +40,7 @@ public class UtilisateurDto implements Serializable {
     private TypeUtilisateurCode typeUtilisateurCodeOneToOneType;
     private long profilId;
     private TypeProfilCode profilTypeProfilCode;
+    private UtilisateurDto utilisateurParent;
 
     /**
      * Id technique.
@@ -101,5 +102,14 @@ public class UtilisateurDto implements Serializable {
      */
     public TypeProfilCode getProfilTypeProfilCode() {
          return this.profilTypeProfilCode;
+    }
+
+    /**
+     * UtilisateurParent.
+     *
+     * @return value of UtilisateurDto.
+     */
+    public UtilisateurDto getUtilisateurParent() {
+        return this.utilisateurParent;
     }
 }

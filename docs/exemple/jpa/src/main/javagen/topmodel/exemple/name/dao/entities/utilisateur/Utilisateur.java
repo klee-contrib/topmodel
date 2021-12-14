@@ -5,6 +5,7 @@
 package topmodel.exemple.name.dao.entities.utilisateur;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.DateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,6 +13,7 @@ import java.util.Set;
 import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -71,7 +73,7 @@ public class Utilisateur implements Serializable {
      * @return value of id.
      */
     @Id
-    @SequenceGenerator(name = "SEQ_UTILISATEUR", sequenceName = "SEQ_UTILISATEUR", allocationSize = 1)
+    @SequenceGenerator(name = "SEQ_UTILISATEUR", sequenceName = "SEQ_UTILISATEUR",  initialValue = 1000, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_UTILISATEUR")
     @Column(name = "ID", nullable = false)
     public long getId() {

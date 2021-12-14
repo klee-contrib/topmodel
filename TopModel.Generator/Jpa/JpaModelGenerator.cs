@@ -279,14 +279,19 @@ public class JpaModelGenerator : GeneratorBase
             {
                 fw.WriteReturns(1, $"value of {cp.Composition.Name}");
                 fw.WriteDocEnd(1);
-                fw.WriteLine(1, @$"public {cp.GetJavaType()} get{cp.Composition.Name.ToFirstUpper()}() {{");
+                string methodName = @$"get{cp.Name.ToFirstUpper()}";
+                if (cp.Kind == "list")
+                {
+                    methodName += "List";
+                }
+                fw.WriteLine(1, @$"public {cp.GetJavaType()} {methodName}() {{");
 
                 if (cp.Kind == "list")
                 {
-                    fw.WriteLine(2, @$"if({cp.Name.ToFirstLower()} == null) this.{cp.Name.ToFirstLower()} = new ArrayList<>();");
+                    fw.WriteLine(2, @$"if({cp.Name.ToFirstLower()} == null) this.{cp.Composition.Name.ToFirstLower()} = new ArrayList<>();");
                 }
 
-                fw.WriteLine(2, @$"return this.{cp.Name};");
+                fw.WriteLine(2, @$"return this.{cp.Name.ToFirstLower()};");
             }
             else if (property is IFieldProperty field)
             {
