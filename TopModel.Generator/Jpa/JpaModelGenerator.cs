@@ -280,10 +280,6 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteReturns(1, $"value of {cp.Composition.Name}");
                 fw.WriteDocEnd(1);
                 string methodName = @$"get{cp.Name.ToFirstUpper()}";
-                if (cp.Kind == "list")
-                {
-                    methodName += "List";
-                }
                 fw.WriteLine(1, @$"public {cp.GetJavaType()} {methodName}() {{");
 
                 if (cp.Kind == "list")
