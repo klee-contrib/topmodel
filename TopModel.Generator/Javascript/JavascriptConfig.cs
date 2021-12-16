@@ -44,4 +44,9 @@ public class JavascriptConfig : GeneratorConfigBase
     /// Mode de génération (JS ou JSON Schema).
     /// </summary>
     public ResourceMode ResourceMode { get; set; }
+
+    /// <summary>
+    /// Si la liste des valeurs de la liste de référence doit être générée
+    /// </summary>
+    public ReferenceMode ReferenceMode { get; set; } = ReferenceMode.DEFINITION;
 }
