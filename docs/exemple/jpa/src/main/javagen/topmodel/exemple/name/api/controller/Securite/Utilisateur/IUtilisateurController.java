@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-package topmodel.exemple.name.api.controller.utilisateur;
+package topmodel.exemple.name.api.controller.securite.utilisateur;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +25,8 @@ import topmodel.exemple.name.dao.references.utilisateur.TypeUtilisateurCode;
 
 @RestController
 @Generated("TopModel : https://github.com/JabX/topmodel")
-@RequestMapping("utilisateur")
-public interface IutilisateurController {
+@RequestMapping("securite.utilisateur")
+public interface IUtilisateurController {
 
 
     /**
@@ -34,7 +34,7 @@ public interface IutilisateurController {
      * @param utilisateurId Id technique
      * @return Le détail de l'utilisateur
      */
-    @GetMapping("/{utiId}")
+    @GetMapping("utilisateur/{utiId}")
     default UtilisateurDto getUtilisateurMapping(@RequestParam("utilisateurId") long utilisateurId) {
         return this.getUtilisateur(utilisateurId);
     }
@@ -51,7 +51,7 @@ public interface IutilisateurController {
      * @param typeUtilisateurCode Type d'utilisateur en Many to one
      * @return Liste des utilisateurs
      */
-    @GetMapping("/list")
+    @GetMapping("utilisateur/list")
     default List<UtilisateurDto> getUtilisateurListMapping(@RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode) {
         return this.getUtilisateurList(typeUtilisateurCode);
     }
@@ -68,7 +68,7 @@ public interface IutilisateurController {
      * @param utilisateur Utilisateur à sauvegarder
      * @return Utilisateur sauvegardé
      */
-    @PostMapping("/save")
+    @PostMapping("utilisateur/save")
     default UtilisateurDto saveUtilisateurMapping(@RequestBody @Valid UtilisateurDto utilisateur) {
         return this.saveUtilisateur(utilisateur);
     }
@@ -85,7 +85,7 @@ public interface IutilisateurController {
      * @param utilisateur Utilisateur à sauvegarder
      * @return Utilisateur sauvegardé
      */
-    @PostMapping("/saveAll")
+    @PostMapping("utilisateur/saveAll")
     default List<UtilisateurDto> saveAllUtilisateurMapping(@RequestBody @Valid List<UtilisateurDto> utilisateur) {
         return this.saveAllUtilisateur(utilisateur);
     }
@@ -107,7 +107,7 @@ public interface IutilisateurController {
      * @param profilTypeProfilCode Type de profil
      * @return Utilisateurs matchant les critères
      */
-    @PostMapping("/search")
+    @PostMapping("utilisateur/search")
     default Page<UtilisateurDto> searchMapping(@RequestParam("utilisateurId") long utilisateurId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode, @RequestParam("typeUtilisateurCodeOneToOneType") TypeUtilisateurCode typeUtilisateurCodeOneToOneType, @RequestParam("profilProfilId") long profilProfilId, @RequestParam("profilTypeProfilCode") TypeProfilCode profilTypeProfilCode) {
         return this.search(utilisateurId, email, typeUtilisateurCode, typeUtilisateurCodeOneToOneType, profilProfilId, profilTypeProfilCode);
     }

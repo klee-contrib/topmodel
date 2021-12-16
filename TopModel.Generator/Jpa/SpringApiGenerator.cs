@@ -41,12 +41,10 @@ public class SpringApiGenerator : GeneratorBase
             CheckEndpoint(endpoint);
         }
 
-        var destFolder = Path.Combine(_config.ApiOutputDirectory, Path.Combine(_config.ApiPackageName.Split(".")), "controller", file.Module.Replace('.', '/').ToLower());
+        var destFolder = Path.Combine(_config.ApiOutputDirectory, Path.Combine(_config.ApiPackageName.Split(".")), "controller", Path.Combine(file.Module.Split(".")));
         Directory.CreateDirectory(destFolder);
 
-        var fileSplit = file.Name.Split("/");
-        var filePath = fileSplit.Length > 1 ? string.Join("/", fileSplit[1..]) : file.Name;
-
+        var filePath = file.Name.Split("/").Last();
         var fileName = $"I{filePath.ToFirstUpper()}Controller.java";
 
         using var fw = new JavaWriter($"{destFolder}/{fileName}", _logger, null);
@@ -58,7 +56,7 @@ public class SpringApiGenerator : GeneratorBase
         fw.WriteLine("@RestController");
         fw.WriteLine("@Generated(\"TopModel : https://github.com/JabX/topmodel\")");
         fw.WriteLine(@$"@RequestMapping(""{file.Module.ToLower()}"")");
-        fw.WriteLine($"public interface I{filePath}Controller {{");
+        fw.WriteLine($"public interface I{filePath.ToFirstUpper()}Controller {{");
 
         fw.WriteLine();
 
@@ -194,7 +192,7 @@ public class SpringApiGenerator : GeneratorBase
             imports.Add("org.springframework.web.bind.annotation.RequestBody");
             imports.Add("javax.validation.Valid");
         }
-
+        imports.Select(imp => imp != "java.util.ArrayList"); // Hack pour éviter d'avoir un import inutile
         fw.WriteImports(imports.Distinct().ToArray());
     }
 
