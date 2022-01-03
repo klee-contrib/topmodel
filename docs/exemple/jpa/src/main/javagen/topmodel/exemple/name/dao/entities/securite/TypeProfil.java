@@ -36,7 +36,7 @@ import topmodel.exemple.name.dao.references.securite.TypeProfilCode;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Generated("TopModel : https://github.com/JabX/topmodel")
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
 @Table(name = "TYPE_PROFIL")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)

@@ -54,7 +54,7 @@ public class SpringApiGenerator : GeneratorBase
         WriteImports(file, fw);
         fw.WriteLine();
         fw.WriteLine("@RestController");
-        fw.WriteLine("@Generated(\"TopModel : https://github.com/JabX/topmodel\")");
+        fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
         fw.WriteLine(@$"@RequestMapping(""{file.Module.ToLower()}"")");
         fw.WriteLine($"public interface I{filePath.ToFirstUpper()}Controller {{");
 

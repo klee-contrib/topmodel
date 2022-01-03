@@ -165,7 +165,7 @@ public class JpaModelGenerator : GeneratorBase
         fw.WriteLine("@AllArgsConstructor");
         fw.WriteLine("@EqualsAndHashCode");
         fw.WriteLine("@ToString");
-        fw.WriteLine("@Generated(\"TopModel : https://github.com/JabX/topmodel\")");
+        fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
 
         if (classe.IsPersistent)
         {

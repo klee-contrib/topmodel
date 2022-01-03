@@ -29,7 +29,7 @@ import topmodel.exemple.name.dao.references.securite.TypeProfilCode;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Generated("TopModel : https://github.com/JabX/topmodel")
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class ProfilDto implements Serializable {
 	/** Serial ID */
     private static final long serialVersionUID = 1L;

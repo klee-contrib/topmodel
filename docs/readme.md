@@ -11,8 +11,8 @@ Il est vivement conseillé d'éditer les fichiers de modèles avec VSCode, muni 
 ```json
 {
   "yaml.schemas": {
-    "https://raw.githubusercontent.com/JabX/topmodel/develop/TopModel.Core/schema.json": "*.yml",
-    "https://raw.githubusercontent.com/JabX/topmodel/develop/TopModel.Generator/schema.config.json": "*.yaml"
+    "https://raw.githubusercontent.com/klee-contrib/topmodel/develop/TopModel.Core/schema.json": "*.yml",
+    "https://raw.githubusercontent.com/klee-contrib/topmodel/develop/TopModel.Generator/schema.config.json": "*.yaml"
   }
 }
 ```

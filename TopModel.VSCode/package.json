@@ -15,7 +15,7 @@
     "redhat.vscode-yaml"
   ],
   "repository": {
-    "url": "https://github.com/JabX/topmodel",
+    "url": "https://github.com/klee-contrib/topmodel",
     "directory": "TopModel.VSCode",
     "type": "git"
   },

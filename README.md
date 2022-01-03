@@ -10,4 +10,4 @@ On retrouve dans ce repository :
 - **TopModel.Generator**, un générateur de code C#, SQL (classique ou SSDT) et de modèles [focus](https://www.github.com/KleeGroup/focus4), à partir des modèles TopModel.
 - **TopModel.UI**, un outil de visualisation de modèle TopModel.
 
-[La documentation est par ici](https://jabx.github.io/topmodel)
+[La documentation est par ici](https://klee-contrib.github.io/topmodel)

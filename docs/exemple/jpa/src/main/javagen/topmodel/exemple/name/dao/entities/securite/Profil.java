@@ -36,7 +36,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Generated("TopModel : https://github.com/JabX/topmodel")
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
 @Table(name = "PROFIL")
 public class Profil implements Serializable {

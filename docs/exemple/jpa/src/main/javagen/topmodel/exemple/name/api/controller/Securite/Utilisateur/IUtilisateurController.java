@@ -24,7 +24,7 @@ import topmodel.exemple.name.dao.references.securite.TypeProfilCode;
 import topmodel.exemple.name.dao.references.utilisateur.TypeUtilisateurCode;
 
 @RestController
-@Generated("TopModel : https://github.com/JabX/topmodel")
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @RequestMapping("securite.utilisateur")
 public interface IUtilisateurController {
 

@@ -51,7 +51,7 @@ import topmodel.exemple.name.dao.entities.securite.Profil;
 @AllArgsConstructor
 @EqualsAndHashCode
 @ToString
-@Generated("TopModel : https://github.com/JabX/topmodel")
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
 @Table(name = "UTILISATEUR")
 @EntityListeners(AuditingEntityListener.class)
