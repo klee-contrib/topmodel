@@ -247,15 +247,15 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteReturns(1, $"value of {ap.GetAssociationName()}");
                 fw.WriteDocEnd(1);
                 var fk = (ap.Role is not null ? ModelUtils.ConvertCsharp2Bdd(ap.Role) + "_" : string.Empty) + ap.Association.PrimaryKey!.SqlName;
-                var pk = ap.Association.PrimaryKey.SqlName;
+                var pk = classe.PrimaryKey!.SqlName;
                 switch (ap.Type)
                 {
                     case AssociationType.ManyToOne:
                         fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY)");
-                        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{pk}"")");
+                        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{fk}"")");
                         break;
                     case AssociationType.OneToMany:
-                        fw.WriteLine(1, @$"@{ap.Type}(cascade=CascadeType.ALL, mappedBy = ""{classe.Name.ToFirstLower()}"", orphanRemoval = true)");
+                        fw.WriteLine(1, @$"@{ap.Type}(cascade=CascadeType.ALL, orphanRemoval = true)");
                         break;
                     case AssociationType.ManyToMany:
                         fw.WriteLine(1, @$"@{ap.Type}");
@@ -263,7 +263,7 @@ public class JpaModelGenerator : GeneratorBase
                         break;
                     case AssociationType.OneToOne:
                         fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY)");
-                        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{pk}"")");
+                        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{fk}"")");
                         break;
                 }
 
