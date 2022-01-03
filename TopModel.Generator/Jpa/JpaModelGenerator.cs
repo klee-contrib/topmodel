@@ -248,11 +248,12 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteDocEnd(1);
                 var fk = (ap.Role is not null ? ModelUtils.ConvertCsharp2Bdd(ap.Role) + "_" : string.Empty) + ap.Association.PrimaryKey!.SqlName;
                 var pk = classe.PrimaryKey!.SqlName;
+                var apk = ap.Association.PrimaryKey.SqlName;
                 switch (ap.Type)
                 {
                     case AssociationType.ManyToOne:
                         fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY)");
-                        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{fk}"")");
+                        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
                         break;
                     case AssociationType.OneToMany:
                         fw.WriteLine(1, @$"@{ap.Type}(cascade=CascadeType.ALL, orphanRemoval = true)");
