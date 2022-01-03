@@ -26,13 +26,50 @@ public class ModelFileLoader
         var parser = new Parser(new StringReader(content));
         parser.Consume<StreamStart>();
 
-        var file = _fileChecker.Deserialize<ModelFile>(parser);
-        file.Path = filePath.ToRelative();
-        file.Name = _config.GetFileName(filePath);
-        file.Classes = new List<Class>();
-        file.Domains = new List<Domain>();
-        file.Endpoints = new List<Endpoint>();
-        file.Aliases = new List<Alias>();
+        parser.Consume<DocumentStart>();
+        parser.Consume<MappingStart>();
+
+        var file = new ModelFile
+        {
+            Name = _config.GetFileName(filePath),
+            Path = filePath.ToRelative(),
+        };
+
+        while (parser.Current is not MappingEnd)
+        {
+            var prop = parser.Consume<Scalar>().Value;
+            parser.TryConsume<Scalar>(out var value);
+
+            switch (prop)
+            {
+                case "module":
+                    file.Module = value!.Value;
+                    break;
+                case "tags":
+                    parser.Consume<SequenceStart>();
+
+                    while (parser.Current is not SequenceEnd)
+                    {
+                        file.Tags.Add(parser.Consume<Scalar>().Value);
+                    }
+
+                    parser.Consume<SequenceEnd>();
+                    break;
+                case "uses":
+                    parser.Consume<SequenceStart>();
+
+                    while (parser.Current is not SequenceEnd)
+                    {
+                        file.Uses.Add(new Reference(parser.Consume<Scalar>()));
+                    }
+
+                    parser.Consume<SequenceEnd>();
+                    break;
+            }
+        }
+
+        parser.Consume<MappingEnd>();
+        parser.Consume<DocumentEnd>();
 
         while (parser.TryConsume<DocumentStart>(out var _))
         {

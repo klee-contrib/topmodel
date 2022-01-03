@@ -7,17 +7,17 @@ public class ModelFile
 
     public IList<string> Tags { get; set; } = new List<string>();
 
-    public IList<string> Uses { get; set; } = new List<string>();
+    public IList<Reference> Uses { get; set; } = new List<Reference>();
 
     public string Name { get; set; }
 
     public string Path { get; set; }
 
-    public IList<Class> Classes { get; set; }
+    public IList<Class> Classes { get; set; } = new List<Class>();
 
-    public IList<Domain> Domains { get; set; }
+    public IList<Domain> Domains { get; set; } = new List<Domain>();
 
-    public IList<Endpoint> Endpoints { get; set; }
+    public IList<Endpoint> Endpoints { get; set; } = new List<Endpoint>();
 
     public IDictionary<Reference, object> References => Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object))
         .Concat(Properties.OfType<RegularProperty>().Select(p => (p.DomainReference as Reference, p.Domain as object)))
@@ -34,7 +34,7 @@ public class ModelFile
         .Where(p => p != null)
         .ToList();
 
-    internal IList<Alias> Aliases { get; set; }
+    internal IList<Alias> Aliases { get; set; } = new List<Alias>();
 
     internal List<object> ResolvedAliases { get; set; } = new();
 

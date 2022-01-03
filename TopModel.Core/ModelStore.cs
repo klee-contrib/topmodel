@@ -161,7 +161,7 @@ public class ModelStore
     {
         foundFiles ??= new();
 
-        foreach (var file in _modelFiles.Values.Where(f => fileNames.Contains(f.Name) || f.Uses.Any(d => fileNames.Contains(d))))
+        foreach (var file in _modelFiles.Values.Where(f => fileNames.Contains(f.Name) || f.Uses.Any(d => fileNames.Contains(d.ReferenceName))))
         {
             if (!foundFiles.Contains(file.Name))
             {
@@ -179,7 +179,7 @@ public class ModelStore
     private IEnumerable<ModelFile> GetDependencies(ModelFile modelFile)
     {
         return modelFile.Uses
-           .Select(dep => _modelFiles.TryGetValue(dep, out var depFile) ? depFile : null!)
+           .Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
            .Where(dep => dep != null);
     }
 
@@ -225,10 +225,10 @@ public class ModelStore
 
     private IEnumerable<ModelError> ResolveReferences(ModelFile modelFile)
     {
-        var nonExistingFiles = modelFile.Uses.Where(use => !_modelFiles.TryGetValue(use, out var _));
+        var nonExistingFiles = modelFile.Uses.Where(use => !_modelFiles.TryGetValue(use.ReferenceName, out var _));
         foreach (var use in nonExistingFiles)
         {
-            yield return new ModelError(modelFile, $"Le fichier référencé '{use}' est introuvable.");
+            yield return new ModelError(modelFile, $"Le fichier référencé '{use.ReferenceName}' est introuvable.", use);
         }
 
         var dependencies = GetDependencies(modelFile).ToList();
@@ -468,10 +468,11 @@ public class ModelStore
 
         foreach (var use in modelFile.Uses
             .Except(nonExistingFiles)
-            .Except(modelFile.Aliases.Select(alias => alias.File))
-            .Except(modelFile.References.Values.Select(r => r.GetFile().Name)))
+            .Where(use => !modelFile.Aliases.Select(alias => alias.File)
+                .Concat(modelFile.References.Values.Select(r => r.GetFile().Name))
+                .Contains(use.ReferenceName)))
         {
-            yield return new ModelError(modelFile, $"L'import '{use}' n'est pas utilisé.") { IsError = false };
+            yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false };
         }
     }
 }
