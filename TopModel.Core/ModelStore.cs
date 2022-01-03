@@ -126,13 +126,18 @@ public class ModelStore
                         .ToDictionary(i => i.file, i => i.errors));
                 }
 
-                if (referenceErrors.Any())
+                foreach (var error in referenceErrors.Where(e => e.IsError))
                 {
-                    foreach (var error in referenceErrors)
-                    {
-                        _logger.LogError(error.ToString());
-                    }
+                    _logger.LogError(error.ToString());
+                }
 
+                foreach (var error in referenceErrors.Where(e => !e.IsError))
+                {
+                    _logger.LogWarning(error.ToString());
+                }
+
+                if (referenceErrors.Any(r => r.IsError))
+                {
                     throw new ModelException("Erreur lors de la lecture du modèle.");
                 }
 
@@ -174,16 +179,8 @@ public class ModelStore
     private IEnumerable<ModelFile> GetDependencies(ModelFile modelFile)
     {
         return modelFile.Uses
-           .Select(dep =>
-           {
-               if (!_modelFiles.TryGetValue(dep, out var depFile))
-               {
-                   _logger.LogError($"{modelFile.Path}[6,0] - Le fichier référencé '{dep}' est introuvable.");
-                   throw new ModelException($"Erreur lors de la résolution des dépendances");
-               }
-
-               return depFile;
-           });
+           .Select(dep => _modelFiles.TryGetValue(dep, out var depFile) ? depFile : null!)
+           .Where(dep => dep != null);
     }
 
     private void OnFSChangedEvent(object sender, FileSystemEventArgs e)
@@ -228,6 +225,12 @@ public class ModelStore
 
     private IEnumerable<ModelError> ResolveReferences(ModelFile modelFile)
     {
+        var nonExistingFiles = modelFile.Uses.Where(use => !_modelFiles.TryGetValue(use, out var _));
+        foreach (var use in nonExistingFiles)
+        {
+            yield return new ModelError(modelFile, $"Le fichier référencé '{use}' est introuvable.");
+        }
+
         var dependencies = GetDependencies(modelFile).ToList();
 
         var fileClasses = modelFile.Classes.Where(c => !modelFile.ResolvedAliases.Contains(c));
@@ -241,7 +244,7 @@ public class ModelStore
             if (!referencedClasses.TryGetValue(classe.ExtendsReference!.ReferenceName, out var extends))
             {
                 yield return new ModelError(classe, "La classe '{0}' est introuvable dans le fichier ou l'un de ses dépendances.", classe.ExtendsReference!);
-                break;
+                continue;
             }
 
             classe.Extends = extends;
@@ -316,7 +319,7 @@ public class ModelStore
             if (!referencedClasses.TryGetValue(alp.Property.Class.Name, out var aliasedClass))
             {
                 yield return new ModelError(alp, $"La classe '{alp.Property.Class.Name}' est introuvable dans le fichier ou l'une de ses dépendances.");
-                break;
+                continue;
             }
 
             var propName = alp.PropertyReference?.ReferenceName ?? alp.Property.Name;
@@ -324,7 +327,7 @@ public class ModelStore
             if (aliasedProperty == null)
             {
                 yield return new ModelError(alp, $"La propriété '{propName}' est introuvable sur la classe '{aliasedClass}'.", alp.PropertyReference);
-                break;
+                continue;
             }
 
             alp.Property = aliasedProperty;
@@ -335,7 +338,7 @@ public class ModelStore
             if (!referencedClasses.TryGetValue(alp.Reference!.ReferenceName, out var aliasedClass))
             {
                 yield return new ModelError(alp, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", alp.Reference);
-                break;
+                continue;
             }
 
             var shouldBreak = false;
@@ -351,7 +354,7 @@ public class ModelStore
 
             if (shouldBreak)
             {
-                break;
+                continue;
             }
 
             var propertiesToAlias =
@@ -402,7 +405,7 @@ public class ModelStore
             if (referencedFile == null)
             {
                 yield return new ModelError(alias, $"Le fichier '{alias.File}' est introuvable dans les dépendances du fichier.");
-                break;
+                continue;
             }
 
             foreach (var className in alias.Classes)
@@ -411,7 +414,7 @@ public class ModelStore
                 if (referencedClass == null)
                 {
                     yield return new ModelError(alias, $"La classe '{className}' est introuvable dans le fichier '{alias.File}'.");
-                    break;
+                    continue;
                 }
 
                 var existingClasse = modelFile.Classes.SingleOrDefault(classe => classe.Name == referencedClass.Name);
@@ -434,7 +437,7 @@ public class ModelStore
                 if (referencedEndpoint == null)
                 {
                     yield return new ModelError(alias, $"L'endpoint '{endpointName}' est introuvable dans le fichier '{alias.File}'.");
-                    break;
+                    continue;
                 }
 
                 var existingEndpoint = modelFile.Endpoints.SingleOrDefault(endpoint => endpoint.Name == referencedEndpoint.Name);
@@ -461,6 +464,14 @@ public class ModelStore
                     yield return new ModelError(classe, $"La classe '{classe.Name}' doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvées).");
                 }
             }
+        }
+
+        foreach (var use in modelFile.Uses
+            .Except(nonExistingFiles)
+            .Except(modelFile.Aliases.Select(alias => alias.File))
+            .Except(modelFile.References.Values.Select(r => r.GetFile().Name)))
+        {
+            yield return new ModelError(modelFile, $"L'import '{use}' n'est pas utilisé.") { IsError = false };
         }
     }
 }

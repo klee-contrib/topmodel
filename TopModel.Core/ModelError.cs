@@ -16,6 +16,8 @@ public class ModelError
         _reference = reference;
     }
 
+    public bool IsError { get; init; } = true;
+
     public ModelFile File => _objet.GetFile();
 
     public Class? Class => _objet switch
