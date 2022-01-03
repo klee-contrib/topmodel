@@ -48,15 +48,34 @@ class CompletionHandler : CompletionHandlerBase
             if (file != null)
             {
                 var currentText = currentLine.Split(":")[1].Trim();
+                var availableClasses = new HashSet<Class>(_modelStore.GetAvailableClasses(file));
+
+                var hasUses = text.Contains("uses:");
+                var firstItemIndex = text.Split(Environment.NewLine).ToList().FindIndex(line => line.Contains("class:") || line.Contains("endpoint:"));
+
+                var useIndex = firstItemIndex - 1;
+                while (useIndex > 0 && string.IsNullOrWhiteSpace(text.Split(Environment.NewLine).ElementAt(useIndex - 1)))
+                {
+                    useIndex--;
+                }
+
                 return Task.FromResult(new CompletionList(
-                    _modelStore.GetAvailableClasses(file)
-                        .OrderBy(domain => domain.Name)
-                        .Where(domain => domain.Name.ToLower().ShouldMatch(currentText))
-                        .Select(domain => new CompletionItem
+                    _modelStore.Classes
+                        .Where(classe => classe.Name.ToLower().ShouldMatch(currentText))
+                        .Select(classe => new CompletionItem
                         {
                             Kind = CompletionItemKind.Class,
-                            Label = domain.Name
-                        })));
+                            Label = availableClasses.Contains(classe) ? classe.Name : $"{classe.Name} - ({classe.ModelFile.Name})",
+                            InsertText = classe.Name,
+                            SortText = availableClasses.Contains(classe) ? "0000" + classe.Name : classe.Name,
+                            AdditionalTextEdits = !availableClasses.Contains(classe) ?
+                                new TextEditContainer(new TextEdit
+                                {
+                                    NewText = hasUses ? $"  - {classe.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {classe.ModelFile.Name}{Environment.NewLine}",
+                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
+                                })
+                                : null
+                        }))); ;
             }
         }
 

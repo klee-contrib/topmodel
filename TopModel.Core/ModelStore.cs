@@ -28,7 +28,7 @@ public class ModelStore
         _modelWatchers = modelWatchers;
     }
 
-    public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes);
+    public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes).Distinct();
 
     public IDictionary<string, Domain> Domains => _modelFiles.SelectMany(mf => mf.Value.Domains).ToDictionary(d => d.Name, d => d);
 
