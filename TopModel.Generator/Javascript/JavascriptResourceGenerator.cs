@@ -113,6 +113,12 @@ public class JavascriptResourceGenerator : GeneratorBase
 
         foreach (var property in classe.Properties)
         {
+            if (property is AliasProperty alp && alp.Label == alp.Property.Label)
+            {
+                i++;
+                continue;
+            }
+
             fw.Write($"        {Quote(property.Name)}: ");
 
             if (_config.ResourceMode == ResourceMode.Schema)
