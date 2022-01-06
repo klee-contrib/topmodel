@@ -316,11 +316,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                 fw.Write(",\r\n        isRequired: ");
                 fw.Write((field.Required && !field.PrimaryKey).ToString().ToFirstLower());
                 fw.Write(",\r\n        label: \"");
-                fw.Write(classe.Namespace.Module.ToFirstLower());
-                fw.Write(".");
-                fw.Write(classe.Name.ToFirstLower());
-                fw.Write(".");
-                fw.Write(property.Name.ToFirstLower());
+                fw.Write(field.ResourceKey);
                 fw.Write("\"\r\n");
             }
             else if (property is CompositionProperty cp3 && cp3.DomainKind != null)
