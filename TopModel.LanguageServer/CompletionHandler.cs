@@ -50,14 +50,11 @@ class CompletionHandler : CompletionHandlerBase
                 var currentText = currentLine.Split(":")[1].Trim();
                 var availableClasses = new HashSet<Class>(_modelStore.GetAvailableClasses(file));
 
-                var hasUses = text.Contains("uses:");
-                var firstItemIndex = text.Split(Environment.NewLine).ToList().FindIndex(line => line.Contains("class:") || line.Contains("endpoint:"));
-
-                var useIndex = firstItemIndex - 1;
-                while (useIndex > 0 && string.IsNullOrWhiteSpace(text.Split(Environment.NewLine).ElementAt(useIndex - 1)))
-                {
-                    useIndex--;
-                }
+                var useIndex = file.Uses.Any()
+                    ? file.Uses.Last().ToRange()!.Start.Line + 1
+                    : text.StartsWith("-") 
+                        ? 1 
+                        : 0;
 
                 return Task.FromResult(new CompletionList(
                     _modelStore.Classes
@@ -71,7 +68,7 @@ class CompletionHandler : CompletionHandlerBase
                             AdditionalTextEdits = !availableClasses.Contains(classe) ?
                                 new TextEditContainer(new TextEdit
                                 {
-                                    NewText = hasUses ? $"  - {classe.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {classe.ModelFile.Name}{Environment.NewLine}",
+                                    NewText = file.Uses.Any() ? $"  - {classe.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {classe.ModelFile.Name}{Environment.NewLine}",
                                     Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
                                 })
                                 : null
