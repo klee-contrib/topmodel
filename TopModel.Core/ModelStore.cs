@@ -112,7 +112,17 @@ public class ModelStore
                     ? _modelFiles.Values
                     : GetAffectedFiles(_pendingUpdates).Distinct();
 
-                var sortedFiles = ModelUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name == d.Name)));
+                IList<ModelFile> sortedFiles = new List<ModelFile>(1);
+                try
+                {
+                    sortedFiles = ModelUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name == d.Name)));
+                }
+
+                // Dépendance circulaire.
+                catch (ModelException e) when (e.ModelError is not null)
+                {
+                    referenceErrors.Add(e.ModelError);
+                }
 
                 foreach (var affectedFile in sortedFiles)
                 {
@@ -121,7 +131,7 @@ public class ModelStore
 
                 foreach (var modelWatcher in _modelWatchers)
                 {
-                    modelWatcher.OnErrors(sortedFiles
+                    modelWatcher.OnErrors(affectedFiles
                         .Select(file => (file, errors: referenceErrors.Where(error => error.File == file)))
                         .ToDictionary(i => i.file, i => i.errors));
                 }

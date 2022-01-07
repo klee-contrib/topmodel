@@ -52,8 +52,8 @@ class CompletionHandler : CompletionHandlerBase
 
                 var useIndex = file.Uses.Any()
                     ? file.Uses.Last().ToRange()!.Start.Line + 1
-                    : text.StartsWith("-") 
-                        ? 1 
+                    : text.StartsWith("-")
+                        ? 1
                         : 0;
 
                 return Task.FromResult(new CompletionList(
@@ -75,6 +75,31 @@ class CompletionHandler : CompletionHandlerBase
                         }))); ;
             }
         }
+        else if (currentLine.TrimStart().StartsWith("-"))
+        {
+            var currentText = currentLine.TrimStart()[1..].Trim();
+
+            var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
+            if (file != null)
+            {
+                // Use
+                if (
+                    text.Split(Environment.NewLine).ElementAt(request.Position.Line - 1) == "uses:"
+                    || file.Uses.Select(u => u.Start.Line).Any(l => l == request.Position.Line))
+                {
+                    return Task.FromResult(new CompletionList(
+                        _modelStore.Files.Select(f => f.Name)
+                            .Except(file.Uses.Select(u => u.ReferenceName))
+                            .Where(name => name != file.Name && name.ToLower().ShouldMatch(currentText))
+                            .Select(name => new CompletionItem
+                            {
+                                Kind = CompletionItemKind.File,
+                                Label = name
+                            })));
+                }
+            }
+        }
+        
 
         return Task.FromResult(new CompletionList());
     }

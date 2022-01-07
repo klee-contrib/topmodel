@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using TopModel.Core.FileModel;
 
 namespace TopModel.Core;
 
@@ -177,7 +178,10 @@ public static class ModelUtils
         {
             if (inProcess)
             {
-                throw new ModelException($"Dépendance circulaire détectée : {visited.Last().Key} ne peut pas référencer {item}.");
+                throw new ModelException(
+                    item,
+                    $"Dépendance circulaire détectée : {visited.Last().Key} ne peut pas référencer {item}.",
+                    (item as ModelFile)?.Uses.FirstOrDefault(u => u.ReferenceName == (visited.Last().Key as ModelFile)?.Name));
             }
         }
         else
