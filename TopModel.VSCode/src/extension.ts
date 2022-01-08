@@ -1,14 +1,15 @@
 import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
 import { Trace } from 'vscode-jsonrpc';
-import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment } from 'vscode';
+import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment, Terminal } from 'vscode';
 import * as fs from "fs";
 import { TopModelConfig } from './types';
 const open = require('open');
 
-var exec = require('child_process').exec;
+const exec = require('child_process').exec;
 const yaml = require("js-yaml");
 
 let NEXT_TERM_ID = 1;
+let currentTerminal: Terminal;
 
 export function activate(context: ExtensionContext) {
     createStatusBar();
@@ -139,9 +140,11 @@ function startLanguageServer(context: ExtensionContext, configPath: any, config:
     context.subscriptions.push(disposable);
 }
 function startModgen(watch: boolean, configPath: string) {
-    const terminal = window.createTerminal(`Topmodel : #${NEXT_TERM_ID++}`);
-    terminal.show();
-    terminal.sendText(
+    if(!currentTerminal) {
+        currentTerminal = window.createTerminal(`Topmodel : #${NEXT_TERM_ID++}`);
+    }
+    currentTerminal.show();
+    currentTerminal.sendText(
         `modgen ${configPath}` + (watch ? " --watch" : "")
     );
 }
@@ -156,5 +159,5 @@ function handleLsReady(config: TopModelConfig, context: ExtensionContext): void 
 function handleNoConfigFound(): void {
     topModelStatusBar.text = "$(diff-review-close) TopModel";
     topModelStatusBar.tooltip = "TopModel is not running";
-    
+
 }
