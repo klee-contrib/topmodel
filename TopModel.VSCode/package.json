@@ -27,7 +27,7 @@
     "Programming Languages"
   ],
   "activationEvents": [
-    "onLanguage:yaml"
+    "workspaceContains:**/*.yaml"
   ],
   "contributes": {
     "commands": [
