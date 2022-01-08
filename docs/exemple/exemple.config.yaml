@@ -12,3 +12,4 @@ jpa:
 javascript:
   - tags:
       - "dto"
+    domainRelativePath: ../../

@@ -26,6 +26,11 @@ public class JavascriptConfig : GeneratorConfigBase
     public string? FetchImportPath { get; set; }
 
     /// <summary>
+    /// Chemin vers le fichier "domain".
+    /// </summary>
+    public string? DomainRelativePath { get; set; } = "../";
+
+    /// <summary>
     /// Génère des modèles pour Focus (par défaut : true).
     /// </summary>
     public bool Focus { get; set; } = true;

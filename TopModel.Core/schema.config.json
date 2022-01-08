@@ -222,6 +222,10 @@
             "type": "string",
             "description": "Chemin vers un 'fetch' personnalisé."
           },
+          "domainRelativePath": {
+            "type": "string",
+            "description": "Chemin vers le fichier 'domain'"
+          },
           "focus": {
             "type": "boolean",
             "description": "Génère des modèles pour Focus (par défaut : true)."

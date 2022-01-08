@@ -134,7 +134,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         if (GetDomainList(classe).Any())
         {
             var arbo = string.Join("/", classe.ModelFile.Module.Split(".").Select(e => ".."));
-            fw.WriteLine($"import {{{string.Join(", ", GetDomainList(classe))}}} from \"{arbo}/../domains\";");
+            fw.WriteLine($"import {{{string.Join(", ", GetDomainList(classe))}}} from \"{arbo}/{_config.DomainRelativePath}domains\";");
         }
 
         var imports = GetImportList(classe);
