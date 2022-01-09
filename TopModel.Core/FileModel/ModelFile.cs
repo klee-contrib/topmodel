@@ -25,7 +25,7 @@ public class ModelFile
         .Concat(Properties.OfType<CompositionProperty>().SelectMany(p => new (Reference, object)[] { (p.Reference, p.Composition), (p.DomainKindReference, p.DomainKind) }))
         .Concat(Properties.OfType<AliasProperty>().SelectMany(p => new (Reference, object)[] { (p.ClassReference, p.Property?.Class), (p.PropertyReference, p.Property), (p.ListDomainReference, p.ListDomain) }))
         .Where(t => t.Item1 != null && t.Item2 != null)
-        .Distinct()
+        .DistinctBy(t => t.Item1)
         .ToDictionary(t => t.Item1, t => t.Item2);
 
     internal IList<IProperty> Properties => Classes.Where(c => !ResolvedAliases.Contains(c)).SelectMany(c => c.Properties)
