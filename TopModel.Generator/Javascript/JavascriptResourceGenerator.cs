@@ -29,7 +29,11 @@ public class JavascriptResourceGenerator : GeneratorBase
             _files[file.Name] = file;
         }
 
-        var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
+        var modules = _files
+            .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
+            .Select(c => c.ResourceProperty)
+            .Distinct()
+            .GroupBy(prop => prop.Class.Namespace.Module);
 
         foreach (var module in modules)
         {
@@ -37,21 +41,15 @@ public class JavascriptResourceGenerator : GeneratorBase
         }
     }
 
-    private void GenerateModule(string module)
+    private void GenerateModule(IGrouping<string, IFieldProperty> module)
     {
         if (_config.ResourceOutputDirectory == null)
         {
             return;
         }
 
-        var classes = _files.Values
-            .SelectMany(f => f.Classes)
-            .Distinct()
-            .Where(c => c.Namespace.Module == module);
-
         var dirInfo = Directory.CreateDirectory(_config.ResourceOutputDirectory);
-        var fileName = module.Split('.').Last().ToDashCase();
-        var filePath = dirInfo.FullName + "/" + module.Replace('.', '/') + (_config.ResourceMode == ResourceMode.JS ? ".ts" : ".json");
+        var filePath = dirInfo.FullName + "/" + string.Join("/", module.Key.Split(".").Select(part => part.ToDashCase())) + (_config.ResourceMode == ResourceMode.JS ? ".ts" : ".json");
 
         using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
 
@@ -61,18 +59,20 @@ public class JavascriptResourceGenerator : GeneratorBase
 
             if (_config.ResourceMode == ResourceMode.Schema)
             {
-                fw.WriteLine($"  \"$id\": \"{module.Replace('.', '/').ToDashCase()}_translation.json\",");
+                fw.WriteLine($"  \"$id\": \"{module.Key.Replace('.', '/').ToDashCase()}_translation.json\",");
                 fw.WriteLine("  \"$schema\": \"http://json-schema.org/draft-07/schema#\",");
                 fw.WriteLine("  \"properties\": {");
             }
         }
         else
         {
-            fw.WriteLine($"export const {module.ToFirstLower()} = {{");
+            fw.WriteLine($"export const {module.Key.ToFirstLower()} = {{");
         }
 
+        var classes = module.GroupBy(prop => prop.Class);
+
         var i = 1;
-        foreach (var classe in classes.OrderBy(c => c.Name))
+        foreach (var classe in classes.OrderBy(c => c.Key.Name))
         {
             WriteClasseNode(fw, classe, classes.Count() == i++);
         }
@@ -98,27 +98,21 @@ public class JavascriptResourceGenerator : GeneratorBase
     /// <param name="fw">Flux de sortie.</param>
     /// <param name="classe">Classe.</param>
     /// <param name="isLast">True s'il s'agit de al dernière classe du namespace.</param>
-    private void WriteClasseNode(FileWriter fw, Class classe, bool isLast)
+    private void WriteClasseNode(FileWriter fw, IGrouping<Class, IFieldProperty> classe, bool isLast)
     {
-        fw.WriteLine($"    {Quote(classe.Name)}: {{");
+        fw.WriteLine($"    {Quote(classe.Key.Name)}: {{");
 
         if (_config.ResourceMode == ResourceMode.Schema)
         {
             fw.WriteLine("      \"type\": \"object\",");
-            fw.WriteLine($"      \"description\": \"{classe.Comment.Replace("\"", "\\\"")}\",");
+            fw.WriteLine($"      \"description\": \"{classe.Key.Comment.Replace("\"", "\\\"")}\",");
             fw.WriteLine("      \"properties\": {");
         }
 
         var i = 1;
 
-        foreach (var property in classe.Properties)
+        foreach (var property in classe)
         {
-            if (property is AliasProperty alp && alp.Label == alp.Property.Label)
-            {
-                i++;
-                continue;
-            }
-
             fw.Write($"        {Quote(property.Name)}: ");
 
             if (_config.ResourceMode == ResourceMode.Schema)
@@ -133,7 +127,7 @@ public class JavascriptResourceGenerator : GeneratorBase
                 fw.Write($@"""{property.Label ?? property.Name}""");
             }
 
-            fw.WriteLine(classe.Properties.Count == i++ ? string.Empty : ",");
+            fw.WriteLine(classe.Count() == i++ ? string.Empty : ",");
         }
 
         if (_config.ResourceMode == ResourceMode.Schema)
