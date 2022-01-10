@@ -23,7 +23,7 @@ var watchMode = false;
 
 var command = new RootCommand
 {
-    new Argument<FileInfo>("configFile", () => new FileInfo("modgen.yaml"), "Chemin vers le fichier de config."),
+    new Argument<FileInfo>("configFile", () => new FileInfo("topmodel.config"), "Chemin vers le fichier de config."),
     new Option<bool>(new[] { "-w", "--watch" }, "Lance le générateur en mode 'watch'")
 };
 

@@ -15,7 +15,7 @@ var server = await LanguageServer.From(options =>
         .WithServices(services =>
         {
             var fileChecker = new FileChecker();
-            var configFile = new FileInfo(args.Length > 0 ? args[0] : "modgen.yaml");
+            var configFile = new FileInfo(args.Length > 0 ? args[0] : "topmodel.config");
             var config = fileChecker.Deserialize<ModelConfig>(configFile.OpenText().ReadToEnd());
             var dn = configFile.DirectoryName;
 
