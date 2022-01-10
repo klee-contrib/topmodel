@@ -1,1 +1,1 @@
-dotnet run --project ../../TopModel.Generator -- ./exemple.config.yaml
+dotnet run --project ../../TopModel.Generator -- ./topmodel.exemple.config

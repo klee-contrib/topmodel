@@ -52,7 +52,7 @@ function checkInstall() {
                     const selection = await window.showInformationMessage('TopModel is not installed', "Install TopModel");
                     if (selection === "Install TopModel") {
                         const terminal = window.createTerminal("TopModel install");
-                        terminal.sendText("dotnet tool install --global TopModel.Generator --version 1.0.0-rc.5");
+                        terminal.sendText("dotnet tool install --global TopModel.Generator");
                         terminal.show();
                     }
                 }
@@ -79,7 +79,7 @@ function registerCommands(context: ExtensionContext, configPath: any) {
 }
 
 async function findConfFile(): Promise<{ config?: TopModelConfig, configPath?: string }> {
-    return workspace.findFiles("**/*.yaml").then((files) => {
+    return workspace.findFiles("**/topmodel*.config").then((files) => {
         let configs: TopModelConfig[] = [];
         let configPaths: string[] = [];
         files.forEach((file) => {
@@ -122,10 +122,10 @@ function startLanguageServer(context: ExtensionContext, configPath: any, config:
     // Options to control the language client
     let clientOptions: LanguageClientOptions = {
         // Register the server for plain text documents
-        documentSelector: [{ language: 'yaml' }, { pattern: `${modelRoot}**/yml` }],
+        documentSelector: [{ language: 'yaml' }, { pattern: `${modelRoot}**/tmd` }],
         synchronize: {
             configurationSection: 'topmodel',
-            fileEvents: workspace.createFileSystemWatcher(`${modelRoot}**/*.yml`)
+            fileEvents: workspace.createFileSystemWatcher(`${modelRoot}**/*.tmd`)
         },
     };
 

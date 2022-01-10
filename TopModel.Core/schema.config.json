@@ -12,7 +12,7 @@
     },
     "modelRoot": {
       "type": "string",
-      "description": "Chemin du dossier racine qui contient tous les fichiers YML du modèle, qui seront chargés par le générateur (à l'exception du fichier de domaines qui est chargé à part). Si non renseigné, le dossier contenant le fichier de config sera utilisé."
+      "description": "Chemin du dossier racine qui contient tous les fichiers tmd du modèle, qui seront chargés par le générateur (à l'exception du fichier de domaines qui est chargé à part). Si non renseigné, le dossier contenant le fichier de config sera utilisé."
     },
     "allowCompositePrimaryKey": {
       "type": "boolean",

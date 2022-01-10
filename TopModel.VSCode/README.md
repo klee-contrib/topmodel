@@ -4,7 +4,7 @@
 
 ## Features
 
-This extension provides a rich editing experience for TopModel `yml` files. Included features :
+This extension provides a rich editing experience for TopModel `tmd` files. Included features :
 
 - Keywords highlighting
 - Auto-complete Domains, Class and Properties (for current and `uses` files)

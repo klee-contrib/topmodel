@@ -54,7 +54,7 @@ public class ModelStore
         if (watch)
         {
             _logger.LogInformation("Lancement du mode watch...");
-            fsWatcher = new FileSystemWatcher(_config.ModelRoot, "*.yml");
+            fsWatcher = new FileSystemWatcher(_config.ModelRoot, "*.tmd");
             fsWatcher.Changed += OnFSChangedEvent;
             fsWatcher.Created += OnFSChangedEvent;
             fsWatcher.Deleted += OnFSChangedEvent;
@@ -67,7 +67,7 @@ public class ModelStore
 
         _logger.LogInformation("Chargement du modèle...");
 
-        var files = Directory.EnumerateFiles(_config.ModelRoot, "*.yml", SearchOption.AllDirectories);
+        var files = Directory.EnumerateFiles(_config.ModelRoot, "*.tmd", SearchOption.AllDirectories);
 
         lock (_puLock)
         {

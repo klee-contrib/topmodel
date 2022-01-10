@@ -12,7 +12,7 @@ public class ModelConfig
     public string GetFileName(string filePath)
     {
         return Path.GetRelativePath(Path.Combine(Directory.GetCurrentDirectory(), ModelRoot), filePath)
-            .Replace(".yml", string.Empty)
+            .Replace(".tmd", string.Empty)
             .Replace("\\", "/");
     }
 }

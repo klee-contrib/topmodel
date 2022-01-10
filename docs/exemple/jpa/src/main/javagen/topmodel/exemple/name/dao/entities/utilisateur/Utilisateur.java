@@ -142,7 +142,7 @@ public class Utilisateur implements Serializable {
      * @return value of typeUtilisateurOneToOneType.
      */
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ONE_TO_ONE_TYPE_CODE", referencedColumnName = "CODE")
+    @JoinColumn(name = "ONE_TO_ONE_TYPE_CODE", referencedColumnName = "ONE_TO_ONE_TYPE_CODE")
     public TypeUtilisateur getTypeUtilisateurOneToOneType() {
         return this.typeUtilisateurOneToOneType;
     }

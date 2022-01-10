@@ -64,7 +64,7 @@ public class Profil implements Serializable {
      *
      * @return value of typeProfilList.
      */
-    @OneToMany(cascade=CascadeType.ALL, mappedBy = "profil", orphanRemoval = true)
+    @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
     public Set<TypeProfil> getTypeProfilList() {
         if(typeProfilList == null) this.typeProfilList= new HashSet<>();
         return this.typeProfilList;

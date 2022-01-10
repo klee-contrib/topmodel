@@ -19,7 +19,7 @@
     "directory": "TopModel.VSCode",
     "type": "git"
   },
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.62.0"
   },
@@ -27,7 +27,7 @@
     "Programming Languages"
   ],
   "activationEvents": [
-    "workspaceContains:**/*.yaml"
+    "workspaceContains:topmodel*.config"
   ],
   "contributes": {
     "commands": [
@@ -42,11 +42,11 @@
     ],
     "yamlValidation": [
       {
-        "fileMatch": "*.yaml",
+        "fileMatch": "topmodel*.configtopmodel*.config",
         "url": "./language-server/schema.config.json"
       },
       {
-        "fileMatch": "*.yml",
+        "fileMatch": "*.topmodel",
         "url": "./language-server/schema.json"
       }
     ]
