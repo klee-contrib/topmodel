@@ -49,7 +49,16 @@
         "fileMatch": "*.tmd",
         "url": "./language-server/schema.json"
       }
-    ]
+    ],
+    "languages": [
+      {
+          "id": "yaml",
+          "extensions": [
+              "tmd"
+          ],
+          "filenamePatterns": ["topmodel*.config"]
+      }
+  ]
   },
   "main": "./out/main.js",
   "scripts": {
