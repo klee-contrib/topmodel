@@ -4,7 +4,6 @@
 
 package topmodel.exemple.name.api.controller.securite.utilisateur;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Generated;
