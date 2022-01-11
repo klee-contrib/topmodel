@@ -27,7 +27,7 @@
     "Programming Languages"
   ],
   "activationEvents": [
-    "workspaceContains:topmodel*.config"
+    "workspaceContains:**/topmodel*.config"
   ],
   "contributes": {
     "commands": [
