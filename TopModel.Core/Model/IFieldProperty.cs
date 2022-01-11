@@ -53,7 +53,7 @@ public interface IFieldProperty : IProperty
     {
         get
         {
-            var prop = this is AliasProperty alp ? alp.Property : this;
+            var prop = !Class.IsPersistent && this is AliasProperty alp ? alp.Property : this;
 
             return prop.Class.Extends != null && prop.PrimaryKey && Class.Trigram != null
                 ? $"{Class.Trigram}_{ModelUtils.ConvertCsharp2Bdd(Name).Replace(prop.Class.SqlName + "_", string.Empty)}"
