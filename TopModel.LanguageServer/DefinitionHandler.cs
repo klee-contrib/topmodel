@@ -40,6 +40,21 @@ class DefinitionHandler : DefinitionHandlerBase
                     TargetUri = _facade.GetFilePath(objet.GetFile())
                 }));
             }
+
+            var matchedUse = file.Uses.SingleOrDefault(use =>
+                use.Start.Line - 1 <= request.Position.Line && request.Position.Line <= use.End.Line - 1
+                && use.Start.Column - 1 <= request.Position.Character && request.Position.Character <= use.End.Column - 1);
+
+            if (matchedUse != null)
+            {
+                return Task.FromResult<LocationOrLocationLinks>(new(new LocationLink
+                {
+                    OriginSelectionRange = matchedReference.ToRange(),
+                    TargetRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 10, 200),
+                    TargetSelectionRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 0, 0),
+                    TargetUri = _facade.GetFilePath(_modelStore.Files.Single(f => f.Name == matchedUse.ReferenceName))
+                })); ;
+            }
         }
 
         return Task.FromResult<LocationOrLocationLinks>(new());

@@ -44,6 +44,11 @@ class SemanticTokensHandler : SemanticTokensHandlerBase
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == identifier.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
+            foreach (var reference in file.Uses)
+            {
+                builder.Push(reference.ToRange()!, SemanticTokenType.Parameter, SemanticTokenModifier.Definition);
+            }
+
             foreach (var reference in file.References.Keys.OrderBy(r => r.Start.Line).ThenBy(r => r.Start.Column))
             {
                 builder.Push(
