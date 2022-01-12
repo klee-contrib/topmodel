@@ -20,7 +20,6 @@
     "type": "git"
   },
   "version": "1.0.0",
-  "modgenVersion": "1.0.1",
   "engines": {
     "vscode": "^1.62.0"
   },
