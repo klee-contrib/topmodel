@@ -46,7 +46,10 @@ class SemanticTokensHandler : SemanticTokensHandlerBase
         {
             foreach (var reference in file.Uses)
             {
-                builder.Push(reference.ToRange()!, SemanticTokenType.Parameter, SemanticTokenModifier.Definition);
+                if (_modelStore.Files.Any(f => f.Name == reference.ReferenceName))
+                {
+                    builder.Push(reference.ToRange()!, SemanticTokenType.Parameter, SemanticTokenModifier.Definition);
+                }
             }
 
             foreach (var reference in file.References.Keys.OrderBy(r => r.Start.Line).ThenBy(r => r.Start.Column))

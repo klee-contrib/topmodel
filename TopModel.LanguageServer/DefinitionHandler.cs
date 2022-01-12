@@ -47,13 +47,17 @@ class DefinitionHandler : DefinitionHandlerBase
 
             if (matchedUse != null)
             {
-                return Task.FromResult<LocationOrLocationLinks>(new(new LocationLink
+                var usedFile = _modelStore.Files.SingleOrDefault(f => f.Name == matchedUse.ReferenceName);
+                if (usedFile != null)
                 {
-                    OriginSelectionRange = matchedReference.ToRange(),
-                    TargetRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 10, 200),
-                    TargetSelectionRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 0, 0),
-                    TargetUri = _facade.GetFilePath(_modelStore.Files.Single(f => f.Name == matchedUse.ReferenceName))
-                })); ;
+                    return Task.FromResult<LocationOrLocationLinks>(new(new LocationLink
+                    {
+                        OriginSelectionRange = matchedReference.ToRange(),
+                        TargetRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 5, 200),
+                        TargetSelectionRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 0, 0),
+                        TargetUri = _facade.GetFilePath(usedFile)
+                    }));
+                }
             }
         }
 
