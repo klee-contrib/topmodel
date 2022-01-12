@@ -81,13 +81,15 @@ async function checkTopModelUpdate() {
 
     const req = https.request(options, (res: any) => {
         res.on('data', (reponse: string) => {
-            const { versions }: {versions: string[]} = JSON.parse(reponse);
-            execute(`dotnet tool list -g | find /C /I "topmodel.generator      ${versions[versions.length - 1]}"`, async (result: string) => {
-                if (result !== '1\r\n') {
+            const { versions }: { versions: string[] } = JSON.parse(reponse);
+            const latest = versions[versions.length - 1];
+            execute(`modgen --version`, async (result: string) => {
+                const currentVersion = result.replace('\r\n', '');
+                if (currentVersion !== latest) {
                     const option = "Update TopModel";
                     const selection = await window.showInformationMessage('TopModel can be updated', option);
                     if (selection === option) {
-                        const terminal = window.createTerminal("TopModel install");
+                        const terminal = window.createTerminal("TopModel update");
                         terminal.sendText("dotnet tool update --global TopModel.Generator");
                         terminal.show();
                     }
@@ -101,8 +103,6 @@ async function checkTopModelUpdate() {
     });
 
     req.end();
-
-
 }
 
 function registerCommands(context: ExtensionContext, configPath: any) {
