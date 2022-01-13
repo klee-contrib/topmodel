@@ -2,13 +2,19 @@ import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-lan
 import { Trace } from 'vscode-jsonrpc';
 import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment, Terminal, Uri } from 'vscode';
 import * as fs from "fs";
-import { TopModelConfig } from './types';
+import { TopModelConfig, TopModelException } from './types';
 const open = require('open');
 
 const exec = require('child_process').exec;
 const yaml = require("js-yaml");
 
 const SERVER_EXE = 'dotnet';
+const COMMANDS = {
+    update: "topmodel.modgen.update",
+    install: "topmodel.modgen.install",
+    modgen: "topmodel.modgen",
+    modgenWatch: "topmodel.modgen.watch",
+};
 
 let NEXT_TERM_ID = 1;
 let currentTerminal: Terminal;
@@ -41,6 +47,10 @@ function createStatusBar() {
 function execute(command: string, callback: Function) {
     exec(command, function (error: string, stdout: string, stderr: string) { callback(stdout); });
 }
+
+/********************************************************* */
+/*********************** CHECKS ************************** */
+/********************************************************* */
 function checkInstall() {
     execute('echo ;%PATH%; | find /C /I "dotnet"', async (dotnetIsInstalled: string) => {
         if (dotnetIsInstalled !== '1\r\n') {
@@ -58,18 +68,15 @@ function checkTopModelInsall() {
     execute('dotnet tool list -g | find /C /I "topmodel"', async (result: string) => {
         if (result !== '1\r\n') {
             const option = "Install TopModel";
-            const selection = await window.showInformationMessage('TopModel is not installed', option);
+            const selection = await window.showInformationMessage('TopModel n\'est pas installé', option);
             if (selection === option) {
-                const terminal = window.createTerminal("TopModel install");
-                terminal.sendText("dotnet tool install --global TopModel.Generator");
-                terminal.show();
+                commands.executeCommand(COMMANDS.install);
             }
         } else {
             checkTopModelUpdate();
         }
     });
 }
-
 async function checkTopModelUpdate() {
     const https = require('https');
     const options = {
@@ -87,12 +94,9 @@ async function checkTopModelUpdate() {
                 const currentVersion = result.replace('\r\n', '');
                 if (currentVersion !== latest) {
                     const option = "Update TopModel";
-                    const selection = await window.showInformationMessage('TopModel can be updated', option);
+                    const selection = await window.showInformationMessage('TopModel peut être mis à jour', option);
                     if (selection === option) {
-                        const terminal = window.createTerminal("TopModel update");
-                        terminal.sendText("dotnet tool update --global TopModel.Generator");
-                        terminal.show();
-                        open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
+                        commands.executeCommand(COMMANDS.update);
                     }
                 }
             });
@@ -106,20 +110,54 @@ async function checkTopModelUpdate() {
     req.end();
 }
 
+
+/********************************************************* */
+/********************* COMMANDS ************************** */
+/********************************************************* */
+
+function installModgen() {
+    const terminal = window.createTerminal("TopModel install");
+    terminal.sendText("dotnet tool install --global TopModel.Generator");
+    terminal.show();
+}
+
+function updateModgen() {
+    const terminal = window.createTerminal("TopModel update");
+    terminal.sendText("dotnet tool update --global TopModel.Generator");
+    terminal.show();
+    open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
+}
+
+function startModgen(watch: boolean, configPath: string) {
+    if (!currentTerminal || !window.terminals.includes(currentTerminal)) {
+        currentTerminal = window.createTerminal({
+            name: `Topmodel : #${NEXT_TERM_ID++}`,
+            message: "Starting modgen in a new terminal"
+        });
+    }
+    currentTerminal.show();
+    currentTerminal.sendText(
+        `modgen ${configPath}` + (watch ? " --watch" : "")
+    );
+}
+
+
 function registerCommands(context: ExtensionContext, configPath: string) {
-    context.subscriptions.push(commands.registerCommand(
-        "extension.topmodel",
+    const modgen = commands.registerCommand(
+        COMMANDS.modgen,
         () => {
             startModgen(false, configPath);
         }
-    ));
-    context.subscriptions.push(commands.registerCommand(
-        "extension.topmodel.watch",
-        () => {
-            startModgen(true, configPath);
-
-        }
-    ));
+    );
+    const modgenWatch =
+        commands.registerCommand(COMMANDS.modgenWatch,
+            () => {
+                startModgen(true, configPath);
+            }
+        );
+    const modgenInstall = commands.registerCommand(COMMANDS.install, () => installModgen());
+    const modgenUpdate = commands.registerCommand(COMMANDS.update, () => updateModgen());
+    context.subscriptions.push(modgenInstall, modgenUpdate, modgen, modgenWatch);
     return NEXT_TERM_ID;
 }
 
@@ -181,19 +219,7 @@ function startLanguageServer(context: ExtensionContext, configPath: string, conf
     // client can be deactivated on extension deactivation
     context.subscriptions.push(disposable);
 }
-function startModgen(watch: boolean, configPath: string) {
-    if (!currentTerminal || !window.terminals.includes(currentTerminal)) {
-        currentTerminal = window.createTerminal({
-            name: `Topmodel : #${NEXT_TERM_ID++}`,
-            message: "Starting modgen in a new terminal"
-        });
-    }
-    currentTerminal.show();
-    currentTerminal.sendText(
-        `modgen ${configPath}` + (watch ? " --watch" : "")
-    );
 
-}
 
 function handleLsReady(config: TopModelConfig, context: ExtensionContext): void {
     topModelStatusBar.text = "$(check-all) TopModel";
@@ -201,9 +227,6 @@ function handleLsReady(config: TopModelConfig, context: ExtensionContext): void 
     topModelStatusBar.command = "extension.topmodel";
     context.subscriptions.push(topModelStatusBar);
     lsStarted = true;
-}
-class TopModelException {
-    constructor(public readonly message: string) { }
 }
 
 function handleError(exception: TopModelException) {

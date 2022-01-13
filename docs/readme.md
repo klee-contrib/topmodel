@@ -8,7 +8,7 @@
 
 `TopModel.Generator` est une application .NET 6, packagée comme un [outil .NET](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools).
 
-Pour l'utiliser, il faut avoir le [SDK .NET](https://dotnet.microsoft.com/download) installé sur votre machine, puis la commande
+Pour l'utiliser, il faut avoir le [SDK .NET](https://dotnet.microsoft.com/download) installé sur votre machine, puis lancer la commande
 
 ```bash
 dotnet tool install --global TopModel.Generator
@@ -35,7 +35,7 @@ Le fichier de configuration doit s'appeler `topmodel.config` ou `topmodel.[NOM D
 
 ## Edition du modèle
 
-Les fichiers de modèle décrivent, comme leur nom l'indique, le modèle de données. Ils portent l'extension `.md`.
+Les fichiers de modèle décrivent, comme leur nom l'indique, le modèle de données. Ils portent l'extension `.tmd`.
 
 Dans ces fichiers, vous pouvez décrire trois types d'objets :
 

@@ -32,11 +32,19 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.topmodel",
+        "command": "topmodel.modgen.install",
+        "title": "TopModel : Install TopModel.Generator"
+      },
+      {
+        "command": "topmodel.modgen.update",
+        "title": "TopModel : Update TopModel.Generator"
+      },
+      {
+        "command": "topmodel.modgen",
         "title": "TopModel : Start model generation"
       },
       {
-        "command": "extension.topmodel.watch",
+        "command": "topmodel.modgen.watch",
         "title": "TopModel : Start model generation (watch mode)"
       }
     ],
@@ -58,6 +66,34 @@
         ],
         "filenamePatterns": [
           "topmodel*.config"
+        ]
+      }
+    ],
+    "walkthroughs": [
+      {
+        "id": "topmodel.configuration",
+        "title": "Topmodel configuration",
+        "description": "Configuration de topmodel pas à pas",
+        "steps": [
+
+          {
+            "id": "install.dotnet",
+            "title": "Installer Dotnet",
+            "media": {
+              "markdown": "media/dotnet.md"
+            }
+          },
+          {
+            "id": "install.modgen",
+            "title": "Installation de TopModel.Generator",
+            "description": "Cliquez ici pour lancer la commande d'installation de TopModel.\n[Installer TopModel](command:topmodel.modgen.install)",
+            "media": {
+              "markdown": "media/modgen.md"
+            },
+            "completionEvents": [
+              "onCommand:topmodel.modgen.install"
+            ]
+          }
         ]
       }
     ]
