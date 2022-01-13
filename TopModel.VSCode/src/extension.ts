@@ -4,22 +4,24 @@ import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBar
 import * as fs from "fs";
 import { TopModelConfig } from './types';
 const open = require('open');
-const pjson = require('../package.json');
 
 const exec = require('child_process').exec;
 const yaml = require("js-yaml");
 
+const SERVER_EXE = 'dotnet';
+
 let NEXT_TERM_ID = 1;
 let currentTerminal: Terminal;
 let lsStarted = false;
+let topModelStatusBar: StatusBarItem;
 
 export function activate(context: ExtensionContext) {
     if (!lsStarted) {
         createStatusBar();
         checkInstall();
         findConfFile().then((conf) => {
-            const config = ((conf as any).config) as TopModelConfig;
-            const configPath = (conf as any).file.path;
+            const config = conf.config;
+            const configPath = conf.file.path;
             startLanguageServer(context, configPath, config);
             registerCommands(context, configPath);
         }, error => {
@@ -27,8 +29,6 @@ export function activate(context: ExtensionContext) {
         });
     }
 }
-
-let topModelStatusBar: StatusBarItem;
 
 
 function createStatusBar() {
@@ -92,6 +92,7 @@ async function checkTopModelUpdate() {
                         const terminal = window.createTerminal("TopModel update");
                         terminal.sendText("dotnet tool update --global TopModel.Generator");
                         terminal.show();
+                        open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
                     }
                 }
             });
@@ -105,7 +106,7 @@ async function checkTopModelUpdate() {
     req.end();
 }
 
-function registerCommands(context: ExtensionContext, configPath: any) {
+function registerCommands(context: ExtensionContext, configPath: string) {
     context.subscriptions.push(commands.registerCommand(
         "extension.topmodel",
         () => {
@@ -145,7 +146,6 @@ async function findConfFile(): Promise<{ config: TopModelConfig, file: Uri }> {
 
 function startLanguageServer(context: ExtensionContext, configPath: string, config: TopModelConfig) {
     // The server is implemented in node
-    let serverExe = 'dotnet';
 
     const args = [context.asAbsolutePath("./language-server/TopModel.LanguageServer.dll")];
     let configRelativePath = workspace.asRelativePath(configPath);
@@ -154,8 +154,8 @@ function startLanguageServer(context: ExtensionContext, configPath: string, conf
     }
     args.push(configPath.substring(1));
     let serverOptions: ServerOptions = {
-        run: { command: serverExe, args },
-        debug: { command: serverExe, args }
+        run: { command: SERVER_EXE, args },
+        debug: { command: SERVER_EXE, args }
     };
     let configFolderA = configRelativePath.split("/");
     configFolderA.pop();

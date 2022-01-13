@@ -52,13 +52,15 @@
     ],
     "languages": [
       {
-          "id": "yaml",
-          "extensions": [
-              "tmd"
-          ],
-          "filenamePatterns": ["topmodel*.config"]
+        "id": "yaml",
+        "extensions": [
+          "tmd"
+        ],
+        "filenamePatterns": [
+          "topmodel*.config"
+        ]
       }
-  ]
+    ]
   },
   "main": "./out/main.js",
   "scripts": {
@@ -83,6 +85,6 @@
     "eslint": "^8.1.0",
     "glob": "^7.1.7",
     "typescript": "^4.4.4",
-    "vsce": "2.5.1"
+    "vsce": "2.6.3"
   }
 }

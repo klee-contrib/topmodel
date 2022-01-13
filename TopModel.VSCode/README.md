@@ -10,9 +10,9 @@ This extension provides a rich editing experience for TopModel `tmd` files. Incl
 - Auto-complete Domains, Class and Properties (for current and `uses` files)
 - Provide inline error messages
 - Commands `TopModel : Start model generation` and `TopModel : Start model generation (watch mode)` with auto-detect config file
+- Auto-import
+- Alias properties completion
 
 ## Work in progress
 
-- Auto-import
 - Multi-config workspace
-- Alias properties completion
