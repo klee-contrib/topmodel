@@ -41,6 +41,7 @@ import lombok.ToString;
 import oorg.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import topmodel.exemple.name.dao.entities.securite.Profil;
+import topmodel.exemple.utils.IFieldEnum;
 
 /**
  * Utilisateur de l'application.
@@ -145,5 +146,14 @@ public class Utilisateur implements Serializable {
     @JoinColumn(name = "ONE_TO_ONE_TYPE_CODE", referencedColumnName = "ONE_TO_ONE_TYPE_CODE")
     public TypeUtilisateur getTypeUtilisateurOneToOneType() {
         return this.typeUtilisateurOneToOneType;
+    }
+    public enum Fields implements IFieldEnum<Utilisateur> {
+         ID, //
+         PROFIL_LIST, //
+         DATE_CREATION, //
+         DATE_MODIFICATION, //
+         EMAIL, //
+         TYPE_UTILISATEUR, //
+         TYPE_UTILISATEUR_ONE_TO_ONE_TYPE
     }
 }

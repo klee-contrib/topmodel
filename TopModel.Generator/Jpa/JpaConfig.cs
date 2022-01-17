@@ -15,6 +15,26 @@ public class JpaConfig : GeneratorConfigBase
     public string DaoPackageName { get; set; }
 
     /// <summary>
+    /// Option pour générer une enum des champs des classes persistées
+    /// </summary>
+    public bool FieldsEnum { get; set; }
+
+    /// <summary>
+    /// Précise l'interface des fields enum générés.
+    /// </summary>
+    public string FieldsEnumInterface { get; set; }
+
+    /// <summary>
+    /// Précise lde chemin de l'interface des fields enum générés
+    /// </summary>
+    public string FieldsEnumInterfaceImport { get; set; }
+
+    /// <summary>
+    /// Précise si l'interface est générique de la classe persistée
+    /// </summary>
+    public bool FieldsEnumInterfaceIsGeneric { get; set; }
+
+    /// <summary>
     /// Précise le nom du package dans lequel générer les controllers.
     /// </summary>
     public string ApiPackageName { get; set; }

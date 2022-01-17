@@ -72,6 +72,10 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine();
             WriteProperties(fw, classe);
             WriteGetters(fw, classe);
+            if (_config.FieldsEnum && classe.IsPersistent)
+            {
+                WriteFieldsEnum(fw, classe);
+            }
             fw.WriteLine("}");
         }
 
@@ -127,7 +131,10 @@ public class JpaModelGenerator : GeneratorBase
         {
             imports.AddRange(property.GetImports(_config));
         }
-
+        if(_config.FieldsEnum && classe.IsPersistent && classe.Properties.Count>0)
+        {
+            imports.Add(_config.FieldsEnumInterfaceImport + "." + _config.FieldsEnumInterface);
+        }
         fw.WriteImports(imports.Distinct().ToArray());
     }
 
@@ -362,5 +369,35 @@ public class JpaModelGenerator : GeneratorBase
 
             fw.WriteLine(1, "}");
         }
+    }
+
+    private void WriteFieldsEnum(JavaWriter fw, Class classe)
+    {
+        string enumDeclaration = @$"public enum Fields ";
+        if (_config.FieldsEnumInterface != null)
+        {
+            enumDeclaration += $"implements {_config.FieldsEnumInterface}";
+            if (_config.FieldsEnumInterfaceIsGeneric)
+            {
+                enumDeclaration += $"<{classe.Name}>";
+            }
+        }
+        enumDeclaration += " {";
+        fw.WriteLine(1, enumDeclaration);
+        fw.WriteLine(string.Join(", //\n", classe.Properties.Select(prop =>
+        {
+            string name;
+            if (prop is AssociationProperty ap)
+            {
+                name = ModelUtils.ConvertCsharp2Bdd(ap.GetAssociationName());
+            }
+            else
+            {
+                name = ModelUtils.ConvertCsharp2Bdd(prop.Name);
+            }
+            return $"         {name}";
+        })));
+
+        fw.WriteLine(1, "}");
     }
 }

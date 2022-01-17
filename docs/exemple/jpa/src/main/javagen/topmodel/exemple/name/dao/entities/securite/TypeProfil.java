@@ -26,6 +26,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import topmodel.exemple.name.dao.references.securite.TypeProfilCode;
+import topmodel.exemple.utils.IFieldEnum;
 
 /**
  * Type d'utilisateur.
@@ -68,5 +69,9 @@ public class TypeProfil implements Serializable {
     @Column(name = "LIBELLE", nullable = false)
     public String getLibelle() {
          return this.libelle;
+    }
+    public enum Fields implements IFieldEnum<TypeProfil> {
+         CODE, //
+         LIBELLE
     }
 }

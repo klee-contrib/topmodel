@@ -27,6 +27,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import topmodel.exemple.utils.IFieldEnum;
+
 /**
  * Profil des utilisateurs.
  */
@@ -68,5 +70,9 @@ public class Profil implements Serializable {
     public Set<TypeProfil> getTypeProfilList() {
         if(typeProfilList == null) this.typeProfilList= new HashSet<>();
         return this.typeProfilList;
+    }
+    public enum Fields implements IFieldEnum<Profil> {
+         ID, //
+         TYPE_PROFIL_LIST
     }
 }
