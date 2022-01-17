@@ -133,7 +133,7 @@ public class JpaModelGenerator : GeneratorBase
             imports.AddRange(property.GetImports(_config));
         }
 
-        if (_config.FieldsEnum && classe.IsPersistent && classe.Properties.Count > 0)
+        if (_config.FieldsEnum && _config.FieldsEnumInterface != null && classe.IsPersistent && classe.Properties.Count > 0)
         {
             imports.Add(_config.FieldsEnumInterface.Replace("<>", string.Empty));
         }
