@@ -44,7 +44,7 @@ public class DbContextGenerator
         {
             usings.Add("System.Data.Entity");
             usings.Add("System.Transactions");
-            usings.Add("Kinetix.Data.SqlClient");
+            usings.Add("Kinetix.DataAccess.Sql");
         }
 
         foreach (var ns in classes.Select(_config.GetNamespace).Distinct())

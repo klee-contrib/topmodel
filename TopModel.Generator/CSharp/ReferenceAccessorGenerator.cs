@@ -91,11 +91,11 @@ public class ReferenceAccessorGenerator
         if (_config.DbContextPath == null)
         {
             usings.Add(_config.GetNamespace(firstClass).Replace("DataContract", "Contract"));
-            usings.Add("Kinetix.Broker");
+            usings.Add("Kinetix.DataAccess.Sql.Broker");
 
             if (classList.Any(classe => classe.OrderProperty != null || classe.LabelProperty != null && classe.LabelProperty.Name != "Libelle"))
             {
-                usings.Add("Kinetix.Data.SqlClient");
+                usings.Add("Kinetix.DataAccess.Sql");
             }
         }
         else if (!_config.UseLatestCSharp)
