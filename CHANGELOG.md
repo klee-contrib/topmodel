@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.1.1
+
+- [`7a47a3d`](https://github.com/klee-contrib/topmodel/commit/7a47a3d3c347e3896b9aa7e6748b5050e28df0b5) - JS - Fix majuscule dans le nom de package
+
 ## 1.1.0
 
 - [`31050e3`](https://github.com/klee-contrib/topmodel/commit/31050e3114fd2808856572946a612545fa15e13b) - JPA-JS : Fix UpperCase in submodules
