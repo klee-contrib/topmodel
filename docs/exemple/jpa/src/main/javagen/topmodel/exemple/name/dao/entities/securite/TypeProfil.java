@@ -70,6 +70,7 @@ public class TypeProfil implements Serializable {
     public String getLibelle() {
          return this.libelle;
     }
+
     public enum Fields implements IFieldEnum<TypeProfil> {
          CODE, //
          LIBELLE

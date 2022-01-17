@@ -147,6 +147,7 @@ public class Utilisateur implements Serializable {
     public TypeUtilisateur getTypeUtilisateurOneToOneType() {
         return this.typeUtilisateurOneToOneType;
     }
+
     public enum Fields implements IFieldEnum<Utilisateur> {
          ID, //
          PROFIL_LIST, //

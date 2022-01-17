@@ -275,14 +275,6 @@
             "type": "string",
             "description": "Précise l'interface des fields enum générés."
           },
-          "fieldsEnumInterfaceImport": {
-            "type": "string",
-            "description": "Précise lde chemin de l'interface des fields enum générés."
-          },
-          "fieldsEnumInterfaceIsGeneric": {
-            "type": "boolean",
-            "description": "Précise si l'interface des fields enum est générique de la classe persistée"
-          },
           "apiPackageName": {
             "type": "string",
             "description": "Précise le nom du package dans lequel générer les controllers."

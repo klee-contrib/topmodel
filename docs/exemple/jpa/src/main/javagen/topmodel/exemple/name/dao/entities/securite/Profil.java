@@ -71,6 +71,7 @@ public class Profil implements Serializable {
         if(typeProfilList == null) this.typeProfilList= new HashSet<>();
         return this.typeProfilList;
     }
+
     public enum Fields implements IFieldEnum<Profil> {
          ID, //
          TYPE_PROFIL_LIST

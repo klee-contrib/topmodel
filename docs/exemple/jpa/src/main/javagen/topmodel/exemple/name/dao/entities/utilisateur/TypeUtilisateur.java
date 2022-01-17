@@ -70,6 +70,7 @@ public class TypeUtilisateur implements Serializable {
     public String getLibelle() {
          return this.libelle;
     }
+
     public enum Fields implements IFieldEnum<TypeUtilisateur> {
          CODE, //
          LIBELLE

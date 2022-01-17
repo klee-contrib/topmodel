@@ -76,6 +76,7 @@ public class JpaModelGenerator : GeneratorBase
             {
                 WriteFieldsEnum(fw, classe);
             }
+
             fw.WriteLine("}");
         }
 
@@ -131,10 +132,12 @@ public class JpaModelGenerator : GeneratorBase
         {
             imports.AddRange(property.GetImports(_config));
         }
-        if(_config.FieldsEnum && classe.IsPersistent && classe.Properties.Count>0)
+
+        if (_config.FieldsEnum && classe.IsPersistent && classe.Properties.Count > 0)
         {
-            imports.Add(_config.FieldsEnumInterfaceImport + "." + _config.FieldsEnumInterface);
+            imports.Add(_config.FieldsEnumInterface.Replace("<>", string.Empty));
         }
+
         fw.WriteImports(imports.Distinct().ToArray());
     }
 
@@ -373,15 +376,13 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteFieldsEnum(JavaWriter fw, Class classe)
     {
+        fw.WriteLine();
         string enumDeclaration = @$"public enum Fields ";
         if (_config.FieldsEnumInterface != null)
         {
-            enumDeclaration += $"implements {_config.FieldsEnumInterface}";
-            if (_config.FieldsEnumInterfaceIsGeneric)
-            {
-                enumDeclaration += $"<{classe.Name}>";
-            }
+            enumDeclaration += $"implements {_config.FieldsEnumInterface.Split(".").Last().Replace("<>", $"<{classe.Name}>")}";
         }
+
         enumDeclaration += " {";
         fw.WriteLine(1, enumDeclaration);
         fw.WriteLine(string.Join(", //\n", classe.Properties.Select(prop =>
@@ -395,6 +396,7 @@ public class JpaModelGenerator : GeneratorBase
             {
                 name = ModelUtils.ConvertCsharp2Bdd(prop.Name);
             }
+
             return $"         {name}";
         })));
 
