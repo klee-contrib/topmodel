@@ -47,7 +47,7 @@ public interface IFieldProperty : IProperty
         ? alp.Property.ResourceProperty
         : this;
 
-    string ResourceKey => $"{ResourceProperty.Class.Namespace.Module.ToLower()}.{ResourceProperty.Class.Name.ToFirstLower()}.{ResourceProperty.Name.ToFirstLower()}";
+    string ResourceKey => $"{string.Join('.', ResourceProperty.Class.Namespace.Module.Split('.').Select(e => e.ToFirstLower()))}.{ResourceProperty.Class.Name.ToFirstLower()}.{ResourceProperty.Name.ToFirstLower()}";
 
     string SqlName
     {
