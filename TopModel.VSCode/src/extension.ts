@@ -116,31 +116,33 @@ async function checkTopModelUpdate() {
 /********************************************************* */
 
 function installModgen() {
-    const terminal = window.createTerminal("TopModel install");
+    const terminal = getTerminal();
     terminal.sendText("dotnet tool install --global TopModel.Generator");
     terminal.show();
 }
 
 function updateModgen() {
-    const terminal = window.createTerminal("TopModel update");
+    const terminal = getTerminal();
     terminal.sendText("dotnet tool update --global TopModel.Generator");
     terminal.show();
     open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
 }
-
 function startModgen(watch: boolean, configPath: string) {
+    const terminal = getTerminal();
+    terminal.sendText(
+        `modgen ${configPath}` + (watch ? " --watch" : "")
+    );
+}
+
+function getTerminal() {
     if (!currentTerminal || !window.terminals.includes(currentTerminal)) {
         currentTerminal = window.createTerminal({
             name: `Topmodel : #${NEXT_TERM_ID++}`,
             message: "Starting modgen in a new terminal"
         });
     }
-    currentTerminal.show();
-    currentTerminal.sendText(
-        `modgen ${configPath}` + (watch ? " --watch" : "")
-    );
+    return currentTerminal;
 }
-
 
 function registerCommands(context: ExtensionContext, configPath: string) {
     const modgen = commands.registerCommand(
