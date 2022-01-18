@@ -9,5 +9,7 @@ On retrouve dans ce repository :
 - **TopModel.Core**, la librairie de parsing de modèle.
 - **TopModel.Generator**, un générateur de code C#, SQL (classique ou SSDT) et de modèles [focus](https://www.github.com/KleeGroup/focus4), à partir des modèles TopModel.
 - **TopModel.UI**, un outil de visualisation de modèle TopModel.
+- **TopModel.LanguageServer**, le language serveur utilisé dans l'extension VSCode.
+- **TopModel.VSCode**, l'extension VSCode qui fournit des fonctionnalités d'auto-complétion, validation, auto-import etc.
 
 [La documentation est par ici](https://klee-contrib.github.io/topmodel)

@@ -1,6 +1,6 @@
 # TopModel Language Service for VSCode
 
-![Features demo](https://github.com/klee-contrib/topmodel/blob/develop/TopModel.VSCode/demo.gif "Features demonstration")
+![Features demo](https://raw.githubusercontent.com/klee-contrib/topmodel/develop/TopModel.VSCode/demo.gif "Features demonstration")
 
 ## Features
 
@@ -11,8 +11,8 @@ This extension provides a rich editing experience for TopModel `tmd` files. Incl
 - Provide inline error messages
 - Commands `TopModel : Start model generation` and `TopModel : Start model generation (watch mode)` with auto-detect config file
 - Auto-import
-- Alias properties completion
 
 ## Work in progress
 
+- Alias properties completion
 - Multi-config workspace

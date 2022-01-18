@@ -37,6 +37,30 @@ A savoir :
 - Il n'est actuellement pas possible de créer des liaisons bi-directionnelles
 - Les compositions ne sont pas gérées dans le modèle persisté (n'utiliser que les associations)
 
+Depuis la version 1.1.0, il est possible de générer dans la définition de la classe, la sous-classe (qui est une enum) `Fields`. Il s'agit d'une enumération des champs de la classe, au format const case.
+Il faut pour cela ajouter la propriété `fieldsEnum: true` A la configuration JPA.
+
+Il est également possible d'ajouter la référence d'une interface à cette configuration. Cette interface sera implémentée par la classe `Fields`. Vous pourrez ainsi la manipuler plus facilement. Si l'interface en question est suffixée par `<>`, alors elle sera considérée comme générique de la classe persistée.
+
+Exemple :
+
+La configuration suivante
+
+```yaml
+fieldsEnum: true
+fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<>
+```
+
+Génèrera, dans la classe `Departement`, l'enum suivante :
+
+```java
+    public enum Fields implements IFieldEnum<Departement> {
+         ID, //
+         CODE_POSTAL, //
+         LIBELLE
+    }
+```
+
 ### References
 
 Lorsque sont ajoutées des listes de références, le générateur créé les `enum` correspondantes. Le domaine de clé primaire de la classe de référence est ignoré, et le champs prend le type de l'enum. Par défaut, l'enum s'appelle `[Nom de la table de ref]Code`
