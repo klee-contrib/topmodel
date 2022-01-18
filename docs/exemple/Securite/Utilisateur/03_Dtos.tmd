@@ -1,8 +1,8 @@
 ---
 module: Utilisateur
 uses:
-  - utilisateur
-  - profil
+  - Securite/Utilisateur/02_Entities
+  - Securite/Profil/02_Entities
 tags:
   - dto
 ---

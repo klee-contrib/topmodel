@@ -3,13 +3,13 @@ module: Securite.Utilisateur
 tags: 
   - dto
 uses: 
-  - utilisateurDto
-  - utilisateur
+  - Securite/Utilisateur/02_Entities
+  - Securite/Utilisateur/03_Dtos
 ---
 endpoint:
   name: GetUtilisateur
   method: GET
-  route: utilisateur/{utiId}
+  route: utilisateur/{utilisateurId}
   description: Charge le détail d'un utilisateur
 
   # Liste des paramètres du endpoint. Ce sont des propriétés de modèle comme pour les classes. Il peut ne pas y en avoir.

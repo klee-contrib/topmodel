@@ -1,7 +1,8 @@
 ---
-module: utilisateur
+module: Utilisateur
 uses:
-  - profil
+  - Securite/Utilisateur/01_References
+  - Securite/Profil/02_Entities
 tags:
   - entity
 ---
@@ -35,23 +36,3 @@ class:
       comment: Type d'utilisateur en one to one
       type: oneToOne
       role: OneToOneType
----
-class:
-  name: TypeUtilisateur
-  comment: Type d'utilisateur
-  reference: true
-  properties:
-    - name: Code
-      comment: Code du type d'utilisateur
-      primaryKey: true
-      required: true
-      domain: DO_CODE
-    - name: Libelle
-      comment: Libellé du type d'utilisateur
-      primaryKey: false
-      required: true
-      domain: DO_LIBELLE
-  values:
-    value1: { Code: ADM, Libelle: Administrateur }
-    value2: { Code: GES, Libelle: Gestionnaire }
-    value3: { Code: CLI, Libelle: Client }

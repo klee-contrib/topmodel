@@ -43,9 +43,10 @@ public class JavascriptApiClientGenerator : GeneratorBase
         var fileName = $"{_config.ApiClientOutputDirectory}/{filePath}.ts";
         using var fw = new FileWriter(fileName, _logger, false);
 
+        var subModules = string.Join(string.Empty, file.Module.Split('.').SkipLast(1).Select(s => "../"));
         var fetch = _config.FetchImportPath != null ? "fetch" : "coreFetch";
 
-        fw.WriteLine($@"import {{{fetch}}} from ""{_config.FetchImportPath ?? "@focus4/core"}"";");
+        fw.WriteLine($@"import {{{fetch}}} from ""{subModules}{_config.FetchImportPath ?? "@focus4/core"}"";");
 
         var imports = GetImports(file);
         if (imports.Any())
@@ -195,10 +196,11 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
         var modelPath = Path.GetRelativePath(_config.ApiClientOutputDirectory!, _config.ModelOutputDirectory!).Replace("\\", "/");
 
+        var subModules = string.Join(string.Empty, file.Module.Split('.').SkipLast(1).Select(s => "../"));
         var imports = types.Select(type =>
         {
             var name = type.Name;
-            var module = $"{modelPath}/{type.Namespace.Module.Replace(".", "/").ToLower()}";
+            var module = $"{subModules}{modelPath}/{type.Namespace.Module.Replace(".", "/").ToLower()}";
             return (Import: name, Path: $"{module}/{name.ToDashCase()}");
         }).Distinct().ToList();
 
@@ -215,8 +217,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
             var referenceTypeMap = references.GroupBy(t => t.Module);
             foreach (var refModule in referenceTypeMap)
             {
-                var module = $"{modelPath}/{refModule.Key.ToLower()}";
-
+                var module = $"{subModules}{modelPath}/{refModule.Key.ToLower()}";
                 imports.Add((string.Join(", ", refModule.Select(r => r.Code).OrderBy(x => x)), $"{module}/references"));
             }
         }
@@ -230,7 +231,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
         imports.AddRange(
             properties.OfType<CompositionProperty>()
                 .Where(p => p.DomainKind != null)
-                .Select(p => (p.DomainKind!.TS!.Type, p.DomainKind.TS.Import!))
+                .Select(p => (p.DomainKind!.TS!.Type, subModules + p.DomainKind.TS.Import!))
                 .Distinct());
 
         return imports
