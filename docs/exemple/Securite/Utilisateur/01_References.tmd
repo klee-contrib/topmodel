@@ -1,24 +1,11 @@
 ---
-module: Securite
+module: Utilisateur
 tags:
+  - dto
   - entity
 ---
 class:
-  name: Profil
-  label: Profil
-  comment: Profil des utilisateurs
-  properties:
-    - name: Id
-      label: Id technique du profil
-      required: true
-      primaryKey: true
-      domain: DO_ID
-      comment: Id technique
-    - association: TypeProfil
-      comment: Type de profil
----
-class:
-  name: TypeProfil
+  name: TypeUtilisateur
   comment: Type d'utilisateur
   reference: true
   properties:
@@ -35,3 +22,4 @@ class:
   values:
     value1: { Code: ADM, Libelle: Administrateur }
     value2: { Code: GES, Libelle: Gestionnaire }
+    value3: { Code: CLI, Libelle: Client }

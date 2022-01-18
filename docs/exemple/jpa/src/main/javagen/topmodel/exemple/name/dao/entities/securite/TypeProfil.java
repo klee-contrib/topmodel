@@ -55,7 +55,7 @@ public class TypeProfil implements Serializable {
      * @return value of code.
      */
     @Id
-    @Column(name = "CODE", nullable = false)
+    @Column(name = "CODE", nullable = false, length = 3)
     @Enumerated(EnumType.STRING)
     public TypeProfilCode getCode() {
          return this.code;
@@ -66,7 +66,7 @@ public class TypeProfil implements Serializable {
      *
      * @return value of libelle.
      */
-    @Column(name = "LIBELLE", nullable = false)
+    @Column(name = "LIBELLE", nullable = false, length = 3)
     public String getLibelle() {
          return this.libelle;
     }

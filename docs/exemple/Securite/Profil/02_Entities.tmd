@@ -1,0 +1,20 @@
+---
+module: Securite
+tags:
+  - entity
+uses:
+  - Securite/Profil/01_References
+---
+class:
+  name: Profil
+  label: Profil
+  comment: Profil des utilisateurs
+  properties:
+    - name: Id
+      label: Id technique du profil
+      required: true
+      primaryKey: true
+      domain: DO_ID
+      comment: Id technique
+    - association: TypeProfil
+      comment: Type de profil

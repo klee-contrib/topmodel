@@ -6,12 +6,16 @@ tags:
 domain:
   name: DO_ID
   label: ID technique
+  ts:
+    type: number
   java:
     type: long
 ---
 domain:
   name: DO_DATE_CREATION
   label: Date de création
+  ts:
+    type: string
   java:
     type: DateTime
     imports:
@@ -25,6 +29,8 @@ domain:
 domain:
   name: DO_DATE_MODIFICATION
   label: Date de modification
+  ts:
+    type: string
   java:
     type: DateTime
     imports:
@@ -37,6 +43,8 @@ domain:
 domain:
   name: DO_EMAIL
   label: Email
+  ts:
+    type: string
   java:
     imports:
       - "javax.validation.constraints.Email"
@@ -47,18 +55,29 @@ domain:
 domain:
   name: DO_CODE
   label: Code
+  ts:
+    type: string
   java:
     type: String
+  sqlType: varchar
+  length: 3
 ---
 domain:
   name: DO_LIBELLE
   label: Libellé
+  ts:
+    type: string
   java:
     type: String
+  sqlType: varchar
+  length: 3
 ---
 domain:
   name: DO_PAGE
   label: Page
+  ts:
+    type: Page
+    import: ../types
   java:
     type: Page
     imports: 

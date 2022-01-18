@@ -1,0 +1,24 @@
+---
+module: Securite
+tags:
+  - entity
+  - dto
+---
+class:
+  name: TypeProfil
+  comment: Type d'utilisateur
+  reference: true
+  properties:
+    - name: Code
+      comment: Code du type d'utilisateur
+      primaryKey: true
+      required: true
+      domain: DO_CODE
+    - name: Libelle
+      comment: Libellé du type d'utilisateur
+      primaryKey: false
+      required: true
+      domain: DO_LIBELLE
+  values:
+    value1: { Code: ADM, Libelle: Administrateur }
+    value2: { Code: GES, Libelle: Gestionnaire }
