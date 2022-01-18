@@ -39,7 +39,7 @@ export function activate(context: ExtensionContext) {
 
 function createStatusBar() {
     topModelStatusBar = window.createStatusBarItem(StatusBarAlignment.Right, 100);
-    topModelStatusBar.text = '$(loading) Topmodel';
+    topModelStatusBar.text = '$(loading~spin) Topmodel';
     topModelStatusBar.tooltip = 'Topmodel is loading configuration';
     topModelStatusBar.show();
 }
