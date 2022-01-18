@@ -29,6 +29,7 @@ var server = await LanguageServer.From(options =>
         .WithHandler<SemanticTokensHandler>()
         .WithHandler<DefinitionHandler>()
         .WithHandler<CompletionHandler>()
+        .WithHandler<WorkspaceSymbolHandler>()
         .OnInitialize((server, _, __) =>
         {
             server.Services.GetRequiredService<ModelStore>().LoadFromConfig();
