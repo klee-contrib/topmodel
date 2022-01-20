@@ -81,6 +81,8 @@ public class AliasProperty : IFieldProperty
 
     internal DomainReference? ListDomainReference { get; set; }
 
+    internal AliasProperty? OriginalAliasProperty { get; private set; }
+
     internal AliasProperty Clone(IFieldProperty prop, Reference? includeReference)
     {
         var alp = new AliasProperty
@@ -95,7 +97,8 @@ public class AliasProperty : IFieldProperty
             Suffix = Suffix,
             Comment = _comment!,
             Label = _label,
-            ListDomain = _listDomain
+            ListDomain = _listDomain,
+            OriginalAliasProperty = this
         };
 
         if (_required.HasValue)

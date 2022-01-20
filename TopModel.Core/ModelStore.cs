@@ -324,25 +324,45 @@ public class ModelStore
             }
         }
 
-        foreach (var alp in modelFile.Properties.OfType<AliasProperty>().Where(alp => alp.Reference == null))
+        // Reset des alias déjà résolus
+        foreach (var classe in modelFile.Classes)
         {
-            if (!referencedClasses.TryGetValue(alp.Property.Class.Name, out var aliasedClass))
+            foreach (var alp in classe.Properties.OfType<AliasProperty>().ToList())
             {
-                yield return new ModelError(alp, $"La classe '{alp.Property.Class.Name}' est introuvable dans le fichier ou l'une de ses dépendances.");
-                continue;
+                if (alp.OriginalAliasProperty is not null)
+                {
+                    var index = classe.Properties.IndexOf(alp);
+                    classe.Properties.RemoveAt(classe.Properties.IndexOf(alp));
+                    if (!classe.Properties.Contains(alp.OriginalAliasProperty))
+                    {
+                        classe.Properties.Insert(index, alp.OriginalAliasProperty);
+                    }
+                }
             }
-
-            var propName = alp.PropertyReference?.ReferenceName ?? alp.Property.Name;
-            var aliasedProperty = aliasedClass.Properties.OfType<IFieldProperty>().SingleOrDefault(p => p.Name == propName);
-            if (aliasedProperty == null)
-            {
-                yield return new ModelError(alp, $"La propriété '{propName}' est introuvable sur la classe '{aliasedClass}'.", alp.PropertyReference);
-                continue;
-            }
-
-            alp.Property = aliasedProperty;
         }
 
+        foreach (var endpoint in modelFile.Endpoints)
+        {
+            foreach (var alp in endpoint.Params.OfType<AliasProperty>().ToList())
+            {
+                if (alp.OriginalAliasProperty is not null)
+                {
+                    var index = endpoint.Params.IndexOf(alp);
+                    endpoint.Params.RemoveAt(endpoint.Params.IndexOf(alp));
+                    if (!endpoint.Params.Contains(alp.OriginalAliasProperty))
+                    {
+                        endpoint.Params.Insert(index, alp.OriginalAliasProperty);
+                    }
+                }
+            }
+
+            if (endpoint.Returns is AliasProperty ralp && ralp.OriginalAliasProperty is not null)
+            {
+                endpoint.Returns = ralp.OriginalAliasProperty;
+            }
+        }
+
+        // Détermination des alias.
         foreach (var alp in modelFile.Properties.OfType<AliasProperty>().Where(alp => alp.Reference != null))
         {
             if (!referencedClasses.TryGetValue(alp.Reference!.ReferenceName, out var aliasedClass))
