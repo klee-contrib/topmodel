@@ -2,7 +2,7 @@
 
 ![Features demo](https://raw.githubusercontent.com/klee-contrib/topmodel/develop/TopModel.VSCode/demo.gif "Features demonstration")
 
-## Features
+## Fonctionnalités disponibles
 
 Cette extension enrichit considérablement l'expérience de développement de projets TopModel `tmd` files. Fonctionnalités principales :
 
@@ -14,7 +14,7 @@ Cette extension enrichit considérablement l'expérience de développement de pr
 - Détection des imports inutiles
 - Recherche des symboles (classes, domaines et endpoints) avec `Ctrl + t`
 
-## Work in progress
+## Fonctionnalités en cours de développement
 
 - Auto complétion des alias
 - Espace de travail multi-config
