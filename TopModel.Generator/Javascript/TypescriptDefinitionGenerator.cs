@@ -526,9 +526,34 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             }
 
             fw.Write("}\r\n");
-
-            WriteReferenceDefinition(fw, reference);
+            if (_config.ReferenceMode == ReferenceMode.VALUES)
+            {
+                WriteReferenceValues(fw, reference);
+            }
+            else
+            {
+                WriteReferenceDefinition(fw, reference);
+            }
         }
+    }
+
+    private void WriteReferenceValues(FileWriter fw, Class reference)
+    {
+        fw.Write("export const ");
+        fw.Write(reference.Name.ToFirstLower());
+        fw.Write($"List: {reference.Name}[] = [");
+        fw.WriteLine();
+        foreach (var refValue in reference.ReferenceValues!)
+        {
+            fw.WriteLine("    {");
+            fw.Write("        ");
+            fw.Write(string.Join(",\n        ", refValue.Value.Select(property => $"{property.Key.Name.ToFirstLower()}: \"{property.Value}\"")));
+            fw.WriteLine();
+            fw.WriteLine("    },");
+        }
+
+        fw.WriteLine("];");
+        fw.WriteLine();
     }
 
     private void WriteReferenceDefinition(FileWriter fw, Class classe)
