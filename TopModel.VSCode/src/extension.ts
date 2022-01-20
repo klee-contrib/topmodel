@@ -3,8 +3,8 @@ import { Trace } from 'vscode-jsonrpc';
 import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment, Terminal, Uri } from 'vscode';
 import * as fs from "fs";
 import { TopModelConfig, TopModelException } from './types';
-const open = require('open');
 
+const open = require('open');
 const exec = require('child_process').exec;
 const yaml = require("js-yaml");
 
@@ -35,7 +35,6 @@ export function activate(context: ExtensionContext) {
         });
     }
 }
-
 
 function createStatusBar() {
     topModelStatusBar = window.createStatusBarItem(StatusBarAlignment.Right, 100);

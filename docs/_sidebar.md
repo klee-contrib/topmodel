@@ -10,5 +10,6 @@
 
 - **[Génération](/generator.md)**
   - [Jpa](/generator/jpa.md)
+  - [Javascript / Typescript](/generator/js.md)
 
 - **[Visualisation](/ui.md)**
