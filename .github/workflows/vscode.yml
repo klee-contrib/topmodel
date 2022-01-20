@@ -1,0 +1,35 @@
+name: Publish TopModel.VSCode
+
+on:
+  push:
+    paths:
+      - TopModel.VSCode/package.json
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+          
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+          
+      - run: dotnet publish
+        name: Build LS
+        working-directory: TopModel.LanguageServer
+          
+      - run: npm ci
+        working-directory: TopModel.VSCode
+      
+      - name: Publish to Visual Studio Marketplace
+        uses: HaaLeo/publish-vscode-extension@v1
+        with:
+          pat: ${{secrets.VS_MARKETPLACE_API_KEY}}
+          registryUrl: https://marketplace.visualstudio.com          
+          packagePath: TopModel.VSCode
