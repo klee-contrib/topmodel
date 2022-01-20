@@ -16,7 +16,7 @@
     <ToolCommandName>modgen</ToolCommandName>
     <Version>1.2.1</Version>
     <Authors>JabX</Authors>
-    <Description>Générateur de modèle pour TopModel.</Description>
+    <Description>Générateur de modèle TopModel.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   
