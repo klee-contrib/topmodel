@@ -28,7 +28,7 @@ Ce mode permet de générer, pour chaque liste de référence, une définition d
 
 Exemple :
 
-```ts
+```typescript
 export type TypeProfilCode = "ADM" | "GES";
 export interface TypeProfil {
   code: TypeProfilCode;
@@ -49,7 +49,7 @@ Il permet de générer l'ensemble des valeurs de chaque liste de référence tel
 
 Exemple :
 
-```ts
+```typescript
 export type TypeProfilCode = "ADM" | "GES";
 
 export interface TypeProfil {

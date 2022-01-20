@@ -8,7 +8,7 @@ Il n'est pas recommandé d'utiliser le générateur Postgresql en combinaison av
 
 Dans le fichier `application.yml` de votre application
 
-```yml
+```yaml
 spring:
   jpa:
     properties:
