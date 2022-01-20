@@ -77,7 +77,7 @@ domain:
   label: Page
   ts:
     type: Page
-    import: ../types
+    import: "@/types"
   java:
     type: Page
     imports: 

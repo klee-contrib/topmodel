@@ -25,7 +25,7 @@ import topmodel.exemple.name.dao.references.utilisateur.TypeUtilisateurCode;
 
 @RestController
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@RequestMapping("securite.utilisateur")
+@RequestMapping("securite/utilisateur")
 public interface IUtilisateurController {
 
 

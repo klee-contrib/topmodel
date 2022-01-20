@@ -37,18 +37,17 @@ public class JavascriptApiClientGenerator : GeneratorBase
         }
 
         var fileSplit = file.Name.Split("/");
-        var filePath = (fileSplit.Length > 1 ? string.Join("/", fileSplit[1..]) : file.Name)
-            .ToDashCase();
-
+        var modulePath = string.Join('/', file.Module.Split('.').Select(m => m.ToDashCase()));
+        var filePath = _config.ApiClientFilePath.Replace("{module}", modulePath) + '/' + string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToDashCase();
         var fileName = $"{_config.ApiClientOutputDirectory}/{filePath}.ts";
-        using var fw = new FileWriter(fileName, _logger, false);
 
-        var subModules = string.Join(string.Empty, file.Module.Split('.').SkipLast(1).Select(s => "../"));
+        var rp = _config.ApiClientFilePath.Length > 0 ? string.Join(string.Empty, _config.ApiClientFilePath.Replace("{module}", modulePath).Split('/').Select(s => "../")) : string.Empty;
         var fetch = _config.FetchImportPath != null ? "fetch" : "coreFetch";
 
-        fw.WriteLine($@"import {{{fetch}}} from ""{subModules}{_config.FetchImportPath ?? "@focus4/core"}"";");
+        using var fw = new FileWriter(fileName, _logger, false);
+        fw.WriteLine($@"import {{{fetch}}} from ""{((_config.FetchImportPath != null && _config.FetchImportPath.StartsWith('@')) ? string.Empty : rp)}{_config.FetchImportPath ?? "@focus4/core"}"";");
 
-        var imports = GetImports(file);
+        var imports = GetImports(file, rp);
         if (imports.Any())
         {
             fw.WriteLine();
@@ -188,7 +187,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
         }
     }
 
-    private IList<(string Import, string Path)> GetImports(ModelFile file)
+    private IList<(string Import, string Path)> GetImports(ModelFile file, string rp)
     {
         var properties = file.Endpoints.SelectMany(endpoint => endpoint.Params.Concat(new[] { endpoint.Returns }));
 
@@ -196,12 +195,11 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
         var modelPath = Path.GetRelativePath(_config.ApiClientOutputDirectory!, _config.ModelOutputDirectory!).Replace("\\", "/");
 
-        var subModules = string.Join(string.Empty, file.Module.Split('.').SkipLast(1).Select(s => "../"));
         var imports = types.Select(type =>
         {
             var name = type.Name;
-            var module = $"{subModules}{modelPath}/{type.Namespace.Module.Replace(".", "/").ToLower()}";
-            return (Import: name, Path: $"{module}/{name.ToDashCase()}");
+            var module = $"{modelPath}/{type.Namespace.Module.Replace(".", "/").ToLower()}";
+            return (Import: name, Path: $"{rp}{module}/{name.ToDashCase()}");
         }).Distinct().ToList();
 
         var references = file.Endpoints.SelectMany(p => p.Params.Concat(new[] { p.Returns }).Where(p => p != null))
@@ -211,14 +209,13 @@ public class JavascriptApiClientGenerator : GeneratorBase
             .Where(pc => pc.prop.TS.Type != pc.prop.Domain.TS!.Type && pc.prop.Domain.TS.Type == "string" && pc.classe.Reference)
             .Select(pc => (Code: pc.prop.TS.Type, pc.classe.Namespace.Module))
             .Distinct();
-
         if (references.Any())
         {
             var referenceTypeMap = references.GroupBy(t => t.Module);
             foreach (var refModule in referenceTypeMap)
             {
-                var module = $"{subModules}{modelPath}/{refModule.Key.ToLower()}";
-                imports.Add((string.Join(", ", refModule.Select(r => r.Code).OrderBy(x => x)), $"{module}/references"));
+                var module = $"{modelPath}/{refModule.Key.ToLower()}";
+                imports.Add((string.Join(", ", refModule.Select(r => r.Code).OrderBy(x => x)), $"{rp}{module}/references"));
             }
         }
 
@@ -231,7 +228,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
         imports.AddRange(
             properties.OfType<CompositionProperty>()
                 .Where(p => p.DomainKind != null)
-                .Select(p => (p.DomainKind!.TS!.Type, subModules + p.DomainKind.TS.Import!))
+                .Select(p => (p.DomainKind!.TS!.Type, p.DomainKind.TS.Import!))
                 .Distinct());
 
         return imports
