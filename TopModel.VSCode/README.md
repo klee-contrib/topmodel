@@ -4,7 +4,9 @@
 
 ## Fonctionnalités disponibles
 
-Cette extension enrichit considérablement l'expérience de développement de projets TopModel `tmd` files. Fonctionnalités principales :
+Cette extension enrichit considérablement l'expérience de développement de projets TopModel (fichiers avec extensions `*.tmd`). 
+
+Fonctionnalités principales :
 
 - Coloration syntaxique
 - Auto-complétion des Domaines, Classes et Propriétés
@@ -12,7 +14,7 @@ Cette extension enrichit considérablement l'expérience de développement de pr
 - Commandes `TopModel : Start model generation` et `TopModel : Start model generation (watch mode)` avec détection automatique du fichier de configuration
 - Import automatique
 - Détection des imports inutiles
-- Recherche des symboles (classes, domaines et endpoints) avec `Ctrl + t`
+- Recherche des symboles (classes, domaines et endpoints) avec `Ctrl + T`
 
 ## Fonctionnalités en cours de développement
 
