@@ -21,6 +21,11 @@ public class JavascriptConfig : GeneratorConfigBase
     public string? ApiClientOutputDirectory { get; set; }
 
     /// <summary>
+    /// Chemin vers lequel sont créés les fichiers générés du client d'API
+    /// </summary>
+    public string ApiClientFilePath { get; set; } = "{module}";
+
+    /// <summary>
     /// Chemin vers un "fetch" personnalisé.
     /// </summary>
     public string? FetchImportPath { get; set; }
@@ -28,7 +33,7 @@ public class JavascriptConfig : GeneratorConfigBase
     /// <summary>
     /// Chemin vers le fichier "domain".
     /// </summary>
-    public string? DomainRelativePath { get; set; } = "../";
+    public string DomainImportPath { get; set; } = "../domains";
 
     /// <summary>
     /// Génère des modèles pour Focus (par défaut : true).

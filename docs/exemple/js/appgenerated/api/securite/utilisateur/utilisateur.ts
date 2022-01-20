@@ -2,12 +2,12 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {fetch} from "../../api-services";
+import {fetch} from "@api-services";
 
-import {Page} from "../../types";
-import {TypeProfilCode} from "../model/securite/references";
-import {TypeUtilisateurCode} from "../model/utilisateur/references";
-import {UtilisateurDto} from "../model/utilisateur/utilisateur-dto";
+import {Page} from "@/types";
+import {TypeProfilCode} from "../../../model/securite/references";
+import {TypeUtilisateurCode} from "../../../model/utilisateur/references";
+import {UtilisateurDto} from "../../../model/utilisateur/utilisateur-dto";
 
 /**
  * Charge le détail d'un utilisateur

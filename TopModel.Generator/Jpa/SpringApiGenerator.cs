@@ -45,7 +45,8 @@ public class SpringApiGenerator : GeneratorBase
         Directory.CreateDirectory(destFolder);
 
         var filePath = file.Name.Split("/").Last();
-        var fileName = $"I{filePath.ToFirstUpper()}Controller.java";
+        var className = $"I{string.Join('_', filePath.Split("_").Skip(filePath.Contains('_') ? 1 : 0)).ToFirstUpper()}Controller";
+        var fileName = $"{className}.java";
 
         using var fw = new JavaWriter($"{destFolder}/{fileName}", _logger, null);
 
@@ -55,8 +56,8 @@ public class SpringApiGenerator : GeneratorBase
         fw.WriteLine();
         fw.WriteLine("@RestController");
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
-        fw.WriteLine(@$"@RequestMapping(""{file.Module.ToLower()}"")");
-        fw.WriteLine($"public interface I{filePath.ToFirstUpper()}Controller {{");
+        fw.WriteLine(@$"@RequestMapping(""{file.Module.Replace('.', '/').ToLower()}"")");
+        fw.WriteLine($"public interface {className} {{");
 
         fw.WriteLine();
 

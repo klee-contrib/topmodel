@@ -208,27 +208,34 @@
           },
           "modelOutputDirectory": {
             "type": "string",
-            "description": "Chemin vers le dossier racine vers lequel générer les fichiers de modèle. Si non renseigné, aucun modèle ne sera généré."
+            "description": "Chemin depuis la racine de la génération vers le dossier racine vers lequel générer les fichiers de modèle. Si non renseigné, aucun modèle ne sera généré."
           },
           "resourceOutputDirectory": {
             "type": "string",
-            "description": "Chemin vers le dossier racine vers lequel générer les fichiers de ressources i18n. Si non renseigné, aucun fichier de sera généré."
+            "description": "Chemin depuis la racine de la génération vers le dossier racine vers lequel générer les fichiers de ressources i18n. Si non renseigné, aucun fichier de sera généré."
           },
           "apiClientOutputDirectory": {
             "type": "string",
-            "description": "Chemin vers le dossier racine vers lequel générer les fichiers de client d'API. Si non renseigné, aucun fichier de sera généré."
+            "description": "Chemin depuis la racine de la génération vers le dossier racine vers lequel générer les fichiers de client d'API. Si non renseigné, aucun fichier de sera généré."
+          },
+          "apiClientFilePath": {
+            "type": "string",
+            "description": "Chemin depuis apiClientOutputDirectory vers lequel sont créés les fichiers générés du client d'API. Peut contenir {module} pour que le fichier soit généré dans le répertoire correspondant au module",
+            "default": "{module}"
           },
           "fetchImportPath": {
             "type": "string",
-            "description": "Chemin vers un 'fetch' personnalisé."
+            "description": "Chemin depuis apiClientOutputDirectory vers un 'fetch' personnalisé, ou alias (commencant par @) vers le fichier contenant le fetch personnalisé"
           },
-          "domainRelativePath": {
+          "domainImportPath": {
             "type": "string",
-            "description": "Chemin vers le fichier 'domain'"
+            "description": "Chemin depuis modelOutputDirectory vers le fichier 'domain', ou alias (commencant par @) vers le fichier de domaine",
+            "default": "../domains"
           },
           "focus": {
             "type": "boolean",
-            "description": "Génère des modèles pour Focus (par défaut : true)."
+            "description": "Génère des modèles pour Focus (par défaut : true).",
+            "default": "true"
           },
           "resourceMode": {
             "type": "string",

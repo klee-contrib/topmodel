@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_CODE, DO_ID} from "../../../domains";
+import {DO_CODE, DO_ID} from "@domains";
 
 import {UtilisateurDtoEntity, UtilisateurDto} from "../utilisateur/utilisateur-dto";
 import {TypeProfilCode} from "./references";

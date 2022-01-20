@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_CODE, DO_EMAIL, DO_ID} from "../../../domains";
+import {DO_CODE, DO_EMAIL, DO_ID} from "@domains";
 
 import {TypeProfilCode} from "../securite/references";
 import {TypeUtilisateurCode} from "./references";
