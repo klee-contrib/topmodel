@@ -214,7 +214,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
             var referenceTypeMap = references.GroupBy(t => t.Module);
             foreach (var refModule in referenceTypeMap)
             {
-                var module = $"{modelPath}/{refModule.Key.ToLower()}";
+                var module = $"{modelPath}/{refModule.Key.Replace('.', '/').ToLower()}";
                 imports.Add((string.Join(", ", refModule.Select(r => r.Code).OrderBy(x => x)), $"{rp}{module}/references"));
             }
         }

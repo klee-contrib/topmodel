@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.2.1
+
+- [192dbf67e68da](https://github.com/klee-contrib/topmodel/commit/192dbf67e68da23871956d3fc05e667103602d4f) JS - Api client : Correction import des liste de ref si elles se trouvent dans un sous-module
+
 ## 1.2.0
 
 - [192dbf67e68da](https://github.com/klee-contrib/topmodel/commit/192dbf67e68da23871956d3fc05e667103602d4f) JS - Ajout du mode `VALUES` pour la génération des listes de ref
