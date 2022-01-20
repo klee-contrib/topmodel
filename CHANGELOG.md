@@ -2,7 +2,7 @@
 
 ## 1.2.1
 
-- [192dbf67e68da](https://github.com/klee-contrib/topmodel/commit/192dbf67e68da23871956d3fc05e667103602d4f) JS - Api client : Correction import des liste de ref si elles se trouvent dans un sous-module
+- [b5c7d2553c0be](https://github.com/klee-contrib/topmodel/commit/b5c7d2553c0bea9d0e65df43a360cab817305913) JS - Api client : Correction import des liste de ref si elles se trouvent dans un sous-module
 
 ## 1.2.0
 
