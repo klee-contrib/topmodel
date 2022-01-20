@@ -24,9 +24,14 @@ public class CSharpConfig : GeneratorConfigBase
     public string NonPersistantModelPath { get; set; } = "{module}/{app}.{module}Contract/Dto";
 
     /// <summary>
-    /// Localisation du l'API générée (client ou serveur), relatif au répertoire de génération. Par défaut : {app}.{module}.
+    /// Localisation du l'API générée (client ou serveur), relatif au répertoire de génération. Par défaut : "{app}.Web".
     /// </summary>
-    public string ApiPath { get; set; } = "{app}.{module}";
+    public string ApiRootPath { get; set; } = "{app}.Web";
+
+    /// <summary>
+    /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API. Par défaut : "{module}".
+    /// </summary>
+    public string ApiFilePath { get; set; } = "{module}";
 
     /// <summary>
     /// Mode de génération de l'API ("client" ou "server").

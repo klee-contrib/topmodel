@@ -136,9 +136,13 @@
             "type": "string",
             "description": "Localisation du modèle non-persisté, relative au répertoire de génération. Par défaut : {module}/{app}.{module}Contract/Dto."
           },
-          "apiPath": {
+          "apiRootPath": {
             "type": "string",
-            "description": "Localisation du l'API générée (client ou serveur), relatif au répertoire de génération. Par défaut : {app}.{module}."
+            "description": "Localisation du l'API générée (client ou serveur), relatif au répertoire de génération. Par défaut : {app}.Web."
+          },
+          "apiFilePath": {
+            "type": "string",
+            "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API. Par défaut : {module}."
           },
           "apiGeneration": {
             "type": "string",

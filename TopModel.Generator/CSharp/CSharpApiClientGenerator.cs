@@ -34,11 +34,9 @@ public class CSharpApiClientGenerator : GeneratorBase
             return;
         }
 
-        var fileSplit = file.Name.Split("/");
-        var path = $"/{string.Join("/", fileSplit.Skip(fileSplit.Length > 1 ? 1 : 0).SkipLast(1))}";
-        var className = $"{fileSplit.Last()}Client";
-        var apiPath = _config.ApiPath.Replace("{app}", file.Endpoints.First().Namespace.App).Replace("{module}", file.Module);
-        var filePath = $"{_config.OutputDirectory}/{apiPath}{path}/generated/{className}.cs";
+        var className = $"{file.Name.Split("/").Last()}Client";
+        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), _config.ApiFilePath.Replace("{module}", file.Module)).Replace("\\", "/");
+        var filePath = $"{_config.OutputDirectory}/{apiPath}/generated/{className}.cs";
 
         using var fw = new CSharpWriter(filePath, _logger, _config.UseLatestCSharp);
 
