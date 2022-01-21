@@ -4,7 +4,7 @@
 
 ## Fonctionnalités disponibles
 
-Cette extension enrichit considérablement l'expérience de développement de projets TopModel (fichiers avec extensions `*.tmd`). 
+Cette extension enrichit considérablement l'expérience de développement de projets TopModel (fichiers avec extensions `*.tmd`).
 
 Fonctionnalités principales :
 
@@ -15,6 +15,8 @@ Fonctionnalités principales :
 - Import automatique
 - Détection des imports inutiles
 - Recherche des symboles (classes, domaines et endpoints) avec `Ctrl + T`
+- Fromattage :
+  - Tri des imports
 
 ## Fonctionnalités en cours de développement
 
