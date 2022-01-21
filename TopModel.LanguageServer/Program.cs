@@ -30,6 +30,7 @@ var server = await LanguageServer.From(options =>
         .WithHandler<DefinitionHandler>()
         .WithHandler<CompletionHandler>()
         .WithHandler<WorkspaceSymbolHandler>()
+        .WithHandler<DocumentFormattingHandler>()
         .OnInitialize((server, _, __) =>
         {
             server.Services.GetRequiredService<ModelStore>().LoadFromConfig();
