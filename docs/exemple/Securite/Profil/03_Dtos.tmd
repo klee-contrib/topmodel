@@ -3,8 +3,8 @@ module: Securite
 tags:
   - dto
 uses:
-  - Securite/Utilisateur/03_Dtos
   - Securite/Profil/02_Entities
+  - Securite/Utilisateur/03_Dtos
 ---
 class:
   name: ProfilDto

@@ -29,7 +29,7 @@ class CodeActionHandler : CodeActionHandlerBase
     public override Task<CommandOrCodeActionContainer> Handle(CodeActionParams request, CancellationToken cancellationToken)
     {
         var l = new List<CommandOrCodeAction>();
-        l.AddRange(request.Context.Diagnostics.Where(d => d.Message.EndsWith("à sa place.")).Select(d =>
+        l.AddRange(request.Context.Diagnostics.Where(d => d.Message.EndsWith("alphabétique.")).Select(d =>
         {
             var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
             var start = file.Uses.First().ToRange()!.Start;
@@ -37,7 +37,7 @@ class CodeActionHandler : CodeActionHandlerBase
 
             return CommandOrCodeAction.From(new CodeAction()
             {
-                Title = "Organize imports",
+                Title = "Trier les Uses",
                 Kind = CodeActionKind.SourceOrganizeImports,
                 IsPreferred = true,
                 Diagnostics = new List<Diagnostic>(){
@@ -45,17 +45,16 @@ class CodeActionHandler : CodeActionHandlerBase
                 },
                 Edit = new WorkspaceEdit
                 {
-                    DocumentChanges = new List<WorkspaceEditDocumentChange>(){
-                        new WorkspaceEditDocumentChange(
-                            new TextDocumentEdit(){
-                                Edits = new List<TextEdit>(){
-                                    new TextEdit() {
-                                        NewText = string.Join("\n  - ", file.Uses.OrderBy(u => u.ReferenceName).Select(u => u.ReferenceName)),
-                                        Range = new Range(start, end)
-                                    }
-                                }
-                            }
-                        )
+                    Changes =
+                    new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                    {
+                        [request.TextDocument.Uri] = new List<TextEdit>(){
+                            new TextEdit()
+                        {
+                            NewText = string.Join("\n  - ", file.Uses.OrderBy(u => u.ReferenceName).Select(u => u.ReferenceName)),
+                            Range = new Range(start, end)
+                        }
+                    }
                     }
                 }
             });
