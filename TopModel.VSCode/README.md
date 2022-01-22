@@ -15,7 +15,7 @@ Fonctionnalités principales :
 - Import automatique
 - Détection des imports inutiles
 - Recherche des symboles (classes, domaines et endpoints) avec `Ctrl + T`
-- Fromattage :
+- Fromatage :
   - Tri des imports
 
 ## Fonctionnalités en cours de développement

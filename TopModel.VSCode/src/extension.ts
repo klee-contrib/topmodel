@@ -1,6 +1,6 @@
 import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
 import { Trace } from 'vscode-jsonrpc';
-import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment, Terminal, Uri } from 'vscode';
+import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment, Terminal, Uri, TextEdit, ProviderResult, extensions } from 'vscode';
 import * as fs from "fs";
 import { TopModelConfig, TopModelException } from './types';
 
@@ -203,7 +203,7 @@ function startLanguageServer(context: ExtensionContext, configPath: string, conf
     // Options to control the language client
     let clientOptions: LanguageClientOptions = {
         // Register the server for plain text documents
-        documentSelector: [{ language: 'yaml' }, { pattern: `${modelRoot}**/tmd` }],
+        documentSelector: [{ pattern: `${modelRoot}**/tmd` }],
         synchronize: {
             configurationSection: 'topmodel',
             fileEvents: workspace.createFileSystemWatcher(`${modelRoot}**/*.tmd`)

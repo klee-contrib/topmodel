@@ -504,5 +504,12 @@ public class ModelStore
         {
             yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false };
         }
+
+        foreach (var use in modelFile.Uses
+            .Except(nonExistingFiles)
+            .Where((use, i) => Array.IndexOf(modelFile.Uses.OrderBy(u => u.ReferenceName).ToArray(), use) != i))
+        {
+            yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas à sa place.", use) { IsError = false };
+        }
     }
 }
