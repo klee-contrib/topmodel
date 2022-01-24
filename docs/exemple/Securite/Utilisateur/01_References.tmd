@@ -8,6 +8,7 @@ class:
   name: TypeUtilisateur
   comment: Type d'utilisateur
   reference: true
+  trigram: TUT
   properties:
     - name: Code
       comment: Code du type d'utilisateur

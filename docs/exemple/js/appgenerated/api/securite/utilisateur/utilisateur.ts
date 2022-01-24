@@ -54,12 +54,12 @@ export function saveAllUtilisateur(utilisateur: UtilisateurDto[], options: Reque
  * @param utilisateurId Id technique
  * @param email Email de l'utilisateur
  * @param typeUtilisateurCode Type d'utilisateur en Many to one
- * @param typeUtilisateurCodeOneToOneType Type d'utilisateur en one to one
+ * @param typeUtilisateurCodeOrigin Type d'utilisateur en one to one
  * @param profilProfilId Id technique
  * @param profilTypeProfilCode Type de profil
  * @param options Options pour 'fetch'.
  * @returns Utilisateurs matchant les critères
  */
-export function search(utilisateurId?: number, email?: string, typeUtilisateurCode?: TypeUtilisateurCode, typeUtilisateurCodeOneToOneType?: TypeUtilisateurCode, profilProfilId?: number, profilTypeProfilCode?: TypeProfilCode, options: RequestInit = {}): Promise<Page<UtilisateurDto>> {
-    return fetch("POST", `./utilisateur/search`, {query: {utilisateurId, email, typeUtilisateurCode, typeUtilisateurCodeOneToOneType, profilProfilId, profilTypeProfilCode}}, options);
+export function search(utilisateurId?: number, email?: string, typeUtilisateurCode?: TypeUtilisateurCode, typeUtilisateurCodeOrigin?: TypeUtilisateurCode, profilProfilId?: number, profilTypeProfilCode?: TypeProfilCode, options: RequestInit = {}): Promise<Page<UtilisateurDto>> {
+    return fetch("POST", `./utilisateur/search`, {query: {utilisateurId, email, typeUtilisateurCode, typeUtilisateurCodeOrigin, profilProfilId, profilTypeProfilCode}}, options);
 }

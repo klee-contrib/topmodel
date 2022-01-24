@@ -11,7 +11,7 @@ export interface UtilisateurDto {
     id?: number,
     email?: string,
     typeUtilisateurCode?: TypeUtilisateurCode,
-    typeUtilisateurCodeOneToOneType?: TypeUtilisateurCode,
+    typeUtilisateurCodeOrigin?: TypeUtilisateurCode,
     profilId?: number,
     profilTypeProfilCode?: TypeProfilCode,
     utilisateurParent?: UtilisateurDto
@@ -39,12 +39,12 @@ export const UtilisateurDtoEntity = {
         isRequired: false,
         label: "utilisateur.utilisateur.typeUtilisateurCode"
     },
-    typeUtilisateurCodeOneToOneType: {
+    typeUtilisateurCodeOrigin: {
         type: "field",
-        name: "typeUtilisateurCodeOneToOneType",
+        name: "typeUtilisateurCodeOrigin",
         domain: DO_CODE,
         isRequired: false,
-        label: "utilisateur.utilisateur.typeUtilisateurCodeOneToOneType"
+        label: "utilisateur.utilisateur.typeUtilisateurCodeOrigin"
     },
     profilId: {
         type: "field",

@@ -274,7 +274,7 @@ public class JpaModelGenerator : GeneratorBase
                         break;
                     case AssociationType.OneToOne:
                         fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY)");
-                        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{fk}"")");
+                        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
                         break;
                 }
 

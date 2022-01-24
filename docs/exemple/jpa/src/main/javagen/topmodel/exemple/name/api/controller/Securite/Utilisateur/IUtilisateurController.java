@@ -102,14 +102,14 @@ public interface IUtilisateurController {
      * @param utilisateurId Id technique
      * @param email Email de l'utilisateur
      * @param typeUtilisateurCode Type d'utilisateur en Many to one
-     * @param typeUtilisateurCodeOneToOneType Type d'utilisateur en one to one
+     * @param typeUtilisateurCodeOrigin Type d'utilisateur en one to one
      * @param profilProfilId Id technique
      * @param profilTypeProfilCode Type de profil
      * @return Utilisateurs matchant les critères
      */
     @PostMapping("utilisateur/search")
-    default Page<UtilisateurDto> searchMapping(@RequestParam("utilisateurId") long utilisateurId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode, @RequestParam("typeUtilisateurCodeOneToOneType") TypeUtilisateurCode typeUtilisateurCodeOneToOneType, @RequestParam("profilProfilId") long profilProfilId, @RequestParam("profilTypeProfilCode") TypeProfilCode profilTypeProfilCode) {
-        return this.search(utilisateurId, email, typeUtilisateurCode, typeUtilisateurCodeOneToOneType, profilProfilId, profilTypeProfilCode);
+    default Page<UtilisateurDto> searchMapping(@RequestParam("utilisateurId") long utilisateurId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode, @RequestParam("typeUtilisateurCodeOrigin") TypeUtilisateurCode typeUtilisateurCodeOrigin, @RequestParam("profilProfilId") long profilProfilId, @RequestParam("profilTypeProfilCode") TypeProfilCode profilTypeProfilCode) {
+        return this.search(utilisateurId, email, typeUtilisateurCode, typeUtilisateurCodeOrigin, profilProfilId, profilTypeProfilCode);
     }
 
     /**
@@ -117,10 +117,10 @@ public interface IUtilisateurController {
      * @param utilisateurId Id technique
      * @param email Email de l'utilisateur
      * @param typeUtilisateurCode Type d'utilisateur en Many to one
-     * @param typeUtilisateurCodeOneToOneType Type d'utilisateur en one to one
+     * @param typeUtilisateurCodeOrigin Type d'utilisateur en one to one
      * @param profilProfilId Id technique
      * @param profilTypeProfilCode Type de profil
      * @return Utilisateurs matchant les critères
      */
-    Page<UtilisateurDto> search(long utilisateurId, String email, TypeUtilisateurCode typeUtilisateurCode, TypeUtilisateurCode typeUtilisateurCodeOneToOneType, long profilProfilId, TypeProfilCode profilTypeProfilCode);
+    Page<UtilisateurDto> search(long utilisateurId, String email, TypeUtilisateurCode typeUtilisateurCode, TypeUtilisateurCode typeUtilisateurCodeOrigin, long profilProfilId, TypeProfilCode profilTypeProfilCode);
 }

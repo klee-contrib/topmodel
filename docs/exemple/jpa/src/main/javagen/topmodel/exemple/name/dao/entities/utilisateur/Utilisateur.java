@@ -66,7 +66,7 @@ public class Utilisateur implements Serializable {
     private DateTime dateModification;
     private String email;
     private TypeUtilisateur typeUtilisateur;
-    private TypeUtilisateur typeUtilisateurOneToOneType;
+    private TypeUtilisateur typeUtilisateurOrigin;
 
     /**
      * Id technique.
@@ -132,7 +132,7 @@ public class Utilisateur implements Serializable {
      * @return value of typeUtilisateur.
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
+    @JoinColumn(name = "TUT_CODE", referencedColumnName = "TUT_CODE")
     public TypeUtilisateur getTypeUtilisateur() {
         return this.typeUtilisateur;
     }
@@ -140,12 +140,12 @@ public class Utilisateur implements Serializable {
     /**
      * Type d'utilisateur en one to one.
      *
-     * @return value of typeUtilisateurOneToOneType.
+     * @return value of typeUtilisateurOrigin.
      */
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ONE_TO_ONE_TYPE_CODE", referencedColumnName = "ONE_TO_ONE_TYPE_CODE")
-    public TypeUtilisateur getTypeUtilisateurOneToOneType() {
-        return this.typeUtilisateurOneToOneType;
+    @JoinColumn(name = "ORIGIN_TUT_CODE", referencedColumnName = "TUT_CODE")
+    public TypeUtilisateur getTypeUtilisateurOrigin() {
+        return this.typeUtilisateurOrigin;
     }
 
     public enum Fields implements IFieldEnum<Utilisateur> {
@@ -155,6 +155,6 @@ public class Utilisateur implements Serializable {
          DATE_MODIFICATION, //
          EMAIL, //
          TYPE_UTILISATEUR, //
-         TYPE_UTILISATEUR_ONE_TO_ONE_TYPE
+         TYPE_UTILISATEUR_ORIGIN
     }
 }

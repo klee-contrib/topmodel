@@ -37,7 +37,7 @@ public class UtilisateurDto implements Serializable {
     private long id;
     private String email;
     private TypeUtilisateurCode typeUtilisateurCode;
-    private TypeUtilisateurCode typeUtilisateurCodeOneToOneType;
+    private TypeUtilisateurCode typeUtilisateurCodeOrigin;
     private long profilId;
     private TypeProfilCode profilTypeProfilCode;
     private UtilisateurDto utilisateurParent;
@@ -75,12 +75,12 @@ public class UtilisateurDto implements Serializable {
 
     /**
      * Type d'utilisateur en one to one.
-     * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getTypeUtilisateurCodeOneToOneType() Utilisateur#getTypeUtilisateurCodeOneToOneType()} 
+     * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getTypeUtilisateurCodeOrigin() Utilisateur#getTypeUtilisateurCodeOrigin()} 
      *
-     * @return value of typeUtilisateurCodeOneToOneType.
+     * @return value of typeUtilisateurCodeOrigin.
      */
-    public TypeUtilisateurCode getTypeUtilisateurCodeOneToOneType() {
-         return this.typeUtilisateurCodeOneToOneType;
+    public TypeUtilisateurCode getTypeUtilisateurCodeOrigin() {
+         return this.typeUtilisateurCodeOrigin;
     }
 
     /**

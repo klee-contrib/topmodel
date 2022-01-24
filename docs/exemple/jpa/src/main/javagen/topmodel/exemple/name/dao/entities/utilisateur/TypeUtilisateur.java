@@ -55,7 +55,7 @@ public class TypeUtilisateur implements Serializable {
      * @return value of code.
      */
     @Id
-    @Column(name = "CODE", nullable = false, length = 3)
+    @Column(name = "TUT_CODE", nullable = false, length = 3)
     @Enumerated(EnumType.STRING)
     public TypeUtilisateurCode getCode() {
          return this.code;
@@ -66,7 +66,7 @@ public class TypeUtilisateur implements Serializable {
      *
      * @return value of libelle.
      */
-    @Column(name = "LIBELLE", nullable = false, length = 3)
+    @Column(name = "TUT_LIBELLE", nullable = false, length = 3)
     public String getLibelle() {
          return this.libelle;
     }

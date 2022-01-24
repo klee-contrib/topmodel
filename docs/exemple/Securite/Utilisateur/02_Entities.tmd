@@ -35,4 +35,4 @@ class:
     - association: TypeUtilisateur
       comment: Type d'utilisateur en one to one
       type: oneToOne
-      role: OneToOneType
+      role: Origin

@@ -50,17 +50,18 @@ class CodeActionHandler : CodeActionHandlerBase
                 Changes =
                     new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                     {
-                        [request.TextDocument.Uri] = new List<TextEdit>(){
-                            new TextEdit()
+                        [request.TextDocument.Uri] = new List<TextEdit>()
                         {
-                            NewText = string.Join("\n  - ", 
-                            modelFile.Uses
-                                .Except(uselessImports)
-                                .OrderBy(u => u.ReferenceName)
-                                .Select(u => u.ReferenceName)),
-                            Range = new Range(start, end)
+                            new TextEdit()
+                            {
+                                NewText = string.Join("\n  - ",
+                                modelFile.Uses
+                                    .Except(uselessImports)
+                                    .OrderBy(u => u.ReferenceName)
+                                    .Select(u => u.ReferenceName)),
+                                Range = new Range(start, end)
+                            }
                         }
-                    }
                     }
             }
         };
