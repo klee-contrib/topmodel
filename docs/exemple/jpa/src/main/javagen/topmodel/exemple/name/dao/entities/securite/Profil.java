@@ -5,7 +5,7 @@
 package topmodel.exemple.name.dao.entities.securite;
 
 import java.io.Serializable;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 import javax.annotation.Generated;
@@ -68,7 +68,7 @@ public class Profil implements Serializable {
      */
     @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
     public Set<TypeProfil> getTypeProfilList() {
-        if(typeProfilList == null) this.typeProfilList= new HashSet<>();
+        if(typeProfilList == null) this.typeProfilList = Collections.emptySet();
         return this.typeProfilList;
     }
 

@@ -5,8 +5,7 @@
 package topmodel.exemple.name.dao.dtos.securite;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Generated;
 
@@ -36,7 +35,7 @@ public class ProfilDto implements Serializable {
 
     private long id;
     private TypeProfilCode typeProfilCode;
-    private List<UtilisateurDto> utilisateurs;
+    private Set<UtilisateurDto> utilisateurs;
 
     /**
      * Id technique.
@@ -63,8 +62,8 @@ public class ProfilDto implements Serializable {
      *
      * @return value of UtilisateurDto.
      */
-    public List<UtilisateurDto> getUtilisateurs() {
-        if(utilisateurs == null) this.utilisateurs = new ArrayList<>();
+    public Set<UtilisateurDto> getUtilisateurs() {
+        if(utilisateurs == null) this.utilisateurs = java.util.Collections.emptySet();
         return this.utilisateurs;
     }
 }

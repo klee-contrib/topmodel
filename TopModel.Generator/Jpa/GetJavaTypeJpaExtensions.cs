@@ -58,7 +58,7 @@ public static class GetJavaTypeJpaExtensions
         }
         else if (cp.Kind == "list")
         {
-            return $"List<{cp.Composition.Name}>";
+            return $"Set<{cp.Composition.Name}>";
         }
         else
         {

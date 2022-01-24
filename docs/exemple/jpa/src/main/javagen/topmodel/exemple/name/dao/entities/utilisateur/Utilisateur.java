@@ -6,11 +6,12 @@ package topmodel.exemple.name.dao.entities.utilisateur;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.DateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.Generated;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -89,7 +90,7 @@ public class Utilisateur implements Serializable {
     @ManyToMany
     @JoinTable(name = "UTILISATEUR_PROFIL", joinColumns = @JoinColumn(name = "ID"), inverseJoinColumns = @JoinColumn(name = "ID"))
     public Set<Profil> getProfilList() {
-        if(profilList == null) this.profilList= new HashSet<>();
+        if(profilList == null) this.profilList = Collections.emptySet();
         return this.profilList;
     }
 
@@ -142,7 +143,7 @@ public class Utilisateur implements Serializable {
      *
      * @return value of typeUtilisateurOrigin.
      */
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "ORIGIN_TUT_CODE", referencedColumnName = "TUT_CODE")
     public TypeUtilisateur getTypeUtilisateurOrigin() {
         return this.typeUtilisateurOrigin;

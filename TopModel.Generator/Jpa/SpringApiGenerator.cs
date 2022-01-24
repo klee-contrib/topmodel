@@ -194,8 +194,7 @@ public class SpringApiGenerator : GeneratorBase
             imports.Add("javax.validation.Valid");
         }
 
-        var filteredImports = imports.Where(imp => imp != "java.util.ArrayList"); // Hack pour éviter d'avoir un import inutile
-        fw.WriteImports(filteredImports.Distinct().ToArray());
+        fw.WriteImports(imports.Distinct().ToArray());
     }
 
     private IEnumerable<string> GetTypeImports(ModelFile file)
