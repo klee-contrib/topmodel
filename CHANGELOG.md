@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.2.2
+
+- [4de0ae72a00b35](https://github.com/klee-contrib/topmodel/commit/4de0ae72a00b35729d90949c57f915db35e066c8) JPA - Fix referenced column dans les associations oneToOne qui ont un rôle
+
 ## 1.2.1
 
 - [b5c7d2553c0be](https://github.com/klee-contrib/topmodel/commit/b5c7d2553c0bea9d0e65df43a360cab817305913) JS - Api client : Correction import des liste de ref si elles se trouvent dans un sous-module
