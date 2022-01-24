@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.2.3
+
+- [1c783b66d2bbd73d010](https://github.com/klee-contrib/topmodel/commit/1c783b66d2bbd73d010a11ababcd9844e7d25af4) JPA - Ajout du cascade type dans les oneToOne et généralisation de l'utilisation des Set.
+
 ## 1.2.2
 
 - [4de0ae72a00b35](https://github.com/klee-contrib/topmodel/commit/4de0ae72a00b35729d90949c57f915db35e066c8) JPA - Fix referenced column dans les associations oneToOne qui ont un rôle
