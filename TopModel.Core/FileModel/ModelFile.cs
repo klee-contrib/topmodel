@@ -42,4 +42,7 @@ public class ModelFile
     {
         return Name;
     }
+    public IList<Reference> UselessImports => Uses.Where(use => !Aliases.Select(alias => alias.File)
+                .Concat(References.Values.Select(r => r.GetFile().Name))
+                .Contains(use.ReferenceName)).ToList();
 }

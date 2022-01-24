@@ -17,6 +17,7 @@ public class ModelError
     }
 
     public bool IsError { get; init; } = true;
+    public ModelErrorType? errorType { get; init; } = null;
 
     public ModelFile File => _objet.GetFile();
 

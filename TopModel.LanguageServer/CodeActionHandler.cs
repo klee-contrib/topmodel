@@ -28,40 +28,45 @@ class CodeActionHandler : CodeActionHandlerBase
 
     public override Task<CommandOrCodeActionContainer> Handle(CodeActionParams request, CancellationToken cancellationToken)
     {
-        var l = new List<CommandOrCodeAction>();
-        l.AddRange(request.Context.Diagnostics.Where(d => d.Message.EndsWith("alphabétique.")).Select(d =>
+        var codeActions = new List<CommandOrCodeAction>();
+        var unsortedImportDiagnostics = request.Context.Diagnostics.Where(d => d.Code == ModelErrorType.UNSORTED_IMPORT.ToString() || d.Code == ModelErrorType.USESLESS_IMPORT.ToString());
+        if (unsortedImportDiagnostics.Any())
         {
-            var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
-            var start = file.Uses.First().ToRange()!.Start;
-            var end = file.Uses.Last().ToRange()!.End;
+            codeActions.Add(getCodeActionSortImports(request, unsortedImportDiagnostics.First()));
+        }
 
-            return CommandOrCodeAction.From(new CodeAction()
-            {
-                Title = "Trier les Uses",
-                Kind = CodeActionKind.SourceOrganizeImports,
-                IsPreferred = true,
-                Diagnostics = new List<Diagnostic>(){
-                    d
+        return Task.FromResult<CommandOrCodeActionContainer>(CommandOrCodeActionContainer.From(codeActions));
+    }
+    protected CodeAction getCodeActionSortImports(CodeActionParams request, Diagnostic diagnostic)
+    {
+        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
+        var start = file.Uses.First().ToRange()!.Start;
+        var end = file.Uses.Last().ToRange()!.End;
+        var uselessImports = file.UselessImports;
+        return new CodeAction()
+        {
+            Title = "Trier les Uses",
+            Kind = CodeActionKind.SourceOrganizeImports,
+            IsPreferred = true,
+            Diagnostics = new List<Diagnostic>(){
+                    diagnostic
                 },
-                Edit = new WorkspaceEdit
-                {
-                    Changes =
+            Edit = new WorkspaceEdit
+            {
+                Changes =
                     new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                     {
                         [request.TextDocument.Uri] = new List<TextEdit>(){
                             new TextEdit()
                         {
-                            NewText = string.Join("\n  - ", file.Uses.OrderBy(u => u.ReferenceName).Select(u => u.ReferenceName)),
+                            NewText = string.Join("\n  - ", file.Uses.Except(uselessImports).OrderBy(u => u.ReferenceName).Select(u => u.ReferenceName)),
                             Range = new Range(start, end)
                         }
                     }
                     }
-                }
-            });
-        }));
-        return Task.FromResult<CommandOrCodeActionContainer>(CommandOrCodeActionContainer.From(l));
+            }
+        };
     }
-
     protected override CodeActionRegistrationOptions CreateRegistrationOptions(CodeActionCapability capability, ClientCapabilities clientCapabilities)
     {
         return new()
