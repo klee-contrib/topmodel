@@ -4,6 +4,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
+using TopModel.Core.FileModel;
 using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
 class CodeActionHandler : CodeActionHandlerBase
@@ -28,29 +29,22 @@ class CodeActionHandler : CodeActionHandlerBase
 
     public override Task<CommandOrCodeActionContainer> Handle(CodeActionParams request, CancellationToken cancellationToken)
     {
+        var modelFile = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath())!;
         var codeActions = new List<CommandOrCodeAction>();
-        var unsortedImportDiagnostics = request.Context.Diagnostics.Where(d => d.Code == ModelErrorType.UNSORTED_IMPORT.ToString() || d.Code == ModelErrorType.USESLESS_IMPORT.ToString());
-        if (unsortedImportDiagnostics.Any())
-        {
-            codeActions.Add(getCodeActionSortImports(request, unsortedImportDiagnostics.First()));
-        }
+        codeActions.Add(getCodeActionOrganizeImports(request, modelFile));
 
         return Task.FromResult<CommandOrCodeActionContainer>(CommandOrCodeActionContainer.From(codeActions));
     }
-    protected CodeAction getCodeActionSortImports(CodeActionParams request, Diagnostic diagnostic)
+    protected CodeAction getCodeActionOrganizeImports(CodeActionParams request, ModelFile modelFile)
     {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
-        var start = file.Uses.First().ToRange()!.Start;
-        var end = file.Uses.Last().ToRange()!.End;
-        var uselessImports = file.UselessImports;
+        var start = modelFile.Uses.First().ToRange()!.Start;
+        var end = modelFile.Uses.Last().ToRange()!.End;
+        var uselessImports = modelFile.UselessImports;
         return new CodeAction()
         {
             Title = "Trier les Uses",
             Kind = CodeActionKind.SourceOrganizeImports,
             IsPreferred = true,
-            Diagnostics = new List<Diagnostic>(){
-                    diagnostic
-                },
             Edit = new WorkspaceEdit
             {
                 Changes =
@@ -59,7 +53,11 @@ class CodeActionHandler : CodeActionHandlerBase
                         [request.TextDocument.Uri] = new List<TextEdit>(){
                             new TextEdit()
                         {
-                            NewText = string.Join("\n  - ", file.Uses.Except(uselessImports).OrderBy(u => u.ReferenceName).Select(u => u.ReferenceName)),
+                            NewText = string.Join("\n  - ", 
+                            modelFile.Uses
+                                .Except(uselessImports)
+                                .OrderBy(u => u.ReferenceName)
+                                .Select(u => u.ReferenceName)),
                             Range = new Range(start, end)
                         }
                     }

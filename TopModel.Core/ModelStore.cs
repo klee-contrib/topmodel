@@ -37,7 +37,7 @@ public class ModelStore
     public IEnumerable<Class> GetAvailableClasses(ModelFile file)
     {
         return GetDependencies(file).SelectMany(m => m.Classes)
-             .Concat(file.Classes.Where(c => !file.ResolvedAliases.Contains(c)));
+        .Concat(file.Classes.Where(c => !file.ResolvedAliases.Contains(c)));
     }
 
     public IDisposable? LoadFromConfig(bool watch = false)
@@ -495,6 +495,7 @@ public class ModelStore
                 }
             }
         }
+
         var uselessImports = modelFile.UselessImports
             .Except(nonExistingFiles)
             .Where(use => !modelFile.Aliases.Select(alias => alias.File)
@@ -502,21 +503,7 @@ public class ModelStore
                 .Contains(use.ReferenceName));
         foreach (var use in uselessImports)
         {
-            yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false, errorType = ModelErrorType.USESLESS_IMPORT };
-        }
-
-        var organizedImports = modelFile
-            .Uses
-            .Except(nonExistingFiles)
-            .Except(uselessImports)
-            .OrderBy(u => u.ReferenceName).ToArray();
-
-        foreach (var use in modelFile.Uses
-            .Except(nonExistingFiles)
-            .Except(uselessImports)
-            .Where((use, i) => Array.IndexOf(organizedImports, use) != i))
-        {
-            yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' pourrait être mis dans l'ordre alphabétique.", use) { IsError = false, errorType = ModelErrorType.UNSORTED_IMPORT };
+            yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false };
         }
     }
 }
