@@ -496,12 +496,7 @@ public class ModelStore
             }
         }
 
-        var uselessImports = modelFile.UselessImports
-            .Except(nonExistingFiles)
-            .Where(use => !modelFile.Aliases.Select(alias => alias.File)
-                .Concat(modelFile.References.Values.Select(r => r.GetFile().Name))
-                .Contains(use.ReferenceName));
-        foreach (var use in uselessImports)
+        foreach (var use in modelFile.UselessImports)
         {
             yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false };
         }
