@@ -397,7 +397,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
             module = module == currentModule
                 ? $"."
-                : $"../{module.Replace(".", "/").ToDashCase()}";
+                : $"{string.Join('/', currentModule.Split(".").Select(m => ".."))}/{module.Replace(".", "/").ToDashCase()}";
 
             return (
                 import: type.DomainKind == null ? $"{name}Entity, {name}{(_config.Focus ? "EntityType" : string.Empty)}" : name,
