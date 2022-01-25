@@ -240,6 +240,15 @@ public class ModelStore
         {
             yield return new ModelError(modelFile, $"Le fichier référencé '{use.ReferenceName}' est introuvable.", use);
         }
+        var duplicatedUses = modelFile.Uses
+                    .GroupBy(u => u.ReferenceName)
+                    .Select(u => new { ReferenceName = u.Key, Count = u.Count() })
+                    .Where(r => r.Count > 1)
+                    .Select(u => u.ReferenceName);
+        foreach (var use in modelFile.Uses.Where(u => duplicatedUses.Contains(u.ReferenceName)).Skip(1))
+        {
+            yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' ne doit être spécifié qu'une seule fois", use) { IsError = true };
+        }
 
         var dependencies = GetDependencies(modelFile).ToList();
 
@@ -247,6 +256,7 @@ public class ModelStore
         var referencedClasses = dependencies
             .SelectMany(m => m.Classes)
             .Concat(fileClasses)
+            .Distinct()
             .ToDictionary(c => c.Name, c => c);
 
         foreach (var classe in fileClasses.Where(c => c.ExtendsReference != null))
