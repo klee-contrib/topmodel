@@ -31,7 +31,10 @@ class CodeActionHandler : CodeActionHandlerBase
     {
         var modelFile = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath())!;
         var codeActions = new List<CommandOrCodeAction>();
-        codeActions.Add(getCodeActionOrganizeImports(request, modelFile));
+        if (modelFile.Uses.Any())
+        {
+            codeActions.Add(getCodeActionOrganizeImports(request, modelFile));
+        }
 
         return Task.FromResult<CommandOrCodeActionContainer>(CommandOrCodeActionContainer.From(codeActions));
     }
