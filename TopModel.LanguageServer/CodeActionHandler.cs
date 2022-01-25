@@ -57,7 +57,7 @@ class CodeActionHandler : CodeActionHandlerBase
                                 NewText = string.Join("\n  - ",
                                 modelFile.Uses
                                     .Except(uselessImports)
-                                    .Distinct()
+                                    .DistinctBy(u => u.ReferenceName)
                                     .OrderBy(u => u.ReferenceName)
                                     .Select(u => u.ReferenceName)),
                                 Range = new Range(start, end)
