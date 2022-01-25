@@ -68,6 +68,12 @@
         ]
       }
     ],
+    "snippets": [
+      {
+        "language": "yaml",
+        "path": "./snippets.json"
+      }
+    ],
     "walkthroughs": [
       {
         "id": "topmodel.configuration",
