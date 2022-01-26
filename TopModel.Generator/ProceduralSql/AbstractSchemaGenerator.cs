@@ -70,7 +70,7 @@ public abstract class AbstractSchemaGenerator
         writerInsert.WriteLine("-- ===========================================================================================");
 
         // Construit la liste des Reference Class ordonnée.
-        var orderList = ModelUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
+        var orderList = SortUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
             .OfType<AssociationProperty>()
             .Select(a => a.Association)
             .Where(a => a.ReferenceValues != null));

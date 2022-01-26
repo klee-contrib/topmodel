@@ -9,36 +9,32 @@ using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
 class CodeActionHandler : CodeActionHandlerBase
 {
+    private readonly ILanguageServerFacade _facade;
     private readonly ModelStore _modelStore;
 
-    private readonly ILanguageServerFacade _facade;
-    private readonly ModelFileCache _fileCache;
-
-    public CodeActionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelFileCache fileCache)
+    public CodeActionHandler(ModelStore modelStore, ILanguageServerFacade facade)
     {
         _modelStore = modelStore;
-        _fileCache = fileCache;
         _facade = facade;
     }
 
     public override Task<CodeAction> Handle(CodeAction request, CancellationToken cancellationToken)
     {
-
-        return Task.FromResult<CodeAction>(request);
+        return Task.FromResult(request);
     }
 
     public override Task<CommandOrCodeActionContainer> Handle(CodeActionParams request, CancellationToken cancellationToken)
     {
         var modelFile = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath())!;
-        var codeActions = new List<CommandOrCodeAction>();
-        if (modelFile.Uses.Any())
+        var codeActions = new List<CommandOrCodeAction>
         {
-            codeActions.Add(getCodeActionOrganizeImports(request, modelFile));
-        }
+            GetCodeActionOrganizeImports(request, modelFile)
+        };
 
-        return Task.FromResult<CommandOrCodeActionContainer>(CommandOrCodeActionContainer.From(codeActions));
+        return Task.FromResult(CommandOrCodeActionContainer.From(codeActions));
     }
-    protected CodeAction getCodeActionOrganizeImports(CodeActionParams request, ModelFile modelFile)
+
+    protected static CodeAction GetCodeActionOrganizeImports(CodeActionParams request, ModelFile modelFile)
     {
         var start = modelFile.Uses.First().ToRange()!.Start;
         var end = modelFile.Uses.Last().ToRange()!.End;
@@ -53,19 +49,17 @@ class CodeActionHandler : CodeActionHandlerBase
                 Changes =
                     new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                     {
-                        [request.TextDocument.Uri] = new List<TextEdit>()
-                        {
+                        [request.TextDocument.Uri] = new List<TextEdit>(){
                             new TextEdit()
-                            {
-                                NewText = string.Join("\n  - ",
-                                modelFile.Uses
-                                    .Except(uselessImports)
-                                    .DistinctBy(u => u.ReferenceName)
-                                    .OrderBy(u => u.ReferenceName)
-                                    .Select(u => u.ReferenceName)),
-                                Range = new Range(start, end)
-                            }
+                        {
+                            NewText = string.Join("\n  - ",
+                            modelFile.Uses
+                                .Except(uselessImports)
+                                .OrderBy(u => u.ReferenceName)
+                                .Select(u => u.ReferenceName)),
+                            Range = new Range(start, end)
                         }
+                    }
                     }
             }
         };

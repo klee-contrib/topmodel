@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using TopModel.Core.FileModel;
 using TopModel.Core.Loaders;
+using TopModel.Utils;
 
 namespace TopModel.Core;
 
@@ -115,7 +116,7 @@ public class ModelStore
                 IList<ModelFile> sortedFiles = new List<ModelFile>(1);
                 try
                 {
-                    sortedFiles = ModelUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name == d.Name)));
+                    sortedFiles = SortUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name == d.Name)));
                 }
 
                 // Dépendance circulaire.
@@ -240,6 +241,7 @@ public class ModelStore
         {
             yield return new ModelError(modelFile, $"Le fichier référencé '{use.ReferenceName}' est introuvable.", use);
         }
+
         var duplicatedUses = modelFile.Uses
                     .GroupBy(u => u.ReferenceName)
                     .Select(u => new { ReferenceName = u.Key, Count = u.Count() })

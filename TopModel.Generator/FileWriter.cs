@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using TopModel.Core;
+using TopModel.Utils;
 
 namespace TopModel.Generator;
 

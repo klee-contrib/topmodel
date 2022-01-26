@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TopModel.Core.Loaders;
+using TopModel.Utils;
 
 namespace TopModel.Core;
-
-using static ModelUtils;
 
 public static class ServiceExtensions
 {
@@ -20,7 +19,7 @@ public static class ServiceExtensions
         {
             config.ModelRoot ??= string.Empty;
 
-            CombinePath(rootDir, config, c => c.ModelRoot);
+            ModelUtils.CombinePath(rootDir, config, c => c.ModelRoot);
             services.AddSingleton(config);
         }
 

@@ -20,6 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TopModel.Utils\TopModel.Utils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="schema.config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

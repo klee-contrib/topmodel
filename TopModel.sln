@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.Generator", "TopMo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.UI", "TopModel.UI\TopModel.UI.csproj", "{783305E5-50B6-414F-8174-9F087CACBA9C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopModel.LanguageServer", "TopModel.LanguageServer\TopModel.LanguageServer.csproj", "{F19CBDD7-03C9-4B6A-9E0A-A4CC3BE4819B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.LanguageServer", "TopModel.LanguageServer\TopModel.LanguageServer.csproj", "{F19CBDD7-03C9-4B6A-9E0A-A4CC3BE4819B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.Utils", "TopModel.Utils\TopModel.Utils.csproj", "{527A62DB-BD1E-4AB6-89AD-3CD7C21E6253}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{F19CBDD7-03C9-4B6A-9E0A-A4CC3BE4819B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F19CBDD7-03C9-4B6A-9E0A-A4CC3BE4819B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F19CBDD7-03C9-4B6A-9E0A-A4CC3BE4819B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{527A62DB-BD1E-4AB6-89AD-3CD7C21E6253}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{527A62DB-BD1E-4AB6-89AD-3CD7C21E6253}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{527A62DB-BD1E-4AB6-89AD-3CD7C21E6253}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{527A62DB-BD1E-4AB6-89AD-3CD7C21E6253}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Utils;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace TopModel.Generator.CSharp;

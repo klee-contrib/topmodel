@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.Generator.CSharp;
 

@@ -13,7 +13,7 @@ using TopModel.Generator.Jpa;
 using TopModel.Generator.Kasper;
 using TopModel.Generator.ProceduralSql;
 using TopModel.Generator.Ssdt;
-using static TopModel.Core.ModelUtils;
+using static TopModel.Utils.ModelUtils;
 
 var fileChecker = new FileChecker("schema.config.json");
 
