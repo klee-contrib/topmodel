@@ -30,6 +30,13 @@
     "workspaceContains:**/topmodel*.config"
   ],
   "contributes": {
+    "iconThemes": [
+      {
+        "id": "turtles",
+        "label": "Turtles",
+        "path": "./icon-theme.json"
+      }
+    ],
     "commands": [
       {
         "command": "topmodel.modgen.update",
@@ -65,7 +72,7 @@
         ],
         "filenamePatterns": [
           "topmodel*.config"
-        ]
+        ]  
       }
     ],
     "snippets": [
@@ -74,6 +81,7 @@
         "path": "./snippets.json"
       }
     ],
+    
     "walkthroughs": [
       {
         "id": "topmodel.configuration",
