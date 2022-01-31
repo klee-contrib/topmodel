@@ -26,7 +26,7 @@ public static class JavascriptUtils
             .Where(p => p.Domain.TS?.Import != null)
             .Select(p => (p.Domain.TS!.Type, p.Domain.TS.Import!))
         .Concat(properties.OfType<CompositionProperty>()
-            .Where(p => p.DomainKind != null)
+            .Where(p => p.DomainKind?.TS?.Import != null)
             .Select(p => (p.DomainKind!.TS!.Type.Split('<').First(), p.DomainKind.TS.Import!)))
         .Distinct();
     }
