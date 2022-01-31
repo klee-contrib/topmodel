@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Ssdt;
 
@@ -17,5 +18,5 @@ public class SqlFileWriter : FileWriter
     /// Renvoie le token de début de ligne de commentaire dans le langage du fichier.
     /// </summary>
     /// <returns>Toket de début de ligne de commentaire.</returns>
-    protected override string StartCommentToken => "----";
+    public override string StartCommentToken => "----";
 }

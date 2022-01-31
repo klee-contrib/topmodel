@@ -61,15 +61,10 @@ public class FileWriter : TextWriter
     public string HeaderMessage { get; set; } = "ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !";
 
     /// <summary>
-    /// Retourne le numéro de la ligne qui contient la version.
-    /// </summary>
-    protected virtual int VersionLine => 3;
-
-    /// <summary>
     /// Renvoie le token de début de ligne de commentaire dans le langage du fichier.
     /// </summary>
-    /// <returns>Toket de début de ligne de commentaire.</returns>
-    protected virtual string StartCommentToken => "////";
+    /// <returns>Token de début de ligne de commentaire.</returns>
+    public virtual string StartCommentToken { get; init; } = "////";
 
     /// <summary>
     /// Ecrit un caractère dans le stream.

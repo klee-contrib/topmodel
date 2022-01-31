@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Logging;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Kasper;
 
@@ -10,5 +11,5 @@ public class JavaPropertiesWriter : FileWriter
     {
     }
 
-    protected override string StartCommentToken => "####";
+    public override string StartCommentToken => "####";
 }
