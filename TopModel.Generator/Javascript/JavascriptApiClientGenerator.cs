@@ -46,7 +46,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
         var fetch = _config.FetchImportPath != null ? "fetch" : "coreFetch";
 
         using var fw = new FileWriter(fileName, _logger, false);
-        fw.WriteLine($@"import {{{fetch}}} from ""{((_config.FetchImportPath != null && _config.FetchImportPath.StartsWith('@')) ? string.Empty : relativePath)}{_config.FetchImportPath ?? "@focus4/core"}"";");
+        fw.WriteLine($@"import {{{fetch}}} from ""{((_config.FetchImportPath == null || _config.FetchImportPath.StartsWith('@')) ? string.Empty : relativePath)}{_config.FetchImportPath ?? "@focus4/core"}"";");
 
         var imports = GetImports(file, relativePath);
         if (imports.Any())
@@ -166,7 +166,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
         var imports = types.Select(type =>
         {
             var name = type.Name;
-            var module = $"{modelPath}/{type.Namespace.Module.Replace(".", "/").ToLower()}";
+            var module = $"{modelPath}/{type.Namespace.Module.Replace(".", "/").ToDashCase()}";
             return (Import: name, Path: $"{relativePath}{module}/{name.ToDashCase()}");
         }).Distinct().ToList();
 
