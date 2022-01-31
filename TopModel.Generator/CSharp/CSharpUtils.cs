@@ -40,7 +40,8 @@ public static class CSharpUtils
                 "object" => cp.Composition.Name,
                 "list" => $"{(useIEnumerable ? "IEnumerable" : "ICollection")}<{cp.Composition.Name}>",
                 "async-list" => $"IAsyncEnumerable<{cp.Composition.Name}>",
-                string _ => $"{cp.DomainKind!.CSharp!.Type}<{cp.Composition.Name}>"
+                string _ when cp.DomainKind!.CSharp!.Type.Contains("{class}") => cp.DomainKind.CSharp.Type.Replace("{class}", cp.Composition.Name),
+                string _ => $"{cp.DomainKind.CSharp.Type}<{cp.Composition.Name}>"
             },
             AssociationProperty { Association: var assoc } when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.PrimaryKey!.Name}s?",
             AliasProperty { Property: AssociationProperty { Association: var assoc } } when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.PrimaryKey!.Name}s?",

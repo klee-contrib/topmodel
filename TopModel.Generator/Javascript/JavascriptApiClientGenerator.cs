@@ -42,13 +42,13 @@ public class JavascriptApiClientGenerator : GeneratorBase
         var filePath = _config.ApiClientFilePath.Replace("{module}", modulePath) + '/' + string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToDashCase();
         var fileName = $"{_config.ApiClientOutputDirectory}/{filePath}.ts";
 
-        var rp = _config.ApiClientFilePath.Length > 0 ? string.Join(string.Empty, _config.ApiClientFilePath.Replace("{module}", modulePath).Split('/').Select(s => "../")) : string.Empty;
+        var relativePath = _config.ApiClientFilePath.Length > 0 ? string.Join(string.Empty, _config.ApiClientFilePath.Replace("{module}", modulePath).Split('/').Select(s => "../")) : string.Empty;
         var fetch = _config.FetchImportPath != null ? "fetch" : "coreFetch";
 
         using var fw = new FileWriter(fileName, _logger, false);
-        fw.WriteLine($@"import {{{fetch}}} from ""{((_config.FetchImportPath != null && _config.FetchImportPath.StartsWith('@')) ? string.Empty : rp)}{_config.FetchImportPath ?? "@focus4/core"}"";");
+        fw.WriteLine($@"import {{{fetch}}} from ""{((_config.FetchImportPath != null && _config.FetchImportPath.StartsWith('@')) ? string.Empty : relativePath)}{_config.FetchImportPath ?? "@focus4/core"}"";");
 
-        var imports = GetImports(file, rp);
+        var imports = GetImports(file, relativePath);
         if (imports.Any())
         {
             fw.WriteLine();
@@ -84,19 +84,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
             foreach (var param in endpoint.Params)
             {
-                fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm ? "?" : string.Empty)}");
-
-                if (param is IFieldProperty fp)
-                {
-                    fw.Write($": {fp.TS.Type}");
-                }
-                else if (param is CompositionProperty cp)
-                {
-                    fw.Write(": ");
-                    WriteCompositionType(fw, cp);
-                }
-
-                fw.Write(", ");
+                fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm ? "?" : string.Empty)}: {param.GetPropertyTypeName()}, ");
             }
 
             fw.Write("options: RequestInit = {}): Promise<");
@@ -104,13 +92,9 @@ public class JavascriptApiClientGenerator : GeneratorBase
             {
                 fw.Write("void");
             }
-            else if (endpoint.Returns is IFieldProperty fp)
+            else
             {
-                fw.Write(fp.TS.Type);
-            }
-            else if (endpoint.Returns is CompositionProperty cp)
-            {
-                WriteCompositionType(fw, cp);
+                fw.Write(endpoint.Returns.GetPropertyTypeName());
             }
 
             fw.WriteLine("> {");
@@ -169,28 +153,11 @@ public class JavascriptApiClientGenerator : GeneratorBase
         }
     }
 
-    private void WriteCompositionType(FileWriter fw, CompositionProperty cp)
+    private IList<(string Import, string Path)> GetImports(ModelFile file, string relativePath)
     {
-        if (cp.DomainKind != null)
-        {
-            fw.Write($"{cp.DomainKind.TS!.Type}<");
-        }
-
-        fw.Write(cp.Composition.Name);
-        if (cp.Kind == "list" || cp.Kind == "async-list")
-        {
-            fw.Write("[]");
-        }
-
-        if (cp.DomainKind != null)
-        {
-            fw.Write($">");
-        }
-    }
-
-    private IList<(string Import, string Path)> GetImports(ModelFile file, string rp)
-    {
-        var properties = file.Endpoints.SelectMany(endpoint => endpoint.Params.Concat(new[] { endpoint.Returns }));
+        var properties = file.Endpoints
+            .SelectMany(endpoint => endpoint.Params.Concat(new[] { endpoint.Returns }))
+            .Where(p => p != null) as IEnumerable<IProperty>;
 
         var types = properties.OfType<CompositionProperty>().Select(property => property.Composition);
 
@@ -200,42 +167,22 @@ public class JavascriptApiClientGenerator : GeneratorBase
         {
             var name = type.Name;
             var module = $"{modelPath}/{type.Namespace.Module.Replace(".", "/").ToLower()}";
-            return (Import: name, Path: $"{rp}{module}/{name.ToDashCase()}");
+            return (Import: name, Path: $"{relativePath}{module}/{name.ToDashCase()}");
         }).Distinct().ToList();
 
-        var references = file.Endpoints.SelectMany(p => p.Params.Concat(new[] { p.Returns }).Where(p => p != null))
-            .Select(p => p is AliasProperty alp ? alp.Property : p)
-            .OfType<IFieldProperty>()
-            .Select(prop => (prop, classe: prop is AssociationProperty ap ? ap.Association : prop.Class))
-            .Where(pc => pc.prop.TS.Type != pc.prop.Domain.TS!.Type && pc.prop.Domain.TS.Type == "string" && pc.classe.Reference)
-            .Select(pc => (Code: pc.prop.TS.Type, pc.classe.Namespace.Module))
-            .Distinct();
+        var references = JavascriptUtils.GetReferencesToImport(properties);
+
         if (references.Any())
         {
             var referenceTypeMap = references.GroupBy(t => t.Module);
             foreach (var refModule in referenceTypeMap)
             {
                 var module = $"{modelPath}/{refModule.Key.Replace('.', '/').ToLower()}";
-                imports.Add((string.Join(", ", refModule.Select(r => r.Code).OrderBy(x => x)), $"{rp}{module}/references"));
+                imports.Add((string.Join(", ", refModule.Select(r => r.Code).OrderBy(x => x)), $"{relativePath}{module}/references"));
             }
         }
 
-        imports.AddRange(
-            properties.OfType<IFieldProperty>()
-                .Where(p => p.Domain.TS?.Import != null)
-                .Select(p => (p.Domain.TS!.Type, p.Domain.TS.Import!))
-                .Distinct());
-
-        imports.AddRange(
-            properties.OfType<CompositionProperty>()
-                .Where(p => p.DomainKind != null)
-                .Select(p => (p.DomainKind!.TS!.Type, p.DomainKind.TS.Import!))
-                .Distinct());
-
-        return imports
-            .GroupBy(i => i.Path)
-            .Select(i => (import: string.Join(", ", i.Select(l => l.Import)), path: i.Key))
-            .OrderBy(i => i.path.StartsWith(".") ? i.path : $"...{i.path}")
-            .ToList();
+        imports.AddRange(JavascriptUtils.GetPropertyImports(properties));
+        return JavascriptUtils.GroupAndSortImports(imports);
     }
 }

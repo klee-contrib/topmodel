@@ -3,7 +3,7 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
 
-public static class GetJavaTypeJpaExtensions
+public static class JpaUtils
 {
     public static string GetJavaType(this IProperty prop)
     {
@@ -53,18 +53,14 @@ public static class GetJavaTypeJpaExtensions
 
     public static string GetJavaType(this CompositionProperty cp)
     {
-        if (cp.Kind == "object")
+        return cp.Kind switch
         {
-            return cp.Composition.Name;
-        }
-        else if (cp.Kind == "list")
-        {
-            return $"Set<{cp.Composition.Name}>";
-        }
-        else
-        {
-            return $"{cp.DomainKind!.Java!.Type}<{cp.Composition.Name}>";
-        }
+            "object" => cp.Composition.Name,
+            "list" => $"Set<{cp.Composition.Name}>",
+            "async-list" => $"IAsyncEnumerable<{cp.Composition.Name}>",
+            string _ when cp.DomainKind!.Java!.Type.Contains("{class}") => cp.DomainKind.Java.Type.Replace("{class}", cp.Composition.Name),
+            string _ => $"{cp.DomainKind.Java.Type}<{cp.Composition.Name}>"
+        };
     }
 
     public static bool IsEnum(this RegularProperty rp)
