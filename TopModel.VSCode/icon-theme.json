@@ -1375,10 +1375,10 @@
       "fontColor": "#d4d7d6"
     },
     "_tmd_light": {
-      "iconPath": "Icon24x24-light.svg"
+      "iconPath": "Icon3_24x24_light.svg"
     },
     "_tmd_dark": {
-      "iconPath": "Icon24x24-dark.svg"
+      "iconPath": "Icon3_24x24_dark.svg"
     },
     "_todo": {
       "fontCharacter": "\\E096"
