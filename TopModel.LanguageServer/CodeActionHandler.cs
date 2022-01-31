@@ -26,10 +26,11 @@ class CodeActionHandler : CodeActionHandlerBase
     public override Task<CommandOrCodeActionContainer> Handle(CodeActionParams request, CancellationToken cancellationToken)
     {
         var modelFile = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath())!;
-        var codeActions = new List<CommandOrCodeAction>
+        var codeActions = new List<CommandOrCodeAction>();
+        if (modelFile.Uses.Any())
         {
-            GetCodeActionOrganizeImports(request, modelFile)
-        };
+            codeActions.Add(GetCodeActionOrganizeImports(request, modelFile));
+        }
 
         return Task.FromResult(CommandOrCodeActionContainer.From(codeActions));
     }
@@ -55,6 +56,7 @@ class CodeActionHandler : CodeActionHandlerBase
                             NewText = string.Join("\n  - ",
                             modelFile.Uses
                                 .Except(uselessImports)
+                                .DistinctBy(u => u.ReferenceName)
                                 .OrderBy(u => u.ReferenceName)
                                 .Select(u => u.ReferenceName)),
                             Range = new Range(start, end)
