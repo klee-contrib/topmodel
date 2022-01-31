@@ -300,7 +300,7 @@
               "properties": {
                 "type": {
                   "type": "string",
-                  "description": "Nom du type."
+                  "description": "Nom du type.\n\nSera considéré comme un type générique de la classe si utilisé dans une composition. Dans ce cas, il est aussi possible d'utiliser cette valeur comme un template de type en utilisant '{class}' pour référencer la classe composée."
                 },
                 "annotations": {
                   "type": "array",
@@ -330,7 +330,7 @@
               "properties": {
                 "type": {
                   "type": "string",
-                  "description": "Nom du type."
+                  "description": "Nom du type.\n\nSera considéré comme un type générique de la classe si utilisé dans une composition. Dans ce cas, il est aussi possible d'utiliser cette valeur comme un template de type en utilisant '{class}' pour référencer la classe composée. Si l'import est défini, ce sera la partie à gauche du '<' qui sera importée."
                 },
                 "import": {
                   "type": "string",
@@ -346,7 +346,7 @@
               "properties": {
                 "type": {
                   "type": "string",
-                  "description": "Nom du type."
+                  "description": "Nom du type.\n\nSera considéré comme un type générique de la classe si utilisé dans une composition. Dans ce cas, il est aussi possible d'utiliser cette valeur comme un template de type en utilisant '{class}' pour référencer la classe composée."
                 },
                 "imports": {
                   "type": "array",

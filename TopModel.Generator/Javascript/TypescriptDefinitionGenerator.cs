@@ -116,7 +116,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
         foreach (var p in classe.Properties.OfType<CompositionProperty>().Where(p => p.DomainKind?.TS?.Import == "@focus4/stores"))
         {
-            yield return p.DomainKind!.TS!.Type;
+            yield return p.DomainKind!.TS!.Type.Split('<').First();
         }
 
         yield return "EntityToType";
@@ -212,7 +212,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                     }
                     else
                     {
-                        fw.Write($"FieldEntry2<typeof {cp.Kind}, {cp.DomainKind!.TS!.Type}<{cp.Composition.Name}>>");
+                        fw.Write($"FieldEntry2<typeof {cp.Kind}, {cp.GetPropertyTypeName()}>");
                     }
                 }
                 else if (property is IFieldProperty field)
@@ -223,25 +223,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             }
             else
             {
-                if (property is CompositionProperty cp)
-                {
-                    if (cp.Kind == "list")
-                    {
-                        fw.Write($"{cp.Composition.Name}[]");
-                    }
-                    else if (cp.Kind == "object")
-                    {
-                        fw.Write(cp.Composition.Name);
-                    }
-                    else
-                    {
-                        fw.Write($"{cp.DomainKind!.TS!.Type}<{cp.Composition.Name}>");
-                    }
-                }
-                else if (property is IFieldProperty field)
-                {
-                    fw.Write(field.TS.Type);
-                }
+                fw.Write(property.GetPropertyTypeName());
             }
 
             if (property != classe.Properties.Last())
@@ -377,7 +359,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
     /// Récupère la liste d'imports de types pour les services.
     /// </summary>
     /// <returns>La liste d'imports (type, chemin du module, nom du fichier).</returns>
-    private IEnumerable<(string Import, string Path)> GetImportList(Class classe)
+    private IList<(string Import, string Path)> GetImportList(Class classe)
     {
         var types = classe.Properties
             .OfType<CompositionProperty>()
@@ -405,44 +387,20 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                 path: $"{module}/{name.ToDashCase()}");
         }).Distinct().ToList();
 
-        var references = classe.Properties
-            .Select(p => p is AliasProperty alp ? alp.Property : p)
-            .OfType<IFieldProperty>()
-            .Select(prop => (prop, classe: prop is AssociationProperty ap ? ap.Association : prop.Class))
-            .Where(pc => pc.prop.TS.Type != pc.prop.Domain.TS!.Type && pc.prop.Domain.TS.Type == "string" && pc.classe.Reference)
-            .Select(pc => (Code: pc.prop.TS.Type, pc.classe.Namespace.Module))
-            .Distinct();
+        var references = JavascriptUtils.GetReferencesToImport(classe.Properties);
 
         if (references.Any())
         {
             var referenceTypeMap = references.GroupBy(t => t.Module);
             foreach (var refModule in referenceTypeMap)
             {
-                var module = refModule.Key == currentModule
-                ? $"."
-                : $"../{refModule.Key.Replace(".", "/").ToDashCase()}";
-
+                var module = refModule.Key == currentModule ? $"." : $"../{refModule.Key.Replace(".", "/").ToDashCase()}";
                 imports.Add((string.Join(", ", refModule.Select(r => r.Code).OrderBy(x => x)), $"{module}/references"));
             }
         }
 
-        imports.AddRange(
-            classe.Properties.OfType<IFieldProperty>()
-                .Where(p => p.Domain.TS?.Import != null)
-                .Select(p => (p.Domain.TS!.Type, p.Domain.TS.Import!))
-                .Distinct());
-
-        imports.AddRange(
-            classe.Properties.OfType<CompositionProperty>()
-                .Where(p => p.DomainKind != null && p.DomainKind.TS!.Import != "@focus4/stores")
-                .Select(p => (p.DomainKind!.TS!.Type, p.DomainKind.TS.Import!))
-                .Distinct());
-
-        return imports
-            .GroupBy(i => i.path)
-            .Select(i => (import: string.Join(", ", i.Select(l => l.import)), path: i.Key))
-            .OrderBy(i => i.path.StartsWith(".") ? i.path : $"...{i.path}")
-            .ToList();
+        imports.AddRange(JavascriptUtils.GetPropertyImports(classe.Properties).Where(p => p.Path != "@focus4/stores"));
+        return JavascriptUtils.GroupAndSortImports(imports);
     }
 
     /// <summary>
