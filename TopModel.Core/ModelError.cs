@@ -17,6 +17,7 @@ public class ModelError
     }
 
     public bool IsError { get; init; } = true;
+    public ModelErrorType ModelErrorType { get; init; } =  ModelErrorType.TMD_0000;
 
     public ModelFile File => _objet.GetFile();
 
