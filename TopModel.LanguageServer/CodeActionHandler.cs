@@ -11,11 +11,12 @@ class CodeActionHandler : CodeActionHandlerBase
 {
     private readonly ILanguageServerFacade _facade;
     private readonly ModelStore _modelStore;
-
-    public CodeActionHandler(ModelStore modelStore, ILanguageServerFacade facade)
+    private readonly ModelFileCache _fileCache;
+    public CodeActionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelFileCache modelFileCache)
     {
         _modelStore = modelStore;
         _facade = facade;
+        _fileCache = modelFileCache;
     }
 
     public override Task<CodeAction> Handle(CodeAction request, CancellationToken cancellationToken)
@@ -31,7 +32,18 @@ class CodeActionHandler : CodeActionHandlerBase
         {
             codeActions.Add(GetCodeActionOrganizeImports(request, modelFile));
         }
-
+        foreach (var diagnostic in request.Context.Diagnostics)
+        {
+            var modelErrorType = GetTypeFromCode(diagnostic.Code!);
+            switch (modelErrorType)
+            {
+                case ModelErrorType.TMD_1005:
+                    codeActions.AddRange(GetCodeActionCreateDomain(request, diagnostic, modelFile));
+                    break;
+                default:
+                    break;
+            }
+        }
         return Task.FromResult(CommandOrCodeActionContainer.From(codeActions));
     }
 
@@ -73,9 +85,58 @@ class CodeActionHandler : CodeActionHandlerBase
             DocumentSelector = DocumentSelector.ForPattern("**/*.tmd"),
             ResolveProvider = true,
             CodeActionKinds = new List<CodeActionKind>(){
-                CodeActionKind.SourceOrganizeImports
+                CodeActionKind.SourceOrganizeImports,
+                CodeActionKind.QuickFix
             },
 
         };
+    }
+
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionCreateDomain(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    {
+        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
+
+        var fs = request.TextDocument.Uri.GetFileSystemPath();
+        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var line = text.Split(Environment.NewLine).ElementAt(diagnostic.Range.Start.Line);
+        var domainName = line.Substring(diagnostic.Range.Start.Character, diagnostic.Range.End.Character - diagnostic.Range.Start.Character);
+
+        return _modelStore.Files.Where(f => f.Domains.Any()).Select(f =>
+        {
+            var lastLine = File.ReadAllText(_facade.GetFilePath(f)).Split(Environment.NewLine).Count();
+            return (CommandOrCodeAction) new CodeAction()
+            {
+                Title = $"TopModel : Ajouter le domain au fichier {f.Path}",
+                Kind = CodeActionKind.QuickFix,
+                IsPreferred = true,
+                Diagnostics = new List<Diagnostic>{
+                diagnostic
+            },
+                Edit = new WorkspaceEdit
+                {
+                    Changes =
+                        new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                        {
+                            [new Uri(_facade.GetFilePath(f))] = new List<TextEdit>(){
+                            new TextEdit()
+                        {
+                            NewText = $@"
+---
+domain:
+  name: {domainName}
+  label: 
+",
+                            Range = new Range(new Position(lastLine, 0), new Position(lastLine, 0))
+                        }
+                        }
+                        }
+                }
+            };
+        }).ToList();
+    }
+
+    protected ModelErrorType GetTypeFromCode(string code)
+    {
+        return Enum.Parse<ModelErrorType>("TMD_" + code);
     }
 }
