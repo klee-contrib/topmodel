@@ -512,5 +512,9 @@ public class ModelStore
         {
             yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false, ModelErrorType = ModelErrorType.TMD_0001 };
         }
+        foreach (var enpoint in modelFile.Endpoints.Where((e, i) => modelFile.Endpoints.Where((p, j) => p.Name == e.Name && j < i).Any()))
+        {
+            yield return new ModelError(modelFile, $"Le nom '{enpoint.Name}' est déjà utilisé.", enpoint.Location) { IsError = true };
+        }
     }
 }
