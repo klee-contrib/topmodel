@@ -29,5 +29,5 @@ public class RegularProperty : IFieldProperty
 #nullable disable
     internal Reference Location { get; set; }
 
-    public DomainReference DomainReference { get; set; }
+    internal DomainReference DomainReference { get; set; }
 }

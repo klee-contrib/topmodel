@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using TopModel.Core.FileModel;
-using Newtonsoft.Json.Linq;
 
 namespace TopModel.Core;
 
@@ -18,7 +17,8 @@ public class ModelError
     }
 
     public bool IsError { get; init; } = true;
-    public ModelErrorType ModelErrorType { get; init; } =  ModelErrorType.TMD_0000;
+
+    public ModelErrorType ModelErrorType { get; init; } = ModelErrorType.TMD_0000;
 
     public ModelFile File => _objet.GetFile();
 

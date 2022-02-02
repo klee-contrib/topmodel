@@ -104,7 +104,7 @@ class CodeActionHandler : CodeActionHandlerBase
         return _modelStore.Files.Where(f => f.Domains.Any()).Select(f =>
         {
             var lastLine = File.ReadAllText(_facade.GetFilePath(f)).Split(Environment.NewLine).Count();
-            return (CommandOrCodeAction) new CodeAction()
+            return (CommandOrCodeAction)new CodeAction()
             {
                 Title = $"TopModel : Ajouter le domain au fichier {f.Path}",
                 Kind = CodeActionKind.QuickFix,
@@ -117,18 +117,19 @@ class CodeActionHandler : CodeActionHandlerBase
                     Changes =
                         new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                         {
-                            [new Uri(_facade.GetFilePath(f))] = new List<TextEdit>(){
-                            new TextEdit()
-                        {
-                            NewText = $@"
+                            [new Uri(_facade.GetFilePath(f))] = new List<TextEdit>()
+                            {
+                                new TextEdit()
+                                {
+                                    Range = new Range(new Position(lastLine, 0), new Position(lastLine, 0)),
+                                    NewText = $@"
 ---
 domain:
   name: {domainName}
   label: 
-",
-                            Range = new Range(new Position(lastLine, 0), new Position(lastLine, 0))
-                        }
-                        }
+"
+                                }
+                            }
                         }
                 }
             };
