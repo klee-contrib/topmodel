@@ -27,7 +27,7 @@ class CompletionHandler : CompletionHandlerBase
         var completionList = new CompletionList(isIncomplete: false);
 
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
-        var currentLine = text.Split(Environment.NewLine).ElementAt(request.Position.Line);
+        var currentLine = text.ElementAt(request.Position.Line);
 
         if (currentLine.Contains("domain: "))
         {
@@ -52,7 +52,7 @@ class CompletionHandler : CompletionHandlerBase
 
                 var useIndex = file.Uses.Any()
                     ? file.Uses.Last().ToRange()!.Start.Line + 1
-                    : text.StartsWith("-")
+                    : text.First().StartsWith("-")
                         ? 1
                         : 0;
 
@@ -84,7 +84,7 @@ class CompletionHandler : CompletionHandlerBase
             {
                 // Use
                 if (
-                    text.Split(Environment.NewLine).ElementAt(request.Position.Line - 1) == "uses:"
+                    text.ElementAt(request.Position.Line - 1) == "uses:"
                     || file.Uses.Select(u => u.Start.Line).Any(l => l == request.Position.Line))
                 {
                     return Task.FromResult(new CompletionList(

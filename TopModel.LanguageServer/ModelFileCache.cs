@@ -2,15 +2,15 @@
 
 public class ModelFileCache
 {
-    private readonly ConcurrentDictionary<string, string> _fileCache = new();
+    private readonly ConcurrentDictionary<string, string[]> _fileCache = new();
 
-    public string GetFile(string filePath)
+    public string[] GetFile(string filePath)
     {
         return _fileCache[filePath];
     }
 
     public void UpdateFile(string filePath, string content)
     {
-        _fileCache.AddOrUpdate(filePath, content, (_, _) => content);
+        _fileCache.AddOrUpdate(filePath, content.Split(Environment.NewLine), (_, _) => content.Split(Environment.NewLine));
     }
 }

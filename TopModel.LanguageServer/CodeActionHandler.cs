@@ -98,12 +98,12 @@ class CodeActionHandler : CodeActionHandlerBase
 
         var fs = request.TextDocument.Uri.GetFileSystemPath();
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
-        var line = text.Split(Environment.NewLine).ElementAt(diagnostic.Range.Start.Line);
+        var line = text.ElementAt(diagnostic.Range.Start.Line);
         var domainName = line.Substring(diagnostic.Range.Start.Character, diagnostic.Range.End.Character - diagnostic.Range.Start.Character);
 
         return _modelStore.Files.Where(f => f.Domains.Any()).Select(f =>
         {
-            var lastLine = File.ReadAllText(_facade.GetFilePath(f)).Split(Environment.NewLine).Count();
+            var lastLine = File.ReadAllLines(_facade.GetFilePath(f)).Count();
             return (CommandOrCodeAction)new CodeAction()
             {
                 Title = $"TopModel : Ajouter le domain au fichier {f.Path}",
