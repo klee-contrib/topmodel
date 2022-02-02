@@ -75,6 +75,20 @@ La classe C# générée aura une propriété `ClasseCibleSet` de type `HashSet<C
 
 La classe référencée par la composition doit être connue du fichier de modèle courant, soit parce qu'elle est définie dedans, soit parce que son fichier est référencé dans la section `uses`.
 
-# Alias
+Il est également possible de définir un pattern pour la classe générique. Pour cela, dans la définition du domaine, il est possible d'écrire
+
+```yaml
+domain:
+  name: DO_DICTIONNAIRE
+  label: Dictionnaire
+  csharp:
+    type: Dictionary<string, {class}>
+  ts:
+    type: Map<String, {class}>
+```
+
+Ainsi, les propriétés de composition générées avec le `kind: DO_DICTIONNAIRE` auront la forme du pattern défini, en remplacant `{class}` étant remplacé par la classe cible.
+
+## Alias
 
 [Voir section correspondante](/model/aliases.md?id=alias-de-propriétés)

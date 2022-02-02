@@ -328,7 +328,7 @@ public class JpaModelGenerator : GeneratorBase
 
                 if (classe.IsPersistent)
                 {
-                    var column = @$"@Column(name = ""{field.SqlName}"", nullable = {(!field.Required).ToString().ToFirstLower()}{(classe.Reference ? ", updatable = false" : "")}";
+                    var column = @$"@Column(name = ""{field.SqlName}"", nullable = {(!field.Required).ToString().ToFirstLower()}{(classe.Reference ? ", updatable = false" : string.Empty)}";
                     if (field.Domain.Length != null)
                     {
                         if (field.Domain.Java!.Type == "String" || field.Domain.Java.Type == "string")

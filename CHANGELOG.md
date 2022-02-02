@@ -11,6 +11,8 @@
 
 - [2596d4ffbdd09bae0c327ad](https://github.com/klee-contrib/topmodel/commit/2596d4ffbdd09bae0c327ad6efc717fc43dd40a2)  Core : Typage des erreurs [#34](https://github.com/klee-contrib/topmodel/issues/34)
 
+- [7eeff2f38e9bc47f0a2f27](https://github.com/klee-contrib/topmodel/commit/7eeff2f38e9bc47f0a2f272fb145fdc780b660ed)  Template de type pour les domaines de composition
+
 ## 1.2.4
 
 - [8139acc971fa6214164f84](https://github.com/klee-contrib/topmodel/commit/8139acc971fa6214164f841ac37df9933283293d) JS - Mauvais import lorsqu'on référérence un type dans un sous-module [#26](https://github.com/klee-contrib/topmodel/issues/26)
