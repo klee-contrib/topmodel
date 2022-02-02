@@ -17,6 +17,8 @@ Fonctionnalités principales :
 - Recherche des symboles (classes, domaines et endpoints) avec `Ctrl + T`
 - Fromatage :
   - Tri des imports
+- Aides à la saisie :
+  - Ajout du domaine manquant
 
 ## Fonctionnalités en cours de développement
 
