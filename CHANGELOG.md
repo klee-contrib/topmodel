@@ -1,5 +1,16 @@
 # TopModel.Generator (`modgen`)
 
+## 1.2.5
+
+- [3c83c59dc36ed159f7c60a6](https://github.com/klee-contrib/topmodel/commit/3c83c59dc36ed159f7c60a6a4d630d178ed5b1c6) JPA - Améliorations persistence :
+  - OneToOne : ajout du paramètre `optional` dépendant de la propriété `required`
+  - OneToOne : ajout de la contrainte d'unicité sur la colonne qui fait l'objet de la oneToOne
+  - Listes de références : les colonnes ont `updatables = false`
+  - ManyToOne : ajout du paramètre `optional` dépendant de la propriété `required`
+  - ManyToMany : Ajout FetchType.LAZY
+
+- [2596d4ffbdd09bae0c327ad](https://github.com/klee-contrib/topmodel/commit/2596d4ffbdd09bae0c327ad6efc717fc43dd40a2)  Core : Typage des erreurs [#34](https://github.com/klee-contrib/topmodel/issues/34)
+
 ## 1.2.4
 
 - [8139acc971fa6214164f84](https://github.com/klee-contrib/topmodel/commit/8139acc971fa6214164f841ac37df9933283293d) JS - Mauvais import lorsqu'on référérence un type dans un sous-module [#26](https://github.com/klee-contrib/topmodel/issues/26)
