@@ -87,7 +87,7 @@ domain:
     type: Map<String, {class}>
 ```
 
-Ainsi, les propriétés de composition générées avec le `kind: DO_DICTIONNAIRE` auront la forme du pattern défini, en remplacant `{class}` étant remplacé par la classe cible.
+Ainsi, les propriétés de composition générées avec le `kind: DO_DICTIONNAIRE` auront la forme du pattern défini, `{class}` étant remplacé par la classe cible.
 
 ## Alias
 
