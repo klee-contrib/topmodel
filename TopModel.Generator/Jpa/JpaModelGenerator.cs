@@ -262,7 +262,7 @@ public class JpaModelGenerator : GeneratorBase
                 switch (ap.Type)
                 {
                     case AssociationType.ManyToOne:
-                        fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY)");
+                        fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY, optional = {(ap.Required ? "false" : "true")})");
                         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
                         break;
                     case AssociationType.OneToMany:
@@ -270,12 +270,12 @@ public class JpaModelGenerator : GeneratorBase
                         break;
                     case AssociationType.ManyToMany:
                         var pk = classe.PrimaryKey!.SqlName;
-                        fw.WriteLine(1, @$"@{ap.Type}");
+                        fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY)");
                         fw.WriteLine(1, @$"@JoinTable(name = ""{ap.Class.SqlName}_{ap.Association.SqlName}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
                         break;
                     case AssociationType.OneToOne:
-                        fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)");
-                        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
+                        fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = {(ap.Required ? "false" : "true")})");
+                        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"", unique = true)");
                         break;
                 }
 
@@ -328,7 +328,7 @@ public class JpaModelGenerator : GeneratorBase
 
                 if (classe.IsPersistent)
                 {
-                    var column = @$"@Column(name = ""{field.SqlName}"", nullable = {(!field.Required).ToString().ToFirstLower()}";
+                    var column = @$"@Column(name = ""{field.SqlName}"", nullable = {(!field.Required).ToString().ToFirstLower()}{(classe.Reference ? ", updatable = false" : "")}";
                     if (field.Domain.Length != null)
                     {
                         if (field.Domain.Java!.Type == "String" || field.Domain.Java.Type == "string")

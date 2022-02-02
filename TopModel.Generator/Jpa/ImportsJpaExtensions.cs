@@ -120,6 +120,7 @@ public static class ImportsJpaExtensions
                 imports.Add("java.util.Set");
                 imports.Add("java.util.Collections");
                 imports.Add("javax.persistence.JoinColumn");
+                imports.Add("javax.persistence.FetchType");
                 imports.Add("javax.persistence.JoinTable");
                 break;
             case AssociationType.OneToOne:

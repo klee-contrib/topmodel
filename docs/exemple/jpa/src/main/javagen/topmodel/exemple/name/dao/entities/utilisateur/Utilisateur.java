@@ -87,7 +87,7 @@ public class Utilisateur implements Serializable {
      *
      * @return value of profilList.
      */
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "UTILISATEUR_PROFIL", joinColumns = @JoinColumn(name = "ID"), inverseJoinColumns = @JoinColumn(name = "ID"))
     public Set<Profil> getProfilList() {
         if(profilList == null) this.profilList = Collections.emptySet();
@@ -132,7 +132,7 @@ public class Utilisateur implements Serializable {
      *
      * @return value of typeUtilisateur.
      */
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "TUT_CODE", referencedColumnName = "TUT_CODE")
     public TypeUtilisateur getTypeUtilisateur() {
         return this.typeUtilisateur;
@@ -143,8 +143,8 @@ public class Utilisateur implements Serializable {
      *
      * @return value of typeUtilisateurOrigin.
      */
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "ORIGIN_TUT_CODE", referencedColumnName = "TUT_CODE")
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
+    @JoinColumn(name = "ORIGIN_TUT_CODE", referencedColumnName = "TUT_CODE", unique = true)
     public TypeUtilisateur getTypeUtilisateurOrigin() {
         return this.typeUtilisateurOrigin;
     }
