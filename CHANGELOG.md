@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.2.6
+
+- [b648f4fe93190ecfd607b616b46fe](https://github.com/klee-contrib/topmodel/commit/b648f4fe93190ecfd607b616b46fe6a1a6a3150f) JPA - Gérer l'héritage [#38](https://github.com/klee-contrib/topmodel/issues/38)
+
 ## 1.2.5
 
 - [3c83c59dc36ed159f7c60a6](https://github.com/klee-contrib/topmodel/commit/3c83c59dc36ed159f7c60a6a4d630d178ed5b1c6) JPA - Améliorations persistence :
