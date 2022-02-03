@@ -11,8 +11,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,7 +23,7 @@ import topmodel.exemple.name.dao.references.utilisateur.TypeUtilisateurCode;
 /**
  * Objet non persisté de communication avec le serveur.
  */
-@Builder
+@SuperBuilder
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor

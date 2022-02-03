@@ -19,8 +19,8 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -31,7 +31,7 @@ import topmodel.exemple.utils.IFieldEnum;
 /**
  * Type d'utilisateur.
  */
-@Builder
+@SuperBuilder
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor

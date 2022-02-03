@@ -10,8 +10,8 @@ import java.util.Set;
 import javax.annotation.Generated;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -22,7 +22,7 @@ import topmodel.exemple.name.dao.references.securite.TypeProfilCode;
 /**
  * Objet métier non persisté représentant Profil.
  */
-@Builder
+@SuperBuilder
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor

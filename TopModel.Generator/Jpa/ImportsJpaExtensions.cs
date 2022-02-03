@@ -165,12 +165,12 @@ public static class ImportsJpaExtensions
         return $"{packageName}.{classe.Name}";
     }
 
-    public static List<string> GetImports(this Class classe)
+    public static List<string> GetImports(this Class classe, JpaConfig config)
     {
         var imports = new List<string>
             {
                 "lombok.NoArgsConstructor",
-                "lombok.Builder",
+                "lombok.experimental.SuperBuilder",
                 "lombok.Setter",
                 "lombok.ToString",
                 "lombok.EqualsAndHashCode",
@@ -210,6 +210,11 @@ public static class ImportsJpaExtensions
         if (classe.UniqueKeys?.Count > 0)
         {
             imports.Add("javax.persistence.UniqueConstraint");
+        }
+
+        if (classe.Extends != null && classe.Extends.Namespace.Module != classe.Namespace.Module)
+        {
+            imports.Add(classe.GetImport(config));
         }
 
         return imports;
