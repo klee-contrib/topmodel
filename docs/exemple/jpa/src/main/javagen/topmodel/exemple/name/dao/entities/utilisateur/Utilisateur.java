@@ -33,8 +33,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -47,7 +47,7 @@ import topmodel.exemple.utils.IFieldEnum;
 /**
  * Utilisateur de l'application.
  */
-@Builder
+@SuperBuilder
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor

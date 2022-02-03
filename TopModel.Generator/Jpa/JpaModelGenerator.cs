@@ -66,7 +66,7 @@ public class JpaModelGenerator : GeneratorBase
 
             WriteAnnotations(module, fw, classe);
 
-            fw.WriteClassDeclaration(classe.Name, null, null, "Serializable");
+            fw.WriteClassDeclaration(classe.Name, null, classe.Extends != null ? classe.Extends.Name : null, "Serializable");
 
             fw.WriteLine("	/** Serial ID */");
             fw.WriteLine("    private static final long serialVersionUID = 1L;");
@@ -128,7 +128,7 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteImports(JavaWriter fw, Class classe)
     {
-        var imports = classe.GetImports();
+        var imports = classe.GetImports(_config);
         foreach (var property in classe.Properties)
         {
             imports.AddRange(property.GetImports(_config));
@@ -170,7 +170,7 @@ public class JpaModelGenerator : GeneratorBase
     {
         fw.WriteDocStart(0, classe.Comment);
         fw.WriteDocEnd(0);
-        fw.WriteLine("@Builder");
+        fw.WriteLine("@SuperBuilder");
         fw.WriteLine("@Setter");
         fw.WriteLine("@NoArgsConstructor");
         fw.WriteLine("@AllArgsConstructor");

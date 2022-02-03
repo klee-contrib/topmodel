@@ -21,8 +21,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -32,7 +32,7 @@ import topmodel.exemple.utils.IFieldEnum;
 /**
  * Profil des utilisateurs.
  */
-@Builder
+@SuperBuilder
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
