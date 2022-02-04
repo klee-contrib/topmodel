@@ -56,29 +56,21 @@ foreach (var source in config.OpenApi.Sources)
 {
     var client = new HttpClient();
 
-    if (!string.IsNullOrEmpty(source.Login))
+    if (!string.IsNullOrEmpty(source.Value.Login))
     {
-        if (!secrets.TryGetValue(source.Login, out var secret))
+        if (!secrets.TryGetValue(source.Value.Login, out var secret))
         {
-            throw new Exception($"Pas de mot de passe associé au login '{source.Login}'");
+            throw new Exception($"Pas de mot de passe associé au login '{source.Value.Login}'");
         }
 
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{source.Login}:{secret}")));
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{source.Value.Login}:{secret}")));
     }
 
-    var openApi = await client.GetAsync(source.Url);
+    var openApi = await client.GetAsync(source.Value.Url);
 
     var modelReader = new OpenApiStreamReader();
 
     var model = modelReader.Read(await openApi.Content.ReadAsStreamAsync(), out var diagnostic);
-
-    Directory.CreateDirectory(config.OutputDirectory);
-    using var sw = new FileWriter($"{config.OutputDirectory}/OpenApi.tmd", logger, false) { StartCommentToken = "####" };
-    sw.WriteLine("---");
-    sw.WriteLine("module: OpenApi");
-    sw.WriteLine("tags:");
-    sw.WriteLine("  - OpenApi");
-    sw.WriteLine();
 
     string GetEndpointName(OpenApiOperation operation)
     {
@@ -95,10 +87,130 @@ foreach (var source in config.OpenApi.Sources)
         return $"{operation.OperationId}{operationsWithId.IndexOf(operation) + 1}";
     }
 
-    foreach (var path in model.Paths.OrderBy(p => p.Key))
+    var modules = model.Paths
+        .SelectMany(p => p.Value.Operations.Where(o => o.Value.Tags.Any()))
+        .GroupBy(o => o.Value.Tags.First().Name.ToFirstUpper())
+        .Where(m => m.Key != "Null" && (source.Value.Include == null || source.Value.Include.Contains(m.Key)));
+
+    IEnumerable<OpenApiReference> GetModuleReferences(IEnumerable<KeyValuePair<OperationType, OpenApiOperation>> operations)
     {
-        foreach (var operation in path.Value.Operations.OrderBy(o => o.Key))
+        var visited = new HashSet<OpenApiSchema>();
+
+        foreach (var operation in operations)
         {
+            if (operation.Value.RequestBody != null)
+            {
+                foreach (var reference in GetSchemaReferences(operation.Value.RequestBody.Content.First().Value.Schema, visited))
+                {
+                    yield return reference;
+                }
+            }
+
+            foreach (var reference in operation.Value.Parameters.SelectMany(p => GetSchemaReferences(p.Schema, visited)))
+            {
+                yield return reference;
+            }
+
+            var response = operation.Value.Responses.FirstOrDefault(r => r.Key == "200").Value;
+            if (response != null && response.Content.Any())
+            {
+                foreach (var reference in GetSchemaReferences(response.Content.First().Value.Schema, visited))
+                {
+                    yield return reference;
+                }
+            }
+        }
+    }
+
+    IEnumerable<OpenApiReference> GetSchemaReferences(OpenApiSchema schema, HashSet<OpenApiSchema> visited)
+    {
+        visited.Add(schema);
+
+        if (schema.Reference != null)
+        {
+            yield return schema.Reference;
+        }
+
+        if (schema.Items != null && !visited.Contains(schema.Items))
+        {
+            foreach (var reference in GetSchemaReferences(schema.Items, visited))
+            {
+                yield return reference;
+            }
+        }
+
+        if (schema.Properties != null)
+        {
+            foreach (var reference in schema.Properties.Values.Where(p => !visited.Contains(p)).SelectMany(p => GetSchemaReferences(p, visited)))
+            {
+                yield return reference;
+            }
+        }
+
+        if (schema.AdditionalProperties != null && !visited.Contains(schema.AdditionalProperties))
+        {
+            foreach (var reference in GetSchemaReferences(schema.AdditionalProperties, visited))
+            {
+                yield return reference;
+            }
+        }
+    }
+
+    var referenceMap = modules.ToDictionary(m => m.Key, m => GetModuleReferences(m));
+
+    using var msw = new FileWriter($"{config.OutputDirectory}/{source.Key}/{source.Value.ModelFileName}.tmd", logger, false) { StartCommentToken = "####" };
+    msw.WriteLine("---");
+    msw.WriteLine($"module: {source.Key}");
+    msw.WriteLine("tags:");
+    foreach (var tag in source.Value.Tags)
+    {
+        msw.WriteLine($"  - {tag}");
+    }
+    msw.WriteLine();
+
+    var references = new HashSet<string>(referenceMap.SelectMany(r => r.Value).Select(r => r.Id).Distinct());
+    foreach (var schema in model.Components.Schemas.Where(s => references.Contains(s.Key)).OrderBy(s => s.Key))
+    {
+        msw.WriteLine("---");
+        msw.WriteLine("class:");
+        msw.WriteLine($"  name: {schema.Key}");
+        msw.WriteLine($"  comment: {FormatDescription(schema.Value.Description ?? schema.Key)}");
+        msw.WriteLine();
+        msw.WriteLine($"  properties:");
+
+        foreach (var property in schema.Value.Properties)
+        {
+            WriteProperty(msw, property);
+
+            if (schema.Value.Properties.Last().Key != property.Key)
+            {
+                msw.WriteLine();
+            }
+        }
+    }
+
+    foreach (var module in modules)
+    {
+        using var sw = new FileWriter($"{config.OutputDirectory}/{source.Key}/{module.Key}.tmd", logger, false) { StartCommentToken = "####" };
+        sw.WriteLine("---");
+        sw.WriteLine($"module: {source.Key}");
+        sw.WriteLine("tags:");
+        foreach (var tag in source.Value.Tags)
+        {
+            sw.WriteLine($"  - {tag}");
+        }
+        if (referenceMap[module.Key].Any())
+        {
+            sw.WriteLine("uses:");
+            sw.WriteLine($"  - {Path.GetRelativePath(dn, config.OutputDirectory).Replace("\\", "/")}/{source.Key}/{source.Value.ModelFileName}");
+
+        }
+        sw.WriteLine();
+
+        foreach (var operation in module.OrderBy(o => GetEndpointName(o.Value)))
+        {
+            var path = model.Paths.Single(p => p.Value.Operations.Any(o => o.Value == operation.Value));
+
             sw.WriteLine("---");
             sw.WriteLine("endpoint:");
             sw.WriteLine($"  name: {GetEndpointName(operation.Value)}");
@@ -128,26 +240,6 @@ foreach (var source in config.OpenApi.Sources)
             {
                 sw.WriteLine("  returns:");
                 WriteProperty(sw, new("Result", response.Content.First().Value.Schema), noList: true);
-            }
-        }
-    }
-
-    foreach (var schema in model.Components.Schemas.OrderBy(s => s.Key))
-    {
-        sw.WriteLine("---");
-        sw.WriteLine("class:");
-        sw.WriteLine($"  name: {schema.Key}");
-        sw.WriteLine($"  comment: {FormatDescription(schema.Value.Description ?? schema.Key)}");
-        sw.WriteLine();
-        sw.WriteLine($"  properties:");
-
-        foreach (var property in schema.Value.Properties)
-        {
-            WriteProperty(sw, property);
-
-            if (schema.Value.Properties.Last().Key != property.Key)
-            {
-                sw.WriteLine();
             }
         }
     }
