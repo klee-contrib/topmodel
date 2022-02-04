@@ -8,7 +8,7 @@ public class OpenApiConfig
     public Dictionary<string, string> Domains { get; set; } = new();
 
     [YamlMember("sources")]
-    public List<OpenApiSource> Sources { get; set; } = new();
+    public Dictionary<string, OpenApiSource> Sources { get; set; } = new();
 }
 
 public class OpenApiSource
@@ -18,4 +18,13 @@ public class OpenApiSource
 
     [YamlMember("login")]
     public string? Login { get; set; }
+
+    [YamlMember("include")]
+    public string[]? Include { get; set; }
+
+    [YamlMember("tags")]
+    public string[] Tags { get; set; } = new[] { "OpenApi" };
+
+    [YamlMember("modelFileName")]
+    public string ModelFileName { get; set; } = "Model";
 }
