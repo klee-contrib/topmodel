@@ -40,6 +40,9 @@ class CodeActionHandler : CodeActionHandlerBase
                 case ModelErrorType.TMD_1005:
                     codeActions.AddRange(GetCodeActionCreateDomain(request, diagnostic, modelFile));
                     break;
+                case ModelErrorType.TMD_1002:
+                    codeActions.AddRange(GetCodeActionMissingImport(request, diagnostic, modelFile));
+                    break;
                 default:
                     break;
             }
@@ -134,6 +137,49 @@ domain:
                 }
             };
         }).ToList();
+    }
+
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    {
+        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
+
+        var fs = request.TextDocument.Uri.GetFileSystemPath();
+        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var line = text.ElementAt(diagnostic.Range.Start.Line);
+        var className = line.Substring(diagnostic.Range.Start.Character, diagnostic.Range.End.Character - diagnostic.Range.Start.Character);
+        var availableClasses = _modelStore.Classes;
+        var useIndex = file!.Uses.Any()
+                        ? file.Uses.Last().ToRange()!.Start.Line + 1
+                        : text.First().StartsWith("-")
+                            ? 1
+                            : 0;
+        return _modelStore.Classes.Where(c => c.Name == className).Select(classToImport =>
+        {
+            return (CommandOrCodeAction)new CodeAction()
+            {
+                Title = $"TopModel : Ajouter l'import {classToImport.ModelFile.Name}",
+                Kind = CodeActionKind.QuickFix,
+                IsPreferred = true,
+                Diagnostics = new List<Diagnostic>{
+                diagnostic
+            },
+                Edit = new WorkspaceEdit
+                {
+                    Changes =
+                        new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                        {
+                            [new Uri(_facade.GetFilePath(file))] = new List<TextEdit>()
+                            {
+                                new TextEdit()
+                                {
+                                    NewText = file.Uses.Any() ? $"  - {classToImport.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {classToImport.ModelFile.Name}{Environment.NewLine}",
+                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
+                                }
+                            }
+                        }
+                }
+            };
+        });
     }
 
     protected ModelErrorType GetTypeFromCode(string code)
