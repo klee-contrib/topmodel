@@ -28,11 +28,11 @@ class CodeActionHandler : CodeActionHandlerBase
     {
         var modelFile = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath())!;
         var codeActions = new List<CommandOrCodeAction>();
-        if (modelFile.Uses.Any())
+        if (modelFile.Uses.Except(modelFile.UselessImports).Any())
         {
             codeActions.Add(GetCodeActionOrganizeImports(request, modelFile));
         }
-        foreach (var diagnostic in request.Context.Diagnostics)
+        foreach (var diagnostic in request.Context.Diagnostics.Where(d => !string.IsNullOrEmpty(d.Code)))
         {
             var modelErrorType = GetTypeFromCode(diagnostic.Code!);
             switch (modelErrorType)
@@ -42,6 +42,7 @@ class CodeActionHandler : CodeActionHandlerBase
                     break;
                 case ModelErrorType.TMD_1002:
                     codeActions.AddRange(GetCodeActionMissingImport(request, diagnostic, modelFile));
+                    codeActions.AddRange(GetCodeActionAddClass(request, diagnostic, modelFile));
                     break;
                 default:
                     break;
@@ -180,6 +181,48 @@ domain:
                 }
             };
         });
+    }
+
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionAddClass(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    {
+        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath())!;
+
+        var fs = request.TextDocument.Uri.GetFileSystemPath();
+        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var line = text.ElementAt(diagnostic.Range.Start.Line);
+        var className = line.Substring(diagnostic.Range.Start.Character, diagnostic.Range.End.Character - diagnostic.Range.Start.Character);
+        return new List<CommandOrCodeAction>{
+            (CommandOrCodeAction)new CodeAction() {
+                Title = $"TopModel : Créer la classe {className} dans ce fichier",
+                Kind = CodeActionKind.QuickFix,
+                IsPreferred = true,
+                Diagnostics = new List<Diagnostic>{
+                diagnostic
+            },
+                Edit = new WorkspaceEdit
+                {
+                    Changes =
+                        new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                        {
+                            [new Uri(_facade.GetFilePath(file))] = new List<TextEdit>()
+                            {
+                                new TextEdit()
+                                {
+                                    NewText = @$"
+---
+class: 
+  name: {className}
+  comment: 
+  properties:
+    - 
+",
+                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(text.Count(), 0, text.Count(), 0)
+                                }
+                            }
+                        }
+                }
+            }
+        };
     }
 
     protected ModelErrorType GetTypeFromCode(string code)
