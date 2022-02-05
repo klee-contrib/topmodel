@@ -563,7 +563,7 @@ public class CSharpClassGenerator
             usings.Add("System.ComponentModel.DataAnnotations.Schema");
         }
 
-        if (item.Properties.OfType<IFieldProperty>().Any() || item.Extends == null)
+        if (item.Properties.OfType<IFieldProperty>().Any())
         {
             if (_config.Kinetix == KinetixVersion.Core)
             {
