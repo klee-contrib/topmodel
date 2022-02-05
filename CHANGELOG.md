@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.2.7
+
+- [fb70003c0](https://github.com/klee-contrib/topmodel/commit/fb70003c060d27afa9d0ca4f4bfeb3b27ac49eb2) Fix imports en trop en C# si pas de field properties dans le fichier.
+
 ## 1.2.6
 
 - [b648f4fe93190ecfd607b616b46fe](https://github.com/klee-contrib/topmodel/commit/b648f4fe93190ecfd607b616b46fe6a1a6a3150f) JPA - Gérer l'héritage [#38](https://github.com/klee-contrib/topmodel/issues/38)
