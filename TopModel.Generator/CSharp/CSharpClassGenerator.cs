@@ -546,9 +546,7 @@ public class CSharpClassGenerator
             usings.Add("System.ComponentModel");
         }
 
-        if (item.Properties.OfType<IFieldProperty>()
-            .Select(p => p is AliasProperty alp ? alp.Property : p)
-            .Any(p => p.Required || p.PrimaryKey))
+        if (item.Properties.OfType<IFieldProperty>().Any(p => p.Required || p.PrimaryKey || p.Domain.CSharp!.Type == "string" && p.Domain.Length != null))
         {
             usings.Add("System.ComponentModel.DataAnnotations");
         }
