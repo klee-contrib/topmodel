@@ -26,28 +26,32 @@ class CodeActionHandler : CodeActionHandlerBase
 
     public override Task<CommandOrCodeActionContainer> Handle(CodeActionParams request, CancellationToken cancellationToken)
     {
-        var modelFile = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath())!;
+        var modelFile = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         var codeActions = new List<CommandOrCodeAction>();
-        if (modelFile.Uses.Except(modelFile.UselessImports).Any())
+        if (modelFile != null)
         {
-            codeActions.Add(GetCodeActionOrganizeImports(request, modelFile));
-        }
-        foreach (var diagnostic in request.Context.Diagnostics.Where(d => !string.IsNullOrEmpty(d.Code)))
-        {
-            var modelErrorType = GetTypeFromCode(diagnostic.Code!);
-            switch (modelErrorType)
+            if (modelFile.Uses.Except(modelFile.UselessImports).Any())
             {
-                case ModelErrorType.TMD_1005:
-                    codeActions.AddRange(GetCodeActionCreateDomain(request, diagnostic, modelFile));
-                    break;
-                case ModelErrorType.TMD_1002:
-                    codeActions.AddRange(GetCodeActionMissingImport(request, diagnostic, modelFile));
-                    codeActions.AddRange(GetCodeActionAddClass(request, diagnostic, modelFile));
-                    break;
-                default:
-                    break;
+                codeActions.Add(GetCodeActionOrganizeImports(request, modelFile));
+            }
+            foreach (var diagnostic in request.Context.Diagnostics.Where(d => !string.IsNullOrEmpty(d.Code)))
+            {
+                var modelErrorType = GetTypeFromCode(diagnostic.Code!);
+                switch (modelErrorType)
+                {
+                    case ModelErrorType.TMD_1005:
+                        codeActions.AddRange(GetCodeActionCreateDomain(request, diagnostic, modelFile));
+                        break;
+                    case ModelErrorType.TMD_1002:
+                        codeActions.AddRange(GetCodeActionMissingImport(request, diagnostic, modelFile));
+                        codeActions.AddRange(GetCodeActionAddClass(request, diagnostic, modelFile));
+                        break;
+                    default:
+                        break;
+                }
             }
         }
+
         return Task.FromResult(CommandOrCodeActionContainer.From(codeActions));
     }
 
@@ -98,8 +102,6 @@ class CodeActionHandler : CodeActionHandlerBase
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionCreateDomain(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
     {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
-
         var fs = request.TextDocument.Uri.GetFileSystemPath();
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var line = text.ElementAt(diagnostic.Range.Start.Line);
@@ -142,15 +144,14 @@ domain:
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
     {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
 
         var fs = request.TextDocument.Uri.GetFileSystemPath();
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var line = text.ElementAt(diagnostic.Range.Start.Line);
         var className = line.Substring(diagnostic.Range.Start.Character, diagnostic.Range.End.Character - diagnostic.Range.Start.Character);
         var availableClasses = _modelStore.Classes;
-        var useIndex = file!.Uses.Any()
-                        ? file.Uses.Last().ToRange()!.Start.Line + 1
+        var useIndex = modelFile!.Uses.Any()
+                        ? modelFile.Uses.Last().ToRange()!.Start.Line + 1
                         : text.First().StartsWith("-")
                             ? 1
                             : 0;
@@ -169,11 +170,11 @@ domain:
                     Changes =
                         new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                         {
-                            [new Uri(_facade.GetFilePath(file))] = new List<TextEdit>()
+                            [new Uri(_facade.GetFilePath(modelFile))] = new List<TextEdit>()
                             {
                                 new TextEdit()
                                 {
-                                    NewText = file.Uses.Any() ? $"  - {classToImport.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {classToImport.ModelFile.Name}{Environment.NewLine}",
+                                    NewText = modelFile.Uses.Any() ? $"  - {classToImport.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {classToImport.ModelFile.Name}{Environment.NewLine}",
                                     Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
                                 }
                             }
@@ -185,8 +186,6 @@ domain:
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionAddClass(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
     {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath())!;
-
         var fs = request.TextDocument.Uri.GetFileSystemPath();
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var line = text.ElementAt(diagnostic.Range.Start.Line);
@@ -204,7 +203,7 @@ domain:
                     Changes =
                         new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                         {
-                            [new Uri(_facade.GetFilePath(file))] = new List<TextEdit>()
+                            [new Uri(_facade.GetFilePath(modelFile))] = new List<TextEdit>()
                             {
                                 new TextEdit()
                                 {
