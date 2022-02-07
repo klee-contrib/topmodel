@@ -1,47 +1,50 @@
 # TopModel.Generator (`modgen`)
 
+## 1.2.8
+
+- [`869f980`](https://github.com/klee-contrib/topmodel/commit/869f980323727add90afbee892fab27a9586dde3) [C#Gen] Encore un fix sur les usings générés à la marge.
 ## 1.2.7
 
-- [fb70003c0](https://github.com/klee-contrib/topmodel/commit/fb70003c060d27afa9d0ca4f4bfeb3b27ac49eb2) Fix imports en trop en C# si pas de field properties dans le fichier.
+- [`fb70003`](https://github.com/klee-contrib/topmodel/commit/fb70003c060d27afa9d0ca4f4bfeb3b27ac49eb2) Fix imports en trop en C# si pas de field properties dans le fichier.
 
 ## 1.2.6
 
-- [b648f4fe93190ecfd607b616b46fe](https://github.com/klee-contrib/topmodel/commit/b648f4fe93190ecfd607b616b46fe6a1a6a3150f) JPA - Gérer l'héritage [#38](https://github.com/klee-contrib/topmodel/issues/38)
+- [`b648f4f`](https://github.com/klee-contrib/topmodel/commit/b648f4fe93190ecfd607b616b46fe6a1a6a3150f) JPA - Gérer l'héritage [#38](https://github.com/klee-contrib/topmodel/issues/38)
 
 ## 1.2.5
 
-- [3c83c59dc36ed159f7c60a6](https://github.com/klee-contrib/topmodel/commit/3c83c59dc36ed159f7c60a6a4d630d178ed5b1c6) JPA - Améliorations persistence :
+- [`3c83c59`](https://github.com/klee-contrib/topmodel/commit/3c83c59dc36ed159f7c60a6a4d630d178ed5b1c6) JPA - Améliorations persistence :
   - OneToOne : ajout du paramètre `optional` dépendant de la propriété `required`
   - OneToOne : ajout de la contrainte d'unicité sur la colonne qui fait l'objet de la oneToOne
   - Listes de références : les colonnes ont `updatables = false`
   - ManyToOne : ajout du paramètre `optional` dépendant de la propriété `required`
   - ManyToMany : Ajout FetchType.LAZY
 
-- [2596d4ffbdd09bae0c327ad](https://github.com/klee-contrib/topmodel/commit/2596d4ffbdd09bae0c327ad6efc717fc43dd40a2)  Core : Typage des erreurs [#34](https://github.com/klee-contrib/topmodel/issues/34)
+- [`2596d4f`](https://github.com/klee-contrib/topmodel/commit/2596d4ffbdd09bae0c327ad6efc717fc43dd40a2)  Core : Typage des erreurs [#34](https://github.com/klee-contrib/topmodel/issues/34)
 
-- [7eeff2f38e9bc47f0a2f27](https://github.com/klee-contrib/topmodel/commit/7eeff2f38e9bc47f0a2f272fb145fdc780b660ed)  Template de type pour les domaines de composition
+- [`7eeff2f`](https://github.com/klee-contrib/topmodel/commit/7eeff2f38e9bc47f0a2f272fb145fdc780b660ed)  Template de type pour les domaines de composition
 
 ## 1.2.4
 
-- [8139acc971fa6214164f84](https://github.com/klee-contrib/topmodel/commit/8139acc971fa6214164f841ac37df9933283293d) JS - Mauvais import lorsqu'on référérence un type dans un sous-module [#26](https://github.com/klee-contrib/topmodel/issues/26)
+- [`8139acc`](https://github.com/klee-contrib/topmodel/commit/8139acc971fa6214164f841ac37df9933283293d) JS - Mauvais import lorsqu'on référérence un type dans un sous-module [#26](https://github.com/klee-contrib/topmodel/issues/26)
 
-- [2804a70b308ffaf0c](https://github.com/klee-contrib/topmodel/commit/2804a70b308ffaf0c8e853655400428242d0c686)  Core : Doit remonter une erreur si un import est dupliqué [#24](https://github.com/klee-contrib/topmodel/issues/24)
+- [`2804a70`](https://github.com/klee-contrib/topmodel/commit/2804a70b308ffaf0c8e853655400428242d0c686)  Core : Doit remonter une erreur si un import est dupliqué [#24](https://github.com/klee-contrib/topmodel/issues/24)
 
 ## 1.2.3
 
-- [1c783b66d2bbd73d010](https://github.com/klee-contrib/topmodel/commit/1c783b66d2bbd73d010a11ababcd9844e7d25af4) JPA - Ajout du cascade type dans les oneToOne et généralisation de l'utilisation des Set.
+- [`1c783b6`](https://github.com/klee-contrib/topmodel/commit/1c783b66d2bbd73d010a11ababcd9844e7d25af4) JPA - Ajout du cascade type dans les oneToOne et généralisation de l'utilisation des Set.
 
 ## 1.2.2
 
-- [4de0ae72a00b35](https://github.com/klee-contrib/topmodel/commit/4de0ae72a00b35729d90949c57f915db35e066c8) JPA - Fix referenced column dans les associations oneToOne qui ont un rôle
+- [`4de0ae7`](https://github.com/klee-contrib/topmodel/commit/4de0ae72a00b35729d90949c57f915db35e066c8) JPA - Fix referenced column dans les associations oneToOne qui ont un rôle
 
 ## 1.2.1
 
-- [b5c7d2553c0be](https://github.com/klee-contrib/topmodel/commit/b5c7d2553c0bea9d0e65df43a360cab817305913) JS - Api client : Correction import des liste de ref si elles se trouvent dans un sous-module
+- [`b5c7d25`](https://github.com/klee-contrib/topmodel/commit/b5c7d2553c0bea9d0e65df43a360cab817305913) JS - Api client : Correction import des liste de ref si elles se trouvent dans un sous-module
 
 ## 1.2.0
 
-- [192dbf67e68da](https://github.com/klee-contrib/topmodel/commit/192dbf67e68da23871956d3fc05e667103602d4f) JS - Ajout du mode `VALUES` pour la génération des listes de ref
+- [`192dbf6`](https://github.com/klee-contrib/topmodel/commit/192dbf67e68da23871956d3fc05e667103602d4f) JS - Ajout du mode `VALUES` pour la génération des listes de ref
 
 - [`a839236`](https://github.com/klee-contrib/topmodel/commit/a839236ea7012961f5761e56934502e953c19bce) (Issue [#7](https://github.com/klee-contrib/topmodel/issues/7)) "reset" des alias déjà résolus à chaque appel de "ResolveReferences"
 
