@@ -1,8 +1,13 @@
 # TopModel.Generator (`modgen`)
 
+## 1.2.9
+
+- [`fb3ccc6`](https://github.com/klee-contrib/topmodel/commit/fb3ccc6fdcb5e57636848d4e77633b46a1f61bfc) [C#Gen] Mise à jour nom package Kinetix.
+
 ## 1.2.8
 
 - [`869f980`](https://github.com/klee-contrib/topmodel/commit/869f980323727add90afbee892fab27a9586dde3) [C#Gen] Encore un fix sur les usings générés à la marge.
+
 ## 1.2.7
 
 - [`fb70003`](https://github.com/klee-contrib/topmodel/commit/fb70003c060d27afa9d0ca4f4bfeb3b27ac49eb2) Fix imports en trop en C# si pas de field properties dans le fichier.
