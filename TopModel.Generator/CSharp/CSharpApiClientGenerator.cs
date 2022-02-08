@@ -125,7 +125,10 @@ public class CSharpApiClientGenerator : GeneratorBase
         }
 
         fw.WriteUsings(usings.Distinct().ToArray());
-        fw.WriteLine();
+        if (usings.Any())
+        {
+            fw.WriteLine();
+        }
 
         fw.WriteNamespace(apiPath.Replace("/", "."));
 

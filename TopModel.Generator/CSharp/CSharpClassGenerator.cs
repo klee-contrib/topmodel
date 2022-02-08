@@ -565,7 +565,7 @@ public class CSharpClassGenerator
         {
             if (_config.Kinetix == KinetixVersion.Core)
             {
-                usings.Add("Kinetix.ComponentModel.Annotations");
+                usings.Add("Kinetix.Modeling.Annotations");
                 usings.Add($"{item.Namespace.App}.Common");
             }
             else if (_config.Kinetix == KinetixVersion.Framework)
