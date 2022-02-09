@@ -394,7 +394,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             var referenceTypeMap = references.GroupBy(t => t.Module);
             foreach (var refModule in referenceTypeMap)
             {
-                var module = refModule.Key == currentModule ? $"." : $"../{refModule.Key.Replace(".", "/").ToDashCase()}";
+                var module = refModule.Key == currentModule ? $"." : $"{string.Join(string.Empty, currentModule.Split('.').Select(m => "../"))}{refModule.Key.Replace(".", "/").ToDashCase()}";
                 imports.Add((string.Join(", ", refModule.Select(r => r.Code).OrderBy(x => x)), $"{module}/references"));
             }
         }
