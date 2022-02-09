@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.2.10
+
+- [`b127ba6b51abd3e08c`](https://github.com/klee-contrib/topmodel/commit/b127ba6b51abd3e08c847a5e062f57120afa3ab6) [JS] Ajout du as const si non mode focus
+
+- [`2e5a932e1a4ffa05ea379dcec4d6c`](https://github.com/klee-contrib/topmodel/commit/2e5a932e1a4ffa05ea379dcec4d6cec31f0500bd) [JS] Correction import liste de ref depuis un sous-module
+
 ## 1.2.9
 
 - [`fb3ccc6`](https://github.com/klee-contrib/topmodel/commit/fb3ccc6fdcb5e57636848d4e77633b46a1f61bfc) [C#Gen] Mise à jour nom package Kinetix.
