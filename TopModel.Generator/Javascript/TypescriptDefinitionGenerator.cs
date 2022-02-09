@@ -336,7 +336,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             fw.Write("\r\n");
         }
 
-        fw.Write("}\r\n");
+        fw.Write($"}}{(_config.Focus ? "": " as const")}\r\n");
 
         if (classe.Reference)
         {
