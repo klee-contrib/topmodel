@@ -139,10 +139,10 @@ public class DbContextGenerator
             }
 
             var hasFk = false;
-            foreach (var prop in classes.OrderBy(c => c.Name).SelectMany(c => c.Properties.OfType<AssociationProperty>()))
+            foreach (var prop in classes.OrderBy(c => c.Name).SelectMany(c => c.Properties).Where(p => p is AssociationProperty || p is AliasProperty { Property: AssociationProperty }))
             {
                 hasFk = true;
-                w.WriteLine(3, $"modelBuilder.Entity<{prop.Class.Name}>().HasOne<{prop.Association}>().WithMany().HasForeignKey(p => p.{prop.Name}).OnDelete(DeleteBehavior.Restrict);");
+                w.WriteLine(3, $"modelBuilder.Entity<{prop.Class.Name}>().HasOne<{(prop is AssociationProperty ap ? ap.Association : prop is AliasProperty { Property: AssociationProperty alp } ? alp.Association : null)}>().WithMany().HasForeignKey(p => p.{prop.Name}).OnDelete(DeleteBehavior.Restrict);");
             }
 
             if (hasFk)
