@@ -1,10 +1,13 @@
 # TopModel.Generator (`modgen`)
 
+## 1.2.11
+
+- [`2788644`](https://github.com/klee-contrib/topmodel/commit/27886449dc529aa1a7a4e229efb0892978e65fb9) [C#] Fix génération classe persistée/DbContext avec des alias
 ## 1.2.10
 
-- [`b127ba6b51abd3e08c`](https://github.com/klee-contrib/topmodel/commit/b127ba6b51abd3e08c847a5e062f57120afa3ab6) [JS] Ajout du as const si non mode focus
+- [`b127ba6`](https://github.com/klee-contrib/topmodel/commit/b127ba6b51abd3e08c847a5e062f57120afa3ab6) [JS] Ajout du as const si non mode focus
 
-- [`2e5a932e1a4ffa05ea379dcec4d6c`](https://github.com/klee-contrib/topmodel/commit/2e5a932e1a4ffa05ea379dcec4d6cec31f0500bd) [JS] Correction import liste de ref depuis un sous-module
+- [`2e5a932`](https://github.com/klee-contrib/topmodel/commit/2e5a932e1a4ffa05ea379dcec4d6cec31f0500bd) [JS] Correction import liste de ref depuis un sous-module
 
 ## 1.2.9
 
