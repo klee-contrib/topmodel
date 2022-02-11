@@ -10,6 +10,7 @@ class:
   name: Utilisateur
   label: Utilisateur
   comment: Utilisateur de l'application
+  trigram: UTI
   properties:
     - name: Id
       label: Id technique

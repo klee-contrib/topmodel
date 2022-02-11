@@ -27,7 +27,7 @@ public static class ApiGeneratorExtensions
     {
         var param = property is not AliasProperty alp || !alp.Property.PrimaryKey
             ? property.Name.ToFirstLower()
-            : $"{alp.Property.Class.Trigram?.ToLower() ?? alp.Property.Class.Name.ToFirstLower()}{property.Name}";
+            : $"{alp.Property.Class.Trigram?.Value.ToLower() ?? alp.Property.Class.Name.ToFirstLower()}{property.Name}";
 
         if (param.StartsWith("_"))
         {

@@ -67,6 +67,6 @@ public interface IFieldProperty : IProperty
     }
 
     string JavaName => this is AssociationProperty ap
-        ? (ap.Association.Trigram?.ToLower().ToFirstUpper() ?? string.Empty) + ap.Association.PrimaryKey!.Name + (ap.Role?.Replace(" ", string.Empty) ?? string.Empty)
-        : (Class.Trigram?.ToLower().ToFirstUpper() ?? string.Empty) + Name;
+        ? (ap.Association.Trigram?.Value.ToLower().ToFirstUpper() ?? string.Empty) + ap.Association.PrimaryKey!.Name + (ap.Role?.Replace(" ", string.Empty) ?? string.Empty)
+        : (Class.Trigram?.Value.ToLower().ToFirstUpper() ?? string.Empty) + Name;
 }

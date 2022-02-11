@@ -28,6 +28,11 @@ public enum ModelErrorType
     TMD_0004,
 
     /// <summary>
+    /// Le trigram '{classe.Trigram}' est déjà utilisé.
+    /// </summary>
+    TMD_0005,
+
+    /// <summary>
     /// La classe '{0}' doit avoir une (et une seule) clé primaire pour être référencée dans une association.
     /// </summary>
     TMD_1001,

@@ -32,4 +32,4 @@ export const ProfilDtoEntity = {
         type: "list",
         entity: UtilisateurDtoEntity
     }
-}
+} as const

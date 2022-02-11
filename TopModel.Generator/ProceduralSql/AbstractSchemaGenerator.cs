@@ -229,7 +229,7 @@ public abstract class AbstractSchemaGenerator
         writer.WriteLine("  * Génération de la contrainte de clef étrangère pour " + tableName + "." + propertyName);
         writer.WriteLine(" **/");
         writer.WriteLine("alter table " + Quote(tableName));
-        var constraintName = Quote("FK_" + (property.Class.Trigram ?? property.Class.SqlName) + "_" + propertyName);
+        var constraintName = Quote("FK_" + (property.Class.Trigram?.Value ?? property.Class.SqlName) + "_" + propertyName);
 
         writer.WriteLine("\tadd constraint " + constraintName + " foreign key (" + Quote(propertyName) + ")");
         writer.Write("\t\treferences " + Quote(property.Association.SqlName) + " (");
@@ -253,7 +253,7 @@ public abstract class AbstractSchemaGenerator
         writer.WriteLine("/**");
         writer.WriteLine("  * Création de l'index de clef étrangère pour " + tableName + "." + propertyName);
         writer.WriteLine(" **/");
-        writer.WriteLine("create index " + Quote("IDX_" + (property.Class.Trigram ?? property.Class.SqlName) + "_" + propertyName + "_FK") + " on " + tableName + " (");
+        writer.WriteLine("create index " + Quote("IDX_" + (property.Class.Trigram?.Value ?? property.Class.SqlName) + "_" + propertyName + "_FK") + " on " + tableName + " (");
         writer.WriteLine("\t" + Quote(propertyName) + " ASC");
         writer.WriteLine(")");
         writer.WriteLine(BatchSeparator);
@@ -468,7 +468,7 @@ public abstract class AbstractSchemaGenerator
                 writerType.WriteLine();
             }
 
-            writerType.WriteLine('\t' + classe.Trigram + "_INSERT_KEY int");
+            writerType.WriteLine('\t' + classe.Trigram.Value + "_INSERT_KEY int");
             writerType.WriteLine();
             writerType.WriteLine(")");
             writerType.WriteLine(BatchSeparator);

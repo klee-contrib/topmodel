@@ -12,7 +12,6 @@ import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,20 +30,20 @@ public interface IUtilisateurController {
 
     /**
      * Charge le détail d'un utilisateur.
-     * @param utilisateurId Id technique
+     * @param utiId Id technique
      * @return Le détail de l'utilisateur
      */
     @GetMapping("utilisateur/{utilisateurId}")
-    default UtilisateurDto getUtilisateurMapping(@PathVariable("utilisateurId") long utilisateurId) {
-        return this.getUtilisateur(utilisateurId);
+    default UtilisateurDto getUtilisateurMapping(@RequestParam("utiId") long utiId) {
+        return this.getUtilisateur(utiId);
     }
 
     /**
      * Charge le détail d'un utilisateur.
-     * @param utilisateurId Id technique
+     * @param utiId Id technique
      * @return Le détail de l'utilisateur
      */
-    UtilisateurDto getUtilisateur(long utilisateurId);
+    UtilisateurDto getUtilisateur(long utiId);
 
     /**
      * Charge une liste d'utilisateurs par leur type.
@@ -99,28 +98,28 @@ public interface IUtilisateurController {
 
     /**
      * Recherche des utilisateurs.
-     * @param utilisateurId Id technique
+     * @param utiId Id technique
      * @param email Email de l'utilisateur
      * @param typeUtilisateurCode Type d'utilisateur en Many to one
      * @param typeUtilisateurCodeOrigin Type d'utilisateur en one to one
-     * @param profilProfilId Id technique
+     * @param utiProfilId Id technique
      * @param profilTypeProfilCode Type de profil
      * @return Utilisateurs matchant les critères
      */
     @PostMapping("utilisateur/search")
-    default Page<UtilisateurDto> searchMapping(@RequestParam("utilisateurId") long utilisateurId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode, @RequestParam("typeUtilisateurCodeOrigin") TypeUtilisateurCode typeUtilisateurCodeOrigin, @RequestParam("profilProfilId") long profilProfilId, @RequestParam("profilTypeProfilCode") TypeProfilCode profilTypeProfilCode) {
-        return this.search(utilisateurId, email, typeUtilisateurCode, typeUtilisateurCodeOrigin, profilProfilId, profilTypeProfilCode);
+    default Page<UtilisateurDto> searchMapping(@RequestParam("utiId") long utiId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode, @RequestParam("typeUtilisateurCodeOrigin") TypeUtilisateurCode typeUtilisateurCodeOrigin, @RequestParam("utiProfilId") long utiProfilId, @RequestParam("profilTypeProfilCode") TypeProfilCode profilTypeProfilCode) {
+        return this.search(utiId, email, typeUtilisateurCode, typeUtilisateurCodeOrigin, utiProfilId, profilTypeProfilCode);
     }
 
     /**
      * Recherche des utilisateurs.
-     * @param utilisateurId Id technique
+     * @param utiId Id technique
      * @param email Email de l'utilisateur
      * @param typeUtilisateurCode Type d'utilisateur en Many to one
      * @param typeUtilisateurCodeOrigin Type d'utilisateur en one to one
-     * @param profilProfilId Id technique
+     * @param utiProfilId Id technique
      * @param profilTypeProfilCode Type de profil
      * @return Utilisateurs matchant les critères
      */
-    Page<UtilisateurDto> search(long utilisateurId, String email, TypeUtilisateurCode typeUtilisateurCode, TypeUtilisateurCode typeUtilisateurCodeOrigin, long profilProfilId, TypeProfilCode profilTypeProfilCode);
+    Page<UtilisateurDto> search(long utiId, String email, TypeUtilisateurCode typeUtilisateurCode, TypeUtilisateurCode typeUtilisateurCodeOrigin, long utiProfilId, TypeProfilCode profilTypeProfilCode);
 }

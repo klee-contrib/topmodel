@@ -9,6 +9,7 @@ class:
   name: Profil
   label: Profil
   comment: Profil des utilisateurs
+  trigram: UTI
   properties:
     - name: Id
       label: Id technique du profil
