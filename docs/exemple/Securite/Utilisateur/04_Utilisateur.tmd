@@ -1,8 +1,8 @@
 ---
 module: Securite.Utilisateur
-tags: 
+tags:
   - dto
-uses: 
+uses:
   - Securite/Utilisateur/02_Entities
   - Securite/Utilisateur/03_Dtos
 ---

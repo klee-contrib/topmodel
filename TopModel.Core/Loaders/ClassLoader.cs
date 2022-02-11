@@ -30,7 +30,7 @@ public class ClassLoader
                     classe.Trigram = new LocatedString()
                     {
                         Value = value.Value,
-                        Location= new Reference(value)
+                        Location = new Reference(value)
                     };
                     break;
                 case "name":

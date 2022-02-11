@@ -9,7 +9,7 @@ public class Endpoint
 #nullable disable
     public ModelFile ModelFile { get; set; }
 
-    public string Name { get; set; }
+    public LocatedString Name { get; set; }
 
     public string Method { get; set; }
 

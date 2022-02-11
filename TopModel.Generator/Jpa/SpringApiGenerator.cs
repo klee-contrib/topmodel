@@ -142,11 +142,11 @@ public class SpringApiGenerator : GeneratorBase
 
         if (writeAnnotation)
         {
-            fw.WriteLine(1, $"default {returnType} {endpoint.Name.ToFirstLower()}{(writeAnnotation ? "Mapping" : string.Empty)}({string.Join(", ", methodParams)}) {{");
+            fw.WriteLine(1, $"default {returnType} {endpoint.Name.Value!.ToFirstLower()}{(writeAnnotation ? "Mapping" : string.Empty)}({string.Join(", ", methodParams)}) {{");
         }
         else
         {
-            fw.WriteLine(1, $"{returnType} {endpoint.Name.ToFirstLower()}({string.Join(", ", methodParams)});");
+            fw.WriteLine(1, $"{returnType} {endpoint.Name.Value!.ToFirstLower()}({string.Join(", ", methodParams)});");
         }
 
         if (writeAnnotation)
@@ -167,7 +167,7 @@ public class SpringApiGenerator : GeneratorBase
                 methodCallParams.Add($"{bodyParam.GetParamName()}");
             }
 
-            fw.WriteLine(2, @$"{(returnType != "void" ? "return " : string.Empty)}this.{endpoint.Name.ToFirstLower()}({string.Join(", ", methodCallParams)});");
+            fw.WriteLine(2, @$"{(returnType != "void" ? "return " : string.Empty)}this.{endpoint.Name.Value!.ToFirstLower()}({string.Join(", ", methodCallParams)});");
             fw.WriteLine(1, "}");
         }
     }

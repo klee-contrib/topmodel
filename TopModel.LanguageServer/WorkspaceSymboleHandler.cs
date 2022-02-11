@@ -37,10 +37,10 @@ class WorkspaceSymbolHandler : WorkspaceSymbolsHandlerBase
             {
                 Deprecated = false,
                 Kind = SymbolKind.Method,
-                Name = e.Name,
+                Name = e.Name.Value!,
                 Location = new Location
                 {
-                    Range = e.GetLocation().ToRange()!,
+                    Range = e.Name!.GetLocation()!.ToRange()!,
                     Uri = _facade.GetFilePath(e.ModelFile)
                 }
             };

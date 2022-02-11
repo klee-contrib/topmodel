@@ -13,5 +13,4 @@ public class LocatedString
     {
         return this.Value;
     }
-
 }
