@@ -56,7 +56,7 @@ public class Profil implements Serializable {
     @Id
     @SequenceGenerator(name = "SEQ_PROFIL", sequenceName = "SEQ_PROFIL",  initialValue = 1000, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PROFIL")
-    @Column(name = "UTI_ID", nullable = false)
+    @Column(name = "PRO_ID", nullable = false)
     public long getId() {
          return this.id;
     }

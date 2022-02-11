@@ -33,6 +33,18 @@ Pour démarrer votre projet TopModel, vous devez d'abord écrire un fichier de c
 
 Le fichier de configuration doit s'appeler `topmodel.config` ou `topmodel.[NOM DE L'APPLICATION].config`
 
+#### Ignorer les warnings
+
+Il est possible de rendre silencieux certains Warnings depuis le fichier de configuration. Pour cela, ajouter la propriété `nowarn`. L'ensemble des warnings entrés dans cette propriété seront ignorés à la génération et dans l'extension.
+
+Exemple :
+
+```yaml
+app: Exemple
+nowarn:
+  - TMD_0005 # Ignore le warning sur la dupplication des trigram
+```
+
 ## Edition du modèle
 
 Les fichiers de modèle décrivent, comme leur nom l'indique, le modèle de données. Ils portent l'extension `.tmd`.

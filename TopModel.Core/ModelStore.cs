@@ -518,9 +518,12 @@ public class ModelStore
             yield return new ModelError(modelFile, $"Le nom '{endpoint.Name}' est déjà utilisé.", endpoint.Name.GetLocation()) { IsError = true, ModelErrorType = ModelErrorType.TMD_0004 };
         }
 
-        foreach (var classe in modelFile.Classes.Where(c => c.Trigram?.Value != null && this.Classes.Any(u => u.Trigram?.Value == c.Trigram?.Value && u != c)))
+        if (!_config.nowarn.Contains(ModelErrorType.TMD_0005))
         {
-            yield return new ModelError(modelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans la (les) classe(s) suivantes : {string.Join(", ", this.Classes.Where(u => u.Trigram?.Value == classe.Trigram?.Value && u != classe).Select(c => c.Name))}", classe.Trigram.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD_0005 };
+            foreach (var classe in modelFile.Classes.Where(c => c.Trigram?.Value != null && this.Classes.Any(u => u.Trigram?.Value == c.Trigram?.Value && u != c)))
+            {
+                yield return new ModelError(modelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans la (les) classe(s) suivantes : {string.Join(", ", this.Classes.Where(u => u.Trigram?.Value == classe.Trigram?.Value && u != classe).Select(c => c.Name))}", classe.Trigram.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD_0005 };
+            }
         }
     }
 }

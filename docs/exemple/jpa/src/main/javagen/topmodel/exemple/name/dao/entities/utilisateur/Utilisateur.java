@@ -88,7 +88,7 @@ public class Utilisateur implements Serializable {
      * @return value of profilList.
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "UTILISATEUR_PROFIL", joinColumns = @JoinColumn(name = "UTI_ID"), inverseJoinColumns = @JoinColumn(name = "UTI_ID"))
+    @JoinTable(name = "UTILISATEUR_PROFIL", joinColumns = @JoinColumn(name = "UTI_ID"), inverseJoinColumns = @JoinColumn(name = "PRO_ID"))
     public Set<Profil> getProfilList() {
         if(profilList == null) this.profilList = Collections.emptySet();
         return this.profilList;

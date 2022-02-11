@@ -102,13 +102,13 @@ public interface IUtilisateurController {
      * @param email Email de l'utilisateur
      * @param typeUtilisateurCode Type d'utilisateur en Many to one
      * @param typeUtilisateurCodeOrigin Type d'utilisateur en one to one
-     * @param utiProfilId Id technique
+     * @param proProfilId Id technique
      * @param profilTypeProfilCode Type de profil
      * @return Utilisateurs matchant les critères
      */
     @PostMapping("utilisateur/search")
-    default Page<UtilisateurDto> searchMapping(@RequestParam("utiId") long utiId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode, @RequestParam("typeUtilisateurCodeOrigin") TypeUtilisateurCode typeUtilisateurCodeOrigin, @RequestParam("utiProfilId") long utiProfilId, @RequestParam("profilTypeProfilCode") TypeProfilCode profilTypeProfilCode) {
-        return this.search(utiId, email, typeUtilisateurCode, typeUtilisateurCodeOrigin, utiProfilId, profilTypeProfilCode);
+    default Page<UtilisateurDto> searchMapping(@RequestParam("utiId") long utiId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode, @RequestParam("typeUtilisateurCodeOrigin") TypeUtilisateurCode typeUtilisateurCodeOrigin, @RequestParam("proProfilId") long proProfilId, @RequestParam("profilTypeProfilCode") TypeProfilCode profilTypeProfilCode) {
+        return this.search(utiId, email, typeUtilisateurCode, typeUtilisateurCodeOrigin, proProfilId, profilTypeProfilCode);
     }
 
     /**
@@ -117,9 +117,9 @@ public interface IUtilisateurController {
      * @param email Email de l'utilisateur
      * @param typeUtilisateurCode Type d'utilisateur en Many to one
      * @param typeUtilisateurCodeOrigin Type d'utilisateur en one to one
-     * @param utiProfilId Id technique
+     * @param proProfilId Id technique
      * @param profilTypeProfilCode Type de profil
      * @return Utilisateurs matchant les critères
      */
-    Page<UtilisateurDto> search(long utiId, String email, TypeUtilisateurCode typeUtilisateurCode, TypeUtilisateurCode typeUtilisateurCodeOrigin, long utiProfilId, TypeProfilCode profilTypeProfilCode);
+    Page<UtilisateurDto> search(long utiId, String email, TypeUtilisateurCode typeUtilisateurCode, TypeUtilisateurCode typeUtilisateurCodeOrigin, long proProfilId, TypeProfilCode profilTypeProfilCode);
 }
