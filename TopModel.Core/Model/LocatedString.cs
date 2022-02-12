@@ -19,7 +19,7 @@ public class LocatedString : IComparable
 
     public static implicit operator string(LocatedString ls)
     {
-        return ls.Value;
+        return ls?.Value;
     }
 
     public static bool operator ==(LocatedString ls1, LocatedString ls2)
@@ -47,6 +47,11 @@ public class LocatedString : IComparable
         return 0;
     }
 
+    public bool EndsWith(string s)
+    {
+        return Value.EndsWith(s);
+    }
+
     public override bool Equals(object obj)
     {
         if (obj is LocatedString ls)
@@ -60,6 +65,11 @@ public class LocatedString : IComparable
     public override int GetHashCode()
     {
         return base.GetHashCode();
+    }
+
+    public string ToDashCase()
+    {
+        return Value.ToDashCase();
     }
 
     public string ToFirstLower()

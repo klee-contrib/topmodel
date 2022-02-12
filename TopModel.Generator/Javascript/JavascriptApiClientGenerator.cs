@@ -165,7 +165,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
         var imports = types.Select(type =>
         {
-            var name = type.Name;
+            var name = type.Name.Value;
             var module = $"{modelPath}/{type.Namespace.Module.Replace(".", "/").ToDashCase()}";
             return (Import: name, Path: $"{relativePath}{module}/{name.ToDashCase()}");
         }).Distinct().ToList();

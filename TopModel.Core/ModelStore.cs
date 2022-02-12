@@ -259,7 +259,7 @@ public class ModelStore
             .SelectMany(m => m.Classes)
             .Concat(fileClasses)
             .Distinct()
-            .ToDictionary(c => c.Name, c => c);
+            .ToDictionary(c => c.Name.Value, c => c);
 
         foreach (var classe in fileClasses.Where(c => c.ExtendsReference != null))
         {
