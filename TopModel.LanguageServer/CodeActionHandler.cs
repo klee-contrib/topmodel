@@ -226,6 +226,6 @@ class:
 
     protected ModelErrorType GetTypeFromCode(string code)
     {
-        return Enum.Parse<ModelErrorType>("TMD_" + code);
+        return Enum.Parse<ModelErrorType>("TMD" + code);
     }
 }
