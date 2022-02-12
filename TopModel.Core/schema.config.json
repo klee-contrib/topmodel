@@ -10,13 +10,13 @@
       "type": "string",
       "description": "Nom de l'application."
     },
-    "nowarn": {
+    "noWarn": {
       "type": "array",
       "description": "Liste des warnings à ignorer.",
       "items": {
         "type": "string",
-        "description": "Code du warning (TMD_XXXX) à ignorer ",
-        "enum": ["TMD_0005"]
+        "description": "Code du warning (TMD9XXX) à ignorer ",
+        "enum": ["TMD9001", "TMD9002"]
       }
     },
     "modelRoot": {

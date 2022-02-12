@@ -468,7 +468,7 @@ public abstract class AbstractSchemaGenerator
                 writerType.WriteLine();
             }
 
-            writerType.WriteLine('\t' + classe.Trigram.Value + "_INSERT_KEY int");
+            writerType.WriteLine('\t' + classe.Trigram?.Value + "_INSERT_KEY int");
             writerType.WriteLine();
             writerType.WriteLine(")");
             writerType.WriteLine(BatchSeparator);

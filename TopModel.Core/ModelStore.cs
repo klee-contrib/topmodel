@@ -133,7 +133,7 @@ public class ModelStore
                 foreach (var modelWatcher in _modelWatchers)
                 {
                     modelWatcher.OnErrors(affectedFiles
-                        .Select(file => (file, errors: referenceErrors.Where(error => error.File == file)))
+                        .Select(file => (file, errors: referenceErrors.Where(e => e.File == file && !_config.NoWarn.Contains(e.ModelErrorType))))
                         .ToDictionary(i => i.file, i => i.errors));
                 }
 
@@ -142,7 +142,7 @@ public class ModelStore
                     _logger.LogError(error.ToString());
                 }
 
-                foreach (var error in referenceErrors.Where(e => !e.IsError))
+                foreach (var error in referenceErrors.Where(e => !e.IsError && !_config.NoWarn.Contains(e.ModelErrorType)))
                 {
                     _logger.LogWarning(error.ToString());
                 }
@@ -239,17 +239,17 @@ public class ModelStore
         var nonExistingFiles = modelFile.Uses.Where(use => !_modelFiles.TryGetValue(use.ReferenceName, out var _));
         foreach (var use in nonExistingFiles)
         {
-            yield return new ModelError(modelFile, $"Le fichier référencé '{use.ReferenceName}' est introuvable.", use) { ModelErrorType = ModelErrorType.TMD_1007 };
+            yield return new ModelError(modelFile, $"Le fichier référencé '{use.ReferenceName}' est introuvable.", use) { ModelErrorType = ModelErrorType.TMD1007 };
         }
 
         var duplicatedUses = modelFile.Uses
-                    .GroupBy(u => u.ReferenceName)
-                    .Select(u => new { ReferenceName = u.Key, Count = u.Count() })
-                    .Where(r => r.Count > 1)
-                    .Select(u => u.ReferenceName);
+            .GroupBy(u => u.ReferenceName)
+            .Select(u => new { ReferenceName = u.Key, Count = u.Count() })
+            .Where(r => r.Count > 1)
+            .Select(u => u.ReferenceName);
         foreach (var use in modelFile.Uses.Where(u => duplicatedUses.Contains(u.ReferenceName)).Skip(1))
         {
-            yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' ne doit être spécifié qu'une seule fois", use) { IsError = true, ModelErrorType = ModelErrorType.TMD_0003 };
+            yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' ne doit être spécifié qu'une seule fois", use) { IsError = true, ModelErrorType = ModelErrorType.TMD0002 };
         }
 
         var dependencies = GetDependencies(modelFile).ToList();
@@ -265,7 +265,7 @@ public class ModelStore
         {
             if (!referencedClasses.TryGetValue(classe.ExtendsReference!.ReferenceName, out var extends))
             {
-                yield return new ModelError(classe, "La classe '{0}' est introuvable dans le fichier ou l'un de ses dépendances.", classe.ExtendsReference!) { ModelErrorType = ModelErrorType.TMD_1002 };
+                yield return new ModelError(classe, "La classe '{0}' est introuvable dans le fichier ou l'un de ses dépendances.", classe.ExtendsReference!) { ModelErrorType = ModelErrorType.TMD1002 };
                 continue;
             }
 
@@ -279,7 +279,7 @@ public class ModelStore
                 case RegularProperty rp:
                     if (!Domains.TryGetValue(rp.DomainReference.ReferenceName, out var domain))
                     {
-                        yield return new ModelError(rp, "Le domaine '{0}' est introuvable.", rp.DomainReference) { ModelErrorType = ModelErrorType.TMD_1005 };
+                        yield return new ModelError(rp, "Le domaine '{0}' est introuvable.", rp.DomainReference) { ModelErrorType = ModelErrorType.TMD1005 };
                         break;
                     }
 
@@ -289,13 +289,13 @@ public class ModelStore
                 case AssociationProperty ap:
                     if (!referencedClasses.TryGetValue(ap.Reference.ReferenceName, out var association))
                     {
-                        yield return new ModelError(ap, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", ap.Reference) { ModelErrorType = ModelErrorType.TMD_1002 };
+                        yield return new ModelError(ap, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", ap.Reference) { ModelErrorType = ModelErrorType.TMD1002 };
                         break;
                     }
 
                     if (association.Properties.Count(p => p.PrimaryKey) != 1)
                     {
-                        yield return new ModelError(ap, "La classe '{0}' doit avoir une (et une seule) clé primaire pour être référencée dans une association.", ap.Reference) { ModelErrorType = ModelErrorType.TMD_1001 };
+                        yield return new ModelError(ap, "La classe '{0}' doit avoir une (et une seule) clé primaire pour être référencée dans une association.", ap.Reference) { ModelErrorType = ModelErrorType.TMD1001 };
                         break;
                     }
 
@@ -305,7 +305,7 @@ public class ModelStore
                 case CompositionProperty cp:
                     if (!referencedClasses.TryGetValue(cp.Reference.ReferenceName, out var composition))
                     {
-                        yield return new ModelError(cp, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", cp.Reference) { ModelErrorType = ModelErrorType.TMD_1002 };
+                        yield return new ModelError(cp, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", cp.Reference) { ModelErrorType = ModelErrorType.TMD1002 };
                         break;
                     }
 
@@ -315,7 +315,7 @@ public class ModelStore
                     {
                         if (!Domains.TryGetValue(cp.DomainKindReference.ReferenceName, out var domainKind))
                         {
-                            yield return new ModelError(cp, "Le domaine '{0}' est introuvable.", cp.DomainKindReference) { ModelErrorType = ModelErrorType.TMD_1005 };
+                            yield return new ModelError(cp, "Le domaine '{0}' est introuvable.", cp.DomainKindReference) { ModelErrorType = ModelErrorType.TMD1005 };
                             break;
                         }
 
@@ -327,7 +327,7 @@ public class ModelStore
                 case AliasProperty alp when alp.ListDomainReference != null:
                     if (!Domains.TryGetValue(alp.ListDomainReference.ReferenceName, out var listDomain))
                     {
-                        yield return new ModelError(alp, "Le domaine '{0}' est introuvable.", alp.ListDomainReference) { ModelErrorType = ModelErrorType.TMD_1005 };
+                        yield return new ModelError(alp, "Le domaine '{0}' est introuvable.", alp.ListDomainReference) { ModelErrorType = ModelErrorType.TMD1005 };
                         break;
                     }
 
@@ -379,7 +379,7 @@ public class ModelStore
         {
             if (!referencedClasses.TryGetValue(alp.Reference!.ReferenceName, out var aliasedClass))
             {
-                yield return new ModelError(alp, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", alp.Reference) { ModelErrorType = ModelErrorType.TMD_1002 };
+                yield return new ModelError(alp, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", alp.Reference) { ModelErrorType = ModelErrorType.TMD1002 };
                 continue;
             }
 
@@ -389,7 +389,7 @@ public class ModelStore
                 var aliasedProperty = aliasedClass.Properties.SingleOrDefault(p => p.Name == propReference.ReferenceName);
                 if (aliasedProperty == null)
                 {
-                    yield return new ModelError(alp, $"La propriété '{{0}}' est introuvable sur la classe '{aliasedClass}'.", propReference) { ModelErrorType = ModelErrorType.TMD_1004 };
+                    yield return new ModelError(alp, $"La propriété '{{0}}' est introuvable sur la classe '{aliasedClass}'.", propReference) { ModelErrorType = ModelErrorType.TMD1004 };
                     shouldBreak = true;
                 }
             }
@@ -446,7 +446,7 @@ public class ModelStore
             var referencedFile = dependencies.SingleOrDefault(dep => dep.Name == alias.File);
             if (referencedFile == null)
             {
-                yield return new ModelError(alias, $"Le fichier '{alias.File}' est introuvable dans les dépendances du fichier.") { ModelErrorType = ModelErrorType.TMD_1003 };
+                yield return new ModelError(alias, $"Le fichier '{alias.File}' est introuvable dans les dépendances du fichier.") { ModelErrorType = ModelErrorType.TMD1003 };
                 continue;
             }
 
@@ -455,7 +455,7 @@ public class ModelStore
                 var referencedClass = referencedFile.Classes.SingleOrDefault(classe => classe.Name == className);
                 if (referencedClass == null)
                 {
-                    yield return new ModelError(alias, $"La classe '{className}' est introuvable dans le fichier '{alias.File}'.") { ModelErrorType = ModelErrorType.TMD_1002 };
+                    yield return new ModelError(alias, $"La classe '{className}' est introuvable dans le fichier '{alias.File}'.") { ModelErrorType = ModelErrorType.TMD1002 };
                     continue;
                 }
 
@@ -478,7 +478,7 @@ public class ModelStore
                 var referencedEndpoint = referencedFile.Endpoints.SingleOrDefault(endpoint => endpoint.Name.Value == endpointName);
                 if (referencedEndpoint == null)
                 {
-                    yield return new ModelError(alias, $"L'endpoint '{endpointName}' est introuvable dans le fichier '{alias.File}'.") { ModelErrorType = ModelErrorType.TMD_1006 };
+                    yield return new ModelError(alias, $"L'endpoint '{endpointName}' est introuvable dans le fichier '{alias.File}'.") { ModelErrorType = ModelErrorType.TMD1006 };
                     continue;
                 }
 
@@ -503,27 +503,24 @@ public class ModelStore
             {
                 if (classe.Properties.Count(p => p.PrimaryKey) > 1)
                 {
-                    yield return new ModelError(classe, $"La classe '{classe.Name}' doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvées).") { ModelErrorType = ModelErrorType.TMD_0002 };
+                    yield return new ModelError(classe, $"La classe '{classe.Name}' doit avoir une seule clé primaire ({string.Join(", ", classe.Properties.Where(p => p.PrimaryKey).Select(p => p.Name))} trouvées).") { ModelErrorType = ModelErrorType.TMD0001 };
                 }
             }
         }
 
-        foreach (var use in modelFile.UselessImports)
-        {
-            yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false, ModelErrorType = ModelErrorType.TMD_0001 };
-        }
-
         foreach (var endpoint in modelFile.Endpoints.Where((e, i) => modelFile.Endpoints.Where((p, j) => p.Name.Value == e.Name.Value && j < i).Any()))
         {
-            yield return new ModelError(modelFile, $"Le nom '{endpoint.Name}' est déjà utilisé.", endpoint.Name.GetLocation()) { IsError = true, ModelErrorType = ModelErrorType.TMD_0004 };
+            yield return new ModelError(modelFile, $"Le nom '{endpoint.Name}' est déjà utilisé.", endpoint.Name.GetLocation()) { IsError = true, ModelErrorType = ModelErrorType.TMD0003 };
         }
 
-        if (!_config.nowarn.Contains(ModelErrorType.TMD_0005))
+        foreach (var use in modelFile.UselessImports)
         {
-            foreach (var classe in modelFile.Classes.Where(c => c.Trigram?.Value != null && this.Classes.Any(u => u.Trigram?.Value == c.Trigram?.Value && u != c)))
-            {
-                yield return new ModelError(modelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans la (les) classe(s) suivantes : {string.Join(", ", this.Classes.Where(u => u.Trigram?.Value == classe.Trigram?.Value && u != classe).Select(c => c.Name))}", classe.Trigram.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD_0005 };
-            }
+            yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false, ModelErrorType = ModelErrorType.TMD9001 };
+        }
+
+        foreach (var classe in modelFile.Classes.Where(c => c.Trigram?.Value != null && this.Classes.Any(u => u.Trigram?.Value == c.Trigram?.Value && u != c)))
+        {
+            yield return new ModelError(modelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans la (les) classe(s) suivantes : {string.Join(", ", Classes.Where(u => u.Trigram?.Value == classe.Trigram?.Value && u != classe).Select(c => c.Name))}", classe.Trigram.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD9002 };
         }
     }
 }

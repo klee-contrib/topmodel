@@ -39,10 +39,10 @@ class CodeActionHandler : CodeActionHandlerBase
                 var modelErrorType = GetTypeFromCode(diagnostic.Code!);
                 switch (modelErrorType)
                 {
-                    case ModelErrorType.TMD_1005:
+                    case ModelErrorType.TMD1005:
                         codeActions.AddRange(GetCodeActionCreateDomain(request, diagnostic, modelFile));
                         break;
-                    case ModelErrorType.TMD_1002:
+                    case ModelErrorType.TMD1002:
                         codeActions.AddRange(GetCodeActionMissingImport(request, diagnostic, modelFile));
                         codeActions.AddRange(GetCodeActionAddClass(request, diagnostic, modelFile));
                         break;

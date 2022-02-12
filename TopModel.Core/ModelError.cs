@@ -18,7 +18,7 @@ public class ModelError
 
     public bool IsError { get; init; } = true;
 
-    public ModelErrorType ModelErrorType { get; init; } = ModelErrorType.TMD_0000;
+    public ModelErrorType ModelErrorType { get; init; } = ModelErrorType.TMD0000;
 
     public ModelFile File => _objet.GetFile();
 
@@ -49,7 +49,9 @@ public class ModelError
         sb.Append(File.Path);
         sb.Append(Location?.Position ?? string.Empty);
 
-        sb.Append(" - ");
+        sb.Append(" - {");
+        sb.Append(ModelErrorType);
+        sb.Append("} ");
         sb.Append(Message);
         sb.Append(" (");
         sb.Append(File);

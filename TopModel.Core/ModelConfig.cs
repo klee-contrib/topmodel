@@ -6,7 +6,8 @@ public class ModelConfig
     public string App { get; set; }
 
     public string ModelRoot { get; set; }
-    public IList<ModelErrorType> nowarn { get; set; } = new List<ModelErrorType>();
+
+    public IList<ModelErrorType> NoWarn { get; set; } = new List<ModelErrorType>();
 
     public bool AllowCompositePrimaryKey { get; set; }
 
