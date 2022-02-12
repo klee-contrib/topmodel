@@ -475,7 +475,7 @@ public class ModelStore
 
             foreach (var endpointName in alias.Endpoints)
             {
-                var referencedEndpoint = referencedFile.Endpoints.SingleOrDefault(endpoint => endpoint.Name.Value == endpointName);
+                var referencedEndpoint = referencedFile.Endpoints.SingleOrDefault(endpoint => endpoint.Name == endpointName);
                 if (referencedEndpoint == null)
                 {
                     yield return new ModelError(alias, $"L'endpoint '{endpointName}' est introuvable dans le fichier '{alias.File}'.") { ModelErrorType = ModelErrorType.TMD1006 };
@@ -508,7 +508,7 @@ public class ModelStore
             }
         }
 
-        foreach (var endpoint in modelFile.Endpoints.Where((e, i) => modelFile.Endpoints.Where((p, j) => p.Name.Value == e.Name.Value && j < i).Any()))
+        foreach (var endpoint in modelFile.Endpoints.Where((e, i) => modelFile.Endpoints.Where((p, j) => p.Name == e.Name && j < i).Any()))
         {
             yield return new ModelError(modelFile, $"Le nom '{endpoint.Name}' est déjà utilisé.", endpoint.Name.GetLocation()) { IsError = true, ModelErrorType = ModelErrorType.TMD0003 };
         }
@@ -518,9 +518,9 @@ public class ModelStore
             yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false, ModelErrorType = ModelErrorType.TMD9001 };
         }
 
-        foreach (var classe in modelFile.Classes.Where(c => c.Trigram?.Value != null && this.Classes.Any(u => u.Trigram?.Value == c.Trigram?.Value && u != c)))
+        foreach (var classe in modelFile.Classes.Where(c => c.Trigram != null && Classes.Any(u => u.Trigram == c.Trigram && u != c)))
         {
-            yield return new ModelError(modelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans la (les) classe(s) suivantes : {string.Join(", ", Classes.Where(u => u.Trigram?.Value == classe.Trigram?.Value && u != classe).Select(c => c.Name))}", classe.Trigram.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD9002 };
+            yield return new ModelError(modelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans la (les) classe(s) suivantes : {string.Join(", ", Classes.Where(u => u.Trigram == classe.Trigram && u != classe).Select(c => c.Name))}", classe.Trigram.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD9002 };
         }
     }
 }

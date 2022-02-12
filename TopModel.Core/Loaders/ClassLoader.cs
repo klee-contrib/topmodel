@@ -27,11 +27,7 @@ public class ClassLoader
             switch (prop)
             {
                 case "trigram":
-                    classe.Trigram = new LocatedString
-                    {
-                        Value = value.Value,
-                        Location = new Reference(value)
-                    };
+                    classe.Trigram = new LocatedString(value);
                     break;
                 case "name":
                     classe.Name = value.Value;

@@ -1,9 +1,8 @@
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using TopModel.Core;
-
 using OmniSharp.Extensions.LanguageServer.Protocol.Workspace;
+using TopModel.Core;
 
 class WorkspaceSymbolHandler : WorkspaceSymbolsHandlerBase
 {
@@ -37,10 +36,10 @@ class WorkspaceSymbolHandler : WorkspaceSymbolsHandlerBase
             {
                 Deprecated = false,
                 Kind = SymbolKind.Method,
-                Name = e.Name.Value!,
+                Name = e.Name,
                 Location = new Location
                 {
-                    Range = e.Name!.GetLocation()!.ToRange()!,
+                    Range = e.Name.GetLocation()!.ToRange()!,
                     Uri = _facade.GetFilePath(e.ModelFile)
                 }
             };

@@ -1,5 +1,4 @@
-﻿using TopModel.Core.FileModel;
-using YamlDotNet.Core;
+﻿using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
@@ -20,11 +19,7 @@ internal static class EndpointLoader
             switch (prop)
             {
                 case "name":
-                    endpoint.Name = new LocatedString
-                    {
-                        Value = value!.Value,
-                        Location = new Reference(value)
-                    };
+                    endpoint.Name = new LocatedString(value);
                     break;
                 case "method":
                     endpoint.Method = value!.Value;
