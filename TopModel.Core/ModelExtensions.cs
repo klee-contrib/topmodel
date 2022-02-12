@@ -31,6 +31,7 @@ public static class ModelExtensions
             AliasProperty p => p.Location,
             Alias a => a.Location,
             Domain d => d.Location,
+            LocatedString l => l.Location,
             _ => null
         };
     }

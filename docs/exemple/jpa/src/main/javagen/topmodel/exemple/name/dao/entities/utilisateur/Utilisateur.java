@@ -77,7 +77,7 @@ public class Utilisateur implements Serializable {
     @Id
     @SequenceGenerator(name = "SEQ_UTILISATEUR", sequenceName = "SEQ_UTILISATEUR",  initialValue = 1000, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_UTILISATEUR")
-    @Column(name = "ID", nullable = false)
+    @Column(name = "UTI_ID", nullable = false)
     public long getId() {
          return this.id;
     }
@@ -88,7 +88,7 @@ public class Utilisateur implements Serializable {
      * @return value of profilList.
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "UTILISATEUR_PROFIL", joinColumns = @JoinColumn(name = "ID"), inverseJoinColumns = @JoinColumn(name = "ID"))
+    @JoinTable(name = "UTILISATEUR_PROFIL", joinColumns = @JoinColumn(name = "UTI_ID"), inverseJoinColumns = @JoinColumn(name = "PRO_ID"))
     public Set<Profil> getProfilList() {
         if(profilList == null) this.profilList = Collections.emptySet();
         return this.profilList;
@@ -99,7 +99,7 @@ public class Utilisateur implements Serializable {
      *
      * @return value of dateCreation.
      */
-    @Column(name = "DATE_CREATION", nullable = true)
+    @Column(name = "UTI_DATE_CREATION", nullable = true)
     @CreatedDate
     public DateTime getDateCreation() {
          return this.dateCreation;
@@ -110,7 +110,7 @@ public class Utilisateur implements Serializable {
      *
      * @return value of dateModification.
      */
-    @Column(name = "DATE_MODIFICATION", nullable = true)
+    @Column(name = "UTI_DATE_MODIFICATION", nullable = true)
     @LastModifiedDate
     public DateTime getDateModification() {
          return this.dateModification;
@@ -121,7 +121,7 @@ public class Utilisateur implements Serializable {
      *
      * @return value of email.
      */
-    @Column(name = "EMAIL", nullable = true)
+    @Column(name = "UTI_EMAIL", nullable = true)
     @Email
     public String getEmail() {
          return this.email;

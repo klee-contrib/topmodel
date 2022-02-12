@@ -7,10 +7,10 @@ public class Class
 {
     private string? _sqlName;
 
-    public string? Trigram { get; set; }
+    public LocatedString? Trigram { get; set; }
 
 #nullable disable
-    public string Name { get; set; }
+    public LocatedString Name { get; set; }
 
     public string Comment { get; set; }
 

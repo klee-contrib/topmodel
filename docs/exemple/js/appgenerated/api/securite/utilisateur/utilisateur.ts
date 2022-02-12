@@ -11,12 +11,12 @@ import {UtilisateurDto} from "../../../model/utilisateur/utilisateur-dto";
 
 /**
  * Charge le détail d'un utilisateur
- * @param utilisateurId Id technique
+ * @param utiId Id technique
  * @param options Options pour 'fetch'.
  * @returns Le détail de l'utilisateur
  */
-export function getUtilisateur(utilisateurId: number, options: RequestInit = {}): Promise<UtilisateurDto> {
-    return fetch("GET", `./utilisateur/${utilisateurId}`, {}, options);
+export function getUtilisateur(utiId?: number, options: RequestInit = {}): Promise<UtilisateurDto> {
+    return fetch("GET", `./utilisateur/${utilisateurId}`, {query: {utiId}}, options);
 }
 
 /**
@@ -51,15 +51,15 @@ export function saveAllUtilisateur(utilisateur: UtilisateurDto[], options: Reque
 
 /**
  * Recherche des utilisateurs
- * @param utilisateurId Id technique
+ * @param utiId Id technique
  * @param email Email de l'utilisateur
  * @param typeUtilisateurCode Type d'utilisateur en Many to one
  * @param typeUtilisateurCodeOrigin Type d'utilisateur en one to one
- * @param profilProfilId Id technique
+ * @param proProfilId Id technique
  * @param profilTypeProfilCode Type de profil
  * @param options Options pour 'fetch'.
  * @returns Utilisateurs matchant les critères
  */
-export function search(utilisateurId?: number, email?: string, typeUtilisateurCode?: TypeUtilisateurCode, typeUtilisateurCodeOrigin?: TypeUtilisateurCode, profilProfilId?: number, profilTypeProfilCode?: TypeProfilCode, options: RequestInit = {}): Promise<Page<UtilisateurDto>> {
-    return fetch("POST", `./utilisateur/search`, {query: {utilisateurId, email, typeUtilisateurCode, typeUtilisateurCodeOrigin, profilProfilId, profilTypeProfilCode}}, options);
+export function search(utiId?: number, email?: string, typeUtilisateurCode?: TypeUtilisateurCode, typeUtilisateurCodeOrigin?: TypeUtilisateurCode, proProfilId?: number, profilTypeProfilCode?: TypeProfilCode, options: RequestInit = {}): Promise<Page<UtilisateurDto>> {
+    return fetch("POST", `./utilisateur/search`, {query: {utiId, email, typeUtilisateurCode, typeUtilisateurCodeOrigin, proProfilId, profilTypeProfilCode}}, options);
 }

@@ -63,4 +63,4 @@ export const UtilisateurDtoEntity = {
     utilisateurParent: {
         type: "object",
     }
-}
+} as const

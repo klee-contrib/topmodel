@@ -19,7 +19,7 @@ internal static class EndpointLoader
             switch (prop)
             {
                 case "name":
-                    endpoint.Name = value!.Value;
+                    endpoint.Name = new LocatedString(value);
                     break;
                 case "method":
                     endpoint.Method = value!.Value;

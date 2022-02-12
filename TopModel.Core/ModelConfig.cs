@@ -7,6 +7,8 @@ public class ModelConfig
 
     public string ModelRoot { get; set; }
 
+    public IList<ModelErrorType> NoWarn { get; set; } = new List<ModelErrorType>();
+
     public bool AllowCompositePrimaryKey { get; set; }
 
     public string GetFileName(string filePath)

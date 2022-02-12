@@ -27,10 +27,10 @@ public class ClassLoader
             switch (prop)
             {
                 case "trigram":
-                    classe.Trigram = value.Value;
+                    classe.Trigram = new LocatedString(value);
                     break;
                 case "name":
-                    classe.Name = value.Value;
+                    classe.Name = new LocatedString(value);
                     break;
                 case "sqlName":
                     classe.SqlName = value.Value;
