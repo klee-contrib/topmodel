@@ -33,7 +33,11 @@ public class AliasProperty : IFieldProperty
     public Endpoint Endpoint { get; set; }
 
 #nullable enable
-    public string Name => (Prefix ?? string.Empty) + _property?.Name + (Suffix ?? string.Empty);
+    public LocatedString Name => new LocatedString(_property.Name)
+    {
+        Location = _property.Name.Location,
+        Value = (Prefix ?? string.Empty) + _property?.Name + (Suffix ?? string.Empty)
+    };
 
     public string? Label
     {
@@ -75,7 +79,7 @@ public class AliasProperty : IFieldProperty
 
     internal AliasReference? Reference { get; set; }
 
-    internal ClassReference? ClassReference { get; set; }
+    public ClassReference? ClassReference { get; set; }
 
     internal Reference? PropertyReference { get; set; }
 

@@ -1,8 +1,8 @@
 ---
 module: Utilisateur
 uses:
-  - Securite/Utilisateur/01_References
   - Securite/Profil/02_Entities
+  - Securite/Utilisateur/01_References
 tags:
   - entity
 ---
@@ -25,7 +25,7 @@ class:
       comment: Date de création de l'utilisateur
       domain: DO_DATE_CREATION
     - name: dateModification
-      comment: Date de modification de l'utilisateur 
+      comment: Date de modification de l'utilisateur
       domain: DO_DATE_MODIFICATION
     - name: email
       comment: Email de l'utilisateur

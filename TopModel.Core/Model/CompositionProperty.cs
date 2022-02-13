@@ -7,7 +7,7 @@ public class CompositionProperty : IProperty
 {
     public Class Composition { get; set; }
 
-    public string Name { get; set; }
+    public LocatedString Name { get; set; }
 
     public string Kind { get; set; }
 
@@ -27,7 +27,7 @@ public class CompositionProperty : IProperty
 
     internal Reference Location { get; set; }
 
-    internal ClassReference Reference { get; set; }
+    public ClassReference Reference { get; set; }
 
 #nullable enable
     internal DomainReference? DomainKindReference { get; set; }

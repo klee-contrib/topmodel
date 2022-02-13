@@ -5,7 +5,7 @@ namespace TopModel.Core;
 public class RegularProperty : IFieldProperty
 {
 #nullable disable
-    public string Name { get; set; }
+    public LocatedString Name { get; set; }
 #nullable enable
 
     public string? Label { get; set; }
@@ -29,5 +29,5 @@ public class RegularProperty : IFieldProperty
 #nullable disable
     internal Reference Location { get; set; }
 
-    internal DomainReference DomainReference { get; set; }
+    public DomainReference DomainReference { get; set; }
 }
