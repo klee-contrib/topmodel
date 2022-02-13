@@ -12,11 +12,13 @@ public class LocatedString : IComparable
         Value = value.Value;
         Location = new Reference(value);
     }
+
     public LocatedString(LocatedString l)
     {
         Value = l.Value;
         Location = l.Location;
     }
+
     public string Value { get; init; }
 
     internal Reference Location { get; init; }
@@ -95,6 +97,7 @@ public class LocatedString : IComparable
     {
         return Value.ToLower();
     }
+
     public bool EndsWith(string end, StringComparison c)
     {
         return Value.EndsWith(end, c);
