@@ -15,8 +15,8 @@ Fonctionnalités principales :
 - Import automatique
 - Détection des imports inutiles
 - Recherche des symboles (classes, domaines et endpoints) avec `Ctrl + T`
-- Recherche des références sur les classes
-- Codelens sur les références d'une classe
+- Recherche des références sur les domaines et les classes
+- Codelens sur les références d'un domaine ou d'une classe
 - Fromatage :
   - Tri des imports
 - Aides à la saisie :
@@ -24,6 +24,7 @@ Fonctionnalités principales :
   - Ajout de l'import manquant
   - Ajout de la classe manquante au fichier courant
   - Ajout du domain manquant au fichier des domaines
+  - Renommage des classes (`F2`)
 
 ## Fonctionnalités en cours de développement
 
