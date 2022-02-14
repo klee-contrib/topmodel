@@ -25,7 +25,7 @@ internal static class PropertyLoader
                     switch (prop)
                     {
                         case "name":
-                            rp.Name = new LocatedString(value);
+                            rp.Name = value.Value;
                             break;
                         case "label":
                             rp.Label = value.Value;
@@ -126,7 +126,7 @@ internal static class PropertyLoader
                             cp.Reference = new ClassReference(value);
                             break;
                         case "name":
-                            cp.Name = new LocatedString(value);
+                            cp.Name = value.Value;
                             break;
                         case "kind":
                             cp.Kind = value.Value;
