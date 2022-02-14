@@ -29,9 +29,9 @@ public class ModelFile
         .ToDictionary(t => t.Item1, t => t.Item2);
 
     public IList<Reference> UselessImports => Uses
-                .Where(use => !Aliases.Select(alias => alias.File)
-                .Concat(References.Values.Select(r => r.GetFile().Name))
-                .Contains(use.ReferenceName)).ToList();
+        .Where(use => !Aliases.Select(alias => alias.File)
+        .Concat(References.Values.Select(r => r.GetFile().Name))
+        .Contains(use.ReferenceName)).ToList();
 
     internal IList<IProperty> Properties => Classes.Where(c => !ResolvedAliases.Contains(c)).SelectMany(c => c.Properties)
         .Concat(Endpoints.Where(e => !ResolvedAliases.Contains(e)).SelectMany(e => e.Params))

@@ -1,10 +1,10 @@
-﻿#nullable disable
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 
 namespace TopModel.Core;
 
 public class CompositionProperty : IProperty
 {
+#nullable disable
     public Class Composition { get; set; }
 
     public string Name { get; set; }
@@ -27,8 +27,9 @@ public class CompositionProperty : IProperty
 
     public ClassReference Reference { get; set; }
 
-    internal Reference Location { get; set; }
-
 #nullable enable
     public DomainReference? DomainKindReference { get; set; }
+#nullable disable
+
+    internal Reference Location { get; set; }
 }

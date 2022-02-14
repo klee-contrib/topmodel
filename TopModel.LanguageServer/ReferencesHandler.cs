@@ -2,7 +2,6 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using OmniSharp.Extensions.LanguageServer.Protocol.Workspace;
 using TopModel.Core;
 
 class ReferencesHandler : ReferencesHandlerBase
@@ -15,104 +14,38 @@ class ReferencesHandler : ReferencesHandlerBase
         _modelStore = modelStore;
         _facade = facade;
     }
+
     public override Task<LocationContainer> Handle(ReferenceParams request, CancellationToken cancellationToken)
     {
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            var clazz = file.Classes.Where(c =>
-            c.Name.GetLocation()!.Start.Line - 1 == request.Position.Line
-            || c.GetLocation()!.Start.Line - 1 == request.Position.Line
-            ).SingleOrDefault();
+            var clazz = file.Classes.SingleOrDefault(c => c.Name.GetLocation()!.Start.Line - 1 == request.Position.Line || c.GetLocation()!.Start.Line - 1 == request.Position.Line);
             if (clazz != null)
             {
-                return Task.FromResult<LocationContainer>(new LocationContainer(this.findClassReferences(clazz)));
+                return Task.FromResult(new LocationContainer(
+                    _modelStore.GetClassReferences(clazz)
+                        .Select(r => new Location
+                        {
+                            Uri = new Uri(_facade.GetFilePath(r.File)),
+                            Range = r.Reference.ToRange()!
+                        })));
             }
-            var domain = file.Domains.Where(d =>
-            d.GetLocation()!.Start.Line - 1 == request.Position.Line
-            ).SingleOrDefault();
+
+            var domain = file.Domains.SingleOrDefault(d => d.GetLocation()!.Start.Line - 1 == request.Position.Line);
             if (domain != null)
             {
-                return Task.FromResult<LocationContainer>(new LocationContainer(this.findDomainReferences(domain)));
+                return Task.FromResult(new LocationContainer(
+                    _modelStore.GetDomainReferences(domain)
+                        .Select(r => new Location
+                        {
+                            Uri = new Uri(_facade.GetFilePath(r.File)),
+                            Range = r.Reference.ToRange()!
+                        })));
             }
         }
+
         return Task.FromResult<LocationContainer>(new());
-    }
-
-    public IEnumerable<Location> findDomainReferences(Domain domain)
-    {
-        return _modelStore.Classes
-        .SelectMany(c => c.Properties)
-        .Concat(_modelStore.Files.SelectMany(f => f.Endpoints).SelectMany(e => e.Params))
-        .Concat(_modelStore.Files.SelectMany(f => f.Endpoints).Where(e => e.Returns != null).Select(e => e.Returns!))
-        .Where(p =>
-        p is RegularProperty rp && rp.Domain == domain
-        || p is CompositionProperty cp && cp.DomainKind == domain
-        )
-        .Select(p =>
-        {
-            OmniSharp.Extensions.LanguageServer.Protocol.Models.Range range;
-            if (p is RegularProperty rp)
-            {
-                range = rp.DomainReference.ToRange()!;
-            }
-
-            else
-            {
-                range = ((CompositionProperty)p).DomainKindReference.ToRange()!;
-            }
-
-            return new Location()
-            {
-                Range = range!,
-                Uri = new Uri(_facade.GetFilePath(p.GetFile()))
-            };
-        })
-        .DistinctBy(l => l.Uri.ToString() + l.Range.Start);
-    }
-
-    public IEnumerable<Location> findClassReferences(Class clazz)
-    {
-        return _modelStore.Classes
-        .SelectMany(c => c.Properties)
-        .Concat(_modelStore.Files.SelectMany(f => f.Endpoints).SelectMany(e => e.Params))
-        .Concat(_modelStore.Files.SelectMany(f => f.Endpoints).Where(e => e.Returns != null).Select(e => e.Returns!))
-        .Where(p =>
-        p is AliasProperty al && al.Property.Class == clazz
-        || p is AssociationProperty asp && asp.Association == clazz
-        || p is CompositionProperty cp && cp.Composition == clazz)
-        .Select(p =>
-        {
-            OmniSharp.Extensions.LanguageServer.Protocol.Models.Range range;
-            if (p is AssociationProperty ap)
-            {
-                range = ap.Reference.ToRange()!;
-            }
-
-            else if (p is CompositionProperty cp)
-            {
-                range = cp.Reference.ToRange()!;
-            }
-            else
-            {
-                range = ((AliasProperty)p).ClassReference.ToRange()!;
-            }
-
-            return new Location()
-            {
-                Range = range!,
-                Uri = new Uri(_facade.GetFilePath(p.GetFile()))
-            };
-        })
-        .Concat(_modelStore.Classes.Where(c => c.Extends == clazz).Select(c =>
-        {
-            return new Location()
-            {
-                Range = c.ExtendsReference!.ToRange()!,
-                Uri = new Uri(_facade.GetFilePath(c.GetFile()))
-            };
-        }))
-        .DistinctBy(l => l.Uri.ToString() + l.Range.Start);
     }
 
     protected override ReferenceRegistrationOptions CreateRegistrationOptions(ReferenceCapability capability, ClientCapabilities clientCapabilities)

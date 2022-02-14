@@ -36,7 +36,7 @@ class CodeActionHandler : CodeActionHandlerBase
             }
             foreach (var diagnostic in request.Context.Diagnostics.Where(d => !string.IsNullOrEmpty(d.Code)))
             {
-                var modelErrorType = ModelErrorType.Parse<ModelErrorType>(diagnostic.Code!);
+                var modelErrorType = Enum.Parse<ModelErrorType>(diagnostic.Code!);
                 switch (modelErrorType)
                 {
                     case ModelErrorType.TMD1005:
@@ -70,18 +70,20 @@ class CodeActionHandler : CodeActionHandlerBase
                 Changes =
                     new Dictionary<DocumentUri, IEnumerable<TextEdit>>
                     {
-                        [request.TextDocument.Uri] = new List<TextEdit>(){
-                            new TextEdit()
+                        [request.TextDocument.Uri] = new List<TextEdit>
                         {
-                            NewText = string.Join("\n  - ",
-                            modelFile.Uses
-                                .Except(uselessImports)
-                                .DistinctBy(u => u.ReferenceName)
-                                .OrderBy(u => u.ReferenceName)
-                                .Select(u => u.ReferenceName)),
-                            Range = new Range(start, end)
+                            new TextEdit
+                            {
+                                NewText = string.Join(
+                                    "\n  - ",
+                                    modelFile.Uses
+                                        .Except(uselessImports)
+                                        .DistinctBy(u => u.ReferenceName)
+                                        .OrderBy(u => u.ReferenceName)
+                                        .Select(u => u.ReferenceName)),
+                                Range = new Range(start, end)
+                            }
                         }
-                    }
                     }
             }
         };
@@ -92,11 +94,11 @@ class CodeActionHandler : CodeActionHandlerBase
         {
             DocumentSelector = DocumentSelector.ForPattern("**/*.tmd"),
             ResolveProvider = true,
-            CodeActionKinds = new List<CodeActionKind>(){
+            CodeActionKinds = new List<CodeActionKind>
+            {
                 CodeActionKind.SourceOrganizeImports,
                 CodeActionKind.QuickFix
-            },
-
+            }
         };
     }
 
@@ -105,19 +107,20 @@ class CodeActionHandler : CodeActionHandlerBase
         var fs = request.TextDocument.Uri.GetFileSystemPath();
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var line = text.ElementAt(diagnostic.Range.Start.Line);
-        var domainName = line.Substring(diagnostic.Range.Start.Character, diagnostic.Range.End.Character - diagnostic.Range.Start.Character);
+        var domainName = line[diagnostic.Range.Start.Character..diagnostic.Range.End.Character];
 
         return _modelStore.Files.Where(f => f.Domains.Any()).Select(f =>
         {
-            var lastLine = File.ReadAllLines(_facade.GetFilePath(f)).Count();
-            return (CommandOrCodeAction)new CodeAction()
+            var lastLine = File.ReadAllLines(_facade.GetFilePath(f)).Length;
+            return (CommandOrCodeAction)new CodeAction
             {
                 Title = $"TopModel : Ajouter le domain au fichier {f.Path}",
                 Kind = CodeActionKind.QuickFix,
                 IsPreferred = true,
-                Diagnostics = new List<Diagnostic>{
-                diagnostic
-            },
+                Diagnostics = new List<Diagnostic>
+                {
+                    diagnostic
+                },
                 Edit = new WorkspaceEdit
                 {
                     Changes =
@@ -144,27 +147,27 @@ domain:
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
     {
-
         var fs = request.TextDocument.Uri.GetFileSystemPath();
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var line = text.ElementAt(diagnostic.Range.Start.Line);
-        var className = line.Substring(diagnostic.Range.Start.Character, diagnostic.Range.End.Character - diagnostic.Range.Start.Character);
+        var className = line[diagnostic.Range.Start.Character..diagnostic.Range.End.Character];
         var availableClasses = _modelStore.Classes;
         var useIndex = modelFile!.Uses.Any()
-                        ? modelFile.Uses.Last().ToRange()!.Start.Line + 1
-                        : text.First().StartsWith("-")
-                            ? 1
-                            : 0;
+            ? modelFile.Uses.Last().ToRange()!.Start.Line + 1
+            : text.First().StartsWith("-")
+                ? 1
+                : 0;
         return _modelStore.Classes.Where(c => c.Name == className).Select(classToImport =>
         {
-            return (CommandOrCodeAction)new CodeAction()
+            return (CommandOrCodeAction)new CodeAction
             {
                 Title = $"TopModel : Ajouter l'import {classToImport.ModelFile.Name}",
                 Kind = CodeActionKind.QuickFix,
                 IsPreferred = true,
-                Diagnostics = new List<Diagnostic>{
-                diagnostic
-            },
+                Diagnostics = new List<Diagnostic>
+                {
+                    diagnostic
+                },
                 Edit = new WorkspaceEdit
                 {
                     Changes =
@@ -175,7 +178,7 @@ domain:
                                 new TextEdit()
                                 {
                                     NewText = modelFile.Uses.Any() ? $"  - {classToImport.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {classToImport.ModelFile.Name}{Environment.NewLine}",
-                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
+                                    Range = new Range(useIndex, 0, useIndex, 0)
                                 }
                             }
                         }
@@ -186,18 +189,19 @@ domain:
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionAddClass(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
     {
-        var fs = request.TextDocument.Uri.GetFileSystemPath();
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var line = text.ElementAt(diagnostic.Range.Start.Line);
-        var className = line.Substring(diagnostic.Range.Start.Character, diagnostic.Range.End.Character - diagnostic.Range.Start.Character);
+        var className = line[diagnostic.Range.Start.Character..diagnostic.Range.End.Character];
         return new List<CommandOrCodeAction>{
-            (CommandOrCodeAction)new CodeAction() {
+            new CodeAction
+            {
                 Title = $"TopModel : Créer la classe {className} dans ce fichier",
                 Kind = CodeActionKind.QuickFix,
                 IsPreferred = true,
-                Diagnostics = new List<Diagnostic>{
-                diagnostic
-            },
+                Diagnostics = new List<Diagnostic>
+                {
+                    diagnostic
+                },
                 Edit = new WorkspaceEdit
                 {
                     Changes =
@@ -215,7 +219,7 @@ class:
   properties:
     - 
 ",
-                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(text.Count(), 0, text.Count(), 0)
+                                    Range = new Range(text.Length, 0, text.Length, 0)
                                 }
                             }
                         }

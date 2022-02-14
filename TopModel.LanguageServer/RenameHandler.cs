@@ -9,13 +9,10 @@ class RenameHandler : RenameHandlerBase
     private readonly ModelStore _modelStore;
     private readonly ILanguageServerFacade _facade;
 
-    private readonly ReferencesHandler _referencesHandler;
-
-    public RenameHandler(ModelStore modelStore, ILanguageServerFacade facade, ReferencesHandler referencesHandler)
+    public RenameHandler(ModelStore modelStore, ILanguageServerFacade facade)
     {
         _modelStore = modelStore;
         _facade = facade;
-        _referencesHandler = referencesHandler;
     }
 
     public override Task<WorkspaceEdit?> Handle(RenameParams request, CancellationToken cancellationToken)
@@ -23,30 +20,35 @@ class RenameHandler : RenameHandlerBase
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            var clazz = file.Classes.Where(c =>
-            c.Name.GetLocation()!.Start.Line - 1 == request.Position.Line
-            || c.GetLocation()!.Start.Line - 1 == request.Position.Line
-            ).SingleOrDefault();
+            var clazz = file.Classes.SingleOrDefault(c =>
+                c.Name.GetLocation()!.Start.Line - 1 == request.Position.Line
+                || c.GetLocation()!.Start.Line - 1 == request.Position.Line);
+
             if (clazz != null)
             {
                 return Task.FromResult<WorkspaceEdit?>(new WorkspaceEdit()
                 {
-                    Changes = _referencesHandler.findClassReferences(clazz)
-                    .Concat(new List<Location>(){
-                        new Location(){
-                            Uri= new Uri(_facade.GetFilePath(file)),
-                            Range = clazz.Name.GetLocation()!.ToRange()!
-                        }
-                    })
-                    .Select(c => new
-                    {
-                        Uri = c.Uri,
-                        TextEdit = new TextEdit()
+                    Changes = _modelStore.GetClassReferences(clazz)
+                        .Select(r => new Location { Uri = new Uri(_facade.GetFilePath(r.File)), Range = r.Reference.ToRange()! })
+                        .Concat(new List<Location>
                         {
-                            NewText = request.NewName,
-                            Range = c.Range
-                        }
-                    }).GroupBy(t => t.Uri, t => t).ToDictionary(x => x.Key, x => x.Select(y => y.TextEdit))
+                            new()
+                            {
+                                Uri = new Uri(_facade.GetFilePath(file)),
+                                Range = clazz.Name.GetLocation()!.ToRange()!
+                            }
+                        })
+                        .Select(c => new
+                        {
+                            c.Uri,
+                            TextEdit = new TextEdit
+                            {
+                                NewText = request.NewName,
+                                Range = c.Range
+                            }
+                        })
+                        .GroupBy(t => t.Uri, t => t)
+                        .ToDictionary(x => x.Key, x => x.Select(y => y.TextEdit))
                 });
             }
         }
@@ -55,7 +57,7 @@ class RenameHandler : RenameHandlerBase
 
     protected override RenameRegistrationOptions CreateRegistrationOptions(RenameCapability capability, ClientCapabilities clientCapabilities)
     {
-        return new RenameRegistrationOptions()
+        return new RenameRegistrationOptions
         {
             DocumentSelector = DocumentSelector.ForLanguage("yaml")
         };

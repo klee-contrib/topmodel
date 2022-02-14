@@ -1,8 +1,8 @@
+using Newtonsoft.Json.Linq;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
-using OmniSharp.Extensions.LanguageServer.Protocol.Workspace;
 using TopModel.Core;
 
 class CodeLensHandler : CodeLensHandlerBase
@@ -10,13 +10,10 @@ class CodeLensHandler : CodeLensHandlerBase
     private readonly ModelStore _modelStore;
     private readonly ILanguageServerFacade _facade;
 
-    private readonly ReferencesHandler _referencesHandler;
-
-    public CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade, ReferencesHandler referencesHandler)
+    public CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade)
     {
         _modelStore = modelStore;
         _facade = facade;
-        _referencesHandler = referencesHandler;
     }
 
     public override Task<CodeLens> Handle(CodeLens request, CancellationToken cancellationToken)
@@ -29,29 +26,31 @@ class CodeLensHandler : CodeLensHandlerBase
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            return Task.FromResult<CodeLensContainer>(new CodeLensContainer(file.Classes.Select(clazz =>
-            new CodeLens()
+            return Task.FromResult(new CodeLensContainer(file.Classes.Select(clazz =>
+            new CodeLens
             {
                 Range = clazz.GetLocation().ToRange()!,
                 Command = new Command()
                 {
-                    Title = $"{_referencesHandler.findClassReferences(clazz).Count()} references",
+                    Title = $"{_modelStore.GetClassReferences(clazz).Count()} references",
                     Name = "topmodel.findRef",
-                    Arguments = new Newtonsoft.Json.Linq.JArray(){
+                    Arguments = new JArray
+                    {
                         clazz.GetLocation()!.Start.Line - 1
                     }
 
                 }
-            }).Concat(file.Domains.Select(domain => new CodeLens()
+            }).Concat(file.Domains.Select(domain => new CodeLens
             {
                 Range = domain.GetLocation().ToRange()!,
                 Command = new Command()
                 {
-                    Title = $"{_referencesHandler.findDomainReferences(domain).Count()} references",
+                    Title = $"{_modelStore.GetDomainReferences(domain).Count()} references",
                     Name = "topmodel.findRef",
-                    Arguments = new Newtonsoft.Json.Linq.JArray(){
-                            domain.GetLocation()!.Start.Line - 1
-                        }
+                    Arguments = new JArray
+                    {
+                        domain.GetLocation()!.Start.Line - 1
+                    }
 
                 }
             }))));
@@ -61,7 +60,7 @@ class CodeLensHandler : CodeLensHandlerBase
 
     protected override CodeLensRegistrationOptions CreateRegistrationOptions(CodeLensCapability capability, ClientCapabilities clientCapabilities)
     {
-        return new CodeLensRegistrationOptions()
+        return new CodeLensRegistrationOptions
         {
             DocumentSelector = DocumentSelector.ForLanguage("yaml")
         };

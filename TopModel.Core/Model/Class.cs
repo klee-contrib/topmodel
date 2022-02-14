@@ -51,10 +51,11 @@ public class Class
 
     public ClassReference? ExtendsReference { get; set; }
 
+#nullable disable
+    internal Reference Location { get; set; }
+
     public override string ToString()
     {
         return Name;
     }
-#nullable disable
-    internal Reference Location { get; set; }
 }

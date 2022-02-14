@@ -35,4 +35,48 @@ public static class ModelExtensions
             _ => null
         };
     }
+
+    public static IEnumerable<(ClassReference Reference, ModelFile File)> GetClassReferences(this ModelStore modelStore, Class classe)
+    {
+        return modelStore.Classes.SelectMany(c => c.Properties)
+            .Concat(modelStore.Endpoints.SelectMany(e => e.Params.Concat(e.Returns != null ? new[] { e.Returns } : Array.Empty<IProperty>())))
+            .Where(p =>
+                p is AliasProperty al && al.Property.Class == classe
+                || p is AssociationProperty asp && asp.Association == classe
+                || p is CompositionProperty cp && cp.Composition == classe)
+            .Select(p =>
+            {
+                return (Reference: p switch
+                {
+                    AssociationProperty ap => ap.Reference,
+                    CompositionProperty cp => cp.Reference,
+                    AliasProperty alp => alp.ClassReference!,
+                    _ => null! // Impossible
+                }, File: p.GetFile());
+            })
+            .Concat(modelStore.Classes.Where(c => c.Extends == classe).Select(c =>
+            {
+                return (Reference: c.ExtendsReference!, File: c.GetFile());
+            }))
+            .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
+    }
+
+    public static IEnumerable<(DomainReference Reference, ModelFile File)> GetDomainReferences(this ModelStore modelStore, Domain domain)
+    {
+        return modelStore.Classes.SelectMany(c => c.Properties)
+            .Concat(modelStore.Endpoints.SelectMany(e => e.Params.Concat(e.Returns != null ? new[] { e.Returns } : Array.Empty<IProperty>())))
+            .Where(p =>
+                p is RegularProperty rp && rp.Domain == domain
+                || p is CompositionProperty cp && cp.DomainKind == domain)
+            .Select(p =>
+            {
+                return (Reference: p switch
+                {
+                    RegularProperty rp => rp.DomainReference,
+                    CompositionProperty cp => cp.DomainKindReference!,
+                    _ => null! // Impossible
+                }, File: p.GetFile());
+            })
+            .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
+    }
 }
