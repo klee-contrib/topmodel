@@ -132,6 +132,8 @@ public class ModelStore
                     referenceErrors.AddRange(ResolveReferences(affectedFile));
                 }
 
+                referenceErrors.AddRange(GetGlobalErrors());
+
                 foreach (var modelWatcher in _modelWatchers)
                 {
                     modelWatcher.OnErrors(affectedFiles
@@ -249,6 +251,7 @@ public class ModelStore
             .Select(u => new { ReferenceName = u.Key, Count = u.Count() })
             .Where(r => r.Count > 1)
             .Select(u => u.ReferenceName);
+
         foreach (var use in modelFile.Uses.Where(u => duplicatedUses.Contains(u.ReferenceName)).Skip(1))
         {
             yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' ne doit être spécifié qu'une seule fois", use) { IsError = true, ModelErrorType = ModelErrorType.TMD0002 };
@@ -519,10 +522,13 @@ public class ModelStore
         {
             yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false, ModelErrorType = ModelErrorType.TMD9001 };
         }
+    }
 
-        foreach (var classe in modelFile.Classes.Where(c => c.Trigram != null && Classes.Any(u => u.Trigram == c.Trigram && u != c)))
+    private IEnumerable<ModelError> GetGlobalErrors()
+    {
+        foreach (var classe in Classes.Where(c => c.Trigram != null && Classes.Any(u => u.Trigram == c.Trigram && u != c)))
         {
-            yield return new ModelError(modelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans la (les) classe(s) suivantes : {string.Join(", ", Classes.Where(u => u.Trigram == classe.Trigram && u != classe).Select(c => c.Name))}", classe.Trigram.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD9002 };
+            yield return new ModelError(classe.ModelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans la (les) classe(s) suivantes : {string.Join(", ", Classes.Where(u => u.Trigram == classe.Trigram && u != classe).Select(c => c.Name))}", classe.Trigram.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD9002 };
         }
     }
 }
