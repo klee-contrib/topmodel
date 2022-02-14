@@ -121,7 +121,7 @@ public class ModelFileLoader
 
                             parser.Consume<SequenceEnd>();
                             break;
-                        case "uses":
+                        case "endpoints":
                             parser.Consume<SequenceStart>();
 
                             while (parser.Current is not SequenceEnd)
