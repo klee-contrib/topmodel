@@ -1,8 +1,15 @@
 # TopModel.Generator (`modgen`)
 
+## 1.3.0
+
+Version d'accompagnement de la release 1.3.x de l'extension VSCode. Contient de nombreuses améliorations internes pour aider le suivi des références de domaines et classes. Aucun impact n'est attendu sur la génération.
+
+Un nouveau warning a été ajouté pour détecter les doublons de trigramme. Les warnings sont désormais désactivables unitairement via la propriété `noWarn` du fichier de config (valable pour la génération et l'extension VSCode).
+
 ## 1.2.11
 
 - [`2788644`](https://github.com/klee-contrib/topmodel/commit/27886449dc529aa1a7a4e229efb0892978e65fb9) [C#] Fix génération classe persistée/DbContext avec des alias
+
 ## 1.2.10
 
 - [`b127ba6`](https://github.com/klee-contrib/topmodel/commit/b127ba6b51abd3e08c847a5e062f57120afa3ab6) [JS] Ajout du as const si non mode focus
@@ -28,21 +35,22 @@
 ## 1.2.5
 
 - [`3c83c59`](https://github.com/klee-contrib/topmodel/commit/3c83c59dc36ed159f7c60a6a4d630d178ed5b1c6) JPA - Améliorations persistence :
+
   - OneToOne : ajout du paramètre `optional` dépendant de la propriété `required`
   - OneToOne : ajout de la contrainte d'unicité sur la colonne qui fait l'objet de la oneToOne
   - Listes de références : les colonnes ont `updatables = false`
   - ManyToOne : ajout du paramètre `optional` dépendant de la propriété `required`
   - ManyToMany : Ajout FetchType.LAZY
 
-- [`2596d4f`](https://github.com/klee-contrib/topmodel/commit/2596d4ffbdd09bae0c327ad6efc717fc43dd40a2)  Core : Typage des erreurs [#34](https://github.com/klee-contrib/topmodel/issues/34)
+- [`2596d4f`](https://github.com/klee-contrib/topmodel/commit/2596d4ffbdd09bae0c327ad6efc717fc43dd40a2) Core : Typage des erreurs [#34](https://github.com/klee-contrib/topmodel/issues/34)
 
-- [`7eeff2f`](https://github.com/klee-contrib/topmodel/commit/7eeff2f38e9bc47f0a2f272fb145fdc780b660ed)  Template de type pour les domaines de composition
+- [`7eeff2f`](https://github.com/klee-contrib/topmodel/commit/7eeff2f38e9bc47f0a2f272fb145fdc780b660ed) Template de type pour les domaines de composition
 
 ## 1.2.4
 
 - [`8139acc`](https://github.com/klee-contrib/topmodel/commit/8139acc971fa6214164f841ac37df9933283293d) JS - Mauvais import lorsqu'on référérence un type dans un sous-module [#26](https://github.com/klee-contrib/topmodel/issues/26)
 
-- [`2804a70`](https://github.com/klee-contrib/topmodel/commit/2804a70b308ffaf0c8e853655400428242d0c686)  Core : Doit remonter une erreur si un import est dupliqué [#24](https://github.com/klee-contrib/topmodel/issues/24)
+- [`2804a70`](https://github.com/klee-contrib/topmodel/commit/2804a70b308ffaf0c8e853655400428242d0c686) Core : Doit remonter une erreur si un import est dupliqué [#24](https://github.com/klee-contrib/topmodel/issues/24)
 
 ## 1.2.3
 
