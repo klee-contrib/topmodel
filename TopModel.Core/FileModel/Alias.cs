@@ -4,11 +4,11 @@ namespace TopModel.Core.FileModel;
 
 internal class Alias
 {
-    public string File { get; set; }
+    public Reference File { get; set; }
 
-    public string[] Classes { get; set; } = Array.Empty<string>();
+    public List<ClassReference> Classes { get; set; } = new();
 
-    public string[] Endpoints { get; set; } = Array.Empty<string>();
+    public List<Reference> Endpoints { get; set; } = new();
 
     public ModelFile ModelFile { get; set; }
 

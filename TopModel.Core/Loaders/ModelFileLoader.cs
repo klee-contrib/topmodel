@@ -98,7 +98,44 @@ public class ModelFileLoader
             }
             else if (scalar.Value == "alias")
             {
-                var alias = _fileChecker.Deserialize<Alias>(parser);
+                var alias = new Alias();
+
+                parser.Consume<MappingStart>();
+                while (parser.Current is not MappingEnd)
+                {
+                    var prop = parser.Consume<Scalar>().Value;
+                    parser.TryConsume<Scalar>(out var value);
+
+                    switch (prop)
+                    {
+                        case "file":
+                            alias.File = new Reference(value);
+                            break;
+                        case "classes":
+                            parser.Consume<SequenceStart>();
+
+                            while (parser.Current is not SequenceEnd)
+                            {
+                                alias.Classes.Add(new ClassReference(parser.Consume<Scalar>()));
+                            }
+
+                            parser.Consume<SequenceEnd>();
+                            break;
+                        case "uses":
+                            parser.Consume<SequenceStart>();
+
+                            while (parser.Current is not SequenceEnd)
+                            {
+                                alias.Endpoints.Add(new Reference(parser.Consume<Scalar>()));
+                            }
+
+                            parser.Consume<SequenceEnd>();
+                            break;
+                    }
+                }
+
+                parser.Consume<MappingEnd>();
+
                 alias.ModelFile = file;
                 alias.Location = new Reference(scalar);
                 file.Aliases.Add(alias);

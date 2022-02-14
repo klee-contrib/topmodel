@@ -54,10 +54,12 @@ public static class ModelExtensions
                     _ => null! // Impossible
                 }, File: p.GetFile());
             })
-            .Concat(modelStore.Classes.Where(c => c.Extends == classe).Select(c =>
-            {
-                return (Reference: c.ExtendsReference!, File: c.GetFile());
-            }))
+            .Concat(modelStore.Classes.Where(c => c.Extends == classe)
+                .Select(c => (Reference: c.ExtendsReference!, File: c.GetFile())))
+            .Concat(modelStore.Files.SelectMany(f =>
+                f.Aliases.SelectMany(a => a.Classes
+                    .Where(c => f.ResolvedAliases.OfType<Class>().Any(ra => ra.Name == c.ReferenceName && ra == classe))
+                    .Select(c => (Reference: c, File: f)))))
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 
