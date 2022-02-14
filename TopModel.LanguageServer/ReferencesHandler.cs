@@ -36,6 +36,8 @@ class ReferencesHandler : ReferencesHandlerBase
     {
         return _modelStore.Classes
         .SelectMany(c => c.Properties)
+        .Concat(_modelStore.Files.SelectMany(f => f.Endpoints).SelectMany(e => e.Params))
+        .Concat(_modelStore.Files.SelectMany(f => f.Endpoints).Where(e => e.Returns != null).Select(e => e.Returns!))
         .Where(p =>
         p is AliasProperty al && al.Property.Class == clazz
         || p is AssociationProperty asp && asp.Association == clazz
