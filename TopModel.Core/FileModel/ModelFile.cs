@@ -24,8 +24,21 @@ public class ModelFile
     public IDictionary<Reference, object> References => Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object))
         .Concat(Properties.OfType<RegularProperty>().Select(p => (p.DomainReference as Reference, p.Domain as object)))
         .Concat(Properties.OfType<AssociationProperty>().Select(p => (p.Reference as Reference, p.Association as object)))
-        .Concat(Properties.OfType<CompositionProperty>().SelectMany(p => new (Reference, object)[] { (p.Reference, p.Composition), (p.DomainKindReference, p.DomainKind) }))
-        .Concat(Properties.OfType<AliasProperty>().SelectMany(p => new (Reference, object)[] { (p.ClassReference, p.OriginalProperty?.Class), (p.PropertyReference, p.OriginalProperty), (p.ListDomainReference, p.ListDomain) }))
+        .Concat(Properties.OfType<CompositionProperty>().SelectMany(p => new (Reference, object)[]
+        {
+            (p.Reference, p.Composition),
+            (p.DomainKindReference, p.DomainKind)
+        }))
+        .Concat(Properties.OfType<AliasProperty>().SelectMany(p => new (Reference, object)[]
+        {
+            (p.ClassReference, p.OriginalProperty?.Class),
+            (p.PropertyReference, p.OriginalProperty),
+            (p.ListDomainReference, p.ListDomain)
+        }))
+        .Concat(Properties.OfType<AliasProperty>()
+            .SelectMany(p => (p?.ClassReference as AliasReference)?.ExcludeReferences?
+                .Select(er => (er, p?.OriginalProperty?.Class?.Properties?.FirstOrDefault(p => p?.Name == er?.ReferenceName) as object))
+            ?? new List<(Reference, object)>()))
         .Concat(Aliases.SelectMany(a => a.Classes).Select(c => (c as Reference, ResolvedAliases.OfType<Class>().FirstOrDefault(ra => ra.Name == c.ReferenceName) as object)))
         .Where(t => t.Item1 != null && t.Item2 != null)
         .DistinctBy(t => t.Item1)
