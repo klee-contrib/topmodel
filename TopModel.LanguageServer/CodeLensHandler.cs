@@ -36,7 +36,12 @@ class CodeLensHandler : CodeLensHandlerBase
                     Range = clazz.GetLocation().ToRange()!,
                     Command = new Command()
                     {
-                        Title = $"{_referencesHandler.findClassReferences(clazz).Count()} references"
+                        Title = $"{_referencesHandler.findClassReferences(clazz).Count()} references",
+                        Name = "topmodel.findRef",
+                        Arguments = new Newtonsoft.Json.Linq.JArray(){
+                            clazz.GetLocation()!.Start.Line
+                        }
+
                     }
                 };
             })));

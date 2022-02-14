@@ -1,6 +1,6 @@
 import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
 import { Trace } from 'vscode-jsonrpc';
-import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment, Terminal, Uri, TextEdit, ProviderResult, extensions } from 'vscode';
+import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment, Terminal, Uri, TextEdit, ProviderResult, extensions, Position, Location, Range } from 'vscode';
 import * as fs from "fs";
 import { TopModelConfig, TopModelException } from './types';
 
@@ -159,6 +159,11 @@ function registerCommands(context: ExtensionContext, configPath: string) {
     const modgenInstall = commands.registerCommand(COMMANDS.install, () => installModgen());
     const modgenUpdate = commands.registerCommand(COMMANDS.update, () => updateModgen());
     context.subscriptions.push(modgenInstall, modgenUpdate, modgen, modgenWatch);
+    commands.registerCommand("topmodel.findRef", async (line: number) => {
+        await commands.executeCommand("editor.action.goToLocations", window.activeTextEditor!.document.uri, new Position(line, 0), []);
+        await commands.executeCommand("editor.action.goToReferences");
+
+    });
     return NEXT_TERM_ID;
 }
 
