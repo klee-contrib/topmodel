@@ -28,8 +28,47 @@ class ReferencesHandler : ReferencesHandlerBase
             {
                 return Task.FromResult<LocationContainer>(new LocationContainer(this.findClassReferences(clazz)));
             }
+            var domain = file.Domains.Where(d =>
+            d.GetLocation()!.Start.Line - 1 == request.Position.Line
+            ).SingleOrDefault();
+            if (domain != null)
+            {
+                return Task.FromResult<LocationContainer>(new LocationContainer(this.findDomainReferences(domain)));
+            }
         }
         return Task.FromResult<LocationContainer>(new());
+    }
+
+    public IEnumerable<Location> findDomainReferences(Domain domain)
+    {
+        return _modelStore.Classes
+        .SelectMany(c => c.Properties)
+        .Concat(_modelStore.Files.SelectMany(f => f.Endpoints).SelectMany(e => e.Params))
+        .Concat(_modelStore.Files.SelectMany(f => f.Endpoints).Where(e => e.Returns != null).Select(e => e.Returns!))
+        .Where(p =>
+        p is RegularProperty rp && rp.Domain == domain
+        || p is CompositionProperty cp && cp.DomainKind == domain
+        )
+        .Select(p =>
+        {
+            OmniSharp.Extensions.LanguageServer.Protocol.Models.Range range;
+            if (p is RegularProperty rp)
+            {
+                range = rp.DomainReference.ToRange()!;
+            }
+
+            else
+            {
+                range = ((CompositionProperty)p).DomainKindReference.ToRange()!;
+            }
+
+            return new Location()
+            {
+                Range = range!,
+                Uri = new Uri(_facade.GetFilePath(p.GetFile()))
+            };
+        })
+        .DistinctBy(l => l.Uri.ToString() + l.Range.Start);
     }
 
     public IEnumerable<Location> findClassReferences(Class clazz)
@@ -69,7 +108,7 @@ class ReferencesHandler : ReferencesHandlerBase
         {
             return new Location()
             {
-                Range =  c.ExtendsReference!.ToRange(),
+                Range = c.ExtendsReference!.ToRange()!,
                 Uri = new Uri(_facade.GetFilePath(c.GetFile()))
             };
         }))
