@@ -116,7 +116,7 @@ public class ModelFileLoader
 
                             while (parser.Current is not SequenceEnd)
                             {
-                                alias.Classes.Add(new Reference(parser.Consume<Scalar>()));
+                                alias.Classes.Add(new ClassReference(parser.Consume<Scalar>()));
                             }
 
                             parser.Consume<SequenceEnd>();

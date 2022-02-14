@@ -6,7 +6,7 @@ internal class Alias
 {
     public Reference File { get; set; }
 
-    public List<Reference> Classes { get; set; } = new();
+    public List<ClassReference> Classes { get; set; } = new();
 
     public List<Reference> Endpoints { get; set; } = new();
 
