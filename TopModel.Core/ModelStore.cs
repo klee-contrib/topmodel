@@ -85,6 +85,16 @@ public class ModelStore
         return fsWatcher;
     }
 
+    public Dictionary<string, Class> GetReferencedClasses(ModelFile modelFile)
+    {
+        var dependencies = GetDependencies(modelFile).ToList();
+        return dependencies
+            .SelectMany(m => m.Classes)
+            .Concat(modelFile.Classes.Where(c => !modelFile.ResolvedAliases.Contains(c)))
+            .Distinct()
+            .ToDictionary(c => c.Name.Value, c => c);
+    }
+
     public void OnModelFileChange(string filePath, string? content = null)
     {
         _logger.LogInformation(string.Empty);

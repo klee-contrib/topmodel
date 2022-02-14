@@ -42,10 +42,11 @@ class CompletionHandler : CompletionHandlerBase
                         Label = domain.Key
                     })));
         }
-        else if (currentLine.Contains("association: ") || currentLine.Contains("composition: ") || currentLine.Contains("    class:"))
+
+        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
+        if (file != null)
         {
-            var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
-            if (file != null)
+            if (currentLine.Contains("association: ") || currentLine.Contains("composition: ") || currentLine.Contains("    class:"))
             {
                 var currentText = currentLine.Split(":")[1].Trim();
                 var availableClasses = new HashSet<Class>(_modelStore.GetAvailableClasses(file));
@@ -74,32 +75,50 @@ class CompletionHandler : CompletionHandlerBase
                                 : null
                         }))); ;
             }
-        }
-        else if (currentLine.TrimStart().StartsWith("-"))
-        {
-            var currentText = currentLine.TrimStart()[1..].Trim();
 
-            var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
-            if (file != null)
+            // Use
+            if (currentLine.TrimStart().StartsWith("-") && (
+                text.ElementAt(request.Position.Line - 1) == "uses:"
+                || file.Uses.Select(u => u.Start.Line).Any(l => l == request.Position.Line)))
             {
-                // Use
-                if (
-                    text.ElementAt(request.Position.Line - 1) == "uses:"
-                    || file.Uses.Select(u => u.Start.Line).Any(l => l == request.Position.Line))
+                var currentText = currentLine.TrimStart()[1..].Trim();
+                return Task.FromResult(new CompletionList(
+                    _modelStore.Files.Select(f => f.Name)
+                        .Except(file.Uses.Select(u => u.ReferenceName))
+                        .Where(name => name != file.Name && name.ToLower().ShouldMatch(currentText))
+                        .Select(name => new CompletionItem
+                        {
+                            Kind = CompletionItemKind.File,
+                            Label = name
+                        })));
+            }
+
+            // Alias de propriété unique.
+            if (currentLine.Contains("property: ") || currentLine.Contains("include: ") || currentLine.Contains("exclude:"))
+            {
+                var prevLine = text.ElementAt(request.Position.Line - 1);
+                var nextLine = text.ElementAt(request.Position.Line + 1);
+
+                var className = prevLine.Contains("class:")
+                    ? prevLine.Split(':')[1].Trim()
+                    : nextLine.Contains("class:")
+                    ? nextLine.Split(':')[1].Trim()
+                    : null;
+
+                if (className != null)
                 {
-                    return Task.FromResult(new CompletionList(
-                        _modelStore.Files.Select(f => f.Name)
-                            .Except(file.Uses.Select(u => u.ReferenceName))
-                            .Where(name => name != file.Name && name.ToLower().ShouldMatch(currentText))
-                            .Select(name => new CompletionItem
-                            {
-                                Kind = CompletionItemKind.File,
-                                Label = name
-                            })));
+                    var referencedClasses = _modelStore.GetReferencedClasses(file);
+                    if (referencedClasses.TryGetValue(className, out var aliasedClass))
+                    {
+                        return Task.FromResult(new CompletionList(aliasedClass.Properties.OfType<IFieldProperty>().Select(f => new CompletionItem
+                        {
+                            Kind = CompletionItemKind.Property,
+                            Label = f.Name
+                        })));
+                    }
                 }
             }
         }
-        
 
         return Task.FromResult(new CompletionList());
     }
