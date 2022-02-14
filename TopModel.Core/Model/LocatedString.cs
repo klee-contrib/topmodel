@@ -13,15 +13,9 @@ public class LocatedString : IComparable
         Location = new Reference(value);
     }
 
-    public LocatedString(LocatedString l)
-    {
-        Value = l.Value;
-        Location = l.Location;
-    }
-
     public string Value { get; init; }
 
-    internal Reference Location { get; init; }
+    internal Reference Location { get; }
 
     public static implicit operator string(LocatedString ls)
     {

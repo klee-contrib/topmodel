@@ -7,7 +7,7 @@ public class CompositionProperty : IProperty
 {
     public Class Composition { get; set; }
 
-    public LocatedString Name { get; set; }
+    public string Name { get; set; }
 
     public string Kind { get; set; }
 

@@ -64,7 +64,16 @@ class ReferencesHandler : ReferencesHandlerBase
                 Range = range!,
                 Uri = new Uri(_facade.GetFilePath(p.GetFile()))
             };
-        }).DistinctBy(l => l.Uri.ToString() + l.Range.Start);
+        })
+        .Concat(_modelStore.Classes.Where(c => c.Extends == clazz).Select(c =>
+        {
+            return new Location()
+            {
+                Range =  c.ExtendsReference!.ToRange(),
+                Uri = new Uri(_facade.GetFilePath(c.GetFile()))
+            };
+        }))
+        .DistinctBy(l => l.Uri.ToString() + l.Range.Start);
     }
 
     protected override ReferenceRegistrationOptions CreateRegistrationOptions(ReferenceCapability capability, ClientCapabilities clientCapabilities)

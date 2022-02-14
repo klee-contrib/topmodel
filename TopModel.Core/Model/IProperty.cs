@@ -2,7 +2,7 @@
 
 public interface IProperty
 {
-    LocatedString Name { get; }
+    string Name { get; }
 
     string? Label { get; }
 

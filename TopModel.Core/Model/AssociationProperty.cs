@@ -26,11 +26,7 @@ public class AssociationProperty : IFieldProperty
 
     public string? DefaultValue { get; set; }
 
-    public LocatedString Name => new LocatedString(Association?.Properties.Single(p => p.PrimaryKey).Name)
-    {
-        Value = (Association?.Extends == null && !AsAlias ? Association?.Name : string.Empty) + Association?.Properties.Single(p => p.PrimaryKey).Name + (Role?.Replace(" ", string.Empty) ?? string.Empty),
-        Location = Association?.Properties.Single(p => p.PrimaryKey).Name.Location
-    };
+    public string Name => (Association?.Extends == null && !AsAlias ? Association?.Name : string.Empty) + Association?.Properties.Single(p => p.PrimaryKey).Name + (Role?.Replace(" ", string.Empty) ?? string.Empty);
 
     public Domain Domain => Association.Properties.OfType<IFieldProperty>().Single(p => p.PrimaryKey).Domain;
 
@@ -41,6 +37,5 @@ public class AssociationProperty : IFieldProperty
 #nullable disable
     public ClassReference Reference { get; set; }
 
-#nullable disable
     internal Reference Location { get; set; }
 }

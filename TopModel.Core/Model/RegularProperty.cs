@@ -5,7 +5,7 @@ namespace TopModel.Core;
 public class RegularProperty : IFieldProperty
 {
 #nullable disable
-    public LocatedString Name { get; set; }
+    public string Name { get; set; }
 #nullable enable
 
     public string? Label { get; set; }
