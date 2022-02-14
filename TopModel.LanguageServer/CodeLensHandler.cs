@@ -26,34 +26,34 @@ class CodeLensHandler : CodeLensHandlerBase
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            return Task.FromResult(new CodeLensContainer(file.Classes.Select(clazz =>
-            new CodeLens
-            {
-                Range = clazz.GetLocation().ToRange()!,
-                Command = new Command()
+            return Task.FromResult(new CodeLensContainer(file.Classes.Where(c => !file.ResolvedAliases.Contains(c)).Select(clazz =>
+                new CodeLens
                 {
-                    Title = $"{_modelStore.GetClassReferences(clazz).Count()} references",
-                    Name = "topmodel.findRef",
-                    Arguments = new JArray
+                    Range = clazz.GetLocation().ToRange()!,
+                    Command = new Command()
                     {
-                        clazz.GetLocation()!.Start.Line - 1
-                    }
+                        Title = $"{_modelStore.GetClassReferences(clazz).Count()} references",
+                        Name = "topmodel.findRef",
+                        Arguments = new JArray
+                        {
+                            clazz.GetLocation()!.Start.Line - 1
+                        }
 
-                }
-            }).Concat(file.Domains.Select(domain => new CodeLens
-            {
-                Range = domain.GetLocation().ToRange()!,
-                Command = new Command()
+                    }
+                }).Concat(file.Domains.Select(domain => new CodeLens
                 {
-                    Title = $"{_modelStore.GetDomainReferences(domain).Count()} references",
-                    Name = "topmodel.findRef",
-                    Arguments = new JArray
+                    Range = domain.GetLocation().ToRange()!,
+                    Command = new Command()
                     {
-                        domain.GetLocation()!.Start.Line - 1
-                    }
+                        Title = $"{_modelStore.GetDomainReferences(domain).Count()} references",
+                        Name = "topmodel.findRef",
+                        Arguments = new JArray
+                        {
+                            domain.GetLocation()!.Start.Line - 1
+                        }
 
-                }
-            }))));
+                    }
+                }))));
         }
         return Task.FromResult<CodeLensContainer>(new());
     }
