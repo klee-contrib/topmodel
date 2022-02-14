@@ -33,6 +33,7 @@ var server = await LanguageServer.From(options =>
         .WithHandler<CodeActionHandler>()
         .WithHandler<ReferencesHandler>()
         .WithHandler<CodeLensHandler>()
+        .WithHandler<RenameHandler>()
         .OnInitialize((server, _, __) =>
         {
             server.Services.GetRequiredService<ModelStore>().LoadFromConfig();
