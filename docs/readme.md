@@ -42,7 +42,7 @@ Exemple :
 ```yaml
 app: Exemple
 nowarn:
-  - TMD_0005 # Ignore le warning sur la dupplication des trigram
+  - TMD0005 # Ignore le warning sur la dupplication des trigram
 ```
 
 ## Edition du modèle

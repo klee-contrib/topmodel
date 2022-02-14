@@ -26,7 +26,7 @@ class WorkspaceSymbolHandler : WorkspaceSymbolsHandlerBase
                 Name = c.Name,
                 Location = new Location
                 {
-                    Range = c.GetLocation().ToRange()!,
+                    Range = c.Name.GetLocation().ToRange()!,
                     Uri = _facade.GetFilePath(c.ModelFile)
                 }
             };

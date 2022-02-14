@@ -65,17 +65,18 @@ public class AliasProperty : IFieldProperty
         set => _listDomain = value;
     }
 
+#nullable enable
+    public ClassReference? ClassReference { get; set; }
+
     internal string? Prefix { get; set; }
 
     internal string? Suffix { get; set; }
 
 #nullable disable
     internal Reference Location { get; set; }
+
 #nullable enable
-
     internal AliasReference? Reference { get; set; }
-
-    internal ClassReference? ClassReference { get; set; }
 
     internal Reference? PropertyReference { get; set; }
 

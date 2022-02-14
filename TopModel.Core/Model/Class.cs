@@ -49,14 +49,12 @@ public class Class
 
     public bool IsPersistent => Properties.Any(p => p is not AliasProperty && p.PrimaryKey) || Properties.All(p => p is AssociationProperty);
 
-#nullable disable
-    internal Reference Location { get; set; }
-#nullable enable
-
-    internal ClassReference? ExtendsReference { get; set; }
+    public ClassReference? ExtendsReference { get; set; }
 
     public override string ToString()
     {
         return Name;
     }
+#nullable disable
+    internal Reference Location { get; set; }
 }

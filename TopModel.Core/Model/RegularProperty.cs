@@ -22,12 +22,13 @@ public class RegularProperty : IFieldProperty
     public Class Class { get; set; }
 
     public Endpoint Endpoint { get; set; }
+
+    public DomainReference DomainReference { get; set; }
+
 #nullable enable
 
     public string? DefaultValue { get; set; }
 
 #nullable disable
     internal Reference Location { get; set; }
-
-    internal DomainReference DomainReference { get; set; }
 }

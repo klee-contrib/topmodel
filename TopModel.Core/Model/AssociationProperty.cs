@@ -35,7 +35,7 @@ public class AssociationProperty : IFieldProperty
     public bool AsAlias { get; set; }
 
 #nullable disable
-    internal Reference Location { get; set; }
+    public ClassReference Reference { get; set; }
 
-    internal ClassReference Reference { get; set; }
+    internal Reference Location { get; set; }
 }

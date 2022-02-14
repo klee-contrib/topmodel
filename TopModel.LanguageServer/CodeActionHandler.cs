@@ -36,7 +36,7 @@ class CodeActionHandler : CodeActionHandlerBase
             }
             foreach (var diagnostic in request.Context.Diagnostics.Where(d => !string.IsNullOrEmpty(d.Code)))
             {
-                var modelErrorType = GetTypeFromCode(diagnostic.Code!);
+                var modelErrorType = ModelErrorType.Parse<ModelErrorType>(diagnostic.Code!);
                 switch (modelErrorType)
                 {
                     case ModelErrorType.TMD1005:
@@ -222,10 +222,5 @@ class:
                 }
             }
         };
-    }
-
-    protected ModelErrorType GetTypeFromCode(string code)
-    {
-        return Enum.Parse<ModelErrorType>("TMD" + code);
     }
 }
