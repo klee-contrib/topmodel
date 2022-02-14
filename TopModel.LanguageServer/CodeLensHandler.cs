@@ -39,7 +39,7 @@ class CodeLensHandler : CodeLensHandlerBase
                         Title = $"{_referencesHandler.findClassReferences(clazz).Count()} references",
                         Name = "topmodel.findRef",
                         Arguments = new Newtonsoft.Json.Linq.JArray(){
-                            clazz.GetLocation()!.Start.Line
+                            clazz.GetLocation()!.Start.Line - 1
                         }
 
                     }
