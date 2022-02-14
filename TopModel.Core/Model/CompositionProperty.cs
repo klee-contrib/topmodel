@@ -30,5 +30,5 @@ public class CompositionProperty : IProperty
     internal Reference Location { get; set; }
 
 #nullable enable
-    internal DomainReference? DomainKindReference { get; set; }
+    public DomainReference? DomainKindReference { get; set; }
 }

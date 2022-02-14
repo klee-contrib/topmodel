@@ -30,21 +30,31 @@ class CodeLensHandler : CodeLensHandlerBase
         if (file != null)
         {
             return Task.FromResult<CodeLensContainer>(new CodeLensContainer(file.Classes.Select(clazz =>
+            new CodeLens()
             {
-                return new CodeLens()
+                Range = clazz.GetLocation().ToRange()!,
+                Command = new Command()
                 {
-                    Range = clazz.GetLocation().ToRange()!,
-                    Command = new Command()
-                    {
-                        Title = $"{_referencesHandler.findClassReferences(clazz).Count()} references",
-                        Name = "topmodel.findRef",
-                        Arguments = new Newtonsoft.Json.Linq.JArray(){
-                            clazz.GetLocation()!.Start.Line - 1
+                    Title = $"{_referencesHandler.findClassReferences(clazz).Count()} references",
+                    Name = "topmodel.findRef",
+                    Arguments = new Newtonsoft.Json.Linq.JArray(){
+                        clazz.GetLocation()!.Start.Line - 1
+                    }
+
+                }
+            }).Concat(file.Domains.Select(domain => new CodeLens()
+            {
+                Range = domain.GetLocation().ToRange()!,
+                Command = new Command()
+                {
+                    Title = $"{_referencesHandler.findDomainReferences(domain).Count()} references",
+                    Name = "topmodel.findRef",
+                    Arguments = new Newtonsoft.Json.Linq.JArray(){
+                            domain.GetLocation()!.Start.Line - 1
                         }
 
-                    }
-                };
-            })));
+                }
+            }))));
         }
         return Task.FromResult<CodeLensContainer>(new());
     }
