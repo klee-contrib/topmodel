@@ -448,19 +448,19 @@ public class ModelStore
 
         foreach (var alias in modelFile.Aliases)
         {
-            var referencedFile = dependencies.SingleOrDefault(dep => dep.Name == alias.File);
+            var referencedFile = dependencies.SingleOrDefault(dep => dep.Name == alias.File.ReferenceName);
             if (referencedFile == null)
             {
-                yield return new ModelError(alias, $"Le fichier '{alias.File}' est introuvable dans les dépendances du fichier.") { ModelErrorType = ModelErrorType.TMD1003 };
+                yield return new ModelError(alias, $"Le fichier '{alias.File.ReferenceName}' est introuvable dans les dépendances du fichier.", alias.File) { ModelErrorType = ModelErrorType.TMD1003 };
                 continue;
             }
 
-            foreach (var className in alias.Classes)
+            foreach (var aliasClass in alias.Classes)
             {
-                var referencedClass = referencedFile.Classes.SingleOrDefault(classe => classe.Name == className);
+                var referencedClass = referencedFile.Classes.SingleOrDefault(classe => classe.Name == aliasClass.ReferenceName);
                 if (referencedClass == null)
                 {
-                    yield return new ModelError(alias, $"La classe '{className}' est introuvable dans le fichier '{alias.File}'.") { ModelErrorType = ModelErrorType.TMD1002 };
+                    yield return new ModelError(alias, $"La classe '{aliasClass.ReferenceName}' est introuvable dans le fichier '{alias.File.ReferenceName}'.", aliasClass) { ModelErrorType = ModelErrorType.TMD1002 };
                     continue;
                 }
 
@@ -478,12 +478,12 @@ public class ModelStore
                 modelFile.ResolvedAliases.Add(referencedClass);
             }
 
-            foreach (var endpointName in alias.Endpoints)
+            foreach (var aliasEndpoint in alias.Endpoints)
             {
-                var referencedEndpoint = referencedFile.Endpoints.SingleOrDefault(endpoint => endpoint.Name == endpointName);
+                var referencedEndpoint = referencedFile.Endpoints.SingleOrDefault(endpoint => endpoint.Name == aliasEndpoint.ReferenceName);
                 if (referencedEndpoint == null)
                 {
-                    yield return new ModelError(alias, $"L'endpoint '{endpointName}' est introuvable dans le fichier '{alias.File}'.") { ModelErrorType = ModelErrorType.TMD1006 };
+                    yield return new ModelError(alias, $"L'endpoint '{aliasEndpoint.ReferenceName}' est introuvable dans le fichier '{alias.File.ReferenceName}'.", aliasEndpoint) { ModelErrorType = ModelErrorType.TMD1006 };
                     continue;
                 }
 

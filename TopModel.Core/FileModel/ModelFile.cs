@@ -5,9 +5,9 @@ public class ModelFile
 {
     public string Module { get; set; }
 
-    public IList<string> Tags { get; set; } = new List<string>();
+    public List<string> Tags { get; set; } = new();
 
-    public IList<Reference> Uses { get; set; } = new List<Reference>();
+    public List<Reference> Uses { get; set; } = new();
 
     public string Name { get; set; }
 
@@ -31,7 +31,7 @@ public class ModelFile
         .ToDictionary(t => t.Item1, t => t.Item2);
 
     public IList<Reference> UselessImports => Uses
-        .Where(use => !Aliases.Select(alias => alias.File)
+        .Where(use => !Aliases.Select(alias => alias.File.ReferenceName)
         .Concat(References.Values.Select(r => r.GetFile().Name))
         .Contains(use.ReferenceName)).ToList();
 
