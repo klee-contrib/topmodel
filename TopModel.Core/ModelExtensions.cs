@@ -41,8 +41,8 @@ public static class ModelExtensions
         return modelStore.Classes.SelectMany(c => c.Properties)
             .Concat(modelStore.Endpoints.SelectMany(e => e.Params.Concat(e.Returns != null ? new[] { e.Returns } : Array.Empty<IProperty>())))
             .Where(p =>
-                p is AliasProperty al && al.Property.Class == classe
-                || p is AssociationProperty asp && asp.Association == classe
+                p is AliasProperty alp && alp.OriginalProperty.Class == classe
+                || p is AssociationProperty ap && ap.Association == classe
                 || p is CompositionProperty cp && cp.Composition == classe)
             .Select(p =>
             {

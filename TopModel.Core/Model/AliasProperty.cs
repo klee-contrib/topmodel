@@ -66,6 +66,8 @@ public class AliasProperty : IFieldProperty
     }
 
 #nullable enable
+    public IFieldProperty OriginalProperty => _property;
+
     public ClassReference? ClassReference { get; set; }
 
     internal string? Prefix { get; set; }
