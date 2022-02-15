@@ -21,6 +21,11 @@ public static class OmnisharpExtensions
 
     public static bool ShouldMatch(this string word, string otherword)
     {
+        if (string.IsNullOrWhiteSpace(otherword))
+        {
+            return true;
+        }
+
         var currentIndex = 0;
 
         foreach (var character in otherword.ToLower())

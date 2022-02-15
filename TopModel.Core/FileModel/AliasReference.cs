@@ -2,7 +2,7 @@
 
 namespace TopModel.Core.FileModel;
 
-internal class AliasReference : ClassReference
+public class AliasReference : ClassReference
 {
     public List<Reference> IncludeReferences { get; } = new();
 

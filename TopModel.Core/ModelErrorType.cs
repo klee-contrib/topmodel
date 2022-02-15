@@ -23,6 +23,11 @@ public enum ModelErrorType
     TMD0003,
 
     /// <summary>
+    /// La propriété '{propertyReference.Name}' est déjà référencée dans la définition de l'alias.
+    /// </summary>
+    TMD0004,
+
+    /// <summary>
     /// La classe '{0}' doit avoir une (et une seule) clé primaire pour être référencée dans une association.
     /// </summary>
     TMD1001,

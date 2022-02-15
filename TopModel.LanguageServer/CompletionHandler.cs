@@ -31,23 +31,35 @@ class CompletionHandler : CompletionHandlerBase
 
         if (currentLine.Contains("domain: "))
         {
-            var currentText = currentLine.Split(":")[1].Trim();
+            var searchText = currentLine.Split(":")[1].Trim();
             return Task.FromResult(new CompletionList(
                 _modelStore.Domains
                     .OrderBy(domain => domain.Key)
-                    .Where(domain => domain.Key.ToLower().ShouldMatch(currentText))
+                    .Where(domain => domain.Key.ToLower().ShouldMatch(searchText))
                     .Select(domain => new CompletionItem
                     {
                         Kind = CompletionItemKind.EnumMember,
-                        Label = domain.Key
+                        Label = domain.Key,
+                        TextEdit = !string.IsNullOrWhiteSpace(searchText)
+                            ? new TextEditOrInsertReplaceEdit(new TextEdit
+                            {
+                                NewText = domain.Key,
+                                Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                                    request.Position.Line,
+                                    currentLine.IndexOf(searchText),
+                                    request.Position.Line,
+                                    currentLine.IndexOf(searchText) + searchText.Length)
+                            })
+                            : null,
                     })));
         }
-        else if (currentLine.Contains("association: ") || currentLine.Contains("composition: ") || currentLine.Contains("    class:"))
+
+        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
+        if (file != null)
         {
-            var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
-            if (file != null)
+            if (currentLine.Contains("association: ") || currentLine.Contains("composition: ") || currentLine.Contains("    class:"))
             {
-                var currentText = currentLine.Split(":")[1].Trim();
+                var searchText = currentLine.Split(":")[1].Trim();
                 var availableClasses = new HashSet<Class>(_modelStore.GetAvailableClasses(file));
 
                 var useIndex = file.Uses.Any()
@@ -58,13 +70,24 @@ class CompletionHandler : CompletionHandlerBase
 
                 return Task.FromResult(new CompletionList(
                     _modelStore.Classes
-                        .Where(classe => classe.Name.ToLower().ShouldMatch(currentText))
+                        .Where(classe => classe.Name.ToLower().ShouldMatch(searchText))
                         .Select(classe => new CompletionItem
                         {
                             Kind = CompletionItemKind.Class,
                             Label = availableClasses.Contains(classe) ? classe.Name : $"{classe.Name} - ({classe.ModelFile.Name})",
                             InsertText = classe.Name,
                             SortText = availableClasses.Contains(classe) ? "0000" + classe.Name : classe.Name,
+                            TextEdit = !string.IsNullOrWhiteSpace(searchText)
+                                ? new TextEditOrInsertReplaceEdit(new TextEdit
+                                {
+                                    NewText = classe.Name,
+                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText),
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText) + searchText.Length)
+                                })
+                                : null,
                             AdditionalTextEdits = !availableClasses.Contains(classe) ?
                                 new TextEditContainer(new TextEdit
                                 {
@@ -74,32 +97,103 @@ class CompletionHandler : CompletionHandlerBase
                                 : null
                         }))); ;
             }
-        }
-        else if (currentLine.TrimStart().StartsWith("-"))
-        {
-            var currentText = currentLine.TrimStart()[1..].Trim();
 
-            var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
-            if (file != null)
+            // Use
+            if (currentLine.TrimStart().StartsWith("-") && (
+                text.ElementAt(request.Position.Line - 1) == "uses:"
+                || file.Uses.Select(u => u.Start.Line).Any(l => l == request.Position.Line)))
             {
-                // Use
-                if (
-                    text.ElementAt(request.Position.Line - 1) == "uses:"
-                    || file.Uses.Select(u => u.Start.Line).Any(l => l == request.Position.Line))
+                var searchText = currentLine.TrimStart()[1..].Trim();
+
+                return Task.FromResult(new CompletionList(
+                    _modelStore.Files.Select(f => f.Name)
+                        .Except(file.Uses.Select(u => u.ReferenceName))
+                        .Where(name => name != file.Name && name.ToLower().ShouldMatch(searchText))
+                        .Select(name => new CompletionItem
+                        {
+                            Kind = CompletionItemKind.File,
+                            Label = name,
+                            TextEdit = !string.IsNullOrWhiteSpace(searchText)
+                                ? new TextEditOrInsertReplaceEdit(new TextEdit
+                                {
+                                    NewText = name,
+                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText),
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText) + searchText.Length)
+                                })
+                                : null
+                        })));
+            }
+            else
+            {
+                // Alias
+                string? className = null;
+                var requestLine = request.Position.Line;
+
+                while (currentLine.Contains("property:") || currentLine.Contains("include:") || currentLine.Contains("exclude:") || currentLine.TrimStart().StartsWith("-") && !currentLine.Contains(':') && !currentLine.Contains('['))
                 {
-                    return Task.FromResult(new CompletionList(
-                        _modelStore.Files.Select(f => f.Name)
-                            .Except(file.Uses.Select(u => u.ReferenceName))
-                            .Where(name => name != file.Name && name.ToLower().ShouldMatch(currentText))
-                            .Select(name => new CompletionItem
+                    requestLine--;
+                    currentLine = text.ElementAt(requestLine);
+                }
+
+                if (currentLine.Contains("class:"))
+                {
+                    className = currentLine.Split(':')[1].Trim();
+                }
+
+                if (className == null)
+                {
+                    currentLine = text.ElementAt(request.Position.Line);
+
+                    while (currentLine.Contains("property:") || currentLine.Contains("include:") || currentLine.Contains("exclude:") || currentLine.TrimStart().StartsWith("-") && !currentLine.Contains(':') && !currentLine.Contains('['))
+                    {
+                        requestLine++;
+                        currentLine = text.ElementAt(requestLine);
+                    }
+
+                    if (currentLine.Contains("class:"))
+                    {
+                        className = currentLine.Split(':')[1].Trim();
+                    }
+                }
+
+                if (className != null)
+                {
+                    currentLine = text.ElementAt(request.Position.Line);
+
+                    var searchText = currentLine.Contains(':')
+                        ? currentLine.Split(':')[1].Trim()
+                        : currentLine.Trim().StartsWith('-')
+                        ? currentLine.Trim()[1..].Trim()
+                        : string.Empty;
+
+                    var referencedClasses = _modelStore.GetReferencedClasses(file);
+                    if (referencedClasses.TryGetValue(className, out var aliasedClass))
+                    {
+                        return Task.FromResult(new CompletionList(aliasedClass.Properties.OfType<IFieldProperty>()
+                            .Where(f => f.Name.ShouldMatch(searchText))
+                            .Select(f => new CompletionItem
                             {
-                                Kind = CompletionItemKind.File,
-                                Label = name
+                                Kind = CompletionItemKind.Property,
+                                Label = f.Name,
+                                TextEdit = !string.IsNullOrWhiteSpace(searchText)
+                                    ? new TextEditOrInsertReplaceEdit(new TextEdit
+                                    {
+                                        NewText = f.Name,
+                                        Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                                            request.Position.Line,
+                                            currentLine.IndexOf(searchText),
+                                            request.Position.Line,
+                                            currentLine.IndexOf(searchText) + searchText.Length)
+                                    })
+                                    : null
                             })));
+                    }
                 }
             }
         }
-        
 
         return Task.FromResult(new CompletionList());
     }

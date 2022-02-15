@@ -85,6 +85,16 @@ public class ModelStore
         return fsWatcher;
     }
 
+    public Dictionary<string, Class> GetReferencedClasses(ModelFile modelFile)
+    {
+        var dependencies = GetDependencies(modelFile).ToList();
+        return dependencies
+            .SelectMany(m => m.Classes)
+            .Concat(modelFile.Classes.Where(c => !modelFile.ResolvedAliases.Contains(c)))
+            .Distinct()
+            .ToDictionary(c => c.Name.Value, c => c);
+    }
+
     public void OnModelFileChange(string filePath, string? content = null)
     {
         _logger.LogInformation(string.Empty);
@@ -397,6 +407,18 @@ public class ModelStore
                     yield return new ModelError(alp, $"La propriété '{{0}}' est introuvable sur la classe '{aliasedClass}'.", propReference) { ModelErrorType = ModelErrorType.TMD1004 };
                     shouldBreak = true;
                 }
+            }
+
+            foreach (var include in alp.Reference.IncludeReferences.Where((e, i) => alp.Reference.IncludeReferences.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i).Any()))
+            {
+                yield return new ModelError(modelFile, $"La propriété '{include.ReferenceName}' est déjà référencée dans la définition de l'alias.", include) { IsError = true, ModelErrorType = ModelErrorType.TMD0004 };
+                shouldBreak = true;
+            }
+
+            foreach (var exclude in alp.Reference.ExcludeReferences.Where((e, i) => alp.Reference.ExcludeReferences.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i).Any()))
+            {
+                yield return new ModelError(modelFile, $"La propriété '{exclude.ReferenceName}' est déjà référencée dans la définition de l'alias.", exclude) { IsError = true, ModelErrorType = ModelErrorType.TMD0004 };
+                shouldBreak = true;
             }
 
             if (shouldBreak)

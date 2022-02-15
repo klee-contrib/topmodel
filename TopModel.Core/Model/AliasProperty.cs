@@ -70,6 +70,10 @@ public class AliasProperty : IFieldProperty
 
     public ClassReference? ClassReference { get; set; }
 
+    public AliasReference? Reference { get; set; }
+
+    public Reference? PropertyReference { get; set; }
+
     internal string? Prefix { get; set; }
 
     internal string? Suffix { get; set; }
@@ -78,10 +82,6 @@ public class AliasProperty : IFieldProperty
     internal Reference Location { get; set; }
 
 #nullable enable
-    internal AliasReference? Reference { get; set; }
-
-    internal Reference? PropertyReference { get; set; }
-
     internal DomainReference? ListDomainReference { get; set; }
 
     internal AliasProperty? OriginalAliasProperty { get; private set; }
