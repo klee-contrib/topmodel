@@ -108,15 +108,23 @@ public class JavascriptApiClientGenerator : GeneratorBase
                     {
                         fw.Write($@"    body.append(""{param.Name}"", {param.Name});");
                     }
-                    else
+                    else if (param is CompositionProperty)
                     {
                         fw.Write($@"    for (const key in {param.Name}) {{
         body.append(key, ({param.Name} as any)[key]);
     }}");
                     }
+                    else
+                    {
+                        fw.Write($@"    body.append(""{param.GetParamName()}"", {param.GetParamName()}?.toString());");
+                    }
 
                     fw.WriteLine();
                 }
+
+                fw.WriteLine($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.Route.Replace("{", "${")}`, {{body}});");
+                fw.WriteLine("}");
+                continue;
             }
 
             fw.Write($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.Route.Replace("{", "${")}`, {{");
