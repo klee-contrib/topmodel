@@ -31,15 +31,26 @@ class CompletionHandler : CompletionHandlerBase
 
         if (currentLine.Contains("domain: "))
         {
-            var currentText = currentLine.Split(":")[1].Trim();
+            var searchText = currentLine.Split(":")[1].Trim();
             return Task.FromResult(new CompletionList(
                 _modelStore.Domains
                     .OrderBy(domain => domain.Key)
-                    .Where(domain => domain.Key.ToLower().ShouldMatch(currentText))
+                    .Where(domain => domain.Key.ToLower().ShouldMatch(searchText))
                     .Select(domain => new CompletionItem
                     {
                         Kind = CompletionItemKind.EnumMember,
-                        Label = domain.Key
+                        Label = domain.Key,
+                        TextEdit = !string.IsNullOrWhiteSpace(searchText)
+                            ? new TextEditOrInsertReplaceEdit(new TextEdit
+                            {
+                                NewText = domain.Key,
+                                Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                                    request.Position.Line,
+                                    currentLine.IndexOf(searchText),
+                                    request.Position.Line,
+                                    currentLine.IndexOf(searchText) + searchText.Length)
+                            })
+                            : null,
                     })));
         }
 
@@ -48,7 +59,7 @@ class CompletionHandler : CompletionHandlerBase
         {
             if (currentLine.Contains("association: ") || currentLine.Contains("composition: ") || currentLine.Contains("    class:"))
             {
-                var currentText = currentLine.Split(":")[1].Trim();
+                var searchText = currentLine.Split(":")[1].Trim();
                 var availableClasses = new HashSet<Class>(_modelStore.GetAvailableClasses(file));
 
                 var useIndex = file.Uses.Any()
@@ -59,13 +70,24 @@ class CompletionHandler : CompletionHandlerBase
 
                 return Task.FromResult(new CompletionList(
                     _modelStore.Classes
-                        .Where(classe => classe.Name.ToLower().ShouldMatch(currentText))
+                        .Where(classe => classe.Name.ToLower().ShouldMatch(searchText))
                         .Select(classe => new CompletionItem
                         {
                             Kind = CompletionItemKind.Class,
                             Label = availableClasses.Contains(classe) ? classe.Name : $"{classe.Name} - ({classe.ModelFile.Name})",
                             InsertText = classe.Name,
                             SortText = availableClasses.Contains(classe) ? "0000" + classe.Name : classe.Name,
+                            TextEdit = !string.IsNullOrWhiteSpace(searchText)
+                                ? new TextEditOrInsertReplaceEdit(new TextEdit
+                                {
+                                    NewText = classe.Name,
+                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText),
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText) + searchText.Length)
+                                })
+                                : null,
                             AdditionalTextEdits = !availableClasses.Contains(classe) ?
                                 new TextEditContainer(new TextEdit
                                 {
@@ -81,40 +103,93 @@ class CompletionHandler : CompletionHandlerBase
                 text.ElementAt(request.Position.Line - 1) == "uses:"
                 || file.Uses.Select(u => u.Start.Line).Any(l => l == request.Position.Line)))
             {
-                var currentText = currentLine.TrimStart()[1..].Trim();
+                var searchText = currentLine.TrimStart()[1..].Trim();
+
                 return Task.FromResult(new CompletionList(
                     _modelStore.Files.Select(f => f.Name)
                         .Except(file.Uses.Select(u => u.ReferenceName))
-                        .Where(name => name != file.Name && name.ToLower().ShouldMatch(currentText))
+                        .Where(name => name != file.Name && name.ToLower().ShouldMatch(searchText))
                         .Select(name => new CompletionItem
                         {
                             Kind = CompletionItemKind.File,
-                            Label = name
+                            Label = name,
+                            TextEdit = !string.IsNullOrWhiteSpace(searchText)
+                                ? new TextEditOrInsertReplaceEdit(new TextEdit
+                                {
+                                    NewText = name,
+                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText),
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText) + searchText.Length)
+                                })
+                                : null
                         })));
             }
-
-            // Alias de propriété unique.
-            if (currentLine.Contains("property: ") || currentLine.Contains("include: ") || currentLine.Contains("exclude:"))
+            else
             {
-                var prevLine = text.ElementAt(request.Position.Line - 1);
-                var nextLine = text.ElementAt(request.Position.Line + 1);
+                // Alias
+                string? className = null;
+                var requestLine = request.Position.Line;
 
-                var className = prevLine.Contains("class:")
-                    ? prevLine.Split(':')[1].Trim()
-                    : nextLine.Contains("class:")
-                    ? nextLine.Split(':')[1].Trim()
-                    : null;
+                while (currentLine.Contains("property:") || currentLine.Contains("include:") || currentLine.Contains("exclude:") || currentLine.TrimStart().StartsWith("-") && !currentLine.Contains(':') && !currentLine.Contains('['))
+                {
+                    requestLine--;
+                    currentLine = text.ElementAt(requestLine);
+                }
+
+                if (currentLine.Contains("class:"))
+                {
+                    className = currentLine.Split(':')[1].Trim();
+                }
+
+                if (className == null)
+                {
+                    currentLine = text.ElementAt(request.Position.Line);
+
+                    while (currentLine.Contains("property:") || currentLine.Contains("include:") || currentLine.Contains("exclude:") || currentLine.TrimStart().StartsWith("-") && !currentLine.Contains(':') && !currentLine.Contains('['))
+                    {
+                        requestLine++;
+                        currentLine = text.ElementAt(requestLine);
+                    }
+
+                    if (currentLine.Contains("class:"))
+                    {
+                        className = currentLine.Split(':')[1].Trim();
+                    }
+                }
 
                 if (className != null)
                 {
+                    currentLine = text.ElementAt(request.Position.Line);
+
+                    var searchText = currentLine.Contains(':')
+                        ? currentLine.Split(':')[1].Trim()
+                        : currentLine.Trim().StartsWith('-')
+                        ? currentLine.Trim()[1..].Trim()
+                        : string.Empty;
+
                     var referencedClasses = _modelStore.GetReferencedClasses(file);
                     if (referencedClasses.TryGetValue(className, out var aliasedClass))
                     {
-                        return Task.FromResult(new CompletionList(aliasedClass.Properties.OfType<IFieldProperty>().Select(f => new CompletionItem
-                        {
-                            Kind = CompletionItemKind.Property,
-                            Label = f.Name
-                        })));
+                        return Task.FromResult(new CompletionList(aliasedClass.Properties.OfType<IFieldProperty>()
+                            .Where(f => f.Name.ShouldMatch(searchText))
+                            .Select(f => new CompletionItem
+                            {
+                                Kind = CompletionItemKind.Property,
+                                Label = f.Name,
+                                TextEdit = !string.IsNullOrWhiteSpace(searchText)
+                                    ? new TextEditOrInsertReplaceEdit(new TextEdit
+                                    {
+                                        NewText = f.Name,
+                                        Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                                            request.Position.Line,
+                                            currentLine.IndexOf(searchText),
+                                            request.Position.Line,
+                                            currentLine.IndexOf(searchText) + searchText.Length)
+                                    })
+                                    : null
+                            })));
                     }
                 }
             }
