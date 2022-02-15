@@ -107,7 +107,7 @@ class CodeActionHandler : CodeActionHandlerBase
         var fs = request.TextDocument.Uri.GetFileSystemPath();
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var line = text.ElementAt(diagnostic.Range.Start.Line);
-        var domainName = line[diagnostic.Range.Start.Character..diagnostic.Range.End.Character];
+        var domainName = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
 
         return _modelStore.Files.Where(f => f.Domains.Any()).Select(f =>
         {
@@ -150,7 +150,7 @@ domain:
         var fs = request.TextDocument.Uri.GetFileSystemPath();
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var line = text.ElementAt(diagnostic.Range.Start.Line);
-        var className = line[diagnostic.Range.Start.Character..diagnostic.Range.End.Character];
+        var className = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
         var availableClasses = _modelStore.Classes;
         var useIndex = modelFile!.Uses.Any()
             ? modelFile.Uses.Last().ToRange()!.Start.Line + 1
@@ -191,7 +191,7 @@ domain:
     {
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var line = text.ElementAt(diagnostic.Range.Start.Line);
-        var className = line[diagnostic.Range.Start.Character..diagnostic.Range.End.Character];
+        var className = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
         return new List<CommandOrCodeAction>{
             new CodeAction
             {
