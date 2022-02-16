@@ -122,7 +122,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
                     fw.WriteLine();
                 }
 
-                fw.WriteLine($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.Route.Replace("{", "${")}`, {{body}});");
+                fw.WriteLine($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.Route.Replace("{", "${")}`, {{body}}, options);");
                 fw.WriteLine("}");
                 continue;
             }
