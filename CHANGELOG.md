@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.3.2
+
+- [`6cdc19f`](https://github.com/klee-contrib/topmodel/commit/6cdc19f414ec2606df51d173438b2193e1217d21) [JS] Fix API CLient options non utilisé dans le cas de téléversement
+
 ## 1.3.1
 
 - [`95ac1b0`](https://github.com/klee-contrib/topmodel/commit/95ac1b025eb9655ea5c5fb07a3954e995f807174) [JS] Fix API CLient dans le cas d'un téléversement de fichier
