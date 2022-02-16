@@ -8,16 +8,14 @@ Cette extension enrichit considérablement l'expérience de développement de pr
 
 Fonctionnalités principales :
 
-- Coloration syntaxique
-- Auto-complétion des domaines, classes, propriétés et :new: alias
-- Validation et messages d'erreurs
+- Coloration sémantique (références de classes, propriétés et domaines, imports)
+- Auto-complétion des domaines, classes et :new: propriétés d'alias
+- Validation et affichages des erreurs et warnings
 - Commandes `TopModel : Start model generation` et `TopModel : Start model generation (watch mode)` avec détection automatique du fichier de configuration
-- Import automatique
-- Détection des imports inutiles
+- Imports automatiques
 - Recherche des symboles (classes, domaines et endpoints) avec `Ctrl + T`
-- Recherche des références sur les domaines et les classes
-- Codelens sur les références d'un domaine ou d'une classe
-- Fromatage :
+- Listing des références de classes et domaines (via `Maj + F12` et CodeLens)
+- Mise en forme :
   - Tri des imports
 - Aides à la saisie :
   - Ajout de l'import manquant
@@ -27,5 +25,4 @@ Fonctionnalités principales :
 
 ## Fonctionnalités en cours de développement
 
-- Auto complétion des alias
 - Espace de travail multi-config
