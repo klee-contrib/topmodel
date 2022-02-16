@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.3.1
+
+- [`95ac1b0`](https://github.com/klee-contrib/topmodel/commit/95ac1b025eb9655ea5c5fb07a3954e995f807174) [JS] Fix API CLient dans le cas d'un téléversement de fichier
+- [`065ce7d`](https://github.com/klee-contrib/topmodel/commit/065ce7d160660efa39fae23dbd7ba556f615b66e) [JPA] Feat. Upload de Multipart File
+- [`927a846`](https://github.com/klee-contrib/topmodel/commit/927a846b11bd6757e7b185cbd9eb9deb26f2ddb1) [Core] Erreur si une propriété est référencée plusieurs fois dans le même al
+
 ## 1.3.0
 
 Version d'accompagnement de la release 1.3.x de l'extension VSCode. Contient de nombreuses améliorations internes pour aider le suivi des références de domaines et classes. Aucun impact n'est attendu sur la génération.
