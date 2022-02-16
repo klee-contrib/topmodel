@@ -9,7 +9,7 @@ Cette extension enrichit considérablement l'expérience de développement de pr
 Fonctionnalités principales :
 
 - Coloration syntaxique
-- Auto-complétion des Domaines, Classes et Propriétés
+- Auto-complétion des domaines, classes, propriétés et :new: alias
 - Validation et messages d'erreurs
 - Commandes `TopModel : Start model generation` et `TopModel : Start model generation (watch mode)` avec détection automatique du fichier de configuration
 - Import automatique
