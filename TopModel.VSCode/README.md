@@ -22,6 +22,10 @@ Fonctionnalités principales :
   - Ajout de la classe manquante au fichier courant
   - Ajout du domaine manquant au fichier des domaines
   - Renommage des classes (`F2`)
+- Warnings
+  - Imports inutiles
+  - Trigrams en doublon
+  - Propriétés d'alias en doublon
 
 ## Fonctionnalités en cours de développement
 
