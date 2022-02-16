@@ -57,7 +57,6 @@ public class SpringApiGenerator : GeneratorBase
         fw.WriteLine();
         fw.WriteLine("@RestController");
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
-        fw.WriteLine(@$"@RequestMapping(""{file.Module.Replace('.', '/').ToLower()}"")");
         fw.WriteLine($"public interface {className} {{");
 
         fw.WriteLine();
@@ -102,7 +101,8 @@ public class SpringApiGenerator : GeneratorBase
 
         if (writeAnnotation)
         {
-            fw.WriteLine(1, @$"@{endpoint.Method.ToLower().ToFirstUpper()}Mapping(""{endpoint.Route.Replace(endpoint.ModelFile.Module.ToLower(), string.Empty)}"")");
+            var hasForm = endpoint.Params.Any(p => p is IFieldProperty { Domain.Java.Type: "MultipartFile" });
+            fw.WriteLine(1, @$"@{endpoint.Method.ToLower().ToFirstUpper()}Mapping(path = ""{endpoint.Route}""{(hasForm ? ", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE }" : string.Empty)})");
         }
 
         var methodParams = new List<string>();
@@ -176,7 +176,6 @@ public class SpringApiGenerator : GeneratorBase
     {
         var imports = file.Endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToLower().ToFirstUpper()}Mapping").ToList();
         imports.AddRange(GetTypeImports(file));
-        imports.Add("org.springframework.web.bind.annotation.RequestMapping");
         imports.Add("org.springframework.web.bind.annotation.RestController");
         imports.Add("javax.annotation.Generated");
         if (file.Endpoints.Any(e => e.GetRouteParams().Any()))
@@ -193,6 +192,12 @@ public class SpringApiGenerator : GeneratorBase
         {
             imports.Add("org.springframework.web.bind.annotation.RequestBody");
             imports.Add("javax.validation.Valid");
+        }
+
+        var hasForm = file.Endpoints.Any(endpoint => endpoint.Params.Any(p => p is IFieldProperty { Domain.Java.Type: "MultipartFile" }));
+        if (hasForm)
+        {
+            imports.Add("org.springframework.http.MediaType");
         }
 
         fw.WriteImports(imports.Distinct().ToArray());
