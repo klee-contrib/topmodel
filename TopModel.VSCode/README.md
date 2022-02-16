@@ -20,10 +20,9 @@ Fonctionnalités principales :
 - Fromatage :
   - Tri des imports
 - Aides à la saisie :
-  - Ajout du domaine manquant
   - Ajout de l'import manquant
   - Ajout de la classe manquante au fichier courant
-  - Ajout du domain manquant au fichier des domaines
+  - Ajout du domaine manquant au fichier des domaines
   - Renommage des classes (`F2`)
 
 ## Fonctionnalités en cours de développement
