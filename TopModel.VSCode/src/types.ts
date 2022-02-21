@@ -6,3 +6,8 @@ export type TopModelConfig = {
 export class TopModelException {
     constructor(public readonly message: string) { }
 }
+
+export type Mermaid = {
+    diagram: string;
+    module: string;
+};

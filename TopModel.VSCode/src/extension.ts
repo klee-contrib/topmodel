@@ -1,19 +1,22 @@
 import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
 import { Trace } from 'vscode-jsonrpc';
-import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment, Terminal, Uri, TextEdit, ProviderResult, extensions, Position, Location, Range } from 'vscode';
+import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment, Terminal, Uri, Position } from 'vscode';
 import * as fs from "fs";
 import { TopModelConfig, TopModelException } from './types';
+import { registerPreview } from './preview';
 
 const open = require('open');
 const exec = require('child_process').exec;
 const yaml = require("js-yaml");
 
 const SERVER_EXE = 'dotnet';
-const COMMANDS = {
+export const COMMANDS = {
     update: "topmodel.modgen.update",
     install: "topmodel.modgen.install",
     modgen: "topmodel.modgen",
     modgenWatch: "topmodel.modgen.watch",
+    preview: "topmodel.preview",
+    findRef: "topmodel.findRef"
 };
 
 let NEXT_TERM_ID = 1;
@@ -35,7 +38,6 @@ export function activate(context: ExtensionContext) {
         });
     }
 }
-
 function createStatusBar() {
     topModelStatusBar = window.createStatusBarItem(StatusBarAlignment.Right, 100);
     topModelStatusBar.text = '$(loading~spin) Topmodel';
@@ -159,11 +161,12 @@ function registerCommands(context: ExtensionContext, configPath: string) {
     const modgenInstall = commands.registerCommand(COMMANDS.install, () => installModgen());
     const modgenUpdate = commands.registerCommand(COMMANDS.update, () => updateModgen());
     context.subscriptions.push(modgenInstall, modgenUpdate, modgen, modgenWatch);
-    commands.registerCommand("topmodel.findRef", async (line: number) => {
+    commands.registerCommand(COMMANDS.findRef, async (line: number) => {
         await commands.executeCommand("editor.action.goToLocations", window.activeTextEditor!.document.uri, new Position(line, 0), []);
         await commands.executeCommand("editor.action.goToReferences");
 
     });
+
     return NEXT_TERM_ID;
 }
 
@@ -218,8 +221,14 @@ function startLanguageServer(context: ExtensionContext, configPath: string, conf
     // Create the language client and start the client.
     const client = new LanguageClient('topmodel', 'TopModel', serverOptions, clientOptions);
     client.trace = Trace.Verbose;
+
     let disposable = client.start();
-    client.onReady().then(() => handleLsReady(config, context));
+    client.onReady().then(() => {
+        handleLsReady(config, context);
+        registerPreview(context, client);
+    });
+
+
     // Push the disposable to the context's subscriptions so that the
     // client can be deactivated on extension deactivation
     context.subscriptions.push(disposable);
@@ -232,6 +241,7 @@ function handleLsReady(config: TopModelConfig, context: ExtensionContext): void 
     topModelStatusBar.command = "extension.topmodel";
     context.subscriptions.push(topModelStatusBar);
     lsStarted = true;
+
 }
 
 function handleError(exception: TopModelException) {

@@ -3,7 +3,7 @@
   "displayName": "topmodel",
   "description": "Extension pour TopModel",
   "publisher": "JabX",
-  "icon": "icon.png",
+  "icon": "src/media/icon.png",
   "contributors": [
     {
       "name": "gideruette"
@@ -38,6 +38,15 @@
         "path": "./icon-theme.json"
       }
     ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "topmodel.preview",
+          "group": "navigation",
+          "when": "resourceExtname==.tmd"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "topmodel.modgen.update",
@@ -53,6 +62,15 @@
         "command": "topmodel.modgen.watch",
         "title": "Start model generation (watch mode)",
         "category": "TopModel"
+      },
+      {
+        "command": "topmodel.preview",
+        "title": "Open preview panel",
+        "category": "TopModel",
+        "icon": {
+          "light": "./src/media/Preview.svg",
+          "dark": "./src/media/Preview_inverse.svg"
+        }
       }
     ],
     "yamlValidation": [
@@ -92,7 +110,7 @@
             "id": "install.dotnet",
             "title": "Installer Dotnet",
             "media": {
-              "markdown": "media/dotnet.md"
+              "markdown": "./src/media/dotnet.md"
             }
           },
           {
@@ -100,7 +118,7 @@
             "title": "Installation de TopModel.Generator",
             "description": "Cliquez ici pour lancer la commande d'installation de TopModel.\n[Installer TopModel](command:topmodel.modgen.install)",
             "media": {
-              "markdown": "media/modgen.md"
+              "markdown": "./src/media/modgen.md"
             },
             "completionEvents": [
               "onCommand:topmodel.modgen.install"
@@ -108,20 +126,38 @@
           }
         ]
       }
+    ],
+    "customEditors": [
+      {
+        "viewType": "topmodel.preview",
+        "displayName": "Topmodel : Preview",
+        "selector": [
+          {
+            "filenamePattern": "*.tmd"
+          }
+        ],
+        "priority": "option"
+      }
     ]
   },
   "main": "./out/main.js",
   "scripts": {
-    "build": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "build-extension": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+    "build-preview-assets": "tsc ./src/topmodel-preview.ts --outfile ./out/topmodel-preview.js && cp ./node_modules/mermaid/dist/mermaid.min.js ./out/mermaid.js",
+    "build": "npm run build-extension && npm run build-preview-assets",
     "lint": "eslint src --ext ts",
     "package": "vsce package",
-    "start": "npm run build -- --sourcemap --watch",
+    "extension-watch": "npm run build-extension -- --sourcemap --watch",
+    "preview-watch": "tsc ./src/topmodel-preview.ts --outfile ./out/topmodel-preview.js --watch",
+    "start": "concurrently --kill-others \"npm run preview-watch\" \"npm run extension-watch\"",
     "vscode:prepublish": "npm run build -- --minify"
   },
   "dependencies": {
+    "@mermaid-js/mermaid-cli": "^8.14.0",
+    "mermaid": "^8.14.0",
     "open": "^8.4.0",
-    "vscode-jsonrpc": "^6.0.0",
-    "vscode-languageclient": "^7.0.0"
+    "vscode-jsonrpc": "8.0.0-next.6",
+    "vscode-languageclient": "8.0.0-next.12"
   },
   "devDependencies": {
     "@types/glob": "^7.1.4",
@@ -129,6 +165,7 @@
     "@types/vscode": "^1.62.0",
     "@typescript-eslint/eslint-plugin": "^5.1.0",
     "@typescript-eslint/parser": "^5.1.0",
+    "concurrently": "^7.0.0",
     "esbuild": "^0.14.1",
     "eslint": "^8.1.0",
     "glob": "^7.1.7",
