@@ -174,7 +174,7 @@ public class JpaModelGenerator : GeneratorBase
         fw.WriteLine("@Setter");
         fw.WriteLine("@NoArgsConstructor");
         fw.WriteLine("@AllArgsConstructor");
-        fw.WriteLine("@EqualsAndHashCode");
+        fw.WriteLine($"@EqualsAndHashCode{(classe.IsPersistent && classe.PrimaryKey != null ? @$"(of = {{ ""{classe.PrimaryKey!.Name.ToFirstLower()}"" }})" : string.Empty)}");
         fw.WriteLine("@ToString");
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
 
@@ -259,6 +259,7 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteDocEnd(1);
                 var fk = (ap.Role is not null ? ModelUtils.ConvertCsharp2Bdd(ap.Role) + "_" : string.Empty) + ap.Association.PrimaryKey!.SqlName;
                 var apk = ap.Association.PrimaryKey.SqlName;
+                var pk = classe.PrimaryKey!.SqlName;
                 switch (ap.Type)
                 {
                     case AssociationType.ManyToOne:
@@ -267,9 +268,9 @@ public class JpaModelGenerator : GeneratorBase
                         break;
                     case AssociationType.OneToMany:
                         fw.WriteLine(1, @$"@{ap.Type}(cascade=CascadeType.ALL, orphanRemoval = true)");
+                        fw.WriteLine(1, @$"@JoinColumn(name = ""{pk}"", referencedColumnName = ""{pk}"")");
                         break;
                     case AssociationType.ManyToMany:
-                        var pk = classe.PrimaryKey!.SqlName;
                         fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY)");
                         fw.WriteLine(1, @$"@JoinTable(name = ""{ap.Class.SqlName}_{ap.Association.SqlName}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
                         break;

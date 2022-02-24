@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +23,6 @@ import topmodel.exemple.name.dao.references.utilisateur.TypeUtilisateurCode;
 
 @RestController
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@RequestMapping("securite/utilisateur")
 public interface IUtilisateurController {
 
 
@@ -33,7 +31,7 @@ public interface IUtilisateurController {
      * @param utiId Id technique
      * @return Le détail de l'utilisateur
      */
-    @GetMapping("utilisateur/{utilisateurId}")
+    @GetMapping(path = "utilisateur/{utilisateurId}")
     default UtilisateurDto getUtilisateurMapping(@RequestParam("utiId") long utiId) {
         return this.getUtilisateur(utiId);
     }
@@ -50,7 +48,7 @@ public interface IUtilisateurController {
      * @param typeUtilisateurCode Type d'utilisateur en Many to one
      * @return Liste des utilisateurs
      */
-    @GetMapping("utilisateur/list")
+    @GetMapping(path = "utilisateur/list")
     default Set<UtilisateurDto> getUtilisateurListMapping(@RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode) {
         return this.getUtilisateurList(typeUtilisateurCode);
     }
@@ -67,7 +65,7 @@ public interface IUtilisateurController {
      * @param utilisateur Utilisateur à sauvegarder
      * @return Utilisateur sauvegardé
      */
-    @PostMapping("utilisateur/save")
+    @PostMapping(path = "utilisateur/save")
     default UtilisateurDto saveUtilisateurMapping(@RequestBody @Valid UtilisateurDto utilisateur) {
         return this.saveUtilisateur(utilisateur);
     }
@@ -84,7 +82,7 @@ public interface IUtilisateurController {
      * @param utilisateur Utilisateur à sauvegarder
      * @return Utilisateur sauvegardé
      */
-    @PostMapping("utilisateur/saveAll")
+    @PostMapping(path = "utilisateur/saveAll")
     default Set<UtilisateurDto> saveAllUtilisateurMapping(@RequestBody @Valid Set<UtilisateurDto> utilisateur) {
         return this.saveAllUtilisateur(utilisateur);
     }
@@ -106,7 +104,7 @@ public interface IUtilisateurController {
      * @param profilTypeProfilCode Type de profil
      * @return Utilisateurs matchant les critères
      */
-    @PostMapping("utilisateur/search")
+    @PostMapping(path = "utilisateur/search")
     default Page<UtilisateurDto> searchMapping(@RequestParam("utiId") long utiId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode, @RequestParam("typeUtilisateurCodeOrigin") TypeUtilisateurCode typeUtilisateurCodeOrigin, @RequestParam("proProfilId") long proProfilId, @RequestParam("profilTypeProfilCode") TypeProfilCode profilTypeProfilCode) {
         return this.search(utiId, email, typeUtilisateurCode, typeUtilisateurCodeOrigin, proProfilId, profilTypeProfilCode);
     }

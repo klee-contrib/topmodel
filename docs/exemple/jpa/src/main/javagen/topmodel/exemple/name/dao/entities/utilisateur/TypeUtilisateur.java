@@ -35,7 +35,7 @@ import topmodel.exemple.utils.IFieldEnum;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(of = { "code" })
 @ToString
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity

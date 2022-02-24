@@ -111,6 +111,7 @@ public static class ImportsJpaExtensions
                 imports.Add("java.util.Collections");
                 imports.Add("javax.persistence.FetchType");
                 imports.Add("javax.persistence.CascadeType");
+                imports.Add("javax.persistence.JoinColumn");
                 break;
             case AssociationType.ManyToOne:
                 imports.Add("javax.persistence.FetchType");

@@ -16,6 +16,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -36,7 +37,7 @@ import topmodel.exemple.utils.IFieldEnum;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(of = { "id" })
 @ToString
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
@@ -67,6 +68,7 @@ public class Profil implements Serializable {
      * @return value of typeProfilList.
      */
     @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "PRO_ID", referencedColumnName = "PRO_ID")
     public Set<TypeProfil> getTypeProfilList() {
         if(typeProfilList == null) this.typeProfilList = Collections.emptySet();
         return this.typeProfilList;
