@@ -4,7 +4,7 @@
 
 package topmodel.exemple.name.api.controller.securite.utilisateur;
 
-import java.util.Set;
+import java.util.List;
 
 import javax.annotation.Generated;
 import javax.validation.constraints.Email;
@@ -49,7 +49,7 @@ public interface IUtilisateurController {
      * @return Liste des utilisateurs
      */
     @GetMapping(path = "utilisateur/list")
-    default Set<UtilisateurDto> getUtilisateurListMapping(@RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode) {
+    default List<UtilisateurDto> getUtilisateurListMapping(@RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode) {
         return this.getUtilisateurList(typeUtilisateurCode);
     }
 
@@ -58,7 +58,7 @@ public interface IUtilisateurController {
      * @param typeUtilisateurCode Type d'utilisateur en Many to one
      * @return Liste des utilisateurs
      */
-    Set<UtilisateurDto> getUtilisateurList(TypeUtilisateurCode typeUtilisateurCode);
+    List<UtilisateurDto> getUtilisateurList(TypeUtilisateurCode typeUtilisateurCode);
 
     /**
      * Sauvegarde un utilisateur.
@@ -83,7 +83,7 @@ public interface IUtilisateurController {
      * @return Utilisateur sauvegardé
      */
     @PostMapping(path = "utilisateur/saveAll")
-    default Set<UtilisateurDto> saveAllUtilisateurMapping(@RequestBody @Valid Set<UtilisateurDto> utilisateur) {
+    default List<UtilisateurDto> saveAllUtilisateurMapping(@RequestBody @Valid List<UtilisateurDto> utilisateur) {
         return this.saveAllUtilisateur(utilisateur);
     }
 
@@ -92,7 +92,7 @@ public interface IUtilisateurController {
      * @param utilisateur Utilisateur à sauvegarder
      * @return Utilisateur sauvegardé
      */
-    Set<UtilisateurDto> saveAllUtilisateur(Set<UtilisateurDto> utilisateur);
+    List<UtilisateurDto> saveAllUtilisateur(List<UtilisateurDto> utilisateur);
 
     /**
      * Recherche des utilisateurs.
