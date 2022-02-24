@@ -107,7 +107,7 @@ public static class ImportsJpaExtensions
         switch (ap.Type)
         {
             case AssociationType.OneToMany:
-                imports.Add("java.util.Set");
+                imports.Add("java.util.List");
                 imports.Add("java.util.Collections");
                 imports.Add("javax.persistence.FetchType");
                 imports.Add("javax.persistence.CascadeType");
@@ -118,7 +118,7 @@ public static class ImportsJpaExtensions
                 imports.Add("javax.persistence.JoinColumn");
                 break;
             case AssociationType.ManyToMany:
-                imports.Add("java.util.Set");
+                imports.Add("java.util.List");
                 imports.Add("java.util.Collections");
                 imports.Add("javax.persistence.JoinColumn");
                 imports.Add("javax.persistence.FetchType");
@@ -149,7 +149,7 @@ public static class ImportsJpaExtensions
 
         if (cp.Kind == "list")
         {
-            imports.Add("java.util.Set");
+            imports.Add("java.util.List");
         }
         else if (cp.DomainKind?.Java?.Imports != null)
         {
