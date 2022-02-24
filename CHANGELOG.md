@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.3.3
+
+- [`5828b26e`](https://github.com/klee-contrib/topmodel/commit/5828b26e8a35b23a448ec7352097ad4d042304c7) [JPA] : Mauvaise génération oneToMany #59
+- [`5828b26e`](https://github.com/klee-contrib/topmodel/commit/5828b26e8a35b23a448ec7352097ad4d042304c7) [JPA] : Le EqualsAndHashCode devrait se base sur l'ID uniquement #60
+
 ## 1.3.2
 
 - [`6cdc19f`](https://github.com/klee-contrib/topmodel/commit/6cdc19f414ec2606df51d173438b2193e1217d21) [JS] Fix API CLient options non utilisé dans le cas de téléversement
