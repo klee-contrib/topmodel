@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.DateTime;
-import java.util.Set;
+import java.util.List;
 
 import javax.annotation.Generated;
 import javax.persistence.CascadeType;
@@ -62,7 +62,7 @@ public class Utilisateur implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private long id;
-    private Set<Profil> profilList;
+    private List<Profil> profilList;
     private DateTime dateCreation;
     private DateTime dateModification;
     private String email;
@@ -89,8 +89,8 @@ public class Utilisateur implements Serializable {
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "UTILISATEUR_PROFIL", joinColumns = @JoinColumn(name = "UTI_ID"), inverseJoinColumns = @JoinColumn(name = "PRO_ID"))
-    public Set<Profil> getProfilList() {
-        if(profilList == null) this.profilList = Collections.emptySet();
+    public List<Profil> getProfilList() {
+        if(profilList == null) this.profilList = Collections.emptyList();
         return this.profilList;
     }
 

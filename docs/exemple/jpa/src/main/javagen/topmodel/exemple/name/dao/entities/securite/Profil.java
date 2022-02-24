@@ -6,7 +6,7 @@ package topmodel.exemple.name.dao.entities.securite;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 
 import javax.annotation.Generated;
 import javax.persistence.CascadeType;
@@ -47,7 +47,7 @@ public class Profil implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private long id;
-    private Set<TypeProfil> typeProfilList;
+    private List<TypeProfil> typeProfilList;
 
     /**
      * Id technique.
@@ -67,10 +67,10 @@ public class Profil implements Serializable {
      *
      * @return value of typeProfilList.
      */
-    @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "PRO_ID", referencedColumnName = "PRO_ID")
-    public Set<TypeProfil> getTypeProfilList() {
-        if(typeProfilList == null) this.typeProfilList = Collections.emptySet();
+    public List<TypeProfil> getTypeProfilList() {
+        if(typeProfilList == null) this.typeProfilList = Collections.emptyList();
         return this.typeProfilList;
     }
 
