@@ -21,7 +21,7 @@ public static class JpaUtils
     {
         if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
         {
-            return $"Set<{ap.Association.Name}>";
+            return $"List<{ap.Association.Name}>";
         }
 
         return ap.Association.Name;
@@ -56,7 +56,7 @@ public static class JpaUtils
         return cp.Kind switch
         {
             "object" => cp.Composition.Name,
-            "list" => $"Set<{cp.Composition.Name}>",
+            "list" => $"List<{cp.Composition.Name}>",
             "async-list" => $"IAsyncEnumerable<{cp.Composition.Name}>",
             string _ when cp.DomainKind!.Java!.Type.Contains("{class}") => cp.DomainKind.Java.Type.Replace("{class}", cp.Composition.Name),
             string _ => $"{cp.DomainKind.Java.Type}<{cp.Composition.Name}>"

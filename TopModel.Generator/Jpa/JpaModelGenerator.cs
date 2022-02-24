@@ -267,7 +267,7 @@ public class JpaModelGenerator : GeneratorBase
                         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
                         break;
                     case AssociationType.OneToMany:
-                        fw.WriteLine(1, @$"@{ap.Type}(cascade=CascadeType.ALL, orphanRemoval = true)");
+                        fw.WriteLine(1, @$"@{ap.Type}(cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)");
                         fw.WriteLine(1, @$"@JoinColumn(name = ""{pk}"", referencedColumnName = ""{pk}"")");
                         break;
                     case AssociationType.ManyToMany:
@@ -283,7 +283,7 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteLine(1, @$"public {ap.GetJavaType()} get{ap.GetAssociationName().ToFirstUpper()}() {{");
                 if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
                 {
-                    fw.WriteLine(2, @$"if({ap.GetAssociationName()} == null) this.{ap.GetAssociationName()} = Collections.emptySet();");
+                    fw.WriteLine(2, @$"if({ap.GetAssociationName()} == null) this.{ap.GetAssociationName()} = Collections.emptyList();");
                 }
 
                 fw.WriteLine(2, @$"return this.{ap.GetAssociationName()};");
@@ -297,7 +297,7 @@ public class JpaModelGenerator : GeneratorBase
 
                 if (cp.Kind == "list")
                 {
-                    fw.WriteLine(2, @$"if({cp.Name.ToFirstLower()} == null) this.{cp.Name.ToFirstLower()} = java.util.Collections.emptySet();");
+                    fw.WriteLine(2, @$"if({cp.Name.ToFirstLower()} == null) this.{cp.Name.ToFirstLower()} = java.util.Collections.emptyList();");
                 }
 
                 fw.WriteLine(2, @$"return this.{cp.Name.ToFirstLower()};");
