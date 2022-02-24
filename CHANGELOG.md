@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.3.4
+
+- [`b344ca01`](https://github.com/klee-contrib/topmodel/commit/b344ca01dc7f47c504dfd75d05fc102cff0f4ecb) [JPA] : EqualsAndHash dans hashset #61
+
 ## 1.3.3
 
 - [`5828b26e`](https://github.com/klee-contrib/topmodel/commit/5828b26e8a35b23a448ec7352097ad4d042304c7) [JPA] : Mauvaise génération oneToMany #59
