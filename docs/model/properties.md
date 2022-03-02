@@ -24,7 +24,13 @@ comment: Montant initial du prêt.
 
 Une association est une propriété spéciale qui permet de **référencer la clé primaire d'une autre classe**. L'usage principal est de pouvoir définir des clés étrangères dans un modèle persisté. Elle est identifiée par la présence de la propriété `association` en premier.
 
-Une association peut être obligatoire (ou non) et définir un rôle optionnel. Le nom de la propriété sera déterminé automatiquement comme étant `{ClasseCible}{CléPrimaire}{Rôle}`. Une association peut aussi définir une multiplicité ("one to one", "one to many"...), mais cette information n'est en général pas utilisée par les divers générateurs, qui supposent qu'il s'agit toujours d'une "one to many".
+Une association peut être obligatoire (ou non) et définir un rôle optionnel.
+
+Une association peut également définir sa multiplicité : `manyToOne` (par défaut), `oneToOne`, `oneToMany` et `manyToMany`.
+
+Une `manyToOne` correspond à une clé étrangère simple vers la classe référencée, tandis que `oneToOne` y ajoute une contrainte d'unicité. Dans ces deux cas, le nom de la propriété sera déterminé automatiquement comme étant `{ClasseCible.Name}{ClasseCible.PrimaryKey}{Rôle}`.
+
+Les `oneToMany` et `manyToMany` ne sont (pour l'instant) acceptées que par le générateur JPA, qui implémentera ces associations comme des collections de la classe cible. Dans ces deux cas, le nom de la propriété sera déterminé automatiquement comme étant `{ClasseCible.PluralName}{Rôle}`.
 
 La classe référencée par l'association doit être connue du fichier de modèle courant, soit parce qu'elle est définie dedans, soit parce que son fichier est référencé dans la section `uses`.
 

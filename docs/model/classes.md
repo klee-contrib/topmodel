@@ -7,6 +7,8 @@ Une classe se définit de la façon suivante :
 ```yaml
 class:
   name: # Nom de la classe
+  pluralName: # Nom de la classe au pluriel, si différent de "name" avec un "s"
+  sqlName: # Nom de la table SQL associée, si différent de "name" ou "pluralName" (selon configuration) en SNAKE_CASE
   label: # Libellé de la classe
   comment: # Description de la calasse
   # Autres propriétés comme "trigram" (si persistant), "defaultProperty", "reference" pour les listes de références...
