@@ -7,6 +7,8 @@ public class Class
 {
     private string? _sqlName;
 
+    private string? _pluralName;
+
     public LocatedString? Trigram { get; set; }
 
 #nullable disable
@@ -45,6 +47,12 @@ public class Class
     {
         get => _sqlName ?? ModelUtils.ConvertCsharp2Bdd(Name);
         set => _sqlName = value;
+    }
+
+    public string PluralName
+    {
+        get => _pluralName ?? (Name.EndsWith("s") ? Name : $"{Name}s");
+        set => _pluralName = value;
     }
 
     public bool IsPersistent => Properties.Any(p => p is not AliasProperty && p.PrimaryKey) || Properties.All(p => p is AssociationProperty);

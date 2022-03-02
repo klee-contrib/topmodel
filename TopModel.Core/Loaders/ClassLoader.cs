@@ -32,6 +32,9 @@ public class ClassLoader
                 case "name":
                     classe.Name = new LocatedString(value);
                     break;
+                case "pluralName":
+                    classe.PluralName = value.Value;
+                    break;
                 case "sqlName":
                     classe.SqlName = value.Value;
                     break;

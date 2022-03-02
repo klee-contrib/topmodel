@@ -2,9 +2,6 @@
 using TopModel.Core;
 
 namespace TopModel.Generator.CSharp;
-
-using static CSharpUtils;
-
 public class ReferenceAccessorGenerator
 {
     private readonly CSharpConfig _config;
@@ -23,7 +20,7 @@ public class ReferenceAccessorGenerator
     public void Generate(IEnumerable<Class> classes)
     {
         var classList = classes
-            .OrderBy(x => Pluralize(x.Name), StringComparer.Ordinal)
+            .OrderBy(x => x.PluralName, StringComparer.Ordinal)
             .ToList();
 
         if (!classList.Any() || _config.Kinetix == KinetixVersion.None)
@@ -155,7 +152,7 @@ public class ReferenceAccessorGenerator
 
         foreach (var classe in classList.Where(c => c.IsPersistent || c.ReferenceValues != null))
         {
-            var serviceName = "Load" + (_config.DbContextPath == null ? $"{classe.Name}List" : Pluralize(classe.Name));
+            var serviceName = "Load" + (_config.DbContextPath == null ? $"{classe.Name}List" : classe.PluralName);
             w.WriteLine(2, "/// <inheritdoc cref=\"" + interfaceName + "." + serviceName + "\" />");
             w.WriteLine(2, "public ICollection<" + classe.Name + "> " + serviceName + "()\r\n{");
             w.WriteLine(3, LoadReferenceAccessorBody(classe));
@@ -254,7 +251,7 @@ public class ReferenceAccessorGenerator
                 w.WriteLine(2, "[OperationContract]");
             }
 
-            w.WriteLine(2, "ICollection<" + classe.Name + "> Load" + (_config.DbContextPath == null ? $"{classe.Name}List" : Pluralize(classe.Name)) + "();");
+            w.WriteLine(2, "ICollection<" + classe.Name + "> Load" + (_config.DbContextPath == null ? $"{classe.Name}List" : classe.PluralName) + "();");
 
             if (count != classList.Count())
             {
@@ -294,7 +291,7 @@ public class ReferenceAccessorGenerator
                 queryParameter = $".OrderBy(row => row.{defaultProperty.Name})";
             }
 
-            return $"return _dbContext.{Pluralize(classe.Name)}{queryParameter}.ToList();";
+            return $"return _dbContext.{classe.PluralName}{queryParameter}.ToList();";
         }
         else
         {

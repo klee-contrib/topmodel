@@ -394,7 +394,11 @@
             },
             "name": {
               "type": "string",
-              "description": "Nom C#/TS de la classe. Sera converti en SQL en SNAKE_CASE."
+              "description": "Nom de la classe. Sera converti en SQL en SNAKE_CASE."
+            },
+            "pluralName": {
+              "type": "string",
+              "description": "Nom de la classe au pluriel. Sera généré à partir du nom avec un 's' si non renseigné."
             },
             "sqlName": {
               "type": "string",

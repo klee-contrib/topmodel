@@ -2,9 +2,6 @@
 using TopModel.Core;
 
 namespace TopModel.Generator.CSharp;
-
-using static CSharpUtils;
-
 public class DbContextGenerator
 {
     private readonly CSharpConfig _config;
@@ -96,7 +93,7 @@ public class DbContextGenerator
         {
             w.WriteLine();
             w.WriteSummary(2, "Accès à l'entité " + classe.Name);
-            w.WriteLine(2, "public DbSet<" + classe.Name + "> " + Pluralize(classe.Name) + " { get; set; }");
+            w.WriteLine(2, "public DbSet<" + classe.Name + "> " + classe.PluralName + " { get; set; }");
         }
 
         if (_config.UseEFMigrations)
