@@ -243,6 +243,11 @@ public class SqlTableScripter : ISqlScripter<Class>
         var fkList = properties.OfType<AssociationProperty>().ToList();
         foreach (var property in fkList)
         {
+            if (property.Type != AssociationType.ManyToOne && property.Type != AssociationType.OneToOne)
+            {
+                throw new ModelException(property, $"Le type d'association {property.Type} n'est pas supporté par le générateur SSDT");
+            }
+
             sb.Clear();
             WriteConstraintForeignKey(sb, property);
             definitions.Add(sb.ToString());
@@ -315,10 +320,9 @@ public class SqlTableScripter : ISqlScripter<Class>
     /// <returns>Liste des déclarations de contraintes d'unicité.</returns>
     private IList<string> WriteUniqueConstraints(Class classe)
     {
-        return classe.UniqueKeys == null
-            ? new List<string>()
-            : classe.UniqueKeys.Select(uk =>
-                $"constraint [UK_{classe.SqlName}_{string.Join("_", uk.Select(p => p.SqlName))}] unique nonclustered ({string.Join(", ", uk.Select(p => $"[{p.SqlName}] ASC"))})")
+        return (classe.UniqueKeys ?? new List<IList<IFieldProperty>>())
+            .Concat(classe.Properties.OfType<AssociationProperty>().Where(ap => ap.Type == AssociationType.OneToOne).Select(ap => new[] { ap }))
+            .Select(uk => $"constraint [UK_{classe.SqlName}_{string.Join("_", uk.Select(p => p.SqlName))}] unique nonclustered ({string.Join(", ", uk.Select(p => $"[{p.SqlName}] ASC"))})")
             .ToList();
     }
 }
