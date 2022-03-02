@@ -142,7 +142,19 @@ public class DbContextGenerator
             foreach (var prop in classes.OrderBy(c => c.Name).SelectMany(c => c.Properties).Where(p => p is AssociationProperty || p is AliasProperty { Property: AssociationProperty }))
             {
                 hasFk = true;
-                w.WriteLine(3, $"modelBuilder.Entity<{prop.Class.Name}>().HasOne<{(prop is AssociationProperty ap ? ap.Association : prop is AliasProperty { Property: AssociationProperty alp } ? alp.Association : null)}>().WithMany().HasForeignKey(p => p.{prop.Name}).OnDelete(DeleteBehavior.Restrict);");
+                var ap = prop switch
+                {
+                    AssociationProperty a => a,
+                    AliasProperty { Property: AssociationProperty a } => a,
+                    _ => null!
+                };
+
+                if (ap.Type != AssociationType.ManyToOne && ap.Type != AssociationType.OneToOne)
+                {
+                    throw new ModelException(ap, $"Le type d'association {ap.Type} n'est pas supporté par le générateur C#");
+                }
+
+                w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().HasOne<{ap.Association}>().With{(ap.Type == AssociationType.ManyToOne ? "Many" : "One")}().HasForeignKey{(ap.Type == AssociationType.ManyToOne ? string.Empty : $"<{prop.Class}>")}(p => p.{prop.Name}).OnDelete(DeleteBehavior.Restrict);");
             }
 
             if (hasFk)

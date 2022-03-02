@@ -64,7 +64,7 @@
             },
             "type": {
               "type": "string",
-              "description": "Type de l'association. La plupart des générateurs ignorent ce paramètre et considèrent qu'une associtation est toujours une FK simple. Par défaut: 'oneToMany'",
+              "description": "Type de l'association. La plupart des générateurs ignorent ce paramètre et considèrent qu'une associtation est toujours une FK simple. Par défaut: 'manyToOne'",
               "enum": [ "oneToOne", "oneToMany", "manyToOne", "manyToMany" ]
             },
             "required": {
