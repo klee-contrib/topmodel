@@ -92,16 +92,6 @@ public static class CSharpUtils
     }
 
     /// <summary>
-    /// Mets au pluriel le nom.
-    /// </summary>
-    /// <param name="className">Le nom de la classe.</param>
-    /// <returns>Au pluriel.</returns>
-    public static string Pluralize(string className)
-    {
-        return className.EndsWith("s") ? className : className + "s";
-    }
-
-    /// <summary>
     /// Initialisation des types.
     /// </summary>
     private static void InitializeRegType()
