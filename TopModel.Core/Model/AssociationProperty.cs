@@ -1,4 +1,5 @@
-﻿using TopModel.Core.FileModel;
+﻿using System.Text;
+using TopModel.Core.FileModel;
 
 namespace TopModel.Core;
 
@@ -26,7 +27,41 @@ public class AssociationProperty : IFieldProperty
 
     public string? DefaultValue { get; set; }
 
-    public string Name => (Association?.Extends == null && !AsAlias ? Association?.Name : string.Empty) + Association?.Properties.Single(p => p.PrimaryKey).Name + (Role?.Replace(" ", string.Empty) ?? string.Empty);
+    public string Name
+    {
+        get
+        {
+            if (Association == null)
+            {
+                return string.Empty;
+            }
+
+            var name = new StringBuilder();
+            if (Association.Extends == null && !AsAlias)
+            {
+                if (Type == AssociationType.OneToMany || Type == AssociationType.ManyToMany)
+                {
+                    name.Append(Association.PluralName);
+                }
+                else
+                {
+                    name.Append(Association.Name);
+                }
+            }
+
+            if (Type == AssociationType.ManyToOne || Type == AssociationType.OneToOne)
+            {
+                name.Append(Association?.Properties.Single(p => p.PrimaryKey).Name);
+            }
+
+            if (!string.IsNullOrWhiteSpace(Role))
+            {
+                name.Append(Role?.Replace(" ", string.Empty));
+            }
+
+            return name.ToString();
+        }
+    }
 
     public Domain Domain => Association.Properties.OfType<IFieldProperty>().Single(p => p.PrimaryKey).Domain;
 
