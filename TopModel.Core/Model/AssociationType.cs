@@ -3,9 +3,9 @@
 public enum AssociationType
 {
     /// <summary>
-    /// One to many.
+    /// Many to one.
     /// </summary>
-    OneToMany,
+    ManyToOne,
 
     /// <summary>
     /// One to one.
@@ -13,9 +13,9 @@ public enum AssociationType
     OneToOne,
 
     /// <summary>
-    /// Many to one.
+    /// One to many.
     /// </summary>
-    ManyToOne,
+    OneToMany,
 
     /// <summary>
     /// Many to many.
