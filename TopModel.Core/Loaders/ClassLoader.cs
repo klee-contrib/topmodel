@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Utils;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
@@ -7,10 +8,12 @@ namespace TopModel.Core.Loaders;
 public class ClassLoader
 {
     private readonly FileChecker _fileChecker;
+    private readonly ModelConfig _modelConfig;
 
-    public ClassLoader(FileChecker fileChecker)
+    public ClassLoader(FileChecker fileChecker, ModelConfig modelConfig)
     {
         _fileChecker = fileChecker;
+        _modelConfig = modelConfig;
     }
 
     internal Class LoadClass(Parser parser, string filePath)
@@ -65,6 +68,7 @@ public class ClassLoader
         }
 
         classe.Label ??= classe.Name;
+        classe.SqlName ??= ModelUtils.ConvertCsharp2Bdd(_modelConfig.PluralizeTableNames ? classe.PluralName : classe.Name);
 
         parser.Consume<Scalar>();
         parser.Consume<SequenceStart>();

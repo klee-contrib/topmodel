@@ -1,18 +1,17 @@
 ﻿using TopModel.Core.FileModel;
-using TopModel.Utils;
 
 namespace TopModel.Core;
 
 public class Class
 {
-    private string? _sqlName;
-
     private string? _pluralName;
 
     public LocatedString? Trigram { get; set; }
 
 #nullable disable
     public LocatedString Name { get; set; }
+
+    public string SqlName { get; set; }
 
     public string Comment { get; set; }
 
@@ -42,12 +41,6 @@ public class Class
     public IList<ReferenceValue>? ReferenceValues { get; set; }
 
     public IList<IList<IFieldProperty>>? UniqueKeys { get; set; }
-
-    public string SqlName
-    {
-        get => _sqlName ?? ModelUtils.ConvertCsharp2Bdd(Name);
-        set => _sqlName = value;
-    }
 
     public string PluralName
     {
