@@ -446,6 +446,11 @@ public abstract class AbstractSchemaGenerator
 
             if (property is AssociationProperty ap)
             {
+                if (ap.Type != AssociationType.ManyToOne && ap.Type != AssociationType.OneToOne)
+                {
+                    throw new ModelException(ap, $"Le type d'association {ap.Type} n'est pas supporté par le générateur SQL");
+                }
+
                 fkPropertiesList.Add(ap);
             }
         }
@@ -485,14 +490,12 @@ public abstract class AbstractSchemaGenerator
     /// <param name="writerUk">Writer.</param>
     private void WriteUniqueKeys(Class classe, SqlFileWriter? writerUk)
     {
-        if (classe.UniqueKeys != null)
+        foreach (var uk in (classe.UniqueKeys ?? new List<IList<IFieldProperty>>())
+            .Concat(classe.Properties.OfType<AssociationProperty>().Where(ap => ap.Type == AssociationType.OneToOne).Select(ap => new[] { ap })))
         {
-            foreach (var uk in classe.UniqueKeys)
-            {
-                writerUk?.Write($"alter table {classe.SqlName} add constraint {Quote($"UK_{classe.SqlName}_{string.Join("_", uk.Select(p => p.SqlName))}")} unique ({string.Join(", ", uk.Select(p => Quote(p.SqlName)))})");
-                writerUk?.WriteLine(BatchSeparator);
-                writerUk?.WriteLine();
-            }
+            writerUk?.Write($"alter table {classe.SqlName} add constraint {Quote($"UK_{classe.SqlName}_{string.Join("_", uk.Select(p => p.SqlName))}")} unique ({string.Join(", ", uk.Select(p => Quote(p.SqlName)))})");
+            writerUk?.WriteLine(BatchSeparator);
+            writerUk?.WriteLine();
         }
     }
 
