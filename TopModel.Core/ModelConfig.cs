@@ -11,6 +11,8 @@ public class ModelConfig
 
     public bool AllowCompositePrimaryKey { get; set; }
 
+    public bool PluralizeTableNames { get; set; }
+
     public string GetFileName(string filePath)
     {
         return Path.GetRelativePath(Path.Combine(Directory.GetCurrentDirectory(), ModelRoot), filePath)
