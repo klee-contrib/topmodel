@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import topmodel.exemple.name.dao.entities.securite.TypeProfil.TypeProfil.Values;
 import topmodel.exemple.utils.IFieldEnum;
 
 /**
@@ -44,7 +45,7 @@ public class Profil implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private long id;
-    private TypeProfil typeProfil;
+    private TypeProfil.Values typeProfilCode;
 
     /**
      * Id technique.
@@ -62,16 +63,16 @@ public class Profil implements Serializable {
     /**
      * Type de profil.
      *
-     * @return value of typeProfil.
+     * @return value of typeProfilCode.
      */
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeProfil.class)
     @JoinColumn(name = "CODE", referencedColumnName = "CODE")
-    public TypeProfil getTypeProfil() {
-        return this.typeProfil;
+    public TypeProfil.Values getTypeProfilCode() {
+        return this.typeProfilCode;
     }
 
     public enum Fields implements IFieldEnum<Profil> {
          ID, //
-         TYPE_PROFIL
+         TYPE_PROFIL_CODE
     }
 }

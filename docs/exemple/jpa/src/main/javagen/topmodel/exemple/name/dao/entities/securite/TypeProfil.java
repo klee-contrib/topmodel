@@ -21,11 +21,12 @@ import org.hibernate.annotations.Immutable;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import topmodel.exemple.name.dao.references.securite.TypeProfilCode;
+import topmodel.exemple.name.dao.entities.securite.TypeProfil.TypeProfil.Values;
 import topmodel.exemple.utils.IFieldEnum;
 
 /**
@@ -46,7 +47,7 @@ public class TypeProfil implements Serializable {
 	/** Serial ID */
     private static final long serialVersionUID = 1L;
 
-    private TypeProfilCode code;
+    private TypeProfil.Values code;
     private String libelle;
 
     /**
@@ -57,7 +58,7 @@ public class TypeProfil implements Serializable {
     @Id
     @Column(name = "CODE", nullable = false, updatable = false, length = 3)
     @Enumerated(EnumType.STRING)
-    public TypeProfilCode getCode() {
+    public TypeProfil.Values getCode() {
          return this.code;
     }
 
@@ -74,5 +75,17 @@ public class TypeProfil implements Serializable {
     public enum Fields implements IFieldEnum<TypeProfil> {
          CODE, //
          LIBELLE
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public enum Values {
+        ADM("Administrateur"), //
+        GES("Gestionnaire"); 
+
+        /**
+         * Libellé du type d'utilisateur.
+         */
+        private final String libelle;
     }
 }

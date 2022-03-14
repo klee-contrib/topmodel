@@ -17,7 +17,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto;
-import topmodel.exemple.name.dao.references.securite.TypeProfilCode;
+import topmodel.exemple.name.dao.entities.securite.TypeProfil;
 
 /**
  * Objet métier non persisté représentant Profil.
@@ -34,7 +34,7 @@ public class ProfilDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private long id;
-    private TypeProfilCode typeProfilCode;
+    private TypeProfil.Values typeProfilCode;
     private List<UtilisateurDto> utilisateurs;
 
     /**
@@ -53,7 +53,7 @@ public class ProfilDto implements Serializable {
      *
      * @return value of typeProfilCode.
      */
-    public TypeProfilCode getTypeProfilCode() {
+    public TypeProfil.Values getTypeProfilCode() {
          return this.typeProfilCode;
     }
 
