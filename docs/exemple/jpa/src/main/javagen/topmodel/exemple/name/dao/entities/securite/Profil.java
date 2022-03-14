@@ -5,11 +5,8 @@
 package topmodel.exemple.name.dao.entities.securite;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
 
 import javax.annotation.Generated;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,7 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -47,7 +44,7 @@ public class Profil implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private long id;
-    private List<TypeProfil> typeProfilList;
+    private TypeProfil typeProfil;
 
     /**
      * Id technique.
@@ -65,17 +62,16 @@ public class Profil implements Serializable {
     /**
      * Type de profil.
      *
-     * @return value of typeProfilList.
+     * @return value of typeProfil.
      */
-    @OneToMany(cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "PRO_ID", referencedColumnName = "PRO_ID")
-    public List<TypeProfil> getTypeProfilList() {
-        if(typeProfilList == null) this.typeProfilList = Collections.emptyList();
-        return this.typeProfilList;
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
+    public TypeProfil getTypeProfil() {
+        return this.typeProfil;
     }
 
     public enum Fields implements IFieldEnum<Profil> {
          ID, //
-         TYPE_PROFIL_LIST
+         TYPE_PROFIL
     }
 }

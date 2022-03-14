@@ -32,10 +32,10 @@ public static class ImportsJpaExtensions
         {
             imports.Add("javax.persistence.Id");
             if (
-                           rp.Domain.Java!.Type == "Long"
-                       || rp.Domain.Java.Type == "long"
-                       || rp.Domain.Java.Type == "int"
-                       || rp.Domain.Java.Type == "Integer")
+                rp.Domain.Java!.Type == "Long"
+                || rp.Domain.Java.Type == "long"
+                || rp.Domain.Java.Type == "int"
+                || rp.Domain.Java.Type == "Integer")
             {
                 imports.AddRange(new List<string>
                 {
@@ -67,15 +67,20 @@ public static class ImportsJpaExtensions
             var package = $"{config.DaoPackageName}.references.{ap.Property.Class.Namespace.Module.ToLower()}";
             imports.Add(package + "." + ap.GetJavaType());
         }
-        else if (ap.IsAssociatedEnum())
+        else if (ap.Property is AssociationProperty apr && ap.IsAssociatedEnum())
         {
             var package = $"{config.DaoPackageName}.references.{((AssociationProperty)ap.Property).Association.Namespace.Module.ToLower()}";
-            imports.Add(package + "." + ap.GetJavaType());
+            imports.Add(package + "." + apr.Association.PrimaryKey!.GetJavaType());
         }
 
         if (ap.Domain.Java?.Imports != null)
         {
             imports.AddRange(ap.Domain.Java.Imports);
+        }
+
+        if (ap.Property is AssociationProperty apo && (apo.Type == AssociationType.ManyToMany || apo.Type == AssociationType.OneToMany))
+        {
+            imports.Add("java.util.List");
         }
 
         return imports;
