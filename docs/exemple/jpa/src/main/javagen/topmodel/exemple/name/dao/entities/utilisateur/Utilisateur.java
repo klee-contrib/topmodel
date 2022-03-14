@@ -42,6 +42,7 @@ import lombok.ToString;
 import oorg.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import topmodel.exemple.name.dao.entities.securite.Profil;
+import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur.TypeUtilisateur.Values;
 import topmodel.exemple.utils.IFieldEnum;
 
 /**
@@ -66,8 +67,8 @@ public class Utilisateur implements Serializable {
     private DateTime dateCreation;
     private DateTime dateModification;
     private String email;
-    private TypeUtilisateur typeUtilisateur;
-    private TypeUtilisateur typeUtilisateurOrigin;
+    private TypeUtilisateur.Values typeUtilisateurCode;
+    private TypeUtilisateur.Values typeUtilisateurCodeOrigin;
 
     /**
      * Id technique.
@@ -130,23 +131,23 @@ public class Utilisateur implements Serializable {
     /**
      * Type d'utilisateur en Many to one.
      *
-     * @return value of typeUtilisateur.
+     * @return value of typeUtilisateurCode.
      */
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeUtilisateur.class)
     @JoinColumn(name = "TUT_CODE", referencedColumnName = "TUT_CODE")
-    public TypeUtilisateur getTypeUtilisateur() {
-        return this.typeUtilisateur;
+    public TypeUtilisateur.Values getTypeUtilisateurCode() {
+        return this.typeUtilisateurCode;
     }
 
     /**
      * Type d'utilisateur en one to one.
      *
-     * @return value of typeUtilisateurOrigin.
+     * @return value of typeUtilisateurCodeOrigin.
      */
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
     @JoinColumn(name = "ORIGIN_TUT_CODE", referencedColumnName = "TUT_CODE", unique = true)
-    public TypeUtilisateur getTypeUtilisateurOrigin() {
-        return this.typeUtilisateurOrigin;
+    public TypeUtilisateur.Values getTypeUtilisateurCodeOrigin() {
+        return this.typeUtilisateurCodeOrigin;
     }
 
     public enum Fields implements IFieldEnum<Utilisateur> {
@@ -155,7 +156,7 @@ public class Utilisateur implements Serializable {
          DATE_CREATION, //
          DATE_MODIFICATION, //
          EMAIL, //
-         TYPE_UTILISATEUR, //
-         TYPE_UTILISATEUR_ORIGIN
+         TYPE_UTILISATEUR_CODE, //
+         TYPE_UTILISATEUR_CODE_ORIGIN
     }
 }

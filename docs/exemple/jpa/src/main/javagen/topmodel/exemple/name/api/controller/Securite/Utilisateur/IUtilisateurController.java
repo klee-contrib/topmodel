@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto;
-import topmodel.exemple.name.dao.references.securite.TypeProfilCode;
-import topmodel.exemple.name.dao.references.utilisateur.TypeUtilisateurCode;
+import topmodel.exemple.name.dao.entities.securite.TypeProfil;
+import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
 
 @RestController
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -49,7 +49,7 @@ public interface IUtilisateurController {
      * @return Liste des utilisateurs
      */
     @GetMapping(path = "utilisateur/list")
-    default List<UtilisateurDto> getUtilisateurListMapping(@RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode) {
+    default List<UtilisateurDto> getUtilisateurListMapping(@RequestParam("typeUtilisateurCode") TypeUtilisateur.Values typeUtilisateurCode) {
         return this.getUtilisateurList(typeUtilisateurCode);
     }
 
@@ -58,7 +58,7 @@ public interface IUtilisateurController {
      * @param typeUtilisateurCode Type d'utilisateur en Many to one
      * @return Liste des utilisateurs
      */
-    List<UtilisateurDto> getUtilisateurList(TypeUtilisateurCode typeUtilisateurCode);
+    List<UtilisateurDto> getUtilisateurList(TypeUtilisateur.Values typeUtilisateurCode);
 
     /**
      * Sauvegarde un utilisateur.
@@ -105,7 +105,7 @@ public interface IUtilisateurController {
      * @return Utilisateurs matchant les critères
      */
     @PostMapping(path = "utilisateur/search")
-    default Page<UtilisateurDto> searchMapping(@RequestParam("utiId") long utiId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateurCode typeUtilisateurCode, @RequestParam("typeUtilisateurCodeOrigin") TypeUtilisateurCode typeUtilisateurCodeOrigin, @RequestParam("proProfilId") long proProfilId, @RequestParam("profilTypeProfilCode") TypeProfilCode profilTypeProfilCode) {
+    default Page<UtilisateurDto> searchMapping(@RequestParam("utiId") long utiId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateur.Values typeUtilisateurCode, @RequestParam("typeUtilisateurCodeOrigin") TypeUtilisateur.Values typeUtilisateurCodeOrigin, @RequestParam("proProfilId") long proProfilId, @RequestParam("profilTypeProfilCode") TypeProfil.Values profilTypeProfilCode) {
         return this.search(utiId, email, typeUtilisateurCode, typeUtilisateurCodeOrigin, proProfilId, profilTypeProfilCode);
     }
 
@@ -119,5 +119,5 @@ public interface IUtilisateurController {
      * @param profilTypeProfilCode Type de profil
      * @return Utilisateurs matchant les critères
      */
-    Page<UtilisateurDto> search(long utiId, String email, TypeUtilisateurCode typeUtilisateurCode, TypeUtilisateurCode typeUtilisateurCodeOrigin, long proProfilId, TypeProfilCode profilTypeProfilCode);
+    Page<UtilisateurDto> search(long utiId, String email, TypeUtilisateur.Values typeUtilisateurCode, TypeUtilisateur.Values typeUtilisateurCodeOrigin, long proProfilId, TypeProfil.Values profilTypeProfilCode);
 }

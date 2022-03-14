@@ -17,8 +17,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import topmodel.exemple.name.dao.references.securite.TypeProfilCode;
-import topmodel.exemple.name.dao.references.utilisateur.TypeUtilisateurCode;
+import topmodel.exemple.name.dao.entities.securite.TypeProfil;
+import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
 
 /**
  * Objet non persisté de communication avec le serveur.
@@ -36,10 +36,10 @@ public class UtilisateurDto implements Serializable {
 
     private long id;
     private String email;
-    private TypeUtilisateurCode typeUtilisateurCode;
-    private TypeUtilisateurCode typeUtilisateurCodeOrigin;
+    private TypeUtilisateur.Values typeUtilisateurCode;
+    private TypeUtilisateur.Values typeUtilisateurCodeOrigin;
     private long profilId;
-    private TypeProfilCode profilTypeProfilCode;
+    private TypeProfil.Values profilTypeProfilCode;
     private UtilisateurDto utilisateurParent;
 
     /**
@@ -69,7 +69,7 @@ public class UtilisateurDto implements Serializable {
      *
      * @return value of typeUtilisateurCode.
      */
-    public TypeUtilisateurCode getTypeUtilisateurCode() {
+    public TypeUtilisateur.Values getTypeUtilisateurCode() {
          return this.typeUtilisateurCode;
     }
 
@@ -79,7 +79,7 @@ public class UtilisateurDto implements Serializable {
      *
      * @return value of typeUtilisateurCodeOrigin.
      */
-    public TypeUtilisateurCode getTypeUtilisateurCodeOrigin() {
+    public TypeUtilisateur.Values getTypeUtilisateurCodeOrigin() {
          return this.typeUtilisateurCodeOrigin;
     }
 
@@ -100,7 +100,7 @@ public class UtilisateurDto implements Serializable {
      *
      * @return value of profilTypeProfilCode.
      */
-    public TypeProfilCode getProfilTypeProfilCode() {
+    public TypeProfil.Values getProfilTypeProfilCode() {
          return this.profilTypeProfilCode;
     }
 

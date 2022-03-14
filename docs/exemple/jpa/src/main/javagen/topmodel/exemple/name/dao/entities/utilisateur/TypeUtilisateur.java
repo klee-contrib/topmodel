@@ -21,11 +21,12 @@ import org.hibernate.annotations.Immutable;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import topmodel.exemple.name.dao.references.utilisateur.TypeUtilisateurCode;
+import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur.TypeUtilisateur.Values;
 import topmodel.exemple.utils.IFieldEnum;
 
 /**
@@ -46,7 +47,7 @@ public class TypeUtilisateur implements Serializable {
 	/** Serial ID */
     private static final long serialVersionUID = 1L;
 
-    private TypeUtilisateurCode code;
+    private TypeUtilisateur.Values code;
     private String libelle;
 
     /**
@@ -57,7 +58,7 @@ public class TypeUtilisateur implements Serializable {
     @Id
     @Column(name = "TUT_CODE", nullable = false, updatable = false, length = 3)
     @Enumerated(EnumType.STRING)
-    public TypeUtilisateurCode getCode() {
+    public TypeUtilisateur.Values getCode() {
          return this.code;
     }
 
@@ -74,5 +75,18 @@ public class TypeUtilisateur implements Serializable {
     public enum Fields implements IFieldEnum<TypeUtilisateur> {
          CODE, //
          LIBELLE
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public enum Values {
+        ADM("Administrateur"), //
+        GES("Gestionnaire"), //
+        CLI("Client"); 
+
+        /**
+         * Libellé du type d'utilisateur.
+         */
+        private final String libelle;
     }
 }

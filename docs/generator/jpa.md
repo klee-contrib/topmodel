@@ -63,7 +63,17 @@ Génèrera, dans la classe `Departement`, l'enum suivante :
 
 ### References
 
-Lorsque sont ajoutées des listes de références, le générateur créé les `enum` correspondantes. Le domaine de clé primaire de la classe de référence est ignoré, et le champs prend le type de l'enum. Par défaut, l'enum s'appelle `[Nom de la table de ref]Code`
+Lorsque sont ajoutées des listes de références, le générateur créé les `enum` correspondantes. Le domaine de clé primaire de la classe de référence est ignoré, et le champs prend le type de l'enum. L'enum s'appelle `Values`. Les différents champs renseignés dans les valeurs sont également ajoutés en tant que propriété de l'enum.
+
+L'association avec une liste de référence a également un comportement particulier : la propriété générée n'est pas du type de la table de référence, mais de sa clé primaire.
+
+Exemple :
+
+```java
+  private TypeUtilisateur.Values typeUtilisateurCode;
+```
+
+En effet, le code est beaucoup plus utilisé dans le code java. L'existence de la table correspondante en base de donnée n'est utilile que pour la création d'une contrainte de valeur sur les tables qui la référencent.
 
 ### DAO
 

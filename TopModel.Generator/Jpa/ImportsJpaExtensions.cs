@@ -64,13 +64,11 @@ public static class ImportsJpaExtensions
         var imports = new List<string>();
         if (ap.IsEnum())
         {
-            var package = $"{config.DaoPackageName}.references.{ap.Property.Class.Namespace.Module.ToLower()}";
-            imports.Add(package + "." + ap.GetJavaType());
+            imports.Add(ap.Property.Class.GetImport(config));
         }
         else if (ap.Property is AssociationProperty apr && ap.IsAssociatedEnum())
         {
-            var package = $"{config.DaoPackageName}.references.{((AssociationProperty)ap.Property).Association.Namespace.Module.ToLower()}";
-            imports.Add(package + "." + apr.Association.PrimaryKey!.GetJavaType());
+            imports.Add(apr.Association.GetImport(config));
         }
 
         if (ap.Domain.Java?.Imports != null)
@@ -91,7 +89,7 @@ public static class ImportsJpaExtensions
         var imports = new List<string>();
         if (rp.IsEnum())
         {
-            imports.Add($"{config.DaoPackageName}.references.{rp.Class.Namespace.Module.ToLower()}.{rp.GetJavaType()}");
+            imports.Add($"{rp.Class.GetImport(config)}.{rp.GetJavaType()}");
         }
 
         if (rp.Domain?.Java?.Imports != null)
@@ -139,6 +137,11 @@ public static class ImportsJpaExtensions
         if (ap.Association.Namespace.Module != ap.Class.Namespace.Module)
         {
             imports.Add(ap.Association.GetImport(config));
+        }
+
+        if (ap.Association.Reference)
+        {
+            imports.AddRange(ap.Association.PrimaryKey!.GetImports(config));
         }
 
         return imports;
@@ -211,6 +214,11 @@ public static class ImportsJpaExtensions
                 "org.hibernate.annotations.Immutable",
                 "org.hibernate.annotations.CacheConcurrencyStrategy"
             });
+
+            if(classe.ReferenceValues != null && classe.ReferenceValues.Count > 0)
+            {
+                imports.Add("lombok.Getter");
+            }
         }
 
         if (classe.UniqueKeys?.Count > 0)

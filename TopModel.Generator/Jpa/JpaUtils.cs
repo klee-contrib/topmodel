@@ -19,7 +19,20 @@ public static class JpaUtils
 
     public static string GetJavaType(this AssociationProperty ap)
     {
-        if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
+        var isList = ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany;
+        if (ap.Association.Reference)
+        {
+            if (isList)
+            {
+                return $"List<{ap.Association.PrimaryKey!.GetJavaType()}>";
+            }
+            else
+            {
+                return ap.Association.PrimaryKey!.GetJavaType();
+            }
+        }
+
+        if (isList)
         {
             return $"List<{ap.Association.Name}>";
         }
@@ -29,7 +42,7 @@ public static class JpaUtils
 
     public static string GetAssociationName(this AssociationProperty ap)
     {
-        if (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany)
+        if (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany || ap.Association.Reference)
         {
             return $"{ap.Name.ToFirstLower()}";
         }
@@ -67,7 +80,7 @@ public static class JpaUtils
 
     public static string GetJavaType(this RegularProperty rp)
     {
-        return rp.IsEnum() ? $"{rp.Class.Name.ToFirstUpper()}Code" : rp.Domain.Java!.Type;
+        return rp.IsEnum() ? $"{rp.Class.Name.ToFirstUpper()}.Values" : rp.Domain.Java!.Type;
     }
 
     public static string GetJavaType(this CompositionProperty cp)

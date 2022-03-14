@@ -77,53 +77,60 @@ public class JpaModelGenerator : GeneratorBase
             {
                 WriteFieldsEnum(fw, classe);
             }
-
-            fw.WriteLine("}");
-        }
-
-        GenerateEnums(module);
-    }
-
-    private void GenerateEnums(string module)
-    {
-        var classes = _files.Values
-           .SelectMany(f => f.Classes)
-           .Distinct()
-           .Where(c => c.Namespace.Module == module);
-
-        foreach (var classe in classes.Where(c => c.ReferenceValues?.Any() ?? false))
-        {
-            var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), "references", classe.Namespace.Module.Replace('.', '/').ToLower());
-            var dirInfo = Directory.CreateDirectory(destFolder);
-            var packageName = $"{_config.DaoPackageName}.references.{classe.Namespace.Module.ToLower()}";
-            using var fw = new JavaWriter($"{destFolder}/{classe.Name}Code.java", _logger, null);
-            fw.WriteLine($"package {packageName};");
-            fw.WriteLine();
-
-            fw.WriteLine();
-
-            fw.WriteLine($"public enum {classe.Name}Code {{");
-
-            var i = 0;
-
-            foreach (var refValue in classe.ReferenceValues!.OrderBy(x => x.Name, StringComparer.Ordinal))
+            if (classe.Reference && classe.ReferenceValues != null && classe.ReferenceValues.Count() > 0)
             {
-                ++i;
-                var code = classe.PrimaryKey?.Domain.Name != "DO_ID"
-                    ? (string)refValue.Value[classe.PrimaryKey ?? classe.Properties.OfType<IFieldProperty>().First()]
-                    : (string)refValue.Value[classe.UniqueKeys!.First().First()];
-                var label = classe.LabelProperty != null
-                    ? (string)refValue.Value[classe.LabelProperty]
-                    : refValue.Name;
-
-                fw.WriteDocStart(1, label);
-                fw.WriteDocEnd(1);
-                fw.WriteLine(1, code.ToUpper() + (i == classe.ReferenceValues!.Count ? ";" : ","));
+                WriteReferenceValues(fw, classe);
             }
 
-            fw.WriteLine();
             fw.WriteLine("}");
         }
+    }
+
+    private void WriteReferenceValues(JavaWriter fw, Class classe)
+    {
+        fw.WriteLine();
+        if (classe.Properties.Count > 1)
+        {
+            fw.WriteLine(1, "@AllArgsConstructor");
+            fw.WriteLine(1, "@Getter");
+        }
+
+        fw.WriteLine(1, $"public enum Values {{");
+
+        var i = 0;
+
+        foreach (var refValue in classe.ReferenceValues!.OrderBy(x => x.Name, StringComparer.Ordinal))
+        {
+            ++i;
+            var code = classe.PrimaryKey?.Domain.Name != "DO_ID"
+                ? (string)refValue.Value[classe.PrimaryKey ?? classe.Properties.OfType<IFieldProperty>().First()]
+                : (string)refValue.Value[classe.UniqueKeys!.First().First()];
+            var label = classe.LabelProperty != null
+                ? (string)refValue.Value[classe.LabelProperty]
+                : refValue.Name;
+
+            if (classe.Properties.Count > 1)
+            {
+                var lineToWrite = @$"{code.ToUpper()}";
+                lineToWrite += $"({string.Join(", ", classe.Properties.Where(p => !p.PrimaryKey).Select(prop => (((IFieldProperty)prop).Domain.Java!.Type == "String" ? "\"" : string.Empty) + refValue.Value[(IFieldProperty)prop] + (((IFieldProperty)prop).Domain.Java!.Type == "String" ? "\"" : string.Empty)))})";
+                lineToWrite += i == classe.ReferenceValues!.Count ? "; " : ", //";
+                fw.WriteLine(2, lineToWrite);
+            }
+            else
+            {
+                fw.WriteLine(2, @$"{code.ToUpper()}{(i == classe.ReferenceValues!.Count ? ";" : ", //")}");
+            }
+        }
+
+        foreach (var prop in classe.Properties.Where(p => !p.PrimaryKey))
+        {
+            fw.WriteLine();
+            fw.WriteDocStart(2, ((IFieldProperty)prop).Comment);
+            fw.WriteDocEnd(2);
+            fw.WriteLine(2, $"private final {((IFieldProperty)prop).Domain.Java!.Type} {prop.Name.ToFirstLower()};");
+        }
+
+        fw.WriteLine(1, "}");
     }
 
     private void WriteImports(JavaWriter fw, Class classe)
@@ -263,7 +270,7 @@ public class JpaModelGenerator : GeneratorBase
                 switch (ap.Type)
                 {
                     case AssociationType.ManyToOne:
-                        fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY, optional = {(ap.Required ? "false" : "true")})");
+                        fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY, optional = {(ap.Required ? "false" : "true")}, targetEntity = {ap.Association.Name}.class)");
                         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
                         break;
                     case AssociationType.OneToMany:
