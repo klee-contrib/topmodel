@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.4.0
+
+- [`944b659e`](https://github.com/klee-contrib/topmodel/pull/70) [JPA] : Pour les listes de référence, mettre la FK plutôt que la composition #69 
+- [`2f057ab7`](https://github.com/klee-contrib/topmodel/pull/68) [JPA] : Bug sur les alias d'association #22
+- [`ec6709ae`](https://github.com/klee-contrib/topmodel/pull/64) [Core] : Pluriels et types d'associations #64
+
 ## 1.3.4
 
 - [`b344ca01`](https://github.com/klee-contrib/topmodel/commit/b344ca01dc7f47c504dfd75d05fc102cff0f4ecb) [JPA] : EqualsAndHash dans hashset #61
