@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.4.1
+
+- [JPA] : Correction import enum suite release 1.4.0
+
 ## 1.4.0
 
 - [`944b659e`](https://github.com/klee-contrib/topmodel/pull/70) [JPA] : Pour les listes de référence, mettre la FK plutôt que la composition #69 

@@ -89,7 +89,7 @@ public static class ImportsJpaExtensions
         var imports = new List<string>();
         if (rp.IsEnum())
         {
-            imports.Add($"{rp.Class.GetImport(config)}.{rp.GetJavaType()}");
+            imports.Add($"{rp.Class.GetImport(config)}");
         }
 
         if (rp.Domain?.Java?.Imports != null)
