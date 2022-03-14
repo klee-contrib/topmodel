@@ -29,7 +29,14 @@ public static class JpaUtils
 
     public static string GetAssociationName(this AssociationProperty ap)
     {
-        return $"{ap.Association.Name.ToFirstLower()}{ap.Role?.ToFirstUpper() ?? string.Empty}{(ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "List" : string.Empty)}";
+        if (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany)
+        {
+            return $"{ap.Name.ToFirstLower()}";
+        }
+        else
+        {
+            return $"{ap.Association.Name.ToFirstLower()}{ap.Role?.ToFirstUpper() ?? string.Empty}";
+        }
     }
 
     public static string GetJavaType(this AliasProperty ap)
@@ -40,7 +47,19 @@ public static class JpaUtils
         }
         else if (ap.Property is AssociationProperty apr && ap.IsAssociatedEnum())
         {
+            if (apr.Type == AssociationType.ManyToMany || apr.Type == AssociationType.OneToMany)
+            {
+                return $"List<{apr.Association.PrimaryKey!.GetJavaType()}>";
+            }
+
             return apr.Association.PrimaryKey!.GetJavaType();
+        }
+        else if (ap.Property is AssociationProperty oapr)
+        {
+            if (oapr.Type == AssociationType.ManyToMany || oapr.Type == AssociationType.OneToMany)
+            {
+                return $"List<{oapr.Association.PrimaryKey!.GetJavaType()}>";
+            }
         }
 
         return ap.Domain.Java!.Type;

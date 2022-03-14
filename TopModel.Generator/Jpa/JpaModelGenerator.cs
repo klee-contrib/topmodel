@@ -225,7 +225,7 @@ public class JpaModelGenerator : GeneratorBase
         }
 
         if (classe.Properties.Any(property =>
-                 property is IFieldProperty t && t.Domain.Java?.Annotations is not null && t.Domain.Java.Annotations.Any(a => a == "@CreatedDate" || a == "@UpdatedDate")))
+            property is IFieldProperty t && t.Domain.Java?.Annotations is not null && t.Domain.Java.Annotations.Any(a => a == "@CreatedDate" || a == "@UpdatedDate")))
         {
             fw.WriteLine("@EntityListeners(AuditingEntityListener.class)");
         }
@@ -237,7 +237,7 @@ public class JpaModelGenerator : GeneratorBase
         {
             if (property is AssociationProperty ap)
             {
-                fw.WriteLine(1, $"private {property.GetJavaType()} {ap.GetAssociationName()};");
+                fw.WriteLine(1, $"private {ap.GetJavaType()} {ap.GetAssociationName()};");
             }
             else
             {

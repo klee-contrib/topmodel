@@ -62,7 +62,7 @@ public class Utilisateur implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private long id;
-    private List<Profil> profilList;
+    private List<Profil> profils;
     private DateTime dateCreation;
     private DateTime dateModification;
     private String email;
@@ -85,13 +85,13 @@ public class Utilisateur implements Serializable {
     /**
      * Liste des profils.
      *
-     * @return value of profilList.
+     * @return value of profils.
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "UTILISATEUR_PROFIL", joinColumns = @JoinColumn(name = "UTI_ID"), inverseJoinColumns = @JoinColumn(name = "PRO_ID"))
-    public List<Profil> getProfilList() {
-        if(profilList == null) this.profilList = Collections.emptyList();
-        return this.profilList;
+    public List<Profil> getProfils() {
+        if(profils == null) this.profils = Collections.emptyList();
+        return this.profils;
     }
 
     /**
@@ -151,7 +151,7 @@ public class Utilisateur implements Serializable {
 
     public enum Fields implements IFieldEnum<Utilisateur> {
          ID, //
-         PROFIL_LIST, //
+         PROFILS, //
          DATE_CREATION, //
          DATE_MODIFICATION, //
          EMAIL, //
