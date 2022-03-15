@@ -13,6 +13,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -26,7 +27,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import topmodel.exemple.name.dao.entities.securite.TypeProfil.TypeProfil.Values;
+import topmodel.exemple.name.dao.entities.securite.TypeProfil;
 import topmodel.exemple.utils.IFieldEnum;
 
 /**

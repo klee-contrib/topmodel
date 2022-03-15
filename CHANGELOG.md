@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.4.2
+
+- [JPA] : Correction import enum suite release 1.4.1
+
 ## 1.4.1
 
 - [JPA] : Correction import enum suite release 1.4.0

@@ -73,16 +73,50 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine();
             WriteProperties(fw, classe);
             WriteGetters(fw, classe);
+            WriteEnumSetters(fw, classe);
             if (_config.FieldsEnum && classe.IsPersistent)
             {
                 WriteFieldsEnum(fw, classe);
             }
+
             if (classe.Reference && classe.ReferenceValues != null && classe.ReferenceValues.Count() > 0)
             {
                 WriteReferenceValues(fw, classe);
             }
 
             fw.WriteLine("}");
+        }
+    }
+
+    private void WriteEnumSetters(JavaWriter fw, Class classe)
+    {
+        foreach (var property in classe.Properties.Where(p => p is AssociationProperty ap && ap.Association.Reference))
+        {
+            if (property is AssociationProperty ap)
+            {
+                {
+                    fw.WriteLine();
+                    fw.WriteDocStart(1, property.Comment);
+                    fw.WriteLine(1, " * Setter enum");
+                    fw.WriteDocEnd(1);
+                    fw.WriteLine(1, @$"public void set{ap.Name}({ap.Association.PrimaryKey!.GetJavaType()} {ap.Name.ToFirstLower()}) {{");
+                    fw.WriteLine(2, $"if({ap.Name.ToFirstLower()} != null)");
+                    fw.WriteLine(3, @$"this.{ap.GetAssociationName()} = {ap.Association.Name}.builder().{ap.Association.PrimaryKey!.Name.ToLower()}({ap.Name.ToFirstLower()}).build();");
+                    fw.WriteLine(1, "}");
+                }
+
+                {
+                    fw.WriteLine();
+                    fw.WriteDocStart(1, property.Comment);
+                    fw.WriteLine(1, " * Getter enum");
+                    fw.WriteDocEnd(1);
+                    fw.WriteLine(1, "@Transient");
+                    fw.WriteLine(1, @$"public {ap.Association.PrimaryKey.GetJavaType()} get{ap.Name}() {{");
+
+                    fw.WriteLine(2, @$"return this.{ap.GetAssociationName()} != null ? this.{ap.GetAssociationName()}.get{ap.Association.PrimaryKey.Name}() : null;");
+                    fw.WriteLine(1, "}");
+                }
+            }
         }
     }
 
@@ -287,7 +321,7 @@ public class JpaModelGenerator : GeneratorBase
                         break;
                 }
 
-                fw.WriteLine(1, @$"public {ap.GetJavaType()} get{ap.GetAssociationName().ToFirstUpper()}() {{");
+                fw.WriteLine(1, @$"{(ap.Association.Reference ? "private" : "public")} {ap.GetJavaType()} get{ap.GetAssociationName().ToFirstUpper()}() {{");
                 if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
                 {
                     fw.WriteLine(2, @$"if({ap.GetAssociationName()} == null) this.{ap.GetAssociationName()} = Collections.emptyList();");

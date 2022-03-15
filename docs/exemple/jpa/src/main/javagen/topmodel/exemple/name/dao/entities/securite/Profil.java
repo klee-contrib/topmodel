@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import topmodel.exemple.name.dao.entities.securite.TypeProfil.TypeProfil.Values;
+import topmodel.exemple.name.dao.entities.securite.TypeProfil;
 import topmodel.exemple.utils.IFieldEnum;
 
 /**
@@ -45,7 +46,7 @@ public class Profil implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private long id;
-    private TypeProfil.Values typeProfilCode;
+    private TypeProfil typeProfil;
 
     /**
      * Id technique.
@@ -63,16 +64,34 @@ public class Profil implements Serializable {
     /**
      * Type de profil.
      *
-     * @return value of typeProfilCode.
+     * @return value of typeProfil.
      */
     @ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeProfil.class)
     @JoinColumn(name = "CODE", referencedColumnName = "CODE")
+    private TypeProfil getTypeProfil() {
+        return this.typeProfil;
+    }
+
+    /**
+     * Type de profil.
+     * Setter enum
+     */
+    public void setTypeProfilCode(TypeProfil.Values typeProfilCode) {
+        if(typeProfilCode != null)
+            this.typeProfil = TypeProfil.builder().code(typeProfilCode).build();
+    }
+
+    /**
+     * Type de profil.
+     * Getter enum
+     */
+    @Transient
     public TypeProfil.Values getTypeProfilCode() {
-        return this.typeProfilCode;
+        return this.typeProfil != null ? this.typeProfil.getCode() : null;
     }
 
     public enum Fields implements IFieldEnum<Profil> {
          ID, //
-         TYPE_PROFIL_CODE
+         TYPE_PROFIL
     }
 }

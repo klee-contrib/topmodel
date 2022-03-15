@@ -15,7 +15,7 @@ public static class JavascriptUtils
                 string _ when cp.DomainKind!.TS!.Type.Contains("{class}") => cp.DomainKind.TS.Type.Replace("{class}", cp.Composition.Name),
                 string _ => $"{cp.DomainKind.TS.Type}<{cp.Composition.Name}>"
             },
-            AliasProperty al => ((IFieldProperty) al).TS.Type + (al.Property is AssociationProperty ap && (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany) ? "[]" : string.Empty),
+            AliasProperty al => ((IFieldProperty)al).TS.Type + (al.Property is AssociationProperty ap && (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany) ? "[]" : string.Empty),
             IFieldProperty fp => fp.TS.Type,
             _ => string.Empty
         };

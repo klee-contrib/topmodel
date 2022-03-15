@@ -20,18 +20,6 @@ public static class JpaUtils
     public static string GetJavaType(this AssociationProperty ap)
     {
         var isList = ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany;
-        if (ap.Association.Reference)
-        {
-            if (isList)
-            {
-                return $"List<{ap.Association.PrimaryKey!.GetJavaType()}>";
-            }
-            else
-            {
-                return ap.Association.PrimaryKey!.GetJavaType();
-            }
-        }
-
         if (isList)
         {
             return $"List<{ap.Association.Name}>";
@@ -42,7 +30,7 @@ public static class JpaUtils
 
     public static string GetAssociationName(this AssociationProperty ap)
     {
-        if (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany || ap.Association.Reference)
+        if (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany)
         {
             return $"{ap.Name.ToFirstLower()}";
         }

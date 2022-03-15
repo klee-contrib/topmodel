@@ -90,6 +90,7 @@ public static class ImportsJpaExtensions
         if (rp.IsEnum())
         {
             imports.Add($"{rp.Class.GetImport(config)}");
+            imports.Add($"javax.persistence.Transient");
         }
 
         if (rp.Domain?.Java?.Imports != null)
@@ -215,7 +216,7 @@ public static class ImportsJpaExtensions
                 "org.hibernate.annotations.CacheConcurrencyStrategy"
             });
 
-            if(classe.ReferenceValues != null && classe.ReferenceValues.Count > 0)
+            if (classe.ReferenceValues != null && classe.ReferenceValues.Count > 0)
             {
                 imports.Add("lombok.Getter");
             }

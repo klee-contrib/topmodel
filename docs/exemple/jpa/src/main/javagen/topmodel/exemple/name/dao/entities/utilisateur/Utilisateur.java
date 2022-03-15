@@ -26,6 +26,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -42,7 +43,7 @@ import lombok.ToString;
 import oorg.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import topmodel.exemple.name.dao.entities.securite.Profil;
-import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur.TypeUtilisateur.Values;
+import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
 import topmodel.exemple.utils.IFieldEnum;
 
 /**
@@ -67,8 +68,8 @@ public class Utilisateur implements Serializable {
     private DateTime dateCreation;
     private DateTime dateModification;
     private String email;
-    private TypeUtilisateur.Values typeUtilisateurCode;
-    private TypeUtilisateur.Values typeUtilisateurCodeOrigin;
+    private TypeUtilisateur typeUtilisateur;
+    private TypeUtilisateur typeUtilisateurOrigin;
 
     /**
      * Id technique.
@@ -131,23 +132,59 @@ public class Utilisateur implements Serializable {
     /**
      * Type d'utilisateur en Many to one.
      *
-     * @return value of typeUtilisateurCode.
+     * @return value of typeUtilisateur.
      */
     @ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeUtilisateur.class)
     @JoinColumn(name = "TUT_CODE", referencedColumnName = "TUT_CODE")
-    public TypeUtilisateur.Values getTypeUtilisateurCode() {
-        return this.typeUtilisateurCode;
+    private TypeUtilisateur getTypeUtilisateur() {
+        return this.typeUtilisateur;
     }
 
     /**
      * Type d'utilisateur en one to one.
      *
-     * @return value of typeUtilisateurCodeOrigin.
+     * @return value of typeUtilisateurOrigin.
      */
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
     @JoinColumn(name = "ORIGIN_TUT_CODE", referencedColumnName = "TUT_CODE", unique = true)
+    private TypeUtilisateur getTypeUtilisateurOrigin() {
+        return this.typeUtilisateurOrigin;
+    }
+
+    /**
+     * Type d'utilisateur en Many to one.
+     * Setter enum
+     */
+    public void setTypeUtilisateurCode(TypeUtilisateur.Values typeUtilisateurCode) {
+        if(typeUtilisateurCode != null)
+            this.typeUtilisateur = TypeUtilisateur.builder().code(typeUtilisateurCode).build();
+    }
+
+    /**
+     * Type d'utilisateur en Many to one.
+     * Getter enum
+     */
+    @Transient
+    public TypeUtilisateur.Values getTypeUtilisateurCode() {
+        return this.typeUtilisateur != null ? this.typeUtilisateur.getCode() : null;
+    }
+
+    /**
+     * Type d'utilisateur en one to one.
+     * Setter enum
+     */
+    public void setTypeUtilisateurCodeOrigin(TypeUtilisateur.Values typeUtilisateurCodeOrigin) {
+        if(typeUtilisateurCodeOrigin != null)
+            this.typeUtilisateurOrigin = TypeUtilisateur.builder().code(typeUtilisateurCodeOrigin).build();
+    }
+
+    /**
+     * Type d'utilisateur en one to one.
+     * Getter enum
+     */
+    @Transient
     public TypeUtilisateur.Values getTypeUtilisateurCodeOrigin() {
-        return this.typeUtilisateurCodeOrigin;
+        return this.typeUtilisateurOrigin != null ? this.typeUtilisateurOrigin.getCode() : null;
     }
 
     public enum Fields implements IFieldEnum<Utilisateur> {
@@ -156,7 +193,7 @@ public class Utilisateur implements Serializable {
          DATE_CREATION, //
          DATE_MODIFICATION, //
          EMAIL, //
-         TYPE_UTILISATEUR_CODE, //
-         TYPE_UTILISATEUR_CODE_ORIGIN
+         TYPE_UTILISATEUR, //
+         TYPE_UTILISATEUR_ORIGIN
     }
 }
