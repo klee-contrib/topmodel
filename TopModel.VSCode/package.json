@@ -3,6 +3,7 @@
   "displayName": "topmodel",
   "description": "Extension pour TopModel",
   "publisher": "JabX",
+  "icon": "icon.png",
   "contributors": [
     {
       "name": "gideruette"
@@ -32,8 +33,8 @@
   "contributes": {
     "iconThemes": [
       {
-        "id": "turtles",
-        "label": "Turtles",
+        "id": "topModel",
+        "label": "TopModel",
         "path": "./icon-theme.json"
       }
     ],
@@ -72,7 +73,7 @@
         ],
         "filenamePatterns": [
           "topmodel*.config"
-        ]  
+        ]
       }
     ],
     "snippets": [
@@ -81,7 +82,6 @@
         "path": "./snippets.json"
       }
     ],
-    
     "walkthroughs": [
       {
         "id": "topmodel.configuration",
@@ -133,6 +133,6 @@
     "eslint": "^8.1.0",
     "glob": "^7.1.7",
     "typescript": "^4.4.4",
-    "vsce": "2.6.3"
+    "vsce": "2.7.0"
   }
 }
