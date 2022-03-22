@@ -113,6 +113,7 @@ public static class ImportsJpaExtensions
             case AssociationType.OneToMany:
                 imports.Add("java.util.List");
                 imports.Add("java.util.Collections");
+                imports.Add("lombok.Builder");
                 imports.Add("javax.persistence.FetchType");
                 imports.Add("javax.persistence.CascadeType");
                 imports.Add("javax.persistence.JoinColumn");
@@ -124,6 +125,7 @@ public static class ImportsJpaExtensions
             case AssociationType.ManyToMany:
                 imports.Add("java.util.List");
                 imports.Add("java.util.Collections");
+                imports.Add("lombok.Builder");
                 imports.Add("javax.persistence.JoinColumn");
                 imports.Add("javax.persistence.FetchType");
                 imports.Add("javax.persistence.JoinTable");
@@ -182,6 +184,7 @@ public static class ImportsJpaExtensions
                 "lombok.NoArgsConstructor",
                 "lombok.experimental.SuperBuilder",
                 "lombok.Setter",
+                "lombok.Getter",
                 "lombok.ToString",
                 "lombok.EqualsAndHashCode",
                 "lombok.AllArgsConstructor",
@@ -230,6 +233,11 @@ public static class ImportsJpaExtensions
         if (classe.Extends != null && classe.Extends.Namespace.Module != classe.Namespace.Module)
         {
             imports.Add(classe.GetImport(config));
+        }
+
+        if (classe.Properties.Any(p => p is AssociationProperty ap && ap.Association.Reference))
+        {
+            imports.Add("lombok.AccessLevel");
         }
 
         return imports;

@@ -12,6 +12,7 @@ import javax.annotation.Generated;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,7 +24,6 @@ import topmodel.exemple.name.dao.entities.securite.TypeProfil;
  * Objet métier non persisté représentant Profil.
  */
 @SuperBuilder
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
@@ -33,37 +33,30 @@ public class ProfilDto implements Serializable {
 	/** Serial ID */
     private static final long serialVersionUID = 1L;
 
-    private long id;
-    private TypeProfil.Values typeProfilCode;
-    private List<UtilisateurDto> utilisateurs;
-
     /**
      * Id technique.
      * Alias of {@link topmodel.exemple.name.dao.entities.securite.Profil#getId() Profil#getId()} 
      *
      * @return value of id.
      */
-    public long getId() {
-         return this.id;
-    }
-
+    @Getter
+    @Setter
+    private long id;
     /**
      * Type de profil.
      * Alias of {@link topmodel.exemple.name.dao.entities.securite.Profil#getTypeProfilCode() Profil#getTypeProfilCode()} 
      *
      * @return value of typeProfilCode.
      */
-    public TypeProfil.Values getTypeProfilCode() {
-         return this.typeProfilCode;
-    }
-
+    @Getter
+    @Setter
+    private TypeProfil.Values typeProfilCode;
     /**
      * Liste paginée des utilisateurs de ce profil.
      *
      * @return value of UtilisateurDto.
      */
-    public List<UtilisateurDto> getUtilisateurs() {
-        if(utilisateurs == null) this.utilisateurs = java.util.Collections.emptyList();
-        return this.utilisateurs;
-    }
+    @Getter
+    @Setter
+    private List<UtilisateurDto> utilisateurs;
 }

@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,7 +25,6 @@ import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
  * Objet non persisté de communication avec le serveur.
  */
 @SuperBuilder
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
@@ -34,24 +34,15 @@ public class UtilisateurDto implements Serializable {
 	/** Serial ID */
     private static final long serialVersionUID = 1L;
 
-    private long id;
-    private String email;
-    private TypeUtilisateur.Values typeUtilisateurCode;
-    private TypeUtilisateur.Values typeUtilisateurCodeOrigin;
-    private long profilId;
-    private TypeProfil.Values profilTypeProfilCode;
-    private UtilisateurDto utilisateurParent;
-
     /**
      * Id technique.
      * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getId() Utilisateur#getId()} 
      *
      * @return value of id.
      */
-    public long getId() {
-         return this.id;
-    }
-
+    @Getter
+    @Setter
+    private long id;
     /**
      * Email de l'utilisateur.
      * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getEmail() Utilisateur#getEmail()} 
@@ -59,30 +50,27 @@ public class UtilisateurDto implements Serializable {
      * @return value of email.
      */
     @Email
-    public String getEmail() {
-         return this.email;
-    }
-
+    @Getter
+    @Setter
+    private String email;
     /**
      * Type d'utilisateur en Many to one.
      * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()} 
      *
      * @return value of typeUtilisateurCode.
      */
-    public TypeUtilisateur.Values getTypeUtilisateurCode() {
-         return this.typeUtilisateurCode;
-    }
-
+    @Getter
+    @Setter
+    private TypeUtilisateur.Values typeUtilisateurCode;
     /**
      * Type d'utilisateur en one to one.
      * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getTypeUtilisateurCodeOrigin() Utilisateur#getTypeUtilisateurCodeOrigin()} 
      *
      * @return value of typeUtilisateurCodeOrigin.
      */
-    public TypeUtilisateur.Values getTypeUtilisateurCodeOrigin() {
-         return this.typeUtilisateurCodeOrigin;
-    }
-
+    @Getter
+    @Setter
+    private TypeUtilisateur.Values typeUtilisateurCodeOrigin;
     /**
      * Id technique.
      * Alias of {@link topmodel.exemple.name.dao.entities.securite.Profil#getId() Profil#getId()} 
@@ -90,26 +78,24 @@ public class UtilisateurDto implements Serializable {
      * @return value of profilId.
      */
     @NotNull
-    public long getProfilId() {
-         return this.profilId;
-    }
-
+    @Getter
+    @Setter
+    private long profilId;
     /**
      * Type de profil.
      * Alias of {@link topmodel.exemple.name.dao.entities.securite.Profil#getTypeProfilCode() Profil#getTypeProfilCode()} 
      *
      * @return value of profilTypeProfilCode.
      */
-    public TypeProfil.Values getProfilTypeProfilCode() {
-         return this.profilTypeProfilCode;
-    }
-
+    @Getter
+    @Setter
+    private TypeProfil.Values profilTypeProfilCode;
     /**
      * UtilisateurParent.
      *
      * @return value of UtilisateurDto.
      */
-    public UtilisateurDto getUtilisateurParent() {
-        return this.utilisateurParent;
-    }
+    @Getter
+    @Setter
+    private UtilisateurDto utilisateurParent;
 }

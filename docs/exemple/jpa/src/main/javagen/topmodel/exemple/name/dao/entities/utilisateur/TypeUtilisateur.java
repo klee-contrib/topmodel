@@ -34,7 +34,6 @@ import topmodel.exemple.utils.IFieldEnum;
  * Type d'utilisateur.
  */
 @SuperBuilder
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = { "code" })
@@ -48,9 +47,6 @@ public class TypeUtilisateur implements Serializable {
 	/** Serial ID */
     private static final long serialVersionUID = 1L;
 
-    private TypeUtilisateur.Values code;
-    private String libelle;
-
     /**
      * Code du type d'utilisateur.
      *
@@ -59,19 +55,18 @@ public class TypeUtilisateur implements Serializable {
     @Id
     @Column(name = "TUT_CODE", nullable = false, updatable = false, length = 3)
     @Enumerated(EnumType.STRING)
-    public TypeUtilisateur.Values getCode() {
-         return this.code;
-    }
-
+    @Getter
+    @Setter
+    private TypeUtilisateur.Values code;
     /**
      * Libellé du type d'utilisateur.
      *
      * @return value of libelle.
      */
     @Column(name = "TUT_LIBELLE", nullable = false, updatable = false, length = 3)
-    public String getLibelle() {
-         return this.libelle;
-    }
+    @Getter
+    @Setter
+    private String libelle;
 
     public enum Fields implements IFieldEnum<TypeUtilisateur> {
          CODE, //

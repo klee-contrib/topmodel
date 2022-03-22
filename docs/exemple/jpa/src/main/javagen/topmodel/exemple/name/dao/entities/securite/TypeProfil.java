@@ -34,7 +34,6 @@ import topmodel.exemple.utils.IFieldEnum;
  * Type d'utilisateur.
  */
 @SuperBuilder
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = { "code" })
@@ -48,9 +47,6 @@ public class TypeProfil implements Serializable {
 	/** Serial ID */
     private static final long serialVersionUID = 1L;
 
-    private TypeProfil.Values code;
-    private String libelle;
-
     /**
      * Code du type d'utilisateur.
      *
@@ -59,19 +55,18 @@ public class TypeProfil implements Serializable {
     @Id
     @Column(name = "CODE", nullable = false, updatable = false, length = 3)
     @Enumerated(EnumType.STRING)
-    public TypeProfil.Values getCode() {
-         return this.code;
-    }
-
+    @Getter
+    @Setter
+    private TypeProfil.Values code;
     /**
      * Libellé du type d'utilisateur.
      *
      * @return value of libelle.
      */
     @Column(name = "LIBELLE", nullable = false, updatable = false, length = 3)
-    public String getLibelle() {
-         return this.libelle;
-    }
+    @Getter
+    @Setter
+    private String libelle;
 
     public enum Fields implements IFieldEnum<TypeProfil> {
          CODE, //

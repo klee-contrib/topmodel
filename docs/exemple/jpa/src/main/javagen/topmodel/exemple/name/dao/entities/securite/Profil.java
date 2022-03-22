@@ -19,9 +19,11 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -33,7 +35,6 @@ import topmodel.exemple.utils.IFieldEnum;
  * Profil des utilisateurs.
  */
 @SuperBuilder
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = { "id" })
@@ -45,9 +46,6 @@ public class Profil implements Serializable {
 	/** Serial ID */
     private static final long serialVersionUID = 1L;
 
-    private long id;
-    private TypeProfil typeProfil;
-
     /**
      * Id technique.
      *
@@ -57,10 +55,9 @@ public class Profil implements Serializable {
     @SequenceGenerator(name = "SEQ_PROFIL", sequenceName = "SEQ_PROFIL",  initialValue = 1000, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PROFIL")
     @Column(name = "PRO_ID", nullable = false)
-    public long getId() {
-         return this.id;
-    }
-
+    @Getter
+    @Setter
+    private long id;
     /**
      * Type de profil.
      *
@@ -68,9 +65,9 @@ public class Profil implements Serializable {
      */
     @ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeProfil.class)
     @JoinColumn(name = "CODE", referencedColumnName = "CODE")
-    private TypeProfil getTypeProfil() {
-        return this.typeProfil;
-    }
+    @Getter(AccessLevel.PROTECTED)
+    @Setter
+    private TypeProfil typeProfil;
 
     /**
      * Type de profil.

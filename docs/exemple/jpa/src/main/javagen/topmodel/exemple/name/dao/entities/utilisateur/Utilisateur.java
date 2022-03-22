@@ -33,9 +33,12 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -50,7 +53,6 @@ import topmodel.exemple.utils.IFieldEnum;
  * Utilisateur de l'application.
  */
 @SuperBuilder
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = { "id" })
@@ -63,14 +65,6 @@ public class Utilisateur implements Serializable {
 	/** Serial ID */
     private static final long serialVersionUID = 1L;
 
-    private long id;
-    private List<Profil> profils;
-    private DateTime dateCreation;
-    private DateTime dateModification;
-    private String email;
-    private TypeUtilisateur typeUtilisateur;
-    private TypeUtilisateur typeUtilisateurOrigin;
-
     /**
      * Id technique.
      *
@@ -80,10 +74,9 @@ public class Utilisateur implements Serializable {
     @SequenceGenerator(name = "SEQ_UTILISATEUR", sequenceName = "SEQ_UTILISATEUR",  initialValue = 1000, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_UTILISATEUR")
     @Column(name = "UTI_ID", nullable = false)
-    public long getId() {
-         return this.id;
-    }
-
+    @Getter
+    @Setter
+    private long id;
     /**
      * Liste des profils.
      *
@@ -91,11 +84,10 @@ public class Utilisateur implements Serializable {
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "UTILISATEUR_PROFIL", joinColumns = @JoinColumn(name = "UTI_ID"), inverseJoinColumns = @JoinColumn(name = "PRO_ID"))
-    public List<Profil> getProfils() {
-        if(profils == null) this.profils = Collections.emptyList();
-        return this.profils;
-    }
-
+    @Builder.Default
+    @Getter
+    @Setter
+    private List<Profil> profils = Collections.emptyList();
     /**
      * Date de création de l'utilisateur.
      *
@@ -103,10 +95,9 @@ public class Utilisateur implements Serializable {
      */
     @Column(name = "UTI_DATE_CREATION", nullable = true)
     @CreatedDate
-    public DateTime getDateCreation() {
-         return this.dateCreation;
-    }
-
+    @Getter
+    @Setter
+    private DateTime dateCreation;
     /**
      * Date de modification de l'utilisateur.
      *
@@ -114,10 +105,9 @@ public class Utilisateur implements Serializable {
      */
     @Column(name = "UTI_DATE_MODIFICATION", nullable = true)
     @LastModifiedDate
-    public DateTime getDateModification() {
-         return this.dateModification;
-    }
-
+    @Getter
+    @Setter
+    private DateTime dateModification;
     /**
      * Email de l'utilisateur.
      *
@@ -125,10 +115,9 @@ public class Utilisateur implements Serializable {
      */
     @Column(name = "UTI_EMAIL", nullable = true)
     @Email
-    public String getEmail() {
-         return this.email;
-    }
-
+    @Getter
+    @Setter
+    private String email;
     /**
      * Type d'utilisateur en Many to one.
      *
@@ -136,10 +125,9 @@ public class Utilisateur implements Serializable {
      */
     @ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeUtilisateur.class)
     @JoinColumn(name = "TUT_CODE", referencedColumnName = "TUT_CODE")
-    private TypeUtilisateur getTypeUtilisateur() {
-        return this.typeUtilisateur;
-    }
-
+    @Getter(AccessLevel.PROTECTED)
+    @Setter
+    private TypeUtilisateur typeUtilisateur;
     /**
      * Type d'utilisateur en one to one.
      *
@@ -147,9 +135,9 @@ public class Utilisateur implements Serializable {
      */
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
     @JoinColumn(name = "ORIGIN_TUT_CODE", referencedColumnName = "TUT_CODE", unique = true)
-    private TypeUtilisateur getTypeUtilisateurOrigin() {
-        return this.typeUtilisateurOrigin;
-    }
+    @Getter(AccessLevel.PROTECTED)
+    @Setter
+    private TypeUtilisateur typeUtilisateurOrigin;
 
     /**
      * Type d'utilisateur en Many to one.

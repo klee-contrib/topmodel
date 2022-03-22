@@ -72,7 +72,6 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine("    private static final long serialVersionUID = 1L;");
             fw.WriteLine();
             WriteProperties(fw, classe);
-            WriteGetters(fw, classe);
             WriteEnumSetters(fw, classe);
             if (_config.FieldsEnum && classe.IsPersistent)
             {
@@ -212,7 +211,6 @@ public class JpaModelGenerator : GeneratorBase
         fw.WriteDocStart(0, classe.Comment);
         fw.WriteDocEnd(0);
         fw.WriteLine("@SuperBuilder");
-        fw.WriteLine("@Setter");
         fw.WriteLine("@NoArgsConstructor");
         fw.WriteLine("@AllArgsConstructor");
         fw.WriteLine($"@EqualsAndHashCode{(classe.IsPersistent && classe.PrimaryKey != null ? @$"(of = {{ ""{classe.PrimaryKey!.Name.ToFirstLower()}"" }})" : string.Empty)}");
@@ -276,24 +274,7 @@ public class JpaModelGenerator : GeneratorBase
     {
         foreach (var property in classe.Properties)
         {
-            if (property is AssociationProperty ap)
-            {
-                fw.WriteLine(1, $"private {ap.GetJavaType()} {ap.GetAssociationName()};");
-            }
-            else
-            {
-                fw.WriteLine(1, $"private {property.GetJavaType()} {property.Name.ToFirstLower()};");
-            }
-        }
-    }
-
-    private void WriteGetters(JavaWriter fw, Class classe)
-    {
-        foreach (var property in classe.Properties)
-        {
-            fw.WriteLine();
             fw.WriteDocStart(1, property.Comment);
-
             if (property is AssociationProperty ap)
             {
                 fw.WriteReturns(1, $"value of {ap.GetAssociationName()}");
@@ -321,27 +302,32 @@ public class JpaModelGenerator : GeneratorBase
                         break;
                 }
 
-                fw.WriteLine(1, @$"{(ap.Association.Reference ? "private" : "public")} {ap.GetJavaType()} get{ap.GetAssociationName().ToFirstUpper()}() {{");
-                if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
+                var toWrite = $"private {ap.GetJavaType()} {ap.GetAssociationName()}";
+                if (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany)
                 {
-                    fw.WriteLine(2, @$"if({ap.GetAssociationName()} == null) this.{ap.GetAssociationName()} = Collections.emptyList();");
+                    fw.WriteLine(1, "@Builder.Default");
+                    toWrite += " = Collections.emptyList()";
                 }
 
-                fw.WriteLine(2, @$"return this.{ap.GetAssociationName()};");
+                if (!ap.Association.Reference)
+                {
+                    fw.WriteLine(1, "@Getter");
+                }
+                else
+                {
+                    fw.WriteLine(1, "@Getter(AccessLevel.PROTECTED)");
+                }
+
+                fw.WriteLine(1, "@Setter");
+                fw.WriteLine(1, $"{toWrite};");
             }
             else if (property is CompositionProperty cp)
             {
                 fw.WriteReturns(1, $"value of {cp.Composition.Name}");
                 fw.WriteDocEnd(1);
-                string methodName = @$"get{cp.Name.ToFirstUpper()}";
-                fw.WriteLine(1, @$"public {cp.GetJavaType()} {methodName}() {{");
-
-                if (cp.Kind == "list")
-                {
-                    fw.WriteLine(2, @$"if({cp.Name.ToFirstLower()} == null) this.{cp.Name.ToFirstLower()} = java.util.Collections.emptyList();");
-                }
-
-                fw.WriteLine(2, @$"return this.{cp.Name.ToFirstLower()};");
+                fw.WriteLine(1, "@Getter");
+                fw.WriteLine(1, "@Setter");
+                fw.WriteLine(1, $"private {property.GetJavaType()} {property.Name.ToFirstLower()};");
             }
             else if (property is IFieldProperty field)
             {
@@ -409,11 +395,10 @@ public class JpaModelGenerator : GeneratorBase
                     }
                 }
 
-                fw.WriteLine(1, @$"public {field.GetJavaType()} get{field.Name.ToFirstUpper()}() {{");
-                fw.WriteLine(2, @$" return this.{property.Name.ToFirstLower()};");
+                fw.WriteLine(1, "@Getter");
+                fw.WriteLine(1, "@Setter");
+                fw.WriteLine(1, $"private {property.GetJavaType()} {property.Name.ToFirstLower()};");
             }
-
-            fw.WriteLine(1, "}");
         }
     }
 
