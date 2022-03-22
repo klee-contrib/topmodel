@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.4.3
+
+- [JPA] : Les annotations JPA sont désormais placées sur les propriétés
+
 ## 1.4.2
 
 - [JPA] : Correction import enum suite release 1.4.1

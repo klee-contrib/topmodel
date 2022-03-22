@@ -14,7 +14,7 @@
     <PackAsTool>true</PackAsTool>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <ToolCommandName>modgen</ToolCommandName>
-    <Version>1.4.2</Version>
+    <Version>1.4.3</Version>
     <Authors>JabX</Authors>
     <Description>Générateur de modèle TopModel.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
