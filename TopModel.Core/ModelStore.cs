@@ -538,7 +538,7 @@ public class ModelStore
         {
             foreach (var property in classe.Properties.Where((e, i) => classe.Properties.Where((p, j) => p.Name == e.Name && j<i).Any()))
             {
-                yield return new ModelError(modelFile, $"Le nom '{property.Name}' est déjà utilisé.", property.Name.GetLocation()) { IsError = true, ModelErrorType = ModelErrorType.TMD0003 };
+                yield return new ModelError(modelFile, $"Le nom '{property.Name}' est déjà utilisé.", property.GetLocation()) { IsError = true, ModelErrorType = ModelErrorType.TMD0003 };
             }
         }
 
