@@ -58,6 +58,7 @@ public class Profil implements Serializable {
     @Getter
     @Setter
     private long id;
+
     /**
      * Type de profil.
      *
@@ -87,8 +88,11 @@ public class Profil implements Serializable {
         return this.typeProfil != null ? this.typeProfil.getCode() : null;
     }
 
+    /**
+     * Enumération des champs de la classe {@link topmodel.exemple.name.dao.entities.securite.Profil Profil}.
+     */
     public enum Fields implements IFieldEnum<Profil> {
-         ID, //
-         TYPE_PROFIL
+        ID, //
+        TYPE_PROFIL
     }
 }

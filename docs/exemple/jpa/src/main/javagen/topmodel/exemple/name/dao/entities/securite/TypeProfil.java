@@ -58,6 +58,7 @@ public class TypeProfil implements Serializable {
     @Getter
     @Setter
     private TypeProfil.Values code;
+
     /**
      * Libellé du type d'utilisateur.
      *
@@ -68,9 +69,12 @@ public class TypeProfil implements Serializable {
     @Setter
     private String libelle;
 
+    /**
+     * Enumération des champs de la classe {@link topmodel.exemple.name.dao.entities.securite.TypeProfil TypeProfil}.
+     */
     public enum Fields implements IFieldEnum<TypeProfil> {
-         CODE, //
-         LIBELLE
+        CODE, //
+        LIBELLE
     }
 
     @AllArgsConstructor

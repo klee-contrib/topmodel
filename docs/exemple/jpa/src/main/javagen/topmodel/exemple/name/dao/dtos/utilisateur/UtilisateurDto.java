@@ -43,6 +43,7 @@ public class UtilisateurDto implements Serializable {
     @Getter
     @Setter
     private long id;
+
     /**
      * Email de l'utilisateur.
      * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getEmail() Utilisateur#getEmail()} 
@@ -53,6 +54,7 @@ public class UtilisateurDto implements Serializable {
     @Getter
     @Setter
     private String email;
+
     /**
      * Type d'utilisateur en Many to one.
      * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()} 
@@ -62,6 +64,7 @@ public class UtilisateurDto implements Serializable {
     @Getter
     @Setter
     private TypeUtilisateur.Values typeUtilisateurCode;
+
     /**
      * Type d'utilisateur en one to one.
      * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getTypeUtilisateurCodeOrigin() Utilisateur#getTypeUtilisateurCodeOrigin()} 
@@ -71,6 +74,7 @@ public class UtilisateurDto implements Serializable {
     @Getter
     @Setter
     private TypeUtilisateur.Values typeUtilisateurCodeOrigin;
+
     /**
      * Id technique.
      * Alias of {@link topmodel.exemple.name.dao.entities.securite.Profil#getId() Profil#getId()} 
@@ -81,6 +85,7 @@ public class UtilisateurDto implements Serializable {
     @Getter
     @Setter
     private long profilId;
+
     /**
      * Type de profil.
      * Alias of {@link topmodel.exemple.name.dao.entities.securite.Profil#getTypeProfilCode() Profil#getTypeProfilCode()} 
@@ -90,6 +95,7 @@ public class UtilisateurDto implements Serializable {
     @Getter
     @Setter
     private TypeProfil.Values profilTypeProfilCode;
+
     /**
      * UtilisateurParent.
      *

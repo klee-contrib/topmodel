@@ -58,6 +58,7 @@ public class TypeUtilisateur implements Serializable {
     @Getter
     @Setter
     private TypeUtilisateur.Values code;
+
     /**
      * Libellé du type d'utilisateur.
      *
@@ -68,9 +69,12 @@ public class TypeUtilisateur implements Serializable {
     @Setter
     private String libelle;
 
+    /**
+     * Enumération des champs de la classe {@link topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur TypeUtilisateur}.
+     */
     public enum Fields implements IFieldEnum<TypeUtilisateur> {
-         CODE, //
-         LIBELLE
+        CODE, //
+        LIBELLE
     }
 
     @AllArgsConstructor

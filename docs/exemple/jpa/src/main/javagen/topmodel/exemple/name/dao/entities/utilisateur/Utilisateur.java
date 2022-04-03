@@ -77,6 +77,7 @@ public class Utilisateur implements Serializable {
     @Getter
     @Setter
     private long id;
+
     /**
      * Liste des profils.
      *
@@ -88,6 +89,7 @@ public class Utilisateur implements Serializable {
     @Getter
     @Setter
     private List<Profil> profils = Collections.emptyList();
+
     /**
      * Date de création de l'utilisateur.
      *
@@ -98,6 +100,7 @@ public class Utilisateur implements Serializable {
     @Getter
     @Setter
     private DateTime dateCreation;
+
     /**
      * Date de modification de l'utilisateur.
      *
@@ -108,6 +111,7 @@ public class Utilisateur implements Serializable {
     @Getter
     @Setter
     private DateTime dateModification;
+
     /**
      * Email de l'utilisateur.
      *
@@ -118,6 +122,7 @@ public class Utilisateur implements Serializable {
     @Getter
     @Setter
     private String email;
+
     /**
      * Type d'utilisateur en Many to one.
      *
@@ -128,6 +133,7 @@ public class Utilisateur implements Serializable {
     @Getter(AccessLevel.PROTECTED)
     @Setter
     private TypeUtilisateur typeUtilisateur;
+
     /**
      * Type d'utilisateur en one to one.
      *
@@ -175,13 +181,16 @@ public class Utilisateur implements Serializable {
         return this.typeUtilisateurOrigin != null ? this.typeUtilisateurOrigin.getCode() : null;
     }
 
+    /**
+     * Enumération des champs de la classe {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur Utilisateur}.
+     */
     public enum Fields implements IFieldEnum<Utilisateur> {
-         ID, //
-         PROFILS, //
-         DATE_CREATION, //
-         DATE_MODIFICATION, //
-         EMAIL, //
-         TYPE_UTILISATEUR, //
-         TYPE_UTILISATEUR_ORIGIN
+        ID, //
+        PROFILS, //
+        DATE_CREATION, //
+        DATE_MODIFICATION, //
+        EMAIL, //
+        TYPE_UTILISATEUR, //
+        TYPE_UTILISATEUR_ORIGIN
     }
 }

@@ -70,7 +70,6 @@ public class JpaModelGenerator : GeneratorBase
 
             fw.WriteLine("	/** Serial ID */");
             fw.WriteLine("    private static final long serialVersionUID = 1L;");
-            fw.WriteLine();
             WriteProperties(fw, classe);
             WriteEnumSetters(fw, classe);
             if (_config.FieldsEnum && classe.IsPersistent)
@@ -274,6 +273,7 @@ public class JpaModelGenerator : GeneratorBase
     {
         foreach (var property in classe.Properties)
         {
+            fw.WriteLine();
             fw.WriteDocStart(1, property.Comment);
             if (property is AssociationProperty ap)
             {
@@ -405,6 +405,8 @@ public class JpaModelGenerator : GeneratorBase
     private void WriteFieldsEnum(JavaWriter fw, Class classe)
     {
         fw.WriteLine();
+        fw.WriteDocStart(1, $"Enumération des champs de la classe {{@link {classe.GetImport(_config)} {classe.Name}}}");
+        fw.WriteDocEnd(1);
         string enumDeclaration = @$"public enum Fields ";
         if (_config.FieldsEnumInterface != null)
         {
@@ -425,7 +427,7 @@ public class JpaModelGenerator : GeneratorBase
                 name = ModelUtils.ConvertCsharp2Bdd(prop.Name);
             }
 
-            return $"         {name}";
+            return $"        {name}";
         })));
 
         fw.WriteLine(1, "}");

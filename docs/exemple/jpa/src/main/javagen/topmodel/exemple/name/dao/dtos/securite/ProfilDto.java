@@ -42,6 +42,7 @@ public class ProfilDto implements Serializable {
     @Getter
     @Setter
     private long id;
+
     /**
      * Type de profil.
      * Alias of {@link topmodel.exemple.name.dao.entities.securite.Profil#getTypeProfilCode() Profil#getTypeProfilCode()} 
@@ -51,6 +52,7 @@ public class ProfilDto implements Serializable {
     @Getter
     @Setter
     private TypeProfil.Values typeProfilCode;
+
     /**
      * Liste paginée des utilisateurs de ce profil.
      *
