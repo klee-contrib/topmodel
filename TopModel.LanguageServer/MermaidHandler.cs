@@ -94,9 +94,13 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
         foreach (var classe in notClasses)
         {
             diagram += @$"%% {classe.Comment}" + '\n';
-            diagram += @$"class {classe.Name}{{" + '\n';
-            diagram += "&lt;&lt;Reference&gt;&gt;" + '\n';
-            diagram += "}\n" + '\n';
+            diagram += @$"class {classe.Name}:::fileReference" + '\n';
+        }
+
+
+        foreach (var classe in classes.Where(c => c.Extends is not null))
+        {
+            diagram += @$"{classe.Extends!.Name} <|--  {classe.Name}" + '\n';
         }
 
         diagram += "\n";

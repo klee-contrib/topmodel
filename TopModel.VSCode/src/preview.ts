@@ -122,14 +122,11 @@ class TopModelPreviewPanel {
             overflow: hidden;
             margin-bottom: 1rem;
         }
+        #draggable .mermaid g.fileReference.node rect {
+            opacity: 0.5;
+        }
         </style>
         <script>const matrix = {x: ${this.matrix.x}, y: ${this.matrix.y}, scale: ${this.matrix.scale}}</script>
-        <script>
-            function onClickClass() {
-                console.log('coucou')
-            }
-        
-        </script>
         <script src="${this.previewSrcUri}"></script>
         <script src="${this.mermaidSrcUri}"></script>
         <title>TopModel</title>  
