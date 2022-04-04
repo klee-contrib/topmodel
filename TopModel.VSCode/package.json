@@ -3,7 +3,7 @@
   "displayName": "topmodel",
   "description": "Extension pour TopModel",
   "publisher": "JabX",
-  "icon": "src/media/icon.png",
+  "icon": "./src/media/icon.png",
   "contributors": [
     {
       "name": "gideruette"
