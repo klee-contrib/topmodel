@@ -20,7 +20,7 @@
     "directory": "TopModel.VSCode",
     "type": "git"
   },
-  "version": "1.5.0",
+  "version": "1.5.1",
   "engines": {
     "vscode": "^1.62.0"
   },
@@ -68,8 +68,8 @@
         "title": "Open preview panel",
         "category": "TopModel",
         "icon": {
-          "light": "./src/media/Preview.svg",
-          "dark": "./src/media/Preview_inverse.svg"
+          "light": "Preview.svg",
+          "dark": "Preview_inverse.svg"
         }
       }
     ],
@@ -110,7 +110,7 @@
             "id": "install.dotnet",
             "title": "Installer Dotnet",
             "media": {
-              "markdown": "./src/media/dotnet.md"
+              "markdown": "dotnet.md"
             }
           },
           {
@@ -118,7 +118,7 @@
             "title": "Installation de TopModel.Generator",
             "description": "Cliquez ici pour lancer la commande d'installation de TopModel.\n[Installer TopModel](command:topmodel.modgen.install)",
             "media": {
-              "markdown": "./src/media/modgen.md"
+              "markdown": "modgen.md"
             },
             "completionEvents": [
               "onCommand:topmodel.modgen.install"
