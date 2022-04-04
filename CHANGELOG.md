@@ -1,8 +1,8 @@
 # TopModel.Generator (`modgen`)
 
-## 1.4.3
+## 1.5.0
 
-- [JPA] : Les annotations JPA sont désormais placées sur les propriétés
+- [550179a9](https://github.com/klee-contrib/topmodel/commit/550179a9fa45b821538231f8426d1fc85711eea6) VSCode : Prévisualisation du schéma UML
 
 ## 1.4.2
 
@@ -14,7 +14,7 @@
 
 ## 1.4.0
 
-- [`944b659e`](https://github.com/klee-contrib/topmodel/pull/70) [JPA] : Pour les listes de référence, mettre la FK plutôt que la composition #69 
+- [`944b659e`](https://github.com/klee-contrib/topmodel/pull/70) [JPA] : Pour les listes de référence, mettre la FK plutôt que la composition #69
 - [`2f057ab7`](https://github.com/klee-contrib/topmodel/pull/68) [JPA] : Bug sur les alias d'association #22
 - [`ec6709ae`](https://github.com/klee-contrib/topmodel/pull/64) [Core] : Pluriels et types d'associations #64
 
