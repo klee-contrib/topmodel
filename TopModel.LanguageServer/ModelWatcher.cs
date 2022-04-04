@@ -6,11 +6,11 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer;
 
-public class ModelErrorWatcher : IModelWatcher
+public class ModelWatcher : IModelWatcher
 {
     private readonly ILanguageServerFacade _facade;
 
-    public ModelErrorWatcher(ILanguageServerFacade facade)
+    public ModelWatcher(ILanguageServerFacade facade)
     {
         _facade = facade;
     }
@@ -48,5 +48,6 @@ public class ModelErrorWatcher : IModelWatcher
 
     public void OnFilesChanged(IEnumerable<ModelFile> files)
     {
+        _facade.SendNotification("filesChanged");
     }
 }

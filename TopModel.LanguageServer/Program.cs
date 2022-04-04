@@ -21,7 +21,7 @@ var server = await LanguageServer.From(options =>
 
             services
                 .AddModelStore(fileChecker, config, dn)
-                .AddSingleton<IModelWatcher, ModelErrorWatcher>()
+                .AddSingleton<IModelWatcher, ModelWatcher>()
                 .AddSingleton<ModelFileCache>();
         })
         .WithHandler<TextDocumentSyncHandler>()
@@ -34,6 +34,7 @@ var server = await LanguageServer.From(options =>
         .WithHandler<ReferencesHandler>()
         .WithHandler<CodeLensHandler>()
         .WithHandler<RenameHandler>()
+        .AddHandler<MermaidHandler>("mermaid")
         .OnInitialize((server, _, __) =>
         {
             server.Services.GetRequiredService<ModelStore>().LoadFromConfig();
