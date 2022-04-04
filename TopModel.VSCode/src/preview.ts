@@ -1,6 +1,6 @@
 import path = require("path");
 import { WebviewPanel, ExtensionContext, Uri, window, workspace, commands, ViewColumn, TextEditor, TextDocumentChangeEvent, SymbolInformation, Position } from "vscode";
-import { DocumentUri, LanguageClient, WorkspaceSymbol } from "vscode-languageclient/node";
+import { LanguageClient } from "vscode-languageclient/node";
 import { COMMANDS } from "./extension";
 import { Mermaid } from "./types";
 
