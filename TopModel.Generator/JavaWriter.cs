@@ -9,7 +9,7 @@ namespace TopModel.Generator;
 /// </summary>
 public class JavaWriter : IDisposable
 {
-    private const string IndentValue = "    ";
+    private const string IndentValue = "	";
 
     private readonly FileWriter _writer;
 

@@ -299,7 +299,18 @@
           },
           "fieldsEnum": {
             "type": "boolean",
-            "description": "Option pour générer une enum des champs des classes persistées"
+            "description": "Option pour générer une enum des champs des classes persistées",
+            "default": "false"
+          },
+          "enumShortcutMode": {
+            "type": "boolean",
+            "description": "Option pour générer des getters et setters vers l'enum des références plutôt que sur la table",
+            "default": "false"
+          },
+          "lombokBuilder": {
+            "type": "boolean",
+            "description": "Option pour ajouter l'annotation @SuperBuilder",
+            "default": "false"
           },
           "fieldsEnumInterface": {
             "type": "string",
