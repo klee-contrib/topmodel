@@ -75,5 +75,10 @@ public enum ModelErrorType
     /// <summary>
     /// Le paramètre de requête '{queryParam.GetParamName()}' doit suivre tous les paramètres de route ou de body dans un endpoint.
     /// </summary>
-    TMD9003
+    TMD9003,
+
+    /// <summary>
+    /// Le domaine '{domain.Name}' n'est pas utilisé.
+    /// </summary>
+    TMD9004
 }
