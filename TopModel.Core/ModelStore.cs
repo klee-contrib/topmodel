@@ -555,6 +555,18 @@ public class ModelStore
         {
             yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false, ModelErrorType = ModelErrorType.TMD9001 };
         }
+
+        foreach (var endpoint in modelFile.Endpoints)
+        {
+            foreach (var queryParam in endpoint.GetQueryParams())
+            {
+                var index = endpoint.Params.IndexOf(queryParam);
+                if (endpoint.Params.Any(param => !param.IsQueryParam() && endpoint.Params.IndexOf(param) > index))
+                {
+                    yield return new ModelError(endpoint, $"Le paramètre de requête '{queryParam.GetParamName()}' doit suivre tous les paramètres de route ou de body dans un endpoint.", queryParam.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD9003 };
+                }
+            }
+        }
     }
 
     private IEnumerable<ModelError> GetGlobalErrors()
