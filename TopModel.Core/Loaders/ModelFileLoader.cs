@@ -18,7 +18,7 @@ public class ModelFileLoader
         _fileChecker = fileChecker;
     }
 
-    public ModelFile LoadModelFile(string filePath, string? content = null)
+    public ModelFile? LoadModelFile(string filePath, string? content = null)
     {
         content ??= File.ReadAllText(filePath);
 
@@ -26,6 +26,11 @@ public class ModelFileLoader
 
         var parser = new Parser(new StringReader(content));
         parser.Consume<StreamStart>();
+
+        if (parser.Current is StreamEnd)
+        {
+            return null;
+        }
 
         parser.Consume<DocumentStart>();
         parser.Consume<MappingStart>();

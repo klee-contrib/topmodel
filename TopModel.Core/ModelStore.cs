@@ -227,17 +227,20 @@ public class ModelStore
     {
         try
         {
+            ModelFile? file = null;
             if (File.Exists(filePath))
             {
-                var file = _modelFileLoader.LoadModelFile(filePath, content);
+                file = _modelFileLoader.LoadModelFile(filePath, content);
+            }
+
+            if (file != null)
+            {
                 _modelFiles[file.Name] = file;
                 _pendingUpdates.Add(file.Name);
             }
             else
             {
                 var fileName = _config.GetFileName(filePath);
-                var file = _modelFiles[fileName];
-
                 _modelFiles.Remove(fileName);
                 _pendingUpdates.Add(fileName);
             }
@@ -546,7 +549,7 @@ public class ModelStore
         foreach (var endpoint in modelFile.Endpoints.Where((e, i) => modelFile.Endpoints.Where((p, j) => p.Name == e.Name && j < i).Any()))
         {
             yield return new ModelError(modelFile, $"Le nom '{endpoint.Name}' est déjà utilisé.", endpoint.Name.GetLocation()) { IsError = true, ModelErrorType = ModelErrorType.TMD0003 };
-}
+        }
 
         foreach (var use in modelFile.UselessImports)
         {
@@ -555,10 +558,10 @@ public class ModelStore
     }
 
     private IEnumerable<ModelError> GetGlobalErrors()
-{
-    foreach (var classe in Classes.Where(c => c.Trigram != null && Classes.Any(u => u.Trigram == c.Trigram && u != c)))
     {
-        yield return new ModelError(classe.ModelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans la (les) classe(s) suivantes : {string.Join(", ", Classes.Where(u => u.Trigram == classe.Trigram && u != classe).Select(c => c.Name))}", classe.Trigram.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD9002 };
+        foreach (var classe in Classes.Where(c => c.Trigram != null && Classes.Any(u => u.Trigram == c.Trigram && u != c)))
+        {
+            yield return new ModelError(classe.ModelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans la (les) classe(s) suivantes : {string.Join(", ", Classes.Where(u => u.Trigram == classe.Trigram && u != classe).Select(c => c.Name))}", classe.Trigram.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD9002 };
+        }
     }
-}
 }
