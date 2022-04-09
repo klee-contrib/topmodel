@@ -1,9 +1,8 @@
-﻿using TopModel.Core;
-using TopModel.Utils;
+﻿using TopModel.Utils;
 
-namespace TopModel.Generator;
+namespace TopModel.Core;
 
-public static class ApiGeneratorExtensions
+public static class EndpointExtensions
 {
     public static IProperty? GetBodyParam(this Endpoint endpoint)
     {

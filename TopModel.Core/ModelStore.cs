@@ -555,6 +555,18 @@ public class ModelStore
         {
             yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false, ModelErrorType = ModelErrorType.TMD9001 };
         }
+
+        foreach (var endpoint in modelFile.Endpoints)
+        {
+            foreach (var queryParam in endpoint.GetQueryParams())
+            {
+                var index = endpoint.Params.IndexOf(queryParam);
+                if (endpoint.Params.Any(param => !param.IsQueryParam() && endpoint.Params.IndexOf(param) > index))
+                {
+                    yield return new ModelError(endpoint, $"Le paramètre de requête '{queryParam.GetParamName()}' doit suivre tous les paramètres de route ou de body dans un endpoint.", queryParam.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD9003 };
+                }
+            }
+        }
     }
 
     private IEnumerable<ModelError> GetGlobalErrors()
@@ -562,6 +574,11 @@ public class ModelStore
         foreach (var classe in Classes.Where(c => c.Trigram != null && Classes.Any(u => u.Trigram == c.Trigram && u != c)))
         {
             yield return new ModelError(classe.ModelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans la (les) classe(s) suivantes : {string.Join(", ", Classes.Where(u => u.Trigram == classe.Trigram && u != classe).Select(c => c.Name))}", classe.Trigram.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD9002 };
+        }
+
+        foreach (var domain in Domains.Values.Where(domain => !this.GetDomainReferences(domain).Any()))
+        {
+            yield return new ModelError(domain, $"Le domaine '{domain.Name}' n'est pas utilisé.") { IsError = false, ModelErrorType = ModelErrorType.TMD9004 };
         }
     }
 }

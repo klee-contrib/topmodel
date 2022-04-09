@@ -70,5 +70,15 @@ public enum ModelErrorType
     /// <summary>
     /// Le trigram '{classe.Trigram}' est déjà utilisé.
     /// </summary>
-    TMD9002
+    TMD9002,
+
+    /// <summary>
+    /// Le paramètre de requête '{queryParam.GetParamName()}' doit suivre tous les paramètres de route ou de body dans un endpoint.
+    /// </summary>
+    TMD9003,
+
+    /// <summary>
+    /// Le domaine '{domain.Name}' n'est pas utilisé.
+    /// </summary>
+    TMD9004
 }

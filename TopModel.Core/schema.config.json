@@ -16,7 +16,7 @@
       "items": {
         "type": "string",
         "description": "Code du warning (TMD9XXX) à ignorer ",
-        "enum": ["TMD9001", "TMD9002"]
+        "enum": ["TMD9001", "TMD9002", "TMD9003", "TMD9004"]
       }
     },
     "modelRoot": {
