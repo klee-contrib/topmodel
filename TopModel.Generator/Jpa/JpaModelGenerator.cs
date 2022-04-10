@@ -447,15 +447,23 @@ public class JpaModelGenerator : GeneratorBase
         fw.WriteLine(1, $"}}");
     }
 
+    private IList<IProperty> GetAllArgsProperties(Class classe)
+    {
+        if (classe.Extends is null)
+        {
+            return classe.Properties;
+        }
+        else
+        {
+            return GetAllArgsProperties(classe.Extends).Concat(classe.Properties).ToList();
+        }
+    }
+
     private void WriteAllArgConstructor(JavaWriter fw, Class classe)
     {
         fw.WriteLine();
         fw.WriteDocStart(1, "All arg constructor");
-        var properties = classe.Properties;
-        if (classe.Extends != null)
-        {
-            properties = classe.Extends.Properties.Concat(classe.Properties).ToList();
-        }
+        var properties = GetAllArgsProperties(classe);
 
         if (properties.Count == 0)
         {
@@ -472,7 +480,7 @@ public class JpaModelGenerator : GeneratorBase
         fw.WriteLine(1, $"public {classe.Name}({propertiesSignature}) {{");
         if (classe.Extends != null)
         {
-            var parentAllArgConstructorArguments = string.Join(", ", classe.Extends.Properties.Select(p => $"{p.GetJavaName()}"));
+            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends).Select(p => $"{p.GetJavaName()}"));
             fw.WriteLine(2, $"super({parentAllArgConstructorArguments});");
         }
 
