@@ -1,5 +1,13 @@
 # TopModel.Generator (`modgen`)
 
+## 1.5.1
+
+- [5f379b3b](https://github.com/klee-contrib/topmodel/commit/5f379b3bf9b2d243a9af51bb05a5ddf0927bd7d8) JPA : Retirer la dépendance à Lombok (fix #77)
+- [4fea1d49](https://github.com/klee-contrib/topmodel/commit/4fea1d497b848da6780a83fc2f6421401b63f450) JPA : Générer les associations manyToMany avec des tables de correspondances identiques (fix #80)
+- [2268df33](https://github.com/klee-contrib/topmodel/commit/2268df33cef6d7eb374bbb89cdc146915ba540e5) Warning sur les domaines non utilisés (fix #73)
+- [c83420e7](https://github.com/klee-contrib/topmodel/commit/c83420e7c7451e007a0258d85b0b4d19cb31dfb3) Warning sur l'ordre des paramètres d'un endpoint (fix #74)
+- [35c04911](https://github.com/klee-contrib/topmodel/commit/35c04911081166715946564aa38419f4d5997155)  Ignore les fichiers vides (fix #75)
+
 ## 1.5.0
 
 - [550179a9](https://github.com/klee-contrib/topmodel/commit/550179a9fa45b821538231f8426d1fc85711eea6) VSCode : Prévisualisation du schéma UML
