@@ -26,22 +26,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.Email;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 import oorg.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -52,139 +41,232 @@ import topmodel.exemple.utils.IFieldEnum;
 /**
  * Utilisateur de l'application.
  */
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(of = { "id" })
-@ToString
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
 @Table(name = "UTILISATEUR")
 @EntityListeners(AuditingEntityListener.class)
 public class Utilisateur implements Serializable {
 	/** Serial ID */
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Id technique.
-     *
-     * @return value of id.
-     */
-    @Id
-    @SequenceGenerator(name = "SEQ_UTILISATEUR", sequenceName = "SEQ_UTILISATEUR",  initialValue = 1000, allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_UTILISATEUR")
-    @Column(name = "UTI_ID", nullable = false)
-    @Getter
-    @Setter
-    private long id;
+	/**
+	 * Id technique.
+	 */
+	@Id
+	@SequenceGenerator(name = "SEQ_UTILISATEUR", sequenceName = "SEQ_UTILISATEUR",  initialValue = 1000, allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_UTILISATEUR")
+	@Column(name = "UTI_ID", nullable = false)
+	private long id;
 
-    /**
-     * Liste des profils.
-     *
-     * @return value of profils.
-     */
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "PROFIL_UTILISATEUR", joinColumns = @JoinColumn(name = "UTI_ID"), inverseJoinColumns = @JoinColumn(name = "PRO_ID"))
-    @Builder.Default
-    @Getter
-    @Setter
-    private List<Profil> profils = Collections.emptyList();
+	/**
+	 * Liste des profils.
+	 */
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "PROFIL_UTILISATEUR", joinColumns = @JoinColumn(name = "UTI_ID"), inverseJoinColumns = @JoinColumn(name = "PRO_ID"))
+	private List<Profil> profils;
 
-    /**
-     * Date de création de l'utilisateur.
-     *
-     * @return value of dateCreation.
-     */
-    @Column(name = "UTI_DATE_CREATION", nullable = true)
-    @CreatedDate
-    @Getter
-    @Setter
-    private DateTime dateCreation;
+	/**
+	 * Date de création de l'utilisateur.
+	 */
+	@Column(name = "UTI_DATE_CREATION", nullable = true)
+	@CreatedDate
+	private DateTime dateCreation;
 
-    /**
-     * Date de modification de l'utilisateur.
-     *
-     * @return value of dateModification.
-     */
-    @Column(name = "UTI_DATE_MODIFICATION", nullable = true)
-    @LastModifiedDate
-    @Getter
-    @Setter
-    private DateTime dateModification;
+	/**
+	 * Date de modification de l'utilisateur.
+	 */
+	@Column(name = "UTI_DATE_MODIFICATION", nullable = true)
+	@LastModifiedDate
+	private DateTime dateModification;
 
-    /**
-     * Email de l'utilisateur.
-     *
-     * @return value of email.
-     */
-    @Column(name = "UTI_EMAIL", nullable = true)
-    @Email
-    @Getter
-    @Setter
-    private String email;
+	/**
+	 * Email de l'utilisateur.
+	 */
+	@Column(name = "UTI_EMAIL", nullable = true)
+	@Email
+	private String email;
 
-    /**
-     * Type d'utilisateur en Many to one.
-     *
-     * @return value of typeUtilisateur.
-     */
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeUtilisateur.class)
-    @JoinColumn(name = "TUT_CODE", referencedColumnName = "TUT_CODE")
-    @Getter(AccessLevel.PROTECTED)
-    @Setter
-    private TypeUtilisateur typeUtilisateur;
+	/**
+	 * Type d'utilisateur en Many to one.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeUtilisateur.class)
+	@JoinColumn(name = "TUT_CODE", referencedColumnName = "TUT_CODE")
+	private TypeUtilisateur typeUtilisateur;
 
-    /**
-     * Type d'utilisateur en one to one.
-     *
-     * @return value of typeUtilisateurOrigin.
-     */
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
-    @JoinColumn(name = "ORIGIN_TUT_CODE", referencedColumnName = "TUT_CODE", unique = true)
-    @Getter(AccessLevel.PROTECTED)
-    @Setter
-    private TypeUtilisateur typeUtilisateurOrigin;
+	/**
+	 * Type d'utilisateur en one to one.
+	 */
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
+	@JoinColumn(name = "ORIGIN_TUT_CODE", referencedColumnName = "TUT_CODE", unique = true)
+	private TypeUtilisateur typeUtilisateurOrigin;
 
-    /**
-     * Type d'utilisateur en Many to one.
-     * Setter enum
-     */
-    public void setTypeUtilisateurCode(TypeUtilisateur.Values typeUtilisateurCode) {
-        if(typeUtilisateurCode != null)
-            this.typeUtilisateur = TypeUtilisateur.builder().code(typeUtilisateurCode).build();
-    }
+	/**
+	 * No arg constructor.
+	 */
+	public Utilisateur() {
+	}
 
-    /**
-     * Type d'utilisateur en Many to one.
-     * Getter enum
-     */
-    @Transient
-    public TypeUtilisateur.Values getTypeUtilisateurCode() {
-        return this.typeUtilisateur != null ? this.typeUtilisateur.getCode() : null;
-    }
+	/**
+	 * All arg constructor.
+	 * @param id Id technique
+	 * @param profils Liste des profils
+	 * @param dateCreation Date de création de l'utilisateur
+	 * @param dateModification Date de modification de l'utilisateur
+	 * @param email Email de l'utilisateur
+	 * @param typeUtilisateur Type d'utilisateur en Many to one
+	 * @param typeUtilisateurOrigin Type d'utilisateur en one to one
+	 */
+	public Utilisateur(long id, List<Profil> profils, DateTime dateCreation, DateTime dateModification, String email, TypeUtilisateur typeUtilisateur, TypeUtilisateur typeUtilisateurOrigin) {
+		this.id = id;
+		this.profils = profils;
+		this.dateCreation = dateCreation;
+		this.dateModification = dateModification;
+		this.email = email;
+		this.typeUtilisateur = typeUtilisateur;
+		this.typeUtilisateurOrigin = typeUtilisateurOrigin;
+	}
 
-    /**
-     * Type d'utilisateur en one to one.
-     * Setter enum
-     */
-    public void setTypeUtilisateurCodeOrigin(TypeUtilisateur.Values typeUtilisateurCodeOrigin) {
-        if(typeUtilisateurCodeOrigin != null)
-            this.typeUtilisateurOrigin = TypeUtilisateur.builder().code(typeUtilisateurCodeOrigin).build();
-    }
+	/**
+	 * Getter for id.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#id id}.
+	 */
+	public long getId() {
+		return this.id;
+	}
 
-    /**
-     * Type d'utilisateur en one to one.
-     * Getter enum
-     */
-    @Transient
-    public TypeUtilisateur.Values getTypeUtilisateurCodeOrigin() {
-        return this.typeUtilisateurOrigin != null ? this.typeUtilisateurOrigin.getCode() : null;
-    }
+	/**
+	 * Getter for profils.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#profils profils}.
+	 */
+	public List<Profil> getProfils() {
+		if(this.profils == null)
+			return Collections.emptyList();
+		return this.profils;
+	}
 
-    /**
-     * Enumération des champs de la classe {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur Utilisateur}.
-     */
-    public enum Fields implements IFieldEnum<Utilisateur> {
+	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#dateCreation dateCreation}.
+	 */
+	public DateTime getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
+	 * Getter for dateModification.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#dateModification dateModification}.
+	 */
+	public DateTime getDateModification() {
+		return this.dateModification;
+	}
+
+	/**
+	 * Getter for email.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#email email}.
+	 */
+	public String getEmail() {
+		return this.email;
+	}
+
+	/**
+	 * Getter for typeUtilisateur.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#typeUtilisateur typeUtilisateur}.
+	 */
+	protected TypeUtilisateur getTypeUtilisateur() {
+		return this.typeUtilisateur;
+	}
+
+	/**
+	 * Getter for typeUtilisateurOrigin.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#typeUtilisateurOrigin typeUtilisateurOrigin}.
+	 */
+	protected TypeUtilisateur getTypeUtilisateurOrigin() {
+		return this.typeUtilisateurOrigin;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#id id}.
+	 * @param id value to set
+	 */
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#profils profils}.
+	 * @param profils value to set
+	 */
+	public void setProfils(List<Profil> profils) {
+		this.profils = profils;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#dateCreation dateCreation}.
+	 * @param dateCreation value to set
+	 */
+	public void setDateCreation(DateTime dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#dateModification dateModification}.
+	 * @param dateModification value to set
+	 */
+	public void setDateModification(DateTime dateModification) {
+		this.dateModification = dateModification;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#email email}.
+	 * @param email value to set
+	 */
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#typeUtilisateur typeUtilisateur}.
+	 * @param typeUtilisateur value to set
+	 */
+	public void setTypeUtilisateur(TypeUtilisateur typeUtilisateur) {
+		this.typeUtilisateur = typeUtilisateur;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#typeUtilisateurOrigin typeUtilisateurOrigin}.
+	 * @param typeUtilisateurOrigin value to set
+	 */
+	public void setTypeUtilisateurOrigin(TypeUtilisateur typeUtilisateurOrigin) {
+		this.typeUtilisateurOrigin = typeUtilisateurOrigin;
+	}
+
+	/**
+	 * Equal function comparing Id.
+	 */
+	public boolean equals(Object o) {
+		if(o instanceof Utilisateur utilisateur) {
+			if(this == utilisateur)
+				return true;
+
+			if(utilisateur == null || this.getId() == null)
+				return false;
+
+			return this.getId().equals(utilisateur.getId());
+		}
+		return false;
+	}
+
+	/**
+	 * Enumération des champs de la classe {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur Utilisateur}.
+	 */
+	public enum Fields implements IFieldEnum<Utilisateur> {
         ID, //
         PROFILS, //
         DATE_CREATION, //
@@ -192,5 +274,5 @@ public class Utilisateur implements Serializable {
         EMAIL, //
         TYPE_UTILISATEUR, //
         TYPE_UTILISATEUR_ORIGIN
-    }
+	}
 }

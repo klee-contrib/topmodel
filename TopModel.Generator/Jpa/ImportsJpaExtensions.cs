@@ -50,8 +50,7 @@ public static class ImportsJpaExtensions
         {
             imports.AddRange(apo.GetImports(config));
         }
-
-        if (rp is RegularProperty rpr)
+        else if (rp is RegularProperty rpr)
         {
             imports.AddRange(rpr.GetImports(config));
         }
@@ -90,7 +89,6 @@ public static class ImportsJpaExtensions
         if (rp.IsEnum())
         {
             imports.Add($"{rp.Class.GetImport(config)}");
-            imports.Add($"javax.persistence.Transient");
         }
 
         if (rp.Domain?.Java?.Imports != null)
@@ -113,7 +111,6 @@ public static class ImportsJpaExtensions
             case AssociationType.OneToMany:
                 imports.Add("java.util.List");
                 imports.Add("java.util.Collections");
-                imports.Add("lombok.Builder");
                 imports.Add("javax.persistence.FetchType");
                 imports.Add("javax.persistence.CascadeType");
                 imports.Add("javax.persistence.JoinColumn");
@@ -125,7 +122,6 @@ public static class ImportsJpaExtensions
             case AssociationType.ManyToMany:
                 imports.Add("java.util.List");
                 imports.Add("java.util.Collections");
-                imports.Add("lombok.Builder");
                 imports.Add("javax.persistence.JoinColumn");
                 imports.Add("javax.persistence.FetchType");
                 imports.Add("javax.persistence.JoinTable");
@@ -181,16 +177,13 @@ public static class ImportsJpaExtensions
     {
         var imports = new List<string>
             {
-                "lombok.NoArgsConstructor",
-                "lombok.experimental.SuperBuilder",
-                "lombok.Setter",
-                "lombok.Getter",
-                "lombok.ToString",
-                "lombok.EqualsAndHashCode",
-                "lombok.AllArgsConstructor",
                 "java.io.Serializable",
-                "javax.annotation.Generated"
+                "javax.annotation.Generated",
             };
+        if (config.LombokBuilder)
+        {
+            imports.Add("lombok.experimental.SuperBuilder");
+        }
 
         if (classe.IsPersistent)
         {
@@ -218,11 +211,6 @@ public static class ImportsJpaExtensions
                 "org.hibernate.annotations.Immutable",
                 "org.hibernate.annotations.CacheConcurrencyStrategy"
             });
-
-            if (classe.ReferenceValues != null && classe.ReferenceValues.Count > 0)
-            {
-                imports.Add("lombok.Getter");
-            }
         }
 
         if (classe.UniqueKeys?.Count > 0)
@@ -233,11 +221,6 @@ public static class ImportsJpaExtensions
         if (classe.Extends != null && classe.Extends.Namespace.Module != classe.Namespace.Module)
         {
             imports.Add(classe.GetImport(config));
-        }
-
-        if (classe.Properties.Any(p => p is AssociationProperty ap && ap.Association.Reference))
-        {
-            imports.Add("lombok.AccessLevel");
         }
 
         return imports;

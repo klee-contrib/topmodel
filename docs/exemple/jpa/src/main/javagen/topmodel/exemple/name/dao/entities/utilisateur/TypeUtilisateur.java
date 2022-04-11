@@ -13,19 +13,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
-
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
 import topmodel.exemple.utils.IFieldEnum;
@@ -33,11 +24,6 @@ import topmodel.exemple.utils.IFieldEnum;
 /**
  * Type d'utilisateur.
  */
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(of = { "code" })
-@ToString
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
 @Table(name = "TYPE_UTILISATEUR")
@@ -45,48 +31,118 @@ import topmodel.exemple.utils.IFieldEnum;
 @Immutable
 public class TypeUtilisateur implements Serializable {
 	/** Serial ID */
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Code du type d'utilisateur.
-     *
-     * @return value of code.
-     */
-    @Id
-    @Column(name = "TUT_CODE", nullable = false, updatable = false, length = 3)
-    @Enumerated(EnumType.STRING)
-    @Getter
-    @Setter
-    private TypeUtilisateur.Values code;
+	/**
+	 * Code du type d'utilisateur.
+	 */
+	@Id
+	@Column(name = "TUT_CODE", nullable = false, updatable = false, length = 3)
+	@Enumerated(EnumType.STRING)
+	private TypeUtilisateur.Values code;
 
-    /**
-     * Libellé du type d'utilisateur.
-     *
-     * @return value of libelle.
-     */
-    @Column(name = "TUT_LIBELLE", nullable = false, updatable = false, length = 3)
-    @Getter
-    @Setter
-    private String libelle;
+	/**
+	 * Libellé du type d'utilisateur.
+	 */
+	@Column(name = "TUT_LIBELLE", nullable = false, updatable = false, length = 3)
+	private String libelle;
 
-    /**
-     * Enumération des champs de la classe {@link topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur TypeUtilisateur}.
-     */
-    public enum Fields implements IFieldEnum<TypeUtilisateur> {
+	/**
+	 * No arg constructor.
+	 */
+	public TypeUtilisateur() {
+	}
+
+	/**
+	 * All arg constructor.
+	 * @param code Code du type d'utilisateur
+	 * @param libelle Libellé du type d'utilisateur
+	 */
+	public TypeUtilisateur(TypeUtilisateur.Values code, String libelle) {
+		this.code = code;
+		this.libelle = libelle;
+	}
+
+	/**
+	 * Getter for code.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur#code code}.
+	 */
+	public TypeUtilisateur.Values getCode() {
+		return this.code;
+	}
+
+	/**
+	 * Getter for libelle.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur#libelle libelle}.
+	 */
+	public String getLibelle() {
+		return this.libelle;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur#code code}.
+	 * @param code value to set
+	 */
+	public void setCode(TypeUtilisateur.Values code) {
+		this.code = code;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur#libelle libelle}.
+	 * @param libelle value to set
+	 */
+	public void setLibelle(String libelle) {
+		this.libelle = libelle;
+	}
+
+	/**
+	 * Equal function comparing Code.
+	 */
+	public boolean equals(Object o) {
+		if(o instanceof TypeUtilisateur typeUtilisateur) {
+			if(this == typeUtilisateur)
+				return true;
+
+			if(typeUtilisateur == null || this.getCode() == null)
+				return false;
+
+			return this.getCode().equals(typeUtilisateur.getCode());
+		}
+		return false;
+	}
+
+	/**
+	 * Enumération des champs de la classe {@link topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur TypeUtilisateur}.
+	 */
+	public enum Fields implements IFieldEnum<TypeUtilisateur> {
         CODE, //
         LIBELLE
-    }
+	}
 
-    @AllArgsConstructor
-    @Getter
-    public enum Values {
-        ADM("Administrateur"), //
-        GES("Gestionnaire"), //
-        CLI("Client"); 
+	public enum Values {
+		ADM("Administrateur"), //
+		GES("Gestionnaire"), //
+		CLI("Client"); 
 
-        /**
-         * Libellé du type d'utilisateur.
-         */
-        private final String libelle;
-    }
+		/**
+		 * Libellé du type d'utilisateur.
+		 */
+		private final String libelle;
+
+		/**
+		 * All arg constructor.
+		 */
+		private Values(String libelle) {
+			this.libelle = libelle;
+		}
+
+		/**
+		 * Libellé du type d'utilisateur.
+		 */
+		public String getLibelle(){
+			return this.libelle;
+		}
+	}
 }

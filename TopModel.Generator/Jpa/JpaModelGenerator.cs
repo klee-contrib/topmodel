@@ -69,9 +69,18 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteClassDeclaration(classe.Name, null, classe.Extends != null ? classe.Extends.Name : null, "Serializable");
 
             fw.WriteLine("	/** Serial ID */");
-            fw.WriteLine("    private static final long serialVersionUID = 1L;");
+            fw.WriteLine(1, "private static final long serialVersionUID = 1L;");
             WriteProperties(fw, classe);
-            WriteEnumSetters(fw, classe);
+            WriteNoArgConstructor(fw, classe);
+            WriteAllArgConstructor(fw, classe);
+            WriteGetters(fw, classe);
+            WriteSetters(fw, classe);
+            WriteEquals(fw, classe);
+            if (_config.EnumShortcutMode)
+            {
+                WriteEnumShortcuts(fw, classe);
+            }
+
             if (_config.FieldsEnum && classe.IsPersistent)
             {
                 WriteFieldsEnum(fw, classe);
@@ -86,32 +95,41 @@ public class JpaModelGenerator : GeneratorBase
         }
     }
 
-    private void WriteEnumSetters(JavaWriter fw, Class classe)
+    private void WriteEnumShortcuts(JavaWriter fw, Class classe)
     {
-        foreach (var property in classe.Properties.Where(p => p is AssociationProperty ap && ap.Association.Reference))
+        foreach (var property in classe.Properties.Where(p => p is AssociationProperty ap && ap.Association.Reference && (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)))
         {
             if (property is AssociationProperty ap)
             {
                 {
+                    var propertyName = ap.Name.ToFirstLower();
                     fw.WriteLine();
-                    fw.WriteDocStart(1, property.Comment);
-                    fw.WriteLine(1, " * Setter enum");
+                    fw.WriteDocStart(1, $"Set the value of {{@link {classe.GetImport(_config)}#{propertyName} {propertyName}}}");
+                    fw.WriteLine(1, " * Cette méthode permet définir la valeur de la FK directement");
+                    fw.WriteLine(1, $" * @param {propertyName} value to set");
                     fw.WriteDocEnd(1);
-                    fw.WriteLine(1, @$"public void set{ap.Name}({ap.Association.PrimaryKey!.GetJavaType()} {ap.Name.ToFirstLower()}) {{");
-                    fw.WriteLine(2, $"if({ap.Name.ToFirstLower()} != null)");
-                    fw.WriteLine(3, @$"this.{ap.GetAssociationName()} = {ap.Association.Name}.builder().{ap.Association.PrimaryKey!.Name.ToLower()}({ap.Name.ToFirstLower()}).build();");
+                    fw.WriteLine(1, @$"public void set{ap.Name}({ap.Association.PrimaryKey!.GetJavaType()} {propertyName}) {{");
+                    fw.WriteLine(2, $"if({propertyName} != null) {{");
+                    var constructorArgs = $"{propertyName}";
+                    foreach (var p in ap.Association.Properties.Where(pr => !pr.PrimaryKey))
+                    {
+                        constructorArgs += $", {propertyName}.get{p.Name}()";
+                    }
+
+                    fw.WriteLine(3, @$"this.{ap.GetAssociationName()} = new {ap.Association.Name}({constructorArgs});");
+                    fw.WriteLine(2, "}");
                     fw.WriteLine(1, "}");
                 }
 
                 {
                     fw.WriteLine();
-                    fw.WriteDocStart(1, property.Comment);
-                    fw.WriteLine(1, " * Getter enum");
+                    fw.WriteDocStart(1, $"Getter for {property.Name.ToFirstLower()}");
+                    fw.WriteLine(1, " * Cette méthode permet de manipuler directement la foreign key de la liste de référence");
+                    fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config)}#{property.GetJavaName()} {property.GetJavaName()}}}");
                     fw.WriteDocEnd(1);
                     fw.WriteLine(1, "@Transient");
-                    fw.WriteLine(1, @$"public {ap.Association.PrimaryKey.GetJavaType()} get{ap.Name}() {{");
-
-                    fw.WriteLine(2, @$"return this.{ap.GetAssociationName()} != null ? this.{ap.GetAssociationName()}.get{ap.Association.PrimaryKey.Name}() : null;");
+                    fw.WriteLine(1, @$"public {ap.Association.PrimaryKey!.GetJavaType()} get{ap.Name}() {{");
+                    fw.WriteLine(2, @$"return this.{ap.GetAssociationName()} != null ? this.{ap.GetAssociationName()}.get{ap.Association.PrimaryKey!.Name}() : null;");
                     fw.WriteLine(1, "}");
                 }
             }
@@ -121,14 +139,7 @@ public class JpaModelGenerator : GeneratorBase
     private void WriteReferenceValues(JavaWriter fw, Class classe)
     {
         fw.WriteLine();
-        if (classe.Properties.Count > 1)
-        {
-            fw.WriteLine(1, "@AllArgsConstructor");
-            fw.WriteLine(1, "@Getter");
-        }
-
         fw.WriteLine(1, $"public enum Values {{");
-
         var i = 0;
 
         foreach (var refValue in classe.ReferenceValues!.OrderBy(x => x.Name, StringComparer.Ordinal))
@@ -162,6 +173,32 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine(2, $"private final {((IFieldProperty)prop).Domain.Java!.Type} {prop.Name.ToFirstLower()};");
         }
 
+        if (classe.Properties.Count > 1)
+        {
+            fw.WriteLine();
+            fw.WriteDocStart(2, "All arg constructor");
+            fw.WriteDocEnd(2);
+            var propertiesSignature = string.Join(", ", classe.Properties.Where(p => !p.PrimaryKey).Select(p => $"{p.GetJavaType()} {p.GetJavaName()}"));
+
+            fw.WriteLine(2, $"private Values({propertiesSignature}) {{");
+            foreach (var property in classe.Properties.Where(p => !p.PrimaryKey))
+            {
+                fw.WriteLine(3, $"this.{property.GetJavaName()} = {property.GetJavaName()};");
+            }
+
+            fw.WriteLine(2, $"}}");
+        }
+
+        foreach (var prop in classe.Properties.Where(p => !p.PrimaryKey))
+        {
+            fw.WriteLine();
+            fw.WriteDocStart(2, ((IFieldProperty)prop).Comment);
+            fw.WriteDocEnd(2);
+            fw.WriteLine(2, $"public {prop.GetJavaType()} get{prop.Name}(){{");
+            fw.WriteLine(3, $"return this.{prop.Name.ToFirstLower()};");
+            fw.WriteLine(2, $"}}");
+        }
+
         fw.WriteLine(1, "}");
     }
 
@@ -173,9 +210,24 @@ public class JpaModelGenerator : GeneratorBase
             imports.AddRange(property.GetImports(_config));
         }
 
+        if (classe.Extends != null)
+        {
+            foreach (var property in classe.Extends.Properties)
+            {
+                imports.AddRange(property.GetImports(_config));
+            }
+        }
+
         if (_config.FieldsEnum && _config.FieldsEnumInterface != null && classe.IsPersistent && classe.Properties.Count > 0)
         {
             imports.Add(_config.FieldsEnumInterface.Replace("<>", string.Empty));
+        }
+
+        if (_config.EnumShortcutMode && classe.Properties.Where(p => p is AssociationProperty apo && apo.IsEnum()).Any())
+        {
+            {
+                imports.Add($"javax.persistence.Transient");
+            }
         }
 
         fw.WriteImports(imports.Distinct().ToArray());
@@ -209,11 +261,11 @@ public class JpaModelGenerator : GeneratorBase
     {
         fw.WriteDocStart(0, classe.Comment);
         fw.WriteDocEnd(0);
-        fw.WriteLine("@SuperBuilder");
-        fw.WriteLine("@NoArgsConstructor");
-        fw.WriteLine("@AllArgsConstructor");
-        fw.WriteLine($"@EqualsAndHashCode{(classe.IsPersistent && classe.PrimaryKey != null ? @$"(of = {{ ""{classe.PrimaryKey!.Name.ToFirstLower()}"" }})" : string.Empty)}");
-        fw.WriteLine("@ToString");
+        if (_config.LombokBuilder)
+        {
+            fw.WriteLine("@SuperBuilder");
+        }
+
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
 
         if (classe.IsPersistent)
@@ -277,7 +329,6 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteDocStart(1, property.Comment);
             if (property is AssociationProperty ap)
             {
-                fw.WriteReturns(1, $"value of {ap.GetAssociationName()}");
                 fw.WriteDocEnd(1);
                 var fk = (ap.Role is not null ? ModelUtils.ConvertCsharp2Bdd(ap.Role) + "_" : string.Empty) + ap.Association.PrimaryKey!.SqlName;
                 var apk = ap.Association.PrimaryKey.SqlName;
@@ -306,31 +357,11 @@ public class JpaModelGenerator : GeneratorBase
                         break;
                 }
 
-                var toWrite = $"private {ap.GetJavaType()} {ap.GetAssociationName()}";
-                if (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany)
-                {
-                    fw.WriteLine(1, "@Builder.Default");
-                    toWrite += " = Collections.emptyList()";
-                }
-
-                if (!ap.Association.Reference)
-                {
-                    fw.WriteLine(1, "@Getter");
-                }
-                else
-                {
-                    fw.WriteLine(1, "@Getter(AccessLevel.PROTECTED)");
-                }
-
-                fw.WriteLine(1, "@Setter");
-                fw.WriteLine(1, $"{toWrite};");
+                fw.WriteLine(1, $"private {ap.GetJavaType()} {ap.GetAssociationName()};");
             }
             else if (property is CompositionProperty cp)
             {
-                fw.WriteReturns(1, $"value of {cp.Composition.Name}");
                 fw.WriteDocEnd(1);
-                fw.WriteLine(1, "@Getter");
-                fw.WriteLine(1, "@Setter");
                 fw.WriteLine(1, $"private {property.GetJavaType()} {property.Name.ToFirstLower()};");
             }
             else if (property is IFieldProperty field)
@@ -339,8 +370,6 @@ public class JpaModelGenerator : GeneratorBase
                 {
                     fw.WriteLine(1, $" * Alias of {{@link {alp.Property.Class.GetImport(_config)}#get{alp.Property.Name.ToFirstUpper()}() {alp.Property.Class.Name}#get{alp.Property.Name.ToFirstUpper()}()}} ");
                 }
-
-                fw.WriteReturns(1, $"value of {property.Name.ToFirstLower()}");
 
                 fw.WriteDocEnd(1);
                 if (field.PrimaryKey && classe.IsPersistent)
@@ -399,10 +428,125 @@ public class JpaModelGenerator : GeneratorBase
                     }
                 }
 
-                fw.WriteLine(1, "@Getter");
-                fw.WriteLine(1, "@Setter");
-                fw.WriteLine(1, $"private {property.GetJavaType()} {property.Name.ToFirstLower()};");
+                fw.WriteLine(1, $"private {property.GetJavaType()} {property.GetJavaName()};");
             }
+        }
+    }
+
+    private void WriteNoArgConstructor(JavaWriter fw, Class classe)
+    {
+        fw.WriteLine();
+        fw.WriteDocStart(1, "No arg constructor");
+        fw.WriteDocEnd(1);
+        fw.WriteLine(1, $"public {classe.Name}() {{");
+        if (classe.Extends != null)
+        {
+            fw.WriteLine(2, $"super();");
+        }
+
+        fw.WriteLine(1, $"}}");
+    }
+
+    private IList<IProperty> GetAllArgsProperties(Class classe)
+    {
+        if (classe.Extends is null)
+        {
+            return classe.Properties;
+        }
+        else
+        {
+            return GetAllArgsProperties(classe.Extends).Concat(classe.Properties).ToList();
+        }
+    }
+
+    private void WriteAllArgConstructor(JavaWriter fw, Class classe)
+    {
+        fw.WriteLine();
+        fw.WriteDocStart(1, "All arg constructor");
+        var properties = GetAllArgsProperties(classe);
+
+        if (properties.Count == 0)
+        {
+            return;
+        }
+
+        var propertiesSignature = string.Join(", ", properties.Select(p => $"{p.GetJavaType()} {p.GetJavaName()}"));
+        foreach (var property in properties)
+        {
+            fw.WriteLine(1, $" * @param {property.GetJavaName()} {property.Comment}");
+        }
+
+        fw.WriteDocEnd(1);
+        fw.WriteLine(1, $"public {classe.Name}({propertiesSignature}) {{");
+        if (classe.Extends != null)
+        {
+            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends).Select(p => $"{p.GetJavaName()}"));
+            fw.WriteLine(2, $"super({parentAllArgConstructorArguments});");
+        }
+
+        foreach (var property in classe.Properties)
+        {
+            fw.WriteLine(2, $"this.{property.GetJavaName()} = {property.GetJavaName()};");
+        }
+
+        fw.WriteLine(1, $"}}");
+    }
+
+    private void WriteGetters(JavaWriter fw, Class classe)
+    {
+        foreach (var property in classe.Properties.Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
+        {
+            fw.WriteLine();
+            fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
+            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config)}#{property.GetJavaName()} {property.GetJavaName()}}}");
+            fw.WriteDocEnd(1);
+            fw.WriteLine(1, @$"{((property is AssociationProperty apo && apo.Association.Reference) ? "protected" : "public")} {property.GetJavaType()} get{property.GetJavaName().ToFirstUpper()}() {{");
+            if (property is AssociationProperty ap && (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany))
+            {
+                fw.WriteLine(2, $"if(this.{property.GetJavaName()} == null)");
+                fw.WriteLine(3, "return Collections.emptyList();");
+            }
+
+            fw.WriteLine(2, @$"return this.{property.GetJavaName()};");
+            fw.WriteLine(1, "}");
+        }
+    }
+
+    private void WriteEquals(JavaWriter fw, Class classe)
+    {
+        if (classe.IsPersistent || classe.PrimaryKey != null)
+        {
+            var pk = classe.PrimaryKey!;
+            fw.WriteLine();
+            fw.WriteDocStart(1, $"Equal function comparing {pk.Name}");
+            fw.WriteDocEnd(1);
+            fw.WriteLine(1, $@"public boolean equals(Object o) {{");
+            fw.WriteLine(2, $"if(o instanceof {classe.Name} {classe.Name.ToFirstLower()}) {{");
+            fw.WriteLine(3, $"if(this == {classe.Name.ToFirstLower()})");
+            fw.WriteLine(4, $"return true;");
+            fw.WriteLine();
+            fw.WriteLine(3, $"if({classe.Name.ToFirstLower()} == null || this.get{pk.Name}() == null)");
+            fw.WriteLine(4, $"return false;");
+            fw.WriteLine();
+            fw.WriteLine(3, $"return this.get{pk.Name}().equals({classe.Name.ToFirstLower()}.get{pk.Name}());");
+            fw.WriteLine(2, "}");
+            fw.WriteLine(2, $"return false;");
+            fw.WriteLine(1, "}");
+        }
+    }
+
+    private void WriteSetters(JavaWriter fw, Class classe)
+    {
+        foreach (var property in classe.Properties.Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
+        {
+            var propertyName = property.GetJavaName();
+            fw.WriteLine();
+            fw.WriteDocStart(1, $"Set the value of {{@link {classe.GetImport(_config)}#{propertyName} {propertyName}}}");
+            fw.WriteLine(1, $" * @param {propertyName} value to set");
+            fw.WriteDocEnd(1);
+            fw.WriteLine(1, @$"public void set{propertyName.ToFirstUpper()}({property.GetJavaType()} {propertyName}) {{");
+            fw.WriteLine(2, @$"this.{propertyName} = {propertyName};");
+            fw.WriteLine(1, "}");
         }
     }
 

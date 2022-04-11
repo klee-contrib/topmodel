@@ -17,6 +17,17 @@ public static class JpaUtils
         };
     }
 
+    public static string GetJavaName(this IProperty prop)
+    {
+        string propertyName = prop.Name.ToFirstLower();
+        if (prop is AssociationProperty ap)
+        {
+            propertyName = ap.GetAssociationName();
+        }
+
+        return propertyName;
+    }
+
     public static string GetJavaType(this AssociationProperty ap)
     {
         var isList = ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany;
@@ -42,11 +53,16 @@ public static class JpaUtils
 
     public static string GetJavaType(this AliasProperty ap)
     {
+        if (ap.Class != null && ap.Class.IsPersistent)
+        {
+            return ap.Property.GetJavaType();
+        }
+
         if (ap.IsEnum())
         {
             return ap.Property.GetJavaType();
         }
-        else if (ap.Property is AssociationProperty apr && ap.IsAssociatedEnum())
+        else if (ap.Property is AssociationProperty apr)
         {
             if (apr.Type == AssociationType.ManyToMany || apr.Type == AssociationType.OneToMany)
             {
@@ -55,11 +71,24 @@ public static class JpaUtils
 
             return apr.Association.PrimaryKey!.GetJavaType();
         }
-        else if (ap.Property is AssociationProperty oapr)
+        else if (ap.Property is CompositionProperty cpo)
         {
-            if (oapr.Type == AssociationType.ManyToMany || oapr.Type == AssociationType.OneToMany)
+            if (cpo.Kind == "list")
             {
-                return $"List<{oapr.Association.PrimaryKey!.GetJavaType()}>";
+                return $"List<{cpo.Composition.Name}>";
+            }
+            else if (cpo.Kind == "object")
+            {
+                return cpo.Composition.Name;
+            }
+            else if (cpo.DomainKind != null)
+            {
+                if (cpo.DomainKind.Java!.Type.Contains("{class}"))
+                {
+                    return cpo.DomainKind.Java.Type.Replace("{class}", cpo.Composition.Name);
+                }
+
+                return $"{cpo.DomainKind.Java.Type}<{cpo.Composition.Name}>";
             }
         }
 
@@ -83,11 +112,13 @@ public static class JpaUtils
         };
     }
 
-    public static bool IsEnum(this RegularProperty rp)
+    public static bool IsEnum(this IFieldProperty rp)
     {
         return rp.Class != null
                 && rp.Class.IsPersistent
                 && rp.Class.Reference
+                && rp.Class.ReferenceValues != null
+                && rp.Class.ReferenceValues.Count > 0
                 && rp.PrimaryKey
                 && rp.Domain.Name != "DO_ID";
     }
@@ -99,9 +130,11 @@ public static class JpaUtils
 
     public static bool IsAssociatedEnum(this AliasProperty ap)
     {
-        return ap.Property is AssociationProperty apr
-          && apr.Association.IsPersistent
-          && apr.Association.Reference
-          && apr.Domain.Name != "DO_ID";
+        return ap.Property is AssociationProperty apr && apr.IsEnum();
+    }
+
+    public static bool IsEnum(this AssociationProperty apr)
+    {
+        return apr.Association.PrimaryKey != null && apr.Association.PrimaryKey.IsEnum();
     }
 }

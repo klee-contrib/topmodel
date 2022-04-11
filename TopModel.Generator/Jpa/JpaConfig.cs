@@ -20,6 +20,16 @@ public class JpaConfig : GeneratorConfigBase
     public bool FieldsEnum { get; set; }
 
     /// <summary>
+    /// Option pour ajouter l'annotation @SuperBuilder
+    /// </summary>
+    public bool LombokBuilder { get; set; }
+
+    /// <summary>
+    /// Option pour générer des getters et setters vers l'enum des références plutôt que sur la table
+    /// </summary>
+    public bool EnumShortcutMode { get; set; }
+
+    /// <summary>
     /// Précise l'interface des fields enum générés.
     /// </summary>
     public string FieldsEnumInterface { get; set; }

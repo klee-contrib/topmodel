@@ -21,8 +21,6 @@ spring:
               create-target: create.sql
 ```
 
-Le générateur suppose que vous utilisez la librairie [lombok](https://projectlombok.org/), et la validation `ajax`
-
 ## Model
 
 Le générateur JPA construit les entités persistées, les entités non persistés, et initialise les DAO.
@@ -65,15 +63,27 @@ Génèrera, dans la classe `Departement`, l'enum suivante :
 
 Lorsque sont ajoutées des listes de références, le générateur créé les `enum` correspondantes. Le domaine de clé primaire de la classe de référence est ignoré, et le champs prend le type de l'enum. L'enum s'appelle `Values`. Les différents champs renseignés dans les valeurs sont également ajoutés en tant que propriété de l'enum.
 
-L'association avec une liste de référence a également un comportement particulier : la propriété générée n'est pas du type de la table de référence, mais de sa clé primaire.
+Si la configuration `enumShortcutMode` est activée :
+
+```yaml
+    enumShortcutMode: true
+```
+
+Alors les getters et setters des références statiques ne considèreront plus le type de la table de référence, mais uniquement celui de sa clé primaire.
 
 Exemple :
 
 ```java
-  private TypeUtilisateur.Values typeUtilisateurCode;
+  private TypeUtilisateur.Values getTypeUtilisateurCode() {
+    return this.typeUtilisateur.getCode();
+  }
+
+  private void setTypeUtilisateurCode(TypeUtilisateur.Values typeUtilisateurCode) {
+    this.typeUtilisateur = new TypeUtilisateur(typeUtilisateurCode, typeUtilisateurCode.getLibelle());
+  }
 ```
 
-En effet, le code est beaucoup plus utilisé dans le code java. L'existence de la table correspondante en base de donnée n'est utilile que pour la création d'une contrainte de valeur sur les tables qui la référencent.
+En effet, pour les références dont toutes les valeurs sont connues à l'avance et identifiées par un code, celui-ci est beaucoup plus utilisé dans le code java. L'existence de la table correspondante en base de donnée n'est utile que pour la création d'une contrainte de valeur sur les tables qui la référencent.
 
 ### DAO
 

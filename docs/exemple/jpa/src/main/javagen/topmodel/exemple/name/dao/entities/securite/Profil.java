@@ -17,16 +17,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 import topmodel.exemple.name.dao.entities.securite.TypeProfil;
 import topmodel.exemple.utils.IFieldEnum;
@@ -34,65 +24,100 @@ import topmodel.exemple.utils.IFieldEnum;
 /**
  * Profil des utilisateurs.
  */
-@SuperBuilder
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(of = { "id" })
-@ToString
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
 @Table(name = "PROFIL")
 public class Profil implements Serializable {
 	/** Serial ID */
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Id technique.
-     *
-     * @return value of id.
-     */
-    @Id
-    @SequenceGenerator(name = "SEQ_PROFIL", sequenceName = "SEQ_PROFIL",  initialValue = 1000, allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PROFIL")
-    @Column(name = "PRO_ID", nullable = false)
-    @Getter
-    @Setter
-    private long id;
+	/**
+	 * Id technique.
+	 */
+	@Id
+	@SequenceGenerator(name = "SEQ_PROFIL", sequenceName = "SEQ_PROFIL",  initialValue = 1000, allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PROFIL")
+	@Column(name = "PRO_ID", nullable = false)
+	private long id;
 
-    /**
-     * Type de profil.
-     *
-     * @return value of typeProfil.
-     */
-    @ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeProfil.class)
-    @JoinColumn(name = "CODE", referencedColumnName = "CODE")
-    @Getter(AccessLevel.PROTECTED)
-    @Setter
-    private TypeProfil typeProfil;
+	/**
+	 * Type de profil.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeProfil.class)
+	@JoinColumn(name = "CODE", referencedColumnName = "CODE")
+	private TypeProfil typeProfil;
 
-    /**
-     * Type de profil.
-     * Setter enum
-     */
-    public void setTypeProfilCode(TypeProfil.Values typeProfilCode) {
-        if(typeProfilCode != null)
-            this.typeProfil = TypeProfil.builder().code(typeProfilCode).build();
-    }
+	/**
+	 * No arg constructor.
+	 */
+	public Profil() {
+	}
 
-    /**
-     * Type de profil.
-     * Getter enum
-     */
-    @Transient
-    public TypeProfil.Values getTypeProfilCode() {
-        return this.typeProfil != null ? this.typeProfil.getCode() : null;
-    }
+	/**
+	 * All arg constructor.
+	 * @param id Id technique
+	 * @param typeProfil Type de profil
+	 */
+	public Profil(long id, TypeProfil typeProfil) {
+		this.id = id;
+		this.typeProfil = typeProfil;
+	}
 
-    /**
-     * Enumération des champs de la classe {@link topmodel.exemple.name.dao.entities.securite.Profil Profil}.
-     */
-    public enum Fields implements IFieldEnum<Profil> {
+	/**
+	 * Getter for id.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dao.entities.securite.Profil#id id}.
+	 */
+	public long getId() {
+		return this.id;
+	}
+
+	/**
+	 * Getter for typeProfil.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dao.entities.securite.Profil#typeProfil typeProfil}.
+	 */
+	protected TypeProfil getTypeProfil() {
+		return this.typeProfil;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.securite.Profil#id id}.
+	 * @param id value to set
+	 */
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.securite.Profil#typeProfil typeProfil}.
+	 * @param typeProfil value to set
+	 */
+	public void setTypeProfil(TypeProfil typeProfil) {
+		this.typeProfil = typeProfil;
+	}
+
+	/**
+	 * Equal function comparing Id.
+	 */
+	public boolean equals(Object o) {
+		if(o instanceof Profil profil) {
+			if(this == profil)
+				return true;
+
+			if(profil == null || this.getId() == null)
+				return false;
+
+			return this.getId().equals(profil.getId());
+		}
+		return false;
+	}
+
+	/**
+	 * Enumération des champs de la classe {@link topmodel.exemple.name.dao.entities.securite.Profil Profil}.
+	 */
+	public enum Fields implements IFieldEnum<Profil> {
         ID, //
         TYPE_PROFIL
-    }
+	}
 }
