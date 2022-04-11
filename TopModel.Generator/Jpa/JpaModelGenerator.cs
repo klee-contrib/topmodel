@@ -293,8 +293,12 @@ public class JpaModelGenerator : GeneratorBase
                         fw.WriteLine(1, @$"@JoinColumn(name = ""{pk}"", referencedColumnName = ""{pk}"")");
                         break;
                     case AssociationType.ManyToMany:
+                        var assoNameList = new List<string>();
+                        assoNameList.Add(ap.Class.SqlName);
+                        assoNameList.Add(ap.Association.SqlName);
+                        assoNameList.Sort();
                         fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY)");
-                        fw.WriteLine(1, @$"@JoinTable(name = ""{ap.Class.SqlName}_{ap.Association.SqlName}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
+                        fw.WriteLine(1, @$"@JoinTable(name = ""{string.Join('_', assoNameList)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
                         break;
                     case AssociationType.OneToOne:
                         fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = {(ap.Required ? "false" : "true")})");

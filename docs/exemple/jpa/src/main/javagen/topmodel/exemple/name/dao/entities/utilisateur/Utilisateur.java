@@ -84,7 +84,7 @@ public class Utilisateur implements Serializable {
      * @return value of profils.
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "UTILISATEUR_PROFIL", joinColumns = @JoinColumn(name = "UTI_ID"), inverseJoinColumns = @JoinColumn(name = "PRO_ID"))
+    @JoinTable(name = "PROFIL_UTILISATEUR", joinColumns = @JoinColumn(name = "UTI_ID"), inverseJoinColumns = @JoinColumn(name = "PRO_ID"))
     @Builder.Default
     @Getter
     @Setter
