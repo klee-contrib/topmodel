@@ -514,7 +514,7 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteEquals(JavaWriter fw, Class classe)
     {
-        if (classe.IsPersistent || classe.PrimaryKey != null)
+        if (classe.IsPersistent)
         {
             var pk = classe.PrimaryKey!;
             fw.WriteLine();
