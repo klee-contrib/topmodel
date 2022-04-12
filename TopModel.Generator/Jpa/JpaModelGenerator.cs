@@ -348,8 +348,13 @@ public class JpaModelGenerator : GeneratorBase
                         assoNameList.Add(ap.Class.SqlName);
                         assoNameList.Add(ap.Association.SqlName);
                         assoNameList.Sort();
-                        fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY)");
-                        fw.WriteLine(1, @$"@JoinTable(name = ""{string.Join('_', assoNameList)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
+                        var inverseProps = ap.Association.Properties.Where(p => p is AssociationProperty pap && pap.Association == classe);
+                        var isInversed = inverseProps.Count() == 1 && assoNameList.First() == ap.Class.SqlName;
+                        fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY{(isInversed ? $@", mappedBy = ""{inverseProps.First().GetJavaName()}"", cascade={{ javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }}" : "")})");
+                        if (!isInversed)
+                        {
+                            fw.WriteLine(1, @$"@JoinTable(name = ""{string.Join('_', assoNameList)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
+                        }
                         break;
                     case AssociationType.OneToOne:
                         fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = {(ap.Required ? "false" : "true")})");
