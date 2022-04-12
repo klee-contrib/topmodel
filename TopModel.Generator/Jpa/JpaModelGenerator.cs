@@ -340,22 +340,35 @@ public class JpaModelGenerator : GeneratorBase
                         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
                         break;
                     case AssociationType.OneToMany:
-                        fw.WriteLine(1, @$"@{ap.Type}(cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)");
-                        fw.WriteLine(1, @$"@JoinColumn(name = ""{pk}"", referencedColumnName = ""{pk}"")");
-                        break;
-                    case AssociationType.ManyToMany:
-                        var assoNameList = new List<string>();
-                        assoNameList.Add(ap.Class.SqlName);
-                        assoNameList.Add(ap.Association.SqlName);
-                        assoNameList.Sort();
-                        var inverseProps = ap.Association.Properties.Where(p => p is AssociationProperty pap && pap.Association == classe);
-                        var isInversed = inverseProps.Count() == 1 && assoNameList.First() == ap.Class.SqlName;
-                        fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY{(isInversed ? $@", mappedBy = ""{inverseProps.First().GetJavaName()}"", cascade={{ javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }}" : "")})");
-                        if (!isInversed)
                         {
-                            fw.WriteLine(1, @$"@JoinTable(name = ""{string.Join('_', assoNameList)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
+                            var inversePropsOneToMany = ap.Association.Properties.Where(p => p is AssociationProperty pap && pap.Association == classe && pap.Type == AssociationType.ManyToOne && (ap.Role is null || ap.Role == pap.Role));
+                            var isInversed = inversePropsOneToMany.Count() == 1;
+                            fw.WriteLine(1, @$"@{ap.Type}(cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY{(isInversed ? $@", mappedBy = ""{inversePropsOneToMany.First().GetJavaName()}""" : string.Empty)})");
+                            if (!isInversed)
+                            {
+                                fw.WriteLine(1, @$"@JoinColumn(name = ""{pk}"", referencedColumnName = ""{pk}"")");
+                            }
+
+                            break;
                         }
-                        break;
+
+                    case AssociationType.ManyToMany:
+                        {
+                            var assoNameList = new List<string>();
+                            assoNameList.Add(ap.Class.SqlName);
+                            assoNameList.Add(ap.Association.SqlName);
+                            assoNameList.Sort();
+                            var inversePropsManyToMany = ap.Association.Properties.Where(p => p is AssociationProperty pap && pap.Association == classe && pap.Type == AssociationType.ManyToMany && (ap.Role is null || ap.Role == pap.Role));
+                            var isInversed = inversePropsManyToMany.Count() == 1 && assoNameList.First() == ap.Class.SqlName;
+                            fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY{(isInversed ? $@", mappedBy = ""{inversePropsManyToMany.First().GetJavaName()}"", cascade={{ javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }}" : string.Empty)})");
+                            if (!isInversed)
+                            {
+                                fw.WriteLine(1, @$"@JoinTable(name = ""{string.Join('_', assoNameList)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
+                            }
+
+                            break;
+                        }
+
                     case AssociationType.OneToOne:
                         fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = {(ap.Required ? "false" : "true")})");
                         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"", unique = true)");

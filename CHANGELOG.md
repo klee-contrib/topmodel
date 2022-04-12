@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.5.3
+
+- [79305ff](https://github.com/klee-contrib/topmodel/commit/79305ff8f65f50e1025ebb2b3d3ede32ee6efeaa) Gestion de la biderectionnalité avec choix du sens arbitraire (fix #82) Cas des oneToMany
+
 ## 1.5.2
 
 - [79305ff](https://github.com/klee-contrib/topmodel/commit/79305ff8f65f50e1025ebb2b3d3ede32ee6efeaa) Gestion de la biderectionnalité avec choix du sens arbitraire (fix #82)

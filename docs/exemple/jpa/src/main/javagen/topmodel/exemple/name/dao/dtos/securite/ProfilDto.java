@@ -105,20 +105,4 @@ public class ProfilDto implements Serializable {
 	public void setUtilisateurs(List<UtilisateurDto> utilisateurs) {
 		this.utilisateurs = utilisateurs;
 	}
-
-	/**
-	 * Equal function comparing Id.
-	 */
-	public boolean equals(Object o) {
-		if(o instanceof ProfilDto profilDto) {
-			if(this == profilDto)
-				return true;
-
-			if(profilDto == null || this.getId() == null)
-				return false;
-
-			return this.getId().equals(profilDto.getId());
-		}
-		return false;
-	}
 }

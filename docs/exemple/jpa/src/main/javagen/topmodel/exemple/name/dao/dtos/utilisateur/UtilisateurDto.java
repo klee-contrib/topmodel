@@ -208,20 +208,4 @@ public class UtilisateurDto implements Serializable {
 	public void setUtilisateurParent(UtilisateurDto utilisateurParent) {
 		this.utilisateurParent = utilisateurParent;
 	}
-
-	/**
-	 * Equal function comparing Id.
-	 */
-	public boolean equals(Object o) {
-		if(o instanceof UtilisateurDto utilisateurDto) {
-			if(this == utilisateurDto)
-				return true;
-
-			if(utilisateurDto == null || this.getId() == null)
-				return false;
-
-			return this.getId().equals(utilisateurDto.getId());
-		}
-		return false;
-	}
 }
