@@ -10,8 +10,10 @@ import javax.annotation.Generated;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
+import topmodel.exemple.name.dao.entities.securite.Profil;
 import topmodel.exemple.name.dao.entities.securite.TypeProfil;
 import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
+import topmodel.exemple.name.dao.entities.utilisateur.Utilisateur;
 
 /**
  * Objet non persisté de communication avec le serveur.
@@ -39,12 +41,6 @@ public class UtilisateurDto implements Serializable {
 	 * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()} 
 	 */
 	private TypeUtilisateur.Values typeUtilisateurCode;
-
-	/**
-	 * Type d'utilisateur en one to one.
-	 * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getTypeUtilisateurCodeOrigin() Utilisateur#getTypeUtilisateurCodeOrigin()} 
-	 */
-	private TypeUtilisateur.Values typeUtilisateurCodeOrigin;
 
 	/**
 	 * Id technique.
@@ -75,19 +71,38 @@ public class UtilisateurDto implements Serializable {
 	 * @param id Id technique
 	 * @param email Email de l'utilisateur
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
-	 * @param typeUtilisateurCodeOrigin Type d'utilisateur en one to one
 	 * @param profilId Id technique
 	 * @param profilTypeProfilCode Type de profil
 	 * @param utilisateurParent UtilisateurParent
 	 */
-	public UtilisateurDto(long id, String email, TypeUtilisateur.Values typeUtilisateurCode, TypeUtilisateur.Values typeUtilisateurCodeOrigin, long profilId, TypeProfil.Values profilTypeProfilCode, UtilisateurDto utilisateurParent) {
+	public UtilisateurDto(long id, String email, TypeUtilisateur.Values typeUtilisateurCode, long profilId, TypeProfil.Values profilTypeProfilCode, UtilisateurDto utilisateurParent) {
 		this.id = id;
 		this.email = email;
 		this.typeUtilisateurCode = typeUtilisateurCode;
-		this.typeUtilisateurCodeOrigin = typeUtilisateurCodeOrigin;
 		this.profilId = profilId;
 		this.profilTypeProfilCode = profilTypeProfilCode;
 		this.utilisateurParent = utilisateurParent;
+	}
+
+	/**
+	 * Alias constructor.
+	 * Ce constructeur permet d'initialiser un objet UtilisateurDto avec comme paramètres les classes dont les propriétés sont référencées UtilisateurDto.
+	 * A ne pas utiliser pour construire un Dto en plusieurs requêtes.
+	 * Voir la <a href="https://klee-contrib.github.io/topmodel/#/generator/jpa?id=constructeurs-par-alias">documentation</a>
+	 * @param Utilisateur Utilisateur de l'application
+	 * @param ProfilProfil Profil des utilisateurs
+	 */
+	public UtilisateurDto(Utilisateur utilisateur, Profil profilProfil) {
+		if(profilProfil != null) {
+			this.profilId = profilProfil.getId();
+			this.profilTypeProfilCode = profilProfil.getTypeProfilCode();
+		}
+
+		if(utilisateur != null) {
+			this.id = utilisateur.getId();
+			this.email = utilisateur.getEmail();
+			this.typeUtilisateurCode = utilisateur.getTypeUtilisateurCode();
+		}
 	}
 
 	/**
@@ -115,15 +130,6 @@ public class UtilisateurDto implements Serializable {
 	 */
 	public TypeUtilisateur.Values getTypeUtilisateurCode() {
 		return this.typeUtilisateurCode;
-	}
-
-	/**
-	 * Getter for typeUtilisateurCodeOrigin.
-	 *
-	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#typeUtilisateurCodeOrigin typeUtilisateurCodeOrigin}.
-	 */
-	public TypeUtilisateur.Values getTypeUtilisateurCodeOrigin() {
-		return this.typeUtilisateurCodeOrigin;
 	}
 
 	/**
@@ -175,14 +181,6 @@ public class UtilisateurDto implements Serializable {
 	 */
 	public void setTypeUtilisateurCode(TypeUtilisateur.Values typeUtilisateurCode) {
 		this.typeUtilisateurCode = typeUtilisateurCode;
-	}
-
-	/**
-	 * Set the value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#typeUtilisateurCodeOrigin typeUtilisateurCodeOrigin}.
-	 * @param typeUtilisateurCodeOrigin value to set
-	 */
-	public void setTypeUtilisateurCodeOrigin(TypeUtilisateur.Values typeUtilisateurCodeOrigin) {
-		this.typeUtilisateurCodeOrigin = typeUtilisateurCodeOrigin;
 	}
 
 	/**

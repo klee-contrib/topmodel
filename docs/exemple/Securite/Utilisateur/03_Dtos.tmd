@@ -14,7 +14,7 @@ class:
     - alias:
         class: Utilisateur
         exclude:
-          - Profils
+          - ProfilId
           - dateCreation
           - dateModification
     - alias:

@@ -10,6 +10,7 @@ import java.util.List;
 import javax.annotation.Generated;
 
 import topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto;
+import topmodel.exemple.name.dao.entities.securite.Profil;
 import topmodel.exemple.name.dao.entities.securite.TypeProfil;
 
 /**
@@ -53,6 +54,20 @@ public class ProfilDto implements Serializable {
 		this.id = id;
 		this.typeProfilCode = typeProfilCode;
 		this.utilisateurs = utilisateurs;
+	}
+
+	/**
+	 * Alias constructor.
+	 * Ce constructeur permet d'initialiser un objet ProfilDto avec comme paramètres les classes dont les propriétés sont référencées ProfilDto.
+	 * A ne pas utiliser pour construire un Dto en plusieurs requêtes.
+	 * Voir la <a href="https://klee-contrib.github.io/topmodel/#/generator/jpa?id=constructeurs-par-alias">documentation</a>
+	 * @param Profil Profil des utilisateurs
+	 */
+	public ProfilDto(Profil profil) {
+		if(profil != null) {
+			this.id = profil.getId();
+			this.typeProfilCode = profil.getTypeProfilCode();
+		}
 	}
 
 	/**

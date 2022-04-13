@@ -99,14 +99,13 @@ public interface IUtilisateurController {
 	 * @param utiId Id technique
 	 * @param email Email de l'utilisateur
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
-	 * @param typeUtilisateurCodeOrigin Type d'utilisateur en one to one
 	 * @param proProfilId Id technique
 	 * @param profilTypeProfilCode Type de profil
 	 * @return Utilisateurs matchant les critères
 	 */
 	@PostMapping(path = "utilisateur/search")
-	default Page<UtilisateurDto> searchMapping(@RequestParam("utiId") long utiId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateur.Values typeUtilisateurCode, @RequestParam("typeUtilisateurCodeOrigin") TypeUtilisateur.Values typeUtilisateurCodeOrigin, @RequestParam("proProfilId") long proProfilId, @RequestParam("profilTypeProfilCode") TypeProfil.Values profilTypeProfilCode) {
-		return this.search(utiId, email, typeUtilisateurCode, typeUtilisateurCodeOrigin, proProfilId, profilTypeProfilCode);
+	default Page<UtilisateurDto> searchMapping(@RequestParam("utiId") long utiId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateur.Values typeUtilisateurCode, @RequestParam("proProfilId") long proProfilId, @RequestParam("profilTypeProfilCode") TypeProfil.Values profilTypeProfilCode) {
+		return this.search(utiId, email, typeUtilisateurCode, proProfilId, profilTypeProfilCode);
 	}
 
 	/**
@@ -114,10 +113,9 @@ public interface IUtilisateurController {
 	 * @param utiId Id technique
 	 * @param email Email de l'utilisateur
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
-	 * @param typeUtilisateurCodeOrigin Type d'utilisateur en one to one
 	 * @param proProfilId Id technique
 	 * @param profilTypeProfilCode Type de profil
 	 * @return Utilisateurs matchant les critères
 	 */
-	Page<UtilisateurDto> search(long utiId, String email, TypeUtilisateur.Values typeUtilisateurCode, TypeUtilisateur.Values typeUtilisateurCodeOrigin, long proProfilId, TypeProfil.Values profilTypeProfilCode);
+	Page<UtilisateurDto> search(long utiId, String email, TypeUtilisateur.Values typeUtilisateurCode, long proProfilId, TypeProfil.Values profilTypeProfilCode);
 }

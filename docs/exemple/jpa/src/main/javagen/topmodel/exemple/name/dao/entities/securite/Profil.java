@@ -64,6 +64,12 @@ public class Profil implements Serializable {
 	}
 
 	/**
+	 * Alias constructor.
+	 * Ce constructeur permet d'initialiser un objet Profil avec comme paramètres les classes dont les propriétés sont référencées Profil.
+	 * A ne pas utiliser pour construire un Dto en plusieurs requêtes.
+	 * Voir la <a href="https://klee-contrib.github.io/topmodel/#/generator/jpa?id=constructeurs-par-alias">documentation</a>
+
+	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link topmodel.exemple.name.dao.entities.securite.Profil#id id}.
