@@ -12,5 +12,5 @@ public class AliasClass
     public Class Class { get; init; }
 
     #nullable enable
-    public string Name => $"{Prefix ?? string.Empty}{Class}{Suffix ?? string.Empty}";
+    public string Name => $"{Prefix ?? string.Empty}{Class.Name}{Suffix ?? string.Empty}";
 }

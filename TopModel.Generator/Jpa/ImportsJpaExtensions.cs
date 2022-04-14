@@ -216,14 +216,24 @@ public static class ImportsJpaExtensions
             imports.Add("javax.persistence.UniqueConstraint");
         }
 
-        if (classe.Extends != null && classe.Extends.Namespace.Module != classe.Namespace.Module)
+        if (classe.Extends != null)
         {
             imports.Add(classe.GetImport(config));
         }
 
         imports.AddRange(GetAliasClass(classe)
             .Select(c => c.Class.GetImport(config)));
-        return imports;
+        imports
+        .AddRange(
+            classe.Properties
+            .OfType<AliasProperty>()
+            .Select(ap => ap.Property)
+            .OfType<AssociationProperty>()
+            .Where(a => (a.Type == AssociationType.OneToMany || a.Type == AssociationType.ManyToMany))
+            .Select(a => a.Association.GetImport(config)));
+
+        // Suppression des imports inutiles
+        return imports.Where(i => string.Join('.', i.Split('.').SkipLast(1)) != string.Join('.', classe.GetImport(config).Split('.').SkipLast(1))).ToList();
     }
 
     public static IList<AliasClass> GetAliasClass(Class classe)
