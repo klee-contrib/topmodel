@@ -540,11 +540,11 @@ public class JpaModelGenerator : GeneratorBase
         }
 
         string currentArg = string.Empty;
-        foreach (var p in classe.Properties.OfType<AliasProperty>().ToList().OrderBy(p => p.Property.Class.Name))
+        foreach (var p in classe.Properties.OfType<AliasProperty>().ToList().OrderBy(p => p.OriginalProperty.Class.Name))
         {
-            var prefix = p.Name.Split(p.Property.Name).First().ToFirstLower();
-            var suffix = p.Name.Split(p.Property.Name).Last();
-            var argName = $"{prefix}{((!string.IsNullOrEmpty(prefix) ? p.Property?.Class?.Name : p.Property?.Class?.Name?.ToFirstLower()) ?? string.Empty)}{suffix}";
+            var prefix = p.Prefix?.ToFirstLower() ?? string.Empty;
+            var suffix = p.Suffix ?? string.Empty;
+            var argName = $"{prefix}{((!string.IsNullOrEmpty(prefix) ? p.OriginalProperty?.Class?.Name : p.OriginalProperty?.Class?.Name?.ToFirstLower()) ?? string.Empty)}{suffix}";
             if (currentArg != argName)
             {
                 if (currentArg != string.Empty)
@@ -558,20 +558,20 @@ public class JpaModelGenerator : GeneratorBase
 
             currentArg = argName;
 
-            if (p.Property is AssociationProperty ap)
+            if (p.OriginalProperty is AssociationProperty ap)
             {
                 if (!ap.IsEnum() || !_config.EnumShortcutMode)
                 {
                     fw.WriteLine();
-                    fw.WriteLine(3, $"if({argName}.get{p.Property.GetJavaName().ToFirstUpper()}{p.Suffix ?? string.Empty}() != null) {{");
+                    fw.WriteLine(3, $"if({argName}.get{p.OriginalProperty.GetJavaName().ToFirstUpper()}{p.Suffix ?? string.Empty}() != null) {{");
 
                     if (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany)
                     {
-                        fw.WriteLine(4, $"this.{p.GetJavaName()} = {argName}.get{p.Property.GetJavaName().ToFirstUpper()}().stream().map({ap.Association.Name}::get{ap.Association.PrimaryKey!.Name}).toList();");
+                        fw.WriteLine(4, $"this.{p.GetJavaName()} = {argName}.get{p.OriginalProperty.GetJavaName().ToFirstUpper()}().stream().map({ap.Association.Name}::get{ap.Association.PrimaryKey!.Name}).toList();");
                     }
                     else
                     {
-                        fw.WriteLine(4, $"this.{p.GetJavaName()} = {argName}.get{p.Property.GetJavaName().ToFirstUpper()}().get{ap.Association.PrimaryKey!.Name}();");
+                        fw.WriteLine(4, $"this.{p.GetJavaName()} = {argName}.get{p.OriginalProperty.GetJavaName().ToFirstUpper()}().get{ap.Association.PrimaryKey!.Name}();");
                     }
                     fw.WriteLine(3, $"}}");
                 }
@@ -582,7 +582,7 @@ public class JpaModelGenerator : GeneratorBase
             }
             else
             {
-                fw.WriteLine(3, $"this.{p.GetJavaName()} = {argName}.get{p.Property.Name.ToFirstUpper()}();");
+                fw.WriteLine(3, $"this.{p.GetJavaName()} = {argName}.get{p.OriginalProperty.Name.ToFirstUpper()}();");
             }
         }
 

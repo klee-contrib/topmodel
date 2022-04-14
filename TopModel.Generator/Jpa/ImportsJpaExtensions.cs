@@ -242,9 +242,9 @@ public static class ImportsJpaExtensions
             .Properties.OfType<AliasProperty>()
             .Select(p => new AliasClass()
             {
-                Prefix = p.Name.Split(p.Property.Name).First(),
-                Suffix = p.Name.Split(p.Property.Name).Last(),
-                Class = p.Property.Class
+                Prefix = p.Prefix,
+                Suffix = p.Suffix,
+                Class = p.OriginalProperty.Class
             })
             .DistinctBy(c => c.Name)
             .ToList();

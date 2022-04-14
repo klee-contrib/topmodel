@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.5.7
+
+- [07aa8982](https://github.com/klee-contrib/topmodel/commit/07aa898215c64dc99dfa1c1b98b0616f7d50b4af) Combo PLS HotFix : JPA : Générer des alias constructor #84
+
 ## 1.5.6
 
 - [07aa8982](https://github.com/klee-contrib/topmodel/commit/07aa898215c64dc99dfa1c1b98b0616f7d50b4af) PLS HotFix : JPA : Générer des alias constructor #84
