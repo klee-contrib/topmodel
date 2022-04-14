@@ -1,12 +1,16 @@
 # TopModel.Generator (`modgen`)
 
+## 1.5.4
+
+- [07aa8982](https://github.com/klee-contrib/topmodel/commit/07aa898215c64dc99dfa1c1b98b0616f7d50b4af) JPA : Générer des alias constructor #84
+
 ## 1.5.3
 
 - [79305ff](https://github.com/klee-contrib/topmodel/commit/79305ff8f65f50e1025ebb2b3d3ede32ee6efeaa) Gestion de la biderectionnalité avec choix du sens arbitraire (fix #82) Cas des oneToMany
 
 ## 1.5.2
 
-- [79305ff](https://github.com/klee-contrib/topmodel/commit/79305ff8f65f50e1025ebb2b3d3ede32ee6efeaa) Gestion de la biderectionnalité avec choix du sens arbitraire (fix #82)
+- [5f379b](https://github.com/klee-contrib/topmodel/commit/5f379b3bf9b2d243a9af51bb05a5ddf0927bd7d8) Gestion de la biderectionnalité avec choix du sens arbitraire (fix #82)
 
 ## 1.5.1
 
