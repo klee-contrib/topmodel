@@ -542,7 +542,7 @@ public class JpaModelGenerator : GeneratorBase
         string currentArg = string.Empty;
         foreach (var p in classe.Properties.OfType<AliasProperty>().ToList().OrderBy(p => p.Property.Class.Name))
         {
-            var argName = $"{(p.Prefix is not null ? p.Prefix.ToFirstLower() : string.Empty)}{(p.Prefix is not null ? p.Property.Class.Name : p.Property.Class.Name.ToFirstLower())}{p.Suffix ?? string.Empty}";
+            var argName = $"{p.Prefix?.ToFirstLower() ?? string.Empty}{(p.Property?.Class?.Name?.ToFirstLower() ?? string.Empty)}{p.Suffix ?? string.Empty}";
             if (currentArg != argName)
             {
                 if (currentArg != string.Empty)
@@ -558,9 +558,12 @@ public class JpaModelGenerator : GeneratorBase
 
             if (p.Property is AssociationProperty ap)
             {
-                if (!ap.IsEnum())
+                if (!ap.IsEnum() || !_config.EnumShortcutMode)
                 {
-                    fw.WriteLine(3, $"this.{p.GetJavaName()} = {argName}.get{p.Property.GetJavaName().ToFirstUpper()}{p.Suffix ?? string.Empty}().get{ap.Association.PrimaryKey!.Name}();");
+                    fw.WriteLine();
+                    fw.WriteLine(3, $"if({argName}.get{p.Property.GetJavaName().ToFirstUpper()}{p.Suffix ?? string.Empty}() != null) {{");
+                    fw.WriteLine(4, $"this.{p.GetJavaName()} = {argName}.get{p.Property.GetJavaName().ToFirstUpper()}{p.Suffix ?? string.Empty}().get{ap.Association.PrimaryKey!.Name}();");
+                    fw.WriteLine(3, $"}}");
                 }
                 else
                 {

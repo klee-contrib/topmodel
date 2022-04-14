@@ -8,7 +8,9 @@ public class AliasClass
 
     public string? Suffix { get; set; }
 
-    public Class Class { get; set; }
+    #nullable disable
+    public Class Class { get; init; }
 
-    public string Name => $"{(Prefix is not null ? Prefix : string.Empty)}{Class}{(Suffix is not null ? Suffix : string.Empty)}";
+    #nullable enable
+    public string Name => $"{Prefix ?? string.Empty}{Class}{Suffix ?? string.Empty}";
 }

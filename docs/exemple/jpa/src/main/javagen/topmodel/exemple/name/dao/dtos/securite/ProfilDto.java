@@ -66,7 +66,10 @@ public class ProfilDto implements Serializable {
 	public ProfilDto(Profil profil) {
 		if(profil != null) {
 			this.id = profil.getId();
-			this.typeProfilCode = profil.getTypeProfilCode();
+
+			if(profil.getTypeProfil() != null) {
+				this.typeProfilCode = profil.getTypeProfil().getCode();
+			}
 		}
 	}
 

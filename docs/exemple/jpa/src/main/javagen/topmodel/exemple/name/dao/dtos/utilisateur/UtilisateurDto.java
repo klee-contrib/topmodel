@@ -95,13 +95,19 @@ public class UtilisateurDto implements Serializable {
 	public UtilisateurDto(Utilisateur utilisateur, Profil profilProfil) {
 		if(profilProfil != null) {
 			this.profilId = profilProfil.getId();
-			this.profilTypeProfilCode = profilProfil.getTypeProfilCode();
+
+			if(profilProfil.getTypeProfil() != null) {
+				this.profilTypeProfilCode = profilProfil.getTypeProfil().getCode();
+			}
 		}
 
 		if(utilisateur != null) {
 			this.id = utilisateur.getId();
 			this.email = utilisateur.getEmail();
-			this.typeUtilisateurCode = utilisateur.getTypeUtilisateurCode();
+
+			if(utilisateur.getTypeUtilisateur() != null) {
+				this.typeUtilisateurCode = utilisateur.getTypeUtilisateur().getCode();
+			}
 		}
 	}
 
