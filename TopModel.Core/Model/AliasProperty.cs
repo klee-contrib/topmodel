@@ -74,9 +74,9 @@ public class AliasProperty : IFieldProperty
 
     public Reference? PropertyReference { get; set; }
 
-    internal string? Prefix { get; set; }
+    public string? Prefix { get; set; }
 
-    internal string? Suffix { get; set; }
+    public string? Suffix { get; set; }
 
 #nullable disable
     internal Reference Location { get; set; }

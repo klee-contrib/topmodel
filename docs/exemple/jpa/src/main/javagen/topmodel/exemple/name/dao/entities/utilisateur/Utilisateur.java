@@ -6,12 +6,9 @@ package topmodel.exemple.name.dao.entities.utilisateur;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.DateTime;
-import java.util.List;
 
 import javax.annotation.Generated;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -20,10 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -59,11 +53,11 @@ public class Utilisateur implements Serializable {
 	private long id;
 
 	/**
-	 * Liste des profils.
+	 * Profil de l'utilisateur.
 	 */
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "PROFIL_UTILISATEUR", joinColumns = @JoinColumn(name = "UTI_ID"), inverseJoinColumns = @JoinColumn(name = "PRO_ID"))
-	private List<Profil> profils;
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Profil.class)
+	@JoinColumn(name = "PRO_ID", referencedColumnName = "PRO_ID")
+	private Profil profil;
 
 	/**
 	 * Date de création de l'utilisateur.
@@ -94,13 +88,6 @@ public class Utilisateur implements Serializable {
 	private TypeUtilisateur typeUtilisateur;
 
 	/**
-	 * Type d'utilisateur en one to one.
-	 */
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
-	@JoinColumn(name = "ORIGIN_TUT_CODE", referencedColumnName = "TUT_CODE", unique = true)
-	private TypeUtilisateur typeUtilisateurOrigin;
-
-	/**
 	 * No arg constructor.
 	 */
 	public Utilisateur() {
@@ -109,22 +96,26 @@ public class Utilisateur implements Serializable {
 	/**
 	 * All arg constructor.
 	 * @param id Id technique
-	 * @param profils Liste des profils
+	 * @param profil Profil de l'utilisateur
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur
 	 * @param email Email de l'utilisateur
 	 * @param typeUtilisateur Type d'utilisateur en Many to one
-	 * @param typeUtilisateurOrigin Type d'utilisateur en one to one
 	 */
-	public Utilisateur(long id, List<Profil> profils, DateTime dateCreation, DateTime dateModification, String email, TypeUtilisateur typeUtilisateur, TypeUtilisateur typeUtilisateurOrigin) {
+	public Utilisateur(long id, Profil profil, DateTime dateCreation, DateTime dateModification, String email, TypeUtilisateur typeUtilisateur) {
 		this.id = id;
-		this.profils = profils;
+		this.profil = profil;
 		this.dateCreation = dateCreation;
 		this.dateModification = dateModification;
 		this.email = email;
 		this.typeUtilisateur = typeUtilisateur;
-		this.typeUtilisateurOrigin = typeUtilisateurOrigin;
 	}
+
+	/**
+	 * Alias constructor.
+	 * Ce constructeur permet d'initialiser un objet Utilisateur avec comme paramètres les classes dont les propriétés sont référencées Utilisateur.
+	 * A ne pas utiliser pour construire un Dto en plusieurs requêtes.
+	 * Voir la <a href="https://klee-contrib.github.io/topmodel/#/generator/jpa?id=constructeurs-par-alias">documentation</a>
 
 	/**
 	 * Getter for id.
@@ -136,14 +127,12 @@ public class Utilisateur implements Serializable {
 	}
 
 	/**
-	 * Getter for profils.
+	 * Getter for profil.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#profils profils}.
+	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#profil profil}.
 	 */
-	public List<Profil> getProfils() {
-		if(this.profils == null)
-			return Collections.emptyList();
-		return this.profils;
+	public Profil getProfil() {
+		return this.profil;
 	}
 
 	/**
@@ -183,15 +172,6 @@ public class Utilisateur implements Serializable {
 	}
 
 	/**
-	 * Getter for typeUtilisateurOrigin.
-	 *
-	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#typeUtilisateurOrigin typeUtilisateurOrigin}.
-	 */
-	protected TypeUtilisateur getTypeUtilisateurOrigin() {
-		return this.typeUtilisateurOrigin;
-	}
-
-	/**
 	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#id id}.
 	 * @param id value to set
 	 */
@@ -200,11 +180,11 @@ public class Utilisateur implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#profils profils}.
-	 * @param profils value to set
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#profil profil}.
+	 * @param profil value to set
 	 */
-	public void setProfils(List<Profil> profils) {
-		this.profils = profils;
+	public void setProfil(Profil profil) {
+		this.profil = profil;
 	}
 
 	/**
@@ -240,14 +220,6 @@ public class Utilisateur implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#typeUtilisateurOrigin typeUtilisateurOrigin}.
-	 * @param typeUtilisateurOrigin value to set
-	 */
-	public void setTypeUtilisateurOrigin(TypeUtilisateur typeUtilisateurOrigin) {
-		this.typeUtilisateurOrigin = typeUtilisateurOrigin;
-	}
-
-	/**
 	 * Equal function comparing Id.
 	 */
 	public boolean equals(Object o) {
@@ -268,11 +240,10 @@ public class Utilisateur implements Serializable {
 	 */
 	public enum Fields implements IFieldEnum<Utilisateur> {
         ID, //
-        PROFILS, //
+        PROFIL, //
         DATE_CREATION, //
         DATE_MODIFICATION, //
         EMAIL, //
-        TYPE_UTILISATEUR, //
-        TYPE_UTILISATEUR_ORIGIN
+        TYPE_UTILISATEUR
 	}
 }

@@ -196,8 +196,6 @@ public static class ImportsJpaExtensions
             {
                 imports.Add("javax.validation.constraints.NotNull");
             }
-
-            return imports;
         }
 
         if (classe.Reference)
@@ -223,6 +221,31 @@ public static class ImportsJpaExtensions
             imports.Add(classe.GetImport(config));
         }
 
+        imports.AddRange(GetAliasClass(classe)
+            .Select(c => c.Class.GetImport(config)));
         return imports;
+    }
+
+    public static IList<AliasClass> GetAliasClass(Class classe)
+    {
+        var classes = classe
+            .Properties.OfType<AliasProperty>()
+            .Select(p => new AliasClass()
+            {
+                Prefix = p.Prefix,
+                Suffix = p.Suffix,
+                Class = p.Property.Class
+            })
+            .DistinctBy(c => c.Name)
+            .ToList();
+
+        if (classe.Extends is null)
+        {
+            return classes;
+        }
+        else
+        {
+            return GetAliasClass(classe.Extends).Concat(classes).DistinctBy(c => c.Name).ToList();
+        }
     }
 }

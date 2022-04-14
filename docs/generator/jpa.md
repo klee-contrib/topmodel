@@ -98,6 +98,75 @@ Les dtos sont le reflet du modèle persité, sans les annotations JPA. Pour les 
 
 Ceci afin d'éviter de mélanger les objets persistés et non persistés. En effet, si votre objet est sérializé, Hibernate risque de charger tout l'arbre de l'objet correspondant
 
+### Constructeurs par alias
+
+Dans les classes contenant des alias, un constructeur par alias est généré. Celui-ci prend en entrée les classes référencées par des alias, et affecte les propriétés correspondantes.
+
+A savoir :
+
+- Si plusieurs alias ont la même classe, le même suffix et le même préfix (y compris dans la classe parente si elle existe), alors le constructeur par alias prendra le même argument pour ces propriétés
+
+Exemple d'utilisation pour initialiser des Dto dans des repository Hibernate :
+
+Si le constructeur par alias n'a qu'un seul argument, alors il est possible d'écrire :
+
+```java
+public interface ProfilDAO extends PagingAndSortingRepository<Profil, Long> {
+ 
+ /**
+  * Récupération du profil par son Id, mapping automatique avec le constructeur par alias
+  *
+  * @param profilId identifiant du profil à récupérer
+  * @return profilDto le profil mappé en profilDto
+  */
+  ProfilDto findById(Long profilId)
+}
+```
+
+En effet, Hibernate est capable de détecter automatiquement que l'objet de type `Profil` peut être mappé en `ProfilDto` grâce au constructeur par alias.
+
+En revanche, lorsque le constructeur par alias prend plusieurs arguments, le mapping ne peut pas être fait automatiquement. Dans ce cas, il est recommandé d'utiliser le constructeur par alias dans un second temps, évenutellement en utilisant l'annotation `@EntityGraph` pour optimiser les performances.
+
+```java
+
+// UtilisateurDAO.java
+
+public interface UtilisateurDAO extends PagingAndSortingRepository<Utilisateur, Long> {
+
+  /**
+  * Récupération de la liste des utilisateurs par filtrés par leur type
+  *
+  * @param typeUtilisateur type d'utilisateur
+  * @return la liste des utilisateurs
+  */
+  @EntityGraph(attributePaths = { "profil" })
+  List<Utilisateur> findByTypeUtilisateur(TypeUtilisateur typeUtilisateur);
+}
+```
+
+```java
+
+// UtilisateurService.java
+@Service
+public class UtilisateurService {
+
+  @Autowired
+  private final UtilisateurDAO utilisateurDAO;
+
+  /**
+  * Récupération de la liste des utilisateurs par filtrés par leur type
+  *
+  * @param typeUtilisateur type d'utilisateur
+  * @return la liste des utilisateurs mappés en UtilisateurDto
+  */
+  List<UtilisateurDto> findByTypeUtilisateur(TypeUtilisateur typeUtilisateur){
+    return utilisateurDAO.findByTypeUtilisateur(typeUtilisateur).stream().map(uti -> new UtilisateurDto(uti, uti.getProfil()));
+  }
+}
+```
+
+> D'un point de vue performance, il est important de souligner qu'il vaut mieux éviter de créer un dto à l'aide de plusieurs requêtes puis du constructeur par alias.
+
 ## Api
 
 Le générateur créé des `interface` contenant, pour chaque endPoint paramétré, deux méthode :

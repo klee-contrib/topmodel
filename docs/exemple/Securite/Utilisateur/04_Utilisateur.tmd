@@ -15,8 +15,8 @@ endpoint:
   # Liste des paramètres du endpoint. Ce sont des propriétés de modèle comme pour les classes. Il peut ne pas y en avoir.
   params:
     - alias:
-        property: Id
         class: UtilisateurDto
+        property: Id
   # Type de retour du endpoint. La aussi, c'est une propriété du modèle et il peut ne pas y en avoir.
   returns:
     composition: UtilisateurDto

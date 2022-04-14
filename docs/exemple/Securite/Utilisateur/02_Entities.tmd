@@ -19,8 +19,8 @@ class:
       domain: DO_ID
       comment: Id technique
     - association: Profil
-      comment: Liste des profils
-      type: manyToMany
+      comment: Profil de l'utilisateur
+      type: manyToOne
     - name: dateCreation
       comment: Date de création de l'utilisateur
       domain: DO_DATE_CREATION
@@ -33,7 +33,4 @@ class:
     - association: TypeUtilisateur
       comment: Type d'utilisateur en Many to one
       type: manyToOne
-    - association: TypeUtilisateur
-      comment: Type d'utilisateur en one to one
-      type: oneToOne
-      role: Origin
+
