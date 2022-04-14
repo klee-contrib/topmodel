@@ -542,7 +542,9 @@ public class JpaModelGenerator : GeneratorBase
         string currentArg = string.Empty;
         foreach (var p in classe.Properties.OfType<AliasProperty>().ToList().OrderBy(p => p.Property.Class.Name))
         {
-            var argName = $"{p.Prefix?.ToFirstLower() ?? string.Empty}{((p.Prefix is not null ? p.Property?.Class?.Name : p.Property?.Class?.Name?.ToFirstLower()) ?? string.Empty)}{p.Suffix ?? string.Empty}";
+            var prefix = p.Name.Split(p.Property.Name).First().ToFirstLower();
+            var suffix = p.Name.Split(p.Property.Name).Last();
+            var argName = $"{prefix}{((!string.IsNullOrEmpty(prefix) ? p.Property?.Class?.Name : p.Property?.Class?.Name?.ToFirstLower()) ?? string.Empty)}{suffix}";
             if (currentArg != argName)
             {
                 if (currentArg != string.Empty)
@@ -565,11 +567,11 @@ public class JpaModelGenerator : GeneratorBase
 
                     if (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany)
                     {
-                        fw.WriteLine(4, $"this.{p.GetJavaName()} = {argName}.get{p.Property.GetJavaName().ToFirstUpper()}{p.Suffix ?? string.Empty}().stream().map({ap.Association.Name}::get{ap.Association.PrimaryKey!.Name}).toList();");
+                        fw.WriteLine(4, $"this.{p.GetJavaName()} = {argName}.get{p.Property.GetJavaName().ToFirstUpper()}().stream().map({ap.Association.Name}::get{ap.Association.PrimaryKey!.Name}).toList();");
                     }
                     else
                     {
-                        fw.WriteLine(4, $"this.{p.GetJavaName()} = {argName}.get{p.Property.GetJavaName().ToFirstUpper()}{p.Suffix ?? string.Empty}().get{ap.Association.PrimaryKey!.Name}();");
+                        fw.WriteLine(4, $"this.{p.GetJavaName()} = {argName}.get{p.Property.GetJavaName().ToFirstUpper()}().get{ap.Association.PrimaryKey!.Name}();");
                     }
                     fw.WriteLine(3, $"}}");
                 }
