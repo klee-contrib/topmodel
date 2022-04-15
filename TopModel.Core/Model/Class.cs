@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 
 namespace TopModel.Core;
 
@@ -19,6 +20,8 @@ public class Class
 
 #nullable enable
     public Class? Extends { get; set; }
+
+    public List<Decorator> Decorators { get; } = new();
 
     public string? Label { get; set; }
 
@@ -51,6 +54,8 @@ public class Class
     public bool IsPersistent => Properties.Any(p => p is not AliasProperty && p.PrimaryKey) || Properties.All(p => p is AssociationProperty);
 
     public ClassReference? ExtendsReference { get; set; }
+
+    public List<DecoratorReference> DecoratorReferences { get; } = new();
 
 #nullable disable
     internal Reference Location { get; set; }

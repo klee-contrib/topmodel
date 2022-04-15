@@ -376,6 +376,84 @@
     },
     {
       "type": "object",
+      "description": "Définition d'un décorateur.",
+      "required": [ "decorator" ],
+      "additionalProperties": false,
+      "properties": {
+        "decorator": {
+          "type": "object",
+          "description": "Décorateur.",
+          "required": [ "name" ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Nom du décorateur."
+            },
+            "csharp": {
+              "type": "object",
+              "description": "Implémentation du décorateur en C#.",
+              "additionalProperties": false,
+              "properties": {
+                "extends": {
+                  "type": "string",
+                  "description": "Classe (hors TopModel) dont une classe C# implémentant ce décorateur doit dériver."
+                },
+                "implements": {
+                  "type": "string",
+                  "description": "Interface (hors TopModel) qu'une classe C# implémentant ce décorateur doit implémenter."
+                },
+                "annotations": {
+                  "type": "array",
+                  "description": "Annotations à ajouter sur une classe C# implémentant ce décorateur.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "usings": {
+                  "type": "array",
+                  "description": "Usings à ajouter pour utiliser ce décorateur.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "java": {
+              "type": "object",
+              "description": "Implémentation du décorateur en Java.",
+              "additionalProperties": false,
+              "properties": {
+                "extends": {
+                  "type": "string",
+                  "description": "Classe (hors TopModel) dont une classe Java implémentant ce décorateur doit dériver."
+                },
+                "implements": {
+                  "type": "string",
+                  "description": "Interface (hors TopModel) qu'une classe Java implémentant ce décorateur doit implémenter."
+                },
+                "annotations": {
+                  "type": "array",
+                  "description": "Annotations à ajouter sur une classe Java implémentant ce décorateur.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "imports": {
+                  "type": "array",
+                  "description": "Imports à ajouter pour utiliser ce décorateur.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
       "description": "Définition d'une classe.",
       "required": [ "class" ],
       "additionalProperties": false,
@@ -431,6 +509,14 @@
             "comment": {
               "type": "string",
               "description": "Description de la classe."
+            },
+            "decorators": {
+              "type": "array",
+              "description": "Décorateurs de la classe",
+              "items": {
+                "type": "string",
+                "description": "Nom du décorateur"
+              }
             },
             "properties": {
               "type": "array",

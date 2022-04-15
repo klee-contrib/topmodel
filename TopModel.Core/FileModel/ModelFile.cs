@@ -1,4 +1,6 @@
 ﻿#nullable disable
+using TopModel.Core.Model;
+
 namespace TopModel.Core.FileModel;
 
 public class ModelFile
@@ -16,6 +18,8 @@ public class ModelFile
     public List<Class> Classes { get; } = new();
 
     public List<Domain> Domains { get; } = new();
+
+    public List<Decorator> Decorators { get; } = new();
 
     public List<Endpoint> Endpoints { get; } = new();
 

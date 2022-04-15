@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using TopModel.Core.FileModel;
 using TopModel.Core.Loaders;
+using TopModel.Core.Model;
 using TopModel.Utils;
 
 namespace TopModel.Core;
@@ -34,6 +35,8 @@ public class ModelStore
     public IEnumerable<Endpoint> Endpoints => _modelFiles.SelectMany(mf => mf.Value.Endpoints).Distinct();
 
     public IDictionary<string, Domain> Domains => _modelFiles.SelectMany(mf => mf.Value.Domains).ToDictionary(d => d.Name, d => d);
+
+    public IEnumerable<Decorator> Decorators => _modelFiles.SelectMany(mf => mf.Value.Decorators).Distinct();
 
     public IEnumerable<ModelFile> Files => _modelFiles.Values;
 

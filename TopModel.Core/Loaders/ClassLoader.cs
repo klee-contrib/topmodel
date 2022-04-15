@@ -25,7 +25,7 @@ public class ClassLoader
         while (!(parser.Current is Scalar { Value: "properties" }))
         {
             var prop = parser.Consume<Scalar>().Value;
-            var value = parser.Consume<Scalar>();
+            _ = parser.TryConsume<Scalar>(out var value);
 
             switch (prop)
             {
@@ -36,31 +36,41 @@ public class ClassLoader
                     classe.Name = new LocatedString(value);
                     break;
                 case "pluralName":
-                    classe.PluralName = value.Value;
+                    classe.PluralName = value!.Value;
                     break;
                 case "sqlName":
-                    classe.SqlName = value.Value;
+                    classe.SqlName = value!.Value;
                     break;
                 case "extends":
-                    classe.ExtendsReference = new ClassReference(value);
+                    classe.ExtendsReference = new ClassReference(value!);
                     break;
                 case "label":
-                    classe.Label = value.Value;
+                    classe.Label = value!.Value;
                     break;
                 case "reference":
-                    classe.Reference = value.Value == "true";
+                    classe.Reference = value!.Value == "true";
                     break;
                 case "orderProperty":
-                    classe.OrderProperty = value.Value;
+                    classe.OrderProperty = value!.Value;
                     break;
                 case "defaultProperty":
-                    classe.DefaultProperty = value.Value;
+                    classe.DefaultProperty = value!.Value;
                     break;
                 case "flagProperty":
-                    classe.FlagProperty = value.Value;
+                    classe.FlagProperty = value!.Value;
                     break;
                 case "comment":
-                    classe.Comment = value.Value;
+                    classe.Comment = value!.Value;
+                    break;
+                case "decorators":
+                    parser.Consume<SequenceStart>();
+
+                    while (parser.Current is not SequenceEnd)
+                    {
+                        classe.DecoratorReferences.Add(new DecoratorReference(parser.Consume<Scalar>()));
+                    }
+
+                    parser.Consume<SequenceEnd>();
                     break;
                 default:
                     throw new ModelException(classe, $"Propriété ${prop} inconnue pour une classe");
