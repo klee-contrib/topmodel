@@ -383,12 +383,16 @@
         "decorator": {
           "type": "object",
           "description": "Décorateur.",
-          "required": [ "name" ],
+          "required": [ "name", "description" ],
           "additionalProperties": false,
           "properties": {
             "name": {
               "type": "string",
               "description": "Nom du décorateur."
+            },
+            "description": {
+              "type": "string",
+              "description": "Description du décorateur."
             },
             "csharp": {
               "type": "object",

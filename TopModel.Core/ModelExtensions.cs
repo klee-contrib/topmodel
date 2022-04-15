@@ -15,6 +15,7 @@ public static class ModelExtensions
             IProperty { Endpoint: Endpoint endpoint } => endpoint.ModelFile,
             Alias alias => alias.ModelFile,
             Domain domain => domain.ModelFile,
+            Decorator decorator => decorator.ModelFile,
             _ => throw new ArgumentException("Type d'objet non supporté.")
         };
     }
@@ -32,6 +33,7 @@ public static class ModelExtensions
             Alias a => a.Location,
             Domain d => d.Location,
             LocatedString l => l.Location,
+            Decorator d => d.Location,
             _ => null
         };
     }

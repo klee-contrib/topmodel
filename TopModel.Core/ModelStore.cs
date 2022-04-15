@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using TopModel.Core.FileModel;
 using TopModel.Core.Loaders;
-using TopModel.Core.Model;
 using TopModel.Utils;
 
 namespace TopModel.Core;
@@ -43,7 +42,7 @@ public class ModelStore
     public IEnumerable<Class> GetAvailableClasses(ModelFile file)
     {
         return GetDependencies(file).SelectMany(m => m.Classes)
-        .Concat(file.Classes.Where(c => !file.ResolvedAliases.Contains(c)));
+            .Concat(file.Classes.Where(c => !file.ResolvedAliases.Contains(c)));
     }
 
     public IDisposable? LoadFromConfig(bool watch = false)
@@ -282,15 +281,59 @@ public class ModelStore
             .Distinct()
             .ToDictionary(c => c.Name.Value, c => c);
 
+        var referencedDecorators = dependencies
+            .SelectMany(m => m.Decorators)
+            .Concat(modelFile.Decorators)
+            .Distinct()
+            .ToDictionary(d => d.Name, c => c);
+
         foreach (var classe in fileClasses.Where(c => c.ExtendsReference != null))
         {
             if (!referencedClasses.TryGetValue(classe.ExtendsReference!.ReferenceName, out var extends))
             {
-                yield return new ModelError(classe, "La classe '{0}' est introuvable dans le fichier ou l'un de ses dépendances.", classe.ExtendsReference!) { ModelErrorType = ModelErrorType.TMD1002 };
+                yield return new ModelError(classe, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", classe.ExtendsReference!) { ModelErrorType = ModelErrorType.TMD1002 };
                 continue;
             }
 
             classe.Extends = extends;
+        }
+
+        foreach (var classe in fileClasses.Where(c => c.DecoratorReferences.Any()))
+        {
+            classe.Decorators.Clear();
+
+            var isError = false;
+            foreach (var decoratorRef in classe.DecoratorReferences)
+            {
+                if (!referencedDecorators.TryGetValue(decoratorRef.ReferenceName, out var decorator))
+                {
+                    isError = true;
+                    yield return new ModelError(classe, $"Le décorateur '{decoratorRef.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1008 };
+                }
+                else
+                {
+                    if (classe.Decorators.Contains(decorator))
+                    {
+                        isError = true;
+                        yield return new ModelError(classe, $"Le décorateur '{decoratorRef.ReferenceName}' est déjà présent dans la liste des décorateurs de la classe '{classe}'.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1009 };
+                    }
+                    else
+                    {
+                        if ((decorator.CSharp?.Extends != null || decorator.Java?.Extends != null) && (classe.Extends != null || classe.Decorators.Any(d => decorator.CSharp?.Extends != null && d.CSharp?.Extends != null || decorator.Java?.Extends != null && d.Java?.Extends != null)))
+                        {
+                            isError = true;
+                            yield return new ModelError(classe, $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à la classe '{classe}' : seul un 'extends' peut être spécifié.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1010 };
+                        }
+
+                        classe.Decorators.Add(decorator);
+                    }
+                }
+            }
+
+            if (isError)
+            {
+                continue;
+            }
         }
 
         foreach (var prop in modelFile.Properties)

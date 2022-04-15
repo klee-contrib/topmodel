@@ -39,6 +39,7 @@ class HoverHandler : HoverHandlerBase
                         CompositionProperty p => p.Comment,
                         AliasProperty p => p.Comment,
                         Domain d => d.Label,
+                        Decorator d => d.Description,
                         _ => string.Empty
                     }))
                 });

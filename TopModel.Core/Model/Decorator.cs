@@ -2,12 +2,14 @@
 using TopModel.Core.Types;
 using YamlDotNet.Serialization;
 
-namespace TopModel.Core.Model;
+namespace TopModel.Core;
 
 public class Decorator
 {
 #nullable disable
     public string Name { get; set; }
+
+    public string Description { get; set; }
 #nullable enable
 
     [YamlMember(Alias = "csharp")]
