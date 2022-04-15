@@ -40,7 +40,8 @@ class CodeLensHandler : CodeLensHandlerBase
                         }
 
                     }
-                }).Concat(file.Domains.Select(domain => new CodeLens
+                })
+                .Concat(file.Domains.Select(domain => new CodeLens
                 {
                     Range = domain.GetLocation().ToRange()!,
                     Command = new Command()
@@ -52,6 +53,19 @@ class CodeLensHandler : CodeLensHandlerBase
                             domain.GetLocation()!.Start.Line - 1
                         }
 
+                    }
+                }))
+                .Concat(file.Decorators.Select(decorator => new CodeLens
+                {
+                    Range = decorator.GetLocation().ToRange()!,
+                    Command = new Command()
+                    {
+                        Title = $"{_modelStore.GetDecoratorReferences(decorator).Count()} references",
+                        Name = "topmodel.findRef",
+                        Arguments = new JArray
+                        {
+                            decorator.GetLocation()!.Start.Line - 1
+                        }
                     }
                 }))));
         }

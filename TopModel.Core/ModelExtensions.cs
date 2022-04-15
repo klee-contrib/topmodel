@@ -83,4 +83,13 @@ public static class ModelExtensions
             })
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
+
+    public static IEnumerable<(DecoratorReference Reference, ModelFile File)> GetDecoratorReferences(this ModelStore modelStore, Decorator decorator)
+    {
+        return modelStore.Classes.Where(c => c.Decorators.Contains(decorator))
+            .Select(c => (
+                Reference: c.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
+                File: c.GetFile()))
+            .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
+    }
 }

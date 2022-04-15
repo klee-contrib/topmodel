@@ -20,11 +20,11 @@ class ReferencesHandler : ReferencesHandlerBase
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            var clazz = file.Classes.SingleOrDefault(c => c.Name.GetLocation()!.Start.Line - 1 == request.Position.Line || c.GetLocation()!.Start.Line - 1 == request.Position.Line);
-            if (clazz != null)
+            var classe = file.Classes.SingleOrDefault(c => c.Name.GetLocation()!.Start.Line - 1 == request.Position.Line || c.GetLocation()!.Start.Line - 1 == request.Position.Line);
+            if (classe != null)
             {
                 return Task.FromResult(new LocationContainer(
-                    _modelStore.GetClassReferences(clazz)
+                    _modelStore.GetClassReferences(classe)
                         .Select(r => new Location
                         {
                             Uri = new Uri(_facade.GetFilePath(r.File)),
@@ -37,6 +37,18 @@ class ReferencesHandler : ReferencesHandlerBase
             {
                 return Task.FromResult(new LocationContainer(
                     _modelStore.GetDomainReferences(domain)
+                        .Select(r => new Location
+                        {
+                            Uri = new Uri(_facade.GetFilePath(r.File)),
+                            Range = r.Reference.ToRange()!
+                        })));
+            }
+
+            var decorator = file.Decorators.SingleOrDefault(d => d.GetLocation()!.Start.Line - 1 == request.Position.Line);
+            if (decorator != null)
+            {
+                return Task.FromResult(new LocationContainer(
+                    _modelStore.GetDecoratorReferences(decorator)
                         .Select(r => new Location
                         {
                             Uri = new Uri(_facade.GetFilePath(r.File)),
