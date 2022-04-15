@@ -404,8 +404,11 @@
                   "description": "Classe (hors TopModel) dont une classe C# implémentant ce décorateur doit dériver."
                 },
                 "implements": {
-                  "type": "string",
-                  "description": "Interface (hors TopModel) qu'une classe C# implémentant ce décorateur doit implémenter."
+                  "type": "array",
+                  "description": "Interfaces (hors TopModel) qu'une classe C# implémentant ce décorateur doit implémenter.",
+                  "items": {
+                    "type": "string"
+                  }
                 },
                 "annotations": {
                   "type": "array",
@@ -433,8 +436,11 @@
                   "description": "Classe (hors TopModel) dont une classe Java implémentant ce décorateur doit dériver."
                 },
                 "implements": {
-                  "type": "string",
-                  "description": "Interface (hors TopModel) qu'une classe Java implémentant ce décorateur doit implémenter."
+                  "type": "array",
+                  "description": "Interfaces (hors TopModel) qu'une classe Java implémentant ce décorateur doit implémenter.",
+                  "items": {
+                    "type": "string"
+                  }
                 },
                 "annotations": {
                   "type": "array",
