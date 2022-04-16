@@ -29,9 +29,7 @@ import topmodel.exemple.utils.IFieldEnum;
 @Table(name = "TYPE_UTILISATEUR")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @Immutable
-public class TypeUtilisateur implements Serializable {
-	/** Serial ID */
-	private static final long serialVersionUID = 1L;
+public class TypeUtilisateur {
 
 	/**
 	 * Code du type d'utilisateur.

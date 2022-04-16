@@ -21,8 +21,6 @@ domain:
     imports:
       - java.time.LocalDate
       - org.springframework.data.annotation.CreatedDate
-      - org.springframework.data.jpa.domain.support.AuditingEntityListener
-      - javax.persistence.EntityListeners
     annotations:
       - "@CreatedDate"
 ---

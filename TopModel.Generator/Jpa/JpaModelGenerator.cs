@@ -65,11 +65,22 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine();
 
             WriteAnnotations(module, fw, classe);
+            var extends = (classe.Extends?.Name ?? classe.Decorators.Find(d => d.Java?.Extends is not null)?.Java!.Extends) ?? null;
 
-            fw.WriteClassDeclaration(classe.Name, null, classe.Extends != null ? classe.Extends.Name : null, "Serializable");
+            var implements = classe.Decorators.SelectMany(d => d.Java!.Implements).Distinct().ToList();
+            if (!classe.IsPersistent)
+            {
+                implements.Add("Serializable");
+            }
 
-            fw.WriteLine("	/** Serial ID */");
-            fw.WriteLine(1, "private static final long serialVersionUID = 1L;");
+            fw.WriteClassDeclaration(classe.Name, null, extends, implements);
+
+            if (!classe.IsPersistent)
+            {
+                fw.WriteLine("	/** Serial ID */");
+                fw.WriteLine(1, "private static final long serialVersionUID = 1L;");
+            }
+
             WriteProperties(fw, classe);
             WriteNoArgConstructor(fw, classe);
             WriteAllArgConstructor(fw, classe);
@@ -206,6 +217,7 @@ public class JpaModelGenerator : GeneratorBase
     private void WriteImports(JavaWriter fw, Class classe)
     {
         var imports = classe.GetImports(_config);
+        imports.AddRange(classe.Decorators.SelectMany(d => d.Java!.Imports));
         foreach (var property in classe.Properties)
         {
             imports.AddRange(property.GetImports(_config));
@@ -262,10 +274,6 @@ public class JpaModelGenerator : GeneratorBase
     {
         fw.WriteDocStart(0, classe.Comment);
         fw.WriteDocEnd(0);
-        if (_config.LombokBuilder)
-        {
-            fw.WriteLine("@SuperBuilder");
-        }
 
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
 
@@ -315,10 +323,9 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine("@Immutable");
         }
 
-        if (classe.Properties.Any(property =>
-            property is IFieldProperty t && t.Domain.Java?.Annotations is not null && t.Domain.Java.Annotations.Any(a => a == "@CreatedDate" || a == "@UpdatedDate")))
+        foreach (var a in classe.Decorators.SelectMany(d => d.Java!.Annotations).Distinct())
         {
-            fw.WriteLine("@EntityListeners(AuditingEntityListener.class)");
+            fw.WriteLine($"{(a.StartsWith("@") ? string.Empty : "@")}{a}");
         }
     }
 
@@ -443,7 +450,7 @@ public class JpaModelGenerator : GeneratorBase
                 {
                     foreach (var annotation in field.Domain.Java.Annotations)
                     {
-                        fw.WriteLine(1, annotation);
+                        fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : '@')}{annotation}");
                     }
                 }
 
@@ -458,7 +465,7 @@ public class JpaModelGenerator : GeneratorBase
         fw.WriteDocStart(1, "No arg constructor");
         fw.WriteDocEnd(1);
         fw.WriteLine(1, $"public {classe.Name}() {{");
-        if (classe.Extends != null)
+        if (classe.Extends != null || classe.Decorators.Any(d => d.Java?.Extends is not null))
         {
             fw.WriteLine(2, $"super();");
         }
@@ -502,6 +509,10 @@ public class JpaModelGenerator : GeneratorBase
             var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends).Select(p => $"{p.GetJavaName()}"));
             fw.WriteLine(2, $"super({parentAllArgConstructorArguments});");
         }
+        else if (classe.Decorators.Any(d => d.Java?.Extends is not null))
+        {
+            fw.WriteLine(2, $"super();");
+        }
 
         foreach (var property in classe.Properties)
         {
@@ -537,6 +548,10 @@ public class JpaModelGenerator : GeneratorBase
         {
             var parentAliasConstructorArguments = string.Join(", ", ImportsJpaExtensions.GetAliasClass(classe.Extends).Select(c => $"{c.Name.ToFirstLower()}"));
             fw.WriteLine(2, $"super({parentAliasConstructorArguments});");
+        }
+        else if (classe.Decorators.Any(d => d.Java?.Extends is not null))
+        {
+            fw.WriteLine(2, $"super();");
         }
 
         string currentArg = string.Empty;
