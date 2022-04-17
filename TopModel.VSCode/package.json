@@ -153,7 +153,6 @@
     "vscode:prepublish": "npm run build -- --minify"
   },
   "dependencies": {
-    "@mermaid-js/mermaid-cli": "^8.14.0",
     "mermaid": "^8.14.0",
     "open": "^8.4.0",
     "vscode-jsonrpc": "8.0.0-next.6",
