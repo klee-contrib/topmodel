@@ -7,6 +7,7 @@
   - [Classes](/model/classes.md)
   - [Endpoints](/model/endpoints.md)
   - [Alias](/model/aliases.md)
+  - [Décorateurs](/model/decorator.md)
 
 - **[Génération](/generator.md)**
 
