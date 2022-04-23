@@ -126,6 +126,51 @@ class CompletionHandler : CompletionHandlerBase
                                 : null
                         })));
             }
+
+            // Décorateur
+            else if (currentLine.TrimStart().StartsWith("-") && (
+                text.ElementAt(request.Position.Line - 1)?.TrimStart() == "decorators:"
+                || file.Classes.SelectMany(c => c.DecoratorReferences).Any(dr => dr.Start.Line == request.Position.Line)))
+            {
+                var searchText = currentLine.TrimStart()[1..].Trim();
+                var availableDecorators = new HashSet<Decorator>(_modelStore.GetAvailableDecorators(file));
+
+                var useIndex = file.Uses.Any()
+                    ? file.Uses.Last().ToRange()!.Start.Line + 1
+                    : text.First().StartsWith("-")
+                        ? 1
+                        : 0;
+
+                return Task.FromResult(new CompletionList(
+                     _modelStore.Decorators
+                         .OrderBy(decorator => decorator.Name)
+                         .Where(decorator => decorator.Name.ToLower().ShouldMatch(searchText))
+                         .Select(decorator => new CompletionItem
+                         {
+                             Kind = CompletionItemKind.Class,
+                             Label = availableDecorators.Contains(decorator) ? decorator.Name : $"{decorator.Name} - ({decorator.ModelFile.Name})",
+                             InsertText = decorator.Name,
+                             SortText = availableDecorators.Contains(decorator) ? "0000" + decorator.Name : decorator.Name,
+                             TextEdit = !string.IsNullOrWhiteSpace(searchText)
+                                ? new TextEditOrInsertReplaceEdit(new TextEdit
+                                {
+                                    NewText = decorator.Name,
+                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText),
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText) + searchText.Length)
+                                })
+                                : null,
+                             AdditionalTextEdits = !availableDecorators.Contains(decorator) ?
+                                new TextEditContainer(new TextEdit
+                                {
+                                    NewText = file.Uses.Any() ? $"  - {decorator.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {decorator.ModelFile.Name}{Environment.NewLine}",
+                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
+                                })
+                                : null
+                         })));
+            }
             else
             {
                 // Alias

@@ -40,11 +40,14 @@ class CodeActionHandler : CodeActionHandlerBase
                 switch (modelErrorType)
                 {
                     case ModelErrorType.TMD1005:
-                        codeActions.AddRange(GetCodeActionCreateDomain(request, diagnostic, modelFile));
+                        codeActions.AddRange(GetCodeActionCreateDomain(request, diagnostic));
                         break;
                     case ModelErrorType.TMD1002:
-                        codeActions.AddRange(GetCodeActionMissingImport(request, diagnostic, modelFile));
+                        codeActions.AddRange(GetCodeActionMissingClassImport(request, diagnostic, modelFile));
                         codeActions.AddRange(GetCodeActionAddClass(request, diagnostic, modelFile));
+                        break;
+                    case ModelErrorType.TMD1008:
+                        codeActions.AddRange(GetCodeActionMissingDecoratorImport(request, diagnostic, modelFile));
                         break;
                     default:
                         break;
@@ -102,7 +105,7 @@ class CodeActionHandler : CodeActionHandlerBase
         };
     }
 
-    protected IEnumerable<CommandOrCodeAction> GetCodeActionCreateDomain(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionCreateDomain(CodeActionParams request, Diagnostic diagnostic)
     {
         var fs = request.TextDocument.Uri.GetFileSystemPath();
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
@@ -145,46 +148,36 @@ domain:
         }).ToList();
     }
 
-    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingClassImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
     {
         var fs = request.TextDocument.Uri.GetFileSystemPath();
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var line = text.ElementAt(diagnostic.Range.Start.Line);
         var className = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
-        var availableClasses = _modelStore.Classes;
         var useIndex = modelFile!.Uses.Any()
             ? modelFile.Uses.Last().ToRange()!.Start.Line + 1
             : text.First().StartsWith("-")
                 ? 1
                 : 0;
-        return _modelStore.Classes.Where(c => c.Name == className).Select(classToImport =>
-        {
-            return (CommandOrCodeAction)new CodeAction
-            {
-                Title = $"TopModel : Ajouter l'import {classToImport.ModelFile.Name}",
-                Kind = CodeActionKind.QuickFix,
-                IsPreferred = true,
-                Diagnostics = new List<Diagnostic>
-                {
-                    diagnostic
-                },
-                Edit = new WorkspaceEdit
-                {
-                    Changes =
-                        new Dictionary<DocumentUri, IEnumerable<TextEdit>>
-                        {
-                            [new Uri(_facade.GetFilePath(modelFile))] = new List<TextEdit>()
-                            {
-                                new TextEdit()
-                                {
-                                    NewText = modelFile.Uses.Any() ? $"  - {classToImport.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {classToImport.ModelFile.Name}{Environment.NewLine}",
-                                    Range = new Range(useIndex, 0, useIndex, 0)
-                                }
-                            }
-                        }
-                }
-            };
-        });
+
+        return _modelStore.Classes.Where(c => c.Name == className)
+            .Select(classToImport => GetFileImportAction(diagnostic, modelFile, classToImport.ModelFile, useIndex));
+    }
+
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingDecoratorImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    {
+        var fs = request.TextDocument.Uri.GetFileSystemPath();
+        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var line = text.ElementAt(diagnostic.Range.Start.Line);
+        var decoratorName = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
+        var useIndex = modelFile!.Uses.Any()
+            ? modelFile.Uses.Last().ToRange()!.Start.Line + 1
+            : text.First().StartsWith("-")
+                ? 1
+                : 0;
+
+        return _modelStore.Decorators.Where(c => c.Name == decoratorName)
+            .Select(decoratorToImport => GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex));
     }
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionAddClass(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
@@ -224,6 +217,32 @@ class:
                             }
                         }
                 }
+            }
+        };
+    }
+
+    private CommandOrCodeAction GetFileImportAction(Diagnostic diagnostic, ModelFile targetFile, ModelFile sourceFile, int useIndex)
+    {
+        return (CommandOrCodeAction)new CodeAction
+        {
+            Title = $"TopModel : Ajouter l'import {sourceFile.Name}",
+            Kind = CodeActionKind.QuickFix,
+            IsPreferred = true,
+            Diagnostics = new List<Diagnostic> { diagnostic },
+            Edit = new WorkspaceEdit
+            {
+                Changes =
+                    new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                    {
+                        [new Uri(_facade.GetFilePath(targetFile))] = new List<TextEdit>()
+                        {
+                            new TextEdit()
+                            {
+                                NewText = targetFile.Uses.Any() ? $"  - {sourceFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {sourceFile.Name}{Environment.NewLine}",
+                                Range = new Range(useIndex, 0, useIndex, 0)
+                            }
+                        }
+                    }
             }
         };
     }

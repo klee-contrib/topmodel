@@ -45,6 +45,11 @@ public class ModelStore
             .Concat(file.Classes.Where(c => !file.ResolvedAliases.Contains(c)));
     }
 
+    public IEnumerable<Decorator> GetAvailableDecorators(ModelFile file)
+    {
+        return GetDependencies(file).SelectMany(m => m.Decorators).Concat(file.Decorators);
+    }
+
     public IDisposable? LoadFromConfig(bool watch = false)
     {
         foreach (var mw in _modelWatchers)
@@ -209,6 +214,7 @@ public class ModelStore
            .Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
            .Where(dep => dep != null);
     }
+
 
     private void OnFSChangedEvent(object sender, FileSystemEventArgs e)
     {
