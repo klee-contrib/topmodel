@@ -57,7 +57,7 @@ class CompletionHandler : CompletionHandlerBase
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            if (currentLine.Contains("association: ") || currentLine.Contains("composition: ") || currentLine.Contains("    class:"))
+            if (currentLine.Contains("association: ") || currentLine.Contains("composition: ") || currentLine.Contains("    class:") || currentLine.Contains("extends: "))
             {
                 var searchText = currentLine.Split(":")[1].Trim();
                 var availableClasses = new HashSet<Class>(_modelStore.GetAvailableClasses(file));
