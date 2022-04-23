@@ -530,7 +530,7 @@
             },
             "properties": {
               "type": "array",
-              "description": "Liste des propriétés de la classe. Cette propriété DOIT être en DERNIER (ou juste avant 'unique' et 'values' si renseignés).",
+              "description": "Liste des propriétés de la classe.",
               "items": {
                 "$ref": "#/definitions/property"
               }
