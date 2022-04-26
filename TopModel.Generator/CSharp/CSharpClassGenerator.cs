@@ -392,7 +392,12 @@ public class CSharpClassGenerator
             }
         }
 
-        w.WriteClassDeclaration(item.Name, item.Extends?.Name);
+        foreach (var annotation in item.Decorators.SelectMany(d => d.CSharp?.Annotations ?? Array.Empty<string>()).Distinct())
+        {
+            w.WriteAttribute(1, annotation);
+        }
+
+        w.WriteClassDeclaration(item.Name, item.Extends?.Name ?? item.Decorators.SingleOrDefault(d => d.CSharp?.Extends != null)?.CSharp?.Extends, item.Decorators.SelectMany(d => d.CSharp?.Implements ?? Array.Empty<string>()).Distinct().ToArray());
 
         if (!_config.CanClassUseEnums(item))
         {
@@ -506,7 +511,7 @@ public class CSharpClassGenerator
 
             foreach (var annotation in domain.CSharp!.Annotations)
             {
-                w.WriteLine(2, annotation);
+                w.WriteAttribute(2, annotation);
             }
 
             if (fp.DefaultValue != null)
@@ -582,6 +587,11 @@ public class CSharpClassGenerator
         if (item.Extends != null)
         {
             usings.Add(_config.GetNamespace(item.Extends));
+        }
+
+        foreach (var @using in item.Decorators.SelectMany(d => d.CSharp?.Usings ?? Array.Empty<string>()).Distinct())
+        {
+            usings.Add(@using);
         }
 
         foreach (var property in item.Properties)

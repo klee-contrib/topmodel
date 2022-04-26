@@ -58,7 +58,7 @@ class SemanticTokensHandler : SemanticTokensHandlerBase
                     reference.ToRange()!,
                     reference switch
                     {
-                        ClassReference => SemanticTokenType.Class,
+                        ClassReference or DecoratorReference => SemanticTokenType.Class,
                         DomainReference => SemanticTokenType.EnumMember,
                         _ => SemanticTokenType.Function
                     },

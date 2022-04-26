@@ -27,9 +27,7 @@ import topmodel.exemple.utils.IFieldEnum;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
 @Table(name = "PROFIL")
-public class Profil implements Serializable {
-	/** Serial ID */
-	private static final long serialVersionUID = 1L;
+public class Profil {
 
 	/**
 	 * Id technique.

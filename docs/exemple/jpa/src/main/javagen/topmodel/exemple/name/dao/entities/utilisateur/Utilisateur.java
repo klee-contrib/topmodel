@@ -26,6 +26,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import lombok.experimental.SuperBuilder;
+
 import oorg.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import topmodel.exemple.name.dao.entities.securite.Profil;
@@ -39,9 +41,8 @@ import topmodel.exemple.utils.IFieldEnum;
 @Entity
 @Table(name = "UTILISATEUR")
 @EntityListeners(AuditingEntityListener.class)
-public class Utilisateur implements Serializable {
-	/** Serial ID */
-	private static final long serialVersionUID = 1L;
+@SuperBuilder
+public class Utilisateur {
 
 	/**
 	 * Id technique.

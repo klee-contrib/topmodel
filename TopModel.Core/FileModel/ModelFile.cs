@@ -1,4 +1,5 @@
 ﻿#nullable disable
+
 namespace TopModel.Core.FileModel;
 
 public class ModelFile
@@ -17,11 +18,14 @@ public class ModelFile
 
     public List<Domain> Domains { get; } = new();
 
+    public List<Decorator> Decorators { get; } = new();
+
     public List<Endpoint> Endpoints { get; } = new();
 
     public List<object> ResolvedAliases { get; } = new();
 
     public IDictionary<Reference, object> References => Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object))
+        .Concat(Classes.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Name == dr.ReferenceName) as object))))
         .Concat(Properties.OfType<RegularProperty>().Select(p => (p.DomainReference as Reference, p.Domain as object)))
         .Concat(Properties.OfType<AssociationProperty>().Select(p => (p.Reference as Reference, p.Association as object)))
         .Concat(Properties.OfType<CompositionProperty>().SelectMany(p => new (Reference, object)[]
@@ -46,8 +50,9 @@ public class ModelFile
 
     public IList<Reference> UselessImports => Uses
         .Where(use => !Aliases.Select(alias => alias.File.ReferenceName)
-        .Concat(References.Values.Select(r => r.GetFile().Name))
-        .Contains(use.ReferenceName)).ToList();
+            .Concat(References.Values.Select(r => r.GetFile().Name))
+            .Contains(use.ReferenceName))
+        .ToList();
 
     internal IList<IProperty> Properties => Classes.Where(c => !ResolvedAliases.Contains(c)).SelectMany(c => c.Properties)
         .Concat(Endpoints.Where(e => !ResolvedAliases.Contains(e)).SelectMany(e => e.Params))

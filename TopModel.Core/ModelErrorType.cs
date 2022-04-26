@@ -63,6 +63,21 @@ public enum ModelErrorType
     TMD1007,
 
     /// <summary>
+    /// Le décorateur est introuvable dans le fichier.
+    /// </summary>
+    TMD1008,
+
+    /// <summary>
+    /// Le décorateur '{decoratorRef.ReferenceName}' est déjà présent dans la liste des décorateurs de la classe '{classe}'.
+    /// </summary>
+    TMD1009,
+
+    /// <summary>
+    /// Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à la classe '{classe}' : seul un 'extends' peut être spécifié.
+    /// </summary>
+    TMD1010,
+
+    /// <summary>
     /// L'import {} n'est pas utilisé.
     /// </summary>
     TMD9001,

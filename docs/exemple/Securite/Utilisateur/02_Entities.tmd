@@ -3,6 +3,7 @@ module: Utilisateur
 uses:
   - Securite/Profil/02_Entities
   - Securite/Utilisateur/01_References
+  - decorators
 tags:
   - entity
 ---
@@ -11,6 +12,8 @@ class:
   label: Utilisateur
   comment: Utilisateur de l'application
   trigram: UTI
+  decorators:
+    - EntityListeners
   properties:
     - name: Id
       label: Id technique

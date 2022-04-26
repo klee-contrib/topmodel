@@ -54,7 +54,7 @@ public class JavaWriter : IDisposable
     /// <param name="modifier">Modifier.</param>
     /// <param name="inheritedClass">Classe parente.</param>
     /// <param name="implementingInterfaces">Interfaces implémentées.</param>
-    public void WriteClassDeclaration(string name, string? modifier, string? inheritedClass = null, string? implementingInterfaces = null)
+    public void WriteClassDeclaration(string name, string? modifier, string? inheritedClass = null, IList<string>? implementingInterfaces = null)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -78,9 +78,9 @@ public class JavaWriter : IDisposable
             sb.Append($" extends {inheritedClass}");
         }
 
-        if (!string.IsNullOrEmpty(implementingInterfaces))
+        if (implementingInterfaces is not null && implementingInterfaces.Count() > 0)
         {
-            sb.Append($" implements {implementingInterfaces}");
+            sb.Append($" implements {string.Join(", ", implementingInterfaces)}");
         }
 
         sb.Append(" {");

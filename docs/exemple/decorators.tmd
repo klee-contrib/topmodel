@@ -1,0 +1,14 @@
+---
+module: Utilisateur
+tags:
+  - entity
+---
+decorator:
+  name: EntityListeners
+  description: Date création
+  java:
+    annotations:
+      - EntityListeners(AuditingEntityListener.class)
+    imports:
+      - org.springframework.data.jpa.domain.support.AuditingEntityListener
+      - javax.persistence.EntityListeners

@@ -89,6 +89,13 @@ public class ModelFileLoader
                 domain.Location = new Reference(scalar);
                 file.Domains.Add(domain);
             }
+            else if (scalar.Value == "decorator")
+            {
+                var decorator = _fileChecker.Deserialize<Decorator>(parser);
+                decorator.ModelFile = file;
+                decorator.Location = new Reference(scalar);
+                file.Decorators.Add(decorator);
+            }
             else if (scalar.Value == "class")
             {
                 var classe = _classLoader.LoadClass(parser, filePath);

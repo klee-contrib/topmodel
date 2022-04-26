@@ -180,10 +180,6 @@ public static class ImportsJpaExtensions
                 "java.io.Serializable",
                 "javax.annotation.Generated",
             };
-        if (config.LombokBuilder)
-        {
-            imports.Add("lombok.experimental.SuperBuilder");
-        }
 
         if (classe.IsPersistent)
         {
