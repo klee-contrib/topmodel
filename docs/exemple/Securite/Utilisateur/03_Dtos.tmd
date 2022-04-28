@@ -3,6 +3,7 @@ module: Utilisateur
 uses:
   - Securite/Profil/02_Entities
   - Securite/Utilisateur/02_Entities
+  - decorators
 tags:
   - dto
 ---
@@ -10,6 +11,8 @@ class:
   name: UtilisateurDto
   label: Utilisateur
   comment: Objet non persisté de communication avec le serveur
+  decorators:
+    - Interface
   properties:
     - alias:
         class: Utilisateur

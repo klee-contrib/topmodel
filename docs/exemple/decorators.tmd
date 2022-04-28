@@ -12,3 +12,9 @@ decorator:
     imports:
       - org.springframework.data.jpa.domain.support.AuditingEntityListener
       - javax.persistence.EntityListeners
+---
+decorator:
+  name: Interface
+  description: Ajoute la génération de l'interface
+  java:
+    generateInterface: true

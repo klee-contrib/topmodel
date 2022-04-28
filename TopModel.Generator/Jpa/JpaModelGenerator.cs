@@ -629,6 +629,11 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
             fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config)}#{property.GetJavaName()} {property.GetJavaName()}}}");
             fw.WriteDocEnd(1);
+            if (classe.Decorators.Any(d => d.Java != null && d.Java.GenerateInterface))
+            {
+                fw.WriteLine(1, "@Override");
+            }
+
             fw.WriteLine(1, @$"{((property is AssociationProperty apo && apo.Association.Reference) ? "protected" : "public")} {property.GetJavaType()} get{property.GetJavaName().ToFirstUpper()}() {{");
             if (property is AssociationProperty ap && (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany))
             {

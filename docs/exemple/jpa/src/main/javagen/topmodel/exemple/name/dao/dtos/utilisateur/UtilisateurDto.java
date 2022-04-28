@@ -10,6 +10,7 @@ import javax.annotation.Generated;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
+import topmodel.exemple.name.dao.dtos.utilisateur.interfaces.IUtilisateurDto;
 import topmodel.exemple.name.dao.entities.securite.Profil;
 import topmodel.exemple.name.dao.entities.securite.TypeProfil;
 import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
@@ -19,7 +20,7 @@ import topmodel.exemple.name.dao.entities.utilisateur.Utilisateur;
  * Objet non persisté de communication avec le serveur.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class UtilisateurDto implements Serializable {
+public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	/** Serial ID */
 	private static final long serialVersionUID = 1L;
 
