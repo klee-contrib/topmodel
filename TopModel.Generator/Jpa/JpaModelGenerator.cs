@@ -73,6 +73,11 @@ public class JpaModelGenerator : GeneratorBase
                 implements.Add("Serializable");
             }
 
+            if (classe.Decorators.Any(d => d.Java != null && d.Java.GenerateInterface))
+            {
+                implements.Add($"I{classe.Name}");
+            }
+
             fw.WriteClassDeclaration(classe.Name, null, extends, implements);
 
             if (!classe.IsPersistent)
@@ -229,6 +234,12 @@ public class JpaModelGenerator : GeneratorBase
             {
                 imports.AddRange(property.GetImports(_config));
             }
+        }
+
+        if (classe.Decorators.Any(d => d.Java != null && d.Java.GenerateInterface))
+        {
+            var entityDto = classe.IsPersistent ? "entities" : "dtos";
+            imports.Add($"{string.Join('.', classe.GetImport(_config).Split('.').SkipLast(1))}.interfaces.I{classe.Name}");
         }
 
         if (_config.FieldsEnum && _config.FieldsEnumInterface != null && classe.IsPersistent && classe.Properties.Count > 0)
@@ -555,11 +566,11 @@ public class JpaModelGenerator : GeneratorBase
         }
 
         string currentArg = string.Empty;
-        foreach (var p in classe.Properties.OfType<AliasProperty>().ToList().OrderBy(p => p.OriginalProperty.Class.Name))
+        foreach (var p in classe.Properties.OfType<AliasProperty>().ToList().OrderBy(p => p.OriginalProperty!.Class.Name))
         {
             var prefix = p.Prefix?.ToFirstLower() ?? string.Empty;
             var suffix = p.Suffix ?? string.Empty;
-            var argName = $"{prefix}{((!string.IsNullOrEmpty(prefix) ? p.OriginalProperty?.Class?.Name : p.OriginalProperty?.Class?.Name?.ToFirstLower()) ?? string.Empty)}{suffix}";
+            var argName = $"{prefix}{(!string.IsNullOrEmpty(prefix) ? p.OriginalProperty?.Class?.Name : p.OriginalProperty?.Class?.Name?.ToFirstLower() ?? string.Empty)}{suffix}";
             if (currentArg != argName)
             {
                 if (currentArg != string.Empty)
@@ -588,6 +599,7 @@ public class JpaModelGenerator : GeneratorBase
                     {
                         fw.WriteLine(4, $"this.{p.GetJavaName()} = {argName}.get{p.OriginalProperty.GetJavaName().ToFirstUpper()}().get{ap.Association.PrimaryKey!.Name}();");
                     }
+
                     fw.WriteLine(3, $"}}");
                 }
                 else
@@ -597,7 +609,7 @@ public class JpaModelGenerator : GeneratorBase
             }
             else
             {
-                fw.WriteLine(3, $"this.{p.GetJavaName()} = {argName}.get{p.OriginalProperty.Name.ToFirstUpper()}();");
+                fw.WriteLine(3, $"this.{p.GetJavaName()} = {argName}.get{p.OriginalProperty!.Name.ToFirstUpper()}();");
             }
         }
 

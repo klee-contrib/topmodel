@@ -177,7 +177,6 @@ public static class ImportsJpaExtensions
     {
         var imports = new List<string>
             {
-                "java.io.Serializable",
                 "javax.annotation.Generated",
             };
 
@@ -188,6 +187,7 @@ public static class ImportsJpaExtensions
         }
         else
         {
+            imports.Add("java.io.Serializable");
             if (classe.Properties.Any(p => p is IFieldProperty { Required: true, PrimaryKey: false }))
             {
                 imports.Add("javax.validation.constraints.NotNull");
