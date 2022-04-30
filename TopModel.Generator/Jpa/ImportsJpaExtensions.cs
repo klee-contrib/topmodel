@@ -240,7 +240,7 @@ public static class ImportsJpaExtensions
             {
                 Prefix = p.Prefix,
                 Suffix = p.Suffix,
-                Class = p.OriginalProperty.Class
+                Class = p.OriginalProperty?.Class
             })
             .DistinctBy(c => c.Name)
             .ToList();

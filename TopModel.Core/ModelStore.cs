@@ -215,7 +215,6 @@ public class ModelStore
            .Where(dep => dep != null);
     }
 
-
     private void OnFSChangedEvent(object sender, FileSystemEventArgs e)
     {
         _fsCache.Set(e.FullPath, e, new MemoryCacheEntryOptions()
