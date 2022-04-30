@@ -4,8 +4,6 @@
 
 package topmodel.exemple.name.dao.entities.utilisateur;
 
-import java.io.Serializable;
-
 import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Entity;

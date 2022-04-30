@@ -435,6 +435,10 @@
                   "type": "string",
                   "description": "Classe (hors TopModel) dont une classe Java implémentant ce décorateur doit dériver."
                 },
+                "generateInterface": {
+                  "type": "boolean",
+                  "description": "Si topmodel doit générer une interface pour les classes qui utilisent ce décorateur."
+                },
                 "implements": {
                   "type": "array",
                   "description": "Interfaces (hors TopModel) qu'une classe Java implémentant ce décorateur doit implémenter.",

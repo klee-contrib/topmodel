@@ -66,7 +66,7 @@ Lorsque sont ajoutées des listes de références, le générateur créé les `e
 Si la configuration `enumShortcutMode` est activée :
 
 ```yaml
-    enumShortcutMode: true
+enumShortcutMode: true
 ```
 
 Alors les getters et setters des références statiques ne considèreront plus le type de la table de référence, mais uniquement celui de sa clé primaire.
@@ -112,7 +112,7 @@ Si le constructeur par alias n'a qu'un seul argument, alors il est possible d'é
 
 ```java
 public interface ProfilDAO extends PagingAndSortingRepository<Profil, Long> {
- 
+
  /**
   * Récupération du profil par son Id, mapping automatique avec le constructeur par alias
   *
@@ -166,6 +166,73 @@ public class UtilisateurService {
 ```
 
 > D'un point de vue performance, il est important de souligner qu'il vaut mieux éviter de créer un dto à l'aide de plusieurs requêtes puis du constructeur par alias.
+
+### Interfaces et projections
+
+Afin d'utiliser les [projections de Spring JPA](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#projections), il peut être nécessaire d'obtenir des interfaces représentant les Dtos (contenant uniquement les getters).
+
+Pour générer de telles interface, vous pouvez passer la propriété `generateInterface` d'un décorateur `Java` à `true`.
+
+```yaml
+---
+decorator:
+  name: Interface
+  description: Ajoute la génération de l'interface
+  java:
+    generateInterface: true
+```
+
+Ajouté à une classe, il permet de générer une interface, implémentée par la classe.
+
+Exemple :
+
+```java
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
+public interface IUtilisateurDto {
+
+  /**
+   * Getter for id.
+   *
+   * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#id id}.
+   */
+   long getId();
+
+  /**
+   * Getter for email.
+   *
+   * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#email email}.
+   */
+   String getEmail();
+
+  /**
+   * Getter for typeUtilisateurCode.
+   *
+   * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#typeUtilisateurCode typeUtilisateurCode}.
+   */
+   TypeUtilisateur.Values getTypeUtilisateurCode();
+
+  /**
+   * Getter for profilId.
+   *
+   * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#profilId profilId}.
+   */
+  long getProfilId();
+
+  /**
+   * Getter for profilTypeProfilCode.
+   *
+   * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#profilTypeProfilCode profilTypeProfilCode}.
+   */
+  TypeProfil.Values getProfilTypeProfilCode();
+
+  /**
+   * Getter for utilisateurParent.
+   *
+   * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#utilisateurParent utilisateurParent}.
+   */
+  UtilisateurDto getUtilisateurParent();
+}
+```
 
 ## Api
 

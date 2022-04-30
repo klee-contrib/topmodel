@@ -148,6 +148,10 @@ if (config.Jpa != null)
         services
             .AddSingleton<IModelWatcher>(p =>
                 new JpaModelGenerator(p.GetRequiredService<ILogger<JpaModelGenerator>>(), jpaConfig));
+
+        services
+            .AddSingleton<IModelWatcher>(p =>
+                new JpaModelInterfaceGenerator(p.GetRequiredService<ILogger<JpaModelInterfaceGenerator>>(), jpaConfig));
         services
             .AddSingleton<IModelWatcher>(p =>
                 new JpaDaoGenerator(p.GetRequiredService<ILogger<JpaDaoGenerator>>(), jpaConfig));
