@@ -13,6 +13,7 @@ public static class ModelExtensions
             Endpoint endpoint => endpoint.ModelFile,
             IProperty { Class: Class classe } => classe.ModelFile,
             IProperty { Endpoint: Endpoint endpoint } => endpoint.ModelFile,
+            IProperty { Decorator: Decorator decorator } => decorator.ModelFile,
             Alias alias => alias.ModelFile,
             Domain domain => domain.ModelFile,
             Decorator decorator => decorator.ModelFile,
@@ -42,6 +43,7 @@ public static class ModelExtensions
     {
         return modelStore.Classes.SelectMany(c => c.Properties)
             .Concat(modelStore.Endpoints.SelectMany(e => e.Params.Concat(e.Returns != null ? new[] { e.Returns } : Array.Empty<IProperty>())))
+            .Concat(modelStore.Decorators.SelectMany(d => d.Properties))
             .Where(p =>
                 p is AliasProperty alp && alp.OriginalProperty?.Class == classe
                 || p is AssociationProperty ap && ap.Association == classe

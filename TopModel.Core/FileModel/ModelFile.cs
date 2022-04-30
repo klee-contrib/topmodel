@@ -57,6 +57,7 @@ public class ModelFile
     internal IList<IProperty> Properties => Classes.Where(c => !ResolvedAliases.Contains(c)).SelectMany(c => c.Properties)
         .Concat(Endpoints.Where(e => !ResolvedAliases.Contains(e)).SelectMany(e => e.Params))
         .Concat(Endpoints.Where(e => !ResolvedAliases.Contains(e)).Select(e => e.Returns))
+        .Concat(Decorators.SelectMany(e => e.Properties))
         .Where(p => p != null)
         .ToList();
 

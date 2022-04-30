@@ -32,6 +32,8 @@ public class AliasProperty : IFieldProperty
 
     public Endpoint Endpoint { get; set; }
 
+    public Decorator Decorator { get; set; }
+
 #nullable enable
     public string Name => (Prefix ?? string.Empty) + _property?.Name + (Suffix ?? string.Empty);
 

@@ -23,6 +23,8 @@ public class RegularProperty : IFieldProperty
 
     public Endpoint Endpoint { get; set; }
 
+    public Decorator Decorator { get; set; }
+
     public DomainReference DomainReference { get; set; }
 
 #nullable enable

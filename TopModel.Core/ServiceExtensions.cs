@@ -12,6 +12,7 @@ public static class ServiceExtensions
             .AddMemoryCache()
             .AddSingleton(fileChecker)
             .AddSingleton<ClassLoader>()
+            .AddSingleton<DecoratorLoader>()
             .AddSingleton<ModelFileLoader>()
             .AddSingleton<ModelStore>();
 
