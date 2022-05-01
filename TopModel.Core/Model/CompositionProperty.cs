@@ -34,4 +34,19 @@ public class CompositionProperty : IProperty
 #nullable disable
 
     internal Reference Location { get; set; }
+
+    public IProperty CloneWithClass(Class classe)
+    {
+        return new CompositionProperty
+        {
+            Class = classe,
+            Comment = Comment,
+            Composition = Composition,
+            Decorator = Decorator,
+            DomainKind = DomainKind,
+            Kind = Kind,
+            Location = Location,
+            Name = Name
+        };
+    }
 }

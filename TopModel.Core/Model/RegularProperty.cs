@@ -33,4 +33,21 @@ public class RegularProperty : IFieldProperty
 
 #nullable disable
     internal Reference Location { get; set; }
+
+    public IProperty CloneWithClass(Class classe)
+    {
+        return new RegularProperty
+        {
+            Class = classe,
+            Comment = Comment,
+            Decorator = Decorator,
+            DefaultValue = DefaultValue,
+            Domain = Domain,
+            Label = Label,
+            Location = Location,
+            Name = Name,
+            PrimaryKey = PrimaryKey,
+            Required = Required
+        };
+    }
 }

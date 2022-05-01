@@ -75,4 +75,22 @@ public class AssociationProperty : IFieldProperty
     public ClassReference Reference { get; set; }
 
     internal Reference Location { get; set; }
+
+    public IProperty CloneWithClass(Class classe)
+    {
+        return new AssociationProperty
+        {
+            AsAlias = AsAlias,
+            Association = Association,
+            Class = classe,
+            Comment = Comment,
+            Decorator = Decorator,
+            DefaultValue = DefaultValue,
+            Label = Label,
+            Location = Location,
+            Required = Required,
+            Role = Role,
+            Type = Type
+        };
+    }
 }
