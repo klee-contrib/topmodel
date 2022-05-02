@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.6.0
+
+- [#76](https://github.com/klee-contrib/topmodel/issues/76) Core : Ajouter une notion de décorateur de classe
+- [#89](https://github.com/klee-contrib/topmodel/issues/89) Ajouter un générateur d'interfaces pour gérer les projections sur les dto
+- [#67](https://github.com/klee-contrib/topmodel/issues/67) Garde-fou sur les doublons
+
 ## 1.5.7
 
 - [07aa8982](https://github.com/klee-contrib/topmodel/commit/07aa898215c64dc99dfa1c1b98b0616f7d50b4af) Combo PLS HotFix : JPA : Générer des alias constructor #84
@@ -30,7 +36,7 @@
 - [4fea1d49](https://github.com/klee-contrib/topmodel/commit/4fea1d497b848da6780a83fc2f6421401b63f450) JPA : Générer les associations manyToMany avec des tables de correspondances identiques (fix #80)
 - [2268df33](https://github.com/klee-contrib/topmodel/commit/2268df33cef6d7eb374bbb89cdc146915ba540e5) Warning sur les domaines non utilisés (fix #73)
 - [c83420e7](https://github.com/klee-contrib/topmodel/commit/c83420e7c7451e007a0258d85b0b4d19cb31dfb3) Warning sur l'ordre des paramètres d'un endpoint (fix #74)
-- [35c04911](https://github.com/klee-contrib/topmodel/commit/35c04911081166715946564aa38419f4d5997155)  Ignore les fichiers vides (fix #75)
+- [35c04911](https://github.com/klee-contrib/topmodel/commit/35c04911081166715946564aa38419f4d5997155) Ignore les fichiers vides (fix #75)
 
 ## 1.5.0
 
