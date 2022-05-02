@@ -20,5 +20,7 @@ public class Decorator
 #nullable disable
     public ModelFile ModelFile { get; set; }
 
+    public IList<IProperty> Properties { get; } = new List<IProperty>();
+
     internal Reference Location { get; set; }
 }

@@ -4,7 +4,15 @@ Afin d'enrichir de manière plus personnalisée le code généré (en Java et C#
 
 Ces décorateurs s'ajoutent ensuite à la définition des classes, sous forme de liste. Les décorateurs ne sont pas automatiquement disponibles dans tous les fichiers comme les domaines, donc il faudra qu'il soit soit importé, soit défini dans le même fichier (comme une classe).
 
-Exemple :
+## Propriétés
+
+Il est également possible de renseigner des propriétés sur les décorateurs. Il n'y a aucune limitation sur les propriétés que l'on peut définir dans un décorateur (on peut mettre des alias, des compositions...).
+
+Ces propriétés sont ensuite recopiées sur les classes décorées (littéralement recopiées, il n'y a pas d'alias vers la propriété du décorateur par exemple). Ce sont par la suite des propriétés à part entière de la classe, qui peuvent être référencées par la suite sans problème (par exemple dans un alias). Leur "location" est en revanche bien dans le décorateur, donc le hover + la navigation dans l'IDE pointe bien vers la déclaration dans le décorateur.
+
+Elles sont ajoutées en premier dans la liste des propriétés, principalement pour avoir l'erreur de nom de propriété en double (si elle existe) sur la propriété définie dans la classe et non sur le décorateur.
+
+## Exemple
 
 En Java, nous pouvons ajouter le décorateur EntityListener, pour ajouter l'annotation `EntityListeners` et les imports y afférent :
 
@@ -18,6 +26,11 @@ decorator:
     imports:
       - org.springframework.data.jpa.domain.support.AuditingEntityListener
       - javax.persistence.EntityListeners
+  properties:
+    - name: DateCreation
+      comment: Date de création de l'objet
+      required: false
+      domain: DO_DATE_CREATION
 ```
 
 Son utilisation dans la classe `Utilisateur`

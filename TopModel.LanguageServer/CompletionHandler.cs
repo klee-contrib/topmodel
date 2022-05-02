@@ -29,21 +29,23 @@ class CompletionHandler : CompletionHandlerBase
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var currentLine = text.ElementAt(request.Position.Line);
 
-        if (currentLine.Contains("domain: "))
+        if (currentLine.Contains("domain: ") || currentLine.Contains("kind: "))
         {
             var searchText = currentLine.Split(":")[1].Trim();
             return Task.FromResult(new CompletionList(
                 _modelStore.Domains
-                    .OrderBy(domain => domain.Key)
-                    .Where(domain => domain.Key.ToLower().ShouldMatch(searchText))
+                    .Select(domain => domain.Key)
+                    .Concat(currentLine.Contains("kind: ") ? new[] { "object", "list" } : Array.Empty<string>())
+                    .OrderBy(domain => domain)
+                    .Where(domain => domain.ToLower().ShouldMatch(searchText))
                     .Select(domain => new CompletionItem
                     {
                         Kind = CompletionItemKind.EnumMember,
-                        Label = domain.Key,
+                        Label = domain,
                         TextEdit = !string.IsNullOrWhiteSpace(searchText)
                             ? new TextEditOrInsertReplaceEdit(new TextEdit
                             {
-                                NewText = domain.Key,
+                                NewText = domain,
                                 Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
                                     request.Position.Line,
                                     currentLine.IndexOf(searchText),

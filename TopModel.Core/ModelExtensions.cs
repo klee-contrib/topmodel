@@ -11,6 +11,7 @@ public static class ModelExtensions
             ModelFile file => file,
             Class classe => classe.ModelFile,
             Endpoint endpoint => endpoint.ModelFile,
+            IProperty { Decorator: Decorator decorator } => decorator.ModelFile,
             IProperty { Class: Class classe } => classe.ModelFile,
             IProperty { Endpoint: Endpoint endpoint } => endpoint.ModelFile,
             Alias alias => alias.ModelFile,
@@ -42,6 +43,7 @@ public static class ModelExtensions
     {
         return modelStore.Classes.SelectMany(c => c.Properties)
             .Concat(modelStore.Endpoints.SelectMany(e => e.Params.Concat(e.Returns != null ? new[] { e.Returns } : Array.Empty<IProperty>())))
+            .Concat(modelStore.Decorators.SelectMany(d => d.Properties))
             .Where(p =>
                 p is AliasProperty alp && alp.OriginalProperty?.Class == classe
                 || p is AssociationProperty ap && ap.Association == classe
@@ -62,6 +64,7 @@ public static class ModelExtensions
                 f.Aliases.SelectMany(a => a.Classes
                     .Where(c => f.ResolvedAliases.OfType<Class>().Any(ra => ra.Name == c.ReferenceName && ra == classe))
                     .Select(c => (Reference: c, File: f)))))
+            .Where(r => r.Reference is not null)
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 
@@ -81,6 +84,7 @@ public static class ModelExtensions
                     _ => null! // Impossible
                 }, File: p.GetFile());
             })
+            .Where(l => l.Reference is not null)
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 

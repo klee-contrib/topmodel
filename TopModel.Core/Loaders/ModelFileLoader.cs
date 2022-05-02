@@ -9,12 +9,14 @@ public class ModelFileLoader
 {
     private readonly ClassLoader _classLoader;
     private readonly ModelConfig _config;
+    private readonly DecoratorLoader _decoratorLoader;
     private readonly FileChecker _fileChecker;
 
-    public ModelFileLoader(ModelConfig config, ClassLoader classLoader, FileChecker fileChecker)
+    public ModelFileLoader(ModelConfig config, ClassLoader classLoader, FileChecker fileChecker, DecoratorLoader decoratorLoader)
     {
         _classLoader = classLoader;
         _config = config;
+        _decoratorLoader = decoratorLoader;
         _fileChecker = fileChecker;
     }
 
@@ -91,7 +93,7 @@ public class ModelFileLoader
             }
             else if (scalar.Value == "decorator")
             {
-                var decorator = _fileChecker.Deserialize<Decorator>(parser);
+                var decorator = _decoratorLoader.LoadDecorator(parser);
                 decorator.ModelFile = file;
                 decorator.Location = new Reference(scalar);
                 file.Decorators.Add(decorator);

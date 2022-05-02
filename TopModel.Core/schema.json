@@ -461,6 +461,13 @@
                   }
                 }
               }
+            },
+            "properties": {
+              "type": "array",
+              "description": "Liste des propriétés du décorateur.",
+              "items": {
+                "$ref": "#/definitions/property"
+              }
             }
           }
         }

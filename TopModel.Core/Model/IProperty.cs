@@ -13,4 +13,8 @@ public interface IProperty
     Class Class { get; set; }
 
     Endpoint Endpoint { get; set; }
+
+    Decorator Decorator { get; set; }
+
+    IProperty CloneWithClass(Class classe);
 }

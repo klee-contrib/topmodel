@@ -32,6 +32,8 @@ public class AliasProperty : IFieldProperty
 
     public Endpoint Endpoint { get; set; }
 
+    public Decorator Decorator { get; set; }
+
 #nullable enable
     public string Name => (Prefix ?? string.Empty) + _property?.Name + (Suffix ?? string.Empty);
 
@@ -86,6 +88,30 @@ public class AliasProperty : IFieldProperty
 
     internal AliasProperty? OriginalAliasProperty { get; private set; }
 
+    public IProperty CloneWithClass(Class classe)
+    {
+        var alp = new AliasProperty
+        {
+            Class = classe,
+            Comment = _comment!,
+            Decorator = Decorator,
+            Label = _label,
+            Location = Location,
+            ListDomain = _listDomain,
+            OriginalAliasProperty = OriginalAliasProperty,
+            Prefix = Prefix,
+            Property = _property,
+            Suffix = Suffix
+        };
+
+        if (_required.HasValue)
+        {
+            alp.Required = _required.Value;
+        }
+
+        return alp;
+    }
+
     internal AliasProperty Clone(IFieldProperty prop, Reference? includeReference)
     {
         var alp = new AliasProperty
@@ -95,6 +121,7 @@ public class AliasProperty : IFieldProperty
             ClassReference = Reference,
             PropertyReference = includeReference,
             Class = Class,
+            Decorator = Decorator,
             Endpoint = Endpoint,
             Prefix = Prefix,
             Suffix = Suffix,

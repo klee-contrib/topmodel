@@ -292,6 +292,7 @@ public class ModelStore
             .Distinct()
             .ToDictionary(d => d.Name, c => c);
 
+        // Résolution des "extends" sur les classes.
         foreach (var classe in fileClasses.Where(c => c.ExtendsReference != null))
         {
             if (!referencedClasses.TryGetValue(classe.ExtendsReference!.ReferenceName, out var extends))
@@ -303,6 +304,7 @@ public class ModelStore
             classe.Extends = extends;
         }
 
+        // Résolution des décorateurs sur les classes.
         foreach (var classe in fileClasses.Where(c => c.DecoratorReferences.Any()))
         {
             classe.Decorators.Clear();
@@ -341,7 +343,10 @@ public class ModelStore
             }
         }
 
-        foreach (var prop in modelFile.Properties)
+        // Résolutions des références sur les propriétés (hors alias).
+        // On ne touche pas aux propriétés liées à une classe et un décorateur en même temps car
+        // ces propriétés sont déjà résolues sur les décorateurs avant d'être recopiées sur les classes.
+        foreach (var prop in modelFile.Properties.Where(p => p.Decorator is null || p.Class is null))
         {
             switch (prop)
             {
@@ -405,7 +410,7 @@ public class ModelStore
             }
         }
 
-        // Reset des alias déjà résolus
+        // Reset des alias déjà résolus sur les classes.
         foreach (var classe in modelFile.Classes)
         {
             foreach (var alp in classe.Properties.OfType<AliasProperty>().ToList())
@@ -422,6 +427,7 @@ public class ModelStore
             }
         }
 
+        // Reset des alias déjà résolus sur les endpoints.
         foreach (var endpoint in modelFile.Endpoints)
         {
             foreach (var alp in endpoint.Params.OfType<AliasProperty>().ToList())
@@ -443,85 +449,149 @@ public class ModelStore
             }
         }
 
-        // Détermination des alias.
-        foreach (var alp in modelFile.Properties.OfType<AliasProperty>().Where(alp => alp.Reference != null))
+        // Reset des alias déjà résolus sur les décorateurs.
+        foreach (var decorator in modelFile.Decorators)
         {
-            if (!referencedClasses.TryGetValue(alp.Reference!.ReferenceName, out var aliasedClass))
+            foreach (var alp in decorator.Properties.OfType<AliasProperty>().ToList())
             {
-                yield return new ModelError(alp, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", alp.Reference) { ModelErrorType = ModelErrorType.TMD1002 };
-                continue;
-            }
-
-            var shouldBreak = false;
-            foreach (var propReference in alp.Reference.IncludeReferences.Concat(alp.Reference.ExcludeReferences))
-            {
-                var aliasedProperty = aliasedClass.Properties.SingleOrDefault(p => p.Name == propReference.ReferenceName);
-                if (aliasedProperty == null)
+                if (alp.OriginalAliasProperty is not null)
                 {
-                    yield return new ModelError(alp, $"La propriété '{{0}}' est introuvable sur la classe '{aliasedClass}'.", propReference) { ModelErrorType = ModelErrorType.TMD1004 };
-                    shouldBreak = true;
-                }
-            }
-
-            foreach (var include in alp.Reference.IncludeReferences.Where((e, i) => alp.Reference.IncludeReferences.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i).Any()))
-            {
-                yield return new ModelError(modelFile, $"La propriété '{include.ReferenceName}' est déjà référencée dans la définition de l'alias.", include) { IsError = true, ModelErrorType = ModelErrorType.TMD0004 };
-                shouldBreak = true;
-            }
-
-            foreach (var exclude in alp.Reference.ExcludeReferences.Where((e, i) => alp.Reference.ExcludeReferences.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i).Any()))
-            {
-                yield return new ModelError(modelFile, $"La propriété '{exclude.ReferenceName}' est déjà référencée dans la définition de l'alias.", exclude) { IsError = true, ModelErrorType = ModelErrorType.TMD0004 };
-                shouldBreak = true;
-            }
-
-            if (shouldBreak)
-            {
-                continue;
-            }
-
-            var propertiesToAlias =
-                (alp.Reference.IncludeReferences.Any()
-                    ? alp.Reference.IncludeReferences.Select(p => aliasedClass.Properties.Single(prop => prop.Name == p.ReferenceName))
-                    : aliasedClass.Properties.Where(prop => !alp.Reference.ExcludeReferences.Select(p => p.ReferenceName).Contains(prop.Name)))
-                .Reverse()
-                .OfType<IFieldProperty>();
-
-            foreach (var property in propertiesToAlias)
-            {
-                var prop = alp.Clone(property, alp.Reference.IncludeReferences.FirstOrDefault(ir => ir.ReferenceName == property.Name));
-                if (alp.Class != null)
-                {
-                    var index = alp.Class.Properties.IndexOf(alp);
-                    if (index >= 0)
+                    var index = decorator.Properties.IndexOf(alp);
+                    decorator.Properties.RemoveAt(decorator.Properties.IndexOf(alp));
+                    if (!decorator.Properties.Contains(alp.OriginalAliasProperty))
                     {
-                        alp.Class.Properties.Insert(index + 1, prop);
+                        decorator.Properties.Insert(index, alp.OriginalAliasProperty);
                     }
                 }
-                else if (alp.Endpoint?.Params.Contains(alp) ?? false)
-                {
-                    var index = alp.Endpoint.Params.IndexOf(alp);
-                    if (index >= 0)
-                    {
-                        alp.Endpoint.Params.Insert(index + 1, prop);
-                    }
-                }
-                else if (alp.Endpoint?.Returns == alp)
-                {
-                    alp.Endpoint.Returns = prop;
-                }
-            }
-
-            if (alp.Class != null)
-            {
-                alp.Class.Properties.Remove(alp);
-            }
-            else if (alp.Endpoint?.Params.Contains(alp) ?? false)
-            {
-                alp.Endpoint.Params.Remove(alp);
             }
         }
 
+        /// <summary>
+        /// Résout les alias d'une liste de propriétés.
+        /// </summary>
+        IEnumerable<ModelError> ResolveAliases(IEnumerable<AliasProperty> alps)
+        {
+            foreach (var alp in alps)
+            {
+                if (!referencedClasses!.TryGetValue(alp.Reference!.ReferenceName, out var aliasedClass))
+                {
+                    yield return new ModelError(alp, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", alp.Reference) { ModelErrorType = ModelErrorType.TMD1002 };
+                    continue;
+                }
+
+                var shouldBreak = false;
+                foreach (var propReference in alp.Reference.IncludeReferences.Concat(alp.Reference.ExcludeReferences))
+                {
+                    var aliasedProperty = aliasedClass.Properties.FirstOrDefault(p => p.Name == propReference.ReferenceName);
+                    if (aliasedProperty == null)
+                    {
+                        yield return new ModelError(alp, $"La propriété '{{0}}' est introuvable sur la classe '{aliasedClass}'.", propReference) { ModelErrorType = ModelErrorType.TMD1004 };
+                        shouldBreak = true;
+                    }
+                }
+
+                foreach (var include in alp.Reference.IncludeReferences.Where((e, i) => alp.Reference.IncludeReferences.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i).Any()))
+                {
+                    yield return new ModelError(modelFile, $"La propriété '{include.ReferenceName}' est déjà référencée dans la définition de l'alias.", include) { IsError = true, ModelErrorType = ModelErrorType.TMD0004 };
+                    shouldBreak = true;
+                }
+
+                foreach (var exclude in alp.Reference.ExcludeReferences.Where((e, i) => alp.Reference.ExcludeReferences.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i).Any()))
+                {
+                    yield return new ModelError(modelFile, $"La propriété '{exclude.ReferenceName}' est déjà référencée dans la définition de l'alias.", exclude) { IsError = true, ModelErrorType = ModelErrorType.TMD0004 };
+                    shouldBreak = true;
+                }
+
+                if (shouldBreak)
+                {
+                    continue;
+                }
+
+                var propertiesToAlias =
+                    (alp.Reference.IncludeReferences.Any()
+                        ? alp.Reference.IncludeReferences.Select(p => aliasedClass.Properties.First(prop => prop.Name == p.ReferenceName))
+                        : aliasedClass.Properties.Where(prop => !alp.Reference.ExcludeReferences.Select(p => p.ReferenceName).Contains(prop.Name)))
+                    .Reverse()
+                    .OfType<IFieldProperty>();
+
+                foreach (var property in propertiesToAlias)
+                {
+                    var prop = alp.Clone(property, alp.Reference.IncludeReferences.FirstOrDefault(ir => ir.ReferenceName == property.Name));
+                    if (alp.Class != null)
+                    {
+                        var index = alp.Class.Properties.IndexOf(alp);
+                        if (index >= 0)
+                        {
+                            alp.Class.Properties.Insert(index + 1, prop);
+                        }
+                    }
+                    else if (alp.Endpoint?.Params.Contains(alp) ?? false)
+                    {
+                        var index = alp.Endpoint.Params.IndexOf(alp);
+                        if (index >= 0)
+                        {
+                            alp.Endpoint.Params.Insert(index + 1, prop);
+                        }
+                    }
+                    else if (alp.Endpoint?.Returns == alp)
+                    {
+                        alp.Endpoint.Returns = prop;
+                    }
+                    else if (alp.Decorator != null)
+                    {
+                        var index = alp.Decorator.Properties.IndexOf(alp);
+                        if (index >= 0)
+                        {
+                            alp.Decorator.Properties.Insert(index + 1, prop);
+                        }
+                    }
+                }
+
+                if (alp.Class != null)
+                {
+                    alp.Class.Properties.Remove(alp);
+                }
+                else if (alp.Endpoint?.Params.Contains(alp) ?? false)
+                {
+                    alp.Endpoint.Params.Remove(alp);
+                }
+                else if (alp.Decorator != null)
+                {
+                    alp.Decorator.Properties.Remove(alp);
+                }
+            }
+        }
+
+        // Résolution des alias des décorateurs
+        foreach (var modelError in ResolveAliases(modelFile.Properties.OfType<AliasProperty>().Where(alp => alp.Decorator is not null && alp.Reference is not null)))
+        {
+            yield return modelError;
+        }
+
+        // Recopie des propriétés des décorateurs dans les classes.
+        foreach (var classe in modelFile.Classes)
+        {
+            if (classe.Decorators.Any())
+            {
+                foreach (var prop in classe.Properties.Where(p => p.Decorator is not null).ToList())
+                {
+                    classe.Properties.Remove(prop);
+                }
+
+                foreach (var prop in classe.Decorators.SelectMany(d => d.Properties).Reverse())
+                {
+                    classe.Properties.Insert(0, prop.CloneWithClass(classe));
+                }
+            }
+        }
+
+        // Résolution des alias des classes et endpoints.
+        foreach (var modelError in ResolveAliases(modelFile.Properties.OfType<AliasProperty>().Where(alp => alp.Reference is not null)))
+        {
+            yield return modelError;
+        }
+
+        // Résolution des alias de classes et endpoints dans le fichier.
         foreach (var alias in modelFile.Aliases)
         {
             var referencedFile = dependencies.SingleOrDefault(dep => dep.Name == alias.File.ReferenceName);
@@ -578,6 +648,7 @@ public class ModelStore
             }
         }
 
+        // Vérifications de cohérence sur les fichiers.
         if (!_config.AllowCompositePrimaryKey)
         {
             foreach (var classe in modelFile.Classes)
@@ -593,7 +664,7 @@ public class ModelStore
         {
             foreach (var property in classe.Properties.Where((e, i) => classe.Properties.Where((p, j) => p.Name == e.Name && j < i).Any()))
             {
-                yield return new ModelError(modelFile, $"Le nom '{property.Name}' est déjà utilisé.", property.GetLocation()) { IsError = true, ModelErrorType = ModelErrorType.TMD0003 };
+                yield return new ModelError(modelFile, $"Le nom '{property.Name}' est déjà utilisé.", property is AliasProperty { PropertyReference: var pr } ? pr : property.GetLocation()) { IsError = true, ModelErrorType = ModelErrorType.TMD0003 };
             }
         }
 
