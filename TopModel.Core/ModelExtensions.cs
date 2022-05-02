@@ -84,6 +84,7 @@ public static class ModelExtensions
                     _ => null! // Impossible
                 }, File: p.GetFile());
             })
+            .Where(l => l.Reference is not null)
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 
