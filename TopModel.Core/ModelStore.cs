@@ -482,7 +482,7 @@ public class ModelStore
                 var shouldBreak = false;
                 foreach (var propReference in alp.Reference.IncludeReferences.Concat(alp.Reference.ExcludeReferences))
                 {
-                    var aliasedProperty = aliasedClass.Properties.SingleOrDefault(p => p.Name == propReference.ReferenceName);
+                    var aliasedProperty = aliasedClass.Properties.FirstOrDefault(p => p.Name == propReference.ReferenceName);
                     if (aliasedProperty == null)
                     {
                         yield return new ModelError(alp, $"La propriété '{{0}}' est introuvable sur la classe '{aliasedClass}'.", propReference) { ModelErrorType = ModelErrorType.TMD1004 };
@@ -509,7 +509,7 @@ public class ModelStore
 
                 var propertiesToAlias =
                     (alp.Reference.IncludeReferences.Any()
-                        ? alp.Reference.IncludeReferences.Select(p => aliasedClass.Properties.Single(prop => prop.Name == p.ReferenceName))
+                        ? alp.Reference.IncludeReferences.Select(p => aliasedClass.Properties.First(prop => prop.Name == p.ReferenceName))
                         : aliasedClass.Properties.Where(prop => !alp.Reference.ExcludeReferences.Select(p => p.ReferenceName).Contains(prop.Name)))
                     .Reverse()
                     .OfType<IFieldProperty>();

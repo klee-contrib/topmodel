@@ -64,6 +64,7 @@ public static class ModelExtensions
                 f.Aliases.SelectMany(a => a.Classes
                     .Where(c => f.ResolvedAliases.OfType<Class>().Any(ra => ra.Name == c.ReferenceName && ra == classe))
                     .Select(c => (Reference: c, File: f)))))
+            .Where(r => r.Reference is not null)
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 
