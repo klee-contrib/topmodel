@@ -2,7 +2,7 @@
 
 Afin d'enrichir de manière plus personnalisée le code généré (en Java et C#), il est possible de définir des décorateurs (`decorator`). On peut y déclarer un ensemble d'interfaces implémentées, une classe étendue (hors TopModel), des annotations à ajouter.
 
-Ces décorateurs s'ajoutent ensuite à la définition des classes, sous forme de liste. Les décorateurs ne sont pas automatiquement disponibles dans tous les fichiers comme les domaines, donc il faudra qu'il soit soit importé, soit défini dans le même fichier (comme une classe).
+Ces décorateurs s'ajoutent ensuite à la définition des classes, sous forme de liste. Les décorateurs ne sont pas automatiquement disponibles dans tous les fichiers comme les domaines, donc il faudra qu'ils soient soit importés, soit définis dans le même fichier (comme une classe).
 
 ## Propriétés
 
