@@ -68,6 +68,19 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param utilisateurDto to copy
+	 */
+	public UtilisateurDto(UtilisateurDto utilisateurDto) {
+		this.id = utilisateurDto.getId();
+		this.email = utilisateurDto.getEmail();
+		this.typeUtilisateurCode = utilisateurDto.getTypeUtilisateurCode();
+		this.profilId = utilisateurDto.getProfilId();
+		this.profilTypeProfilCode = utilisateurDto.getProfilTypeProfilCode();
+		this.utilisateurParent = utilisateurDto.getUtilisateurParent();
+	}
+
+	/**
 	 * All arg constructor.
 	 * @param id Id technique
 	 * @param email Email de l'utilisateur

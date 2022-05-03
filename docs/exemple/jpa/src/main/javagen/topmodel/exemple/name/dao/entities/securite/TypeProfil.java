@@ -50,6 +50,15 @@ public class TypeProfil {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param typeProfil to copy
+	 */
+	public TypeProfil(TypeProfil typeProfil) {
+		this.code = typeProfil.getCode();
+		this.libelle = typeProfil.getLibelle();
+	}
+
+	/**
 	 * All arg constructor.
 	 * @param code Code du type d'utilisateur
 	 * @param libelle Libellé du type d'utilisateur

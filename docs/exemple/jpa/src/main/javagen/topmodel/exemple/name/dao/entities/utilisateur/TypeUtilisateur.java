@@ -50,6 +50,15 @@ public class TypeUtilisateur {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param typeUtilisateur to copy
+	 */
+	public TypeUtilisateur(TypeUtilisateur typeUtilisateur) {
+		this.code = typeUtilisateur.getCode();
+		this.libelle = typeUtilisateur.getLibelle();
+	}
+
+	/**
 	 * All arg constructor.
 	 * @param code Code du type d'utilisateur
 	 * @param libelle Libellé du type d'utilisateur

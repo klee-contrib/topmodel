@@ -50,6 +50,15 @@ public class Profil {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param profil to copy
+	 */
+	public Profil(Profil profil) {
+		this.id = profil.getId();
+		this.typeProfil = profil.getTypeProfil();
+	}
+
+	/**
 	 * All arg constructor.
 	 * @param id Id technique
 	 * @param typeProfil Type de profil

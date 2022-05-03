@@ -88,6 +88,7 @@ public class JpaModelGenerator : GeneratorBase
 
             WriteProperties(fw, classe);
             WriteNoArgConstructor(fw, classe);
+            WriteCopyConstructor(fw, classe);
             WriteAllArgConstructor(fw, classe);
             WriteAliasConstructor(fw, classe);
             WriteGetters(fw, classe);
@@ -114,41 +115,38 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteEnumShortcuts(JavaWriter fw, Class classe)
     {
-        foreach (var property in classe.Properties.Where(p => p is AssociationProperty ap && ap.Association.Reference && (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)))
+        foreach (var ap in classe.Properties.OfType<AssociationProperty>().Where(ap => ap.Association.Reference && (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)))
         {
-            if (property is AssociationProperty ap)
             {
+                var propertyName = ap.Name.ToFirstLower();
+                fw.WriteLine();
+                fw.WriteDocStart(1, $"Set the value of {{@link {classe.GetImport(_config)}#{propertyName} {propertyName}}}");
+                fw.WriteLine(1, " * Cette méthode permet définir la valeur de la FK directement");
+                fw.WriteLine(1, $" * @param {propertyName} value to set");
+                fw.WriteDocEnd(1);
+                fw.WriteLine(1, @$"public void set{ap.Name}({ap.Association.PrimaryKey!.GetJavaType()} {propertyName}) {{");
+                fw.WriteLine(2, $"if({propertyName} != null) {{");
+                var constructorArgs = $"{propertyName}";
+                foreach (var p in ap.Association.Properties.Where(pr => !pr.PrimaryKey))
                 {
-                    var propertyName = ap.Name.ToFirstLower();
-                    fw.WriteLine();
-                    fw.WriteDocStart(1, $"Set the value of {{@link {classe.GetImport(_config)}#{propertyName} {propertyName}}}");
-                    fw.WriteLine(1, " * Cette méthode permet définir la valeur de la FK directement");
-                    fw.WriteLine(1, $" * @param {propertyName} value to set");
-                    fw.WriteDocEnd(1);
-                    fw.WriteLine(1, @$"public void set{ap.Name}({ap.Association.PrimaryKey!.GetJavaType()} {propertyName}) {{");
-                    fw.WriteLine(2, $"if({propertyName} != null) {{");
-                    var constructorArgs = $"{propertyName}";
-                    foreach (var p in ap.Association.Properties.Where(pr => !pr.PrimaryKey))
-                    {
-                        constructorArgs += $", {propertyName}.get{p.Name}()";
-                    }
-
-                    fw.WriteLine(3, @$"this.{ap.GetAssociationName()} = new {ap.Association.Name}({constructorArgs});");
-                    fw.WriteLine(2, "}");
-                    fw.WriteLine(1, "}");
+                    constructorArgs += $", {propertyName}.get{p.Name}()";
                 }
 
-                {
-                    fw.WriteLine();
-                    fw.WriteDocStart(1, $"Getter for {property.Name.ToFirstLower()}");
-                    fw.WriteLine(1, " * Cette méthode permet de manipuler directement la foreign key de la liste de référence");
-                    fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config)}#{property.GetJavaName()} {property.GetJavaName()}}}");
-                    fw.WriteDocEnd(1);
-                    fw.WriteLine(1, "@Transient");
-                    fw.WriteLine(1, @$"public {ap.Association.PrimaryKey!.GetJavaType()} get{ap.Name}() {{");
-                    fw.WriteLine(2, @$"return this.{ap.GetAssociationName()} != null ? this.{ap.GetAssociationName()}.get{ap.Association.PrimaryKey!.Name}() : null;");
-                    fw.WriteLine(1, "}");
-                }
+                fw.WriteLine(3, @$"this.{ap.GetAssociationName()} = new {ap.Association.Name}({constructorArgs});");
+                fw.WriteLine(2, "}");
+                fw.WriteLine(1, "}");
+            }
+
+            {
+                fw.WriteLine();
+                fw.WriteDocStart(1, $"Getter for {ap.Name.ToFirstLower()}");
+                fw.WriteLine(1, " * Cette méthode permet de manipuler directement la foreign key de la liste de référence");
+                fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config)}#{ap.GetJavaName()} {ap.GetJavaName()}}}");
+                fw.WriteDocEnd(1);
+                fw.WriteLine(1, "@Transient");
+                fw.WriteLine(1, @$"public {ap.Association.PrimaryKey!.GetJavaType()} get{ap.Name}() {{");
+                fw.WriteLine(2, @$"return this.{ap.GetAssociationName()} != null ? this.{ap.GetAssociationName()}.get{ap.Association.PrimaryKey!.Name}() : null;");
+                fw.WriteLine(1, "}");
             }
         }
     }
@@ -530,6 +528,40 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine(2, $"this.{property.GetJavaName()} = {property.GetJavaName()};");
         }
 
+        fw.WriteLine(1, $"}}");
+    }
+
+    private void WriteCopyConstructor(JavaWriter fw, Class classe)
+    {
+        fw.WriteLine();
+        fw.WriteDocStart(1, "Copy constructor");
+        fw.WriteLine(1, $" * @param {classe.Name.ToFirstLower()} to copy");
+        var properties = classe.Properties;
+        fw.WriteDocEnd(1);
+        fw.WriteLine(1, $"public {classe.Name}({classe.Name} {classe.Name.ToFirstLower()}) {{");
+        if (classe.Extends != null)
+        {
+            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends).Select(p => $"{p.GetJavaName()}"));
+            fw.WriteLine(2, $"super({classe.Name.ToFirstLower()});");
+        }
+        else if (classe.Decorators.Any(d => d.Java?.Extends is not null))
+        {
+            fw.WriteLine(2, $"super();");
+        }
+
+        foreach (var property in classe.Properties.Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
+        {
+            fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.Name.ToFirstLower()}.get{property.GetJavaName().ToFirstUpper()}();");
+        }
+        if (_config.EnumShortcutMode)
+        {
+            fw.WriteLine();
+            foreach (var ap in classe.Properties.OfType<AssociationProperty>().Where(ap => ap.Association.Reference && (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)))
+            {
+                var propertyName = ap.Name.ToFirstLower();
+                fw.WriteLine(2, $"this.set{ap.Name}({classe.Name.ToFirstLower()}.get{ap.Name.ToFirstUpper()}());");
+            }
+        }
         fw.WriteLine(1, $"}}");
     }
 

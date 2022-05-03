@@ -98,7 +98,16 @@ Les dtos sont le reflet du modèle persité, sans les annotations JPA. Pour les 
 
 Ceci afin d'éviter de mélanger les objets persistés et non persistés. En effet, si votre objet est sérializé, Hibernate risque de charger tout l'arbre de l'objet correspondant
 
-### Constructeurs par alias
+### Constructeurs
+
+Le générateur JPA constuit 3 ou 4 constructeurs par classe : 
+
+- Constructeur vide
+- Construteur tout argument
+- Constructeur par recopie
+- Constructeur par alias
+
+#### Constructeurs par alias
 
 Dans les classes contenant des alias, un constructeur par alias est généré. Celui-ci prend en entrée les classes référencées par des alias, et affecte les propriétés correspondantes.
 
