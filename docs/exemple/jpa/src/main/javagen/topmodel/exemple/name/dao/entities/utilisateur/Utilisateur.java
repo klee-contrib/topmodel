@@ -91,6 +91,23 @@ public class Utilisateur {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param utilisateur to copy
+	 */
+	public Utilisateur(Utilisateur utilisateur) {
+		if(utilisateur == null) {
+			return;
+		}
+
+		this.dateCreation = utilisateur.getDateCreation();
+		this.dateModification = utilisateur.getDateModification();
+		this.id = utilisateur.getId();
+		this.profil = utilisateur.getProfil();
+		this.email = utilisateur.getEmail();
+		this.typeUtilisateur = utilisateur.getTypeUtilisateur();
+	}
+
+	/**
 	 * All arg constructor.
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur

@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.6.1
+
+- [#92](https://github.com/klee-contrib/topmodel/issues/92) JPA Ajouter des constructeurs par recopie
+
 ## 1.6.0
 
 - [#76](https://github.com/klee-contrib/topmodel/issues/76) Core : Ajouter une notion de décorateur de classe

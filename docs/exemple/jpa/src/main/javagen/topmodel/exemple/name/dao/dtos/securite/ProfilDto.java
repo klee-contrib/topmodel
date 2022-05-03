@@ -45,6 +45,21 @@ public class ProfilDto implements Serializable {
 	}
 
 	/**
+	 * Copy constructor.
+	 * @param profilDto to copy
+	 */
+	public ProfilDto(ProfilDto profilDto) {
+		if(profilDto == null) {
+			return;
+		}
+
+		this.id = profilDto.getId();
+		this.typeProfilCode = profilDto.getTypeProfilCode();
+
+		this.utilisateurs = profilDto.getUtilisateurs().stream().toList();
+	}
+
+	/**
 	 * All arg constructor.
 	 * @param id Id technique
 	 * @param typeProfilCode Type de profil
