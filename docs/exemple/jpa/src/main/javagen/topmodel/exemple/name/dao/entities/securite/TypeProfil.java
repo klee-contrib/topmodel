@@ -54,6 +54,10 @@ public class TypeProfil {
 	 * @param typeProfil to copy
 	 */
 	public TypeProfil(TypeProfil typeProfil) {
+		if(typeProfil == null) {
+			return;
+		}
+
 		this.code = typeProfil.getCode();
 		this.libelle = typeProfil.getLibelle();
 	}

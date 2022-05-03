@@ -49,9 +49,14 @@ public class ProfilDto implements Serializable {
 	 * @param profilDto to copy
 	 */
 	public ProfilDto(ProfilDto profilDto) {
+		if(profilDto == null) {
+			return;
+		}
+
 		this.id = profilDto.getId();
 		this.typeProfilCode = profilDto.getTypeProfilCode();
-		this.utilisateurs = profilDto.getUtilisateurs();
+
+		this.utilisateurs = profilDto.getUtilisateurs().stream().toList();
 	}
 
 	/**

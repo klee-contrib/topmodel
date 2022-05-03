@@ -54,6 +54,10 @@ public class TypeUtilisateur {
 	 * @param typeUtilisateur to copy
 	 */
 	public TypeUtilisateur(TypeUtilisateur typeUtilisateur) {
+		if(typeUtilisateur == null) {
+			return;
+		}
+
 		this.code = typeUtilisateur.getCode();
 		this.libelle = typeUtilisateur.getLibelle();
 	}

@@ -54,6 +54,10 @@ public class Profil {
 	 * @param profil to copy
 	 */
 	public Profil(Profil profil) {
+		if(profil == null) {
+			return;
+		}
+
 		this.id = profil.getId();
 		this.typeProfil = profil.getTypeProfil();
 	}

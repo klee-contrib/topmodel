@@ -95,6 +95,10 @@ public class Utilisateur {
 	 * @param utilisateur to copy
 	 */
 	public Utilisateur(Utilisateur utilisateur) {
+		if(utilisateur == null) {
+			return;
+		}
+
 		this.dateCreation = utilisateur.getDateCreation();
 		this.dateModification = utilisateur.getDateModification();
 		this.id = utilisateur.getId();

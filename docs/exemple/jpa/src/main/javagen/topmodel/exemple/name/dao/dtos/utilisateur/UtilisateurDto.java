@@ -72,6 +72,10 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * @param utilisateurDto to copy
 	 */
 	public UtilisateurDto(UtilisateurDto utilisateurDto) {
+		if(utilisateurDto == null) {
+			return;
+		}
+
 		this.id = utilisateurDto.getId();
 		this.email = utilisateurDto.getEmail();
 		this.typeUtilisateurCode = utilisateurDto.getTypeUtilisateurCode();

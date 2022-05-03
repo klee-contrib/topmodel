@@ -549,10 +549,36 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine(2, $"super();");
         }
 
+        fw.WriteLine(2, $"if({classe.Name.ToFirstLower()} == null) {{");
+        fw.WriteLine(3, $"return;");
+        fw.WriteLine(2, "}");
+        fw.WriteLine();
+
         foreach (var property in classe.Properties.Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
         {
-            fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.Name.ToFirstLower()}.get{property.GetJavaName().ToFirstUpper()}();");
+            if (!(property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list"))
+            {
+                fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.Name.ToFirstLower()}.get{property.GetJavaName().ToFirstUpper()}();");
+            }
         }
+
+        var propertyListToCopy = classe.Properties
+        .Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne)))
+        .Where(property => property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list");
+
+        if (propertyListToCopy.Count() > 0)
+        {
+            fw.WriteLine();
+        }
+
+        foreach (var property in propertyListToCopy)
+        {
+            if (property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list")
+            {
+                fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.Name.ToFirstLower()}.get{property.GetJavaName().ToFirstUpper()}().stream().toList();");
+            }
+        }
+
         if (_config.EnumShortcutMode)
         {
             fw.WriteLine();
@@ -562,6 +588,7 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteLine(2, $"this.set{ap.Name}({classe.Name.ToFirstLower()}.get{ap.Name.ToFirstUpper()}());");
             }
         }
+
         fw.WriteLine(1, $"}}");
     }
 
