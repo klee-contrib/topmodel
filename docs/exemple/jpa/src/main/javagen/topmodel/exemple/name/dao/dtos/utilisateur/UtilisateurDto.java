@@ -117,6 +117,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#id id}.
 	 */
+	@Override
 	public long getId() {
 		return this.id;
 	}
@@ -126,6 +127,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#email email}.
 	 */
+	@Override
 	public String getEmail() {
 		return this.email;
 	}
@@ -135,6 +137,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#typeUtilisateurCode typeUtilisateurCode}.
 	 */
+	@Override
 	public TypeUtilisateur.Values getTypeUtilisateurCode() {
 		return this.typeUtilisateurCode;
 	}
@@ -144,6 +147,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#profilId profilId}.
 	 */
+	@Override
 	public long getProfilId() {
 		return this.profilId;
 	}
@@ -153,6 +157,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#profilTypeProfilCode profilTypeProfilCode}.
 	 */
+	@Override
 	public TypeProfil.Values getProfilTypeProfilCode() {
 		return this.profilTypeProfilCode;
 	}
@@ -162,6 +167,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#utilisateurParent utilisateurParent}.
 	 */
+	@Override
 	public UtilisateurDto getUtilisateurParent() {
 		return this.utilisateurParent;
 	}

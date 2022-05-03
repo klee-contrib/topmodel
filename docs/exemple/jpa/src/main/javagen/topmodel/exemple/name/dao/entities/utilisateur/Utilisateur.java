@@ -41,6 +41,20 @@ import topmodel.exemple.utils.IFieldEnum;
 public class Utilisateur {
 
 	/**
+	 * Date de création de l'utilisateur.
+	 */
+	@Column(name = "UTI_DATE_CREATION", nullable = true)
+	@CreatedDate
+	private DateTime dateCreation;
+
+	/**
+	 * Date de modification de l'utilisateur.
+	 */
+	@Column(name = "UTI_DATE_MODIFICATION", nullable = true)
+	@LastModifiedDate
+	private DateTime dateModification;
+
+	/**
 	 * Id technique.
 	 */
 	@Id
@@ -55,20 +69,6 @@ public class Utilisateur {
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Profil.class)
 	@JoinColumn(name = "PRO_ID", referencedColumnName = "PRO_ID")
 	private Profil profil;
-
-	/**
-	 * Date de création de l'utilisateur.
-	 */
-	@Column(name = "UTI_DATE_CREATION", nullable = true)
-	@CreatedDate
-	private DateTime dateCreation;
-
-	/**
-	 * Date de modification de l'utilisateur.
-	 */
-	@Column(name = "UTI_DATE_MODIFICATION", nullable = true)
-	@LastModifiedDate
-	private DateTime dateModification;
 
 	/**
 	 * Email de l'utilisateur.
@@ -92,18 +92,18 @@ public class Utilisateur {
 
 	/**
 	 * All arg constructor.
-	 * @param id Id technique
-	 * @param profil Profil de l'utilisateur
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur
+	 * @param id Id technique
+	 * @param profil Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
 	 * @param typeUtilisateur Type d'utilisateur en Many to one
 	 */
-	public Utilisateur(long id, Profil profil, DateTime dateCreation, DateTime dateModification, String email, TypeUtilisateur typeUtilisateur) {
-		this.id = id;
-		this.profil = profil;
+	public Utilisateur(DateTime dateCreation, DateTime dateModification, long id, Profil profil, String email, TypeUtilisateur typeUtilisateur) {
 		this.dateCreation = dateCreation;
 		this.dateModification = dateModification;
+		this.id = id;
+		this.profil = profil;
 		this.email = email;
 		this.typeUtilisateur = typeUtilisateur;
 	}
@@ -113,24 +113,6 @@ public class Utilisateur {
 	 * Ce constructeur permet d'initialiser un objet Utilisateur avec comme paramètres les classes dont les propriétés sont référencées Utilisateur.
 	 * A ne pas utiliser pour construire un Dto en plusieurs requêtes.
 	 * Voir la <a href="https://klee-contrib.github.io/topmodel/#/generator/jpa?id=constructeurs-par-alias">documentation</a>
-
-	/**
-	 * Getter for id.
-	 *
-	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#id id}.
-	 */
-	public long getId() {
-		return this.id;
-	}
-
-	/**
-	 * Getter for profil.
-	 *
-	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#profil profil}.
-	 */
-	public Profil getProfil() {
-		return this.profil;
-	}
 
 	/**
 	 * Getter for dateCreation.
@@ -148,6 +130,24 @@ public class Utilisateur {
 	 */
 	public DateTime getDateModification() {
 		return this.dateModification;
+	}
+
+	/**
+	 * Getter for id.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#id id}.
+	 */
+	public long getId() {
+		return this.id;
+	}
+
+	/**
+	 * Getter for profil.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#profil profil}.
+	 */
+	public Profil getProfil() {
+		return this.profil;
 	}
 
 	/**
@@ -169,22 +169,6 @@ public class Utilisateur {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#id id}.
-	 * @param id value to set
-	 */
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	/**
-	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#profil profil}.
-	 * @param profil value to set
-	 */
-	public void setProfil(Profil profil) {
-		this.profil = profil;
-	}
-
-	/**
 	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#dateCreation dateCreation}.
 	 * @param dateCreation value to set
 	 */
@@ -198,6 +182,22 @@ public class Utilisateur {
 	 */
 	public void setDateModification(DateTime dateModification) {
 		this.dateModification = dateModification;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#id id}.
+	 * @param id value to set
+	 */
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#profil profil}.
+	 * @param profil value to set
+	 */
+	public void setProfil(Profil profil) {
+		this.profil = profil;
 	}
 
 	/**
@@ -236,10 +236,10 @@ public class Utilisateur {
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur Utilisateur}.
 	 */
 	public enum Fields implements IFieldEnum<Utilisateur> {
-        ID, //
-        PROFIL, //
         DATE_CREATION, //
         DATE_MODIFICATION, //
+        ID, //
+        PROFIL, //
         EMAIL, //
         TYPE_UTILISATEUR
 	}

@@ -19,7 +19,7 @@ En Java, nous pouvons ajouter le décorateur EntityListener, pour ajouter l'anno
 ```yaml
 decorator:
   name: EntityListeners
-  description: Entity Listeber pour suivre les évènements de création et de modification
+  description: Entity Listener pour suivre les évènements de création et de modification
   java:
     annotations:
       - EntityListeners(AuditingEntityListener.class)
@@ -27,10 +27,12 @@ decorator:
       - org.springframework.data.jpa.domain.support.AuditingEntityListener
       - javax.persistence.EntityListeners
   properties:
-    - name: DateCreation
-      comment: Date de création de l'objet
-      required: false
+    - name: dateCreation
+      comment: Date de création de l'utilisateur
       domain: DO_DATE_CREATION
+    - name: dateModification
+      comment: Date de modification de l'utilisateur
+      domain: DO_DATE_MODIFICATION
 ```
 
 Son utilisation dans la classe `Utilisateur`
@@ -44,4 +46,32 @@ class:
   trigram: UTI
   decorators:
     - EntityListeners
+```
+
+Le code généré aura les annotations et les champs issus des décorateurs :
+
+```java
+/**
+ * Utilisateur de l'application.
+ */
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
+@Entity
+@Table(name = "UTILISATEUR")
+@EntityListeners(AuditingEntityListener.class)
+public class Utilisateur {
+
+  /**
+   * Date de création de l'utilisateur.
+   */
+  @Column(name = "UTI_DATE_CREATION", nullable = true)
+  @CreatedDate
+  private DateTime dateCreation;
+  
+  /**
+   * Date de modification de l'utilisateur.
+   */
+  @Column(name = "UTI_DATE_MODIFICATION", nullable = true)
+  @LastModifiedDate
+  private DateTime dateModification;
+
 ```
