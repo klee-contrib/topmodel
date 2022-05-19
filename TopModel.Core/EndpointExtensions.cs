@@ -26,7 +26,7 @@ public static class EndpointExtensions
     {
         if (property is AliasProperty { Property: null })
         {
-            return String.Empty;
+            return string.Empty;
         }
 
         var param = property is not AliasProperty alp || !alp.Property.PrimaryKey
