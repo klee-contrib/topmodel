@@ -51,7 +51,9 @@ public class AliasProperty : IFieldProperty
         set => _required = value;
     }
 
-    public Domain Domain => _property.Domain;
+#nullable disable
+    public Domain Domain => _property?.Domain;
+#nullable enable
 
     public string Comment
     {
@@ -67,7 +69,6 @@ public class AliasProperty : IFieldProperty
         set => _listDomain = value;
     }
 
-#nullable enable
     public IFieldProperty? OriginalProperty => _property;
 
     public ClassReference? ClassReference { get; set; }

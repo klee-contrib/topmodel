@@ -24,6 +24,11 @@ public static class EndpointExtensions
 
     public static string GetParamName(this IProperty property)
     {
+        if (property is AliasProperty { Property: null })
+        {
+            return String.Empty;
+        }
+
         var param = property is not AliasProperty alp || !alp.Property.PrimaryKey
             ? property.Name.ToFirstLower()
             : $"{alp.Property.Class.Trigram?.ToLower() ?? alp.Property.Class.Name.ToFirstLower()}{property.Name}";
