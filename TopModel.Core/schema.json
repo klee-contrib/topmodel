@@ -559,7 +559,7 @@
             },
             "values": {
               "type": "object",
-              "description": "Liste des valeurs de la table à insérer à la création de la base de données. DOIT être placé en APRES 'properties'. Il doit d'agir d'un objet ayant pour clés un nom de ligne (qui sera utilisé pour identifier la clé en C#), et pour valeurs un objet de type JSON qui renseigne les valeurs des différentes propriétés."
+              "description": "Liste des valeurs de la table à insérer à la création de la base de données. Il doit d'agir d'un objet ayant pour clés un nom de ligne (qui sera utilisé pour identifier la clé en C#), et pour valeurs un objet de type JSON qui renseigne les valeurs des différentes propriétés."
             }
           }
         }

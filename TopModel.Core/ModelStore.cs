@@ -672,6 +672,37 @@ public class ModelStore
             }
         }
 
+        // Résolution des valeurs de références
+        foreach (var classe in fileClasses.Where(c => c.ReferenceValueReferences.Any()))
+        {
+            foreach (var valueRef in classe.ReferenceValueReferences)
+            {
+                var referenceValue = new ReferenceValue { Name = valueRef.Key.ReferenceName };
+                classe.ReferenceValues.Add(referenceValue);
+
+                foreach (var value in valueRef.Value)
+                {
+                    var property = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == value.Key.ReferenceName);
+
+                    if (property == null)
+                    {
+                        yield return new ModelError(classe, $"La propriété '{value.Key.ReferenceName}' n'existe pas sur la classe '{classe}'.", value.Key) { ModelErrorType = ModelErrorType.TMD1011 };
+                    }
+                    else
+                    {
+                        referenceValue.Value.Add(property, value.Value);
+                    }
+                }
+
+                var missingRequiredProperties = classe.Properties.OfType<IFieldProperty>().Where(p => p.Required && (!p.PrimaryKey || p.Domain.Name != "DO_ID") && !valueRef.Value.Any(v => v.Key.ReferenceName == p.Name));
+
+                if (missingRequiredProperties.Any())
+                {
+                    yield return new ModelError(classe, $"La valeur '{valueRef.Key.ReferenceName}' n'initialise pas les propriétés obligatoires suivantes : {string.Join(", ", missingRequiredProperties.Select(p => p.Name))}.", valueRef.Key) { ModelErrorType = ModelErrorType.TMD1012 };
+                }
+            }
+        }
+
         // Vérifications de cohérence sur les fichiers.
         if (!_config.AllowCompositePrimaryKey)
         {

@@ -44,7 +44,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         var count = 0;
         foreach (var classe in file.Classes)
         {
-            if (!(classe.Reference || classe.ReferenceValues != null) || classe.PrimaryKey?.Domain.TS?.Type == "number")
+            if (!(classe.Reference || classe.ReferenceValues.Any()) || classe.PrimaryKey?.Domain.TS?.Type == "number")
             {
                 var fileName = classe.Name.ToDashCase();
 
@@ -70,7 +70,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         var classes = _files.Values
             .SelectMany(f => f.Classes)
             .Distinct()
-            .Where(c => c.Namespace.Module == module && (c.Reference || c.ReferenceValues != null) && c.PrimaryKey?.Domain.Name != "DO_ID");
+            .Where(c => c.Namespace.Module == module && (c.Reference || c.ReferenceValues.Any()) && c.PrimaryKey?.Domain.Name != "DO_ID");
 
         if (_config.ModelOutputDirectory != null && classes.Any())
         {
@@ -446,20 +446,20 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             fw.Write("export type ");
             fw.Write(reference.Name);
             fw.Write("Code = ");
-            fw.Write(reference.ReferenceValues != null
+            fw.Write(reference.ReferenceValues.Any()
                 ? string.Join(" | ", reference.ReferenceValues.Select(r => $@"""{r.Value[reference.PrimaryKey ?? reference.Properties.OfType<IFieldProperty>().First()]}""").OrderBy(x => x, StringComparer.Ordinal))
                 : "string");
             fw.WriteLine(";");
 
-            if (reference.FlagProperty != null && reference.ReferenceValues != null)
+            if (reference.FlagProperty != null && reference.ReferenceValues.Any())
             {
                 fw.Write($"export enum {reference.Name}Flag {{\r\n");
 
                 var flagProperty = reference.Properties.OfType<IFieldProperty>().Single(rp => rp.Name == reference.FlagProperty);
-                var flagValues = reference.ReferenceValues.Where(refValue => int.TryParse((string)refValue.Value[flagProperty], out var _)).ToList();
+                var flagValues = reference.ReferenceValues.Where(refValue => refValue.Value.ContainsKey(flagProperty) && int.TryParse(refValue.Value[flagProperty], out var _)).ToList();
                 foreach (var refValue in flagValues)
                 {
-                    var flag = int.Parse((string)refValue.Value[flagProperty]);
+                    var flag = int.Parse(refValue.Value[flagProperty]);
                     fw.Write($"    {refValue.Name} = 0b{Convert.ToString(flag, 2)}");
                     if (flagValues.IndexOf(refValue) != flagValues.Count - 1)
                     {
@@ -502,7 +502,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         fw.Write(reference.Name.ToFirstLower());
         fw.Write($"List: {reference.Name}[] = [");
         fw.WriteLine();
-        foreach (var refValue in reference.ReferenceValues!)
+        foreach (var refValue in reference.ReferenceValues)
         {
             fw.WriteLine("    {");
             fw.Write("        ");

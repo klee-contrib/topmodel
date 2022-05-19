@@ -104,7 +104,7 @@ public class JpaModelGenerator : GeneratorBase
                 WriteFieldsEnum(fw, classe);
             }
 
-            if (classe.Reference && classe.ReferenceValues != null && classe.ReferenceValues.Count() > 0)
+            if (classe.Reference && classe.ReferenceValues.Any())
             {
                 WriteReferenceValues(fw, classe);
             }
@@ -157,7 +157,7 @@ public class JpaModelGenerator : GeneratorBase
         fw.WriteLine(1, $"public enum Values {{");
         var i = 0;
 
-        foreach (var refValue in classe.ReferenceValues!.OrderBy(x => x.Name, StringComparer.Ordinal))
+        foreach (var refValue in classe.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal))
         {
             ++i;
             var code = classe.PrimaryKey?.Domain.Name != "DO_ID"
@@ -171,12 +171,12 @@ public class JpaModelGenerator : GeneratorBase
             {
                 var lineToWrite = @$"{code.ToUpper()}";
                 lineToWrite += $"({string.Join(", ", classe.Properties.Where(p => !p.PrimaryKey).Select(prop => (((IFieldProperty)prop).Domain.Java!.Type == "String" ? "\"" : string.Empty) + refValue.Value[(IFieldProperty)prop] + (((IFieldProperty)prop).Domain.Java!.Type == "String" ? "\"" : string.Empty)))})";
-                lineToWrite += i == classe.ReferenceValues!.Count ? "; " : ", //";
+                lineToWrite += i == classe.ReferenceValues.Count ? "; " : ", //";
                 fw.WriteLine(2, lineToWrite);
             }
             else
             {
-                fw.WriteLine(2, @$"{code.ToUpper()}{(i == classe.ReferenceValues!.Count ? ";" : ", //")}");
+                fw.WriteLine(2, @$"{code.ToUpper()}{(i == classe.ReferenceValues.Count ? ";" : ", //")}");
             }
         }
 

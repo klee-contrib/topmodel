@@ -26,7 +26,6 @@ public class ClassLoader
         {
             var prop = parser.Consume<Scalar>();
             _ = parser.TryConsume<Scalar>(out var value);
-            var pos = $"{filePath}[{prop.Start.Line},{prop.Start.Column}]";
 
             switch (prop.Value)
             {
@@ -107,26 +106,26 @@ public class ClassLoader
                     parser.Consume<SequenceEnd>();
                     break;
                 case "values":
-                    var references = _fileChecker.Deserialize<IDictionary<string, IDictionary<string, object>>>(parser);
-                    classe.ReferenceValues = references.Select(reference => new ReferenceValue
-                    {
-                        Name = reference.Key,
-                        Value = classe.Properties.OfType<IFieldProperty>().Select<IFieldProperty, (IFieldProperty Prop, object PropValue)>(prop =>
-                        {
-                            var propName = prop switch
-                            {
-                                RegularProperty rp => rp.Name,
-                                AssociationProperty ap => $"{ap.Reference.ReferenceName}{ap.Role ?? string.Empty}",
-                                _ => throw new ModelException($"{pos}: Type de propriété non géré pour initialisation.")
-                            };
-                            reference.Value.TryGetValue(propName, out var propValue);
+                    parser.Consume<MappingStart>();
 
-                            return propValue == null && prop.Required && (!prop.PrimaryKey || (prop as RegularProperty)?.DomainReference.ReferenceName != "DO_ID")
-                                ? throw new ModelException($"{pos}: L'initilisation {reference.Key} de la classe {classe.Name} n'initialise pas la propriété obligatoire '{propName}'.")
-                                : (prop, propValue!);
-                        })
-                        .ToDictionary(v => v.Prop, v => v.PropValue)
-                    }).ToList();
+                    while (parser.Current is not MappingEnd)
+                    {
+                        var name = new Reference(parser.Consume<Scalar>());
+                        var values = new Dictionary<Reference, string>();
+                        classe.ReferenceValueReferences.Add(name, values);
+
+                        parser.Consume<MappingStart>();
+
+                        while (parser.Current is not MappingEnd)
+                        {
+                            values.Add(new Reference(parser.Consume<Scalar>()), parser.Consume<Scalar>().Value);
+                        }
+
+                        parser.Consume<MappingEnd>();
+                    }
+
+                    parser.Consume<MappingEnd>();
+
                     break;
                 default:
                     throw new ModelException(classe, $"Propriété ${prop} inconnue pour une classe");

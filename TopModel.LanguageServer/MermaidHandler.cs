@@ -35,7 +35,7 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
         {
             diagram += @$"%% {classe.Comment}" + '\n';
             diagram += @$"class {classe.Name}{{" + '\n';
-            if (classe.Reference && classe.ReferenceValues != null && classe.ReferenceValues.Count() > 0)
+            if (classe.Reference && classe.ReferenceValues.Any())
             {
                 diagram += "&lt;&lt;Enum&gt;&gt;\n";
                 foreach (var refValue in classe.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal))

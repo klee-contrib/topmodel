@@ -117,7 +117,6 @@ public static class JpaUtils
         return rp.Class != null
                 && rp.Class.IsPersistent
                 && rp.Class.Reference
-                && rp.Class.ReferenceValues != null
                 && rp.Class.ReferenceValues.Count > 0
                 && rp.PrimaryKey
                 && rp.Domain.Name != "DO_ID";

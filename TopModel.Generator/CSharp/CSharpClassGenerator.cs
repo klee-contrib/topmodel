@@ -74,7 +74,7 @@ public class CSharpClassGenerator
     /// <param name="item">La classe générée.</param>
     private static void GenerateConstProperties(CSharpWriter w, Class item)
     {
-        if (item.ReferenceValues?.Any() ?? false)
+        if (item.ReferenceValues.Any())
         {
             foreach (var refValue in item.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal))
             {
@@ -290,7 +290,7 @@ public class CSharpClassGenerator
         w.WriteLine(2, $"public enum {item.PrimaryKey!.Name}s");
         w.WriteLine(2, "{");
 
-        var refs = item.ReferenceValues!.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
+        var refs = item.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
         foreach (var refValue in refs)
         {
             var code = (string)refValue.Value[item.PrimaryKey];
@@ -322,7 +322,7 @@ public class CSharpClassGenerator
     /// <param name="item">La classe générée.</param>
     private static void GenerateFlags(CSharpWriter w, Class item)
     {
-        if (item.FlagProperty != null && item.ReferenceValues != null)
+        if (item.FlagProperty != null && item.ReferenceValues.Any())
         {
             w.WriteLine();
             w.WriteLine(2, "#region Flags");
@@ -332,12 +332,12 @@ public class CSharpClassGenerator
             w.WriteLine(2, "{");
 
             var flagProperty = item.Properties.OfType<IFieldProperty>().Single(rp => rp.Name == item.FlagProperty);
-            var flagValues = item.ReferenceValues.Where(refValue => int.TryParse((string)refValue.Value[flagProperty], out var _)).ToList();
+            var flagValues = item.ReferenceValues.Where(refValue => refValue.Value.ContainsKey(flagProperty) && int.TryParse(refValue.Value[flagProperty], out var _)).ToList();
             foreach (var refValue in flagValues)
             {
-                var flag = int.Parse((string)refValue.Value[flagProperty]);
+                var flag = int.Parse(refValue.Value[flagProperty]);
                 var label = item.LabelProperty != null
-                    ? (string)refValue.Value[item.LabelProperty]
+                    ? refValue.Value[item.LabelProperty]
                     : refValue.Name;
 
                 w.WriteSummary(3, label);

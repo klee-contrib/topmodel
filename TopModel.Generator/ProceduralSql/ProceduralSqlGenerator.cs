@@ -39,7 +39,7 @@ public class ProceduralSqlGenerator : GeneratorBase
         var classes = _files.Values
             .SelectMany(f => f.Classes)
             .Distinct()
-            .Where(c => c.ReferenceValues != null);
+            .Where(c => c.ReferenceValues.Any());
 
         if (classes.Any())
         {
