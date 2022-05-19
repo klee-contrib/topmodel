@@ -30,28 +30,3 @@ values:
   Valeur1: { Code: 1, Libelle: Valeur 1 }
   Valeur2: { Code: 2, Libelle: Valeur 2 }
 ```
-
-_Remarque: Pour initialiser une valeur d'une association dans `values`, il faut utiliser le nom de la classe et non le nom de la propriété (`AutreClasse` au lieu de `AutreClasseCode` par exemple)._
-
-Pour conclure, un rappel sur l'ordre dans lequel il faut définir les différentes propriétés d'une classe:
-
-```yaml
-class:
-  ## Tout le reste ##
-
-  properties:
-    -  ###
-    -  ###
-    -  ###
-
-  unique:
-    -  ###
-    -  ###
-
-  values:
-    ###
-    ###
-    ###
-```
-
-_Remarque : il est possible d'inverser `unique` et `values`._
