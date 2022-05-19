@@ -173,11 +173,11 @@ public class DbContextGenerator
             }
 
             var hasData = false;
-            foreach (var classe in classes.Where(c => c.ReferenceValues != null).OrderBy(c => c.Name))
+            foreach (var classe in classes.Where(c => c.ReferenceValues.Any()).OrderBy(c => c.Name))
             {
                 hasData = true;
                 w.WriteLine(3, $"modelBuilder.Entity<{classe.Name}>().HasData(");
-                foreach (var refValue in classe.ReferenceValues!)
+                foreach (var refValue in classe.ReferenceValues)
                 {
                     if (!_config.UseLatestCSharp)
                     {
@@ -191,8 +191,6 @@ public class DbContextGenerator
                             ? $"{(classe.Name.EndsWith("s") ? $"{string.Join(".", _config.GetNamespace(classe).Split(".").Except(contextNs.Split(".")))}.{classe.Name}" : classe.Name)}.{classe.PrimaryKey!.Name}s.{prop.Value}"
                             : prop.Key.Domain.ShouldQuoteSqlValue
                             ? $"\"{prop.Value}\""
-                            : prop.Value is bool b
-                            ? (b ? "true" : "false")
                             : prop.Value;
                         w.Write($" {prop.Key.Name} = {value}");
                         if (refValue.Value.ToList().IndexOf(prop) < refValue.Value.Count - 1)

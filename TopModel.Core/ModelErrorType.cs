@@ -83,6 +83,11 @@ public enum ModelErrorType
     TMD1011,
 
     /// <summary>
+    /// La valeur '{valueRef.Key.ReferenceName}' n'initialise pas les propriétés obligatoires suivantes.
+    /// </summary>
+    TMD1012,
+
+    /// <summary>
     /// L'import {} n'est pas utilisé.
     /// </summary>
     TMD9001,

@@ -44,6 +44,7 @@ public class ModelFile
                 .Select(er => (er, p?.OriginalProperty?.Class?.Properties?.FirstOrDefault(p => p?.Name == er?.ReferenceName) as object))
             ?? new List<(Reference, object)>()))
         .Concat(Classes.SelectMany(c => c.UniqueKeyReferences.SelectMany(uk => uk).Select(propRef => (propRef, (object)c.Properties.FirstOrDefault(p => p.Name == propRef.ReferenceName)))))
+        .Concat(Classes.SelectMany(c => c.ReferenceValueReferences.SelectMany(rv => rv.Value).Select(prop => (prop.Key, (object)c.Properties.FirstOrDefault(p => p.Name == prop.Key.ReferenceName)))))
         .Concat(Aliases.SelectMany(a => a.Classes).Select(c => (c as Reference, ResolvedAliases.OfType<Class>().FirstOrDefault(ra => ra.Name == c.ReferenceName) as object)))
         .Where(t => t.Item1 != null && t.Item2 != null)
         .DistinctBy(t => t.Item1)

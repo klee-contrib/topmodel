@@ -66,10 +66,10 @@ public class InitReferenceListScripter : ISqlScripter<Class>
         {
             if (!property.PrimaryKey || property.Domain.Name != "DO_ID")
             {
-                nameValueDict[property.SqlName] = definition[property] switch
+                definition.TryGetValue(property, out var propValue);
+                nameValueDict[property.SqlName] = propValue switch
                 {
                     null => "NULL",
-                    bool b => b ? "N'true'" : "N'false'",
                     string bs when property.Domain.SqlType == "bit" => $"N'{bs}'",
                     string s when property.Domain.SqlType!.Contains("varchar") => $"N'{ScriptUtils.PrepareDataToSqlDisplay(s)}'",
                     object v => v.ToString()
@@ -139,7 +139,7 @@ public class InitReferenceListScripter : ISqlScripter<Class>
     /// <param name="item">Liste de références.</param>
     private void WriteInsertLines(TextWriter writer, Class item)
     {
-        foreach (var initItem in item.ReferenceValues!)
+        foreach (var initItem in item.ReferenceValues)
         {
             writer.WriteLine(GetInsertLine(item, initItem));
         }

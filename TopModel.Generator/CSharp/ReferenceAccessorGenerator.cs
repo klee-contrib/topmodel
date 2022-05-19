@@ -150,7 +150,7 @@ public class ReferenceAccessorGenerator
             w.WriteLine();
         }
 
-        foreach (var classe in classList.Where(c => c.IsPersistent || c.ReferenceValues != null))
+        foreach (var classe in classList.Where(c => c.IsPersistent || c.ReferenceValues.Any()))
         {
             var serviceName = "Load" + (_config.DbContextPath == null ? $"{classe.Name}List" : classe.PluralName);
             w.WriteLine(2, "/// <inheritdoc cref=\"" + interfaceName + "." + serviceName + "\" />");
@@ -274,7 +274,7 @@ public class ReferenceAccessorGenerator
         {
             return $@"return new List<{classe.Name}>
 {{
-    {string.Join(",\r\n    ", classe.ReferenceValues!.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.Name} = {(prop.Key.Domain.ShouldQuoteSqlValue ? $"\"{prop.Value}\"" : prop.Value is bool b ? (b ? "true" : "false") : prop.Value)}"))} }}"))}
+    {string.Join(",\r\n    ", classe.ReferenceValues.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.Name} = {(prop.Key.Domain.ShouldQuoteSqlValue ? $"\"{prop.Value}\"" : prop.Value)}"))} }}"))}
 }};";
         }
 

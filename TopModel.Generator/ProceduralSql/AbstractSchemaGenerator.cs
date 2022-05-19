@@ -73,7 +73,7 @@ public abstract class AbstractSchemaGenerator
         var orderList = SortUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
             .OfType<AssociationProperty>()
             .Select(a => a.Association)
-            .Where(a => a.ReferenceValues != null));
+            .Where(a => a.ReferenceValues.Any()));
 
         foreach (var classe in orderList)
         {
@@ -188,10 +188,10 @@ public abstract class AbstractSchemaGenerator
         {
             if (!property.PrimaryKey || property.Domain.Name != "DO_ID")
             {
-                nameValueDict[property.SqlName] = definition[property] switch
+                definition.TryGetValue(property, out var value);
+                nameValueDict[property.SqlName] = value switch
                 {
                     null => "null",
-                    bool b => b ? "true" : "false",
                     string s when property.Domain.SqlType!.Contains("varchar") || property.Domain.SqlType!.Contains("timestamp") => $"'{ScriptUtils.PrepareDataToSqlDisplay(s)}'",
                     object v => v.ToString()
                 };
@@ -320,7 +320,7 @@ public abstract class AbstractSchemaGenerator
     private void WriteInsert(SqlFileWriter writer, Class modelClass)
     {
         writer.WriteLine("/**\t\tInitialisation de la table " + modelClass.Name + "\t\t**/");
-        foreach (var initItem in modelClass.ReferenceValues!)
+        foreach (var initItem in modelClass.ReferenceValues)
         {
             writer.WriteLine(GetInsertLine(modelClass, initItem));
         }

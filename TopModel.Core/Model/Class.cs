@@ -40,7 +40,7 @@ public class Class
 
     public IFieldProperty? LabelProperty => Properties.OfType<IFieldProperty>().SingleOrDefault(p => p.Name == (DefaultProperty ?? "Libelle"));
 
-    public IList<ReferenceValue>? ReferenceValues { get; set; }
+    public List<ReferenceValue> ReferenceValues { get; } = new();
 
     public List<List<IFieldProperty>> UniqueKeys { get; } = new();
 
@@ -57,6 +57,8 @@ public class Class
     public List<DecoratorReference> DecoratorReferences { get; } = new();
 
     public List<List<Reference>> UniqueKeyReferences { get; } = new();
+
+    public Dictionary<Reference, Dictionary<Reference, string>> ReferenceValueReferences { get; } = new();
 
 #nullable disable
     internal Reference Location { get; set; }

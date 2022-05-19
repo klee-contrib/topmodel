@@ -97,7 +97,6 @@ public class CSharpConfig : GeneratorConfigBase
     {
         return EnumsForStaticReferences
             && classe.PrimaryKey?.Domain.CSharp?.Type == "string"
-            && (classe.ReferenceValues?.Any() ?? false)
             && classe.ReferenceValues.Any(r => !Regex.IsMatch(r.Value[classe.PrimaryKey].ToString() ?? string.Empty, "^\\d"));
     }
 

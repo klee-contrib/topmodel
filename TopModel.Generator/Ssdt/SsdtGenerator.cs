@@ -62,7 +62,7 @@ public class SsdtGenerator : GeneratorBase
 
     private void GenerateListInitScript()
     {
-        var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues != null);
+        var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues.Any());
 
         if (!classes.Any() || _config.InitListMainScriptName == null || _config.InitListScriptFolder == null)
         {
@@ -75,7 +75,7 @@ public class SsdtGenerator : GeneratorBase
         var orderList = SortUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
             .OfType<AssociationProperty>()
             .Select(a => a.Association)
-            .Where(a => a.ReferenceValues != null));
+            .Where(a => a.ReferenceValues.Any()));
 
         // Script un fichier par classe.
         foreach (var referenceClass in orderList)
