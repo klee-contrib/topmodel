@@ -160,7 +160,7 @@ public class DbContextGenerator
             }
 
             var hasUk = false;
-            foreach (var uk in classes.OrderBy(c => c.Name).SelectMany(c => c.UniqueKeys ?? new List<IList<IFieldProperty>>()))
+            foreach (var uk in classes.OrderBy(c => c.Name).SelectMany(c => c.UniqueKeys))
             {
                 hasUk = true;
                 var expr = uk.Count == 1 ? $"p.{uk.Single().Name}" : $"new {{ {string.Join(", ", uk.Select(p => $"p.{p.Name}"))} }}";

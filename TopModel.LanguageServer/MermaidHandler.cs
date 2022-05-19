@@ -42,7 +42,7 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
                 {
                     var code = classe.PrimaryKey == null || classe.PrimaryKey.Domain.Name != "DO_ID"
                         ? (string)refValue.Value[classe.PrimaryKey ?? classe.Properties.OfType<IFieldProperty>().First()]
-                        : (string)refValue.Value[classe.UniqueKeys!.First().First()];
+                        : (string)refValue.Value[classe.UniqueKeys.First().First()];
 
                     diagram += code + '\n';
                 }

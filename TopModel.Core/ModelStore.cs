@@ -648,6 +648,30 @@ public class ModelStore
             }
         }
 
+        // Résolution des clés d'unicités.
+        foreach (var classe in fileClasses.Where(c => c.UniqueKeyReferences.Any()))
+        {
+            foreach (var ukRef in classe.UniqueKeyReferences)
+            {
+                var uk = new List<IFieldProperty>();
+                classe.UniqueKeys.Add(uk);
+
+                foreach (var ukPropRef in ukRef)
+                {
+                    var property = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == ukPropRef.ReferenceName);
+
+                    if (property == null)
+                    {
+                        yield return new ModelError(classe, $"La propriété '{ukPropRef.ReferenceName}' n'existe pas sur la classe '{classe}'.", ukPropRef) { ModelErrorType = ModelErrorType.TMD1011 };
+                    }
+                    else
+                    {
+                        uk.Add(property);
+                    }
+                }
+            }
+        }
+
         // Vérifications de cohérence sur les fichiers.
         if (!_config.AllowCompositePrimaryKey)
         {

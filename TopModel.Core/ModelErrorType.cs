@@ -78,6 +78,11 @@ public enum ModelErrorType
     TMD1010,
 
     /// <summary>
+    /// La propriété '{ukPropRef.ReferenceName}' n'existe pas sur la classe '{classe}'.
+    /// </summary>
+    TMD1011,
+
+    /// <summary>
     /// L'import {} n'est pas utilisé.
     /// </summary>
     TMD9001,

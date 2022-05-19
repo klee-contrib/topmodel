@@ -87,22 +87,24 @@ public class ClassLoader
                     parser.Consume<SequenceEnd>();
                     break;
                 case "unique":
-                    var uniqueKeys = _fileChecker.Deserialize<IList<IList<string>>>(parser);
-                    classe.UniqueKeys = uniqueKeys.Select(uk => (IList<IFieldProperty>)uk.Select(propName =>
+                    parser.Consume<SequenceStart>();
+
+                    while (parser.Current is not SequenceEnd)
                     {
-                        var regularProperty = classe.Properties.OfType<RegularProperty>().SingleOrDefault(rp => rp.Name == propName);
-                        if (regularProperty != null)
+                        var uniqueKeyRef = new List<Reference>();
+                        classe.UniqueKeyReferences.Add(uniqueKeyRef);
+
+                        parser.Consume<SequenceStart>();
+
+                        while (parser.Current is not SequenceEnd)
                         {
-                            return regularProperty;
+                            uniqueKeyRef.Add(new Reference(parser.Consume<Scalar>()));
                         }
 
-                        var associationProperty = classe.Properties.OfType<AssociationProperty>().SingleOrDefault(ap => $"{ap.Reference.ReferenceName}{ap.Role ?? string.Empty}" == propName);
+                        parser.Consume<SequenceEnd>();
+                    }
 
-                        return associationProperty != null
-                            ? (IFieldProperty)associationProperty
-                            : throw new ModelException($@"{pos}: La propriété ""{propName}"" n'existe pas sur la classe {classe}.");
-                    })
-                    .ToList()).ToList();
+                    parser.Consume<SequenceEnd>();
                     break;
                 case "values":
                     var references = _fileChecker.Deserialize<IDictionary<string, IDictionary<string, object>>>(parser);

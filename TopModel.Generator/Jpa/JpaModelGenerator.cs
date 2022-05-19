@@ -162,7 +162,7 @@ public class JpaModelGenerator : GeneratorBase
             ++i;
             var code = classe.PrimaryKey?.Domain.Name != "DO_ID"
                 ? (string)refValue.Value[classe.PrimaryKey ?? classe.Properties.OfType<IFieldProperty>().First()]
-                : (string)refValue.Value[classe.UniqueKeys!.First().First()];
+                : (string)refValue.Value[classe.UniqueKeys.First().First()];
             var label = classe.LabelProperty != null
                 ? (string)refValue.Value[classe.LabelProperty]
                 : refValue.Name;
@@ -289,7 +289,7 @@ public class JpaModelGenerator : GeneratorBase
         if (classe.IsPersistent)
         {
             var table = @$"@Table(name = ""{classe.SqlName}""";
-            if (classe.UniqueKeys?.Count > 0)
+            if (classe.UniqueKeys.Count > 0)
             {
                 table += ", uniqueConstraints = {";
                 var isFirstConstraint = true;

@@ -207,7 +207,7 @@ public static class ImportsJpaExtensions
             });
         }
 
-        if (classe.UniqueKeys?.Count > 0)
+        if (classe.UniqueKeys.Count > 0)
         {
             imports.Add("javax.persistence.UniqueConstraint");
         }
