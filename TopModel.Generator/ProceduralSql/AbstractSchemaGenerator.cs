@@ -490,8 +490,8 @@ public abstract class AbstractSchemaGenerator
     /// <param name="writerUk">Writer.</param>
     private void WriteUniqueKeys(Class classe, SqlFileWriter? writerUk)
     {
-        foreach (var uk in (classe.UniqueKeys ?? new List<IList<IFieldProperty>>())
-            .Concat(classe.Properties.OfType<AssociationProperty>().Where(ap => ap.Type == AssociationType.OneToOne).Select(ap => new[] { ap })))
+        foreach (var uk in classe.UniqueKeys
+            .Concat(classe.Properties.OfType<AssociationProperty>().Where(ap => ap.Type == AssociationType.OneToOne).Select(ap => new List<IFieldProperty> { ap })))
         {
             writerUk?.Write($"alter table {classe.SqlName} add constraint {Quote($"UK_{classe.SqlName}_{string.Join("_", uk.Select(p => p.SqlName))}")} unique ({string.Join(", ", uk.Select(p => Quote(p.SqlName)))})");
             writerUk?.WriteLine(BatchSeparator);

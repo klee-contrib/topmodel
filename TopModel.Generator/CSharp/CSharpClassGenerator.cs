@@ -80,7 +80,7 @@ public class CSharpClassGenerator
             {
                 var code = item.PrimaryKey == null || item.PrimaryKey.Domain.CSharp!.Type == "string"
                     ? (string)refValue.Value[item.PrimaryKey ?? item.Properties.OfType<IFieldProperty>().First()]
-                    : (string)refValue.Value[item.UniqueKeys!.First().First()];
+                    : (string)refValue.Value[item.UniqueKeys.First().First()];
                 var label = item.LabelProperty != null
                     ? (string)refValue.Value[item.LabelProperty]
                     : refValue.Name;

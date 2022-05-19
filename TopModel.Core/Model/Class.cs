@@ -42,7 +42,7 @@ public class Class
 
     public IList<ReferenceValue>? ReferenceValues { get; set; }
 
-    public IList<IList<IFieldProperty>>? UniqueKeys { get; set; }
+    public List<List<IFieldProperty>> UniqueKeys { get; } = new();
 
     public string PluralName
     {
@@ -55,6 +55,8 @@ public class Class
     public ClassReference? ExtendsReference { get; set; }
 
     public List<DecoratorReference> DecoratorReferences { get; } = new();
+
+    public List<List<Reference>> UniqueKeyReferences { get; } = new();
 
 #nullable disable
     internal Reference Location { get; set; }

@@ -320,8 +320,8 @@ public class SqlTableScripter : ISqlScripter<Class>
     /// <returns>Liste des déclarations de contraintes d'unicité.</returns>
     private IList<string> WriteUniqueConstraints(Class classe)
     {
-        return (classe.UniqueKeys ?? new List<IList<IFieldProperty>>())
-            .Concat(classe.Properties.OfType<AssociationProperty>().Where(ap => ap.Type == AssociationType.OneToOne).Select(ap => new[] { ap }))
+        return classe.UniqueKeys
+            .Concat(classe.Properties.OfType<AssociationProperty>().Where(ap => ap.Type == AssociationType.OneToOne).Select(ap => new List<IFieldProperty> { ap }))
             .Select(uk => $"constraint [UK_{classe.SqlName}_{string.Join("_", uk.Select(p => p.SqlName))}] unique nonclustered ({string.Join(", ", uk.Select(p => $"[{p.SqlName}] ASC"))})")
             .ToList();
     }

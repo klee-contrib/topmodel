@@ -548,11 +548,11 @@
             },
             "unique": {
               "type": "array",
-              "description": "Liste des clés d'unicité sur la classe. DOIT être placé en APRES 'properties'. Chaque clé est un array des propriétés concernées (même s'il n'y en a qu'une).",
+              "description": "Liste des clés d'unicité sur la classe. Chaque clé est un array des propriétés concernées (même s'il n'y en a qu'une).",
               "items": {
                 "type": "array",
                 "items": {
-                  "description": "Nom de la propriété. Une association doit être décrite par le nom de la classe suivie par le rôle (si renseigné).",
+                  "description": "Nom de la propriété.",
                   "type": "string"
                 }
               }
