@@ -88,6 +88,11 @@ public enum ModelErrorType
     TMD1012,
 
     /// <summary>
+    /// La classe '{classe}' doit avoir une clé primaire non auto-générée ou une contrainte d'unicité sur une seule propriété en première position pour pouvoir définir des valeurs de références.
+    /// </summary>
+    TMD1013,
+
+    /// <summary>
     /// L'import {} n'est pas utilisé.
     /// </summary>
     TMD9001,
