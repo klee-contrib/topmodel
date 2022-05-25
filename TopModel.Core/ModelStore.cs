@@ -703,6 +703,42 @@ public class ModelStore
             }
         }
 
+        // Résolution des propriétés spéciales de classe.
+        foreach (var classe in fileClasses)
+        {
+            if (classe.DefaultPropertyReference != null)
+            {
+                classe.DefaultProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == classe.DefaultPropertyReference.ReferenceName);
+                if (classe.DefaultProperty == null)
+                {
+                    yield return new ModelError(classe, $"La propriété '{classe.DefaultPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.DefaultPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
+                }
+            }
+            else
+            {
+                // Si la classe a une propriété "Libelle", alors on la considère par défaut (sic) comme propriété par défaut.
+                classe.DefaultProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == "Libelle");
+            }
+
+            if (classe.OrderPropertyReference != null)
+            {
+                classe.OrderProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == classe.OrderPropertyReference.ReferenceName);
+                if (classe.OrderProperty == null)
+                {
+                    yield return new ModelError(classe, $"La propriété '{classe.OrderPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.OrderPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
+                }
+            }
+
+            if (classe.FlagPropertyReference != null)
+            {
+                classe.FlagProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == classe.FlagPropertyReference.ReferenceName);
+                if (classe.FlagProperty == null)
+                {
+                    yield return new ModelError(classe, $"La propriété '{classe.FlagPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.FlagPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
+                }
+            }
+        }
+
         // Vérifications de cohérence sur les fichiers.
         if (!_config.AllowCompositePrimaryKey)
         {
