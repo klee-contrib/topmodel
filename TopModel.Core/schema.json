@@ -584,7 +584,7 @@
             "method": {
               "type": "string",
               "description": "Méthode du endpoint.",
-              "enum": [ "GET", "POST", "PUT", "DELETE" ]
+              "enum": [ "GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS", "PATCH" ]
             },
             "route": {
               "type": "string",
