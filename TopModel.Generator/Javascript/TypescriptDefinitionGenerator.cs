@@ -455,11 +455,10 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             {
                 fw.Write($"export enum {reference.Name}Flag {{\r\n");
 
-                var flagProperty = reference.Properties.OfType<IFieldProperty>().Single(rp => rp.Name == reference.FlagProperty);
-                var flagValues = reference.ReferenceValues.Where(refValue => refValue.Value.ContainsKey(flagProperty) && int.TryParse(refValue.Value[flagProperty], out var _)).ToList();
+                var flagValues = reference.ReferenceValues.Where(refValue => refValue.Value.ContainsKey(reference.FlagProperty) && int.TryParse(refValue.Value[reference.FlagProperty], out var _)).ToList();
                 foreach (var refValue in flagValues)
                 {
-                    var flag = int.Parse(refValue.Value[flagProperty]);
+                    var flag = int.Parse(refValue.Value[reference.FlagProperty]);
                     fw.Write($"    {refValue.Name} = 0b{Convert.ToString(flag, 2)}");
                     if (flagValues.IndexOf(refValue) != flagValues.Count - 1)
                     {
@@ -524,7 +523,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         fw.Write(", valueKey: \"");
         fw.Write((classe.PrimaryKey ?? classe.Properties.OfType<IFieldProperty>().First()).Name.ToFirstLower());
         fw.Write("\", labelKey: \"");
-        fw.Write(classe.DefaultProperty?.ToFirstLower() ?? "libelle");
+        fw.Write(classe.DefaultProperty?.Name.ToFirstLower());
         fw.Write("\"} as const;\r\n");
     }
 

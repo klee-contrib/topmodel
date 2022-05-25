@@ -26,19 +26,17 @@ public class Class
 
     public bool Reference { get; set; }
 
-    public string? OrderProperty { get; set; }
+    public IFieldProperty? OrderProperty { get; set; }
 
-    public string? DefaultProperty { get; set; }
+    public IFieldProperty? DefaultProperty { get; set; }
 
-    public string? FlagProperty { get; set; }
+    public IFieldProperty? FlagProperty { get; set; }
 
     public IList<IProperty> Properties { get; } = new List<IProperty>();
 
     public Namespace Namespace { get; set; }
 
     public IFieldProperty? PrimaryKey => Properties.OfType<IFieldProperty>().SingleOrDefault(p => p.PrimaryKey);
-
-    public IFieldProperty? LabelProperty => Properties.OfType<IFieldProperty>().SingleOrDefault(p => p.Name == (DefaultProperty ?? "Libelle"));
 
     public List<ReferenceValue> ReferenceValues { get; } = new();
 
@@ -53,6 +51,12 @@ public class Class
     public bool IsPersistent => Properties.Any(p => p is not AliasProperty && p.PrimaryKey) || Properties.All(p => p is AssociationProperty);
 
     public ClassReference? ExtendsReference { get; set; }
+
+    public Reference? OrderPropertyReference { get; set; }
+
+    public Reference? DefaultPropertyReference { get; set; }
+
+    public Reference? FlagPropertyReference { get; set; }
 
     public List<DecoratorReference> DecoratorReferences { get; } = new();
 

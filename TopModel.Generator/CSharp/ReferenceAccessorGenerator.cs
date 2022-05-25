@@ -90,7 +90,7 @@ public class ReferenceAccessorGenerator
             usings.Add(_config.GetNamespace(firstClass).Replace("DataContract", "Contract"));
             usings.Add("Kinetix.DataAccess.Sql.Broker");
 
-            if (classList.Any(classe => classe.OrderProperty != null || classe.LabelProperty != null && classe.LabelProperty.Name != "Libelle"))
+            if (classList.Any(classe => classe.OrderProperty != null || classe.DefaultProperty != null && classe.DefaultProperty.Name != "Libelle"))
             {
                 usings.Add("Kinetix.DataAccess.Sql");
             }
@@ -278,10 +278,7 @@ public class ReferenceAccessorGenerator
 }};";
         }
 
-        var defaultProperty = classe.Properties.OfType<IFieldProperty>()
-            .SingleOrDefault(p => p.Name == classe.OrderProperty)
-        ?? classe.Properties.OfType<IFieldProperty>()
-            .SingleOrDefault(p => p.Name == classe.DefaultProperty);
+        var defaultProperty = classe.OrderProperty ?? classe.DefaultProperty;
 
         var queryParameter = string.Empty;
         if (_config.DbContextPath != null)

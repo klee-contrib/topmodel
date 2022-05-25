@@ -51,13 +51,13 @@ public class ClassLoader
                     classe.Reference = value!.Value == "true";
                     break;
                 case "orderProperty":
-                    classe.OrderProperty = value!.Value;
+                    classe.OrderPropertyReference = new Reference(value!);
                     break;
                 case "defaultProperty":
-                    classe.DefaultProperty = value!.Value;
+                    classe.DefaultPropertyReference = new Reference(value!);
                     break;
                 case "flagProperty":
-                    classe.FlagProperty = value!.Value;
+                    classe.FlagPropertyReference = new Reference(value!);
                     break;
                 case "comment":
                     classe.Comment = value!.Value;
