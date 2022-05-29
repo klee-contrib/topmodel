@@ -1,4 +1,5 @@
-﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+﻿using System.Text.RegularExpressions;
+using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
@@ -177,39 +178,38 @@ class CompletionHandler : CompletionHandlerBase
             {
                 // Alias
                 string? className = null;
+                var classLine = currentLine;
                 var requestLine = request.Position.Line;
 
-                while (currentLine.Contains("property:") || currentLine.Contains("include:") || currentLine.Contains("exclude:") || currentLine.TrimStart().StartsWith("-") && !currentLine.Contains(':') && !currentLine.Contains('['))
+                while (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('['))
                 {
                     requestLine--;
-                    currentLine = text.ElementAt(requestLine);
+                    classLine = text.ElementAt(requestLine);
                 }
 
-                if (currentLine.Contains("class:"))
+                if (classLine.Contains("class:"))
                 {
-                    className = currentLine.Split(':')[1].Trim();
+                    className = classLine.Split(':')[1].Trim();
                 }
 
                 if (className == null)
                 {
-                    currentLine = text.ElementAt(request.Position.Line);
+                    classLine = text.ElementAt(request.Position.Line);
 
-                    while (currentLine.Contains("property:") || currentLine.Contains("include:") || currentLine.Contains("exclude:") || currentLine.TrimStart().StartsWith("-") && !currentLine.Contains(':') && !currentLine.Contains('['))
+                    while (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('['))
                     {
                         requestLine++;
-                        currentLine = text.ElementAt(requestLine);
+                        classLine = text.ElementAt(requestLine);
                     }
 
-                    if (currentLine.Contains("class:"))
+                    if (classLine.Contains("class:"))
                     {
-                        className = currentLine.Split(':')[1].Trim();
+                        className = classLine.Split(':')[1].Trim();
                     }
                 }
 
                 if (className != null)
                 {
-                    currentLine = text.ElementAt(request.Position.Line);
-
                     var searchText = currentLine.Contains(':')
                         ? currentLine.Split(':')[1].Trim()
                         : currentLine.Trim().StartsWith('-')
@@ -237,6 +237,95 @@ class CompletionHandler : CompletionHandlerBase
                                     })
                                     : null
                             })));
+                    }
+                }
+            }
+
+            // Propriétés de la classe courante
+            {
+                var requestLine = request.Position.Line;
+                var classLine = currentLine;
+                while (classLine != "class:")
+                {
+                    requestLine--;
+                    if (requestLine < 0)
+                    {
+                        break;
+                    }
+
+                    classLine = text.ElementAt(requestLine);
+                }
+
+                if (classLine == "class:")
+                {
+                    var classe = file.Classes.FirstOrDefault(f => f.GetLocation()?.Start.Line == requestLine + 1);
+
+                    if (classe != null)
+                    {
+                        string? searchText = null;
+
+                        if (currentLine.Contains("defaultProperty:") || currentLine.Contains("flagProperty:") || currentLine.Contains("orderProperty:"))
+                        {
+                            searchText = currentLine.Split(":")[1].Trim();
+                        }
+                        else
+                        {
+                            requestLine = request.Position.Line - 1;
+                            var ukValuesLine = text.ElementAt(requestLine);
+                            while (!Regex.IsMatch(ukValuesLine, "^  \\w"))
+                            {
+                                requestLine--;
+                                if (requestLine < 0)
+                                {
+                                    break;
+                                }
+
+                                ukValuesLine = text.ElementAt(requestLine);
+                            }
+
+                            var isUk = ukValuesLine.Contains("unique:");
+                            var isValues = ukValuesLine.Contains("values:");
+                            var pC = currentLine[..request.Position.Character].LastOrDefault();
+                            var pCT = currentLine[..request.Position.Character].TrimEnd().LastOrDefault();
+                            if (
+                                isUk
+                                    && currentLine.Contains('[') && currentLine.IndexOf('[') < request.Position.Character
+                                    && (!currentLine.Contains(']') || currentLine.IndexOf(']') >= request.Position.Character)
+                                    && (pC != ' ' || pCT == '[' || pCT == ',')
+                                || isValues
+                                    && currentLine.Contains('{') && currentLine.IndexOf('{') < request.Position.Character
+                                    && (!currentLine.Contains('}') || currentLine.IndexOf('}') >= request.Position.Character)
+                                    && (pC != ' ' || pCT == '{' || pCT == ','))
+                            {
+                                searchText = string.Join(
+                                    string.Empty,
+                                    currentLine[..request.Position.Character].Reverse().TakeWhile(c => c != ',' && c != '[' && c != ' ' && c != '{').Reverse()
+                                        .Concat(currentLine[request.Position.Character..].TakeWhile(c => c != ',' && c != ']' && c != ' ' && c != '}' && c != ':')));
+
+                            }
+                        }
+
+                        if (searchText != null)
+                        {
+                            return Task.FromResult(new CompletionList(classe.Properties.OfType<IFieldProperty>()
+                                .Where(f => f.Name.ShouldMatch(searchText))
+                                .Select(f => new CompletionItem
+                                {
+                                    Kind = CompletionItemKind.Property,
+                                    Label = f.Name,
+                                    TextEdit = !string.IsNullOrWhiteSpace(searchText)
+                                        ? new TextEditOrInsertReplaceEdit(new TextEdit
+                                        {
+                                            NewText = f.Name,
+                                            Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                                                request.Position.Line,
+                                                currentLine.IndexOf(searchText),
+                                                request.Position.Line,
+                                                currentLine.IndexOf(searchText) + searchText.Length)
+                                        })
+                                        : null
+                                })));
+                        }
                     }
                 }
             }
