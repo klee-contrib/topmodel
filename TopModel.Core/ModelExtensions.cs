@@ -71,6 +71,7 @@ public static class ModelExtensions
     public static IEnumerable<(DomainReference Reference, ModelFile File)> GetDomainReferences(this ModelStore modelStore, Domain domain)
     {
         return modelStore.Classes.SelectMany(c => c.Properties)
+            .Concat(modelStore.Decorators.SelectMany(c => c.Properties))
             .Concat(modelStore.Endpoints.SelectMany(e => e.Params.Concat(e.Returns != null ? new[] { e.Returns } : Array.Empty<IProperty>())))
             .Where(p =>
                 p is RegularProperty rp && rp.Domain == domain
