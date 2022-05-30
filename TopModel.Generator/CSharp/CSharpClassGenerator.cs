@@ -375,9 +375,9 @@ public class CSharpClassGenerator
             }
         }
 
-        if (item.DefaultProperty != null && item.DefaultProperty.Name != "Libelle")
+        if (item.DefaultProperty != null)
         {
-            w.WriteAttribute(1, "DefaultProperty", $@"""{item.DefaultProperty.Name}""");
+            w.WriteAttribute(1, "DefaultProperty", $@"nameof({item.DefaultProperty.Name})");
         }
 
         if (item.IsPersistent && !_config.NoPersistance)
@@ -552,7 +552,7 @@ public class CSharpClassGenerator
             }
         }
 
-        if (item.DefaultProperty != null && item.DefaultProperty.Name != "Libelle")
+        if (item.DefaultProperty != null)
         {
             usings.Add("System.ComponentModel");
         }

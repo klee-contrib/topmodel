@@ -714,7 +714,7 @@ public class ModelStore
                     yield return new ModelError(classe, $"La propriété '{classe.DefaultPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.DefaultPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
                 }
             }
-            else
+            else if (classe.Reference || classe.ReferenceValues.Any())
             {
                 // Si la classe a une propriété "Label" ou "Libelle", alors on la considère par défaut (sic) comme propriété par défaut.
                 classe.DefaultProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == "Label" || fp.Name == "Libelle");
@@ -728,7 +728,7 @@ public class ModelStore
                     yield return new ModelError(classe, $"La propriété '{classe.OrderPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.OrderPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
                 }
             }
-            else
+            else if (classe.Reference || classe.ReferenceValues.Any())
             {
                 // Si la classe a une propriété "Order" ou "Ordre", alors on la considère par défaut comme propriété d'ordre.
                 classe.OrderProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == "Order" || fp.Name == "Ordre");
@@ -742,7 +742,7 @@ public class ModelStore
                     yield return new ModelError(classe, $"La propriété '{classe.FlagPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.FlagPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
                 }
             }
-            else
+            else if (classe.Reference || classe.ReferenceValues.Any())
             {
                 // Si la classe a une propriété "Flag", alors on la considère par défaut comme propriété de flag.
                 classe.FlagProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == "Flag");
