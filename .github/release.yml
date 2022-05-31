@@ -1,0 +1,14 @@
+changelog:
+  categories:
+    - title: Nouvelles fonctionnalités
+      labels:
+        - "type: feature"
+    - title: Corrections de bugs
+      labels:
+        - "type: bug"
+    - title: Amélioration de la documentation
+      labels:
+        - "type: documentation"
+    - title: Autres
+      labels:
+        - "*"
