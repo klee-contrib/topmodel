@@ -1,0 +1,25 @@
+﻿#
+# ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+#
+
+version: 1.7.0
+generatedFiles:
+  - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\securite\utilisateur\IUtilisateurController.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\daos\securite\ProfilDAO.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\daos\securite\ProfilDtoDAO.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\daos\securite\TypeProfilDAO.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\daos\utilisateur\TypeUtilisateurDAO.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\daos\utilisateur\UtilisateurDAO.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\daos\utilisateur\UtilisateurDtoDAO.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\dtos\securite\interfaces\IProfilDto.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\dtos\securite\ProfilDto.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\dtos\utilisateur\interfaces\IUtilisateurDto.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\dtos\utilisateur\UtilisateurDto.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\entities\securite\interfaces\IProfil.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\entities\securite\interfaces\ITypeProfil.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\entities\securite\Profil.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\entities\securite\TypeProfil.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\entities\utilisateur\interfaces\ITypeUtilisateur.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\entities\utilisateur\interfaces\IUtilisateur.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\entities\utilisateur\TypeUtilisateur.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\dao\entities\utilisateur\Utilisateur.java

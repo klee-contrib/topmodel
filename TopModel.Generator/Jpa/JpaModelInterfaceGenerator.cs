@@ -23,6 +23,11 @@ public class JpaModelInterfaceGenerator : GeneratorBase
 
     public override string Name => "JpaInterfaceGen";
 
+    public override List<string> GetGeneratedFiles(ModelStore modelStore)
+    {
+        return modelStore.Classes.Select(c => this.GetFileClassName(c)).ToList();
+    }
+
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
@@ -38,6 +43,27 @@ public class JpaModelInterfaceGenerator : GeneratorBase
         }
     }
 
+    private string GetDestinationFolder(Class classe)
+    {
+        var entityDto = classe.IsPersistent ? "entities" : "dtos";
+        return Path.Combine(
+                _config.ModelOutputDirectory,
+                Path.Combine(_config.DaoPackageName.Split(".")),
+                entityDto,
+                classe.Namespace.Module.Replace(".", "\\").ToLower(),
+                "interfaces");
+    }
+
+    private string GetClassName(Class classe)
+    {
+        return $"I{classe.Name}";
+    }
+
+    private string GetFileClassName(Class classe)
+    {
+        return $"{GetDestinationFolder(classe)}\\{GetClassName(classe)}.java";
+    }
+
     private void GenerateModule(string module)
     {
         var classes = _files.Values
@@ -48,16 +74,10 @@ public class JpaModelInterfaceGenerator : GeneratorBase
         foreach (var classe in classes)
         {
             var entityDto = classe.IsPersistent ? "entities" : "dtos";
-            var destFolder = Path.Combine(
-                _config.ModelOutputDirectory,
-                Path.Combine(_config.DaoPackageName.Split(".")),
-                entityDto,
-                classe.Namespace.Module.Replace(".", "/").ToLower(),
-                "interfaces");
-
+            var destFolder = GetDestinationFolder(classe);
             var dirInfo = Directory.CreateDirectory(destFolder);
             var packageName = $"{_config.DaoPackageName}.{entityDto}.{classe.Namespace.Module.ToLower()}.interfaces";
-            using var fw = new JavaWriter($"{destFolder}/I{classe.Name}.java", _logger, null);
+            using var fw = new JavaWriter(GetFileClassName(classe), _logger, null);
             fw.WriteLine($"package {packageName};");
 
             WriteImports(fw, classe);

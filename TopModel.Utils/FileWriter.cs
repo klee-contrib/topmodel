@@ -156,7 +156,7 @@ public class FileWriter : TextWriter
             FinishFile(_fileName);
         }
 
-        _logger.LogInformation($"Généré: {_fileName.ToRelative()}");
+        _logger.LogInformation($"{(fileExists ? "Modifié:  " : "Créé:     ")}{_fileName.ToRelative()}");
     }
 
     /// <summary>

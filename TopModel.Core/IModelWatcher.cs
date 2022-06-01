@@ -13,4 +13,9 @@ public interface IModelWatcher
     void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors);
 
     void OnFilesChanged(IEnumerable<ModelFile> files);
+
+    public virtual List<string> GetGeneratedFiles(ModelStore modelStore)
+    {
+        return new List<string>();
+    }
 }

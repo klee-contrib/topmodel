@@ -22,6 +22,11 @@ public class JpaDaoGenerator : GeneratorBase
 
     public override string Name => "JpaDaoGen";
 
+    public override List<string> GetGeneratedFiles(ModelStore modelStore)
+    {
+        return modelStore.Classes.Select(c => this.GetFileClassName(c)).ToList();
+    }
+
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
@@ -37,6 +42,16 @@ public class JpaDaoGenerator : GeneratorBase
         }
     }
 
+    private string GetDestinationFolder(Class classe)
+    {
+        return Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), "daos", classe.Namespace.Module.Replace('.', '\\').ToLower());
+    }
+
+    private string GetFileClassName(Class classe)
+    {
+        return $"{GetDestinationFolder(classe)}\\{classe.Name}DAO.java";
+    }
+
     private void GenerateModule(string module)
     {
         var classes = _files.Values
@@ -46,10 +61,10 @@ public class JpaDaoGenerator : GeneratorBase
 
         foreach (var classe in classes.Where(c => c.IsPersistent))
         {
-            var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), "daos", classe.Namespace.Module.Replace('.', '/').ToLower());
+            var destFolder = GetDestinationFolder(classe);
             var dirInfo = Directory.CreateDirectory(destFolder);
             var packageName = $"{_config.DaoPackageName}.daos.{classe.Namespace.Module.ToLower()}";
-            var fileName = $"{destFolder}/{classe.Name}DAO.java";
+            var fileName = GetFileClassName(classe);
 
             var fileExists = File.Exists(fileName);
 

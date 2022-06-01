@@ -12,6 +12,7 @@ public class JpaModelGenerator : GeneratorBase
 {
     private readonly JpaConfig _config;
     private readonly ILogger<JpaModelGenerator> _logger;
+
     private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
 
     public JpaModelGenerator(ILogger<JpaModelGenerator> logger, JpaConfig config)
@@ -22,6 +23,11 @@ public class JpaModelGenerator : GeneratorBase
     }
 
     public override string Name => "JpaModelGen";
+
+    public override List<string> GetGeneratedFiles(ModelStore modelStore)
+    {
+        return modelStore.Classes.Select(c => this.GetFileClassName(c)).ToList();
+    }
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
@@ -45,6 +51,24 @@ public class JpaModelGenerator : GeneratorBase
         }
     }
 
+    private string GetDestinationFolder(Class classe)
+    {
+        var entityDto = classe.IsPersistent ? "entities" : "dtos";
+        var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), entityDto, classe.Namespace.Module.Replace(".", "\\").ToLower());
+        return $"{destFolder}";
+    }
+
+    private string GetFileClassName(Class classe)
+    {
+        return $"{GetDestinationFolder(classe)}\\{classe.Name}.java";
+    }
+
+    private string GetPackageName(Class classe)
+    {
+        var entityDto = classe.IsPersistent ? "entities" : "dtos";
+        return $"{_config.DaoPackageName}.{entityDto}.{classe.Namespace.Module.ToLower()}";
+    }
+
     private void GenerateModule(string module)
     {
         var classes = _files.Values
@@ -54,10 +78,9 @@ public class JpaModelGenerator : GeneratorBase
 
         foreach (var classe in classes)
         {
-            var entityDto = classe.IsPersistent ? "entities" : "dtos";
-            var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), entityDto, classe.Namespace.Module.Replace(".", "/").ToLower());
+            var destFolder = GetDestinationFolder(classe);
             var dirInfo = Directory.CreateDirectory(destFolder);
-            var packageName = $"{_config.DaoPackageName}.{entityDto}.{classe.Namespace.Module.ToLower()}";
+            var packageName = GetPackageName(classe);
             using var fw = new JavaWriter($"{destFolder}/{classe.Name}.java", _logger, null);
             fw.WriteLine($"package {packageName};");
 
