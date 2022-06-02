@@ -211,9 +211,12 @@ public class ModelStore
                     modelWatcher.OnFilesChanged(sortedFiles);
                 }
 
-                DeleteOldFiles();
-                _topModelLock.GeneratedFiles = GetGeneratedFiles();
-                WriteTopModelLock();
+                if (_modelWatchers.Any(m => m.GeneratedFiles != null))
+                {
+                    DeleteOldFiles();
+                    _topModelLock.GeneratedFiles = GetGeneratedFiles();
+                    WriteTopModelLock();
+                }
 
                 _logger.LogInformation($"Mise à jour terminée avec succès.");
 
@@ -240,7 +243,8 @@ public class ModelStore
     private List<string> GetGeneratedFiles()
     {
         return _modelWatchers
-            .SelectMany(m => m.GeneratedFiles)
+            .Where(m => m.GeneratedFiles != null)
+            .SelectMany(m => m.GeneratedFiles!)
             .Select(f => f.ToRelative())
             .OrderBy(t => t)
             .ToList();

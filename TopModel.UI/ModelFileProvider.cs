@@ -28,7 +28,7 @@ public class ModelFileProvider : IModelWatcher
 
     public int Number { get; set; }
 
-    public IEnumerable<string> GeneratedFiles => new List<string>();
+    public IEnumerable<string>? GeneratedFiles => null;
 
     public void OnFilesChanged(IEnumerable<ModelFile> files)
     {

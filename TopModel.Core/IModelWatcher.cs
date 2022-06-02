@@ -10,7 +10,7 @@ public interface IModelWatcher
 
     string FullName => $"{Name}@{Number}";
 
-    IEnumerable<string> GeneratedFiles { get; }
+    IEnumerable<string>? GeneratedFiles { get; }
 
     void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors);
 

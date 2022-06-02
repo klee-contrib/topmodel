@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.7.2
+
+[0f161c6](https://github.com/klee-contrib/topmodel/pull/101) - Gestion de la suppression des fichiers #101
+
 ## 1.7.1
 
 [0f161c6](https://github.com/klee-contrib/topmodel/commit/0f161c6f216642e940da0718467b7cec8aec219b) - Inférence de default/order/flagProperty que si liste de ref + [C#] DefaultProperty explicite
