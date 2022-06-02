@@ -23,7 +23,7 @@ public class JavascriptResourceGenerator : GeneratorBase
 
     public override string Name => "JSResourceGen";
 
-    public override List<string> GetGeneratedFiles(ModelStore modelStore)
+    public override List<string> GetGeneratedFiles()
     {
         var modules = _files
             .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))

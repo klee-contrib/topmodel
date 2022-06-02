@@ -14,7 +14,7 @@ public interface IModelWatcher
 
     void OnFilesChanged(IEnumerable<ModelFile> files);
 
-    public virtual List<string> GetGeneratedFiles(ModelStore modelStore)
+    public virtual List<string> GetGeneratedFiles()
     {
         return new List<string>();
     }

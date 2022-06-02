@@ -44,6 +44,11 @@ public class ModelStore
         }
 
         _logger.LogInformation($"TopModel v{_topModelLock.Version}");
+        var currentVersion = GetCurrentVersion();
+        if (currentVersion != _topModelLock.Version)
+        {
+            _logger.LogWarning($"Ce modèle a été généré pour la dernière fois avec TopModel v{_topModelLock.Version}, qui n'est pas la version actuellement installée (v{currentVersion})");
+        }
     }
 
     public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes).Distinct();
@@ -224,7 +229,7 @@ public class ModelStore
     private List<string> GetGeneratedFiles()
     {
         return _modelWatchers
-            .SelectMany(m => m.GetGeneratedFiles(this))
+            .SelectMany(m => m.GetGeneratedFiles())
             .Select(f => f.ToRelative())
             .OrderBy(t => t)
             .ToList();
@@ -233,7 +238,7 @@ public class ModelStore
     private string GetCurrentVersion()
     {
         var version = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Version!;
-        return $"version: {version.Major}.{version.Minor}.{version.Build}";
+        return $"{version.Major}.{version.Minor}.{version.Build}";
     }
 
     private void UpdateTopModelLock()
@@ -249,8 +254,7 @@ public class ModelStore
             StartCommentToken = "#"
         };
 
-        var version = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Version!;
-        fw.WriteLine($"version: {version.Major}.{version.Minor}.{version.Build}");
+        fw.WriteLine($"version: {_topModelLock.Version}");
         fw.WriteLine("generatedFiles:");
         foreach (var genFile in _topModelLock.GeneratedFiles)
         {

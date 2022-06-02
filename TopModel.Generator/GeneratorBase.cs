@@ -29,7 +29,7 @@ public abstract class GeneratorBase : IModelWatcher
         HandleFiles(files.Where(file => _config.Tags.Intersect(file.Tags).Any()));
     }
 
-    public virtual List<string> GetGeneratedFiles(ModelStore modelStore)
+    public virtual List<string> GetGeneratedFiles()
     {
         return new List<string>();
     }

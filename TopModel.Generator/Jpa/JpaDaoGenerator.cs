@@ -22,9 +22,9 @@ public class JpaDaoGenerator : GeneratorBase
 
     public override string Name => "JpaDaoGen";
 
-    public override List<string> GetGeneratedFiles(ModelStore modelStore)
+    public override List<string> GetGeneratedFiles()
     {
-        return modelStore.Classes.Select(c => this.GetFileClassName(c)).ToList();
+        return _files.SelectMany(f => f.Value.Classes).Select(c => this.GetFileClassName(c)).ToList();
     }
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)

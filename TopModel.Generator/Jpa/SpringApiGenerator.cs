@@ -13,6 +13,8 @@ public class SpringApiGenerator : GeneratorBase
     private readonly JpaConfig _config;
     private readonly ILogger<SpringApiGenerator> _logger;
 
+    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
+
     public SpringApiGenerator(ILogger<SpringApiGenerator> logger, JpaConfig config)
         : base(logger, config)
     {
@@ -22,15 +24,16 @@ public class SpringApiGenerator : GeneratorBase
 
     public override string Name => "SpringApiGenerator";
 
-    public override List<string> GetGeneratedFiles(ModelStore modelStore)
+    public override List<string> GetGeneratedFiles()
     {
-        return modelStore.Endpoints.Select(e => e.GetFile()).Distinct().Select(f => this.GetFilePath(f)).ToList();
+        return _files.Select(f => this.GetFilePath(f.Value)).ToList();
     }
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
         {
+            _files[file.Name] = file;
             GenerateController(file);
         }
     }
