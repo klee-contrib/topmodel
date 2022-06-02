@@ -23,10 +23,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
     public override string Name => "TSDefinitionGen";
 
-    public override List<string> GetGeneratedFiles()
-    {
-        return _files.SelectMany(f => GetClasses(f.Value)).Select(c => GetFileName(c)).ToList();
-    }
+    public override IEnumerable<string> GeneratedFiles => _files.SelectMany(f => GetClasses(f.Value)).Select(c => GetFileName(c));
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {

@@ -24,10 +24,7 @@ public class SpringApiGenerator : GeneratorBase
 
     public override string Name => "SpringApiGenerator";
 
-    public override List<string> GetGeneratedFiles()
-    {
-        return _files.Select(f => this.GetFilePath(f.Value)).ToList();
-    }
+    public override IEnumerable<string> GeneratedFiles => _files.Select(f => GetFilePath(f.Value));
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {

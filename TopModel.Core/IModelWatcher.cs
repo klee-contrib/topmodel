@@ -10,12 +10,9 @@ public interface IModelWatcher
 
     string FullName => $"{Name}@{Number}";
 
+    IEnumerable<string> GeneratedFiles { get; }
+
     void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors);
 
     void OnFilesChanged(IEnumerable<ModelFile> files);
-
-    public virtual List<string> GetGeneratedFiles()
-    {
-        return new List<string>();
-    }
 }

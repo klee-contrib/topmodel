@@ -19,6 +19,8 @@ public abstract class GeneratorBase : IModelWatcher
 
     public int Number { get; set; }
 
+    public virtual IEnumerable<string> GeneratedFiles => new List<string>();
+
     public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
     {
     }
@@ -27,11 +29,6 @@ public abstract class GeneratorBase : IModelWatcher
     {
         using var scope = _logger.BeginScope(((IModelWatcher)this).FullName);
         HandleFiles(files.Where(file => _config.Tags.Intersect(file.Tags).Any()));
-    }
-
-    public virtual List<string> GetGeneratedFiles()
-    {
-        return new List<string>();
     }
 
     protected abstract void HandleFiles(IEnumerable<ModelFile> files);

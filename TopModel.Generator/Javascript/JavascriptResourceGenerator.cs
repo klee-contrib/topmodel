@@ -23,16 +23,11 @@ public class JavascriptResourceGenerator : GeneratorBase
 
     public override string Name => "JSResourceGen";
 
-    public override List<string> GetGeneratedFiles()
-    {
-        var modules = _files
-            .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
-            .Select(c => c.ResourceProperty)
-            .Distinct()
-            .GroupBy(prop => prop.Class.Namespace.Module);
-
-        return modules.Select(m => GetFilePath(m)).ToList();
-    }
+    public override IEnumerable<string> GeneratedFiles => _files
+        .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
+        .Select(c => c.ResourceProperty)
+        .Distinct()
+        .GroupBy(prop => prop.Class.Namespace.Module).Select(m => GetFilePath(m));
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {

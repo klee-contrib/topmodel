@@ -39,12 +39,14 @@ public class ModelStore
         }
         else
         {
-            _topModelLock = new TopModelLock();
-            UpdateTopModelLock();
+            _topModelLock = new TopModelLock { Version = CurrentVersion };
         }
 
+        _topModelLock.Version ??= CurrentVersion;
+        _topModelLock.GeneratedFiles ??= new();
+
         _logger.LogInformation($"TopModel v{_topModelLock.Version}");
-        var currentVersion = GetCurrentVersion();
+        var currentVersion = CurrentVersion;
         if (currentVersion != _topModelLock.Version)
         {
             _logger.LogWarning($"Ce modèle a été généré pour la dernière fois avec TopModel v{_topModelLock.Version}, qui n'est pas la version actuellement installée (v{currentVersion})");
@@ -60,6 +62,15 @@ public class ModelStore
     public IEnumerable<Decorator> Decorators => _modelFiles.SelectMany(mf => mf.Value.Decorators).Distinct();
 
     public IEnumerable<ModelFile> Files => _modelFiles.Values;
+
+    private static string CurrentVersion
+    {
+        get
+        {
+            var version = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Version!;
+            return $"{version.Major}.{version.Minor}.{version.Build}";
+        }
+    }
 
     public IEnumerable<Class> GetAvailableClasses(ModelFile file)
     {
@@ -127,7 +138,7 @@ public class ModelStore
     public void OnModelFileChange(string filePath, string? content = null)
     {
         _logger.LogInformation(string.Empty);
-        _logger.LogInformation($"Modifié:   {filePath.ToRelative()}");
+        _logger.LogInformation($"Modifié:  {filePath.ToRelative()}");
 
         lock (_puLock)
         {
@@ -201,7 +212,7 @@ public class ModelStore
                 }
 
                 DeleteOldFiles();
-                UpdateTopModelLock();
+                _topModelLock.GeneratedFiles = GetGeneratedFiles();
                 WriteTopModelLock();
 
                 _logger.LogInformation($"Mise à jour terminée avec succès.");
@@ -229,22 +240,10 @@ public class ModelStore
     private List<string> GetGeneratedFiles()
     {
         return _modelWatchers
-            .SelectMany(m => m.GetGeneratedFiles())
+            .SelectMany(m => m.GeneratedFiles)
             .Select(f => f.ToRelative())
             .OrderBy(t => t)
             .ToList();
-    }
-
-    private string GetCurrentVersion()
-    {
-        var version = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Version!;
-        return $"{version.Major}.{version.Minor}.{version.Build}";
-    }
-
-    private void UpdateTopModelLock()
-    {
-        _topModelLock.GeneratedFiles = GetGeneratedFiles();
-        _topModelLock.Version = GetCurrentVersion();
     }
 
     private void WriteTopModelLock()
