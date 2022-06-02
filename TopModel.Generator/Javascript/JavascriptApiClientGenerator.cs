@@ -22,12 +22,25 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
     public override string Name => "JSApiClientGen";
 
+    public override List<string> GetGeneratedFiles(ModelStore modelStore)
+    {
+        return modelStore.Endpoints.Select(e => e.ModelFile).Distinct().Select(f => this.GetFileName(f)).ToList();
+    }
+
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
         {
             GenerateClientFile(file);
         }
+    }
+
+    private string GetFileName(ModelFile file)
+    {
+        var fileSplit = file.Name.Split("/");
+        var modulePath = string.Join('\\', file.Module.Split('.').Select(m => m.ToDashCase()));
+        var filePath = _config.ApiClientFilePath.Replace("{module}", modulePath) + '/' + string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToDashCase();
+        return $"{_config.ApiClientOutputDirectory}\\{filePath}.ts";
     }
 
     private void GenerateClientFile(ModelFile file)
@@ -37,10 +50,8 @@ public class JavascriptApiClientGenerator : GeneratorBase
             return;
         }
 
-        var fileSplit = file.Name.Split("/");
         var modulePath = string.Join('/', file.Module.Split('.').Select(m => m.ToDashCase()));
-        var filePath = _config.ApiClientFilePath.Replace("{module}", modulePath) + '/' + string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToDashCase();
-        var fileName = $"{_config.ApiClientOutputDirectory}/{filePath}.ts";
+        var fileName = GetFileName(file);
 
         var relativePath = _config.ApiClientFilePath.Length > 0 ? string.Join(string.Empty, _config.ApiClientFilePath.Replace("{module}", modulePath).Split('/').Select(s => "../")) : string.Empty;
         var fetch = _config.FetchImportPath != null ? "fetch" : "coreFetch";

@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 1.7.0
+version: 1.7.1
 generatedFiles:
   - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\securite\utilisateur\IUtilisateurController.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\dao\daos\securite\ProfilDAO.java
@@ -23,3 +23,8 @@ generatedFiles:
   - .\jpa\src\main\javagen\topmodel\exemple\name\dao\entities\utilisateur\interfaces\IUtilisateur.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\dao\entities\utilisateur\TypeUtilisateur.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\dao\entities\utilisateur\Utilisateur.java
+  - .\js\appgenerated\api\securite\utilisateur\utilisateur.ts
+  - .\js\appgenerated\model\securite\profil-dto.ts
+  - .\js\appgenerated\model\utilisateur\utilisateur-dto.ts
+  - .\js\appgenerated\resources\securite.ts
+  - .\js\appgenerated\resources\utilisateur.ts
