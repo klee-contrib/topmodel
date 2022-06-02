@@ -181,7 +181,7 @@ class CompletionHandler : CompletionHandlerBase
                 var classLine = currentLine;
                 var requestLine = request.Position.Line;
 
-                while (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('['))
+                while (requestLine > 0 && (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('[')))
                 {
                     requestLine--;
                     classLine = text.ElementAt(requestLine);
@@ -196,7 +196,7 @@ class CompletionHandler : CompletionHandlerBase
                 {
                     classLine = text.ElementAt(request.Position.Line);
 
-                    while (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('['))
+                    while (requestLine < text.Length - 1 && (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('[')))
                     {
                         requestLine++;
                         classLine = text.ElementAt(requestLine);
