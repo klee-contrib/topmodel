@@ -45,7 +45,7 @@ public class LoggerProvider : ILoggerProvider
 
                 var name = ((_generatorName ?? _categoryName) + " ").PadRight(19, '-');
                 var split = name.Split(" ");
-                Console.ForegroundColor = _generatorName != null ? ConsoleColor.DarkGreen : ConsoleColor.DarkGray;
+                Console.ForegroundColor = _generatorName != null ? ConsoleColor.Magenta : ConsoleColor.DarkGray;
                 Console.Write(split[0]);
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.Write($" {split[1]} ");
@@ -56,14 +56,16 @@ public class LoggerProvider : ILoggerProvider
                     _ => ConsoleColor.Gray
                 };
 
+                message = WriteAction(message, "Supprimé", ConsoleColor.DarkRed);
+                message = WriteAction(message, "Créé", ConsoleColor.DarkGreen);
+                message = WriteAction(message, "Modifié", ConsoleColor.DarkCyan);
+
                 var split2 = message.Split(Path.DirectorySeparatorChar);
                 if (split2.Length > 1)
                 {
+                    Console.ForegroundColor = ConsoleColor.White;
                     Console.Write($"{string.Join(Path.DirectorySeparatorChar, split2[0..^1])}{Path.DirectorySeparatorChar}");
-                    if (Console.ForegroundColor == ConsoleColor.Gray)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Blue;
-                    }
+                    Console.ForegroundColor = ConsoleColor.Blue;
                 }
 
                 Console.WriteLine(split2[^1]);
@@ -75,6 +77,19 @@ public class LoggerProvider : ILoggerProvider
 
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
+        }
+
+        public string WriteAction(string message, string action, ConsoleColor color)
+        {
+            if (message.LastIndexOf(action) >= 0)
+            {
+                Console.ForegroundColor = color;
+                message = message.Split(action)[1];
+                Console.Write(action);
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+            }
+
+            return message;
         }
 
         public bool IsEnabled(LogLevel logLevel)

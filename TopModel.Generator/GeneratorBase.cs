@@ -19,6 +19,8 @@ public abstract class GeneratorBase : IModelWatcher
 
     public int Number { get; set; }
 
+    public virtual IEnumerable<string> GeneratedFiles => new List<string>();
+
     public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
     {
     }

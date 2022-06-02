@@ -13,6 +13,8 @@ public class SpringApiGenerator : GeneratorBase
     private readonly JpaConfig _config;
     private readonly ILogger<SpringApiGenerator> _logger;
 
+    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
+
     public SpringApiGenerator(ILogger<SpringApiGenerator> logger, JpaConfig config)
         : base(logger, config)
     {
@@ -22,12 +24,37 @@ public class SpringApiGenerator : GeneratorBase
 
     public override string Name => "SpringApiGenerator";
 
+    public override IEnumerable<string> GeneratedFiles => _files.Select(f => GetFilePath(f.Value));
+
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
         {
+            _files[file.Name] = file;
             GenerateController(file);
         }
+    }
+
+    private string GetDestinationFolder(ModelFile file)
+    {
+        return Path.Combine(_config.ApiOutputDirectory!, Path.Combine(_config.ApiPackageName.ToLower().Split(".")), "controller", Path.Combine(file.Module.ToLower().Split(".")));
+    }
+
+    private string GetClassName(ModelFile file)
+    {
+        var filePath = file.Name.Split("/").Last();
+        return $"I{string.Join('_', filePath.Split("_").Skip(filePath.Contains('_') ? 1 : 0)).ToFirstUpper()}Controller";
+    }
+
+    private string GetFileName(ModelFile file)
+    {
+        var filePath = file.Name.Split("/").Last();
+        return $"{GetClassName(file)}.java";
+    }
+
+    private string GetFilePath(ModelFile file)
+    {
+        return $"{GetDestinationFolder(file)}\\{GetFileName(file)}";
     }
 
     private void GenerateController(ModelFile file)
@@ -42,14 +69,10 @@ public class SpringApiGenerator : GeneratorBase
             CheckEndpoint(endpoint);
         }
 
-        var destFolder = Path.Combine(_config.ApiOutputDirectory, Path.Combine(_config.ApiPackageName.ToLower().Split(".")), "controller", Path.Combine(file.Module.ToLower().Split(".")));
+        var destFolder = GetDestinationFolder(file);
         Directory.CreateDirectory(destFolder);
 
-        var filePath = file.Name.Split("/").Last();
-        var className = $"I{string.Join('_', filePath.Split("_").Skip(filePath.Contains('_') ? 1 : 0)).ToFirstUpper()}Controller";
-        var fileName = $"{className}.java";
-
-        using var fw = new JavaWriter($"{destFolder}/{fileName}", _logger, null);
+        using var fw = new JavaWriter($"{GetFilePath(file)}", _logger, null);
 
         fw.WriteLine($"package {_config.ApiPackageName}.controller.{file.Module.ToLower()};");
 
@@ -57,7 +80,7 @@ public class SpringApiGenerator : GeneratorBase
         fw.WriteLine();
         fw.WriteLine("@RestController");
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
-        fw.WriteLine($"public interface {className} {{");
+        fw.WriteLine($"public interface {GetClassName(file)} {{");
 
         fw.WriteLine();
 

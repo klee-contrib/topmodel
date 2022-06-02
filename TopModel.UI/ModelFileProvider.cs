@@ -28,6 +28,8 @@ public class ModelFileProvider : IModelWatcher
 
     public int Number { get; set; }
 
+    public IEnumerable<string> GeneratedFiles => new List<string>();
+
     public void OnFilesChanged(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)

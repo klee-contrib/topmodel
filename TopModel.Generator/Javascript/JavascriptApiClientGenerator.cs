@@ -13,6 +13,8 @@ public class JavascriptApiClientGenerator : GeneratorBase
     private readonly JavascriptConfig _config;
     private readonly ILogger<JavascriptApiClientGenerator> _logger;
 
+    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
+
     public JavascriptApiClientGenerator(ILogger<JavascriptApiClientGenerator> logger, JavascriptConfig config)
         : base(logger, config)
     {
@@ -22,12 +24,23 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
     public override string Name => "JSApiClientGen";
 
+    public override List<string> GeneratedFiles => _files.Select(f => GetFileName(f.Value)).ToList();
+
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
         {
+            _files[file.Name] = file;
             GenerateClientFile(file);
         }
+    }
+
+    private string GetFileName(ModelFile file)
+    {
+        var fileSplit = file.Name.Split("/");
+        var modulePath = string.Join('\\', file.Module.Split('.').Select(m => m.ToDashCase()));
+        var filePath = _config.ApiClientFilePath.Replace("{module}", modulePath) + '/' + string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToDashCase();
+        return $"{_config.ApiClientOutputDirectory}\\{filePath}.ts";
     }
 
     private void GenerateClientFile(ModelFile file)
@@ -37,10 +50,8 @@ public class JavascriptApiClientGenerator : GeneratorBase
             return;
         }
 
-        var fileSplit = file.Name.Split("/");
         var modulePath = string.Join('/', file.Module.Split('.').Select(m => m.ToDashCase()));
-        var filePath = _config.ApiClientFilePath.Replace("{module}", modulePath) + '/' + string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToDashCase();
-        var fileName = $"{_config.ApiClientOutputDirectory}/{filePath}.ts";
+        var fileName = GetFileName(file);
 
         var relativePath = _config.ApiClientFilePath.Length > 0 ? string.Join(string.Empty, _config.ApiClientFilePath.Replace("{module}", modulePath).Split('/').Select(s => "../")) : string.Empty;
         var fetch = _config.FetchImportPath != null ? "fetch" : "coreFetch";

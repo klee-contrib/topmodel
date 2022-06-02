@@ -23,6 +23,12 @@ public class JavascriptResourceGenerator : GeneratorBase
 
     public override string Name => "JSResourceGen";
 
+    public override IEnumerable<string> GeneratedFiles => _files
+        .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
+        .Select(c => c.ResourceProperty)
+        .Distinct()
+        .GroupBy(prop => prop.Class.Namespace.Module).Select(m => GetFilePath(m));
+
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
@@ -42,6 +48,14 @@ public class JavascriptResourceGenerator : GeneratorBase
         }
     }
 
+    private string GetFilePath(IGrouping<string, IFieldProperty> module)
+    {
+        return _config.ResourceOutputDirectory!
+            + "\\"
+            + string.Join('\\', module.Key.Split(".").Select(part => part.ToDashCase()))
+            + (_config.ResourceMode == ResourceMode.JS ? ".ts" : ".json");
+    }
+
     private void GenerateModule(IGrouping<string, IFieldProperty> module)
     {
         if (_config.ResourceOutputDirectory == null)
@@ -50,7 +64,7 @@ public class JavascriptResourceGenerator : GeneratorBase
         }
 
         var dirInfo = Directory.CreateDirectory(_config.ResourceOutputDirectory);
-        var filePath = dirInfo.FullName + "/" + string.Join("/", module.Key.Split(".").Select(part => part.ToDashCase())) + (_config.ResourceMode == ResourceMode.JS ? ".ts" : ".json");
+        var filePath = GetFilePath(module);
 
         using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
 
@@ -67,7 +81,7 @@ public class JavascriptResourceGenerator : GeneratorBase
         }
         else
         {
-            fw.WriteLine($"export const {module.Key.ToFirstLower()} = {{");
+            fw.WriteLine($"export const {module.Key.Split('.').Last().ToFirstLower()} = {{");
         }
 
         var classes = module.GroupBy(prop => prop.Class);

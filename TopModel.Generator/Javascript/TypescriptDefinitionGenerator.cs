@@ -23,6 +23,8 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
     public override string Name => "TSDefinitionGen";
 
+    public override IEnumerable<string> GeneratedFiles => _files.SelectMany(f => GetClasses(f.Value)).Select(c => GetFileName(c));
+
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
@@ -39,29 +41,34 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         }
     }
 
+    private string GetFileName(Class classe)
+    {
+        return $"{_config.ModelOutputDirectory}/{classe.ModelFile.Module.Replace('.', '\\').ToDashCase()}\\{classe.Name.ToDashCase()}.ts";
+    }
+
+    private List<Class> GetClasses(ModelFile file)
+    {
+        return file.Classes.Where(classe => !(classe.Reference || classe.ReferenceValues.Any()) || classe.PrimaryKey?.Domain.TS?.Type == "number").ToList();
+    }
+
     private void GenerateClasses(ModelFile file)
     {
         var count = 0;
-        foreach (var classe in file.Classes)
+        foreach (var classe in GetClasses(file))
         {
-            if (!(classe.Reference || classe.ReferenceValues.Any()) || classe.PrimaryKey?.Domain.TS?.Type == "number")
+            var fileName = GetFileName(classe);
+            var fileInfo = new FileInfo(fileName);
+
+            var isNewFile = !fileInfo.Exists;
+
+            var directoryInfo = fileInfo.Directory!;
+            if (!directoryInfo.Exists)
             {
-                var fileName = classe.Name.ToDashCase();
-
-                fileName = $"{_config.ModelOutputDirectory}/{file.Module.Replace(".", "/").ToDashCase()}/{fileName}.ts";
-                var fileInfo = new FileInfo(fileName);
-
-                var isNewFile = !fileInfo.Exists;
-
-                var directoryInfo = fileInfo.Directory!;
-                if (!directoryInfo.Exists)
-                {
-                    Directory.CreateDirectory(directoryInfo.FullName);
-                }
-
-                GenerateClassFile(fileName, classe);
-                count++;
+                Directory.CreateDirectory(directoryInfo.FullName);
             }
+
+            GenerateClassFile(fileName, classe);
+            count++;
         }
     }
 

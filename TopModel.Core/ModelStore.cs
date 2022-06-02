@@ -20,6 +20,8 @@ public class ModelStore
     private readonly object _puLock = new();
     private readonly HashSet<string> _pendingUpdates = new();
 
+    private TopModelLock _topModelLock;
+
     public ModelStore(IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers)
     {
         _config = config;
@@ -27,6 +29,28 @@ public class ModelStore
         _logger = logger;
         _modelFileLoader = modelFileLoader;
         _modelWatchers = modelWatchers;
+
+        var topModelFile = new FileInfo(Path.Combine(_config.ModelRoot, "topmodel.lock"));
+        if (topModelFile.Exists)
+        {
+            var fileChecker = new FileChecker();
+            using var topModelLockFile = topModelFile.OpenText();
+            _topModelLock = fileChecker.Deserialize<TopModelLock>(topModelLockFile.ReadToEnd());
+        }
+        else
+        {
+            _topModelLock = new TopModelLock { Version = CurrentVersion };
+        }
+
+        _topModelLock.Version ??= CurrentVersion;
+        _topModelLock.GeneratedFiles ??= new();
+
+        _logger.LogInformation($"TopModel v{_topModelLock.Version}");
+        var currentVersion = CurrentVersion;
+        if (currentVersion != _topModelLock.Version)
+        {
+            _logger.LogWarning($"Ce modèle a été généré pour la dernière fois avec TopModel v{_topModelLock.Version}, qui n'est pas la version actuellement installée (v{currentVersion})");
+        }
     }
 
     public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes).Distinct();
@@ -38,6 +62,15 @@ public class ModelStore
     public IEnumerable<Decorator> Decorators => _modelFiles.SelectMany(mf => mf.Value.Decorators).Distinct();
 
     public IEnumerable<ModelFile> Files => _modelFiles.Values;
+
+    private static string CurrentVersion
+    {
+        get
+        {
+            var version = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Version!;
+            return $"{version.Major}.{version.Minor}.{version.Build}";
+        }
+    }
 
     public IEnumerable<Class> GetAvailableClasses(ModelFile file)
     {
@@ -58,7 +91,7 @@ public class ModelStore
             mw.Number = sameGeneratorList.IndexOf(mw) + 1;
         }
 
-        _logger.LogInformation($"Watchers enregistrés : {string.Join(", ", _modelWatchers.Select(mw => mw.FullName))}");
+        _logger.LogInformation($"Watchers enregistrés : \n                    - {string.Join("\n                    - ", _modelWatchers.Select(mw => mw.FullName))}");
 
         FileSystemWatcher? fsWatcher = null;
         if (watch)
@@ -105,7 +138,7 @@ public class ModelStore
     public void OnModelFileChange(string filePath, string? content = null)
     {
         _logger.LogInformation(string.Empty);
-        _logger.LogInformation($"Modifié: {filePath.ToRelative()}");
+        _logger.LogInformation($"Modifié:  {filePath.ToRelative()}");
 
         lock (_puLock)
         {
@@ -178,6 +211,10 @@ public class ModelStore
                     modelWatcher.OnFilesChanged(sortedFiles);
                 }
 
+                DeleteOldFiles();
+                _topModelLock.GeneratedFiles = GetGeneratedFiles();
+                WriteTopModelLock();
+
                 _logger.LogInformation($"Mise à jour terminée avec succès.");
 
                 _pendingUpdates.Clear();
@@ -186,6 +223,41 @@ public class ModelStore
             {
                 _logger.LogError(e, e.Message);
             }
+        }
+    }
+
+    private void DeleteOldFiles()
+    {
+        var generatedFiles = GetGeneratedFiles();
+        var filesToPrune = _topModelLock.GeneratedFiles.Where(f => !generatedFiles.Contains(f));
+        foreach (var fileToPrune in filesToPrune.Where(fileToPrune => File.Exists(fileToPrune)))
+        {
+            File.Delete(fileToPrune);
+            _logger.LogInformation($"Supprimé: {fileToPrune.ToRelative()}");
+        }
+    }
+
+    private List<string> GetGeneratedFiles()
+    {
+        return _modelWatchers
+            .SelectMany(m => m.GeneratedFiles)
+            .Select(f => f.ToRelative())
+            .OrderBy(t => t)
+            .ToList();
+    }
+
+    private void WriteTopModelLock()
+    {
+        using var fw = new FileWriter(Path.Combine(_config.ModelRoot, "topmodel.lock"), _logger)
+        {
+            StartCommentToken = "#"
+        };
+
+        fw.WriteLine($"version: {_topModelLock.Version}");
+        fw.WriteLine("generatedFiles:");
+        foreach (var genFile in _topModelLock.GeneratedFiles)
+        {
+            fw.WriteLine($"  - {genFile}");
         }
     }
 
