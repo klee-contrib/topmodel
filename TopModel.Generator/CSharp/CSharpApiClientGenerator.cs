@@ -9,6 +9,7 @@ namespace TopModel.Generator.CSharp;
 public class CSharpApiClientGenerator : GeneratorBase
 {
     private readonly CSharpConfig _config;
+    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
     private readonly ILogger<CSharpApiClientGenerator> _logger;
 
     public CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, CSharpConfig config)
@@ -20,12 +21,22 @@ public class CSharpApiClientGenerator : GeneratorBase
 
     public override string Name => "CSharpApiClientGen";
 
+    public override IEnumerable<string> GeneratedFiles => _files.Values.Where(f => f.Endpoints.Any()).Select(GetFilePath);
+
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
         {
+            _files[file.Name] = file;
             HandleFile(file);
         }
+    }
+
+    private string GetFilePath(ModelFile file)
+    {
+        var className = $"{file.Name.Split("/").Last()}Client";
+        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), _config.ApiFilePath.Replace("{module}", file.Module)).Replace("\\", "/");
+        return $"{_config.OutputDirectory}/{apiPath}/generated/{className}.cs";
     }
 
     private void HandleFile(ModelFile file)

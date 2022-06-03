@@ -25,6 +25,8 @@ public class CSharpApiServerGenerator : GeneratorBase
 
     public override string Name => "CSharpApiServerGen";
 
+    public override IEnumerable<string> GeneratedFiles => _files.Values.Where(f => f.Endpoints.Any()).Select(GetFilePath);
+
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
@@ -32,6 +34,14 @@ public class CSharpApiServerGenerator : GeneratorBase
             _files[file.Name] = file;
             HandleFile(file);
         }
+    }
+
+    private string GetFilePath(ModelFile file)
+    {
+        var fileSplit = file.Name.Split("/");
+        var className = $"{fileSplit.Last()}Controller";
+        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), "Controllers", _config.ApiFilePath.Replace("{module}", file.Module)).Replace("\\", "/");
+        return $"{_config.OutputDirectory}/{apiPath}/{className}.cs";
     }
 
     private void HandleFile(ModelFile file)
