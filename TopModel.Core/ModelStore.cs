@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System.Runtime.InteropServices;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using TopModel.Core.FileModel;
@@ -20,7 +21,7 @@ public class ModelStore
     private readonly object _puLock = new();
     private readonly HashSet<string> _pendingUpdates = new();
 
-    private TopModelLock _topModelLock;
+    private readonly TopModelLock _topModelLock;
 
     public ModelStore(IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers)
     {
@@ -231,8 +232,9 @@ public class ModelStore
 
     private void DeleteOldFiles()
     {
+        var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         var generatedFiles = GetGeneratedFiles();
-        var filesToPrune = _topModelLock.GeneratedFiles.Where(f => !generatedFiles.Contains(f));
+        var filesToPrune = _topModelLock.GeneratedFiles.Where(f => !generatedFiles.Select(gf => isWindows ? gf.ToLowerInvariant() : gf).Contains(isWindows ? f.ToLowerInvariant() : f));
         foreach (var fileToPrune in filesToPrune.Where(fileToPrune => File.Exists(fileToPrune)))
         {
             File.Delete(fileToPrune);
