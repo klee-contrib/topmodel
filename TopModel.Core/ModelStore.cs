@@ -728,6 +728,8 @@ public class ModelStore
         // Résolution des clés d'unicités.
         foreach (var classe in fileClasses.Where(c => c.UniqueKeyReferences.Any()))
         {
+            classe.UniqueKeys.Clear();
+
             foreach (var ukRef in classe.UniqueKeyReferences)
             {
                 var uk = new List<IFieldProperty>();
@@ -752,6 +754,8 @@ public class ModelStore
         // Résolution des valeurs de références
         foreach (var classe in fileClasses.Where(c => c.ReferenceValueReferences.Any()))
         {
+            classe.ReferenceValues.Clear();
+
             foreach (var valueRef in classe.ReferenceValueReferences)
             {
                 var referenceValue = new ReferenceValue { Name = valueRef.Key.ReferenceName };
