@@ -60,15 +60,22 @@ public class LoggerProvider : ILoggerProvider
                 message = WriteAction(message, "Créé", ConsoleColor.DarkGreen);
                 message = WriteAction(message, "Modifié", ConsoleColor.DarkCyan);
 
-                var split2 = message.Split(Path.DirectorySeparatorChar);
-                if (split2.Length > 1)
+                if (logLevel != LogLevel.Error && logLevel != LogLevel.Warning)
                 {
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.Write($"{string.Join(Path.DirectorySeparatorChar, split2[0..^1])}{Path.DirectorySeparatorChar}");
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                }
+                    var split2 = message.Split(Path.DirectorySeparatorChar);
+                    if (split2.Length > 1)
+                    {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write($"{string.Join(Path.DirectorySeparatorChar, split2[0..^1])}{Path.DirectorySeparatorChar}");
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                    }
 
-                Console.WriteLine(split2[^1]);
+                    Console.WriteLine(split2[^1]);
+                }
+                else
+                {
+                    Console.WriteLine(message);
+                }
 
                 if (exception is not null and not ModelException)
                 {
