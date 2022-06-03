@@ -1,6 +1,6 @@
 - **[Présentation](/)**
 
-- **[Tutoriel](/getting-started/01_intro.md)**
+- **[Tutoriel](/getting-started/00_getting_started.md)**
   - [Intro](/getting-started/01_intro.md)
   - [Création d'une classe persitée](/getting-started/02_classe_persistee.md)
   - [Liste de référence](/getting-started/03_liste_ref.md)

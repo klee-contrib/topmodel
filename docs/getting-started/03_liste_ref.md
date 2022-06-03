@@ -58,7 +58,7 @@ class:
       domain: DO_LIBELLE
 
   values:
-    value1: { Code: ADM, Libelle: Administrateur }
-    value2: { Code: GES, Libelle: Gestionnaire }
-    value3: { Code: CLI, Libelle: Client }
+    ADM: { Code: ADM, Libelle: Administrateur }
+    GES: { Code: GES, Libelle: Gestionnaire }
+    CLI: { Code: CLI, Libelle: Client }
 ```
