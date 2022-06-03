@@ -43,15 +43,14 @@ public class ModelStore
             _topModelLock = new TopModelLock { Version = CurrentVersion };
         }
 
-        _topModelLock.Version ??= CurrentVersion;
-        _topModelLock.GeneratedFiles ??= new();
-
-        _logger.LogInformation($"TopModel v{_topModelLock.Version}");
-        var currentVersion = CurrentVersion;
-        if (currentVersion != _topModelLock.Version)
+        _logger.LogInformation($"TopModel v{CurrentVersion}");
+        if (CurrentVersion != _topModelLock.Version)
         {
-            _logger.LogWarning($"Ce modèle a été généré pour la dernière fois avec TopModel v{_topModelLock.Version}, qui n'est pas la version actuellement installée (v{currentVersion})");
+            _logger.LogWarning($"Ce modèle a été généré pour la dernière fois avec TopModel v{_topModelLock.Version}, qui n'est pas la version actuellement installée (v{CurrentVersion})");
         }
+
+        _topModelLock.Version = CurrentVersion;
+        _topModelLock.GeneratedFiles ??= new();
     }
 
     public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes).Distinct();

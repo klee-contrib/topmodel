@@ -1,8 +1,11 @@
 # TopModel.Generator (`modgen`)
 
-## 1.7.2
+## 1.8.0
 
-[0f161c6](https://github.com/klee-contrib/topmodel/pull/101) - Gestion de la suppression des fichiers #101
+- [#101](https://github.com/klee-contrib/topmodel/pull/101) et [5a15a7](https://github.com/klee-contrib/topmodel/commit/5a15a76141ec6ee17680f7629735e0364b8109ea)/[2f59e4](https://github.com/klee-contrib/topmodel/commit/2f59e413eb9a00f6a75e9bf9997df30a32d07aa6) - TopModel génère désormais un fichier `topmodel.lock` qui contient la version de TopModel utilisé par la dernière génération ainsi que la liste des fichiers générés. Cela permet :
+  - D'avertir si la version de TopModel installée n'est pas celle avec laquelle le modèle a été généré la dernière fois (pour indiquer à l'utilisateur qu'il doit soit mettre à jour sa version de TopModel, soit mettre à jour son modèle s'il y a des breaking changes avec une nouvelle version)
+  - De supprimer automatiquement les fichiers qui correspondant à des classes ou modules précédemment générés par TopModel qui ont été retirés du modèle.
+- Bug fixes : [aa8bb02](https://github.com/klee-contrib/topmodel/commit/aa8bb02e5c7a4267a12b64663593a4bb2075cb44) et [7a1eb56](https://github.com/klee-contrib/topmodel/commit/7a1eb56139c7d73c5177f2360c0e70a25723aa3c)
 
 ## 1.7.1
 

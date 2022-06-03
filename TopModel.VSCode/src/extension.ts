@@ -95,7 +95,7 @@ async function checkTopModelUpdate() {
                 const currentVersion = result.replace('\r\n', '');
                 if (currentVersion !== latest) {
                     const option = "Update TopModel";
-                    const selection = await window.showInformationMessage('TopModel peut être mis à jour', option);
+                    const selection = await window.showInformationMessage(`TopModel peut être mis à jour (${currentVersion} > ${latest})`, option);
                     if (selection === option) {
                         commands.executeCommand(COMMANDS.update);
                     }
