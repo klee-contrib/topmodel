@@ -36,6 +36,8 @@ generatedFiles:
   - .\js\appgenerated\api\utilisateur\dtos.ts
   - .\js\appgenerated\api\utilisateur\references.ts
   - .\js\appgenerated\model\securite\profil-dto.ts
+  - .\js\appgenerated\model\securite\references.ts
+  - .\js\appgenerated\model\utilisateur\references.ts
   - .\js\appgenerated\model\utilisateur\utilisateur-dto.ts
   - .\js\appgenerated\resources\securite.ts
   - .\js\appgenerated\resources\utilisateur.ts

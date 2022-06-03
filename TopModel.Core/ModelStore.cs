@@ -246,6 +246,7 @@ public class ModelStore
             .Where(m => m.GeneratedFiles != null)
             .SelectMany(m => m.GeneratedFiles!)
             .Select(f => f.ToRelative())
+            .Distinct()
             .OrderBy(t => t)
             .ToList();
     }

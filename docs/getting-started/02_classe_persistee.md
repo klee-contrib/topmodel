@@ -3,10 +3,10 @@
 ## Déclaration de la classe sans propriétés
 
 Commençons par créer une **classe** `Utilisateur`, qui représenterait les utilisateurs de notre application. Cette classe peut être organisée dans un module, ici ce sera `Users`.
-Dans TopModel, le modèle est décrit dans des fichiers `yaml`. La classe proposée sera représentée de la manière suivante :
+Dans TopModel, le modèle est décrit dans des fichiers au format `yaml`, mais avec l'extension `.tmd`. Ce format est pris en charge par VSCode et l'extension [TopModel](https://marketplace.visualstudio.com/items?itemName=JabX.topmodel). La classe proposée sera représentée de la manière suivante :
 
 ```yaml
-# Utilisateur.yml
+# Utilisateur.tmd
 ---
 module: Users # Module commun de toutes classes du fichier
 ---
@@ -30,7 +30,7 @@ A cette propriété, nous souhaitons associer un **domaine**. Il s'agit du type 
 Ajoutons donc un identifiant à la classe `Utilisateur`
 
 ```yaml
-# Utilisateur.yml
+# Utilisateur.tmd
 ---
 module: Users # Module commun de toutes classes du fichier
 ---
@@ -51,7 +51,7 @@ Ajoutons maintenant quelques propriétés à la classe utilisateur, qui nous ser
 - `label` : Libelle d'affichage de la propriété
 
 ```yaml
-# Utilisateur.yml
+# Utilisateur.tmd
 ---
 module: Users # Module commun de toutes classes du fichier
 ---
