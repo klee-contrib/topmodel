@@ -127,7 +127,7 @@
         "type": "object",
         "description": "Config pour la génération de C#.",
         "additionalProperties": false,
-        "required": ["tags"],
+        "required": ["outputDirectory", "tags"],
         "properties": {
           "tags": {
             "type": "array",

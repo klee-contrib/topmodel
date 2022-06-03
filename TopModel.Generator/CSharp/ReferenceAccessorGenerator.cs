@@ -38,32 +38,25 @@ public class ReferenceAccessorGenerator
     /// <param name="classList">Liste de ModelClass.</param>
     private void GenerateReferenceAccessorsImplementation(List<Class> classList)
     {
-        if (_config.OutputDirectory == null)
-        {
-            return;
-        }
-
         var firstClass = classList.First();
 
-        string projectDir;
         string projectName;
         string implementationName;
+
         if (_config.DbContextPath != null)
         {
-            projectDir = $"{_config.OutputDirectory}\\{_config.DbContextPath}";
             projectName = _config.DbContextPath.Split('/').Last();
             implementationName = $"{firstClass.Namespace.Module}AccessorsDal";
         }
         else
         {
             projectName = $"{firstClass.Namespace.App}.{firstClass.Namespace.Module}Implementation";
-            projectDir = $"{_config.OutputDirectory}\\{firstClass.Namespace.App}.Implementation\\{projectName}\\Service.Implementation";
             implementationName = $"Service{firstClass.Namespace.Module}Accessors";
         }
 
         var interfaceName = $"I{implementationName}";
 
-        var implementationFileName = Path.Combine(projectDir, _config.DbContextPath == null ? "generated" : "generated\\Reference", $"{implementationName}.cs");
+        var implementationFileName = _config.GetReferenceImplementationFilePath(classList)!;
 
         using var w = new CSharpWriter(implementationFileName, _logger, _config.UseLatestCSharp);
 
@@ -174,30 +167,23 @@ public class ReferenceAccessorGenerator
     /// <param name="classList">Liste de ModelClass.</param>
     private void GenerateReferenceAccessorsInterface(IEnumerable<Class> classList)
     {
-        if (_config.OutputDirectory == null)
-        {
-            return;
-        }
-
         var firstClass = classList.First();
 
-        string projectDir;
         string projectName;
         string interfaceName;
+
         if (_config.DbContextPath != null)
         {
-            projectDir = $"{_config.OutputDirectory}\\{_config.DbContextPath}";
             projectName = _config.DbContextPath.Split('/').Last();
             interfaceName = $"I{firstClass.Namespace.Module}AccessorsDal";
         }
         else
         {
             projectName = _config.GetNamespace(firstClass).Replace("DataContract", "Contract");
-            projectDir = $"{_config.OutputDirectory}\\{_config.GetModelPath(firstClass).Replace("DataContract", "Contract")}";
             interfaceName = $"IService{firstClass.Namespace.Module}Accessors";
         }
 
-        var interfaceFileName = Path.Combine(projectDir, _config.DbContextPath == null ? "generated" : "generated\\Reference", $"{interfaceName}.cs");
+        var interfaceFileName = _config.GetReferenceInterfaceFilePath(classList)!;
 
         using var w = new CSharpWriter(interfaceFileName, _logger, _config.UseLatestCSharp);
 

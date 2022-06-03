@@ -23,20 +23,12 @@ public class CSharpClassGenerator
     /// <param name="item">Classe concernée.</param>
     public void Generate(Class item)
     {
-        if (_config.OutputDirectory == null)
-        {
-            return;
-        }
-
         if (item.Properties.OfType<IFieldProperty>().Any(p => p.Domain.CSharp == null))
         {
             throw new ModelException(item, $"Le type C# de tous les domaines des propriétés de {item.Name} doit être défini.");
         }
 
-        var directory = Path.Combine(_config.OutputDirectory, _config.GetModelPath(item), "generated");
-        Directory.CreateDirectory(directory);
-
-        var fileName = Path.Combine(directory, item.Name + ".cs");
+        var fileName = _config.GetClassFileName(item);
 
         using var w = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
 

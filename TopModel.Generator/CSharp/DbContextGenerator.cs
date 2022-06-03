@@ -18,18 +18,17 @@ public class DbContextGenerator
     /// </summary>
     /// <remarks>Support de Linq2Sql.</remarks>
     /// <param name="classes">Classes.</param>
-    public void Generate(IEnumerable<Class> classes)
+    /// <param name="appName">Nom de l'appli.</param>
+    public void Generate(IEnumerable<Class> classes, string appName)
     {
-        if (_config.OutputDirectory == null || _config.DbContextPath == null)
+        if (_config.DbContextPath == null)
         {
             return;
         }
 
-        var dbContextName = _config.GetDbContextName(classes.First().Namespace.App);
-        var destDirectory = Path.Combine(_config.OutputDirectory, _config.DbContextPath);
-        Directory.CreateDirectory(destDirectory);
+        var dbContextName = _config.GetDbContextName(appName);
+        var targetFileName = _config.GetDbContextFilePath(appName)!;
 
-        var targetFileName = Path.Combine(destDirectory, "generated", $"{dbContextName}.cs");
         using var w = new CSharpWriter(targetFileName, _logger, _config.UseLatestCSharp);
 
         var usings = new List<string>();

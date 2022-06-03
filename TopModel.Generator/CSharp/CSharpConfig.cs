@@ -8,10 +8,12 @@ namespace TopModel.Generator.CSharp;
 /// </summary>
 public class CSharpConfig : GeneratorConfigBase
 {
+#nullable disable
     /// <summary>
     /// Racine du répertoire de génération.
     /// </summary>
-    public string? OutputDirectory { get; set; }
+    public string OutputDirectory { get; set; }
+#nullable enable
 
     /// <summary>
     /// Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {module}/{app}.{module}DataContract.

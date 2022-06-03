@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using TopModel.Core;
 using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.CSharp;
@@ -29,6 +30,14 @@ public class CSharpGenerator : GeneratorBase
 
     public override string Name => "CSharpGen";
 
+    public override IEnumerable<string> GeneratedFiles =>
+        new[] { AppName != null ? _config.GetDbContextFilePath(AppName) : null }
+        .Concat(_files.Values.SelectMany(f => f.Classes).Select(c => _config.GetClassFileName(c)))
+        .Concat(GetReferenceModules(_files.Values).SelectMany(module => new[] { _config.GetReferenceInterfaceFilePath(module), _config.GetReferenceImplementationFilePath(module) }))
+        .Where(f => f != null)!;
+
+    private string? AppName => _files.FirstOrDefault().Value?.Classes.FirstOrDefault()?.Namespace.App;
+
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
@@ -43,39 +52,37 @@ public class CSharpGenerator : GeneratorBase
         }
 
         var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
-        foreach (var module in modules)
+        foreach (var classes in GetReferenceModules(files))
         {
-            GenerateReferences(module);
+            _referenceAccessorGenerator.Generate(classes);
         }
     }
 
     private void GenerateDbContext()
     {
-        if (_config.DbContextPath != null)
+        if (_config.DbContextPath != null && AppName != null)
         {
-            _dbContextGenerator.Generate(_files.Values.SelectMany(f => f.Classes).Where(c => c.IsPersistent));
+            _dbContextGenerator.Generate(_files.Values.SelectMany(f => f.Classes).Where(c => c.IsPersistent), AppName);
         }
     }
 
     private void GenerateClasses(ModelFile file)
     {
-        if (_config.OutputDirectory == null)
-        {
-            return;
-        }
-
         foreach (var classe in file.Classes)
         {
             _classGenerator.Generate(classe);
         }
     }
 
-    private void GenerateReferences(string module)
+    private IEnumerable<IEnumerable<Class>> GetReferenceModules(IEnumerable<ModelFile> files)
     {
-        _referenceAccessorGenerator.Generate(
-            _files.Values
-                .SelectMany(f => f.Classes)
-                .Distinct()
-                .Where(c => c.Reference && c.Namespace.Module == module));
+        return files
+            .SelectMany(f => f.Classes.Select(c => c.Namespace.Module))
+            .Distinct()
+            .Select(
+                module => _files.Values
+                    .SelectMany(f => f.Classes)
+                    .Distinct()
+                    .Where(c => c.Reference && c.Namespace.Module == module));
     }
 }

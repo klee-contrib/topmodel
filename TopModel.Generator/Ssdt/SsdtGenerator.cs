@@ -29,6 +29,34 @@ public class SsdtGenerator : GeneratorBase
 
     public override string Name => "SsdtGen";
 
+    public override IEnumerable<string> GeneratedFiles =>
+        _files.Values.SelectMany(f => f.Classes).SelectMany(c =>
+        {
+            var files = new List<string>();
+            if (_config.TableScriptFolder != null)
+            {
+                files.Add(Path.Combine(_config.TableScriptFolder, _tableScripter.GetScriptName(c)));
+            }
+
+            if (c.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName) && _config.TableTypeScriptFolder != null)
+            {
+                files.Add(Path.Combine(_config.TableTypeScriptFolder, _tableTypeScripter.GetScriptName(c)));
+            }
+
+            return files;
+        })
+        .Concat(_files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues.Any()).Select(c =>
+        {
+            if (_config.InitListScriptFolder != null)
+            {
+                return Path.Combine(_config.InitListScriptFolder, _initReferenceListScript.GetScriptName(c));
+            }
+
+            return null;
+        }))
+        .Concat(_files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues.Any()).Any() && _config.InitListScriptFolder != null && _config.InitListMainScriptName != null ? new[] { Path.Combine(_config.InitListScriptFolder, _config.InitListMainScriptName) } : Array.Empty<string>())
+        .Where(f => f != null)!;
+
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
