@@ -24,7 +24,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
     public override string Name => "JSApiClientGen";
 
-    public override List<string> GeneratedFiles => _files.Select(f => GetFileName(f.Value)).ToList();
+    public override List<string> GeneratedFiles => _files.Values.Where(f => f.Endpoints.Any()).Select(GetFileName).ToList();
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
