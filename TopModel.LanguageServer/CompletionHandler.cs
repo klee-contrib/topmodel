@@ -60,7 +60,7 @@ class CompletionHandler : CompletionHandlerBase
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            if (currentLine.Contains("association: ") || currentLine.Contains("composition: ") || currentLine.Contains("    class:") || currentLine.Contains("extends: "))
+            if (currentLine.Contains("association: ") || currentLine.Contains("composition: ") || currentLine.Contains("    class:") || currentLine.Contains("    - class:") || currentLine.Contains("extends: "))
             {
                 var searchText = currentLine.Split(":")[1].Trim();
                 var availableClasses = new HashSet<Class>(_modelStore.GetAvailableClasses(file));
@@ -272,7 +272,7 @@ class CompletionHandler : CompletionHandlerBase
                         {
                             requestLine = request.Position.Line - 1;
                             var ukValuesLine = text.ElementAt(requestLine);
-                            while (!Regex.IsMatch(ukValuesLine, "^  \\w"))
+                            while (!Regex.IsMatch(ukValuesLine, "^  \\w") && !ukValuesLine.Contains("mappings:"))
                             {
                                 requestLine--;
                                 if (requestLine < 0)
@@ -285,6 +285,7 @@ class CompletionHandler : CompletionHandlerBase
 
                             var isUk = ukValuesLine.Contains("unique:");
                             var isValues = ukValuesLine.Contains("values:");
+                            var isMappings = ukValuesLine.Contains("mappings:");
                             var pC = currentLine[..request.Position.Character].LastOrDefault();
                             var pCT = currentLine[..request.Position.Character].TrimEnd().LastOrDefault();
                             if (
@@ -295,13 +296,61 @@ class CompletionHandler : CompletionHandlerBase
                                 || isValues
                                     && currentLine.Contains('{') && currentLine.IndexOf('{') < request.Position.Character
                                     && (!currentLine.Contains('}') || currentLine.IndexOf('}') >= request.Position.Character)
-                                    && (pC != ' ' || pCT == '{' || pCT == ','))
+                                    && (pC != ' ' || pCT == '{' || pCT == ',')
+                                || isMappings)
                             {
                                 searchText = string.Join(
                                     string.Empty,
                                     currentLine[..request.Position.Character].Reverse().TakeWhile(c => c != ',' && c != '[' && c != ' ' && c != '{').Reverse()
                                         .Concat(currentLine[request.Position.Character..].TakeWhile(c => c != ',' && c != ']' && c != ' ' && c != '}' && c != ':')));
 
+                            }
+
+                            if (isMappings && currentLine.Contains(':') && currentLine.IndexOf(':') < request.Position.Character)
+                            {
+                                string? className = null;
+                                classLine = ukValuesLine;
+
+                                while (requestLine > 0 && !classLine.TrimStart().StartsWith('-') && !classLine.Contains("class:"))
+                                {
+                                    requestLine--;
+                                    classLine = text.ElementAt(requestLine);
+                                }
+
+                                if (classLine.Contains("class:"))
+                                {
+                                    className = classLine.Split(':')[1].Trim();
+                                }
+
+                                if (className == null)
+                                {
+                                    requestLine = request.Position.Line;
+                                    classLine = text.ElementAt(requestLine);
+
+                                    while (requestLine < text.Length - 1 && !classLine.Contains("class:"))
+                                    {
+                                        requestLine++;
+                                        classLine = text.ElementAt(requestLine);
+                                    }
+
+                                    if (classLine.Contains("class:"))
+                                    {
+                                        className = classLine.Split(':')[1].Trim();
+                                    }
+                                }
+
+                                if (className != null)
+                                {
+                                    var referencedClasses = _modelStore.GetReferencedClasses(file);
+                                    if (referencedClasses.TryGetValue(className, out var aliasedClass))
+                                    {
+                                        classe = aliasedClass;
+                                    }
+                                    else
+                                    {
+                                        searchText = null;
+                                    }
+                                }
                             }
                         }
 

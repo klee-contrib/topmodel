@@ -35,7 +35,6 @@ public class ModelFileLoader
         }
 
         parser.Consume<DocumentStart>();
-        parser.Consume<MappingStart>();
 
         var file = new ModelFile
         {
@@ -43,7 +42,7 @@ public class ModelFileLoader
             Path = filePath.ToRelative(),
         };
 
-        while (parser.Current is not MappingEnd)
+        parser.ConsumeMapping(() =>
         {
             var prop = parser.Consume<Scalar>().Value;
             parser.TryConsume<Scalar>(out var value);
@@ -54,29 +53,20 @@ public class ModelFileLoader
                     file.Module = value!.Value;
                     break;
                 case "tags":
-                    parser.Consume<SequenceStart>();
-
-                    while (parser.Current is not SequenceEnd)
+                    parser.ConsumeSequence(() =>
                     {
                         file.Tags.Add(parser.Consume<Scalar>().Value);
-                    }
-
-                    parser.Consume<SequenceEnd>();
+                    });
                     break;
                 case "uses":
-                    parser.Consume<SequenceStart>();
-
-                    while (parser.Current is not SequenceEnd)
+                    parser.ConsumeSequence(() =>
                     {
                         file.Uses.Add(new Reference(parser.Consume<Scalar>()));
-                    }
-
-                    parser.Consume<SequenceEnd>();
+                    });
                     break;
             }
-        }
+        });
 
-        parser.Consume<MappingEnd>();
         parser.Consume<DocumentEnd>();
 
         while (parser.TryConsume<DocumentStart>(out var _))
@@ -114,8 +104,7 @@ public class ModelFileLoader
             {
                 var alias = new Alias();
 
-                parser.Consume<MappingStart>();
-                while (parser.Current is not MappingEnd)
+                parser.ConsumeMapping(() =>
                 {
                     var prop = parser.Consume<Scalar>().Value;
                     parser.TryConsume<Scalar>(out var value);
@@ -126,29 +115,19 @@ public class ModelFileLoader
                             alias.File = new Reference(value);
                             break;
                         case "classes":
-                            parser.Consume<SequenceStart>();
-
-                            while (parser.Current is not SequenceEnd)
+                            parser.ConsumeSequence(() =>
                             {
                                 alias.Classes.Add(new ClassReference(parser.Consume<Scalar>()));
-                            }
-
-                            parser.Consume<SequenceEnd>();
+                            });
                             break;
                         case "endpoints":
-                            parser.Consume<SequenceStart>();
-
-                            while (parser.Current is not SequenceEnd)
+                            parser.ConsumeSequence(() =>
                             {
                                 alias.Endpoints.Add(new Reference(parser.Consume<Scalar>()));
-                            }
-
-                            parser.Consume<SequenceEnd>();
+                            });
                             break;
                     }
-                }
-
-                parser.Consume<MappingEnd>();
+                });
 
                 alias.ModelFile = file;
                 alias.Location = new Reference(scalar);

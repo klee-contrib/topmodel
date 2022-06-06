@@ -15,11 +15,9 @@ public class DecoratorLoader
 
     public Decorator LoadDecorator(Parser parser)
     {
-        parser.Consume<MappingStart>();
-
         var decorator = new Decorator();
 
-        while (parser.Current is not MappingEnd)
+        parser.ConsumeMapping(() =>
         {
             var prop = parser.Consume<Scalar>().Value;
             _ = parser.TryConsume<Scalar>(out var value);
@@ -39,24 +37,18 @@ public class DecoratorLoader
                     decorator.Java = _fileChecker.Deserialize<JavaDecorator>(parser);
                     break;
                 case "properties":
-                    parser.Consume<SequenceStart>();
-
-                    while (parser.Current is not SequenceEnd)
+                    parser.ConsumeSequence(() =>
                     {
                         foreach (var property in PropertyLoader.LoadProperty(parser))
                         {
                             decorator.Properties.Add(property);
                         }
-                    }
-
-                    parser.Consume<SequenceEnd>();
+                    });
                     break;
                 default:
                     throw new ModelException(decorator, $"Propriété ${prop} inconnue pour un décoteur");
             }
-        }
-
-        parser.Consume<MappingEnd>();
+        });
 
         foreach (var prop in decorator.Properties)
         {
