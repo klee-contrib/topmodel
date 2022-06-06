@@ -871,6 +871,26 @@ public class ModelStore
                     }
                 }
             }
+
+            foreach (var mapper in classe.FromMappers)
+            {
+                foreach (var param in mapper.Params.Where((e, i) => mapper.Params.Where((p, j) => p.Name == e.Name && j < i).Any()))
+                {
+                    yield return new ModelError(classe, $"Le nom '{param.Name}' est déjà utilisé.", param.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
+                }
+
+                var mappings = mapper.Params.SelectMany(p => p.MappingReferences);
+
+                foreach (var mapping in mappings.Where((e, i) => mappings.Where((p, j) => p.Key.ReferenceName == e.Key.ReferenceName && j < i).Any()))
+                {
+                    yield return new ModelError(classe, $"La propriété '{mapping.Key.ReferenceName}' est déjà initialisée dans ce mapper.", mapping.Key) { ModelErrorType = ModelErrorType.TMD1015 };
+                }
+            }
+
+            foreach (var mapper in classe.ToMappers.Where((e, i) => classe.ToMappers.Where((p, j) => p.Name == e.Name && j < i).Any()))
+            {
+                yield return new ModelError(classe, $"Le nom '{mapper.Name}' est déjà utilisé.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
+            }
         }
 
         // Vérifications de cohérence sur les fichiers.

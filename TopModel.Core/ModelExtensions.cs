@@ -35,6 +35,7 @@ public static class ModelExtensions
             Domain d => d.Location,
             LocatedString l => l.Location,
             Decorator d => d.Location,
+            ClassMappings c => c.Name.Location,
             _ => null
         };
     }

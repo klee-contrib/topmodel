@@ -98,6 +98,11 @@ public enum ModelErrorType
     TMD1014,
 
     /// <summary>
+    /// La propriété '{mapping.Key.ReferenceName}' est déjà initialisée dans ce mapper.
+    /// </summary>
+    TMD1015,
+
+    /// <summary>
     /// L'import {} n'est pas utilisé.
     /// </summary>
     TMD9001,

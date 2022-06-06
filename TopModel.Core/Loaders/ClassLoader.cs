@@ -124,16 +124,18 @@ public class ClassLoader
                                                     var param = new ClassMappings();
                                                     mapper.Params.Add(param);
 
+                                                    Scalar classScalar = null!;
                                                     parser.ConsumeMapping(() =>
                                                     {
                                                         var subSubSubProp = parser.Consume<Scalar>().Value;
                                                         switch (subSubSubProp)
                                                         {
                                                             case "class":
-                                                                param.ClassReference = new(parser.Consume<Scalar>());
+                                                                classScalar = parser.Consume<Scalar>();
+                                                                param.ClassReference = new ClassReference(classScalar);
                                                                 break;
                                                             case "name":
-                                                                param.Name = parser.Consume<Scalar>().Value;
+                                                                param.Name = new LocatedString(parser.Consume<Scalar>());
                                                                 break;
                                                             case "mappings":
                                                                 parser.ConsumeMapping(() =>
@@ -144,7 +146,7 @@ public class ClassLoader
                                                         }
                                                     });
 
-                                                    param.Name ??= param.ClassReference.ReferenceName.ToFirstLower();
+                                                    param.Name ??= new LocatedString(classScalar) { Value = param.ClassReference.ReferenceName.ToFirstLower() };
                                                 });
                                                 break;
                                         }
@@ -161,13 +163,15 @@ public class ClassLoader
                                     parser.ConsumeMapping(() =>
                                     {
                                         var subSubProp = parser.Consume<Scalar>().Value;
+                                        Scalar classScalar = null!;
                                         switch (subSubProp)
                                         {
                                             case "class":
-                                                mapper.ClassReference = new ClassReference(parser.Consume<Scalar>());
+                                                classScalar = parser.Consume<Scalar>();
+                                                mapper.ClassReference = new ClassReference(classScalar);
                                                 break;
                                             case "name":
-                                                mapper.Name = parser.Consume<Scalar>().Value;
+                                                mapper.Name = new LocatedString(parser.Consume<Scalar>());
                                                 break;
                                             case "mappings":
                                                 parser.ConsumeMapping(() =>
@@ -177,7 +181,7 @@ public class ClassLoader
                                                 break;
                                         }
 
-                                        mapper.Name ??= $"To{mapper.ClassReference.ReferenceName}";
+                                        mapper.Name ??= new LocatedString(classScalar) { Value = $"To{mapper.ClassReference.ReferenceName}" };
                                     });
                                 });
                                 break;

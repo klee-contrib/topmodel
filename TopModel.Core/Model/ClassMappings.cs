@@ -5,7 +5,7 @@ namespace TopModel.Core;
 public class ClassMappings
 {
 #nullable disable
-    public string Name { get; set; }
+    public LocatedString Name { get; set; }
 
     public Class Class { get; set; }
 
