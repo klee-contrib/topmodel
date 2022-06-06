@@ -93,6 +93,11 @@ public enum ModelErrorType
     TMD1013,
 
     /// <summary>
+    /// La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine.
+    /// </summary>
+    TMD1014,
+
+    /// <summary>
     /// L'import {} n'est pas utilisé.
     /// </summary>
     TMD9001,

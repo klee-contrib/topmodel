@@ -831,10 +831,52 @@ public class ModelStore
             }
         }
 
+        // Résolutions des mappers
+        foreach (var classe in fileClasses)
+        {
+            foreach (var mappings in classe.FromMappers.SelectMany(m => m.Params).Concat(classe.ToMappers))
+            {
+                if (!referencedClasses.TryGetValue(mappings.ClassReference.ReferenceName, out var mappedClass))
+                {
+                    yield return new ModelError(classe, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", mappings.ClassReference) { ModelErrorType = ModelErrorType.TMD1002 };
+                    continue;
+                }
+
+                mappings.Class = mappedClass;
+
+                mappings.Mappings.Clear();
+
+                foreach (var mapping in mappings.MappingReferences)
+                {
+                    var currentProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == mapping.Key.ReferenceName);
+                    if (currentProperty == null)
+                    {
+                        yield return new ModelError(classe, $"La propriété '{{0}}' est introuvable sur la classe '{classe}'.", mapping.Key) { ModelErrorType = ModelErrorType.TMD1004 };
+                    }
+
+                    var mappedProperty = mappedClass.Properties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == mapping.Value.ReferenceName);
+                    if (mappedProperty == null)
+                    {
+                        yield return new ModelError(classe, $"La propriété '{{0}}' est introuvable sur la classe '{mappedClass}'.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1004 };
+                    }
+
+                    if (currentProperty != null && mappedProperty != null)
+                    {
+                        mappings.Mappings.Add(currentProperty, mappedProperty);
+
+                        if (currentProperty.Domain != mappedProperty.Domain)
+                        {
+                            yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine ('{mappedProperty.Domain.Name}' au lieu de '{currentProperty.Domain.Name}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1014 };
+                        }
+                    }
+                }
+            }
+        }
+
         // Vérifications de cohérence sur les fichiers.
         if (!_config.AllowCompositePrimaryKey)
         {
-            foreach (var classe in modelFile.Classes)
+            foreach (var classe in fileClasses)
             {
                 if (classe.Properties.Count(p => p.PrimaryKey) > 1)
                 {

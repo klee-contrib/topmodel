@@ -110,6 +110,9 @@ public class ClassLoader
                             case "from":
                                 parser.ConsumeSequence(() =>
                                 {
+                                    var mapper = new FromMapper();
+                                    classe.FromMappers.Add(mapper);
+
                                     parser.ConsumeMapping(() =>
                                     {
                                         var subSubProp = parser.Consume<Scalar>().Value;
@@ -118,26 +121,30 @@ public class ClassLoader
                                             case "params":
                                                 parser.ConsumeSequence(() =>
                                                 {
+                                                    var param = new ClassMappings();
+                                                    mapper.Params.Add(param);
+
                                                     parser.ConsumeMapping(() =>
                                                     {
                                                         var subSubSubProp = parser.Consume<Scalar>().Value;
                                                         switch (subSubSubProp)
                                                         {
                                                             case "class":
-                                                                parser.Consume<Scalar>();
+                                                                param.ClassReference = new(parser.Consume<Scalar>());
                                                                 break;
                                                             case "name":
-                                                                parser.Consume<Scalar>();
+                                                                param.Name = parser.Consume<Scalar>().Value;
                                                                 break;
                                                             case "mappings":
                                                                 parser.ConsumeMapping(() =>
                                                                 {
-                                                                    parser.Consume<Scalar>();
-                                                                    parser.Consume<Scalar>();
+                                                                    param.MappingReferences.Add(new Reference(parser.Consume<Scalar>()), new Reference(parser.Consume<Scalar>()));
                                                                 });
                                                                 break;
                                                         }
                                                     });
+
+                                                    param.Name ??= param.ClassReference.ReferenceName.ToFirstLower();
                                                 });
                                                 break;
                                         }
@@ -148,25 +155,29 @@ public class ClassLoader
                             case "to":
                                 parser.ConsumeSequence(() =>
                                 {
+                                    var mapper = new ClassMappings();
+                                    classe.ToMappers.Add(mapper);
+
                                     parser.ConsumeMapping(() =>
                                     {
                                         var subSubProp = parser.Consume<Scalar>().Value;
                                         switch (subSubProp)
                                         {
                                             case "class":
-                                                parser.Consume<Scalar>();
+                                                mapper.ClassReference = new ClassReference(parser.Consume<Scalar>());
                                                 break;
                                             case "name":
-                                                parser.Consume<Scalar>();
+                                                mapper.Name = parser.Consume<Scalar>().Value;
                                                 break;
                                             case "mappings":
                                                 parser.ConsumeMapping(() =>
                                                 {
-                                                    parser.Consume<Scalar>();
-                                                    parser.Consume<Scalar>();
+                                                    mapper.MappingReferences.Add(new Reference(parser.Consume<Scalar>()), new Reference(parser.Consume<Scalar>()));
                                                 });
                                                 break;
                                         }
+
+                                        mapper.Name ??= $"To{mapper.ClassReference.ReferenceName}";
                                     });
                                 });
                                 break;
