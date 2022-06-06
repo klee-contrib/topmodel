@@ -601,7 +601,14 @@
                               "type": "object",
                               "description": "Correspondances de champs entre la classe courante et la classe en paramètre. Les correspondances entre alias sont ajoutées automatiquement s'il n'y a pas ambiguïté. Les propriétés doivent avoir le même domaine pour établir une correspondance.",
                               "additionalProperties": {
-                                "type": "string"
+                                "oneOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "boolean"
+                                  }
+                                ]
                               }
                             }
                           }
@@ -632,7 +639,14 @@
                         "type": "object",
                         "description": "Correspondances de champs entre la classe courante et la classe cible. Les correspondances entre alias sont ajoutées automatiquement s'il n'y a pas ambiguïté. Les propriétés doivent avoir le même domaine pour établir une correspondance.",
                         "additionalProperties": {
-                          "type": "string"
+                          "oneOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "boolean"
+                            }
+                          ]
                         }
                       }
                     }

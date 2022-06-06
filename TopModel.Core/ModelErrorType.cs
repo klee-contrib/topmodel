@@ -103,6 +103,11 @@ public enum ModelErrorType
     TMD1015,
 
     /// <summary>
+    /// Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Value.Name}'.
+    /// </summary>
+    TMD1016,
+
+    /// <summary>
     /// L'import {} n'est pas utilisé.
     /// </summary>
     TMD9001,

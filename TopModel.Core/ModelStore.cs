@@ -854,6 +854,11 @@ public class ModelStore
                         yield return new ModelError(classe, $"La propriété '{{0}}' est introuvable sur la classe '{classe}'.", mapping.Key) { ModelErrorType = ModelErrorType.TMD1004 };
                     }
 
+                    if (mapping.Value.ReferenceName == "false")
+                    {
+                        continue;
+                    }
+
                     var mappedProperty = mappedClass.Properties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == mapping.Value.ReferenceName);
                     if (mappedProperty == null)
                     {
@@ -881,15 +886,58 @@ public class ModelStore
 
                 var mappings = mapper.Params.SelectMany(p => p.MappingReferences);
 
-                foreach (var mapping in mappings.Where((e, i) => mappings.Where((p, j) => p.Key.ReferenceName == e.Key.ReferenceName && j < i).Any()))
+                var hasDoublon = false;
+                foreach (var mapping in mappings.Where((e, i) => e.Value.ReferenceName != "false" && mappings.Where((p, j) => p.Value.ReferenceName != "false" && p.Key.ReferenceName == e.Key.ReferenceName && j < i).Any()))
                 {
+                    hasDoublon = true;
                     yield return new ModelError(classe, $"La propriété '{mapping.Key.ReferenceName}' est déjà initialisée dans ce mapper.", mapping.Key) { ModelErrorType = ModelErrorType.TMD1015 };
+                }
+
+                if (!hasDoublon)
+                {
+                    var explicitMappings = mapper.Params.SelectMany(p => p.Mappings).ToDictionary(p => p.Key, p => p.Value);
+
+                    foreach (var param in mapper.Params)
+                    {
+                        foreach (var property in classe.Properties.OfType<AliasProperty>().Where(property => !explicitMappings.ContainsKey(property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
+                        {
+                            if (property.IsAliasFrom(param.Class))
+                            {
+                                param.Mappings.Add(property, property.Property);
+                            }
+                        }
+                    }
+
+                    var finalMappings = mapper.Params.SelectMany(p => p.Mappings).ToList();
+
+                    foreach (var mapping in finalMappings.Where((e, i) => finalMappings.Where((p, j) => p.Key == e.Key && j < i).Any()))
+                    {
+                        yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Key.Name}' : {string.Join(", ", mapper.Params.SelectMany(p => p.Mappings.Where(m => m.Key == mapping.Key).Select(m => $"'{p.Name}.{m.Value.Name}'")))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
+                    }
                 }
             }
 
             foreach (var mapper in classe.ToMappers.Where((e, i) => classe.ToMappers.Where((p, j) => p.Name == e.Name && j < i).Any()))
             {
                 yield return new ModelError(classe, $"Le nom '{mapper.Name}' est déjà utilisé.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
+            }
+
+            foreach (var mapper in classe.ToMappers)
+            {
+                var explicitMappings = mapper.Mappings.ToDictionary(p => p.Key, p => p.Value);
+
+                foreach (var property in classe.Properties.OfType<AliasProperty>().Where(property => !explicitMappings.ContainsKey(property) && !mapper.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
+                {
+                    if (property.IsAliasFrom(mapper.Class))
+                    {
+                        mapper.Mappings.Add(property, property.Property);
+                    }
+                }
+
+                foreach (var mapping in mapper.Mappings.Where((e, i) => mapper.Mappings.Where((p, j) => p.Value == e.Value && j < i).Any()))
+                {
+                    yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapper.Class}.{mapping.Value.Name}' : {string.Join(", ", mapper.Mappings.Where(p => p.Value == mapping.Value).Select(p => $"'{p.Key.Name}'"))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
+                }
             }
         }
 

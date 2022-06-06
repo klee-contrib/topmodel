@@ -115,10 +115,11 @@ public class ClassLoader
 
                                     parser.ConsumeMapping(() =>
                                     {
-                                        var subSubProp = parser.Consume<Scalar>().Value;
-                                        switch (subSubProp)
+                                        var subSubProp = parser.Consume<Scalar>();
+                                        switch (subSubProp.Value)
                                         {
                                             case "params":
+                                                mapper.Reference = new LocatedString(subSubProp);
                                                 parser.ConsumeSequence(() =>
                                                 {
                                                     var param = new ClassMappings();

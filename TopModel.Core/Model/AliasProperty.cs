@@ -139,4 +139,26 @@ public class AliasProperty : IFieldProperty
 
         return alp;
     }
+
+    internal bool IsAliasFrom(Class classe)
+    {
+        var prop = _property;
+
+        if (prop.Class == classe)
+        {
+            return true;
+        }
+
+        while (prop is AliasProperty alp)
+        {
+            prop = alp.Property;
+
+            if (prop.Class == classe)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
