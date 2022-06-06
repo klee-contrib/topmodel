@@ -53,6 +53,21 @@ public static class CSharpUtils
         return Path.Combine(destDirectory, "generated", $"{dbContextName}.cs");
     }
 
+    public static string? GetMapperFilePath(this CSharpConfig config, IEnumerable<Class> classList)
+    {
+        var firstClass = classList.FirstOrDefault();
+
+        if (firstClass == null)
+        {
+            return null;
+        }
+
+        var directory = Path.Combine(config.OutputDirectory, config.GetModelPath(firstClass), "Mappers/generated");
+        Directory.CreateDirectory(directory);
+
+        return Path.Combine(directory, $"{firstClass.Namespace.Module}Mappers.cs");
+    }
+
     public static string? GetReferenceInterfaceFilePath(this CSharpConfig config, IEnumerable<Class> classList)
     {
         var firstClass = classList.FirstOrDefault();
