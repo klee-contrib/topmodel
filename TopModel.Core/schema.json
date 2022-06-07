@@ -599,7 +599,7 @@
                             },
                             "mappings": {
                               "type": "object",
-                              "description": "Correspondances de champs entre la classe courante et la classe en paramètre. Les correspondances entre alias sont ajoutées automatiquement s'il n'y a pas ambiguïté. Les propriétés doivent avoir le même domaine pour établir une correspondance.",
+                              "description": "Correspondances de champs entre la classe courante et la classe en paramètre. Les propriétés doivent avoir le même domaine pour pouvoir établir une correspondance.\n\nLes correspondances entre alias, puis entre propriétés de même nom et de même domaine sont ajoutées automatiquement sauf indication contraire (correspondance explicite sur une autre propriété, ou correspondance renseignée à `false` pour la désactiver).",
                               "additionalProperties": {
                                 "oneOf": [
                                   {
@@ -637,7 +637,7 @@
                       },
                       "mappings": {
                         "type": "object",
-                        "description": "Correspondances de champs entre la classe courante et la classe cible. Les correspondances entre alias sont ajoutées automatiquement s'il n'y a pas ambiguïté. Les propriétés doivent avoir le même domaine pour établir une correspondance.",
+                        "description": "Correspondances de champs entre la classe courante et la classe en paramètre. Les propriétés doivent avoir le même domaine pour pouvoir établir une correspondance.\n\nLes correspondances entre alias, puis entre propriétés de même nom et de même domaine sont ajoutées automatiquement sauf indication contraire (correspondance explicite sur une autre propriété, ou correspondance renseignée à `false` pour la désactiver).",
                         "additionalProperties": {
                           "oneOf": [
                             {

@@ -895,15 +895,31 @@ public class ModelStore
 
                 if (!hasDoublon)
                 {
-                    var explicitMappings = mapper.Params.SelectMany(p => p.Mappings).ToDictionary(p => p.Key, p => p.Value);
+                    var explicitMappings = mapper.Params.SelectMany(p => p.Mappings).ToList();
 
                     foreach (var param in mapper.Params)
                     {
-                        foreach (var property in classe.Properties.OfType<AliasProperty>().Where(property => !explicitMappings.ContainsKey(property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
+                        foreach (var property in classe.Properties.OfType<AliasProperty>().Where(property => !explicitMappings.Any(m => m.Key == property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
                         {
                             if (property.IsAliasFrom(param.Class))
                             {
                                 param.Mappings.Add(property, property.Property);
+                            }
+                        }
+                    }
+
+                    var explicitAndAliasMappings = mapper.Params.SelectMany(p => p.Mappings).ToList();
+
+                    foreach (var param in mapper.Params)
+                    {
+                        foreach (var property in classe.Properties.OfType<IFieldProperty>().Where(property => !explicitAndAliasMappings.Any(m => m.Key == property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
+                        {
+                            foreach (var p in param.Class.Properties.OfType<IFieldProperty>())
+                            {
+                                if (p.Name == property.Name && p.Domain == property.Domain)
+                                {
+                                    param.Mappings.Add(property, p);
+                                }
                             }
                         }
                     }
@@ -931,6 +947,19 @@ public class ModelStore
                     if (property.IsAliasFrom(mapper.Class))
                     {
                         mapper.Mappings.Add(property, property.Property);
+                    }
+                }
+
+                var explicitAndAliasMappings = mapper.Mappings.ToDictionary(p => p.Key, p => p.Value);
+
+                foreach (var property in classe.Properties.OfType<IFieldProperty>().Where(property => !explicitAndAliasMappings.ContainsKey(property) && !mapper.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
+                {
+                    foreach (var p in mapper.Class.Properties.OfType<IFieldProperty>())
+                    {
+                        if (p.Name == property.Name && p.Domain == property.Domain)
+                        {
+                            mapper.Mappings.Add(property, p);
+                        }
                     }
                 }
 
