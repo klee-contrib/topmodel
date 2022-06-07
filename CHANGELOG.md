@@ -1,5 +1,13 @@
 # TopModel.Generator (`modgen`)
 
+## 1.8.1
+
+- [#105](https://github.com/klee-contrib/topmodel/pull/107) VSCode : Correction détection numéro de version et autoUpdate #105
+
+> L'extension est maintenant capable de mettre à jour automatiquement TopModel, si le paramètre topmodel.autoUpdate est renseigné à true
+
+- JS : Correction anomalie régression de la v1.8.0
+
 ## 1.8.0
 
 - [#101](https://github.com/klee-contrib/topmodel/pull/101) et [5a15a7](https://github.com/klee-contrib/topmodel/commit/5a15a76141ec6ee17680f7629735e0364b8109ea)/[2f59e4](https://github.com/klee-contrib/topmodel/commit/2f59e413eb9a00f6a75e9bf9997df30a32d07aa6) - TopModel génère désormais un fichier `topmodel.lock` qui contient la version de TopModel utilisé par la dernière génération ainsi que la liste des fichiers générés. Cela permet :
