@@ -83,7 +83,7 @@ async function checkTopModelUpdate() {
     const options = {
         hostname: 'api.nuget.org',
         port: 443,
-        path: '/v3-flatcontainer/TopModel.Generator/index.json',
+        path: '/v3-flatcontainer/topmodel.generator/index.json',
         method: 'GET'
     };
 
@@ -94,10 +94,17 @@ async function checkTopModelUpdate() {
             execute(`modgen --version`, async (result: string) => {
                 const currentVersion = result.replace('\r\n', '');
                 if (currentVersion !== latest) {
-                    const option = "Update TopModel";
-                    const selection = await window.showInformationMessage(`TopModel peut être mis à jour (${currentVersion} > ${latest})`, option);
-                    if (selection === option) {
-                        commands.executeCommand(COMMANDS.update);
+                    const extensionConfiguration = workspace.getConfiguration('topmodel');
+                    if (extensionConfiguration.autoUpdate) {
+                        execute(`dotnet tool update --global TopModel.Generator`, () => {
+                            window.showInformationMessage(`TopModel a été mis à jour ${currentVersion} --> ${latest})`);
+                        });
+                    } else {
+                        const option = "Update TopModel";
+                        const selection = await window.showInformationMessage(`TopModel peut être mis à jour (${currentVersion} > ${latest})`, option);
+                        if (selection === option) {
+                            commands.executeCommand(COMMANDS.update);
+                        }
                     }
                 }
             });
@@ -220,7 +227,6 @@ function startLanguageServer(context: ExtensionContext, configPath: string, conf
 
     // Create the language client and start the client.
     const client = new LanguageClient('topmodel', 'TopModel', serverOptions, clientOptions);
-    client.trace = Trace.Verbose;
 
     let disposable = client.start();
     client.onReady().then(() => {
