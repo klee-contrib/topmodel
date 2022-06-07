@@ -97,7 +97,7 @@ async function checkTopModelUpdate() {
                     const extensionConfiguration = workspace.getConfiguration('topmodel');
                     if (extensionConfiguration.autoUpdate) {
                         execute(`dotnet tool update --global TopModel.Generator`, () => {
-                            window.showInformationMessage(`TopModel a été mis à jour ${currentVersion} --> ${latest})`);
+                            window.showInformationMessage(`TopModel a été mis à jour ${currentVersion} --> ${latest}`);
                         });
                     } else {
                         const option = "Update TopModel";
