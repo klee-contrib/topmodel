@@ -32,7 +32,8 @@ public static class ModelUtils
         return Regex.Replace(text, @"\p{Lu}", m => "-" + m.Value)
             .ToLowerInvariant()
             .Substring(upperStart ? 1 : 0)
-            .Replace("/-", "/");
+            .Replace("/-", "/")
+            .Replace("\\-", "\\");
     }
 
     /// <summary>
