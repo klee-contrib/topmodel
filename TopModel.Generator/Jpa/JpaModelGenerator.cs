@@ -434,7 +434,7 @@ public class JpaModelGenerator : GeneratorBase
                         || field.Domain.Java.Type == "Integer")
                     {
                         var seqName = $"SEQ_{classe.SqlName}";
-                        fw.WriteLine(1, @$"@SequenceGenerator(name = ""{seqName}"", sequenceName = ""{seqName}"",  initialValue = 1000, allocationSize = 1)");
+                        fw.WriteLine(1, @$"@SequenceGenerator(name = ""{seqName}"", sequenceName = ""{seqName}"",  initialValue = 1000)");
                         fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ""{seqName}"")");
                     }
                 }
