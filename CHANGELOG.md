@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.8.3
+
+- JPA: Suppression du allocationSize pour optimisation récupération séquence en masse
+
 ## 1.8.2
 
 - [#108](https://github.com/klee-contrib/topmodel/pull/108)  [VSCode] Améliorations status bar TopModel #104
