@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.8.2
+
+- [#108](https://github.com/klee-contrib/topmodel/pull/108)  [VSCode] Améliorations status bar TopModel #104
+
 ## 1.8.1
 
 - [#105](https://github.com/klee-contrib/topmodel/pull/107) VSCode : Correction détection numéro de version et autoUpdate #105
