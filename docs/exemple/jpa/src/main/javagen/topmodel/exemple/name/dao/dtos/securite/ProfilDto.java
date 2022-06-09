@@ -89,6 +89,22 @@ public class ProfilDto implements Serializable {
 	}
 
 	/**
+	 * Crée une nouvelle instance de 'ProfilDto'.
+	 * @param profil Instance de 'Profil'.
+	 *
+	 * @return Une nouvelle instance de 'ProfilDto'.
+	 */
+	public ProfilDto(Profil profil) {
+		if(profil != null) {
+			this.id = profil.getId();
+
+			if(profil.getTypeProfil() != null) {
+				this.typeProfilCode = profil.getTypeProfil().getCode();
+			}
+		};
+	}
+
+	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link topmodel.exemple.name.dao.dtos.securite.ProfilDto#id id}.
@@ -137,5 +153,20 @@ public class ProfilDto implements Serializable {
 	 */
 	public void setUtilisateurs(List<UtilisateurDto> utilisateurs) {
 		this.utilisateurs = utilisateurs;
+	}
+
+	/**
+	 * Mappe 'ProfilDto' vers 'Profil'.
+	 * @param source Instance de 'ProfilDto'.
+	 * @param dest Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
+	 *
+	 * @return Une instance de 'Profil'.
+	 */
+	public Profil ToProfil(Profil dest) {
+		dest = dest == null ? new Profil() : dest;
+
+		dest.setId(this.getId());
+
+		return dest;
 	}
 }

@@ -17,3 +17,9 @@ class:
       name: utilisateurs # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
       kind: list
       comment: Liste paginée des utilisateurs de ce profil
+  mappers:
+    to:
+      - class: Profil
+    from:
+      - params:
+        - class: Profil
