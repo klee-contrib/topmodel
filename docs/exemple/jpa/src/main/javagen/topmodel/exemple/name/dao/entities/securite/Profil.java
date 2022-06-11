@@ -31,7 +31,7 @@ public class Profil {
 	 * Id technique.
 	 */
 	@Id
-	@SequenceGenerator(name = "SEQ_PROFIL", sequenceName = "SEQ_PROFIL",  initialValue = 1000, allocationSize = 1)
+	@SequenceGenerator(name = "SEQ_PROFIL", sequenceName = "SEQ_PROFIL", initialValue = 1000)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PROFIL")
 	@Column(name = "PRO_ID", nullable = false)
 	private long id;
