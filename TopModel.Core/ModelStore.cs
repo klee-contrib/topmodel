@@ -903,7 +903,7 @@ public class ModelStore
                         {
                             if (property.IsAliasFrom(param.Class))
                             {
-                                param.Mappings.Add(property, property.Property);
+                                param.Mappings.Add(property, property.OriginalProperty!);
                             }
                         }
                     }
@@ -946,7 +946,7 @@ public class ModelStore
                 {
                     if (property.IsAliasFrom(mapper.Class))
                     {
-                        mapper.Mappings.Add(property, property.Property);
+                        mapper.Mappings.Add(property, property.OriginalProperty!);
                     }
                 }
 

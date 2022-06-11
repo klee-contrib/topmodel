@@ -126,12 +126,6 @@ public class Utilisateur {
 	}
 
 	/**
-	 * Alias constructor.
-	 * Ce constructeur permet d'initialiser un objet Utilisateur avec comme paramètres les classes dont les propriétés sont référencées Utilisateur.
-	 * A ne pas utiliser pour construire un Dto en plusieurs requêtes.
-	 * Voir la <a href="https://klee-contrib.github.io/topmodel/#/generator/jpa?id=constructeurs-par-alias">documentation</a>
-
-	/**
 	 * Getter for dateCreation.
 	 *
 	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#dateCreation dateCreation}.

@@ -110,9 +110,8 @@ public class JpaModelGenerator : GeneratorBase
 
             WriteProperties(fw, classe);
             _jpaModelConstructorGenerator.WriteNoArgConstructor(fw, classe);
-           // _jpaModelConstructorGenerator.WriteCopyConstructor(fw, classe);
+            _jpaModelConstructorGenerator.WriteCopyConstructor(fw, classe);
             _jpaModelConstructorGenerator.WriteAllArgConstructor(fw, classe);
-            _jpaModelConstructorGenerator.WriteAliasConstructor(fw, classe);
 
             var availableClasses = _files.Values.SelectMany(c => c.Classes).ToList();
             _jpaModelConstructorGenerator.WriteFromMappers(fw, classe, availableClasses);
@@ -569,7 +568,7 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteParam("dest", $"Instance pré-existante de '{mapper.Class}'. Une nouvelle instance sera créée si non spécifié.");
             fw.WriteReturns(1, $"Une instance de '{mapper.Class}'");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, $"public {mapper.Class} {mapper.Name}({mapper.Class} dest) {{");
+            fw.WriteLine(1, $"public {mapper.Class} {mapper.Name.ToFirstLower()}({mapper.Class} dest) {{");
             fw.WriteLine(2, $"dest = dest == null ? new {mapper.Class}() : dest;");
             fw.WriteLine();
 

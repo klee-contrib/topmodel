@@ -73,12 +73,6 @@ public class TypeProfil {
 	}
 
 	/**
-	 * Alias constructor.
-	 * Ce constructeur permet d'initialiser un objet TypeProfil avec comme paramètres les classes dont les propriétés sont référencées TypeProfil.
-	 * A ne pas utiliser pour construire un Dto en plusieurs requêtes.
-	 * Voir la <a href="https://klee-contrib.github.io/topmodel/#/generator/jpa?id=constructeurs-par-alias">documentation</a>
-
-	/**
 	 * Getter for code.
 	 *
 	 * @return value of {@link topmodel.exemple.name.dao.entities.securite.TypeProfil#code code}.

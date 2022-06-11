@@ -73,10 +73,18 @@ public class Profil {
 	}
 
 	/**
-	 * Alias constructor.
-	 * Ce constructeur permet d'initialiser un objet Profil avec comme paramètres les classes dont les propriétés sont référencées Profil.
-	 * A ne pas utiliser pour construire un Dto en plusieurs requêtes.
-	 * Voir la <a href="https://klee-contrib.github.io/topmodel/#/generator/jpa?id=constructeurs-par-alias">documentation</a>
+	 * Crée une nouvelle instance de 'Profil'.
+	 * @param profil Instance de 'Profil'.
+	 *
+	 * @return Une nouvelle instance de 'Profil'.
+	 */
+	public Profil(Profil profil) {
+		if(profil != null) {
+			this.id = profil.getId();
+			this.typeProfil = profil.getTypeProfil();
+		}
+
+	}
 
 	/**
 	 * Getter for id.
@@ -126,6 +134,22 @@ public class Profil {
 			return this.getId().equals(profil.getId());
 		}
 		return false;
+	}
+
+	/**
+	 * Mappe 'Profil' vers 'Profil'.
+	 * @param source Instance de 'Profil'.
+	 * @param dest Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
+	 *
+	 * @return Une instance de 'Profil'.
+	 */
+	public Profil toProfil(Profil dest) {
+		dest = dest == null ? new Profil() : dest;
+
+		dest.setId(this.getId());
+		dest.setTypeProfil(this.getTypeProfil());
+
+		return dest;
 	}
 
 	/**
