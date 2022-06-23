@@ -25,7 +25,7 @@ Nous souhaitons maintenant ajouter à notre classe `Utilisateur` des **propriét
 | --------- | --------------------------------------- |
 | **Id**    | **Identifiant unique de l'utilisateur** |
 
-A cette propriété, nous souhaitons associer un **domaine**. Il s'agit du type théorique de la propriété, qui sera par la suite décliné dans les différents langages utilisés ( ex : java - Long, TypeScript - number etc). Nous reviendrons vers la configuration des domaines plus tard dans ce tutoriel.
+A cette propriété, nous souhaitons associer un **domaine**. Il s'agit du type théorique de la propriété, qui sera par la suite décliné dans les différents langages utilisés ( ex : java - Long, TypeScript - number etc).
 
 Ajoutons donc un identifiant à la classe `Utilisateur`
 
@@ -44,6 +44,72 @@ class:
       domain: DO_ID # Type théorique de la propriété. Il sera décliné dans différents langages par la suite
 
 ```
+
+## Déclaration du domaine
+
+Le domaine représente le type théorique de la propriété, à décliner dans les différents langages utilisés pour la génération. Ici, nous allons prendre un exemple en Java et Typescript (TS). Créons donc un fichier `Domains.tmd` où nous définirons tous nos domaines.
+
+```yaml
+# Domains.ts
+---
+domain:
+  name: DO_ID # Nom du domaine utilisé dans la définition des propriétés
+  label: ID technique # Description du domaine
+  ts:
+    type: number # Type TS à utiliser pour ce domaine
+  java:
+    type: long # Type Java à utiliser pour ce domaine
+```
+
+Selon le langage, vous pourrez améliorer la définition des domaines pour les personnaliser totalement à vos besoin. Ci dessous quelques exemples :
+
+```yaml
+---
+domain:
+  name: DO_DATE
+  label: Date
+  ts:
+    type: string
+  java:
+    type: LocalDate
+    imports:
+      - java.time.LocalDate # Imports nécessaires au bon fonctionnement de la classe Java
+---
+domain:
+  name: DO_EMAIL
+  label: Email
+  length: 50 # Taille maximum de la chaine de caractères représentée par ce domaine
+  ts:
+    type: string
+  java:
+    type: String
+    annotations:
+      - "@Email" # Ensemble des annotations à ajouter au dessus de la propriété
+    imports:
+      - "javax.validation.constraints.Email" # Imports nécessaires au bon fonctionnement de la classe Java
+---
+domain:
+  name: DO_CODE
+  label: Code
+  length: 3
+  ts:
+    type: string
+  java:
+    type: String
+  sqlType: varchar
+---
+domain:
+  name: DO_LIBELLE
+  label: Libellé
+  length: 15
+  ts:
+    type: string
+  java:
+    type: String
+  sqlType: varchar
+```
+
+## Où l'on ajoute plusieurs propriétés
 
 Ajoutons maintenant quelques propriétés à la classe utilisateur, qui nous servirons par la suite : un nom, une date d'inscription, et une adresse mail. Nous pouvons compléter ces propriétés avec des informations facultatives. Les plus communes :
 

@@ -3,9 +3,11 @@
 Dans notre modèle de données, nous souhaitons définir des **listes de références**. Ce sont des classes dont les instances changent peu ou pas du tout, et qui peuvent donc être mises en cache.
 
 Définissons donc dans notre module `Users` la classe `TypeUtilisateur`. Pour indiquer qu'il s'agit d'une liste de référence, il suffit de préciser l'attribut `reference`.
-Ainsi :
+
+Ainsi, dans un nouveau fichier `References` :
 
 ```yaml
+# References
 ---
 class:
   name: TypeUtilisateur
