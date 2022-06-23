@@ -106,3 +106,5 @@ class:
       label: Profil
       domain: DO_LIBELLE
 ```
+
+Aller plus loin dans la documentation complète des [associations](/model/properties?id=association)

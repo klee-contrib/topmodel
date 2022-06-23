@@ -148,3 +148,5 @@ class:
 ```
 
 Nous avons donc créé une classe `Utilisateur` dans le module `users` contenant quatre propriétés.
+
+Aller plus loin dans la documentation complète de [classes](/model/classes.md)
