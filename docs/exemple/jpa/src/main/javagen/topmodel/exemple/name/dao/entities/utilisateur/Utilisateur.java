@@ -58,7 +58,7 @@ public class Utilisateur {
 	 * Id technique.
 	 */
 	@Id
-	@SequenceGenerator(name = "SEQ_UTILISATEUR", sequenceName = "SEQ_UTILISATEUR",  initialValue = 1000, allocationSize = 1)
+	@SequenceGenerator(name = "SEQ_UTILISATEUR", sequenceName = "SEQ_UTILISATEUR", initialValue = 1000)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_UTILISATEUR")
 	@Column(name = "UTI_ID", nullable = false)
 	private long id;
@@ -124,12 +124,6 @@ public class Utilisateur {
 		this.email = email;
 		this.typeUtilisateur = typeUtilisateur;
 	}
-
-	/**
-	 * Alias constructor.
-	 * Ce constructeur permet d'initialiser un objet Utilisateur avec comme paramètres les classes dont les propriétés sont référencées Utilisateur.
-	 * A ne pas utiliser pour construire un Dto en plusieurs requêtes.
-	 * Voir la <a href="https://klee-contrib.github.io/topmodel/#/generator/jpa?id=constructeurs-par-alias">documentation</a>
 
 	/**
 	 * Getter for dateCreation.

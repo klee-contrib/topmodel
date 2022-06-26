@@ -72,11 +72,10 @@ public class ProfilDto implements Serializable {
 	}
 
 	/**
-	 * Alias constructor.
-	 * Ce constructeur permet d'initialiser un objet ProfilDto avec comme paramètres les classes dont les propriétés sont référencées ProfilDto.
-	 * A ne pas utiliser pour construire un Dto en plusieurs requêtes.
-	 * Voir la <a href="https://klee-contrib.github.io/topmodel/#/generator/jpa?id=constructeurs-par-alias">documentation</a>
-	 * @param Profil Profil des utilisateurs
+	 * Crée une nouvelle instance de 'ProfilDto'.
+	 * @param profil Instance de 'Profil'.
+	 *
+	 * @return Une nouvelle instance de 'ProfilDto'.
 	 */
 	public ProfilDto(Profil profil) {
 		if(profil != null) {
@@ -85,7 +84,9 @@ public class ProfilDto implements Serializable {
 			if(profil.getTypeProfil() != null) {
 				this.typeProfilCode = profil.getTypeProfil().getCode();
 			}
+
 		}
+
 	}
 
 	/**
@@ -137,5 +138,20 @@ public class ProfilDto implements Serializable {
 	 */
 	public void setUtilisateurs(List<UtilisateurDto> utilisateurs) {
 		this.utilisateurs = utilisateurs;
+	}
+
+	/**
+	 * Mappe 'ProfilDto' vers 'Profil'.
+	 * @param source Instance de 'ProfilDto'.
+	 * @param dest Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
+	 *
+	 * @return Une instance de 'Profil'.
+	 */
+	public Profil toProfil(Profil dest) {
+		dest = dest == null ? new Profil() : dest;
+
+		dest.setId(this.getId());
+
+		return dest;
 	}
 }

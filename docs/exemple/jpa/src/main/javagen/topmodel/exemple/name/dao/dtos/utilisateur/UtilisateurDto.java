@@ -103,33 +103,6 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	}
 
 	/**
-	 * Alias constructor.
-	 * Ce constructeur permet d'initialiser un objet UtilisateurDto avec comme paramètres les classes dont les propriétés sont référencées UtilisateurDto.
-	 * A ne pas utiliser pour construire un Dto en plusieurs requêtes.
-	 * Voir la <a href="https://klee-contrib.github.io/topmodel/#/generator/jpa?id=constructeurs-par-alias">documentation</a>
-	 * @param Utilisateur Utilisateur de l'application
-	 * @param ProfilProfil Profil des utilisateurs
-	 */
-	public UtilisateurDto(Utilisateur utilisateur, Profil profilProfil) {
-		if(profilProfil != null) {
-			this.profilId = profilProfil.getId();
-
-			if(profilProfil.getTypeProfil() != null) {
-				this.profilTypeProfilCode = profilProfil.getTypeProfil().getCode();
-			}
-		}
-
-		if(utilisateur != null) {
-			this.id = utilisateur.getId();
-			this.email = utilisateur.getEmail();
-
-			if(utilisateur.getTypeUtilisateur() != null) {
-				this.typeUtilisateurCode = utilisateur.getTypeUtilisateur().getCode();
-			}
-		}
-	}
-
-	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#id id}.

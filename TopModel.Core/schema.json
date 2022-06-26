@@ -564,6 +564,95 @@
             "values": {
               "type": "object",
               "description": "Liste des valeurs de la table à insérer à la création de la base de données. Il doit d'agir d'un objet ayant pour clés un nom de ligne (qui sera utilisé pour identifier la clé en C#), et pour valeurs un objet de type JSON qui renseigne les valeurs des différentes propriétés."
+            },
+            "mappers": {
+              "type": "object",
+              "description": "Définitions de mappers vers et depuis cette classe.",
+              "additionalProperties": false,
+              "properties": {
+                "from": {
+                  "type": "array",
+                  "description": "Mappers vers cette classe.",
+                  "additionalProperties": false,
+                  "items": {
+                    "type": "object",
+                    "description": "Mapper vers la classe courante",
+                    "required": [ "params" ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "params": {
+                        "type": "array",
+                        "description": "Liste des paramètres du mapper.",
+                        "items": {
+                          "type": "object",
+                          "description": "Paramètre pour le mapper.",
+                          "required": [ "class" ],
+                          "additionalProperties": false,
+                          "properties": {
+                            "class": {
+                              "type": "string",
+                              "description": "Classe depuis laquelle recopier des propriétés."
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Nom du paramètre. Utilise le nom de la classe par défaut."
+                            },
+                            "mappings": {
+                              "type": "object",
+                              "description": "Correspondances de champs entre la classe courante et la classe en paramètre. Les propriétés doivent avoir le même domaine pour pouvoir établir une correspondance.\n\nLes correspondances entre alias, puis entre propriétés de même nom et de même domaine sont ajoutées automatiquement sauf indication contraire (correspondance explicite sur une autre propriété, ou correspondance renseignée à `false` pour la désactiver).",
+                              "additionalProperties": {
+                                "oneOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "boolean"
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "to": {
+                  "type": "array",
+                  "description": "Mappers depuis cette classe.",
+                  "additionalProperties": false,
+                  "items": {
+                    "type": "object",
+                    "description": "Définition du mapper.",
+                    "required": [ "class" ],
+                    "additionalProperties": false,
+                    "properties": {
+                      "class": {
+                        "type": "string",
+                        "description": "Classe vers laquelle recopier des propriétés."
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Nom du mapper. Utilise le nom de la classe par défaut préfixé par 'To'."
+                      },
+                      "mappings": {
+                        "type": "object",
+                        "description": "Correspondances de champs entre la classe courante et la classe en paramètre. Les propriétés doivent avoir le même domaine pour pouvoir établir une correspondance.\n\nLes correspondances entre alias, puis entre propriétés de même nom et de même domaine sont ajoutées automatiquement sauf indication contraire (correspondance explicite sur une autre propriété, ou correspondance renseignée à `false` pour la désactiver).",
+                        "additionalProperties": {
+                          "oneOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "boolean"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }

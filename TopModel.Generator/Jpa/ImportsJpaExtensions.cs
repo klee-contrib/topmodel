@@ -221,12 +221,10 @@ public static class ImportsJpaExtensions
             .Select(c => c.Class.GetImport(config)));
         imports
         .AddRange(
-            classe.Properties
-            .OfType<AliasProperty>()
-            .Select(ap => ap.Property)
-            .OfType<AssociationProperty>()
-            .Where(a => (a.Type == AssociationType.OneToMany || a.Type == AssociationType.ManyToMany))
-            .Select(a => a.Association.GetImport(config)));
+            classe.FromMappers.SelectMany(fm => fm.Params).Select(fmp => fmp.Class.GetImport(config)));
+        imports
+        .AddRange(
+            classe.ToMappers.Select(fmp => fmp.Class.GetImport(config)));
 
         // Suppression des imports inutiles
         return imports.Where(i => string.Join('.', i.Split('.').SkipLast(1)) != string.Join('.', classe.GetImport(config).Split('.').SkipLast(1))).ToList();

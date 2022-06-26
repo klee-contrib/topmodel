@@ -42,6 +42,10 @@ public class Class
 
     public List<List<IFieldProperty>> UniqueKeys { get; } = new();
 
+    public List<FromMapper> FromMappers { get; } = new();
+
+    public List<ClassMappings> ToMappers { get; } = new();
+
     public string PluralName
     {
         get => _pluralName ?? (Name.EndsWith("s") ? Name : $"{Name}s");

@@ -15,6 +15,7 @@ public class CSharpGenerator : GeneratorBase
 
     private readonly CSharpClassGenerator _classGenerator;
     private readonly DbContextGenerator _dbContextGenerator;
+    private readonly MapperGenerator _mapperGenerator;
     private readonly ReferenceAccessorGenerator _referenceAccessorGenerator;
 
     public CSharpGenerator(ILogger<CSharpGenerator> logger, CSharpConfig config)
@@ -25,6 +26,7 @@ public class CSharpGenerator : GeneratorBase
 
         _classGenerator = new CSharpClassGenerator(_config, _logger);
         _dbContextGenerator = new DbContextGenerator(_config, _logger);
+        _mapperGenerator = new MapperGenerator(_config, _logger);
         _referenceAccessorGenerator = new ReferenceAccessorGenerator(_config, _logger);
     }
 
@@ -33,6 +35,7 @@ public class CSharpGenerator : GeneratorBase
     public override IEnumerable<string> GeneratedFiles =>
         new[] { AppName != null ? _config.GetDbContextFilePath(AppName) : null }
         .Concat(_files.Values.SelectMany(f => f.Classes).Select(c => _config.GetClassFileName(c)))
+        .Concat(GetMapperModules(_files.Values).Select(module => _config.GetMapperFilePath(module)))
         .Concat(GetReferenceModules(_files.Values).SelectMany(module => new[] { _config.GetReferenceInterfaceFilePath(module), _config.GetReferenceImplementationFilePath(module) }))
         .Where(f => f != null)!;
 
@@ -52,6 +55,12 @@ public class CSharpGenerator : GeneratorBase
         }
 
         var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
+
+        foreach (var classes in GetMapperModules(files))
+        {
+            _mapperGenerator.Generate(classes, _files.Values.SelectMany(c => c.Classes).ToList());
+        }
+
         foreach (var classes in GetReferenceModules(files))
         {
             _referenceAccessorGenerator.Generate(classes);
@@ -72,6 +81,21 @@ public class CSharpGenerator : GeneratorBase
         {
             _classGenerator.Generate(classe);
         }
+    }
+
+    private IEnumerable<IEnumerable<Class>> GetMapperModules(IEnumerable<ModelFile> files)
+    {
+        return files
+            .SelectMany(f => f.Classes.Select(c => c.Namespace.Module))
+            .Distinct()
+            .Select(
+                module => _files.Values
+                    .SelectMany(f => f.Classes)
+                    .Distinct()
+                    .Where(c =>
+                        c.Namespace.Module == module
+                        && c.FromMappers.SelectMany(m => m.Params).Concat(c.ToMappers)
+                            .Any(m => _files.SelectMany(f => f.Value.Classes).Contains(c))));
     }
 
     private IEnumerable<IEnumerable<Class>> GetReferenceModules(IEnumerable<ModelFile> files)

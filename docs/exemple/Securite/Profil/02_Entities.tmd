@@ -19,3 +19,9 @@ class:
       comment: Id technique
     - association: TypeProfil
       comment: Type de profil
+  mappers:
+    to:
+      - class: Profil
+    from:
+      - params:
+        - class: Profil

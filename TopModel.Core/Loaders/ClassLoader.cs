@@ -18,11 +18,9 @@ public class ClassLoader
 
     internal Class LoadClass(Parser parser, string filePath)
     {
-        parser.Consume<MappingStart>();
-
         var classe = new Class();
 
-        while (parser.Current is not MappingEnd)
+        parser.ConsumeMapping(() =>
         {
             var prop = parser.Consume<Scalar>();
             _ = parser.TryConsume<Scalar>(out var value);
@@ -63,79 +61,141 @@ public class ClassLoader
                     classe.Comment = value!.Value;
                     break;
                 case "decorators":
-                    parser.Consume<SequenceStart>();
-
-                    while (parser.Current is not SequenceEnd)
+                    parser.ConsumeSequence(() =>
                     {
                         classe.DecoratorReferences.Add(new DecoratorReference(parser.Consume<Scalar>()));
-                    }
-
-                    parser.Consume<SequenceEnd>();
+                    });
                     break;
                 case "properties":
-                    parser.Consume<SequenceStart>();
-
-                    while (parser.Current is not SequenceEnd)
+                    parser.ConsumeSequence(() =>
                     {
                         foreach (var property in PropertyLoader.LoadProperty(parser))
                         {
                             classe.Properties.Add(property);
                         }
-                    }
-
-                    parser.Consume<SequenceEnd>();
+                    });
                     break;
                 case "unique":
-                    parser.Consume<SequenceStart>();
-
-                    while (parser.Current is not SequenceEnd)
+                    parser.ConsumeSequence(() =>
                     {
                         var uniqueKeyRef = new List<Reference>();
                         classe.UniqueKeyReferences.Add(uniqueKeyRef);
 
-                        parser.Consume<SequenceStart>();
-
-                        while (parser.Current is not SequenceEnd)
+                        parser.ConsumeSequence(() =>
                         {
                             uniqueKeyRef.Add(new Reference(parser.Consume<Scalar>()));
-                        }
-
-                        parser.Consume<SequenceEnd>();
-                    }
-
-                    parser.Consume<SequenceEnd>();
+                        });
+                    });
                     break;
                 case "values":
-                    parser.Consume<MappingStart>();
-
-                    while (parser.Current is not MappingEnd)
+                    parser.ConsumeMapping(() =>
                     {
                         var name = new Reference(parser.Consume<Scalar>());
                         var values = new Dictionary<Reference, string>();
+
                         classe.ReferenceValueReferences.Add(name, values);
 
-                        parser.Consume<MappingStart>();
-
-                        while (parser.Current is not MappingEnd)
+                        parser.ConsumeMapping(() =>
                         {
                             values.Add(new Reference(parser.Consume<Scalar>()), parser.Consume<Scalar>().Value);
+                        });
+                    });
+                    break;
+                case "mappers":
+                    parser.ConsumeMapping(() =>
+                    {
+                        var subProp = parser.Consume<Scalar>().Value;
+                        switch (subProp)
+                        {
+                            case "from":
+                                parser.ConsumeSequence(() =>
+                                {
+                                    var mapper = new FromMapper();
+                                    classe.FromMappers.Add(mapper);
+
+                                    parser.ConsumeMapping(() =>
+                                    {
+                                        var subSubProp = parser.Consume<Scalar>();
+                                        switch (subSubProp.Value)
+                                        {
+                                            case "params":
+                                                mapper.Reference = new LocatedString(subSubProp);
+                                                parser.ConsumeSequence(() =>
+                                                {
+                                                    var param = new ClassMappings();
+                                                    mapper.Params.Add(param);
+
+                                                    Scalar classScalar = null!;
+                                                    parser.ConsumeMapping(() =>
+                                                    {
+                                                        var subSubSubProp = parser.Consume<Scalar>().Value;
+                                                        switch (subSubSubProp)
+                                                        {
+                                                            case "class":
+                                                                classScalar = parser.Consume<Scalar>();
+                                                                param.ClassReference = new ClassReference(classScalar);
+                                                                break;
+                                                            case "name":
+                                                                param.Name = new LocatedString(parser.Consume<Scalar>());
+                                                                break;
+                                                            case "mappings":
+                                                                parser.ConsumeMapping(() =>
+                                                                {
+                                                                    param.MappingReferences.Add(new Reference(parser.Consume<Scalar>()), new Reference(parser.Consume<Scalar>()));
+                                                                });
+                                                                break;
+                                                        }
+                                                    });
+
+                                                    param.Name ??= new LocatedString(classScalar) { Value = param.ClassReference.ReferenceName.ToFirstLower() };
+                                                });
+                                                break;
+                                        }
+                                    });
+                                });
+                                break;
+
+                            case "to":
+                                parser.ConsumeSequence(() =>
+                                {
+                                    var mapper = new ClassMappings();
+                                    classe.ToMappers.Add(mapper);
+
+                                    parser.ConsumeMapping(() =>
+                                    {
+                                        var subSubProp = parser.Consume<Scalar>().Value;
+                                        Scalar classScalar = null!;
+                                        switch (subSubProp)
+                                        {
+                                            case "class":
+                                                classScalar = parser.Consume<Scalar>();
+                                                mapper.ClassReference = new ClassReference(classScalar);
+                                                break;
+                                            case "name":
+                                                mapper.Name = new LocatedString(parser.Consume<Scalar>());
+                                                break;
+                                            case "mappings":
+                                                parser.ConsumeMapping(() =>
+                                                {
+                                                    mapper.MappingReferences.Add(new Reference(parser.Consume<Scalar>()), new Reference(parser.Consume<Scalar>()));
+                                                });
+                                                break;
+                                        }
+
+                                        mapper.Name ??= new LocatedString(classScalar) { Value = $"To{mapper.ClassReference.ReferenceName}" };
+                                    });
+                                });
+                                break;
                         }
-
-                        parser.Consume<MappingEnd>();
-                    }
-
-                    parser.Consume<MappingEnd>();
-
+                    });
                     break;
                 default:
                     throw new ModelException(classe, $"Propriété ${prop} inconnue pour une classe");
             }
-        }
+        });
 
         classe.Label ??= classe.Name;
         classe.SqlName ??= ModelUtils.ConvertCsharp2Bdd(_modelConfig.PluralizeTableNames ? classe.PluralName : classe.Name);
-
-        parser.Consume<MappingEnd>();
 
         foreach (var prop in classe.Properties)
         {

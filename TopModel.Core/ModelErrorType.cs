@@ -93,6 +93,21 @@ public enum ModelErrorType
     TMD1013,
 
     /// <summary>
+    /// La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine.
+    /// </summary>
+    TMD1014,
+
+    /// <summary>
+    /// La propriété '{mapping.Key.ReferenceName}' est déjà initialisée dans ce mapper.
+    /// </summary>
+    TMD1015,
+
+    /// <summary>
+    /// Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Value.Name}'.
+    /// </summary>
+    TMD1016,
+
+    /// <summary>
     /// L'import {} n'est pas utilisé.
     /// </summary>
     TMD9001,
