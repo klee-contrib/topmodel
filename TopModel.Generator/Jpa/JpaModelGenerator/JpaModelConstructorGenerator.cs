@@ -153,7 +153,7 @@ public class JpaModelConstructorGenerator
             {
                 if (mapper.ParentMapper != null)
                 {
-                    fw.WriteLine(2, $"super({string.Join(", ", mapper.ParentMapper.Params.Select(p => p.Name))});");
+                    fw.WriteLine(2, $"super({string.Join(", ", mapper.Params.Take(mapper.ParentMapper.Params.Count()).Select(p => p.Name))});");
                 }
                 else
                 {

@@ -75,4 +75,9 @@ public class Class
     {
         return Name;
     }
+
+    public Boolean Inherit(Class classe)
+    {
+        return this == classe || this.Extends != null && this.Extends.Inherit(classe);
+    }
 }

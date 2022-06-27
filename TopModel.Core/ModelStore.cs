@@ -986,7 +986,7 @@ public class ModelStore
                         int score = 0;
                         foreach (var (param, index) in mapper.Params.Select((value, i) => (value, i)))
                         {
-                            if (index >= parentMapper.Params.Count() || param.Class != parentMapper.Params[index].Class)
+                            if (index >= parentMapper.Params.Count() || !param.Class.Inherit(parentMapper.Params[index].Class) && !parentMapper.Params[index].Class.Inherit(param.Class))
                             {
                                 break;
                             }
@@ -1009,9 +1009,9 @@ public class ModelStore
 
                 foreach (var mapper in classe.ToMappers)
                 {
-                    if (classe.Extends.ToMappers.Any(m => m.Class == mapper.Class && m.Name == mapper.Name))
+                    if (classe.Extends.ToMappers.Any(m => mapper.Class.Inherit(m.Class) || m.Class.Inherit(mapper.Class)))
                     {
-                        mapper.ParentMapping = classe.Extends.ToMappers.Find(m => m.Class == mapper.Class);
+                        mapper.ParentMapper = classe.Extends.ToMappers.Find(m => mapper.Class.Inherit(m.Class) || m.Class.Inherit(mapper.Class));
                     }
                 }
             }

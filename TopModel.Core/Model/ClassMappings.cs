@@ -17,5 +17,5 @@ public class ClassMappings
 
     public Dictionary<Reference, Reference> MappingReferences { get; } = new();
 
-    public ClassMappings? ParentMapping { get; set; }
+    public ClassMappings? ParentMapper { get; set; }
 }
