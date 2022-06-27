@@ -1,12 +1,22 @@
 # TopModel.Generator (`modgen`)
 
+## 1.9.0
+
+[#106](https://github.com/klee-contrib/topmodel/pull/106)
+
+Cette release introduit la notion de **mappers** entre classes dans TopModel.
+
+Pour une classe donnée, il est désormais possible de définir des mappers pour instancier cette classe à partir d'autres classes (`from`), ou bien pour instancier une autre classe à partir de cette classe (`t`o`). Les mappings entre propriétés sont déterminés automatiquement dès lors qu'une propriété est un alias d'une autre, ou à défaut si les propriétés ont le même nom et le même domaine. Il est évidemment possible de personnaliser le mapping au-delà de ce qui est déterminé automatiquement.
+
+[Plus de détails dans la doc](https://klee-contrib.github.io/topmodel/#/model/mappers).
+
 ## 1.8.3
 
 - JPA: Suppression du allocationSize pour optimisation récupération séquence en masse
 
 ## 1.8.2
 
-- [#108](https://github.com/klee-contrib/topmodel/pull/108)  [VSCode] Améliorations status bar TopModel #104
+- [#108](https://github.com/klee-contrib/topmodel/pull/108) [VSCode] Améliorations status bar TopModel #104
 
 ## 1.8.1
 
