@@ -972,6 +972,51 @@ public class ModelStore
             }
         }
 
+        // Résolution des mappers hérités
+        foreach (var classe in fileClasses)
+        {
+            if (classe.Extends != null)
+            {
+                foreach (var mapper in classe.FromMappers)
+                {
+                    FromMapper? bestParentMapper = null;
+                    int bestParentMapperScore = 0;
+                    foreach (var parentMapper in classe.Extends.FromMappers.Where(parentMapper => parentMapper.Params.Count() <= mapper.Params.Count()))
+                    {
+                        int score = 0;
+                        foreach (var (param, index) in mapper.Params.Select((value, i) => (value, i)))
+                        {
+                            if (index >= parentMapper.Params.Count() || param.Class != parentMapper.Params[index].Class)
+                            {
+                                break;
+                            }
+
+                            score++;
+                        }
+
+                        if (score > bestParentMapperScore)
+                        {
+                            bestParentMapperScore = score;
+                            bestParentMapper = parentMapper;
+                        }
+                    }
+
+                    if (bestParentMapper != null)
+                    {
+                        mapper.ParentMapper = bestParentMapper;
+                    }
+                }
+
+                foreach (var mapper in classe.ToMappers)
+                {
+                    if (classe.Extends.ToMappers.Any(m => m.Class == mapper.Class && m.Name == mapper.Name))
+                    {
+                        mapper.ParentMapping = classe.Extends.ToMappers.Find(m => m.Class == mapper.Class);
+                    }
+                }
+            }
+        }
+
         // Vérifications de cohérence sur les fichiers.
         if (!_config.AllowCompositePrimaryKey)
         {

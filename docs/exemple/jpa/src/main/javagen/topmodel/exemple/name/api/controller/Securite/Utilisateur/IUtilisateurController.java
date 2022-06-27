@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto;
-import topmodel.exemple.name.dao.entities.securite.TypeProfil;
 import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
 
 @RestController
@@ -96,26 +95,22 @@ public interface IUtilisateurController {
 
 	/**
 	 * Recherche des utilisateurs.
-	 * @param utiId Id technique
-	 * @param email Email de l'utilisateur
-	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
-	 * @param proProfilId Id technique
-	 * @param profilTypeProfilCode Type de profil
+	 * @param utiUtilisateurId Id technique
+	 * @param utilisateuremail Email de l'utilisateur
+	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Utilisateurs matchant les critères
 	 */
 	@PostMapping(path = "utilisateur/search")
-	default Page<UtilisateurDto> searchMapping(@RequestParam("utiId") long utiId, @RequestParam("email") String email, @RequestParam("typeUtilisateurCode") TypeUtilisateur.Values typeUtilisateurCode, @RequestParam("proProfilId") long proProfilId, @RequestParam("profilTypeProfilCode") TypeProfil.Values profilTypeProfilCode) {
-		return this.search(utiId, email, typeUtilisateurCode, proProfilId, profilTypeProfilCode);
+	default Page<UtilisateurDto> searchMapping(@RequestParam("utiUtilisateurId") long utiUtilisateurId, @RequestParam("utilisateuremail") String utilisateuremail, @RequestParam("utilisateurTypeUtilisateurCode") TypeUtilisateur.Values utilisateurTypeUtilisateurCode) {
+		return this.search(utiUtilisateurId, utilisateuremail, utilisateurTypeUtilisateurCode);
 	}
 
 	/**
 	 * Recherche des utilisateurs.
-	 * @param utiId Id technique
-	 * @param email Email de l'utilisateur
-	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
-	 * @param proProfilId Id technique
-	 * @param profilTypeProfilCode Type de profil
+	 * @param utiUtilisateurId Id technique
+	 * @param utilisateuremail Email de l'utilisateur
+	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Utilisateurs matchant les critères
 	 */
-	Page<UtilisateurDto> search(long utiId, String email, TypeUtilisateur.Values typeUtilisateurCode, long proProfilId, TypeProfil.Values profilTypeProfilCode);
+	Page<UtilisateurDto> search(long utiUtilisateurId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode);
 }

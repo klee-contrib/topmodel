@@ -20,10 +20,14 @@ class:
           - ProfilId
           - dateCreation
           - dateModification
-    - alias:
-        class: Profil
       prefix: true
     - composition: UtilisateurDto
       name: UtilisateurParent
       comment: UtilisateurParent
       kind: object
+  mappers:
+    from:
+      - params:
+          - class: Utilisateur
+    to:
+      - class: Utilisateur

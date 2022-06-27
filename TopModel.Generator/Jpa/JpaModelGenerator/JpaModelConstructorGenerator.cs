@@ -151,10 +151,17 @@ public class JpaModelConstructorGenerator
 
             if (classe.Extends != null || classe.Decorators.Any(d => d.Java?.Extends is not null))
             {
-                fw.WriteLine(2, $"super();");
+                if (mapper.ParentMapper != null)
+                {
+                    fw.WriteLine(2, $"super({string.Join(", ", mapper.ParentMapper.Params.Select(p => p.Name))});");
+                }
+                else
+                {
+                    fw.WriteLine(2, $"super();");
+                }
             }
 
-            foreach (var param in mapper.Params)
+            foreach (var param in mapper.Params.Where(p => p.Mappings.Count() > 0))
             {
                 fw.WriteLine(2, $"if({param.Name.ToFirstLower()} != null) {{");
                 var mappings = param.Mappings.ToList();

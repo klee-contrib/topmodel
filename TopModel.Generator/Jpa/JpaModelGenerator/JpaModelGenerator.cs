@@ -568,9 +568,19 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteParam("dest", $"Instance pré-existante de '{mapper.Class}'. Une nouvelle instance sera créée si non spécifié.");
             fw.WriteReturns(1, $"Une instance de '{mapper.Class}'");
             fw.WriteDocEnd(1);
+            if (mapper.ParentMapping != null && mapper.ParentMapping.Name == mapper.Name)
+            {
+                fw.WriteLine(1, $"@Override");
+            }
+
             fw.WriteLine(1, $"public {mapper.Class} {mapper.Name.ToFirstLower()}({mapper.Class} dest) {{");
             fw.WriteLine(2, $"dest = dest == null ? new {mapper.Class}() : dest;");
             fw.WriteLine();
+            if (mapper.ParentMapping != null)
+            {
+                fw.WriteLine(2, $"super.{mapper.ParentMapping.Name.ToFirstLower()}(dest);");
+
+            }
 
             foreach (var mapping in mapper.Mappings)
             {

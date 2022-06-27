@@ -5,7 +5,6 @@
 import {fetch} from "@api-services";
 
 import {Page} from "@/types";
-import {TypeProfilCode} from "../../../model/securite/references";
 import {TypeUtilisateurCode} from "../../../model/utilisateur/references";
 import {UtilisateurDto} from "../../../model/utilisateur/utilisateur-dto";
 
@@ -51,14 +50,12 @@ export function saveAllUtilisateur(utilisateur: UtilisateurDto[], options: Reque
 
 /**
  * Recherche des utilisateurs
- * @param utiId Id technique
- * @param email Email de l'utilisateur
- * @param typeUtilisateurCode Type d'utilisateur en Many to one
- * @param proProfilId Id technique
- * @param profilTypeProfilCode Type de profil
+ * @param utiUtilisateurId Id technique
+ * @param utilisateuremail Email de l'utilisateur
+ * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
  * @param options Options pour 'fetch'.
  * @returns Utilisateurs matchant les critères
  */
-export function search(utiId?: number, email?: string, typeUtilisateurCode?: TypeUtilisateurCode, proProfilId?: number, profilTypeProfilCode?: TypeProfilCode, options: RequestInit = {}): Promise<Page<UtilisateurDto>> {
-    return fetch("POST", `./utilisateur/search`, {query: {utiId, email, typeUtilisateurCode, proProfilId, profilTypeProfilCode}}, options);
+export function search(utiUtilisateurId?: number, utilisateuremail?: string, utilisateurTypeUtilisateurCode?: TypeUtilisateurCode, options: RequestInit = {}): Promise<Page<UtilisateurDto>> {
+    return fetch("POST", `./utilisateur/search`, {query: {utiUtilisateurId, utilisateuremail, utilisateurTypeUtilisateurCode}}, options);
 }

@@ -8,46 +8,31 @@ import javax.annotation.Generated;
 import javax.validation.constraints.Email;
 
 import topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto;
-import topmodel.exemple.name.dao.entities.securite.TypeProfil;
 import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface IUtilisateurDto {
 
 	/**
-	 * Getter for id.
+	 * Getter for utilisateurId.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#id id}.
+	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#utilisateurId utilisateurId}.
 	 */
-	long getId();
+	long getUtilisateurId();
 
 	/**
-	 * Getter for email.
+	 * Getter for utilisateuremail.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#email email}.
+	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#utilisateuremail utilisateuremail}.
 	 */
-	String getEmail();
+	String getUtilisateuremail();
 
 	/**
-	 * Getter for typeUtilisateurCode.
+	 * Getter for utilisateurTypeUtilisateurCode.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#typeUtilisateurCode typeUtilisateurCode}.
+	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#utilisateurTypeUtilisateurCode utilisateurTypeUtilisateurCode}.
 	 */
-	TypeUtilisateur.Values getTypeUtilisateurCode();
-
-	/**
-	 * Getter for profilId.
-	 *
-	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#profilId profilId}.
-	 */
-	long getProfilId();
-
-	/**
-	 * Getter for profilTypeProfilCode.
-	 *
-	 * @return value of {@link topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto#profilTypeProfilCode profilTypeProfilCode}.
-	 */
-	TypeProfil.Values getProfilTypeProfilCode();
+	TypeUtilisateur.Values getUtilisateurTypeUtilisateurCode();
 
 	/**
 	 * Getter for utilisateurParent.
