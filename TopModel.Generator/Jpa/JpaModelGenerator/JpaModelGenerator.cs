@@ -579,7 +579,6 @@ public class JpaModelGenerator : GeneratorBase
             if (mapper.ParentMapper != null)
             {
                 fw.WriteLine(2, $"super.{mapper.ParentMapper.Name.ToFirstLower()}(dest);");
-
             }
 
             foreach (var mapping in mapper.Mappings)

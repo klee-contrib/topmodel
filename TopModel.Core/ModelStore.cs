@@ -981,24 +981,30 @@ public class ModelStore
                 {
                     FromMapper? bestParentMapper = null;
                     int bestParentMapperScore = 0;
-                    foreach (var parentMapper in classe.Extends.FromMappers.Where(parentMapper => parentMapper.Params.Count() <= mapper.Params.Count()))
+                    var parent = classe.Extends;
+                    while (parent != null && mapper.ParentMapper == null)
                     {
-                        int score = 0;
-                        foreach (var (param, index) in mapper.Params.Select((value, i) => (value, i)))
+                        foreach (var parentMapper in parent.FromMappers.Where(parentMapper => parentMapper.Params.Count() <= mapper.Params.Count()))
                         {
-                            if (index >= parentMapper.Params.Count() || !param.Class.Inherit(parentMapper.Params[index].Class) && !parentMapper.Params[index].Class.Inherit(param.Class))
+                            int score = 0;
+                            foreach (var (param, index) in mapper.Params.Select((value, i) => (value, i)))
                             {
-                                break;
+                                if (index >= parentMapper.Params.Count() || !param.Class.Inherit(parentMapper.Params[index].Class) && !parentMapper.Params[index].Class.Inherit(param.Class))
+                                {
+                                    break;
+                                }
+
+                                score++;
                             }
 
-                            score++;
+                            if (score > bestParentMapperScore)
+                            {
+                                bestParentMapperScore = score;
+                                bestParentMapper = parentMapper;
+                            }
                         }
 
-                        if (score > bestParentMapperScore)
-                        {
-                            bestParentMapperScore = score;
-                            bestParentMapper = parentMapper;
-                        }
+                        parent = parent.Extends;
                     }
 
                     if (bestParentMapper != null)
@@ -1009,9 +1015,15 @@ public class ModelStore
 
                 foreach (var mapper in classe.ToMappers)
                 {
-                    if (classe.Extends.ToMappers.Any(m => mapper.Class.Inherit(m.Class) || m.Class.Inherit(mapper.Class)))
+                    var parent = classe.Extends;
+                    while (parent != null && mapper.ParentMapper == null)
                     {
-                        mapper.ParentMapper = classe.Extends.ToMappers.Find(m => mapper.Class.Inherit(m.Class) || m.Class.Inherit(mapper.Class));
+                        if (parent.ToMappers.Any(m => mapper.Class.Inherit(m.Class) || m.Class.Inherit(mapper.Class)))
+                        {
+                            mapper.ParentMapper = parent.ToMappers.Find(m => mapper.Class.Inherit(m.Class) || m.Class.Inherit(mapper.Class));
+                        }
+
+                        parent = parent.Extends;
                     }
                 }
             }

@@ -89,6 +89,14 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * @return Une nouvelle instance de 'UtilisateurDto'.
 	 */
 	public UtilisateurDto(Utilisateur utilisateur) {
+		this.from(utilisateur);
+	}
+
+	/**
+	 * Map les champs des classes passées en paramètre dans l'instance courante.
+	 * @param utilisateur Instance de 'Utilisateur'.
+	 */
+	protected void from(Utilisateur utilisateur) {
 		if(utilisateur != null) {
 			this.utilisateurId = utilisateur.getId();
 			this.utilisateuremail = utilisateur.getEmail();

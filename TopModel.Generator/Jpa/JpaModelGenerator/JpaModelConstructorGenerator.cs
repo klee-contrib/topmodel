@@ -148,16 +148,29 @@ public class JpaModelConstructorGenerator
             fw.WriteReturns(1, $"Une nouvelle instance de '{classe}'");
             fw.WriteDocEnd(1);
             fw.WriteLine(1, $"public {classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToFirstLower()}"))}) {{");
+            if (classe.Extends != null)
+            {
+                fw.WriteLine(2, $"super();");
+            }
 
+            fw.WriteLine(2, $"this.from({string.Join(", ", mapper.Params.Select(p => p.Name.ToFirstLower()))});");
+
+            fw.WriteLine(1, "}");
+
+            fw.WriteLine();
+            fw.WriteDocStart(1, $"Map les champs des classes passées en paramètre dans l'instance courante");
+            foreach (var param in mapper.Params)
+            {
+                fw.WriteParam(param.Name.ToFirstLower(), $"Instance de '{param.Class}'");
+            }
+
+            fw.WriteDocEnd(1);
+            fw.WriteLine(1, $"protected void from({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToFirstLower()}"))}) {{");
             if (classe.Extends != null || classe.Decorators.Any(d => d.Java?.Extends is not null))
             {
                 if (mapper.ParentMapper != null)
                 {
-                    fw.WriteLine(2, $"super({string.Join(", ", mapper.Params.Take(mapper.ParentMapper.Params.Count()).Select(p => p.Name))});");
-                }
-                else
-                {
-                    fw.WriteLine(2, $"super();");
+                    fw.WriteLine(2, $"super.from({string.Join(", ", mapper.Params.Take(mapper.ParentMapper.Params.Count()).Select(p => p.Name))});");
                 }
             }
 

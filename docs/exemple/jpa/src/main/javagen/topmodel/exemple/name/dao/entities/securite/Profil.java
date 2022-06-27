@@ -79,6 +79,14 @@ public class Profil {
 	 * @return Une nouvelle instance de 'Profil'.
 	 */
 	public Profil(Profil profil) {
+		this.from(profil);
+	}
+
+	/**
+	 * Map les champs des classes passées en paramètre dans l'instance courante.
+	 * @param profil Instance de 'Profil'.
+	 */
+	protected void from(Profil profil) {
 		if(profil != null) {
 			this.id = profil.getId();
 			this.typeProfil = profil.getTypeProfil();
