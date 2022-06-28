@@ -1,5 +1,13 @@
 # TopModel.Generator (`modgen`)
 
+## 1.9.1
+
+[#109](https://github.com/klee-contrib/topmodel/pull/109)  Gestion de l'héritage des mappers.
+
+Cette release ajoute la gestion de l'héritage aux **mappers**.
+
+[Plus de détails dans la doc](https://klee-contrib.github.io/topmodel/#/model/mappers).
+
 ## 1.9.0
 
 [#106](https://github.com/klee-contrib/topmodel/pull/106)
