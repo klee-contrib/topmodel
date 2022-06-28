@@ -972,6 +972,63 @@ public class ModelStore
             }
         }
 
+        // Résolution des mappers hérités
+        foreach (var classe in fileClasses)
+        {
+            if (classe.Extends != null)
+            {
+                foreach (var mapper in classe.FromMappers)
+                {
+                    FromMapper? bestParentMapper = null;
+                    int bestParentMapperScore = 0;
+                    var parent = classe.Extends;
+                    while (parent != null && mapper.ParentMapper == null)
+                    {
+                        foreach (var parentMapper in parent.FromMappers.Where(parentMapper => parentMapper.Params.Count() <= mapper.Params.Count()))
+                        {
+                            int score = 0;
+                            foreach (var (param, index) in mapper.Params.Select((value, i) => (value, i)))
+                            {
+                                if (index >= parentMapper.Params.Count() || !param.Class.Inherit(parentMapper.Params[index].Class) && !parentMapper.Params[index].Class.Inherit(param.Class))
+                                {
+                                    break;
+                                }
+
+                                score++;
+                            }
+
+                            if (score > bestParentMapperScore)
+                            {
+                                bestParentMapperScore = score;
+                                bestParentMapper = parentMapper;
+                            }
+                        }
+
+                        parent = parent.Extends;
+                    }
+
+                    if (bestParentMapper != null)
+                    {
+                        mapper.ParentMapper = bestParentMapper;
+                    }
+                }
+
+                foreach (var mapper in classe.ToMappers)
+                {
+                    var parent = classe.Extends;
+                    while (parent != null && mapper.ParentMapper == null)
+                    {
+                        if (parent.ToMappers.Any(m => mapper.Class.Inherit(m.Class) || m.Class.Inherit(mapper.Class)))
+                        {
+                            mapper.ParentMapper = parent.ToMappers.Find(m => mapper.Class.Inherit(m.Class) || m.Class.Inherit(mapper.Class));
+                        }
+
+                        parent = parent.Extends;
+                    }
+                }
+            }
+        }
+
         // Vérifications de cohérence sur les fichiers.
         if (!_config.AllowCompositePrimaryKey)
         {

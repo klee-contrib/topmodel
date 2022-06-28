@@ -217,8 +217,6 @@ public static class ImportsJpaExtensions
             imports.Add(classe.GetImport(config));
         }
 
-        imports.AddRange(GetAliasClass(classe)
-            .Select(c => c.Class.GetImport(config)));
         imports
         .AddRange(
             classe.FromMappers.SelectMany(fm => fm.Params).Select(fmp => fmp.Class.GetImport(config)));

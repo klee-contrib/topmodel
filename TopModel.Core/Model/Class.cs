@@ -75,4 +75,6 @@ public class Class
     {
         return Name;
     }
+
+    public bool Inherit(Class classe) => this == classe || this.Extends != null && this.Extends.Inherit(classe);
 }

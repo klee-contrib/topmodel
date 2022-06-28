@@ -10,9 +10,12 @@ public class ClassMappings
     public Class Class { get; set; }
 
     public ClassReference ClassReference { get; set; }
+
 #nullable enable
 
     public Dictionary<IFieldProperty, IFieldProperty> Mappings { get; } = new();
 
     public Dictionary<Reference, Reference> MappingReferences { get; } = new();
+
+    public ClassMappings? ParentMapper { get; set; }
 }

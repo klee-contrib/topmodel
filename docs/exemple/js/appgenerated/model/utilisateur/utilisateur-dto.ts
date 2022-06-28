@@ -4,53 +4,36 @@
 
 import {DO_CODE, DO_EMAIL, DO_ID} from "@domains";
 
-import {TypeProfilCode} from "../securite/references";
 import {TypeUtilisateurCode} from "./references";
 
 export interface UtilisateurDto {
-    id?: number,
-    email?: string,
-    typeUtilisateurCode?: TypeUtilisateurCode,
-    profilId?: number,
-    profilTypeProfilCode?: TypeProfilCode,
+    utilisateurId?: number,
+    utilisateuremail?: string,
+    utilisateurTypeUtilisateurCode?: TypeUtilisateurCode,
     utilisateurParent?: UtilisateurDto
 }
 
 export const UtilisateurDtoEntity = {
-    id: {
+    utilisateurId: {
         type: "field",
-        name: "id",
+        name: "utilisateurId",
         domain: DO_ID,
-        isRequired: false,
+        isRequired: true,
         label: "utilisateur.utilisateur.id"
     },
-    email: {
+    utilisateuremail: {
         type: "field",
-        name: "email",
+        name: "utilisateuremail",
         domain: DO_EMAIL,
         isRequired: false,
         label: "utilisateur.utilisateur.email"
     },
-    typeUtilisateurCode: {
+    utilisateurTypeUtilisateurCode: {
         type: "field",
-        name: "typeUtilisateurCode",
+        name: "utilisateurTypeUtilisateurCode",
         domain: DO_CODE,
         isRequired: false,
         label: "utilisateur.utilisateur.typeUtilisateurCode"
-    },
-    profilId: {
-        type: "field",
-        name: "profilId",
-        domain: DO_ID,
-        isRequired: true,
-        label: "securite.profil.id"
-    },
-    profilTypeProfilCode: {
-        type: "field",
-        name: "profilTypeProfilCode",
-        domain: DO_CODE,
-        isRequired: false,
-        label: "securite.profil.typeProfilCode"
     },
     utilisateurParent: {
         type: "object",

@@ -78,6 +78,14 @@ public class ProfilDto implements Serializable {
 	 * @return Une nouvelle instance de 'ProfilDto'.
 	 */
 	public ProfilDto(Profil profil) {
+		this.from(profil);
+	}
+
+	/**
+	 * Map les champs des classes passées en paramètre dans l'instance courante.
+	 * @param profil Instance de 'Profil'.
+	 */
+	protected void from(Profil profil) {
 		if(profil != null) {
 			this.id = profil.getId();
 
