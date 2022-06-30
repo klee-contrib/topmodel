@@ -29,11 +29,33 @@ Le générateur JPA construit les entités persistées, les entités non persist
 
 Les entités sont générées contenant les annotations JPA représentant le modèle de données.
 
-A savoir :
+#### Associations
 
-- Si l'annotation `@createdDate` ou `@updatedDate` est ajoutée à un champs, alors l'annotation `@EntityListeners(AuditingEntityListener.class)` sera automatiquement ajoutée à la classe
-- Il n'est actuellement pas possible de créer des liaisons bi-directionnelles
+Dès lors qu'une association est faite entre deux classes, si celles-ci ont le même package racine et que la classe de destination n'est pas une liste de référence, alors l'association réciproque sera générée.
+
+> Les classes **`securite`**.Profil et **`utilisateur`**.Utilisateur n'ont pas le même package racine, au contraire de **`utilisateur`**.Utilisateur et **`utilisateur`**.Utilisateur
+
+##### ManyToMany
+
+L'association `ManyToMany` réciproque est générée dans la classe de destination. L'association "propriétaire" de la relation est celle déclarée dans le modèle TopModel.
+
+##### OneToMany
+
+L'association `ManyToOne` réciproque est générée dans la classe de destination. L'association "propriétaire" de la relation est **toujours** l'association `ManyToOne`
+
+##### ManyToOne
+
+L'association `OneToMany` réciproque est générée dans la classe de destination. L'association "propriétaire" de la relation est **toujours** l'association `ManyToOne`
+
+##### OneToOne
+
+Pour des raisons de performances, les associations oneToOne réciproques ne sont pas générées.
+
+#### Compositions
+
 - Les compositions ne sont pas gérées dans le modèle persisté (n'utiliser que les associations)
+
+#### FieldsEnum
 
 Depuis la version 1.1.0, il est possible de générer dans la définition de la classe, la sous-classe (qui est une enum) `Fields`. Il s'agit d'une enumération des champs de la classe, au format const case.
 Il faut pour cela ajouter la propriété `fieldsEnum: true` A la configuration JPA.
@@ -61,9 +83,11 @@ Génèrera, dans la classe `Departement`, l'enum suivante :
 
 ### References
 
-Lorsque sont ajoutées des listes de références, le générateur créé les `enum` correspondantes. Le domaine de clé primaire de la classe de référence est ignoré, et le champs prend le type de l'enum. L'enum s'appelle `Values`. Les différents champs renseignés dans les valeurs sont également ajoutés en tant que propriété de l'enum.
+Lorsque sont ajoutées des listes de références, le générateur créé les `enum` correspondantes. Le domaine de clé primaire de la classe de référence est ignoré, et le champs prend le type de l'enum. L'enum est générée à l'intérieur de la classe de référence, et s'appelle  `[Nom de la classe].Values`. Les différents champs renseignés dans les valeurs sont également ajoutés en tant que propriétés de l'enum.
 
-Si la configuration `enumShortcutMode` est activée :
+#### EnumShortcutMode
+
+Il peut être laborieux de toujours passer par la classe de référence lorsqu'on ne manipule le plus souvent que leurs clés primaires. CTopModel - JPA permet de créer des raccoucis pour rendre cette approche possible. Si la configuration `enumShortcutMode` est activée :
 
 ```yaml
 enumShortcutMode: true
@@ -100,12 +124,11 @@ Ceci afin d'éviter de mélanger les objets persistés et non persistés. En eff
 
 ### Constructeurs
 
-Le générateur JPA constuit 3 ou 4 constructeurs par classe :
+Le générateur JPA constuit 3 par classe :
 
 - Constructeur vide
 - Construteur tout argument
 - Constructeur par recopie
-
 
 ### Interfaces et projections
 
@@ -180,3 +203,5 @@ Le générateur créé des `interface` contenant, pour chaque endPoint paramétr
 
 - Une méthode par défaut `[NomDuEndPoint]Mapping`, portant l'annotation de mappping de la route, et qui appelle la méthode suivante
 - Une méthode abstraite `Nom du endpoint`, méthode à implémenter dans votre controller.
+
+Pour créer votre API, il suffit donc de créer un nouveau controller qui implémente la classe générée. L'annotation `@RestController` reste nécessaire.

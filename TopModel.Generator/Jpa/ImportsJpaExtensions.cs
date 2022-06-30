@@ -113,7 +113,11 @@ public static class ImportsJpaExtensions
                 imports.Add("java.util.Collections");
                 imports.Add("javax.persistence.FetchType");
                 imports.Add("javax.persistence.CascadeType");
-                imports.Add("javax.persistence.JoinColumn");
+                if (!(ap is JpaAssociationProperty jap && jap.IsReverse) && (ap.Association.Namespace.Module.Split('.').First()) != ap.Class.Namespace.Module.Split('.').First())
+                {
+                    imports.Add("javax.persistence.JoinColumn");
+                }
+
                 break;
             case AssociationType.ManyToOne:
                 imports.Add("javax.persistence.FetchType");
@@ -123,8 +127,13 @@ public static class ImportsJpaExtensions
                 imports.Add("java.util.List");
                 imports.Add("java.util.Collections");
                 imports.Add("javax.persistence.JoinColumn");
+                imports.Add("javax.persistence.CascadeType");
                 imports.Add("javax.persistence.FetchType");
-                imports.Add("javax.persistence.JoinTable");
+                if (!(ap is JpaAssociationProperty japo && japo.IsReverse) && (ap.Association.Namespace.Module.Split('.').First()) != ap.Class.Namespace.Module.Split('.').First())
+                {
+                    imports.Add("javax.persistence.JoinTable");
+                }
+
                 break;
             case AssociationType.OneToOne:
                 imports.Add("javax.persistence.FetchType");
@@ -173,7 +182,7 @@ public static class ImportsJpaExtensions
         return $"{packageName}.{classe.Name}";
     }
 
-    public static List<string> GetImports(this Class classe, JpaConfig config)
+    public static List<string> GetImports(this Class classe, List<Class> classes, JpaConfig config)
     {
         var imports = new List<string>
             {
@@ -224,30 +233,9 @@ public static class ImportsJpaExtensions
         .AddRange(
             classe.ToMappers.Select(fmp => fmp.Class.GetImport(config)));
 
+        var props = classe.GetReverseProperties(classes);
+
         // Suppression des imports inutiles
-        return imports.Where(i => string.Join('.', i.Split('.').SkipLast(1)) != string.Join('.', classe.GetImport(config).Split('.').SkipLast(1))).ToList();
-    }
-
-    public static IList<AliasClass> GetAliasClass(Class classe)
-    {
-        var classes = classe
-            .Properties.OfType<AliasProperty>()
-            .Select(p => new AliasClass()
-            {
-                Prefix = p.Prefix,
-                Suffix = p.Suffix,
-                Class = p.OriginalProperty?.Class
-            })
-            .DistinctBy(c => c.Name)
-            .ToList();
-
-        if (classe.Extends is null)
-        {
-            return classes;
-        }
-        else
-        {
-            return GetAliasClass(classe.Extends).Concat(classes).DistinctBy(c => c.Name).ToList();
-        }
+        return imports.Distinct().Where(i => string.Join('.', i.Split('.').SkipLast(1)) != string.Join('.', classe.GetImport(config).Split('.').SkipLast(1))).ToList();
     }
 }

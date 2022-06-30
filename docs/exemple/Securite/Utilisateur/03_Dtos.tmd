@@ -1,7 +1,6 @@
 ---
 module: Utilisateur
 uses:
-  - Securite/Profil/02_Entities
   - Securite/Utilisateur/02_Entities
   - decorators
 tags:

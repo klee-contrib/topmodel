@@ -13,6 +13,7 @@ public class JpaModelGenerator : GeneratorBase
     private readonly JpaConfig _config;
     private readonly ILogger<JpaModelGenerator> _logger;
     private readonly JpaModelConstructorGenerator _jpaModelConstructorGenerator;
+    private readonly JpaModelPropertyGenerator _jpaModelPropertyGenerator;
 
     private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
 
@@ -22,6 +23,7 @@ public class JpaModelGenerator : GeneratorBase
         _config = config;
         _logger = logger;
         _jpaModelConstructorGenerator = new JpaModelConstructorGenerator(config);
+        _jpaModelPropertyGenerator = new JpaModelPropertyGenerator(config, _files);
     }
 
     public override string Name => "JpaModelGen";
@@ -81,8 +83,22 @@ public class JpaModelGenerator : GeneratorBase
             var dirInfo = Directory.CreateDirectory(destFolder);
             var packageName = GetPackageName(classe);
             using var fw = new JavaWriter($"{destFolder}/{classe.Name}.java", _logger, null);
-            fw.WriteLine($"package {packageName};");
+            var availableClasses = _files.Values.SelectMany(c => c.Classes).ToList();
+            var reverseProps = classe.GetReverseProperties(availableClasses).Select(p => new JpaAssociationProperty()
+            {
+                Association = p.Class,
+                Type = p.Type == AssociationType.OneToMany ? AssociationType.ManyToOne
+                        : p.Type == AssociationType.ManyToOne ? AssociationType.OneToMany
+                        : AssociationType.ManyToMany,
+                Comment = $"Association réciproque de {{@link {GetPackageName(p.Class)}.{p.Class}#{p.GetJavaName()} {p.Class.Name}.{p.GetJavaName()}}}",
+                Class = classe,
+                ReverseProperty = p,
+                Role = p.Role
+            }).ToList();
 
+            reverseProps.ForEach(p => classe.Properties.Add(p));
+
+            fw.WriteLine($"package {packageName};");
             WriteImports(fw, classe);
             fw.WriteLine();
 
@@ -108,12 +124,11 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteLine(1, "private static final long serialVersionUID = 1L;");
             }
 
-            WriteProperties(fw, classe);
+            _jpaModelPropertyGenerator.WriteProperties(fw, classe);
+
             _jpaModelConstructorGenerator.WriteNoArgConstructor(fw, classe);
             _jpaModelConstructorGenerator.WriteCopyConstructor(fw, classe);
-            _jpaModelConstructorGenerator.WriteAllArgConstructor(fw, classe);
-
-            var availableClasses = _files.Values.SelectMany(c => c.Classes).ToList();
+            _jpaModelConstructorGenerator.WriteAllArgConstructor(fw, classe, availableClasses);
             _jpaModelConstructorGenerator.WriteFromMappers(fw, classe, availableClasses);
 
             WriteGetters(fw, classe);
@@ -128,7 +143,7 @@ public class JpaModelGenerator : GeneratorBase
 
             if (_config.FieldsEnum && classe.IsPersistent)
             {
-                WriteFieldsEnum(fw, classe);
+                WriteFieldsEnum(fw, classe, availableClasses);
             }
 
             if (classe.Reference && classe.ReferenceValues.Any())
@@ -243,7 +258,7 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteImports(JavaWriter fw, Class classe)
     {
-        var imports = classe.GetImports(_config);
+        var imports = classe.GetImports(_files.SelectMany(f => f.Value.Classes).ToList(), _config);
         imports.AddRange(classe.Decorators.SelectMany(d => d.Java!.Imports));
         foreach (var property in classe.Properties)
         {
@@ -359,136 +374,6 @@ public class JpaModelGenerator : GeneratorBase
         foreach (var a in classe.Decorators.SelectMany(d => d.Java!.Annotations).Distinct())
         {
             fw.WriteLine($"{(a.StartsWith("@") ? string.Empty : "@")}{a}");
-        }
-    }
-
-    private void WriteProperties(JavaWriter fw, Class classe)
-    {
-        foreach (var property in classe.Properties)
-        {
-            fw.WriteLine();
-            fw.WriteDocStart(1, property.Comment);
-            if (property is AssociationProperty ap)
-            {
-                fw.WriteDocEnd(1);
-                var fk = (ap.Role is not null ? ModelUtils.ConvertCsharp2Bdd(ap.Role) + "_" : string.Empty) + ap.Association.PrimaryKey!.SqlName;
-                var apk = ap.Association.PrimaryKey.SqlName;
-                var pk = classe.PrimaryKey!.SqlName;
-                switch (ap.Type)
-                {
-                    case AssociationType.ManyToOne:
-                        fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY, optional = {(ap.Required ? "false" : "true")}, targetEntity = {ap.Association.Name}.class)");
-                        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
-                        break;
-                    case AssociationType.OneToMany:
-                        {
-                            var inversePropsOneToMany = ap.Association.Properties.Where(p => p is AssociationProperty pap && pap.Association == classe && pap.Type == AssociationType.ManyToOne && (ap.Role is null || ap.Role == pap.Role));
-                            var isInversed = inversePropsOneToMany.Count() == 1;
-                            fw.WriteLine(1, @$"@{ap.Type}(cascade=CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY{(isInversed ? $@", mappedBy = ""{inversePropsOneToMany.First().GetJavaName()}""" : string.Empty)})");
-                            if (!isInversed)
-                            {
-                                fw.WriteLine(1, @$"@JoinColumn(name = ""{pk}"", referencedColumnName = ""{pk}"")");
-                            }
-
-                            break;
-                        }
-
-                    case AssociationType.ManyToMany:
-                        {
-                            var assoNameList = new List<string>();
-                            assoNameList.Add(ap.Class.SqlName);
-                            assoNameList.Add(ap.Association.SqlName);
-                            assoNameList.Sort();
-                            var inversePropsManyToMany = ap.Association.Properties.Where(p => p is AssociationProperty pap && pap.Association == classe && pap.Type == AssociationType.ManyToMany && (ap.Role is null || ap.Role == pap.Role));
-                            var isInversed = inversePropsManyToMany.Count() == 1 && assoNameList.First() == ap.Class.SqlName;
-                            fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY{(isInversed ? $@", mappedBy = ""{inversePropsManyToMany.First().GetJavaName()}"", cascade={{ javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }}" : string.Empty)})");
-                            if (!isInversed)
-                            {
-                                fw.WriteLine(1, @$"@JoinTable(name = ""{string.Join('_', assoNameList)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
-                            }
-
-                            break;
-                        }
-
-                    case AssociationType.OneToOne:
-                        fw.WriteLine(1, @$"@{ap.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = {(ap.Required ? "false" : "true")})");
-                        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"", unique = true)");
-                        break;
-                }
-
-                fw.WriteLine(1, $"private {ap.GetJavaType()} {ap.GetAssociationName()};");
-            }
-            else if (property is CompositionProperty cp)
-            {
-                fw.WriteDocEnd(1);
-                fw.WriteLine(1, $"private {property.GetJavaType()} {property.Name.ToFirstLower()};");
-            }
-            else if (property is IFieldProperty field)
-            {
-                if (property is AliasProperty alp)
-                {
-                    fw.WriteLine(1, $" * Alias of {{@link {alp.Property.Class.GetImport(_config)}#get{alp.Property.Name.ToFirstUpper()}() {alp.Property.Class.Name}#get{alp.Property.Name.ToFirstUpper()}()}} ");
-                }
-
-                fw.WriteDocEnd(1);
-                if (field.PrimaryKey && classe.IsPersistent)
-                {
-                    fw.WriteLine(1, "@Id");
-                    if (
-                        field.Domain.Java!.Type == "Long"
-                        || field.Domain.Java.Type == "long"
-                        || field.Domain.Java.Type == "int"
-                        || field.Domain.Java.Type == "Integer")
-                    {
-                        var seqName = $"SEQ_{classe.SqlName}";
-                        fw.WriteLine(1, @$"@SequenceGenerator(name = ""{seqName}"", sequenceName = ""{seqName}"", initialValue = 1000)");
-                        fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ""{seqName}"")");
-                    }
-                }
-
-                if (classe.IsPersistent)
-                {
-                    var column = @$"@Column(name = ""{field.SqlName}"", nullable = {(!field.Required).ToString().ToFirstLower()}{(classe.Reference ? ", updatable = false" : string.Empty)}";
-                    if (field.Domain.Length != null)
-                    {
-                        if (field.Domain.Java!.Type == "String" || field.Domain.Java.Type == "string")
-                        {
-                            column += $", length = {field.Domain.Length}";
-                        }
-                        else
-                        {
-                            column += $", precision = {field.Domain.Length}";
-                        }
-                    }
-
-                    if (field.Domain.Scale != null)
-                    {
-                        column += $", scale = {field.Domain.Scale}";
-                    }
-
-                    column += ")";
-                    fw.WriteLine(1, column);
-                }
-                else if (field.Required && !field.PrimaryKey)
-                {
-                    fw.WriteLine(1, @$"@NotNull");
-                }
-
-                if (field.PrimaryKey && classe.Reference)
-                {
-                    fw.WriteLine(1, "@Enumerated(EnumType.STRING)");
-                }
-
-                if (field.Domain.Java is not null && field.Domain.Java.Annotations is not null)
-                {
-                    foreach (var annotation in field.Domain.Java.Annotations)
-                    {
-                        fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : '@')}{annotation}");
-                    }
-                }
-
-                fw.WriteLine(1, $"private {property.GetJavaType()} {property.GetJavaName()};");
-            }
         }
     }
 
@@ -627,7 +512,7 @@ public class JpaModelGenerator : GeneratorBase
         }
     }
 
-    private void WriteFieldsEnum(JavaWriter fw, Class classe)
+    private void WriteFieldsEnum(JavaWriter fw, Class classe, List<Class> allClasses)
     {
         fw.WriteLine();
         fw.WriteDocStart(1, $"Enumération des champs de la classe {{@link {classe.GetImport(_config)} {classe.Name}}}");
@@ -640,7 +525,8 @@ public class JpaModelGenerator : GeneratorBase
 
         enumDeclaration += " {";
         fw.WriteLine(1, enumDeclaration);
-        fw.WriteLine(string.Join(", //\n", classe.Properties.Select(prop =>
+
+        var props = classe.Properties.Select(prop =>
         {
             string name;
             if (prop is AssociationProperty ap)
@@ -653,8 +539,9 @@ public class JpaModelGenerator : GeneratorBase
             }
 
             return $"        {name}";
-        })));
+        });
 
+        fw.WriteLine(string.Join(", //\n", props));
         fw.WriteLine(1, "}");
     }
 }

@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.9.2
+
+- [110](https://github.com/klee-contrib/topmodel/pull/110) JPA - Gestion des associations réciproques au sein d'un même package racine
+
 ## 1.9.1
 
 [#109](https://github.com/klee-contrib/topmodel/pull/109)  Gestion de l'héritage des mappers.

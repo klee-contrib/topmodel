@@ -136,4 +136,21 @@ public static class JpaUtils
     {
         return apr.Association.PrimaryKey != null && apr.Association.PrimaryKey.IsEnum();
     }
+
+    public static List<AssociationProperty> GetReverseProperties(this Class classe, List<Class> availableClasses)
+    {
+        if (classe.Reference)
+        {
+            return new List<AssociationProperty>();
+        }
+
+        return availableClasses
+                    .SelectMany(c => c.Properties)
+                    .OfType<AssociationProperty>()
+                    .Where(p => !(p is JpaAssociationProperty))
+                    .Where(p => p.Type != AssociationType.OneToOne)
+                    .Where(p => p.Association == classe
+                                && p.Class.Namespace.Module.Split('.').First() == classe.Namespace.Module.Split('.').First())
+                    .ToList();
+    }
 }
