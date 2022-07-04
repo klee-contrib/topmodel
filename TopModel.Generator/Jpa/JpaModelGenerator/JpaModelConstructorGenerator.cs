@@ -31,7 +31,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"}}");
     }
 
-    public void WriteAllArgConstructor(JavaWriter fw, Class classe)
+    public void WriteAllArgConstructor(JavaWriter fw, Class classe, List<Class> allClasses)
     {
         fw.WriteLine();
         fw.WriteDocStart(1, "All arg constructor");
@@ -43,6 +43,7 @@ public class JpaModelConstructorGenerator
         }
 
         var propertiesSignature = string.Join(", ", properties.Select(p => $"{p.GetJavaType()} {p.GetJavaName()}"));
+
         foreach (var property in properties)
         {
             fw.WriteLine(1, $" * @param {property.GetJavaName()} {property.Comment}");
