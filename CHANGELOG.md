@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.9.3
+
+[2547b6](https://github.com/klee-contrib/topmodel/commit/2547b691ce42d67b2f66caaab6f1f50d43e56b0a) Fix génération topmodel.lock quand lancé depuis un autre répertoire
+
 ## 1.9.2
 
 - [110](https://github.com/klee-contrib/topmodel/pull/110) JPA - Gestion des associations réciproques au sein d'un même package racine
