@@ -233,8 +233,11 @@ public class ModelStore
     {
         var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         var generatedFiles = GetGeneratedFiles();
-        var filesToPrune = _topModelLock.GeneratedFiles.Where(f => !generatedFiles.Select(gf => isWindows ? gf.ToLowerInvariant() : gf).Contains(isWindows ? f.ToLowerInvariant() : f));
-        foreach (var fileToPrune in filesToPrune.Where(fileToPrune => File.Exists(fileToPrune)))
+        var filesToPrune = _topModelLock.GeneratedFiles
+            .Where(f => !generatedFiles.Select(gf => isWindows ? gf.ToLowerInvariant() : gf).Contains(isWindows ? f.ToLowerInvariant() : f))
+            .Select(f => Path.Combine(_config.ModelRoot, f));
+
+        foreach (var fileToPrune in filesToPrune.Where(File.Exists))
         {
             File.Delete(fileToPrune);
             _logger.LogInformation($"Supprimé: {fileToPrune.ToRelative()}");
@@ -246,7 +249,7 @@ public class ModelStore
         return _modelWatchers
             .Where(m => m.GeneratedFiles != null)
             .SelectMany(m => m.GeneratedFiles!)
-            .Select(f => f.ToRelative())
+            .Select(f => f.ToRelative(_config.ModelRoot))
             .Distinct()
             .OrderBy(t => t)
             .ToList();
@@ -984,12 +987,12 @@ public class ModelStore
                     var parent = classe.Extends;
                     while (parent != null && mapper.ParentMapper == null)
                     {
-                        foreach (var parentMapper in parent.FromMappers.Where(parentMapper => parentMapper.Params.Count() <= mapper.Params.Count()))
+                        foreach (var parentMapper in parent.FromMappers.Where(parentMapper => parentMapper.Params.Count <= mapper.Params.Count))
                         {
                             int score = 0;
                             foreach (var (param, index) in mapper.Params.Select((value, i) => (value, i)))
                             {
-                                if (index >= parentMapper.Params.Count() || !param.Class.Inherit(parentMapper.Params[index].Class) && !parentMapper.Params[index].Class.Inherit(param.Class))
+                                if (index >= parentMapper.Params.Count || !param.Class.Inherit(parentMapper.Params[index].Class) && !parentMapper.Params[index].Class.Inherit(param.Class))
                                 {
                                     break;
                                 }

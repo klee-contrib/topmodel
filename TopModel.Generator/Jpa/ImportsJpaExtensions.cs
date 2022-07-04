@@ -113,7 +113,7 @@ public static class ImportsJpaExtensions
                 imports.Add("java.util.Collections");
                 imports.Add("javax.persistence.FetchType");
                 imports.Add("javax.persistence.CascadeType");
-                if (!(ap is JpaAssociationProperty jap && jap.IsReverse) && (ap.Association.Namespace.Module.Split('.').First()) != ap.Class.Namespace.Module.Split('.').First())
+                if (!(ap is JpaAssociationProperty jap && jap.IsReverse) && ap.Association.Namespace.Module.Split('.').First() != ap.Class.Namespace.Module.Split('.').First())
                 {
                     imports.Add("javax.persistence.JoinColumn");
                 }
@@ -129,7 +129,7 @@ public static class ImportsJpaExtensions
                 imports.Add("javax.persistence.JoinColumn");
                 imports.Add("javax.persistence.CascadeType");
                 imports.Add("javax.persistence.FetchType");
-                if (!(ap is JpaAssociationProperty japo && japo.IsReverse) && (ap.Association.Namespace.Module.Split('.').First()) != ap.Class.Namespace.Module.Split('.').First())
+                if (!(ap is JpaAssociationProperty japo && japo.IsReverse) && ap.Association.Namespace.Module.Split('.').First() != ap.Class.Namespace.Module.Split('.').First())
                 {
                     imports.Add("javax.persistence.JoinTable");
                 }

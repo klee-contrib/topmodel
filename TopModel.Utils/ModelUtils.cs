@@ -78,7 +78,7 @@ public static class ModelUtils
     /// <returns>Le texte en sortie.</returns>
     public static string ToFirstLower(this string text)
     {
-        if(string.IsNullOrEmpty(text))
+        if (string.IsNullOrEmpty(text))
         {
             return text;
         }
@@ -149,9 +149,9 @@ public static class ModelUtils
         return sb.ToString();
     }
 
-    public static string ToRelative(this string path)
+    public static string ToRelative(this string path, string? relativeTo = null)
     {
-        var relative = Path.GetRelativePath(Directory.GetCurrentDirectory(), path);
+        var relative = Path.GetRelativePath(relativeTo ?? Directory.GetCurrentDirectory(), path);
         if (!relative.StartsWith("."))
         {
             relative = $".\\{relative}";
