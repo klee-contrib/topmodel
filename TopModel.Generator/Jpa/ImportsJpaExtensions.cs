@@ -110,7 +110,7 @@ public static class ImportsJpaExtensions
         {
             case AssociationType.OneToMany:
                 imports.Add("java.util.List");
-                imports.Add("java.util.Collections");
+                imports.Add("java.util.ArrayList");
                 imports.Add("javax.persistence.FetchType");
                 imports.Add("javax.persistence.CascadeType");
                 if (!(ap is JpaAssociationProperty jap && jap.IsReverse) && ap.Association.Namespace.Module.Split('.').First() != ap.Class.Namespace.Module.Split('.').First())
@@ -125,7 +125,7 @@ public static class ImportsJpaExtensions
                 break;
             case AssociationType.ManyToMany:
                 imports.Add("java.util.List");
-                imports.Add("java.util.Collections");
+                imports.Add("java.util.ArrayList");
                 imports.Add("javax.persistence.JoinColumn");
                 imports.Add("javax.persistence.CascadeType");
                 imports.Add("javax.persistence.FetchType");

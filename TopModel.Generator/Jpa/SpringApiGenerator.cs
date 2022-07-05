@@ -145,7 +145,7 @@ public class SpringApiGenerator : GeneratorBase
             var ann = string.Empty;
             if (writeAnnotation)
             {
-                ann += @$"@RequestParam(""{param.GetParamName()}"") ";
+                ann += @$"@RequestParam(value = ""{param.GetParamName()}"", required = {(param is IFieldProperty fp ? fp.Required : true).ToString().ToFirstLower()}) ";
             }
 
             methodParams.Add($"{ann}{param.GetJavaType()} {param.GetParamName()}");

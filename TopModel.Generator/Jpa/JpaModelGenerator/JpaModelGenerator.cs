@@ -406,7 +406,7 @@ public class JpaModelGenerator : GeneratorBase
             if (property is AssociationProperty ap && (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany))
             {
                 fw.WriteLine(2, $"if(this.{property.GetJavaName()} == null)");
-                fw.WriteLine(3, "return Collections.emptyList();");
+                fw.WriteLine(3, $"this.{property.GetJavaName()} = new ArrayList<>();");
             }
 
             fw.WriteLine(2, @$"return this.{property.GetJavaName()};");
