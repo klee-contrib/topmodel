@@ -67,10 +67,17 @@ public class MapperGenerator
         {
             var (classe, mapper) = fromMapper;
 
-            w.WriteSummary(2, $"Crée une nouvelle instance de '{classe}'");
+            w.WriteSummary(2, $"Crée une nouvelle instance de '{classe}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
             foreach (var param in mapper.Params)
             {
-                w.WriteParam(param.Name, $"Instance de '{param.Class}'");
+                if (param.Comment != null)
+                {
+                    w.WriteParam(param.Name, param.Comment);
+                }
+                else
+                {
+                    w.WriteParam(param.Name, $"Instance de '{param.Class}'");
+                }
             }
 
             w.WriteReturns(2, $"Une nouvelle instance de '{classe}'");
@@ -79,6 +86,18 @@ public class MapperGenerator
             w.WriteLine(2, "{");
             w.WriteLine(3, $"return new {classe}");
             w.WriteLine(3, "{");
+
+            if (mapper.ParentMapper != null)
+            {
+                foreach (var param in mapper.ParentMapper.Params)
+                {
+                    var mappings = param.Mappings.ToList();
+                    foreach (var mapping in mappings)
+                    {
+                        w.WriteLine(4, $"{mapping.Key.Name} = {mapper.Params[mapper.ParentMapper.Params.IndexOf(param)].Name}.{mapping.Value.Name}{(mapper.Params.IndexOf(param) < mapper.Params.Count - 1 || mappings.IndexOf(mapping) < mappings.Count - 1 ? "," : string.Empty)}");
+                    }
+                }
+            }
 
             foreach (var param in mapper.Params)
             {
@@ -102,7 +121,7 @@ public class MapperGenerator
         {
             var (classe, mapper) = toMapper;
 
-            w.WriteSummary(2, $"Mappe '{classe}' vers '{mapper.Class}'");
+            w.WriteSummary(2, $"Mappe '{classe}' vers '{mapper.Class}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
             w.WriteParam("source", $"Instance de '{classe}'");
             w.WriteParam("dest", $"Instance pré-existante de '{mapper.Class}'. Une nouvelle instance sera créée si non spécifié.");
             w.WriteReturns(2, $"Une instance de '{mapper.Class}'");
@@ -110,6 +129,14 @@ public class MapperGenerator
             w.WriteLine(2, $"public static {mapper.Class} {mapper.Name}(this {classe} source, {mapper.Class} dest = null)");
             w.WriteLine(2, "{");
             w.WriteLine(3, $"dest ??= new {mapper.Class}();");
+
+            if (mapper.ParentMapper != null)
+            {
+                foreach (var mapping in mapper.ParentMapper.Mappings)
+                {
+                    w.WriteLine(3, $"dest.{mapping.Value.Name} = source.{mapping.Key.Name};");
+                }
+            }
 
             foreach (var mapping in mapper.Mappings)
             {

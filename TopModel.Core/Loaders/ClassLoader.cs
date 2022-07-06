@@ -139,7 +139,7 @@ public class ClassLoader
                                                                 param.ClassReference = new ClassReference(classScalar);
                                                                 break;
                                                             case "comment":
-                                                                mapper.Comment = parser.Consume<Scalar>().Value;
+                                                                param.Comment = parser.Consume<Scalar>().Value;
                                                                 break;
                                                             case "name":
                                                                 param.Name = new LocatedString(parser.Consume<Scalar>());
