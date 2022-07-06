@@ -141,8 +141,18 @@ public class JpaModelConstructorGenerator
             var (clazz, mapper) = fromMapper;
             fw.WriteLine();
             fw.WriteDocStart(1, $"Crée une nouvelle instance de '{classe}'");
+            if (mapper.Comment != null)
+            {
+                fw.WriteLine(1, $" * {mapper.Comment}");
+            }
+
             foreach (var param in mapper.Params)
             {
+                if (param.Comment != null)
+                {
+                    fw.WriteLine(1, $" * {param.Comment}");
+                }
+
                 fw.WriteParam(param.Name.ToFirstLower(), $"Instance de '{param.Class}'");
             }
 
@@ -162,7 +172,14 @@ public class JpaModelConstructorGenerator
             fw.WriteDocStart(1, $"Map les champs des classes passées en paramètre dans l'instance courante");
             foreach (var param in mapper.Params)
             {
-                fw.WriteParam(param.Name.ToFirstLower(), $"Instance de '{param.Class}'");
+                if (param.Comment != null)
+                {
+                    fw.WriteParam(param.Name.ToFirstLower(), param.Comment);
+                }
+                else
+                {
+                    fw.WriteParam(param.Name.ToFirstLower(), $"Instance de '{param.Class}'");
+                }
             }
 
             fw.WriteDocEnd(1);

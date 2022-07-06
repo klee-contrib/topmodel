@@ -449,9 +449,15 @@ public class JpaModelGenerator : GeneratorBase
 
             fw.WriteLine();
             fw.WriteDocStart(1, $"Mappe '{classe}' vers '{mapper.Class}'");
+            if (mapper.Comment != null)
+            {
+                fw.WriteLine(1, $" * {mapper.Comment}");
+            }
+
             fw.WriteParam("source", $"Instance de '{classe}'");
             fw.WriteParam("dest", $"Instance pré-existante de '{mapper.Class}'. Une nouvelle instance sera créée si non spécifié.");
             fw.WriteReturns(1, $"Une instance de '{mapper.Class}'");
+
             fw.WriteDocEnd(1);
             if (mapper.ParentMapper != null && mapper.ParentMapper.Name == mapper.Name)
             {

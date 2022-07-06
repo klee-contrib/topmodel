@@ -118,6 +118,9 @@ public class ClassLoader
                                         var subSubProp = parser.Consume<Scalar>();
                                         switch (subSubProp.Value)
                                         {
+                                            case "comment":
+                                                mapper.Comment = parser.Consume<Scalar>().Value;
+                                                break;
                                             case "params":
                                                 mapper.Reference = new LocatedString(subSubProp);
                                                 parser.ConsumeSequence(() =>
@@ -134,6 +137,9 @@ public class ClassLoader
                                                             case "class":
                                                                 classScalar = parser.Consume<Scalar>();
                                                                 param.ClassReference = new ClassReference(classScalar);
+                                                                break;
+                                                            case "comment":
+                                                                mapper.Comment = parser.Consume<Scalar>().Value;
                                                                 break;
                                                             case "name":
                                                                 param.Name = new LocatedString(parser.Consume<Scalar>());
@@ -173,6 +179,9 @@ public class ClassLoader
                                                 break;
                                             case "name":
                                                 mapper.Name = new LocatedString(parser.Consume<Scalar>());
+                                                break;
+                                            case "comment":
+                                                mapper.Comment = parser.Consume<Scalar>().Value;
                                                 break;
                                             case "mappings":
                                                 parser.ConsumeMapping(() =>

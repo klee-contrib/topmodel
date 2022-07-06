@@ -580,6 +580,10 @@
                     "required": [ "params" ],
                     "additionalProperties": false,
                     "properties": {
+                      "comment": {
+                        "type": "string",
+                        "description": "Commentaire facultatif du mapper."
+                      },
                       "params": {
                         "type": "array",
                         "description": "Liste des paramètres du mapper.",
@@ -592,6 +596,10 @@
                             "class": {
                               "type": "string",
                               "description": "Classe depuis laquelle recopier des propriétés."
+                            },
+                            "comment": {
+                              "type": "string",
+                              "description": "Commentaire facultatif du mapper."
                             },
                             "name": {
                               "type": "string",
@@ -634,6 +642,10 @@
                       "name": {
                         "type": "string",
                         "description": "Nom du mapper. Utilise le nom de la classe par défaut préfixé par 'To'."
+                      },
+                      "comment": {
+                        "type": "string",
+                        "description": "Commentaire facultatif du mapper."
                       },
                       "mappings": {
                         "type": "object",

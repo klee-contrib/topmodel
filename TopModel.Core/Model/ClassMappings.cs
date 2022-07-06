@@ -12,6 +12,7 @@ public class ClassMappings
     public ClassReference ClassReference { get; set; }
 
 #nullable enable
+    public string? Comment { get; set; }
 
     public Dictionary<IFieldProperty, IFieldProperty> Mappings { get; } = new();
 
