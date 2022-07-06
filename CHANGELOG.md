@@ -1,5 +1,12 @@
 # TopModel.Generator (`modgen`)
 
+## 1.9.5
+
+[#113](https://github.com/klee-contrib/topmodel/pull/113) + [43c67ef](https://github.com/klee-contrib/topmodel/commit/43c67efbde63698b01e7c2a117235d94b324ff9e)
+
+- Ajout de commentaires dans les mappers (définition + paramètres de mappers `from`)
+- Implémentation C# de l'héritage de mappers
+
 ## 1.9.4
 
 [2547b6](https://github.com/klee-contrib/topmodel/commit/2547b691ce42d67b2f66caaab6f1f50d43e56b0a) JPA :
@@ -17,7 +24,7 @@
 
 ## 1.9.1
 
-[#109](https://github.com/klee-contrib/topmodel/pull/109)  Gestion de l'héritage des mappers.
+[#109](https://github.com/klee-contrib/topmodel/pull/109) Gestion de l'héritage des mappers.
 
 Cette release ajoute la gestion de l'héritage aux **mappers**.
 
