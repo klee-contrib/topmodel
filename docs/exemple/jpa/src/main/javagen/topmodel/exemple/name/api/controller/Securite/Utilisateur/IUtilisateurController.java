@@ -31,7 +31,7 @@ public interface IUtilisateurController {
 	 * @return Le détail de l'utilisateur
 	 */
 	@GetMapping(path = "utilisateur/{utilisateurId}")
-	default UtilisateurDto getUtilisateurMapping(@RequestParam("utiId") long utiId) {
+	default UtilisateurDto getUtilisateurMapping(@RequestParam(value = "utiId", required = true) long utiId) {
 		return this.getUtilisateur(utiId);
 	}
 
@@ -48,7 +48,7 @@ public interface IUtilisateurController {
 	 * @return Liste des utilisateurs
 	 */
 	@GetMapping(path = "utilisateur/list")
-	default List<UtilisateurDto> getUtilisateurListMapping(@RequestParam("typeUtilisateurCode") TypeUtilisateur.Values typeUtilisateurCode) {
+	default List<UtilisateurDto> getUtilisateurListMapping(@RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode) {
 		return this.getUtilisateurList(typeUtilisateurCode);
 	}
 
@@ -101,7 +101,7 @@ public interface IUtilisateurController {
 	 * @return Utilisateurs matchant les critères
 	 */
 	@PostMapping(path = "utilisateur/search")
-	default Page<UtilisateurDto> searchMapping(@RequestParam("utiUtilisateurId") long utiUtilisateurId, @RequestParam("utilisateuremail") String utilisateuremail, @RequestParam("utilisateurTypeUtilisateurCode") TypeUtilisateur.Values utilisateurTypeUtilisateurCode) {
+	default Page<UtilisateurDto> searchMapping(@RequestParam(value = "utiUtilisateurId", required = true) long utiUtilisateurId, @RequestParam(value = "utilisateuremail", required = false) String utilisateuremail, @RequestParam(value = "utilisateurTypeUtilisateurCode", required = false) TypeUtilisateur.Values utilisateurTypeUtilisateurCode) {
 		return this.search(utiUtilisateurId, utilisateuremail, utilisateurTypeUtilisateurCode);
 	}
 
