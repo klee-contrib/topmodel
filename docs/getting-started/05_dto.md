@@ -152,3 +152,9 @@ class:
 Les deux exemples ci-dessus produisent exactement le même résultat que le premier exemple proposé : `ProfilDto` contiendra une propriété `Libelle`, ayant les mêmes attributs que la propriété `Libelle` de la classe `Profil`.
 
 > **Astuce** : il est tout à fait possible d'ajouter deux alias vers la même classe. Cette pratique permet notamment de surcharger différemment des ensembles de propriétés.
+
+## Mappers
+
+Avec la possibililité de créer aisément des Dtos vient la nécessité de transformer nos entités persistées en dtos et vice et versa. L'usage de mappers par convention de nommage peut être hasardeuse, et TopModel peut mieux faire. En effet, le modèle contient, dans sa description, le lien fort qu'entretiennent les propriétés des deux côtés des alias. C'est pourquoi TopModel donne la possibilité de créer des `mappers`. La correspondance entre les champs se fera d'abord par **correspondance entre alias**. Puis, les propriétés restantes seront mappées avec la règle **même nom et même domaine**.
+
+S'il y a ambiguité sur les mappings, où si certains champs doivent être ignorés, il est possible de donner des précisions sous l'attribut `mappings`.
