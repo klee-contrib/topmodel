@@ -26,7 +26,3 @@ Fonctionnalités principales :
   - Imports inutiles
   - Trigrams en doublon
   - Propriétés d'alias en doublon
-
-## Fonctionnalités en cours de développement
-
-- Espace de travail multi-config
