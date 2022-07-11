@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.9.6
+
+- [32601d4a8f](https://github.com/klee-contrib/topmodel/commit/32601d4a8f27177144a0888223b438cf8f12400d) JPA - Ne plus utiliser le stream().toList() car la liste renvoyée est immutable.
+
 ## 1.9.5
 
 [#113](https://github.com/klee-contrib/topmodel/pull/113) + [43c67ef](https://github.com/klee-contrib/topmodel/commit/43c67efbde63698b01e7c2a117235d94b324ff9e)
