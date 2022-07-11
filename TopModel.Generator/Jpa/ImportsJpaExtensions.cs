@@ -111,6 +111,7 @@ public static class ImportsJpaExtensions
             case AssociationType.OneToMany:
                 imports.Add("java.util.List");
                 imports.Add("java.util.ArrayList");
+                imports.Add("java.util.stream.Collectors");
                 imports.Add("javax.persistence.FetchType");
                 imports.Add("javax.persistence.CascadeType");
                 if (!(ap is JpaAssociationProperty jap && jap.IsReverse) && ap.Association.Namespace.Module.Split('.').First() != ap.Class.Namespace.Module.Split('.').First())
@@ -127,6 +128,7 @@ public static class ImportsJpaExtensions
                 imports.Add("java.util.List");
                 imports.Add("java.util.ArrayList");
                 imports.Add("javax.persistence.JoinColumn");
+                imports.Add("java.util.stream.Collectors");
                 imports.Add("javax.persistence.CascadeType");
                 imports.Add("javax.persistence.FetchType");
                 if (!(ap is JpaAssociationProperty japo && japo.IsReverse) && ap.Association.Namespace.Module.Split('.').First() != ap.Class.Namespace.Module.Split('.').First())
@@ -166,6 +168,7 @@ public static class ImportsJpaExtensions
         if (cp.Kind == "list")
         {
             imports.Add("java.util.List");
+            imports.Add("java.util.stream.Collectors");
         }
         else if (cp.DomainKind?.Java?.Imports != null)
         {
