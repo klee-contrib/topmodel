@@ -311,7 +311,6 @@ function startLanguageServer(context: ExtensionContext, configPath: string, conf
     context.subscriptions.push(disposable);
 }
 
-
 function handleLsReady(context: ExtensionContext): void {
     extentionState = "RUNNING";
     context.subscriptions.push(topModelStatusBar);

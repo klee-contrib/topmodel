@@ -147,7 +147,7 @@ class TopModelPreviewPanel {
         <title>TopModel</title>  
     </head>   
     <body>
-        <h1>[${currentClient.config.app}] : ${this.diagramMap[this.currentFsPath].module}</h1>
+        <h1>${CLIENTS.length > 1 ? "[" + currentClient.config.app + "] : " : ''}${this.diagramMap[this.currentFsPath].module}</h1>
         <div>
             <button onclick="zoomClick(false)">-</button>
             <button onclick="zoomClick(true)">+</button>
