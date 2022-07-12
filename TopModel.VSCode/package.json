@@ -20,7 +20,7 @@
     "directory": "TopModel.VSCode",
     "type": "git"
   },
-  "version": "1.9.1",
+  "version": "1.9.2",
   "engines": {
     "vscode": "^1.67.0"
   },
@@ -55,17 +55,17 @@
       },
       {
         "command": "topmodel.modgen",
-        "title": "Start model generation",
+        "title": "Lance la commande de génération du modèle",
         "category": "TopModel"
       },
       {
         "command": "topmodel.modgen.watch",
-        "title": "Start model generation (watch mode)",
+        "title": "Lance la commande de génération du modèle en mode watch",
         "category": "TopModel"
       },
       {
         "command": "topmodel.preview",
-        "title": "Open preview panel",
+        "title": "Ouvre la prévisualisation UML du modèle",
         "category": "TopModel",
         "icon": {
           "light": "Preview.svg",

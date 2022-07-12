@@ -11,3 +11,5 @@ export type Mermaid = {
     diagram: string;
     module: string;
 };
+
+export type ExtensionState = "LOADING" | "ERROR" | "RUNNING" | "UPDATING" | "INSTALLING"; 

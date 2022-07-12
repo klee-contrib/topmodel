@@ -1,12 +1,12 @@
 import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
 import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment, Terminal, Uri, Position } from 'vscode';
 import * as fs from "fs";
-import { TopModelConfig, TopModelException } from './types';
+import { ExtensionState, TopModelConfig, TopModelException } from './types';
 import { addClient, registerPreview } from './preview';
 
 const open = require('open');
 const exec = require('child_process').exec;
-const yaml = require("js-yaml");
+const yaml = require('js-yaml');
 
 const SERVER_EXE = 'dotnet';
 export const COMMANDS = {
@@ -23,7 +23,7 @@ let lsStarted = false;
 let topModelStatusBar: StatusBarItem;
 let currentVersion: string;
 let latestVersion: string;
-let extentionState: "LOADING" | "ERROR" | "RUNNING" | "UPDATING" | "INSTALLING" = "LOADING";
+let extentionState: ExtensionState = "LOADING";
 
 export async function activate(context: ExtensionContext) {
     if (!lsStarted) {
@@ -185,7 +185,7 @@ function getTerminal(app: string) {
     if (!currentTerminals[app] || !window.terminals.includes(currentTerminals[app])) {
         currentTerminals[app] = window.createTerminal({
             name: `modgen - ${app}`,
-            message: "Starting modgen in a new terminal"
+            message: "Démarrage de modgen dans un nouveau terminal"
         });
     }
     return currentTerminals[app];
@@ -272,17 +272,17 @@ async function findConfFiles(): Promise<{ config: TopModelConfig, file: Uri }[]>
 function startLanguageServer(context: ExtensionContext, configPath: string, config: TopModelConfig) {
     // The server is implemented in node
 
-    const args = [context.asAbsolutePath("./language-server/TopModel.LanguageServer.dll")];
+    const args = [context.asAbsolutePath('./language-server/TopModel.LanguageServer.dll')];
     let configRelativePath = workspace.asRelativePath(configPath);
     if ((workspace.workspaceFolders?.length || 0) > 1) {
-        configRelativePath = configRelativePath.split("/").splice(1).join('/');
+        configRelativePath = configRelativePath.split('/').splice(1).join('/');
     }
     args.push(configPath.substring(1));
     let serverOptions: ServerOptions = {
         run: { command: SERVER_EXE, args },
         debug: { command: SERVER_EXE, args }
     };
-    let configFolderA = configRelativePath.split("/");
+    let configFolderA = configRelativePath.split('/');
     configFolderA.pop();
     const configFolder = configFolderA.join('/');
     const modelRoot = config.modelRoot || configFolder;

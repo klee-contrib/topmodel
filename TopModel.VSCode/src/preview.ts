@@ -34,9 +34,10 @@ function updateCurrentClient(currentFsPath: string) {
 }
 
 class TopModelPreviewPanel {
-    private diagramMap: Record<string, Mermaid> = {};
+    private readonly diagramMap: Record<string, Mermaid> = {};
     public readonly panel: WebviewPanel;
-    private context: ExtensionContext;
+    private readonly context: ExtensionContext;
+
     private mermaidSrcUri: Uri;
     private previewSrcUri: Uri;
     private currentFsPath: string = "";
@@ -115,32 +116,32 @@ class TopModelPreviewPanel {
     }
     getWebviewContent() {
         return `<!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport">
-        <style>
-        body {
-            overflow: hidden;
-        }
-        .dragme{
-            position:relative;
-            cursor: move;
-            max-width: fit-content;
-            max-height: fit-content;
-            overflow: hidden;
-            z-index=-1
-        }
-        .cadre{
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-            margin-bottom: 1rem;
-        }
-        #draggable .mermaid g.fileReference.node rect {
-            opacity: 0.5;
-        }
-        </style>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport">
+            <style>
+                body {
+                    overflow: hidden;
+                }
+                .dragme {
+                    position:relative;
+                    cursor: move;
+                    max-width: fit-content;
+                    max-height: fit-content;
+                    overflow: hidden;
+                    z-index=-1
+                }
+                .cadre {
+                    height: 100%;
+                    width: 100%;
+                    overflow: hidden;
+                    margin-bottom: 1rem;
+                }
+                #draggable .mermaid g.fileReference.node rect {
+                    opacity: 0.5;
+                }
+            </style>
         <script>const matrix = {x: ${this.matrix.x}, y: ${this.matrix.y}, scale: ${this.matrix.scale}}</script>
         <script src="${this.previewSrcUri}"></script>
         <script src="${this.mermaidSrcUri}"></script>
@@ -160,6 +161,7 @@ class TopModelPreviewPanel {
     </body>
     </html>`;
     }
+
     getMermaidContent() {
         if (this.diagramMap[this.currentFsPath].diagram !== 'classDiagram\n\n') {
             return `<div class="mermaid"> 
