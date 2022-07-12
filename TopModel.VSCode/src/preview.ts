@@ -2,34 +2,48 @@ import path = require("path");
 import { WebviewPanel, ExtensionContext, Uri, window, workspace, commands, ViewColumn, TextEditor, TextDocumentChangeEvent, SymbolInformation, Position } from "vscode";
 import { LanguageClient } from "vscode-languageclient/node";
 import { COMMANDS } from "./extension";
-import { Mermaid } from "./types";
+import { Mermaid, TopModelConfig } from "./types";
 
 let currentPanel: TopModelPreviewPanel | null;
+let currentClient: { client: LanguageClient, modelRoot: string, config: TopModelConfig };
+const CLIENTS: { client: LanguageClient, modelRoot: string, config: TopModelConfig }[] = [];
 
-export function registerPreview(context: ExtensionContext, client: LanguageClient) {
+export function registerPreview(context: ExtensionContext) {
     context.subscriptions.push(
         commands.registerCommand(COMMANDS.preview, () => {
             if (!currentPanel) {
-                currentPanel = new TopModelPreviewPanel(client, context);
+                currentPanel = new TopModelPreviewPanel(context);
             } else {
                 currentPanel.panel.reveal();
             }
         })
     );
 }
+
+export function addClient(client: LanguageClient, modelRoot: string, config: TopModelConfig) {
+    currentClient = { client, modelRoot, config };
+    CLIENTS.push({ client, modelRoot, config });
+}
+
+function updateCurrentClient(currentFsPath: string) {
+    CLIENTS.forEach(c => {
+        if (currentFsPath.indexOf(c.modelRoot) >= 0) {
+            currentClient = c;
+        }
+    });
+}
+
 class TopModelPreviewPanel {
     private diagramMap: Record<string, Mermaid> = {};
     public readonly panel: WebviewPanel;
-    private client: LanguageClient;
     private context: ExtensionContext;
     private mermaidSrcUri: Uri;
     private previewSrcUri: Uri;
     private currentFsPath: string = "";
     private matrix: { scale: number, x: number, y: number };
 
-    constructor(client: LanguageClient, context: ExtensionContext) {
+    constructor(context: ExtensionContext) {
         this.context = context;
-        this.client = client;
         this.panel = window.createWebviewPanel(
             'preview', // Identifies the type of the webview. Used internally
             'Top Model Preview', // Title of the panel displayed to the user
@@ -80,7 +94,7 @@ class TopModelPreviewPanel {
         }
         if (message.type === "click:class") {
             const className = message.className;
-            this.client.sendRequest("workspace/symbol", { query: className }).then((value) => {
+            currentClient.client.sendRequest("workspace/symbol", { query: className }).then((value) => {
                 const symbol = (value as SymbolInformation[]).filter(s => s.name === className)[0];
                 const uri = Uri.file((symbol.location.uri as any).replace('file:///', ''));
                 commands.executeCommand("editor.action.goToLocations", uri, new Position(symbol.location.range.start.line, 0), []);
@@ -88,11 +102,12 @@ class TopModelPreviewPanel {
         }
     }
     async refresh() {
+        updateCurrentClient(this.currentFsPath);
         await this.refreshDiagram();
         this.refreshContent();
     }
     async refreshDiagram() {
-        const data = await this.client.sendRequest("mermaid", { uri: this.currentFsPath });
+        const data = await currentClient.client.sendRequest("mermaid", { uri: this.currentFsPath });
         this.diagramMap[this.currentFsPath] = (data as Mermaid);
     }
     refreshContent() {
@@ -132,7 +147,7 @@ class TopModelPreviewPanel {
         <title>TopModel</title>  
     </head>   
     <body>
-        <h1>${this.diagramMap[this.currentFsPath].module}</h1>
+        <h1>[${currentClient.config.app}] : ${this.diagramMap[this.currentFsPath].module}</h1>
         <div>
             <button onclick="zoomClick(false)">-</button>
             <button onclick="zoomClick(true)">+</button>

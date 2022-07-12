@@ -2,7 +2,7 @@ import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-lan
 import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment, Terminal, Uri, Position } from 'vscode';
 import * as fs from "fs";
 import { TopModelConfig, TopModelException } from './types';
-import { registerPreview } from './preview';
+import { addClient, registerPreview } from './preview';
 
 const open = require('open');
 const exec = require('child_process').exec;
@@ -206,8 +206,8 @@ function registerGlobalCommands(context: ExtensionContext) {
     commands.registerCommand(COMMANDS.findRef, async (line: number) => {
         await commands.executeCommand("editor.action.goToLocations", window.activeTextEditor!.document.uri, new Position(line, 0), []);
         await commands.executeCommand("editor.action.goToReferences");
-
     });
+    registerPreview(context);
 }
 
 function registerCommands(context: ExtensionContext, configPath: string, config: TopModelConfig) {
@@ -285,7 +285,7 @@ function startLanguageServer(context: ExtensionContext, configPath: string, conf
     let configFolderA = configRelativePath.split("/");
     configFolderA.pop();
     const configFolder = configFolderA.join('/');
-    let modelRoot = config.modelRoot || configFolder;
+    const modelRoot = config.modelRoot || configFolder;
     // Options to control the language client
     let clientOptions: LanguageClientOptions = {
         // Register the server for plain text documents
@@ -303,9 +303,8 @@ function startLanguageServer(context: ExtensionContext, configPath: string, conf
     client.onReady().then(() => {
         handleLsReady(context);
         updateStatusBar();
-        registerPreview(context, client);
+        addClient(client, modelRoot, config);
     });
-
 
     // Push the disposable to the context's subscriptions so that the
     // client can be deactivated on extension deactivation
