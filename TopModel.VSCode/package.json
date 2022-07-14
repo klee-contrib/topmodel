@@ -50,22 +50,22 @@
     "commands": [
       {
         "command": "topmodel.modgen.update",
-        "title": "Update TopModel.Generator",
+        "title": "Mettre à jour TopModel.Generator",
         "category": "TopModel"
       },
       {
         "command": "topmodel.modgen",
-        "title": "Lance la commande de génération du modèle",
+        "title": "Lancer la génération du modèle",
         "category": "TopModel"
       },
       {
         "command": "topmodel.modgen.watch",
-        "title": "Lance la commande de génération du modèle en mode watch",
+        "title": "Lancer la génération du modèle en continu",
         "category": "TopModel"
       },
       {
         "command": "topmodel.preview",
-        "title": "Ouvre la prévisualisation UML du modèle",
+        "title": "Ouvrir la prévisualisation UML du modèle",
         "category": "TopModel",
         "icon": {
           "light": "Preview.svg",

@@ -1,64 +1,63 @@
-import { LanguageClient, LanguageClientOptions, ServerOptions } from 'vscode-languageclient/node';
-import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment, Terminal, Uri, Position } from 'vscode';
+import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment, Uri, Position } from 'vscode';
 import * as fs from "fs";
 import { ExtensionState, TopModelConfig, TopModelException } from './types';
-import { addClient, registerPreview } from './preview';
+import { registerPreview } from './preview';
+import { Application } from './application';
+import { COMMANDS, COMMANDS_OPTIONS } from './const';
+import { execute } from './utils';
 
 const open = require('open');
-const exec = require('child_process').exec;
 const yaml = require('js-yaml');
 
-const SERVER_EXE = 'dotnet';
-export const COMMANDS = {
-    update: "topmodel.modgen.update",
-    modgen: "topmodel.modgen",
-    modgenWatch: "topmodel.modgen.watch",
-    preview: "topmodel.preview",
-    findRef: "topmodel.findRef",
-    chooseCommand: "topmodel.chooseCommand"
-};
-
-let currentTerminals: Record<string, Terminal> = {};
-let lsStarted = false;
 let topModelStatusBar: StatusBarItem;
 let currentVersion: string;
 let latestVersion: string;
 let extentionState: ExtensionState = "LOADING";
+let context: ExtensionContext;
+const applications: Application[] = [];
 
-export async function activate(context: ExtensionContext) {
-    if (!lsStarted) {
-        createStatusBar(context);
-        checkInstall();
+export async function activate(ctx: ExtensionContext) {
+    context = ctx;
+    createStatusBar();
+    checkInstall();
+    if (applications.length === 0) {
         const confs = await findConfFiles();
         try {
-            confs.forEach(conf => {
-                const config = conf.config;
-                const configPath = conf.file.path;
-                startLanguageServer(context, configPath, config);
-                registerCommands(context, configPath, config);
+            applications.push(...confs.map(conf => new Application(conf.file.path, conf.config, ctx)));
+            applications.forEach(async app => {
+                await app.start();
+                refreshState();
             });
-            registerGlobalCommands(context);
-            registerChooseCommand(context);
+            refreshState();
+            registerGlobalCommands();
         } catch (error: any) {
             handleError(error);
+            refreshState();
         }
     }
 }
 
-function createStatusBar(context: ExtensionContext) {
+function refreshState() {
+    let status: ExtensionState = "RUNNING";
+    applications.forEach(a => {
+        if (a.status === "LOADING") {
+            status = "LOADING";
+        }
+    });
+    extentionState = status;
+    updateStatusBar();
+}
+
+function createStatusBar() {
     topModelStatusBar = window.createStatusBarItem(StatusBarAlignment.Right, 100);
     context.subscriptions.push(topModelStatusBar);
     updateStatusBar();
 }
 
-function execute(command: string, callback: Function) {
-    exec(command, function (error: string, stdout: string, stderr: string) { callback(stdout); });
-}
-
 /********************************************************* */
 /*********************** CHECKS ************************** */
 /********************************************************* */
-function checkInstall() {
+async function checkInstall() {
     execute('echo ;%PATH%; | find /C /I "dotnet"', async (dotnetIsInstalled: string) => {
         if (dotnetIsInstalled !== '1\r\n') {
             const selection = await window.showInformationMessage('Dotnet is not installed', "Show download page");
@@ -161,39 +160,16 @@ function updateModgen() {
         loadCurrentVersion();
         extentionState = "RUNNING";
         updateStatusBar();
-        const selection = await window.showInformationMessage(`TopModel a été mis à jour ${currentVersion} --> ${latestVersion}`, "Voir la release note");
-        if (selection === "Voir la release note") {
-            open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
+        if (latestVersion) {
+            const selection = await window.showInformationMessage(`TopModel a été mis à jour ${currentVersion} --> ${latestVersion}`, "Voir la release note");
+            if (selection === "Voir la release note") {
+                open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
+            }
         }
     });
 }
 
-function startModgen(watch: boolean, configPath: string, app: string) {
-    const terminal = getTerminal(app);
-    let path = configPath;
-    if (path.startsWith('/')) {
-        path = path.substring(1);
-    }
-
-    terminal.sendText(
-        `modgen ${path}` + (watch ? " --watch" : "")
-    );
-    terminal.show();
-}
-
-function getTerminal(app: string) {
-    if (!currentTerminals[app] || !window.terminals.includes(currentTerminals[app])) {
-        currentTerminals[app] = window.createTerminal({
-            name: `modgen - ${app}`,
-            message: "Démarrage de modgen dans un nouveau terminal"
-        });
-    }
-    return currentTerminals[app];
-}
-
-const COMMANDS_OPTIONS: { [key: string]: { title: string, description: string, detail?: string, command: typeof COMMANDS[keyof typeof COMMANDS] } } = {};
-
-function registerGlobalCommands(context: ExtensionContext) {
+function registerGlobalCommands() {
     const modgenUpdate = commands.registerCommand(COMMANDS.update, () => updateModgen());
     context.subscriptions.push(modgenUpdate);
     COMMANDS_OPTIONS.update = {
@@ -208,35 +184,24 @@ function registerGlobalCommands(context: ExtensionContext) {
         await commands.executeCommand("editor.action.goToReferences");
     });
     registerPreview(context);
+    registerChooseCommand();
+    registerModgen(true);
+    registerModgen(false);
+    refreshState();
 }
 
-function registerCommands(context: ExtensionContext, configPath: string, config: TopModelConfig) {
+function registerModgen(watch: boolean) {
     const modgen = commands.registerCommand(
-        COMMANDS.modgen + " - " + config.app,
+        watch ? COMMANDS.modgenWatch : COMMANDS.modgen,
         () => {
-            startModgen(false, configPath, config.app);
-        }
-    );
-    const modgenWatch =
-        commands.registerCommand(COMMANDS.modgenWatch + " - " + config.app,
-            () => {
-                startModgen(true, configPath, config.app);
-            }
-        );
-    COMMANDS_OPTIONS["modgen-" + config.app] = {
-        title: "Lancer la génération de " + config.app,
-        description: "Lance la commande de génération du modèle",
-        command: COMMANDS.modgen + " - " + config.app,
-    };
-    COMMANDS_OPTIONS["modgenWatch-" + config.app] = {
-        title: "Lancer la génération en continu de " + config.app,
-        description: "Lance la commande de génération du modèle en mode watch",
-        command: COMMANDS.modgenWatch + " - " + config.app,
-    };
-    context.subscriptions.push(modgen, modgenWatch);
+            applications.forEach(app => {
+                app.startModgen(watch);
+            });
+        });
+    context.subscriptions.push(modgen);
 }
 
-function registerChooseCommand(context: ExtensionContext) {
+function registerChooseCommand() {
     context.subscriptions.push(commands.registerCommand(COMMANDS.chooseCommand, async () => {
         const options = COMMANDS_OPTIONS;
         const quickPick = window.createQuickPick();
@@ -269,54 +234,6 @@ async function findConfFiles(): Promise<{ config: TopModelConfig, file: Uri }[]>
     return configs;
 }
 
-function startLanguageServer(context: ExtensionContext, configPath: string, config: TopModelConfig) {
-    // The server is implemented in node
-
-    const args = [context.asAbsolutePath('./language-server/TopModel.LanguageServer.dll')];
-    let configRelativePath = workspace.asRelativePath(configPath);
-    if ((workspace.workspaceFolders?.length || 0) > 1) {
-        configRelativePath = configRelativePath.split('/').splice(1).join('/');
-    }
-    args.push(configPath.substring(1));
-    let serverOptions: ServerOptions = {
-        run: { command: SERVER_EXE, args },
-        debug: { command: SERVER_EXE, args }
-    };
-    let configFolderA = configRelativePath.split('/');
-    configFolderA.pop();
-    const configFolder = configFolderA.join('/');
-    const modelRoot = config.modelRoot || configFolder;
-    // Options to control the language client
-    let clientOptions: LanguageClientOptions = {
-        // Register the server for plain text documents
-        documentSelector: [{ pattern: `${modelRoot}**/tmd` }],
-        synchronize: {
-            configurationSection: 'topmodel',
-            fileEvents: workspace.createFileSystemWatcher(`${modelRoot}**/*.tmd`)
-        },
-    };
-
-    // Create the language client and start the client.
-    const client = new LanguageClient('topmodel', 'TopModel', serverOptions, clientOptions);
-
-    let disposable = client.start();
-    client.onReady().then(() => {
-        handleLsReady(context);
-        updateStatusBar();
-        addClient(client, modelRoot, config);
-    });
-
-    // Push the disposable to the context's subscriptions so that the
-    // client can be deactivated on extension deactivation
-    context.subscriptions.push(disposable);
-}
-
-function handleLsReady(context: ExtensionContext): void {
-    extentionState = "RUNNING";
-    context.subscriptions.push(topModelStatusBar);
-    lsStarted = true;
-}
-
 function updateStatusBar() {
     switch (extentionState) {
         case 'LOADING':
@@ -324,13 +241,12 @@ function updateStatusBar() {
             topModelStatusBar.tooltip = 'L\'extension TopModel est en cours de chargement';
             break;
         case 'RUNNING':
-            topModelStatusBar.text = `$(warning)`;
-            if (currentVersion !== latestVersion) {
+            if (currentVersion !== latestVersion && latestVersion) {
                 topModelStatusBar.text = `$(warning)`;
                 topModelStatusBar.tooltip = `Le générateur n\'est pas à jour (dernière version v${latestVersion})`;
             } else {
                 topModelStatusBar.text = `$(check-all)`;
-                topModelStatusBar.tooltip = 'L\'extension TopModel est démarré';
+                topModelStatusBar.tooltip = `L\'extension TopModel est démarrée (${applications.map(app => app.config.app).join(', ')})`;
             }
             topModelStatusBar.command = COMMANDS.chooseCommand;
             break;

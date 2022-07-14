@@ -1,12 +1,12 @@
 import path = require("path");
 import { WebviewPanel, ExtensionContext, Uri, window, workspace, commands, ViewColumn, TextEditor, TextDocumentChangeEvent, SymbolInformation, Position } from "vscode";
-import { LanguageClient } from "vscode-languageclient/node";
-import { COMMANDS } from "./extension";
-import { Mermaid, TopModelConfig } from "./types";
+import { Application } from "./application";
+import { COMMANDS } from "./const";
+import { Mermaid } from "./types";
 
 let currentPanel: TopModelPreviewPanel | null;
-let currentClient: { client: LanguageClient, modelRoot: string, config: TopModelConfig };
-const CLIENTS: { client: LanguageClient, modelRoot: string, config: TopModelConfig }[] = [];
+let currentApplication: Application;
+const APPLICATIONS: Application[] = [];
 
 export function registerPreview(context: ExtensionContext) {
     context.subscriptions.push(
@@ -20,15 +20,15 @@ export function registerPreview(context: ExtensionContext) {
     );
 }
 
-export function addClient(client: LanguageClient, modelRoot: string, config: TopModelConfig) {
-    currentClient = { client, modelRoot, config };
-    CLIENTS.push({ client, modelRoot, config });
+export function addPreviewApplication(application: Application) {
+    currentApplication = application;
+    APPLICATIONS.push(application);
 }
 
-function updateCurrentClient(currentFsPath: string) {
-    CLIENTS.forEach(c => {
-        if (currentFsPath.indexOf(c.modelRoot) >= 0) {
-            currentClient = c;
+function updateCurrentApplication(currentFsPath: string) {
+    APPLICATIONS.forEach(c => {
+        if (currentFsPath.indexOf(c.modelRoot || "") >= 0) {
+            currentApplication = c;
         }
     });
 }
@@ -95,7 +95,7 @@ class TopModelPreviewPanel {
         }
         if (message.type === "click:class") {
             const className = message.className;
-            currentClient.client.sendRequest("workspace/symbol", { query: className }).then((value) => {
+            currentApplication.client!.sendRequest("workspace/symbol", { query: className }).then((value) => {
                 const symbol = (value as SymbolInformation[]).filter(s => s.name === className)[0];
                 const uri = Uri.file((symbol.location.uri as any).replace('file:///', ''));
                 commands.executeCommand("editor.action.goToLocations", uri, new Position(symbol.location.range.start.line, 0), []);
@@ -103,12 +103,12 @@ class TopModelPreviewPanel {
         }
     }
     async refresh() {
-        updateCurrentClient(this.currentFsPath);
+        updateCurrentApplication(this.currentFsPath);
         await this.refreshDiagram();
         this.refreshContent();
     }
     async refreshDiagram() {
-        const data = await currentClient.client.sendRequest("mermaid", { uri: this.currentFsPath });
+        const data = await currentApplication.client!.sendRequest("mermaid", { uri: this.currentFsPath });
         this.diagramMap[this.currentFsPath] = (data as Mermaid);
     }
     refreshContent() {
@@ -148,7 +148,7 @@ class TopModelPreviewPanel {
         <title>TopModel</title>  
     </head>   
     <body>
-        <h1>${CLIENTS.length > 1 ? "[" + currentClient.config.app + "] : " : ''}${this.diagramMap[this.currentFsPath].module}</h1>
+        <h1>${APPLICATIONS.length > 1 ? "[" + currentApplication.config.app + "] : " : ''}${this.diagramMap[this.currentFsPath].module}</h1>
         <div>
             <button onclick="zoomClick(false)">-</button>
             <button onclick="zoomClick(true)">+</button>
