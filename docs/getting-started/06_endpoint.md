@@ -1,4 +1,4 @@
-# Les endpoints
+# Créer un endpoint
 
 TopModel défini un formalisme permettant de représenter un modèle de données. Le modèle décrit pourra ensuite être décliné dans plusieurs langages de programmation différents.
 

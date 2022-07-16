@@ -183,7 +183,7 @@ Lorsque sont saisies ces informations, nous obtenons une `UtilisateurDto` que no
 Il serait en théorie possible de créer soit :
 
 - Un mapper `from` sur la classe `Utilisateur` qui prend comme paramètre un `UtilisateurCreateDto`
-- Un mapper `to` sur la classe `UtilisateurDto` qui prend comme classe destination un `Utilisateur`
+- Un mapper `to` sur la classe `UtilisateurCreateDto` qui prend comme classe destination un `Utilisateur`
 
 Mais, le plus souvent, les classes persistées et non persistées sont définis dans des fichiers différents. Ainsi le fichier dans lequel est déclaré `UtilisateurCreateDto` a une dépendance au fichier dans lequel est défini `Utilisateur`. Pour éviter d'introduire une dépendance circulaire, nous sommes obligés de choisir la deuxième option, **créer un mapper `to` sur la classe `UtilisateurCreateDto`**.
 
@@ -207,7 +207,7 @@ class:
       - class: Utilisateur # Définition de notre premier mapper, vers la classe Utilisateur
 ```
 
-Nous avons donc défini un mapper de la classe `UtilisateurCreateDto` vers la classe Utilisateur
+Nous avons donc défini un mapper de la classe `UtilisateurCreateDto` vers la classe `Utilisateur`
 
 ### Mapper From
 

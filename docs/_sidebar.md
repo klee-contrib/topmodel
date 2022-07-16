@@ -6,7 +6,7 @@
   - [Liste de référence](/getting-started/03_liste_ref.md)
   - [Associer les classes](/getting-started/04_association.md)
   - [Alias et classes non persistées](/getting-started/05_dto.md)
-  - [Créer d'un endpoint](/getting-started/06_endpoint.md)
+  - [Créer un endpoint](/getting-started/06_endpoint.md)
   - [Générer du code](/getting-started/07_generation.md)
 
 - **[Modélisation](/model.md)**
