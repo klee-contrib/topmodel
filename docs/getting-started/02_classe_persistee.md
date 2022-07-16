@@ -109,7 +109,7 @@ domain:
   sqlType: varchar
 ```
 
-## Où l'on ajoute plusieurs propriétés
+## Exemple de propriétés
 
 Ajoutons maintenant quelques propriétés à la classe utilisateur, qui nous servirons par la suite : un nom, une date d'inscription, et une adresse mail. Nous pouvons compléter ces propriétés avec des informations facultatives. Les plus communes :
 

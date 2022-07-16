@@ -171,8 +171,9 @@ class:
   properties:
     - alias:
         class: Utilisateur
-        exclude:
-          - Id
+        include:
+          - Nom
+          - Email
       prefix: true
 ```
 
@@ -197,7 +198,9 @@ class:
     - alias:
         class: Utilisateur
         exclude:
-          - Id
+        include:
+          - Nom
+          - Email
       prefix: true
   mappers: # Définition des mappers
     to: # Mappers to ou from
@@ -249,10 +252,10 @@ class:
   mappers:
     from: # Liste des mappers From
       - params: # Liste des paramètres du mapper
-        - class: Utilisateur # Premier paramètre, la classe Utilisateur
-        - class: Profil # Deuxième paramètre, la classe Profil
+        - class: Utilisateur # Premier paramètre, une instance de la classe Utilisateur
+        - class: Profil # Deuxième paramètre, une instance de la classe Profil
 ```
 
 Nous avons donc défini un mapper `from`, prenant deux paramètres, `Utilisateur` et `Profil`, permettant de créer une instance de la classe `UtilisateurSearchResultDto`.
 
-Pour plus de détails sur les cas d'usage avancés, se rapporter à la section [Mappers](/model/properties?id=mappers)
+Pour plus de détails sur les cas d'usage avancés (exclusion de propriétés, cas de mappings ambigus, héritage, nommage des paramètres et des mappers...), se rapporter à la section [Mappers](/model/properties?id=mappers).
