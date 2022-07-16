@@ -8,3 +8,4 @@ Bienvenue dans ce tutoriel de prise en main de TopModel. Ici vous allez découvr
 - Associer deux classes persistées
 - Créer une classe non persistée
 - Créer un endpoint
+- Générer du code

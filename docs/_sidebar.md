@@ -2,11 +2,12 @@
 
 - **[Tutoriel](/getting-started/00_getting_started.md)**
   - [Intro](/getting-started/01_intro.md)
-  - [Création d'une classe persitée](/getting-started/02_classe_persistee.md)
+  - [Créer une classe persitée](/getting-started/02_classe_persistee.md)
   - [Liste de référence](/getting-started/03_liste_ref.md)
   - [Associer les classes](/getting-started/04_association.md)
-  - [Création d'une classe non persistée](/getting-started/05_dto.md)
-  - [Création d'un endpoint](/getting-started/06_endpoint.md)
+  - [Alias et classes non persistées](/getting-started/05_dto.md)
+  - [Créer d'un endpoint](/getting-started/06_endpoint.md)
+  - [Générer du code](/getting-started/07_generation.md)
 
 - **[Modélisation](/model.md)**
 

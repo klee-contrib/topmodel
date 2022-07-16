@@ -101,7 +101,7 @@ class:
       primaryKey: true
       domain: DO_ID
 
-    - name: Libelle
+    - name: Nom
       comment: Nom du profil
       label: Profil
       domain: DO_LIBELLE
