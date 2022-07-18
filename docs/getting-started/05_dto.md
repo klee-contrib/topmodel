@@ -178,7 +178,7 @@ class:
 ```
 
 Dans l'application qui utilisera ce modèle, on souhaite donner la possibilité de renseigner un nouvel utilisateur en renseignant toutes ses propriétés, sauf l'identifiant technique.
-Lorsque sont saisies ces informations, nous obtenons une `UtilisateurDto` que nous souhaiterons convertir en `Utilisateur` afin de le sauvegarder en base de données. Créons donc un mapper `UtilisateurCreateDto -> Utilisateur`.
+Lorsque sont saisies ces informations, nous obtenons une `UtilisateurCreateDto` que nous souhaiterons convertir en `Utilisateur` afin de le sauvegarder en base de données. Créons donc un mapper `UtilisateurCreateDto -> Utilisateur`.
 
 Il serait en théorie possible de créer soit :
 
@@ -258,4 +258,4 @@ class:
 
 Nous avons donc défini un mapper `from`, prenant deux paramètres, `Utilisateur` et `Profil`, permettant de créer une instance de la classe `UtilisateurSearchResultDto`.
 
-Pour plus de détails sur les cas d'usage avancés (exclusion de propriétés, cas de mappings ambigus, héritage, nommage des paramètres et des mappers...), se rapporter à la section [Mappers](/model/properties?id=mappers).
+Pour plus de détails sur les cas d'usage avancés (exclusion de propriétés, cas de mappings ambigus, héritage, nommage des paramètres et des mappers...), se rapporter à la section [Mappers](/model/mappers).

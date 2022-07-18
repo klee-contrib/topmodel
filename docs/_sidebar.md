@@ -8,6 +8,7 @@
   - [Alias et classes non persistées](/getting-started/05_dto.md)
   - [Créer un endpoint](/getting-started/06_endpoint.md)
   - [Générer du code](/getting-started/07_generation.md)
+  - [Utiliser l'extension VSCode](/getting-started/08_vscode.md)
 
 - **[Modélisation](/model.md)**
 

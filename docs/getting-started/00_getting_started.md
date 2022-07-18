@@ -7,5 +7,7 @@ Bienvenue dans ce tutoriel de prise en main de TopModel. Ici vous allez découvr
 - Définir des listes de références
 - Associer des classes persistées
 - Créer des classes non persistées à l'aide d'alias
+- Définir des mappers entre classes non persistées et classes persistées
 - Créer des endpoints
 - Générer du code
+- Utiliser l'extension VSCode

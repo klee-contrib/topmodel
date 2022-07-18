@@ -17,6 +17,8 @@ class:
 
 Nous avons donc déclaré notre classe `Utilisateur`, dans le module `Users`, et nous lui avons associé un commentaire.
 
+> Si vous utilisez l'extension TopModel, vous devriez avoir une erreur due à l'absence de l'attribut `tags` dans les en-têtes. Nous n'évoquerons les `tags` que dans la partie [`Générer du code`](/getting-started/07_generation.md) de ce tutoriel. En attendant, vous pouvez ajouter `tags: []` dans toutes les en-têtes des fichiers que nous allons créer.
+
 ## Déclaration des propriétés
 
 Nous souhaitons maintenant ajouter à notre classe `Utilisateur` des **propriétés**. Tout d'abord, notre classe `Utilisateur` doit pouvoir être sauvegardée dans une base de données, c'est pourquoi nous lui ajoutons un identifiant unique.
