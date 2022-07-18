@@ -153,6 +153,78 @@ Les deux exemples ci-dessus produisent exactement le même résultat que le prem
 
 > **Astuce** : il est tout à fait possible d'ajouter deux alias vers la même classe. Cette pratique permet notamment de surcharger différemment des ensembles de propriétés.
 
+## Composition
+
+Dans certains cas, il est nécessaire de définir des propriétés dont le type est une classe définie dans le modèle. Nous pourrions éventuellement passer par un domaine, mais il vaut mieux utiliser des propriétés de type `composition`.
+
+Ajoutons donc dans notre Dto `UtilisateurDto` une composition avec la classe `ProfilDto` :
+
+```yaml
+# Dto.yml
+---
+class:
+  name: UtilisateurDto
+  comment: Objet de transfert pour la classe Utilisateur
+  properties:
+    - alias:
+        class: Utilisateur
+    - composition: ProfilDto # Nom de la classe
+      name: Profil # Nom de la propriété
+      comment: Profil de l'utilisateur # Commentaire obligatoire
+      kind: object # Type de composition
+```
+
+### Type de composition (kind)
+
+Il existe trois valeurs possibles pour l'attribut `kind`
+
+#### Object
+
+C'est la composition de base. La classe composée est contenue simplement dans la classe mère.
+
+#### List
+
+La classe composée est contenue sous forme de collection dans la classe mère.
+
+#### Domaine
+
+Si un domaine est renseigné dans l'attribut `kind`, alors il doit être générique dans les langages où il est décliné. La composition sera alors du type du domaine, générique de la classe composée.
+
+Exemple avec le domaine `DO_PAGE`
+
+```yaml
+---
+domain:
+  name: DO_PAGE
+  label: Date
+  ts:
+    type: Page
+    import: "@/services/api-types"
+  java:
+    type: Page
+    imports:
+      - "org.springframework.data.domain.Page"
+```
+
+Avec le kind `DO_PAGE`
+
+```yaml
+# Dto.yml
+---
+class:
+  name: UtilisateurDto
+  comment: Objet de transfert pour la classe Utilisateur
+  properties:
+    - alias:
+        class: Utilisateur
+    - composition: ProfilDto # Nom de la classe
+      name: Profil # Nom de la propriété
+      comment: Profil de l'utilisateur # Commentaire obligatoire
+      kind: DO_PAGE # Type de composition
+```
+
+Le type de composition donnera le type générique `Page<ProfilDto>`.
+
 ## Mappers
 
 Avec la possibililité de créer aisément des Dtos vient la nécessité de transformer nos entités persistées en dtos et vice et versa. L'usage de mappers par convention de nommage peut être hasardeuse, et TopModel peut mieux faire. En effet, le modèle contient, dans sa description, le lien fort qu'entretiennent les propriétés des deux côtés des alias. C'est pourquoi TopModel donne la possibilité de créer des `mappers`. La correspondance entre les champs se fera d'abord par **correspondance entre alias**. Puis, les propriétés restantes seront mappées avec la règle **même nom et même domaine**.
