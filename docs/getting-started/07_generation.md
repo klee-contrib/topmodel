@@ -120,7 +120,7 @@ Le fichier d'initialisation des listes de référence est créé.
 
 Dans les logs, vous pouvez observer :
 
-- Les autres fichiers, inchangés, n'apparaissent pas dans les logs
+- Les autres fichiers, inchangés, n'apparaissent pas
 - Deux watchers ont été enregistrés, `ProceduralSqlGen@1` et `ProceduralSqlGen@2`
 
 Nous avons donc ajouté un générateur à notre modèle, puis généré le code correspondant.
@@ -131,4 +131,4 @@ Dans le répertoire du projet, contenant le fichier `topmodel.config`, lancer la
 
 ## Générateurs disponibles
 
-Voir la page [Génération](/generator.md) pour la liste des générateurs disponibles, ainsi que la documentation spécifique de chacun des générateurs pour connaître les paramétrage possibles.
+Voir la page [Génération](/generator.md) pour la liste des générateurs disponibles, ainsi que la documentation spécifique de chacun des générateurs pour connaître les paramétrages possibles.
