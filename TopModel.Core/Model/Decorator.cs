@@ -7,7 +7,7 @@ namespace TopModel.Core;
 public class Decorator
 {
 #nullable disable
-    public string Name { get; set; }
+    public LocatedString Name { get; set; }
 
     public string Description { get; set; }
 #nullable enable

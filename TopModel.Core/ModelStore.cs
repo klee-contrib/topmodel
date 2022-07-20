@@ -371,7 +371,7 @@ public class ModelStore
             .SelectMany(m => m.Decorators)
             .Concat(modelFile.Decorators)
             .Distinct()
-            .ToDictionary(d => d.Name, c => c);
+            .ToDictionary(d => (string)d.Name, c => c);
 
         // Résolution des "extends" sur les classes.
         foreach (var classe in fileClasses.Where(c => c.ExtendsReference != null))
