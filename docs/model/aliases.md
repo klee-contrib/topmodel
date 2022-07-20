@@ -49,6 +49,18 @@ Il n'est pas possible de définir un alias sur une propriété de type compositi
 
 Enfin, via la propriété `asListWithDomain`, il est possible de recopier une propriété en tant que liste, en spécifiant un domaine qui devra correspondre au type "généré" par cet alias. Le type défini dans le domaine sera ignoré.
 
+Exemple :
+
+```yaml
+# Génère une propriété MyClassCodeList, de domaine DO_CODE_LIST et de type string[] (ou MyClassCode[] si le language/générateur supporte les enums), en supposant que Code est un string et MyClass est une liste de référence
+alias:
+  class: MyClass
+  include: Code
+asListWithDomain: DO_CODE_LIST
+prefix: true
+suffix: List
+```
+
 ## Alias de classes et endpoints
 
 Il est possible de définir, dans un fichier de modèle, un **alias vers un autre fichier de modèle**, pour pouvoir recopier des définitions de classes ou d'endpoints dans ce nouveau fichier.
@@ -65,6 +77,6 @@ alias:
     - Endpoint1
 ```
 
-Cette fonctionnalité est utile lorsqu'on a plusieurs générateurs et que l'on veut qu'un d'entre eux n'ait accès qu'à une partie d'un fichier, sans avoir à revoir intégralement la structure des fichiers pour isoler la partie commune (ce qui peut être particulièrement embêtant lorsqu'il s'agit d'endpoints où un fichier correspond à un contrôleur ou un client).
+Cette fonctionnalité est utile lorsqu'on a plusieurs générateurs et que l'on veut que l'un d'entre eux ne puisse générer qu'un sous-ensemble d'un fichier, sans avoir à réorganiser entièrement la hiérarchie des fichiers (ce qui peut poser des problèmes pour des endpoints où la génération se fait par fichier).
 
 Le fichier référencé par l'alias doit être listé dans la section `uses`.

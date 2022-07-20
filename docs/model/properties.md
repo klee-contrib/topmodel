@@ -24,7 +24,7 @@ comment: Montant initial du prêt.
 
 Une association est une propriété spéciale qui permet de **référencer la clé primaire d'une autre classe**. L'usage principal est de pouvoir définir des clés étrangères dans un modèle persisté. Elle est identifiée par la présence de la propriété `association` en premier.
 
-Une association peut être obligatoire (ou non) et définir un rôle optionnel.
+Une association peut être obligatoire (ou non) (`required`) et optionnellement définir un rôle (`role`), utilisé pour suffixer le nom de la propriété représentant l'association (et permettre donc d'avoir plusieurs associations vers la même classe).
 
 Une association peut également définir sa multiplicité : `manyToOne` (par défaut), `oneToOne`, `oneToMany` et `manyToMany`.
 

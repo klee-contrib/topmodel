@@ -36,10 +36,8 @@ Chaque définition de mapping (qui correspond à un paramètre d'un `from` ou la
 
 TopModel va déterminer automatiquement les correspondances de champs entre classes via les règles suivantes :
 
-1. La propriété de la classe courante est un alias de la propriété de la classe cible.
-2. La propriété de la classe courante est un alias et la propriété de la classe cible sont des alias de la même propriété.
-3. La propriété de la classe cible est un alias de la propriété de la classe courante.
-4. La propriété de la classe courante a le même nom et le même domaine que la propriété de la classe cible.
+1. La propriété de la classe courante est un alias de la propriété de la classe cible (y compris s'il y a plusieurs niveaux d'alias entre les deux).
+2. La propriété de la classe courante a le même nom et le même domaine que la propriété de la classe cible.
 
 Il n'est **pas possible d'initialiser deux fois la même propriété dans un mapper** (quelque soit le sens). En revanche, il est bien possible d'initialiser deux propriétés à partir de la même propriété.
 
