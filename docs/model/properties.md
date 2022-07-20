@@ -34,6 +34,7 @@ Les `oneToMany` et `manyToMany` ne sont (pour l'instant) acceptées que par le g
 
 La classe référencée par l'association doit être connue du fichier de modèle courant, soit parce qu'elle est définie dedans, soit parce que son fichier est référencé dans la section `uses`.
 
+
 Exemple :
 
 ```yaml
@@ -41,6 +42,17 @@ association: ClasseCible
 required: true
 comment: C'est une FK obligatoire
 ```
+
+Il est par ailleurs possible de définir un `role` pour l'association. Le rôle est une chaîne de caractères permettant de spécifier l'usage de l'association. Il viendra se placer en suffix du nom de la propriété.
+
+```yaml
+association: ClasseCible
+required: true
+comment: C'est une FK obligatoire
+role: Exemple
+```
+
+La propriété qui en découlera sera `ClasseCibleExempleId` (si la `primaryKey` de `ClasseCible` est `Id`).
 
 ## Composition
 

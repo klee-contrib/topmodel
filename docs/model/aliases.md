@@ -6,7 +6,7 @@ TopModel permet donc de définir des **alias** de propriétés, classes et endpo
 
 ## Alias de propriétés
 
-Le cas le plus courant est celui ou on veut recopier des propriétés d'une classe vers une autre (ou dans la définition d'un endpoint).
+Le cas le plus courant est celui où l'on veut recopier des propriétés d'une classe vers une autre (ou dans la définition d'un endpoint).
 
 Pour se faire, il est possible de définir un `alias` à la place d'une définition de propriété, par exemple :
 

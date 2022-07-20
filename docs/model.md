@@ -12,7 +12,7 @@ Il doit impérativement se composer de :
 
 Ce sont donc à priori le module et les tags qui vont dicter l'organisation de vos fichiers de modèles. Vous allez vouloir regrouper vos différentes classes et endpoints dans des groupements logiques qui correspondent à la fois à votre métier et à la distinction technique qu'il pourrait y avoir entre les différents objets (par exemple, ce qui est persisté et ce qui ne l'est pas).
 
-De plus, si **des classes d'un fichier ont besoin de référencer des classes d'un autre fichier**, alors il faudra également **spécifier les dépendances aux autres fichiers**, via la propriété supplémentaire **`uses`**. C'est une liste de noms de fichiers. Un nom de fichier est déterminé comme étant **le chemin du fichier relatif à la racine du modèle**.
+De plus, si **des classes d'un fichier ont besoin de référencer des classes d'un autre fichier**, alors il faudra également **spécifier les dépendances aux autres fichiers**, via la propriété supplémentaire **`uses`**. Il s'agit d'une liste de noms de fichiers, sans l'extension. Un nom de fichier est déterminé comme étant **le chemin du fichier relatif à la racine du modèle**.
 
 Exemple :
 
@@ -26,7 +26,7 @@ uses:
   - Referentiel/Data/File_01
 ```
 
-Les documents YAML suivants sont libres, et peuvent être de **4 types** différents :
+Il n'y a pas de contrainte d'ordre sur le reste des documents YAML suivants. Ils peuvent être de **4 types** différents :
 
 - [Un domaine](/model/domains.md)
 - [Une classe](/model/classes.md)

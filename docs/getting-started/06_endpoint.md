@@ -144,3 +144,5 @@ class:
 ```
 
 On voit ici l'utilité de créer un dto par usage. La définition pertinente du dto, du endpoint et du mapping nous permet de nous éviter des vérifications côté serveur. Le propriétés `Email` et `DateInscription` ne devraient pas être modifiées par ce `endpoint`, si les mappers sont bien utilisés. L'évolutivité et la maintenabilité sont assurés !
+
+Aller plus loin dans la documentation complète des [endpoints](/model/endpoints)

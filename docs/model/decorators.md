@@ -73,5 +73,5 @@ public class Utilisateur {
   @Column(name = "UTI_DATE_MODIFICATION", nullable = true)
   @LastModifiedDate
   private DateTime dateModification;
-
+}
 ```
