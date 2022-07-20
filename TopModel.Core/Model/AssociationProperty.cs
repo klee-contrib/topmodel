@@ -65,7 +65,7 @@ public class AssociationProperty : IFieldProperty
         }
     }
 
-    public Domain Domain => Association.Properties.OfType<IFieldProperty>().Single(p => p.PrimaryKey).Domain;
+    public Domain Domain => Association?.Properties.OfType<IFieldProperty>().Single(p => p.PrimaryKey).Domain!;
 
     public bool PrimaryKey => false;
 

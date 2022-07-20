@@ -904,8 +904,8 @@ public class ModelStore
                     {
                         foreach (var property in classe.Properties.OfType<AliasProperty>().Where(property => !explicitMappings.Any(m => m.Key == property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
                         {
-                            var matchingProperties = param.Class.Properties.OfType<IFieldProperty>().Where(p => property.Property == p || p is AliasProperty alp && property == alp.Property);
-                            if (matchingProperties.Count() == 1)
+                            var matchingProperties = param.Class?.Properties.OfType<IFieldProperty>().Where(p => property.Property == p || p is AliasProperty alp && property == alp.Property)!;
+                            if (matchingProperties != null && matchingProperties.Count() == 1)
                             {
                                 param.Mappings.Add(property, matchingProperties.First());
                             }
@@ -918,11 +918,14 @@ public class ModelStore
                     {
                         foreach (var property in classe.Properties.OfType<IFieldProperty>().Where(property => !explicitAndAliasMappings.Any(m => m.Key == property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
                         {
-                            foreach (var p in param.Class.Properties.OfType<IFieldProperty>())
+                            if (param.Class != null)
                             {
-                                if (p.Name == property.Name && p.Domain == property.Domain)
+                                foreach (var p in param.Class.Properties.OfType<IFieldProperty>())
                                 {
-                                    param.Mappings.Add(property, p);
+                                    if (p.Name == property.Name && p.Domain == property.Domain)
+                                    {
+                                        param.Mappings.Add(property, p);
+                                    }
                                 }
                             }
                         }
@@ -948,8 +951,8 @@ public class ModelStore
 
                 foreach (var property in classe.Properties.OfType<AliasProperty>().Where(property => !explicitMappings.ContainsKey(property) && !mapper.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
                 {
-                    var matchingProperties = mapper.Class.Properties.OfType<IFieldProperty>().Where(p => property.Property == p || p is AliasProperty alp && property == alp.Property);
-                    if (matchingProperties.Count() == 1)
+                    var matchingProperties = mapper.Class?.Properties.OfType<IFieldProperty>().Where(p => property.Property == p || p is AliasProperty alp && property == alp.Property)!;
+                    if (matchingProperties != null && matchingProperties.Count() == 1)
                     {
                         mapper.Mappings.Add(property, matchingProperties.First());
                     }
@@ -959,11 +962,14 @@ public class ModelStore
 
                 foreach (var property in classe.Properties.OfType<IFieldProperty>().Where(property => !explicitAndAliasMappings.ContainsKey(property) && !mapper.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
                 {
-                    foreach (var p in mapper.Class.Properties.OfType<IFieldProperty>())
+                    if (mapper.Class != null)
                     {
-                        if (p.Name == property.Name && p.Domain == property.Domain)
+                        foreach (var p in mapper.Class.Properties.OfType<IFieldProperty>())
                         {
-                            mapper.Mappings.Add(property, p);
+                            if (p.Name == property.Name && p.Domain == property.Domain)
+                            {
+                                mapper.Mappings.Add(property, p);
+                            }
                         }
                     }
                 }
