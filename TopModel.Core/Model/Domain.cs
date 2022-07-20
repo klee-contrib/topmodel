@@ -1,14 +1,13 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Core.Types;
 using TopModel.Utils;
-using YamlDotNet.Serialization;
 
 namespace TopModel.Core;
 
 public class Domain
 {
 #nullable disable
-    public string Name { get; set; }
+    public LocatedString Name { get; set; }
 
     public string Label { get; set; }
 #nullable enable
@@ -21,10 +20,8 @@ public class Domain
 
     public bool BodyParam { get; set; }
 
-    [YamlMember(Alias = "csharp")]
     public CSharpType? CSharp { get; set; }
 
-    [YamlMember(Alias = "ts")]
     public TSType? TS { get; set; }
 
     public JavaType? Java { get; set; }

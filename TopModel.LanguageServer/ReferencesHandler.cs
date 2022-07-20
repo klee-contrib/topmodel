@@ -32,7 +32,7 @@ class ReferencesHandler : ReferencesHandlerBase
                         })));
             }
 
-            var domain = file.Domains.SingleOrDefault(d => d.GetLocation()!.Start.Line - 1 == request.Position.Line);
+            var domain = file.Domains.SingleOrDefault(d => d.Name.GetLocation()!.Start.Line - 1 == request.Position.Line || d.GetLocation()!.Start.Line - 1 == request.Position.Line);
             if (domain != null)
             {
                 return Task.FromResult(new LocationContainer(
