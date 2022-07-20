@@ -125,5 +125,10 @@ public enum ModelErrorType
     /// <summary>
     /// Le domaine '{domain.Name}' n'est pas utilisé.
     /// </summary>
-    TMD9004
+    TMD9004,
+
+    /// <summary>
+    /// Le décorateur '{decorateur.Name}' n'est pas utilisé.
+    /// </summary>
+    TMD9005
 }
