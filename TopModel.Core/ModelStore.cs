@@ -900,7 +900,7 @@ public class ModelStore
                 {
                     var explicitMappings = mapper.Params.SelectMany(p => p.Mappings).ToList();
 
-                    foreach (var param in mapper.Params)
+                    foreach (var param in mapper.Params.Where(p => p.Class != null))
                     {
                         foreach (var property in classe.Properties.OfType<AliasProperty>().Where(property => !explicitMappings.Any(m => m.Key == property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
                         {
@@ -914,7 +914,7 @@ public class ModelStore
 
                     var explicitAndAliasMappings = mapper.Params.SelectMany(p => p.Mappings).ToList();
 
-                    foreach (var param in mapper.Params)
+                    foreach (var param in mapper.Params.Where(p => p.Class != null))
                     {
                         foreach (var property in classe.Properties.OfType<IFieldProperty>().Where(property => !explicitAndAliasMappings.Any(m => m.Key == property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
                         {
@@ -942,7 +942,7 @@ public class ModelStore
                 yield return new ModelError(classe, $"Le nom '{mapper.Name}' est déjà utilisé.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
             }
 
-            foreach (var mapper in classe.ToMappers)
+            foreach (var mapper in classe.ToMappers.Where(m => m.Class != null))
             {
                 var explicitMappings = mapper.Mappings.ToDictionary(p => p.Key, p => p.Value);
 
