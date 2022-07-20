@@ -30,6 +30,7 @@ public static class ModelExtensions
             RegularProperty p => p.Location,
             AssociationProperty p => p.Location,
             CompositionProperty p => p.Location,
+            AliasProperty { PropertyReference: Reference pr } => pr,
             AliasProperty p => p.Location,
             Alias a => a.Location,
             Domain d => d.Location,

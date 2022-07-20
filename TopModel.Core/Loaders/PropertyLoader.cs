@@ -12,10 +12,7 @@ internal static class PropertyLoader
         switch (parser.Current)
         {
             case Scalar { Value: "name" } s:
-                var rp = new RegularProperty
-                {
-                    Location = new Reference(s)
-                };
+                var rp = new RegularProperty();
 
                 while (parser.Current is not MappingEnd)
                 {
@@ -26,6 +23,7 @@ internal static class PropertyLoader
                     {
                         case "name":
                             rp.Name = value.Value;
+                            rp.Location = new Reference(value);
                             break;
                         case "label":
                             rp.Label = value.Value;
