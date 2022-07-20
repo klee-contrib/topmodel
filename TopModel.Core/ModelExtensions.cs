@@ -63,6 +63,7 @@ public static class ModelExtensions
             })
             .Concat(modelStore.Classes.Where(c => c.Extends == classe)
                 .Select(c => (Reference: c.ExtendsReference!, File: c.GetFile())))
+            .Concat(modelStore.Classes.SelectMany(c => c.FromMappers.SelectMany(c => c.Params).Concat(c.ToMappers).Where(m => m.Class == classe).Select(m => (Reference: m.ClassReference, File: c.GetFile()))))
             .Concat(modelStore.Files.SelectMany(f =>
                 f.Aliases.SelectMany(a => a.Classes
                     .Where(c => f.ResolvedAliases.OfType<Class>().Any(ra => ra.Name == c.ReferenceName && ra == classe))
