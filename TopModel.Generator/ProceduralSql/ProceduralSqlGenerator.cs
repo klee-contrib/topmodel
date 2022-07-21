@@ -23,6 +23,14 @@ public class ProceduralSqlGenerator : GeneratorBase
 
     public override string Name => "ProceduralSqlGen";
 
+    public override IEnumerable<string> GeneratedFiles => new List<string>()
+    {
+        _config.CrebasFile!,
+        _config.IndexFKFile!,
+        _config.InitListFile!,
+        _config.UniqueKeysFile!,
+    }.Where(t => !string.IsNullOrEmpty(t));
+
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
