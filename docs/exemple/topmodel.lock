@@ -37,3 +37,4 @@ generatedFiles:
   - .\js\appgenerated\model\utilisateur\utilisateur-dto.ts
   - .\js\appgenerated\resources\securite.ts
   - .\js\appgenerated\resources\utilisateur.ts
+  - .\pg\model\init-references.sql
