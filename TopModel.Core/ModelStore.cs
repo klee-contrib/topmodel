@@ -57,7 +57,7 @@ public class ModelStore
 
     public IEnumerable<Endpoint> Endpoints => _modelFiles.SelectMany(mf => mf.Value.Endpoints).Distinct();
 
-    public IDictionary<string, Domain> Domains => _modelFiles.SelectMany(mf => mf.Value.Domains).ToDictionary(d => d.Name, d => d);
+    public IDictionary<string, Domain> Domains => _modelFiles.SelectMany(mf => mf.Value.Domains).ToDictionary(d => (string)d.Name, d => d);
 
     public IEnumerable<Decorator> Decorators => _modelFiles.SelectMany(mf => mf.Value.Decorators).Distinct();
 
@@ -371,7 +371,7 @@ public class ModelStore
             .SelectMany(m => m.Decorators)
             .Concat(modelFile.Decorators)
             .Distinct()
-            .ToDictionary(d => d.Name, c => c);
+            .ToDictionary(d => (string)d.Name, c => c);
 
         // Résolution des "extends" sur les classes.
         foreach (var classe in fileClasses.Where(c => c.ExtendsReference != null))

@@ -361,8 +361,8 @@ public class TypescriptDefinitionGenerator : GeneratorBase
     {
         return classe.Properties
             .OfType<IFieldProperty>()
-            .Select(property => property is AliasProperty { ListDomain: Domain ld } ? ld.Name : property.Domain.Name)
-            .Concat(classe.Properties.OfType<CompositionProperty>().Where(cp => cp.DomainKind != null).Select(cp => cp.DomainKind!.Name))
+            .Select(property => property is AliasProperty { ListDomain: Domain ld } ? (string)ld.Name : (string)property.Domain.Name)
+            .Concat(classe.Properties.OfType<CompositionProperty>().Where(cp => cp.DomainKind != null).Select(cp => (string)cp.DomainKind!.Name))
             .Distinct()
             .OrderBy(x => x);
     }

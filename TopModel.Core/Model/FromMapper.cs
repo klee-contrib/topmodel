@@ -2,7 +2,6 @@
 
 public class FromMapper
 {
-
 #nullable enable
     public string? Comment { get; set; }
 
