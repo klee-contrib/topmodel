@@ -1,8 +1,17 @@
 # TopModel.Generator (`modgen`)
 
+## 1.9.7
+
+- [75a535c](https://github.com/klee-contrib/topmodel/commit/75a535c4a8365aafb11b5e4116761501723aada0) - Fix warning import non utilisé si non existant
+- [e722d41](https://github.com/klee-contrib/topmodel/commit/e722d4159f3219ba14b69ad19ff581823e17fc0d) - [#116](https://github.com/klee-contrib/topmodel/issues/116) Fix plantage si classe non résolue dans un mapper
+- [f41f1fd](https://github.com/klee-contrib/topmodel/commit/f41f1fd1a9b3264804d71d2bf1a67598bef7bd7e) - Fix [#120](https://github.com/klee-contrib/topmodel/issues/120) (erreurs mal positionnées sur les propriétés)
+- [5fae0b1](https://github.com/klee-contrib/topmodel/commit/5fae0b134c9a7f94df4e02bf8316b403b11800cb) - Warning décorateur non utilisé ([#119](https://github.com/klee-contrib/topmodel/issues/119))
+- [fae6e99](https://github.com/klee-contrib/topmodel/commit/fae6e9904e71438a330e2c28eb723aa892aaf6b0) - Amélioration détection mappings
+- [26a989b](https://github.com/klee-contrib/topmodel/commit/26a989bb231dbb29b7f27c3dbb2523ee9ad72481) - PG: Suppression des anciens fichiers [#114](https://github.com/klee-contrib/topmodel/issues/114)
+
 ## 1.9.6
 
-- [32601d4a8f](https://github.com/klee-contrib/topmodel/commit/32601d4a8f27177144a0888223b438cf8f12400d) JPA - Ne plus utiliser le stream().toList() car la liste renvoyée est immutable.
+- [32601d4](https://github.com/klee-contrib/topmodel/commit/32601d4a8f27177144a0888223b438cf8f12400d) JPA - Ne plus utiliser le stream().toList() car la liste renvoyée est immutable.
 
 ## 1.9.5
 
