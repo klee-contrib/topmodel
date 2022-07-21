@@ -6,6 +6,7 @@ package topmodel.exemple.name.dao.dtos.securite;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Generated;
 
@@ -56,7 +57,7 @@ public class ProfilDto implements Serializable {
 		this.id = profilDto.getId();
 		this.typeProfilCode = profilDto.getTypeProfilCode();
 
-		this.utilisateurs = profilDto.getUtilisateurs().stream().toList();
+		this.utilisateurs = profilDto.getUtilisateurs().stream().collect(Collectors.toList());
 	}
 
 	/**

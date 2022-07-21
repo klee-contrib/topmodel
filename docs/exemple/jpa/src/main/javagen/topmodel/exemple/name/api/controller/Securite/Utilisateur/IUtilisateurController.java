@@ -5,6 +5,7 @@
 package topmodel.exemple.name.api.controller.securite.utilisateur;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Generated;
 import javax.validation.constraints.Email;
