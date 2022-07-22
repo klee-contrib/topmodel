@@ -33,6 +33,8 @@ public class Domain
     public bool ShouldQuoteSqlValue =>
         (SqlType ?? string.Empty).Contains("varchar")
         || SqlType == "text"
+        || SqlType == "uniqueidentifier"
+        || SqlType == "uuid"
         || CSharp?.Type == "string";
 
 #nullable disable
