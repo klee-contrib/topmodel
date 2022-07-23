@@ -39,8 +39,15 @@ public class JavascriptApiClientGenerator : GeneratorBase
     {
         var fileSplit = file.Name.Split("/");
         var modulePath = string.Join('\\', file.Module.Split('.').Select(m => m.ToDashCase()));
-        var filePath = _config.ApiClientFilePath.Replace("{module}", modulePath) + '/' + string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToDashCase();
-        return $"{_config.ApiClientOutputDirectory}\\{filePath}.ts";
+        var filePath = _config.ApiClientFilePath.Replace("{module}", modulePath) + '/';
+        var fileName = string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToDashCase();
+
+        if (file.Options?.Endpoints?.FileName != null)
+        {
+            fileName = file.Options?.Endpoints?.FileName.ToDashCase();
+        }
+
+        return $"{_config.ApiClientOutputDirectory}\\{filePath}\\{fileName}.ts";
     }
 
     private void GenerateClientFile(ModelFile file)
@@ -109,6 +116,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
             }
 
             fw.WriteLine("> {");
+            var endPointPrefix = endpoint.ModelFile.Options?.Endpoints?.Prefix != null ? endpoint.ModelFile.Options.Endpoints.Prefix + (endpoint.Route.StartsWith('/') ? string.Empty : '/') : string.Empty;
 
             if (hasForm)
             {
@@ -133,12 +141,12 @@ public class JavascriptApiClientGenerator : GeneratorBase
                     fw.WriteLine();
                 }
 
-                fw.WriteLine($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.Route.Replace("{", "${")}`, {{body}}, options);");
+                fw.WriteLine($@"    return {fetch}(""{endpoint.Method}"", `./{endPointPrefix}{endpoint.Route.Replace("{", "${")}`, {{body}}, options);");
                 fw.WriteLine("}");
                 continue;
             }
 
-            fw.Write($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.Route.Replace("{", "${")}`, {{");
+            fw.Write($@"    return {fetch}(""{endpoint.Method}"", `./{endPointPrefix}{endpoint.Route.Replace("{", "${")}`, {{");
 
             if (endpoint.GetBodyParam() != null)
             {

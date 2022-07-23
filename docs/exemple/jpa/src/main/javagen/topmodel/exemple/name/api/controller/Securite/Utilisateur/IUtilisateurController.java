@@ -13,13 +13,16 @@ import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto;
 import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
 
+@RequestMapping("utilisateur")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface IUtilisateurController {
 
@@ -29,15 +32,15 @@ public interface IUtilisateurController {
 	 * @param utiId Id technique
 	 * @return Le détail de l'utilisateur
 	 */
-	@GetMapping(path = "utilisateur/{utilisateurId}")
-	UtilisateurDto getUtilisateur(@RequestParam(value = "utiId", required = true) long utiId);
+	@GetMapping(path = "/{utiId}")
+	UtilisateurDto getUtilisateur(@PathVariable("utiId") long utiId);
 
 	/**
 	 * Charge une liste d'utilisateurs par leur type.
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Liste des utilisateurs
 	 */
-	@GetMapping(path = "utilisateur/list")
+	@GetMapping(path = "/list")
 	List<UtilisateurDto> getUtilisateurList(@RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode);
 
 	/**
@@ -45,7 +48,7 @@ public interface IUtilisateurController {
 	 * @param utilisateur Utilisateur à sauvegarder
 	 * @return Utilisateur sauvegardé
 	 */
-	@PostMapping(path = "utilisateur/save")
+	@PostMapping(path = "/save")
 	UtilisateurDto saveUtilisateur(@RequestBody @Valid UtilisateurDto utilisateur);
 
 	/**
@@ -53,7 +56,7 @@ public interface IUtilisateurController {
 	 * @param utilisateur Utilisateur à sauvegarder
 	 * @return Utilisateur sauvegardé
 	 */
-	@PostMapping(path = "utilisateur/saveAll")
+	@PostMapping(path = "/saveAll")
 	List<UtilisateurDto> saveAllUtilisateur(@RequestBody @Valid List<UtilisateurDto> utilisateur);
 
 	/**
@@ -63,6 +66,6 @@ public interface IUtilisateurController {
 	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Utilisateurs matchant les critères
 	 */
-	@PostMapping(path = "utilisateur/search")
+	@PostMapping(path = "/search")
 	Page<UtilisateurDto> search(@RequestParam(value = "utiUtilisateurId", required = true) long utiUtilisateurId, @RequestParam(value = "utilisateuremail", required = false) String utilisateuremail, @RequestParam(value = "utilisateurTypeUtilisateurCode", required = false) TypeUtilisateur.Values utilisateurTypeUtilisateurCode);
 }

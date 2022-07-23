@@ -42,6 +42,11 @@ public class SpringApiGenerator : GeneratorBase
 
     private string GetClassName(ModelFile file)
     {
+        if (file.Options?.Endpoints?.FileName != null)
+        {
+            return $"I{file.Options.Endpoints.FileName.ToFirstUpper()}Controller";
+        }
+
         var filePath = file.Name.Split("/").Last();
         return $"I{string.Join('_', filePath.Split("_").Skip(filePath.Contains('_') ? 1 : 0)).ToFirstUpper()}Controller";
     }
@@ -78,6 +83,11 @@ public class SpringApiGenerator : GeneratorBase
 
         WriteImports(file, fw);
         fw.WriteLine();
+        if (file.Options?.Endpoints.Prefix != null)
+        {
+            fw.WriteLine($@"@RequestMapping(""{file.Options.Endpoints.Prefix}"")");
+        }
+
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
         fw.WriteLine($"public interface {GetClassName(file)} {{");
 
@@ -192,6 +202,11 @@ public class SpringApiGenerator : GeneratorBase
         if (hasForm)
         {
             imports.Add("org.springframework.http.MediaType");
+        }
+
+        if (file.Options?.Endpoints.Prefix != null)
+        {
+            imports.Add("org.springframework.web.bind.annotation.RequestMapping");
         }
 
         fw.WriteImports(imports.Distinct().ToArray());

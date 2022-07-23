@@ -14,6 +14,8 @@ public class ModelFile
 
     public string Path { get; set; }
 
+    public ModelFileOptions Options { get; set; }
+
     public List<Class> Classes { get; } = new();
 
     public List<Domain> Domains { get; } = new();
