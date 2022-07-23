@@ -66,6 +66,31 @@ public class ModelFileLoader
                         file.Uses.Add(new Reference(parser.Consume<Scalar>()));
                     });
                     break;
+                case "options":
+                    parser.Consume<MappingStart>();
+                    var scalar = parser.Consume<Scalar>();
+                    var fileOptions = new ModelFileOptions();
+                    if (scalar.Value == "endpoints")
+                    {
+                        parser.ConsumeMapping(() =>
+                        {
+                            var prop = parser.Consume<Scalar>().Value;
+                            parser.TryConsume<Scalar>(out var value);
+                            switch (prop)
+                            {
+                                case "fileName":
+                                    fileOptions.Endpoints.FileName = value!.Value;
+                                    break;
+                                case "prefix":
+                                    fileOptions.Endpoints.Prefix = value!.Value;
+                                    break;
+                            }
+                        });
+                    }
+
+                    file.Options = fileOptions;
+                    parser.Consume<MappingEnd>();
+                    break;
             }
         });
 
