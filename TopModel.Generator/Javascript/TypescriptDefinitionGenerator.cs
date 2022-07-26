@@ -493,7 +493,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                 fw.Write(property.Name.ToFirstLower());
                 fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
                 fw.Write(": ");
-                fw.Write(GetRefTSType(property, reference));
+                fw.Write(property.TS.Type);
                 fw.Write(";\r\n");
             }
 
@@ -539,25 +539,5 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         fw.Write("\", labelKey: \"");
         fw.Write(classe.DefaultProperty?.Name.ToFirstLower());
         fw.Write("\"} as const;\r\n");
-    }
-
-    /// <summary>
-    /// Transforme le type en type Typescript.
-    /// </summary>
-    /// <param name="property">La propriété dont on cherche le type.</param>
-    /// <param name="reference">Classe de la propriété.</param>
-    /// <returns>Le type en sortie.</returns>
-    private string GetRefTSType(IFieldProperty property, Class reference)
-    {
-        if (property.Name == "Code")
-        {
-            return $"{reference.Name}Code";
-        }
-        else if (property.Name.EndsWith("Code", StringComparison.Ordinal))
-        {
-            return property.Name.ToFirstUpper();
-        }
-
-        return property.TS?.Type ?? throw new ModelException(property.Domain, $"Le type Typescript du domaine doit être renseigné.");
     }
 }
