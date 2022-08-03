@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.9.11
+
+- [e9f70af7](https://github.com/klee-contrib/topmodel/commit/e9f70af7a069d3e265db09046e120a0e59ba6660) - [JS] Homogénéisation imports pour domaines/liste de ref
+
 ## 1.9.10
 
 - [`7a04334`](https://github.com/klee-contrib/topmodel/commit/7a043346ad81e3e85e28d3a24d053e9b33785386) - [TSGen] Fix génération types enum dans les cas non standards
