@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 1.9.6
+version: 1.9.10
 generatedFiles:
   - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\securite\IDtosController.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\securite\IEntitiesController.java

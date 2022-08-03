@@ -373,6 +373,8 @@ public class TypescriptDefinitionGenerator : GeneratorBase
     /// <returns>La liste d'imports (type, chemin du module, nom du fichier).</returns>
     private IList<(string Import, string Path)> GetImportList(Class classe)
     {
+        var currentModule = classe.Namespace.Module;
+
         var types = classe.Properties
             .OfType<CompositionProperty>()
             .Select(property => (property.Composition, property.DomainKind))
@@ -382,8 +384,6 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         {
             types = types.Concat(new[] { (classe.Extends, (Domain?)null) });
         }
-
-        var currentModule = classe.Namespace.Module;
 
         var imports = types.Select(type =>
         {
@@ -399,20 +399,8 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                 path: $"{module}/{name.ToDashCase()}");
         }).Distinct().ToList();
 
-        var references = JavascriptUtils.GetReferencesToImport(classe.Properties);
-
-        if (references.Any())
-        {
-            var referenceTypeMap = references.GroupBy(t => t.Module);
-            foreach (var refModule in referenceTypeMap)
-            {
-                var module = refModule.Key == currentModule ? $"." : $"{string.Join(string.Empty, currentModule.Split('.').Select(m => "../"))}{refModule.Key.Replace(".", "/").ToDashCase()}";
-                imports.Add((string.Join(", ", refModule.Select(r => r.Code).OrderBy(x => x)), $"{module}/references"));
-            }
-        }
-
-        imports.AddRange(JavascriptUtils.GetPropertyImports(classe.Properties).Where(p => p.Path != "@focus4/stores"));
-        return JavascriptUtils.GroupAndSortImports(imports);
+        imports.AddRange(JavascriptUtils.GetImportsForProperties(classe.Properties, currentModule).Where(i => i.Path != "@focus4/stores"));
+        return imports.GroupAndSort();
     }
 
     /// <summary>
@@ -422,19 +410,18 @@ public class TypescriptDefinitionGenerator : GeneratorBase
     {
         using var fw = new FileWriter(fileName, _logger, false);
 
+        var module = references.First().Namespace.Module;
         var imports = references
-            .SelectMany(classe => classe.Properties.OfType<IFieldProperty>().Select(fp => (fp.TS.Type, fp.TS.Import)))
-            .Where(type => type.Import != null)
-            .Distinct()
-            .OrderBy(fp => fp.Import)
-            .ToList();
+            .SelectMany(r => JavascriptUtils.GetImportsForProperties(r.Properties, module))
+            .Where(i => i.Path != $"./references")
+            .GroupAndSort();
 
         foreach (var import in imports)
         {
             fw.Write("import {");
-            fw.Write(import.Type);
-            fw.Write("} from \"");
             fw.Write(import.Import);
+            fw.Write("} from \"");
+            fw.Write(import.Path);
             fw.Write("\";\r\n");
         }
 

@@ -189,19 +189,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
             return (Import: name, Path: $"{relativePath}{module}/{name.ToDashCase()}");
         }).Distinct().ToList();
 
-        var references = JavascriptUtils.GetReferencesToImport(properties);
-
-        if (references.Any())
-        {
-            var referenceTypeMap = references.GroupBy(t => t.Module);
-            foreach (var refModule in referenceTypeMap)
-            {
-                var module = $"{modelPath}/{refModule.Key.Replace('.', '/').ToLower()}";
-                imports.Add((string.Join(", ", refModule.Select(r => r.Code).OrderBy(x => x)), $"{relativePath}{module}/references"));
-            }
-        }
-
-        imports.AddRange(JavascriptUtils.GetPropertyImports(properties));
-        return JavascriptUtils.GroupAndSortImports(imports);
+        imports.AddRange(JavascriptUtils.GetImportsForProperties(properties, string.Empty).Select(i => (i.Import, Path: $"{i.Path.Replace("../", $"{relativePath}{modelPath}/")}")));
+        return imports.GroupAndSort();
     }
 }
