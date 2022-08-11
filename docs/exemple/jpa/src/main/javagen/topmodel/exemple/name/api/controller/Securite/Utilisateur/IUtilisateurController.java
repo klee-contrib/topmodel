@@ -16,12 +16,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto;
 import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
 
-@RestController
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface IUtilisateurController {
 

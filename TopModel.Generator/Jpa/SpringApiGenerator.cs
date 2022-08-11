@@ -78,7 +78,6 @@ public class SpringApiGenerator : GeneratorBase
 
         WriteImports(file, fw);
         fw.WriteLine();
-        fw.WriteLine("@RestController");
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
         fw.WriteLine($"public interface {GetClassName(file)} {{");
 
@@ -199,7 +198,6 @@ public class SpringApiGenerator : GeneratorBase
     {
         var imports = file.Endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToLower().ToFirstUpper()}Mapping").ToList();
         imports.AddRange(GetTypeImports(file));
-        imports.Add("org.springframework.web.bind.annotation.RestController");
         imports.Add("javax.annotation.Generated");
         if (file.Endpoints.Any(e => e.GetRouteParams().Any()))
         {
