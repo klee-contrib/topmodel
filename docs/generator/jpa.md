@@ -199,9 +199,6 @@ public interface IUtilisateurDto {
 
 ## Api
 
-Le générateur créé des `interface` contenant, pour chaque endPoint paramétré, deux méthode :
-
-- Une méthode par défaut `[NomDuEndPoint]Mapping`, portant l'annotation de mappping de la route, et qui appelle la méthode suivante
-- Une méthode abstraite `Nom du endpoint`, méthode à implémenter dans votre controller.
+Le générateur créé des `interface` contenant, pour chaque endPoint paramétré, la méthode abstraite `Nom du endpoint`, à implémenter dans votre controller.
 
 Pour créer votre API, il suffit donc de créer un nouveau controller qui implémente la classe générée. L'annotation `@RestController` reste nécessaire.
