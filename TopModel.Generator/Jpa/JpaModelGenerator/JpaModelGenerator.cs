@@ -175,6 +175,8 @@ public class JpaModelGenerator : GeneratorBase
                 }
 
                 fw.WriteLine(3, @$"this.{ap.GetAssociationName()} = new {ap.Association.Name}({constructorArgs});");
+                fw.WriteLine(2, "} else {");
+                fw.WriteLine(3, @$"this.{ap.GetAssociationName()} = null;");
                 fw.WriteLine(2, "}");
                 fw.WriteLine(1, "}");
             }
