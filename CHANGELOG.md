@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.9.12
+
+- [60316754](https://github.com/klee-contrib/topmodel/commit/60316754166386114c629059aa5087e407636949) - [JPA] Enum Shortcut gestion nullité
+- [428891ed](https://github.com/klee-contrib/topmodel/commit/428891edfd5c9ca08ac0e4e15211aa268441e5fc) - [JPA] Simplification code généré api
+- [8d68d8b4](https://github.com/klee-contrib/topmodel/commit/8d68d8b49042328b586d63dc830ff33e53ee7c6e) - [JPA] Suppression annotation RestController inutile
+
 ## 1.9.11
 
 - [e9f70af7](https://github.com/klee-contrib/topmodel/commit/e9f70af7a069d3e265db09046e120a0e59ba6660) - [JS] Homogénéisation imports pour domaines/liste de ref
