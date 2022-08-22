@@ -167,7 +167,7 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteLine(1, $" * @param {propertyName} value to set");
                 fw.WriteDocEnd(1);
                 fw.WriteLine(1, @$"public void set{ap.Name}({ap.Association.PrimaryKey!.GetJavaType()} {propertyName}) {{");
-                fw.WriteLine(2, $"if({propertyName} != null) {{");
+                fw.WriteLine(2, $"if ({propertyName} != null) {{");
                 var constructorArgs = $"{propertyName}";
                 foreach (var p in ap.Association.Properties.Where(pr => !pr.PrimaryKey))
                 {
