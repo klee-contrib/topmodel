@@ -55,7 +55,21 @@ public static class JpaUtils
     {
         if (ap.Class != null && ap.Class.IsPersistent)
         {
-            return ap.Property.GetJavaType();
+            if (ap.Property is AssociationProperty asp)
+            {
+                if (asp.IsEnum())
+                {
+                    return asp.Association.PrimaryKey!.GetJavaType();
+                }
+                else
+                {
+                    return ap.Property.Domain.Java!.Type;
+                }
+            }
+            else
+            {
+                return ap.Property.GetJavaType();
+            }
         }
 
         if (ap.IsEnum())

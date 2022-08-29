@@ -61,6 +61,17 @@ public static class ImportsJpaExtensions
     public static List<string> GetImports(this AliasProperty ap, JpaConfig config)
     {
         var imports = new List<string>();
+        if (ap.Class != null && ap.Class.IsPersistent && ap.Property is AssociationProperty asp)
+        {
+            if (asp.IsEnum())
+            {
+                imports.AddRange(asp.Association.PrimaryKey!.GetImports(config));
+            }
+            else if (ap.Property.Domain.Java!.Imports != null)
+            {
+                imports.AddRange(ap.Property.Domain.Java!.Imports);
+            }
+        }
         if (ap.IsEnum())
         {
             imports.Add(ap.Property.Class.GetImport(config));
