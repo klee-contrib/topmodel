@@ -58,16 +58,15 @@ function createStatusBar() {
 /*********************** CHECKS ************************** */
 /********************************************************* */
 async function checkInstall() {
-    execute('echo ;%PATH%; | find /C /I "dotnet"', async (dotnetIsInstalled: string) => {
-        if (dotnetIsInstalled !== '1\r\n') {
-            const selection = await window.showInformationMessage('Dotnet is not installed', "Show download page");
-            if (selection === "Show download page") {
-                open("https://dotnet.microsoft.com/download/dotnet/6.0");
-            }
-        } else {
-            await checkTopModelInsall();
+    const dotnetIsInstalled = await execute('echo ;%PATH%; | find /C /I "dotnet"');
+    if (dotnetIsInstalled !== '1\r\n') {
+        const selection = await window.showInformationMessage('Dotnet is not installed', "Show download page");
+        if (selection === "Show download page") {
+            open("https://dotnet.microsoft.com/download/dotnet/6.0");
         }
-    });
+    } else {
+        await checkTopModelInsall();
+    }
 }
 
 async function loadlatestVersionVersion() {
@@ -95,78 +94,77 @@ async function loadlatestVersionVersion() {
 
 async function checkTopModelInsall() {
     await loadlatestVersionVersion();
-    execute('dotnet tool list -g | find /C /I "topmodel"', async (result: string) => {
-        if (result !== '1\r\n') {
-            const option = "Install TopModel";
-            const selection = await window.showInformationMessage('TopModel n\'est pas installé', option);
-            if (selection === option) {
-                installModgen();
-            }
-        } else {
-            checkTopModelUpdate();
+    let result;
+    try {
+        result = await execute('dotnet tool list -g | find /C /I "topmodel"');
+    } catch (error: any) {
+        result = "Not Installed";
+    }
+    if (result !== '1\r\n') {
+        const option = "Install TopModel";
+        const selection = await window.showInformationMessage('TopModel n\'est pas installé', option);
+        if (selection === option) {
+            installModgen();
         }
-    });
+    } else {
+        checkTopModelUpdate();
+    }
 }
 
 async function checkTopModelUpdate() {
-    await loadCurrentVersion(async () => {
-        if (currentVersion !== latestVersion && latestVersion) {
-            const extensionConfiguration = workspace.getConfiguration('topmodel');
-            if (extensionConfiguration.autoUpdate) {
+    await loadCurrentVersion();
+    if (currentVersion !== latestVersion && latestVersion) {
+        const extensionConfiguration = workspace.getConfiguration('topmodel');
+        if (extensionConfiguration.autoUpdate) {
+            updateModgen();
+        } else {
+            const option = "Mettre à jour le générateur";
+            const selection = await window.showInformationMessage(`Le générateur TopModel peut être mis à jour (${currentVersion} > ${latestVersion})`, option);
+            if (selection === option) {
                 updateModgen();
-            } else {
-                const option = "Mettre à jour le générateur";
-                const selection = await window.showInformationMessage(`Le générateur TopModel peut être mis à jour (${currentVersion} > ${latestVersion})`, option);
-                if (selection === option) {
-                    updateModgen();
-                }
             }
         }
-    });
+    }
 }
 
-async function loadCurrentVersion(_callBack?: Function) {
-    execute(`modgen --version`, async (result: string) => {
-        currentVersion = result.replace('\r\n', '');
-        if (_callBack) {
-            _callBack();
-        }
-        updateStatusBar();
-    });
+async function loadCurrentVersion() {
+    const result = await execute(`modgen --version`) as string;
+    currentVersion = result.replace('\r\n', '');
+    updateStatusBar();
 }
 
 /***********************************************************/
 /********************* COMMANDS ****************************/
 /***********************************************************/
 
-function installModgen() {
+async function installModgen() {
     extentionState = "INSTALLING";
     updateStatusBar();
-    execute(`dotnet tool install --global TopModel.Generator`, async () => {
-        loadCurrentVersion();
-        extentionState = "RUNNING";
-        updateStatusBar();
-        const selection = await window.showInformationMessage(`Le générateur TopModel v${latestVersion} a été installé`, "Voir la release note");
+    await execute(`dotnet tool install --global TopModel.Generator`);
+    loadCurrentVersion();
+    extentionState = "RUNNING";
+    updateStatusBar();
+    const selection = await window.showInformationMessage(`Le générateur TopModel v${latestVersion} a été installé`, "Voir la release note");
+    if (selection === "Voir la release note") {
+        open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
+    }
+}
+
+async function updateModgen() {
+    extentionState = "UPDATING";
+    updateStatusBar();
+    await execute(`dotnet nuget locals http-cache --clear`);
+    await execute(`dotnet tool update --global TopModel.Generator`);
+    const oldVersion = currentVersion;
+    await loadCurrentVersion();
+    extentionState = "RUNNING";
+    updateStatusBar();
+    if (latestVersion) {
+        const selection = await window.showInformationMessage(`TopModel a été mis à jour ${oldVersion} --> ${latestVersion}`, "Voir la release note");
         if (selection === "Voir la release note") {
             open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
         }
-    });
-}
-
-function updateModgen() {
-    extentionState = "UPDATING";
-    updateStatusBar();
-    execute(`dotnet tool update --global TopModel.Generator`, async () => {
-        loadCurrentVersion();
-        extentionState = "RUNNING";
-        updateStatusBar();
-        if (latestVersion) {
-            const selection = await window.showInformationMessage(`TopModel a été mis à jour ${currentVersion} --> ${latestVersion}`, "Voir la release note");
-            if (selection === "Voir la release note") {
-                open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
-            }
-        }
-    });
+    }
 }
 
 function registerGlobalCommands() {
