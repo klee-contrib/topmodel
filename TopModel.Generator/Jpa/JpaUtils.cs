@@ -59,7 +59,7 @@ public static class JpaUtils
             {
                 if (asp.IsEnum())
                 {
-                    return asp.Association.PrimaryKey!.GetJavaType();
+                    return asp.Property.GetJavaType();
                 }
                 else
                 {
@@ -80,10 +80,10 @@ public static class JpaUtils
         {
             if (apr.Type == AssociationType.ManyToMany || apr.Type == AssociationType.OneToMany)
             {
-                return $"List<{apr.Association.PrimaryKey!.GetJavaType()}>";
+                return $"List<{apr.Property.GetJavaType()}>";
             }
 
-            return apr.Association.PrimaryKey!.GetJavaType();
+            return apr.Property.GetJavaType();
         }
         else if (ap.Property is CompositionProperty cpo)
         {
@@ -148,7 +148,7 @@ public static class JpaUtils
 
     public static bool IsEnum(this AssociationProperty apr)
     {
-        return apr.Association.PrimaryKey != null && apr.Association.PrimaryKey.IsEnum();
+        return apr.Property != null && apr.Property.IsEnum();
     }
 
     public static List<AssociationProperty> GetReverseProperties(this Class classe, List<Class> availableClasses)

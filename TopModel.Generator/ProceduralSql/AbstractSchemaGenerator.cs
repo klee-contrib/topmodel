@@ -234,7 +234,7 @@ public abstract class AbstractSchemaGenerator
         writer.WriteLine("\tadd constraint " + constraintName + " foreign key (" + Quote(propertyName) + ")");
         writer.Write("\t\treferences " + Quote(property.Association.SqlName) + " (");
 
-        writer.Write(Quote(property.Association.PrimaryKey!.SqlName));
+        writer.Write(Quote(property.Property.SqlName));
 
         writer.WriteLine(")");
         writer.WriteLine(BatchSeparator);
@@ -444,7 +444,7 @@ public abstract class AbstractSchemaGenerator
             writerCrebas.Write(",");
             writerCrebas.WriteLine();
 
-            if (property is AssociationProperty ap)
+            if (property is AssociationProperty { Association.IsPersistent: true } ap)
             {
                 if (ap.Type != AssociationType.ManyToOne && ap.Type != AssociationType.OneToOne)
                 {

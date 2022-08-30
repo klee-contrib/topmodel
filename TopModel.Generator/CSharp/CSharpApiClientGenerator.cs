@@ -109,7 +109,7 @@ public class CSharpApiClientGenerator : GeneratorBase
 
             switch (property)
             {
-                case AssociationProperty ap when !ap.AsAlias:
+                case AssociationProperty ap:
                     usings.Add(_config.GetNamespace(ap.Association));
                     break;
                 case AliasProperty { Property: AssociationProperty ap2 }:

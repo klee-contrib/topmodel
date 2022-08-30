@@ -135,7 +135,7 @@ public class DbContextGenerator
             }
 
             var hasFk = false;
-            foreach (var prop in classes.OrderBy(c => c.Name).SelectMany(c => c.Properties).Where(p => p is AssociationProperty || p is AliasProperty { Property: AssociationProperty }))
+            foreach (var prop in classes.OrderBy(c => c.Name).SelectMany(c => c.Properties).Where(p => p is AssociationProperty { Association.IsPersistent: true } || p is AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } }))
             {
                 hasFk = true;
                 var ap = prop switch

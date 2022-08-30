@@ -65,13 +65,14 @@ public static class ImportsJpaExtensions
         {
             if (asp.IsEnum())
             {
-                imports.AddRange(asp.Association.PrimaryKey!.GetImports(config));
+                imports.AddRange(asp.Property.GetImports(config));
             }
             else if (ap.Property.Domain.Java!.Imports != null)
             {
                 imports.AddRange(ap.Property.Domain.Java!.Imports);
             }
         }
+
         if (ap.IsEnum())
         {
             imports.Add(ap.Property.Class.GetImport(config));
@@ -162,7 +163,7 @@ public static class ImportsJpaExtensions
 
         if (ap.Association.Reference)
         {
-            imports.AddRange(ap.Association.PrimaryKey!.GetImports(config));
+            imports.AddRange(ap.Property.GetImports(config));
         }
 
         return imports;

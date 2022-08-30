@@ -166,7 +166,7 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteLine(1, " * Cette méthode permet définir la valeur de la FK directement");
                 fw.WriteLine(1, $" * @param {propertyName} value to set");
                 fw.WriteDocEnd(1);
-                fw.WriteLine(1, @$"public void set{ap.Name}({ap.Association.PrimaryKey!.GetJavaType()} {propertyName}) {{");
+                fw.WriteLine(1, @$"public void set{ap.Name}({ap.Property.GetJavaType()} {propertyName}) {{");
                 fw.WriteLine(2, $"if ({propertyName} != null) {{");
                 var constructorArgs = $"{propertyName}";
                 foreach (var p in ap.Association.Properties.Where(pr => !pr.PrimaryKey))
@@ -188,8 +188,8 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config)}#{ap.GetJavaName()} {ap.GetJavaName()}}}");
                 fw.WriteDocEnd(1);
                 fw.WriteLine(1, "@Transient");
-                fw.WriteLine(1, @$"public {ap.Association.PrimaryKey!.GetJavaType()} get{ap.Name}() {{");
-                fw.WriteLine(2, @$"return this.{ap.GetAssociationName()} != null ? this.{ap.GetAssociationName()}.get{ap.Association.PrimaryKey!.Name}() : null;");
+                fw.WriteLine(1, @$"public {ap.Property.GetJavaType()} get{ap.Name}() {{");
+                fw.WriteLine(2, @$"return this.{ap.GetAssociationName()} != null ? this.{ap.GetAssociationName()}.get{ap.Property.Name}() : null;");
                 fw.WriteLine(1, "}");
             }
         }
@@ -478,7 +478,7 @@ public class JpaModelGenerator : GeneratorBase
             {
                 if (mapping.Value is AssociationProperty ap)
                 {
-                    if (ap.Association.PrimaryKey!.IsEnum() && _config.EnumShortcutMode)
+                    if (ap.Property.IsEnum() && _config.EnumShortcutMode)
                     {
                         fw.WriteLine(2, $"dest.set{mapping.Value.Name.ToFirstUpper()}(this.get{mapping.Key.Name.ToFirstUpper()}());");
                     }

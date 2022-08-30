@@ -5,8 +5,17 @@ namespace TopModel.Core;
 
 public class AssociationProperty : IFieldProperty
 {
+    private IFieldProperty? _property;
+
 #nullable disable
     public Class Association { get; set; }
+
+    public IFieldProperty Property
+    {
+        get => _property ?? Association?.PrimaryKey!;
+        set => _property = value;
+    }
+
 #nullable enable
 
     public string? Label { get; set; }
@@ -39,7 +48,7 @@ public class AssociationProperty : IFieldProperty
             }
 
             var name = new StringBuilder();
-            if (Association.Extends == null && !AsAlias)
+            if (Association.Extends == null)
             {
                 if (Type == AssociationType.OneToMany || Type == AssociationType.ManyToMany)
                 {
@@ -53,7 +62,7 @@ public class AssociationProperty : IFieldProperty
 
             if (Type == AssociationType.ManyToOne || Type == AssociationType.OneToOne)
             {
-                name.Append(Association?.Properties.Single(p => p.PrimaryKey).Name);
+                name.Append(Property?.Name);
             }
 
             if (!string.IsNullOrWhiteSpace(Role))
@@ -65,11 +74,11 @@ public class AssociationProperty : IFieldProperty
         }
     }
 
-    public Domain Domain => Association.Properties.OfType<IFieldProperty>().Single(p => p.PrimaryKey).Domain;
+    public Domain Domain => Property.Domain;
 
     public bool PrimaryKey => false;
 
-    public bool AsAlias { get; set; }
+    public Reference? PropertyReference { get; set; }
 
 #nullable disable
     public ClassReference Reference { get; set; }
@@ -80,7 +89,6 @@ public class AssociationProperty : IFieldProperty
     {
         return new AssociationProperty
         {
-            AsAlias = AsAlias,
             Association = Association,
             Class = classe,
             Comment = Comment,

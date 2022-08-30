@@ -72,9 +72,6 @@ internal static class PropertyLoader
                         case "association":
                             ap.Reference = new ClassReference(value);
                             break;
-                        case "asAlias":
-                            ap.AsAlias = value.Value == "true";
-                            break;
                         case "role":
                             ap.Role = value.Value;
                             break;
@@ -98,6 +95,9 @@ internal static class PropertyLoader
                             break;
                         case "comment":
                             ap.Comment = value.Value;
+                            break;
+                        case "property":
+                            ap.PropertyReference = new Reference(value);
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
