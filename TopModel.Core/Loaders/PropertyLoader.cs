@@ -96,6 +96,9 @@ internal static class PropertyLoader
                         case "comment":
                             ap.Comment = value.Value;
                             break;
+                        case "property":
+                            ap.PropertyReference = new Reference(value);
+                            break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                     }

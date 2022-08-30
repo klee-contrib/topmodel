@@ -448,7 +448,7 @@ public class ModelStore
                         break;
                     }
 
-                    if (association.Properties.Count(p => p.PrimaryKey) != 1)
+                    if (ap.PropertyReference == null && association.Properties.Count(p => p.PrimaryKey) != 1)
                     {
                         yield return new ModelError(ap, "La classe '{0}' doit avoir une (et une seule) clé primaire pour être référencée dans une association.", ap.Reference) { ModelErrorType = ModelErrorType.TMD1001 };
                         break;
@@ -670,6 +670,18 @@ public class ModelStore
         foreach (var modelError in ResolveAliases(modelFile.Properties.OfType<AliasProperty>().Where(alp => alp.Reference is not null)))
         {
             yield return modelError;
+        }
+
+        // Résolution des propriétés d'association (pour clé étrangère).
+        foreach (var ap in modelFile.Classes.SelectMany(c => c.Properties.OfType<AssociationProperty>()).Where(ap => ap.Association != null && ap.PropertyReference != null))
+        {
+            var referencedProperty = ap.Association.Properties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == ap.PropertyReference!.ReferenceName);
+            if (referencedProperty == null)
+            {
+                yield return new ModelError(ap, $"La propriété '{{0}}' est introuvable sur la classe '{ap.Association}'.", ap.PropertyReference) { ModelErrorType = ModelErrorType.TMD1004 };
+            }
+
+            ap.Property = referencedProperty;
         }
 
         // Résolution des alias de classes et endpoints dans le fichier.

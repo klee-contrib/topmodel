@@ -240,8 +240,7 @@ public class SqlTableScripter : ISqlScripter<Class>
         definitions.Add(sb.ToString());
 
         // Foreign key constraints
-        var fkList = properties.OfType<AssociationProperty>().ToList();
-        foreach (var property in fkList)
+        foreach (var property in properties.OfType<AssociationProperty>().Where(ap => ap.Association.IsPersistent))
         {
             if (property.Type != AssociationType.ManyToOne && property.Type != AssociationType.OneToOne)
             {

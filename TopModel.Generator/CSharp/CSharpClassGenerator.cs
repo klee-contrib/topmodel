@@ -478,7 +478,7 @@ public class CSharpClassGenerator
 
             if (_config.Kinetix != KinetixVersion.None)
             {
-                if (prop is AssociationProperty ap)
+                if (prop is AssociationProperty ap && ap.Association.IsPersistent)
                 {
                     w.WriteAttribute(2, "ReferencedType", $"typeof({ap.Association.Name})");
                 }
@@ -599,10 +599,10 @@ public class CSharpClassGenerator
 
             switch (property)
             {
-                case AssociationProperty ap:
+                case AssociationProperty { Association.IsPersistent: true } ap:
                     usings.Add(_config.GetNamespace(ap.Association));
                     break;
-                case AliasProperty { Property: AssociationProperty ap2 }:
+                case AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } ap2 }:
                     usings.Add(_config.GetNamespace(ap2.Association));
                     break;
                 case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp }:

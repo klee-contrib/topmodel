@@ -176,7 +176,7 @@ class CompletionHandler : CompletionHandlerBase
             }
             else
             {
-                // Alias
+                // Alias ou propriété d'association
                 string? className = null;
                 var classLine = currentLine;
                 var requestLine = request.Position.Line;
@@ -187,7 +187,7 @@ class CompletionHandler : CompletionHandlerBase
                     classLine = text.ElementAt(requestLine);
                 }
 
-                if (classLine.Contains("class:"))
+                if (classLine.Contains("class:") || classLine.Contains("association:"))
                 {
                     className = classLine.Split(':')[1].Trim();
                 }

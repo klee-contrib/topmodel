@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using TopModel.Core;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
@@ -206,7 +204,7 @@ public class JpaModelConstructorGenerator
                             {
                                 fw.WriteLine();
                                 fw.WriteLine(3, $"if({param.Name.ToFirstLower()}.get{mapping.Value.GetJavaName().ToFirstUpper()}() != null) {{");
-                                fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{mapping.Value.GetJavaName().ToFirstUpper()}().get{ap.Association.PrimaryKey!.Name}();");
+                                fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{mapping.Value.GetJavaName().ToFirstUpper()}().get{ap.Property.Name}();");
                                 fw.WriteLine(3, "}");
                                 fw.WriteLine();
                             }
@@ -226,7 +224,7 @@ public class JpaModelConstructorGenerator
                                 else
                                 {
                                     fw.WriteLine(3, $"if({param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}() != null) {{");
-                                    fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}().get{ap.Association.PrimaryKey!.Name.ToFirstUpper()}();");
+                                    fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}().get{ap.Property.Name.ToFirstUpper()}();");
                                     fw.WriteLine(3, "}");
                                     fw.WriteLine();
                                 }

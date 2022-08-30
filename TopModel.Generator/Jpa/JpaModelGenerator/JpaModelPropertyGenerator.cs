@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using TopModel.Core;
+﻿using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Utils;
 
@@ -28,7 +27,7 @@ public class JpaModelPropertyGenerator
             case CompositionProperty cp:
                 WriteProperty(fw, classe, cp);
                 break;
-            case AssociationProperty ap:
+            case AssociationProperty { Association.IsPersistent: true } ap:
                 WriteProperty(fw, classe, ap);
                 break;
             case IFieldProperty fp:
@@ -47,16 +46,13 @@ public class JpaModelPropertyGenerator
     {
         foreach (var property in classe.Properties)
         {
-            this.WriteProperty(fw, classe, property);
+            WriteProperty(fw, classe, property);
         }
     }
 
     private void WriteProperty(JavaWriter fw, Class classe, AssociationProperty property)
     {
         fw.WriteDocEnd(1);
-        var fk = (property.Role is not null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty) + property.Association.PrimaryKey!.SqlName;
-        var apk = property.Association.PrimaryKey.SqlName;
-        var pk = classe.PrimaryKey!.SqlName;
         switch (property.Type)
         {
             case AssociationType.ManyToOne:
@@ -78,28 +74,24 @@ public class JpaModelPropertyGenerator
 
     private void WriteManyToOne(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        var fk = (property.Role is not null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty) + property.Association.PrimaryKey!.SqlName;
-        var apk = property.Association.PrimaryKey.SqlName;
-        var pk = classe.PrimaryKey!.SqlName;
+        var fk = (property.Role is not null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty) + property.Property.SqlName;
+        var apk = property.Property.SqlName;
         fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, optional = {(property.Required ? "false" : "true")}, targetEntity = {property.Association.Name}.class)");
         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
     }
 
     private void WriteOneToOne(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        var fk = (property.Role is not null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty) + property.Association.PrimaryKey!.SqlName;
-        var apk = property.Association.PrimaryKey.SqlName;
-        var pk = classe.PrimaryKey!.SqlName;
+        var fk = (property.Role is not null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty) + property.Property.SqlName;
+        var apk = property.Property.SqlName;
         fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = {(property.Required ? "false" : "true")})");
         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"", unique = true)");
     }
 
     private void WriteManyToMany(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        var fk = (property.Role is not null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty) + property.Association.PrimaryKey!.SqlName;
-        var apk = property.Association.PrimaryKey.SqlName;
+        var fk = (property.Role is not null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty) + property.Property.SqlName;
         var pk = classe.PrimaryKey!.SqlName;
-        var reverse = property is JpaAssociationProperty;
         if (property is JpaAssociationProperty jap)
         {
             fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, mappedBy = ""{jap.ReverseProperty.GetJavaName()}"", cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }})");

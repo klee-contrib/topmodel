@@ -74,6 +74,10 @@
             "comment": {
               "type": "string",
               "description": "Description de la propriété."
+            },
+            "property": {
+              "type": "string",
+              "description": "Propriété de la classe cible à utiliser pour la clé étrangère (au lieu de la clé primaire)."
             }
           }
         },
