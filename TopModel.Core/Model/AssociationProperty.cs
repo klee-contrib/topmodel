@@ -39,7 +39,7 @@ public class AssociationProperty : IFieldProperty
             }
 
             var name = new StringBuilder();
-            if (Association.Extends == null && !AsAlias)
+            if (Association.Extends == null)
             {
                 if (Type == AssociationType.OneToMany || Type == AssociationType.ManyToMany)
                 {
@@ -69,8 +69,6 @@ public class AssociationProperty : IFieldProperty
 
     public bool PrimaryKey => false;
 
-    public bool AsAlias { get; set; }
-
 #nullable disable
     public ClassReference Reference { get; set; }
 
@@ -80,7 +78,6 @@ public class AssociationProperty : IFieldProperty
     {
         return new AssociationProperty
         {
-            AsAlias = AsAlias,
             Association = Association,
             Class = classe,
             Comment = Comment,

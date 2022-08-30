@@ -72,9 +72,6 @@ internal static class PropertyLoader
                         case "association":
                             ap.Reference = new ClassReference(value);
                             break;
-                        case "asAlias":
-                            ap.AsAlias = value.Value == "true";
-                            break;
                         case "role":
                             ap.Role = value.Value;
                             break;

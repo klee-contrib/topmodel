@@ -478,7 +478,7 @@ public class CSharpClassGenerator
 
             if (_config.Kinetix != KinetixVersion.None)
             {
-                if (prop is AssociationProperty ap && !ap.AsAlias)
+                if (prop is AssociationProperty ap)
                 {
                     w.WriteAttribute(2, "ReferencedType", $"typeof({ap.Association.Name})");
                 }
@@ -599,7 +599,7 @@ public class CSharpClassGenerator
 
             switch (property)
             {
-                case AssociationProperty ap when !ap.AsAlias:
+                case AssociationProperty ap:
                     usings.Add(_config.GetNamespace(ap.Association));
                     break;
                 case AliasProperty { Property: AssociationProperty ap2 }:

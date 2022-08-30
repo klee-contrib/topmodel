@@ -50,10 +50,6 @@
               "type": "string",
               "description": "Nom de la classe référencée par cette propriété. Doit être référencée dans ce fichier, soit en y étant déclarée, soit en étant listée dans la section 'uses' du fichier. Cette propriété DOIT être en PREMIER."
             },
-            "asAlias": {
-              "type": "boolean",
-              "description": "Traite la propriété comme un alias en dehors du SQL (si la table n'est générée qu'en SQL, par exemple)."
-            },
             "label": {
               "type": "string",
               "description": "Libellé de la propriété. Sera utilisé comme libellé pour le champ dans Focus."
