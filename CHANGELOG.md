@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.10.0
+
+- [0c0a0a2d](https://github.com/klee-contrib/topmodel/commit/0c0a0a2d807cf243f839eda357f3550946c4086c) - `property` sur `association` pour spécifier la propriété cible (fix [#129](https://github.com/klee-contrib/topmodel/issues/129))
+- [7ca733cb](https://github.com/klee-contrib/topmodel/commit/7ca733cbee0e524195e4485d0137dfe6b9cffff9) - Retrait de "asAlias" sur les associations (fix [#130](https://github.com/klee-contrib/topmodel/issues/130))
+
 ## 1.9.12
 
 - [60316754](https://github.com/klee-contrib/topmodel/commit/60316754166386114c629059aa5087e407636949) - [JPA] Enum Shortcut gestion nullité
