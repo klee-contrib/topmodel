@@ -32,12 +32,22 @@ public class JpaConfig : GeneratorConfigBase
     /// <summary>
     /// Précise le nom du package dans lequel générer les controllers.
     /// </summary>
-    public string ApiPackageName { get; set; }
+    public string ApiServerPackageName { get; set; }
+
+    /// <summary>
+    /// Précise le nom du package dans lequel générer les clients d'api.
+    /// </summary>
+    public string ApiClientPackageName { get; set; }
 
 #nullable enable
 
     /// <summary>
-    /// Dossier de sortie pour les Controllers.
+    /// Dossier de sortie pour les controllers.
     /// </summary>
-    public string? ApiOutputDirectory { get; set; }
+    public string? ApiServerOutputDirectory { get; set; }
+
+    /// <summary>
+    /// Dossier de sortie pour les clients d'api.
+    /// </summary>
+    public string? ApiClientOutputDirectory { get; set; }
 }

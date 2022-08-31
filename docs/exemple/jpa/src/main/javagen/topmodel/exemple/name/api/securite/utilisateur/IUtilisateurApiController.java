@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-package topmodel.exemple.name.api.controller.securite.utilisateur;
+package topmodel.exemple.name.api.securite.utilisateur;
 
 import java.util.List;
 import java.util.stream.Collectors;
