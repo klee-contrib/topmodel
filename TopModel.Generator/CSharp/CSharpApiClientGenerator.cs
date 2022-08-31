@@ -34,7 +34,7 @@ public class CSharpApiClientGenerator : GeneratorBase
 
     private string GetFilePath(ModelFile file)
     {
-        var className = $"{file.Name.Split("/").Last()}Client";
+        var className = $"{file.Options?.Endpoints?.FileName ?? file.Name.Split("/").Last()}Client";
         var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), _config.ApiFilePath.Replace("{module}", file.Module)).Replace("\\", "/");
         return $"{_config.OutputDirectory}/{apiPath}/generated/{className}.cs";
     }
@@ -46,7 +46,7 @@ public class CSharpApiClientGenerator : GeneratorBase
             return;
         }
 
-        var className = $"{file.Name.Split("/").Last()}Client";
+        var className = $"{file.Options?.Endpoints?.FileName ?? file.Name.Split("/").Last()}Client";
         var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), _config.ApiFilePath.Replace("{module}", file.Module)).Replace("\\", "/");
         var filePath = $"{_config.OutputDirectory}/{apiPath}/generated/{className}.cs";
 
@@ -267,7 +267,7 @@ public class CSharpApiClientGenerator : GeneratorBase
                 }
             }
 
-            fw.WriteLine(3, $"using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.{endpoint.Method.ToLower().ToFirstUpper()}, $\"{endpoint.Route}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = GetBody({bodyParam.Name}) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)});");
+            fw.WriteLine(3, $"using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.{endpoint.Method.ToLower().ToFirstUpper()}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = GetBody({bodyParam.Name}) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)});");
             fw.WriteLine(3, $"await EnsureSuccess(res);");
 
             if (returnType != null)

@@ -52,7 +52,7 @@ public class CSharpApiServerGenerator : GeneratorBase
         }
 
         var fileSplit = file.Name.Split("/");
-        var className = $"{fileSplit.Last()}Controller";
+        var className = $"{file.Options?.Endpoints?.FileName ?? fileSplit.Last()}Controller";
         var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), "Controllers", _config.ApiFilePath.Replace("{module}", file.Module)).Replace("\\", "/");
         var filePath = $"{_config.OutputDirectory}/{apiPath}/{className}.cs";
 
@@ -128,7 +128,7 @@ namespace {apiPath.Replace("/", ".")}
 
     private string GetRoute(Endpoint endpoint)
     {
-        var split = endpoint.Route.Split("/");
+        var split = endpoint.FullRoute.Split("/");
 
         for (var i = 0; i < split.Length; i++)
         {

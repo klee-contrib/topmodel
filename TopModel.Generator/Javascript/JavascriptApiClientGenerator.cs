@@ -116,7 +116,6 @@ public class JavascriptApiClientGenerator : GeneratorBase
             }
 
             fw.WriteLine("> {");
-            var endPointPrefix = endpoint.ModelFile.Options?.Endpoints?.Prefix != null ? endpoint.ModelFile.Options.Endpoints.Prefix + (endpoint.Route.StartsWith('/') ? string.Empty : '/') : string.Empty;
 
             if (hasForm)
             {
@@ -141,12 +140,12 @@ public class JavascriptApiClientGenerator : GeneratorBase
                     fw.WriteLine();
                 }
 
-                fw.WriteLine($@"    return {fetch}(""{endpoint.Method}"", `./{endPointPrefix}{endpoint.Route.Replace("{", "${")}`, {{body}}, options);");
+                fw.WriteLine($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.FullRoute.Replace("{", "${")}`, {{body}}, options);");
                 fw.WriteLine("}");
                 continue;
             }
 
-            fw.Write($@"    return {fetch}(""{endpoint.Method}"", `./{endPointPrefix}{endpoint.Route.Replace("{", "${")}`, {{");
+            fw.Write($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.FullRoute.Replace("{", "${")}`, {{");
 
             if (endpoint.GetBodyParam() != null)
             {
