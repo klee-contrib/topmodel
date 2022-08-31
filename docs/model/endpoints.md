@@ -37,3 +37,21 @@ Le type de paramètre (body, query, route) est automatiquement déterminé :
   - Il sera forcément facultatif, quelque soit la valeur de `required` pour la propriété.
 
 Tous les générateurs vont générer **un fichier client ou serveur par fichier de modèle qui contient des endpoints**, qui reflétera le chemin et le nom du fichier de modèle en question. A l'inverse des générateurs de classes qui vont utiliser le module, ici il n'est pas important.
+
+Il est possible de paramétrer le nom du fichier généré, ainsi que d'ajouter un préfix aux routes. Pour cela, dans les méta-data du fichier (au niveau de `module`,`tags`, `uses`...), vous pouvez ajouter des options :
+
+```yaml
+---
+module: Securite.Utilisateur
+tags:
+  - dto
+uses:
+  - Securite/Utilisateur/02_Entities
+  - Securite/Utilisateur/03_Dtos
+options:
+  endpoints:
+    prefix: utilisateur
+    fileName: UtilisateurApi
+```
+
+Ainsi, toutes les routes décrites dans ce fichier auront le préfix `utilisateur`. Le fichier généré se nommera `UtilisateurApi` (en fonction des spécificité des générateurs).

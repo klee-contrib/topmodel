@@ -8,7 +8,7 @@ uses:
 options:
   endpoints:
     prefix: utilisateur
-    fileName: Utilisateur
+    fileName: UtilisateurApi
 ---
 endpoint:
   name: GetUtilisateur

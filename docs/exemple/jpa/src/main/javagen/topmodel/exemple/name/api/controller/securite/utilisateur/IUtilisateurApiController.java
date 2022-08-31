@@ -24,7 +24,7 @@ import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
 
 @RequestMapping("utilisateur")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public interface IUtilisateurController {
+public interface IUtilisateurApiController {
 
 
 	/**
