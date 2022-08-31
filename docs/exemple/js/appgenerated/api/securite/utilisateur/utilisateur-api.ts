@@ -14,8 +14,8 @@ import {UtilisateurDto} from "../../../model/utilisateur/utilisateur-dto";
  * @param options Options pour 'fetch'.
  * @returns Le détail de l'utilisateur
  */
-export function getUtilisateur(utiId?: number, options: RequestInit = {}): Promise<UtilisateurDto> {
-    return fetch("GET", `./utilisateur/${utilisateurId}`, {query: {utiId}}, options);
+export function getUtilisateur(utiId: number, options: RequestInit = {}): Promise<UtilisateurDto> {
+    return fetch("GET", `./utilisateur/${utiId}`, {}, options);
 }
 
 /**

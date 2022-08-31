@@ -2,12 +2,12 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 1.9.11
+version: 1.10.0
 generatedFiles:
   - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\securite\IDtosController.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\securite\IEntitiesController.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\securite\IReferencesController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\securite\utilisateur\IUtilisateurController.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\securite\utilisateur\IUtilisateurApiController.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\utilisateur\IDecoratorsController.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\utilisateur\IDtosController.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\utilisateur\IEntitiesController.java
@@ -30,7 +30,7 @@ generatedFiles:
   - .\jpa\src\main\javagen\topmodel\exemple\name\dao\entities\utilisateur\interfaces\IUtilisateur.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\dao\entities\utilisateur\TypeUtilisateur.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\dao\entities\utilisateur\Utilisateur.java
-  - .\js\appgenerated\api\securite\utilisateur\utilisateur.ts
+  - .\js\appgenerated\api\securite\utilisateur\utilisateur-api.ts
   - .\js\appgenerated\model\securite\profil-dto.ts
   - .\js\appgenerated\model\securite\references.ts
   - .\js\appgenerated\model\utilisateur\references.ts

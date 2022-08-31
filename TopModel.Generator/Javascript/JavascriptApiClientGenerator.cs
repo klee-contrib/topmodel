@@ -39,8 +39,15 @@ public class JavascriptApiClientGenerator : GeneratorBase
     {
         var fileSplit = file.Name.Split("/");
         var modulePath = string.Join('\\', file.Module.Split('.').Select(m => m.ToDashCase()));
-        var filePath = _config.ApiClientFilePath.Replace("{module}", modulePath) + '/' + string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToDashCase();
-        return $"{_config.ApiClientOutputDirectory}\\{filePath}.ts";
+        var filePath = _config.ApiClientFilePath.Replace("{module}", modulePath) + '/';
+        var fileName = string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToDashCase();
+
+        if (file.Options?.Endpoints?.FileName != null)
+        {
+            fileName = file.Options?.Endpoints?.FileName.ToDashCase();
+        }
+
+        return $"{_config.ApiClientOutputDirectory}\\{filePath}\\{fileName}.ts";
     }
 
     private void GenerateClientFile(ModelFile file)
@@ -133,12 +140,12 @@ public class JavascriptApiClientGenerator : GeneratorBase
                     fw.WriteLine();
                 }
 
-                fw.WriteLine($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.Route.Replace("{", "${")}`, {{body}}, options);");
+                fw.WriteLine($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.FullRoute.Replace("{", "${")}`, {{body}}, options);");
                 fw.WriteLine("}");
                 continue;
             }
 
-            fw.Write($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.Route.Replace("{", "${")}`, {{");
+            fw.Write($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.FullRoute.Replace("{", "${")}`, {{");
 
             if (endpoint.GetBodyParam() != null)
             {

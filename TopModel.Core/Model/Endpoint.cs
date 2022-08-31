@@ -15,6 +15,16 @@ public class Endpoint
 
     public string Route { get; set; }
 
+    public string FullRoute
+    {
+        get
+        {
+            var endpointPrefix = (ModelFile.Options?.Endpoints?.Prefix ?? string.Empty).Trim('/');
+            var endpointRoute = Route.Trim('/');
+            return $"{endpointPrefix}{(string.IsNullOrEmpty(endpointPrefix) || string.IsNullOrEmpty(endpointRoute) ? string.Empty : "/")}{endpointRoute}";
+        }
+    }
+
     public string Description { get; set; }
 #nullable enable
 

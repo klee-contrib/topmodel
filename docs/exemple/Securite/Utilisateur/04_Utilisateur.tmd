@@ -5,11 +5,15 @@ tags:
 uses:
   - Securite/Utilisateur/02_Entities
   - Securite/Utilisateur/03_Dtos
+options:
+  endpoints:
+    prefix: utilisateur
+    fileName: UtilisateurApi
 ---
 endpoint:
   name: GetUtilisateur
   method: GET
-  route: utilisateur/{utilisateurId}
+  route: /{utiId}
   description: Charge le détail d'un utilisateur
 
   # Liste des paramètres du endpoint. Ce sont des propriétés de modèle comme pour les classes. Il peut ne pas y en avoir.
@@ -27,7 +31,7 @@ endpoint:
 endpoint:
   name: GetUtilisateurList
   method: GET
-  route: utilisateur/list
+  route: /list
   description: Charge une liste d'utilisateurs par leur type
   params:
     - alias:
@@ -42,7 +46,7 @@ endpoint:
 endpoint:
   name: SaveUtilisateur
   method: POST
-  route: utilisateur/save
+  route: /save
   description: Sauvegarde un utilisateur
   params:
     - composition: UtilisateurDto
@@ -58,7 +62,7 @@ endpoint:
 endpoint:
   name: SaveAllUtilisateur
   method: POST
-  route: utilisateur/saveAll
+  route: /saveAll
   description: Sauvegarde une liste d'utilisateurs
   params:
     - composition: UtilisateurDto
@@ -74,7 +78,7 @@ endpoint:
 endpoint:
   name: Search
   method: POST
-  route: utilisateur/search
+  route: /search
   description: Recherche des utilisateurs
   params:
     - alias:
