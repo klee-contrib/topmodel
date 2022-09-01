@@ -48,7 +48,7 @@ public class SpringClientApiGenerator : GeneratorBase
         }
 
         var filePath = file.Name.Split("/").Last();
-        return $"Abstract{string.Join('_', filePath.Split("_").Skip(filePath.Contains('_') ? 1 : 0)).ToFirstUpper()}Controller";
+        return $"Abstract{string.Join('_', filePath.Split("_").Skip(filePath.Contains('_') ? 1 : 0)).ToFirstUpper()}Client";
     }
 
     private string GetFileName(ModelFile file)
@@ -97,7 +97,7 @@ public class SpringClientApiGenerator : GeneratorBase
         fw.WriteLine(1, " * @param restTemplate");
         fw.WriteLine(1, " * @param host");
         fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"{GetClassName(file)}(RestTemplate restTemplate, String host) {{");
+        fw.WriteLine(1, $"protected {GetClassName(file)}(RestTemplate restTemplate, String host) {{");
         fw.WriteLine(2, $"this.restTemplate = restTemplate;");
         fw.WriteLine(2, $"this.host = host;");
         fw.WriteLine(1, $"}}");
@@ -119,6 +119,7 @@ public class SpringClientApiGenerator : GeneratorBase
         fw.WriteLine();
         WriteEndpointCallMethod(fw, endpoint);
     }
+
     private List<string> GetMethodParams(Endpoint endpoint, bool withType = true, bool withBody = true)
     {
         var methodParams = new List<string>();
@@ -186,6 +187,7 @@ public class SpringClientApiGenerator : GeneratorBase
         {
             fullRoute = fullRoute.Replace(@$"{{{p.GetParamName()}}}", "%s");
         }
+
         if (endpoint.GetRouteParams().Any())
         {
             fullRoute = $@"""{fullRoute}"".formatted({string.Join(", ", endpoint.GetRouteParams().Select(p => p.GetParamName()))});";
@@ -202,6 +204,7 @@ public class SpringClientApiGenerator : GeneratorBase
             fw.WriteLine(1, "}");
             return;
         }
+
         fw.WriteLine(2, @$"UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));");
         foreach (IProperty p in endpoint.GetQueryParams())
         {
@@ -224,6 +227,7 @@ public class SpringClientApiGenerator : GeneratorBase
         fw.WriteLine(2, $"return uriBuilder;");
         fw.WriteLine(1, "}");
     }
+
     private void WriteEndpointCallMethod(JavaWriter fw, Endpoint endpoint)
     {
         fw.WriteDocStart(1, endpoint.Description);
@@ -240,26 +244,34 @@ public class SpringClientApiGenerator : GeneratorBase
 
         fw.WriteLine(1, " */");
         var returnType = "ResponseEntity";
-
+        var returnClass = "(Class<?>) null";
         if (endpoint.Returns != null)
         {
             returnType = $"ResponseEntity<{endpoint.Returns.GetJavaType().Split('<').First()}>";
+            returnClass = $"{endpoint.Returns.GetJavaType().Split('<').First()}.class";
+            if (endpoint.Returns.GetJavaType().Split('<').First() == "ResponseEntity" && endpoint.Returns.GetJavaType().Split('<').Count() > 1)
+            {
+                returnType = $"ResponseEntity<{endpoint.Returns.GetJavaType().Split('<')[1].Split('>').First()}>";
+                returnClass = $"{endpoint.Returns.GetJavaType().Split('<')[1].Split('>').First()}.class";
+            }
         }
 
         var methodParams = GetMethodParams(endpoint, true, false);
-        fw.WriteLine(1, $"public {returnType} {endpoint.Name.ToFirstLower()}({string.Join(", ", GetMethodParams(endpoint).Concat(new List<string>(){"MultiValueMap<String, String> headers"}))}) {{");
+        fw.WriteLine(1, $"public {returnType} {endpoint.Name.ToFirstLower()}({string.Join(", ", GetMethodParams(endpoint).Concat(new List<string>() { "HttpHeaders headers" }))}) {{");
         fw.WriteLine(2, $"UriComponentsBuilder uri = this.{endpoint.Name.ToFirstLower()}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, false, false))});");
         var body = $"new HttpEntity<>({(endpoint.GetBodyParam()?.GetParamName() != null ? $"{endpoint.GetBodyParam()?.GetParamName()}, " : string.Empty)}headers)";
         if (endpoint.Returns != null)
         {
-            fw.WriteLine(2, $"return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.{endpoint.Method}, {body}, {endpoint.Returns.GetJavaType().Split('<').First()}.class);");
+            fw.WriteLine(2, $"return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.{endpoint.Method}, {body}, {returnClass});");
         }
         else
         {
-            fw.WriteLine(2, $"return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.{endpoint.Method}, {body}, (Class<?>) null);");
+            fw.WriteLine(2, $"return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.{endpoint.Method}, {body}, {returnClass});");
         }
+
         fw.WriteLine(1, "}");
     }
+
     private void WriteImports(ModelFile file, JavaWriter fw)
     {
         var imports = new List<string>();
@@ -270,7 +282,7 @@ public class SpringClientApiGenerator : GeneratorBase
         imports.Add("java.net.URI");
         imports.Add("org.springframework.http.HttpMethod");
         imports.Add("org.springframework.http.HttpEntity");
-        imports.Add("org.springframework.util.MultiValueMap");
+        imports.Add("org.springframework.http.HttpHeaders");
         imports.Add("org.springframework.http.ResponseEntity");
         fw.WriteImports(imports.Distinct().ToArray());
     }

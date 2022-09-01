@@ -13,9 +13,9 @@ import javax.validation.constraints.Email;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -33,7 +33,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param restTemplate
 	 * @param host
 	 */
-	AbstractUtilisateurApiClient(RestTemplate restTemplate, String host) {
+	protected AbstractUtilisateurApiClient(RestTemplate restTemplate, String host) {
 		this.restTemplate = restTemplate;
 		this.host = host;
 	}
@@ -53,7 +53,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utiId Id technique
 	 * @return Le détail de l'utilisateur
 	 */
-	public ResponseEntity<UtilisateurDto> getUtilisateur(long utiId, MultiValueMap<String, String> headers) {
+	public ResponseEntity<UtilisateurDto> getUtilisateur(long utiId, HttpHeaders headers) {
 		UriComponentsBuilder uri = this.getUtilisateurUriComponentsBuilder(utiId);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), UtilisateurDto.class);
 	}
@@ -78,7 +78,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Liste des utilisateurs
 	 */
-	public ResponseEntity<List> getUtilisateurList(TypeUtilisateur.Values typeUtilisateurCode, MultiValueMap<String, String> headers) {
+	public ResponseEntity<List> getUtilisateurList(TypeUtilisateur.Values typeUtilisateurCode, HttpHeaders headers) {
 		UriComponentsBuilder uri = this.getUtilisateurListUriComponentsBuilder(typeUtilisateurCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), List.class);
 	}
@@ -97,7 +97,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utilisateur Utilisateur à sauvegarder
 	 * @return Utilisateur sauvegardé
 	 */
-	public ResponseEntity<UtilisateurDto> saveUtilisateur(UtilisateurDto utilisateur, MultiValueMap<String, String> headers) {
+	public ResponseEntity<UtilisateurDto> saveUtilisateur(UtilisateurDto utilisateur, HttpHeaders headers) {
 		UriComponentsBuilder uri = this.saveUtilisateurUriComponentsBuilder();
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(utilisateur, headers), UtilisateurDto.class);
 	}
@@ -116,7 +116,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utilisateur Utilisateur à sauvegarder
 	 * @return Utilisateur sauvegardé
 	 */
-	public ResponseEntity<List> saveAllUtilisateur(List<UtilisateurDto> utilisateur, MultiValueMap<String, String> headers) {
+	public ResponseEntity<List> saveAllUtilisateur(List<UtilisateurDto> utilisateur, HttpHeaders headers) {
 		UriComponentsBuilder uri = this.saveAllUtilisateurUriComponentsBuilder();
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(utilisateur, headers), List.class);
 	}
@@ -150,7 +150,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<Page> search(long utiUtilisateurId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode, MultiValueMap<String, String> headers) {
+	public ResponseEntity<Page> search(long utiUtilisateurId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode, HttpHeaders headers) {
 		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utiUtilisateurId, utilisateuremail, utilisateurTypeUtilisateurCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), Page.class);
 	}
