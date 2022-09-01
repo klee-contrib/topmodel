@@ -177,7 +177,7 @@ foreach (var source in config.OpenApi.Sources)
     msw.WriteLine();
 
     var references = new HashSet<string>(referenceMap.SelectMany(r => r.Value).Select(r => r.Id).Distinct());
-    foreach (var schema in model.Components.Schemas.Where(s => references.Contains(s.Key)).OrderBy(s => s.Key))
+    foreach (var schema in model.Components.Schemas.Where(s => s.Value.Type == "object").Where(s => references.Contains(s.Key)).OrderBy(s => s.Key))
     {
         msw.WriteLine("---");
         msw.WriteLine("class:");
@@ -196,7 +196,7 @@ foreach (var source in config.OpenApi.Sources)
 
         foreach (var property in schema.Value.Properties)
         {
-            WriteProperty(msw, property);
+            WriteProperty(msw, property, model);
 
             if (schema.Value.Properties.Last().Key != property.Key)
             {
@@ -247,7 +247,7 @@ foreach (var source in config.OpenApi.Sources)
 
                 if (operation.Value.RequestBody != null)
                 {
-                    WriteProperty(sw, new("Body", operation.Value.RequestBody.Content.First().Value.Schema));
+                    WriteProperty(sw, new("Body", operation.Value.RequestBody.Content.First().Value.Schema), model);
                 }
 
                 foreach (var param in operation.Value.Parameters)
@@ -269,7 +269,7 @@ foreach (var source in config.OpenApi.Sources)
             if (response != null && response.Content.Any())
             {
                 sw.WriteLine("  returns:");
-                WriteProperty(sw, new("Result", response.Content.First().Value.Schema), noList: true);
+                WriteProperty(sw, new("Result", response.Content.First().Value.Schema), model, noList: true);
             }
         }
     }
@@ -313,11 +313,11 @@ string GetDomainCore(OpenApiSchema schema)
     return schema.Type + length;
 }
 
-void WriteProperty(FileWriter sw, KeyValuePair<string, OpenApiSchema> property, bool noList = false)
+void WriteProperty(FileWriter sw, KeyValuePair<string, OpenApiSchema> property, OpenApiDocument model, bool noList = false)
 {
     var kind =
         property.Value.Items?.Reference != null ? "list"
-        : property.Value.Reference != null ? "object"
+        : property.Value.Reference != null && model.Components.Schemas.Any(s => s.Value.Type == "object" && s.Value.Reference == property.Value.Reference) ? "object"
         : property.Value.Type == "object" && property.Value.AdditionalProperties?.Reference != null ? "map"
         : property.Value.Type == "object" && property.Value.AdditionalProperties?.Items?.Reference != null ? "list-map"
         : null;
