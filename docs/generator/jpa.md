@@ -197,8 +197,55 @@ public interface IUtilisateurDto {
 }
 ```
 
-## Api
+## Api Server
 
 Le générateur créé des `interface` contenant, pour chaque endPoint paramétré, la méthode abstraite `Nom du endpoint`, à implémenter dans votre controller.
 
 Pour créer votre API, il suffit donc de créer un nouveau controller qui implémente la classe générée. L'annotation `@RestController` reste nécessaire.
+
+## Api Client
+
+Le générateur créé des classes abstraites contenant, toutes les méthodes permettant d'accéder aux endpoints paramétrés.
+
+Pour créer votre client d'API, il suffit de créer une classe qui hérite de cette classe abstraite. Pour fonctionner, elle devra appeler le constructeur de la classe abrstaite, en renseignant :
+
+- Le host de l'API
+- Une instance de `RestTemplate`
+
+Exemple :
+
+```java
+@Service
+public class UtilisateurApiClient extends AbstractUtilisateurApiCLient {
+
+  private static final HOST = "http://localhost:8080/my-app/api/";
+
+  @Autowired
+  public UtilisateurApiClient(RestTemplate restTemplate) {
+    super(restTemplate, HOST);
+  }
+}
+```
+
+Pour appeler l'API utilisateur, injecter le service UtilisateurApiClient. Puis appeler la méthode de votre choix en entrant les différents paramètres, en y ajoutant l'objet HttpHeaders désiré.
+
+```java
+@Service
+public class UtilisateurService {
+
+  private static final HOST = "http://localhost:8080/my-app/api/";
+
+  private final UtilisateurApiClient utilisateurApiClient;
+
+  @Autowired
+  public UtilisateurService(UtilisateurApiClient utilisateurApiClient) {
+    this.utilisateurApiClient = utilisateurApiClient;
+  }
+
+  public UtilisateurDto getUtilisateur(Long id){
+    var headers = new HttpHeaders();
+    headers.add("token-sécurisé", "MON_TOKEN_SECURISE");
+    return utilisateurApiClient.getUtilisateur(id, headers);
+  }
+}
+```
