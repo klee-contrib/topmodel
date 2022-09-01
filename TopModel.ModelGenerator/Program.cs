@@ -43,6 +43,7 @@ command.Handler = CommandHandler.Create<FileInfo, FileInfo>((configFile, secrets
 command.Invoke(args);
 
 ModelUtils.CombinePath(dn, config, c => c.OutputDirectory);
+ModelUtils.CombinePath(dn, config, c => c.ModelRoot);
 
 if (config.OpenApi is null)
 {
@@ -66,11 +67,18 @@ foreach (var source in config.OpenApi.Sources)
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{source.Value.Login}:{secret}")));
     }
 
-    var openApi = await client.GetAsync(source.Value.Url);
-
+    OpenApiDocument model;
     var modelReader = new OpenApiStreamReader();
+    if (source.Value.Url != null)
+    {
+        var openApi = await client.GetAsync(source.Value.Url);
+        model = modelReader.Read(await openApi.Content.ReadAsStreamAsync(), out var diagnostic);
+    }
+    else
+    {
+        model = modelReader.Read(File.Open(dn + "/" + source.Value.Path!, FileMode.Open), out var diagnostic);
+    }
 
-    var model = modelReader.Read(await openApi.Content.ReadAsStreamAsync(), out var diagnostic);
 
     string GetEndpointName(OpenApiOperation operation)
     {
@@ -174,7 +182,15 @@ foreach (var source in config.OpenApi.Sources)
         msw.WriteLine("---");
         msw.WriteLine("class:");
         msw.WriteLine($"  name: {schema.Key}");
-        msw.WriteLine($"  comment: {FormatDescription(schema.Value.Description ?? schema.Key)}");
+        if (schema.Value.Description != null)
+        {
+            msw.WriteLine($"  comment: {FormatDescription(schema.Value.Description ?? schema.Key)}");
+        }
+        else
+        {
+            msw.WriteLine($"  comment: no description provided");
+        }
+
         msw.WriteLine();
         msw.WriteLine($"  properties:");
 
@@ -202,7 +218,7 @@ foreach (var source in config.OpenApi.Sources)
         if (referenceMap[module.Key].Any())
         {
             sw.WriteLine("uses:");
-            sw.WriteLine($"  - {Path.GetRelativePath(dn, config.OutputDirectory).Replace("\\", "/")}/{source.Key}/{source.Value.ModelFileName}");
+            sw.WriteLine($"  - {Path.GetRelativePath(config.ModelRoot, config.OutputDirectory).Replace("\\", "/")}/{source.Key}/{source.Value.ModelFileName}");
 
         }
         sw.WriteLine();
@@ -216,7 +232,14 @@ foreach (var source in config.OpenApi.Sources)
             sw.WriteLine($"  name: {GetEndpointName(operation.Value)}");
             sw.WriteLine($"  method: {operation.Key.ToString().ToUpper()}");
             sw.WriteLine($"  route: {path.Key[1..]}");
-            sw.WriteLine($"  description: {FormatDescription(operation.Value.Summary)}");
+            if (operation.Value.Summary != null)
+            {
+                sw.WriteLine($"  description: {FormatDescription(operation.Value.Summary)}");
+            }
+            else
+            {
+                sw.WriteLine($"  description: no description provided");
+            }
 
             if (operation.Value.Parameters.Any() || operation.Value.RequestBody != null)
             {
@@ -231,7 +254,14 @@ foreach (var source in config.OpenApi.Sources)
                 {
                     sw.WriteLine($"    - name: {param.Name.ToFirstUpper()}");
                     sw.WriteLine($"      domain: {GetDomain(param.Schema)}");
-                    sw.WriteLine($"      comment: {FormatDescription(param.Description)}");
+                    if (param.Description != null)
+                    {
+                        sw.WriteLine($"      comment: {FormatDescription(param.Description)}");
+                    }
+                    else
+                    {
+                        sw.WriteLine($"      comment: no description provided");
+                    }
                 }
             }
 
@@ -247,11 +277,14 @@ foreach (var source in config.OpenApi.Sources)
 
 static string FormatDescription(string description)
 {
+    if (description == null)
+    {
+        return string.Empty;
+    }
+
     description = description.Replace(Environment.NewLine, " ");
 
-    return description.Contains(':')
-        ? $"\"{description}\""
-        : description;
+    return @$"""{description}""";
 }
 
 string GetDomain(OpenApiSchema schema)
