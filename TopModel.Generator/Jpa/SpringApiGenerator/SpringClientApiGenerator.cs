@@ -48,7 +48,7 @@ public class SpringClientApiGenerator : GeneratorBase
         }
 
         var filePath = file.Name.Split("/").Last();
-        return $"Abstract{string.Join('_', filePath.Split("_").Skip(filePath.Contains('_') ? 1 : 0)).ToFirstUpper()}Client";
+        return $"Abstract{string.Join('_', filePath.Split("_").Skip(filePath.Contains('_') ? 1 : 0)).ToFirstUpper().Replace("-", string.Empty)}Client";
     }
 
     private string GetFileName(ModelFile file)
