@@ -1,19 +1,26 @@
 # TopModel.Generator (`modgen`)
 
+## 1.11.0
+
+- [#125](https://github.com/klee-contrib/topmodel/pull/125) - Endpoint Prefix et FileName (fix [#123](https://github.com/klee-contrib/topmodel/issues/123))
+- [`25bdb766`](https://github.com/klee-contrib/topmodel/commit/25bdb7663d2588ba18b1c6e6b597ed499a82cb2b) - [C#] Fix génération client API avec un guid dans un query param
+- [`29ec1c42`](https://github.com/klee-contrib/topmodel/commit/29ec1c42d1cde038cd663062eb2667ac3f70bd46) - [C#/JS] Gestion API avec plusieurs fichiers et des sous objets (avec FormData)
+- [#135](https://github.com/klee-contrib/topmodel/pull/135) - JPA : Implémenter générateur Spring Api client (fix [#134](https://github.com/klee-contrib/topmodel/issues/134))
+
 ## 1.10.0
 
-- [0c0a0a2d](https://github.com/klee-contrib/topmodel/commit/0c0a0a2d807cf243f839eda357f3550946c4086c) - `property` sur `association` pour spécifier la propriété cible (fix [#129](https://github.com/klee-contrib/topmodel/issues/129))
-- [7ca733cb](https://github.com/klee-contrib/topmodel/commit/7ca733cbee0e524195e4485d0137dfe6b9cffff9) - Retrait de "asAlias" sur les associations (fix [#130](https://github.com/klee-contrib/topmodel/issues/130))
+- [`0c0a0a2d`](https://github.com/klee-contrib/topmodel/commit/0c0a0a2d807cf243f839eda357f3550946c4086c) - `property` sur `association` pour spécifier la propriété cible (fix [#129](https://github.com/klee-contrib/topmodel/issues/129))
+- [`7ca733cb`](https://github.com/klee-contrib/topmodel/commit/7ca733cbee0e524195e4485d0137dfe6b9cffff9) - Retrait de "asAlias" sur les associations (fix [#130](https://github.com/klee-contrib/topmodel/issues/130))
 
 ## 1.9.12
 
-- [60316754](https://github.com/klee-contrib/topmodel/commit/60316754166386114c629059aa5087e407636949) - [JPA] Enum Shortcut gestion nullité
-- [428891ed](https://github.com/klee-contrib/topmodel/commit/428891edfd5c9ca08ac0e4e15211aa268441e5fc) - [JPA] Simplification code généré api
-- [8d68d8b4](https://github.com/klee-contrib/topmodel/commit/8d68d8b49042328b586d63dc830ff33e53ee7c6e) - [JPA] Suppression annotation RestController inutile
+- [`60316754`](https://github.com/klee-contrib/topmodel/commit/60316754166386114c629059aa5087e407636949) - [JPA] Enum Shortcut gestion nullité
+- [`428891ed`](https://github.com/klee-contrib/topmodel/commit/428891edfd5c9ca08ac0e4e15211aa268441e5fc) - [JPA] Simplification code généré api
+- [`8d68d8b4`](https://github.com/klee-contrib/topmodel/commit/8d68d8b49042328b586d63dc830ff33e53ee7c6e) - [JPA] Suppression annotation RestController inutile
 
 ## 1.9.11
 
-- [e9f70af7](https://github.com/klee-contrib/topmodel/commit/e9f70af7a069d3e265db09046e120a0e59ba6660) - [JS] Homogénéisation imports pour domaines/liste de ref
+- [`e9f70af7`](https://github.com/klee-contrib/topmodel/commit/e9f70af7a069d3e265db09046e120a0e59ba6660) - [JS] Homogénéisation imports pour domaines/liste de ref
 
 ## 1.9.10
 
