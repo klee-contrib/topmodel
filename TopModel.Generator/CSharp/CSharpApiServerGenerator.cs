@@ -164,7 +164,7 @@ namespace {apiPath.Replace("/", ".")}
     {
         var sb = new StringBuilder();
 
-        var hasForm = param.Endpoint.Params.Any(p => p is IFieldProperty { Domain.CSharp.Type: "IFormFile" });
+        var hasForm = param.Endpoint.Params.Any(p => p is IFieldProperty fp && fp.Domain.CSharp!.Type.Contains("IFormFile"));
 
         if (param.IsBodyParam())
         {

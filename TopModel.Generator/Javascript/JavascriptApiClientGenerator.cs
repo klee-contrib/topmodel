@@ -98,7 +98,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
             fw.WriteLine(" */");
             fw.Write($"export function {endpoint.Name.ToFirstLower()}(");
 
-            var hasForm = endpoint.Params.Any(p => p is IFieldProperty { Domain.TS.Type: "File" });
+            var hasForm = endpoint.Params.Any(p => p is IFieldProperty fp && fp.Domain.TS!.Type.Contains("File"));
 
             foreach (var param in endpoint.Params)
             {
@@ -119,26 +119,33 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
             if (hasForm)
             {
-                fw.Write("    const body = new FormData();\r\n");
+                fw.WriteLine("    const body = new FormData();");
+                fw.WriteLine("    fillFormData(");
+                fw.WriteLine("        {");
                 foreach (var param in endpoint.Params)
                 {
-                    if (param is IFieldProperty { Domain.TS.Type: "File" })
+                    if (param is IFieldProperty)
                     {
-                        fw.Write($@"    body.append(""{param.Name}"", {param.Name});");
-                    }
-                    else if (param is CompositionProperty)
-                    {
-                        fw.Write($@"    for (const key in {param.Name}) {{
-        body.append(key, ({param.Name} as any)[key]);
-    }}");
+                        fw.Write($@"            {param.GetParamName()}");
                     }
                     else
                     {
-                        fw.Write($@"    body.append(""{param.GetParamName()}"", {param.GetParamName()}?.toString());");
+                        fw.Write($@"            ...{param.GetParamName()}");
                     }
 
-                    fw.WriteLine();
+                    if (endpoint.Params.IndexOf(param) < endpoint.Params.Count - 1)
+                    {
+                        fw.WriteLine(",");
+                    }
+                    else
+                    {
+                        fw.WriteLine();
+                    }
                 }
+
+                fw.WriteLine("        },");
+                fw.WriteLine("        body");
+                fw.WriteLine("    );");
 
                 fw.WriteLine($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.FullRoute.Replace("{", "${")}`, {{body}}, options);");
                 fw.WriteLine("}");
@@ -176,6 +183,22 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
             fw.WriteLine("}, options);");
             fw.WriteLine("}");
+        }
+
+        if (file.Endpoints.Any(endpoint => endpoint.Params.Any(p => p is IFieldProperty fp && fp.Domain.TS!.Type.Contains("File"))))
+        {
+            fw.WriteLine(@"
+function fillFormData(data: any, formData: FormData, prefix = """") {
+    if (Array.isArray(data)) {
+        data.forEach((item, i) => fillFormData(item, formData, prefix + (typeof item === ""object"" && !(item instanceof File) ? `[${i}]` : """")));
+    } else if (typeof data === ""object"" && !(data instanceof File)) {
+        for (const key in data) {
+            fillFormData(data[key], formData, (prefix ? `${prefix}.` : """") + key);
+        }
+    } else {
+        formData.append(prefix, data);
+    }
+}");
         }
     }
 
