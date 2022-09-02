@@ -41,7 +41,6 @@ public class JpaConfig : GeneratorConfigBase
     /// </summary>
     public string? ApiOutputDirectory { get; set; }
 
-
     /// <summary>
     /// Mode de génération de l'API ("client" ou "server").
     /// </summary>
