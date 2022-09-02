@@ -256,6 +256,7 @@ public class CSharpApiClientGenerator : GeneratorBase
                         var toString = _config.GetPropertyTypeName(qp) switch
                         {
                             "string" => string.Empty,
+                            "Guid" => ".ToString()",
                             _ => $".ToString(CultureInfo.InvariantCulture)"
                         };
 
