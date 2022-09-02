@@ -37,7 +37,13 @@ public class JpaConfig : GeneratorConfigBase
 #nullable enable
 
     /// <summary>
-    /// Dossier de sortie pour les Controllers.
+    /// Dossier de sortie pour les controllers.
     /// </summary>
     public string? ApiOutputDirectory { get; set; }
+
+
+    /// <summary>
+    /// Mode de génération de l'API ("client" ou "server").
+    /// </summary>
+    public ApiGeneration ApiGeneration { get; set; }
 }

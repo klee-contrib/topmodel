@@ -4,14 +4,15 @@
 
 version: 1.10.0
 generatedFiles:
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\securite\IDtosController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\securite\IEntitiesController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\securite\IReferencesController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\securite\utilisateur\IUtilisateurApiController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\utilisateur\IDecoratorsController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\utilisateur\IDtosController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\utilisateur\IEntitiesController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\controller\utilisateur\IReferencesController.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\IDtosController.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\IEntitiesController.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\IReferencesController.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\utilisateur\AbstractUtilisateurApiClient.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\utilisateur\IUtilisateurApiController.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\api\utilisateur\IDecoratorsController.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\api\utilisateur\IDtosController.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\api\utilisateur\IEntitiesController.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\api\utilisateur\IReferencesController.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\dao\daos\securite\ProfilDAO.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\dao\daos\securite\ProfilDtoDAO.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\dao\daos\securite\TypeProfilDAO.java

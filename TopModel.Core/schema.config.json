@@ -314,6 +314,11 @@
           "apiPackageName": {
             "type": "string",
             "description": "Précise le nom du package dans lequel générer les controllers."
+          },
+          "apiGeneration": {
+            "type": "string",
+            "description": "Mode de génération de l'API ('Client' ou 'Server')",
+            "enum": ["Client", "Server"]
           }
         }
       }

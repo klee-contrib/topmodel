@@ -8,21 +8,21 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class SpringApiGenerator : GeneratorBase
+public class SpringServerApiGenerator : GeneratorBase
 {
     private readonly JpaConfig _config;
-    private readonly ILogger<SpringApiGenerator> _logger;
+    private readonly ILogger<SpringServerApiGenerator> _logger;
 
     private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
 
-    public SpringApiGenerator(ILogger<SpringApiGenerator> logger, JpaConfig config)
+    public SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, JpaConfig config)
         : base(logger, config)
     {
         _config = config;
         _logger = logger;
     }
 
-    public override string Name => "SpringApiGenerator";
+    public override string Name => "SpringServerApiGenerator";
 
     public override IEnumerable<string> GeneratedFiles => _files.Select(f => GetFilePath(f.Value));
 
@@ -37,7 +37,7 @@ public class SpringApiGenerator : GeneratorBase
 
     private string GetDestinationFolder(ModelFile file)
     {
-        return Path.Combine(_config.ApiOutputDirectory!, Path.Combine(_config.ApiPackageName.ToLower().Split(".")), "controller", Path.Combine(file.Module.ToLower().Split(".")));
+        return Path.Combine(_config.ApiOutputDirectory!, Path.Combine(_config.ApiOutputDirectory!.ToLower().Split(".")), Path.Combine(_config.ApiPackageName.Split('.')), Path.Combine(file.Module.ToLower().Split(".")));
     }
 
     private string GetClassName(ModelFile file)
@@ -79,7 +79,7 @@ public class SpringApiGenerator : GeneratorBase
 
         using var fw = new JavaWriter($"{GetFilePath(file)}", _logger, null);
 
-        fw.WriteLine($"package {_config.ApiPackageName}.controller.{file.Module.ToLower()};");
+        fw.WriteLine($"package {_config.ApiPackageName}.{file.Module.ToLower()};");
 
         WriteImports(file, fw);
         fw.WriteLine();

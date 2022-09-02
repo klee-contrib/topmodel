@@ -158,9 +158,18 @@ if (config.Jpa != null)
 
         if (jpaConfig.ApiOutputDirectory != null)
         {
-            services
-                .AddSingleton<IModelWatcher>(p =>
-                    new SpringApiGenerator(p.GetRequiredService<ILogger<SpringApiGenerator>>(), jpaConfig));
+            if (jpaConfig.ApiGeneration == ApiGeneration.Server)
+            {
+                services
+                    .AddSingleton<IModelWatcher>(p =>
+                        new SpringServerApiGenerator(p.GetRequiredService<ILogger<SpringServerApiGenerator>>(), jpaConfig));
+            }
+            else if (jpaConfig.ApiGeneration == ApiGeneration.Client)
+            {
+                services
+                    .AddSingleton<IModelWatcher>(p =>
+                        new SpringClientApiGenerator(p.GetRequiredService<ILogger<SpringClientApiGenerator>>(), jpaConfig));
+            }
         }
     }
 }
