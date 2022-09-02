@@ -285,13 +285,9 @@
               "description": "Catégorie de fichier que le générateur doit lire."
             }
           },
-          "apiServerOutputDirectory": {
+          "apiOutputDirectory": {
             "type": "string",
             "description": "Dossier de sortie pour les Controllers."
-          },
-          "apiClientOutputDirectory": {
-            "type": "string",
-            "description": "Dossier de sortie pour les clients d'api."
           },
           "modelOutputDirectory": {
             "type": "string",
@@ -315,13 +311,14 @@
             "type": "string",
             "description": "Précise l'interface des fields enum générés."
           },
-          "apiServerPackageName": {
+          "apiPackageName": {
             "type": "string",
             "description": "Précise le nom du package dans lequel générer les controllers."
           },
-          "apiClientPackageName": {
+          "apiGeneration": {
             "type": "string",
-            "description": "Précise le nom du package dans lequel générer les clients d'api."
+            "description": "Mode de génération de l'API ('Client' ou 'Server')",
+            "enum": ["Client", "Server"]
           }
         }
       }

@@ -1,4 +1,4 @@
-﻿namespace TopModel.Generator.CSharp;
+﻿namespace TopModel.Generator;
 
 /// <summary>
 /// Version de Kinetix.

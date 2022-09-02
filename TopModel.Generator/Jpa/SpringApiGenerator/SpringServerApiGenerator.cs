@@ -37,7 +37,7 @@ public class SpringServerApiGenerator : GeneratorBase
 
     private string GetDestinationFolder(ModelFile file)
     {
-        return Path.Combine(_config.ApiServerOutputDirectory!, Path.Combine(_config.ApiServerOutputDirectory!.ToLower().Split(".")), Path.Combine(_config.ApiServerPackageName.Split('.')), Path.Combine(file.Module.ToLower().Split(".")));
+        return Path.Combine(_config.ApiOutputDirectory!, Path.Combine(_config.ApiOutputDirectory!.ToLower().Split(".")), Path.Combine(_config.ApiPackageName.Split('.')), Path.Combine(file.Module.ToLower().Split(".")));
     }
 
     private string GetClassName(ModelFile file)
@@ -64,7 +64,7 @@ public class SpringServerApiGenerator : GeneratorBase
 
     private void GenerateController(ModelFile file)
     {
-        if (!file.Endpoints.Any() || _config.ApiServerOutputDirectory == null)
+        if (!file.Endpoints.Any() || _config.ApiOutputDirectory == null)
         {
             return;
         }
@@ -79,7 +79,7 @@ public class SpringServerApiGenerator : GeneratorBase
 
         using var fw = new JavaWriter($"{GetFilePath(file)}", _logger, null);
 
-        fw.WriteLine($"package {_config.ApiServerPackageName}.{file.Module.ToLower()};");
+        fw.WriteLine($"package {_config.ApiPackageName}.{file.Module.ToLower()};");
 
         WriteImports(file, fw);
         fw.WriteLine();

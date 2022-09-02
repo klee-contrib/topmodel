@@ -143,8 +143,7 @@ if (config.Jpa != null)
     foreach (var jpaConfig in config.Jpa)
     {
         CombinePath(dn, jpaConfig, c => c.ModelOutputDirectory);
-        CombinePath(dn, jpaConfig, c => c.ApiServerOutputDirectory);
-        CombinePath(dn, jpaConfig, c => c.ApiClientOutputDirectory);
+        CombinePath(dn, jpaConfig, c => c.ApiOutputDirectory);
 
         services
             .AddSingleton<IModelWatcher>(p =>
@@ -157,18 +156,20 @@ if (config.Jpa != null)
             .AddSingleton<IModelWatcher>(p =>
                 new JpaDaoGenerator(p.GetRequiredService<ILogger<JpaDaoGenerator>>(), jpaConfig));
 
-        if (jpaConfig.ApiServerOutputDirectory != null)
+        if (jpaConfig.ApiOutputDirectory != null)
         {
-            services
-                .AddSingleton<IModelWatcher>(p =>
-                    new SpringServerApiGenerator(p.GetRequiredService<ILogger<SpringServerApiGenerator>>(), jpaConfig));
-        }
-
-        if (jpaConfig.ApiClientOutputDirectory != null)
-        {
-            services
-                .AddSingleton<IModelWatcher>(p =>
-                    new SpringClientApiGenerator(p.GetRequiredService<ILogger<SpringClientApiGenerator>>(), jpaConfig));
+            if (jpaConfig.ApiGeneration == ApiGeneration.Server)
+            {
+                services
+                    .AddSingleton<IModelWatcher>(p =>
+                        new SpringServerApiGenerator(p.GetRequiredService<ILogger<SpringServerApiGenerator>>(), jpaConfig));
+            }
+            else if (jpaConfig.ApiGeneration == ApiGeneration.Client)
+            {
+                services
+                    .AddSingleton<IModelWatcher>(p =>
+                        new SpringClientApiGenerator(p.GetRequiredService<ILogger<SpringClientApiGenerator>>(), jpaConfig));
+            }
         }
     }
 }
