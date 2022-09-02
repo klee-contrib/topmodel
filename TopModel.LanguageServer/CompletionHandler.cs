@@ -30,7 +30,7 @@ class CompletionHandler : CompletionHandlerBase
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var currentLine = text.ElementAt(request.Position.Line);
 
-        if (currentLine.Contains("domain: ") || currentLine.Contains("kind: "))
+        if (currentLine.Contains("domain: ") || currentLine.Contains("asListWithDomain: ") || currentLine.Contains("kind: "))
         {
             var searchText = currentLine.Split(":")[1].Trim();
             return Task.FromResult(new CompletionList(

@@ -129,6 +129,7 @@ public class AliasProperty : IFieldProperty
             Comment = _comment!,
             Label = _label,
             ListDomain = _listDomain,
+            ListDomainReference = ListDomainReference,
             OriginalAliasProperty = this
         };
 
