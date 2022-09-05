@@ -146,6 +146,9 @@ public class ModelFileLoader
                         case "sqlType":
                             domain.SqlType = value!.Value;
                             break;
+                        case "mediaType":
+                            domain.MediaType = value!.Value;
+                            break;
                     }
                 });
 

@@ -448,6 +448,10 @@
             "sqlType": {
               "type": "string",
               "description": "Type correspondant au domaine en SQL."
+            },
+            "mediaType": {
+              "type": "string",
+              "description": "Nom du type de média"
             }
           }
         }
