@@ -10,9 +10,19 @@ public class JpaConfig : GeneratorConfigBase
     public string ModelOutputDirectory { get; set; }
 
     /// <summary>
-    /// Précise le nom du package dans lequel générer les classes du modèle.
+    /// Précise le nom du package dans lequel générer les classes persistées du modèle.
     /// </summary>
-    public string DaoPackageName { get; set; }
+    public string EntitiesPackageName { get; set; }
+
+    /// <summary>
+    /// Précise le nom du package dans lequel générer les classes non persistées du modèle.
+    /// </summary>
+    public string DtosPackageName { get; set; }
+
+    /// <summary>
+    /// Précise le nom du package dans lequel générer les classes non persistées du modèle.
+    /// </summary>
+    public string DaosPackageName { get; set; }
 
     /// <summary>
     /// Option pour générer une enum des champs des classes persistées

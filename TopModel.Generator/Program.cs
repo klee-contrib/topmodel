@@ -145,16 +145,23 @@ if (config.Jpa != null)
         CombinePath(dn, jpaConfig, c => c.ModelOutputDirectory);
         CombinePath(dn, jpaConfig, c => c.ApiOutputDirectory);
 
-        services
-            .AddSingleton<IModelWatcher>(p =>
-                new JpaModelGenerator(p.GetRequiredService<ILogger<JpaModelGenerator>>(), jpaConfig));
+        if (jpaConfig.EntitiesPackageName != null || jpaConfig.DtosPackageName != null)
+        {
+            services
+                .AddSingleton<IModelWatcher>(p =>
+                    new JpaModelGenerator(p.GetRequiredService<ILogger<JpaModelGenerator>>(), jpaConfig));
+            services
+                .AddSingleton<IModelWatcher>(p =>
+                    new JpaModelInterfaceGenerator(p.GetRequiredService<ILogger<JpaModelInterfaceGenerator>>(), jpaConfig));
+        }
 
-        services
-            .AddSingleton<IModelWatcher>(p =>
-                new JpaModelInterfaceGenerator(p.GetRequiredService<ILogger<JpaModelInterfaceGenerator>>(), jpaConfig));
-        services
-            .AddSingleton<IModelWatcher>(p =>
-                new JpaDaoGenerator(p.GetRequiredService<ILogger<JpaDaoGenerator>>(), jpaConfig));
+
+        if (jpaConfig.DaosPackageName != null)
+        {
+            services
+                .AddSingleton<IModelWatcher>(p =>
+                    new JpaDaoGenerator(p.GetRequiredService<ILogger<JpaDaoGenerator>>(), jpaConfig));
+        }
 
         if (jpaConfig.ApiOutputDirectory != null)
         {

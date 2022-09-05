@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto;
 import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
+import topmodel.exemple.name.dtos.utilisateur.UtilisateurDto;
 
 @RequestMapping("utilisateur")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")

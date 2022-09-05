@@ -275,7 +275,7 @@
         "type": "object",
         "description": "Config pour la génération de Jpa.",
         "additionalProperties": false,
-        "required": ["tags", "modelOutputDirectory", "daoPackageName"],
+        "required": ["tags", "modelOutputDirectory"],
         "properties": {
           "tags": {
             "type": "array",
@@ -293,9 +293,17 @@
             "type": "string",
             "description": "Dossier de sortie pour le modèle."
           },
-          "daoPackageName": {
+          "daosPackageName": {
             "type": "string",
-            "description": "Précise le nom du package dans lequel générer les classes du modèle."
+            "description": "Précise le nom du package dans lequel générer les daos."
+          },
+          "entitiesPackageName": {
+            "type": "string",
+            "description": "Précise le nom du package dans lequel générer les classes persistées du modèle."
+          },
+          "dtosPackageName": {
+            "type": "string",
+            "description": "Précise le nom du package dans lequel générer les classes non persistées du modèle."
           },
           "fieldsEnum": {
             "type": "boolean",

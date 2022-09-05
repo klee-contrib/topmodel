@@ -54,8 +54,8 @@ public class JpaModelGenerator : GeneratorBase
 
     private string GetDestinationFolder(Class classe)
     {
-        var entityDto = classe.IsPersistent ? "entities" : "dtos";
-        var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), entityDto, classe.Namespace.Module.Replace(".", "\\").ToLower());
+        var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
+        var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(packageRoot.Split(".")), classe.Namespace.Module.Replace(".", "\\").ToLower());
         return $"{destFolder}";
     }
 
@@ -66,8 +66,8 @@ public class JpaModelGenerator : GeneratorBase
 
     private string GetPackageName(Class classe)
     {
-        var entityDto = classe.IsPersistent ? "entities" : "dtos";
-        return $"{_config.DaoPackageName}.{entityDto}.{classe.Namespace.Module.ToLower()}";
+        var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
+        return $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
     }
 
     private void GenerateModule(string module)

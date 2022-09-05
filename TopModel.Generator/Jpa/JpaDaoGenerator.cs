@@ -41,7 +41,7 @@ public class JpaDaoGenerator : GeneratorBase
 
     private string GetDestinationFolder(Class classe)
     {
-        return Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaoPackageName.Split(".")), "daos", classe.Namespace.Module.Replace('.', '\\').ToLower());
+        return Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaosPackageName.Split(".")), classe.Namespace.Module.Replace('.', '\\').ToLower());
     }
 
     private string GetFileClassName(Class classe)
@@ -60,7 +60,7 @@ public class JpaDaoGenerator : GeneratorBase
         {
             var destFolder = GetDestinationFolder(classe);
             var dirInfo = Directory.CreateDirectory(destFolder);
-            var packageName = $"{_config.DaoPackageName}.daos.{classe.Namespace.Module.ToLower()}";
+            var packageName = $"{_config.DaosPackageName}.{classe.Namespace.Module.ToLower()}";
             var fileName = GetFileClassName(classe);
 
             var fileExists = File.Exists(fileName);
@@ -86,7 +86,7 @@ public class JpaDaoGenerator : GeneratorBase
     {
         var imports = new List<string>
             {
-                $"{_config.DaoPackageName}.entities.{classe.Namespace.Module.ToLower()}.{classe.Name}"
+                $"{_config.EntitiesPackageName}.{classe.Namespace.Module.ToLower()}.{classe.Name}"
             };
         if (classe.Reference)
         {
