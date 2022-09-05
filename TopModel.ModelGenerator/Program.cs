@@ -218,8 +218,8 @@ foreach (var source in config.OpenApi.Sources)
         if (referenceMap[module.Key].Any())
         {
             sw.WriteLine("uses:");
-            sw.WriteLine($"  - {Path.GetRelativePath(config.ModelRoot, config.OutputDirectory).Replace("\\", "/")}/{source.Key}/{source.Value.ModelFileName}");
-
+            var use = $"{Path.GetRelativePath(config.ModelRoot, config.OutputDirectory).Replace("\\", "/")}/{source.Key}/{source.Value.ModelFileName}".Replace("//", "/");
+            sw.WriteLine($"  - {use}");
         }
         sw.WriteLine();
 
