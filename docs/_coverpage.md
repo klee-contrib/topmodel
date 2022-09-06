@@ -1,6 +1,6 @@
 <!-- _coverpage.md -->
 
-![logo](./media/logo-Dark.svg)
+![logo](./media/IconDark.svg)
 
 # TopModel <small>1.11.0</small>
 
