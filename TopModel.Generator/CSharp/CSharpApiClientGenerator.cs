@@ -135,13 +135,15 @@ public class CSharpApiClientGenerator : GeneratorBase
             }
         }
 
-        fw.WriteUsings(usings.Distinct().ToArray());
+        var ns = apiPath.Replace("/", ".");
+
+        fw.WriteUsings(usings.Distinct().Where(u => u != ns).ToArray());
         if (usings.Any())
         {
             fw.WriteLine();
         }
 
-        fw.WriteNamespace(apiPath.Replace("/", "."));
+        fw.WriteNamespace(ns);
 
         fw.WriteSummary(1, $"Client {file.Module}");
         fw.WriteClassDeclaration(className, null);

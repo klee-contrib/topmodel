@@ -79,13 +79,15 @@ public static class ModelExtensions
             .Concat(modelStore.Endpoints.SelectMany(e => e.Params.Concat(e.Returns != null ? new[] { e.Returns } : Array.Empty<IProperty>())))
             .Where(p =>
                 p is RegularProperty rp && rp.Domain == domain
-                || p is CompositionProperty cp && cp.DomainKind == domain)
+                || p is CompositionProperty cp && cp.DomainKind == domain
+                || p is AliasProperty alp && alp.ListDomain == domain)
             .Select(p =>
             {
                 return (Reference: p switch
                 {
                     RegularProperty rp => rp.DomainReference,
                     CompositionProperty cp => cp.DomainKindReference!,
+                    AliasProperty alp => alp.ListDomainReference!,
                     _ => null! // Impossible
                 }, File: p.GetFile());
             })
