@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.11.1
+
+- [`9e3b2b5e`](https://github.com/klee-contrib/topmodel/commit/9e3b2b5e1d63a7746cf355eccad18d2f5e0fe528) - Fix références "asListWithDomain" manquantes + mini fix C# client gen
+
 ## 1.11.0
 
 - [#125](https://github.com/klee-contrib/topmodel/pull/125) - Endpoint Prefix et FileName (fix [#123](https://github.com/klee-contrib/topmodel/issues/123))
