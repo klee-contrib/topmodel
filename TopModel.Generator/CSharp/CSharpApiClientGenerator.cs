@@ -91,7 +91,11 @@ public class CSharpApiClientGenerator : GeneratorBase
                 usings.AddRange(new[] { "System.Collections.Generic", "System.Linq" });
             }
 
-            if (file.Endpoints.Any(e => e.GetQueryParams().Any(qp => _config.GetPropertyTypeName(qp) != "string")))
+            if (file.Endpoints.Any(e => e.GetQueryParams().Any(qp =>
+            {
+                var typeName = _config.GetPropertyTypeName(qp);
+                return !typeName.StartsWith("string") && !typeName.StartsWith("Guid");
+            })))
             {
                 usings.Add("System.Globalization");
             }
@@ -233,6 +237,7 @@ public class CSharpApiClientGenerator : GeneratorBase
                     var toString = _config.GetPropertyTypeName(qp) switch
                     {
                         "string" => string.Empty,
+                        "Guid" or "Guid?" => "?.ToString()",
                         _ => $"?.ToString(CultureInfo.InvariantCulture)"
                     };
 
@@ -257,8 +262,8 @@ public class CSharpApiClientGenerator : GeneratorBase
                     {
                         var toString = _config.GetPropertyTypeName(qp) switch
                         {
-                            "string" => string.Empty,
-                            "Guid" => ".ToString()",
+                            "string[]" => string.Empty,
+                            "Guid[]" => ".ToString()",
                             _ => $".ToString(CultureInfo.InvariantCulture)"
                         };
 
