@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.11.2
+
+- [`3dbbe392`](https://github.com/klee-contrib/topmodel/commit/3dbbe3922d15da6dd263fe63a25bd0725f6dc2a4) - [C# ClientGen] Fix vraiment les paramètres Guid cette fois-ci
+
 ## 1.11.1
 
 - [`9e3b2b5e`](https://github.com/klee-contrib/topmodel/commit/9e3b2b5e1d63a7746cf355eccad18d2f5e0fe528) - Fix références "asListWithDomain" manquantes + mini fix C# client gen
