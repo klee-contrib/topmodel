@@ -2,7 +2,7 @@
 
 - **[Tutoriel](/getting-started/00_getting_started.md)**
   - [Intro](/getting-started/01_intro.md)
-  - [Créer une classe persitée](/getting-started/02_classe_persistee.md)
+  - [Créer une classe persistée](/getting-started/02_classe_persistee.md)
   - [Liste de référence](/getting-started/03_liste_ref.md)
   - [Associer les classes](/getting-started/04_association.md)
   - [Alias et classes non persistées](/getting-started/05_dto.md)

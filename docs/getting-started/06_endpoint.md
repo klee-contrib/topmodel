@@ -1,6 +1,6 @@
 # Créer un endpoint
 
-TopModel défini un formalisme permettant de représenter un modèle de données. Le modèle décrit pourra ensuite être décliné dans plusieurs langages de programmation différents.
+TopModel définit un formalisme permettant de représenter un modèle de données. Le modèle décrit pourra ensuite être décliné dans plusieurs langages de programmation différents.
 
 Mais qu'en est-il des interactions entre ces différents langages ? TopModel permet de définir ces points d'interaction. Concrètement, il permet de décrire des API, qui seront ensuite déclinés en points d'entrée (API server) ou points de sortie (API client) dans les différents langages de programmation.
 
