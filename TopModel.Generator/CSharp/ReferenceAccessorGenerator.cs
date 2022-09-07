@@ -114,11 +114,6 @@ public class ReferenceAccessorGenerator
         if (_config.DbContextPath != null)
         {
             var dbContextName = _config.GetDbContextName(firstClass.Namespace.App);
-            var schema = _config.DbSchema;
-            if (schema != null)
-            {
-                dbContextName = $"{schema.First().ToString().ToUpper() + schema[1..]}DbContext";
-            }
 
             w.WriteLine(2, $"private readonly {dbContextName} _dbContext;");
             w.WriteLine();

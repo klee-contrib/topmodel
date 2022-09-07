@@ -377,7 +377,7 @@ public class CSharpClassGenerator
             var sqlName = _config.UseLowerCaseSqlNames ? item.SqlName.ToLower() : item.SqlName;
             if (_config.DbSchema != null)
             {
-                w.WriteAttribute(1, "Table", $@"""{sqlName}""", $@"Schema = ""{_config.DbSchema}""");
+                w.WriteAttribute(1, "Table", $@"""{sqlName}""", $@"Schema = ""{_config.DbSchema.Replace("{module}", item.Namespace.Module.ToLower())}""");
             }
             else
             {

@@ -8,6 +8,8 @@ namespace TopModel.Generator.CSharp;
 /// </summary>
 public class CSharpConfig : GeneratorConfigBase
 {
+    private string? _dbContextPath;
+
 #nullable disable
     /// <summary>
     /// Racine du répertoire de génération.
@@ -48,7 +50,15 @@ public class CSharpConfig : GeneratorConfigBase
     /// <summary>
     /// Localisation du DbContext, relatif au répertoire de génération.
     /// </summary>
-    public string? DbContextPath { get; set; }
+    public string? DbContextPath
+    {
+        get => _dbContextPath == null
+            ? null
+            : _dbContextPath.EndsWith("DbContext")
+                ? string.Join("/", _dbContextPath.Split("/").SkipLast(1))
+            : _dbContextPath;
+        set => _dbContextPath = value;
+    }
 
     /// <summary>
     /// Utilise les migrations EF pour créer/mettre à jour la base de données.
@@ -61,7 +71,7 @@ public class CSharpConfig : GeneratorConfigBase
     public bool UseLowerCaseSqlNames { get; set; }
 
     /// <summary>
-    /// Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo').
+    /// Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo'/"public').
     /// </summary>
     public string? DbSchema { get; set; }
 
@@ -109,8 +119,10 @@ public class CSharpConfig : GeneratorConfigBase
     /// <returns>Nom.</returns>
     public string GetDbContextName(string appName)
     {
-        return DbContextPath == null
+        return _dbContextPath == null
             ? throw new ModelException("Le DbContext doit être renseigné.")
+            : _dbContextPath.EndsWith("DbContext")
+            ? _dbContextPath.Split("/").Last()
             : DbSchema != null
                 ? $"{DbSchema.First().ToString().ToUpper() + DbSchema[1..]}DbContext"
                 : $"{appName.Replace(".", string.Empty)}DbContext";
