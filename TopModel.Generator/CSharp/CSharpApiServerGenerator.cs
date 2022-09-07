@@ -91,7 +91,7 @@ namespace {apiPath.Replace("/", ".")}
 {indent}/// <summary>
 {indent}/// {endpoint.Description}
 {indent}/// </summary>{string.Join(Environment.NewLine, new[] { string.Empty }.Concat(endpoint.Params.Select(param => $@"{indent}/// <param name=""{param.GetParamName()}"">{param.Comment}</param>")))}
-{indent}/// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>
+{indent}/// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>{(endpoint.Returns is IFieldProperty { Domain.MediaType: string mediaType } ? $@"{Environment.NewLine}{indent}[Produces(""{mediaType}"")]" : string.Empty)}
 {indent}[Http{endpoint.Method.ToLower().ToFirstUpper()}(""{GetRoute(endpoint)}"")]
 {indent}public {_config.GetReturnTypeName(endpoint.Returns)} {endpoint.Name}({string.Join(", ", endpoint.Params.Select(GetParam))})
 {indent}{{

@@ -451,7 +451,7 @@
             },
             "mediaType": {
               "type": "string",
-              "description": "Nom du type de média"
+              "description": "Type de médias (utilisé si retourné par un endpoint)."
             }
           }
         }
