@@ -19,8 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import topmodel.exemple.name.dao.dtos.utilisateur.UtilisateurDto;
-import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
+import topmodel.exemple.name.dtos.utilisateur.UtilisateurDto;
+import topmodel.exemple.name.entities.utilisateur.TypeUtilisateur;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public abstract class AbstractUtilisateurApiClient {
@@ -43,7 +43,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utiId Id technique
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder getUtilisateurUriComponentsBuilder (long utiId) {
+	protected UriComponentsBuilder getUtilisateurUriComponentsBuilder(long utiId) {
 		String uri = host + "utilisateur/%s".formatted(utiId);;
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
@@ -53,7 +53,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utiId Id technique
 	 * @return Le détail de l'utilisateur
 	 */
-	public ResponseEntity<UtilisateurDto> getUtilisateur(long utiId, HttpHeaders headers) {
+	public ResponseEntity<UtilisateurDto> getUtilisateur(long utiId, HttpHeaders headers){
 		UriComponentsBuilder uri = this.getUtilisateurUriComponentsBuilder(utiId);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), UtilisateurDto.class);
 	}
@@ -63,7 +63,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder getUtilisateurListUriComponentsBuilder (TypeUtilisateur.Values typeUtilisateurCode) {
+	protected UriComponentsBuilder getUtilisateurListUriComponentsBuilder(TypeUtilisateur.Values typeUtilisateurCode) {
 		String uri = host + "utilisateur/list";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		if (typeUtilisateurCode != null) {
@@ -78,7 +78,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Liste des utilisateurs
 	 */
-	public ResponseEntity<List> getUtilisateurList(TypeUtilisateur.Values typeUtilisateurCode, HttpHeaders headers) {
+	public ResponseEntity<List> getUtilisateurList(TypeUtilisateur.Values typeUtilisateurCode, HttpHeaders headers){
 		UriComponentsBuilder uri = this.getUtilisateurListUriComponentsBuilder(typeUtilisateurCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), List.class);
 	}
@@ -87,7 +87,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * UriComponentsBuilder pour la méthode SaveUtilisateur.
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder saveUtilisateurUriComponentsBuilder () {
+	protected UriComponentsBuilder saveUtilisateurUriComponentsBuilder() {
 		String uri = host + "utilisateur/save";
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
@@ -97,7 +97,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utilisateur Utilisateur à sauvegarder
 	 * @return Utilisateur sauvegardé
 	 */
-	public ResponseEntity<UtilisateurDto> saveUtilisateur(UtilisateurDto utilisateur, HttpHeaders headers) {
+	public ResponseEntity<UtilisateurDto> saveUtilisateur(UtilisateurDto utilisateur, HttpHeaders headers){
 		UriComponentsBuilder uri = this.saveUtilisateurUriComponentsBuilder();
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(utilisateur, headers), UtilisateurDto.class);
 	}
@@ -106,7 +106,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * UriComponentsBuilder pour la méthode SaveAllUtilisateur.
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder saveAllUtilisateurUriComponentsBuilder () {
+	protected UriComponentsBuilder saveAllUtilisateurUriComponentsBuilder() {
 		String uri = host + "utilisateur/saveAll";
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
@@ -116,7 +116,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utilisateur Utilisateur à sauvegarder
 	 * @return Utilisateur sauvegardé
 	 */
-	public ResponseEntity<List> saveAllUtilisateur(List<UtilisateurDto> utilisateur, HttpHeaders headers) {
+	public ResponseEntity<List> saveAllUtilisateur(List<UtilisateurDto> utilisateur, HttpHeaders headers){
 		UriComponentsBuilder uri = this.saveAllUtilisateurUriComponentsBuilder();
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(utilisateur, headers), List.class);
 	}
@@ -128,7 +128,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder searchUriComponentsBuilder (long utiUtilisateurId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode) {
+	protected UriComponentsBuilder searchUriComponentsBuilder(long utiUtilisateurId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode) {
 		String uri = host + "utilisateur/search";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("utiUtilisateurId", utiUtilisateurId);
@@ -150,7 +150,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<Page> search(long utiUtilisateurId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode, HttpHeaders headers) {
+	public ResponseEntity<Page> search(long utiUtilisateurId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode, HttpHeaders headers){
 		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utiUtilisateurId, utilisateuremail, utilisateurTypeUtilisateurCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), Page.class);
 	}

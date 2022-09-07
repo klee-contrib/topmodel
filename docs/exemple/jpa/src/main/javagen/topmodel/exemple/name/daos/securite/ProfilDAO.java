@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-package topmodel.exemple.name.dao.daos.securite;
+package topmodel.exemple.name.daos.securite;
 
 
 import org.springframework.data.repository.PagingAndSortingRepository;

@@ -42,11 +42,10 @@ public class JpaModelInterfaceGenerator : GeneratorBase
 
     private string GetDestinationFolder(Class classe)
     {
-        var entityDto = classe.IsPersistent ? "entities" : "dtos";
+        var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
         return Path.Combine(
                 _config.ModelOutputDirectory,
-                Path.Combine(_config.DaoPackageName.Split(".")),
-                entityDto,
+                Path.Combine(packageRoot.Split(".")),
                 classe.Namespace.Module.Replace(".", "\\").ToLower(),
                 "interfaces");
     }
@@ -70,10 +69,10 @@ public class JpaModelInterfaceGenerator : GeneratorBase
             .Where(c => c.Namespace.Module == module);
         foreach (var classe in classes)
         {
-            var entityDto = classe.IsPersistent ? "entities" : "dtos";
+            var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
             var destFolder = GetDestinationFolder(classe);
             var dirInfo = Directory.CreateDirectory(destFolder);
-            var packageName = $"{_config.DaoPackageName}.{entityDto}.{classe.Namespace.Module.ToLower()}.interfaces";
+            var packageName = $"{packageRoot}.{classe.Namespace.Module.ToLower()}.interfaces";
             using var fw = new JavaWriter(GetFileClassName(classe), _logger, null);
             fw.WriteLine($"package {packageName};");
 
