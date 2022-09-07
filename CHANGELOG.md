@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.11.3
+
+- [#140](https://github.com/klee-contrib/topmodel/pull/140) - [JPA] Différenciation des configuration de package (fix [#139](https://github.com/klee-contrib/topmodel/issues/139))
+- [#137](https://github.com/klee-contrib/topmodel/pull/137) - Ajout du champ mediaType sur le domaine (fix [#133](https://github.com/klee-contrib/topmodel/issues/133))
+- [`6639924b`](https://github.com/klee-contrib/topmodel/commit/6639924bebdb3d67ede1bf3796630773bba1bd92) - [C#Gen] Autorise {module} dans le nom de schéma DB + surcharge nom DbContext
+
 ## 1.11.2
 
 - [`3dbbe392`](https://github.com/klee-contrib/topmodel/commit/3dbbe3922d15da6dd263fe63a25bd0725f6dc2a4) - [C# ClientGen] Fix vraiment les paramètres Guid cette fois-ci
