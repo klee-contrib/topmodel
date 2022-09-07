@@ -5,7 +5,7 @@ Commençons par créer un environnement de travail propice à une expérience de
 - Installer [VSCode](https://code.visualstudio.com/)
 - Installer l'[extension](https://marketplace.visualstudio.com/items?itemName=JabX.topmodel)
 - Installer le [SDK .NET](https://dotnet.microsoft.com/download)
-- Installer le générateur avec la commande `dotnet tool update --global TopModel.Generator`
+- Installer le générateur avec la commande `dotnet tool install --global TopModel.Generator`
 
 ## Initialisation du fichier de configuration
 

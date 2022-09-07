@@ -11,3 +11,5 @@ Bienvenue dans ce tutoriel de prise en main de TopModel. Ici vous allez découvr
 - Créer des endpoints
 - Générer du code
 - Utiliser l'extension VSCode
+
+[Démarrer tout de suite !](/getting-started/01_intro.md)
