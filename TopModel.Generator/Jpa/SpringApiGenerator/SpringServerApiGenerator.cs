@@ -130,7 +130,21 @@ public class SpringServerApiGenerator : GeneratorBase
         }
 
         var hasForm = endpoint.Params.Any(p => p is IFieldProperty { Domain.Java.Type: "MultipartFile" });
-        fw.WriteLine(1, @$"@{endpoint.Method.ToLower().ToFirstUpper()}Mapping(path = ""{endpoint.Route}""{(hasForm ? ", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE }" : string.Empty)})");
+        {
+            var produces = string.Empty;
+            if (endpoint.Returns != null && endpoint.Returns is IFieldProperty fp && fp.Domain.MediaType != null)
+            {
+                produces = @$", produces = {{ ""{fp.Domain.MediaType}"" }}";
+            }
+            var consumes = string.Empty;
+
+            if (endpoint.Params.Any(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null))
+            {
+                consumes = @$", consumes = {{ {string.Join(", ", endpoint.Params.Where(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null).Select(p => $@"""{((IFieldProperty)p).Domain.MediaType}"""))} }}";
+            }
+
+            fw.WriteLine(1, @$"@{endpoint.Method.ToLower().ToFirstUpper()}Mapping(path = ""{endpoint.Route}""{consumes}{produces})");
+        }
 
         var methodParams = new List<string>();
         foreach (var param in endpoint.GetRouteParams())
@@ -198,11 +212,6 @@ public class SpringServerApiGenerator : GeneratorBase
             imports.Add("javax.validation.Valid");
         }
 
-        var hasForm = file.Endpoints.Any(endpoint => endpoint.Params.Any(p => p is IFieldProperty { Domain.Java.Type: "MultipartFile" }));
-        if (hasForm)
-        {
-            imports.Add("org.springframework.http.MediaType");
-        }
 
         if (file.Options?.Endpoints.Prefix != null)
         {

@@ -28,6 +28,8 @@ public class Domain
 
     public string? SqlType { get; set; }
 
+    public string? MediaType { get; set; }
+
     public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCase();
 
     public bool ShouldQuoteSqlValue =>
