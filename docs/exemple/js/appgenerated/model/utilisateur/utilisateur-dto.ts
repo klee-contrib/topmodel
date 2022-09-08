@@ -9,6 +9,7 @@ import {TypeUtilisateurCode} from "./references";
 export interface UtilisateurDto {
     utilisateurId?: number,
     utilisateurAge?: number,
+    utilisateurProfilId?: number,
     utilisateuremail?: string,
     utilisateurTypeUtilisateurCode?: TypeUtilisateurCode,
     utilisateurParent?: UtilisateurDto
@@ -28,6 +29,13 @@ export const UtilisateurDtoEntity = {
         domain: DO_NUMBER,
         isRequired: false,
         label: "utilisateur.utilisateur.age"
+    },
+    utilisateurProfilId: {
+        type: "field",
+        name: "utilisateurProfilId",
+        domain: DO_ID,
+        isRequired: false,
+        label: "utilisateur.utilisateur.profilId"
     },
     utilisateuremail: {
         type: "field",

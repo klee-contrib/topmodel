@@ -7,8 +7,8 @@ package topmodel.exemple.name.dtos.utilisateur.interfaces;
 import javax.annotation.Generated;
 import javax.validation.constraints.Email;
 
-import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
 import topmodel.exemple.name.dtos.utilisateur.UtilisateurDto;
+import topmodel.exemple.name.entities.utilisateur.TypeUtilisateur;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface IUtilisateurDto {
@@ -26,6 +26,13 @@ public interface IUtilisateurDto {
 	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurAge utilisateurAge}.
 	 */
 	Long getUtilisateurAge();
+
+	/**
+	 * Getter for utilisateurProfilId.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurProfilId utilisateurProfilId}.
+	 */
+	long getUtilisateurProfilId();
 
 	/**
 	 * Getter for utilisateuremail.

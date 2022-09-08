@@ -4,6 +4,6 @@
 
 -- =========================================================================================== 
 --   Application Name	:	Exemple 
---   Script Name		:	unique_keys.sql
+--   Script Name		:	03_unique_keys.sql
 --   Description		:	Script de création des index uniques.
 -- =========================================================================================== 

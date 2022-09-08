@@ -10,9 +10,10 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Generated;
 
-import topmodel.exemple.name.dao.entities.securite.Profil;
-import topmodel.exemple.name.dao.entities.securite.TypeProfil;
 import topmodel.exemple.name.dtos.utilisateur.UtilisateurDto;
+import topmodel.exemple.name.entities.securite.Droits;
+import topmodel.exemple.name.entities.securite.Profil;
+import topmodel.exemple.name.entities.securite.TypeProfil;
 
 /**
  * Objet métier non persisté représentant Profil.
@@ -24,15 +25,27 @@ public class ProfilDto implements Serializable {
 
 	/**
 	 * Id technique.
-	 * Alias of {@link topmodel.exemple.name.dao.entities.securite.Profil#getId() Profil#getId()} 
+	 * Alias of {@link topmodel.exemple.name.entities.securite.Profil#getId() Profil#getId()} 
 	 */
 	private long id;
 
 	/**
 	 * Type de profil.
-	 * Alias of {@link topmodel.exemple.name.dao.entities.securite.Profil#getTypeProfilCode() Profil#getTypeProfilCode()} 
+	 * Alias of {@link topmodel.exemple.name.entities.securite.Profil#getTypeProfilCode() Profil#getTypeProfilCode()} 
 	 */
 	private TypeProfil.Values typeProfilCode;
+
+	/**
+	 * Liste des droits de l'utilisateur.
+	 * Alias of {@link topmodel.exemple.name.entities.securite.Profil#getDroitsAppli() Profil#getDroitsAppli()} 
+	 */
+	private List<Droits.Values> droitsAppli;
+
+	/**
+	 * Liste des secteurs de l'utilisateur.
+	 * Alias of {@link topmodel.exemple.name.entities.securite.Profil#getSecteurs() Profil#getSecteurs()} 
+	 */
+	private List<long> secteurs;
 
 	/**
 	 * Liste paginée des utilisateurs de ce profil.
@@ -56,6 +69,8 @@ public class ProfilDto implements Serializable {
 
 		this.id = profilDto.getId();
 		this.typeProfilCode = profilDto.getTypeProfilCode();
+		this.droitsAppli = profilDto.getDroitsAppli();
+		this.secteurs = profilDto.getSecteurs();
 
 		this.utilisateurs = profilDto.getUtilisateurs().stream().collect(Collectors.toList());
 	}
@@ -64,11 +79,15 @@ public class ProfilDto implements Serializable {
 	 * All arg constructor.
 	 * @param id Id technique
 	 * @param typeProfilCode Type de profil
+	 * @param droitsAppli Liste des droits de l'utilisateur
+	 * @param secteurs Liste des secteurs de l'utilisateur
 	 * @param utilisateurs Liste paginée des utilisateurs de ce profil
 	 */
-	public ProfilDto(long id, TypeProfil.Values typeProfilCode, List<UtilisateurDto> utilisateurs) {
+	public ProfilDto(long id, TypeProfil.Values typeProfilCode, List<Droits.Values> droitsAppli, List<long> secteurs, List<UtilisateurDto> utilisateurs) {
 		this.id = id;
 		this.typeProfilCode = typeProfilCode;
+		this.droitsAppli = droitsAppli;
+		this.secteurs = secteurs;
 		this.utilisateurs = utilisateurs;
 	}
 
@@ -94,6 +113,16 @@ public class ProfilDto implements Serializable {
 				this.typeProfilCode = profil.getTypeProfil().getCode();
 			}
 
+
+			if(profil.getDroitsAppli() != null) {
+				this.droitsAppli = profil.getDroitsAppli().getCode();
+			}
+
+
+			if(profil.getSecteurs() != null) {
+				this.secteurs = profil.getSecteurs().getId();
+			}
+
 		}
 
 	}
@@ -114,6 +143,24 @@ public class ProfilDto implements Serializable {
 	 */
 	public TypeProfil.Values getTypeProfilCode() {
 		return this.typeProfilCode;
+	}
+
+	/**
+	 * Getter for droitsAppli.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dtos.securite.ProfilDto#droitsAppli droitsAppli}.
+	 */
+	public List<Droits.Values> getDroitsAppli() {
+		return this.droitsAppli;
+	}
+
+	/**
+	 * Getter for secteurs.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dtos.securite.ProfilDto#secteurs secteurs}.
+	 */
+	public List<long> getSecteurs() {
+		return this.secteurs;
 	}
 
 	/**
@@ -139,6 +186,22 @@ public class ProfilDto implements Serializable {
 	 */
 	public void setTypeProfilCode(TypeProfil.Values typeProfilCode) {
 		this.typeProfilCode = typeProfilCode;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dtos.securite.ProfilDto#droitsAppli droitsAppli}.
+	 * @param droitsAppli value to set
+	 */
+	public void setDroitsAppli(List<Droits.Values> droitsAppli) {
+		this.droitsAppli = droitsAppli;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dtos.securite.ProfilDto#secteurs secteurs}.
+	 * @param secteurs value to set
+	 */
+	public void setSecteurs(List<long> secteurs) {
+		this.secteurs = secteurs;
 	}
 
 	/**

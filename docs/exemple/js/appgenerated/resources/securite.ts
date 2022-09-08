@@ -3,9 +3,15 @@
 ////
 
 export const securite = {
+    droits: {
+        code: "Code",
+        libelle: "Libelle"
+    },
     profil: {
         id: "Id technique du profil",
-        typeProfilCode: "TypeProfilCode"
+        typeProfilCode: "TypeProfilCode",
+        droitsAppli: "DroitsAppli",
+        secteurs: "Secteurs"
     },
     typeProfil: {
         code: "Code",

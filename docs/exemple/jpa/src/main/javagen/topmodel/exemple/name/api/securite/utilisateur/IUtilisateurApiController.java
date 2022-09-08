@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
 import topmodel.exemple.name.dtos.utilisateur.UtilisateurDto;
+import topmodel.exemple.name.entities.utilisateur.TypeUtilisateur;
 
 @RequestMapping("utilisateur")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -63,10 +63,11 @@ public interface IUtilisateurApiController {
 	 * Recherche des utilisateurs.
 	 * @param utiUtilisateurId Id technique
 	 * @param utilisateurAge Age en années de l'utilisateur
+	 * @param utilisateurProfilId Profil de l'utilisateur
 	 * @param utilisateuremail Email de l'utilisateur
 	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Utilisateurs matchant les critères
 	 */
 	@PostMapping(path = "/search")
-	Page<UtilisateurDto> search(@RequestParam(value = "utiUtilisateurId", required = true) long utiUtilisateurId, @RequestParam(value = "utilisateurAge", required = false) Long utilisateurAge, @RequestParam(value = "utilisateuremail", required = false) String utilisateuremail, @RequestParam(value = "utilisateurTypeUtilisateurCode", required = false) TypeUtilisateur.Values utilisateurTypeUtilisateurCode);
+	Page<UtilisateurDto> search(@RequestParam(value = "utiUtilisateurId", required = true) long utiUtilisateurId, @RequestParam(value = "utilisateurAge", required = false) Long utilisateurAge, @RequestParam(value = "utilisateurProfilId", required = false) long utilisateurProfilId, @RequestParam(value = "utilisateuremail", required = false) String utilisateuremail, @RequestParam(value = "utilisateurTypeUtilisateurCode", required = false) TypeUtilisateur.Values utilisateurTypeUtilisateurCode);
 }

@@ -10,6 +10,7 @@ export const utilisateur = {
     utilisateur: {
         id: "Id technique",
         age: "Age",
+        profilId: "ProfilId",
         email: "email",
         typeUtilisateurCode: "TypeUtilisateurCode"
     }

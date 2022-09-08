@@ -4,9 +4,41 @@
 
 -- =========================================================================================== 
 --   Application Name	:	Exemple 
---   Script Name		:	indexFk.sql
+--   Script Name		:	02_fk_indexes.sql
 --   Description		:	Script de création des indexes et des clef étrangères. 
 -- =========================================================================================== 
+/**
+  * Création de l'index de clef étrangère pour PROFIL_DROITS_APPLI.PRO_ID_APPLI
+ **/
+create index IDX_PROFIL_DROITS_APPLI_PRO_ID_APPLI_FK on PROFIL_DROITS_APPLI (
+	PRO_ID_APPLI ASC
+)
+;
+
+/**
+  * Génération de la contrainte de clef étrangère pour PROFIL_DROITS_APPLI.PRO_ID_APPLI
+ **/
+alter table PROFIL_DROITS_APPLI
+	add constraint FK_PROFIL_DROITS_APPLI_PRO_ID_APPLI foreign key (PRO_ID_APPLI)
+		references PROFIL (PRO_ID)
+;
+
+/**
+  * Création de l'index de clef étrangère pour PROFIL_DROITS_APPLI.CODE_APPLI
+ **/
+create index IDX_PROFIL_DROITS_APPLI_CODE_APPLI_FK on PROFIL_DROITS_APPLI (
+	CODE_APPLI ASC
+)
+;
+
+/**
+  * Génération de la contrainte de clef étrangère pour PROFIL_DROITS_APPLI.CODE_APPLI
+ **/
+alter table PROFIL_DROITS_APPLI
+	add constraint FK_PROFIL_DROITS_APPLI_CODE_APPLI foreign key (CODE_APPLI)
+		references DROITS (CODE)
+;
+
 /**
   * Création de l'index de clef étrangère pour PROFIL.CODE
  **/
@@ -21,6 +53,22 @@ create index IDX_PRO_CODE_FK on PROFIL (
 alter table PROFIL
 	add constraint FK_PRO_CODE foreign key (CODE)
 		references TYPE_PROFIL (CODE)
+;
+
+/**
+  * Création de l'index de clef étrangère pour SECTEUR.SEC_ID
+ **/
+create index IDX_SEC_SEC_ID_FK on SECTEUR (
+	SEC_ID ASC
+)
+;
+
+/**
+  * Génération de la contrainte de clef étrangère pour SECTEUR.SEC_ID
+ **/
+alter table SECTEUR
+	add constraint FK_SEC_SEC_ID foreign key (SEC_ID)
+		references PROFIL (SEC_ID)
 ;
 
 /**

@@ -50,6 +50,13 @@ public class JpaModelGenerator : GeneratorBase
         {
             GenerateModule(module);
         }
+
+        var properties = _files.Values
+                    .SelectMany(f => f.Classes).SelectMany(c => c.Properties).Where(p => p is JpaAssociationProperty).ToList();
+        foreach (var p in properties)
+        {
+            p.Class.Properties.Remove(p);
+        }
     }
 
     private string GetDestinationFolder(Class classe)

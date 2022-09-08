@@ -10,9 +10,9 @@ import javax.annotation.Generated;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
-import topmodel.exemple.name.dao.entities.utilisateur.TypeUtilisateur;
-import topmodel.exemple.name.dao.entities.utilisateur.Utilisateur;
 import topmodel.exemple.name.dtos.utilisateur.interfaces.IUtilisateurDto;
+import topmodel.exemple.name.entities.utilisateur.TypeUtilisateur;
+import topmodel.exemple.name.entities.utilisateur.Utilisateur;
 
 /**
  * Objet non persisté de communication avec le serveur.
@@ -24,27 +24,33 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 
 	/**
 	 * Id technique.
-	 * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getId() Utilisateur#getId()} 
+	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getId() Utilisateur#getId()} 
 	 */
 	@NotNull
 	private long utilisateurId;
 
 	/**
 	 * Age en années de l'utilisateur.
-	 * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getAge() Utilisateur#getAge()} 
+	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getAge() Utilisateur#getAge()} 
 	 */
 	private Long utilisateurAge;
 
 	/**
+	 * Profil de l'utilisateur.
+	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getProfilId() Utilisateur#getProfilId()} 
+	 */
+	private long utilisateurProfilId;
+
+	/**
 	 * Email de l'utilisateur.
-	 * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getEmail() Utilisateur#getEmail()} 
+	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getEmail() Utilisateur#getEmail()} 
 	 */
 	@Email
 	private String utilisateuremail;
 
 	/**
 	 * Type d'utilisateur en Many to one.
-	 * Alias of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()} 
+	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()} 
 	 */
 	private TypeUtilisateur.Values utilisateurTypeUtilisateurCode;
 
@@ -70,6 +76,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 
 		this.utilisateurId = utilisateurDto.getUtilisateurId();
 		this.utilisateurAge = utilisateurDto.getUtilisateurAge();
+		this.utilisateurProfilId = utilisateurDto.getUtilisateurProfilId();
 		this.utilisateuremail = utilisateurDto.getUtilisateuremail();
 		this.utilisateurTypeUtilisateurCode = utilisateurDto.getUtilisateurTypeUtilisateurCode();
 		this.utilisateurParent = utilisateurDto.getUtilisateurParent();
@@ -79,13 +86,15 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * All arg constructor.
 	 * @param utilisateurId Id technique
 	 * @param utilisateurAge Age en années de l'utilisateur
+	 * @param utilisateurProfilId Profil de l'utilisateur
 	 * @param utilisateuremail Email de l'utilisateur
 	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
 	 * @param utilisateurParent UtilisateurParent
 	 */
-	public UtilisateurDto(long utilisateurId, Long utilisateurAge, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode, UtilisateurDto utilisateurParent) {
+	public UtilisateurDto(long utilisateurId, Long utilisateurAge, long utilisateurProfilId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode, UtilisateurDto utilisateurParent) {
 		this.utilisateurId = utilisateurId;
 		this.utilisateurAge = utilisateurAge;
+		this.utilisateurProfilId = utilisateurProfilId;
 		this.utilisateuremail = utilisateuremail;
 		this.utilisateurTypeUtilisateurCode = utilisateurTypeUtilisateurCode;
 		this.utilisateurParent = utilisateurParent;
@@ -109,6 +118,11 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 		if(utilisateur != null) {
 			this.utilisateurId = utilisateur.getId();
 			this.utilisateurAge = utilisateur.getAge();
+
+			if(utilisateur.getProfil() != null) {
+				this.utilisateurProfilId = utilisateur.getProfil().getId();
+			}
+
 			this.utilisateuremail = utilisateur.getEmail();
 
 			if(utilisateur.getTypeUtilisateur() != null) {
@@ -137,6 +151,16 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	@Override
 	public Long getUtilisateurAge() {
 		return this.utilisateurAge;
+	}
+
+	/**
+	 * Getter for utilisateurProfilId.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurProfilId utilisateurProfilId}.
+	 */
+	@Override
+	public long getUtilisateurProfilId() {
+		return this.utilisateurProfilId;
 	}
 
 	/**
@@ -183,6 +207,14 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 */
 	public void setUtilisateurAge(Long utilisateurAge) {
 		this.utilisateurAge = utilisateurAge;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurProfilId utilisateurProfilId}.
+	 * @param utilisateurProfilId value to set
+	 */
+	public void setUtilisateurProfilId(long utilisateurProfilId) {
+		this.utilisateurProfilId = utilisateurProfilId;
 	}
 
 	/**

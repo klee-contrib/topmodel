@@ -403,7 +403,7 @@ public abstract class AbstractSchemaGenerator
         var nbPropertyCount = classe.Properties.Count;
         var t = 0;
 
-        foreach (var property in classe.Properties.OfType<IFieldProperty>())
+        foreach (var property in classe.Properties.OfType<IFieldProperty>().Where(p => !(p is AssociationProperty ap) || ap.Type == AssociationType.ManyToOne || ap.Type == AssociationType.OneToOne))
         {
             var persistentType = property.Domain.SqlType!;
             if (persistentType is null)
@@ -461,11 +461,6 @@ public abstract class AbstractSchemaGenerator
 
             if (property is AssociationProperty { Association.IsPersistent: true } ap)
             {
-                if (ap.Type != AssociationType.ManyToOne && ap.Type != AssociationType.OneToOne)
-                {
-                    throw new ModelException(ap, $"Le type d'association {ap.Type} n'est pas supporté par le générateur SQL");
-                }
-
                 fkPropertiesList.Add(ap);
             }
         }
