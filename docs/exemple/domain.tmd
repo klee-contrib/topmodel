@@ -11,6 +11,7 @@ domain:
     type: number
   java:
     type: long
+  sqlType: int8
 ---
 domain:
   name: DO_DATE_CREATION
@@ -24,6 +25,7 @@ domain:
       - org.springframework.data.annotation.CreatedDate
     annotations:
       - "@CreatedDate"
+  sqlType: date
 ---
 domain:
   name: DO_DATE_MODIFICATION
@@ -38,6 +40,7 @@ domain:
       - oorg.springframework.data.jpa.domain.support.AuditingEntityListener
     annotations:
       - "@LastModifiedDate"
+  sqlType: date
 ---
 domain:
   name: DO_EMAIL
@@ -50,6 +53,8 @@ domain:
     type: String
     annotations:
       - "@Email"
+  sqlType: varchar
+  length: 50
 ---
 domain:
   name: DO_CODE
@@ -81,3 +86,15 @@ domain:
     type: Page
     imports: 
       - org.springframework.data.domain.Page
+
+---
+domain:
+  name: DO_NUMBER
+  label: Nombre
+  ts:
+    type: number
+  java:
+    type: Long
+  sqlType: numeric
+  scale: 9
+  length: 20

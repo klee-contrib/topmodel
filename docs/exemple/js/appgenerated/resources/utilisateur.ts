@@ -9,6 +9,7 @@ export const utilisateur = {
     },
     utilisateur: {
         id: "Id technique",
+        age: "Age",
         email: "email",
         typeUtilisateurCode: "TypeUtilisateurCode"
     }
