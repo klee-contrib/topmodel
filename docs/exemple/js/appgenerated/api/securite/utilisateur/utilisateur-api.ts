@@ -51,11 +51,12 @@ export function saveAllUtilisateur(utilisateur: UtilisateurDto[], options: Reque
 /**
  * Recherche des utilisateurs
  * @param utiUtilisateurId Id technique
+ * @param utilisateurAge Age en années de l'utilisateur
  * @param utilisateuremail Email de l'utilisateur
  * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
  * @param options Options pour 'fetch'.
  * @returns Utilisateurs matchant les critères
  */
-export function search(utiUtilisateurId?: number, utilisateuremail?: string, utilisateurTypeUtilisateurCode?: TypeUtilisateurCode, options: RequestInit = {}): Promise<Page<UtilisateurDto>> {
-    return fetch("POST", `./utilisateur/search`, {query: {utiUtilisateurId, utilisateuremail, utilisateurTypeUtilisateurCode}}, options);
+export function search(utiUtilisateurId?: number, utilisateurAge?: number, utilisateuremail?: string, utilisateurTypeUtilisateurCode?: TypeUtilisateurCode, options: RequestInit = {}): Promise<Page<UtilisateurDto>> {
+    return fetch("POST", `./utilisateur/search`, {query: {utiUtilisateurId, utilisateurAge, utilisateuremail, utilisateurTypeUtilisateurCode}}, options);
 }

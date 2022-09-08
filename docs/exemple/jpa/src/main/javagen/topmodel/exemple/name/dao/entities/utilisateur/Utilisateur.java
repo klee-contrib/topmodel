@@ -64,6 +64,12 @@ public class Utilisateur {
 	private long id;
 
 	/**
+	 * Age en années de l'utilisateur.
+	 */
+	@Column(name = "UTI_AGE", nullable = true, precision = 20, scale = 9)
+	private Long age;
+
+	/**
 	 * Profil de l'utilisateur.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Profil.class)
@@ -73,7 +79,7 @@ public class Utilisateur {
 	/**
 	 * Email de l'utilisateur.
 	 */
-	@Column(name = "UTI_EMAIL", nullable = true)
+	@Column(name = "UTI_EMAIL", nullable = true, length = 50)
 	@Email
 	private String email;
 
@@ -102,6 +108,7 @@ public class Utilisateur {
 		this.dateCreation = utilisateur.getDateCreation();
 		this.dateModification = utilisateur.getDateModification();
 		this.id = utilisateur.getId();
+		this.age = utilisateur.getAge();
 		this.profil = utilisateur.getProfil();
 		this.email = utilisateur.getEmail();
 		this.typeUtilisateur = utilisateur.getTypeUtilisateur();
@@ -112,14 +119,16 @@ public class Utilisateur {
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur
 	 * @param id Id technique
+	 * @param age Age en années de l'utilisateur
 	 * @param profil Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
 	 * @param typeUtilisateur Type d'utilisateur en Many to one
 	 */
-	public Utilisateur(DateTime dateCreation, DateTime dateModification, long id, Profil profil, String email, TypeUtilisateur typeUtilisateur) {
+	public Utilisateur(DateTime dateCreation, DateTime dateModification, long id, Long age, Profil profil, String email, TypeUtilisateur typeUtilisateur) {
 		this.dateCreation = dateCreation;
 		this.dateModification = dateModification;
 		this.id = id;
+		this.age = age;
 		this.profil = profil;
 		this.email = email;
 		this.typeUtilisateur = typeUtilisateur;
@@ -150,6 +159,15 @@ public class Utilisateur {
 	 */
 	public long getId() {
 		return this.id;
+	}
+
+	/**
+	 * Getter for age.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#age age}.
+	 */
+	public Long getAge() {
+		return this.age;
 	}
 
 	/**
@@ -204,6 +222,14 @@ public class Utilisateur {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#age age}.
+	 * @param age value to set
+	 */
+	public void setAge(Long age) {
+		this.age = age;
+	}
+
+	/**
 	 * Set the value of {@link topmodel.exemple.name.dao.entities.utilisateur.Utilisateur#profil profil}.
 	 * @param profil value to set
 	 */
@@ -250,6 +276,7 @@ public class Utilisateur {
         DATE_CREATION, //
         DATE_MODIFICATION, //
         ID, //
+        AGE, //
         PROFIL, //
         EMAIL, //
         TYPE_UTILISATEUR

@@ -21,6 +21,13 @@ public interface IUtilisateurDto {
 	long getUtilisateurId();
 
 	/**
+	 * Getter for utilisateurAge.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurAge utilisateurAge}.
+	 */
+	Long getUtilisateurAge();
+
+	/**
 	 * Getter for utilisateuremail.
 	 *
 	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateuremail utilisateuremail}.
