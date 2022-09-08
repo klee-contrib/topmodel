@@ -155,7 +155,6 @@ if (config.Jpa != null)
                     new JpaModelInterfaceGenerator(p.GetRequiredService<ILogger<JpaModelInterfaceGenerator>>(), jpaConfig));
         }
 
-
         if (jpaConfig.DaosPackageName != null)
         {
             services

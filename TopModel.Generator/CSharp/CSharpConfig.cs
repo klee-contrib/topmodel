@@ -11,6 +11,7 @@ public class CSharpConfig : GeneratorConfigBase
     private string? _dbContextPath;
 
 #nullable disable
+
     /// <summary>
     /// Racine du répertoire de génération.
     /// </summary>

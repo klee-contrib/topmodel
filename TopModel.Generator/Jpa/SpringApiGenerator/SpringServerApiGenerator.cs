@@ -136,6 +136,7 @@ public class SpringServerApiGenerator : GeneratorBase
             {
                 produces = @$", produces = {{ ""{fp.Domain.MediaType}"" }}";
             }
+
             var consumes = string.Empty;
 
             if (endpoint.Params.Any(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null))
@@ -211,7 +212,6 @@ public class SpringServerApiGenerator : GeneratorBase
             imports.Add("org.springframework.web.bind.annotation.RequestBody");
             imports.Add("javax.validation.Valid");
         }
-
 
         if (file.Options?.Endpoints.Prefix != null)
         {
