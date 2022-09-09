@@ -128,9 +128,10 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utilisateurProfilId Profil de l'utilisateur
 	 * @param utilisateuremail Email de l'utilisateur
 	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
+	 * @param utilisateurUtilisateurIdJumeau Utilisateur jumeau
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder searchUriComponentsBuilder(long utiUtilisateurId, Long utilisateurAge, long utilisateurProfilId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode) {
+	protected UriComponentsBuilder searchUriComponentsBuilder(long utiUtilisateurId, Long utilisateurAge, long utilisateurProfilId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode, long utilisateurUtilisateurIdJumeau) {
 		String uri = host + "utilisateur/search";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("utiUtilisateurId", utiUtilisateurId);
@@ -150,6 +151,10 @@ public abstract class AbstractUtilisateurApiClient {
 			uriBuilder.queryParam("utilisateurTypeUtilisateurCode", utilisateurTypeUtilisateurCode);
 		}
 
+		if (utilisateurUtilisateurIdJumeau != null) {
+			uriBuilder.queryParam("utilisateurUtilisateurIdJumeau", utilisateurUtilisateurIdJumeau);
+		}
+
 		return uriBuilder;
 	}
 
@@ -160,10 +165,11 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utilisateurProfilId Profil de l'utilisateur
 	 * @param utilisateuremail Email de l'utilisateur
 	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
+	 * @param utilisateurUtilisateurIdJumeau Utilisateur jumeau
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<Page> search(long utiUtilisateurId, Long utilisateurAge, long utilisateurProfilId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode, HttpHeaders headers){
-		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utiUtilisateurId, utilisateurAge, utilisateurProfilId, utilisateuremail, utilisateurTypeUtilisateurCode);
+	public ResponseEntity<Page> search(long utiUtilisateurId, Long utilisateurAge, long utilisateurProfilId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode, long utilisateurUtilisateurIdJumeau, HttpHeaders headers){
+		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utiUtilisateurId, utilisateurAge, utilisateurProfilId, utilisateuremail, utilisateurTypeUtilisateurCode, utilisateurUtilisateurIdJumeau);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), Page.class);
 	}
 }

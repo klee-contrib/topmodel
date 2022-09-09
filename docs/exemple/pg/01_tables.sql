@@ -28,6 +28,11 @@ create table DROITS (
 ;
 
 /**
+  * Création de la séquence pour la clé primaire de la table PROFIL
+ **/
+create sequence SEQ_PROFIL start 1000 increment 50
+;
+/**
   * Création de la table PROFIL
  **/
 create table PROFIL (
@@ -37,6 +42,11 @@ create table PROFIL (
 )
 ;
 
+/**
+  * Création de la séquence pour la clé primaire de la table SECTEUR
+ **/
+create sequence SEQ_SECTEUR start 1000 increment 50
+;
 /**
   * Création de la table SECTEUR
  **/
@@ -68,6 +78,11 @@ create table TYPE_UTILISATEUR (
 ;
 
 /**
+  * Création de la séquence pour la clé primaire de la table UTILISATEUR
+ **/
+create sequence SEQ_UTILISATEUR start 1000 increment 50
+;
+/**
   * Création de la table UTILISATEUR
  **/
 create table UTILISATEUR (
@@ -78,6 +93,7 @@ create table UTILISATEUR (
 	PRO_ID int8,
 	UTI_EMAIL varchar(50),
 	TUT_CODE varchar(3),
+	UTI_ID_JUMEAU int8,
 	constraint PK_UTILISATEUR primary key (UTI_ID)
 )
 ;

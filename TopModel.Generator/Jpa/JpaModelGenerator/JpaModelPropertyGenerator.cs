@@ -74,7 +74,7 @@ public class JpaModelPropertyGenerator
 
     private void WriteManyToOne(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        var fk = (property.Role is not null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty) + property.Property.SqlName;
+        var fk = property.Property.SqlName + (property.Role is not null ? "_" + ModelUtils.ConvertCsharp2Bdd(property.Role) : string.Empty);
         var apk = property.Property.SqlName;
         fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, optional = {(property.Required ? "false" : "true")}, targetEntity = {property.Association.Name}.class)");
         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
@@ -82,7 +82,7 @@ public class JpaModelPropertyGenerator
 
     private void WriteOneToOne(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        var fk = (property.Role is not null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty) + property.Property.SqlName;
+        var fk = property.Property.SqlName + (property.Role is not null ? "_" + ModelUtils.ConvertCsharp2Bdd(property.Role) : string.Empty);
         var apk = property.Property.SqlName;
         fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = {(property.Required ? "false" : "true")})");
         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"", unique = true)");
@@ -98,11 +98,11 @@ public class JpaModelPropertyGenerator
         }
         else
         {
-            var hasRerverse = property.Class.Namespace.Module.Split('.').First() == property.Association.Namespace.Module.Split('.').First();
+            var hasRerverse = property.Class.Namespace.Module.Split('.').First() == property.Association.Namespace.Module.Split('.').First() && !property.Association.Reference;
             fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }})");
             if (!hasRerverse)
             {
-                fw.WriteLine(1, @$"@JoinTable(name = ""{(property.Role != null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty)}{property.Class.SqlName}_{property.Association.SqlName}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
+                fw.WriteLine(1, @$"@JoinTable(name = ""{property.Class.SqlName}_{property.Association.SqlName}{(property.Role != null ? "_" + ModelUtils.ConvertCsharp2Bdd(property.Role): string.Empty)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
             }
         }
     }

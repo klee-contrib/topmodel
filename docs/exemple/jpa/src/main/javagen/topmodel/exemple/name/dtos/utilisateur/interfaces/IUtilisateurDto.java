@@ -49,6 +49,13 @@ public interface IUtilisateurDto {
 	TypeUtilisateur.Values getUtilisateurTypeUtilisateurCode();
 
 	/**
+	 * Getter for utilisateurUtilisateurIdJumeau.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurUtilisateurIdJumeau utilisateurUtilisateurIdJumeau}.
+	 */
+	long getUtilisateurUtilisateurIdJumeau();
+
+	/**
 	 * Getter for utilisateurParent.
 	 *
 	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurParent utilisateurParent}.

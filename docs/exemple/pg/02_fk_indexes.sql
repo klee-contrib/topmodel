@@ -103,3 +103,19 @@ alter table UTILISATEUR
 		references TYPE_UTILISATEUR (TUT_CODE)
 ;
 
+/**
+  * Création de l'index de clef étrangère pour UTILISATEUR.UTI_ID_JUMEAU
+ **/
+create index IDX_UTI_UTI_ID_JUMEAU_FK on UTILISATEUR (
+	UTI_ID_JUMEAU ASC
+)
+;
+
+/**
+  * Génération de la contrainte de clef étrangère pour UTILISATEUR.UTI_ID_JUMEAU
+ **/
+alter table UTILISATEUR
+	add constraint FK_UTI_UTI_ID_JUMEAU foreign key (UTI_ID_JUMEAU)
+		references UTILISATEUR (UTI_ID)
+;
+

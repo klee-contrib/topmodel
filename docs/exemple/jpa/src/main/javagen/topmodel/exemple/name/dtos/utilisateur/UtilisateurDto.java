@@ -55,6 +55,12 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	private TypeUtilisateur.Values utilisateurTypeUtilisateurCode;
 
 	/**
+	 * Utilisateur jumeau.
+	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getUtilisateurIdJumeau() Utilisateur#getUtilisateurIdJumeau()} 
+	 */
+	private long utilisateurUtilisateurIdJumeau;
+
+	/**
 	 * UtilisateurParent.
 	 */
 	private UtilisateurDto utilisateurParent;
@@ -79,6 +85,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 		this.utilisateurProfilId = utilisateurDto.getUtilisateurProfilId();
 		this.utilisateuremail = utilisateurDto.getUtilisateuremail();
 		this.utilisateurTypeUtilisateurCode = utilisateurDto.getUtilisateurTypeUtilisateurCode();
+		this.utilisateurUtilisateurIdJumeau = utilisateurDto.getUtilisateurUtilisateurIdJumeau();
 		this.utilisateurParent = utilisateurDto.getUtilisateurParent();
 	}
 
@@ -89,14 +96,16 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * @param utilisateurProfilId Profil de l'utilisateur
 	 * @param utilisateuremail Email de l'utilisateur
 	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
+	 * @param utilisateurUtilisateurIdJumeau Utilisateur jumeau
 	 * @param utilisateurParent UtilisateurParent
 	 */
-	public UtilisateurDto(long utilisateurId, Long utilisateurAge, long utilisateurProfilId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode, UtilisateurDto utilisateurParent) {
+	public UtilisateurDto(long utilisateurId, Long utilisateurAge, long utilisateurProfilId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode, long utilisateurUtilisateurIdJumeau, UtilisateurDto utilisateurParent) {
 		this.utilisateurId = utilisateurId;
 		this.utilisateurAge = utilisateurAge;
 		this.utilisateurProfilId = utilisateurProfilId;
 		this.utilisateuremail = utilisateuremail;
 		this.utilisateurTypeUtilisateurCode = utilisateurTypeUtilisateurCode;
+		this.utilisateurUtilisateurIdJumeau = utilisateurUtilisateurIdJumeau;
 		this.utilisateurParent = utilisateurParent;
 	}
 
@@ -127,6 +136,11 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 
 			if(utilisateur.getTypeUtilisateur() != null) {
 				this.utilisateurTypeUtilisateurCode = utilisateur.getTypeUtilisateur().getCode();
+			}
+
+
+			if(utilisateur.getUtilisateurJumeau() != null) {
+				this.utilisateurUtilisateurIdJumeau = utilisateur.getUtilisateurJumeau().getId();
 			}
 
 		}
@@ -184,6 +198,16 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	}
 
 	/**
+	 * Getter for utilisateurUtilisateurIdJumeau.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurUtilisateurIdJumeau utilisateurUtilisateurIdJumeau}.
+	 */
+	@Override
+	public long getUtilisateurUtilisateurIdJumeau() {
+		return this.utilisateurUtilisateurIdJumeau;
+	}
+
+	/**
 	 * Getter for utilisateurParent.
 	 *
 	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurParent utilisateurParent}.
@@ -231,6 +255,14 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 */
 	public void setUtilisateurTypeUtilisateurCode(TypeUtilisateur.Values utilisateurTypeUtilisateurCode) {
 		this.utilisateurTypeUtilisateurCode = utilisateurTypeUtilisateurCode;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurUtilisateurIdJumeau utilisateurUtilisateurIdJumeau}.
+	 * @param utilisateurUtilisateurIdJumeau value to set
+	 */
+	public void setUtilisateurUtilisateurIdJumeau(long utilisateurUtilisateurIdJumeau) {
+		this.utilisateurUtilisateurIdJumeau = utilisateurUtilisateurIdJumeau;
 	}
 
 	/**

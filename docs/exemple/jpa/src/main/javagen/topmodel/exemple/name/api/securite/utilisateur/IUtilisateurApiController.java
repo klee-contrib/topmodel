@@ -66,8 +66,9 @@ public interface IUtilisateurApiController {
 	 * @param utilisateurProfilId Profil de l'utilisateur
 	 * @param utilisateuremail Email de l'utilisateur
 	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
+	 * @param utilisateurUtilisateurIdJumeau Utilisateur jumeau
 	 * @return Utilisateurs matchant les critères
 	 */
 	@PostMapping(path = "/search")
-	Page<UtilisateurDto> search(@RequestParam(value = "utiUtilisateurId", required = true) long utiUtilisateurId, @RequestParam(value = "utilisateurAge", required = false) Long utilisateurAge, @RequestParam(value = "utilisateurProfilId", required = false) long utilisateurProfilId, @RequestParam(value = "utilisateuremail", required = false) String utilisateuremail, @RequestParam(value = "utilisateurTypeUtilisateurCode", required = false) TypeUtilisateur.Values utilisateurTypeUtilisateurCode);
+	Page<UtilisateurDto> search(@RequestParam(value = "utiUtilisateurId", required = true) long utiUtilisateurId, @RequestParam(value = "utilisateurAge", required = false) Long utilisateurAge, @RequestParam(value = "utilisateurProfilId", required = false) long utilisateurProfilId, @RequestParam(value = "utilisateuremail", required = false) String utilisateuremail, @RequestParam(value = "utilisateurTypeUtilisateurCode", required = false) TypeUtilisateur.Values utilisateurTypeUtilisateurCode, @RequestParam(value = "utilisateurUtilisateurIdJumeau", required = false) long utilisateurUtilisateurIdJumeau);
 }
