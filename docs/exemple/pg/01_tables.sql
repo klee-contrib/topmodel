@@ -52,7 +52,7 @@ create sequence SEQ_SECTEUR start 1000 increment 50
  **/
 create table SECTEUR (
 	SEC_ID int8 not null,
-	SEC_ID int8,
+	PRO_ID int8,
 	constraint PK_SECTEUR primary key (SEC_ID)
 )
 ;

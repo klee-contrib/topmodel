@@ -56,19 +56,19 @@ alter table PROFIL
 ;
 
 /**
-  * Création de l'index de clef étrangère pour SECTEUR.SEC_ID
+  * Création de l'index de clef étrangère pour SECTEUR.PRO_ID
  **/
-create index IDX_SEC_SEC_ID_FK on SECTEUR (
-	SEC_ID ASC
+create index IDX_SEC_PRO_ID_FK on SECTEUR (
+	PRO_ID ASC
 )
 ;
 
 /**
-  * Génération de la contrainte de clef étrangère pour SECTEUR.SEC_ID
+  * Génération de la contrainte de clef étrangère pour SECTEUR.PRO_ID
  **/
 alter table SECTEUR
-	add constraint FK_SEC_SEC_ID foreign key (SEC_ID)
-		references PROFIL (SEC_ID)
+	add constraint FK_SEC_PRO_ID foreign key (PRO_ID)
+		references PROFIL (PRO_ID)
 ;
 
 /**

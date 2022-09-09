@@ -92,7 +92,7 @@ public abstract class AbstractSchemaGenerator
         var outputFileNameType = _config.TypeFile;
         var outputFileNameUK = _config.UniqueKeysFile;
 
-        if (outputFileNameCrebas == null || outputFileNameIndex == null)
+        if (outputFileNameCrebas == null || outputFileNameIndex == null || !classes.Any())
         {
             return;
         }
@@ -134,6 +134,7 @@ public abstract class AbstractSchemaGenerator
 
         var foreignKeys = classes
             .OrderBy(c => c.Name)
+            .Where(c => c.IsPersistent)
             .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType))
             .ToList();
 
@@ -339,6 +340,7 @@ public abstract class AbstractSchemaGenerator
 
         if (!classe.Properties.Any(p => p.PrimaryKey) && !classe.Properties.All(p => p is AssociationProperty))
         {
+            writerCrebas.WriteLine(")");
             return;
         }
 
@@ -408,11 +410,10 @@ public abstract class AbstractSchemaGenerator
         {
             WriteType(classe, writerType);
         }
-
-        var nbPropertyCount = classe.Properties.Count;
+        var properties = classe.Properties.OfType<IFieldProperty>().Where(p => !(p is AssociationProperty ap) || ap.Type == AssociationType.ManyToOne || ap.Type == AssociationType.OneToOne);
         var t = 0;
 
-        foreach (var property in classe.Properties.OfType<IFieldProperty>().Where(p => !(p is AssociationProperty ap) || ap.Type == AssociationType.ManyToOne || ap.Type == AssociationType.OneToOne))
+        foreach (var property in properties)
         {
             var persistentType = property.Domain.SqlType!;
             if (persistentType is null)

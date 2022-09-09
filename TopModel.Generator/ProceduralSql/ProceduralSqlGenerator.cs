@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
-
+using TopModel.Utils;
 namespace TopModel.Generator.ProceduralSql;
 
 public class ProceduralSqlGenerator : GeneratorBase
@@ -54,8 +54,7 @@ public class ProceduralSqlGenerator : GeneratorBase
                     Required = ap.Required,
                     Role = ap.Role,
                     DefaultValue = ap.DefaultValue,
-                    Label = ap.Label,
-                    Property = ap
+                    Label = ap.Label
                 };
                 c.Properties.Add(asp);
             }

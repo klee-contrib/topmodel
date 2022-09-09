@@ -90,20 +90,17 @@ public class JpaModelPropertyGenerator
 
     private void WriteManyToMany(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        var fk = (property.Role is not null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty) + property.Property.SqlName;
-        var pk = classe.PrimaryKey!.SqlName;
+        var role = (property.Role is not null ? "_" + ModelUtils.ConvertCsharp2Bdd(property.Role) : string.Empty);
+        var fk = property.Property.SqlName + role;
+        var pk = classe.PrimaryKey!.SqlName + role;
         if (property is JpaAssociationProperty jap)
         {
             fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, mappedBy = ""{jap.ReverseProperty.GetJavaName()}"", cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }})");
         }
         else
         {
-            var hasRerverse = property.Class.Namespace.Module.Split('.').First() == property.Association.Namespace.Module.Split('.').First() && !property.Association.Reference;
             fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }})");
-            if (!hasRerverse)
-            {
-                fw.WriteLine(1, @$"@JoinTable(name = ""{property.Class.SqlName}_{property.Association.SqlName}{(property.Role != null ? "_" + ModelUtils.ConvertCsharp2Bdd(property.Role): string.Empty)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
-            }
+            fw.WriteLine(1, @$"@JoinTable(name = ""{property.Class.SqlName}_{property.Association.SqlName}{(property.Role != null ? "_" + ModelUtils.ConvertCsharp2Bdd(property.Role) : string.Empty)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
         }
     }
 
