@@ -90,7 +90,7 @@ public class JpaModelPropertyGenerator
 
     private void WriteManyToMany(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        var role = (property.Role is not null ? "_" + ModelUtils.ConvertCsharp2Bdd(property.Role) : string.Empty);
+        var role = property.Role is not null ? "_" + ModelUtils.ConvertCsharp2Bdd(property.Role) : string.Empty;
         var fk = property.Property.SqlName + role;
         var pk = classe.PrimaryKey!.SqlName + role;
         if (property is JpaAssociationProperty jap)

@@ -135,7 +135,7 @@ public abstract class AbstractSchemaGenerator
         var foreignKeys = classes
             .OrderBy(c => c.Name)
             .Where(c => c.IsPersistent)
-            .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType))
+            .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType, classes.ToList()))
             .ToList();
 
         if (writerType != null)
@@ -385,7 +385,7 @@ public abstract class AbstractSchemaGenerator
     /// <param name="writerUk">Flux d'écriture Unique Key.</param>
     /// <param name="writerType">Flux d'écritures des types.</param>
     /// <returns>Liste des propriétés étrangères persistentes.</returns>
-    private IEnumerable<AssociationProperty> WriteTableDeclaration(Class classe, SqlFileWriter writerCrebas, SqlFileWriter? writerUk, SqlFileWriter? writerType)
+    private IEnumerable<AssociationProperty> WriteTableDeclaration(Class classe, SqlFileWriter writerCrebas, SqlFileWriter? writerUk, SqlFileWriter? writerType, IList<Class> availableClasses)
     {
         var fkPropertiesList = new List<AssociationProperty>();
 
@@ -410,8 +410,27 @@ public abstract class AbstractSchemaGenerator
         {
             WriteType(classe, writerType);
         }
-        var properties = classe.Properties.OfType<IFieldProperty>().Where(p => !(p is AssociationProperty ap) || ap.Type == AssociationType.ManyToOne || ap.Type == AssociationType.OneToOne);
+
+        var properties = classe.Properties.OfType<IFieldProperty>().Where(p => !(p is AssociationProperty ap) || ap.Type == AssociationType.ManyToOne || ap.Type == AssociationType.OneToOne).ToList();
         var t = 0;
+        var classes = availableClasses.Distinct();
+
+        var oneToManyProperties = classes.SelectMany(cl => cl.Properties).Where(p => p is AssociationProperty ap && ap.Type == AssociationType.OneToMany && ap.Association == classe).Select(p => (AssociationProperty)p);
+        foreach (var ap in oneToManyProperties)
+        {
+            var asp = new AssociationProperty()
+            {
+                Association = ap.Class,
+                Class = ap.Association,
+                Comment = ap.Comment,
+                Type = AssociationType.ManyToOne,
+                Required = ap.Required,
+                Role = ap.Role,
+                DefaultValue = ap.DefaultValue,
+                Label = ap.Label
+            };
+            properties.Add(asp);
+        }
 
         foreach (var property in properties)
         {

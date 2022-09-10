@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
-using TopModel.Utils;
+
 namespace TopModel.Generator.ProceduralSql;
 
 public class ProceduralSqlGenerator : GeneratorBase
@@ -40,25 +40,6 @@ public class ProceduralSqlGenerator : GeneratorBase
         }
 
         var classes = _files.Values.SelectMany(f => f.Classes).Distinct();
-        classes.ToList().ForEach(c =>
-        {
-            var oneToManyProperties = classes.SelectMany(cl => cl.Properties).Where(p => p is AssociationProperty ap && ap.Type == AssociationType.OneToMany && ap.Association == c).Select(p => (AssociationProperty)p);
-            foreach (var ap in oneToManyProperties)
-            {
-                var asp = new PgAssociationProperty()
-                {
-                    Association = ap.Class,
-                    Class = ap.Association,
-                    Comment = ap.Comment,
-                    Type = AssociationType.ManyToOne,
-                    Required = ap.Required,
-                    Role = ap.Role,
-                    DefaultValue = ap.DefaultValue,
-                    Label = ap.Label
-                };
-                c.Properties.Add(asp);
-            }
-        });
 
         var manyToManyProperties = classes.SelectMany(cl => cl.Properties).Where(p => p is AssociationProperty ap && ap.Type == AssociationType.ManyToMany).Select(p => (AssociationProperty)p);
         foreach (var ap in manyToManyProperties)
@@ -69,7 +50,7 @@ public class ProceduralSqlGenerator : GeneratorBase
                 Label = ap.Label,
                 SqlName = $"{ap.Class.SqlName}_{ap.Association.SqlName}{(ap.Role != null ? $"_{ap.Role.ToUpper()}" : string.Empty)}"
             };
-            traClass.Properties.Add(new PgAssociationProperty()
+            traClass.Properties.Add(new AssociationProperty()
             {
                 Association = ap.Class,
                 Class = traClass,
@@ -80,7 +61,7 @@ public class ProceduralSqlGenerator : GeneratorBase
                 DefaultValue = ap.DefaultValue,
                 Label = ap.Label
             });
-            traClass.Properties.Add(new PgAssociationProperty()
+            traClass.Properties.Add(new AssociationProperty()
             {
                 Association = ap.Association,
                 Class = traClass,
@@ -95,10 +76,6 @@ public class ProceduralSqlGenerator : GeneratorBase
         }
 
         _schemaGenerator?.GenerateSchemaScript(classes.OrderBy(c => c.SqlName));
-        foreach (var p in classes.SelectMany(c => c.Properties).Where(p => p is PgAssociationProperty).ToList())
-        {
-            p.Class.Properties.Remove(p);
-        }
 
         GenerateListInitScript();
     }
