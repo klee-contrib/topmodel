@@ -432,7 +432,7 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine(3, $"if({classe.Name.ToFirstLower()} == null || this.get{pk.Name}() == null)");
             fw.WriteLine(4, $"return false;");
             fw.WriteLine();
-            fw.WriteLine(3, $"return this.get{pk.Name}().equals({classe.Name.ToFirstLower()}.get{pk.Name}());");
+            fw.WriteLine(3, $"return this.get{pk.Name.ToFirstUpper()}().equals({classe.Name.ToFirstLower()}.get{pk.Name.ToFirstUpper()}());");
             fw.WriteLine(2, "}");
             fw.WriteLine(2, $"return false;");
             fw.WriteLine(1, "}");
