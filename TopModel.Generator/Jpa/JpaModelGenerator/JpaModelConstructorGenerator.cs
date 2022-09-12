@@ -29,11 +29,11 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"}}");
     }
 
-    public void WriteAllArgConstructor(JavaWriter fw, Class classe, List<Class> allClasses)
+    public void WriteAllArgConstructor(JavaWriter fw, Class classe, List<Class> availableClasses)
     {
         fw.WriteLine();
         fw.WriteDocStart(1, "All arg constructor");
-        var properties = GetAllArgsProperties(classe);
+        var properties = GetAllArgsProperties(classe, availableClasses);
 
         if (properties.Count == 0)
         {
@@ -51,7 +51,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"public {classe.Name}({propertiesSignature}) {{");
         if (classe.Extends != null)
         {
-            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends).Select(p => $"{p.GetJavaName()}"));
+            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses).Select(p => $"{p.GetJavaName()}"));
             fw.WriteLine(2, $"super({parentAllArgConstructorArguments});");
         }
         else if (classe.Decorators.Any(d => d.Java?.Extends is not null))
@@ -59,7 +59,7 @@ public class JpaModelConstructorGenerator
             fw.WriteLine(2, $"super();");
         }
 
-        foreach (var property in classe.Properties)
+        foreach (var property in classe.GetProperties(_config, availableClasses))
         {
             fw.WriteLine(2, $"this.{property.GetJavaName()} = {property.GetJavaName()};");
         }
@@ -67,17 +67,17 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"}}");
     }
 
-    public void WriteCopyConstructor(JavaWriter fw, Class classe)
+    public void WriteCopyConstructor(JavaWriter fw, Class classe, List<Class> availableClasses)
     {
         fw.WriteLine();
         fw.WriteDocStart(1, "Copy constructor");
         fw.WriteLine(1, $" * @param {classe.Name.ToFirstLower()} to copy");
-        var properties = classe.Properties;
+        var properties = classe.GetProperties(_config, availableClasses);
         fw.WriteDocEnd(1);
         fw.WriteLine(1, $"public {classe.Name}({classe.Name} {classe.Name.ToFirstLower()}) {{");
         if (classe.Extends != null)
         {
-            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends).Select(p => $"{p.GetJavaName()}"));
+            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses).Select(p => $"{p.GetJavaName()}"));
             fw.WriteLine(2, $"super({classe.Name.ToFirstLower()});");
         }
         else if (classe.Decorators.Any(d => d.Java?.Extends is not null))
@@ -90,7 +90,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(2, "}");
         fw.WriteLine();
 
-        foreach (var property in classe.Properties.Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
+        foreach (var property in classe.GetProperties(_config, availableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
         {
             if (!(property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list"))
             {
@@ -98,7 +98,7 @@ public class JpaModelConstructorGenerator
             }
         }
 
-        var propertyListToCopy = classe.Properties
+        var propertyListToCopy = classe.GetProperties(_config, availableClasses)
         .Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne)))
         .Where(property => property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list");
 
@@ -118,7 +118,7 @@ public class JpaModelConstructorGenerator
         if (_config.EnumShortcutMode)
         {
             fw.WriteLine();
-            foreach (var ap in classe.Properties.OfType<AssociationProperty>().Where(ap => ap.Association.Reference && (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)))
+            foreach (var ap in classe.GetProperties(_config, availableClasses).OfType<AssociationProperty>().Where(ap => ap.Association.Reference && (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)))
             {
                 var propertyName = ap.Name.ToFirstLower();
                 fw.WriteLine(2, $"this.set{ap.Name}({classe.Name.ToFirstLower()}.get{ap.Name.ToFirstUpper()}());");
@@ -249,15 +249,15 @@ public class JpaModelConstructorGenerator
         }
     }
 
-    private IList<IProperty> GetAllArgsProperties(Class classe)
+    private IList<IProperty> GetAllArgsProperties(Class classe, List<Class> availableClasses)
     {
         if (classe.Extends is null)
         {
-            return classe.Properties;
+            return classe.GetProperties(_config, availableClasses);
         }
         else
         {
-            return GetAllArgsProperties(classe.Extends).Concat(classe.Properties).ToList();
+            return GetAllArgsProperties(classe.Extends, availableClasses).Concat(classe.GetProperties(_config, availableClasses)).ToList();
         }
     }
 }

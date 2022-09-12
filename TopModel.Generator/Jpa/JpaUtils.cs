@@ -167,4 +167,30 @@ public static class JpaUtils
                                 && p.Class.Namespace.Module.Split('.').First() == classe.Namespace.Module.Split('.').First())
                     .ToList();
     }
+
+    public static IList<IProperty> GetProperties(this Class classe, JpaConfig config,  List<Class> availableClasses)
+    {
+        if (classe.Reference)
+        {
+            return classe.Properties;
+        }
+
+        return classe.Properties.Concat(classe.GetReverseProperties(availableClasses).Select(p => new JpaAssociationProperty()
+        {
+            Association = p.Class,
+            Type = p.Type == AssociationType.OneToMany ? AssociationType.ManyToOne
+                                : p.Type == AssociationType.ManyToOne ? AssociationType.OneToMany
+                                : AssociationType.ManyToMany,
+            Comment = $"Association réciproque de {{@link {p.Class.GetPackageName(config)}.{p.Class}#{p.GetJavaName()} {p.Class.Name}.{p.GetJavaName()}}}",
+            Class = classe,
+            ReverseProperty = p,
+            Role = p.Role
+        })).ToList();
+    }
+
+    public static string GetPackageName(this Class classe, JpaConfig config)
+    {
+        var packageRoot = classe.IsPersistent ? config.EntitiesPackageName : config.DtosPackageName;
+        return $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
+    }
 }

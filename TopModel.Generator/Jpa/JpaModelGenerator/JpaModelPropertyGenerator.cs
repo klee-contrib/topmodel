@@ -10,12 +10,10 @@ namespace TopModel.Generator.Jpa;
 public class JpaModelPropertyGenerator
 {
     private readonly JpaConfig _config;
-    private readonly IDictionary<string, ModelFile> _files;
 
-    public JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, ModelFile> files)
+    public JpaModelPropertyGenerator(JpaConfig config)
     {
         _config = config;
-        this._files = files;
     }
 
     public void WriteProperty(JavaWriter fw, Class classe, IProperty property)
@@ -42,9 +40,9 @@ public class JpaModelPropertyGenerator
         fw.WriteLine(1, $"private {property.GetJavaType()} {property.Name.ToFirstLower()};");
     }
 
-    public void WriteProperties(JavaWriter fw, Class classe)
+    public void WriteProperties(JavaWriter fw, Class classe, List<Class> availableClasses)
     {
-        foreach (var property in classe.Properties)
+        foreach (var property in classe.GetProperties(_config, availableClasses))
         {
             WriteProperty(fw, classe, property);
         }
