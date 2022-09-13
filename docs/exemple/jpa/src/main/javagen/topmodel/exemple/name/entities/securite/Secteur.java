@@ -30,8 +30,7 @@ public class Secteur {
 	 * Id technique.
 	 */
 	@Id
-	@SequenceGenerator(name = "SEQ_SECTEUR", sequenceName = "SEQ_SECTEUR", initialValue = 1000)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_SECTEUR")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "SEC_ID", nullable = false)
 	private long id;
 

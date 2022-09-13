@@ -60,8 +60,7 @@ public class Utilisateur {
 	 * Id technique.
 	 */
 	@Id
-	@SequenceGenerator(name = "SEQ_UTILISATEUR", sequenceName = "SEQ_UTILISATEUR", initialValue = 1000)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_UTILISATEUR")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "UTI_ID", nullable = false)
 	private long id;
 

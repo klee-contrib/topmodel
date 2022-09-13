@@ -137,9 +137,7 @@ public class JpaModelPropertyGenerator
                 || property.Domain.Java.Type == "int"
                 || property.Domain.Java.Type == "Integer")
             {
-                var seqName = $"SEQ_{classe.SqlName}";
-                fw.WriteLine(1, @$"@SequenceGenerator(name = ""{seqName}"", sequenceName = ""{seqName}"", initialValue = 1000)");
-                fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ""{seqName}"")");
+                fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.IDENTITY)");
             }
         }
 

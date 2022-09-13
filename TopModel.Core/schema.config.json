@@ -73,9 +73,19 @@
             "type": "string",
             "description": "Emplacement du script d'insertion des données des listes de référence."
           },
-          "disableIdentity": {
-            "type": "boolean",
-            "description": "Désactive les colonnes d'identité."
+          "identityMode": {
+            "type": "string",
+            "description": "Mode de génération des séquences.",
+            "enum": ["none", "sequence", "identity"],
+            "default": "identity"
+          },
+          "identityIncrement": {
+            "type": "string",
+            "description": "Incrément de la séquence générée."
+          },
+          "identityStart": {
+            "type": "string",
+            "description": "Début de la séquence générée."
           }
         }
       }

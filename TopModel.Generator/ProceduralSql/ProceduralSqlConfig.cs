@@ -36,7 +36,17 @@ public class ProceduralSqlConfig : GeneratorConfigBase
     public string? InitListFile { get; set; }
 
     /// <summary>
-    /// Désactive les colonnes d'identité.
+    /// Mode de génération des séquences.
     /// </summary>
-    public bool DisableIdentity { get; set; }
+    public IdentityMode IdentityMode { get; set; } = IdentityMode.IDENTITY;
+
+    /// <summary>
+    /// Incrément de la séquence générée
+    /// </summary>
+    public string? IdentityIncrement { get; set; }
+
+    /// <summary>
+    /// Début de la séquence générée
+    /// </summary>
+    public string? IdentityStart { get; set; }
 }
