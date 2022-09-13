@@ -110,7 +110,8 @@ public class TypeProfil {
 	 * Equal function comparing Code.
 	 */
 	public boolean equals(Object o) {
-		if(o instanceof TypeProfil typeProfil) {
+		if(o instanceof TypeProfil) {
+			TypeProfil typeProfil = (TypeProfil) o;
 			if(this == typeProfil)
 				return true;
 
@@ -119,6 +120,7 @@ public class TypeProfil {
 
 			return this.getCode().equals(typeProfil.getCode());
 		}
+
 		return false;
 	}
 

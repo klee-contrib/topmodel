@@ -425,7 +425,9 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteDocStart(1, $"Equal function comparing {pk.Name}");
             fw.WriteDocEnd(1);
             fw.WriteLine(1, $@"public boolean equals(Object o) {{");
-            fw.WriteLine(2, $"if(o instanceof {classe.Name} {classe.Name.ToFirstLower()}) {{");
+            fw.WriteLine(2, $"if(o instanceof {classe.Name}) {{");
+            fw.WriteLine(3, $"{classe.Name} {classe.Name.ToFirstLower()} = ({classe.Name}) o;");
+            
             fw.WriteLine(3, $"if(this == {classe.Name.ToFirstLower()})");
             fw.WriteLine(4, $"return true;");
             fw.WriteLine();
@@ -434,6 +436,7 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine();
             fw.WriteLine(3, $"return this.get{pk.Name.ToFirstUpper()}().equals({classe.Name.ToFirstLower()}.get{pk.Name.ToFirstUpper()}());");
             fw.WriteLine(2, "}");
+            fw.WriteLine();
             fw.WriteLine(2, $"return false;");
             fw.WriteLine(1, "}");
         }

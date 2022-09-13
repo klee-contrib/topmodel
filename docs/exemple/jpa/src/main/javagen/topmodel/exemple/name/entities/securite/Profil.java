@@ -132,7 +132,8 @@ public class Profil {
 	 * Equal function comparing Id.
 	 */
 	public boolean equals(Object o) {
-		if(o instanceof Profil profil) {
+		if(o instanceof Profil) {
+			Profil profil = (Profil) o;
 			if(this == profil)
 				return true;
 
@@ -141,6 +142,7 @@ public class Profil {
 
 			return this.getId().equals(profil.getId());
 		}
+
 		return false;
 	}
 

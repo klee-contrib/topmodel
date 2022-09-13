@@ -110,7 +110,8 @@ public class TypeUtilisateur {
 	 * Equal function comparing Code.
 	 */
 	public boolean equals(Object o) {
-		if(o instanceof TypeUtilisateur typeUtilisateur) {
+		if(o instanceof TypeUtilisateur) {
+			TypeUtilisateur typeUtilisateur = (TypeUtilisateur) o;
 			if(this == typeUtilisateur)
 				return true;
 
@@ -119,6 +120,7 @@ public class TypeUtilisateur {
 
 			return this.getCode().equals(typeUtilisateur.getCode());
 		}
+
 		return false;
 	}
 

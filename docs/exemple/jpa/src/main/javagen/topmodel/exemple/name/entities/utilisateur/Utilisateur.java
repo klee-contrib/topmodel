@@ -257,7 +257,8 @@ public class Utilisateur {
 	 * Equal function comparing Id.
 	 */
 	public boolean equals(Object o) {
-		if(o instanceof Utilisateur utilisateur) {
+		if(o instanceof Utilisateur) {
+			Utilisateur utilisateur = (Utilisateur) o;
 			if(this == utilisateur)
 				return true;
 
@@ -266,6 +267,7 @@ public class Utilisateur {
 
 			return this.getId().equals(utilisateur.getId());
 		}
+
 		return false;
 	}
 
