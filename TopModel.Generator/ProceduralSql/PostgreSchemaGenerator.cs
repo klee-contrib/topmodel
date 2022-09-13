@@ -39,7 +39,7 @@ public class PostgreSchemaGenerator : AbstractSchemaGenerator
 
             if (this._config.IdentityIncrement != null)
             {
-                writerCrebas.Write($"{$"increment {this._config.IdentityIncrement}"}");
+                writerCrebas.Write($"{$" increment {this._config.IdentityIncrement}"}");
             }
 
             writerCrebas.Write(")");
