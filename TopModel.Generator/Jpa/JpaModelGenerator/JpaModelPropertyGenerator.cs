@@ -10,12 +10,10 @@ namespace TopModel.Generator.Jpa;
 public class JpaModelPropertyGenerator
 {
     private readonly JpaConfig _config;
-    private readonly IDictionary<string, ModelFile> _files;
 
-    public JpaModelPropertyGenerator(JpaConfig config, IDictionary<string, ModelFile> files)
+    public JpaModelPropertyGenerator(JpaConfig config)
     {
         _config = config;
-        this._files = files;
     }
 
     public void WriteProperty(JavaWriter fw, Class classe, IProperty property)
@@ -42,9 +40,9 @@ public class JpaModelPropertyGenerator
         fw.WriteLine(1, $"private {property.GetJavaType()} {property.Name.ToFirstLower()};");
     }
 
-    public void WriteProperties(JavaWriter fw, Class classe)
+    public void WriteProperties(JavaWriter fw, Class classe, List<Class> availableClasses)
     {
-        foreach (var property in classe.Properties)
+        foreach (var property in classe.GetProperties(_config, availableClasses))
         {
             WriteProperty(fw, classe, property);
         }
@@ -74,36 +72,33 @@ public class JpaModelPropertyGenerator
 
     private void WriteManyToOne(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        var fk = (property.Role is not null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty) + property.Property.SqlName;
-        var apk = property.Property.SqlName;
+        var fk = ((IFieldProperty)property).SqlName;
+        var apk = property.Association.PrimaryKey!.SqlName;
         fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, optional = {(property.Required ? "false" : "true")}, targetEntity = {property.Association.Name}.class)");
         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
     }
 
     private void WriteOneToOne(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        var fk = (property.Role is not null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty) + property.Property.SqlName;
-        var apk = property.Property.SqlName;
+        var fk = ((IFieldProperty)property).SqlName;
+        var apk = property.Association.PrimaryKey!.SqlName;
         fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = {(property.Required ? "false" : "true")})");
         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"", unique = true)");
     }
 
     private void WriteManyToMany(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        var fk = (property.Role is not null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty) + property.Property.SqlName;
-        var pk = classe.PrimaryKey!.SqlName;
+        var role = property.Role is not null ? "_" + property.Role.ToUpper() : string.Empty;
+        var fk = ((IFieldProperty)property).SqlName;
+        var pk = classe.PrimaryKey!.SqlName + role;
         if (property is JpaAssociationProperty jap)
         {
             fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, mappedBy = ""{jap.ReverseProperty.GetJavaName()}"", cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }})");
         }
         else
         {
-            var hasRerverse = property.Class.Namespace.Module.Split('.').First() == property.Association.Namespace.Module.Split('.').First();
             fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }})");
-            if (!hasRerverse)
-            {
-                fw.WriteLine(1, @$"@JoinTable(name = ""{(property.Role != null ? ModelUtils.ConvertCsharp2Bdd(property.Role) + "_" : string.Empty)}{property.Class.SqlName}_{property.Association.SqlName}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
-            }
+            fw.WriteLine(1, @$"@JoinTable(name = ""{property.Class.SqlName}_{property.Association.SqlName}{(property.Role != null ? "_" + property.Role.ToUpper() : string.Empty)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
         }
     }
 
@@ -142,9 +137,18 @@ public class JpaModelPropertyGenerator
                 || property.Domain.Java.Type == "int"
                 || property.Domain.Java.Type == "Integer")
             {
-                var seqName = $"SEQ_{classe.SqlName}";
-                fw.WriteLine(1, @$"@SequenceGenerator(name = ""{seqName}"", sequenceName = ""{seqName}"", initialValue = 1000)");
-                fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ""{seqName}"")");
+                if (_config.Identity.Mode == IdentityMode.IDENTITY)
+                {
+                    fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.IDENTITY)");
+                }
+                else if (_config.Identity.Mode == IdentityMode.SEQUENCE)
+                {
+                    var seqName = $"SEQ_{classe.SqlName}";
+                    var initialValue = _config.Identity.Start != null ? $", initialValue = {_config.Identity.Start}" : string.Empty;
+                    var increment = _config.Identity.Increment != null ? $", allocationSize = {_config.Identity.Increment}" : string.Empty;
+                    fw.WriteLine(1, @$"@SequenceGenerator(name = ""{seqName}"", sequenceName = ""{seqName}""{initialValue}{increment})");
+                    fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ""{seqName}"")");
+                }
             }
         }
 

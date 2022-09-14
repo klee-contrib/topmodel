@@ -9,8 +9,10 @@ import {TypeUtilisateurCode} from "./references";
 export interface UtilisateurDto {
     utilisateurId?: number,
     utilisateurAge?: number,
+    utilisateurProfilId?: number,
     utilisateuremail?: string,
     utilisateurTypeUtilisateurCode?: TypeUtilisateurCode,
+    utilisateurUtilisateurIdJumeau?: number,
     utilisateurParent?: UtilisateurDto
 }
 
@@ -29,6 +31,13 @@ export const UtilisateurDtoEntity = {
         isRequired: false,
         label: "utilisateur.utilisateur.age"
     },
+    utilisateurProfilId: {
+        type: "field",
+        name: "utilisateurProfilId",
+        domain: DO_ID,
+        isRequired: false,
+        label: "utilisateur.utilisateur.profilId"
+    },
     utilisateuremail: {
         type: "field",
         name: "utilisateuremail",
@@ -42,6 +51,13 @@ export const UtilisateurDtoEntity = {
         domain: DO_CODE,
         isRequired: false,
         label: "utilisateur.utilisateur.typeUtilisateurCode"
+    },
+    utilisateurUtilisateurIdJumeau: {
+        type: "field",
+        name: "utilisateurUtilisateurIdJumeau",
+        domain: DO_ID,
+        isRequired: false,
+        label: "utilisateur.utilisateur.utilisateurIdJumeau"
     },
     utilisateurParent: {
         type: "object",

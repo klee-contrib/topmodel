@@ -7,8 +7,8 @@ package topmodel.exemple.name.daos.securite;
 
 import org.springframework.data.repository.CrudRepository;
 
-import topmodel.exemple.name.entities.securite.TypeProfil;
+import topmodel.exemple.name.entities.securite.Droits;
 
-public interface TypeProfilDAO extends CrudRepository<TypeProfil, Long> {
+public interface DroitsDAO extends CrudRepository<Droits, Long> {
 
 }

@@ -143,7 +143,7 @@ public static class ImportsJpaExtensions
                 imports.Add("java.util.stream.Collectors");
                 imports.Add("javax.persistence.CascadeType");
                 imports.Add("javax.persistence.FetchType");
-                if (!(ap is JpaAssociationProperty japo && japo.IsReverse) && ap.Association.Namespace.Module.Split('.').First() != ap.Class.Namespace.Module.Split('.').First())
+                if (!(ap is JpaAssociationProperty japo && japo.IsReverse))
                 {
                     imports.Add("javax.persistence.JoinTable");
                 }

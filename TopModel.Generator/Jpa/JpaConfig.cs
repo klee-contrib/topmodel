@@ -55,4 +55,12 @@ public class JpaConfig : GeneratorConfigBase
     /// Mode de génération de l'API ("client" ou "server").
     /// </summary>
     public ApiGeneration ApiGeneration { get; set; }
+
+    /// <summary>
+    /// Mode de génération des séquences.
+    /// </summary>
+    public IdentityConfig Identity { get; set; } = new IdentityConfig()
+    {
+        Mode = IdentityMode.IDENTITY
+    };
 }

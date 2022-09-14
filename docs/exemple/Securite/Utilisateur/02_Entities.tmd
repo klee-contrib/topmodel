@@ -35,4 +35,8 @@ class:
     - association: TypeUtilisateur
       comment: Type d'utilisateur en Many to one
       type: manyToOne
+    - association: Utilisateur
+      comment: Utilisateur jumeau
+      role: Jumeau
+      type: oneToOne
 

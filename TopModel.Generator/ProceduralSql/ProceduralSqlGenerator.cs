@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using TopModel.Core;
 using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.ProceduralSql;
@@ -38,7 +39,44 @@ public class ProceduralSqlGenerator : GeneratorBase
             _files[file.Name] = file;
         }
 
-        _schemaGenerator?.GenerateSchemaScript(_files.Values.SelectMany(f => f.Classes).Distinct());
+        var classes = _files.Values.SelectMany(f => f.Classes).Distinct();
+
+        var manyToManyProperties = classes.SelectMany(cl => cl.Properties).Where(p => p is AssociationProperty ap && ap.Type == AssociationType.ManyToMany).Select(p => (AssociationProperty)p);
+        foreach (var ap in manyToManyProperties)
+        {
+            var traClass = new Class()
+            {
+                Comment = ap.Comment,
+                Label = ap.Label,
+                SqlName = $"{ap.Class.SqlName}_{ap.Association.SqlName}{(ap.Role != null ? $"_{ap.Role.ToUpper()}" : string.Empty)}"
+            };
+            traClass.Properties.Add(new AssociationProperty()
+            {
+                Association = ap.Class,
+                Class = traClass,
+                Comment = ap.Comment,
+                Type = AssociationType.ManyToOne,
+                Required = true,
+                Role = ap.Role,
+                DefaultValue = ap.DefaultValue,
+                Label = ap.Label
+            });
+            traClass.Properties.Add(new AssociationProperty()
+            {
+                Association = ap.Association,
+                Class = traClass,
+                Comment = ap.Comment,
+                Type = AssociationType.ManyToOne,
+                Required = true,
+                Role = ap.Role,
+                DefaultValue = ap.DefaultValue,
+                Label = ap.Label
+            });
+            classes = classes.Append(traClass);
+        }
+
+        _schemaGenerator?.GenerateSchemaScript(classes.OrderBy(c => c.SqlName));
+
         GenerateListInitScript();
     }
 

@@ -19,9 +19,29 @@ class:
       comment: Id technique
     - association: TypeProfil
       comment: Type de profil
+    - association: Droits
+      comment: Liste des droits de l'utilisateur
+      type: manyToMany
+      role: Appli
+    - association: Secteur
+      comment: Liste des secteurs de l'utilisateur
+      type: oneToMany
   mappers:
     to:
       - class: Profil
     from:
       - params:
         - class: Profil
+---
+class:
+  name: Secteur
+  label: Secteur
+  comment: Secteur d'application du profil
+  trigram: SEC
+  properties:
+    - name: Id
+      label: Id technique du secteur
+      required: true
+      primaryKey: true
+      domain: DO_ID
+      comment: Id technique

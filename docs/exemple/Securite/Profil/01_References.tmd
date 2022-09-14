@@ -22,3 +22,23 @@ class:
   values:
     value1: { Code: ADM, Libelle: Administrateur }
     value2: { Code: GES, Libelle: Gestionnaire }
+---
+class:
+  name: Droits
+  comment: Droits de l'application
+  reference: true
+  properties:
+    - name: Code
+      comment: Code du droit
+      primaryKey: true
+      required: true
+      domain: DO_CODE
+    - name: Libelle
+      comment: Libellé du droit
+      primaryKey: false
+      required: true
+      domain: DO_LIBELLE
+  values:
+    CRE: { Code: CRE, Libelle: Créer }
+    MOD: { Code: MOD, Libelle: Modifier }
+    SUP: { Code: SUP, Libelle: Supprimer }

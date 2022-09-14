@@ -4,7 +4,9 @@
   "type": "object",
   "description": "Fichier de config du générateur",
   "additionalProperties": false,
-  "required": ["app"],
+  "required": [
+    "app"
+  ],
   "properties": {
     "app": {
       "type": "string",
@@ -16,7 +18,12 @@
       "items": {
         "type": "string",
         "description": "Code du warning (TMD9XXX) à ignorer ",
-        "enum": ["TMD9001", "TMD9002", "TMD9003", "TMD9004"]
+        "enum": [
+          "TMD9001",
+          "TMD9002",
+          "TMD9003",
+          "TMD9004"
+        ]
       }
     },
     "modelRoot": {
@@ -38,7 +45,9 @@
         "type": "object",
         "description": "Config pour la génération de SQL 'procédurale' (sans SSDT)",
         "additionalProperties": false,
-        "required": ["tags"],
+        "required": [
+          "tags"
+        ],
         "properties": {
           "tags": {
             "type": "array",
@@ -51,7 +60,10 @@
           "targetDBMS": {
             "type": "string",
             "description": "SGBD cible ('postgre' ou 'sqlserver').",
-            "enum": ["sqlserver", "postgre"]
+            "enum": [
+              "sqlserver",
+              "postgre"
+            ]
           },
           "crebasFile": {
             "type": "string",
@@ -73,9 +85,29 @@
             "type": "string",
             "description": "Emplacement du script d'insertion des données des listes de référence."
           },
-          "disableIdentity": {
-            "type": "boolean",
-            "description": "Désactive les colonnes d'identité."
+          "identity": {
+            "type": "object",
+            "description": "Options de génération de la séquence",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "description": "Mode de génération des séquences.",
+                "enum": [
+                  "none",
+                  "sequence",
+                  "identity"
+                ],
+                "default": "identity"
+              },
+              "increment": {
+                "type": "number",
+                "description": "Incrément de la séquence générée."
+              },
+              "start": {
+                "type": "number",
+                "description": "Début de la séquence générée."
+              }
+            }
           }
         }
       }
@@ -87,7 +119,9 @@
         "type": "object",
         "description": "Config pour la génération SSDT",
         "additionalProperties": false,
-        "required": ["tags"],
+        "required": [
+          "tags"
+        ],
         "properties": {
           "tags": {
             "type": "array",
@@ -127,7 +161,10 @@
         "type": "object",
         "description": "Config pour la génération de C#.",
         "additionalProperties": false,
-        "required": ["outputDirectory", "tags"],
+        "required": [
+          "outputDirectory",
+          "tags"
+        ],
         "properties": {
           "tags": {
             "type": "array",
@@ -160,7 +197,10 @@
           "apiGeneration": {
             "type": "string",
             "description": "Mode de génération de l'API ('Client' ou 'Server')",
-            "enum": ["Client", "Server"]
+            "enum": [
+              "Client",
+              "Server"
+            ]
           },
           "useEFMigrations": {
             "type": "boolean",
@@ -189,7 +229,11 @@
           "kinetix": {
             "type": "string",
             "description": "Version de kinetix utilisée: Core, Framework ou None.",
-            "enum": ["Core", "Framework", "None"]
+            "enum": [
+              "Core",
+              "Framework",
+              "None"
+            ]
           },
           "noColumnOnAlias": {
             "type": "boolean",
@@ -213,7 +257,9 @@
         "type": "object",
         "description": "Config pour la génération de Typescript.",
         "additionalProperties": false,
-        "required": ["tags"],
+        "required": [
+          "tags"
+        ],
         "properties": {
           "tags": {
             "type": "array",
@@ -257,12 +303,19 @@
           "resourceMode": {
             "type": "string",
             "description": "Mode de génération (JS, JSON ou JSON Schema).",
-            "enum": ["js", "json", "schema"]
+            "enum": [
+              "js",
+              "json",
+              "schema"
+            ]
           },
           "referenceMode": {
             "type": "string",
             "description": "Mode de génération des listes de références (définitions ou valeurs).",
-            "enum": ["definition", "values"],
+            "enum": [
+              "definition",
+              "values"
+            ],
             "default": "definition"
           }
         }
@@ -275,7 +328,10 @@
         "type": "object",
         "description": "Config pour la génération de Jpa.",
         "additionalProperties": false,
-        "required": ["tags", "modelOutputDirectory"],
+        "required": [
+          "tags",
+          "modelOutputDirectory"
+        ],
         "properties": {
           "tags": {
             "type": "array",
@@ -326,7 +382,10 @@
           "apiGeneration": {
             "type": "string",
             "description": "Mode de génération de l'API ('Client' ou 'Server')",
-            "enum": ["Client", "Server"]
+            "enum": [
+              "Client",
+              "Server"
+            ]
           }
         }
       }
@@ -338,7 +397,11 @@
         "type": "object",
         "description": "Config pour la génération de Kasper.",
         "additionalProperties": false,
-        "required": ["tags", "sourcesDirectory", "packageName"],
+        "required": [
+          "tags",
+          "sourcesDirectory",
+          "packageName"
+        ],
         "properties": {
           "tags": {
             "type": "array",

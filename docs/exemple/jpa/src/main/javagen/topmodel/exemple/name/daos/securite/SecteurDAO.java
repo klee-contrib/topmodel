@@ -7,8 +7,8 @@ package topmodel.exemple.name.daos.securite;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import topmodel.exemple.name.entities.securite.Profil;
+import topmodel.exemple.name.entities.securite.Secteur;
 
-public interface ProfilDAO extends PagingAndSortingRepository<Profil, Long> {
+public interface SecteurDAO extends PagingAndSortingRepository<Secteur, Long> {
 
 }

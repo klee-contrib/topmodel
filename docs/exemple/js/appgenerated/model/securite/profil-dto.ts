@@ -5,11 +5,13 @@
 import {DO_CODE, DO_ID} from "@domains";
 
 import {UtilisateurDtoEntity, UtilisateurDto} from "../utilisateur/utilisateur-dto";
-import {TypeProfilCode} from "./references";
+import {DroitsCode, TypeProfilCode} from "./references";
 
 export interface ProfilDto {
     id?: number,
     typeProfilCode?: TypeProfilCode,
+    droitsAppli?: DroitsCode[],
+    secteurs?: number[],
     utilisateurs?: UtilisateurDto[]
 }
 
@@ -27,6 +29,20 @@ export const ProfilDtoEntity = {
         domain: DO_CODE,
         isRequired: false,
         label: "securite.profil.typeProfilCode"
+    },
+    droitsAppli: {
+        type: "field",
+        name: "droitsAppli",
+        domain: DO_CODE,
+        isRequired: false,
+        label: "securite.profil.droitsAppli"
+    },
+    secteurs: {
+        type: "field",
+        name: "secteurs",
+        domain: DO_ID,
+        isRequired: false,
+        label: "securite.profil.secteurs"
     },
     utilisateurs: {
         type: "list",
