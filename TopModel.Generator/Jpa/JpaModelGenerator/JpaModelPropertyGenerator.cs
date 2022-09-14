@@ -137,7 +137,18 @@ public class JpaModelPropertyGenerator
                 || property.Domain.Java.Type == "int"
                 || property.Domain.Java.Type == "Integer")
             {
-                fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.IDENTITY)");
+                if (_config.Identity.Mode == IdentityMode.IDENTITY)
+                {
+                    fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.IDENTITY)");
+                }
+                else if (_config.Identity.Mode == IdentityMode.SEQUENCE)
+                {
+                    var seqName = $"SEQ_{classe.SqlName}";
+                    var initialValue = _config.Identity.Start != null ? $", initialValue = {_config.Identity.Start}" : string.Empty;
+                    var increment = _config.Identity.Increment != null ? $", allocationSize = {_config.Identity.Increment}" : string.Empty;
+                    fw.WriteLine(1, @$"@SequenceGenerator(name = ""{seqName}"", sequenceName = ""{seqName}""{initialValue}{increment})");
+                    fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ""{seqName}"")");
+                }
             }
         }
 

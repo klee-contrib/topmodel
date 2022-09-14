@@ -1,4 +1,4 @@
-﻿namespace TopModel.Generator.ProceduralSql;
+﻿namespace TopModel.Generator;
 
 public enum IdentityMode
 {

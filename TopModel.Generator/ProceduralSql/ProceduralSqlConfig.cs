@@ -38,15 +38,8 @@ public class ProceduralSqlConfig : GeneratorConfigBase
     /// <summary>
     /// Mode de génération des séquences.
     /// </summary>
-    public IdentityMode IdentityMode { get; set; } = IdentityMode.IDENTITY;
-
-    /// <summary>
-    /// Incrément de la séquence générée
-    /// </summary>
-    public string? IdentityIncrement { get; set; }
-
-    /// <summary>
-    /// Début de la séquence générée
-    /// </summary>
-    public string? IdentityStart { get; set; }
+    public IdentityConfig Identity { get; set; } = new IdentityConfig()
+    {
+        Mode = IdentityMode.IDENTITY
+    };
 }
