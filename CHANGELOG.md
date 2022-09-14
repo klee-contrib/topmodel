@@ -1,5 +1,15 @@
 # TopModel.Generator (`modgen`)
 
+## 1.12.0
+
+- [#18](https://github.com/klee-contrib/topmodel/pull/143) PG : Génération tenant compte des types d'associations (ManyToMany en particulier)
+  - Adaptation de la génération JPA pour coller avec la génération PG
+    - Ajout du mode de génération de clé primaire: `sequence`, `none` ou `identity`
+    - Ajout du paramétrage du debut et de l'incrément de la séquence
+- [#145](https://github.com/klee-contrib/topmodel/commit/9d588ebdc84a0c74cd3bf37c4982032504138cf6) JPA: compatibilité avec Java 11 (`instance of Class classe` n'est disponible qu'à partir de Java 16)
+- [#142](https://github.com/klee-contrib/topmodel/pull/142) Prise en compte de length et scale dans le générateur pg
+- [#144](https://github.com/klee-contrib/topmodel/commit/c2411a15022237142dd98c2bf1a7bdf2c081b091) JPA : Générer correctement l'entity Java si le name de la clé primaire ne commence pas par une majuscule
+
 ## 1.11.3
 
 - [#140](https://github.com/klee-contrib/topmodel/pull/140) - [JPA] Différenciation des configuration de package (fix [#139](https://github.com/klee-contrib/topmodel/issues/139))
