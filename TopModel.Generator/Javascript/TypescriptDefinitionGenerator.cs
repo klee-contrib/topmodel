@@ -139,7 +139,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
     {
         using var fw = new FileWriter(fileName, _logger, false);
 
-        if (_config.Focus)
+        if (_config.TargetFramework == TargetFramework.FOCUS)
         {
             fw.WriteLine($"import {{{string.Join(", ", GetFocusStoresImports(classe).OrderBy(x => x))}}} from \"@focus4/stores\";");
         }
@@ -167,7 +167,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
         fw.Write("\r\n");
 
-        if (_config.Focus)
+        if (_config.TargetFramework == TargetFramework.FOCUS)
         {
             fw.Write("export type ");
             fw.Write(classe.Name);
@@ -201,9 +201,9 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
         foreach (var property in classe.Properties)
         {
-            fw.Write($"    {property.Name.ToFirstLower()}{(_config.Focus ? string.Empty : "?")}: ");
+            fw.Write($"    {property.Name.ToFirstLower()}{(_config.TargetFramework == TargetFramework.FOCUS ? string.Empty : "?")}: ");
 
-            if (_config.Focus)
+            if (_config.TargetFramework == TargetFramework.FOCUS)
             {
                 if (property is CompositionProperty cp)
                 {
@@ -250,7 +250,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
         fw.Write($"export const {classe.Name}Entity");
 
-        if (_config.Focus)
+        if (_config.TargetFramework == TargetFramework.FOCUS)
         {
             fw.Write($": {classe.Name}EntityType");
         }
@@ -348,7 +348,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             fw.Write("\r\n");
         }
 
-        fw.Write($"}}{(_config.Focus ? string.Empty : " as const")}\r\n");
+        fw.Write($"}}{(_config.TargetFramework == TargetFramework.FOCUS ? string.Empty : " as const")}\r\n");
 
         if (classe.Reference)
         {
@@ -395,7 +395,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                 : $"{string.Join('/', currentModule.Split(".").Select(m => ".."))}/{module.Replace(".", "/").ToDashCase()}";
 
             return (
-                import: type.DomainKind == null ? $"{name}Entity, {name}{(_config.Focus ? "EntityType" : string.Empty)}" : name,
+                import: type.DomainKind == null ? $"{name}Entity, {name}{(_config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}" : name,
                 path: $"{module}/{name.ToDashCase()}");
         }).Distinct().ToList();
 

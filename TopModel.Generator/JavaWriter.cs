@@ -103,14 +103,7 @@ public class JavaWriter : IDisposable
     /// <param name="value">Valeur à écrire dans le flux.</param>
     public void WriteLine(int indentationLevel, string value)
     {
-        var indentValue = string.Empty;
-        for (var i = 0; i < indentationLevel; ++i)
-        {
-            indentValue += IndentValue;
-        }
-
-        value = value.Replace("\n", "\n" + indentValue);
-        _writer.WriteLine(indentValue + value);
+        _writer.WriteLine(indentationLevel, value);
     }
 
     /// <summary>

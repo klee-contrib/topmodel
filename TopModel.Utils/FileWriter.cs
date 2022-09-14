@@ -19,6 +19,8 @@ public class FileWriter : TextWriter
     private readonly string _fileName;
     private readonly ILogger _logger;
 
+    protected string IndentValue { get; set; } = "	";
+
     /// <summary>
     /// Crée une nouvelle instance.
     /// </summary>
@@ -75,6 +77,23 @@ public class FileWriter : TextWriter
         _sb.Append(value);
     }
 
+
+    /// <summary>
+    /// Ecrit un caractère dans le stream.
+    /// </summary>
+    /// <param name="value">Caractère.</param>
+    public void Write(int indentationLevel, string value)
+    {
+        var indentValue = string.Empty;
+        for (var i = 0; i < indentationLevel; ++i)
+        {
+            indentValue += IndentValue;
+        }
+
+        value = value.Replace("\n", "\n" + indentValue);
+        this.Write(indentValue + value);
+    }
+
     /// <summary>
     /// Ecrit un string dans le stream.
     /// </summary>
@@ -91,6 +110,23 @@ public class FileWriter : TextWriter
     public override void WriteLine(string? value)
     {
         _sb.Append(value + "\r\n");
+    }
+
+    /// <summary>
+    /// Ecrit la chaine avec le niveau indenté.
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="value">Valeur à écrire dans le flux.</param>
+    public void WriteLine(int indentationLevel, string value)
+    {
+        var indentValue = string.Empty;
+        for (var i = 0; i < indentationLevel; ++i)
+        {
+            indentValue += IndentValue;
+        }
+
+        value = value.Replace("\n", "\n" + indentValue);
+        this.WriteLine(indentValue + value);
     }
 
     /// <summary>
