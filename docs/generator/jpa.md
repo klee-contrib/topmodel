@@ -2,23 +2,23 @@
 
 ## Configuration
 
-Préconisations :
-
-Il n'est pas recommandé d'utiliser le générateur Postgresql en combinaison avec le générateur JPA. En effet, celui-ci ne gère pas les relations `manyToMany` de la même manière. La seule génération des listes de références suffit, en y ajoutant la configuration du `generateddl` de spring :
-
-Dans le fichier `application.yml` de votre application
+Voici un exemple de configuration du générateur JPA 
 
 ```yaml
-spring:
-  jpa:
-    properties:
-      javax:
-        persistence:
-          schema-generation:
-            create-source: metadata
-            scripts:
-              action: create
-              create-target: create.sql
+jpa:
+  - tags:
+      - dto
+      - entity
+    modelOutputDirectory: ./jpa/src/main/javagen
+    daosPackageName: topmodel.exemple.name.daos
+    dtosPackageName: topmodel.exemple.name.dtos
+    entitiesPackageName: topmodel.exemple.name.entities
+    apiOutputDirectory: ./jpa/src/main/javagen
+    apiPackageName: topmodel.exemple.name.api
+    apiGeneration: Server
+    fieldsEnum: true
+    fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<>
+    enumShortcutMode: false
 ```
 
 ## Model
