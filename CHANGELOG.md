@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.12.1
+
+- [`1f017a3f`](https://github.com/klee-contrib/topmodel/commit/1f017a3fec6a1ad32596d9b29d797d1cf679a72f) - Hotfix schema.config.json
+
 ## 1.12.0
 
 - [#18](https://github.com/klee-contrib/topmodel/pull/143) PG : Génération tenant compte des types d'associations (ManyToMany en particulier)
