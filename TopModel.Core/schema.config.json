@@ -386,6 +386,30 @@
               "Client",
               "Server"
             ]
+          },
+          "identity": {
+            "type": "object",
+            "description": "Options de génération de la séquence",
+            "properties": {
+              "mode": {
+                "type": "string",
+                "description": "Mode de génération des séquences.",
+                "enum": [
+                  "none",
+                  "sequence",
+                  "identity"
+                ],
+                "default": "identity"
+              },
+              "increment": {
+                "type": "number",
+                "description": "Incrément de la séquence générée."
+              },
+              "start": {
+                "type": "number",
+                "description": "Début de la séquence générée."
+              }
+            }
           }
         }
       }
