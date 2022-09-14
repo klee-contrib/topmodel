@@ -60,7 +60,7 @@ public interface IFieldProperty : IProperty
             return prop.Class.Extends != null && prop.PrimaryKey && Class.Trigram != null
                 ? $"{Class.Trigram}_{ModelUtils.ConvertCsharp2Bdd(Name).Replace(prop.Class.SqlName + "_", string.Empty)}"
                 : prop is AssociationProperty ap
-                ? ap.Property.SqlName + (ap.Role != null ? $"_{ModelUtils.ConvertCsharp2Bdd(ap.Role.Replace(" ", "_")).ToUpper()}" : string.Empty)
+                ? ap.Property.SqlName + (ap.Role != null ? $"_{ap.Role.Replace(" ", "_").ToUpper()}" : string.Empty)
                 : prop.Class.Trigram != null
                 ? $"{prop.Class.Trigram}_{ModelUtils.ConvertCsharp2Bdd(prop.Name)}"
                 : ModelUtils.ConvertCsharp2Bdd(prop.Name);
