@@ -2,23 +2,36 @@
 
 ## Configuration
 
-Voici un exemple de configuration du générateur JPA 
+Voici un exemple de configuration du générateur JPA
 
 ```yaml
 jpa:
   - tags:
       - dto
       - entity
-    modelOutputDirectory: ./jpa/src/main/javagen
-    daosPackageName: topmodel.exemple.name.daos
-    dtosPackageName: topmodel.exemple.name.dtos
-    entitiesPackageName: topmodel.exemple.name.entities
-    apiOutputDirectory: ./jpa/src/main/javagen
-    apiPackageName: topmodel.exemple.name.api
-    apiGeneration: Server
-    fieldsEnum: true
-    fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<>
-    enumShortcutMode: false
+    modelOutputDirectory: ./jpa/src/main/javagen # Dossier cible de la génération
+    daosPackageName: topmodel.exemple.name.daos # Package des DAO
+    dtosPackageName: topmodel.exemple.name.dtos # Package des objets non persistés
+    entitiesPackageName: topmodel.exemple.name.entities # Package des objets non persistés
+    apiOutputDirectory: ./jpa/src/main/javagen # Dossier cible des API
+    apiPackageName: topmodel.exemple.name.api # Package des l'API
+    apiGeneration: Server # Mode de génération de l'API (serveur ou client)
+    fieldsEnum: true # Si le générateur doit ajouter une enum des champs de la classe persistés
+    fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<> # Classe dont doivent hériter ces enum
+```
+
+### Utilisation combinée avec le générateur postgresql
+
+Le mode de génération par défaut des générateur ne créé par de séquence, mais des colonnes auto-générées avec `identity`. Malheureusement, le batch insert de jdbc ne fonctionne correctement qu'avec des séquences. Il est donc recommandé d'utiliser le mode `sequence` de du générateur postgresql.
+
+Le mode `sequence` dans la configuration jpa et dans la configuration postgresql se déclare de la même manière :
+
+```yaml
+## Configuration jpa ou proceduralSql
+    identity:
+      increment: 50
+      start: 1000
+      mode: sequence
 ```
 
 ## Model
