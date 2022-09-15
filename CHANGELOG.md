@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.12.2
+
+- [`0b48d2ee`](https://github.com/klee-contrib/topmodel/commit/0b48d2eee444d849fb5ec1cf1aaa44df021e21f9) - Gestion des dates dans "values"
+
 ## 1.12.1
 
 - [`1f017a3f`](https://github.com/klee-contrib/topmodel/commit/1f017a3fec6a1ad32596d9b29d797d1cf679a72f) - Hotfix schema.config.json
