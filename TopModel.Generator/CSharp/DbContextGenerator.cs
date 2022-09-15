@@ -188,6 +188,8 @@ public class DbContextGenerator
                     {
                         var value = _config.CanClassUseEnums(classe) && prop.Key.PrimaryKey
                             ? $"{(classe.Name.EndsWith("s") ? $"{string.Join(".", _config.GetNamespace(classe).Split(".").Except(contextNs.Split(".")))}.{classe.Name}" : classe.Name)}.{classe.PrimaryKey!.Name}s.{prop.Value}"
+                            : prop.Key.Domain.CSharp!.Type.Contains("Date")
+                            ? $"{prop.Key.Domain.CSharp.Type.TrimEnd('?')}.Parse(\"{prop.Value}\"){(prop.Key.Domain.CSharp.Type.Contains("Time") ? ".ToUniversalTime()" : string.Empty)}"
                             : prop.Key.Domain.ShouldQuoteSqlValue
                             ? $"\"{prop.Value}\""
                             : prop.Value;

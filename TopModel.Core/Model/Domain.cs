@@ -37,6 +37,8 @@ public class Domain
         || SqlType == "text"
         || SqlType == "uniqueidentifier"
         || SqlType == "uuid"
+        || (SqlType ?? string.Empty).Contains("date")
+        || (SqlType ?? string.Empty).Contains("time")
         || CSharp?.Type == "string";
 
 #nullable disable
