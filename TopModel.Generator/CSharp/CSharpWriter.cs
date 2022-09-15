@@ -32,7 +32,19 @@ public class CSharpWriter : IDisposable
     /// <param name="text">Texte.</param>
     public void Write(string text)
     {
-        _writer.Write(text);
+        Write(0, text);
+    }
+
+    /// <summary>
+    /// Ecrit la chaine avec le niveau indenté.
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="value">Valeur à écrire dans le flux.</param>
+    public void Write(int indentationLevel, string value)
+    {
+        var indentValue = GetIdentValue(indentationLevel);
+        value = value.Replace("\r\n", "\r\n" + indentValue);
+        _writer.Write(indentValue + value);
     }
 
     /// <summary>
@@ -125,17 +137,7 @@ public class CSharpWriter : IDisposable
     /// <param name="value">Valeur à écrire dans le flux.</param>
     public void WriteLine(int indentationLevel, string value)
     {
-        if (_useLatestCSharp && indentationLevel > 0)
-        {
-            indentationLevel--;
-        }
-
-        var indentValue = string.Empty;
-        for (var i = 0; i < indentationLevel; ++i)
-        {
-            indentValue += IndentValue;
-        }
-
+        var indentValue = GetIdentValue(indentationLevel);
         value = value.Replace("\r\n", "\r\n" + indentValue);
         _writer.WriteLine(indentValue + value);
     }
@@ -318,5 +320,26 @@ public class CSharpWriter : IDisposable
 
         sb.Append("\r\n/// </summary>");
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// Calcule l'identation nécessaire.
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indention.</param>
+    /// <returns>Identation.</returns>
+    private string GetIdentValue(int indentationLevel)
+    {
+        if (_useLatestCSharp && indentationLevel > 0)
+        {
+            indentationLevel--;
+        }
+
+        var indentValue = string.Empty;
+        for (var i = 0; i < indentationLevel; ++i)
+        {
+            indentValue += IndentValue;
+        }
+
+        return indentValue;
     }
 }

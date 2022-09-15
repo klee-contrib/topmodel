@@ -14,7 +14,7 @@ public class ClassMappings
 #nullable enable
     public string? Comment { get; set; }
 
-    public Dictionary<IFieldProperty, IFieldProperty> Mappings { get; } = new();
+    public Dictionary<IProperty, IFieldProperty> Mappings { get; } = new();
 
     public Dictionary<Reference, Reference> MappingReferences { get; } = new();
 

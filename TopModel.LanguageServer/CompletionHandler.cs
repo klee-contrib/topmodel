@@ -263,6 +263,7 @@ class CompletionHandler : CompletionHandlerBase
                     if (classe != null)
                     {
                         string? searchText = null;
+                        var includeCompositions = false;
 
                         if (currentLine.Contains("defaultProperty:") || currentLine.Contains("flagProperty:") || currentLine.Contains("orderProperty:"))
                         {
@@ -352,11 +353,18 @@ class CompletionHandler : CompletionHandlerBase
                                     }
                                 }
                             }
+                            else if (isMappings)
+                            {
+                                includeCompositions = true;
+                            }
                         }
 
                         if (searchText != null)
                         {
-                            return Task.FromResult(new CompletionList(classe.Properties.OfType<IFieldProperty>()
+                            return Task.FromResult(new CompletionList(
+                                (includeCompositions
+                                    ? classe.Properties
+                                    : classe.Properties.Where(p => p is IFieldProperty))
                                 .Where(f => f.Name.ShouldMatch(searchText))
                                 .Select(f => new CompletionItem
                                 {

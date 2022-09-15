@@ -108,6 +108,21 @@ public enum ModelErrorType
     TMD1016,
 
     /// <summary>
+    /// La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car ce n'est pas une association.
+    /// </summary>
+    TMD1017,
+
+    /// <summary>
+    /// L'association '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car les types de composition et d'association ne correspondent pas.
+    /// </summary>
+    TMD1018,
+
+    /// <summary>
+    /// La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la clé primaire de la classe '{cp.Composition.Name}' composée.
+    /// </summary>
+    TMD1019,
+
+    /// <summary>
     /// L'import {} n'est pas utilisé.
     /// </summary>
     TMD9001,
