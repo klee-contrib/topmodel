@@ -111,14 +111,22 @@ public class AngularApiClientGenerator : GeneratorBase
         fw.Write(1, $"{endpoint.Name.ToFirstLower()}(");
 
         var hasForm = endpoint.Params.Any(p => p is IFieldProperty fp && fp.Domain.TS!.Type.Contains("File"));
-
+        var hasProperty = false;
         foreach (var param in endpoint.Params)
         {
-            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm ? "?" : string.Empty)}: {param.GetPropertyTypeName()}, ");
+            hasProperty = true;
+            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm ? "?" : string.Empty)}: {param.GetPropertyTypeName()} ");
         }
 
         string returnType;
-        fw.Write("httpOptions: any = {}): Observable<");
+        if (endpoint.GetQueryParams().Any())
+        {
+            if (hasProperty) {
+                fw.Write(", ");
+            }
+            fw.Write("queryParams: any = {}");
+        }
+        fw.Write("): Observable<");
         if (endpoint.Returns == null)
         {
             returnType = "void";
@@ -133,10 +141,10 @@ public class AngularApiClientGenerator : GeneratorBase
 
         if (endpoint.GetQueryParams().Any())
         {
-
+            fw.WriteLine(2, "const httpParams = new HttpParams({fromObject : queryParams});");
+            fw.WriteLine(2, "const httpOptions = { params: httpParams }");
             foreach (var qParam in endpoint.GetQueryParams())
             {
-
                 fw.WriteLine(2, @$"if({qParam.GetParamName()} !== null) {{");
                 fw.WriteLine(3, $"httpOptions.params.set('{qParam.GetParamName()}', {qParam.GetParamName()})");
                 fw.WriteLine(2, @$"}}");
@@ -144,13 +152,15 @@ public class AngularApiClientGenerator : GeneratorBase
             fw.WriteLine();
         }
 
-        fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}<{returnType}>(`./{endpoint.FullRoute.Replace("{", "${")}`");
+        fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}<{returnType}>(`/{endpoint.FullRoute.Replace("{", "${")}`");
 
         if (endpoint.GetBodyParam() != null)
         {
             fw.Write($", {endpoint.GetBodyParam()!.GetParamName()}");
         }
-        fw.Write($", httpOptions");
+        if (endpoint.GetQueryParams().Any()) {
+            fw.Write(", httpOptions");
+        }
 
         fw.WriteLine(");");
         fw.WriteLine(1, "}");
