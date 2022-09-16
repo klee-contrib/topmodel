@@ -164,11 +164,11 @@ public static class JpaUtils
                     .Where(p => !(p is JpaAssociationProperty))
                     .Where(p => p.Type != AssociationType.OneToOne)
                     .Where(p => p.Association == classe
-                                && p.Class.Namespace.Module.Split('.').First() == classe.Namespace.Module.Split('.').First())
+                                && (p.Type == AssociationType.OneToMany || p.Class.Namespace.Module.Split('.').First() == classe.Namespace.Module.Split('.').First()))
                     .ToList();
     }
 
-    public static IList<IProperty> GetProperties(this Class classe, JpaConfig config,  List<Class> availableClasses)
+    public static IList<IProperty> GetProperties(this Class classe, JpaConfig config, List<Class> availableClasses)
     {
         if (classe.Reference)
         {
