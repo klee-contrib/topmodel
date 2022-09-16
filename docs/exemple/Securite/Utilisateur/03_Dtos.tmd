@@ -5,6 +5,7 @@ uses:
   - decorators
 tags:
   - dto
+
 ---
 class:
   name: UtilisateurDto
@@ -18,7 +19,7 @@ class:
         exclude:
           - dateCreation
           - dateModification
-      prefix: true
+          - UtilisateurIdParent
     - composition: UtilisateurDto
       name: UtilisateurParent
       comment: UtilisateurParent
@@ -27,5 +28,9 @@ class:
     from:
       - params:
           - class: Utilisateur
+            mappings:
+              UtilisateurParent: UtilisateurIdParent
     to:
       - class: Utilisateur
+        mappings:
+          UtilisateurParent: UtilisateurIdParent

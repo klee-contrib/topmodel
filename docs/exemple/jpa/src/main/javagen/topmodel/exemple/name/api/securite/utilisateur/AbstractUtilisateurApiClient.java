@@ -123,36 +123,31 @@ public abstract class AbstractUtilisateurApiClient {
 
 	/**
 	 * UriComponentsBuilder pour la méthode Search.
-	 * @param utiUtilisateurId Id technique
-	 * @param utilisateurAge Age en années de l'utilisateur
-	 * @param utilisateurProfilId Profil de l'utilisateur
-	 * @param utilisateuremail Email de l'utilisateur
-	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
-	 * @param utilisateurUtilisateurIdJumeau Utilisateur jumeau
+	 * @param utiId Id technique
+	 * @param age Age en années de l'utilisateur
+	 * @param profilId Profil de l'utilisateur
+	 * @param email Email de l'utilisateur
+	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder searchUriComponentsBuilder(long utiUtilisateurId, Long utilisateurAge, long utilisateurProfilId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode, long utilisateurUtilisateurIdJumeau) {
+	protected UriComponentsBuilder searchUriComponentsBuilder(long utiId, Long age, long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode) {
 		String uri = host + "utilisateur/search";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
-		uriBuilder.queryParam("utiUtilisateurId", utiUtilisateurId);
-		if (utilisateurAge != null) {
-			uriBuilder.queryParam("utilisateurAge", utilisateurAge);
+		uriBuilder.queryParam("utiId", utiId);
+		if (age != null) {
+			uriBuilder.queryParam("age", age);
 		}
 
-		if (utilisateurProfilId != null) {
-			uriBuilder.queryParam("utilisateurProfilId", utilisateurProfilId);
+		if (profilId != null) {
+			uriBuilder.queryParam("profilId", profilId);
 		}
 
-		if (utilisateuremail != null) {
-			uriBuilder.queryParam("utilisateuremail", utilisateuremail);
+		if (email != null) {
+			uriBuilder.queryParam("email", email);
 		}
 
-		if (utilisateurTypeUtilisateurCode != null) {
-			uriBuilder.queryParam("utilisateurTypeUtilisateurCode", utilisateurTypeUtilisateurCode);
-		}
-
-		if (utilisateurUtilisateurIdJumeau != null) {
-			uriBuilder.queryParam("utilisateurUtilisateurIdJumeau", utilisateurUtilisateurIdJumeau);
+		if (typeUtilisateurCode != null) {
+			uriBuilder.queryParam("typeUtilisateurCode", typeUtilisateurCode);
 		}
 
 		return uriBuilder;
@@ -160,16 +155,15 @@ public abstract class AbstractUtilisateurApiClient {
 
 	/**
 	 * Recherche des utilisateurs.
-	 * @param utiUtilisateurId Id technique
-	 * @param utilisateurAge Age en années de l'utilisateur
-	 * @param utilisateurProfilId Profil de l'utilisateur
-	 * @param utilisateuremail Email de l'utilisateur
-	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
-	 * @param utilisateurUtilisateurIdJumeau Utilisateur jumeau
+	 * @param utiId Id technique
+	 * @param age Age en années de l'utilisateur
+	 * @param profilId Profil de l'utilisateur
+	 * @param email Email de l'utilisateur
+	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<Page> search(long utiUtilisateurId, Long utilisateurAge, long utilisateurProfilId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode, long utilisateurUtilisateurIdJumeau, HttpHeaders headers){
-		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utiUtilisateurId, utilisateurAge, utilisateurProfilId, utilisateuremail, utilisateurTypeUtilisateurCode, utilisateurUtilisateurIdJumeau);
+	public ResponseEntity<Page> search(long utiId, Long age, long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, HttpHeaders headers){
+		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utiId, age, profilId, email, typeUtilisateurCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), Page.class);
 	}
 }

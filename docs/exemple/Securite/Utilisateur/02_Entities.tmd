@@ -36,7 +36,6 @@ class:
       comment: Type d'utilisateur en Many to one
       type: manyToOne
     - association: Utilisateur
-      comment: Utilisateur jumeau
-      role: Jumeau
+      comment: Utilisateur parent
+      role: Parent
       type: oneToOne
-

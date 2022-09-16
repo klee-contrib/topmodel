@@ -92,11 +92,11 @@ public class Utilisateur {
 	private TypeUtilisateur typeUtilisateur;
 
 	/**
-	 * Utilisateur jumeau.
+	 * Utilisateur parent.
 	 */
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
-	@JoinColumn(name = "UTI_ID_JUMEAU", referencedColumnName = "UTI_ID", unique = true)
-	private Utilisateur utilisateurJumeau;
+	@JoinColumn(name = "UTI_ID_PARENT", referencedColumnName = "UTI_ID", unique = true)
+	private Utilisateur utilisateurParent;
 
 	/**
 	 * No arg constructor.
@@ -120,7 +120,7 @@ public class Utilisateur {
 		this.profil = utilisateur.getProfil();
 		this.email = utilisateur.getEmail();
 		this.typeUtilisateur = utilisateur.getTypeUtilisateur();
-		this.utilisateurJumeau = utilisateur.getUtilisateurJumeau();
+		this.utilisateurParent = utilisateur.getUtilisateurParent();
 	}
 
 	/**
@@ -132,9 +132,9 @@ public class Utilisateur {
 	 * @param profil Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
 	 * @param typeUtilisateur Type d'utilisateur en Many to one
-	 * @param utilisateurJumeau Utilisateur jumeau
+	 * @param utilisateurParent Utilisateur parent
 	 */
-	public Utilisateur(DateTime dateCreation, DateTime dateModification, long id, Long age, Profil profil, String email, TypeUtilisateur typeUtilisateur, Utilisateur utilisateurJumeau) {
+	public Utilisateur(DateTime dateCreation, DateTime dateModification, long id, Long age, Profil profil, String email, TypeUtilisateur typeUtilisateur, Utilisateur utilisateurParent) {
 		this.dateCreation = dateCreation;
 		this.dateModification = dateModification;
 		this.id = id;
@@ -142,7 +142,7 @@ public class Utilisateur {
 		this.profil = profil;
 		this.email = email;
 		this.typeUtilisateur = typeUtilisateur;
-		this.utilisateurJumeau = utilisateurJumeau;
+		this.utilisateurParent = utilisateurParent;
 	}
 
 	/**
@@ -209,12 +209,12 @@ public class Utilisateur {
 	}
 
 	/**
-	 * Getter for utilisateurJumeau.
+	 * Getter for utilisateurParent.
 	 *
-	 * @return value of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#utilisateurJumeau utilisateurJumeau}.
+	 * @return value of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#utilisateurParent utilisateurParent}.
 	 */
-	public Utilisateur getUtilisateurJumeau() {
-		return this.utilisateurJumeau;
+	public Utilisateur getUtilisateurParent() {
+		return this.utilisateurParent;
 	}
 
 	/**
@@ -274,11 +274,11 @@ public class Utilisateur {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#utilisateurJumeau utilisateurJumeau}.
-	 * @param utilisateurJumeau value to set
+	 * Set the value of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#utilisateurParent utilisateurParent}.
+	 * @param utilisateurParent value to set
 	 */
-	public void setUtilisateurJumeau(Utilisateur utilisateurJumeau) {
-		this.utilisateurJumeau = utilisateurJumeau;
+	public void setUtilisateurParent(Utilisateur utilisateurParent) {
+		this.utilisateurParent = utilisateurParent;
 	}
 
 	/**
@@ -310,6 +310,6 @@ public class Utilisateur {
         PROFIL, //
         EMAIL, //
         TYPE_UTILISATEUR, //
-        UTILISATEUR_JUMEAU
+        UTILISATEUR_PARENT
 	}
 }

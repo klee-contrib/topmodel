@@ -14,46 +14,39 @@ import topmodel.exemple.name.entities.utilisateur.TypeUtilisateur;
 public interface IUtilisateurDto {
 
 	/**
-	 * Getter for utilisateurId.
+	 * Getter for id.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurId utilisateurId}.
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#id id}.
 	 */
-	long getUtilisateurId();
+	long getId();
 
 	/**
-	 * Getter for utilisateurAge.
+	 * Getter for age.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurAge utilisateurAge}.
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#age age}.
 	 */
-	Long getUtilisateurAge();
+	Long getAge();
 
 	/**
-	 * Getter for utilisateurProfilId.
+	 * Getter for profilId.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurProfilId utilisateurProfilId}.
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#profilId profilId}.
 	 */
-	long getUtilisateurProfilId();
+	long getProfilId();
 
 	/**
-	 * Getter for utilisateuremail.
+	 * Getter for email.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateuremail utilisateuremail}.
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#email email}.
 	 */
-	String getUtilisateuremail();
+	String getEmail();
 
 	/**
-	 * Getter for utilisateurTypeUtilisateurCode.
+	 * Getter for typeUtilisateurCode.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurTypeUtilisateurCode utilisateurTypeUtilisateurCode}.
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#typeUtilisateurCode typeUtilisateurCode}.
 	 */
-	TypeUtilisateur.Values getUtilisateurTypeUtilisateurCode();
-
-	/**
-	 * Getter for utilisateurUtilisateurIdJumeau.
-	 *
-	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurUtilisateurIdJumeau utilisateurUtilisateurIdJumeau}.
-	 */
-	long getUtilisateurUtilisateurIdJumeau();
+	TypeUtilisateur.Values getTypeUtilisateurCode();
 
 	/**
 	 * Getter for utilisateurParent.

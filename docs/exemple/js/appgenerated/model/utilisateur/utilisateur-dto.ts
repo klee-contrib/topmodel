@@ -7,57 +7,49 @@ import {DO_CODE, DO_EMAIL, DO_ID, DO_NUMBER} from "@domains";
 import {TypeUtilisateurCode} from "./references";
 
 export interface UtilisateurDto {
-    utilisateurId?: number,
-    utilisateurAge?: number,
-    utilisateurProfilId?: number,
-    utilisateuremail?: string,
-    utilisateurTypeUtilisateurCode?: TypeUtilisateurCode,
-    utilisateurUtilisateurIdJumeau?: number,
+    id?: number,
+    age?: number,
+    profilId?: number,
+    email?: string,
+    typeUtilisateurCode?: TypeUtilisateurCode,
     utilisateurParent?: UtilisateurDto
 }
 
 export const UtilisateurDtoEntity = {
-    utilisateurId: {
+    id: {
         type: "field",
-        name: "utilisateurId",
+        name: "id",
         domain: DO_ID,
-        isRequired: true,
+        isRequired: false,
         label: "utilisateur.utilisateur.id"
     },
-    utilisateurAge: {
+    age: {
         type: "field",
-        name: "utilisateurAge",
+        name: "age",
         domain: DO_NUMBER,
         isRequired: false,
         label: "utilisateur.utilisateur.age"
     },
-    utilisateurProfilId: {
+    profilId: {
         type: "field",
-        name: "utilisateurProfilId",
+        name: "profilId",
         domain: DO_ID,
         isRequired: false,
         label: "utilisateur.utilisateur.profilId"
     },
-    utilisateuremail: {
+    email: {
         type: "field",
-        name: "utilisateuremail",
+        name: "email",
         domain: DO_EMAIL,
         isRequired: false,
         label: "utilisateur.utilisateur.email"
     },
-    utilisateurTypeUtilisateurCode: {
+    typeUtilisateurCode: {
         type: "field",
-        name: "utilisateurTypeUtilisateurCode",
+        name: "typeUtilisateurCode",
         domain: DO_CODE,
         isRequired: false,
         label: "utilisateur.utilisateur.typeUtilisateurCode"
-    },
-    utilisateurUtilisateurIdJumeau: {
-        type: "field",
-        name: "utilisateurUtilisateurIdJumeau",
-        domain: DO_ID,
-        isRequired: false,
-        label: "utilisateur.utilisateur.utilisateurIdJumeau"
     },
     utilisateurParent: {
         type: "object",

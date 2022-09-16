@@ -8,7 +8,6 @@ import java.io.Serializable;
 
 import javax.annotation.Generated;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 
 import topmodel.exemple.name.dtos.utilisateur.interfaces.IUtilisateurDto;
 import topmodel.exemple.name.entities.utilisateur.TypeUtilisateur;
@@ -26,39 +25,32 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * Id technique.
 	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getId() Utilisateur#getId()} 
 	 */
-	@NotNull
-	private long utilisateurId;
+	private long id;
 
 	/**
 	 * Age en années de l'utilisateur.
 	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getAge() Utilisateur#getAge()} 
 	 */
-	private Long utilisateurAge;
+	private Long age;
 
 	/**
 	 * Profil de l'utilisateur.
 	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getProfilId() Utilisateur#getProfilId()} 
 	 */
-	private long utilisateurProfilId;
+	private long profilId;
 
 	/**
 	 * Email de l'utilisateur.
 	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getEmail() Utilisateur#getEmail()} 
 	 */
 	@Email
-	private String utilisateuremail;
+	private String email;
 
 	/**
 	 * Type d'utilisateur en Many to one.
 	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()} 
 	 */
-	private TypeUtilisateur.Values utilisateurTypeUtilisateurCode;
-
-	/**
-	 * Utilisateur jumeau.
-	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getUtilisateurIdJumeau() Utilisateur#getUtilisateurIdJumeau()} 
-	 */
-	private long utilisateurUtilisateurIdJumeau;
+	private TypeUtilisateur.Values typeUtilisateurCode;
 
 	/**
 	 * UtilisateurParent.
@@ -80,32 +72,29 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 			return;
 		}
 
-		this.utilisateurId = utilisateurDto.getUtilisateurId();
-		this.utilisateurAge = utilisateurDto.getUtilisateurAge();
-		this.utilisateurProfilId = utilisateurDto.getUtilisateurProfilId();
-		this.utilisateuremail = utilisateurDto.getUtilisateuremail();
-		this.utilisateurTypeUtilisateurCode = utilisateurDto.getUtilisateurTypeUtilisateurCode();
-		this.utilisateurUtilisateurIdJumeau = utilisateurDto.getUtilisateurUtilisateurIdJumeau();
+		this.id = utilisateurDto.getId();
+		this.age = utilisateurDto.getAge();
+		this.profilId = utilisateurDto.getProfilId();
+		this.email = utilisateurDto.getEmail();
+		this.typeUtilisateurCode = utilisateurDto.getTypeUtilisateurCode();
 		this.utilisateurParent = utilisateurDto.getUtilisateurParent();
 	}
 
 	/**
 	 * All arg constructor.
-	 * @param utilisateurId Id technique
-	 * @param utilisateurAge Age en années de l'utilisateur
-	 * @param utilisateurProfilId Profil de l'utilisateur
-	 * @param utilisateuremail Email de l'utilisateur
-	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
-	 * @param utilisateurUtilisateurIdJumeau Utilisateur jumeau
+	 * @param id Id technique
+	 * @param age Age en années de l'utilisateur
+	 * @param profilId Profil de l'utilisateur
+	 * @param email Email de l'utilisateur
+	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @param utilisateurParent UtilisateurParent
 	 */
-	public UtilisateurDto(long utilisateurId, Long utilisateurAge, long utilisateurProfilId, String utilisateuremail, TypeUtilisateur.Values utilisateurTypeUtilisateurCode, long utilisateurUtilisateurIdJumeau, UtilisateurDto utilisateurParent) {
-		this.utilisateurId = utilisateurId;
-		this.utilisateurAge = utilisateurAge;
-		this.utilisateurProfilId = utilisateurProfilId;
-		this.utilisateuremail = utilisateuremail;
-		this.utilisateurTypeUtilisateurCode = utilisateurTypeUtilisateurCode;
-		this.utilisateurUtilisateurIdJumeau = utilisateurUtilisateurIdJumeau;
+	public UtilisateurDto(long id, Long age, long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, UtilisateurDto utilisateurParent) {
+		this.id = id;
+		this.age = age;
+		this.profilId = profilId;
+		this.email = email;
+		this.typeUtilisateurCode = typeUtilisateurCode;
 		this.utilisateurParent = utilisateurParent;
 	}
 
@@ -125,22 +114,18 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 */
 	protected void from(Utilisateur utilisateur) {
 		if(utilisateur != null) {
-			this.utilisateurId = utilisateur.getId();
-			this.utilisateurAge = utilisateur.getAge();
+			this.utilisateurParent = new UtilisateurDto(utilisateur.getUtilisateurParent());
+			this.id = utilisateur.getId();
+			this.age = utilisateur.getAge();
 
 			if(utilisateur.getProfil() != null) {
-				this.utilisateurProfilId = utilisateur.getProfil().getId();
+				this.profilId = utilisateur.getProfil().getId();
 			}
 
-			this.utilisateuremail = utilisateur.getEmail();
+			this.email = utilisateur.getEmail();
 
 			if(utilisateur.getTypeUtilisateur() != null) {
-				this.utilisateurTypeUtilisateurCode = utilisateur.getTypeUtilisateur().getCode();
-			}
-
-
-			if(utilisateur.getUtilisateurJumeau() != null) {
-				this.utilisateurUtilisateurIdJumeau = utilisateur.getUtilisateurJumeau().getId();
+				this.typeUtilisateurCode = utilisateur.getTypeUtilisateur().getCode();
 			}
 
 		}
@@ -148,63 +133,53 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	}
 
 	/**
-	 * Getter for utilisateurId.
+	 * Getter for id.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurId utilisateurId}.
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#id id}.
 	 */
 	@Override
-	public long getUtilisateurId() {
-		return this.utilisateurId;
+	public long getId() {
+		return this.id;
 	}
 
 	/**
-	 * Getter for utilisateurAge.
+	 * Getter for age.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurAge utilisateurAge}.
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#age age}.
 	 */
 	@Override
-	public Long getUtilisateurAge() {
-		return this.utilisateurAge;
+	public Long getAge() {
+		return this.age;
 	}
 
 	/**
-	 * Getter for utilisateurProfilId.
+	 * Getter for profilId.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurProfilId utilisateurProfilId}.
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#profilId profilId}.
 	 */
 	@Override
-	public long getUtilisateurProfilId() {
-		return this.utilisateurProfilId;
+	public long getProfilId() {
+		return this.profilId;
 	}
 
 	/**
-	 * Getter for utilisateuremail.
+	 * Getter for email.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateuremail utilisateuremail}.
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#email email}.
 	 */
 	@Override
-	public String getUtilisateuremail() {
-		return this.utilisateuremail;
+	public String getEmail() {
+		return this.email;
 	}
 
 	/**
-	 * Getter for utilisateurTypeUtilisateurCode.
+	 * Getter for typeUtilisateurCode.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurTypeUtilisateurCode utilisateurTypeUtilisateurCode}.
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#typeUtilisateurCode typeUtilisateurCode}.
 	 */
 	@Override
-	public TypeUtilisateur.Values getUtilisateurTypeUtilisateurCode() {
-		return this.utilisateurTypeUtilisateurCode;
-	}
-
-	/**
-	 * Getter for utilisateurUtilisateurIdJumeau.
-	 *
-	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurUtilisateurIdJumeau utilisateurUtilisateurIdJumeau}.
-	 */
-	@Override
-	public long getUtilisateurUtilisateurIdJumeau() {
-		return this.utilisateurUtilisateurIdJumeau;
+	public TypeUtilisateur.Values getTypeUtilisateurCode() {
+		return this.typeUtilisateurCode;
 	}
 
 	/**
@@ -218,51 +193,43 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurId utilisateurId}.
-	 * @param utilisateurId value to set
+	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#id id}.
+	 * @param id value to set
 	 */
-	public void setUtilisateurId(long utilisateurId) {
-		this.utilisateurId = utilisateurId;
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurAge utilisateurAge}.
-	 * @param utilisateurAge value to set
+	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#age age}.
+	 * @param age value to set
 	 */
-	public void setUtilisateurAge(Long utilisateurAge) {
-		this.utilisateurAge = utilisateurAge;
+	public void setAge(Long age) {
+		this.age = age;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurProfilId utilisateurProfilId}.
-	 * @param utilisateurProfilId value to set
+	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#profilId profilId}.
+	 * @param profilId value to set
 	 */
-	public void setUtilisateurProfilId(long utilisateurProfilId) {
-		this.utilisateurProfilId = utilisateurProfilId;
+	public void setProfilId(long profilId) {
+		this.profilId = profilId;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateuremail utilisateuremail}.
-	 * @param utilisateuremail value to set
+	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#email email}.
+	 * @param email value to set
 	 */
-	public void setUtilisateuremail(String utilisateuremail) {
-		this.utilisateuremail = utilisateuremail;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurTypeUtilisateurCode utilisateurTypeUtilisateurCode}.
-	 * @param utilisateurTypeUtilisateurCode value to set
+	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#typeUtilisateurCode typeUtilisateurCode}.
+	 * @param typeUtilisateurCode value to set
 	 */
-	public void setUtilisateurTypeUtilisateurCode(TypeUtilisateur.Values utilisateurTypeUtilisateurCode) {
-		this.utilisateurTypeUtilisateurCode = utilisateurTypeUtilisateurCode;
-	}
-
-	/**
-	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#utilisateurUtilisateurIdJumeau utilisateurUtilisateurIdJumeau}.
-	 * @param utilisateurUtilisateurIdJumeau value to set
-	 */
-	public void setUtilisateurUtilisateurIdJumeau(long utilisateurUtilisateurIdJumeau) {
-		this.utilisateurUtilisateurIdJumeau = utilisateurUtilisateurIdJumeau;
+	public void setTypeUtilisateurCode(TypeUtilisateur.Values typeUtilisateurCode) {
+		this.typeUtilisateurCode = typeUtilisateurCode;
 	}
 
 	/**
@@ -283,9 +250,13 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	public Utilisateur toUtilisateur(Utilisateur dest) {
 		dest = dest == null ? new Utilisateur() : dest;
 
-		dest.setId(this.getUtilisateurId());
-		dest.setAge(this.getUtilisateurAge());
-		dest.setEmail(this.getUtilisateuremail());
+		if (this.getUtilisateurParent() != null) {
+			dest.setUtilisateurParent(this.getUtilisateurParent().toUtilisateur(dest.getUtilisateurParent());
+		}
+
+		dest.setId(this.getId());
+		dest.setAge(this.getAge());
+		dest.setEmail(this.getEmail());
 
 		return dest;
 	}
