@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.12.3
+
+- [`bc2207fa`](https://github.com/klee-contrib/topmodel/commit/bc2207faf0a3b7e73c0e2f93e00fbf93d96ec53b) - JPA : Génération de toutes les associations réciproques des oneToMany.
+
 ## 1.12.2
 
 - [`0b48d2ee`](https://github.com/klee-contrib/topmodel/commit/0b48d2eee444d849fb5ec1cf1aaa44df021e21f9) - Gestion des dates dans "values"
