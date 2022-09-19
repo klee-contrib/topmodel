@@ -874,6 +874,20 @@ public class ModelStore
                         continue;
                     }
 
+                    if (currentProperty != null && mapping.Value.ReferenceName == "this")
+                    {
+                        if (currentProperty is CompositionProperty cp && cp.Composition == mappedClass)
+                        {
+                            mappings.Mappings.Add(currentProperty, null);
+                        }
+                        else
+                        {
+                            yield return new ModelError(classe, $"La classe '{mappedClass.Name}' ne peut pas être mappée sur la propriété '{currentProperty.Name}' car ce n'est pas une composition de cette classe.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1020 };
+                        }
+
+                        continue;
+                    }
+
                     var mappedProperty = mappedClass.Properties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == mapping.Value.ReferenceName);
                     if (mappedProperty == null)
                     {
@@ -1013,7 +1027,7 @@ public class ModelStore
 
                 foreach (var mapping in mapper.Mappings.Where((e, i) => mapper.Mappings.Where((p, j) => p.Value == e.Value && j < i).Any()))
                 {
-                    yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapper.Class}.{mapping.Value.Name}' : {string.Join(", ", mapper.Mappings.Where(p => p.Value == mapping.Value).Select(p => $"'{p.Key.Name}'"))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
+                    yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapper.Class}.{mapping.Value?.Name}' : {string.Join(", ", mapper.Mappings.Where(p => p.Value == mapping.Value).Select(p => $"'{p.Key.Name}'"))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
                 }
             }
         }

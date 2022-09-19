@@ -483,7 +483,7 @@ public class JpaModelGenerator : GeneratorBase
                 }
                 else
                 {
-                    fw.WriteLine(2, $"dest.set{mapping.Value.GetJavaName().ToFirstUpper()}(this.get{mapping.Key.GetJavaName().ToFirstUpper()}());");
+                    fw.WriteLine(2, $"dest.set{mapping.Value!.GetJavaName().ToFirstUpper()}(this.get{mapping.Key.GetJavaName().ToFirstUpper()}());");
                 }
             }
 

@@ -27,7 +27,12 @@ class DefinitionHandler : DefinitionHandlerBase
             if (matchedReference != null)
             {
                 var objet = file.References[matchedReference];
-                var selectionRange = objet.GetLocation().ToRange()!;
+                var selectionRange = objet.GetLocation().ToRange();
+                if (selectionRange == null)
+                {
+                    return Task.FromResult<LocationOrLocationLinks>(new());
+                }
+
                 return Task.FromResult<LocationOrLocationLinks>(new(new LocationLink
                 {
                     OriginSelectionRange = matchedReference.ToRange(),

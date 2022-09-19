@@ -123,6 +123,11 @@ public enum ModelErrorType
     TMD1019,
 
     /// <summary>
+    /// La classe '{mappedClass.Name}' ne peut pas être mappée sur la propriété '{currentProperty.Name}' car ce n'est pas une composition de cette classe.
+    /// </summary>
+    TMD1020,
+
+    /// <summary>
     /// L'import {} n'est pas utilisé.
     /// </summary>
     TMD9001,

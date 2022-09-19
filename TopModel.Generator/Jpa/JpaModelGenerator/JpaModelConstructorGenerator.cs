@@ -212,7 +212,11 @@ public class JpaModelConstructorGenerator
                                 }
                                 else if (mapping.Key is CompositionProperty cp)
                                 {
-                                    if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == mapping.Value.Class))
+                                    if (mapping.Value == null)
+                                    {
+                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name};");
+                                    }
+                                    else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == mapping.Value.Class))
                                     {
                                         var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == mapping.Value.Class);
                                         fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = new {mapping.Key.Class.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}());");
@@ -252,7 +256,7 @@ public class JpaModelConstructorGenerator
                     }
                     else
                     {
-                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{mapping.Value.Name.ToFirstUpper()}();");
+                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{mapping.Value!.Name.ToFirstUpper()}();");
                     }
                 }
 

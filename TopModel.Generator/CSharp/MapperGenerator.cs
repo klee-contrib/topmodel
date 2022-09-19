@@ -96,16 +96,23 @@ public class MapperGenerator
                     {
                         w.Write(4, $"{mapping.Key.Name} = ");
 
-                        if (mapping.Key is CompositionProperty cp)
+                        if (mapping.Value == null)
                         {
-                            w.Write($"new() {{ {cp.Composition.PrimaryKey?.Name} = ");
+                            w.Write(param.Name);
                         }
-
-                        w.Write($"{mapper.Params[mapper.ParentMapper.Params.IndexOf(param)].Name}.{mapping.Value.Name}");
-
-                        if (mapping.Key is CompositionProperty)
+                        else
                         {
-                            w.Write("}");
+                            if (mapping.Key is CompositionProperty cp)
+                            {
+                                w.Write($"new() {{ {cp.Composition.PrimaryKey?.Name} = ");
+                            }
+
+                            w.Write($"{mapper.Params[mapper.ParentMapper.Params.IndexOf(param)].Name}.{mapping.Value.Name}");
+
+                            if (mapping.Key is CompositionProperty)
+                            {
+                                w.Write("}");
+                            }
                         }
 
                         if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1 || mappings.IndexOf(mapping) < mappings.Count - 1)
@@ -125,16 +132,23 @@ public class MapperGenerator
                 {
                     w.Write(4, $"{mapping.Key.Name} = ");
 
-                    if (mapping.Key is CompositionProperty cp)
+                    if (mapping.Value == null)
                     {
-                        w.Write($"new() {{ {cp.Composition.PrimaryKey?.Name} = ");
+                        w.Write(param.Name);
                     }
-
-                    w.Write($"{param.Name}.{mapping.Value.Name}");
-
-                    if (mapping.Key is CompositionProperty)
+                    else
                     {
-                        w.Write(" }");
+                        if (mapping.Key is CompositionProperty cp)
+                        {
+                            w.Write($"new() {{ {cp.Composition.PrimaryKey?.Name} = ");
+                        }
+
+                        w.Write($"{param.Name}.{mapping.Value.Name}");
+
+                        if (mapping.Key is CompositionProperty)
+                        {
+                            w.Write(" }");
+                        }
                     }
 
                     if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1 || mappings.IndexOf(mapping) < mappings.Count - 1)
@@ -184,13 +198,13 @@ public class MapperGenerator
             {
                 foreach (var mapping in mapper.ParentMapper.Mappings)
                 {
-                    w.WriteLine(3, $"dest.{mapping.Value.Name} = source.{GetSourceMapping(mapping.Key)};");
+                    w.WriteLine(3, $"dest.{mapping.Value?.Name} = source.{GetSourceMapping(mapping.Key)};");
                 }
             }
 
             foreach (var mapping in mapper.Mappings)
             {
-                w.WriteLine(3, $"dest.{mapping.Value.Name} = source.{GetSourceMapping(mapping.Key)};");
+                w.WriteLine(3, $"dest.{mapping.Value?.Name} = source.{GetSourceMapping(mapping.Key)};");
             }
 
             w.WriteLine(3, "return dest;");
