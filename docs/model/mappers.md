@@ -64,6 +64,41 @@ La propriété à gauche est toujours celle de la classe courante (pour un `from
 
 En dehors des mappings automatiques qui respectent forcément cette règle, **tous les mappings manuels ne peuvent être définis qu'entre deux propriétés de même domaine**.
 
+## Mappings de compositions
+
+En plus de mapper des champs sur des champs, certains mappings peuvent être aussi définis sur des **compositions** (uniquement sur la classe qui définit les mappers). Les mappings possibles sont :
+
+- Un paramètre entier d'un mapping `from`, si la classe composée est la même que le paramètre.
+
+  Exemple :
+
+  ```yaml
+  # classe "ContactDTO"
+  from:
+    - params:
+        - class: Contact
+        - class: AdresseDTO
+          mappings:
+            Adresse: this
+  ```
+
+- Une association (ou alias vers une association) dont la clé primaire et de même domaine que celle de la classe composée.
+
+  Exemple :
+
+  ```yaml
+  # classe "ContactDTO"
+  to:
+    - class: Contact
+      mappings:
+        Adresse: AdresseId
+  ```
+
+  Ce mapping est possible dans les deux sens :
+
+  - En C#, le mapping ne concerne que la clé primaire (`from` crée une nouvelle instance en renseignant simplement la PK, `to` récupère la clé primaire)
+  - En JPA, il faut avoir défini un mapper entre les deux classes (celle de l'association et celle de la composition), et le mapping généré mappe la classe dans l'autre dans le sens demandé. Les types de l'association et de la composition doivent également correspondre (`oneToOne`/`manyToOne` <> `object`, `oneToMany`/`manyToMany` <> `list`).
+
 ## Gestion de l'héritage
 
 TopModel est capable de gérer l'héritage des mappers. Prenons une classe A, une classe B qui en hérite. Pour les mappers `to`, si A définit un mapper vers C, alors si B définit aussi un mapper vers la classe C, alors le mapper de A vers C sera appelé dans le mapper de B vers C.

@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.13.0
+
+- [#148](https://github.com/klee-contrib/topmodel/pull/148) - Générateur de client d'API pour Angular (fix [#112](https://github.com/klee-contrib/topmodel/issues/112))
+- [#149](https://github.com/klee-contrib/topmodel/pull/149) - Mappings sur les compositions (fix [#146](https://github.com/klee-contrib/topmodel/issues/146))
+
 ## 1.12.3
 
 - [`bc2207fa`](https://github.com/klee-contrib/topmodel/commit/bc2207faf0a3b7e73c0e2f93e00fbf93d96ec53b) - JPA : Génération de toutes les associations réciproques des oneToMany.
