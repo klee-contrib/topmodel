@@ -125,8 +125,16 @@ if (config.Javascript != null)
 
             if (jsConfig.ApiClientOutputDirectory != null)
             {
-                services.AddSingleton<IModelWatcher>(p =>
-                    new JavascriptApiClientGenerator(p.GetRequiredService<ILogger<JavascriptApiClientGenerator>>(), jsConfig));
+                if (jsConfig.TargetFramework == TargetFramework.ANGULAR)
+                {
+                    services.AddSingleton<IModelWatcher>(p =>
+                       new AngularApiClientGenerator(p.GetRequiredService<ILogger<AngularApiClientGenerator>>(), jsConfig));
+                }
+                else
+                {
+                    services.AddSingleton<IModelWatcher>(p =>
+                       new JavascriptApiClientGenerator(p.GetRequiredService<ILogger<JavascriptApiClientGenerator>>(), jsConfig));
+                }
             }
         }
 

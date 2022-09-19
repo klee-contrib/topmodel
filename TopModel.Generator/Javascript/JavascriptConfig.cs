@@ -38,7 +38,7 @@ public class JavascriptConfig : GeneratorConfigBase
     /// <summary>
     /// Génère des modèles pour Focus (par défaut : true).
     /// </summary>
-    public bool Focus { get; set; } = true;
+    public TargetFramework TargetFramework { get; set; } = TargetFramework.FOCUS;
 
     /// <summary>
     /// Mode de génération (JS ou JSON Schema).

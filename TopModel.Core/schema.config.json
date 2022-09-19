@@ -295,10 +295,15 @@
             "description": "Chemin depuis modelOutputDirectory vers le fichier 'domain', ou alias (commencant par @) vers le fichier de domaine",
             "default": "../domains"
           },
-          "focus": {
-            "type": "boolean",
-            "description": "Génère des modèles pour Focus (par défaut : true).",
-            "default": "true"
+          "targetFramework": {
+            "type": "string",
+            "description": "Framework cible pour la génération",
+            "default": "focus",
+            "enum": [
+              "focus",
+              "angular",
+              "vanilla"
+            ]
           },
           "resourceMode": {
             "type": "string",
