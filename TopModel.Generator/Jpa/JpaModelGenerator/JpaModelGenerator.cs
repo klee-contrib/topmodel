@@ -403,7 +403,7 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine(1, $@"public boolean equals(Object o) {{");
             fw.WriteLine(2, $"if(o instanceof {classe.Name}) {{");
             fw.WriteLine(3, $"{classe.Name} {classe.Name.ToFirstLower()} = ({classe.Name}) o;");
-            
+
             fw.WriteLine(3, $"if(this == {classe.Name.ToFirstLower()})");
             fw.WriteLine(4, $"return true;");
             fw.WriteLine();

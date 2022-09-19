@@ -121,12 +121,16 @@ public class AngularApiClientGenerator : GeneratorBase
         string returnType;
         if (endpoint.GetQueryParams().Any())
         {
-            if (hasProperty) {
+            if (hasProperty)
+            {
                 fw.Write(", ");
             }
+
             fw.Write("queryParams: any = {}");
         }
+
         fw.Write("): Observable<");
+
         if (endpoint.Returns == null)
         {
             returnType = "void";
@@ -149,6 +153,7 @@ public class AngularApiClientGenerator : GeneratorBase
                 fw.WriteLine(3, $"httpOptions.params.set('{qParam.GetParamName()}', {qParam.GetParamName()})");
                 fw.WriteLine(2, @$"}}");
             }
+
             fw.WriteLine();
         }
 
@@ -158,7 +163,9 @@ public class AngularApiClientGenerator : GeneratorBase
         {
             fw.Write($", {endpoint.GetBodyParam()!.GetParamName()}");
         }
-        if (endpoint.GetQueryParams().Any()) {
+
+        if (endpoint.GetQueryParams().Any())
+        {
             fw.Write(", httpOptions");
         }
 
@@ -193,7 +200,8 @@ public class AngularApiClientGenerator : GeneratorBase
             var module = $"{modelPath}/{type.Namespace.Module.Replace(".", "/").ToDashCase()}";
             return (Import: name, Path: $"{relativePath}{module}/{name.ToDashCase()}");
         }).Distinct().ToList();
-        imports.AddRange(new List<(string Import, string Path)>(){
+        imports.AddRange(new List<(string Import, string Path)>()
+        {
             (Import: "Injectable", Path: "@angular/core"),
             (Import: "HttpClient", Path: "@angular/common/http"),
             (Import: "Observable", Path: "rxjs"),
@@ -201,9 +209,7 @@ public class AngularApiClientGenerator : GeneratorBase
 
         if (file.Endpoints.Any(e => e.GetQueryParams().Any()))
         {
-            imports.Add(
-                       (Import: "HttpParams", Path: "@angular/common/http")
-                   );
+            imports.Add((Import: "HttpParams", Path: "@angular/common/http"));
         }
 
         imports.AddRange(JavascriptUtils.GetImportsForProperties(properties, string.Empty).Select(i => (i.Import, Path: $"{i.Path.Replace("../", $"{relativePath}{modelPath}/")}")));
