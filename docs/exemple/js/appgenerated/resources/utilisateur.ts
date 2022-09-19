@@ -12,7 +12,6 @@ export const utilisateur = {
         age: "Age",
         profilId: "ProfilId",
         email: "email",
-        typeUtilisateurCode: "TypeUtilisateurCode",
-        utilisateurIdJumeau: "UtilisateurIdJumeau"
+        typeUtilisateurCode: "TypeUtilisateurCode"
     }
 };

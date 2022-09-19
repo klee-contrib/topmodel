@@ -61,14 +61,13 @@ public interface IUtilisateurApiController {
 
 	/**
 	 * Recherche des utilisateurs.
-	 * @param utiUtilisateurId Id technique
-	 * @param utilisateurAge Age en années de l'utilisateur
-	 * @param utilisateurProfilId Profil de l'utilisateur
-	 * @param utilisateuremail Email de l'utilisateur
-	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
-	 * @param utilisateurUtilisateurIdJumeau Utilisateur jumeau
+	 * @param utiId Id technique
+	 * @param age Age en années de l'utilisateur
+	 * @param profilId Profil de l'utilisateur
+	 * @param email Email de l'utilisateur
+	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Utilisateurs matchant les critères
 	 */
 	@PostMapping(path = "/search")
-	Page<UtilisateurDto> search(@RequestParam(value = "utiUtilisateurId", required = true) long utiUtilisateurId, @RequestParam(value = "utilisateurAge", required = false) Long utilisateurAge, @RequestParam(value = "utilisateurProfilId", required = false) long utilisateurProfilId, @RequestParam(value = "utilisateuremail", required = false) String utilisateuremail, @RequestParam(value = "utilisateurTypeUtilisateurCode", required = false) TypeUtilisateur.Values utilisateurTypeUtilisateurCode, @RequestParam(value = "utilisateurUtilisateurIdJumeau", required = false) long utilisateurUtilisateurIdJumeau);
+	Page<UtilisateurDto> search(@RequestParam(value = "utiId", required = true) long utiId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode);
 }

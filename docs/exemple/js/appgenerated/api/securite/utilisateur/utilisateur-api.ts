@@ -64,35 +64,31 @@ export class UtilisateurApiService {
 
 	/**
 	 * Recherche des utilisateurs
-	 * @param utiUtilisateurId Id technique
-	 * @param utilisateurAge Age en années de l'utilisateur
-	 * @param utilisateurProfilId Profil de l'utilisateur
-	 * @param utilisateuremail Email de l'utilisateur
-	 * @param utilisateurTypeUtilisateurCode Type d'utilisateur en Many to one
-	 * @param utilisateurUtilisateurIdJumeau Utilisateur jumeau
+	 * @param utiId Id technique
+	 * @param age Age en années de l'utilisateur
+	 * @param profilId Profil de l'utilisateur
+	 * @param email Email de l'utilisateur
+	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @param options Options pour 'fetch'.
 	 * @returns Utilisateurs matchant les critères
 	 */
-	search(utiUtilisateurId?: number utilisateurAge?: number utilisateurProfilId?: number utilisateuremail?: string utilisateurTypeUtilisateurCode?: TypeUtilisateurCode utilisateurUtilisateurIdJumeau?: number , queryParams: any = {}): Observable<Page<UtilisateurDto>> {
+	search(utiId?: number age?: number profilId?: number email?: string typeUtilisateurCode?: TypeUtilisateurCode , queryParams: any = {}): Observable<Page<UtilisateurDto>> {
 		const httpParams = new HttpParams({fromObject : queryParams});
 		const httpOptions = { params: httpParams }
-		if(utiUtilisateurId !== null) {
-			httpOptions.params.set('utiUtilisateurId', utiUtilisateurId)
+		if(utiId !== null) {
+			httpOptions.params.set('utiId', utiId)
 		}
-		if(utilisateurAge !== null) {
-			httpOptions.params.set('utilisateurAge', utilisateurAge)
+		if(age !== null) {
+			httpOptions.params.set('age', age)
 		}
-		if(utilisateurProfilId !== null) {
-			httpOptions.params.set('utilisateurProfilId', utilisateurProfilId)
+		if(profilId !== null) {
+			httpOptions.params.set('profilId', profilId)
 		}
-		if(utilisateuremail !== null) {
-			httpOptions.params.set('utilisateuremail', utilisateuremail)
+		if(email !== null) {
+			httpOptions.params.set('email', email)
 		}
-		if(utilisateurTypeUtilisateurCode !== null) {
-			httpOptions.params.set('utilisateurTypeUtilisateurCode', utilisateurTypeUtilisateurCode)
-		}
-		if(utilisateurUtilisateurIdJumeau !== null) {
-			httpOptions.params.set('utilisateurUtilisateurIdJumeau', utilisateurUtilisateurIdJumeau)
+		if(typeUtilisateurCode !== null) {
+			httpOptions.params.set('typeUtilisateurCode', typeUtilisateurCode)
 		}
 
 		return this.http.post<Page<UtilisateurDto>>(`/utilisateur/search`, httpOptions);

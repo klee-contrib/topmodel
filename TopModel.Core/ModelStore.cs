@@ -863,7 +863,7 @@ public class ModelStore
 
                 foreach (var mapping in mappings.MappingReferences)
                 {
-                    var currentProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == mapping.Key.ReferenceName);
+                    var currentProperty = classe.Properties.FirstOrDefault(p => p.Name == mapping.Key.ReferenceName);
                     if (currentProperty == null)
                     {
                         yield return new ModelError(classe, $"La propriété '{{0}}' est introuvable sur la classe '{classe}'.", mapping.Key) { ModelErrorType = ModelErrorType.TMD1004 };
@@ -871,6 +871,20 @@ public class ModelStore
 
                     if (mapping.Value.ReferenceName == "false")
                     {
+                        continue;
+                    }
+
+                    if (currentProperty != null && mapping.Value.ReferenceName == "this")
+                    {
+                        if (currentProperty is CompositionProperty cp && cp.Composition == mappedClass)
+                        {
+                            mappings.Mappings.Add(currentProperty, null);
+                        }
+                        else
+                        {
+                            yield return new ModelError(classe, $"La classe '{mappedClass.Name}' ne peut pas être mappée sur la propriété '{currentProperty.Name}' car ce n'est pas une composition de cette classe.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1020 };
+                        }
+
                         continue;
                     }
 
@@ -884,9 +898,40 @@ public class ModelStore
                     {
                         mappings.Mappings.Add(currentProperty, mappedProperty);
 
-                        if (currentProperty.Domain != mappedProperty.Domain)
+                        if (currentProperty is IFieldProperty fp && fp.Domain != mappedProperty.Domain)
                         {
-                            yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine ('{mappedProperty.Domain.Name}' au lieu de '{currentProperty.Domain.Name}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1014 };
+                            yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine ('{mappedProperty.Domain.Name}' au lieu de '{fp.Domain.Name}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1014 };
+                        }
+                        else if (currentProperty is CompositionProperty cp)
+                        {
+                            var mappedAp = mappedProperty switch
+                            {
+                                AssociationProperty ap => ap,
+                                AliasProperty { Property: AssociationProperty ap } => ap,
+                                _ => null
+                            };
+
+                            if (mappedAp == null)
+                            {
+                                yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car ce n'est pas une association.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1017 };
+                            }
+                            else
+                            {
+                                if (!(
+                                    cp.Kind == "object" && (mappedAp.Type == AssociationType.ManyToOne || mappedAp.Type == AssociationType.OneToOne)
+                                    || cp.Kind == "list" && (mappedAp.Type == AssociationType.ManyToMany || mappedAp.Type == AssociationType.OneToMany)))
+                                {
+                                    yield return new ModelError(classe, $"L'association '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car les types de composition et d'association ne correspondent pas.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1018 };
+                                }
+
+                                var compositionPKs = cp.Composition.Properties.OfType<IFieldProperty>().Where(p => p.PrimaryKey);
+                                var compositionPK = compositionPKs.Count() == 1 ? compositionPKs.Single() : null;
+
+                                if (compositionPK?.Domain != mappedAp.Domain)
+                                {
+                                    yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la clé primaire de la classe '{cp.Composition.Name}' composée ('{mappedProperty.Domain.Name}' au lieu de '{compositionPK?.Domain.Name ?? string.Empty}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1019 };
+                                }
+                            }
                         }
                     }
                 }
@@ -982,7 +1027,7 @@ public class ModelStore
 
                 foreach (var mapping in mapper.Mappings.Where((e, i) => mapper.Mappings.Where((p, j) => p.Value == e.Value && j < i).Any()))
                 {
-                    yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapper.Class}.{mapping.Value.Name}' : {string.Join(", ", mapper.Mappings.Where(p => p.Value == mapping.Value).Select(p => $"'{p.Key.Name}'"))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
+                    yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapper.Class}.{mapping.Value?.Name}' : {string.Join(", ", mapper.Mappings.Where(p => p.Value == mapping.Value).Select(p => $"'{p.Key.Name}'"))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
                 }
             }
         }

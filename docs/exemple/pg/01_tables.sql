@@ -78,7 +78,7 @@ create table UTILISATEUR (
 	PRO_ID int8,
 	UTI_EMAIL varchar(50),
 	TUT_CODE varchar(3),
-	UTI_ID_JUMEAU int8,
+	UTI_ID_PARENT int8,
 	constraint PK_UTILISATEUR primary key (UTI_ID)
 )
 ;

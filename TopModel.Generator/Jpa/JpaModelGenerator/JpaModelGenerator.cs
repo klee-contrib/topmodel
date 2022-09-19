@@ -465,10 +465,25 @@ public class JpaModelGenerator : GeneratorBase
                     {
                         fw.WriteLine(2, $"dest.set{mapping.Value.GetJavaName().ToFirstUpper()}(this.get{mapping.Key.GetJavaName().ToFirstUpper()}());");
                     }
+                    else if (mapping.Key is CompositionProperty cp)
+                    {
+                        if (mapping.Key.Class.ToMappers.Any(t => t.Class == mapping.Value.Class))
+                        {
+                            var cpMapper = mapping.Key.Class.ToMappers.Find(t => t.Class == mapping.Value.Class)!;
+                            fw.WriteLine(2, $@"if (this.get{cp.GetJavaName().ToFirstUpper()}() != null) {{");
+                            fw.WriteLine(3, $@"dest.set{mapping.Value.GetJavaName().ToFirstUpper()}(this.get{cp.GetJavaName().ToFirstUpper()}().{cpMapper.Name.ToFirstLower()}(dest.get{mapping.Value.GetJavaName().ToFirstUpper()}());");
+                            fw.WriteLine(2, $@"}}");
+                            fw.WriteLine();
+                        }
+                        else
+                        {
+                            throw new ModelException(classe, $"La propriété {mapping.Key.Name} ne peut pas être mappée avec la propriété {mapping.Value.Name} car il n'existe pas de mapper {mapping.Key.Class.Name} -> {mapping.Value.Class.Name}");
+                        }
+                    }
                 }
                 else
                 {
-                    fw.WriteLine(2, $"dest.set{mapping.Value.GetJavaName().ToFirstUpper()}(this.get{mapping.Key.GetJavaName().ToFirstUpper()}());");
+                    fw.WriteLine(2, $"dest.set{mapping.Value!.GetJavaName().ToFirstUpper()}(this.get{mapping.Key.GetJavaName().ToFirstUpper()}());");
                 }
             }
 

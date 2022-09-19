@@ -94,7 +94,33 @@ public class MapperGenerator
                     var mappings = param.Mappings.ToList();
                     foreach (var mapping in mappings)
                     {
-                        w.WriteLine(4, $"{mapping.Key.Name} = {mapper.Params[mapper.ParentMapper.Params.IndexOf(param)].Name}.{mapping.Value.Name}{(mapper.Params.IndexOf(param) < mapper.Params.Count - 1 || mappings.IndexOf(mapping) < mappings.Count - 1 ? "," : string.Empty)}");
+                        w.Write(4, $"{mapping.Key.Name} = ");
+
+                        if (mapping.Value == null)
+                        {
+                            w.Write(param.Name);
+                        }
+                        else
+                        {
+                            if (mapping.Key is CompositionProperty cp)
+                            {
+                                w.Write($"new() {{ {cp.Composition.PrimaryKey?.Name} = ");
+                            }
+
+                            w.Write($"{mapper.Params[mapper.ParentMapper.Params.IndexOf(param)].Name}.{mapping.Value.Name}");
+
+                            if (mapping.Key is CompositionProperty)
+                            {
+                                w.Write("}");
+                            }
+                        }
+
+                        if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1 || mappings.IndexOf(mapping) < mappings.Count - 1)
+                        {
+                            w.Write(",");
+                        }
+
+                        w.WriteLine();
                     }
                 }
             }
@@ -104,7 +130,33 @@ public class MapperGenerator
                 var mappings = param.Mappings.ToList();
                 foreach (var mapping in mappings)
                 {
-                    w.WriteLine(4, $"{mapping.Key.Name} = {param.Name}.{mapping.Value.Name}{(mapper.Params.IndexOf(param) < mapper.Params.Count - 1 || mappings.IndexOf(mapping) < mappings.Count - 1 ? "," : string.Empty)}");
+                    w.Write(4, $"{mapping.Key.Name} = ");
+
+                    if (mapping.Value == null)
+                    {
+                        w.Write(param.Name);
+                    }
+                    else
+                    {
+                        if (mapping.Key is CompositionProperty cp)
+                        {
+                            w.Write($"new() {{ {cp.Composition.PrimaryKey?.Name} = ");
+                        }
+
+                        w.Write($"{param.Name}.{mapping.Value.Name}");
+
+                        if (mapping.Key is CompositionProperty)
+                        {
+                            w.Write(" }");
+                        }
+                    }
+
+                    if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1 || mappings.IndexOf(mapping) < mappings.Count - 1)
+                    {
+                        w.Write(",");
+                    }
+
+                    w.WriteLine();
                 }
             }
 
@@ -130,17 +182,29 @@ public class MapperGenerator
             w.WriteLine(2, "{");
             w.WriteLine(3, $"dest ??= new {mapper.Class}();");
 
+            static string GetSourceMapping(IProperty property)
+            {
+                if (property is CompositionProperty cp)
+                {
+                    return $"{cp.Name}?.{cp.Composition.PrimaryKey?.Name}";
+                }
+                else
+                {
+                    return property.Name;
+                }
+            }
+
             if (mapper.ParentMapper != null)
             {
                 foreach (var mapping in mapper.ParentMapper.Mappings)
                 {
-                    w.WriteLine(3, $"dest.{mapping.Value.Name} = source.{mapping.Key.Name};");
+                    w.WriteLine(3, $"dest.{mapping.Value?.Name} = source.{GetSourceMapping(mapping.Key)};");
                 }
             }
 
             foreach (var mapping in mapper.Mappings)
             {
-                w.WriteLine(3, $"dest.{mapping.Value.Name} = source.{mapping.Key.Name};");
+                w.WriteLine(3, $"dest.{mapping.Value?.Name} = source.{GetSourceMapping(mapping.Key)};");
             }
 
             w.WriteLine(3, "return dest;");

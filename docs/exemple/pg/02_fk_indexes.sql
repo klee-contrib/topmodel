@@ -104,18 +104,18 @@ alter table UTILISATEUR
 ;
 
 /**
-  * Création de l'index de clef étrangère pour UTILISATEUR.UTI_ID_JUMEAU
+  * Création de l'index de clef étrangère pour UTILISATEUR.UTI_ID_PARENT
  **/
-create index IDX_UTI_UTI_ID_JUMEAU_FK on UTILISATEUR (
-	UTI_ID_JUMEAU ASC
+create index IDX_UTI_UTI_ID_PARENT_FK on UTILISATEUR (
+	UTI_ID_PARENT ASC
 )
 ;
 
 /**
-  * Génération de la contrainte de clef étrangère pour UTILISATEUR.UTI_ID_JUMEAU
+  * Génération de la contrainte de clef étrangère pour UTILISATEUR.UTI_ID_PARENT
  **/
 alter table UTILISATEUR
-	add constraint FK_UTI_UTI_ID_JUMEAU foreign key (UTI_ID_JUMEAU)
+	add constraint FK_UTI_UTI_ID_PARENT foreign key (UTI_ID_PARENT)
 		references UTILISATEUR (UTI_ID)
 ;
 
