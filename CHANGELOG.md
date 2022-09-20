@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.13.1
+
+- [`e3a8a3f1d4`]((https://github.com/klee-contrib/topmodel/commit/e3a8a3f1d45a3ee8a3d862fcaa4e0360406f30bd) JPA : Correction mapping associations - compositions
+
 ## 1.13.0
 
 - [#148](https://github.com/klee-contrib/topmodel/pull/148) - Générateur de client d'API pour Angular (fix [#112](https://github.com/klee-contrib/topmodel/issues/112))
