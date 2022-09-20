@@ -204,9 +204,16 @@ public class JpaModelConstructorGenerator
                             {
                                 if (mapping.Key is IFieldProperty)
                                 {
-                                    fw.WriteLine();
                                     fw.WriteLine(3, $"if({param.Name.ToFirstLower()}.get{mapping.Value.GetJavaName().ToFirstUpper()}() != null) {{");
-                                    fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{mapping.Value.GetJavaName().ToFirstUpper()}().get{ap.Property.Name}();");
+                                    if (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)
+                                    {
+                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}().get{ap.Property.Name.ToFirstUpper()}();");
+                                    }
+                                    else
+                                    {
+                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}().stream().filter(t -> t != null).map({ap.GetJavaName().ToFirstLower()} -> {ap.GetJavaName().ToFirstLower()}.get{ap.Property.Name.ToFirstUpper()}()).collect(Collectors.toList());");
+                                    }
+
                                     fw.WriteLine(3, "}");
                                     fw.WriteLine();
                                 }
@@ -216,14 +223,14 @@ public class JpaModelConstructorGenerator
                                     {
                                         fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name};");
                                     }
-                                    else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == mapping.Value.Class))
+                                    else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association))
                                     {
-                                        var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == mapping.Value.Class);
-                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = new {mapping.Key.Class.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}());");
+                                        var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association);
+                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = new {cp.Composition.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}());");
                                     }
                                     else
                                     {
-                                        throw new ModelException(classe, $"La propriété {mapping.Key.Name} ne peut pas être mappée avec la propriété {mapping.Value.Name} car il n'existe pas de mapper {mapping.Key.Class.Name} -> {mapping.Value.Class.Name}");
+                                        throw new ModelException(classe, $"La propriété {mapping.Key.Name} ne peut pas être mappée avec la propriété {mapping.Value.Name} car il n'existe pas de mapper {ap.Association.Name} -> {cp.Composition.Name}");
                                     }
                                 }
                             }
@@ -240,12 +247,37 @@ public class JpaModelConstructorGenerator
                                 {
                                     fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}();");
                                 }
-                                else
+                                else if (mapping.Key is IFieldProperty)
                                 {
+
                                     fw.WriteLine(3, $"if({param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}() != null) {{");
-                                    fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}().get{ap.Property.Name.ToFirstUpper()}();");
+                                    if (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)
+                                    {
+                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}().get{ap.Property.Name.ToFirstUpper()}();");
+                                    }
+                                    else
+                                    {
+                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}().stream().filter(t -> t != null).map({ap.GetJavaName().ToFirstLower()} -> {ap.GetJavaName().ToFirstLower()}.get{ap.Property.Name.ToFirstUpper()}()).collect(Collectors.toList());");
+                                    }
+
                                     fw.WriteLine(3, "}");
                                     fw.WriteLine();
+                                }
+                                else if (mapping.Key is CompositionProperty cp)
+                                {
+                                    if (mapping.Value == null)
+                                    {
+                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name};");
+                                    }
+                                    else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association))
+                                    {
+                                        var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association);
+                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = new {cp.Composition.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}());");
+                                    }
+                                    else
+                                    {
+                                        throw new ModelException(classe, $"La propriété {mapping.Key.Name} ne peut pas être mappée avec la propriété {mapping.Value.Name} car il n'existe pas de mapper {ap.Association.Name} -> {cp.Composition.Name}");
+                                    }
                                 }
                             }
                             else

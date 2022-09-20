@@ -380,7 +380,7 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteLine(1, "@Override");
             }
 
-            fw.WriteLine(1, @$"{((property is AssociationProperty apo && apo.Association.Reference) ? "protected" : "public")} {property.GetJavaType()} get{property.GetJavaName().ToFirstUpper()}() {{");
+            fw.WriteLine(1, @$"public {property.GetJavaType()} get{property.GetJavaName().ToFirstUpper()}() {{");
             if (property is AssociationProperty ap && (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany))
             {
                 fw.WriteLine(2, $"if(this.{property.GetJavaName()} == null)");
@@ -467,17 +467,17 @@ public class JpaModelGenerator : GeneratorBase
                     }
                     else if (mapping.Key is CompositionProperty cp)
                     {
-                        if (mapping.Key.Class.ToMappers.Any(t => t.Class == mapping.Value.Class))
+                        if (cp.Composition.ToMappers.Any(t => t.Class == ap.Association))
                         {
-                            var cpMapper = mapping.Key.Class.ToMappers.Find(t => t.Class == mapping.Value.Class)!;
+                            var cpMapper = cp.Composition.ToMappers.Find(t => t.Class == ap.Association)!;
                             fw.WriteLine(2, $@"if (this.get{cp.GetJavaName().ToFirstUpper()}() != null) {{");
-                            fw.WriteLine(3, $@"dest.set{mapping.Value.GetJavaName().ToFirstUpper()}(this.get{cp.GetJavaName().ToFirstUpper()}().{cpMapper.Name.ToFirstLower()}(dest.get{mapping.Value.GetJavaName().ToFirstUpper()}());");
+                            fw.WriteLine(3, $@"dest.set{mapping.Value.GetJavaName().ToFirstUpper()}(this.get{cp.GetJavaName().ToFirstUpper()}().{cpMapper.Name.ToFirstLower()}(dest.get{ap.GetJavaName().ToFirstUpper()}()));");
                             fw.WriteLine(2, $@"}}");
                             fw.WriteLine();
                         }
                         else
                         {
-                            throw new ModelException(classe, $"La propriété {mapping.Key.Name} ne peut pas être mappée avec la propriété {mapping.Value.Name} car il n'existe pas de mapper {mapping.Key.Class.Name} -> {mapping.Value.Class.Name}");
+                            throw new ModelException(classe, $"La propriété {mapping.Key.Name} ne peut pas être mappée avec la propriété {mapping.Value.Name} car il n'existe pas de mapper {cp.Composition.Name} -> {ap.Association.Name}");
                         }
                     }
                 }
