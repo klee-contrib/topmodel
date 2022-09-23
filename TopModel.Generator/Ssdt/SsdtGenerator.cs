@@ -92,7 +92,7 @@ public class SsdtGenerator : GeneratorBase
     {
         var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues.Any());
 
-        if (!classes.Any() || _config.InitListMainScriptName == null || _config.InitListScriptFolder == null)
+        if (!classes.Any() || _config.InitListScriptFolder == null)
         {
             return;
         }
@@ -112,6 +112,9 @@ public class SsdtGenerator : GeneratorBase
         }
 
         // Script le fichier appelant les fichiers dans le bon ordre.
-        _initReferenceListMainScripter.Write(orderList, _config.InitListScriptFolder, _logger);
+        if (_config.InitListMainScriptName != null)
+        {
+            _initReferenceListMainScripter.Write(orderList, _config.InitListScriptFolder, _logger);
+        }
     }
 }
