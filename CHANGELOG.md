@@ -1,8 +1,15 @@
 # TopModel.Generator (`modgen`)
 
+## 1.13.2
+
+- [`8427cee2`](https://github.com/klee-contrib/topmodel/commit/8427cee2f53f39f6d4d8b24b2020608cf1bf41c8) - [SSDTGen] InitListMainScriptName facultatif
+- [`1072f99b`](https://github.com/klee-contrib/topmodel/commit/1072f99b9b5aea2493a75df14e7f007ca5ff98ec) - [SSDTGen] Mode "postgres"
+
+_Remarque : Générer du SSDT pour PostgreSQL n'a évidemment pas de sens, mais le générateur peut servir pour créer des scripts de définitions de tables et d'inserts complets sans tout regrouper et réordonner pour avoir un script général qui fonctionne en une seule fois._
+
 ## 1.13.1
 
-- [`e3a8a3f1d4`]((https://github.com/klee-contrib/topmodel/commit/e3a8a3f1d45a3ee8a3d862fcaa4e0360406f30bd) JPA : Correction mapping associations - compositions
+- [`e3a8a3f1`]((https://github.com/klee-contrib/topmodel/commit/e3a8a3f1d45a3ee8a3d862fcaa4e0360406f30bd) JPA : Correction mapping associations - compositions
 
 ## 1.13.0
 
