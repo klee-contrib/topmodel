@@ -19,7 +19,7 @@ public class ProceduralSqlGenerator : GeneratorBase
         _logger = logger;
         _schemaGenerator = _config.TargetDBMS == TargetDBMS.Postgre
             ? new PostgreSchemaGenerator(_config, _logger)
-            : (AbstractSchemaGenerator)new SqlServerSchemaGenerator(_config, _logger);
+            : new SqlServerSchemaGenerator(_config, _logger);
     }
 
     public override string Name => "ProceduralSqlGen";

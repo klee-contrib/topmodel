@@ -1,4 +1,6 @@
-﻿namespace TopModel.Generator.Ssdt;
+﻿using TopModel.Generator.ProceduralSql;
+
+namespace TopModel.Generator.Ssdt;
 
 /// <summary>
 /// Paramètres pour la génération SSDT.
@@ -29,4 +31,9 @@ public class SsdtConfig : GeneratorConfigBase
     /// Désactive les colonnes d'identité.
     /// </summary>
     public bool DisableIdentity { get; set; }
+
+    /// <summary>
+    /// SGBD cible ("sqlserver" ou "postgres").
+    /// </summary>
+    public TargetDBMS TargetDBMS { get; set; } = TargetDBMS.Sqlserver;
 }

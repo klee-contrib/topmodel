@@ -23,7 +23,7 @@ public class SsdtGenerator : GeneratorBase
         _logger = logger;
         _tableScripter = new SqlTableScripter(config);
 
-        _initReferenceListScript = new InitReferenceListScripter();
+        _initReferenceListScript = new InitReferenceListScripter(_config);
         _initReferenceListMainScripter = new InitReferenceListMainScripter(_config);
     }
 

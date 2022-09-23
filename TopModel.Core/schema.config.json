@@ -150,6 +150,14 @@
           "disableIdentity": {
             "type": "boolean",
             "description": "Désactive les colonnes d'identité."
+          },
+          "targetDBMS": {
+            "type": "string",
+            "description": "SGBD cible ('sqlserver' ou 'postgres'). SSDT en tant que tel n'existe évidemment pas pour PostgreSQL, mais le générateur peut quand même être utilisé pour générer les définitions de tables et les scripts d'inserts.'",
+            "enum": [
+              "sqlserver",
+              "postgre"
+            ]
           }
         }
       }

@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using TopModel.Core;
+using TopModel.Generator.ProceduralSql;
 
 namespace TopModel.Generator.Ssdt.Scripter;
 
@@ -8,6 +9,17 @@ namespace TopModel.Generator.Ssdt.Scripter;
 /// </summary>
 public class InitReferenceListScripter : ISqlScripter<Class>
 {
+    private SsdtConfig _config;
+
+    /// <summary>
+    /// Constructeur.
+    /// </summary>
+    /// <param name="config">Config.</param>
+    public InitReferenceListScripter(SsdtConfig config)
+    {
+        _config = config;
+    }
+
     /// <summary>
     /// Calcule le nom du script pour l'item.
     /// </summary>
@@ -17,7 +29,7 @@ public class InitReferenceListScripter : ISqlScripter<Class>
     {
         if (item == null)
         {
-            throw new ArgumentNullException("item");
+            throw new ArgumentNullException(nameof(item));
         }
 
         return item.SqlName + ".insert.sql";
@@ -32,12 +44,12 @@ public class InitReferenceListScripter : ISqlScripter<Class>
     {
         if (writer == null)
         {
-            throw new ArgumentNullException("writer");
+            throw new ArgumentNullException(nameof(writer));
         }
 
         if (item == null)
         {
-            throw new ArgumentNullException("item");
+            throw new ArgumentNullException(nameof(item));
         }
 
         var tableName = item.SqlName;
@@ -57,7 +69,7 @@ public class InitReferenceListScripter : ISqlScripter<Class>
     /// <param name="modelClass">Modele de la classe.</param>
     /// <param name="initItem">Item a insérer.</param>
     /// <returns>Requête.</returns>
-    private static string GetInsertLine(Class modelClass, ReferenceValue initItem)
+    private string GetInsertLine(Class modelClass, ReferenceValue initItem)
     {
         // Remplissage d'un dictionnaire nom de colonne => valeur.
         var definition = initItem.Value;
@@ -71,7 +83,7 @@ public class InitReferenceListScripter : ISqlScripter<Class>
                 {
                     null => "NULL",
                     string bs when property.Domain.SqlType == "bit" => $"N'{bs}'",
-                    string s when property.Domain.SqlType!.Contains("varchar") => $"N'{ScriptUtils.PrepareDataToSqlDisplay(s)}'",
+                    string s when property.Domain.SqlType!.Contains("varchar") => $"{(_config.TargetDBMS == TargetDBMS.Sqlserver ? "N" : string.Empty)}'{ScriptUtils.PrepareDataToSqlDisplay(s)}'",
                     object v => v.ToString()
                 };
             }
