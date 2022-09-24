@@ -88,7 +88,7 @@ public class DbContextGenerator
             w.WriteLine(2, "}");
         }
 
-        foreach (var classe in classes.OrderBy(c => c.Name))
+        foreach (var classe in classes.Distinct().OrderBy(c => c.Name))
         {
             w.WriteLine();
             w.WriteSummary(2, "Accès à l'entité " + classe.Name);
@@ -114,7 +114,7 @@ public class DbContextGenerator
             }
 
             var hasPropConfig = false;
-            foreach (var prop in classes.OrderBy(c => c.Name).SelectMany(c => c.Properties.OfType<IFieldProperty>()))
+            foreach (var prop in classes.Distinct().OrderBy(c => c.Name).SelectMany(c => c.Properties.OfType<IFieldProperty>()))
             {
                 if (prop.PrimaryKey && _config.CanClassUseEnums(prop.Class) || prop is AssociationProperty ap && _config.CanClassUseEnums(ap.Association))
                 {
@@ -135,7 +135,7 @@ public class DbContextGenerator
             }
 
             var hasFk = false;
-            foreach (var prop in classes.OrderBy(c => c.Name).SelectMany(c => c.Properties).Where(p => p is AssociationProperty { Association.IsPersistent: true } || p is AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } }))
+            foreach (var prop in classes.Distinct().OrderBy(c => c.Name).SelectMany(c => c.Properties).Where(p => p is AssociationProperty { Association.IsPersistent: true } || p is AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } }))
             {
                 hasFk = true;
                 var ap = prop switch
@@ -159,7 +159,7 @@ public class DbContextGenerator
             }
 
             var hasUk = false;
-            foreach (var uk in classes.OrderBy(c => c.Name).SelectMany(c => c.UniqueKeys))
+            foreach (var uk in classes.Distinct().OrderBy(c => c.Name).SelectMany(c => c.UniqueKeys))
             {
                 hasUk = true;
                 var expr = uk.Count == 1 ? $"p.{uk.Single().Name}" : $"new {{ {string.Join(", ", uk.Select(p => $"p.{p.Name}"))} }}";
@@ -172,7 +172,7 @@ public class DbContextGenerator
             }
 
             var hasData = false;
-            foreach (var classe in classes.Where(c => c.ReferenceValues.Any()).OrderBy(c => c.Name))
+            foreach (var classe in classes.Distinct().Where(c => c.ReferenceValues.Any()).OrderBy(c => c.Name))
             {
                 hasData = true;
                 w.WriteLine(3, $"modelBuilder.Entity<{classe.Name}>().HasData(");
