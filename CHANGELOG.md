@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.13.3
+
+- [`831711dd`](https://github.com/klee-contrib/topmodel/commit/831711dd83c40f094e92cc51b58d0d703f42077d) - [C#] Fix Distinct() manquant sur DBContext
+
 ## 1.13.2
 
 - [`8427cee2`](https://github.com/klee-contrib/topmodel/commit/8427cee2f53f39f6d4d8b24b2020608cf1bf41c8) - [SSDTGen] InitListMainScriptName facultatif
