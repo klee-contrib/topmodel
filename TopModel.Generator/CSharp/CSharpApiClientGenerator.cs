@@ -207,7 +207,7 @@ public class CSharpApiClientGenerator : GeneratorBase
 
             foreach (var param in endpoint.Params)
             {
-                fw.Write($"{_config.GetPropertyTypeName(param, param.IsRouteParam())} {param.GetParamName()}");
+                fw.Write($"{_config.GetPropertyTypeName(param, param.IsRouteParam())} {param.GetParamName().Verbatim()}");
 
                 if (param.IsQueryParam())
                 {
@@ -241,7 +241,7 @@ public class CSharpApiClientGenerator : GeneratorBase
                         _ => $"?.ToString(CultureInfo.InvariantCulture)"
                     };
 
-                    fw.WriteLine(4, $@"[""{qp.GetParamName()}""] = {qp.GetParamName()}{toString},");
+                    fw.WriteLine(4, $@"[""{qp.GetParamName()}""] = {qp.GetParamName().Verbatim()}{toString},");
                 }
 
                 var listQPs = endpoint.GetQueryParams().Where(qp => _config.GetPropertyTypeName(qp).Contains("[]")).ToList();

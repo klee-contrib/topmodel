@@ -179,7 +179,7 @@ namespace {apiPath.Replace("/", ".")}
             }
         }
 
-        sb.Append($@"{_config.GetPropertyTypeName(param, param.IsRouteParam())} {param.GetParamName()}");
+        sb.Append($@"{_config.GetPropertyTypeName(param, param.IsRouteParam())} {param.GetParamName().Verbatim()}");
 
         if (param.IsQueryParam() && !hasForm)
         {
