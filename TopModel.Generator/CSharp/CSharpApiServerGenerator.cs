@@ -25,7 +25,7 @@ public class CSharpApiServerGenerator : GeneratorBase
 
     public override string Name => "CSharpApiServerGen";
 
-    public override IEnumerable<string> GeneratedFiles => _files.Values.Where(f => f.Endpoints.Any()).Select(GetFilePath);
+    public override IEnumerable<string> GeneratedFiles => _files.Values.Where(f => f.Endpoints.Any(endpoint => endpoint.ModelFile == f || !_files.ContainsKey(endpoint.ModelFile.Name))).Select(GetFilePath);
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
@@ -46,7 +46,8 @@ public class CSharpApiServerGenerator : GeneratorBase
 
     private void HandleFile(ModelFile file)
     {
-        if (!file.Endpoints.Any())
+        var endpoints = file.Endpoints.Where(endpoint => endpoint.ModelFile == file || !_files.ContainsKey(endpoint.ModelFile.Name));
+        if (!endpoints.Any())
         {
             return;
         }
@@ -85,7 +86,7 @@ namespace {apiPath.Replace("/", ".")}
 
         var indent = _config.UseLatestCSharp ? "    " : "        ";
 
-        foreach (var endpoint in file.Endpoints.Where(endpoint => endpoint.ModelFile == file || !_files.ContainsKey(endpoint.ModelFile.Name)))
+        foreach (var endpoint in endpoints)
         {
             var method = (MethodDeclarationSyntax)ParseMemberDeclaration($@"
 {indent}/// <summary>

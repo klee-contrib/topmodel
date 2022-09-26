@@ -249,7 +249,6 @@ public class JpaModelConstructorGenerator
                                 }
                                 else if (mapping.Key is IFieldProperty)
                                 {
-
                                     fw.WriteLine(3, $"if({param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}() != null) {{");
                                     if (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)
                                     {

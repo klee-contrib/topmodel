@@ -112,7 +112,6 @@ public class SqlTableScripter : ISqlScripter<Class>
             }
 
             writer.WriteLine();
-
         }
     }
 
