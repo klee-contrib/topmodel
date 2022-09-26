@@ -25,9 +25,10 @@ public abstract class GeneratorBase : IModelWatcher
     {
     }
 
-    public void OnFilesChanged(IEnumerable<ModelFile> files)
+    public void OnFilesChanged(IEnumerable<ModelFile> files, ModelStoreConfig? storeConfig = null)
     {
         using var scope = _logger.BeginScope(((IModelWatcher)this).FullName);
+        using var scope2 = _logger.BeginScope(storeConfig);
         HandleFiles(files.Where(file => _config.Tags.Intersect(file.Tags).Any()));
     }
 

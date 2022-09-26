@@ -23,6 +23,8 @@ public class ModelStore
 
     private readonly TopModelLock _topModelLock;
 
+    private ModelStoreConfig? _storeConfig;
+
     public ModelStore(IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers)
     {
         _config = config;
@@ -42,15 +44,6 @@ public class ModelStore
         {
             _topModelLock = new TopModelLock { Version = CurrentVersion };
         }
-
-        _logger.LogInformation($"TopModel v{CurrentVersion}");
-        if (CurrentVersion != _topModelLock.Version)
-        {
-            _logger.LogWarning($"Ce modèle a été généré pour la dernière fois avec TopModel v{_topModelLock.Version}, qui n'est pas la version actuellement installée (v{CurrentVersion})");
-        }
-
-        _topModelLock.Version = CurrentVersion;
-        _topModelLock.GeneratedFiles ??= new();
     }
 
     public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes).Distinct();
@@ -83,15 +76,27 @@ public class ModelStore
         return GetDependencies(file).SelectMany(m => m.Decorators).Concat(file.Decorators);
     }
 
-    public IDisposable? LoadFromConfig(bool watch = false)
+    public IDisposable? LoadFromConfig(bool watch = false, ModelStoreConfig? storeConfig = null)
     {
+        _storeConfig = storeConfig;
+
+        using var scope = _logger.BeginScope(_storeConfig);
+
+        if (CurrentVersion != _topModelLock.Version)
+        {
+            _logger.LogWarning($"Ce modèle a été généré pour la dernière fois avec TopModel v{_topModelLock.Version}, qui n'est pas la version actuellement installée (v{CurrentVersion})");
+        }
+
+        _topModelLock.Version = CurrentVersion;
+        _topModelLock.GeneratedFiles ??= new();
+
         foreach (var mw in _modelWatchers)
         {
             var sameGeneratorList = _modelWatchers.Where(m => m.Name == mw.Name).ToList();
             mw.Number = sameGeneratorList.IndexOf(mw) + 1;
         }
 
-        _logger.LogInformation($"Watchers enregistrés : \n                    - {string.Join("\n                    - ", _modelWatchers.Select(mw => mw.FullName))}");
+        _logger.LogInformation($"Watchers enregistrés : \n                          - {string.Join("\n                          - ", _modelWatchers.Select(mw => mw.FullName))}");
 
         FileSystemWatcher? fsWatcher = null;
         if (watch)
@@ -208,7 +213,7 @@ public class ModelStore
 
                 foreach (var modelWatcher in _modelWatchers)
                 {
-                    modelWatcher.OnFilesChanged(sortedFiles);
+                    modelWatcher.OnFilesChanged(sortedFiles, _storeConfig);
                 }
 
                 if (_modelWatchers.Any(m => m.GeneratedFiles != null))

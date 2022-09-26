@@ -30,7 +30,7 @@ public class ModelFileProvider : IModelWatcher
 
     public IEnumerable<string>? GeneratedFiles => null;
 
-    public void OnFilesChanged(IEnumerable<ModelFile> files)
+    public void OnFilesChanged(IEnumerable<ModelFile> files, ModelStoreConfig? storeConfig = null)
     {
         foreach (var file in files)
         {

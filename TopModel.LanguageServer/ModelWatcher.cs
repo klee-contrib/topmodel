@@ -48,7 +48,7 @@ public class ModelWatcher : IModelWatcher
         }
     }
 
-    public void OnFilesChanged(IEnumerable<ModelFile> files)
+    public void OnFilesChanged(IEnumerable<ModelFile> files, ModelStoreConfig? storeConfig = null)
     {
         _facade.SendNotification("filesChanged");
     }
