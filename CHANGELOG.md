@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.13.4
+
+- [`96c32208`](https://github.com/klee-contrib/topmodel/commit/96c3220825b392b36abd7cdea19dce163e8fd1e3) - [C#ServerApiGen] Fix génération contrôleur vide s'il n'y a que des alias d'endpoints
+
 ## 1.13.3
 
 - [`831711dd`](https://github.com/klee-contrib/topmodel/commit/831711dd83c40f094e92cc51b58d0d703f42077d) - [C#] Fix Distinct() manquant sur DBContext
