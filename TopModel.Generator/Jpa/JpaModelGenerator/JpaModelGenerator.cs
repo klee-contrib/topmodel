@@ -533,11 +533,11 @@ public class JpaModelGenerator : GeneratorBase
             string name;
             if (prop is AssociationProperty ap)
             {
-                name = ModelUtils.ConvertCsharp2Bdd(ap.GetAssociationName());
+                name = ap.GetAssociationName().ToSnakeCase();
             }
             else
             {
-                name = ModelUtils.ConvertCsharp2Bdd(prop.Name);
+                name = prop.Name.ToSnakeCase();
             }
 
             return $"        {name}";

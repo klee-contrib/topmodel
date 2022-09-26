@@ -107,7 +107,7 @@ public class KasperGenerator : GeneratorBase
         {
             fw.WriteDocStart(2, property.Comment);
             fw.WriteDocEnd(2);
-            fw.WriteLine(2, $"{ModelUtils.ConvertCsharp2Bdd(property.JavaName)}{(properties.IndexOf(property) < properties.Count - 1 ? "," : string.Empty)}");
+            fw.WriteLine(2, $"{property.JavaName.ToSnakeCase()}{(properties.IndexOf(property) < properties.Count - 1 ? "," : string.Empty)}");
         }
 
         fw.WriteLine(1, "}");
@@ -195,7 +195,7 @@ public class KasperGenerator : GeneratorBase
 
             fw.WriteAttribute(1, "kasperx.annotation.Field", kasperFieldProps.ToArray());
             fw.WriteLine(1, $"public final {property.Domain.Java.Type} get{property.JavaName}() {{");
-            fw.WriteLine(2, $"return ({property.Domain.Java.Type}) getValue({ModelUtils.ConvertCsharp2Bdd(property.JavaName)});");
+            fw.WriteLine(2, $"return ({property.Domain.Java.Type}) getValue({property.JavaName.ToSnakeCase()});");
             fw.WriteLine(1, "}");
 
             fw.WriteLine();
@@ -203,7 +203,7 @@ public class KasperGenerator : GeneratorBase
             fw.WriteParam(property.JavaName.ToFirstLower(), property.Domain.Java.Type);
             fw.WriteDocEnd(1);
             fw.WriteLine(1, $"public final void set{property.JavaName}({property.Domain.Java.Type} {property.JavaName.ToFirstLower()}) {{");
-            fw.WriteLine(2, $"setValue({ModelUtils.ConvertCsharp2Bdd(property.JavaName)}, {property.JavaName.ToFirstLower()});");
+            fw.WriteLine(2, $"setValue({property.JavaName.ToSnakeCase()}, {property.JavaName.ToFirstLower()});");
             fw.WriteLine(1, "}");
         }
 
@@ -364,7 +364,7 @@ public class KasperGenerator : GeneratorBase
                 {
                     fw.WriteDocStart(1, property.Comment);
                     fw.WriteDocEnd(1);
-                    fw.WriteLine(1, $"FLD{classe.SqlName}${ModelUtils.ConvertCsharp2Bdd(property.JavaName)},");
+                    fw.WriteLine(1, $"FLD{classe.SqlName}${property.JavaName.ToSnakeCase()},");
                 }
             }
 
@@ -382,7 +382,7 @@ public class KasperGenerator : GeneratorBase
             {
                 foreach (var property in classe.Properties.OfType<IFieldProperty>())
                 {
-                    fw.WriteLine($"FLD{classe.SqlName}${ModelUtils.ConvertCsharp2Bdd(property.JavaName)} ={property.Label ?? property.Name}");
+                    fw.WriteLine($"FLD{classe.SqlName}${property.JavaName.ToSnakeCase()} ={property.Label ?? property.Name}");
                 }
 
                 fw.WriteLine();

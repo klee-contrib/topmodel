@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using TopModel.Core;
+using TopModel.Utils;
 
 namespace TopModel.Generator.CSharp;
 
@@ -377,7 +378,7 @@ public class CSharpClassGenerator
             var sqlName = _config.UseLowerCaseSqlNames ? item.SqlName.ToLower() : item.SqlName;
             if (_config.DbSchema != null)
             {
-                w.WriteAttribute(1, "Table", $@"""{sqlName}""", $@"Schema = ""{_config.DbSchema.Replace("{module}", item.Namespace.Module.ToLower())}""");
+                w.WriteAttribute(1, "Table", $@"""{sqlName}""", $@"Schema = ""{_config.DbSchema.Replace("{module}", item.Namespace.Module.ToLowerSnakeCase())}""");
             }
             else
             {

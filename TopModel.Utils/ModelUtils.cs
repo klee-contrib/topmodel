@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -27,13 +26,9 @@ public static class ModelUtils
     /// <param name="text">Le texte en entrée.</param>
     /// <param name="upperStart">Texte commençant par une majuscule.</param>
     /// <returns>Le texte en sortie.</returns>
-    public static string ToDashCase(this string text, bool upperStart = true)
+    public static string ToDashCase(this string text)
     {
-        return Regex.Replace(text, @"\p{Lu}", m => "-" + m.Value)
-            .ToLowerInvariant()
-            .Substring(upperStart ? 1 : 0)
-            .Replace("/-", "/")
-            .Replace("\\-", "\\");
+        return text.ToLowerSnakeCase().Replace("_", "-");
     }
 
     /// <summary>
@@ -72,6 +67,55 @@ public static class ModelUtils
     }
 
     /// <summary>
+    /// Convertit un text en SNAKE_CASE majuscule.
+    /// </summary>
+    /// <param name="text">Le texte en entrée.</param>
+    /// <param name="upperStart">Texte commençant par une majuscule.</param>
+    /// <returns>Le texte en sortie.</returns>
+    public static string ToSnakeCase(this string text)
+    {
+        if (text.Contains('_'))
+        {
+            return text.ToUpperInvariant();
+        }
+
+        var sb = new StringBuilder();
+        var c = text.ToCharArray();
+        var lastIsUp = true;
+
+        for (var i = 0; i < c.Length; ++i)
+        {
+            var upperChar = char.ToUpper(c[i]);
+            var isLastChar = i == c.Length - 1;
+            var nextIsLow = !isLastChar && char.ToUpper(c[i + 1]) != c[i + 1];
+
+            if (upperChar == c[i])
+            {
+                if (sb.Length != 0 && (!lastIsUp || nextIsLow))
+                {
+                    sb.Append('_');
+                }
+            }
+
+            lastIsUp = upperChar == c[i];
+
+            sb.Append(upperChar);
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Convertit un text en snake_case minuscule.
+    /// </summary>
+    /// <param name="text">Le texte en entrée.</param>
+    /// <returns>Le texte en sortie.</returns>
+    public static string ToLowerSnakeCase(this string text)
+    {
+        return ToSnakeCase(text).ToLower();
+    }
+
+    /// <summary>
     /// Met la première lettre d'un string en minuscule.
     /// </summary>
     /// <param name="text">Le texte en entrée.</param>
@@ -83,7 +127,7 @@ public static class ModelUtils
             return text;
         }
 
-        return char.ToLower(text[0]) + text.Substring(1);
+        return char.ToLower(text[0]) + text[1..];
     }
 
     /// <summary>
@@ -93,60 +137,7 @@ public static class ModelUtils
     /// <returns>Le texte en sortie.</returns>
     public static string ToFirstUpper(this string text)
     {
-        return char.ToUpper(text[0]) + text.Substring(1);
-    }
-
-    /// <summary>
-    /// Convertit un nom avec la syntaxe C#.
-    /// </summary>
-    /// <param name="name">Nom au format C#.</param>
-    /// <returns>Nom base de données.</returns>
-    public static string ConvertCsharp2Bdd(string name)
-    {
-        if (name.Contains("_"))
-        {
-            return name.ToUpperInvariant();
-        }
-
-        var sb = new StringBuilder();
-        var c = name.ToCharArray();
-        var lastIsUp = true;
-        var anteLastIsUp = false;
-        for (var i = 0; i < c.Length; ++i)
-        {
-            var upperChar = new string(c[i], 1).ToUpper(CultureInfo.CurrentCulture);
-            if (i > 0)
-            {
-                var isLastCaracter = i == c.Length - 1;
-                var nextIsMinus = !isLastCaracter && !new string(c[i + 1], 1).ToUpper(CultureInfo.CurrentCulture).Equals(new string(c[i + 1], 1));
-
-                if (upperChar.Equals(new string(c[i], 1)))
-                {
-                    if (!lastIsUp || anteLastIsUp ||
-                        !lastIsUp && isLastCaracter ||
-                        lastIsUp && nextIsMinus)
-                    {
-                        sb.Append('_');
-                        anteLastIsUp = false;
-                        lastIsUp = true;
-                    }
-                    else
-                    {
-                        anteLastIsUp = lastIsUp;
-                        lastIsUp = true;
-                    }
-                }
-                else
-                {
-                    anteLastIsUp = lastIsUp;
-                    lastIsUp = false;
-                }
-            }
-
-            sb.Append(upperChar);
-        }
-
-        return sb.ToString();
+        return char.ToUpper(text[0]) + text[1..];
     }
 
     public static string ToRelative(this string path, string? relativeTo = null)

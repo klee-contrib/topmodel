@@ -58,12 +58,12 @@ public interface IFieldProperty : IProperty
             var prop = !Class.IsPersistent && this is AliasProperty alp ? alp.Property : this;
 
             return prop.Class.Extends != null && prop.PrimaryKey && Class.Trigram != null
-                ? $"{Class.Trigram}_{ModelUtils.ConvertCsharp2Bdd(Name).Replace(prop.Class.SqlName + "_", string.Empty)}"
+                ? $"{Class.Trigram}_{Name.ToSnakeCase().Replace(prop.Class.SqlName + "_", string.Empty)}"
                 : prop is AssociationProperty ap
                 ? ap.Property.SqlName + (ap.Role != null ? $"_{ap.Role.Replace(" ", "_").ToUpper()}" : string.Empty)
                 : prop.Class.Trigram != null
-                ? $"{prop.Class.Trigram}_{ModelUtils.ConvertCsharp2Bdd(prop.Name)}"
-                : ModelUtils.ConvertCsharp2Bdd(prop.Name);
+                ? $"{prop.Class.Trigram}_{prop.Name.ToSnakeCase()}"
+                : prop.Name.ToSnakeCase();
         }
     }
 

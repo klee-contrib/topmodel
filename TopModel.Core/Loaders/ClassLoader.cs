@@ -204,7 +204,7 @@ public class ClassLoader
         });
 
         classe.Label ??= classe.Name;
-        classe.SqlName ??= ModelUtils.ConvertCsharp2Bdd(_modelConfig.PluralizeTableNames ? classe.PluralName : classe.Name);
+        classe.SqlName ??= (_modelConfig.PluralizeTableNames ? classe.PluralName : classe.Name).ToSnakeCase();
 
         foreach (var prop in classe.Properties)
         {
