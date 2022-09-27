@@ -58,19 +58,18 @@ export class Application {
         // Options to control the language client
         let clientOptions: LanguageClientOptions = {
             // Register the server for plain text documents
-            documentSelector: [{ pattern: `${this.modelRoot}**/tmd` }],
+            documentSelector: [
+                { scheme: 'file', pattern: `/${this.modelRoot}/**.tmd` }
+            ],
+
             synchronize: {
-                configurationSection: 'topmodel',
-                fileEvents: workspace.createFileSystemWatcher(`${this.modelRoot}**/*.tmd`)
+                fileEvents: [workspace.createFileSystemWatcher(`/${this.modelRoot}/**.tmd`)]
             },
         };
 
         // Create the language client and start the client.
         this.client = new LanguageClient(`TopModel - ${this.config.app}`, `TopModel - ${this.config.app}`, serverOptions, clientOptions);
-
-        let disposable = this.client.start();
-        this.extensionContext.subscriptions.push(disposable);
-        await this.client.onReady();
+        await this.client.start();
         addPreviewApplication(this);
         this.status = "STARTED";
     }

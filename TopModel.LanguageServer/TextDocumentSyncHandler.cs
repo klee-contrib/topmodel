@@ -10,11 +10,12 @@ class TextDocumentSyncHandler : TextDocumentSyncHandlerBase
 {
     private readonly ModelFileCache _fileCache;
     private readonly ModelStore _modelStore;
-
-    public TextDocumentSyncHandler(ModelStore modelStore, ModelFileCache fileCache)
+    private readonly ModelConfig _config;
+    public TextDocumentSyncHandler(ModelStore modelStore, ModelFileCache fileCache, ModelConfig config)
     {
         _fileCache = fileCache;
         _modelStore = modelStore;
+        _config = config;
     }
 
     public override TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri)
@@ -53,7 +54,7 @@ class TextDocumentSyncHandler : TextDocumentSyncHandlerBase
     {
         return new TextDocumentSyncRegistrationOptions
         {
-            DocumentSelector = DocumentSelector.ForLanguage("yaml"),
+            DocumentSelector = _config.GetDocumentSelector(),
             Change = TextDocumentSyncKind.Full,
             Save = new SaveOptions { IncludeText = true }
         };

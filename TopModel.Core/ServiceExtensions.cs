@@ -14,6 +14,7 @@ public static class ServiceExtensions
             .AddSingleton<ClassLoader>()
             .AddSingleton<DecoratorLoader>()
             .AddSingleton<ModelFileLoader>()
+            .AddSingleton<ModelConfig>()
             .AddSingleton<ModelStore>();
 
         if (config != null && rootDir != null)

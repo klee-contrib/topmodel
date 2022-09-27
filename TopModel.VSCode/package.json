@@ -166,7 +166,7 @@
     "mermaid": "^9.1.1",
     "open": "^8.4.0",
     "vscode-jsonrpc": "8.0.2-next.1",
-    "vscode-languageclient": "8.0.0-next.12"
+    "vscode-languageclient": "8.0.2"
   },
   "devDependencies": {
     "@types/glob": "^7.1.4",
