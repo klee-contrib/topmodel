@@ -40,21 +40,23 @@ public abstract class AbstractUtilisateurApiClient {
 
 	/**
 	 * UriComponentsBuilder pour la méthode GetUtilisateur.
-	 * @param utiId Id technique
+	 * @param utilisateurId Id technique
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder getUtilisateurUriComponentsBuilder(long utiId) {
-		String uri = host + "utilisateur/%s".formatted(utiId);;
-		return UriComponentsBuilder.fromUri(URI.create(uri));
+	protected UriComponentsBuilder getUtilisateurUriComponentsBuilder(long utilisateurId) {
+		String uri = host + "utilisateur/{utiId}";
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
+		uriBuilder.queryParam("utilisateurId", utilisateurId);
+		return uriBuilder;
 	}
 
 	/**
 	 * Charge le détail d'un utilisateur.
-	 * @param utiId Id technique
+	 * @param utilisateurId Id technique
 	 * @return Le détail de l'utilisateur
 	 */
-	public ResponseEntity<UtilisateurDto> getUtilisateur(long utiId, HttpHeaders headers){
-		UriComponentsBuilder uri = this.getUtilisateurUriComponentsBuilder(utiId);
+	public ResponseEntity<UtilisateurDto> getUtilisateur(long utilisateurId, HttpHeaders headers){
+		UriComponentsBuilder uri = this.getUtilisateurUriComponentsBuilder(utilisateurId);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), UtilisateurDto.class);
 	}
 
@@ -123,17 +125,17 @@ public abstract class AbstractUtilisateurApiClient {
 
 	/**
 	 * UriComponentsBuilder pour la méthode Search.
-	 * @param utiId Id technique
+	 * @param utilisateurId Id technique
 	 * @param age Age en années de l'utilisateur
 	 * @param profilId Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder searchUriComponentsBuilder(long utiId, Long age, long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode) {
+	protected UriComponentsBuilder searchUriComponentsBuilder(long utilisateurId, Long age, long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode) {
 		String uri = host + "utilisateur/search";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
-		uriBuilder.queryParam("utiId", utiId);
+		uriBuilder.queryParam("utilisateurId", utilisateurId);
 		if (age != null) {
 			uriBuilder.queryParam("age", age);
 		}
@@ -155,15 +157,15 @@ public abstract class AbstractUtilisateurApiClient {
 
 	/**
 	 * Recherche des utilisateurs.
-	 * @param utiId Id technique
+	 * @param utilisateurId Id technique
 	 * @param age Age en années de l'utilisateur
 	 * @param profilId Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<Page> search(long utiId, Long age, long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, HttpHeaders headers){
-		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utiId, age, profilId, email, typeUtilisateurCode);
+	public ResponseEntity<Page> search(long utilisateurId, Long age, long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, HttpHeaders headers){
+		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utilisateurId, age, profilId, email, typeUtilisateurCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), Page.class);
 	}
 }

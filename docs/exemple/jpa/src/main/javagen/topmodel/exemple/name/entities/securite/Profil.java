@@ -41,21 +41,21 @@ public class Profil {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "PRO_ID", nullable = false)
+	@Column(name = "ID", nullable = false)
 	private long id;
 
 	/**
 	 * Type de profil.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeProfil.class)
-	@JoinColumn(name = "CODE", referencedColumnName = "CODE")
+	@JoinColumn(name = "TYPE_PROFIL_CODE", referencedColumnName = "CODE")
 	private TypeProfil typeProfil;
 
 	/**
 	 * Liste des droits de l'utilisateur.
 	 */
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "PROFIL_DROITS_APPLI", joinColumns = @JoinColumn(name = "PRO_ID_APPLI"), inverseJoinColumns = @JoinColumn(name = "CODE_APPLI"))
+	@JoinTable(name = "PROFIL_DROITS_APPLI", joinColumns = @JoinColumn(name = "PROFIL_ID_APPLI"), inverseJoinColumns = @JoinColumn(name = "DROITS_DROITS_CODE_APPLI"))
 	private List<Droits> droitsAppli;
 
 	/**
@@ -138,7 +138,7 @@ public class Profil {
 	 *
 	 * @return value of {@link topmodel.exemple.name.entities.securite.Profil#typeProfil typeProfil}.
 	 */
-	protected TypeProfil getTypeProfil() {
+	public TypeProfil getTypeProfil() {
 		return this.typeProfil;
 	}
 
@@ -147,7 +147,7 @@ public class Profil {
 	 *
 	 * @return value of {@link topmodel.exemple.name.entities.securite.Profil#droitsAppli droitsAppli}.
 	 */
-	protected List<Droits> getDroitsAppli() {
+	public List<Droits> getDroitsAppli() {
 		if(this.droitsAppli == null)
 			this.droitsAppli = new ArrayList<>();
 		return this.droitsAppli;

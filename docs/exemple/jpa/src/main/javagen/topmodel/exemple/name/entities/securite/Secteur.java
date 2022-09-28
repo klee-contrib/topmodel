@@ -38,7 +38,7 @@ public class Secteur {
 	 * Association réciproque de {@link topmodel.exemple.name.entities.securite.Profil#secteurs Profil.secteurs}.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Profil.class)
-	@JoinColumn(name = "PRO_ID", referencedColumnName = "PRO_ID")
+	@JoinColumn(name = "ID", referencedColumnName = "ID")
 	private Profil profil;
 
 	/**

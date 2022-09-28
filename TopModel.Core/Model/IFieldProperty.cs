@@ -56,14 +56,16 @@ public interface IFieldProperty : IProperty
         get
         {
             var prop = !Class.IsPersistent && this is AliasProperty alp ? alp.Property : this;
-
+            var snakeCaseName = prop.Name.ToSnakeCase();
+            var classPrefix = prop is AssociationProperty api && api.Class.Trigram == null && api.Association.Trigram == null ? $"{api.Association.Name.ToString().ToSnakeCase()}_" : string.Empty;
             return prop.Class.Extends != null && prop.PrimaryKey && Class.Trigram != null
                 ? $"{Class.Trigram}_{Name.ToSnakeCase().Replace(prop.Class.SqlName + "_", string.Empty)}"
                 : prop is AssociationProperty ap
-                ? ap.Property.SqlName + (ap.Role != null ? $"_{ap.Role.Replace(" ", "_").ToUpper()}" : string.Empty)
+                ? ap.Role != null ? classPrefix + ap.Property.SqlName + $"_{ap.Role.Replace(" ", "_").ToUpper()}"
+                : classPrefix + ap.Property.SqlName
                 : prop.Class.Trigram != null
-                ? $"{prop.Class.Trigram}_{prop.Name.ToSnakeCase()}"
-                : prop.Name.ToSnakeCase();
+                ? $"{prop.Class.Trigram}_{snakeCaseName}"
+                : snakeCaseName;
         }
     }
 

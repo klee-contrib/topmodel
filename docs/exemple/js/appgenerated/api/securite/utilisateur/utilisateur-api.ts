@@ -18,12 +18,18 @@ export class UtilisateurApiService {
 
 	/**
 	 * Charge le détail d'un utilisateur
-	 * @param utiId Id technique
+	 * @param utilisateurId Id technique
 	 * @param options Options pour 'fetch'.
 	 * @returns Le détail de l'utilisateur
 	 */
-	getUtilisateur(utiId: number ): Observable<UtilisateurDto> {
-		return this.http.get<UtilisateurDto>(`/utilisateur/${utiId}`);
+	getUtilisateur(utilisateurId?: number , queryParams: any = {}): Observable<UtilisateurDto> {
+		const httpParams = new HttpParams({fromObject : queryParams});
+		const httpOptions = { params: httpParams }
+		if(utilisateurId !== null) {
+			httpOptions.params.set('utilisateurId', utilisateurId)
+		}
+
+		return this.http.get<UtilisateurDto>(`/utilisateur/${utiId}`, httpOptions);
 	}
 
 	/**
@@ -64,7 +70,7 @@ export class UtilisateurApiService {
 
 	/**
 	 * Recherche des utilisateurs
-	 * @param utiId Id technique
+	 * @param utilisateurId Id technique
 	 * @param age Age en années de l'utilisateur
 	 * @param profilId Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
@@ -72,11 +78,11 @@ export class UtilisateurApiService {
 	 * @param options Options pour 'fetch'.
 	 * @returns Utilisateurs matchant les critères
 	 */
-	search(utiId?: number age?: number profilId?: number email?: string typeUtilisateurCode?: TypeUtilisateurCode , queryParams: any = {}): Observable<Page<UtilisateurDto>> {
+	search(utilisateurId?: number age?: number profilId?: number email?: string typeUtilisateurCode?: TypeUtilisateurCode , queryParams: any = {}): Observable<Page<UtilisateurDto>> {
 		const httpParams = new HttpParams({fromObject : queryParams});
 		const httpOptions = { params: httpParams }
-		if(utiId !== null) {
-			httpOptions.params.set('utiId', utiId)
+		if(utilisateurId !== null) {
+			httpOptions.params.set('utilisateurId', utilisateurId)
 		}
 		if(age !== null) {
 			httpOptions.params.set('age', age)

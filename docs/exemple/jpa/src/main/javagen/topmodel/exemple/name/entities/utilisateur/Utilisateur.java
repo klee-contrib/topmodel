@@ -45,14 +45,14 @@ public class Utilisateur {
 	/**
 	 * Date de création de l'utilisateur.
 	 */
-	@Column(name = "UTI_DATE_CREATION", nullable = true)
+	@Column(name = "DATE_CREATION", nullable = true)
 	@CreatedDate
 	private DateTime dateCreation;
 
 	/**
 	 * Date de modification de l'utilisateur.
 	 */
-	@Column(name = "UTI_DATE_MODIFICATION", nullable = true)
+	@Column(name = "DATE_MODIFICATION", nullable = true)
 	@LastModifiedDate
 	private DateTime dateModification;
 
@@ -61,26 +61,26 @@ public class Utilisateur {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "UTI_ID", nullable = false)
+	@Column(name = "ID", nullable = false)
 	private long id;
 
 	/**
 	 * Age en années de l'utilisateur.
 	 */
-	@Column(name = "UTI_AGE", nullable = true, precision = 20, scale = 9)
+	@Column(name = "AGE", nullable = true, precision = 20, scale = 9)
 	private Long age;
 
 	/**
 	 * Profil de l'utilisateur.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Profil.class)
-	@JoinColumn(name = "PRO_ID", referencedColumnName = "PRO_ID")
+	@JoinColumn(name = "PROFIL_ID", referencedColumnName = "ID")
 	private Profil profil;
 
 	/**
 	 * Email de l'utilisateur.
 	 */
-	@Column(name = "UTI_EMAIL", nullable = true, length = 50)
+	@Column(name = "EMAIL", nullable = true, length = 50)
 	@Email
 	private String email;
 
@@ -95,7 +95,7 @@ public class Utilisateur {
 	 * Utilisateur parent.
 	 */
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
-	@JoinColumn(name = "UTI_ID_PARENT", referencedColumnName = "UTI_ID", unique = true)
+	@JoinColumn(name = "UTILISATEUR_ID_PARENT", referencedColumnName = "ID", unique = true)
 	private Utilisateur utilisateurParent;
 
 	/**
@@ -204,7 +204,7 @@ public class Utilisateur {
 	 *
 	 * @return value of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#typeUtilisateur typeUtilisateur}.
 	 */
-	protected TypeUtilisateur getTypeUtilisateur() {
+	public TypeUtilisateur getTypeUtilisateur() {
 		return this.typeUtilisateur;
 	}
 
