@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.13.5
+
+- [`097cd3af`](https://github.com/klee-contrib/topmodel/pull/151) - JPA/PG : Préfixer les PK dans le cas où les classes associées n'ont pas de trigram #150
+- [`4a605e16`](https://github.com/klee-contrib/topmodel/commit/4a605e16c778e035fe529658841a0035c344ffd2) - [C#ApiGen] Gestion des mots clés réservés dans les noms de paramètres
+- [`d1bdb2b3`](https://github.com/klee-contrib/topmodel/commit/d1bdb2b3e9f7bbc65d6a52bfc02f630c3ba04602) - homogénéisation snake_case/dash-case
+
 ## 1.13.4
 
 - [`96c32208`](https://github.com/klee-contrib/topmodel/commit/96c3220825b392b36abd7cdea19dce163e8fd1e3) - [C#ServerApiGen] Fix génération contrôleur vide s'il n'y a que des alias d'endpoints
