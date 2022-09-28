@@ -7,5 +7,5 @@
 --   Script Name		:	03_unique_keys.sql
 --   Description		:	Script de création des index uniques.
 -- =========================================================================================== 
-alter table UTILISATEUR add constraint UK_UTILISATEUR_UTI_ID_PARENT unique (UTI_ID_PARENT);
+alter table UTILISATEUR add constraint UK_UTILISATEUR_UTILISATEUR_ID_PARENT unique (UTILISATEUR_ID_PARENT);
 

@@ -117,13 +117,11 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 			this.utilisateurParent = new UtilisateurDto(utilisateur.getUtilisateurParent());
 			this.id = utilisateur.getId();
 			this.age = utilisateur.getAge();
-
 			if(utilisateur.getProfil() != null) {
 				this.profilId = utilisateur.getProfil().getId();
 			}
 
 			this.email = utilisateur.getEmail();
-
 			if(utilisateur.getTypeUtilisateur() != null) {
 				this.typeUtilisateurCode = utilisateur.getTypeUtilisateur().getCode();
 			}
@@ -251,7 +249,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 		dest = dest == null ? new Utilisateur() : dest;
 
 		if (this.getUtilisateurParent() != null) {
-			dest.setUtilisateurParent(this.getUtilisateurParent().toUtilisateur(dest.getUtilisateurParent());
+			dest.setUtilisateurParent(this.getUtilisateurParent().toUtilisateur(dest.getUtilisateurParent()));
 		}
 
 		dest.setId(this.getId());

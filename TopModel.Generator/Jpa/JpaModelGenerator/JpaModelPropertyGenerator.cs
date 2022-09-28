@@ -91,6 +91,12 @@ public class JpaModelPropertyGenerator
         var role = property.Role is not null ? "_" + property.Role.ToUpper() : string.Empty;
         var fk = ((IFieldProperty)property).SqlName;
         var pk = classe.PrimaryKey!.SqlName + role;
+        if (classe.Trigram is null && property.Association.Trigram is null)
+        {
+            fk = property.Association.SqlName + "_" + fk;
+            pk = classe.SqlName + "_" + pk;
+        }
+
         if (property is JpaAssociationProperty jap)
         {
             fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, mappedBy = ""{jap.ReverseProperty.GetJavaName()}"", cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }})");

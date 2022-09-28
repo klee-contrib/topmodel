@@ -108,19 +108,16 @@ public class ProfilDto implements Serializable {
 	protected void from(Profil profil) {
 		if(profil != null) {
 			this.id = profil.getId();
-
 			if(profil.getTypeProfil() != null) {
 				this.typeProfilCode = profil.getTypeProfil().getCode();
 			}
 
-
 			if(profil.getDroitsAppli() != null) {
-				this.droitsAppli = profil.getDroitsAppli().getCode();
+				this.droitsAppli = profil.getDroitsAppli().stream().filter(t -> t != null).map(droitsAppli -> droitsAppli.getCode()).collect(Collectors.toList());
 			}
 
-
 			if(profil.getSecteurs() != null) {
-				this.secteurs = profil.getSecteurs().getId();
+				this.secteurs = profil.getSecteurs().stream().filter(t -> t != null).map(secteurs -> secteurs.getId()).collect(Collectors.toList());
 			}
 
 		}

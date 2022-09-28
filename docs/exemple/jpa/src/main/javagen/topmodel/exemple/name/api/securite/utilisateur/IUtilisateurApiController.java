@@ -13,7 +13,6 @@ import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,11 +28,11 @@ public interface IUtilisateurApiController {
 
 	/**
 	 * Charge le détail d'un utilisateur.
-	 * @param utiId Id technique
+	 * @param utilisateurId Id technique
 	 * @return Le détail de l'utilisateur
 	 */
 	@GetMapping(path = "/{utiId}")
-	UtilisateurDto getUtilisateur(@PathVariable("utiId") long utiId);
+	UtilisateurDto getUtilisateur(@RequestParam(value = "utilisateurId", required = true) long utilisateurId);
 
 	/**
 	 * Charge une liste d'utilisateurs par leur type.
@@ -61,7 +60,7 @@ public interface IUtilisateurApiController {
 
 	/**
 	 * Recherche des utilisateurs.
-	 * @param utiId Id technique
+	 * @param utilisateurId Id technique
 	 * @param age Age en années de l'utilisateur
 	 * @param profilId Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
@@ -69,5 +68,5 @@ public interface IUtilisateurApiController {
 	 * @return Utilisateurs matchant les critères
 	 */
 	@PostMapping(path = "/search")
-	Page<UtilisateurDto> search(@RequestParam(value = "utiId", required = true) long utiId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode);
+	Page<UtilisateurDto> search(@RequestParam(value = "utilisateurId", required = true) long utilisateurId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode);
 }
