@@ -27,7 +27,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         .Select(c => GetFileName(c))
         .Concat(_files.SelectMany(f => f.Value.Classes)
             .Select(c => c.ModelFile.Module != null
-                ? $"{_config.ModelOutputDirectory}/{c.ModelFile.Module.Replace(".", "\\").ToDashCase()}/references.ts"
+                ? $"{_config.ModelOutputDirectory}/{string.Join('/', c.ModelFile.Module.Split('.').Select(m => m.ToDashCase()))}/references.ts"
                 : $"{_config.ModelOutputDirectory}/references.ts"));
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
@@ -48,7 +48,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
     private string GetFileName(Class classe)
     {
-        return $"{_config.ModelOutputDirectory}/{classe.ModelFile.Module.Replace('.', '\\').ToDashCase()}\\{classe.Name.ToDashCase()}.ts";
+        return $"{_config.ModelOutputDirectory}/{string.Join('/', classe.Namespace.Module.Split('.').Select(m => m.ToDashCase()))}\\{classe.Name.ToDashCase()}.ts";
     }
 
     private List<Class> GetClasses(ModelFile file)
@@ -87,7 +87,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         if (_config.ModelOutputDirectory != null && classes.Any())
         {
             var fileName = module != null
-                ? $"{_config.ModelOutputDirectory}/{module.Replace(".", "/").ToDashCase()}/references.ts"
+                ? $"{_config.ModelOutputDirectory}/{string.Join('/', module.Split('.').Select(m => m.ToDashCase()))}/references.ts"
                 : $"{_config.ModelOutputDirectory}/references.ts";
 
             var fileInfo = new FileInfo(fileName);
@@ -392,7 +392,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
             module = module == currentModule
                 ? $"."
-                : $"{string.Join('/', currentModule.Split(".").Select(m => ".."))}/{module.Replace(".", "/").ToDashCase()}";
+                : $"{string.Join('/', currentModule.Split(".").Select(m => ".."))}/{string.Join('/', module.Split('.').Select(m => m.ToDashCase()))}";
 
             return (
                 import: type.DomainKind == null ? $"{name}Entity, {name}{(_config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}" : name,

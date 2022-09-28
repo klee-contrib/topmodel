@@ -46,7 +46,7 @@ public static class JavascriptUtils
                 {
                     var targetModule = pc.classe.Namespace.Module == currentModule
                        ? $"."
-                       : $"{string.Join('/', currentModule.Split(".").Select(m => ".."))}/{pc.classe.Namespace.Module.Replace(".", "/").ToDashCase()}";
+                       : $"{string.Join('/', currentModule.Split(".").Select(m => ".."))}/{string.Join('/', pc.classe.Namespace.Module.Split('.').Select(m => m.ToDashCase()))}";
                     return (Import: pc.prop.TS.Type, Path: $"{targetModule}/references");
                 }))
             .Distinct();

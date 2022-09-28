@@ -215,7 +215,7 @@ function fillFormData(data: any, formData: FormData, prefix = """") {
         var imports = types.Select(type =>
         {
             var name = type.Name.Value;
-            var module = $"{modelPath}/{type.Namespace.Module.Replace(".", "/").ToDashCase()}";
+            var module = $"{modelPath}/{string.Join('/', type.Namespace.Module.Split('.').Select(m => m.ToDashCase()))}";
             return (Import: name, Path: $"{relativePath}{module}/{name.ToDashCase()}");
         }).Distinct().ToList();
 
