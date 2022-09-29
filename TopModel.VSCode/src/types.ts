@@ -1,10 +1,10 @@
 export type TopModelConfig = {
     app: string;
-    modelRoot?:string;
+    modelRoot?: string;
 };
 
 export class TopModelException {
-    constructor(public readonly message: string) { }
+    constructor(public readonly message: string) {}
 }
 
 export type Mermaid = {
@@ -12,4 +12,4 @@ export type Mermaid = {
     module: string;
 };
 
-export type ExtensionState = "LOADING" | "ERROR" | "RUNNING" | "UPDATING" | "INSTALLING"; 
+export type ExtensionState = "LOADING" | "ERROR" | "RUNNING" | "UPDATING" | "INSTALLING";

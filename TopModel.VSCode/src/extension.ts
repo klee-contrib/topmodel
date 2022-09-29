@@ -1,13 +1,23 @@
-import { ExtensionContext, workspace, commands, window, StatusBarItem, StatusBarAlignment, Uri, Position } from 'vscode';
+import {
+    ExtensionContext,
+    workspace,
+    commands,
+    window,
+    StatusBarItem,
+    StatusBarAlignment,
+    Uri,
+    Position,
+} from "vscode";
 import * as fs from "fs";
-import { ExtensionState, TopModelConfig, TopModelException } from './types';
-import { registerPreview } from './preview';
-import { Application } from './application';
-import { COMMANDS, COMMANDS_OPTIONS } from './const';
-import { execute } from './utils';
+import { ExtensionState, TopModelConfig, TopModelException } from "./types";
+import { registerPreview } from "./preview";
+import { Application } from "./application";
+import { COMMANDS, COMMANDS_OPTIONS } from "./const";
+import { execute } from "./utils";
+import { Global } from "./global";
 
-const open = require('open');
-const yaml = require('js-yaml');
+const open = require("open");
+const yaml = require("js-yaml");
 
 let topModelStatusBar: StatusBarItem;
 let currentVersion: string;
@@ -23,8 +33,8 @@ export async function activate(ctx: ExtensionContext) {
     if (applications.length === 0) {
         const confs = await findConfFiles();
         try {
-            applications.push(...confs.map(conf => new Application(conf.file.path, conf.config, ctx)));
-            applications.forEach(async app => {
+            applications.push(...confs.map((conf) => new Application(conf.file.path, conf.config, ctx)));
+            applications.forEach(async (app) => {
                 await app.start();
                 refreshState();
             });
@@ -39,7 +49,7 @@ export async function activate(ctx: ExtensionContext) {
 
 function refreshState() {
     let status: ExtensionState = "RUNNING";
-    applications.forEach(a => {
+    applications.forEach((a) => {
         if (a.status === "LOADING") {
             status = "LOADING";
         }
@@ -59,8 +69,8 @@ function createStatusBar() {
 /********************************************************* */
 async function checkInstall() {
     const dotnetIsInstalled = await execute('echo ;%PATH%; | find /C /I "dotnet"');
-    if (dotnetIsInstalled !== '1\r\n') {
-        const selection = await window.showInformationMessage('Dotnet is not installed', "Show download page");
+    if (dotnetIsInstalled !== "1\r\n") {
+        const selection = await window.showInformationMessage("Dotnet is not installed", "Show download page");
         if (selection === "Show download page") {
             open("https://dotnet.microsoft.com/download/dotnet/6.0");
         }
@@ -70,22 +80,22 @@ async function checkInstall() {
 }
 
 async function loadlatestVersionVersion() {
-    const https = require('https');
+    const https = require("https");
     const options = {
-        hostname: 'api.nuget.org',
+        hostname: "api.nuget.org",
         port: 443,
-        path: '/v3-flatcontainer/topmodel.generator/index.json',
-        method: 'GET'
+        path: "/v3-flatcontainer/topmodel.generator/index.json",
+        method: "GET",
     };
 
     const req = await https.request(options, (res: any) => {
-        res.on('data', async (reponse: string) => {
+        res.on("data", async (reponse: string) => {
             const { versions }: { versions: string[] } = JSON.parse(reponse);
             latestVersion = versions[versions.length - 1];
         });
     });
 
-    req.on('error', (error: any) => {
+    req.on("error", (error: any) => {
         console.error(error);
     });
 
@@ -100,9 +110,9 @@ async function checkTopModelInsall() {
     } catch (error: any) {
         result = "Not Installed";
     }
-    if (result !== '1\r\n') {
+    if (result !== "1\r\n") {
         const option = "Install TopModel";
-        const selection = await window.showInformationMessage('TopModel n\'est pas installé', option);
+        const selection = await window.showInformationMessage("TopModel n'est pas installé", option);
         if (selection === option) {
             installModgen();
         }
@@ -114,12 +124,15 @@ async function checkTopModelInsall() {
 async function checkTopModelUpdate() {
     await loadCurrentVersion();
     if (currentVersion !== latestVersion && latestVersion) {
-        const extensionConfiguration = workspace.getConfiguration('topmodel');
+        const extensionConfiguration = workspace.getConfiguration("topmodel");
         if (extensionConfiguration.autoUpdate) {
             updateModgen();
         } else {
             const option = "Mettre à jour le générateur";
-            const selection = await window.showInformationMessage(`Le générateur TopModel peut être mis à jour (${currentVersion} > ${latestVersion})`, option);
+            const selection = await window.showInformationMessage(
+                `Le générateur TopModel peut être mis à jour (${currentVersion} > ${latestVersion})`,
+                option
+            );
             if (selection === option) {
                 updateModgen();
             }
@@ -128,8 +141,8 @@ async function checkTopModelUpdate() {
 }
 
 async function loadCurrentVersion() {
-    const result = await execute(`modgen --version`) as string;
-    currentVersion = result.replace('\r\n', '');
+    const result = (await execute(`modgen --version`)) as string;
+    currentVersion = result.replace("\r\n", "");
     updateStatusBar();
 }
 
@@ -144,7 +157,10 @@ async function installModgen() {
     loadCurrentVersion();
     extentionState = "RUNNING";
     updateStatusBar();
-    const selection = await window.showInformationMessage(`Le générateur TopModel v${latestVersion} a été installé`, "Voir la release note");
+    const selection = await window.showInformationMessage(
+        `Le générateur TopModel v${latestVersion} a été installé`,
+        "Voir la release note"
+    );
     if (selection === "Voir la release note") {
         open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
     }
@@ -160,7 +176,10 @@ async function updateModgen() {
     extentionState = "RUNNING";
     updateStatusBar();
     if (latestVersion) {
-        const selection = await window.showInformationMessage(`TopModel a été mis à jour ${oldVersion} --> ${latestVersion}`, "Voir la release note");
+        const selection = await window.showInformationMessage(
+            `TopModel a été mis à jour ${oldVersion} --> ${latestVersion}`,
+            "Voir la release note"
+        );
         if (selection === "Voir la release note") {
             open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
         }
@@ -174,58 +193,56 @@ function registerGlobalCommands() {
         title: "Mettre à jour le générateur",
         description: "Mise à jour manuelle de l'outil de génération",
         command: COMMANDS.update,
-        detail: "L'extension et le générateur sont versionnés séparément. Vous pouvez activer la mise à jour automatique dans les paramètres de l'extension."
-
+        detail: "L'extension et le générateur sont versionnés séparément. Vous pouvez activer la mise à jour automatique dans les paramètres de l'extension.",
     };
     commands.registerCommand(COMMANDS.findRef, async (line: number) => {
-        await commands.executeCommand("editor.action.goToLocations", window.activeTextEditor!.document.uri, new Position(line, 0), []);
+        await commands.executeCommand(
+            "editor.action.goToLocations",
+            window.activeTextEditor!.document.uri,
+            new Position(line, 0),
+            []
+        );
         await commands.executeCommand("editor.action.goToReferences");
     });
     registerPreview(context);
     registerChooseCommand();
-    registerModgen(true);
-    registerModgen(false);
+    new Global(context).registerCommands();
     refreshState();
 }
 
-function registerModgen(watch: boolean) {
-    const modgen = commands.registerCommand(
-        watch ? COMMANDS.modgenWatch : COMMANDS.modgen,
-        () => {
-            applications.forEach(app => {
-                app.startModgen(watch);
-            });
-        });
-    context.subscriptions.push(modgen);
-}
-
 function registerChooseCommand() {
-    context.subscriptions.push(commands.registerCommand(COMMANDS.chooseCommand, async () => {
-        const options = COMMANDS_OPTIONS;
-        const quickPick = window.createQuickPick();
-        quickPick.items = Object.keys(options).map(key => ({ key, label: options[key].title, description: options[key].description, detail: options[key].detail }));
-        quickPick.onDidChangeSelection(selection => {
-            if (selection[0]) {
-                commands.executeCommand(options[(selection[0] as any).key].command);
-                quickPick.hide();
-            }
-        });
-        quickPick.onDidHide(() => quickPick.dispose());
-        quickPick.show();
-    }));
+    context.subscriptions.push(
+        commands.registerCommand(COMMANDS.chooseCommand, async () => {
+            const options = COMMANDS_OPTIONS;
+            const quickPick = window.createQuickPick();
+            quickPick.items = Object.keys(options).map((key) => ({
+                key,
+                label: options[key].title,
+                description: options[key].description,
+                detail: options[key].detail,
+            }));
+            quickPick.onDidChangeSelection((selection) => {
+                if (selection[0]) {
+                    commands.executeCommand(options[(selection[0] as any).key].command);
+                    quickPick.hide();
+                }
+            });
+            quickPick.onDidHide(() => quickPick.dispose());
+            quickPick.show();
+        })
+    );
 }
 
-async function findConfFiles(): Promise<{ config: TopModelConfig, file: Uri }[]> {
+async function findConfFiles(): Promise<{ config: TopModelConfig; file: Uri }[]> {
     const files = await workspace.findFiles("**/topmodel*.config");
-    let configs: { config: TopModelConfig, file: Uri }[] = files.map((file) => {
+    let configs: { config: TopModelConfig; file: Uri }[] = files.map((file) => {
         const doc = fs.readFileSync(file.path.substring(1), "utf8");
         const c = doc
             .split("---")
-            .filter(e => e)
+            .filter((e) => e)
             .map(yaml.load)
-            .map(e => e as TopModelConfig)
-            .filter(e => e.app)
-        [0];
+            .map((e) => e as TopModelConfig)
+            .filter((e) => e.app)[0];
         return { config: c, file };
     });
 
@@ -234,28 +251,30 @@ async function findConfFiles(): Promise<{ config: TopModelConfig, file: Uri }[]>
 
 function updateStatusBar() {
     switch (extentionState) {
-        case 'LOADING':
+        case "LOADING":
             topModelStatusBar.text = `$(loading~spin)`;
-            topModelStatusBar.tooltip = 'L\'extension TopModel est en cours de chargement';
+            topModelStatusBar.tooltip = "L'extension TopModel est en cours de chargement";
             break;
-        case 'RUNNING':
+        case "RUNNING":
             if (currentVersion !== latestVersion && latestVersion) {
                 topModelStatusBar.text = `$(warning)`;
                 topModelStatusBar.tooltip = `Le générateur n\'est pas à jour (dernière version v${latestVersion})`;
             } else {
                 topModelStatusBar.text = `$(check-all)`;
-                topModelStatusBar.tooltip = `L\'extension TopModel est démarrée (${applications.map(app => app.config.app).join(', ')})`;
+                topModelStatusBar.tooltip = `L\'extension TopModel est démarrée (${applications
+                    .map((app) => app.config.app)
+                    .join(", ")})`;
             }
             topModelStatusBar.command = COMMANDS.chooseCommand;
             break;
-        case 'ERROR':
+        case "ERROR":
             topModelStatusBar.text = `$(diff-review-close)`;
-            topModelStatusBar.tooltip = "l\'extension TopModel n'a pas démarré correctement";
+            topModelStatusBar.tooltip = "l'extension TopModel n'a pas démarré correctement";
             break;
-        case 'UPDATING':
+        case "UPDATING":
             topModelStatusBar.text = "$(loading~spin) Mise à jour du générateur";
             break;
-        case 'INSTALLING':
+        case "INSTALLING":
             topModelStatusBar.text = "$(loading~spin) Installation du générateur";
             break;
     }
