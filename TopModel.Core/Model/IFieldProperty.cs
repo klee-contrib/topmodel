@@ -60,7 +60,7 @@ public interface IFieldProperty : IProperty
             var prop = !Class.IsPersistent && this is AliasProperty alp ? alp.Property : this;
             var snakeCaseName = prop.Name.ToSnakeCase();
 
-            string? sqlPrefix = prop.Trigram ?? (prop as AssociationProperty)?.Association?.Trigram ?? Class.Trigram;
+            string? sqlPrefix = prop.Trigram ?? (prop is AssociationProperty ? string.Empty : null) ?? Class.Trigram;
             sqlPrefix = !string.IsNullOrWhiteSpace(sqlPrefix) ? sqlPrefix + "_" : string.Empty;
             var sqlSuffix = prop is AssociationProperty { Role: string role } ? $"_{role.Replace(" ", "_").ToUpper()}" : string.Empty;
             if (prop.Class.Extends != null && prop.PrimaryKey && sqlPrefix != string.Empty)
@@ -70,7 +70,7 @@ public interface IFieldProperty : IProperty
 
             if (prop is AssociationProperty asp && asp.Association.PrimaryKey is not null)
             {
-                snakeCaseName = asp.Association.PrimaryKey.Name.ToSnakeCase();
+                snakeCaseName = asp.Association.PrimaryKey.SqlName;
             }
 
             return $"{sqlPrefix}{snakeCaseName}{sqlSuffix}";

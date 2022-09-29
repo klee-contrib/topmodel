@@ -1,1 +1,1 @@
-dotnet run --project ../../TopModel.Generator -- ./topmodel.exemple.config
+dotnet run --project ../../TopModel.Generator -- -f ./topmodel.exemple.config
