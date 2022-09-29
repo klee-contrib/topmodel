@@ -198,8 +198,22 @@ public class JpaModelGenerator : GeneratorBase
 
             if (classe.GetProperties(_config, AvailableClasses).Count > 1)
             {
-                var lineToWrite = @$"{code.ToUpper()}";
-                lineToWrite += $"({string.Join(", ", classe.GetProperties(_config, AvailableClasses).Where(p => !p.PrimaryKey).Select(prop => (((IFieldProperty)prop).Domain.Java!.Type == "String" ? "\"" : string.Empty) + refValue.Value[(IFieldProperty)prop] + (((IFieldProperty)prop).Domain.Java!.Type == "String" ? "\"" : string.Empty)))})";
+                var lineToWrite = @$"{code.ToUpper()}(";
+                lineToWrite += string.Join(", ", classe.GetProperties(_config, AvailableClasses)
+                    .Where(p => !p.PrimaryKey)
+                    .Select(prop =>
+                    {
+                        var isString = ((IFieldProperty)prop).GetJavaType() == "String";
+                        var fix = isString ? "\"" : string.Empty;
+                        var value = refValue.Value.ContainsKey((IFieldProperty)prop) ? refValue.Value[(IFieldProperty)prop] : "null";
+                        if (prop is AssociationProperty ap && ap.IsEnum() && ap.Association.ReferenceValues.Any(r => r.Value.ContainsKey(ap.Association.PrimaryKey) && r.Value[ap.Association.PrimaryKey] == value))
+                        {
+                            value = ap.Association.Name + ".Values." + value;
+                        }
+
+                        return fix + value + fix;
+                    }));
+                lineToWrite += ")";
                 lineToWrite += i == classe.ReferenceValues.Count ? "; " : ", //";
                 fw.WriteLine(2, lineToWrite);
             }
@@ -214,7 +228,15 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine();
             fw.WriteDocStart(2, ((IFieldProperty)prop).Comment);
             fw.WriteDocEnd(2);
-            fw.WriteLine(2, $"private final {((IFieldProperty)prop).Domain.Java!.Type} {prop.Name.ToFirstLower()};");
+            var type = ((IFieldProperty)prop).GetJavaType();
+            var name = prop.GetJavaName().ToFirstLower();
+            if (prop is AssociationProperty ap && ap.IsEnum())
+            {
+                type = $"{ap.Association.Name}.Values";
+                name = prop.Name.ToString().ToFirstLower();
+            }
+
+            fw.WriteLine(2, $"private final {type} {name};");
         }
 
         if (classe.GetProperties(_config, AvailableClasses).Count > 1)
@@ -222,12 +244,31 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine();
             fw.WriteDocStart(2, "All arg constructor");
             fw.WriteDocEnd(2);
-            var propertiesSignature = string.Join(", ", classe.GetProperties(_config, AvailableClasses).Where(p => !p.PrimaryKey).Select(p => $"{p.GetJavaType()} {p.GetJavaName()}"));
+            var propertiesSignature = string.Join(", ", classe.GetProperties(_config, AvailableClasses).Where(p => !p.PrimaryKey).Select(prop =>
+            {
+                var type = ((IFieldProperty)prop).GetJavaType();
+                var name = prop.GetJavaName().ToFirstLower();
+                if (prop is AssociationProperty ap && ap.IsEnum())
+                {
+                    type = $"{ap.Association.Name}.Values";
+                    name = prop.Name.ToString().ToFirstLower();
+                }
+
+                return $"{type} {name}";
+            }));
 
             fw.WriteLine(2, $"private Values({propertiesSignature}) {{");
-            foreach (var property in classe.GetProperties(_config, AvailableClasses).Where(p => !p.PrimaryKey))
+            foreach (var prop in classe.GetProperties(_config, AvailableClasses).Where(p => !p.PrimaryKey))
             {
-                fw.WriteLine(3, $"this.{property.GetJavaName()} = {property.GetJavaName()};");
+                var type = ((IFieldProperty)prop).GetJavaType();
+                var name = prop.GetJavaName().ToFirstLower();
+                if (prop is AssociationProperty ap && ap.IsEnum())
+                {
+                    type = $"{ap.Association.Name}.Values";
+                    name = prop.Name.ToString().ToFirstLower();
+                }
+
+                fw.WriteLine(3, $"this.{name} = {name};");
             }
 
             fw.WriteLine(2, $"}}");
@@ -238,8 +279,16 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine();
             fw.WriteDocStart(2, ((IFieldProperty)prop).Comment);
             fw.WriteDocEnd(2);
-            fw.WriteLine(2, $"public {prop.GetJavaType()} get{prop.Name}(){{");
-            fw.WriteLine(3, $"return this.{prop.Name.ToFirstLower()};");
+            var type = ((IFieldProperty)prop).GetJavaType();
+            var name = prop.GetJavaName().ToFirstLower();
+            if (prop is AssociationProperty ap && ap.IsEnum())
+            {
+                type = $"{ap.Association.Name}.Values";
+                name = prop.Name.ToString().ToFirstLower();
+            }
+
+            fw.WriteLine(2, $"public {type} get{name.ToFirstUpper()}(){{");
+            fw.WriteLine(3, $"return this.{name};");
             fw.WriteLine(2, $"}}");
         }
 

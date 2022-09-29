@@ -33,14 +33,14 @@ public class TypeProfil {
 	 * Code du type d'utilisateur.
 	 */
 	@Id
-	@Column(name = "CODE", nullable = false, updatable = false, length = 3)
+	@Column(name = "TPR_CODE", nullable = false, updatable = false, length = 3)
 	@Enumerated(EnumType.STRING)
 	private TypeProfil.Values code;
 
 	/**
 	 * Libellé du type d'utilisateur.
 	 */
-	@Column(name = "LIBELLE", nullable = false, updatable = false, length = 3)
+	@Column(name = "TPR_LIBELLE", nullable = false, updatable = false, length = 3)
 	private String libelle;
 
 	/**

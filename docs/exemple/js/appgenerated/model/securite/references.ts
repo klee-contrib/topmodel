@@ -6,6 +6,7 @@ export type DroitsCode = "CRE" | "MOD" | "SUP";
 export interface Droits {
     code: DroitsCode;
     libelle: string;
+    typeProfilCode?: TypeProfilCode;
 }
 export const droits = {type: {} as Droits, valueKey: "code", labelKey: "libelle"} as const;
 

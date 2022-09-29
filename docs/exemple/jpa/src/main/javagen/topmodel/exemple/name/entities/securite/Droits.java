@@ -9,7 +9,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.EnumType;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
@@ -17,6 +20,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 
 import topmodel.exemple.name.entities.securite.Droits;
+import topmodel.exemple.name.entities.securite.TypeProfil;
 import topmodel.exemple.utils.IFieldEnum;
 
 /**
@@ -33,15 +37,22 @@ public class Droits {
 	 * Code du droit.
 	 */
 	@Id
-	@Column(name = "CODE", nullable = false, updatable = false, length = 3)
+	@Column(name = "DRO_CODE", nullable = false, updatable = false, length = 3)
 	@Enumerated(EnumType.STRING)
 	private Droits.Values code;
 
 	/**
 	 * Libellé du droit.
 	 */
-	@Column(name = "LIBELLE", nullable = false, updatable = false, length = 3)
+	@Column(name = "DRO_LIBELLE", nullable = false, updatable = false, length = 3)
 	private String libelle;
+
+	/**
+	 * Type de profil pouvant faire l'action.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeProfil.class)
+	@JoinColumn(name = "TPR_CODE", referencedColumnName = "TPR_CODE")
+	private TypeProfil typeProfil;
 
 	/**
 	 * No arg constructor.
@@ -60,16 +71,19 @@ public class Droits {
 
 		this.code = droits.getCode();
 		this.libelle = droits.getLibelle();
+		this.typeProfil = droits.getTypeProfil();
 	}
 
 	/**
 	 * All arg constructor.
 	 * @param code Code du droit
 	 * @param libelle Libellé du droit
+	 * @param typeProfil Type de profil pouvant faire l'action
 	 */
-	public Droits(Droits.Values code, String libelle) {
+	public Droits(Droits.Values code, String libelle, TypeProfil typeProfil) {
 		this.code = code;
 		this.libelle = libelle;
+		this.typeProfil = typeProfil;
 	}
 
 	/**
@@ -91,6 +105,15 @@ public class Droits {
 	}
 
 	/**
+	 * Getter for typeProfil.
+	 *
+	 * @return value of {@link topmodel.exemple.name.entities.securite.Droits#typeProfil typeProfil}.
+	 */
+	public TypeProfil getTypeProfil() {
+		return this.typeProfil;
+	}
+
+	/**
 	 * Set the value of {@link topmodel.exemple.name.entities.securite.Droits#code code}.
 	 * @param code value to set
 	 */
@@ -104,6 +127,14 @@ public class Droits {
 	 */
 	public void setLibelle(String libelle) {
 		this.libelle = libelle;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.entities.securite.Droits#typeProfil typeProfil}.
+	 * @param typeProfil value to set
+	 */
+	public void setTypeProfil(TypeProfil typeProfil) {
+		this.typeProfil = typeProfil;
 	}
 
 	/**
@@ -129,13 +160,14 @@ public class Droits {
 	 */
 	public enum Fields implements IFieldEnum<Droits> {
         CODE, //
-        LIBELLE
+        LIBELLE, //
+        TYPE_PROFIL
 	}
 
 	public enum Values {
-		CRE("Créer"), //
-		MOD("Modifier"), //
-		SUP("Supprimer"); 
+		CRE("Créer", TypeProfilCodeAlternatif.POT), //
+		MOD("Modifier", null), //
+		SUP("Supprimer", null); 
 
 		/**
 		 * Libellé du droit.
@@ -143,10 +175,16 @@ public class Droits {
 		private final String libelle;
 
 		/**
+		 * Type de profil pouvant faire l'action.
+		 */
+		private final TypeProfil.Values typeProfilCode;
+
+		/**
 		 * All arg constructor.
 		 */
-		private Values(String libelle) {
+		private Values(String libelle, TypeProfil.Values typeProfilCode) {
 			this.libelle = libelle;
+			this.typeProfilCode = typeProfilCode;
 		}
 
 		/**
@@ -154,6 +192,13 @@ public class Droits {
 		 */
 		public String getLibelle(){
 			return this.libelle;
+		}
+
+		/**
+		 * Type de profil pouvant faire l'action.
+		 */
+		public TypeProfil.Values getTypeProfilCode(){
+			return this.typeProfilCode;
 		}
 	}
 }

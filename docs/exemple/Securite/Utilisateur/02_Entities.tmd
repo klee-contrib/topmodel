@@ -38,3 +38,5 @@ class:
       comment: Utilisateur parent
       role: Parent
       type: oneToOne
+  unique:
+    - [email, UtilisateurIdParent]

@@ -21,6 +21,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -38,7 +39,8 @@ import topmodel.exemple.utils.IFieldEnum;
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
-@Table(name = "UTILISATEUR")
+@Table(name = "UTILISATEUR", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"EMAIL","ID_PARENT"})})
 @EntityListeners(AuditingEntityListener.class)
 public class Utilisateur {
 
