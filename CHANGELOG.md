@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.14.1
+
+- [`74c99e99`](https://github.com/klee-contrib/topmodel/commit/74c99e99a7da1e5a923761d98ad5b047b1405414) - Retrait "GO" en trop si SSDT Postgres
+- [`047be582`](https://github.com/klee-contrib/topmodel/commit/047be582120ce3196fa58e08725dc3a3ed2795c4) - [C#Gen] Récupération "AppName" propre depuis la config
+- [`30fb0349`](https://github.com/klee-contrib/topmodel/commit/30fb0349aa06ee82b291e6f9507242fcc693d50b) - [modgen] Retrait message d'erreur en trop si on lance --version ou --help
+
 ## 1.14.0
 
 - [#153](https://github.com/klee-contrib/topmodel/pull/153) - `modgen` avec configs multiples
