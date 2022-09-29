@@ -96,7 +96,8 @@ public class ModelStore
             mw.Number = sameGeneratorList.IndexOf(mw) + 1;
         }
 
-        _logger.LogInformation($"Watchers enregistrés : \n                          - {string.Join("\n                          - ", _modelWatchers.Select(mw => mw.FullName))}");
+        var watchers = _modelWatchers.Select(mw => mw.FullName.Split("@")).GroupBy(split => split[0]).Select(grp => $"{grp.Key}@{{{string.Join(",", grp.Select(split => split[1]))}}}");
+        _logger.LogInformation($"Watchers enregistrés : \n                          - {string.Join("\n                          - ", watchers)}");
 
         FileSystemWatcher? fsWatcher = null;
         if (watch)
