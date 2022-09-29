@@ -2,13 +2,14 @@ using MediatR;
 using OmniSharp.Extensions.JsonRpc;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
+using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer;
 
 public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpcHandler
 {
-    ModelStore _modelStore;
-    ILanguageServerFacade _facade;
+    private readonly ModelStore _modelStore;
+    private readonly ILanguageServerFacade _facade;
 
     public MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
     {
@@ -20,10 +21,10 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
     {
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.Uri);
         var result = GenerateDiagramFile(file!);
-        return Task.FromResult<Mermaid>(new Mermaid(result, file!.Name));
+        return Task.FromResult(new Mermaid(result, file!.Name));
     }
 
-    public string GenerateDiagramFile(TopModel.Core.FileModel.ModelFile file)
+    public static string GenerateDiagramFile(ModelFile file)
     {
         string diagram = string.Empty;
         var classes = file.Classes

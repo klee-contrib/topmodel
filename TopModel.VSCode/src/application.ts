@@ -35,7 +35,7 @@ export class Application {
         }
 
         this.terminal.sendText(
-            `modgen ${path}` + (watch ? " --watch" : "")
+            `modgen -f ${path}` + (watch ? " --watch" : "")
         );
         this.terminal.show();
     }
@@ -55,20 +55,8 @@ export class Application {
         configFolderA.pop();
         const configFolder = configFolderA.join('/');
         this.modelRoot = this.config.modelRoot || configFolder;
-        // Options to control the language client
-        let clientOptions: LanguageClientOptions = {
-            // Register the server for plain text documents
-            documentSelector: [
-                { scheme: 'file', pattern: `/${this.modelRoot}/**.tmd` }
-            ],
-
-            synchronize: {
-                fileEvents: [workspace.createFileSystemWatcher(`/${this.modelRoot}/**.tmd`)]
-            },
-        };
-
         // Create the language client and start the client.
-        this.client = new LanguageClient(`TopModel - ${this.config.app}`, `TopModel - ${this.config.app}`, serverOptions, clientOptions);
+        this.client = new LanguageClient(`TopModel - ${this.config.app}`, `TopModel - ${this.config.app}`, serverOptions, {});
         await this.client.start();
         addPreviewApplication(this);
         this.status = "STARTED";

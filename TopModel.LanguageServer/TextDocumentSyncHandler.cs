@@ -6,11 +6,14 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server.Capabilities;
 using TopModel.Core;
 
+namespace TopModel.LanguageServer;
+
 class TextDocumentSyncHandler : TextDocumentSyncHandlerBase
 {
     private readonly ModelFileCache _fileCache;
     private readonly ModelStore _modelStore;
     private readonly ModelConfig _config;
+
     public TextDocumentSyncHandler(ModelStore modelStore, ModelFileCache fileCache, ModelConfig config)
     {
         _fileCache = fileCache;

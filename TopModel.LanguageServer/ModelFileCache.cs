@@ -1,5 +1,7 @@
 ﻿using System.Collections.Concurrent;
 
+namespace TopModel.LanguageServer;
+
 public class ModelFileCache
 {
     private readonly ConcurrentDictionary<string, string[]> _fileCache = new();

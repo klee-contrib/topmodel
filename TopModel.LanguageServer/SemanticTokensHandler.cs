@@ -5,22 +5,26 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 
-class SemanticTokensHandler : SemanticTokensHandlerBase
+namespace TopModel.LanguageServer;
+
+public class SemanticTokensHandler : SemanticTokensHandlerBase
 {
     private readonly ModelStore _modelStore;
     private readonly ILanguageServerFacade _facade;
+    private readonly ModelConfig _config;
 
-    public SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade facade)
+    public SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
     {
         _modelStore = modelStore;
         _facade = facade;
+        _config = config;
     }
 
     protected override SemanticTokensRegistrationOptions CreateRegistrationOptions(SemanticTokensCapability capability, ClientCapabilities clientCapabilities)
     {
         return new SemanticTokensRegistrationOptions
         {
-            DocumentSelector = DocumentSelector.ForLanguage("yaml"),
+            DocumentSelector = _config.GetDocumentSelector(),
             Legend = new()
             {
                 TokenModifiers = capability.TokenModifiers,

@@ -5,6 +5,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.LanguageServer;
 using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
 class CodeActionHandler : CodeActionHandlerBase
@@ -12,11 +13,14 @@ class CodeActionHandler : CodeActionHandlerBase
     private readonly ILanguageServerFacade _facade;
     private readonly ModelStore _modelStore;
     private readonly ModelFileCache _fileCache;
-    public CodeActionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelFileCache modelFileCache)
+    private readonly ModelConfig _config;
+
+    public CodeActionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelFileCache modelFileCache, ModelConfig config)
     {
         _modelStore = modelStore;
         _facade = facade;
         _fileCache = modelFileCache;
+        _config = config;
     }
 
     public override Task<CodeAction> Handle(CodeAction request, CancellationToken cancellationToken)
@@ -95,7 +99,7 @@ class CodeActionHandler : CodeActionHandlerBase
     {
         return new()
         {
-            DocumentSelector = DocumentSelector.ForPattern("**/*.tmd"),
+            DocumentSelector = _config.GetDocumentSelector(),
             ResolveProvider = true,
             CodeActionKinds = new List<CodeActionKind>
             {

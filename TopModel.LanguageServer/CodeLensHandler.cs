@@ -4,16 +4,19 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
+using TopModel.LanguageServer;
 
 class CodeLensHandler : CodeLensHandlerBase
 {
     private readonly ModelStore _modelStore;
     private readonly ILanguageServerFacade _facade;
+    private readonly ModelConfig _config;
 
-    public CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade)
+    public CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
     {
         _modelStore = modelStore;
         _facade = facade;
+        _config = config;
     }
 
     public override Task<CodeLens> Handle(CodeLens request, CancellationToken cancellationToken)
@@ -76,7 +79,7 @@ class CodeLensHandler : CodeLensHandlerBase
     {
         return new CodeLensRegistrationOptions
         {
-            DocumentSelector = DocumentSelector.ForLanguage("yaml")
+            DocumentSelector = _config.GetDocumentSelector()
         };
     }
 }
