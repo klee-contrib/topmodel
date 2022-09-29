@@ -128,7 +128,10 @@ public class InitReferenceListScripter : ISqlScripter<Class>
     /// <param name="writer">Flux.</param>
     private void WriteFooter(TextWriter writer)
     {
-        writer.WriteLine("GO");
+        if (_config.TargetDBMS == TargetDBMS.Sqlserver)
+        {
+            writer.WriteLine("GO");
+        }
     }
 
     /// <summary>
