@@ -220,6 +220,13 @@ for (var i = 0; i < configs.Count; i++)
                         new JpaDaoGenerator(p.GetRequiredService<ILogger<JpaDaoGenerator>>(), jpaConfig));
             }
 
+            if (jpaConfig.ResourcesOutputDirectory != null)
+            {
+                services
+                    .AddSingleton<IModelWatcher>(p =>
+                        new JpaResourceGenerator(p.GetRequiredService<ILogger<JpaResourceGenerator>>(), jpaConfig));
+            }
+
             if (jpaConfig.ApiOutputDirectory != null)
             {
                 if (jpaConfig.ApiGeneration == ApiGeneration.Server)

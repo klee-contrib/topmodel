@@ -4,14 +4,14 @@
 
 export const securite = {
     droits: {
-        code: "Code",
-        libelle: "Libelle",
+        code: "Droit",
+        libelle: "Droit",
         typeProfilCode: "TypeProfilCode"
     },
     profil: {
         id: "Id technique du profil",
-        typeProfilCode: "TypeProfilCode",
-        droitsAppli: "DroitsAppli",
+        typeProfilCode: "Profil",
+        droitsAppli: "Droits",
         secteurs: "Secteurs"
     },
     typeProfil: {
