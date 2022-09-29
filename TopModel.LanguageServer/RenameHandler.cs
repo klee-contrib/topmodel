@@ -4,15 +4,19 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 
-class RenameHandler : RenameHandlerBase
+namespace TopModel.LanguageServer;
+
+public class RenameHandler : RenameHandlerBase
 {
     private readonly ModelStore _modelStore;
     private readonly ILanguageServerFacade _facade;
+    private readonly ModelConfig _config;
 
-    public RenameHandler(ModelStore modelStore, ILanguageServerFacade facade)
+    public RenameHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
     {
         _modelStore = modelStore;
         _facade = facade;
+        _config = config;
     }
 
     public override Task<WorkspaceEdit?> Handle(RenameParams request, CancellationToken cancellationToken)
@@ -49,7 +53,7 @@ class RenameHandler : RenameHandlerBase
     {
         return new RenameRegistrationOptions
         {
-            DocumentSelector = DocumentSelector.ForLanguage("yaml")
+            DocumentSelector = _config.GetDocumentSelector()
         };
     }
 }

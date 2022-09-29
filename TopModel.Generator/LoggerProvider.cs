@@ -20,6 +20,8 @@ public class LoggerProvider : ILoggerProvider
 
         private readonly string _categoryName;
         private string? _generatorName;
+        private int? _storeNumber;
+        private ConsoleColor? _storeColor;
 
         public ConsoleLogger(string categoryName)
         {
@@ -43,7 +45,13 @@ public class LoggerProvider : ILoggerProvider
                     return;
                 }
 
-                var name = ((_generatorName ?? _categoryName) + " ").PadRight(19, '-');
+                if (_storeNumber != null && _storeColor != null)
+                {
+                    Console.ForegroundColor = _storeColor.Value;
+                    Console.Write($"#{_storeNumber.Value} ");
+                }
+
+                var name = ((_generatorName ?? _categoryName) + " ").PadRight(22, '-');
                 var split = name.Split(" ");
                 Console.ForegroundColor = _generatorName != null ? ConsoleColor.Magenta : ConsoleColor.DarkGray;
                 Console.Write(split[0]);
@@ -106,7 +114,16 @@ public class LoggerProvider : ILoggerProvider
 
         public IDisposable BeginScope<TState>(TState state)
         {
-            _generatorName = state as string;
+            if (state is ModelStoreConfig scope)
+            {
+                _storeNumber = scope.Number;
+                _storeColor = scope.Color;
+            }
+            else if (state is string generatorName)
+            {
+                _generatorName = generatorName;
+            }
+
             return null!;
         }
     }

@@ -14,5 +14,5 @@ public interface IModelWatcher
 
     void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors);
 
-    void OnFilesChanged(IEnumerable<ModelFile> files);
+    void OnFilesChanged(IEnumerable<ModelFile> files, ModelStoreConfig? storeConfig = null);
 }

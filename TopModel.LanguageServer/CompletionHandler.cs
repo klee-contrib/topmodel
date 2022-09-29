@@ -4,18 +4,21 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
+using TopModel.LanguageServer;
 
 class CompletionHandler : CompletionHandlerBase
 {
     private readonly ModelStore _modelStore;
     private readonly ILanguageServerFacade _facade;
     private readonly ModelFileCache _fileCache;
+    private readonly ModelConfig _config;
 
-    public CompletionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelFileCache fileCache)
+    public CompletionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelFileCache fileCache, ModelConfig config)
     {
         _modelStore = modelStore;
         _facade = facade;
         _fileCache = fileCache;
+        _config = config;
     }
 
     public override Task<CompletionItem> Handle(CompletionItem request, CancellationToken cancellationToken)
@@ -395,7 +398,7 @@ class CompletionHandler : CompletionHandlerBase
     {
         return new CompletionRegistrationOptions
         {
-            DocumentSelector = DocumentSelector.ForLanguage("yaml")
+            DocumentSelector = _config.GetDocumentSelector()
         };
     }
 }

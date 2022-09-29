@@ -1,12 +1,14 @@
-using OmniSharp.Extensions.JsonRpc;
 using MediatR;
+using OmniSharp.Extensions.JsonRpc;
+
 namespace TopModel.LanguageServer;
 
 public class MermaidRequest : IJsonRpcRequest, IRequest<Mermaid>
 {
-    public string Uri { get; init; }
     public MermaidRequest(string uri)
     {
-        this.Uri = uri;
+        Uri = uri;
     }
+
+    public string Uri { get; init; }
 }

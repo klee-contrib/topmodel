@@ -4,7 +4,9 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using OmniSharp.Extensions.LanguageServer.Protocol.Workspace;
 using TopModel.Core;
 
-class WorkspaceSymbolHandler : WorkspaceSymbolsHandlerBase
+namespace TopModel.LanguageServer;
+
+public class WorkspaceSymbolHandler : WorkspaceSymbolsHandlerBase
 {
     private readonly ModelStore _modelStore;
     private readonly ILanguageServerFacade _facade;
@@ -74,6 +76,6 @@ class WorkspaceSymbolHandler : WorkspaceSymbolsHandlerBase
 
     protected override WorkspaceSymbolRegistrationOptions CreateRegistrationOptions(WorkspaceSymbolCapability capability, ClientCapabilities clientCapabilities)
     {
-        return new WorkspaceSymbolRegistrationOptions();
+        return new();
     }
 }

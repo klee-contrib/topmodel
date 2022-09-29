@@ -3,6 +3,8 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 
+namespace TopModel.LanguageServer;
+
 public static class OmnisharpExtensions
 {
     public static OmniSharp.Extensions.LanguageServer.Protocol.Models.Range? ToRange(this Reference? loc)
