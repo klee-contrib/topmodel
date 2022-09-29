@@ -77,6 +77,11 @@ public class LocatedString : IComparable
         return Value.ToDashCase();
     }
 
+    public string ToSnakeCase()
+    {
+        return Value.ToSnakeCase();
+    }
+
     public string ToFirstLower()
     {
         return Value.ToFirstLower();

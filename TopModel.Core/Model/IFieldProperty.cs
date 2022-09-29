@@ -58,22 +58,29 @@ public interface IFieldProperty : IProperty
         get
         {
             var prop = !Class.IsPersistent && this is AliasProperty alp ? alp.Property : this;
-            var snakeCaseName = prop.Name.ToSnakeCase();
 
-            string? sqlPrefix = prop.Trigram ?? (prop is AssociationProperty ? string.Empty : null) ?? Class.Trigram;
-            sqlPrefix = !string.IsNullOrWhiteSpace(sqlPrefix) ? sqlPrefix + "_" : string.Empty;
-            var sqlSuffix = prop is AssociationProperty { Role: string role } ? $"_{role.Replace(" ", "_").ToUpper()}" : string.Empty;
-            if (prop.Class.Extends != null && prop.PrimaryKey && sqlPrefix != string.Empty)
+            var apPk = prop is AssociationProperty ap
+                ? ap.Association switch
+                {
+                    { PrimaryKey: IFieldProperty pk } => pk,
+                    Class classe => classe.Properties.OfType<IFieldProperty>().FirstOrDefault()
+                }
+                : null;
+
+            var apPkTrigram = apPk?.Trigram ?? apPk?.Class.Trigram;
+
+            var sqlName = prop switch
             {
-                snakeCaseName = snakeCaseName.Replace(prop.Class.SqlName + "_", string.Empty);
-            }
+                AssociationProperty => apPkTrigram != null ? apPk?.SqlName.Replace($"{apPkTrigram}_", string.Empty) : apPk?.SqlName,
+                { Class.Extends: not null, PrimaryKey: true } => prop.Name.Replace(prop.Class.Name, string.Empty).ToSnakeCase(),
+                _ => prop.Name.ToSnakeCase()
+            };
 
-            if (prop is AssociationProperty asp && (asp.Association.PrimaryKey is not null || asp.Property != null) )
-            {
-                snakeCaseName = (asp.Association.PrimaryKey ?? asp.Property).SqlName;
-            }
+            string? prefix = prop.Trigram ?? (prop as AssociationProperty)?.Association.Trigram ?? prop.Class.Trigram;
+            prefix = !string.IsNullOrWhiteSpace(prefix) ? $"{prefix}_" : string.Empty;
+            var suffix = prop is AssociationProperty { Role: string role } ? $"_{role.Replace(" ", "_").ToUpper()}" : string.Empty;
 
-            return $"{sqlPrefix}{snakeCaseName}{sqlSuffix}";
+            return $"{prefix}{sqlName}{suffix}";
         }
     }
 
