@@ -14,12 +14,11 @@ public class FileWriter : TextWriter
     /// Nombre de lignes d'en-tête à ignorer dans le calcul de checksum.
     /// </summary>
     private const int LinesInHeader = 4;
+    private const string IndentValue = " ";
 
     private readonly StringBuilder _sb;
     private readonly string _fileName;
     private readonly ILogger _logger;
-
-    protected string IndentValue { get; set; } = "	";
 
     /// <summary>
     /// Crée une nouvelle instance.
@@ -91,7 +90,7 @@ public class FileWriter : TextWriter
         }
 
         value = value.Replace("\n", "\n" + indentValue);
-        this.Write(indentValue + value);
+        Write(indentValue + value);
     }
 
     /// <summary>
@@ -109,7 +108,7 @@ public class FileWriter : TextWriter
     /// <param name="value">Chaîne de caractère.</param>
     public override void WriteLine(string? value)
     {
-        _sb.Append(value + "\r\n");
+        _sb.Append(value + NewLine);
     }
 
     /// <summary>
@@ -187,19 +186,6 @@ public class FileWriter : TextWriter
             sw.Write(newContent);
         }
 
-        if (!fileExists)
-        {
-            FinishFile(_fileName);
-        }
-
         _logger.LogInformation($"{(fileExists ? "Modifié:  " : "Créé:     ")}{_fileName.ToRelative()}");
-    }
-
-    /// <summary>
-    /// Appelé après la création d'un nouveau fichier.
-    /// </summary>
-    /// <param name="fileName">Nom du fichier.</param>
-    protected virtual void FinishFile(string fileName)
-    {
     }
 }

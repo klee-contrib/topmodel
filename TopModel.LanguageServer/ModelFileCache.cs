@@ -13,6 +13,22 @@ public class ModelFileCache
 
     public void UpdateFile(string filePath, string content)
     {
-        _fileCache.AddOrUpdate(filePath, content.Split(Environment.NewLine), (_, _) => content.Split(Environment.NewLine));
+        var lines = SplitToLines(content).ToArray();
+        _fileCache.AddOrUpdate(filePath, lines, (_, _) => lines);
+    }
+
+    private static IEnumerable<string> SplitToLines(string input)
+    {
+        if (input == null)
+        {
+            yield break;
+        }
+
+        using var reader = new StringReader(input);
+        string? line;
+        while ((line = reader.ReadLine()) != null)
+        {
+            yield return line;
+        }
     }
 }
