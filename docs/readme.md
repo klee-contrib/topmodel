@@ -59,12 +59,13 @@ Pour plus de détails, voir la [page dédiée](./model)
 
 ### Génération
 
-Si vous avez bien suivi les prérequis, vous pouvez lancer la commande  **`modgen`** pour lancer la génération.
+Si vous avez bien suivi les prérequis, vous pouvez lancer la commande **`modgen`** pour lancer la génération.
 
 Si vous avez l'extension, `modgen` se lance à l'aide d'une action rapide via la touche `F1` ou depuis la barre de statut.
 
 ## Utilisation
 
-La commande **`modgen`** permet de lancer la génération du modèle. Elle prend comme paramètre le fichier de config (par défaut `topmodel.config` à la racine du dossier), et peut être lancée avec l'option **`--watch`**.
+La commande **`modgen`** permet de lancer la génération du modèle. Elle récupère par défaut tous les fichiers de configuration qu'elle trouve dans le répertoire courant, et génère le modèle correspondant à chaque configuration. Les deux options suivantes sont disponibles :
 
-L'option **`--watch`** permet de "surveiller" toute modification de fichier, et TopModel essaiera de "recompiler" le modèle à chaque fois. En cas d'erreur, cette dernière sera affichée dans la console avec sa localisation dans les fichiers sources. Si TopModel est ouvert dans la console intégrée de VSCode, alors les liens seront cliquables.
+- **`--file`**/**`-f`** : Chemin vers un fichier de config en particulier à générer (au lieu de la récupération automatique de tous les fichiers). Cette option peut être spécifiée plusieurs fois pour embarquer plusieurs configurations spécifiques.
+- **`--watch`**/**`-w`** : Permet de "surveiller" toute modification de fichier, et TopModel essaiera de "recompiler" le(s) modèle(s) à chaque fois. En cas d'erreur, cette dernière sera affichée dans la console avec sa localisation dans les fichiers sources. Si TopModel est ouvert dans la console intégrée de VSCode, alors les liens seront cliquables.

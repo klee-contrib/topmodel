@@ -2,11 +2,14 @@
 
 ## 1.14.0
 
-- [`097cd3af`](https://github.com/klee-contrib/topmodel/pull/151) - JPA/PG : Revert #150, remplacé par implémentation de [128](https://github.com/klee-contrib/topmodel/issues/128)
+- [#153](https://github.com/klee-contrib/topmodel/pull/153) - `modgen` avec configs multiples
+- [`097cd3af`](https://github.com/klee-contrib/topmodel/commit/cc857e8c06d4ee3a3bb353b1dba5140fc3340899)...[`cb91c9bf`](https://github.com/klee-contrib/topmodel/commit/cb91c9bf7556f23c24467257f5751d6e8baf8254) - Surcharge locale de trigramme (fix [#128](https://github.com/klee-contrib/topmodel/issues/128), revert [#151](https://github.com/klee-contrib/topmodel/pull/151))
+- [#154](https://github.com/klee-contrib/topmodel/pull/154) - [JPA] - Enum dans les values d'enum (fix [#152](https://github.com/klee-contrib/topmodel/issues/152))
+- [`716191f4`](https://github.com/klee-contrib/topmodel/commit/716191f4e6a5c38eab50e4778aa8f62d9d76490a) - Fix watch avec des alias de classes et endpoints
 
 ## 1.13.5
 
-- [`097cd3af`](https://github.com/klee-contrib/topmodel/pull/151) - JPA/PG : Préfixer les PK dans le cas où les classes associées n'ont pas de trigram #150
+- [#151](https://github.com/klee-contrib/topmodel/pull/151) - JPA/PG : Préfixer les PK dans le cas où les classes associées n'ont pas de trigram #150
 - [`4a605e16`](https://github.com/klee-contrib/topmodel/commit/4a605e16c778e035fe529658841a0035c344ffd2) - [C#ApiGen] Gestion des mots clés réservés dans les noms de paramètres
 - [`d1bdb2b3`](https://github.com/klee-contrib/topmodel/commit/d1bdb2b3e9f7bbc65d6a52bfc02f630c3ba04602) - homogénéisation snake_case/dash-case
 
