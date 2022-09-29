@@ -68,9 +68,9 @@ public interface IFieldProperty : IProperty
                 snakeCaseName = snakeCaseName.Replace(prop.Class.SqlName + "_", string.Empty);
             }
 
-            if (prop is AssociationProperty asp)
+            if (prop is AssociationProperty asp && asp.Association.PrimaryKey is not null)
             {
-                snakeCaseName = asp.Association.PrimaryKey!.SqlName;
+                snakeCaseName = asp.Association.PrimaryKey.Name.ToSnakeCase();
             }
 
             return $"{sqlPrefix}{snakeCaseName}{sqlSuffix}";
