@@ -34,6 +34,10 @@
               "type": "string",
               "description": "Le domaine lié à la propriété. Doit référencer un domaine défini dans le fichier de domaines."
             },
+            "trigram": {
+              "type": "string",
+              "description": "Surcharge locale du trigram"
+            },
             "comment": {
               "type": "string",
               "description": "Description de la propriété."
@@ -94,6 +98,10 @@
             "comment": {
               "type": "string",
               "description": "Description de la propriété."
+            },
+            "trigram": {
+              "type": "string",
+              "description": "Surcharge locale du trigram"
             },
             "property": {
               "type": "string",
@@ -209,6 +217,10 @@
                 }
               ]
             },
+            "trigram": {
+              "type": "string",
+              "description": "Surcharge locale du trigram"
+            },
             "suffix": {
               "oneOf": [
                 {
@@ -265,6 +277,10 @@
             "comment": {
               "type": "string",
               "description": "Description de la propriété."
+            },
+            "trigram": {
+              "type": "string",
+              "description": "Surcharge locale du trigram"
             }
           }
         }
@@ -581,9 +597,7 @@
           "properties": {
             "trigram": {
               "type": "string",
-              "description": "Le trigramme qui préfixera toutes les propriétés de la classe en SQL. Doit faire exactement 3 lettres.",
-              "minLength": 3,
-              "maxLength": 3
+              "description": "Le trigramme qui préfixera toutes les propriétés de la classe en SQL"
             },
             "name": {
               "type": "string",

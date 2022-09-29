@@ -11,6 +11,8 @@ public interface IFieldProperty : IProperty
 
     string? DefaultValue { get; }
 
+    public LocatedString? Trigram { get; set; }
+
     TSType TS
     {
         get
@@ -58,16 +60,20 @@ public interface IFieldProperty : IProperty
             var prop = !Class.IsPersistent && this is AliasProperty alp ? alp.Property : this;
             var snakeCaseName = prop.Name.ToSnakeCase();
 
-            // On préfix par le nom de la table seulement si les SQL name des deux clés primaires des classes de l'association sont identiques
-            var classPrefix = prop is AssociationProperty api && api.Association.PrimaryKey!.SqlName == snakeCaseName ? $"{api.Association.Name.ToString().ToSnakeCase()}_" : string.Empty;
-            return prop.Class.Extends != null && prop.PrimaryKey && Class.Trigram != null
-                ? $"{Class.Trigram}_{Name.ToSnakeCase().Replace(prop.Class.SqlName + "_", string.Empty)}"
-                : prop is AssociationProperty ap
-                ? ap.Role != null ? classPrefix + ap.Property.SqlName + $"_{ap.Role.Replace(" ", "_").ToUpper()}"
-                : classPrefix + ap.Property.SqlName
-                : prop.Class.Trigram != null
-                ? $"{prop.Class.Trigram}_{snakeCaseName}"
-                : snakeCaseName;
+            string? sqlPrefix = prop.Trigram ?? (prop as AssociationProperty)?.Association?.Trigram ?? Class.Trigram;
+            sqlPrefix = !string.IsNullOrWhiteSpace(sqlPrefix) ? sqlPrefix + "_" : string.Empty;
+            var sqlSuffix = prop is AssociationProperty { Role: string role } ? $"_{role.Replace(" ", "_").ToUpper()}" : string.Empty;
+            if (prop.Class.Extends != null && prop.PrimaryKey && sqlPrefix != string.Empty)
+            {
+                snakeCaseName = snakeCaseName.Replace(prop.Class.SqlName + "_", string.Empty);
+            }
+
+            if (prop is AssociationProperty asp)
+            {
+                snakeCaseName = asp.Association.PrimaryKey!.SqlName;
+            }
+
+            return $"{sqlPrefix}{snakeCaseName}{sqlSuffix}";
         }
     }
 

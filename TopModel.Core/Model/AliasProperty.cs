@@ -35,6 +35,9 @@ public class AliasProperty : IFieldProperty
     public Decorator Decorator { get; set; }
 
 #nullable enable
+
+    public LocatedString? Trigram { get; set; }
+
     public string Name => (Prefix ?? string.Empty) + _property?.Name + (Suffix ?? string.Empty);
 
     public string? Label

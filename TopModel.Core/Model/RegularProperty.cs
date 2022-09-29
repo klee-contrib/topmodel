@@ -14,6 +14,8 @@ public class RegularProperty : IFieldProperty
 
     public bool Required { get; set; }
 
+    public LocatedString? Trigram { get; set; }
+
 #nullable disable
     public Domain Domain { get; set; }
 

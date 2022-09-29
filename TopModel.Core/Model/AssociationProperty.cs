@@ -7,6 +7,8 @@ public class AssociationProperty : IFieldProperty
 {
     private IFieldProperty? _property;
 
+    public LocatedString? Trigram { get; set; }
+
 #nullable disable
     public Class Association { get; set; }
 

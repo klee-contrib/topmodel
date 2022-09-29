@@ -43,6 +43,9 @@ internal static class PropertyLoader
                         case "comment":
                             rp.Comment = value.Value;
                             break;
+                        case "trigram":
+                            rp.Trigram = new LocatedString(value);
+                            break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                     }
@@ -98,6 +101,9 @@ internal static class PropertyLoader
                             break;
                         case "property":
                             ap.PropertyReference = new Reference(value);
+                            break;
+                        case "trigram":
+                            ap.Trigram = new LocatedString(value);
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
@@ -221,6 +227,9 @@ internal static class PropertyLoader
                             break;
                         case "asListWithDomain":
                             alp.ListDomainReference = new DomainReference(value);
+                            break;
+                        case "trigram":
+                            alp.Trigram = new LocatedString(value);
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
