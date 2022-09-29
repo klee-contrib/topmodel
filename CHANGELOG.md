@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.14.0
+
+- [`097cd3af`](https://github.com/klee-contrib/topmodel/pull/151) - JPA/PG : Revert #150, remplacé par implémentation de [128](https://github.com/klee-contrib/topmodel/issues/128)
+
 ## 1.13.5
 
 - [`097cd3af`](https://github.com/klee-contrib/topmodel/pull/151) - JPA/PG : Préfixer les PK dans le cas où les classes associées n'ont pas de trigram #150

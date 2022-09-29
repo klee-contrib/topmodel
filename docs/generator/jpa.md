@@ -98,6 +98,8 @@ Génèrera, dans la classe `Departement`, l'enum suivante :
 
 Lorsque sont ajoutées des listes de références, le générateur créé les `enum` correspondantes. Le domaine de clé primaire de la classe de référence est ignoré, et le champs prend le type de l'enum. L'enum est générée à l'intérieur de la classe de référence, et s'appelle  `[Nom de la classe].Values`. Les différents champs renseignés dans les valeurs sont également ajoutés en tant que propriétés de l'enum.
 
+Par ailleurs, si la classe possède une association avec une classe qui contient une liste de référence, alors il le type du champ dans l'enum sera le type de l'enum de la clé primaire de la classe associée.
+
 #### EnumShortcutMode
 
 Il peut être laborieux de toujours passer par la classe de référence lorsqu'on ne manipule le plus souvent que leurs clés primaires. CTopModel - JPA permet de créer des raccoucis pour rendre cette approche possible. Si la configuration `enumShortcutMode` est activée :
