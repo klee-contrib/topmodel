@@ -17,8 +17,10 @@ class:
       domain: DO_ID
       comment: Id technique
     - association: TypeProfil
+      label: Profil
       comment: Type de profil
     - association: Droits
+      label: Droits
       comment: Liste des droits de l'utilisateur
       type: manyToMany
       role: Appli

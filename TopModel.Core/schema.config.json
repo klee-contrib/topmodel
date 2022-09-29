@@ -358,6 +358,10 @@
             "type": "string",
             "description": "Dossier de sortie pour les Controllers."
           },
+          "resourcesOutputDirectory": {
+            "type": "string",
+            "description": "Dossier de sortie pour les fichiers de traduction."
+          },
           "modelOutputDirectory": {
             "type": "string",
             "description": "Dossier de sortie pour le modèle."

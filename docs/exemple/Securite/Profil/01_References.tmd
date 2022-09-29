@@ -31,11 +31,13 @@ class:
   trigram: DRO
   properties:
     - name: Code
+      label: Droit
       comment: Code du droit
       primaryKey: true
       required: true
       domain: DO_CODE
     - name: Libelle
+      label: Droit
       comment: Libellé du droit
       primaryKey: false
       required: true

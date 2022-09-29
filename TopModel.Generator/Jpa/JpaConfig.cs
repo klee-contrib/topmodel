@@ -10,6 +10,11 @@ public class JpaConfig : GeneratorConfigBase
     public string ModelOutputDirectory { get; set; }
 
     /// <summary>
+    /// Dossier de sortie pour les fichiers de resources.
+    /// </summary>
+    public string ResourcesOutputDirectory { get; set; }
+
+    /// <summary>
     /// Précise le nom du package dans lequel générer les classes persistées du modèle.
     /// </summary>
     public string EntitiesPackageName { get; set; }
