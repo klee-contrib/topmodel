@@ -366,6 +366,8 @@ public class ModelStore
         var dependencies = GetDependencies(modelFile).ToList();
 
         var fileClasses = modelFile.Classes.Where(c => !modelFile.ResolvedAliases.Contains(c));
+        var fileEndpoints = modelFile.Endpoints.Where(c => !modelFile.ResolvedAliases.Contains(c));
+
         var referencedClasses = dependencies
             .SelectMany(m => m.Classes)
             .Concat(fileClasses)
@@ -497,7 +499,7 @@ public class ModelStore
         }
 
         // Reset des alias déjà résolus sur les classes.
-        foreach (var classe in modelFile.Classes)
+        foreach (var classe in fileClasses)
         {
             foreach (var alp in classe.Properties.OfType<AliasProperty>().ToList())
             {
@@ -514,7 +516,7 @@ public class ModelStore
         }
 
         // Reset des alias déjà résolus sur les endpoints.
-        foreach (var endpoint in modelFile.Endpoints)
+        foreach (var endpoint in fileEndpoints)
         {
             foreach (var alp in endpoint.Params.OfType<AliasProperty>().ToList())
             {
@@ -655,7 +657,7 @@ public class ModelStore
         }
 
         // Recopie des propriétés des décorateurs dans les classes.
-        foreach (var classe in modelFile.Classes)
+        foreach (var classe in fileClasses)
         {
             if (classe.Decorators.Any())
             {
@@ -678,7 +680,7 @@ public class ModelStore
         }
 
         // Résolution des propriétés d'association (pour clé étrangère).
-        foreach (var ap in modelFile.Classes.SelectMany(c => c.Properties.OfType<AssociationProperty>()).Where(ap => ap.Association != null && ap.PropertyReference != null))
+        foreach (var ap in fileClasses.SelectMany(c => c.Properties.OfType<AssociationProperty>()).Where(ap => ap.Association != null && ap.PropertyReference != null))
         {
             var referencedProperty = ap.Association.Properties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == ap.PropertyReference!.ReferenceName);
             if (referencedProperty == null)
@@ -1123,7 +1125,7 @@ public class ModelStore
             }
         }
 
-        foreach (var endpoint in modelFile.Endpoints.Where((e, i) => modelFile.Endpoints.Where((p, j) => p.Name == e.Name && j < i).Any()))
+        foreach (var endpoint in fileEndpoints.Where((e, i) => modelFile.Endpoints.Where((p, j) => p.Name == e.Name && j < i).Any()))
         {
             yield return new ModelError(modelFile, $"Le nom '{endpoint.Name}' est déjà utilisé.", endpoint.Name.GetLocation()) { IsError = true, ModelErrorType = ModelErrorType.TMD0003 };
         }
@@ -1133,7 +1135,7 @@ public class ModelStore
             yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false, ModelErrorType = ModelErrorType.TMD9001 };
         }
 
-        foreach (var endpoint in modelFile.Endpoints)
+        foreach (var endpoint in fileEndpoints)
         {
             foreach (var queryParam in endpoint.GetQueryParams())
             {
