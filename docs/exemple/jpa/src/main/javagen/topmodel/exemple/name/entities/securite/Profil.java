@@ -48,14 +48,14 @@ public class Profil {
 	 * Type de profil.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeProfil.class)
-	@JoinColumn(name = "TYPE_PROFIL_CODE", referencedColumnName = "CODE")
+	@JoinColumn(name = "CODE", referencedColumnName = "CODE")
 	private TypeProfil typeProfil;
 
 	/**
 	 * Liste des droits de l'utilisateur.
 	 */
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "PROFIL_DROITS_APPLI", joinColumns = @JoinColumn(name = "PROFIL_ID_APPLI"), inverseJoinColumns = @JoinColumn(name = "DROITS_DROITS_CODE_APPLI"))
+	@JoinTable(name = "PROFIL_DROITS_APPLI", joinColumns = @JoinColumn(name = "PROFIL_ID_APPLI"), inverseJoinColumns = @JoinColumn(name = "DROITS_CODE_APPLI"))
 	private List<Droits> droitsAppli;
 
 	/**

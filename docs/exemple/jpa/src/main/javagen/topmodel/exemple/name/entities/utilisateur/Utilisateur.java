@@ -74,7 +74,7 @@ public class Utilisateur {
 	 * Profil de l'utilisateur.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Profil.class)
-	@JoinColumn(name = "PROFIL_ID", referencedColumnName = "ID")
+	@JoinColumn(name = "ID", referencedColumnName = "ID")
 	private Profil profil;
 
 	/**
@@ -95,7 +95,7 @@ public class Utilisateur {
 	 * Utilisateur parent.
 	 */
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
-	@JoinColumn(name = "UTILISATEUR_ID_PARENT", referencedColumnName = "ID", unique = true)
+	@JoinColumn(name = "ID_PARENT", referencedColumnName = "ID", unique = true)
 	private Utilisateur utilisateurParent;
 
 	/**

@@ -8,50 +8,50 @@
 --   Description		:	Script de création des indexes et des clef étrangères. 
 -- =========================================================================================== 
 /**
-  * Création de l'index de clef étrangère pour PROFIL_DROITS_APPLI.PROFIL_ID_APPLI
+  * Création de l'index de clef étrangère pour PROFIL_DROITS_APPLI.ID_APPLI
  **/
-create index IDX_PROFIL_DROITS_APPLI_PROFIL_ID_APPLI_FK on PROFIL_DROITS_APPLI (
-	PROFIL_ID_APPLI ASC
+create index IDX_PROFIL_DROITS_APPLI_ID_APPLI_FK on PROFIL_DROITS_APPLI (
+	ID_APPLI ASC
 )
 ;
 
 /**
-  * Génération de la contrainte de clef étrangère pour PROFIL_DROITS_APPLI.PROFIL_ID_APPLI
+  * Génération de la contrainte de clef étrangère pour PROFIL_DROITS_APPLI.ID_APPLI
  **/
 alter table PROFIL_DROITS_APPLI
-	add constraint FK_PROFIL_DROITS_APPLI_PROFIL_ID_APPLI foreign key (PROFIL_ID_APPLI)
+	add constraint FK_PROFIL_DROITS_APPLI_ID_APPLI foreign key (ID_APPLI)
 		references PROFIL (ID)
 ;
 
 /**
-  * Création de l'index de clef étrangère pour PROFIL_DROITS_APPLI.DROITS_CODE_APPLI
+  * Création de l'index de clef étrangère pour PROFIL_DROITS_APPLI.CODE_APPLI
  **/
-create index IDX_PROFIL_DROITS_APPLI_DROITS_CODE_APPLI_FK on PROFIL_DROITS_APPLI (
-	DROITS_CODE_APPLI ASC
+create index IDX_PROFIL_DROITS_APPLI_CODE_APPLI_FK on PROFIL_DROITS_APPLI (
+	CODE_APPLI ASC
 )
 ;
 
 /**
-  * Génération de la contrainte de clef étrangère pour PROFIL_DROITS_APPLI.DROITS_CODE_APPLI
+  * Génération de la contrainte de clef étrangère pour PROFIL_DROITS_APPLI.CODE_APPLI
  **/
 alter table PROFIL_DROITS_APPLI
-	add constraint FK_PROFIL_DROITS_APPLI_DROITS_CODE_APPLI foreign key (DROITS_CODE_APPLI)
+	add constraint FK_PROFIL_DROITS_APPLI_CODE_APPLI foreign key (CODE_APPLI)
 		references DROITS (CODE)
 ;
 
 /**
-  * Création de l'index de clef étrangère pour PROFIL.TYPE_PROFIL_CODE
+  * Création de l'index de clef étrangère pour PROFIL.CODE
  **/
-create index IDX_PROFIL_TYPE_PROFIL_CODE_FK on PROFIL (
-	TYPE_PROFIL_CODE ASC
+create index IDX_PROFIL_CODE_FK on PROFIL (
+	CODE ASC
 )
 ;
 
 /**
-  * Génération de la contrainte de clef étrangère pour PROFIL.TYPE_PROFIL_CODE
+  * Génération de la contrainte de clef étrangère pour PROFIL.CODE
  **/
 alter table PROFIL
-	add constraint FK_PROFIL_TYPE_PROFIL_CODE foreign key (TYPE_PROFIL_CODE)
+	add constraint FK_PROFIL_CODE foreign key (CODE)
 		references TYPE_PROFIL (CODE)
 ;
 
@@ -72,18 +72,18 @@ alter table SECTEUR
 ;
 
 /**
-  * Création de l'index de clef étrangère pour UTILISATEUR.PROFIL_ID
+  * Création de l'index de clef étrangère pour UTILISATEUR.ID
  **/
-create index IDX_UTILISATEUR_PROFIL_ID_FK on UTILISATEUR (
-	PROFIL_ID ASC
+create index IDX_UTILISATEUR_ID_FK on UTILISATEUR (
+	ID ASC
 )
 ;
 
 /**
-  * Génération de la contrainte de clef étrangère pour UTILISATEUR.PROFIL_ID
+  * Génération de la contrainte de clef étrangère pour UTILISATEUR.ID
  **/
 alter table UTILISATEUR
-	add constraint FK_UTILISATEUR_PROFIL_ID foreign key (PROFIL_ID)
+	add constraint FK_UTILISATEUR_ID foreign key (ID)
 		references PROFIL (ID)
 ;
 
@@ -104,18 +104,18 @@ alter table UTILISATEUR
 ;
 
 /**
-  * Création de l'index de clef étrangère pour UTILISATEUR.UTILISATEUR_ID_PARENT
+  * Création de l'index de clef étrangère pour UTILISATEUR.ID_PARENT
  **/
-create index IDX_UTILISATEUR_UTILISATEUR_ID_PARENT_FK on UTILISATEUR (
-	UTILISATEUR_ID_PARENT ASC
+create index IDX_UTILISATEUR_ID_PARENT_FK on UTILISATEUR (
+	ID_PARENT ASC
 )
 ;
 
 /**
-  * Génération de la contrainte de clef étrangère pour UTILISATEUR.UTILISATEUR_ID_PARENT
+  * Génération de la contrainte de clef étrangère pour UTILISATEUR.ID_PARENT
  **/
 alter table UTILISATEUR
-	add constraint FK_UTILISATEUR_UTILISATEUR_ID_PARENT foreign key (UTILISATEUR_ID_PARENT)
+	add constraint FK_UTILISATEUR_ID_PARENT foreign key (ID_PARENT)
 		references UTILISATEUR (ID)
 ;
 

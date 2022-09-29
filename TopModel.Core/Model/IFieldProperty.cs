@@ -57,7 +57,9 @@ public interface IFieldProperty : IProperty
         {
             var prop = !Class.IsPersistent && this is AliasProperty alp ? alp.Property : this;
             var snakeCaseName = prop.Name.ToSnakeCase();
-            var classPrefix = prop is AssociationProperty api && api.Class.Trigram == null && api.Association.Trigram == null ? $"{api.Association.Name.ToString().ToSnakeCase()}_" : string.Empty;
+
+            // On préfix par le nom de la table seulement si les SQL name des deux clés primaires des classes de l'association sont identiques
+            var classPrefix = prop is AssociationProperty api && api.Association.PrimaryKey!.SqlName == snakeCaseName ? $"{api.Association.Name.ToString().ToSnakeCase()}_" : string.Empty;
             return prop.Class.Extends != null && prop.PrimaryKey && Class.Trigram != null
                 ? $"{Class.Trigram}_{Name.ToSnakeCase().Replace(prop.Class.SqlName + "_", string.Empty)}"
                 : prop is AssociationProperty ap
