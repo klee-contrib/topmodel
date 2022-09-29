@@ -9,6 +9,7 @@ namespace TopModel.Generator.CSharp;
 /// </summary>
 public class CSharpGenerator : GeneratorBase
 {
+    private readonly string _appName;
     private readonly CSharpConfig _config;
     private readonly ILogger<CSharpGenerator> _logger;
     private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
@@ -18,9 +19,10 @@ public class CSharpGenerator : GeneratorBase
     private readonly MapperGenerator _mapperGenerator;
     private readonly ReferenceAccessorGenerator _referenceAccessorGenerator;
 
-    public CSharpGenerator(ILogger<CSharpGenerator> logger, CSharpConfig config)
+    public CSharpGenerator(ILogger<CSharpGenerator> logger, CSharpConfig config, string appName)
         : base(logger, config)
     {
+        _appName = appName;
         _config = config;
         _logger = logger;
 
@@ -33,13 +35,11 @@ public class CSharpGenerator : GeneratorBase
     public override string Name => "CSharpGen";
 
     public override IEnumerable<string> GeneratedFiles =>
-        new[] { AppName != null ? _config.GetDbContextFilePath(AppName) : null }
+        new[] { _config.GetDbContextFilePath(_appName) }
         .Concat(_files.Values.SelectMany(f => f.Classes).Select(c => _config.GetClassFileName(c)))
         .Concat(GetMapperModules(_files.Values).Select(module => _config.GetMapperFilePath(module)))
         .Concat(GetReferenceModules(_files.Values).SelectMany(module => new[] { _config.GetReferenceInterfaceFilePath(module), _config.GetReferenceImplementationFilePath(module) }))
         .Where(f => f != null)!;
-
-    private string? AppName => _files.FirstOrDefault().Value?.Classes.FirstOrDefault()?.Namespace.App;
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
@@ -69,9 +69,9 @@ public class CSharpGenerator : GeneratorBase
 
     private void GenerateDbContext()
     {
-        if (_config.DbContextPath != null && AppName != null)
+        if (_config.DbContextPath != null)
         {
-            _dbContextGenerator.Generate(_files.Values.SelectMany(f => f.Classes).Where(c => c.IsPersistent), AppName);
+            _dbContextGenerator.Generate(_files.Values.SelectMany(f => f.Classes).Where(c => c.IsPersistent), _appName);
         }
     }
 

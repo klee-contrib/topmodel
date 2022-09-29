@@ -138,7 +138,7 @@ for (var i = 0; i < configs.Count; i++)
             CombinePath(dn, csharpConfig, c => c.OutputDirectory);
 
             services.AddSingleton<IModelWatcher>(p =>
-                new CSharpGenerator(p.GetRequiredService<ILogger<CSharpGenerator>>(), csharpConfig));
+                new CSharpGenerator(p.GetRequiredService<ILogger<CSharpGenerator>>(), csharpConfig, config.App));
 
             if (csharpConfig.ApiGeneration == ApiGeneration.Server)
             {
