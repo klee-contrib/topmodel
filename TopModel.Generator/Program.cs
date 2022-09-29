@@ -18,6 +18,7 @@ var fileChecker = new FileChecker("schema.config.json");
 
 var configs = new List<(FullConfig Config, string FullPath, string DirectoryName)>();
 var watchMode = false;
+var regularCommand = false;
 
 var command = new RootCommand("Lance le générateur topmodel.") { Name = "modgen" };
 
@@ -28,6 +29,7 @@ command.AddOption(watchOption);
 command.SetHandler(
     (files, watch) =>
     {
+        regularCommand = true;
         watchMode = watch;
 
         if (files.Any())
@@ -61,6 +63,11 @@ command.SetHandler(
     watchOption);
 
 await command.InvokeAsync(args);
+
+if (!regularCommand)
+{
+    return;
+}
 
 if (!configs.Any())
 {
