@@ -24,50 +24,66 @@ alter table PROFIL_DROITS_APPLI
 ;
 
 /**
-  * Création de l'index de clef étrangère pour PROFIL_DROITS_APPLI.CODE_APPLI
+  * Création de l'index de clef étrangère pour PROFIL_DROITS_APPLI.DRO_CODE_APPLI
  **/
-create index IDX_PROFIL_DROITS_APPLI_CODE_APPLI_FK on PROFIL_DROITS_APPLI (
-	CODE_APPLI ASC
+create index IDX_PROFIL_DROITS_APPLI_DRO_CODE_APPLI_FK on PROFIL_DROITS_APPLI (
+	DRO_CODE_APPLI ASC
 )
 ;
 
 /**
-  * Génération de la contrainte de clef étrangère pour PROFIL_DROITS_APPLI.CODE_APPLI
+  * Génération de la contrainte de clef étrangère pour PROFIL_DROITS_APPLI.DRO_CODE_APPLI
  **/
 alter table PROFIL_DROITS_APPLI
-	add constraint FK_PROFIL_DROITS_APPLI_CODE_APPLI foreign key (CODE_APPLI)
-		references DROITS (CODE)
+	add constraint FK_PROFIL_DROITS_APPLI_DRO_CODE_APPLI foreign key (DRO_CODE_APPLI)
+		references DROITS (DRO_CODE)
 ;
 
 /**
-  * Création de l'index de clef étrangère pour PROFIL.CODE
+  * Création de l'index de clef étrangère pour DROITS.TPR_CODE
  **/
-create index IDX_PROFIL_CODE_FK on PROFIL (
-	CODE ASC
+create index IDX_DRO_TPR_CODE_FK on DROITS (
+	TPR_CODE ASC
 )
 ;
 
 /**
-  * Génération de la contrainte de clef étrangère pour PROFIL.CODE
+  * Génération de la contrainte de clef étrangère pour DROITS.TPR_CODE
+ **/
+alter table DROITS
+	add constraint FK_DRO_TPR_CODE foreign key (TPR_CODE)
+		references TYPE_PROFIL (TPR_CODE)
+;
+
+/**
+  * Création de l'index de clef étrangère pour PROFIL.TPR_CODE
+ **/
+create index IDX_PROFIL_TPR_CODE_FK on PROFIL (
+	TPR_CODE ASC
+)
+;
+
+/**
+  * Génération de la contrainte de clef étrangère pour PROFIL.TPR_CODE
  **/
 alter table PROFIL
-	add constraint FK_PROFIL_CODE foreign key (CODE)
-		references TYPE_PROFIL (CODE)
+	add constraint FK_PROFIL_TPR_CODE foreign key (TPR_CODE)
+		references TYPE_PROFIL (TPR_CODE)
 ;
 
 /**
-  * Création de l'index de clef étrangère pour SECTEUR.ID
+  * Création de l'index de clef étrangère pour SECTEUR.SEC_ID
  **/
-create index IDX_SEC_ID_FK on SECTEUR (
-	ID ASC
+create index IDX_SEC_SEC_ID_FK on SECTEUR (
+	SEC_ID ASC
 )
 ;
 
 /**
-  * Génération de la contrainte de clef étrangère pour SECTEUR.ID
+  * Génération de la contrainte de clef étrangère pour SECTEUR.SEC_ID
  **/
 alter table SECTEUR
-	add constraint FK_SEC_ID foreign key (ID)
+	add constraint FK_SEC_SEC_ID foreign key (SEC_ID)
 		references PROFIL (ID)
 ;
 

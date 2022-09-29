@@ -8,6 +8,7 @@ class:
   name: TypeProfil
   comment: Type d'utilisateur
   reference: true
+  trigram: TPR
   properties:
     - name: Code
       comment: Code du type d'utilisateur
@@ -27,6 +28,7 @@ class:
   name: Droits
   comment: Droits de l'application
   reference: true
+  trigram: DRO
   properties:
     - name: Code
       comment: Code du droit
@@ -38,7 +40,10 @@ class:
       primaryKey: false
       required: true
       domain: DO_LIBELLE
+    - association: TypeProfil
+      comment: Type de profil pouvant faire l'action
+      type: manyToOne
   values:
-    CRE: { Code: CRE, Libelle: Créer }
+    CRE: { Code: CRE, Libelle: Créer, TypeProfilCode: TypeProfilCodeAlternatif.POT }
     MOD: { Code: MOD, Libelle: Modifier }
     SUP: { Code: SUP, Libelle: Supprimer }

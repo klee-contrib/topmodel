@@ -5,7 +5,8 @@
 export const securite = {
     droits: {
         code: "Code",
-        libelle: "Libelle"
+        libelle: "Libelle",
+        typeProfilCode: "TypeProfilCode"
     },
     profil: {
         id: "Id technique du profil",
