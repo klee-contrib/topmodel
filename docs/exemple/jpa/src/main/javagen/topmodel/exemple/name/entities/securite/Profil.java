@@ -236,9 +236,19 @@ public class Profil {
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.securite.Profil Profil}.
 	 */
 	public enum Fields implements IFieldEnum<Profil> {
-        ID, //
-        TYPE_PROFIL, //
-        DROITS_APPLI, //
-        SECTEURS
+        ID(long.class), //
+        TYPE_PROFIL(TypeProfil.class), //
+        DROITS_APPLI(List.class), //
+        SECTEURS(List.class);
+
+		private Class<?> type;
+
+		private Fields(Class<?> type) {
+			this.type = type;
+		}
+
+		public Class<?> getType() {
+			return this.type;
+		}
 	}
 }

@@ -159,9 +159,19 @@ public class Droits {
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.securite.Droits Droits}.
 	 */
 	public enum Fields implements IFieldEnum<Droits> {
-        CODE, //
-        LIBELLE, //
-        TYPE_PROFIL
+        CODE(Droits.Values.class), //
+        LIBELLE(String.class), //
+        TYPE_PROFIL(TypeProfil.class);
+
+		private Class<?> type;
+
+		private Fields(Class<?> type) {
+			this.type = type;
+		}
+
+		public Class<?> getType() {
+			return this.type;
+		}
 	}
 
 	public enum Values {

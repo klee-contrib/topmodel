@@ -126,7 +126,17 @@ public class Secteur {
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.securite.Secteur Secteur}.
 	 */
 	public enum Fields implements IFieldEnum<Secteur> {
-        ID, //
-        PROFIL
+        ID(long.class), //
+        PROFIL(Profil.class);
+
+		private Class<?> type;
+
+		private Fields(Class<?> type) {
+			this.type = type;
+		}
+
+		public Class<?> getType() {
+			return this.type;
+		}
 	}
 }

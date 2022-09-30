@@ -15,7 +15,7 @@ public class JavaWriter : IDisposable
     {
         _writer = new FileWriter(name, logger, codePage != null ? CodePagesEncodingProvider.Instance.GetEncoding(codePage.Value)! : new UTF8Encoding(false))
         {
-            IndentValue = " "
+            IndentValue = "	"
         };
     }
 

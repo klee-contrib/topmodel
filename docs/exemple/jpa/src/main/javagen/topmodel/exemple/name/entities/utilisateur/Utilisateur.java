@@ -305,13 +305,23 @@ public class Utilisateur {
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.utilisateur.Utilisateur Utilisateur}.
 	 */
 	public enum Fields implements IFieldEnum<Utilisateur> {
-        DATE_CREATION, //
-        DATE_MODIFICATION, //
-        ID, //
-        AGE, //
-        PROFIL, //
-        EMAIL, //
-        TYPE_UTILISATEUR, //
-        UTILISATEUR_PARENT
+        DATE_CREATION(DateTime.class), //
+        DATE_MODIFICATION(DateTime.class), //
+        ID(long.class), //
+        AGE(Long.class), //
+        PROFIL(Profil.class), //
+        EMAIL(String.class), //
+        TYPE_UTILISATEUR(TypeUtilisateur.class), //
+        UTILISATEUR_PARENT(Utilisateur.class);
+
+		private Class<?> type;
+
+		private Fields(Class<?> type) {
+			this.type = type;
+		}
+
+		public Class<?> getType() {
+			return this.type;
+		}
 	}
 }

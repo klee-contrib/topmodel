@@ -128,8 +128,18 @@ public class TypeUtilisateur {
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.utilisateur.TypeUtilisateur TypeUtilisateur}.
 	 */
 	public enum Fields implements IFieldEnum<TypeUtilisateur> {
-        CODE, //
-        LIBELLE
+        CODE(TypeUtilisateur.Values.class), //
+        LIBELLE(String.class);
+
+		private Class<?> type;
+
+		private Fields(Class<?> type) {
+			this.type = type;
+		}
+
+		public Class<?> getType() {
+			return this.type;
+		}
 	}
 
 	public enum Values {

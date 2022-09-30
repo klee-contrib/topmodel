@@ -96,11 +96,12 @@ public class JpaModelInterfaceGenerator : GeneratorBase
     {
         foreach (var property in classe.Properties.Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
         {
+            var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
             fw.WriteLine();
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
             fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config)}#{property.GetJavaName()} {property.GetJavaName()}}}");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, @$"{property.GetJavaType()} get{property.GetJavaName().ToFirstUpper()}();");
+            fw.WriteLine(1, @$"{property.GetJavaType()} {getterPrefix}{property.GetJavaName().ToFirstUpper()}();");
         }
     }
 

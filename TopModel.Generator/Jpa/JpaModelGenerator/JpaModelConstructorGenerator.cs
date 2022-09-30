@@ -94,7 +94,8 @@ public class JpaModelConstructorGenerator
         {
             if (!(property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list"))
             {
-                fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.Name.ToFirstLower()}.get{property.GetJavaName().ToFirstUpper()}();");
+                var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+                fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.Name.ToFirstLower()}.{getterPrefix}{property.GetJavaName().ToFirstUpper()}();");
             }
         }
 
@@ -111,7 +112,8 @@ public class JpaModelConstructorGenerator
         {
             if (property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list")
             {
-                fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.Name.ToFirstLower()}.get{property.GetJavaName().ToFirstUpper()}().stream().collect(Collectors.toList());");
+                var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+                fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.Name.ToFirstLower()}.{getterPrefix}{property.GetJavaName().ToFirstUpper()}().stream().collect(Collectors.toList());");
             }
         }
 
@@ -121,7 +123,8 @@ public class JpaModelConstructorGenerator
             foreach (var ap in classe.GetProperties(_config, availableClasses).OfType<AssociationProperty>().Where(ap => ap.Association.Reference && (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)))
             {
                 var propertyName = ap.Name.ToFirstLower();
-                fw.WriteLine(2, $"this.set{ap.Name}({classe.Name.ToFirstLower()}.get{ap.Name.ToFirstUpper()}());");
+                var getterPrefix = ap.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+                fw.WriteLine(2, $"this.set{ap.Name}({classe.Name.ToFirstLower()}.{getterPrefix}{ap.Name.ToFirstUpper()}());");
             }
         }
 
@@ -196,6 +199,7 @@ public class JpaModelConstructorGenerator
                 var mappings = param.Mappings.ToList();
                 foreach (var mapping in mappings)
                 {
+                    var getterPrefix = mapping.Value!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
                     if (mapping.Value is AssociationProperty ap)
                     {
                         if (!_config.EnumShortcutMode)
@@ -204,14 +208,14 @@ public class JpaModelConstructorGenerator
                             {
                                 if (mapping.Key is IFieldProperty)
                                 {
-                                    fw.WriteLine(3, $"if({param.Name.ToFirstLower()}.get{mapping.Value.GetJavaName().ToFirstUpper()}() != null) {{");
+                                    fw.WriteLine(3, $"if({param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value.GetJavaName().ToFirstUpper()}() != null) {{");
                                     if (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)
                                     {
-                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}().get{ap.Property.Name.ToFirstUpper()}();");
+                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().{getterPrefix}{ap.Property.Name.ToFirstUpper()}();");
                                     }
                                     else
                                     {
-                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}().stream().filter(t -> t != null).map({ap.GetJavaName().ToFirstLower()} -> {ap.GetJavaName().ToFirstLower()}.get{ap.Property.Name.ToFirstUpper()}()).collect(Collectors.toList());");
+                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().stream().filter(t -> t != null).map({ap.GetJavaName().ToFirstLower()} -> {ap.GetJavaName().ToFirstLower()}.{getterPrefix}{ap.Property.Name.ToFirstUpper()}()).collect(Collectors.toList());");
                                     }
 
                                     fw.WriteLine(3, "}");
@@ -226,7 +230,7 @@ public class JpaModelConstructorGenerator
                                     else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association))
                                     {
                                         var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association);
-                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = new {cp.Composition.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}());");
+                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = new {cp.Composition.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}());");
                                     }
                                     else
                                     {
@@ -236,7 +240,7 @@ public class JpaModelConstructorGenerator
                             }
                             else
                             {
-                                fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{mapping.Value.GetJavaName().ToFirstUpper()}();");
+                                fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value.GetJavaName().ToFirstUpper()}();");
                             }
                         }
                         else
@@ -245,18 +249,18 @@ public class JpaModelConstructorGenerator
                             {
                                 if (classe.IsPersistent)
                                 {
-                                    fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}();");
+                                    fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}();");
                                 }
                                 else if (mapping.Key is IFieldProperty)
                                 {
-                                    fw.WriteLine(3, $"if({param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}() != null) {{");
+                                    fw.WriteLine(3, $"if({param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}() != null) {{");
                                     if (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)
                                     {
-                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}().get{ap.Property.Name.ToFirstUpper()}();");
+                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().{getterPrefix}{ap.Property.Name.ToFirstUpper()}();");
                                     }
                                     else
                                     {
-                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}().stream().filter(t -> t != null).map({ap.GetJavaName().ToFirstLower()} -> {ap.GetJavaName().ToFirstLower()}.get{ap.Property.Name.ToFirstUpper()}()).collect(Collectors.toList());");
+                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().stream().filter(t -> t != null).map({ap.GetJavaName().ToFirstLower()} -> {ap.GetJavaName().ToFirstLower()}.{getterPrefix}{ap.Property.Name.ToFirstUpper()}()).collect(Collectors.toList());");
                                     }
 
                                     fw.WriteLine(3, "}");
@@ -271,7 +275,7 @@ public class JpaModelConstructorGenerator
                                     else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association))
                                     {
                                         var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association);
-                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = new {cp.Composition.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.get{ap.GetJavaName().ToFirstUpper()}());");
+                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = new {cp.Composition.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}());");
                                     }
                                     else
                                     {
@@ -281,13 +285,13 @@ public class JpaModelConstructorGenerator
                             }
                             else
                             {
-                                fw.WriteLine(3, $"this.set{mapping.Key.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.get{mapping.Value.Name.ToFirstUpper()}());");
+                                fw.WriteLine(3, $"this.set{mapping.Key.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value.Name.ToFirstUpper()}());");
                             }
                         }
                     }
                     else
                     {
-                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.get{mapping.Value!.Name.ToFirstUpper()}();");
+                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value!.Name.ToFirstUpper()}();");
                     }
                 }
 

@@ -128,8 +128,18 @@ public class TypeProfil {
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.securite.TypeProfil TypeProfil}.
 	 */
 	public enum Fields implements IFieldEnum<TypeProfil> {
-        CODE, //
-        LIBELLE
+        CODE(TypeProfil.Values.class), //
+        LIBELLE(String.class);
+
+		private Class<?> type;
+
+		private Fields(Class<?> type) {
+			this.type = type;
+		}
+
+		public Class<?> getType() {
+			return this.type;
+		}
 	}
 
 	public enum Values {

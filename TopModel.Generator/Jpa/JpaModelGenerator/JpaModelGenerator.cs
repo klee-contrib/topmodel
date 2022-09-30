@@ -428,8 +428,8 @@ public class JpaModelGenerator : GeneratorBase
             {
                 fw.WriteLine(1, "@Override");
             }
-
-            fw.WriteLine(1, @$"public {property.GetJavaType()} get{property.GetJavaName().ToFirstUpper()}() {{");
+            var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+            fw.WriteLine(1, @$"public {property.GetJavaType()} {getterPrefix}{property.GetJavaName().ToFirstUpper()}() {{");
             if (property is AssociationProperty ap && (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany))
             {
                 fw.WriteLine(2, $"if(this.{property.GetJavaName()} == null)");
@@ -504,15 +504,16 @@ public class JpaModelGenerator : GeneratorBase
 
             foreach (var mapping in mapper.Mappings)
             {
+                var getterPrefix = mapping.Value!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
                 if (mapping.Value is AssociationProperty ap)
                 {
                     if (ap.Property.IsEnum() && _config.EnumShortcutMode)
                     {
-                        fw.WriteLine(2, $"dest.set{mapping.Value.Name.ToFirstUpper()}(this.get{mapping.Key.Name.ToFirstUpper()}());");
+                        fw.WriteLine(2, $"dest.set{mapping.Value.Name.ToFirstUpper()}(this.{getterPrefix}{mapping.Key.Name.ToFirstUpper()}());");
                     }
                     else if (mapping.Value.Class.IsPersistent && mapping.Key.Class.IsPersistent)
                     {
-                        fw.WriteLine(2, $"dest.set{mapping.Value.GetJavaName().ToFirstUpper()}(this.get{mapping.Key.GetJavaName().ToFirstUpper()}());");
+                        fw.WriteLine(2, $"dest.set{mapping.Value.GetJavaName().ToFirstUpper()}(this.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}());");
                     }
                     else if (mapping.Key is CompositionProperty cp)
                     {
@@ -520,7 +521,7 @@ public class JpaModelGenerator : GeneratorBase
                         {
                             var cpMapper = cp.Composition.ToMappers.Find(t => t.Class == ap.Association)!;
                             fw.WriteLine(2, $@"if (this.get{cp.GetJavaName().ToFirstUpper()}() != null) {{");
-                            fw.WriteLine(3, $@"dest.set{mapping.Value.GetJavaName().ToFirstUpper()}(this.get{cp.GetJavaName().ToFirstUpper()}().{cpMapper.Name.ToFirstLower()}(dest.get{ap.GetJavaName().ToFirstUpper()}()));");
+                            fw.WriteLine(3, $@"dest.set{mapping.Value.GetJavaName().ToFirstUpper()}(this.{getterPrefix}{cp.GetJavaName().ToFirstUpper()}().{cpMapper.Name.ToFirstLower()}(dest.get{ap.GetJavaName().ToFirstUpper()}()));");
                             fw.WriteLine(2, $@"}}");
                             fw.WriteLine();
                         }
@@ -532,7 +533,7 @@ public class JpaModelGenerator : GeneratorBase
                 }
                 else
                 {
-                    fw.WriteLine(2, $"dest.set{mapping.Value!.GetJavaName().ToFirstUpper()}(this.get{mapping.Key.GetJavaName().ToFirstUpper()}());");
+                    fw.WriteLine(2, $"dest.set{mapping.Value!.GetJavaName().ToFirstUpper()}(this.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}());");
                 }
             }
 
