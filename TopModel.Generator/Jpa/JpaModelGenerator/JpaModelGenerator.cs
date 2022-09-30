@@ -589,10 +589,27 @@ public class JpaModelGenerator : GeneratorBase
                 name = prop.Name.ToSnakeCase();
             }
 
-            return $"        {name}";
+            var javaType = prop.GetJavaType();
+            javaType = javaType.Split("<").First();
+            return $"        {name}({javaType}.class)";
         });
 
-        fw.WriteLine(string.Join(", //\n", props));
+        fw.WriteLine(string.Join(", //\n", props) + ";");
+
+        fw.WriteLine();
+
+        fw.WriteLine(2, "private Class<?> type;");
+        fw.WriteLine();
+        fw.WriteLine(2, "private Fields(Class<?> type) {");
+        fw.WriteLine(3, "this.type = type;");
+        fw.WriteLine(2, "}");
+
+        fw.WriteLine();
+
+        fw.WriteLine(2, "public Class<?> getType() {");
+        fw.WriteLine(3, "return this.type;");
+        fw.WriteLine(2, "}");
+
         fw.WriteLine(1, "}");
     }
 }
