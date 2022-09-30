@@ -31,4 +31,3 @@ Les générateurs disponibles sont :
   - Un fichier "crebas" qui contient toutes les créations de tables
   - Un fichier "index + fk" qui contient toutes les FKs et indexes
   - Un fichier qui contient toutes les initialisations de listes de références
-- **Le générateur Kasper (`kasper`)**, qui permet de générer toutes les différentes classes abstraites, fichiers de ressources... pour ceux qui sont encore coincés avec un Kasper qui a 10 ans sur un projet dans un coin...

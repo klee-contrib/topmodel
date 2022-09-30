@@ -428,6 +428,7 @@ public class JpaModelGenerator : GeneratorBase
             {
                 fw.WriteLine(1, "@Override");
             }
+
             var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
             fw.WriteLine(1, @$"public {property.GetJavaType()} {getterPrefix}{property.GetJavaName().ToFirstUpper()}() {{");
             if (property is AssociationProperty ap && (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany))

@@ -430,38 +430,6 @@
           }
         }
       }
-    },
-    "kasper": {
-      "type": "array",
-      "description": "Liste de configs pour la génération Kasper",
-      "items": {
-        "type": "object",
-        "description": "Config pour la génération de Kasper.",
-        "additionalProperties": false,
-        "required": [
-          "tags",
-          "sourcesDirectory",
-          "packageName"
-        ],
-        "properties": {
-          "tags": {
-            "type": "array",
-            "description": "Précise les tags de fichier que le générateur doit lire",
-            "items": {
-              "type": "string",
-              "description": "Catégorie de fichier que le générateur doit lire."
-            }
-          },
-          "sourcesDirectory": {
-            "type": "string",
-            "description": "Racine du répertoire où sont situées les sources Java."
-          },
-          "packageName": {
-            "type": "string",
-            "description": "Précise le nom du package dans lequel générer les classes."
-          }
-        }
-      }
     }
   }
 }

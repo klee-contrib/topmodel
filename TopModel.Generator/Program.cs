@@ -9,10 +9,8 @@ using TopModel.Generator;
 using TopModel.Generator.CSharp;
 using TopModel.Generator.Javascript;
 using TopModel.Generator.Jpa;
-using TopModel.Generator.Kasper;
 using TopModel.Generator.ProceduralSql;
 using TopModel.Generator.Ssdt;
-using static TopModel.Utils.ModelUtils;
 
 var fileChecker = new FileChecker("schema.config.json");
 
@@ -101,160 +99,14 @@ for (var i = 0; i < configs.Count; i++)
 
     Console.WriteLine();
 
-    if (config.AllowCompositePrimaryKey && config.Csharp != null)
-    {
-        throw new ArgumentException("Impossible de spécifier 'allowCompositePrimaryKey' avec 'csharp'.");
-    }
-
     var services = new ServiceCollection()
+        .AddLogging(builder => builder.AddProvider(new LoggerProvider()))
         .AddModelStore(fileChecker, config, dn)
-        .AddLogging(builder => builder.AddProvider(new LoggerProvider()));
-
-    if (config.ProceduralSql != null)
-    {
-        foreach (var pSqlConfig in config.ProceduralSql)
-        {
-            CombinePath(dn, pSqlConfig, c => c.CrebasFile);
-            CombinePath(dn, pSqlConfig, c => c.IndexFKFile);
-            CombinePath(dn, pSqlConfig, c => c.InitListFile);
-            CombinePath(dn, pSqlConfig, c => c.TypeFile);
-            CombinePath(dn, pSqlConfig, c => c.UniqueKeysFile);
-
-            services.AddSingleton<IModelWatcher>(p =>
-                new ProceduralSqlGenerator(p.GetRequiredService<ILogger<ProceduralSqlGenerator>>(), pSqlConfig));
-        }
-    }
-
-    if (config.Ssdt != null)
-    {
-        foreach (var ssdtConfig in config.Ssdt)
-        {
-            CombinePath(dn, ssdtConfig, c => c.InitListScriptFolder);
-            CombinePath(dn, ssdtConfig, c => c.TableScriptFolder);
-            CombinePath(dn, ssdtConfig, c => c.TableTypeScriptFolder);
-
-            services.AddSingleton<IModelWatcher>(p =>
-                new SsdtGenerator(p.GetRequiredService<ILogger<SsdtGenerator>>(), ssdtConfig));
-        }
-    }
-
-    if (config.Csharp != null)
-    {
-        foreach (var csharpConfig in config.Csharp)
-        {
-            CombinePath(dn, csharpConfig, c => c.OutputDirectory);
-
-            services.AddSingleton<IModelWatcher>(p =>
-                new CSharpGenerator(p.GetRequiredService<ILogger<CSharpGenerator>>(), csharpConfig, config.App));
-
-            if (csharpConfig.ApiGeneration == ApiGeneration.Server)
-            {
-                services.AddSingleton<IModelWatcher>(p =>
-                    new CSharpApiServerGenerator(p.GetRequiredService<ILogger<CSharpApiServerGenerator>>(), csharpConfig));
-            }
-            else if (csharpConfig.ApiGeneration == ApiGeneration.Client)
-            {
-                services.AddSingleton<IModelWatcher>(p =>
-                    new CSharpApiClientGenerator(p.GetRequiredService<ILogger<CSharpApiClientGenerator>>(), csharpConfig));
-            }
-        }
-    }
-
-    if (config.Javascript != null)
-    {
-        foreach (var jsConfig in config.Javascript)
-        {
-            CombinePath(dn, jsConfig, c => c.ModelOutputDirectory);
-            CombinePath(dn, jsConfig, c => c.ResourceOutputDirectory);
-            CombinePath(dn, jsConfig, c => c.ApiClientOutputDirectory);
-
-            if (jsConfig.ModelOutputDirectory != null)
-            {
-                services.AddSingleton<IModelWatcher>(p =>
-                    new TypescriptDefinitionGenerator(p.GetRequiredService<ILogger<TypescriptDefinitionGenerator>>(), jsConfig));
-
-                if (jsConfig.ApiClientOutputDirectory != null)
-                {
-                    if (jsConfig.TargetFramework == TargetFramework.ANGULAR)
-                    {
-                        services.AddSingleton<IModelWatcher>(p =>
-                           new AngularApiClientGenerator(p.GetRequiredService<ILogger<AngularApiClientGenerator>>(), jsConfig));
-                    }
-                    else
-                    {
-                        services.AddSingleton<IModelWatcher>(p =>
-                           new JavascriptApiClientGenerator(p.GetRequiredService<ILogger<JavascriptApiClientGenerator>>(), jsConfig));
-                    }
-                }
-            }
-
-            if (jsConfig.ResourceOutputDirectory != null)
-            {
-                services.AddSingleton<IModelWatcher>(p =>
-                    new JavascriptResourceGenerator(p.GetRequiredService<ILogger<JavascriptResourceGenerator>>(), jsConfig));
-            }
-        }
-    }
-
-    if (config.Jpa != null)
-    {
-        foreach (var jpaConfig in config.Jpa)
-        {
-            CombinePath(dn, jpaConfig, c => c.ModelOutputDirectory);
-            CombinePath(dn, jpaConfig, c => c.ApiOutputDirectory);
-
-            if (jpaConfig.EntitiesPackageName != null || jpaConfig.DtosPackageName != null)
-            {
-                services
-                    .AddSingleton<IModelWatcher>(p =>
-                        new JpaModelGenerator(p.GetRequiredService<ILogger<JpaModelGenerator>>(), jpaConfig));
-                services
-                    .AddSingleton<IModelWatcher>(p =>
-                        new JpaModelInterfaceGenerator(p.GetRequiredService<ILogger<JpaModelInterfaceGenerator>>(), jpaConfig));
-            }
-
-            if (jpaConfig.DaosPackageName != null)
-            {
-                services
-                    .AddSingleton<IModelWatcher>(p =>
-                        new JpaDaoGenerator(p.GetRequiredService<ILogger<JpaDaoGenerator>>(), jpaConfig));
-            }
-
-            if (jpaConfig.ResourcesOutputDirectory != null)
-            {
-                services
-                    .AddSingleton<IModelWatcher>(p =>
-                        new JpaResourceGenerator(p.GetRequiredService<ILogger<JpaResourceGenerator>>(), jpaConfig));
-            }
-
-            if (jpaConfig.ApiOutputDirectory != null)
-            {
-                if (jpaConfig.ApiGeneration == ApiGeneration.Server)
-                {
-                    services
-                        .AddSingleton<IModelWatcher>(p =>
-                            new SpringServerApiGenerator(p.GetRequiredService<ILogger<SpringServerApiGenerator>>(), jpaConfig));
-                }
-                else if (jpaConfig.ApiGeneration == ApiGeneration.Client)
-                {
-                    services
-                        .AddSingleton<IModelWatcher>(p =>
-                            new SpringClientApiGenerator(p.GetRequiredService<ILogger<SpringClientApiGenerator>>(), jpaConfig));
-                }
-            }
-        }
-    }
-
-    if (config.Kasper != null)
-    {
-        foreach (var kasperConfig in config.Kasper)
-        {
-            CombinePath(dn, kasperConfig, c => c.SourcesDirectory);
-
-            services.AddSingleton<IModelWatcher>(p =>
-                new KasperGenerator(p.GetRequiredService<ILogger<KasperGenerator>>(), kasperConfig));
-        }
-    }
+        .AddProceduralSql(dn, config.ProceduralSql)
+        .AddSsdt(dn, config.Ssdt)
+        .AddCSharp(dn, config.App, config.Csharp)
+        .AddJavascript(dn, config.Javascript)
+        .AddJpa(dn, config.Jpa);
 
     var provider = services.BuildServiceProvider();
     disposables.Add(provider);

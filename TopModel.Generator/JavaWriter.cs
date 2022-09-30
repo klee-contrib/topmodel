@@ -35,12 +35,7 @@ public class JavaWriter : IDisposable
     {
         var aParams = string.Empty;
 
-        if (attributeName.Contains("kasperx"))
-        {
-            var ident = string.Join(_writer.IndentValue, Enumerable.Range(0, indentLevel).Select(v => string.Empty));
-            aParams = $" (\r\n{ident}{_writer.IndentValue}{string.Join($",\r\n{ident}{_writer.IndentValue}", attributeParams)}\r\n{ident})";
-        }
-        else if (attributeParams.Any())
+        if (attributeParams.Any())
         {
             aParams = $@"({string.Join(", ", attributeParams)})";
         }
