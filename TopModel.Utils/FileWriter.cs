@@ -14,7 +14,6 @@ public class FileWriter : TextWriter
     /// Nombre de lignes d'en-tête à ignorer dans le calcul de checksum.
     /// </summary>
     private const int LinesInHeader = 4;
-    private const string IndentValue = " ";
 
     private readonly StringBuilder _sb;
     private readonly string _fileName;
@@ -68,6 +67,11 @@ public class FileWriter : TextWriter
     public virtual string StartCommentToken { get; init; } = "////";
 
     /// <summary>
+    /// Indentation.
+    /// </summary>
+    public string IndentValue { get; init; } = "    ";
+
+    /// <summary>
     /// Ecrit un caractère dans le stream.
     /// </summary>
     /// <param name="value">Caractère.</param>
@@ -75,7 +79,6 @@ public class FileWriter : TextWriter
     {
         _sb.Append(value);
     }
-
 
     /// <summary>
     /// Ecrit un caractère dans le stream.

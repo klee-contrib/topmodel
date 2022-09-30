@@ -9,13 +9,14 @@ namespace TopModel.Generator;
 /// </summary>
 public class JavaWriter : IDisposable
 {
-    private const string IndentValue = "	";
-
     private readonly FileWriter _writer;
 
     public JavaWriter(string name, ILogger logger, int? codePage = 1252)
     {
-        _writer = new FileWriter(name, logger, codePage != null ? CodePagesEncodingProvider.Instance.GetEncoding(codePage.Value)! : new UTF8Encoding(false));
+        _writer = new FileWriter(name, logger, codePage != null ? CodePagesEncodingProvider.Instance.GetEncoding(codePage.Value)! : new UTF8Encoding(false))
+        {
+            IndentValue = " "
+        };
     }
 
     /// <inheritdoc cref="IDisposable.Dispose" />
@@ -36,8 +37,8 @@ public class JavaWriter : IDisposable
 
         if (attributeName.Contains("kasperx"))
         {
-            var ident = string.Join(IndentValue, Enumerable.Range(0, indentLevel).Select(v => string.Empty));
-            aParams = $" (\r\n{ident}{IndentValue}{string.Join($",\r\n{ident}{IndentValue}", attributeParams)}\r\n{ident})";
+            var ident = string.Join(_writer.IndentValue, Enumerable.Range(0, indentLevel).Select(v => string.Empty));
+            aParams = $" (\r\n{ident}{_writer.IndentValue}{string.Join($",\r\n{ident}{_writer.IndentValue}", attributeParams)}\r\n{ident})";
         }
         else if (attributeParams.Any())
         {

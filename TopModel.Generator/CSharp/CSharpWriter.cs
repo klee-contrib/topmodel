@@ -9,8 +9,6 @@ namespace TopModel.Generator.CSharp;
 /// </summary>
 public class CSharpWriter : IDisposable
 {
-    private const string IndentValue = "    ";
-
     private readonly bool _useLatestCSharp;
     private readonly FileWriter _writer;
 
@@ -337,7 +335,7 @@ public class CSharpWriter : IDisposable
         var indentValue = string.Empty;
         for (var i = 0; i < indentationLevel; ++i)
         {
-            indentValue += IndentValue;
+            indentValue += _writer.IndentValue;
         }
 
         return indentValue;
