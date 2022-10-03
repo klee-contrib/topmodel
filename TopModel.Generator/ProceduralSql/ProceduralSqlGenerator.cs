@@ -59,7 +59,8 @@ public class ProceduralSqlGenerator : GeneratorBase
                 Required = true,
                 Role = ap.Role,
                 DefaultValue = ap.DefaultValue,
-                Label = ap.Label
+                Label = ap.Label,
+                Trigram = ap.Class.PrimaryKey!.Trigram
             });
             traClass.Properties.Add(new AssociationProperty()
             {
@@ -70,7 +71,8 @@ public class ProceduralSqlGenerator : GeneratorBase
                 Required = true,
                 Role = ap.Role,
                 DefaultValue = ap.DefaultValue,
-                Label = ap.Label
+                Label = ap.Label,
+                Trigram = ap.Trigram
             });
             classes = classes.Append(traClass);
         }
