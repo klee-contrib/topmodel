@@ -17,7 +17,7 @@ public class ModelWatcher : IModelWatcher
 
     public string Name => "Errors";
 
-    public int Number { get; set; }
+    public int Number { get; init; }
 
     public IEnumerable<string>? GeneratedFiles => null;
 

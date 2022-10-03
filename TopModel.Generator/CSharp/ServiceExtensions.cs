@@ -11,37 +11,40 @@ public static class ServiceExtensions
     {
         if (configs != null)
         {
-            foreach (var config in configs)
+            for (var i = 0; i < configs.Count(); i++)
             {
+                var config = configs.ElementAt(i);
+                var number = i + 1;
+
                 CombinePath(dn, config, c => c.OutputDirectory);
 
                 services.AddSingleton<IModelWatcher>(p =>
-                    new CSharpClassGenerator(p.GetRequiredService<ILogger<CSharpClassGenerator>>(), config));
+                    new CSharpClassGenerator(p.GetRequiredService<ILogger<CSharpClassGenerator>>(), config) { Number = number });
 
                 services.AddSingleton<IModelWatcher>(p =>
-                    new MapperGenerator(p.GetRequiredService<ILogger<MapperGenerator>>(), config));
+                    new MapperGenerator(p.GetRequiredService<ILogger<MapperGenerator>>(), config) { Number = number });
 
                 if (config.DbContextPath != null)
                 {
                     services.AddSingleton<IModelWatcher>(p =>
-                        new DbContextGenerator(p.GetRequiredService<ILogger<DbContextGenerator>>(), config, app));
+                        new DbContextGenerator(p.GetRequiredService<ILogger<DbContextGenerator>>(), config, app) { Number = number });
                 }
 
                 if (config.Kinetix != KinetixVersion.None)
                 {
                     services.AddSingleton<IModelWatcher>(p =>
-                        new ReferenceAccessorGenerator(p.GetRequiredService<ILogger<ReferenceAccessorGenerator>>(), config));
+                        new ReferenceAccessorGenerator(p.GetRequiredService<ILogger<ReferenceAccessorGenerator>>(), config) { Number = number });
                 }
 
                 if (config.ApiGeneration == ApiGeneration.Server)
                 {
                     services.AddSingleton<IModelWatcher>(p =>
-                        new CSharpApiServerGenerator(p.GetRequiredService<ILogger<CSharpApiServerGenerator>>(), config));
+                        new CSharpApiServerGenerator(p.GetRequiredService<ILogger<CSharpApiServerGenerator>>(), config) { Number = number });
                 }
                 else if (config.ApiGeneration == ApiGeneration.Client)
                 {
                     services.AddSingleton<IModelWatcher>(p =>
-                        new CSharpApiClientGenerator(p.GetRequiredService<ILogger<CSharpApiClientGenerator>>(), config));
+                        new CSharpApiClientGenerator(p.GetRequiredService<ILogger<CSharpApiClientGenerator>>(), config) { Number = number });
                 }
             }
         }

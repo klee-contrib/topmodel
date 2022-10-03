@@ -20,7 +20,7 @@ public class JpaResourceGenerator : GeneratorBase
         _logger = logger;
     }
 
-    public override string Name => "JpaResourceGenerator";
+    public override string Name => "JpaResourceGen";
 
     public override IEnumerable<string> GeneratedFiles => Files
         .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))

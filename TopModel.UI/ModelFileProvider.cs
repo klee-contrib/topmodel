@@ -26,7 +26,7 @@ public class ModelFileProvider : IModelWatcher
 
     public string Name => "UI";
 
-    public int Number { get; set; }
+    public int Number { get; init; }
 
     public IEnumerable<string>? GeneratedFiles => null;
 

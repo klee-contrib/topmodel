@@ -90,19 +90,12 @@ public class ModelStore
         _topModelLock.Version = CurrentVersion;
         _topModelLock.GeneratedFiles ??= new();
 
-        foreach (var mw in _modelWatchers)
-        {
-            var sameGeneratorList = _modelWatchers.Where(m => m.Name == mw.Name).ToList();
-            mw.Number = sameGeneratorList.IndexOf(mw) + 1;
-        }
-
         var watchers = _modelWatchers.Select(mw => mw.FullName.Split("@")).GroupBy(split => split[0]).Select(grp => $"{grp.Key}@{{{string.Join(",", grp.Select(split => split[1]))}}}");
-        _logger.LogInformation($"Watchers enregistrés : \n                          - {string.Join("\n                          - ", watchers)}");
+        _logger.LogInformation($"Watchers enregistrés : \n                          - {string.Join("\n                          - ", watchers.OrderBy(x => x))}");
 
         FileSystemWatcher? fsWatcher = null;
         if (watch)
         {
-            _logger.LogInformation("Lancement du mode watch...");
             fsWatcher = new FileSystemWatcher(_config.ModelRoot, "*.tmd");
             fsWatcher.Changed += OnFSChangedEvent;
             fsWatcher.Created += OnFSChangedEvent;

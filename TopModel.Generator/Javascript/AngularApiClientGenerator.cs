@@ -20,7 +20,7 @@ public class AngularApiClientGenerator : GeneratorBase
         _logger = logger;
     }
 
-    public override string Name => "AngularApiClientGen";
+    public override string Name => "JSNGApiClientGen";
 
     public override List<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any()).Select(GetFileName).ToList();
 

@@ -11,17 +11,19 @@ public static class ServiceExtensions
     {
         if (configs != null)
         {
-            foreach (var config in configs)
+            for (var i = 0; i < configs.Count(); i++)
             {
+                var config = configs.ElementAt(i);
+                var number = i + 1;
+
                 CombinePath(dn, config, c => c.CrebasFile);
                 CombinePath(dn, config, c => c.IndexFKFile);
                 CombinePath(dn, config, c => c.InitListFile);
                 CombinePath(dn, config, c => c.TypeFile);
                 CombinePath(dn, config, c => c.UniqueKeysFile);
 
-                services.AddSingleton<IModelWatcher>(p => new ProceduralSqlGenerator(
-                    p.GetRequiredService<ILogger<ProceduralSqlGenerator>>(),
-                    config));
+                services.AddSingleton<IModelWatcher>(p =>
+                    new ProceduralSqlGenerator(p.GetRequiredService<ILogger<ProceduralSqlGenerator>>(), config) { Number = number });
             }
         }
 

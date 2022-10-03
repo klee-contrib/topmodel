@@ -20,7 +20,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         _logger = logger;
     }
 
-    public override string Name => "TSDefinitionGen";
+    public override string Name => "JSDefinitionGen";
 
     public override IEnumerable<string> GeneratedFiles => Files.SelectMany(f => GetClasses(f.Value))
         .Select(c => GetFileName(c))

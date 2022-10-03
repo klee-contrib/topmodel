@@ -17,7 +17,7 @@ public abstract class GeneratorBase : IModelWatcher
 
     public abstract string Name { get; }
 
-    public int Number { get; set; }
+    public int Number { get; init; }
 
     public virtual IEnumerable<string> GeneratedFiles => new List<string>();
 

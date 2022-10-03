@@ -6,9 +6,9 @@ public interface IModelWatcher
 {
     string Name { get; }
 
-    int Number { get; set; }
+    int Number { get; init; }
 
-    string FullName => $"{Name}@{Number}";
+    string FullName => $"{Name.PadRight(18, '.')}@{Number}";
 
     IEnumerable<string>? GeneratedFiles { get; }
 

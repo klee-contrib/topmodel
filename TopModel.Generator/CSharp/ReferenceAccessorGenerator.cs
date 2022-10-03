@@ -16,7 +16,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
         _logger = logger;
     }
 
-    public override string Name => "CSharpRefAccessorGen";
+    public override string Name => "CSharpRefAccessGen";
 
     public override IEnumerable<string> GeneratedFiles => GetReferenceModules(Files.Values)
         .SelectMany(module => new[] { _config.GetReferenceInterfaceFilePath(module), _config.GetReferenceImplementationFilePath(module) })

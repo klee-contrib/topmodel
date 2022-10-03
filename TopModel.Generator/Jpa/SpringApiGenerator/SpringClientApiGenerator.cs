@@ -20,7 +20,7 @@ public class SpringClientApiGenerator : GeneratorBase
         _logger = logger;
     }
 
-    public override string Name => "SpringClientApiGenerator";
+    public override string Name => "SpringApiClientGen";
 
     public override IEnumerable<string> GeneratedFiles => Files.Select(f => GetFilePath(f.Value));
 

@@ -18,7 +18,7 @@ public class DbContextGenerator : GeneratorBase
         _logger = logger;
     }
 
-    public override string Name => "DbContextGen";
+    public override string Name => "CSharpDbContextGen";
 
     public override IEnumerable<string> GeneratedFiles => new[] { _config.GetDbContextFilePath(_appName) };
 

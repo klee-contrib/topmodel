@@ -81,6 +81,16 @@ var colors = new[] { ConsoleColor.DarkCyan, ConsoleColor.DarkYellow, ConsoleColo
 
 Console.WriteLine($"========= TopModel v{version} =========");
 Console.WriteLine();
+
+if (watchMode)
+{
+    Console.Write("Mode");
+    Console.ForegroundColor = ConsoleColor.DarkCyan;
+    Console.Write(" watch ");
+    Console.ForegroundColor = ConsoleColor.Gray;
+    Console.WriteLine("activé.");
+}
+
 Console.WriteLine("Configuration trouvées :");
 
 for (var i = 0; i < configs.Count; i++)

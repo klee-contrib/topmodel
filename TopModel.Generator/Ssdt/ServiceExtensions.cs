@@ -11,14 +11,17 @@ public static class ServiceExtensions
     {
         if (configs != null)
         {
-            foreach (var config in configs)
+            for (var i = 0; i < configs.Count(); i++)
             {
+                var config = configs.ElementAt(i);
+                var number = i + 1;
+
                 CombinePath(dn, config, c => c.InitListScriptFolder);
                 CombinePath(dn, config, c => c.TableScriptFolder);
                 CombinePath(dn, config, c => c.TableTypeScriptFolder);
 
                 services.AddSingleton<IModelWatcher>(p =>
-                    new SsdtGenerator(p.GetRequiredService<ILogger<SsdtGenerator>>(), config));
+                    new SsdtGenerator(p.GetRequiredService<ILogger<SsdtGenerator>>(), config) { Number = number });
             }
         }
 
