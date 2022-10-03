@@ -297,7 +297,7 @@ public class CSharpClassGenerator
                 : refValue.Name;
 
             w.WriteSummary(3, label);
-            w.Write($"            {code}");
+            w.Write(3, code);
 
             if (refs.IndexOf(refValue) != refs.Count - 1)
             {

@@ -184,10 +184,18 @@ public class DbContextGenerator
                     }
 
                     w.Write($"            new {classe.Name} {{");
+
+                    string WriteEnumValue(Class targetClass, string value)
+                    {
+                        return $"{(targetClass.Name == targetClass.PluralName ? $"{string.Join(".", _config.GetNamespace(targetClass).Split(".").Except(contextNs.Split(".")))}.{targetClass.Name}" : targetClass.Name)}.{targetClass.PrimaryKey!.Name}s.{value}";
+                    }
+
                     foreach (var prop in refValue.Value.ToList())
                     {
                         var value = _config.CanClassUseEnums(classe) && prop.Key.PrimaryKey
-                            ? $"{(classe.Name.EndsWith("s") ? $"{string.Join(".", _config.GetNamespace(classe).Split(".").Except(contextNs.Split(".")))}.{classe.Name}" : classe.Name)}.{classe.PrimaryKey!.Name}s.{prop.Value}"
+                            ? WriteEnumValue(classe, prop.Value)
+                            : prop.Key is AssociationProperty ap && _config.CanClassUseEnums(ap.Association)
+                            ? WriteEnumValue(ap.Association, prop.Value)
                             : prop.Key.Domain.CSharp!.Type.Contains("Date")
                             ? $"{prop.Key.Domain.CSharp.Type.TrimEnd('?')}.Parse(\"{prop.Value}\"){(prop.Key.Domain.CSharp.Type.Contains("Time") ? ".ToUniversalTime()" : string.Empty)}"
                             : prop.Key.Domain.ShouldQuoteSqlValue
