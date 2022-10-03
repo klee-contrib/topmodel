@@ -18,6 +18,7 @@ public static class ServiceExtensions
 
                 CombinePath(dn, config, c => c.ModelOutputDirectory);
                 CombinePath(dn, config, c => c.ApiOutputDirectory);
+                CombinePath(dn, config, c => c.ResourcesOutputDirectory);
 
                 if (config.EntitiesPackageName != null || config.DtosPackageName != null)
                 {

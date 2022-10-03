@@ -46,6 +46,7 @@
         "description": "Config pour la génération de SQL 'procédurale' (sans SSDT)",
         "additionalProperties": false,
         "required": [
+          "outputDirectory",
           "tags"
         ],
         "properties": {
@@ -56,6 +57,10 @@
               "type": "string",
               "description": "Catégorie de fichier que le générateur doit lire."
             }
+          },
+          "outputDirectory": {
+            "type": "string",
+            "description": "Racine du répertoire de génération."
           },
           "targetDBMS": {
             "type": "string",
@@ -120,6 +125,7 @@
         "description": "Config pour la génération SSDT",
         "additionalProperties": false,
         "required": [
+          "outputDirectory",
           "tags"
         ],
         "properties": {
@@ -130,6 +136,10 @@
               "type": "string",
               "description": "Catégorie de fichier que le générateur doit lire."
             }
+          },
+          "outputDirectory": {
+            "type": "string",
+            "description": "Racine du répertoire de génération."
           },
           "tableScriptFolder": {
             "type": "string",

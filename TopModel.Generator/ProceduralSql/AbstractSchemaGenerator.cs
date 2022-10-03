@@ -65,7 +65,7 @@ public abstract class AbstractSchemaGenerator
 
         writerInsert.WriteLine("-- =========================================================================================== ");
         writerInsert.WriteLine($"--   Application Name	:	{classes.First().Namespace.App} ");
-        writerInsert.WriteLine("--   Script Name		:	" + _config.InitListFile.Split("\\").Last());
+        writerInsert.WriteLine("--   Script Name		:	" + _config.InitListFile.Split(Path.DirectorySeparatorChar).Last());
         writerInsert.WriteLine("--   Description		:	Script d'insertion des données de références");
         writerInsert.WriteLine("-- ===========================================================================================");
 
@@ -87,48 +87,43 @@ public abstract class AbstractSchemaGenerator
     /// <param name="classes">Classes.</param>
     public void GenerateSchemaScript(IEnumerable<Class> classes)
     {
-        var outputFileNameCrebas = _config.CrebasFile;
-        var outputFileNameIndex = _config.IndexFKFile;
-        var outputFileNameType = _config.TypeFile;
-        var outputFileNameUK = _config.UniqueKeysFile;
-
-        if (outputFileNameCrebas == null || outputFileNameIndex == null || !classes.Any())
+        if (_config.CrebasFile == null || _config.IndexFKFile == null || !classes.Any())
         {
             return;
         }
 
-        using var writerCrebas = new SqlFileWriter(outputFileNameCrebas, _logger);
+        using var writerCrebas = new SqlFileWriter(_config.CrebasFile, _logger);
 
         SqlFileWriter? writerType = null;
         SqlFileWriter? writerUk = null;
 
-        if (outputFileNameType != null)
+        if (_config.TypeFile != null)
         {
-            writerType = new SqlFileWriter(outputFileNameType, _logger);
+            writerType = new SqlFileWriter(_config.TypeFile, _logger);
         }
 
-        if (outputFileNameUK != null)
+        if (_config.UniqueKeysFile != null)
         {
-            writerUk = new SqlFileWriter(outputFileNameUK, _logger);
+            writerUk = new SqlFileWriter(_config.UniqueKeysFile, _logger);
         }
 
         var appName = classes.First().Namespace.App;
 
         writerCrebas.WriteLine("-- =========================================================================================== ");
         writerCrebas.WriteLine($"--   Application Name	:	{appName} ");
-        writerCrebas.WriteLine("--   Script Name		:	" + outputFileNameCrebas.Split("\\").Last());
+        writerCrebas.WriteLine("--   Script Name		:	" + _config.CrebasFile.Split(Path.DirectorySeparatorChar).Last());
         writerCrebas.WriteLine("--   Description		:	Script de création des tables.");
         writerCrebas.WriteLine("-- =========================================================================================== ");
 
         writerUk?.WriteLine("-- =========================================================================================== ");
         writerUk?.WriteLine($"--   Application Name	:	{appName} ");
-        writerUk?.WriteLine("--   Script Name		:	" + outputFileNameUK?.Split("\\").Last());
+        writerUk?.WriteLine("--   Script Name		:	" + _config.UniqueKeysFile?.Split(Path.DirectorySeparatorChar).Last());
         writerUk?.WriteLine("--   Description		:	Script de création des index uniques.");
         writerUk?.WriteLine("-- =========================================================================================== ");
 
         writerType?.WriteLine("-- =========================================================================================== ");
         writerType?.WriteLine($"--   Application Name	:	{appName} ");
-        writerType?.WriteLine("--   Script Name		:	" + outputFileNameType?.Split("\\").Last());
+        writerType?.WriteLine("--   Script Name		:	" + _config.TypeFile?.Split(Path.DirectorySeparatorChar).Last());
         writerType?.WriteLine("--   Description		:	Script de création des types. ");
         writerType?.WriteLine("-- =========================================================================================== ");
 
@@ -148,11 +143,11 @@ public abstract class AbstractSchemaGenerator
             writerUk.Dispose();
         }
 
-        using var writer = new SqlFileWriter(outputFileNameIndex, _logger);
+        using var writer = new SqlFileWriter(_config.IndexFKFile, _logger);
 
         writer.WriteLine("-- =========================================================================================== ");
         writer.WriteLine($"--   Application Name	:	{appName} ");
-        writer.WriteLine("--   Script Name		:	" + outputFileNameIndex.Split("\\").Last());
+        writer.WriteLine("--   Script Name		:	" + _config.IndexFKFile.Split(Path.DirectorySeparatorChar).Last());
         writer.WriteLine("--   Description		:	Script de création des indexes et des clef étrangères. ");
         writer.WriteLine("-- =========================================================================================== ");
 
