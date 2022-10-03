@@ -48,7 +48,7 @@ public class Profil {
 	 * Type de profil.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeProfil.class)
-	@JoinColumn(name = "TPR_CODE", referencedColumnName = "DRO_CODE")
+	@JoinColumn(name = "TPR_CODE", referencedColumnName = "TPR_CODE")
 	private TypeProfil typeProfil;
 
 	/**

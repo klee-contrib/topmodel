@@ -8,8 +8,8 @@
 --   Description		:	Script d'insertion des données de références
 -- ===========================================================================================
 /**		Initialisation de la table TypeProfil		**/
-INSERT INTO TYPE_PROFIL(DRO_CODE, TPR_LIBELLE) VALUES('ADM', 'Administrateur');
-INSERT INTO TYPE_PROFIL(DRO_CODE, TPR_LIBELLE) VALUES('GES', 'Gestionnaire');
+INSERT INTO TYPE_PROFIL(TPR_CODE, TPR_LIBELLE) VALUES('ADM', 'Administrateur');
+INSERT INTO TYPE_PROFIL(TPR_CODE, TPR_LIBELLE) VALUES('GES', 'Gestionnaire');
 
 /**		Initialisation de la table Droits		**/
 INSERT INTO DROITS(DRO_CODE, DRO_LIBELLE, TPR_CODE) VALUES('CRE', 'Créer', 'TypeProfilCodeAlternatif.POT');

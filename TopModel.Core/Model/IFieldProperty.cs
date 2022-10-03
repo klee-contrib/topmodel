@@ -76,7 +76,7 @@ public interface IFieldProperty : IProperty
                 _ => prop.Name.ToSnakeCase()
             };
 
-            string? prefix = prop.Trigram ?? (prop as AssociationProperty)?.Association.Trigram ?? prop.Class.Trigram;
+            string? prefix = prop.Trigram ?? (apPk != null ? apPkTrigram : prop.Class.Trigram);
             prefix = !string.IsNullOrWhiteSpace(prefix) ? $"{prefix}_" : string.Empty;
             var suffix = prop is AssociationProperty { Role: string role } ? $"_{role.Replace(" ", "_").ToUpper()}" : string.Empty;
 

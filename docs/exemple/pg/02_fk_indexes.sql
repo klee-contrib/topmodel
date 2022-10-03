@@ -52,7 +52,7 @@ create index IDX_DRO_TPR_CODE_FK on DROITS (
  **/
 alter table DROITS
 	add constraint FK_DRO_TPR_CODE foreign key (TPR_CODE)
-		references TYPE_PROFIL (DRO_CODE)
+		references TYPE_PROFIL (TPR_CODE)
 ;
 
 /**
@@ -68,38 +68,38 @@ create index IDX_PROFIL_TPR_CODE_FK on PROFIL (
  **/
 alter table PROFIL
 	add constraint FK_PROFIL_TPR_CODE foreign key (TPR_CODE)
-		references TYPE_PROFIL (DRO_CODE)
+		references TYPE_PROFIL (TPR_CODE)
 ;
 
 /**
-  * Création de l'index de clef étrangère pour SECTEUR.SEC_ID
+  * Création de l'index de clef étrangère pour SECTEUR.PRO_ID
  **/
-create index IDX_SEC_SEC_ID_FK on SECTEUR (
-	SEC_ID ASC
+create index IDX_SEC_PRO_ID_FK on SECTEUR (
+	PRO_ID ASC
 )
 ;
 
 /**
-  * Génération de la contrainte de clef étrangère pour SECTEUR.SEC_ID
+  * Génération de la contrainte de clef étrangère pour SECTEUR.PRO_ID
  **/
 alter table SECTEUR
-	add constraint FK_SEC_SEC_ID foreign key (SEC_ID)
+	add constraint FK_SEC_PRO_ID foreign key (PRO_ID)
 		references PROFIL (PRO_ID)
 ;
 
 /**
-  * Création de l'index de clef étrangère pour UTILISATEUR.ID
+  * Création de l'index de clef étrangère pour UTILISATEUR.PRO_ID
  **/
-create index IDX_UTILISATEUR_ID_FK on UTILISATEUR (
-	ID ASC
+create index IDX_UTILISATEUR_PRO_ID_FK on UTILISATEUR (
+	PRO_ID ASC
 )
 ;
 
 /**
-  * Génération de la contrainte de clef étrangère pour UTILISATEUR.ID
+  * Génération de la contrainte de clef étrangère pour UTILISATEUR.PRO_ID
  **/
 alter table UTILISATEUR
-	add constraint FK_UTILISATEUR_ID foreign key (ID)
+	add constraint FK_UTILISATEUR_PRO_ID foreign key (PRO_ID)
 		references PROFIL (PRO_ID)
 ;
 
