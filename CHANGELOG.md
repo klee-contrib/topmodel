@@ -2,7 +2,7 @@
 
 ## 1.14.3
 
-- [`7ed8ef6`](https://github.com/klee-contrib/topmodel/commit/7ed8ef6c5f7c8409c8b0ced8ccab9a41122b2217) - [JPA] Correction utilisation trigram dans le cas des manyToMany
+- [`1040e99`](https://github.com/klee-contrib/topmodel/commit/1040e99940f981a1aa6b05ab6cc093424a67f6bd) - [JPA] Correction sqlName dans le cas surcharge du trigram dans la pk
 
 ## 1.14.2
 
