@@ -41,22 +41,22 @@ public class Profil {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ID", nullable = false)
+	@Column(name = "PRO_ID", nullable = false)
 	private long id;
 
 	/**
 	 * Type de profil.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeProfil.class)
-	@JoinColumn(name = "TPR_CODE", referencedColumnName = "TPR_CODE")
+	@JoinColumn(name = "TPR_CODE", referencedColumnName = "DRO_CODE")
 	private TypeProfil typeProfil;
 
 	/**
 	 * Liste des droits de l'utilisateur.
 	 */
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "PROFIL_DROITS_APPLI", joinColumns = @JoinColumn(name = "ID_APPLI"), inverseJoinColumns = @JoinColumn(name = "DRO_CODE_APPLI"))
-	private List<Droits> droitsAppli;
+	@JoinTable(name = "PROFIL_DROITS", joinColumns = @JoinColumn(name = "PRO_ID"), inverseJoinColumns = @JoinColumn(name = "DRO_CODE"))
+	private List<Droits> droits;
 
 	/**
 	 * Liste des secteurs de l'utilisateur.
@@ -82,7 +82,7 @@ public class Profil {
 		this.id = profil.getId();
 		this.typeProfil = profil.getTypeProfil();
 
-		this.droitsAppli = profil.getDroitsAppli().stream().collect(Collectors.toList());
+		this.droits = profil.getDroits().stream().collect(Collectors.toList());
 		this.secteurs = profil.getSecteurs().stream().collect(Collectors.toList());
 	}
 
@@ -90,13 +90,13 @@ public class Profil {
 	 * All arg constructor.
 	 * @param id Id technique
 	 * @param typeProfil Type de profil
-	 * @param droitsAppli Liste des droits de l'utilisateur
+	 * @param droits Liste des droits de l'utilisateur
 	 * @param secteurs Liste des secteurs de l'utilisateur
 	 */
-	public Profil(long id, TypeProfil typeProfil, List<Droits> droitsAppli, List<Secteur> secteurs) {
+	public Profil(long id, TypeProfil typeProfil, List<Droits> droits, List<Secteur> secteurs) {
 		this.id = id;
 		this.typeProfil = typeProfil;
-		this.droitsAppli = droitsAppli;
+		this.droits = droits;
 		this.secteurs = secteurs;
 	}
 
@@ -118,7 +118,7 @@ public class Profil {
 		if(profil != null) {
 			this.id = profil.getId();
 			this.typeProfil = profil.getTypeProfil();
-			this.droitsAppli = profil.getDroitsAppli();
+			this.droits = profil.getDroits();
 			this.secteurs = profil.getSecteurs();
 		}
 
@@ -143,14 +143,14 @@ public class Profil {
 	}
 
 	/**
-	 * Getter for droitsAppli.
+	 * Getter for droits.
 	 *
-	 * @return value of {@link topmodel.exemple.name.entities.securite.Profil#droitsAppli droitsAppli}.
+	 * @return value of {@link topmodel.exemple.name.entities.securite.Profil#droits droits}.
 	 */
-	public List<Droits> getDroitsAppli() {
-		if(this.droitsAppli == null)
-			this.droitsAppli = new ArrayList<>();
-		return this.droitsAppli;
+	public List<Droits> getDroits() {
+		if(this.droits == null)
+			this.droits = new ArrayList<>();
+		return this.droits;
 	}
 
 	/**
@@ -181,11 +181,11 @@ public class Profil {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.exemple.name.entities.securite.Profil#droitsAppli droitsAppli}.
-	 * @param droitsAppli value to set
+	 * Set the value of {@link topmodel.exemple.name.entities.securite.Profil#droits droits}.
+	 * @param droits value to set
 	 */
-	public void setDroitsAppli(List<Droits> droitsAppli) {
-		this.droitsAppli = droitsAppli;
+	public void setDroits(List<Droits> droits) {
+		this.droits = droits;
 	}
 
 	/**
@@ -226,7 +226,7 @@ public class Profil {
 
 		dest.setId(this.getId());
 		dest.setTypeProfil(this.getTypeProfil());
-		dest.setDroitsAppli(this.getDroitsAppli());
+		dest.setDroits(this.getDroits());
 		dest.setSecteurs(this.getSecteurs());
 
 		return dest;
@@ -238,7 +238,7 @@ public class Profil {
 	public enum Fields implements IFieldEnum<Profil> {
         ID(long.class), //
         TYPE_PROFIL(TypeProfil.class), //
-        DROITS_APPLI(List.class), //
+        DROITS(List.class), //
         SECTEURS(List.class);
 
 		private Class<?> type;

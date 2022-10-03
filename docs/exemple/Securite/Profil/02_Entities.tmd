@@ -16,6 +16,7 @@ class:
       primaryKey: true
       domain: DO_ID
       comment: Id technique
+      trigram: PRO
     - association: TypeProfil
       label: Profil
       comment: Type de profil
@@ -23,7 +24,6 @@ class:
       label: Droits
       comment: Liste des droits de l'utilisateur
       type: manyToMany
-      role: Appli
     - association: Secteur
       comment: Liste des secteurs de l'utilisateur
       type: oneToMany

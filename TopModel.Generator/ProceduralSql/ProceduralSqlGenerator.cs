@@ -72,7 +72,7 @@ public class ProceduralSqlGenerator : GeneratorBase
                 Role = ap.Role,
                 DefaultValue = ap.DefaultValue,
                 Label = ap.Label,
-                Trigram = ap.Trigram
+                Trigram = ap.Trigram ?? ap.Association.PrimaryKey?.Trigram ?? ap.Association.Trigram
             });
             classes = classes.Append(traClass);
         }

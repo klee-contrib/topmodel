@@ -37,9 +37,9 @@ public class ProfilDto implements Serializable {
 
 	/**
 	 * Liste des droits de l'utilisateur.
-	 * Alias of {@link topmodel.exemple.name.entities.securite.Profil#getDroitsAppli() Profil#getDroitsAppli()} 
+	 * Alias of {@link topmodel.exemple.name.entities.securite.Profil#getDroits() Profil#getDroits()} 
 	 */
-	private List<Droits.Values> droitsAppli;
+	private List<Droits.Values> droits;
 
 	/**
 	 * Liste des secteurs de l'utilisateur.
@@ -69,7 +69,7 @@ public class ProfilDto implements Serializable {
 
 		this.id = profilDto.getId();
 		this.typeProfilCode = profilDto.getTypeProfilCode();
-		this.droitsAppli = profilDto.getDroitsAppli();
+		this.droits = profilDto.getDroits();
 		this.secteurs = profilDto.getSecteurs();
 
 		this.utilisateurs = profilDto.getUtilisateurs().stream().collect(Collectors.toList());
@@ -79,14 +79,14 @@ public class ProfilDto implements Serializable {
 	 * All arg constructor.
 	 * @param id Id technique
 	 * @param typeProfilCode Type de profil
-	 * @param droitsAppli Liste des droits de l'utilisateur
+	 * @param droits Liste des droits de l'utilisateur
 	 * @param secteurs Liste des secteurs de l'utilisateur
 	 * @param utilisateurs Liste paginée des utilisateurs de ce profil
 	 */
-	public ProfilDto(long id, TypeProfil.Values typeProfilCode, List<Droits.Values> droitsAppli, List<long> secteurs, List<UtilisateurDto> utilisateurs) {
+	public ProfilDto(long id, TypeProfil.Values typeProfilCode, List<Droits.Values> droits, List<long> secteurs, List<UtilisateurDto> utilisateurs) {
 		this.id = id;
 		this.typeProfilCode = typeProfilCode;
-		this.droitsAppli = droitsAppli;
+		this.droits = droits;
 		this.secteurs = secteurs;
 		this.utilisateurs = utilisateurs;
 	}
@@ -112,8 +112,8 @@ public class ProfilDto implements Serializable {
 				this.typeProfilCode = profil.getTypeProfil().getCode();
 			}
 
-			if(profil.getDroitsAppli() != null) {
-				this.droitsAppli = profil.getDroitsAppli().stream().filter(t -> t != null).map(droitsAppli -> droitsAppli.getCode()).collect(Collectors.toList());
+			if(profil.getDroits() != null) {
+				this.droits = profil.getDroits().stream().filter(t -> t != null).map(droits -> droits.getCode()).collect(Collectors.toList());
 			}
 
 			if(profil.getSecteurs() != null) {
@@ -143,12 +143,12 @@ public class ProfilDto implements Serializable {
 	}
 
 	/**
-	 * Getter for droitsAppli.
+	 * Getter for droits.
 	 *
-	 * @return value of {@link topmodel.exemple.name.dtos.securite.ProfilDto#droitsAppli droitsAppli}.
+	 * @return value of {@link topmodel.exemple.name.dtos.securite.ProfilDto#droits droits}.
 	 */
-	public List<Droits.Values> getDroitsAppli() {
-		return this.droitsAppli;
+	public List<Droits.Values> getDroits() {
+		return this.droits;
 	}
 
 	/**
@@ -186,11 +186,11 @@ public class ProfilDto implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.exemple.name.dtos.securite.ProfilDto#droitsAppli droitsAppli}.
-	 * @param droitsAppli value to set
+	 * Set the value of {@link topmodel.exemple.name.dtos.securite.ProfilDto#droits droits}.
+	 * @param droits value to set
 	 */
-	public void setDroitsAppli(List<Droits.Values> droitsAppli) {
-		this.droitsAppli = droitsAppli;
+	public void setDroits(List<Droits.Values> droits) {
+		this.droits = droits;
 	}
 
 	/**

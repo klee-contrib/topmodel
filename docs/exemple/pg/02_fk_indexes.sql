@@ -8,34 +8,34 @@
 --   Description		:	Script de création des indexes et des clef étrangères. 
 -- =========================================================================================== 
 /**
-  * Création de l'index de clef étrangère pour PROFIL_DROITS_APPLI.ID_APPLI
+  * Création de l'index de clef étrangère pour PROFIL_DROITS.PRO_ID
  **/
-create index IDX_PROFIL_DROITS_APPLI_ID_APPLI_FK on PROFIL_DROITS_APPLI (
-	ID_APPLI ASC
+create index IDX_PROFIL_DROITS_PRO_ID_FK on PROFIL_DROITS (
+	PRO_ID ASC
 )
 ;
 
 /**
-  * Génération de la contrainte de clef étrangère pour PROFIL_DROITS_APPLI.ID_APPLI
+  * Génération de la contrainte de clef étrangère pour PROFIL_DROITS.PRO_ID
  **/
-alter table PROFIL_DROITS_APPLI
-	add constraint FK_PROFIL_DROITS_APPLI_ID_APPLI foreign key (ID_APPLI)
-		references PROFIL (ID)
+alter table PROFIL_DROITS
+	add constraint FK_PROFIL_DROITS_PRO_ID foreign key (PRO_ID)
+		references PROFIL (PRO_ID)
 ;
 
 /**
-  * Création de l'index de clef étrangère pour PROFIL_DROITS_APPLI.DRO_CODE_APPLI
+  * Création de l'index de clef étrangère pour PROFIL_DROITS.DRO_CODE
  **/
-create index IDX_PROFIL_DROITS_APPLI_DRO_CODE_APPLI_FK on PROFIL_DROITS_APPLI (
-	DRO_CODE_APPLI ASC
+create index IDX_PROFIL_DROITS_DRO_CODE_FK on PROFIL_DROITS (
+	DRO_CODE ASC
 )
 ;
 
 /**
-  * Génération de la contrainte de clef étrangère pour PROFIL_DROITS_APPLI.DRO_CODE_APPLI
+  * Génération de la contrainte de clef étrangère pour PROFIL_DROITS.DRO_CODE
  **/
-alter table PROFIL_DROITS_APPLI
-	add constraint FK_PROFIL_DROITS_APPLI_DRO_CODE_APPLI foreign key (DRO_CODE_APPLI)
+alter table PROFIL_DROITS
+	add constraint FK_PROFIL_DROITS_DRO_CODE foreign key (DRO_CODE)
 		references DROITS (DRO_CODE)
 ;
 
@@ -52,7 +52,7 @@ create index IDX_DRO_TPR_CODE_FK on DROITS (
  **/
 alter table DROITS
 	add constraint FK_DRO_TPR_CODE foreign key (TPR_CODE)
-		references TYPE_PROFIL (TPR_CODE)
+		references TYPE_PROFIL (DRO_CODE)
 ;
 
 /**
@@ -68,7 +68,7 @@ create index IDX_PROFIL_TPR_CODE_FK on PROFIL (
  **/
 alter table PROFIL
 	add constraint FK_PROFIL_TPR_CODE foreign key (TPR_CODE)
-		references TYPE_PROFIL (TPR_CODE)
+		references TYPE_PROFIL (DRO_CODE)
 ;
 
 /**
@@ -84,7 +84,7 @@ create index IDX_SEC_SEC_ID_FK on SECTEUR (
  **/
 alter table SECTEUR
 	add constraint FK_SEC_SEC_ID foreign key (SEC_ID)
-		references PROFIL (ID)
+		references PROFIL (PRO_ID)
 ;
 
 /**
@@ -100,7 +100,7 @@ create index IDX_UTILISATEUR_ID_FK on UTILISATEUR (
  **/
 alter table UTILISATEUR
 	add constraint FK_UTILISATEUR_ID foreign key (ID)
-		references PROFIL (ID)
+		references PROFIL (PRO_ID)
 ;
 
 /**

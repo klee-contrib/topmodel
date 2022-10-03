@@ -15,6 +15,7 @@ class:
       primaryKey: true
       required: true
       domain: DO_CODE
+      trigram: DRO
     - name: Libelle
       comment: Libellé du type d'utilisateur
       primaryKey: false

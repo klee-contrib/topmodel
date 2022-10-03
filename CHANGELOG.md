@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.14.3
+
+- [`7ed8ef6`](https://github.com/klee-contrib/topmodel/commit/7ed8ef6c5f7c8409c8b0ced8ccab9a41122b2217) - [JPA] Correction utilisation trigram dans le cas des manyToMany
+
 ## 1.14.2
 
 - [`ca79975`](https://github.com/klee-contrib/topmodel/commit/ca79975663cd95f403419e72965259c30bfa014a) - [C#Gen] Fix génération enums sur les FK

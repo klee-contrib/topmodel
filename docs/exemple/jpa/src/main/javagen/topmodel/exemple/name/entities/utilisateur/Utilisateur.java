@@ -76,7 +76,7 @@ public class Utilisateur {
 	 * Profil de l'utilisateur.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Profil.class)
-	@JoinColumn(name = "ID", referencedColumnName = "ID")
+	@JoinColumn(name = "ID", referencedColumnName = "PRO_ID")
 	private Profil profil;
 
 	/**
