@@ -47,8 +47,8 @@ public interface IFieldProperty : IProperty
         }
     }
 
-    IFieldProperty ResourceProperty => this is AliasProperty alp && alp.Label == alp.Property.Label
-        ? alp.Property.ResourceProperty
+    IFieldProperty ResourceProperty => this is AliasProperty alp && alp.Label == alp.OriginalProperty!.Label
+        ? alp.OriginalProperty!.ResourceProperty
         : this;
 
     string ResourceKey => $"{string.Join('.', ResourceProperty.Class.Namespace.Module.Split('.').Select(e => e.ToFirstLower()))}.{ResourceProperty.Class.Name.ToFirstLower()}.{ResourceProperty.Name.ToFirstLower()}";
