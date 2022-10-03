@@ -1,35 +1,55 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
+using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.CSharp;
-public class ReferenceAccessorGenerator
+
+public class ReferenceAccessorGenerator : GeneratorBase
 {
     private readonly CSharpConfig _config;
-    private readonly ILogger<CSharpGenerator> _logger;
+    private readonly ILogger<ReferenceAccessorGenerator> _logger;
 
-    public ReferenceAccessorGenerator(CSharpConfig config, ILogger<CSharpGenerator> logger)
+    public ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logger, CSharpConfig config)
+        : base(logger, config)
     {
         _config = config;
         _logger = logger;
     }
 
-    /// <summary>
-    /// Génère les ReferenceAccessor pour un namespace.
-    /// </summary>
-    /// <param name="classes">Classes.</param>
-    public void Generate(IEnumerable<Class> classes)
+    public override string Name => "CSharpRefAccessorGen";
+
+    public override IEnumerable<string> GeneratedFiles => GetReferenceModules(Files.Values)
+        .SelectMany(module => new[] { _config.GetReferenceInterfaceFilePath(module), _config.GetReferenceImplementationFilePath(module) })
+        .Where(file => file != null)!;
+
+    protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        var classList = classes
-            .OrderBy(x => x.PluralName, StringComparer.Ordinal)
-            .ToList();
-
-        if (!classList.Any() || _config.Kinetix == KinetixVersion.None)
+        foreach (var classes in GetReferenceModules(files))
         {
-            return;
-        }
+            var classList = classes
+                .OrderBy(x => x.PluralName, StringComparer.Ordinal)
+                .ToList();
 
-        GenerateReferenceAccessorsInterface(classList);
-        GenerateReferenceAccessorsImplementation(classList);
+            if (!classList.Any())
+            {
+                return;
+            }
+
+            GenerateReferenceAccessorsInterface(classList);
+            GenerateReferenceAccessorsImplementation(classList);
+        }
+    }
+
+    private IEnumerable<IEnumerable<Class>> GetReferenceModules(IEnumerable<ModelFile> files)
+    {
+        return files
+            .SelectMany(f => f.Classes.Select(c => c.Namespace.Module))
+            .Distinct()
+            .Select(
+                module => Files.Values
+                    .SelectMany(f => f.Classes)
+                    .Distinct()
+                    .Where(c => c.Reference && c.Namespace.Module == module));
     }
 
     /// <summary>

@@ -1,17 +1,48 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
+using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.CSharp;
 
-public class MapperGenerator
+public class MapperGenerator : GeneratorBase
 {
     private readonly CSharpConfig _config;
-    private readonly ILogger<CSharpGenerator> _logger;
+    private readonly ILogger<MapperGenerator> _logger;
 
-    public MapperGenerator(CSharpConfig config, ILogger<CSharpGenerator> logger)
+    public MapperGenerator(ILogger<MapperGenerator> logger, CSharpConfig config)
+        : base(logger, config)
     {
         _config = config;
         _logger = logger;
+    }
+
+    public override string Name => "CSharpMapperGen";
+
+    public override IEnumerable<string> GeneratedFiles => GetMapperModules(Files.Values)
+        .Select(module => _config.GetMapperFilePath(module))
+        .Where(f => f != null)!;
+
+    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    {
+        foreach (var classes in GetMapperModules(files))
+        {
+            Generate(classes, Files.Values.SelectMany(c => c.Classes).ToList());
+        }
+    }
+
+    private IEnumerable<IEnumerable<Class>> GetMapperModules(IEnumerable<ModelFile> files)
+    {
+        return files
+            .SelectMany(f => f.Classes.Select(c => c.Namespace.Module))
+            .Distinct()
+            .Select(
+                module => Files.Values
+                    .SelectMany(f => f.Classes)
+                    .Distinct()
+                    .Where(c =>
+                        c.Namespace.Module == module
+                        && c.FromMappers.SelectMany(m => m.Params).Concat(c.ToMappers)
+                            .Any(m => Files.SelectMany(f => f.Value.Classes).Contains(c))));
     }
 
     /// <summary>
@@ -19,7 +50,7 @@ public class MapperGenerator
     /// </summary>
     /// <param name="classes">Classes.</param>
     /// <param name="availableClasses">Classes disponibles dans le générateur.</param>
-    public void Generate(IEnumerable<Class> classes, List<Class> availableClasses)
+    private void Generate(IEnumerable<Class> classes, List<Class> availableClasses)
     {
         if (!classes.Any())
         {

@@ -16,7 +16,22 @@ public static class ServiceExtensions
                 CombinePath(dn, config, c => c.OutputDirectory);
 
                 services.AddSingleton<IModelWatcher>(p =>
-                    new CSharpGenerator(p.GetRequiredService<ILogger<CSharpGenerator>>(), config, app));
+                    new CSharpClassGenerator(p.GetRequiredService<ILogger<CSharpClassGenerator>>(), config));
+
+                services.AddSingleton<IModelWatcher>(p =>
+                    new MapperGenerator(p.GetRequiredService<ILogger<MapperGenerator>>(), config));
+
+                if (config.DbContextPath != null)
+                {
+                    services.AddSingleton<IModelWatcher>(p =>
+                        new DbContextGenerator(p.GetRequiredService<ILogger<DbContextGenerator>>(), config, app));
+                }
+
+                if (config.Kinetix != KinetixVersion.None)
+                {
+                    services.AddSingleton<IModelWatcher>(p =>
+                        new ReferenceAccessorGenerator(p.GetRequiredService<ILogger<ReferenceAccessorGenerator>>(), config));
+                }
 
                 if (config.ApiGeneration == ApiGeneration.Server)
                 {

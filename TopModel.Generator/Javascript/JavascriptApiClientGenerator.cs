@@ -13,8 +13,6 @@ public class JavascriptApiClientGenerator : GeneratorBase
     private readonly JavascriptConfig _config;
     private readonly ILogger<JavascriptApiClientGenerator> _logger;
 
-    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
-
     public JavascriptApiClientGenerator(ILogger<JavascriptApiClientGenerator> logger, JavascriptConfig config)
         : base(logger, config)
     {
@@ -24,13 +22,12 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
     public override string Name => "JSApiClientGen";
 
-    public override List<string> GeneratedFiles => _files.Values.Where(f => f.Endpoints.Any()).Select(GetFileName).ToList();
+    public override List<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any()).Select(GetFileName).ToList();
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
         {
-            _files[file.Name] = file;
             GenerateClientFile(file);
         }
     }

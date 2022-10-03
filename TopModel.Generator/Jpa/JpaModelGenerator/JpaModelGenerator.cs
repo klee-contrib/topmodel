@@ -15,8 +15,6 @@ public class JpaModelGenerator : GeneratorBase
     private readonly JpaModelConstructorGenerator _jpaModelConstructorGenerator;
     private readonly JpaModelPropertyGenerator _jpaModelPropertyGenerator;
 
-    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
-
     public JpaModelGenerator(ILogger<JpaModelGenerator> logger, JpaConfig config)
         : base(logger, config)
     {
@@ -28,18 +26,13 @@ public class JpaModelGenerator : GeneratorBase
 
     public override string Name => "JpaModelGen";
 
-    public override IEnumerable<string> GeneratedFiles => _files.SelectMany(f => f.Value.Classes).Select(c => GetFileClassName(c));
+    public override IEnumerable<string> GeneratedFiles => Files.SelectMany(f => f.Value.Classes).Select(c => GetFileClassName(c));
 
-    private List<Class> AvailableClasses => _files.Values.SelectMany(c => c.Classes).ToList();
+    private List<Class> AvailableClasses => Files.Values.SelectMany(c => c.Classes).ToList();
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in files)
-        {
-            _files[file.Name] = file;
-        }
-
-        foreach (var c in _files.Values
+        foreach (var c in Files.Values
                     .SelectMany(f => f.Classes)
                     .Distinct())
         {
@@ -74,7 +67,7 @@ public class JpaModelGenerator : GeneratorBase
 
     private void GenerateModule(string module)
     {
-        var classes = _files.Values
+        var classes = Files.Values
             .SelectMany(f => f.Classes)
             .Distinct()
             .Where(c => c.Namespace.Module == module);
@@ -297,7 +290,7 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteImports(JavaWriter fw, Class classe)
     {
-        var imports = classe.GetImports(_files.SelectMany(f => f.Value.Classes).ToList(), _config);
+        var imports = classe.GetImports(Files.SelectMany(f => f.Value.Classes).ToList(), _config);
         imports.AddRange(classe.Decorators.SelectMany(d => d.Java!.Imports));
         foreach (var property in classe.GetProperties(_config, AvailableClasses))
         {

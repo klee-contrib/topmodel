@@ -12,7 +12,6 @@ public class JavascriptResourceGenerator : GeneratorBase
 {
     private readonly JavascriptConfig _config;
     private readonly ILogger<JavascriptResourceGenerator> _logger;
-    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
 
     public JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> logger, JavascriptConfig config)
         : base(logger, config)
@@ -23,7 +22,7 @@ public class JavascriptResourceGenerator : GeneratorBase
 
     public override string Name => "JSResourceGen";
 
-    public override IEnumerable<string> GeneratedFiles => _files
+    public override IEnumerable<string> GeneratedFiles => Files
         .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
         .Select(c => c.ResourceProperty)
         .Distinct()
@@ -31,12 +30,7 @@ public class JavascriptResourceGenerator : GeneratorBase
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in files)
-        {
-            _files[file.Name] = file;
-        }
-
-        var modules = _files
+        var modules = Files
             .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
             .Select(c => c.ResourceProperty)
             .Distinct()

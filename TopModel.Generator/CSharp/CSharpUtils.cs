@@ -121,15 +121,10 @@ public static class CSharpUtils
         return Path.Combine(directory, classe.Name + ".cs");
     }
 
-    public static string? GetDbContextFilePath(this CSharpConfig config, string appName)
+    public static string GetDbContextFilePath(this CSharpConfig config, string appName)
     {
-        if (config.DbContextPath == null)
-        {
-            return null;
-        }
-
         var dbContextName = config.GetDbContextName(appName);
-        var destDirectory = Path.Combine(config.OutputDirectory, config.DbContextPath);
+        var destDirectory = Path.Combine(config.OutputDirectory, config.DbContextPath!);
         Directory.CreateDirectory(destDirectory);
 
         return Path.Combine(destDirectory, "generated", $"{dbContextName}.cs");

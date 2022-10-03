@@ -1,33 +1,32 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
+using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.CSharp;
-public class DbContextGenerator
-{
-    private readonly CSharpConfig _config;
-    private readonly ILogger<CSharpGenerator> _logger;
 
-    public DbContextGenerator(CSharpConfig config, ILogger<CSharpGenerator> logger)
+public class DbContextGenerator : GeneratorBase
+{
+    private readonly string _appName;
+    private readonly CSharpConfig _config;
+    private readonly ILogger<DbContextGenerator> _logger;
+
+    public DbContextGenerator(ILogger<DbContextGenerator> logger, CSharpConfig config, string appName)
+        : base(logger, config)
     {
+        _appName = appName;
         _config = config;
         _logger = logger;
     }
 
-    /// <summary>
-    /// Génère l'objectcontext spécialisé pour le schéma.
-    /// </summary>
-    /// <remarks>Support de Linq2Sql.</remarks>
-    /// <param name="classes">Classes.</param>
-    /// <param name="appName">Nom de l'appli.</param>
-    public void Generate(IEnumerable<Class> classes, string appName)
-    {
-        if (_config.DbContextPath == null)
-        {
-            return;
-        }
+    public override string Name => "DbContextGen";
 
-        var dbContextName = _config.GetDbContextName(appName);
-        var targetFileName = _config.GetDbContextFilePath(appName)!;
+    public override IEnumerable<string> GeneratedFiles => new[] { _config.GetDbContextFilePath(_appName) };
+
+    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    {
+        var classes = Files.Values.SelectMany(f => f.Classes).Where(c => c.IsPersistent);
+        var dbContextName = _config.GetDbContextName(_appName);
+        var targetFileName = _config.GetDbContextFilePath(_appName);
 
         using var w = new CSharpWriter(targetFileName, _logger, _config.UseLatestCSharp);
 
@@ -50,7 +49,7 @@ public class DbContextGenerator
 
         w.WriteUsings(usings.ToArray());
 
-        var contextNs = _config.DbContextPath.Split("/").Last();
+        var contextNs = _config.DbContextPath!.Split("/").Last();
         w.WriteLine();
         w.WriteNamespace(contextNs);
 

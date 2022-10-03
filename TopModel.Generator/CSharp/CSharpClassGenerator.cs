@@ -1,28 +1,42 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using TopModel.Core;
+using TopModel.Core.FileModel;
 using TopModel.Utils;
 
 namespace TopModel.Generator.CSharp;
 
 using static CSharpUtils;
 
-public class CSharpClassGenerator
+public class CSharpClassGenerator : GeneratorBase
 {
     private readonly CSharpConfig _config;
-    private readonly ILogger _logger;
+    private readonly ILogger<CSharpClassGenerator> _logger;
 
-    public CSharpClassGenerator(CSharpConfig config, ILogger logger)
+    public CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, CSharpConfig config)
+        : base(logger, config)
     {
         _config = config;
         _logger = logger;
+    }
+
+    public override string Name => "CSharpClassGen";
+
+    public override IEnumerable<string> GeneratedFiles => Files.Values.SelectMany(f => f.Classes).Select(c => _config.GetClassFileName(c));
+
+    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    {
+        foreach (var classe in files.SelectMany(file => file.Classes))
+        {
+            Generate(classe);
+        }
     }
 
     /// <summary>
     /// Méthode générant le code d'une classe.
     /// </summary>
     /// <param name="item">Classe concernée.</param>
-    public void Generate(Class item)
+    protected void Generate(Class item)
     {
         if (item.Properties.OfType<IFieldProperty>().Any(p => p.Domain.CSharp == null))
         {

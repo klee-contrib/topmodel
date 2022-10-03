@@ -12,7 +12,6 @@ public class JpaModelInterfaceGenerator : GeneratorBase
 {
     private readonly JpaConfig _config;
     private readonly ILogger<JpaModelInterfaceGenerator> _logger;
-    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
 
     public JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logger, JpaConfig config)
         : base(logger, config)
@@ -23,15 +22,10 @@ public class JpaModelInterfaceGenerator : GeneratorBase
 
     public override string Name => "JpaInterfaceGen";
 
-    public override IEnumerable<string> GeneratedFiles => _files.SelectMany(f => f.Value.Classes).Select(c => GetFileClassName(c));
+    public override IEnumerable<string> GeneratedFiles => Files.SelectMany(f => f.Value.Classes).Select(c => GetFileClassName(c));
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in files)
-        {
-            _files[file.Name] = file;
-        }
-
         var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
 
         foreach (var module in modules)
@@ -62,7 +56,7 @@ public class JpaModelInterfaceGenerator : GeneratorBase
 
     private void GenerateModule(string module)
     {
-        var classes = _files.Values
+        var classes = Files.Values
             .SelectMany(f => f.Classes)
             .Where(c => c.Decorators.Any(d => d.Java != null && d.Java.GenerateInterface))
             .Distinct()

@@ -13,8 +13,6 @@ public class SpringClientApiGenerator : GeneratorBase
     private readonly JpaConfig _config;
     private readonly ILogger<SpringClientApiGenerator> _logger;
 
-    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
-
     public SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, JpaConfig config)
         : base(logger, config)
     {
@@ -24,13 +22,12 @@ public class SpringClientApiGenerator : GeneratorBase
 
     public override string Name => "SpringClientApiGenerator";
 
-    public override IEnumerable<string> GeneratedFiles => _files.Select(f => GetFilePath(f.Value));
+    public override IEnumerable<string> GeneratedFiles => Files.Select(f => GetFilePath(f.Value));
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
         {
-            _files[file.Name] = file;
             GenerateClient(file);
         }
     }

@@ -9,7 +9,6 @@ public class SsdtGenerator : GeneratorBase
 {
     private readonly SsdtConfig _config;
     private readonly ILogger<SsdtGenerator> _logger;
-    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
 
     private readonly ISqlScripter<Class> _tableScripter;
     private readonly ISqlScripter<Class> _tableTypeScripter = new SqlTableTypeScripter();
@@ -30,7 +29,7 @@ public class SsdtGenerator : GeneratorBase
     public override string Name => "SsdtGen";
 
     public override IEnumerable<string> GeneratedFiles =>
-        _files.Values.SelectMany(f => f.Classes).SelectMany(c =>
+        Files.Values.SelectMany(f => f.Classes).SelectMany(c =>
         {
             var files = new List<string>();
             if (_config.TableScriptFolder != null)
@@ -45,7 +44,7 @@ public class SsdtGenerator : GeneratorBase
 
             return files;
         })
-        .Concat(_files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues.Any()).Select(c =>
+        .Concat(Files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues.Any()).Select(c =>
         {
             if (_config.InitListScriptFolder != null)
             {
@@ -54,14 +53,13 @@ public class SsdtGenerator : GeneratorBase
 
             return null;
         }))
-        .Concat(_files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues.Any()).Any() && _config.InitListScriptFolder != null && _config.InitListMainScriptName != null ? new[] { Path.Combine(_config.InitListScriptFolder, _config.InitListMainScriptName) } : Array.Empty<string>())
+        .Concat(Files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues.Any()).Any() && _config.InitListScriptFolder != null && _config.InitListMainScriptName != null ? new[] { Path.Combine(_config.InitListScriptFolder, _config.InitListMainScriptName) } : Array.Empty<string>())
         .Where(f => f != null)!;
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)
         {
-            _files[file.Name] = file;
             GenerateClasses(file);
         }
 
@@ -90,7 +88,7 @@ public class SsdtGenerator : GeneratorBase
 
     private void GenerateListInitScript()
     {
-        var classes = _files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues.Any());
+        var classes = Files.Values.SelectMany(f => f.Classes).Where(c => c.ReferenceValues.Any());
 
         if (!classes.Any() || _config.InitListScriptFolder == null)
         {

@@ -11,7 +11,6 @@ public class JpaDaoGenerator : GeneratorBase
 {
     private readonly JpaConfig _config;
     private readonly ILogger<JpaDaoGenerator> _logger;
-    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
 
     public JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, JpaConfig config)
         : base(logger, config)
@@ -22,15 +21,10 @@ public class JpaDaoGenerator : GeneratorBase
 
     public override string Name => "JpaDaoGen";
 
-    public override IEnumerable<string> GeneratedFiles => _files.SelectMany(f => f.Value.Classes).Select(c => GetFileClassName(c));
+    public override IEnumerable<string> GeneratedFiles => Files.SelectMany(f => f.Value.Classes).Select(c => GetFileClassName(c));
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in files)
-        {
-            _files[file.Name] = file;
-        }
-
         var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
 
         foreach (var module in modules)
@@ -51,7 +45,7 @@ public class JpaDaoGenerator : GeneratorBase
 
     private void GenerateModule(string module)
     {
-        var classes = _files.Values
+        var classes = Files.Values
             .SelectMany(f => f.Classes)
             .Distinct()
             .Where(c => c.Namespace.Module == module);

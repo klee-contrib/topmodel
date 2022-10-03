@@ -8,7 +8,6 @@ public class ProceduralSqlGenerator : GeneratorBase
 {
     private readonly ProceduralSqlConfig _config;
     private readonly ILogger<ProceduralSqlGenerator> _logger;
-    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
 
     private readonly AbstractSchemaGenerator? _schemaGenerator;
 
@@ -34,12 +33,7 @@ public class ProceduralSqlGenerator : GeneratorBase
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in files)
-        {
-            _files[file.Name] = file;
-        }
-
-        var classes = _files.Values.SelectMany(f => f.Classes).Distinct();
+        var classes = Files.Values.SelectMany(f => f.Classes).Distinct();
 
         var manyToManyProperties = classes.SelectMany(cl => cl.Properties).Where(p => p is AssociationProperty ap && ap.Type == AssociationType.ManyToMany).Select(p => (AssociationProperty)p);
         foreach (var ap in manyToManyProperties)
@@ -84,7 +78,7 @@ public class ProceduralSqlGenerator : GeneratorBase
 
     private void GenerateListInitScript()
     {
-        var classes = _files.Values
+        var classes = Files.Values
             .SelectMany(f => f.Classes)
             .Distinct()
             .Where(c => c.ReferenceValues.Any());
