@@ -38,9 +38,10 @@ public class JpaModelInterfaceGenerator : GeneratorBase
     {
         var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
         return Path.Combine(
-                _config.ModelOutputDirectory,
+                _config.OutputDirectory,
+                _config.ModelRootPath,
                 Path.Combine(packageRoot.Split(".")),
-                classe.Namespace.Module.Replace(".", "\\").ToLower(),
+                classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower(),
                 "interfaces");
     }
 
@@ -51,7 +52,7 @@ public class JpaModelInterfaceGenerator : GeneratorBase
 
     private string GetFileClassName(Class classe)
     {
-        return $"{GetDestinationFolder(classe)}\\{GetClassName(classe)}.java";
+        return Path.Combine(GetDestinationFolder(classe), $"{GetClassName(classe)}.java");
     }
 
     private void GenerateModule(string module)

@@ -34,7 +34,7 @@ public class SpringClientApiGenerator : GeneratorBase
 
     private string GetDestinationFolder(ModelFile file)
     {
-        return Path.Combine(_config.ApiOutputDirectory!, Path.Combine(_config.ApiOutputDirectory!.ToLower().Split(".")), Path.Combine(_config.ApiPackageName.Split('.')), Path.Combine(file.Module.ToLower().Split(".")));
+        return Path.Combine(_config.OutputDirectory, Path.Combine(_config.ApiRootPath!.ToLower().Split(".")), Path.Combine(_config.ApiPackageName.Split('.')), Path.Combine(file.Module.ToLower().Split(".")));
     }
 
     private string GetClassName(ModelFile file)
@@ -56,12 +56,12 @@ public class SpringClientApiGenerator : GeneratorBase
 
     private string GetFilePath(ModelFile file)
     {
-        return $"{GetDestinationFolder(file)}\\{GetFileName(file)}";
+        return Path.Combine(GetDestinationFolder(file), GetFileName(file));
     }
 
     private void GenerateClient(ModelFile file)
     {
-        if (!file.Endpoints.Any() || _config.ApiOutputDirectory == null)
+        if (!file.Endpoints.Any() || _config.ApiRootPath == null)
         {
             return;
         }

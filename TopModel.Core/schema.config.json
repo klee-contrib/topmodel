@@ -358,7 +358,8 @@
         "additionalProperties": false,
         "required": [
           "tags",
-          "modelOutputDirectory"
+          "modelRootPath",
+          "outputDirectory"
         ],
         "properties": {
           "tags": {
@@ -369,17 +370,21 @@
               "description": "Catégorie de fichier que le générateur doit lire."
             }
           },
-          "apiOutputDirectory": {
+          "outputDirectory": {
             "type": "string",
-            "description": "Dossier de sortie pour les Controllers."
+            "description": "Racine du répertoire de génération."
           },
-          "resourcesOutputDirectory": {
+          "apiRootPath": {
             "type": "string",
-            "description": "Dossier de sortie pour les fichiers de traduction."
+            "description": "Localisation du l'API générée (client ou serveur), relatif au répertoire de génération."
           },
-          "modelOutputDirectory": {
+          "resourceRootPath": {
             "type": "string",
-            "description": "Dossier de sortie pour le modèle."
+            "description": "Localisation des ressources, relative au répertoire de génération."
+          },
+          "modelRootPath": {
+            "type": "string",
+            "description": "Localisation du modèle, relative au répertoire de génération."
           },
           "daosPackageName": {
             "type": "string",

@@ -16,9 +16,10 @@ public static class ServiceExtensions
                 var config = configs.ElementAt(i);
                 var number = i + 1;
 
-                CombinePath(dn, config, c => c.ModelOutputDirectory);
-                CombinePath(dn, config, c => c.ApiOutputDirectory);
-                CombinePath(dn, config, c => c.ResourcesOutputDirectory);
+                CombinePath(dn, config, c => c.OutputDirectory);
+                TrimSlashes(config, c => c.ApiRootPath);
+                TrimSlashes(config, c => c.ModelRootPath);
+                TrimSlashes(config, c => c.ResourceRootPath);
 
                 if (config.EntitiesPackageName != null || config.DtosPackageName != null)
                 {
@@ -37,14 +38,14 @@ public static class ServiceExtensions
                             new JpaDaoGenerator(p.GetRequiredService<ILogger<JpaDaoGenerator>>(), config) { Number = number });
                 }
 
-                if (config.ResourcesOutputDirectory != null)
+                if (config.ResourceRootPath != null)
                 {
                     services
                         .AddSingleton<IModelWatcher>(p =>
                             new JpaResourceGenerator(p.GetRequiredService<ILogger<JpaResourceGenerator>>(), config) { Number = number });
                 }
 
-                if (config.ApiOutputDirectory != null)
+                if (config.ApiRootPath != null)
                 {
                     if (config.ApiGeneration == ApiGeneration.Server)
                     {

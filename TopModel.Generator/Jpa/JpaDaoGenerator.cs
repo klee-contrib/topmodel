@@ -35,12 +35,12 @@ public class JpaDaoGenerator : GeneratorBase
 
     private string GetDestinationFolder(Class classe)
     {
-        return Path.Combine(_config.ModelOutputDirectory, Path.Combine(_config.DaosPackageName.Split(".")), classe.Namespace.Module.Replace('.', '\\').ToLower());
+        return Path.Combine(_config.OutputDirectory, _config.ModelRootPath, Path.Combine(_config.DaosPackageName.Split(".")), classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower());
     }
 
     private string GetFileClassName(Class classe)
     {
-        return $"{GetDestinationFolder(classe)}\\{classe.Name}DAO.java";
+        return Path.Combine(GetDestinationFolder(classe), $"{classe.Name}DAO.java");
     }
 
     private void GenerateModule(string module)
