@@ -260,12 +260,13 @@
     },
     "javascript": {
       "type": "array",
-      "description": "Liste de configs pour la génération de Typescript.",
+      "description": "Liste de configs pour la génération de Javascript.",
       "items": {
         "type": "object",
-        "description": "Config pour la génération de Typescript.",
+        "description": "Config pour la génération de Javascript.",
         "additionalProperties": false,
         "required": [
+          "outputDirectory",
           "tags"
         ],
         "properties": {
@@ -277,35 +278,39 @@
               "description": "Catégorie de fichier que le générateur doit lire."
             }
           },
-          "modelOutputDirectory": {
+          "outputDirectory": {
             "type": "string",
-            "description": "Chemin depuis la racine de la génération vers le dossier racine vers lequel générer les fichiers de modèle. Si non renseigné, aucun modèle ne sera généré."
+            "description": "Racine du répertoire de génération."
           },
-          "resourceOutputDirectory": {
+          "modelRootPath": {
             "type": "string",
-            "description": "Chemin depuis la racine de la génération vers le dossier racine vers lequel générer les fichiers de ressources i18n. Si non renseigné, aucun fichier de sera généré."
+            "description": "Localisation du modèle, relative au répertoire de génération. Si non renseigné, aucun modèle ne sera généré."
           },
-          "apiClientOutputDirectory": {
+          "resourceRootPath": {
             "type": "string",
-            "description": "Chemin depuis la racine de la génération vers le dossier racine vers lequel générer les fichiers de client d'API. Si non renseigné, aucun fichier de sera généré."
+            "description": "Localisation des ressources i18n, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré"
+          },
+          "apiClientRootPath": {
+            "type": "string",
+            "description": "Localisation des clients d'API, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré."
           },
           "apiClientFilePath": {
             "type": "string",
-            "description": "Chemin depuis apiClientOutputDirectory vers lequel sont créés les fichiers générés du client d'API. Peut contenir {module} pour que le fichier soit généré dans le répertoire correspondant au module",
+            "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.",
             "default": "{module}"
           },
           "fetchImportPath": {
             "type": "string",
-            "description": "Chemin depuis apiClientOutputDirectory vers un 'fetch' personnalisé, ou alias (commencant par @) vers le fichier contenant le fetch personnalisé"
+            "description": "Chemin (ou alias commençant par '@') vers un 'fetch' personnalisé, relatif à la racine de l'API."
           },
           "domainImportPath": {
             "type": "string",
-            "description": "Chemin depuis modelOutputDirectory vers le fichier 'domain', ou alias (commencant par @) vers le fichier de domaine",
+            "description": "Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif à la racine du modèle.",
             "default": "../domains"
           },
           "targetFramework": {
             "type": "string",
-            "description": "Framework cible pour la génération",
+            "description": "Framework cible pour la génération.",
             "default": "focus",
             "enum": [
               "focus",

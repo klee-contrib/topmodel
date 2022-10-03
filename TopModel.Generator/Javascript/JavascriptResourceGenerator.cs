@@ -44,20 +44,17 @@ public class JavascriptResourceGenerator : GeneratorBase
 
     private string GetFilePath(IGrouping<string, IFieldProperty> module)
     {
-        return _config.ResourceOutputDirectory!
-            + "\\"
-            + string.Join('\\', module.Key.Split(".").Select(part => part.ToDashCase()))
-            + (_config.ResourceMode == ResourceMode.JS ? ".ts" : ".json");
+        return Path.Combine(_config.OutputDirectory, _config.ResourceRootPath!, Path.Combine(module.Key.Split(".").Select(part => part.ToDashCase()).ToArray())) + (_config.ResourceMode == ResourceMode.JS ? ".ts" : ".json");
     }
 
     private void GenerateModule(IGrouping<string, IFieldProperty> module)
     {
-        if (_config.ResourceOutputDirectory == null)
+        if (_config.ResourceRootPath == null)
         {
             return;
         }
 
-        var dirInfo = Directory.CreateDirectory(_config.ResourceOutputDirectory);
+        var dirInfo = Directory.CreateDirectory(Path.Combine(_config.OutputDirectory, _config.ResourceRootPath));
         var filePath = GetFilePath(module);
 
         using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };

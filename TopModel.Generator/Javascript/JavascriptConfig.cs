@@ -6,47 +6,47 @@
 public class JavascriptConfig : GeneratorConfigBase
 {
     /// <summary>
-    /// Dossier de sortie pour le modèle.
+    /// Localisation du modèle, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré.
     /// </summary>
-    public string? ModelOutputDirectory { get; set; }
+    public string? ModelRootPath { get; set; }
 
     /// <summary>
-    /// Dossier de sortie pour les ressources.
+    /// Localisation des ressources i18n, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré.
     /// </summary>
-    public string? ResourceOutputDirectory { get; set; }
+    public string? ResourceRootPath { get; set; }
 
     /// <summary>
-    /// Dossier de sortie pour le client d'API.
+    /// Localisation des clients d'API, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré.
     /// </summary>
-    public string? ApiClientOutputDirectory { get; set; }
+    public string? ApiClientRootPath { get; set; }
 
     /// <summary>
-    /// Chemin vers lequel sont créés les fichiers générés du client d'API
+    /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.
     /// </summary>
     public string ApiClientFilePath { get; set; } = "{module}";
 
     /// <summary>
-    /// Chemin vers un "fetch" personnalisé.
+    /// Chemin (ou alias commençant par '@') vers un 'fetch' personnalisé, relatif à la racine de l'API.
     /// </summary>
     public string? FetchImportPath { get; set; }
 
     /// <summary>
-    /// Chemin vers le fichier "domain".
+    /// Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif à la racine du modèle.
     /// </summary>
     public string DomainImportPath { get; set; } = "../domains";
 
     /// <summary>
-    /// Génère des modèles pour Focus (par défaut : true).
+    /// Framework cible pour la génération.
     /// </summary>
     public TargetFramework TargetFramework { get; set; } = TargetFramework.FOCUS;
 
     /// <summary>
-    /// Mode de génération (JS ou JSON Schema).
+    /// Mode de génération (JS, JSON ou JSON Schema).
     /// </summary>
     public ResourceMode ResourceMode { get; set; }
 
     /// <summary>
-    /// Si la liste des valeurs de la liste de référence doit être générée
+    /// Mode de génération des listes de références (définitions ou valeurs).
     /// </summary>
     public ReferenceMode ReferenceMode { get; set; } = ReferenceMode.DEFINITION;
 }

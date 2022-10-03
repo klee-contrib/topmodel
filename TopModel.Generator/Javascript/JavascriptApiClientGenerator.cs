@@ -35,8 +35,8 @@ public class JavascriptApiClientGenerator : GeneratorBase
     private string GetFileName(ModelFile file)
     {
         var fileSplit = file.Name.Split("/");
-        var modulePath = string.Join('\\', file.Module.Split('.').Select(m => m.ToDashCase()));
-        var filePath = _config.ApiClientFilePath.Replace("{module}", modulePath) + '/';
+        var modulePath = Path.Combine(file.Module.Split('.').Select(m => m.ToDashCase()).ToArray());
+        var filePath = _config.ApiClientFilePath.Replace("{module}", modulePath);
         var fileName = string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToDashCase();
 
         if (file.Options?.Endpoints?.FileName != null)
@@ -44,7 +44,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
             fileName = file.Options?.Endpoints?.FileName.ToDashCase();
         }
 
-        return $"{_config.ApiClientOutputDirectory}\\{filePath}\\{fileName}.ts";
+        return Path.Combine(_config.OutputDirectory, _config.ApiClientRootPath!, filePath, $"{fileName}.ts");
     }
 
     private void GenerateClientFile(ModelFile file)
@@ -207,7 +207,7 @@ function fillFormData(data: any, formData: FormData, prefix = """") {
 
         var types = properties.OfType<CompositionProperty>().Select(property => property.Composition);
 
-        var modelPath = Path.GetRelativePath(_config.ApiClientOutputDirectory!, _config.ModelOutputDirectory!).Replace("\\", "/");
+        var modelPath = Path.GetRelativePath(_config.ApiClientRootPath!, _config.ModelRootPath!).Replace("\\", "/");
 
         var imports = types.Select(type =>
         {

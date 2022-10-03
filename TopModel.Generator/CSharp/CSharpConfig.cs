@@ -10,14 +10,6 @@ public class CSharpConfig : GeneratorConfigBase
 {
     private string? _dbContextPath;
 
-#nullable disable
-
-    /// <summary>
-    /// Racine du répertoire de génération.
-    /// </summary>
-    public string OutputDirectory { get; set; }
-#nullable enable
-
     /// <summary>
     /// Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {module}/{app}.{module}DataContract.
     /// </summary>
