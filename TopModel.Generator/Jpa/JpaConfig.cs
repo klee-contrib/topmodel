@@ -5,14 +5,19 @@ namespace TopModel.Generator.Jpa;
 public class JpaConfig : GeneratorConfigBase
 {
     /// <summary>
-    /// Dossier de sortie pour le modèle.
+    /// Localisation du modèle, relative au répertoire de génération.
     /// </summary>
-    public string ModelOutputDirectory { get; set; }
+    public string ModelRootPath { get; set; }
 
     /// <summary>
-    /// Dossier de sortie pour les fichiers de resources.
+    /// Localisation des ressources, relative au répertoire de génération.
     /// </summary>
-    public string ResourcesOutputDirectory { get; set; }
+    public string ResourceRootPath { get; set; }
+
+    /// <summary>
+    /// Localisation du l'API générée (client ou serveur), relatif au répertoire de génération.
+    /// </summary>
+    public string ApiRootPath { get; set; }
 
     /// <summary>
     /// Précise le nom du package dans lequel générer les classes persistées du modèle.
@@ -50,11 +55,6 @@ public class JpaConfig : GeneratorConfigBase
     public string ApiPackageName { get; set; }
 
 #nullable enable
-
-    /// <summary>
-    /// Dossier de sortie pour les controllers.
-    /// </summary>
-    public string? ApiOutputDirectory { get; set; }
 
     /// <summary>
     /// Mode de génération de l'API ("client" ou "server").

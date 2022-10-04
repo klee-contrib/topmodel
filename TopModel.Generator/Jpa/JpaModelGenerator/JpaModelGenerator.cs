@@ -50,13 +50,13 @@ public class JpaModelGenerator : GeneratorBase
     private string GetDestinationFolder(Class classe)
     {
         var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
-        var destFolder = Path.Combine(_config.ModelOutputDirectory, Path.Combine(packageRoot.Split(".")), classe.Namespace.Module.Replace(".", "\\").ToLower());
+        var destFolder = Path.Combine(_config.OutputDirectory, _config.ModelRootPath, Path.Combine(packageRoot.Split(".")), classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower());
         return $"{destFolder}";
     }
 
     private string GetFileClassName(Class classe)
     {
-        return $"{GetDestinationFolder(classe)}\\{classe.Name}.java";
+        return Path.Combine(GetDestinationFolder(classe), $"{classe.Name}.java");
     }
 
     private string GetPackageName(Class classe)

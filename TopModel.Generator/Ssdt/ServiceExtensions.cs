@@ -16,9 +16,10 @@ public static class ServiceExtensions
                 var config = configs.ElementAt(i);
                 var number = i + 1;
 
-                CombinePath(dn, config, c => c.InitListScriptFolder);
-                CombinePath(dn, config, c => c.TableScriptFolder);
-                CombinePath(dn, config, c => c.TableTypeScriptFolder);
+                CombinePath(dn, config, c => c.OutputDirectory);
+                CombinePath(config.OutputDirectory, config, c => c.InitListScriptFolder);
+                CombinePath(config.OutputDirectory, config, c => c.TableScriptFolder);
+                CombinePath(config.OutputDirectory, config, c => c.TableTypeScriptFolder);
 
                 services.AddSingleton<IModelWatcher>(p =>
                     new SsdtGenerator(p.GetRequiredService<ILogger<SsdtGenerator>>(), config) { Number = number });

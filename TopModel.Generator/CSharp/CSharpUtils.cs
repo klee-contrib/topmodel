@@ -158,16 +158,16 @@ public static class CSharpUtils
         string interfaceName;
         if (config.DbContextPath != null)
         {
-            projectDir = $"{config.OutputDirectory}\\{config.DbContextPath}";
+            projectDir = Path.Combine(config.OutputDirectory, config.DbContextPath);
             interfaceName = $"I{firstClass.Namespace.Module}AccessorsDal";
         }
         else
         {
-            projectDir = $"{config.OutputDirectory}\\{config.GetModelPath(firstClass).Replace("DataContract", "Contract")}";
+            projectDir = Path.Combine(config.OutputDirectory, config.GetModelPath(firstClass).Replace("DataContract", "Contract"));
             interfaceName = $"IService{firstClass.Namespace.Module}Accessors";
         }
 
-        return Path.Combine(projectDir, config.DbContextPath == null ? "generated" : "generated\\Reference", $"{interfaceName}.cs");
+        return Path.Combine(projectDir, config.DbContextPath == null ? "generated" : Path.Combine("generated", "Reference"), $"{interfaceName}.cs");
     }
 
     public static string? GetReferenceImplementationFilePath(this CSharpConfig config, IEnumerable<Class> classList)
@@ -184,17 +184,17 @@ public static class CSharpUtils
 
         if (config.DbContextPath != null)
         {
-            projectDir = $"{config.OutputDirectory}\\{config.DbContextPath}";
+            projectDir = Path.Combine(config.OutputDirectory, config.DbContextPath);
             implementationName = $"{firstClass.Namespace.Module}AccessorsDal";
         }
         else
         {
             var projectName = $"{firstClass.Namespace.App}.{firstClass.Namespace.Module}Implementation";
-            projectDir = $"{config.OutputDirectory}\\{firstClass.Namespace.App}.Implementation\\{projectName}\\Service.Implementation";
+            projectDir = Path.Combine(config.OutputDirectory, $"{firstClass.Namespace.App}.Implementation", projectName, "Service.Implementation");
             implementationName = $"Service{firstClass.Namespace.Module}Accessors";
         }
 
-        return Path.Combine(projectDir, config.DbContextPath == null ? "generated" : "generated\\Reference", $"{implementationName}.cs");
+        return Path.Combine(projectDir, config.DbContextPath == null ? "generated" : Path.Combine("generated", "Reference"), $"{implementationName}.cs");
     }
 
     public static string GetPropertyTypeName(this CSharpConfig config, IProperty prop, bool nonNullable = false, bool useIEnumerable = true)

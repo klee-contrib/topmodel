@@ -16,7 +16,17 @@ public static class ModelUtils
 
         if (property.GetValue(classe) != null)
         {
-            property.SetValue(classe, Path.GetFullPath(Path.Combine(directoryName, (string)property.GetValue(classe)!)));
+            property.SetValue(classe, Path.GetFullPath(Path.Combine(directoryName, (string)property.GetValue(classe)!).Trim('/')));
+        }
+    }
+
+    public static void TrimSlashes<T>(T classe, Expression<Func<T, string?>> getter)
+    {
+        var property = (PropertyInfo)((MemberExpression)getter.Body).Member;
+
+        if (property.GetValue(classe) != null)
+        {
+            property.SetValue(classe, ((string)property.GetValue(classe)!).Trim('/'));
         }
     }
 

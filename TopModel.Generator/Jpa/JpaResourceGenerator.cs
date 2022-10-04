@@ -44,20 +44,17 @@ public class JpaResourceGenerator : GeneratorBase
 
     private string GetFilePath(IGrouping<string, IFieldProperty> module)
     {
-        return _config.ResourcesOutputDirectory!
-            + "\\"
-            + string.Join('\\', module.Key.Split(".").Select(part => part.ToDashCase()))
-            + "_fr_FR.properties";
+        return Path.Combine(_config.OutputDirectory, _config.ResourceRootPath, Path.Combine(module.Key.Split(".").Select(part => part.ToDashCase()).ToArray()) + "_fr_FR.properties");
     }
 
     private void GenerateModule(IGrouping<string, IFieldProperty> module)
     {
-        if (_config.ResourcesOutputDirectory == null)
+        if (_config.ResourceRootPath == null)
         {
             return;
         }
 
-        var dirInfo = Directory.CreateDirectory(_config.ResourcesOutputDirectory);
+        var dirInfo = Directory.CreateDirectory(Path.Combine(_config.OutputDirectory, _config.ResourceRootPath));
         var filePath = GetFilePath(module);
 
         using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = false };

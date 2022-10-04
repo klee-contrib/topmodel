@@ -16,16 +16,20 @@ public static class ServiceExtensions
                 var config = configs.ElementAt(i);
                 var number = i + 1;
 
-                CombinePath(dn, config, c => c.ModelOutputDirectory);
-                CombinePath(dn, config, c => c.ResourceOutputDirectory);
-                CombinePath(dn, config, c => c.ApiClientOutputDirectory);
+                CombinePath(dn, config, c => c.OutputDirectory);
+                TrimSlashes(config, c => c.ApiClientFilePath);
+                TrimSlashes(config, c => c.ApiClientRootPath);
+                TrimSlashes(config, c => c.DomainImportPath);
+                TrimSlashes(config, c => c.FetchImportPath);
+                TrimSlashes(config, c => c.ModelRootPath);
+                TrimSlashes(config, c => c.ResourceRootPath);
 
-                if (config.ModelOutputDirectory != null)
+                if (config.ModelRootPath != null)
                 {
                     services.AddSingleton<IModelWatcher>(p =>
                         new TypescriptDefinitionGenerator(p.GetRequiredService<ILogger<TypescriptDefinitionGenerator>>(), config) { Number = number });
 
-                    if (config.ApiClientOutputDirectory != null)
+                    if (config.ApiClientRootPath != null)
                     {
                         if (config.TargetFramework == TargetFramework.ANGULAR)
                         {
@@ -40,7 +44,7 @@ public static class ServiceExtensions
                     }
                 }
 
-                if (config.ResourceOutputDirectory != null)
+                if (config.ResourceRootPath != null)
                 {
                     services.AddSingleton<IModelWatcher>(p =>
                         new JavascriptResourceGenerator(p.GetRequiredService<ILogger<JavascriptResourceGenerator>>(), config) { Number = number });

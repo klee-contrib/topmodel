@@ -17,6 +17,11 @@ public static class ServiceExtensions
                 var number = i + 1;
 
                 CombinePath(dn, config, c => c.OutputDirectory);
+                TrimSlashes(config, c => c.ApiFilePath);
+                TrimSlashes(config, c => c.ApiRootPath);
+                TrimSlashes(config, c => c.DbContextPath);
+                TrimSlashes(config, c => c.NonPersistantModelPath);
+                TrimSlashes(config, c => c.PersistantModelPath);
 
                 services.AddSingleton<IModelWatcher>(p =>
                     new CSharpClassGenerator(p.GetRequiredService<ILogger<CSharpClassGenerator>>(), config) { Number = number });
