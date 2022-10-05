@@ -70,7 +70,7 @@ public class JpaDaoGenerator : GeneratorBase
             fw.WriteLine();
             WriteImports(fw, classe);
             fw.WriteLine();
-            fw.WriteLine($"public interface {classe.Name}DAO extends {(classe.Reference ? "CrudRepository" : "PagingAndSortingRepository")}<{classe.Name}, Long> {{");
+            fw.WriteLine($"public interface {classe.Name}DAO extends {(classe.Reference ? "CrudRepository" : "JpaRepository")}<{classe.Name}, Long> {{");
             fw.WriteLine();
             fw.WriteLine("}");
         }
@@ -90,7 +90,7 @@ public class JpaDaoGenerator : GeneratorBase
         else
         {
             imports.Add(
-            "org.springframework.data.repository.PagingAndSortingRepository");
+            "org.springframework.data.jpa.repository.JpaRepository");
         }
 
         fw.WriteImports(imports.Distinct().ToArray());
