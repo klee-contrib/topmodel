@@ -90,6 +90,7 @@ public static class ImportsJpaExtensions
         if (ap.Property is AssociationProperty apo && (apo.Type == AssociationType.ManyToMany || apo.Type == AssociationType.OneToMany))
         {
             imports.Add("java.util.List");
+            imports.Add("java.util.stream.Collectors");
         }
 
         return imports;

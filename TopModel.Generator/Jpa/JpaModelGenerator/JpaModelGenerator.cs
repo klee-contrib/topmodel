@@ -138,8 +138,9 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteEnumShortcuts(JavaWriter fw, Class classe)
     {
-        foreach (var ap in classe.GetProperties(_config, AvailableClasses).OfType<AssociationProperty>().Where(ap => ap.Association.Reference && (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)))
+        foreach (var ap in classe.GetProperties(_config, AvailableClasses).OfType<AssociationProperty>().Where(ap => ap.Association.Reference))
         {
+            var isMultiple = ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany;
             {
                 var propertyName = ap.Name.ToFirstLower();
                 fw.WriteLine();
@@ -147,15 +148,30 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteLine(1, " * Cette méthode permet définir la valeur de la FK directement");
                 fw.WriteLine(1, $" * @param {propertyName} value to set");
                 fw.WriteDocEnd(1);
-                fw.WriteLine(1, @$"public void set{ap.Name}({ap.Property.GetJavaType()} {propertyName}) {{");
+                fw.WriteLine(1, @$"public void set{ap.Name}({(isMultiple ? $"List<{ap.Property.GetJavaType()}>" : ap.Property.GetJavaType())} {propertyName}) {{");
                 fw.WriteLine(2, $"if ({propertyName} != null) {{");
-                var constructorArgs = $"{propertyName}";
-                foreach (var p in ap.Association.GetProperties(_config, AvailableClasses).Where(pr => !pr.PrimaryKey))
+                if (!isMultiple)
                 {
-                    constructorArgs += $", {propertyName}.get{p.Name}()";
+                    var constructorArgs = $"{propertyName}";
+                    foreach (var p in ap.Association.GetProperties(_config, AvailableClasses).Where(pr => !pr.PrimaryKey))
+                    {
+                        constructorArgs += $", {propertyName}.get{p.Name}()";
+                    }
+
+                    fw.WriteLine(3, @$"this.{ap.GetAssociationName()} = new {ap.Association.Name}({constructorArgs});");
+                }
+                else
+                {
+                    var constructorArgs = "p";
+                    foreach (var p in ap.Association.GetProperties(_config, AvailableClasses).Where(pr => !pr.PrimaryKey))
+                    {
+                        constructorArgs += $", p.get{p.Name}()";
+                    }
+
+                    fw.WriteLine(3, @$"this.{ap.GetAssociationName()}.clear();");
+                    fw.WriteLine(3, @$"this.{ap.GetAssociationName()}.addAll({propertyName}.stream().map(p -> new {ap.Association.Name}({constructorArgs})).collect(Collectors.toList()));");
                 }
 
-                fw.WriteLine(3, @$"this.{ap.GetAssociationName()} = new {ap.Association.Name}({constructorArgs});");
                 fw.WriteLine(2, "} else {");
                 fw.WriteLine(3, @$"this.{ap.GetAssociationName()} = null;");
                 fw.WriteLine(2, "}");
@@ -169,8 +185,16 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config)}#{ap.GetJavaName()} {ap.GetJavaName()}}}");
                 fw.WriteDocEnd(1);
                 fw.WriteLine(1, "@Transient");
-                fw.WriteLine(1, @$"public {ap.Property.GetJavaType()} get{ap.Name}() {{");
-                fw.WriteLine(2, @$"return this.{ap.GetAssociationName()} != null ? this.{ap.GetAssociationName()}.get{ap.Property.Name}() : null;");
+                fw.WriteLine(1, @$"public {(isMultiple ? $"List<{ap.Property.GetJavaType()}>" : ap.Property.GetJavaType())} get{ap.Name}() {{");
+                if (!isMultiple)
+                {
+                    fw.WriteLine(2, @$"return this.{ap.GetAssociationName()} != null ? this.{ap.GetAssociationName()}.get{ap.Property.Name}() : null;");
+                }
+                else
+                {
+                    fw.WriteLine(2, @$"return this.{ap.GetAssociationName()} != null ? this.{ap.GetAssociationName()}.stream().map({ap.Association.Name}::get{ap.Property.Name}).collect(Collectors.toList()) : null;");
+                }
+
                 fw.WriteLine(1, "}");
             }
         }
@@ -318,9 +342,7 @@ public class JpaModelGenerator : GeneratorBase
 
         if (_config.EnumShortcutMode && classe.GetProperties(_config, AvailableClasses).Where(p => p is AssociationProperty apo && apo.IsEnum()).Any())
         {
-            {
-                imports.Add($"javax.persistence.Transient");
-            }
+            imports.Add($"javax.persistence.Transient");
         }
 
         fw.WriteImports(imports.Distinct().ToArray());
@@ -411,7 +433,7 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteGetters(JavaWriter fw, Class classe)
     {
-        foreach (var property in classe.GetProperties(_config, AvailableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
+        foreach (var property in classe.GetProperties(_config, AvailableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference)))
         {
             fw.WriteLine();
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
@@ -545,7 +567,7 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteSetters(JavaWriter fw, Class classe)
     {
-        foreach (var property in classe.GetProperties(_config, AvailableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
+        foreach (var property in classe.GetProperties(_config, AvailableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference)))
         {
             var propertyName = property.GetJavaName();
             fw.WriteLine();
