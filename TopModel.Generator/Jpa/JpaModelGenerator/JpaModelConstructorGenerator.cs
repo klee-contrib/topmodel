@@ -67,6 +67,56 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"}}");
     }
 
+    public void WriteAllArgConstructorEnumShortcut(JavaWriter fw, Class classe, List<Class> availableClasses)
+    {
+        var properties = GetAllArgsProperties(classe, availableClasses);
+        if (!properties.OfType<AssociationProperty>().Any(p => p.IsEnum() && (p.Type == AssociationType.OneToOne || p.Type == AssociationType.ManyToOne)))
+        {
+            return;
+        }
+
+        fw.WriteLine();
+        fw.WriteDocStart(1, "All arg constructor when Enum shortcut mode is set");
+
+        if (properties.Count == 0)
+        {
+            return;
+        }
+
+        var propertiesSignature = string.Join(", ", properties.Select(p => $"{(p is AssociationProperty ap && ap.IsEnum() ? (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) ? $"List<{ap.Association.Name}.Values>" : $"{p.GetJavaType()}.Values" : p.GetJavaType())} {(p is AssociationProperty asp && asp.IsEnum() ? p.Name.ToFirstLower() : p.GetJavaName())}"));
+
+        foreach (var property in properties)
+        {
+            fw.WriteLine(1, $" * @param {property.GetJavaName()} {property.Comment}");
+        }
+
+        fw.WriteDocEnd(1);
+        fw.WriteLine(1, $"public {classe.Name}({propertiesSignature}) {{");
+        if (classe.Extends != null)
+        {
+            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses).Select(p => $"{p.GetJavaName()}"));
+            fw.WriteLine(2, $"super({parentAllArgConstructorArguments});");
+        }
+        else if (classe.Decorators.Any(d => d.Java?.Extends is not null))
+        {
+            fw.WriteLine(2, $"super();");
+        }
+
+        foreach (var property in classe.GetProperties(_config, availableClasses))
+        {
+            if (!(property is AssociationProperty aspr2 && aspr2.IsEnum()))
+            {
+                fw.WriteLine(2, $"this.{property.GetJavaName()} = {property.GetJavaName()};");
+            }
+            else
+            {
+                fw.WriteLine(2, $"this.set{property.Name.ToFirstUpper()}({property.Name.ToFirstLower()});");
+            }
+        }
+
+        fw.WriteLine(1, $"}}");
+    }
+
     public void WriteCopyConstructor(JavaWriter fw, Class classe, List<Class> availableClasses)
     {
         fw.WriteLine();

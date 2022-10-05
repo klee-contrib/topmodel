@@ -110,6 +110,11 @@ public class JpaModelGenerator : GeneratorBase
             _jpaModelConstructorGenerator.WriteNoArgConstructor(fw, classe);
             _jpaModelConstructorGenerator.WriteCopyConstructor(fw, classe, AvailableClasses);
             _jpaModelConstructorGenerator.WriteAllArgConstructor(fw, classe, AvailableClasses);
+            if (_config.EnumShortcutMode)
+            {
+                _jpaModelConstructorGenerator.WriteAllArgConstructorEnumShortcut(fw, classe, AvailableClasses);
+            }
+
             _jpaModelConstructorGenerator.WriteFromMappers(fw, classe, AvailableClasses);
 
             WriteGetters(fw, classe);
@@ -155,7 +160,7 @@ public class JpaModelGenerator : GeneratorBase
                     var constructorArgs = $"{propertyName}";
                     foreach (var p in ap.Association.GetProperties(_config, AvailableClasses).Where(pr => !pr.PrimaryKey))
                     {
-                        constructorArgs += $", {propertyName}.get{p.Name}()";
+                        constructorArgs += $", {propertyName}.get{p.GetJavaName().ToFirstUpper()}()";
                     }
 
                     fw.WriteLine(3, @$"this.{ap.GetAssociationName()} = new {ap.Association.Name}({constructorArgs});");
@@ -165,7 +170,7 @@ public class JpaModelGenerator : GeneratorBase
                     var constructorArgs = "p";
                     foreach (var p in ap.Association.GetProperties(_config, AvailableClasses).Where(pr => !pr.PrimaryKey))
                     {
-                        constructorArgs += $", p.get{p.Name}()";
+                        constructorArgs += $", p.get{((p is AssociationProperty asp && asp.IsEnum()) ? p.Name : p.GetJavaName()).ToFirstUpper()}()";
                     }
 
                     fw.WriteLine(3, @$"this.{ap.GetAssociationName()}.clear();");
