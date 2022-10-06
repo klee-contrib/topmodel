@@ -309,7 +309,8 @@ public class JpaModelGenerator : GeneratorBase
                 name = prop.Name.ToString().ToFirstLower();
             }
 
-            fw.WriteLine(2, $"public {type} get{name.ToFirstUpper()}(){{");
+            var getterPrefix = prop.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+            fw.WriteLine(2, $"public {type} {getterPrefix}{name.ToFirstUpper()}(){{");
             fw.WriteLine(3, $"return this.{name};");
             fw.WriteLine(2, $"}}");
         }
