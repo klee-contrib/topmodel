@@ -160,7 +160,8 @@ public class JpaModelGenerator : GeneratorBase
                     var constructorArgs = $"{propertyName}";
                     foreach (var p in ap.Association.GetProperties(_config, AvailableClasses).Where(pr => !pr.PrimaryKey))
                     {
-                        constructorArgs += $", {propertyName}.get{p.GetJavaName().ToFirstUpper()}()";
+                        var getterPrefix = p.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+                        constructorArgs += $", {propertyName}.{getterPrefix}{p.GetJavaName().ToFirstUpper()}()";
                     }
 
                     fw.WriteLine(3, @$"this.{ap.GetAssociationName()} = new {ap.Association.Name}({constructorArgs});");
