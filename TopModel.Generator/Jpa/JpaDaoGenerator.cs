@@ -70,7 +70,7 @@ public class JpaDaoGenerator : GeneratorBase
             fw.WriteLine();
             WriteImports(fw, classe);
             fw.WriteLine();
-            fw.WriteLine($"public interface {classe.Name}DAO extends {(classe.Reference ? "CrudRepository" : "JpaRepository")}<{classe.Name}, Long> {{");
+            fw.WriteLine($"public interface {classe.Name}DAO extends {(classe.Reference ? "CrudRepository" : "JpaRepository")}<{classe.Name}, {classe.PrimaryKey!.Domain.Java!.Type}> {{");
             fw.WriteLine();
             fw.WriteLine("}");
         }
