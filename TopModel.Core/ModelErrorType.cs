@@ -28,6 +28,11 @@ public enum ModelErrorType
     TMD0004,
 
     /// <summary>
+    /// La classe '{classe}' est définie plusieurs fois dans le fichier ou une de ses dépendences.
+    /// </summary>
+    TMD0005,
+
+    /// <summary>
     /// La classe '{0}' doit avoir une (et une seule) clé primaire pour être référencée dans une association.
     /// </summary>
     TMD1001,
