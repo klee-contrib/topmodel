@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.15.2
+
+- [`2c49fa56`](https://github.com/klee-contrib/topmodel/commit/2c49fa56109674d2091e7d9d358b040baca0fe85) - [JPA] : Correction Dao des listes de ref : le type de la clé primaire n'était pas le bon
+
 ## 1.15.1
 
 - [`8e64ecda`](https://github.com/klee-contrib/topmodel/commit/8e64ecdaa10d902d8e99b781f6e10bbc7f85c642) - [C#] Fix surcharge nom DbContext
