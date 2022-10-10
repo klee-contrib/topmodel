@@ -174,7 +174,11 @@ public class JpaModelGenerator : GeneratorBase
                         constructorArgs += $", p.get{((p is AssociationProperty asp && asp.IsEnum()) ? p.Name : p.GetJavaName()).ToFirstUpper()}()";
                     }
 
-                    fw.WriteLine(3, @$"this.{ap.GetAssociationName()}.clear();");
+                    fw.WriteLine(3, @$"if (this.{ap.GetAssociationName()} != null) {{");
+                    fw.WriteLine(4, @$"this.{ap.GetAssociationName()}.clear();");
+                    fw.WriteLine(3, "} else {");
+                    fw.WriteLine(4, @$"this.{ap.GetAssociationName()} = new ArrayList<>();");
+                    fw.WriteLine(3, "}");
                     fw.WriteLine(3, @$"this.{ap.GetAssociationName()}.addAll({propertyName}.stream().map(p -> new {ap.Association.Name}({constructorArgs})).collect(Collectors.toList()));");
                 }
 
