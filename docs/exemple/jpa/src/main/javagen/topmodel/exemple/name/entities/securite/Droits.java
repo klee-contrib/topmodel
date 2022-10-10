@@ -17,7 +17,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Immutable;
 
 import topmodel.exemple.name.entities.securite.Droits;
 import topmodel.exemple.name.entities.securite.TypeProfil;
@@ -30,21 +29,20 @@ import topmodel.exemple.utils.IFieldEnum;
 @Entity
 @Table(name = "DROITS")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-@Immutable
 public class Droits {
 
 	/**
 	 * Code du droit.
 	 */
 	@Id
-	@Column(name = "DRO_CODE", nullable = false, updatable = false, length = 3)
+	@Column(name = "DRO_CODE", nullable = false, length = 3)
 	@Enumerated(EnumType.STRING)
 	private Droits.Values code;
 
 	/**
 	 * Libellé du droit.
 	 */
-	@Column(name = "DRO_LIBELLE", nullable = false, updatable = false, length = 3)
+	@Column(name = "DRO_LIBELLE", nullable = false, length = 3)
 	private String libelle;
 
 	/**

@@ -14,7 +14,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Immutable;
 
 import topmodel.exemple.name.entities.securite.TypeProfil;
 import topmodel.exemple.utils.IFieldEnum;
@@ -26,21 +25,20 @@ import topmodel.exemple.utils.IFieldEnum;
 @Entity
 @Table(name = "TYPE_PROFIL")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-@Immutable
 public class TypeProfil {
 
 	/**
 	 * Code du type d'utilisateur.
 	 */
 	@Id
-	@Column(name = "TPR_CODE", nullable = false, updatable = false, length = 3)
+	@Column(name = "TPR_CODE", nullable = false, length = 3)
 	@Enumerated(EnumType.STRING)
 	private TypeProfil.Values code;
 
 	/**
 	 * Libellé du type d'utilisateur.
 	 */
-	@Column(name = "TPR_LIBELLE", nullable = false, updatable = false, length = 3)
+	@Column(name = "TPR_LIBELLE", nullable = false, length = 3)
 	private String libelle;
 
 	/**
