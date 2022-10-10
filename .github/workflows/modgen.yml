@@ -6,20 +6,21 @@ on:
       - TopModel.Generator/TopModel.Generator.csproj
 
 jobs:
-  build:
+  build_and_deploy:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
 
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
-        
-    - name: Pack
-      run: dotnet pack
-      working-directory: TopModel.Generator
-      
-    - name: Publish
-      run: dotnet nuget push **/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Pack
+        run: dotnet pack
+        working-directory: TopModel.Generator
+
+      - name: Publish
+        run: dotnet nuget push **/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json

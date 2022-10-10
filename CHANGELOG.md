@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.15.4
+
+- [`577c5ab8`](https://github.com/klee-contrib/topmodel/commit/577c5ab889921ea6ca06877ff7c0a9b77cca5d57) - Fix plantage si doublon de classe ou domaine non définie sur une PK de classe avec values
+
 ## 1.15.3
 
 - [`9b7f415a`](https://github.com/klee-contrib/topmodel/commit/9b7f415a6d9c13a917acf9cff70068bcc07866df) - [JPA] : Ne pas rendre les listes de ref immutables
