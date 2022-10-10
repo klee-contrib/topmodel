@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.15.3
+
+- [`9b7f415a`](https://github.com/klee-contrib/topmodel/commit/9b7f415a6d9c13a917acf9cff70068bcc07866df) - [JPA] : Ne pas rendre les listes de ref immutables
+
 ## 1.15.2
 
 - [`2c49fa56`](https://github.com/klee-contrib/topmodel/commit/2c49fa56109674d2091e7d9d358b040baca0fe85) - [JPA] : Correction Dao des listes de ref : le type de la clé primaire n'était pas le bon
