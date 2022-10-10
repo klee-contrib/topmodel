@@ -370,7 +370,7 @@ public class ModelStore
         var duplicateClasses = referencedClassesRaw
             .GroupBy(c => c.Name.Value)
             .Where(g => g.Count() > 1)
-            .Select(g => g.OrderBy(c => c.ModelFile == modelFile ? 0 : 1).First());
+            .Select(g => g.OrderByDescending(c => (c.ModelFile == modelFile ? 1_000_000 : 0) + c.Name.Location.Start.Line).First());
 
         foreach (var classe in duplicateClasses.Where(c => c.ModelFile == modelFile))
         {
