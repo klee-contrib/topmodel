@@ -154,7 +154,7 @@ public class JpaModelPropertyGenerator
 
         if (classe.IsPersistent)
         {
-            var column = @$"@Column(name = ""{property.SqlName}"", nullable = {(!property.Required).ToString().ToFirstLower()}{(classe.Reference ? ", updatable = false" : string.Empty)}";
+            var column = @$"@Column(name = ""{property.SqlName}"", nullable = {(!property.Required).ToString().ToFirstLower()}";
             if (property.Domain.Length != null)
             {
                 if (property.Domain.Java!.Type == "String" || property.Domain.Java.Type == "string")
@@ -180,7 +180,7 @@ public class JpaModelPropertyGenerator
             fw.WriteLine(1, @$"@NotNull");
         }
 
-        if (property.PrimaryKey && classe.Reference)
+        if (property.PrimaryKey && classe.Reference && classe.ReferenceValues.Any())
         {
             fw.WriteLine(1, "@Enumerated(EnumType.STRING)");
         }

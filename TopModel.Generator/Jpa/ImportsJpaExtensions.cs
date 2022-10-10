@@ -223,16 +223,20 @@ public static class ImportsJpaExtensions
         {
             imports.AddRange(new List<string>
             {
-                "javax.persistence.Enumerated",
-                "javax.persistence.EnumType",
                 "org.hibernate.annotations.Cache",
-                "org.hibernate.annotations.Cache",
-                "org.hibernate.annotations.Immutable",
                 "org.hibernate.annotations.CacheConcurrencyStrategy"
             });
+            if (classe.ReferenceValues.Any())
+            {
+                imports.AddRange(new List<string>
+            {
+                "javax.persistence.Enumerated",
+                "javax.persistence.EnumType",
+            });
+            }
         }
 
-        if (classe.UniqueKeys.Count > 0)
+        if (classe.UniqueKeys.Any())
         {
             imports.Add("javax.persistence.UniqueConstraint");
         }
