@@ -1,5 +1,15 @@
 # TopModel.Generator (`modgen`)
 
+## 1.15.0
+
+- [#157](https://github.com/klee-contrib/topmodel/pull/157) Tous les générateurs définissent maintenant un "outputDirectory" obligatoire, à partir duquel les autres chemins de génération (modèle, api...) sont déterminés. On s'en servira par la suite pour autoriser des références inter-configurations dans les fichiers générés (même racine = généré au même endroit = peut être référencé)
+- [a6e6ab35](https://github.com/klee-contrib/topmodel/commit/a6e6ab35fd3ea052993ac3fe2123716cca54e23f) [JPA] : Gestion du mode enumShortcut avec des listes de ref multiples
+- [e3a409ef](https://github.com/klee-contrib/topmodel/commit/e3a409ef05a7b6aba5df6dbdeeff9674da8952e4) [JPA] : Remplacement des PagingAndSortingRepository par JpaRepository
+- [8561ccfd](https://github.com/klee-contrib/topmodel/commit/8561ccfdcb8f4b6cb7945fd39293dad56480f69f) [JPA] : Correction génération enum lists (les constructeurs n'étaient pas correctement gérés)
+- [d2207792](https://github.com/klee-contrib/topmodel/commit/d22077927ad46e49bf18e11a17a86680d4881f3e) [JPA] : Les DAOs ne se généraient pas avec le bon type de clé primaire (`long` en dur dans le code)
+- [7cbaa8e3](https://github.com/klee-contrib/topmodel/commit/7cbaa8e39b41c9619184d3e1b5d7fff33f0e6d8e) [JPA] : Dans les getter de liste de référénces, mettre prefix `is` si la propriété est un boolean
+- [aed0407b](https://github.com/klee-contrib/topmodel/commit/aed0407bfbe3a52b89c91a5e813d9b74cdc10d4d) [JPA] :  Correction NPE setter enumShortcut list
+
 ## 1.14.3
 
 - [`1040e99`](https://github.com/klee-contrib/topmodel/commit/1040e99940f981a1aa6b05ab6cc093424a67f6bd) - [JPA] Correction sqlName dans le cas surcharge du trigram dans la pk
