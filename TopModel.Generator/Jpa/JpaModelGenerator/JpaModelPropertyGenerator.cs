@@ -91,13 +91,14 @@ public class JpaModelPropertyGenerator
         var role = property.Role is not null ? "_" + property.Role.ToUpper() : string.Empty;
         var fk = ((IFieldProperty)property).SqlName;
         var pk = classe.PrimaryKey!.SqlName + role;
+        var cascade = property.Association.IsStatic() ? string.Empty : $", cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }}";
         if (property is JpaAssociationProperty jap)
         {
-            fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, mappedBy = ""{jap.ReverseProperty.GetJavaName()}"", cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }})");
+            fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, mappedBy = ""{jap.ReverseProperty.GetJavaName()}""{cascade})");
         }
         else
         {
-            fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }})");
+            fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY{cascade})");
             fw.WriteLine(1, @$"@JoinTable(name = ""{property.Class.SqlName}_{property.Association.SqlName}{(property.Role != null ? "_" + property.Role.ToUpper() : string.Empty)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
         }
     }

@@ -234,6 +234,11 @@ public static class ImportsJpaExtensions
                 "javax.persistence.EnumType",
             });
             }
+
+            if (classe.IsStatic())
+            {
+                imports.Add("org.hibernate.annotations.Immutable");
+            }
         }
 
         if (classe.UniqueKeys.Any())

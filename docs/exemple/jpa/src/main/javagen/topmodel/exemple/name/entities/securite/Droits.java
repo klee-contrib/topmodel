@@ -17,6 +17,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Immutable;
 
 import topmodel.exemple.name.entities.securite.Droits;
 import topmodel.exemple.name.entities.securite.TypeProfil;
@@ -28,6 +29,7 @@ import topmodel.exemple.utils.IFieldEnum;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
 @Table(name = "DROITS")
+@Immutable
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class Droits {
 

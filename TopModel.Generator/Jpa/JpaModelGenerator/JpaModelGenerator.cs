@@ -432,7 +432,15 @@ public class JpaModelGenerator : GeneratorBase
 
         if (classe.Reference)
         {
-            fw.WriteLine("@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)");
+            if (classe.IsStatic())
+            {
+                fw.WriteLine("@Immutable");
+                fw.WriteLine("@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)");
+            }
+            else
+            {
+                fw.WriteLine("@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)");
+            }
         }
 
         foreach (var a in classe.Decorators.SelectMany(d => d.Java!.Annotations).Distinct())

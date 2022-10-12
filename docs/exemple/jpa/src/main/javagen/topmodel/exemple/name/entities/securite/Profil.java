@@ -54,7 +54,7 @@ public class Profil {
 	/**
 	 * Liste des droits de l'utilisateur.
 	 */
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "PROFIL_DROITS", joinColumns = @JoinColumn(name = "PRO_ID"), inverseJoinColumns = @JoinColumn(name = "DRO_CODE"))
 	private List<Droits> droits;
 
