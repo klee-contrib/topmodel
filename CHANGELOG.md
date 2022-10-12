@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.15.5
+
+- [`e49c347a6`](https://github.com/klee-contrib/topmodel/commit/e49c347a6c630d585b5d8ba08655f65dec2a7bef) - [JPA] : Amélioration gestion classes statiques et cache
+
 ## 1.15.4
 
 - [`577c5ab8`](https://github.com/klee-contrib/topmodel/commit/577c5ab889921ea6ca06877ff7c0a9b77cca5d57) - Fix plantage si doublon de classe ou domaine non définie sur une PK de classe avec values
