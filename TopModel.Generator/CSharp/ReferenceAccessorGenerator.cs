@@ -59,6 +59,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
     private void GenerateReferenceAccessorsImplementation(List<Class> classList)
     {
         var firstClass = classList.First();
+        var firstPersistedClass = classList.FirstOrDefault(c => c.IsPersistent);
 
         string projectName;
         string implementationName;
@@ -87,7 +88,10 @@ public class ReferenceAccessorGenerator : GeneratorBase
             usings.Add("System.Collections.Generic");
         }
 
-        usings.Add(_config.GetNamespace(firstClass));
+        if (firstPersistedClass != null)
+        {
+            usings.Add(_config.GetNamespace(firstPersistedClass));
+        }
 
         if (_config.Kinetix == KinetixVersion.Core)
         {
@@ -183,6 +187,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
     private void GenerateReferenceAccessorsInterface(IEnumerable<Class> classList)
     {
         var firstClass = classList.First();
+        var firstPersistedClass = classList.FirstOrDefault(c => c.IsPersistent);
 
         string projectName;
         string interfaceName;
@@ -202,28 +207,29 @@ public class ReferenceAccessorGenerator : GeneratorBase
 
         using var w = new CSharpWriter(interfaceFileName, _logger, _config.UseLatestCSharp);
 
+        var usings = new List<string>();
+
+        if (!_config.UseLatestCSharp)
+        {
+            usings.Add("System.Collections.Generic");
+        }
+
+        if (firstPersistedClass != null)
+        {
+            usings.Add(_config.GetNamespace(firstPersistedClass));
+        }
+
         if (_config.Kinetix == KinetixVersion.Core)
         {
-            var usings = new List<string>();
-
-            if (!_config.UseLatestCSharp)
-            {
-                usings.Add("System.Collections.Generic");
-            }
-
-            usings.Add(_config.GetNamespace(firstClass));
             usings.Add("Kinetix.Services.Annotations");
-
-            w.WriteUsings(usings.ToArray());
         }
         else
         {
-            w.WriteUsings(
-                "System.Collections.Generic",
-                "System.ServiceModel",
-                _config.GetNamespace(firstClass),
-                "Kinetix.ServiceModel");
+            usings.Add("Kinetix.ServiceModel");
+            usings.Add("System.ServiceModel");
         }
+
+        w.WriteUsings(usings.ToArray());
 
         w.WriteLine();
         w.WriteNamespace(projectName);
