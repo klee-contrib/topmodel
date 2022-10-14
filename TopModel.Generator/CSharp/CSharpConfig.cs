@@ -107,6 +107,11 @@ public class CSharpConfig : GeneratorConfigBase
     public bool EnumsForStaticReferences { get; set; }
 
     /// <summary>
+    /// Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `UseEFMigrations`).
+    /// </summary>
+    public bool UseEFComments { get; set; }
+
+    /// <summary>
     /// Détermine si une classe utilise une enum pour sa clé primaire.
     /// </summary>
     /// <param name="classe">Classe.</param>

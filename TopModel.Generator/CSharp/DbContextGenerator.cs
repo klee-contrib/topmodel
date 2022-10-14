@@ -20,11 +20,16 @@ public class DbContextGenerator : GeneratorBase
 
     public override string Name => "CSharpDbContextGen";
 
-    public override IEnumerable<string> GeneratedFiles => new[] { _config.GetDbContextFilePath(_appName) };
+    public override IEnumerable<string> GeneratedFiles => new[]
+    {
+        _config.GetDbContextFilePath(_appName),
+        _config.UseEFComments ? _config.GetDbContextFilePath(_appName).Replace(".cs", ".comments.cs") : null!
+    }
+    .Where(x => x != null);
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        var classes = Files.Values.SelectMany(f => f.Classes).Where(c => c.IsPersistent);
+        var classes = Files.Values.SelectMany(f => f.Classes).Where(c => c.IsPersistent).Distinct().OrderBy(c => c.Name).ToList();
         var dbContextName = _config.GetDbContextName(_appName);
         var targetFileName = _config.GetDbContextFilePath(_appName);
 
@@ -88,7 +93,7 @@ public class DbContextGenerator : GeneratorBase
             w.WriteLine(2, "}");
         }
 
-        foreach (var classe in classes.Distinct().OrderBy(c => c.Name))
+        foreach (var classe in classes)
         {
             w.WriteLine();
             w.WriteSummary(2, "Accès à l'entité " + classe.Name);
@@ -223,8 +228,19 @@ public class DbContextGenerator : GeneratorBase
                 w.WriteLine();
             }
 
+            if (_config.UseEFComments)
+            {
+                w.WriteLine(3, "AddComments(modelBuilder);");
+            }
+
             w.WriteLine(3, "OnModelCreatingPartial(modelBuilder);");
             w.WriteLine(2, "}");
+
+            if (_config.UseEFComments)
+            {
+                w.WriteLine();
+                w.WriteLine(2, "partial void AddComments(ModelBuilder modelBuilder);");
+            }
 
             w.WriteLine();
             w.WriteLine(2, "partial void OnModelCreatingPartial(ModelBuilder modelBuilder);");
@@ -232,5 +248,52 @@ public class DbContextGenerator : GeneratorBase
 
         w.WriteLine(1, "}");
         w.WriteNamespaceEnd();
+
+        w.Dispose();
+
+        if (_config.UseEFComments)
+        {
+            using var cw = new CSharpWriter(targetFileName.Replace(".cs", ".comments.cs"), _logger, _config.UseLatestCSharp);
+
+            var cUsings = new List<string>
+            {
+                "Microsoft.EntityFrameworkCore"
+            };
+
+            foreach (var ns in classes.Select(_config.GetNamespace).Distinct())
+            {
+                cUsings.Add(ns);
+            }
+
+            cw.WriteUsings(usings.ToArray());
+
+            cw.WriteLine();
+            cw.WriteNamespace(contextNs);
+
+            cw.WriteSummary(1, "Partial pour ajouter les commentaires EF.");
+            cw.WriteLine(1, $"public partial class {dbContextName} : DbContext");
+            cw.WriteLine(1, "{");
+            cw.WriteLine(2, "partial void AddComments(ModelBuilder modelBuilder)");
+            cw.WriteLine(2, "{");
+
+            foreach (var classe in classes)
+            {
+                cw.WriteLine(3, $"var {classe.Name.ToFirstLower()} = modelBuilder.Entity<{classe.Name}>();");
+                cw.WriteLine(3, $"{classe.Name.ToFirstLower()}.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\");");
+
+                foreach (var property in classe.Properties.OfType<IFieldProperty>())
+                {
+                    cw.WriteLine(3, $"{classe.Name.ToFirstLower()}.Property(p => p.{property.Name}).HasComment(\"{property.Comment.Replace("\"", "\\\"")}\");");
+                }
+
+                if (classes.IndexOf(classe) < classes.Count - 1)
+                {
+                    cw.WriteLine();
+                }
+            }
+
+            cw.WriteLine(2, "}");
+            cw.WriteLine(1, "}");
+        }
     }
 }

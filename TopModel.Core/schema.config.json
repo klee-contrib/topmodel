@@ -280,6 +280,10 @@
           "enumsForStaticReferences": {
             "type": "boolean",
             "description": "Utilise des enums au lieu de strings pour les PKs de listes de référence statiques."
+          },
+          "useEFComments": {
+            "type": "boolean",
+            "description": "Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `UseEFMigrations`)."
           }
         }
       }
