@@ -19,8 +19,14 @@ public static class ServiceExtensions
                 CombinePath(dn, config, c => c.OutputDirectory);
                 TrimSlashes(config, c => c.ApiFilePath);
                 TrimSlashes(config, c => c.ApiRootPath);
+                TrimSlashes(config, c => c.DbContextPath);
+                TrimSlashes(config, c => c.ReferenceAccessorsImplementationPath);
+                TrimSlashes(config, c => c.ReferenceAccessorsInterfacePath);
                 TrimSlashes(config, c => c.NonPersistantModelPath);
                 TrimSlashes(config, c => c.PersistantModelPath);
+
+                config.ReferenceAccessorsImplementationPath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
+                config.ReferenceAccessorsInterfacePath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
 
                 services.AddSingleton<IModelWatcher>(p =>
                     new CSharpClassGenerator(p.GetRequiredService<ILogger<CSharpClassGenerator>>(), config) { Number = number });

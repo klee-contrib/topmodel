@@ -61,23 +61,12 @@ public class ReferenceAccessorGenerator : GeneratorBase
         var firstClass = classList.First();
         var firstPersistedClass = classList.FirstOrDefault(c => c.IsPersistent);
 
-        string projectName;
-        string implementationName;
-
-        if (_config.DbContextPath != null)
-        {
-            projectName = _config.DbContextPath.Split('/').Last();
-            implementationName = $"{firstClass.Namespace.Module}AccessorsDal";
-        }
-        else
-        {
-            projectName = $"{firstClass.Namespace.App}.{firstClass.Namespace.Module}Implementation";
-            implementationName = $"Service{firstClass.Namespace.Module}Accessors";
-        }
+        var implementationFileName = _config.GetReferenceImplementationFilePath(classList);
+        var implementationName = _config.GetReferenceAccessorName(firstClass);
+        var implementationNamespace = _config.GetReferenceImplementationNamespace(firstClass);
 
         var interfaceName = $"I{implementationName}";
-
-        var implementationFileName = _config.GetReferenceImplementationFilePath(classList)!;
+        var interfaceNamespace = _config.GetReferenceInterfaceNamespace(firstClass);
 
         using var w = new CSharpWriter(implementationFileName, _logger, _config.UseLatestCSharp);
 
@@ -86,6 +75,11 @@ public class ReferenceAccessorGenerator : GeneratorBase
         if (!_config.UseLatestCSharp)
         {
             usings.Add("System.Collections.Generic");
+        }
+
+        if (!implementationNamespace.Contains(interfaceNamespace))
+        {
+            usings.Add(interfaceNamespace);
         }
 
         if (firstPersistedClass != null)
@@ -104,7 +98,6 @@ public class ReferenceAccessorGenerator : GeneratorBase
 
         if (_config.DbContextPath == null)
         {
-            usings.Add(_config.GetNamespace(firstClass).Replace("DataContract", "Contract"));
             usings.Add("Kinetix.DataAccess.Sql.Broker");
 
             if (classList.Any(classe => classe.OrderProperty != null || classe.DefaultProperty != null && classe.DefaultProperty.Name != "Libelle"))
@@ -112,15 +105,24 @@ public class ReferenceAccessorGenerator : GeneratorBase
                 usings.Add("Kinetix.DataAccess.Sql");
             }
         }
-        else if (!_config.UseLatestCSharp)
+        else
         {
-            usings.Add("System.Linq");
+            if (!_config.UseLatestCSharp)
+            {
+                usings.Add("System.Linq");
+            }
+
+            var contextNs = _config.GetDbContextNamespace(firstClass.Namespace.App);
+            if (!implementationNamespace.Contains(contextNs))
+            {
+                usings.Add(contextNs);
+            }
         }
 
         w.WriteUsings(usings.ToArray());
 
         w.WriteLine();
-        w.WriteNamespace(projectName);
+        w.WriteNamespace(implementationNamespace);
 
         w.WriteSummary(1, "This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + firstClass.Namespace.Module + ".");
 
@@ -189,21 +191,9 @@ public class ReferenceAccessorGenerator : GeneratorBase
         var firstClass = classList.First();
         var firstPersistedClass = classList.FirstOrDefault(c => c.IsPersistent);
 
-        string projectName;
-        string interfaceName;
-
-        if (_config.DbContextPath != null)
-        {
-            projectName = _config.DbContextPath.Split('/').Last();
-            interfaceName = $"I{firstClass.Namespace.Module}AccessorsDal";
-        }
-        else
-        {
-            projectName = _config.GetNamespace(firstClass).Replace("DataContract", "Contract");
-            interfaceName = $"IService{firstClass.Namespace.Module}Accessors";
-        }
-
         var interfaceFileName = _config.GetReferenceInterfaceFilePath(classList)!;
+        var interfaceNamespace = _config.GetReferenceInterfaceNamespace(firstClass);
+        var interfaceName = $"I{_config.GetReferenceAccessorName(firstClass)}";
 
         using var w = new CSharpWriter(interfaceFileName, _logger, _config.UseLatestCSharp);
 
@@ -232,7 +222,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
         w.WriteUsings(usings.ToArray());
 
         w.WriteLine();
-        w.WriteNamespace(projectName);
+        w.WriteNamespace(interfaceNamespace);
         w.WriteSummary(1, "This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + firstClass.Namespace.Module + ".");
 
         if (_config.Kinetix == KinetixVersion.Core)

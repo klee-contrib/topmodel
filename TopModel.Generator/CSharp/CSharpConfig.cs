@@ -8,17 +8,15 @@ namespace TopModel.Generator.CSharp;
 /// </summary>
 public class CSharpConfig : GeneratorConfigBase
 {
-    private string? _dbContextPath;
+    /// <summary>
+    /// Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models.
+    /// </summary>
+    public string PersistantModelPath { get; set; } = "{app}.{module}.Models";
 
     /// <summary>
-    /// Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {module}/{app}.{module}DataContract.
+    /// Localisation du modèle non-persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models/Dto.
     /// </summary>
-    public string PersistantModelPath { get; set; } = "{module}/{app}.{module}DataContract";
-
-    /// <summary>
-    /// Localisation du modèle non-persisté, relative au répertoire de génération. Par défaut : {module}/{app}.{module}Contract/Dto.
-    /// </summary>
-    public string NonPersistantModelPath { get; set; } = "{module}/{app}.{module}Contract/Dto";
+    public string NonPersistantModelPath { get; set; } = "{app}.{module}.Models/Dto";
 
     /// <summary>
     /// Localisation du l'API générée (client ou serveur), relatif au répertoire de génération. Par défaut : "{app}.Web".
@@ -43,15 +41,30 @@ public class CSharpConfig : GeneratorConfigBase
     /// <summary>
     /// Localisation du DbContext, relatif au répertoire de génération.
     /// </summary>
-    public string? DbContextPath
-    {
-        get => _dbContextPath == null
-            ? null
-            : _dbContextPath.EndsWith("DbContext")
-                ? string.Join("/", _dbContextPath.Split("/").SkipLast(1))
-            : _dbContextPath;
-        set => _dbContextPath = value;
-    }
+    public string? DbContextPath { get; set; }
+
+    /// <summary>
+    /// Nom du DbContext. Par défaut : {app}DbContext.
+    /// </summary>
+    public string DbContextName { get; set; } = "{app}DbContext";
+
+#nullable disable
+
+    /// <summary>
+    /// Chemin vers lequel générer les interfaces d'accesseurs de référence. Par défaut : {DbContextPath}/Reference.
+    /// </summary>
+    public string ReferenceAccessorsInterfacePath { get; set; }
+
+    /// <summary>
+    /// Chemin vers lequel générer les implémentation d'accesseurs de référence. Par défaut : {DbContextPath}/Reference.
+    /// </summary>
+    public string ReferenceAccessorsImplementationPath { get; set; }
+#nullable enable
+
+    /// <summary>
+    /// Nom des accesseurs de référence (préfixé par 'I' pour l'interface). Par défaut : {module}ReferenceAccessors.
+    /// </summary>
+    public string ReferenceAccessorsName { get; set; } = "{module}ReferenceAccessors";
 
     /// <summary>
     /// Utilise les migrations EF pour créer/mettre à jour la base de données.
@@ -112,13 +125,8 @@ public class CSharpConfig : GeneratorConfigBase
     /// <returns>Nom.</returns>
     public string GetDbContextName(string appName)
     {
-        return _dbContextPath == null
-            ? throw new ModelException("Le DbContext doit être renseigné.")
-            : _dbContextPath.EndsWith("DbContext")
-            ? _dbContextPath.Split("/").Last()
-            : DbSchema != null
-                ? $"{DbSchema.First().ToString().ToUpper() + DbSchema[1..]}DbContext"
-                : $"{appName.Replace(".", string.Empty)}DbContext";
+        return DbContextName?.Replace("{app}", appName.Replace(".", string.Empty))
+            ?? throw new ModelException("Le DbContext doit être renseigné.");
     }
 
     /// <summary>
@@ -141,8 +149,6 @@ public class CSharpConfig : GeneratorConfigBase
     {
         var baseModelPath = classe.IsPersistent && !NoPersistance ? PersistantModelPath : NonPersistantModelPath;
         var ns = baseModelPath.Replace("/", ".")
-            .Replace(".Contract", string.Empty)
-            .Replace(".DataContract", string.Empty)
             .Replace(".Dto", string.Empty);
         return ns[Math.Max(0, ns.IndexOf("{app}"))..]
             .Replace("{app}", classe.Namespace.App)

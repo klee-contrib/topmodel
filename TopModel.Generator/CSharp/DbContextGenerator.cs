@@ -49,7 +49,8 @@ public class DbContextGenerator : GeneratorBase
 
         w.WriteUsings(usings.ToArray());
 
-        var contextNs = _config.DbContextPath!.Split("/").Last();
+        var contextNs = _config.GetDbContextNamespace(_appName);
+
         w.WriteLine();
         w.WriteNamespace(contextNs);
 
