@@ -1,5 +1,20 @@
 # TopModel.Generator (`modgen`)
 
+## 1.15.7
+
+- [`77476772`](https://github.com/klee-contrib/topmodel/commit/774767723544ab8fb10dbf798ee9491a488b394e) - [C#Gen] Chemins/noms explicites pour ref accessors + DbContext + retrait conventions legacy
+- [`8e148d3e`](https://github.com/klee-contrib/topmodel/commit/8e148d3e247998e78fcd87a5153cf525767e2986) - [C#] Génération des commentaires (tables/colonnes) pour migrations EF
+
+Le générateur C# est désormais muni de ces nouveaux paramètres :
+
+- `dbContextName`
+- `referenceAccessorsInterfacePath`
+- `referenceAccessorsImplementationPath`
+- `referenceAccessorsName`
+- `useEFComments`
+
+Les 4 premiers explicitent des conventions plus ou moins obscures (qu'ils remplacement).
+
 ## 1.15.6
 
 - [`3232a056`](https://github.com/klee-contrib/topmodel/commit/3232a0565828f3da054057ef6043d5aa8eaa91ee) - [C#RefAccessor] Fix usings si première classe non persistée
