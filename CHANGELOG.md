@@ -1,8 +1,12 @@
 # TopModel.Generator (`modgen`)
 
+## 1.15.6
+
+- [`3232a056`](https://github.com/klee-contrib/topmodel/commit/3232a0565828f3da054057ef6043d5aa8eaa91ee) - [C#RefAccessor] Fix usings si première classe non persistée
+
 ## 1.15.5
 
-- [`e49c347a6`](https://github.com/klee-contrib/topmodel/commit/e49c347a6c630d585b5d8ba08655f65dec2a7bef) - [JPA] : Amélioration gestion classes statiques et cache
+- [`e49c347a`](https://github.com/klee-contrib/topmodel/commit/e49c347a6c630d585b5d8ba08655f65dec2a7bef) - [JPA] : Amélioration gestion classes statiques et cache
 
 ## 1.15.4
 
