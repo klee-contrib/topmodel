@@ -33,9 +33,9 @@ public class ProceduralSqlGenerator : GeneratorBase
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        var classes = Files.Values.SelectMany(f => f.Classes).Distinct();
+        var classes = Classes.ToList();
 
-        var manyToManyProperties = classes.SelectMany(cl => cl.Properties).Where(p => p is AssociationProperty ap && ap.Type == AssociationType.ManyToMany).Select(p => (AssociationProperty)p);
+        var manyToManyProperties = Classes.SelectMany(cl => cl.Properties).Where(p => p is AssociationProperty ap && ap.Type == AssociationType.ManyToMany).Select(p => (AssociationProperty)p);
         foreach (var ap in manyToManyProperties)
         {
             var traClass = new Class()
@@ -68,7 +68,7 @@ public class ProceduralSqlGenerator : GeneratorBase
                 Label = ap.Label,
                 Trigram = ap.Trigram ?? ap.Association.PrimaryKey?.Trigram ?? ap.Association.Trigram
             });
-            classes = classes.Append(traClass);
+            classes.Add(traClass);
         }
 
         _schemaGenerator?.GenerateSchemaScript(classes.OrderBy(c => c.SqlName));
@@ -78,10 +78,7 @@ public class ProceduralSqlGenerator : GeneratorBase
 
     private void GenerateListInitScript()
     {
-        var classes = Files.Values
-            .SelectMany(f => f.Classes)
-            .Distinct()
-            .Where(c => c.ReferenceValues.Any());
+        var classes = Classes.Where(c => c.ReferenceValues.Any());
 
         if (classes.Any())
         {

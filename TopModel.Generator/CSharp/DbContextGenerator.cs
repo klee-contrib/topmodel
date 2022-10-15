@@ -29,7 +29,7 @@ public class DbContextGenerator : GeneratorBase
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        var classes = Files.Values.SelectMany(f => f.Classes).Where(c => c.IsPersistent).Distinct().OrderBy(c => c.Name).ToList();
+        var classes = Classes.Where(c => c.IsPersistent).OrderBy(c => c.Name).ToList();
         var dbContextName = _config.GetDbContextName(_appName);
         var targetFileName = _config.GetDbContextFilePath(_appName);
 

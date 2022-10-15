@@ -46,10 +46,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
             .SelectMany(f => f.Classes.Select(c => c.Namespace.Module))
             .Distinct()
             .Select(
-                module => Files.Values
-                    .SelectMany(f => f.Classes)
-                    .Distinct()
-                    .Where(c => c.Reference && c.Namespace.Module == module));
+                module => Classes.Where(c => c.Reference && c.Namespace.Module == module));
     }
 
     /// <summary>

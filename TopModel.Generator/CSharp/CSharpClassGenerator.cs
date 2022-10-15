@@ -22,7 +22,7 @@ public class CSharpClassGenerator : GeneratorBase
 
     public override string Name => "CSharpClassGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files.Values.SelectMany(f => f.Classes).Select(c => _config.GetClassFileName(c));
+    public override IEnumerable<string> GeneratedFiles => Classes.Select(c => _config.GetClassFileName(c));
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {

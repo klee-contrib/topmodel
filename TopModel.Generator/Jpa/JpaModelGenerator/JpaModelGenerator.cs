@@ -28,13 +28,11 @@ public class JpaModelGenerator : GeneratorBase
 
     public override IEnumerable<string> GeneratedFiles => Files.SelectMany(f => f.Value.Classes).Select(c => GetFileClassName(c));
 
-    private List<Class> AvailableClasses => Files.Values.SelectMany(c => c.Classes).ToList();
+    private List<Class> AvailableClasses => Classes.ToList();
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var c in Files.Values
-                    .SelectMany(f => f.Classes)
-                    .Distinct())
+        foreach (var c in Classes)
         {
             CheckClass(c);
         }
@@ -67,10 +65,7 @@ public class JpaModelGenerator : GeneratorBase
 
     private void GenerateModule(string module)
     {
-        var classes = Files.Values
-            .SelectMany(f => f.Classes)
-            .Distinct()
-            .Where(c => c.Namespace.Module == module);
+        var classes = Classes.Where(c => c.Namespace.Module == module);
 
         foreach (var classe in classes)
         {

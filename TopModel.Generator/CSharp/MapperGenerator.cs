@@ -26,7 +26,7 @@ public class MapperGenerator : GeneratorBase
     {
         foreach (var classes in GetMapperModules(files))
         {
-            Generate(classes, Files.Values.SelectMany(c => c.Classes).ToList());
+            Generate(classes, Classes.ToList());
         }
     }
 
@@ -36,9 +36,7 @@ public class MapperGenerator : GeneratorBase
             .SelectMany(f => f.Classes.Select(c => c.Namespace.Module))
             .Distinct()
             .Select(
-                module => Files.Values
-                    .SelectMany(f => f.Classes)
-                    .Distinct()
+                module => Classes
                     .Where(c =>
                         c.Namespace.Module == module
                         && c.FromMappers.SelectMany(m => m.Params).Concat(c.ToMappers)

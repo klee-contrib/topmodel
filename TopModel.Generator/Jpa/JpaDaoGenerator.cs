@@ -45,10 +45,7 @@ public class JpaDaoGenerator : GeneratorBase
 
     private void GenerateModule(string module)
     {
-        var classes = Files.Values
-            .SelectMany(f => f.Classes)
-            .Distinct()
-            .Where(c => c.Namespace.Module == module);
+        var classes = Classes.Where(c => c.Namespace.Module == module);
 
         foreach (var classe in classes.Where(c => c.IsPersistent))
         {

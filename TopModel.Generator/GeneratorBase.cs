@@ -23,6 +23,8 @@ public abstract class GeneratorBase : IModelWatcher
 
     protected Dictionary<string, ModelFile> Files { get; } = new();
 
+    protected IEnumerable<Class> Classes => Files.SelectMany(f => f.Value.Classes).Distinct();
+
     public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
     {
     }

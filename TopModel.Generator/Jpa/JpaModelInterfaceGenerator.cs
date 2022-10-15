@@ -57,10 +57,8 @@ public class JpaModelInterfaceGenerator : GeneratorBase
 
     private void GenerateModule(string module)
     {
-        var classes = Files.Values
-            .SelectMany(f => f.Classes)
+        var classes = Classes
             .Where(c => c.Decorators.Any(d => d.Java != null && d.Java.GenerateInterface))
-            .Distinct()
             .Where(c => c.Namespace.Module == module);
         foreach (var classe in classes)
         {
