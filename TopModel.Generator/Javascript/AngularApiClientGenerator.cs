@@ -22,7 +22,7 @@ public class AngularApiClientGenerator : GeneratorBase
 
     public override string Name => "JSNGApiClientGen";
 
-    public override List<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any()).Select(GetFileName).ToList();
+    public override List<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any()).Select(_config.GetEndpointsFileName).ToList();
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
@@ -32,21 +32,6 @@ public class AngularApiClientGenerator : GeneratorBase
         }
     }
 
-    private string GetFileName(ModelFile file)
-    {
-        var fileSplit = file.Name.Split("/");
-        var modulePath = Path.Combine(file.Module.Split('.').Select(m => m.ToDashCase()).ToArray());
-        var filePath = _config.ApiClientFilePath.Replace("{module}", modulePath);
-        var fileName = string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToDashCase();
-
-        if (file.Options?.Endpoints?.FileName != null)
-        {
-            fileName = file.Options?.Endpoints?.FileName.ToDashCase();
-        }
-
-        return Path.Combine(_config.OutputDirectory, _config.ApiClientRootPath!, filePath, $"{fileName}.ts");
-    }
-
     private void GenerateClientFile(ModelFile file)
     {
         if (!file.Endpoints.Any())
@@ -54,13 +39,24 @@ public class AngularApiClientGenerator : GeneratorBase
             return;
         }
 
-        var modulePath = string.Join('/', file.Module.Split('.').Select(m => m.ToDashCase()));
-        var fileName = GetFileName(file);
-
-        var relativePath = _config.ApiClientFilePath.Length > 0 ? string.Join(string.Empty, _config.ApiClientFilePath.Replace("{module}", modulePath).Split('/').Select(s => "../")) : string.Empty;
-
+        var fileName = _config.GetEndpointsFileName(file);
         using var fw = new FileWriter(fileName, _logger, false);
-        var imports = GetImports(file, relativePath);
+        var imports = _config.GetEndpointImports(file);
+
+        imports.AddRange(new List<(string Import, string Path)>()
+        {
+            (Import: "Injectable", Path: "@angular/core"),
+            (Import: "HttpClient", Path: "@angular/common/http"),
+            (Import: "Observable", Path: "rxjs"),
+        });
+
+        if (file.Endpoints.Any(e => e.GetQueryParams().Any()))
+        {
+            imports.Add((Import: "HttpParams", Path: "@angular/common/http"));
+        }
+
+        imports = imports.GroupAndSort();
+
         if (imports.Any())
         {
             fw.WriteLine();
@@ -179,37 +175,5 @@ public class AngularApiClientGenerator : GeneratorBase
 
         var filePath = file.Name.Split("/").Last();
         return $"{string.Join('_', filePath.Split("_").Skip(filePath.Contains('_') ? 1 : 0)).ToFirstUpper()}Service";
-    }
-
-    private IList<(string Import, string Path)> GetImports(ModelFile file, string relativePath)
-    {
-        var properties = file.Endpoints
-            .SelectMany(endpoint => endpoint.Params.Concat(new[] { endpoint.Returns }))
-            .Where(p => p != null) as IEnumerable<IProperty>;
-
-        var types = properties.OfType<CompositionProperty>().Select(property => property.Composition);
-
-        var modelPath = Path.GetRelativePath(_config.ApiClientRootPath!, _config.ModelRootPath!).Replace("\\", "/");
-
-        var imports = types.Select(type =>
-        {
-            var name = type.Name.Value;
-            var module = $"{modelPath}/{string.Join('/', type.Namespace.Module.Split('.').Select(m => m.ToDashCase()))}";
-            return (Import: name, Path: $"{relativePath}{module}/{name.ToDashCase()}");
-        }).Distinct().ToList();
-        imports.AddRange(new List<(string Import, string Path)>()
-        {
-            (Import: "Injectable", Path: "@angular/core"),
-            (Import: "HttpClient", Path: "@angular/common/http"),
-            (Import: "Observable", Path: "rxjs"),
-        });
-
-        if (file.Endpoints.Any(e => e.GetQueryParams().Any()))
-        {
-            imports.Add((Import: "HttpParams", Path: "@angular/common/http"));
-        }
-
-        imports.AddRange(JavascriptUtils.GetImportsForProperties(properties, string.Empty).Select(i => (i.Import, Path: $"{i.Path.Replace("../", $"{relativePath}{modelPath}/")}")));
-        return imports.GroupAndSort();
     }
 }

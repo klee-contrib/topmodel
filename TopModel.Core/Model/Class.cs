@@ -68,6 +68,11 @@ public class Class
 
     public Dictionary<Reference, Dictionary<Reference, string>> ReferenceValueReferences { get; } = new();
 
+    public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies(this)
+        .Concat(Extends != null ? new[] { new ClassDependency(Extends, this) } : Array.Empty<ClassDependency>());
+
+    public IEnumerable<Domain> DomainDependencies => Properties.GetDomainDependencies();
+
 #nullable disable
     internal Reference Location { get; set; }
 

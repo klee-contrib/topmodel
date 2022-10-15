@@ -30,8 +30,8 @@ public class JavascriptResourceGenerator : GeneratorBase
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        var modules = Files
-            .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
+        var modules = Classes
+            .SelectMany(c => c.Properties.OfType<IFieldProperty>())
             .Select(c => c.ResourceProperty)
             .Distinct()
             .GroupBy(prop => prop.Class.Namespace.Module);

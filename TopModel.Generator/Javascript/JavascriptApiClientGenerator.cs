@@ -22,7 +22,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
     public override string Name => "JSApiClientGen";
 
-    public override List<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any()).Select(GetFileName).ToList();
+    public override List<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any()).Select(_config.GetEndpointsFileName).ToList();
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
@@ -30,21 +30,6 @@ public class JavascriptApiClientGenerator : GeneratorBase
         {
             GenerateClientFile(file);
         }
-    }
-
-    private string GetFileName(ModelFile file)
-    {
-        var fileSplit = file.Name.Split("/");
-        var modulePath = Path.Combine(file.Module.Split('.').Select(m => m.ToDashCase()).ToArray());
-        var filePath = _config.ApiClientFilePath.Replace("{module}", modulePath);
-        var fileName = string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToDashCase();
-
-        if (file.Options?.Endpoints?.FileName != null)
-        {
-            fileName = file.Options?.Endpoints?.FileName.ToDashCase();
-        }
-
-        return Path.Combine(_config.OutputDirectory, _config.ApiClientRootPath!, filePath, $"{fileName}.ts");
     }
 
     private void GenerateClientFile(ModelFile file)
@@ -55,15 +40,15 @@ public class JavascriptApiClientGenerator : GeneratorBase
         }
 
         var modulePath = string.Join('/', file.Module.Split('.').Select(m => m.ToDashCase()));
-        var fileName = GetFileName(file);
-
         var relativePath = _config.ApiClientFilePath.Length > 0 ? string.Join(string.Empty, _config.ApiClientFilePath.Replace("{module}", modulePath).Split('/').Select(s => "../")) : string.Empty;
+        var fileName = _config.GetEndpointsFileName(file);
+
         var fetch = _config.FetchImportPath != null ? "fetch" : "coreFetch";
 
         using var fw = new FileWriter(fileName, _logger, false);
         fw.WriteLine($@"import {{{fetch}}} from ""{((_config.FetchImportPath == null || _config.FetchImportPath.StartsWith('@')) ? string.Empty : relativePath)}{_config.FetchImportPath ?? "@focus4/core"}"";");
 
-        var imports = GetImports(file, relativePath);
+        var imports = _config.GetEndpointImports(file);
         if (imports.Any())
         {
             fw.WriteLine();
@@ -197,26 +182,5 @@ function fillFormData(data: any, formData: FormData, prefix = """") {
     }
 }");
         }
-    }
-
-    private IList<(string Import, string Path)> GetImports(ModelFile file, string relativePath)
-    {
-        var properties = file.Endpoints
-            .SelectMany(endpoint => endpoint.Params.Concat(new[] { endpoint.Returns }))
-            .Where(p => p != null) as IEnumerable<IProperty>;
-
-        var types = properties.OfType<CompositionProperty>().Select(property => property.Composition);
-
-        var modelPath = Path.GetRelativePath(_config.ApiClientRootPath!, _config.ModelRootPath!).Replace("\\", "/");
-
-        var imports = types.Select(type =>
-        {
-            var name = type.Name.Value;
-            var module = $"{modelPath}/{string.Join('/', type.Namespace.Module.Split('.').Select(m => m.ToDashCase()))}";
-            return (Import: name, Path: $"{relativePath}{module}/{name.ToDashCase()}");
-        }).Distinct().ToList();
-
-        imports.AddRange(JavascriptUtils.GetImportsForProperties(properties, string.Empty).Select(i => (i.Import, Path: $"{i.Path.Replace("../", $"{relativePath}{modelPath}/")}")));
-        return imports.GroupAndSort();
     }
 }

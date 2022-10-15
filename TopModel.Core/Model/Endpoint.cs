@@ -32,7 +32,16 @@ public class Endpoint
 
     public IList<IProperty> Params { get; set; } = new List<IProperty>();
 
+    public IEnumerable<ClassDependency> ClassDependencies => Params.Concat(new[] { Returns! }).Where(p => p != null).GetClassDependencies();
+
+    public IEnumerable<Domain> DomainDependencies => Params.Concat(new[] { Returns! }).Where(p => p != null).GetDomainDependencies();
+
 #nullable disable
     internal Reference Location { get; set; }
 #nullable enable
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }
