@@ -91,7 +91,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
                 foreach (var param in endpoint.Params)
                 {
-                    fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm ? "?" : string.Empty)}: {param.GetPropertyTypeName()}, ");
+                    fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm ? "?" : string.Empty)}: {param.GetPropertyTypeName(Classes)}, ");
                 }
 
                 fw.Write("options: RequestInit = {}): Promise<");
@@ -101,7 +101,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
                 }
                 else
                 {
-                    fw.Write(endpoint.Returns.GetPropertyTypeName());
+                    fw.Write(endpoint.Returns.GetPropertyTypeName(Classes));
                 }
 
                 fw.WriteLine("> {");

@@ -115,7 +115,7 @@ public class AngularApiClientGenerator : GeneratorBase
         foreach (var param in endpoint.Params)
         {
             hasProperty = true;
-            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm ? "?" : string.Empty)}: {param.GetPropertyTypeName()} ");
+            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm ? "?" : string.Empty)}: {param.GetPropertyTypeName(Classes)} ");
         }
 
         string returnType;
@@ -137,7 +137,7 @@ public class AngularApiClientGenerator : GeneratorBase
         }
         else
         {
-            returnType = endpoint.Returns.GetPropertyTypeName();
+            returnType = endpoint.Returns.GetPropertyTypeName(Classes);
         }
 
         fw.Write(returnType);

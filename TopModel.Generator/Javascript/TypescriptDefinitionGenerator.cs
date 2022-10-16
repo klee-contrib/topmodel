@@ -138,7 +138,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                 Import: dep is { Source: CompositionProperty { DomainKind: not null } }
                     ? dep.Classe.Name
                     : dep is { Source: IFieldProperty fp }
-                    ? fp.GetPropertyTypeName().Replace("[]", string.Empty)
+                    ? fp.GetPropertyTypeName(Classes).Replace("[]", string.Empty)
                     : $"{dep.Classe.Name}Entity, {dep.Classe.Name}{(_config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}",
                 Path: _config.GetImportPathForClass(dep, tag)!))
             .Concat(domains.Select(p => (Import: p.TS!.Type.Split("<").First(), Path: p.TS.Import!)))
@@ -214,18 +214,18 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                     }
                     else
                     {
-                        fw.Write($"FieldEntry2<typeof {cp.Kind}, {cp.GetPropertyTypeName()}>");
+                        fw.Write($"FieldEntry2<typeof {cp.Kind}, {cp.GetPropertyTypeName(Classes)}>");
                     }
                 }
                 else if (property is IFieldProperty field)
                 {
                     var domain = (field as AliasProperty)?.ListDomain ?? field.Domain;
-                    fw.Write($"FieldEntry2<typeof {domain.Name}, {field.GetPropertyTypeName()}>");
+                    fw.Write($"FieldEntry2<typeof {domain.Name}, {field.GetPropertyTypeName(Classes)}>");
                 }
             }
             else
             {
-                fw.Write(property.GetPropertyTypeName());
+                fw.Write(property.GetPropertyTypeName(Classes));
             }
 
             if (property != classe.Properties.Last())
@@ -360,7 +360,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             .Select(dep => (
                 Import: dep.Source switch
                 {
-                    IProperty fp => fp.GetPropertyTypeName(),
+                    IProperty fp => fp.GetPropertyTypeName(Classes),
                     Class c => c.Name,
                     _ => null!
                 },
@@ -433,7 +433,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                 fw.Write(property.Name.ToFirstLower());
                 fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
                 fw.Write(": ");
-                fw.Write(property.GetPropertyTypeName());
+                fw.Write(property.GetPropertyTypeName(Classes));
                 fw.Write(";\r\n");
             }
 
