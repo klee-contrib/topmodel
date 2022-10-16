@@ -122,7 +122,12 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             fw.WriteLine($"import {{{string.Join(", ", GetFocusStoresImports(classe).OrderBy(x => x))}}} from \"@focus4/stores\";");
         }
 
-        var domains = classe.DomainDependencies.OrderBy(d => d.Name).ToList();
+        var domains = classe.DomainDependencies
+            /* Cette vérification est nécessaire car pour un alias avec ListDomain les deux domaines sont dans les dépendances...*/
+            .Where(d => classe.Properties.Any(p => d == ((p as AliasProperty)?.ListDomain ?? (p as CompositionProperty)?.DomainKind ?? (p as IFieldProperty)?.Domain)))
+            .OrderBy(d => d.Name)
+            .ToList();
+
         if (domains.Any())
         {
             var arbo = _config.DomainImportPath.StartsWith("@") ? string.Empty : string.Join("/", classe.ModelFile.Module.Split(".").Select(e => "..")) + '/';
@@ -360,7 +365,8 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                     Class c => c.Name,
                     _ => null!
                 },
-                Path: _config.GetImportPathForClass(dep)!))
+                Path: _config.GetImportPathForClass(dep, tag)!))
+            .Concat(references.SelectMany(r => r.DomainDependencies).Select(p => (Import: p.TS!.Type.Split("<").First(), Path: p.TS.Import!)))
             .Where(i => i.Path != null && i.Path != $"./references")
             .GroupAndSort();
 
