@@ -19,6 +19,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
     public override string Name => "CSharpRefAccessGen";
 
     public override IEnumerable<string> GeneratedFiles => GetReferenceModules(Files.Values)
+        .Where(c => c.Any())
         .SelectMany(module => new[] { _config.GetReferenceInterfaceFilePath(module), _config.GetReferenceImplementationFilePath(module) })
         .Where(file => file != null)!;
 
@@ -32,7 +33,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
 
             if (!classList.Any())
             {
-                return;
+                continue;
             }
 
             GenerateReferenceAccessorsInterface(classList);
