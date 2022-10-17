@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.15.9
+
+- [`a6bcf36f`](https://github.com/klee-contrib/topmodel/commit/a6bcf36f01b0735581c06eb9bcf20330db3c6aec) - [C#RefAccessor] Fix return au lieu de continue (!)
+
 ## 1.15.8
 
 - [#158](https://github.com/klee-contrib/topmodel/pull/158) - Génération des fichiers JS selon le(s) tag(s) des fichiers de modèle
