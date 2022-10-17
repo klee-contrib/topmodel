@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.15.8
+
+- [#158](https://github.com/klee-contrib/topmodel/pull/158) - Génération des fichiers JS selon le(s) tag(s) des fichiers de modèle
+
 ## 1.15.7
 
 - [`77476772`](https://github.com/klee-contrib/topmodel/commit/774767723544ab8fb10dbf798ee9491a488b394e) - [C#Gen] Chemins/noms explicites pour ref accessors + DbContext + retrait conventions legacy
