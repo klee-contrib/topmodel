@@ -22,79 +22,78 @@ public class JavascriptResourceGenerator : GeneratorBase
 
     public override string Name => "JSResourceGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files
-        .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
-        .Select(c => c.ResourceProperty)
-        .Distinct()
-        .GroupBy(prop => prop.Class.Namespace.Module).Select(m => GetFilePath(m));
+    public override IEnumerable<string> GeneratedFiles => Classes
+        .SelectMany(c => _config.Tags.Intersect(c.ModelFile.Tags).Select(tag => _config.GetResourcesFilePath(c.Namespace.Module, tag)))
+        .Distinct();
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        var modules = Classes
-            .SelectMany(c => c.Properties.OfType<IFieldProperty>())
-            .Select(c => c.ResourceProperty)
-            .Distinct()
-            .GroupBy(prop => prop.Class.Namespace.Module);
-
-        foreach (var module in modules)
+        foreach (var module in files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct())
         {
             GenerateModule(module);
         }
     }
 
-    private string GetFilePath(IGrouping<string, IFieldProperty> module)
-    {
-        return Path.Combine(_config.OutputDirectory, _config.ResourceRootPath!, Path.Combine(module.Key.Split(".").Select(part => part.ToDashCase()).ToArray())) + (_config.ResourceMode == ResourceMode.JS ? ".ts" : ".json");
-    }
-
-    private void GenerateModule(IGrouping<string, IFieldProperty> module)
+    private void GenerateModule(string module)
     {
         if (_config.ResourceRootPath == null)
         {
             return;
         }
 
-        var dirInfo = Directory.CreateDirectory(Path.Combine(_config.OutputDirectory, _config.ResourceRootPath));
-        var filePath = GetFilePath(module);
-
-        using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
-
-        if (_config.ResourceMode != ResourceMode.JS)
+        foreach (var group in _config.Tags
+            .Select(tag => (tag, fileName: _config.GetResourcesFilePath(module, tag)))
+            .GroupBy(t => t.fileName))
         {
-            fw.WriteLine("{");
+            var properties = Classes
+                .Where(c => c.ModelFile.Tags.Intersect(group.Select(t => t.tag)).Any())
+                .SelectMany(c => c.Properties.OfType<IFieldProperty>())
+                .Select(c => c.ResourceProperty)
+                .Distinct()
+                .Where(prop => prop.Class.Namespace.Module == module);
 
-            if (_config.ResourceMode == ResourceMode.Schema)
+            if (properties.Any())
             {
-                fw.WriteLine($"  \"$id\": \"{string.Join('/', module.Key.Split('.').Select(m => m.ToDashCase()))}_translation.json\",");
-                fw.WriteLine("  \"$schema\": \"http://json-schema.org/draft-07/schema#\",");
-                fw.WriteLine("  \"properties\": {");
+                using var fw = new FileWriter(group.Key, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
+
+                if (_config.ResourceMode != ResourceMode.JS)
+                {
+                    fw.WriteLine("{");
+
+                    if (_config.ResourceMode == ResourceMode.Schema)
+                    {
+                        fw.WriteLine($"  \"$id\": \"{string.Join('/', module.Split('.').Select(m => m.ToDashCase()))}_translation.json\",");
+                        fw.WriteLine("  \"$schema\": \"http://json-schema.org/draft-07/schema#\",");
+                        fw.WriteLine("  \"properties\": {");
+                    }
+                }
+                else
+                {
+                    fw.WriteLine($"export const {module.Split('.').Last().ToFirstLower()} = {{");
+                }
+
+                var classes = properties.GroupBy(prop => prop.Class);
+
+                var i = 1;
+                foreach (var classe in classes.OrderBy(c => c.Key.Name))
+                {
+                    WriteClasseNode(fw, classe, classes.Count() == i++);
+                }
+
+                if (_config.ResourceMode == ResourceMode.Schema)
+                {
+                    fw.WriteLine("  }");
+                }
+
+                if (_config.ResourceMode != ResourceMode.JS)
+                {
+                    fw.WriteLine("}");
+                }
+                else
+                {
+                    fw.WriteLine("};");
+                }
             }
-        }
-        else
-        {
-            fw.WriteLine($"export const {module.Key.Split('.').Last().ToFirstLower()} = {{");
-        }
-
-        var classes = module.GroupBy(prop => prop.Class);
-
-        var i = 1;
-        foreach (var classe in classes.OrderBy(c => c.Key.Name))
-        {
-            WriteClasseNode(fw, classe, classes.Count() == i++);
-        }
-
-        if (_config.ResourceMode == ResourceMode.Schema)
-        {
-            fw.WriteLine("  }");
-        }
-
-        if (_config.ResourceMode != ResourceMode.JS)
-        {
-            fw.WriteLine("}");
-        }
-        else
-        {
-            fw.WriteLine("};");
         }
     }
 

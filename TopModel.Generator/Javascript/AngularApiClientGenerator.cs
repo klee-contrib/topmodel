@@ -22,7 +22,10 @@ public class AngularApiClientGenerator : GeneratorBase
 
     public override string Name => "JSNGApiClientGen";
 
-    public override List<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any()).Select(_config.GetEndpointsFileName).ToList();
+    public override List<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any())
+        .SelectMany(file => _config.Tags.Intersect(file.Tags).Select(tag => _config.GetEndpointsFileName(file, tag)))
+        .Distinct()
+        .ToList();
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
@@ -39,47 +42,51 @@ public class AngularApiClientGenerator : GeneratorBase
             return;
         }
 
-        var fileName = _config.GetEndpointsFileName(file);
-        using var fw = new FileWriter(fileName, _logger, false);
-        var imports = _config.GetEndpointImports(file);
-
-        imports.AddRange(new List<(string Import, string Path)>()
+        foreach (var (tag, fileName) in _config.Tags.Intersect(file.Tags)
+            .Select(tag => (tag, fileName: _config.GetEndpointsFileName(file, tag)))
+            .DistinctBy(t => t.fileName))
         {
-            (Import: "Injectable", Path: "@angular/core"),
-            (Import: "HttpClient", Path: "@angular/common/http"),
-            (Import: "Observable", Path: "rxjs"),
-        });
+            using var fw = new FileWriter(fileName, _logger, false);
+            var imports = _config.GetEndpointImports(file, tag);
 
-        if (file.Endpoints.Any(e => e.GetQueryParams().Any()))
-        {
-            imports.Add((Import: "HttpParams", Path: "@angular/common/http"));
-        }
-
-        imports = imports.GroupAndSort();
-
-        if (imports.Any())
-        {
-            fw.WriteLine();
-
-            foreach (var (import, path) in imports)
+            imports.AddRange(new List<(string Import, string Path)>()
             {
-                fw.WriteLine($@"import {{{import}}} from ""{path}"";");
+                (Import: "Injectable", Path: "@angular/core"),
+                (Import: "HttpClient", Path: "@angular/common/http"),
+                (Import: "Observable", Path: "rxjs"),
+            });
+
+            if (file.Endpoints.Any(e => e.GetQueryParams().Any()))
+            {
+                imports.Add((Import: "HttpParams", Path: "@angular/common/http"));
             }
+
+            imports = imports.GroupAndSort();
+
+            if (imports.Any())
+            {
+                fw.WriteLine();
+
+                foreach (var (import, path) in imports)
+                {
+                    fw.WriteLine($@"import {{{import}}} from ""{path}"";");
+                }
+            }
+
+            fw.WriteLine("@Injectable({");
+            fw.WriteLine(1, "providedIn: 'root'");
+            fw.WriteLine("})");
+
+            fw.WriteLine(@$"export class {GetClassName(file)} {{");
+            fw.WriteLine();
+            fw.WriteLine(1, "constructor(private http: HttpClient) {}");
+            foreach (var endpoint in file.Endpoints)
+            {
+                WriteEndpoint(endpoint, fw);
+            }
+
+            fw.WriteLine("}");
         }
-
-        fw.WriteLine("@Injectable({");
-        fw.WriteLine(1, "providedIn: 'root'");
-        fw.WriteLine("})");
-
-        fw.WriteLine(@$"export class {GetClassName(file)} {{");
-        fw.WriteLine();
-        fw.WriteLine(1, "constructor(private http: HttpClient) {}");
-        foreach (var endpoint in file.Endpoints)
-        {
-            WriteEndpoint(endpoint, fw);
-        }
-
-        fw.WriteLine("}");
     }
 
     private void WriteEndpoint(Endpoint endpoint, FileWriter fw)
@@ -108,7 +115,7 @@ public class AngularApiClientGenerator : GeneratorBase
         foreach (var param in endpoint.Params)
         {
             hasProperty = true;
-            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm ? "?" : string.Empty)}: {param.GetPropertyTypeName()} ");
+            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm ? "?" : string.Empty)}: {param.GetPropertyTypeName(Classes)} ");
         }
 
         string returnType;
@@ -130,7 +137,7 @@ public class AngularApiClientGenerator : GeneratorBase
         }
         else
         {
-            returnType = endpoint.Returns.GetPropertyTypeName();
+            returnType = endpoint.Returns.GetPropertyTypeName(Classes);
         }
 
         fw.Write(returnType);
