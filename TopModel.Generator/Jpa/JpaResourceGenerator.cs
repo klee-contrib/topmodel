@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
+using System.Text;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
@@ -57,7 +58,7 @@ public class JpaResourceGenerator : GeneratorBase
         var dirInfo = Directory.CreateDirectory(Path.Combine(_config.OutputDirectory, _config.ResourceRootPath));
         var filePath = GetFilePath(module);
 
-        using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = false };
+        using var fw = new FileWriter(filePath, _logger, Encoding.Latin1) { EnableHeader = false };
         var classes = module.GroupBy(prop => prop.Class);
 
         foreach (var classe in classes.OrderBy(c => c.Key.Name))
