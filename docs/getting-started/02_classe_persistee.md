@@ -54,6 +54,10 @@ Le domaine représente le type théorique de la propriété, à décliner dans l
 ```yaml
 # Domains.ts
 ---
+module: Users # Module obligatoire, bien qu'inutile dans le cas des domaines
+tags: # tags obligatoires, bien qu'inutiles dans le cas des domaines
+  - ""
+---
 domain:
   name: DO_ID # Nom du domaine utilisé dans la définition des propriétés
   label: ID technique # Description du domaine
