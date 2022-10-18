@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.15.11
+
+- [`4138e9f69`](https://github.com/klee-contrib/topmodel/commit/4138e9f69e9b941091245927bb5eff3634a9afa9) - [JPA] Ne pas générer de fichier de ressource vide
+
 ## 1.15.10
 
 - [`72e8007c`](https://github.com/klee-contrib/topmodel/commit/72e8007c9b33d99cd76302b473624235f0efcb93) - [JPA] Encoder les fichiers de ressource en Latin1
