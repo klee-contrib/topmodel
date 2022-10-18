@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.15.10
+
+- [`72e8007c`](https://github.com/klee-contrib/topmodel/commit/72e8007c9b33d99cd76302b473624235f0efcb93) - [JPA] Encoder les fichiers de ressource en Latin1
+
 ## 1.15.9
 
 - [`a6bcf36f`](https://github.com/klee-contrib/topmodel/commit/a6bcf36f01b0735581c06eb9bcf20330db3c6aec) - [C#RefAccessor] Fix return au lieu de continue (!)
