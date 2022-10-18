@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
-using System.Text;
 using TopModel.Utils;
+using System.Text;
 
 namespace TopModel.Generator.Jpa;
 
@@ -23,19 +23,11 @@ public class JpaResourceGenerator : GeneratorBase
 
     public override string Name => "JpaResourceGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files
-        .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
-        .Select(c => c.ResourceProperty)
-        .Distinct()
-        .GroupBy(prop => prop.Class.Namespace.Module).Select(m => GetFilePath(m));
+    public override IEnumerable<string> GeneratedFiles => GetModules().Select(m => GetFilePath(m));
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        var modules = Files
-            .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
-            .Select(c => c.ResourceProperty)
-            .Distinct()
-            .GroupBy(prop => prop.Class.Namespace.Module);
+        var modules = GetModules();
 
         foreach (var module in modules)
         {
@@ -46,6 +38,15 @@ public class JpaResourceGenerator : GeneratorBase
     private string GetFilePath(IGrouping<string, IFieldProperty> module)
     {
         return Path.Combine(_config.OutputDirectory, _config.ResourceRootPath, Path.Combine(module.Key.Split(".").Select(part => part.ToDashCase()).ToArray()) + "_fr_FR.properties");
+    }
+    private IEnumerable<IGrouping<string, IFieldProperty>> GetModules()
+    {
+        return Files
+                    .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
+                    .Select(c => c.ResourceProperty)
+                    .Where(p => p.Label != null || p.Class.ReferenceValues.Any())
+                    .Distinct()
+                    .GroupBy(prop => prop.Class.Namespace.Module);
     }
 
     private void GenerateModule(IGrouping<string, IFieldProperty> module)
