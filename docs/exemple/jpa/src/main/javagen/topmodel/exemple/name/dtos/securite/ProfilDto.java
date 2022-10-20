@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Generated;
+import jakarta.annotation.Generated;
 
 import topmodel.exemple.name.dtos.utilisateur.UtilisateurDto;
 import topmodel.exemple.name.entities.securite.Droits;
@@ -27,7 +27,7 @@ public class ProfilDto implements Serializable {
 	 * Id technique.
 	 * Alias of {@link topmodel.exemple.name.entities.securite.Profil#getId() Profil#getId()} 
 	 */
-	private long id;
+	private Long id;
 
 	/**
 	 * Type de profil.
@@ -45,7 +45,7 @@ public class ProfilDto implements Serializable {
 	 * Liste des secteurs de l'utilisateur.
 	 * Alias of {@link topmodel.exemple.name.entities.securite.Profil#getSecteurs() Profil#getSecteurs()} 
 	 */
-	private List<long> secteurs;
+	private List<Long> secteurs;
 
 	/**
 	 * Liste paginée des utilisateurs de ce profil.
@@ -83,7 +83,7 @@ public class ProfilDto implements Serializable {
 	 * @param secteurs Liste des secteurs de l'utilisateur
 	 * @param utilisateurs Liste paginée des utilisateurs de ce profil
 	 */
-	public ProfilDto(long id, TypeProfil.Values typeProfilCode, List<Droits.Values> droits, List<long> secteurs, List<UtilisateurDto> utilisateurs) {
+	public ProfilDto(Long id, TypeProfil.Values typeProfilCode, List<Droits.Values> droits, List<Long> secteurs, List<UtilisateurDto> utilisateurs) {
 		this.id = id;
 		this.typeProfilCode = typeProfilCode;
 		this.droits = droits;
@@ -129,7 +129,7 @@ public class ProfilDto implements Serializable {
 	 *
 	 * @return value of {@link topmodel.exemple.name.dtos.securite.ProfilDto#id id}.
 	 */
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
@@ -156,7 +156,7 @@ public class ProfilDto implements Serializable {
 	 *
 	 * @return value of {@link topmodel.exemple.name.dtos.securite.ProfilDto#secteurs secteurs}.
 	 */
-	public List<long> getSecteurs() {
+	public List<Long> getSecteurs() {
 		return this.secteurs;
 	}
 
@@ -173,7 +173,7 @@ public class ProfilDto implements Serializable {
 	 * Set the value of {@link topmodel.exemple.name.dtos.securite.ProfilDto#id id}.
 	 * @param id value to set
 	 */
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -197,7 +197,7 @@ public class ProfilDto implements Serializable {
 	 * Set the value of {@link topmodel.exemple.name.dtos.securite.ProfilDto#secteurs secteurs}.
 	 * @param secteurs value to set
 	 */
-	public void setSecteurs(List<long> secteurs) {
+	public void setSecteurs(List<Long> secteurs) {
 		this.secteurs = secteurs;
 	}
 

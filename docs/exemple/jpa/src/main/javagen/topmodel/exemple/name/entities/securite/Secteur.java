@@ -4,19 +4,16 @@
 
 package topmodel.exemple.name.entities.securite;
 
-import javax.annotation.Generated;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
-import topmodel.exemple.utils.IFieldEnum;
+import jakarta.annotation.Generated;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 /**
  * Secteur d'application du profil.
@@ -32,7 +29,7 @@ public class Secteur {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "SEC_ID", nullable = false)
-	private long id;
+	private Long id;
 
 	/**
 	 * Association réciproque de {@link topmodel.exemple.name.entities.securite.Profil#secteurs Profil.secteurs}.
@@ -65,7 +62,7 @@ public class Secteur {
 	 * @param id Id technique
 	 * @param profil Association réciproque de {@link topmodel.exemple.name.entities.securite.Profil#secteurs Profil.secteurs}
 	 */
-	public Secteur(long id, Profil profil) {
+	public Secteur(Long id, Profil profil) {
 		this.id = id;
 		this.profil = profil;
 	}
@@ -75,7 +72,7 @@ public class Secteur {
 	 *
 	 * @return value of {@link topmodel.exemple.name.entities.securite.Secteur#id id}.
 	 */
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
@@ -92,7 +89,7 @@ public class Secteur {
 	 * Set the value of {@link topmodel.exemple.name.entities.securite.Secteur#id id}.
 	 * @param id value to set
 	 */
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -125,8 +122,8 @@ public class Secteur {
 	/**
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.securite.Secteur Secteur}.
 	 */
-	public enum Fields implements IFieldEnum<Secteur> {
-        ID(long.class), //
+	public enum Fields  {
+        ID(Long.class), //
         PROFIL(Profil.class);
 
 		private Class<?> type;

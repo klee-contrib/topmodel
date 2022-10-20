@@ -10,7 +10,7 @@ domain:
   ts:
     type: number
   java:
-    type: long
+    type: Long
   sqlType: int8
 ---
 domain:
@@ -19,7 +19,7 @@ domain:
   ts:
     type: string
   java:
-    type: DateTime
+    type: LocalDate
     imports:
       - java.time.LocalDate
       - org.springframework.data.annotation.CreatedDate
@@ -33,11 +33,11 @@ domain:
   ts:
     type: string
   java:
-    type: DateTime
+    type: LocalDateTime
     imports:
-      - java.util.DateTime
+      - java.time.LocalDateTime
       - org.springframework.data.annotation.LastModifiedDate
-      - oorg.springframework.data.jpa.domain.support.AuditingEntityListener
+      - org.springframework.data.jpa.domain.support.AuditingEntityListener
     annotations:
       - "@LastModifiedDate"
   sqlType: date
@@ -49,7 +49,7 @@ domain:
     type: string
   java:
     imports:
-      - "javax.validation.constraints.Email"
+      - "jakarta.validation.constraints.Email"
     type: String
     annotations:
       - "@Email"

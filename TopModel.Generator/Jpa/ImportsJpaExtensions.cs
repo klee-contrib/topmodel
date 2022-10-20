@@ -20,7 +20,7 @@ public static class ImportsJpaExtensions
         var imports = new List<string>();
         if (rp.Class != null && rp.Class.IsPersistent)
         {
-            imports.Add("javax.persistence.Column");
+            imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.Column");
         }
 
         if (rp.Domain.Java?.Imports != null)
@@ -30,19 +30,23 @@ public static class ImportsJpaExtensions
 
         if (rp.Class != null && rp.PrimaryKey && rp.Class.IsPersistent)
         {
-            imports.Add("javax.persistence.Id");
+            imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.Id");
             if (
                 rp.Domain.Java!.Type == "Long"
                 || rp.Domain.Java.Type == "long"
                 || rp.Domain.Java.Type == "int"
                 || rp.Domain.Java.Type == "Integer")
             {
+                var javaOrJakarta = config.PersistenceMode.ToString().ToLower();
                 imports.AddRange(new List<string>
                 {
-                    "javax.persistence.GeneratedValue",
-                    "javax.persistence.SequenceGenerator",
-                    "javax.persistence.GenerationType"
+                    $"{javaOrJakarta}.persistence.GeneratedValue",
+                    $"{javaOrJakarta}.persistence.GenerationType"
                 });
+                if (config.Identity.Mode == IdentityMode.SEQUENCE)
+                {
+                    imports.Add($"{javaOrJakarta}.persistence.SequenceGenerator");
+                }
             }
         }
 
@@ -116,7 +120,7 @@ public static class ImportsJpaExtensions
     {
         var imports = new List<string>
         {
-            $"javax.persistence.{ap.Type}"
+            config.PersistenceMode.ToString().ToLower() + $".persistence.{ap.Type}"
         };
 
         switch (ap.Type)
@@ -125,35 +129,35 @@ public static class ImportsJpaExtensions
                 imports.Add("java.util.List");
                 imports.Add("java.util.ArrayList");
                 imports.Add("java.util.stream.Collectors");
-                imports.Add("javax.persistence.FetchType");
-                imports.Add("javax.persistence.CascadeType");
+                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.FetchType");
+                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.CascadeType");
                 if (!(ap is JpaAssociationProperty jap && jap.IsReverse) && ap.Association.Namespace.Module.Split('.').First() != ap.Class.Namespace.Module.Split('.').First())
                 {
-                    imports.Add("javax.persistence.JoinColumn");
+                    imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.JoinColumn");
                 }
 
                 break;
             case AssociationType.ManyToOne:
-                imports.Add("javax.persistence.FetchType");
-                imports.Add("javax.persistence.JoinColumn");
+                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.FetchType");
+                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.JoinColumn");
                 break;
             case AssociationType.ManyToMany:
                 imports.Add("java.util.List");
                 imports.Add("java.util.ArrayList");
-                imports.Add("javax.persistence.JoinColumn");
+                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.JoinColumn");
                 imports.Add("java.util.stream.Collectors");
-                imports.Add("javax.persistence.CascadeType");
-                imports.Add("javax.persistence.FetchType");
+                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.CascadeType");
+                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.FetchType");
                 if (!(ap is JpaAssociationProperty japo && japo.IsReverse))
                 {
-                    imports.Add("javax.persistence.JoinTable");
+                    imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.JoinTable");
                 }
 
                 break;
             case AssociationType.OneToOne:
-                imports.Add("javax.persistence.FetchType");
-                imports.Add("javax.persistence.JoinColumn");
-                imports.Add("javax.persistence.CascadeType");
+                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.FetchType");
+                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.JoinColumn");
+                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.CascadeType");
                 break;
         }
 
@@ -202,20 +206,20 @@ public static class ImportsJpaExtensions
     {
         var imports = new List<string>
             {
-                "javax.annotation.Generated",
+                config.PersistenceMode.ToString().ToLower() + ".annotation.Generated",
             };
 
         if (classe.IsPersistent)
         {
-            imports.Add("javax.persistence.Entity");
-            imports.Add("javax.persistence.Table");
+            imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.Entity");
+            imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.Table");
         }
         else
         {
             imports.Add("java.io.Serializable");
             if (classe.Properties.Any(p => p is IFieldProperty { Required: true, PrimaryKey: false }))
             {
-                imports.Add("javax.validation.constraints.NotNull");
+                imports.Add(config.PersistenceMode.ToString().ToLower() + ".validation.constraints.NotNull");
             }
         }
 
@@ -230,8 +234,8 @@ public static class ImportsJpaExtensions
             {
                 imports.AddRange(new List<string>
             {
-                "javax.persistence.Enumerated",
-                "javax.persistence.EnumType",
+                config.PersistenceMode.ToString().ToLower() + ".persistence.Enumerated",
+                config.PersistenceMode.ToString().ToLower() + ".persistence.EnumType",
             });
             }
 
@@ -243,7 +247,7 @@ public static class ImportsJpaExtensions
 
         if (classe.UniqueKeys.Any())
         {
-            imports.Add("javax.persistence.UniqueConstraint");
+            imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.UniqueConstraint");
         }
 
         if (classe.Extends != null)

@@ -4,20 +4,17 @@
 
 package topmodel.exemple.name.entities.securite;
 
-import javax.annotation.Generated;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.EnumType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 
-import topmodel.exemple.name.entities.securite.TypeProfil;
-import topmodel.exemple.utils.IFieldEnum;
+import jakarta.annotation.Generated;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
  * Type d'utilisateur.
@@ -127,7 +124,7 @@ public class TypeProfil {
 	/**
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.securite.TypeProfil TypeProfil}.
 	 */
-	public enum Fields implements IFieldEnum<TypeProfil> {
+	public enum Fields  {
         CODE(TypeProfil.Values.class), //
         LIBELLE(String.class);
 

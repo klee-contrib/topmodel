@@ -193,7 +193,7 @@ public class SpringServerApiGenerator : GeneratorBase
     {
         var imports = file.Endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToLower().ToFirstUpper()}Mapping").ToList();
         imports.AddRange(GetTypeImports(file));
-        imports.Add("javax.annotation.Generated");
+        imports.Add(_config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
         if (file.Endpoints.Any(e => e.GetRouteParams().Any()))
         {
             imports.Add("org.springframework.web.bind.annotation.PathVariable");
@@ -207,7 +207,7 @@ public class SpringServerApiGenerator : GeneratorBase
         if (file.Endpoints.Any(e => e.GetBodyParam() != null))
         {
             imports.Add("org.springframework.web.bind.annotation.RequestBody");
-            imports.Add("javax.validation.Valid");
+            imports.Add(_config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
         }
 
         if (file.Options?.Endpoints.Prefix != null)

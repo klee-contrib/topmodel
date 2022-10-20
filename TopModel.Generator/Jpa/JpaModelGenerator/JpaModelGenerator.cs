@@ -348,10 +348,10 @@ public class JpaModelGenerator : GeneratorBase
 
         if (_config.EnumShortcutMode && classe.GetProperties(_config, AvailableClasses).Where(p => p is AssociationProperty apo && apo.IsEnum()).Any())
         {
-            imports.Add($"javax.persistence.Transient");
+            imports.Add(_config.PersistenceMode.ToString().ToLower() + ".persistence.Transient");
         }
 
-        fw.WriteImports(imports.Distinct().ToArray());
+        fw.WriteImports(imports.Where(i => string.Join('.', i.Split('.').SkipLast(1).ToList()) != GetPackageName(classe)).Distinct().ToArray());
     }
 
     private void CheckClass(Class classe)

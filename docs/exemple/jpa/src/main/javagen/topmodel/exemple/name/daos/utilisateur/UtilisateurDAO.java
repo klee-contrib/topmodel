@@ -4,11 +4,10 @@
 
 package topmodel.exemple.name.daos.utilisateur;
 
-
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import topmodel.exemple.name.entities.utilisateur.Utilisateur;
 
-public interface UtilisateurDAO extends PagingAndSortingRepository<Utilisateur, Long> {
+public interface UtilisateurDAO extends JpaRepository<Utilisateur, Long> {
 
 }

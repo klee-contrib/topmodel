@@ -9,6 +9,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import topmodel.exemple.name.entities.utilisateur.TypeUtilisateur;
 
-public interface TypeUtilisateurDAO extends CrudRepository<TypeUtilisateur, Long> {
+public interface TypeUtilisateurDAO extends CrudRepository<TypeUtilisateur, TypeUtilisateur.Values> {
 
 }

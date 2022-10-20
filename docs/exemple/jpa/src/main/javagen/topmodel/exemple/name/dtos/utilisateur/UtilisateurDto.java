@@ -6,8 +6,8 @@ package topmodel.exemple.name.dtos.utilisateur;
 
 import java.io.Serializable;
 
-import javax.annotation.Generated;
-import javax.validation.constraints.Email;
+import jakarta.annotation.Generated;
+import jakarta.validation.constraints.Email;
 
 import topmodel.exemple.name.dtos.utilisateur.interfaces.IUtilisateurDto;
 import topmodel.exemple.name.entities.utilisateur.TypeUtilisateur;
@@ -25,7 +25,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * Id technique.
 	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getId() Utilisateur#getId()} 
 	 */
-	private long id;
+	private Long id;
 
 	/**
 	 * Age en années de l'utilisateur.
@@ -37,7 +37,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * Profil de l'utilisateur.
 	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getProfilId() Utilisateur#getProfilId()} 
 	 */
-	private long profilId;
+	private Long profilId;
 
 	/**
 	 * Email de l'utilisateur.
@@ -89,7 +89,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @param utilisateurParent UtilisateurParent
 	 */
-	public UtilisateurDto(long id, Long age, long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, UtilisateurDto utilisateurParent) {
+	public UtilisateurDto(Long id, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, UtilisateurDto utilisateurParent) {
 		this.id = id;
 		this.age = age;
 		this.profilId = profilId;
@@ -136,7 +136,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#id id}.
 	 */
 	@Override
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
@@ -156,7 +156,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#profilId profilId}.
 	 */
 	@Override
-	public long getProfilId() {
+	public Long getProfilId() {
 		return this.profilId;
 	}
 
@@ -194,7 +194,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#id id}.
 	 * @param id value to set
 	 */
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -210,7 +210,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#profilId profilId}.
 	 * @param profilId value to set
 	 */
-	public void setProfilId(long profilId) {
+	public void setProfilId(Long profilId) {
 		this.profilId = profilId;
 	}
 

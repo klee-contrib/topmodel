@@ -9,6 +9,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import topmodel.exemple.name.entities.securite.TypeProfil;
 
-public interface TypeProfilDAO extends CrudRepository<TypeProfil, Long> {
+public interface TypeProfilDAO extends CrudRepository<TypeProfil, TypeProfil.Values> {
 
 }

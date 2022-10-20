@@ -273,7 +273,7 @@ public class SpringClientApiGenerator : GeneratorBase
     {
         var imports = new List<string>();
         imports.AddRange(GetTypeImports(file));
-        imports.Add("javax.annotation.Generated");
+        imports.Add(_config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
         imports.Add("org.springframework.web.util.UriComponentsBuilder");
         imports.Add("org.springframework.web.client.RestTemplate");
         imports.Add("java.net.URI");

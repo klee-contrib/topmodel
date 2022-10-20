@@ -4,11 +4,10 @@
 
 package topmodel.exemple.name.daos.securite;
 
-
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import topmodel.exemple.name.entities.securite.Secteur;
 
-public interface SecteurDAO extends PagingAndSortingRepository<Secteur, Long> {
+public interface SecteurDAO extends JpaRepository<Secteur, Long> {
 
 }

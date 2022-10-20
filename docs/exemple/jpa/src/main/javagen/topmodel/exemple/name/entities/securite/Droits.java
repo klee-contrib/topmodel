@@ -4,24 +4,20 @@
 
 package topmodel.exemple.name.entities.securite;
 
-import javax.annotation.Generated;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Enumerated;
-import javax.persistence.EnumType;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 
-import topmodel.exemple.name.entities.securite.Droits;
-import topmodel.exemple.name.entities.securite.TypeProfil;
-import topmodel.exemple.utils.IFieldEnum;
+import jakarta.annotation.Generated;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 /**
  * Droits de l'application.
@@ -158,7 +154,7 @@ public class Droits {
 	/**
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.securite.Droits Droits}.
 	 */
-	public enum Fields implements IFieldEnum<Droits> {
+	public enum Fields  {
         CODE(Droits.Values.class), //
         LIBELLE(String.class), //
         TYPE_PROFIL(TypeProfil.class);
@@ -175,7 +171,7 @@ public class Droits {
 	}
 
 	public enum Values {
-		CRE("Créer", TypeProfilCodeAlternatif.POT), //
+		CRE("Créer", TypeProfil.Values.ADM), //
 		MOD("Modifier", null), //
 		SUP("Supprimer", null); 
 

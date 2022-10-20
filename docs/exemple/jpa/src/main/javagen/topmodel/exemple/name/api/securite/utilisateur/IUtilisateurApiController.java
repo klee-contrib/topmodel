@@ -7,16 +7,16 @@ package topmodel.exemple.name.api.securite.utilisateur;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Generated;
-import javax.validation.constraints.Email;
-import javax.validation.Valid;
-
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import jakarta.annotation.Generated;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.Valid;
 
 import topmodel.exemple.name.dtos.utilisateur.UtilisateurDto;
 import topmodel.exemple.name.entities.utilisateur.TypeUtilisateur;
@@ -32,7 +32,7 @@ public interface IUtilisateurApiController {
 	 * @return Le détail de l'utilisateur
 	 */
 	@GetMapping(path = "/{utiId}")
-	UtilisateurDto getUtilisateur(@RequestParam(value = "utilisateurId", required = true) long utilisateurId);
+	UtilisateurDto getUtilisateur(@RequestParam(value = "utilisateurId", required = true) Long utilisateurId);
 
 	/**
 	 * Charge une liste d'utilisateurs par leur type.
@@ -68,5 +68,5 @@ public interface IUtilisateurApiController {
 	 * @return Utilisateurs matchant les critères
 	 */
 	@PostMapping(path = "/search")
-	Page<UtilisateurDto> search(@RequestParam(value = "utilisateurId", required = true) long utilisateurId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode);
+	Page<UtilisateurDto> search(@RequestParam(value = "utilisateurId", required = true) Long utilisateurId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) Long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode);
 }

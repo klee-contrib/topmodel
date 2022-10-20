@@ -444,6 +444,14 @@
               "Server"
             ]
           },
+          "persistenceMode": {
+            "type": "string",
+            "description": "Mode de génération de la persistence ('Javax' ou 'Jakarta')",
+            "enum": [
+              "Javax",
+              "Jakarta"
+            ]
+          },
           "identity": {
             "type": "object",
             "description": "Options de génération de la séquence",
