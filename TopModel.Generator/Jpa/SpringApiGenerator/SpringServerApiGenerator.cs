@@ -41,11 +41,11 @@ public class SpringServerApiGenerator : GeneratorBase
     {
         if (file.Options?.Endpoints?.FileName != null)
         {
-            return $"I{file.Options.Endpoints.FileName.ToFirstUpper()}Controller";
+            return $"{file.Options.Endpoints.FileName.ToFirstUpper()}Controller";
         }
 
         var filePath = file.Name.Split("/").Last();
-        return $"I{string.Join('_', filePath.Split("_").Skip(filePath.Contains('_') ? 1 : 0)).ToFirstUpper()}Controller";
+        return $"{string.Join('_', filePath.Split("_").Skip(filePath.Contains('_') ? 1 : 0)).ToFirstUpper()}Controller";
     }
 
     private string GetFileName(ModelFile file)
