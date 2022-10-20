@@ -19,6 +19,7 @@
   - [Alias](/model/aliases.md)
   - [Mappers](/model/mappers.md)
   - [Décorateurs](/model/decorators.md)
+  - [Personnalisation fine](/model/customs.md)
 
 - **[Génération](/generator.md)**
 

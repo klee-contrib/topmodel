@@ -20,14 +20,71 @@ jpa:
     fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<> # Classe dont doivent hériter ces enum
 ```
 
+### Dépendances obligatoires
+
+#### Modèle
+
+Le modèle généré par TopModel dépend d'une api de persistence. Par défaut, c'est l'API de persistence `javax` qui est utilisée, mais le mode `jakarta` est aussi disponible.
+
+La validation elle est gérée par le package `jakarta.validation-api`, dont les imports changent entre la version 2 et la version 3.
+
+##### Javax (spring-boot < v3)
+
+```xml
+<!-- https://mvnrepository.com/artifact/javax.persistence/javax.persistence-api -->
+<dependency>
+    <groupId>javax.persistence</groupId>
+    <artifactId>javax.persistence-api</artifactId>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+<dependency>
+  <groupId>jakarta.validation</groupId>
+  <artifactId>jakarta.validation-api</artifactId>
+</dependency>
+```
+
+##### Jakarta (spring-boot > v3)
+
+```xml
+<!-- https://mvnrepository.com/artifact/jakarta.persistence/jakarta.persistence-api -->
+<dependency>
+    <groupId>jakarta.persistence</groupId>
+    <artifactId>jakarta.persistence-api</artifactId>
+    <version>3.1.0</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+<dependency>
+  <groupId>jakarta.validation</groupId>
+  <artifactId>jakarta.validation-api</artifactId>
+</dependency>
+```
+
+#### Endpoints
+
+Actuellement, la seule génération de endpoint cliente et serveur qui est gérée passe par les API de `Spring-web`
+
+```xml
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-web</artifactId>
+</dependency>
+```
+
+### Version Java
+
+Le cde Java généré est compatible avec toutes les versions de Java postérieures à `Java 11`.
+
 ### Utilisation combinée avec le générateur postgresql
 
-Le mode de génération par défaut des générateur ne créé par de séquence, mais des colonnes auto-générées avec `identity`. Malheureusement, le batch insert de jdbc ne fonctionne correctement qu'avec des séquences. Il est donc recommandé d'utiliser le mode `sequence` de du générateur postgresql.
+Le mode de génération par défaut des générateur ne créé par de séquence, mais des colonnes auto-générées avec `identity`. Malheureusement, le `batch insert` de jdbc ne fonctionne pas correctement avec ce mode de génération d'ID. Il est donc recommandé d'utiliser le mode `sequence` de du générateur postgresql.
 
 Le mode `sequence` dans la configuration jpa et dans la configuration postgresql se déclare de la même manière :
 
 ```yaml
-## Configuration jpa ou proceduralSql
+## Configuration jpa et proceduralSql
     identity:
       increment: 50
       start: 1000
