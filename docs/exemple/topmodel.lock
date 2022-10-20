@@ -4,15 +4,8 @@
 
 version: 1.15.11
 generatedFiles:
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\IDtosController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\IEntitiesController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\IReferencesController.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\utilisateur\AbstractUtilisateurApiClient.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\utilisateur\IUtilisateurApiController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\utilisateur\IDecoratorsController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\utilisateur\IDtosController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\utilisateur\IEntitiesController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\utilisateur\IReferencesController.java
+  - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\utilisateur\UtilisateurApiController.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\daos\securite\DroitsDAO.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\daos\securite\ProfilDAO.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\daos\securite\ProfilDtoDAO.java
