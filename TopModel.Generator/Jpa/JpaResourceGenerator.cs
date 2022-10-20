@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Text;
+using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Utils;
-using System.Text;
 
 namespace TopModel.Generator.Jpa;
 
@@ -39,6 +39,7 @@ public class JpaResourceGenerator : GeneratorBase
     {
         return Path.Combine(_config.OutputDirectory, _config.ResourceRootPath, Path.Combine(module.Key.Split(".").Select(part => part.ToDashCase()).ToArray()) + "_fr_FR.properties");
     }
+
     private IEnumerable<IGrouping<string, IFieldProperty>> GetModules()
     {
         return Files

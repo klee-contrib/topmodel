@@ -102,7 +102,7 @@ public class JpaModelInterfaceGenerator : GeneratorBase
     {
         var imports = new List<string>
             {
-                "javax.annotation.Generated",
+                _config.PersistenceMode.ToString().ToLower() + ".annotation.Generated",
             };
         foreach (var property in classe.Properties)
         {

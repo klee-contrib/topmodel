@@ -30,9 +30,6 @@ class:
   mappers:
     to:
       - class: Profil
-    from:
-      - params:
-        - class: Profil
 ---
 class:
   name: Secteur

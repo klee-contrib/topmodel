@@ -4,11 +4,10 @@
 
 package topmodel.exemple.name.daos.securite;
 
-
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import topmodel.exemple.name.entities.securite.Profil;
 
-public interface ProfilDAO extends PagingAndSortingRepository<Profil, Long> {
+public interface ProfilDAO extends JpaRepository<Profil, Long> {
 
 }

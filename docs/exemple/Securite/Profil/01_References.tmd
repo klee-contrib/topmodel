@@ -46,6 +46,6 @@ class:
       comment: Type de profil pouvant faire l'action
       type: manyToOne
   values:
-    CRE: { Code: CRE, Libelle: Créer, TypeProfilCode: TypeProfilCodeAlternatif.POT }
+    CRE: { Code: CRE, Libelle: Créer, TypeProfilCode: ADM }
     MOD: { Code: MOD, Libelle: Modifier }
     SUP: { Code: SUP, Libelle: Supprimer }

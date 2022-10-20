@@ -5,34 +5,29 @@
 package topmodel.exemple.name.entities.utilisateur;
 
 import java.time.LocalDate;
-import java.util.DateTime;
-
-import javax.annotation.Generated;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-import javax.validation.constraints.Email;
+import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import oorg.springframework.data.jpa.domain.support.AuditingEntityListener;
+import jakarta.annotation.Generated;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.Email;
 
 import topmodel.exemple.name.entities.securite.Profil;
-import topmodel.exemple.name.entities.utilisateur.TypeUtilisateur;
-import topmodel.exemple.utils.IFieldEnum;
 
 /**
  * Utilisateur de l'application.
@@ -49,14 +44,14 @@ public class Utilisateur {
 	 */
 	@Column(name = "DATE_CREATION", nullable = true)
 	@CreatedDate
-	private DateTime dateCreation;
+	private LocalDate dateCreation;
 
 	/**
 	 * Date de modification de l'utilisateur.
 	 */
 	@Column(name = "DATE_MODIFICATION", nullable = true)
 	@LastModifiedDate
-	private DateTime dateModification;
+	private LocalDateTime dateModification;
 
 	/**
 	 * Id technique.
@@ -64,7 +59,7 @@ public class Utilisateur {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID", nullable = false)
-	private long id;
+	private Long id;
 
 	/**
 	 * Age en années de l'utilisateur.
@@ -136,7 +131,7 @@ public class Utilisateur {
 	 * @param typeUtilisateur Type d'utilisateur en Many to one
 	 * @param utilisateurParent Utilisateur parent
 	 */
-	public Utilisateur(DateTime dateCreation, DateTime dateModification, long id, Long age, Profil profil, String email, TypeUtilisateur typeUtilisateur, Utilisateur utilisateurParent) {
+	public Utilisateur(LocalDate dateCreation, LocalDateTime dateModification, Long id, Long age, Profil profil, String email, TypeUtilisateur typeUtilisateur, Utilisateur utilisateurParent) {
 		this.dateCreation = dateCreation;
 		this.dateModification = dateModification;
 		this.id = id;
@@ -152,7 +147,7 @@ public class Utilisateur {
 	 *
 	 * @return value of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#dateCreation dateCreation}.
 	 */
-	public DateTime getDateCreation() {
+	public LocalDate getDateCreation() {
 		return this.dateCreation;
 	}
 
@@ -161,7 +156,7 @@ public class Utilisateur {
 	 *
 	 * @return value of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#dateModification dateModification}.
 	 */
-	public DateTime getDateModification() {
+	public LocalDateTime getDateModification() {
 		return this.dateModification;
 	}
 
@@ -170,7 +165,7 @@ public class Utilisateur {
 	 *
 	 * @return value of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#id id}.
 	 */
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
@@ -223,7 +218,7 @@ public class Utilisateur {
 	 * Set the value of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#dateCreation dateCreation}.
 	 * @param dateCreation value to set
 	 */
-	public void setDateCreation(DateTime dateCreation) {
+	public void setDateCreation(LocalDate dateCreation) {
 		this.dateCreation = dateCreation;
 	}
 
@@ -231,7 +226,7 @@ public class Utilisateur {
 	 * Set the value of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#dateModification dateModification}.
 	 * @param dateModification value to set
 	 */
-	public void setDateModification(DateTime dateModification) {
+	public void setDateModification(LocalDateTime dateModification) {
 		this.dateModification = dateModification;
 	}
 
@@ -239,7 +234,7 @@ public class Utilisateur {
 	 * Set the value of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#id id}.
 	 * @param id value to set
 	 */
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -304,10 +299,10 @@ public class Utilisateur {
 	/**
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.utilisateur.Utilisateur Utilisateur}.
 	 */
-	public enum Fields implements IFieldEnum<Utilisateur> {
-        DATE_CREATION(DateTime.class), //
-        DATE_MODIFICATION(DateTime.class), //
-        ID(long.class), //
+	public enum Fields  {
+        DATE_CREATION(LocalDate.class), //
+        DATE_MODIFICATION(LocalDateTime.class), //
+        ID(Long.class), //
         AGE(Long.class), //
         PROFIL(Profil.class), //
         EMAIL(String.class), //

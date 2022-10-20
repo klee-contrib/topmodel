@@ -4,8 +4,8 @@
 
 package topmodel.exemple.name.dtos.utilisateur.interfaces;
 
-import javax.annotation.Generated;
-import javax.validation.constraints.Email;
+import jakarta.annotation.Generated;
+import jakarta.validation.constraints.Email;
 
 import topmodel.exemple.name.dtos.utilisateur.UtilisateurDto;
 import topmodel.exemple.name.entities.utilisateur.TypeUtilisateur;
@@ -18,7 +18,7 @@ public interface IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#id id}.
 	 */
-	long getId();
+	Long getId();
 
 	/**
 	 * Getter for age.
@@ -32,7 +32,7 @@ public interface IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#profilId profilId}.
 	 */
-	long getProfilId();
+	Long getProfilId();
 
 	/**
 	 * Getter for email.

@@ -8,25 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Generated;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-
-import topmodel.exemple.name.entities.securite.Droits;
-import topmodel.exemple.name.entities.securite.TypeProfil;
-import topmodel.exemple.utils.IFieldEnum;
+import jakarta.annotation.Generated;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 /**
  * Profil des utilisateurs.
@@ -42,7 +37,7 @@ public class Profil {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PRO_ID", nullable = false)
-	private long id;
+	private Long id;
 
 	/**
 	 * Type de profil.
@@ -93,7 +88,7 @@ public class Profil {
 	 * @param droits Liste des droits de l'utilisateur
 	 * @param secteurs Liste des secteurs de l'utilisateur
 	 */
-	public Profil(long id, TypeProfil typeProfil, List<Droits> droits, List<Secteur> secteurs) {
+	public Profil(Long id, TypeProfil typeProfil, List<Droits> droits, List<Secteur> secteurs) {
 		this.id = id;
 		this.typeProfil = typeProfil;
 		this.droits = droits;
@@ -101,35 +96,11 @@ public class Profil {
 	}
 
 	/**
-	 * Crée une nouvelle instance de 'Profil'.
-	 * @param profil Instance de 'Profil'.
-	 *
-	 * @return Une nouvelle instance de 'Profil'.
-	 */
-	public Profil(Profil profil) {
-		this.from(profil);
-	}
-
-	/**
-	 * Map les champs des classes passées en paramètre dans l'instance courante.
-	 * @param profil Instance de 'Profil'.
-	 */
-	protected void from(Profil profil) {
-		if(profil != null) {
-			this.id = profil.getId();
-			this.typeProfil = profil.getTypeProfil();
-			this.droits = profil.getDroits();
-			this.secteurs = profil.getSecteurs();
-		}
-
-	}
-
-	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link topmodel.exemple.name.entities.securite.Profil#id id}.
 	 */
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
@@ -168,7 +139,7 @@ public class Profil {
 	 * Set the value of {@link topmodel.exemple.name.entities.securite.Profil#id id}.
 	 * @param id value to set
 	 */
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -235,8 +206,8 @@ public class Profil {
 	/**
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.securite.Profil Profil}.
 	 */
-	public enum Fields implements IFieldEnum<Profil> {
-        ID(long.class), //
+	public enum Fields  {
+        ID(Long.class), //
         TYPE_PROFIL(TypeProfil.class), //
         DROITS(List.class), //
         SECTEURS(List.class);
