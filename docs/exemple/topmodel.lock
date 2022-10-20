@@ -4,15 +4,8 @@
 
 version: 1.15.11
 generatedFiles:
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\DtosController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\EntitiesController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\ReferencesController.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\utilisateur\AbstractUtilisateurApiClient.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\api\securite\utilisateur\UtilisateurApiController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\utilisateur\DecoratorsController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\utilisateur\DtosController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\utilisateur\EntitiesController.java
-  - .\jpa\src\main\javagen\topmodel\exemple\name\api\utilisateur\ReferencesController.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\daos\securite\DroitsDAO.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\daos\securite\ProfilDAO.java
   - .\jpa\src\main\javagen\topmodel\exemple\name\daos\securite\ProfilDtoDAO.java

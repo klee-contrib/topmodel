@@ -22,7 +22,7 @@ public class SpringClientApiGenerator : GeneratorBase
 
     public override string Name => "SpringApiClientGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files.Select(f => GetFilePath(f.Value));
+    public override IEnumerable<string> GeneratedFiles => Files.Where(f => f.Value.Endpoints.Any()).Select(f => GetFilePath(f.Value));
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
