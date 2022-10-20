@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.16.0
+
+- [#162](https://github.com/klee-contrib/topmodel/pull/162) -  JPA : Respect de la convention de nommage des interfaces #161 
+- [#160](https://github.com/klee-contrib/topmodel/pull/160) - [JPA] JPA : Mode Spring 3 : utilisation possible de l'API `jakarta` à la place de `javax`
+- [`9298c5ec`](https://github.com/klee-contrib/topmodel/commit/9298c5ec0b56098558d35f70e535409603382312) - [Doc] Ajustements sur les domains dans le tutoriel
+
 ## 1.15.11
 
 - [`4138e9f69`](https://github.com/klee-contrib/topmodel/commit/4138e9f69e9b941091245927bb5eff3634a9afa9) - [JPA] Ne pas générer de fichier de ressource vide
