@@ -129,7 +129,6 @@ public static class TemplateExtension
         var result = input.Split(':').First()
             .Replace("class.name", transform(cp.Class?.Name.ToString() ?? string.Empty))
             .Replace("composition.name", transform(cp.Composition?.Name.ToString() ?? string.Empty))
-            .Replace("name", transform(cp.Class?.Name.ToString() ?? string.Empty))
             .Replace("name", transform(cp.Name ?? string.Empty))
             .Replace("label", transform(cp.Label ?? string.Empty))
             .Replace("comment", transform(cp.Comment));
@@ -152,7 +151,7 @@ public static class TemplateExtension
 
     private static MatchCollection ExtractVariables(this string input)
     {
-        var regex = new Regex(@"(\{[a-zA-Z0-9:]+\})");
+        var regex = new Regex(@"(\{[a-zA-Z0-9:.]+\})");
         return regex.Matches(input);
     }
 }

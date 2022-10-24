@@ -89,6 +89,8 @@ Dans ces propriétés :
 - `csharp.type`
 - `csharp.annotations`
 - `csharp.usings`
+- `ts.type`
+- `ts.import`
 
 Les templates des domaines des propriétés sont également valorisés.
 

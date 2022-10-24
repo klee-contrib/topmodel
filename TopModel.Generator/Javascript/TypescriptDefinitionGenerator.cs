@@ -103,7 +103,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
         foreach (var p in classe.Properties.OfType<CompositionProperty>().Where(p => p.DomainKind?.TS?.Import == "@focus4/stores"))
         {
-            yield return p.DomainKind!.TS!.Type.Split('<').First();
+            yield return p.DomainKind!.TS!.Type.ParseTemplate(p).Split('<').First();
         }
 
         yield return "EntityToType";
@@ -121,8 +121,8 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
         var domains = classe.DomainDependencies
             /* Cette vérification est nécessaire car pour un alias avec ListDomain les deux domaines sont dans les dépendances...*/
-            .Where(d => classe.Properties.Any(p => d == ((p as AliasProperty)?.ListDomain ?? (p as CompositionProperty)?.DomainKind ?? (p as IFieldProperty)?.Domain)))
-            .OrderBy(d => d.Name)
+            .Where(d => classe.Properties.Any(p => d.Domain == ((p as AliasProperty)?.ListDomain ?? (p as CompositionProperty)?.DomainKind ?? (p as IFieldProperty)?.Domain)))
+            .OrderBy(d => d.Domain.Name)
             .ToList();
 
         if (domains.Any())
@@ -130,7 +130,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             var domainImport = _config.DomainImportPath.StartsWith("@")
                 ? _config.DomainImportPath
                 : Path.GetRelativePath(string.Join('/', fileName.Split('/').SkipLast(1)), Path.Combine(_config.OutputDirectory, _config.ModelRootPath!.Replace("{tag}", tag.ToKebabCase()), _config.DomainImportPath)).Replace("\\", "/");
-            fw.WriteLine($"import {{{string.Join(", ", domains.Select(d => d.Name))}}} from \"{domainImport}\";");
+            fw.WriteLine($"import {{{string.Join(", ", domains.Select(d => d.Domain.Name).Distinct())}}} from \"{domainImport}\";");
         }
 
         var imports = classe.ClassDependencies
@@ -141,7 +141,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                     ? fp.GetPropertyTypeName(Classes).Replace("[]", string.Empty)
                     : $"{dep.Classe.Name}Entity, {dep.Classe.Name}{(_config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}",
                 Path: _config.GetImportPathForClass(dep, tag)!))
-            .Concat(domains.Select(p => (Import: p.TS!.Type.Split("<").First(), Path: p.TS.Import!)))
+            .Concat(classe.DomainDependencies.Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(p => p.Path != null && p.Path != "@focus4/stores")
             .GroupAndSort();
 
@@ -365,7 +365,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                     _ => null!
                 },
                 Path: _config.GetImportPathForClass(dep, tag)!))
-            .Concat(references.SelectMany(r => r.DomainDependencies).Select(p => (Import: p.TS!.Type.Split("<").First(), Path: p.TS.Import!)))
+            .Concat(references.SelectMany(r => r.DomainDependencies).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(i => i.Path != null && i.Path != $"./references")
             .GroupAndSort();
 
@@ -402,7 +402,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             fw.Write($"{valueProperty.Name} = ");
             fw.Write(reference.ReferenceValues.Any()
                 ? string.Join(" | ", reference.ReferenceValues.Select(r => $@"""{r.Value[valueProperty]}""").OrderBy(x => x, StringComparer.Ordinal))
-                : valueProperty.Domain.TS?.Type);
+                : valueProperty.Domain.TS?.Type.ParseTemplate(valueProperty));
             fw.WriteLine(";");
 
             if (reference.FlagProperty != null && reference.ReferenceValues.Any())

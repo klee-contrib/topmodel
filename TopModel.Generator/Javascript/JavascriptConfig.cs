@@ -83,7 +83,7 @@ public class JavascriptConfig : GeneratorConfigBase
                     ? fp.GetPropertyTypeName().Replace("[]", string.Empty)
                     : dep.Classe.Name,
                 Path: GetImportPathForClass(dep, tag)!))
-            .Concat(file.Endpoints.SelectMany(d => d.DomainDependencies).Select(p => (Import: p.TS!.Type.Split("<").First(), Path: p.TS.Import!)))
+            .Concat(file.Endpoints.SelectMany(d => d.DomainDependencies).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(i => i.Path != null)
             .GroupAndSort();
     }

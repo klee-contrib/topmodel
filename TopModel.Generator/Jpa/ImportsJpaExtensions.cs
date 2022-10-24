@@ -190,7 +190,7 @@ public static class ImportsJpaExtensions
         }
         else if (cp.DomainKind?.Java?.Imports != null)
         {
-            imports.AddRange(cp.DomainKind.Java.Imports);
+            imports.AddRange(cp.DomainKind.Java.Imports.Select(i => i.ParseTemplate(cp)));
         }
 
         return imports;
