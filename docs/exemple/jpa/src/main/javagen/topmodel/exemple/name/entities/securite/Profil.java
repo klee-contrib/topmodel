@@ -168,24 +168,6 @@ public class Profil {
 	}
 
 	/**
-	 * Equal function comparing Id.
-	 */
-	public boolean equals(Object o) {
-		if(o instanceof Profil) {
-			Profil profil = (Profil) o;
-			if(this == profil)
-				return true;
-
-			if(profil == null || this.getId() == null)
-				return false;
-
-			return this.getId().equals(profil.getId());
-		}
-
-		return false;
-	}
-
-	/**
 	 * Mappe 'Profil' vers 'Profil'.
 	 * @param source Instance de 'Profil'.
 	 * @param dest Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.

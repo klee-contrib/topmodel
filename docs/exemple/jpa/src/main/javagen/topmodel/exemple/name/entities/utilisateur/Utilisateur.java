@@ -279,24 +279,6 @@ public class Utilisateur {
 	}
 
 	/**
-	 * Equal function comparing Id.
-	 */
-	public boolean equals(Object o) {
-		if(o instanceof Utilisateur) {
-			Utilisateur utilisateur = (Utilisateur) o;
-			if(this == utilisateur)
-				return true;
-
-			if(utilisateur == null || this.getId() == null)
-				return false;
-
-			return this.getId().equals(utilisateur.getId());
-		}
-
-		return false;
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.utilisateur.Utilisateur Utilisateur}.
 	 */
 	public enum Fields  {

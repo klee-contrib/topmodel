@@ -104,24 +104,6 @@ public class TypeProfil {
 	}
 
 	/**
-	 * Equal function comparing Code.
-	 */
-	public boolean equals(Object o) {
-		if(o instanceof TypeProfil) {
-			TypeProfil typeProfil = (TypeProfil) o;
-			if(this == typeProfil)
-				return true;
-
-			if(typeProfil == null || this.getCode() == null)
-				return false;
-
-			return this.getCode().equals(typeProfil.getCode());
-		}
-
-		return false;
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.securite.TypeProfil TypeProfil}.
 	 */
 	public enum Fields  {
