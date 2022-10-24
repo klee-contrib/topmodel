@@ -104,24 +104,6 @@ public class TypeUtilisateur {
 	}
 
 	/**
-	 * Equal function comparing Code.
-	 */
-	public boolean equals(Object o) {
-		if(o instanceof TypeUtilisateur) {
-			TypeUtilisateur typeUtilisateur = (TypeUtilisateur) o;
-			if(this == typeUtilisateur)
-				return true;
-
-			if(typeUtilisateur == null || this.getCode() == null)
-				return false;
-
-			return this.getCode().equals(typeUtilisateur.getCode());
-		}
-
-		return false;
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.utilisateur.TypeUtilisateur TypeUtilisateur}.
 	 */
 	public enum Fields  {

@@ -134,24 +134,6 @@ public class Droits {
 	}
 
 	/**
-	 * Equal function comparing Code.
-	 */
-	public boolean equals(Object o) {
-		if(o instanceof Droits) {
-			Droits droits = (Droits) o;
-			if(this == droits)
-				return true;
-
-			if(droits == null || this.getCode() == null)
-				return false;
-
-			return this.getCode().equals(droits.getCode());
-		}
-
-		return false;
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.securite.Droits Droits}.
 	 */
 	public enum Fields  {

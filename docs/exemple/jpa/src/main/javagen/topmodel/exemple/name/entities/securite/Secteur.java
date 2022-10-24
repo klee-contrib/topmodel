@@ -102,24 +102,6 @@ public class Secteur {
 	}
 
 	/**
-	 * Equal function comparing Id.
-	 */
-	public boolean equals(Object o) {
-		if(o instanceof Secteur) {
-			Secteur secteur = (Secteur) o;
-			if(this == secteur)
-				return true;
-
-			if(secteur == null || this.getId() == null)
-				return false;
-
-			return this.getId().equals(secteur.getId());
-		}
-
-		return false;
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link topmodel.exemple.name.entities.securite.Secteur Secteur}.
 	 */
 	public enum Fields  {
