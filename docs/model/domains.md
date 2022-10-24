@@ -48,3 +48,76 @@ domain:
       - org.springframework.http.ResponseEntity
       - org.springframework.core.io.Resource
 ```
+
+## Templating
+
+Il est possible que certaines propriétés des domaines dépendent de la propriété sur laquelle vous l'ajouter. Vous pourriez par exemple ajouter une annotation `@Label` dans le code `java` qui aurait besoin du libelle renseigné dans TopModel.
+
+Pour utiliser un attribut de la propriété dans le domaine, il suffit de référencer cette propriété entre accolades :
+
+```yaml
+---
+domain:
+  name: DO_ID
+  label: Identifiant
+  java:
+    type: Integer
+    annotations:
+      - @Label(\"{label}\")
+    imports:
+      - topmodel.sample.custom.annotation.Label
+```
+
+Le code généré sera ainsi différent selon la propriété sur laquelle vous allez effectivement ajouter ce domaine/
+
+Actuellement il est possible d'utiliser ces variables
+
+- `class.name`
+- `name`
+- `trigram`
+- `label`
+- `comment`
+- `required`
+- `resourceKey`
+- `defaultValue`
+
+Dans ces propriétés :
+
+- `java.type`
+- `java.annotations`
+- `java.imports`
+- `csharp.type`
+- `csharp.annotations`
+- `csharp.usings`
+
+Les templates des domaines des propriétés sont également valorisés.
+
+## Transformation
+
+Il est possible que la variable que vous utilisez dans votre template ne corresponde pas tout à fait à votre besoin. TopModel gère l'ajout de `transformateurs` sur les templates. Vous pouvez ajouter un `transformateur` après le nom de la variable que vous référencez, précédé de `:`. Le code généré tiendra compte de cette transformation.
+
+Exemple :
+
+```yaml
+domain:
+  name: DO_ID
+  label: Identifiant
+  java:
+    type: Integer
+    annotations:
+      - @Label(\"{label:lower}\")
+    imports:
+      - topmodel.sample.custom.annotation.Label
+```
+
+Actuellement, voici les transformations gérées par `TopModel` :
+
+| nom          | résultat      |
+| ------------ | ------------- |
+| `kebab`      | kebab-case    |
+| `snake_case` | snake_case    |
+| `constant`   | CONSTANT_CASE |
+| `camel`      | camelCase     |
+| `pascal`     | PascalCase    |
+| `lower`      | lowercase     |
+| `upper`      | UPPERCASE     |
