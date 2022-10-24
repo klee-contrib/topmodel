@@ -56,23 +56,23 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public string GetClassFileName(Class classe, string tag)
     {
-        var rootPath = Path.Combine(OutputDirectory, ModelRootPath!.Replace("{tag}", tag.ToDashCase())).Replace("\\", "/");
-        return $"{rootPath}/{string.Join('/', classe.Namespace.Module.Split('.').Select(m => m.ToDashCase()))}/{classe.Name.ToDashCase()}.ts";
+        var rootPath = Path.Combine(OutputDirectory, ModelRootPath!.Replace("{tag}", tag.ToKebabCase())).Replace("\\", "/");
+        return $"{rootPath}/{string.Join('/', classe.Namespace.Module.Split('.').Select(m => m.ToKebabCase()))}/{classe.Name.ToDashCase()}.ts";
     }
 
     public string GetEndpointsFileName(ModelFile file, string tag)
     {
         var fileSplit = file.Name.Split("/");
-        var modulePath = Path.Combine(file.Module.Split('.').Select(m => m.ToDashCase()).ToArray());
+        var modulePath = Path.Combine(file.Module.Split('.').Select(m => m.ToKebabCase()).ToArray());
         var filePath = ApiClientFilePath.Replace("{module}", modulePath);
-        var fileName = string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToDashCase();
+        var fileName = string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToKebabCase();
 
         if (file.Options?.Endpoints?.FileName != null)
         {
-            fileName = file.Options?.Endpoints?.FileName.ToDashCase();
+            fileName = file.Options?.Endpoints?.FileName.ToKebabCase();
         }
 
-        return Path.Combine(OutputDirectory, ApiClientRootPath!.Replace("{tag}", tag.ToDashCase()), filePath, $"{fileName}.ts").Replace("\\", "/");
+        return Path.Combine(OutputDirectory, ApiClientRootPath!.Replace("{tag}", tag.ToKebabCase()), filePath, $"{fileName}.ts").Replace("\\", "/");
     }
 
     public List<(string Import, string Path)> GetEndpointImports(ModelFile file, string tag)
@@ -132,12 +132,12 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public string GetReferencesFileName(string module, string tag)
     {
-        var rootPath = Path.Combine(OutputDirectory, ModelRootPath!.Replace("{tag}", tag.ToDashCase())).Replace("\\", "/");
-        return $"{rootPath}/{string.Join('/', module.Split('.').Select(m => m.ToDashCase()))}/references.ts";
+        var rootPath = Path.Combine(OutputDirectory, ModelRootPath!.Replace("{tag}", tag.ToKebabCase())).Replace("\\", "/");
+        return $"{rootPath}/{string.Join('/', module.Split('.').Select(m => m.ToKebabCase()))}/references.ts";
     }
 
     public string GetResourcesFilePath(string module, string tag)
     {
-        return Path.Combine(OutputDirectory, ResourceRootPath!.Replace("{tag}", tag.ToDashCase()), Path.Combine(module.Split(".").Select(part => part.ToDashCase()).ToArray())) + (ResourceMode == ResourceMode.JS ? ".ts" : ".json");
+        return Path.Combine(OutputDirectory, ResourceRootPath!.Replace("{tag}", tag.ToKebabCase()), Path.Combine(module.Split(".").Select(part => part.ToKebabCase()).ToArray())) + (ResourceMode == ResourceMode.JS ? ".ts" : ".json");
     }
 }

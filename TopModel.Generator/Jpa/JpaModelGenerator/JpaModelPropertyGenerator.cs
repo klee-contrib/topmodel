@@ -153,7 +153,7 @@ public class JpaModelPropertyGenerator
             }
         }
 
-        if (classe.IsPersistent)
+        if (classe.IsPersistent && !property.Domain.Java!.Annotations.Any(a => a.Replace("@", string.Empty).StartsWith("Column")))
         {
             var column = @$"@Column(name = ""{property.SqlName}"", nullable = {(!property.Required).ToString().ToFirstLower()}";
             if (property.Domain.Length != null)
@@ -190,7 +190,7 @@ public class JpaModelPropertyGenerator
         {
             foreach (var annotation in property.Domain.Java.Annotations)
             {
-                fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : '@')}{annotation}");
+                fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : '@')}{annotation.ParseTemplate(property)}");
             }
         }
 

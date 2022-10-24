@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace TopModel.Utils;
 
@@ -36,9 +36,19 @@ public static class ModelUtils
     /// <param name="text">Le texte en entrée.</param>
     /// <param name="upperStart">Texte commençant par une majuscule.</param>
     /// <returns>Le texte en sortie.</returns>
-    public static string ToDashCase(this string text)
+    public static string ToKebabCase(this string text)
     {
-        return text.ToLowerSnakeCase().Replace("_", "-");
+        return text.ToSnakeCase().Replace("_", "-");
+    }
+
+    /// <summary>
+    /// Convertit un text en PascalCase.
+    /// </summary>
+    /// <param name="text">Le texte en entrée.</param>
+    /// <returns>Le texte en sortie.</returns>
+    public static string ToCamelCase(this string text)
+    {
+        return text.ToPascalCase().ToFirstLower();
     }
 
     /// <summary>
@@ -82,7 +92,7 @@ public static class ModelUtils
     /// <param name="text">Le texte en entrée.</param>
     /// <param name="upperStart">Texte commençant par une majuscule.</param>
     /// <returns>Le texte en sortie.</returns>
-    public static string ToSnakeCase(this string text)
+    public static string ToConstantCase(this string text)
     {
         if (text.Contains('_'))
         {
@@ -120,9 +130,9 @@ public static class ModelUtils
     /// </summary>
     /// <param name="text">Le texte en entrée.</param>
     /// <returns>Le texte en sortie.</returns>
-    public static string ToLowerSnakeCase(this string text)
+    public static string ToSnakeCase(this string text)
     {
-        return ToSnakeCase(text).ToLower();
+        return ToConstantCase(text).ToLower();
     }
 
     /// <summary>

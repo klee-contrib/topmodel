@@ -23,19 +23,20 @@ public static class ImportsJpaExtensions
             imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.Column");
         }
 
-        if (rp.Domain.Java?.Imports != null)
+        var javaType = rp.Domain.Java;
+        if (javaType?.Imports != null)
         {
-            imports.AddRange(rp.Domain.Java.Imports);
+            imports.AddRange(javaType.Imports.Select(i => i.ParseTemplate(rp)));
         }
 
         if (rp.Class != null && rp.PrimaryKey && rp.Class.IsPersistent)
         {
             imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.Id");
             if (
-                rp.Domain.Java!.Type == "Long"
-                || rp.Domain.Java.Type == "long"
-                || rp.Domain.Java.Type == "int"
-                || rp.Domain.Java.Type == "Integer")
+                javaType!.Type == "Long"
+                || javaType.Type == "long"
+                || javaType.Type == "int"
+                || javaType.Type == "Integer")
             {
                 var javaOrJakarta = config.PersistenceMode.ToString().ToLower();
                 imports.AddRange(new List<string>
@@ -73,7 +74,7 @@ public static class ImportsJpaExtensions
             }
             else if (ap.Property.Domain.Java!.Imports != null)
             {
-                imports.AddRange(ap.Property.Domain.Java!.Imports);
+                imports.AddRange(ap.Property.Domain.Java!.Imports.Select(i => i.ParseTemplate(ap)));
             }
         }
 
@@ -88,7 +89,7 @@ public static class ImportsJpaExtensions
 
         if (ap.Domain.Java?.Imports != null)
         {
-            imports.AddRange(ap.Domain.Java.Imports);
+            imports.AddRange(ap.Domain.Java.Imports.Select(i => i.ParseTemplate(ap)));
         }
 
         if (ap.Property is AssociationProperty apo && (apo.Type == AssociationType.ManyToMany || apo.Type == AssociationType.OneToMany))
@@ -110,7 +111,7 @@ public static class ImportsJpaExtensions
 
         if (rp.Domain?.Java?.Imports != null)
         {
-            imports.AddRange(rp.Domain.Java.Imports);
+            imports.AddRange(rp.Domain.Java.Imports.Select(i => i.ParseTemplate(rp)));
         }
 
         return imports;

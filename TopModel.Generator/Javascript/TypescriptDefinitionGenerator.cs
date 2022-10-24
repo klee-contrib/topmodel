@@ -129,7 +129,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         {
             var domainImport = _config.DomainImportPath.StartsWith("@")
                 ? _config.DomainImportPath
-                : Path.GetRelativePath(string.Join('/', fileName.Split('/').SkipLast(1)), Path.Combine(_config.OutputDirectory, _config.ModelRootPath!.Replace("{tag}", tag.ToDashCase()), _config.DomainImportPath)).Replace("\\", "/");
+                : Path.GetRelativePath(string.Join('/', fileName.Split('/').SkipLast(1)), Path.Combine(_config.OutputDirectory, _config.ModelRootPath!.Replace("{tag}", tag.ToKebabCase()), _config.DomainImportPath)).Replace("\\", "/");
             fw.WriteLine($"import {{{string.Join(", ", domains.Select(d => d.Name))}}} from \"{domainImport}\";");
         }
 

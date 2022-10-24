@@ -204,7 +204,7 @@ public class ClassLoader
         });
 
         classe.Label ??= classe.Name;
-        classe.SqlName ??= (_modelConfig.PluralizeTableNames ? classe.PluralName : classe.Name).ToSnakeCase();
+        classe.SqlName ??= (_modelConfig.PluralizeTableNames ? classe.PluralName : classe.Name).ToConstantCase();
 
         foreach (var prop in classe.Properties)
         {

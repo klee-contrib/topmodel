@@ -111,7 +111,7 @@ public static class JpaUtils
 
     public static string GetJavaType(this RegularProperty rp)
     {
-        return rp.IsEnum() ? $"{rp.Class.Name.ToFirstUpper()}.Values" : rp.Domain.Java!.Type;
+        return rp.IsEnum() ? $"{rp.Class.Name.ToFirstUpper()}.Values" : rp.Domain.Java!.Type.ParseTemplate(rp);
     }
 
     public static string GetJavaType(this CompositionProperty cp)

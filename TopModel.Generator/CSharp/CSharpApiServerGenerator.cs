@@ -153,7 +153,7 @@ namespace {apiPath.Replace("/", ".")}
                 };
                 if (paramType != null)
                 {
-                    split[i] = $"{{{routeParamName}:{paramType}}}";
+                    split[i] = $"{{{routeParamName}:{paramType.ParseTemplate(param)}}}";
                 }
             }
         }

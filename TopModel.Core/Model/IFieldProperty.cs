@@ -37,8 +37,8 @@ public interface IFieldProperty : IProperty
             var sqlName = prop switch
             {
                 AssociationProperty => apPkTrigram != null ? apPk?.SqlName.Replace($"{apPkTrigram}_", string.Empty) : apPk?.SqlName,
-                { Class.Extends: not null, PrimaryKey: true } => prop.Name.Replace(prop.Class.Name, string.Empty).ToSnakeCase(),
-                _ => prop.Name.ToSnakeCase()
+                { Class.Extends: not null, PrimaryKey: true } => prop.Name.Replace(prop.Class.Name, string.Empty).ToConstantCase(),
+                _ => prop.Name.ToConstantCase()
             };
 
             string? prefix = prop.Trigram ?? (apPk != null ? apPkTrigram : prop.Class.Trigram);

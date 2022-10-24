@@ -105,7 +105,7 @@ public class CSharpApiClientGenerator : GeneratorBase
         {
             if (property is IFieldProperty fp)
             {
-                foreach (var @using in fp.Domain.CSharp!.Usings)
+                foreach (var @using in fp.Domain.CSharp!.Usings.Select(u => u.ParseTemplate(fp)))
                 {
                     usings.Add(@using);
                 }
@@ -127,7 +127,7 @@ public class CSharpApiClientGenerator : GeneratorBase
 
                     if (cp.DomainKind != null)
                     {
-                        usings.AddRange(cp.DomainKind.CSharp!.Usings);
+                        usings.AddRange(cp.DomainKind.CSharp!.Usings.Select(u => u.ParseTemplate(cp)));
                     }
 
                     if (!_config.UseLatestCSharp && (cp.Kind == "list" || cp.Kind == "async-list"))
