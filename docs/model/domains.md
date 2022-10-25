@@ -115,9 +115,9 @@ domain:
   java:
     type: Integer
     annotations:
-      - "@Label(\"{label:lower}\")"
-    imports:
-      - topmodel.sample.custom.annotation.Label
+      - text: "@Label(\"{label:lower}\")"
+        imports:
+          - topmodel.sample.custom.annotation.Label
 ```
 
 Actuellement, voici les transformations gérées par `TopModel` :
@@ -144,4 +144,19 @@ Les annotations peuvent être spécialisées selon la cible de la génération. 
 - `Api_Dto`
 - `Api_Dto_Persisted`
 
-Ainsi, les annotations `Dto` ne seront ajoutées que pour les classes non persistées, les annotations `Persisted` ne seront ajoutées que pour les classes persistées etc.
+Ainsi, les annotations `Dto` ne seront ajoutées que pour les classes non persistées, les annotations `Persisted` ne seront ajoutées que pour les classes persistées etc. Par défaut, la valeur est `Persisted-Dto`.
+
+Ex :
+
+```yaml
+domain:
+  name: DO_ID
+  label: Identifiant
+  java:
+    type: Integer
+    annotations:
+      - text: "@Label(\"{label:lower}\")"
+        imports:
+          - topmodel.sample.custom.annotation.Label
+        target: Dto
+```
