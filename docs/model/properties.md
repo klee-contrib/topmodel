@@ -100,12 +100,12 @@ domain:
   name: DO_DICTIONNAIRE
   label: Dictionnaire
   csharp:
-    type: Dictionary<string, {class}>
+    type: Dictionary<string, {composition.name}>
   ts:
-    type: Map<String, {class}>
+    type: Map<String, {composition.name}>
 ```
 
-Ainsi, les propriétés de composition générées avec le `kind: DO_DICTIONNAIRE` auront la forme du pattern défini, `{class}` étant remplacé par la classe cible.
+Ainsi, les propriétés de composition générées avec le `kind: DO_DICTIONNAIRE` auront la forme du pattern défini, `{composition.name}` étant remplacé par la classe cible.
 
 ## Alias
 

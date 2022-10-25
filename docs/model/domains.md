@@ -81,7 +81,15 @@ Actuellement il est possible d'utiliser ces variables
 - `resourceKey`
 - `defaultValue`
 
-Dans ces propriétés :
+Dans le cadre d'une composition, il est possible d'utiliser ces variables :
+
+- `class.name`
+- `composition.name`
+- `name`
+- `label`
+- `comment`
+
+Le tout dans ces propriétés :
 
 - `java.type`
 - `java.annotations`
