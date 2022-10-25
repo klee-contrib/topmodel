@@ -109,6 +109,14 @@ public class CSharpApiClientGenerator : GeneratorBase
                 {
                     usings.Add(@using);
                 }
+
+                foreach (var @using in fp.Domain.CSharp!.Annotations
+                .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
+                .SelectMany(a => a.Using)
+                .Select(u => u.ParseTemplate(fp)))
+                {
+                    usings.Add(@using);
+                }
             }
 
             switch (property)
@@ -128,6 +136,9 @@ public class CSharpApiClientGenerator : GeneratorBase
                     if (cp.DomainKind != null)
                     {
                         usings.AddRange(cp.DomainKind.CSharp!.Usings.Select(u => u.ParseTemplate(cp)));
+                        usings.AddRange(cp.DomainKind.CSharp!.Annotations
+                        .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
+                        .SelectMany(a => a.Using));
                     }
 
                     if (!_config.UseLatestCSharp && (cp.Kind == "list" || cp.Kind == "async-list"))

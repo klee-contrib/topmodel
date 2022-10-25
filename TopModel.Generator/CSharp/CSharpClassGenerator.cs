@@ -517,7 +517,9 @@ public class CSharpClassGenerator : GeneratorBase
                 w.WriteAttribute(2, "StringLength", $"{domain.Length}");
             }
 
-            foreach (var annotation in domain.CSharp!.Annotations.Select(a => a.ParseTemplate(property)))
+            foreach (var annotation in domain.CSharp!.Annotations
+                .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
+                .Select(a => a.Text.ParseTemplate(property)))
             {
                 w.WriteAttribute(2, annotation);
             }
@@ -610,6 +612,14 @@ public class CSharpClassGenerator : GeneratorBase
                 {
                     usings.Add(@using);
                 }
+
+                foreach (var @using in (fp is AliasProperty { ListDomain: Domain ld } ? ld : fp.Domain).CSharp!.Annotations
+                .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
+                .SelectMany(a => a.Using)
+                .Select(u => u.ParseTemplate(fp)))
+                {
+                    usings.Add(@using);
+                }
             }
 
             switch (property)
@@ -628,6 +638,10 @@ public class CSharpClassGenerator : GeneratorBase
                     if (cp.DomainKind != null)
                     {
                         usings.AddRange(cp.DomainKind.CSharp!.Usings.Select(u => u.ParseTemplate(cp)));
+                        usings.AddRange(cp.DomainKind.CSharp!.Annotations
+                        .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
+                        .SelectMany(a => a.Using)
+                        .Select(u => u.ParseTemplate(cp)));
                     }
 
                     break;

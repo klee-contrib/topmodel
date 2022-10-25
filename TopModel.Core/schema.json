@@ -411,7 +411,25 @@
                   "type": "array",
                   "description": "Annotations à ajouter sur toutes les propriétés C# de ce domaine (par exemple pour aider l'ORM a mapper le type correctement).",
                   "items": {
-                    "type": "string"
+                    "type": "object",
+                    "description": "Annotations à ajouter  (ex : `CreatedDate`)",
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "description": "Annotation à ajouter. Peut contenir des variables"
+                      },
+                      "target": {
+                        "$ref": "#/definitions/target"
+                      },
+                      "usings": {
+                        "type": "array",
+                        "description": "Liste des imports nécessaires au bon fonctionnement de cette annotation",
+                        "items": {
+                          "type": "string",
+                          "description": "Import nécessaire au bon fonctionnement de l'annotation. Peut contenir des variables"
+                        }
+                      }
+                    }
                   }
                 },
                 "usings": {
@@ -474,7 +492,7 @@
                     "properties": {
                       "text": {
                         "type": "string",
-                        "description": "Annotation à ajouter. Ppeut contenir des variables"
+                        "description": "Annotation à ajouter. Peut contenir des variables"
                       },
                       "target": {
                         "$ref": "#/definitions/target"
