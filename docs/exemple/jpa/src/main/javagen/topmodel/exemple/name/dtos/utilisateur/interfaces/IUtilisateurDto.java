@@ -4,6 +4,9 @@
 
 package topmodel.exemple.name.dtos.utilisateur.interfaces;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.Email;
 
@@ -12,6 +15,20 @@ import topmodel.exemple.name.entities.utilisateur.TypeUtilisateur;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface IUtilisateurDto {
+
+	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#dateCreation dateCreation}.
+	 */
+	LocalDate getDateCreation();
+
+	/**
+	 * Getter for dateModification.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#dateModification dateModification}.
+	 */
+	LocalDateTime getDateModification();
 
 	/**
 	 * Getter for id.

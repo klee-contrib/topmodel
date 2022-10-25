@@ -8,6 +8,8 @@ export const utilisateur = {
         libelle: "Libelle"
     },
     utilisateur: {
+        dateCreation: "dateCreation",
+        dateModification: "dateModification",
         id: "Id technique",
         age: "Age",
         profilId: "ProfilId",

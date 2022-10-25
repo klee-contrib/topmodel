@@ -2,6 +2,20 @@
   "$id": "topmodel.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
+    "target": {
+      "type": "string",
+      "description": "Cible de la génération",
+      "enum": [
+        "None",
+        "Persisted",
+        "Dto",
+        "Persisted_Dto",
+        "Api",
+        "Api_Persisted",
+        "Api_Dto",
+        "Api_Dto_Persisted"
+      ]
+    },
     "property": {
       "oneOf": [
         {
@@ -441,22 +455,39 @@
               "properties": {
                 "type": {
                   "type": "string",
-                  "description": "Nom du type.\n\nSera considéré comme un type générique de la classe si utilisé dans une composition. Dans ce cas, il est aussi possible d'utiliser cette valeur comme un template de type en utilisant '{class}' pour référencer la classe composée."
+                  "description": "Type java du domaine. Peut contenir des variables"
                 },
                 "imports": {
                   "type": "array",
-                  "description": "Imports à ajouter pour utiliser cette annotation",
+                  "description": "Imports nécessaires au bon fonctionnement du type. Peuvent contenir des variables",
                   "items": {
                     "type": "string",
-                    "description": "Imports à ajouter à tout fichier Java qui utilise une propriété de ce domaine."
+                    "description": "Import nécessaire au bon fonctionnement du type. Peut contenir des variables"
                   }
                 },
                 "annotations": {
                   "type": "array",
                   "description": "Annotations à ajouter sur toutes les propriétés C# de ce domaine (par exemple pour aider l'ORM a mapper le type correctement).",
                   "items": {
-                    "type": "string",
-                    "description": "Annotations à ajouter  (ex : `@CreatedDate`)"
+                    "type": "object",
+                    "description": "Annotations à ajouter  (ex : `@CreatedDate`)",
+                    "properties": {
+                      "text": {
+                        "type": "string",
+                        "description": "Annotation à ajouter. Ppeut contenir des variables"
+                      },
+                      "target": {
+                        "$ref": "#/definitions/target"
+                      },
+                      "imports": {
+                        "type": "array",
+                        "description": "Liste des imports nécessaires au bon fonctionnement de cette annotation",
+                        "items": {
+                          "type": "string",
+                          "description": "Import nécessaire au bon fonctionnement de l'annotation. Peut contenir des variables"
+                        }
+                      }
+                    }
                   }
                 }
               }

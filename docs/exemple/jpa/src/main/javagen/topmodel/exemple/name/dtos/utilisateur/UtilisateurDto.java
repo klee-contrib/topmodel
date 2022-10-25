@@ -5,6 +5,8 @@
 package topmodel.exemple.name.dtos.utilisateur;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.Email;
@@ -20,6 +22,18 @@ import topmodel.exemple.name.entities.utilisateur.Utilisateur;
 public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	/** Serial ID */
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Date de création de l'utilisateur.
+	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getDateCreation() Utilisateur#getDateCreation()} 
+	 */
+	private LocalDate dateCreation;
+
+	/**
+	 * Date de modification de l'utilisateur.
+	 * Alias of {@link topmodel.exemple.name.entities.utilisateur.Utilisateur#getDateModification() Utilisateur#getDateModification()} 
+	 */
+	private LocalDateTime dateModification;
 
 	/**
 	 * Id technique.
@@ -72,6 +86,8 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 			return;
 		}
 
+		this.dateCreation = utilisateurDto.getDateCreation();
+		this.dateModification = utilisateurDto.getDateModification();
 		this.id = utilisateurDto.getId();
 		this.age = utilisateurDto.getAge();
 		this.profilId = utilisateurDto.getProfilId();
@@ -82,6 +98,8 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 
 	/**
 	 * All arg constructor.
+	 * @param dateCreation Date de création de l'utilisateur
+	 * @param dateModification Date de modification de l'utilisateur
 	 * @param id Id technique
 	 * @param age Age en années de l'utilisateur
 	 * @param profilId Profil de l'utilisateur
@@ -89,7 +107,9 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @param utilisateurParent UtilisateurParent
 	 */
-	public UtilisateurDto(Long id, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, UtilisateurDto utilisateurParent) {
+	public UtilisateurDto(LocalDate dateCreation, LocalDateTime dateModification, Long id, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, UtilisateurDto utilisateurParent) {
+		this.dateCreation = dateCreation;
+		this.dateModification = dateModification;
 		this.id = id;
 		this.age = age;
 		this.profilId = profilId;
@@ -115,6 +135,8 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	protected void from(Utilisateur utilisateur) {
 		if(utilisateur != null) {
 			this.utilisateurParent = new UtilisateurDto(utilisateur.getUtilisateurParent());
+			this.dateCreation = utilisateur.getDateCreation();
+			this.dateModification = utilisateur.getDateModification();
 			this.id = utilisateur.getId();
 			this.age = utilisateur.getAge();
 			if(utilisateur.getProfil() != null) {
@@ -128,6 +150,26 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 
 		}
 
+	}
+
+	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#dateCreation dateCreation}.
+	 */
+	@Override
+	public LocalDate getDateCreation() {
+		return this.dateCreation;
+	}
+
+	/**
+	 * Getter for dateModification.
+	 *
+	 * @return value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#dateModification dateModification}.
+	 */
+	@Override
+	public LocalDateTime getDateModification() {
+		return this.dateModification;
 	}
 
 	/**
@@ -188,6 +230,22 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	@Override
 	public UtilisateurDto getUtilisateurParent() {
 		return this.utilisateurParent;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#dateCreation dateCreation}.
+	 * @param dateCreation value to set
+	 */
+	public void setDateCreation(LocalDate dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.exemple.name.dtos.utilisateur.UtilisateurDto#dateModification dateModification}.
+	 * @param dateModification value to set
+	 */
+	public void setDateModification(LocalDateTime dateModification) {
+		this.dateModification = dateModification;
 	}
 
 	/**
@@ -252,6 +310,8 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 			dest.setUtilisateurParent(this.getUtilisateurParent().toUtilisateur(dest.getUtilisateurParent()));
 		}
 
+		dest.setDateCreation(this.getDateCreation());
+		dest.setDateModification(this.getDateModification());
 		dest.setId(this.getId());
 		dest.setAge(this.getAge());
 		dest.setEmail(this.getEmail());

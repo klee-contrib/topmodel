@@ -26,7 +26,10 @@ public static class ImportsJpaExtensions
         var javaType = rp.Domain.Java;
         if (javaType?.Imports != null)
         {
-            imports.AddRange(javaType.Imports.Select(i => i.ParseTemplate(rp)));
+            imports.AddRange(javaType.Imports.Concat(javaType.Annotations.Where(a =>
+                (rp.Class?.IsPersistent ?? false) && (Target.Persisted & a.Target) > 0
+            || !(rp.Class?.IsPersistent ?? false) && (Target.Dto & a.Target) > 0).SelectMany(a => a.Imports))
+            .Select(i => i.ParseTemplate(rp)));
         }
 
         if (rp.Class != null && rp.PrimaryKey && rp.Class.IsPersistent)
@@ -72,10 +75,6 @@ public static class ImportsJpaExtensions
             {
                 imports.AddRange(asp.Property.GetImports(config));
             }
-            else if (ap.Property.Domain.Java!.Imports != null)
-            {
-                imports.AddRange(ap.Property.Domain.Java!.Imports.Select(i => i.ParseTemplate(ap)));
-            }
         }
 
         if (ap.IsEnum())
@@ -88,6 +87,11 @@ public static class ImportsJpaExtensions
         }
 
         if (ap.Domain.Java?.Imports != null)
+        {
+            imports.AddRange(ap.Domain.Java.Imports.Select(i => i.ParseTemplate(ap)));
+        }
+
+        if (ap.Domain.Java?.Annotations.Where(a => ((a.Target & Target.Persisted) > 0) && (ap.Class?.IsPersistent ?? false) || ((a.Target & Target.Dto) > 0)).SelectMany(a => a.Imports) != null)
         {
             imports.AddRange(ap.Domain.Java.Imports.Select(i => i.ParseTemplate(ap)));
         }
@@ -109,19 +113,21 @@ public static class ImportsJpaExtensions
             imports.Add($"{rp.Class.GetImport(config)}");
         }
 
-        if (rp.Domain?.Java?.Imports != null)
-        {
-            imports.AddRange(rp.Domain.Java.Imports.Select(i => i.ParseTemplate(rp)));
-        }
+        imports.AddRange(rp.Domain.Java!.Imports.Concat(rp.Domain.Java.Annotations.Where(a =>
+            (rp.Class?.IsPersistent ?? false) && (Target.Persisted & a.Target) > 0
+        || !(rp.Class?.IsPersistent ?? false) && (Target.Dto & a.Target) > 0)
+        .SelectMany(a => a.Imports))
+        .Select(i => i.ParseTemplate(rp)));
 
         return imports;
     }
 
     public static List<string> GetImports(this AssociationProperty ap, JpaConfig config)
     {
+        var persistenceMode = $"{config.PersistenceMode.ToString().ToLower()}.persistence.";
         var imports = new List<string>
         {
-            config.PersistenceMode.ToString().ToLower() + $".persistence.{ap.Type}"
+            $"{persistenceMode}{ap.Type}"
         };
 
         switch (ap.Type)
@@ -130,35 +136,35 @@ public static class ImportsJpaExtensions
                 imports.Add("java.util.List");
                 imports.Add("java.util.ArrayList");
                 imports.Add("java.util.stream.Collectors");
-                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.FetchType");
-                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.CascadeType");
+                imports.Add($"{persistenceMode}FetchType");
+                imports.Add($"{persistenceMode}CascadeType");
                 if (!(ap is JpaAssociationProperty jap && jap.IsReverse) && ap.Association.Namespace.Module.Split('.').First() != ap.Class.Namespace.Module.Split('.').First())
                 {
-                    imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.JoinColumn");
+                    imports.Add($"{persistenceMode}JoinColumn");
                 }
 
                 break;
             case AssociationType.ManyToOne:
-                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.FetchType");
-                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.JoinColumn");
+                imports.Add($"{persistenceMode}FetchType");
+                imports.Add($"{persistenceMode}JoinColumn");
                 break;
             case AssociationType.ManyToMany:
                 imports.Add("java.util.List");
                 imports.Add("java.util.ArrayList");
-                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.JoinColumn");
+                imports.Add($"{persistenceMode}JoinColumn");
                 imports.Add("java.util.stream.Collectors");
-                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.CascadeType");
-                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.FetchType");
+                imports.Add($"{persistenceMode}CascadeType");
+                imports.Add($"{persistenceMode}FetchType");
                 if (!(ap is JpaAssociationProperty japo && japo.IsReverse))
                 {
-                    imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.JoinTable");
+                    imports.Add($"{persistenceMode}JoinTable");
                 }
 
                 break;
             case AssociationType.OneToOne:
-                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.FetchType");
-                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.JoinColumn");
-                imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.CascadeType");
+                imports.Add($"{persistenceMode}FetchType");
+                imports.Add($"{persistenceMode}JoinColumn");
+                imports.Add($"{persistenceMode}CascadeType");
                 break;
         }
 
@@ -188,9 +194,12 @@ public static class ImportsJpaExtensions
             imports.Add("java.util.List");
             imports.Add("java.util.stream.Collectors");
         }
-        else if (cp.DomainKind?.Java?.Imports != null)
+        else if (cp.DomainKind != null)
         {
-            imports.AddRange(cp.DomainKind.Java.Imports.Select(i => i.ParseTemplate(cp)));
+            imports.AddRange(cp.DomainKind.Java!.Imports.Concat(cp.DomainKind.Java.Annotations.Where(a =>
+                (cp.Class?.IsPersistent ?? false) && (Target.Persisted & a.Target) > 0
+            || !(cp.Class?.IsPersistent ?? false) && (Target.Dto & a.Target) > 0)
+            .SelectMany(a => a.Imports)).Select(i => i.ParseTemplate(cp)));
         }
 
         return imports;

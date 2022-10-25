@@ -5,6 +5,8 @@
 package topmodel.exemple.name.api.securite.utilisateur;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -125,6 +127,8 @@ public abstract class AbstractUtilisateurApiClient {
 
 	/**
 	 * UriComponentsBuilder pour la méthode Search.
+	 * @param dateCreation Date de création de l'utilisateur
+	 * @param dateModification Date de modification de l'utilisateur
 	 * @param utilisateurId Id technique
 	 * @param age Age en années de l'utilisateur
 	 * @param profilId Profil de l'utilisateur
@@ -132,9 +136,17 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder searchUriComponentsBuilder(Long utilisateurId, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode) {
+	protected UriComponentsBuilder searchUriComponentsBuilder(LocalDate dateCreation, LocalDateTime dateModification, Long utilisateurId, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode) {
 		String uri = host + "utilisateur/search";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
+		if (dateCreation != null) {
+			uriBuilder.queryParam("dateCreation", dateCreation);
+		}
+
+		if (dateModification != null) {
+			uriBuilder.queryParam("dateModification", dateModification);
+		}
+
 		uriBuilder.queryParam("utilisateurId", utilisateurId);
 		if (age != null) {
 			uriBuilder.queryParam("age", age);
@@ -157,6 +169,8 @@ public abstract class AbstractUtilisateurApiClient {
 
 	/**
 	 * Recherche des utilisateurs.
+	 * @param dateCreation Date de création de l'utilisateur
+	 * @param dateModification Date de modification de l'utilisateur
 	 * @param utilisateurId Id technique
 	 * @param age Age en années de l'utilisateur
 	 * @param profilId Profil de l'utilisateur
@@ -164,8 +178,8 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<Page> search(Long utilisateurId, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, HttpHeaders headers){
-		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utilisateurId, age, profilId, email, typeUtilisateurCode);
+	public ResponseEntity<Page> search(LocalDate dateCreation, LocalDateTime dateModification, Long utilisateurId, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, HttpHeaders headers){
+		UriComponentsBuilder uri = this.searchUriComponentsBuilder(dateCreation, dateModification, utilisateurId, age, profilId, email, typeUtilisateurCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), Page.class);
 	}
 }

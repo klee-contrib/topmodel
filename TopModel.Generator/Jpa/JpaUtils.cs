@@ -63,7 +63,7 @@ public static class JpaUtils
                 }
                 else
                 {
-                    return ap.Property.Domain.Java!.Type;
+                    return ap.Property.Domain.Java!.Type.ParseTemplate(ap);
                 }
             }
             else
