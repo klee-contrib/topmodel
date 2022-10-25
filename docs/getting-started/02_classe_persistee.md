@@ -89,10 +89,10 @@ domain:
     type: string
   java:
     type: String
-    annotations:
-      - "@Email" # Ensemble des annotations à ajouter au dessus de la propriété
-    imports:
-      - "javax.validation.constraints.Email" # Imports nécessaires au bon fonctionnement de la classe Java
+    annotations: # Ensemble des annotations à ajouter au dessus de la propriété
+      - text: "@Email" 
+        imports:
+          - "javax.validation.constraints.Email" # Imports nécessaires au bon fonctionnement de l'annotation
 ---
 domain:
   name: DO_CODE

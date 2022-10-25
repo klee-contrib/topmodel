@@ -156,7 +156,7 @@ domain:
     type: Integer
     annotations:
       - text: "@Label(\"{label:lower}\")"
-        imports:
+        imports: # Using pour les annotations C#
           - topmodel.sample.custom.annotation.Label
         target: Dto
 ```
