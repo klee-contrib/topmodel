@@ -63,9 +63,9 @@ domain:
   java:
     type: Integer
     annotations:
-      - @Label(\"{label}\")
-    imports:
-      - topmodel.sample.custom.annotation.Label
+      - text: @Label(\"{label}\")
+        imports:
+          - topmodel.sample.custom.annotation.Label
 ```
 
 Le code généré sera ainsi différent selon la propriété sur laquelle vous allez effectivement ajouter ce domaine/
@@ -115,7 +115,7 @@ domain:
   java:
     type: Integer
     annotations:
-      - @Label(\"{label:lower}\")
+      - "@Label(\"{label:lower}\")"
     imports:
       - topmodel.sample.custom.annotation.Label
 ```
@@ -131,3 +131,17 @@ Actuellement, voici les transformations gérées par `TopModel` :
 | `pascal`     | PascalCase    |
 | `lower`      | lowercase     |
 | `upper`      | UPPERCASE     |
+
+## Spécialisation
+
+Les annotations peuvent être spécialisées selon la cible de la génération. Il y a actuellement trois cibles possibles, qui sont composables. La propriété `target` de l'annotation peut donc prendre les valeurs suivantes :
+
+- `Persisted`
+- `Dto`
+- `Persisted_Dto`
+- `Api`
+- `Api_Persisted`
+- `Api_Dto`
+- `Api_Dto_Persisted`
+
+Ainsi, les annotations `Dto` ne seront ajoutées que pour les classes non persistées, les annotations `Persisted` ne seront ajoutées que pour les classes persistées etc.
