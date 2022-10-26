@@ -12,8 +12,8 @@ public static class JavascriptUtils
             {
                 "object" => cp.Composition.Name,
                 "list" or "async-list" => $"{cp.Composition.Name}[]",
-                string _ when cp.DomainKind!.TS!.Type.Contains("{class}") => cp.DomainKind.TS.Type.Replace("{class}", cp.Composition.Name),
-                string _ => $"{cp.DomainKind.TS.Type}<{cp.Composition.Name}>"
+                string _ when cp.DomainKind!.TS!.Type.Contains("{composition.name}") => cp.DomainKind.TS.Type.ParseTemplate(cp),
+                string _ => $"{cp.DomainKind.TS.Type}<{{composition.name}}>".ParseTemplate(cp)
             };
         }
 
@@ -24,7 +24,7 @@ public static class JavascriptUtils
             throw new ModelException(fp.Domain, $"Le type Typescript du domaine doit être renseigné.");
         }
 
-        var fixedType = fp.Domain.TS.Type;
+        var fixedType = fp.Domain.TS.Type.ParseTemplate(fp);
 
         var prop = fp is AliasProperty alp ? alp.Property : fp;
 

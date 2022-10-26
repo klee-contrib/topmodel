@@ -74,12 +74,12 @@ public class LocatedString : IComparable
 
     public string ToDashCase()
     {
-        return Value.ToDashCase();
+        return Value.ToKebabCase();
     }
 
     public string ToSnakeCase()
     {
-        return Value.ToSnakeCase();
+        return Value.ToConstantCase();
     }
 
     public string ToFirstLower()

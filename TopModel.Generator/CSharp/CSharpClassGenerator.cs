@@ -144,7 +144,7 @@ public class CSharpClassGenerator : GeneratorBase
         foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => t.Domain.CSharp!.Type.Contains("ICollection")))
         {
             initd.Add(property.Name);
-            var strip = property.Domain.CSharp!.Type.Replace("ICollection<", string.Empty).Replace(">", string.Empty);
+            var strip = property.Domain.CSharp!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
             w.WriteLine(3, property.Name + " = new List<" + strip + ">(bean." + property.Name + ");");
         }
 
@@ -189,7 +189,7 @@ public class CSharpClassGenerator : GeneratorBase
         foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => t.Domain.CSharp!.Type.Contains("ICollection")))
         {
             line = true;
-            var strip = property.Domain.CSharp!.Type.Replace("ICollection<", string.Empty).Replace(">", string.Empty);
+            var strip = property.Domain.CSharp!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
             w.WriteLine(3, LoadPropertyInit(property.Name, "List<" + strip + ">"));
         }
 
@@ -392,7 +392,7 @@ public class CSharpClassGenerator : GeneratorBase
             var sqlName = _config.UseLowerCaseSqlNames ? item.SqlName.ToLower() : item.SqlName;
             if (_config.DbSchema != null)
             {
-                w.WriteAttribute(1, "Table", $@"""{sqlName}""", $@"Schema = ""{_config.DbSchema.Replace("{module}", item.Namespace.Module.ToLowerSnakeCase())}""");
+                w.WriteAttribute(1, "Table", $@"""{sqlName}""", $@"Schema = ""{_config.DbSchema.Replace("{module}", item.Namespace.Module.ToSnakeCase())}""");
             }
             else
             {
@@ -400,12 +400,12 @@ public class CSharpClassGenerator : GeneratorBase
             }
         }
 
-        foreach (var annotation in item.Decorators.SelectMany(d => d.CSharp?.Annotations ?? Array.Empty<string>()).Distinct())
+        foreach (var annotation in item.Decorators.SelectMany(d => d.CSharp?.Annotations ?? Array.Empty<string>()).Select(a => a.ParseTemplate(item)).Distinct())
         {
             w.WriteAttribute(1, annotation);
         }
 
-        w.WriteClassDeclaration(item.Name, item.Extends?.Name ?? item.Decorators.SingleOrDefault(d => d.CSharp?.Extends != null)?.CSharp?.Extends, item.Decorators.SelectMany(d => d.CSharp?.Implements ?? Array.Empty<string>()).Distinct().ToArray());
+        w.WriteClassDeclaration(item.Name, item.Extends?.Name ?? item.Decorators.SingleOrDefault(d => d.CSharp?.Extends != null)?.CSharp?.Extends!.ParseTemplate(item), item.Decorators.SelectMany(d => d.CSharp?.Implements ?? Array.Empty<string>()).Distinct().Select(i => i.ParseTemplate(item)).ToArray());
 
         if (!_config.CanClassUseEnums(item))
         {
@@ -517,7 +517,9 @@ public class CSharpClassGenerator : GeneratorBase
                 w.WriteAttribute(2, "StringLength", $"{domain.Length}");
             }
 
-            foreach (var annotation in domain.CSharp!.Annotations)
+            foreach (var annotation in domain.CSharp!.Annotations
+                .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
+                .Select(a => a.Text.ParseTemplate(property)))
             {
                 w.WriteAttribute(2, annotation);
             }
@@ -597,7 +599,7 @@ public class CSharpClassGenerator : GeneratorBase
             usings.Add(_config.GetNamespace(item.Extends));
         }
 
-        foreach (var @using in item.Decorators.SelectMany(d => d.CSharp?.Usings ?? Array.Empty<string>()).Distinct())
+        foreach (var @using in item.Decorators.SelectMany(d => d.CSharp?.Usings ?? Array.Empty<string>()).Select(u => u.ParseTemplate(item)).Distinct())
         {
             usings.Add(@using);
         }
@@ -606,7 +608,15 @@ public class CSharpClassGenerator : GeneratorBase
         {
             if (property is IFieldProperty fp)
             {
-                foreach (var @using in (fp is AliasProperty { ListDomain: Domain ld } ? ld : fp.Domain).CSharp!.Usings)
+                foreach (var @using in (fp is AliasProperty { ListDomain: Domain ld } ? ld : fp.Domain).CSharp!.Usings.Select(u => u.ParseTemplate(fp)))
+                {
+                    usings.Add(@using);
+                }
+
+                foreach (var @using in (fp is AliasProperty { ListDomain: Domain ld } ? ld : fp.Domain).CSharp!.Annotations
+                    .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
+                    .SelectMany(a => a.Usings)
+                    .Select(u => u.ParseTemplate(fp)))
                 {
                     usings.Add(@using);
                 }
@@ -627,7 +637,11 @@ public class CSharpClassGenerator : GeneratorBase
                     usings.Add(_config.GetNamespace(cp.Composition));
                     if (cp.DomainKind != null)
                     {
-                        usings.AddRange(cp.DomainKind.CSharp!.Usings);
+                        usings.AddRange(cp.DomainKind.CSharp!.Usings.Select(u => u.ParseTemplate(cp)));
+                        usings.AddRange(cp.DomainKind.CSharp!.Annotations
+                        .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
+                        .SelectMany(a => a.Usings)
+                        .Select(u => u.ParseTemplate(cp)));
                     }
 
                     break;

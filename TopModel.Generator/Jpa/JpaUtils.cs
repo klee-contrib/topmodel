@@ -63,7 +63,7 @@ public static class JpaUtils
                 }
                 else
                 {
-                    return ap.Property.Domain.Java!.Type;
+                    return ap.Property.Domain.Java!.Type.ParseTemplate(ap);
                 }
             }
             else
@@ -97,12 +97,13 @@ public static class JpaUtils
             }
             else if (cpo.DomainKind != null)
             {
-                if (cpo.DomainKind.Java!.Type.Contains("{class}"))
+                var javaType = cpo.DomainKind.Java!.Type;
+                if (!javaType.Contains("{composition.name}"))
                 {
-                    return cpo.DomainKind.Java.Type.Replace("{class}", cpo.Composition.Name);
+                    javaType += "<{composition.name}>";
                 }
 
-                return $"{cpo.DomainKind.Java.Type}<{cpo.Composition.Name}>";
+                return javaType.ParseTemplate(cpo);
             }
         }
 
@@ -111,7 +112,7 @@ public static class JpaUtils
 
     public static string GetJavaType(this RegularProperty rp)
     {
-        return rp.IsEnum() ? $"{rp.Class.Name.ToFirstUpper()}.Values" : rp.Domain.Java!.Type;
+        return rp.IsEnum() ? $"{rp.Class.Name.ToFirstUpper()}.Values" : rp.Domain.Java!.Type.ParseTemplate(rp);
     }
 
     public static string GetJavaType(this CompositionProperty cp)
@@ -121,8 +122,8 @@ public static class JpaUtils
             "object" => cp.Composition.Name,
             "list" => $"List<{cp.Composition.Name}>",
             "async-list" => $"IAsyncEnumerable<{cp.Composition.Name}>",
-            string _ when cp.DomainKind!.Java!.Type.Contains("{class}") => cp.DomainKind.Java.Type.Replace("{class}", cp.Composition.Name),
-            string _ => $"{cp.DomainKind.Java.Type}<{cp.Composition.Name}>"
+            string _ when cp.DomainKind!.Java!.Type.Contains("{composition.name}") => cp.DomainKind.Java.Type.ParseTemplate(cp),
+            string _ => $"{cp.DomainKind.Java.Type}<{{composition.name}}>".ParseTemplate(cp)
         };
     }
 

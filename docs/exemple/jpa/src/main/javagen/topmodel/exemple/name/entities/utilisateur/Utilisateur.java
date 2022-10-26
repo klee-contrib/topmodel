@@ -25,7 +25,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import jakarta.validation.constraints.Email;
 
 import topmodel.exemple.name.entities.securite.Profil;
 
@@ -78,7 +77,6 @@ public class Utilisateur {
 	 * Email de l'utilisateur.
 	 */
 	@Column(name = "EMAIL", nullable = true, length = 50)
-	@Email
 	private String email;
 
 	/**

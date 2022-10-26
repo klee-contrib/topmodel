@@ -4,9 +4,8 @@ public class JavaType
 {
 #nullable disable
     public string Type { get; set; }
-#nullable enable
 
-    public List<string>? Imports { get; set; }
+    public List<string> Imports { get; set; } = new List<string>();
 
-    public List<string>? Annotations { get; set; }
+    public List<TargetedText> Annotations { get; set; } = new List<TargetedText>();
 }

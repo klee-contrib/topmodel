@@ -11,11 +11,10 @@ internal static class DependenciesExtensions
             .Where(d => d != null)!;
     }
 
-    internal static IEnumerable<Domain> GetDomainDependencies(this IEnumerable<IProperty> properties)
+    internal static IEnumerable<DomainDependency> GetDomainDependencies(this IEnumerable<IProperty> properties)
     {
-        return properties.OfType<IFieldProperty>().SelectMany(p => new[] { p.Domain, p is AliasProperty { ListDomain: Domain ld } ? ld : null })
-            .Concat(properties.OfType<CompositionProperty>().Select(p => p.DomainKind != null ? p.DomainKind : null))
-            .Distinct()
+        return properties.OfType<IFieldProperty>().SelectMany(p => new[] { new DomainDependency(p.Domain, p), p is AliasProperty { ListDomain: Domain ld } ? new DomainDependency(ld, p) : null })
+            .Concat(properties.OfType<CompositionProperty>().Select(p => p.DomainKind != null ? new DomainDependency(p.DomainKind, p) : null))
             .Where(d => d != null)!;
     }
 }

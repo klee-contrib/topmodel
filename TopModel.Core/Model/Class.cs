@@ -71,7 +71,7 @@ public class Class
     public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies(this)
         .Concat(Extends != null ? new[] { new ClassDependency(Extends, this) } : Array.Empty<ClassDependency>());
 
-    public IEnumerable<Domain> DomainDependencies => Properties.GetDomainDependencies();
+    public IEnumerable<DomainDependency> DomainDependencies => Properties.GetDomainDependencies();
 
 #nullable disable
     internal Reference Location { get; set; }

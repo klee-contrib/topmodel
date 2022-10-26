@@ -2,11 +2,13 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_CODE, DO_EMAIL, DO_ID, DO_NUMBER} from "@domains";
+import {DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_NUMBER} from "@domains";
 
 import {TypeUtilisateurCode} from "./references";
 
 export interface UtilisateurDto {
+    dateCreation?: string,
+    dateModification?: string,
     id?: number,
     age?: number,
     profilId?: number,
@@ -16,6 +18,20 @@ export interface UtilisateurDto {
 }
 
 export const UtilisateurDtoEntity = {
+    dateCreation: {
+        type: "field",
+        name: "dateCreation",
+        domain: DO_DATE_CREATION,
+        isRequired: false,
+        label: "utilisateur.utilisateur.dateCreation"
+    },
+    dateModification: {
+        type: "field",
+        name: "dateModification",
+        domain: DO_DATE_MODIFICATION,
+        isRequired: false,
+        label: "utilisateur.utilisateur.dateModification"
+    },
     id: {
         type: "field",
         name: "id",

@@ -37,7 +37,7 @@ public class JpaResourceGenerator : GeneratorBase
 
     private string GetFilePath(IGrouping<string, IFieldProperty> module)
     {
-        return Path.Combine(_config.OutputDirectory, _config.ResourceRootPath, Path.Combine(module.Key.Split(".").Select(part => part.ToDashCase()).ToArray()) + "_fr_FR.properties");
+        return Path.Combine(_config.OutputDirectory, _config.ResourceRootPath, Path.Combine(module.Key.Split(".").Select(part => part.ToKebabCase()).ToArray()) + "_fr_FR.properties");
     }
 
     private IEnumerable<IGrouping<string, IFieldProperty>> GetModules()
@@ -83,14 +83,14 @@ public class JpaResourceGenerator : GeneratorBase
                 string name;
                 if (property is AssociationProperty ap)
                 {
-                    name = ap.GetAssociationName().ToSnakeCase();
+                    name = ap.GetAssociationName().ToConstantCase();
                 }
                 else
                 {
-                    name = property.Name.ToSnakeCase();
+                    name = property.Name.ToConstantCase();
                 }
 
-                fw.WriteLine($"{classe.Key.Name.ToString().ToSnakeCase()}.{name}={property.Label}");
+                fw.WriteLine($"{classe.Key.Name.ToString().ToConstantCase()}.{name}={property.Label}");
             }
         }
 
@@ -100,7 +100,7 @@ public class JpaResourceGenerator : GeneratorBase
             {
                 var key = val.Value[classe.Key.PrimaryKey];
                 var value = val.Value[classe.Key.DefaultProperty];
-                fw.WriteLine($"{classe.Key.Name.ToString().ToSnakeCase()}.VALUES.{key}={value}");
+                fw.WriteLine($"{classe.Key.Name.ToString().ToConstantCase()}.VALUES.{key}={value}");
             }
         }
     }

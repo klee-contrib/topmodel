@@ -202,7 +202,7 @@ public class DbContextGenerator : GeneratorBase
                             : prop.Key is AssociationProperty ap && _config.CanClassUseEnums(ap.Association)
                             ? WriteEnumValue(ap.Association, prop.Value)
                             : prop.Key.Domain.CSharp!.Type.Contains("Date")
-                            ? $"{prop.Key.Domain.CSharp.Type.TrimEnd('?')}.Parse(\"{prop.Value}\"){(prop.Key.Domain.CSharp.Type.Contains("Time") ? ".ToUniversalTime()" : string.Empty)}"
+                            ? $"{prop.Key.Domain.CSharp.Type.ParseTemplate(prop.Key).TrimEnd('?')}.Parse(\"{prop.Value}\"){(prop.Key.Domain.CSharp.Type.Contains("Time") ? ".ToUniversalTime()" : string.Empty)}"
                             : prop.Key.Domain.ShouldQuoteSqlValue
                             ? $"\"{prop.Value}\""
                             : prop.Value;

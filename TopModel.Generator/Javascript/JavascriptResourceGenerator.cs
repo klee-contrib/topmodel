@@ -67,7 +67,7 @@ public class JavascriptResourceGenerator : GeneratorBase
 
                     if (_config.ResourceMode == ResourceMode.Schema)
                     {
-                        fw.WriteLine($"  \"$id\": \"{string.Join('/', module.Split('.').Select(m => m.ToDashCase()))}_translation.json\",");
+                        fw.WriteLine($"  \"$id\": \"{string.Join('/', module.Split('.').Select(m => m.ToKebabCase()))}_translation.json\",");
                         fw.WriteLine("  \"$schema\": \"http://json-schema.org/draft-07/schema#\",");
                         fw.WriteLine("  \"properties\": {");
                     }

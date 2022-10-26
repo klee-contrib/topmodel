@@ -17,8 +17,6 @@ class:
     - alias:
         class: Utilisateur
         exclude:
-          - dateCreation
-          - dateModification
           - UtilisateurIdParent
     - composition: UtilisateurDto
       name: UtilisateurParent

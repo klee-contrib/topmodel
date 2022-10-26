@@ -153,12 +153,16 @@ public class JpaModelPropertyGenerator
             }
         }
 
-        if (classe.IsPersistent)
+        if (classe.IsPersistent && !property.Domain.Java!.Annotations
+        .Where(i =>
+                classe.IsPersistent && (Target.Persisted & i.Target) > 0
+            || !classe.IsPersistent && (Target.Dto & i.Target) > 0)
+            .Any(a => a.Text.Replace("@", string.Empty).StartsWith("Column")))
         {
             var column = @$"@Column(name = ""{property.SqlName}"", nullable = {(!property.Required).ToString().ToFirstLower()}";
             if (property.Domain.Length != null)
             {
-                if (property.Domain.Java!.Type == "String" || property.Domain.Java.Type == "string")
+                if (property.Domain.Java!.Type.ToUpper() == "STRING")
                 {
                     column += $", length = {property.Domain.Length}";
                 }
@@ -188,9 +192,11 @@ public class JpaModelPropertyGenerator
 
         if (property.Domain.Java is not null && property.Domain.Java.Annotations is not null)
         {
-            foreach (var annotation in property.Domain.Java.Annotations)
+            foreach (var annotation in property.Domain.Java.Annotations.Where(a =>
+                classe.IsPersistent && (Target.Persisted & a.Target) > 0
+            || !classe.IsPersistent && (Target.Dto & a.Target) > 0))
             {
-                fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : '@')}{annotation}");
+                fw.WriteLine(1, $"{(annotation.Text.StartsWith("@") ? string.Empty : '@')}{annotation.Text.ParseTemplate(property)}");
             }
         }
 

@@ -22,9 +22,11 @@ domain:
     type: LocalDate
     imports:
       - java.time.LocalDate
-      - org.springframework.data.annotation.CreatedDate
     annotations:
-      - "@CreatedDate"
+      - text: "@CreatedDate"
+        target: Persisted
+        imports:
+          - org.springframework.data.annotation.CreatedDate
   sqlType: date
 ---
 domain:
@@ -34,12 +36,14 @@ domain:
     type: string
   java:
     type: LocalDateTime
-    imports:
+    imports: 
       - java.time.LocalDateTime
-      - org.springframework.data.annotation.LastModifiedDate
-      - org.springframework.data.jpa.domain.support.AuditingEntityListener
     annotations:
-      - "@LastModifiedDate"
+      - text: "@LastModifiedDate"
+        target: Persisted
+        imports:
+          - org.springframework.data.annotation.LastModifiedDate
+          - org.springframework.data.jpa.domain.support.AuditingEntityListener
   sqlType: date
 ---
 domain:
@@ -48,11 +52,12 @@ domain:
   ts:
     type: string
   java:
-    imports:
-      - "jakarta.validation.constraints.Email"
     type: String
     annotations:
-      - "@Email"
+      - text: "@Email"
+        target: Dto
+        imports:
+          - jakarta.validation.constraints.Email
   sqlType: varchar
   length: 50
 ---
@@ -86,7 +91,6 @@ domain:
     type: Page
     imports: 
       - org.springframework.data.domain.Page
-
 ---
 domain:
   name: DO_NUMBER

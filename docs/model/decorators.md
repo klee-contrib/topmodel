@@ -75,3 +75,98 @@ public class Utilisateur {
   private DateTime dateModification;
 }
 ```
+
+## Templating
+
+## Variables
+
+Il est possible que certaines propriétés des décorateurs dépendent de la classe sur laquelle vous l'ajouter. Vous pourriez par exemple ajouter une interface `java` générique de la classe sur laquelle est ajouté le décorateur.
+
+```java
+/**
+ * Utilisateur de l'application.
+ */
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
+@Entity
+@Table(name = "UTILISATEUR")
+@EntityListeners(AuditingEntityListener.class)
+public class Utilisateur implements MonInterface<Utilisateur> {
+}
+```
+
+Ici nous pourrions écrire un décorateur `MonInterfaceUtilisateur` :
+
+```yaml
+decorator:
+  name: MonInterfaceUtilisateur
+  description: Implémente MonInterface pour la classe utilisateur
+  java:
+    annotations:
+      - MonInterface<Utilisateur>
+```
+
+Cela pose un problème évident : ce décorateur n'est utilisable que pour cette classe là.
+Mais TopModel permet de gérer ce type de cas, et de créer des décorateurs plus génériques avec des `templates`.
+
+TopModel peut remplacer la chaîne de caractère `{name}` par le nom de la classe sur lequel est ajouté le générateur. Ainsi :
+
+```yaml
+decorator:
+  name: MonInterface
+  description: Implémente MonInterface pour la classe sur laquelle ce décorateur est ajouté
+  java:
+    implements:
+      - MonInterface<{name}>
+```
+
+Permet de généraliser le comportement du décorateur `MonInterface` à toutes les classes qui voudraient l'utiliser.
+
+Actuellement il est possible d'utiliser ces variables
+
+- `primaryKey.name`
+- `trigram`
+- `name`
+- `comment`
+- `label`
+- `pluralName`
+- `module`
+
+Dans ces propriétés :
+
+- `java.annotations`
+- `java.implements`
+- `java.extends`
+- `java.imports`
+- `csharp.extends`
+- `csharp.implements`
+- `csharp.annotations`
+- `csharp.usings`
+
+Les templates des domaines des propriétés sont également valorisés.
+
+## Transformation
+
+Il est possible que la variable que vous utilisez dans votre template ne corresponde pas tout à fait à votre besoin. TopModel gère l'ajout de `transformateurs` sur les templates. Vous pouvez ajouter un `transformateur` après le nom de la variable que vous référencez, précédé de `:`. Le code généré tiendra compte de cette transformation.
+
+Exemple :
+
+```yaml
+decorator:
+  name: MonInterface
+  description: Implémente MonInterface pour la classe sur laquelle ce décorateur est ajouté
+  java:
+    annotations:
+      - @Label(\"{name:lower}\")
+```
+
+Actuellement, voici les transformations gérées par `TopModel` :
+
+| nom          | résultat      |
+| ------------ | ------------- |
+| `kebab`      | kebab-case    |
+| `snake_case` | snake_case    |
+| `constant`   | CONSTANT_CASE |
+| `camel`      | camelCase     |
+| `pascal`     | PascalCase    |
+| `lower`      | lowercase     |
+| `upper`      | UPPERCASE     |

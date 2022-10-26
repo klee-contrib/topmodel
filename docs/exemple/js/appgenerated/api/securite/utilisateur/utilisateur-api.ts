@@ -70,6 +70,8 @@ export class UtilisateurApiService {
 
     /**
      * Recherche des utilisateurs
+     * @param dateCreation Date de création de l'utilisateur
+     * @param dateModification Date de modification de l'utilisateur
      * @param utilisateurId Id technique
      * @param age Age en années de l'utilisateur
      * @param profilId Profil de l'utilisateur
@@ -78,9 +80,15 @@ export class UtilisateurApiService {
      * @param options Options pour 'fetch'.
      * @returns Utilisateurs matchant les critères
      */
-    search(utilisateurId?: number age?: number profilId?: number email?: string typeUtilisateurCode?: TypeUtilisateurCode , queryParams: any = {}): Observable<Page<UtilisateurDto>> {
+    search(dateCreation?: string dateModification?: string utilisateurId?: number age?: number profilId?: number email?: string typeUtilisateurCode?: TypeUtilisateurCode , queryParams: any = {}): Observable<Page<UtilisateurDto>> {
         const httpParams = new HttpParams({fromObject : queryParams});
         const httpOptions = { params: httpParams }
+        if(dateCreation !== null) {
+            httpOptions.params.set('dateCreation', dateCreation)
+        }
+        if(dateModification !== null) {
+            httpOptions.params.set('dateModification', dateModification)
+        }
         if(utilisateurId !== null) {
             httpOptions.params.set('utilisateurId', utilisateurId)
         }

@@ -6,7 +6,7 @@ public class CSharpType
     public string Type { get; set; }
 #nullable enable
 
-    public IList<string> Annotations { get; set; } = new List<string>();
+    public IList<TargetedText> Annotations { get; set; } = new List<TargetedText>();
 
     public IList<string> Usings { get; set; } = new List<string>();
 

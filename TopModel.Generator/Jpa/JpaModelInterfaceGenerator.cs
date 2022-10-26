@@ -72,9 +72,9 @@ public class JpaModelInterfaceGenerator : GeneratorBase
             WriteImports(fw, classe);
             fw.WriteLine();
 
-            var extends = (classe.Extends?.Name ?? classe.Decorators.Find(d => d.Java?.Extends is not null)?.Java!.Extends) ?? null;
+            var extends = (classe.Extends?.Name ?? classe.Decorators.Find(d => d.Java?.Extends is not null)?.Java!.Extends!.ParseTemplate(classe)) ?? null;
 
-            var implements = classe.Decorators.SelectMany(d => d.Java!.Implements).Distinct().ToList();
+            var implements = classe.Decorators.SelectMany(d => d.Java!.Implements).Select(i => i.ParseTemplate(classe)).Distinct().ToList();
 
             fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
             fw.WriteLine($"public interface I{classe.Name} {{");

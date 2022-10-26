@@ -79,9 +79,9 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine();
 
             WriteAnnotations(module, fw, classe);
-            var extends = (classe.Extends?.Name ?? classe.Decorators.Find(d => d.Java?.Extends is not null)?.Java!.Extends) ?? null;
+            var extends = (classe.Extends?.Name ?? classe.Decorators.Find(d => d.Java?.Extends is not null)?.Java!.Extends!.ParseTemplate(classe)) ?? null;
 
-            var implements = classe.Decorators.SelectMany(d => d.Java!.Implements).Distinct().ToList();
+            var implements = classe.Decorators.SelectMany(d => d.Java!.Implements).Select(i => i.ParseTemplate(classe)).Distinct().ToList();
             if (!classe.IsPersistent)
             {
                 implements.Add("Serializable");
@@ -320,7 +320,7 @@ public class JpaModelGenerator : GeneratorBase
     private void WriteImports(JavaWriter fw, Class classe)
     {
         var imports = classe.GetImports(Files.SelectMany(f => f.Value.Classes).ToList(), _config);
-        imports.AddRange(classe.Decorators.SelectMany(d => d.Java!.Imports));
+        imports.AddRange(classe.Decorators.SelectMany(d => d.Java!.Imports.Select(i => i.ParseTemplate(classe))));
         foreach (var property in classe.GetProperties(_config, AvailableClasses))
         {
             imports.AddRange(property.GetImports(_config));
@@ -437,9 +437,9 @@ public class JpaModelGenerator : GeneratorBase
             }
         }
 
-        foreach (var a in classe.Decorators.SelectMany(d => d.Java!.Annotations).Distinct())
+        foreach (var a in classe.Decorators.SelectMany(d => d.Java!.Annotations).Select(a => a.ParseTemplate(classe)).Distinct())
         {
-            fw.WriteLine($"{(a.StartsWith("@") ? string.Empty : "@")}{a}");
+            fw.WriteLine($"{(a.StartsWith("@") ? string.Empty : "@")}{a.ParseTemplate(classe)}");
         }
     }
 
@@ -585,11 +585,11 @@ public class JpaModelGenerator : GeneratorBase
             string name;
             if (prop is AssociationProperty ap)
             {
-                name = ap.GetAssociationName().ToSnakeCase();
+                name = ap.GetAssociationName().ToConstantCase();
             }
             else
             {
-                name = prop.Name.ToSnakeCase();
+                name = prop.Name.ToConstantCase();
             }
 
             var javaType = prop.GetJavaType();
