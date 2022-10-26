@@ -1,9 +1,16 @@
 # TopModel.Generator (`modgen`)
 
+## 1.17.0
+
+- [#166](https://github.com/klee-contrib/topmodel/pull/166) -  [JPA] : Ne pas générer de méthode `equals`
+- [#167](https://github.com/klee-contrib/topmodel/pull/167) - [Core] :
+  - Donner la possibilité de templater les domaines : [voir la documentation](https://klee-contrib.github.io/topmodel/#/model/domains?id=templating)
+  - Spécifier le scope d'une annotation et de ses imports dans le domaine : voir [voir la documentation](https://klee-contrib.github.io/topmodel/#/model/domains?id=sp%c3%a9cialisation)
+
 ## 1.16.0
 
-- [#162](https://github.com/klee-contrib/topmodel/pull/162) -  JPA : Respect de la convention de nommage des interfaces #161 
-- [#160](https://github.com/klee-contrib/topmodel/pull/160) - [JPA] JPA : Mode Spring 3 : utilisation possible de l'API `jakarta` à la place de `javax`
+- [#162](https://github.com/klee-contrib/topmodel/pull/162) -  [JPA] : Respect de la convention de nommage des interfaces #161
+- [#160](https://github.com/klee-contrib/topmodel/pull/160) - [JPA] : Mode Spring 3 : utilisation possible de l'API `jakarta` à la place de `javax`
 - [`9298c5ec`](https://github.com/klee-contrib/topmodel/commit/9298c5ec0b56098558d35f70e535409603382312) - [Doc] Ajustements sur les domains dans le tutoriel
 
 ## 1.15.11
@@ -119,7 +126,7 @@ _Remarque : Générer du SSDT pour PostgreSQL n'a évidemment pas de sens, mais 
 
 ## 1.13.1
 
-- [`e3a8a3f1`]((https://github.com/klee-contrib/topmodel/commit/e3a8a3f1d45a3ee8a3d862fcaa4e0360406f30bd) JPA : Correction mapping associations - compositions
+- [`e3a8a3f1`](https://github.com/klee-contrib/topmodel/commit/e3a8a3f1d45a3ee8a3d862fcaa4e0360406f30bd) JPA : Correction mapping associations - compositions
 
 ## 1.13.0
 
