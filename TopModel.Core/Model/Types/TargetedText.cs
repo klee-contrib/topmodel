@@ -9,5 +9,5 @@ public class TargetedText
 
     public List<string> Imports { get; set; } = new List<string>();
 
-    public List<string> Using { get; set; } = new List<string>();
+    public List<string> Usings { get; set; } = new List<string>();
 }

@@ -614,9 +614,9 @@ public class CSharpClassGenerator : GeneratorBase
                 }
 
                 foreach (var @using in (fp is AliasProperty { ListDomain: Domain ld } ? ld : fp.Domain).CSharp!.Annotations
-                .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
-                .SelectMany(a => a.Using)
-                .Select(u => u.ParseTemplate(fp)))
+                    .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
+                    .SelectMany(a => a.Usings)
+                    .Select(u => u.ParseTemplate(fp)))
                 {
                     usings.Add(@using);
                 }
@@ -640,7 +640,7 @@ public class CSharpClassGenerator : GeneratorBase
                         usings.AddRange(cp.DomainKind.CSharp!.Usings.Select(u => u.ParseTemplate(cp)));
                         usings.AddRange(cp.DomainKind.CSharp!.Annotations
                         .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
-                        .SelectMany(a => a.Using)
+                        .SelectMany(a => a.Usings)
                         .Select(u => u.ParseTemplate(cp)));
                     }
 

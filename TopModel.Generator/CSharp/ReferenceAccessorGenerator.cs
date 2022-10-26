@@ -28,7 +28,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
         foreach (var classes in GetReferenceModules(files))
         {
             var classList = classes
-                .OrderBy(x => x.PluralName, StringComparer.Ordinal)
+                .OrderBy(x => (_config.DbContextPath == null ? $"{x.Name}List" : x.PluralName), StringComparer.Ordinal)
                 .ToList();
 
             if (!classList.Any())
