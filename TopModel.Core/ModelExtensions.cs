@@ -17,6 +17,7 @@ public static class ModelExtensions
             Alias alias => alias.ModelFile,
             Domain domain => domain.ModelFile,
             Decorator decorator => decorator.ModelFile,
+            Keyword keyword => keyword.ModelFile,
             _ => throw new ArgumentException("Type d'objet non supporté.")
         };
     }

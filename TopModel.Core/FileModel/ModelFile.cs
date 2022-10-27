@@ -53,7 +53,7 @@ public class ModelFile
         .Concat(Classes.SelectMany(c => c.UniqueKeyReferences.SelectMany(uk => uk).Select(propRef => (propRef, (object)c.Properties.FirstOrDefault(p => p.Name == propRef.ReferenceName)))))
         .Concat(Classes.SelectMany(c => c.ReferenceValueReferences.SelectMany(rv => rv.Value).Select(prop => (prop.Key, (object)c.Properties.FirstOrDefault(p => p.Name == prop.Key.ReferenceName)))))
         .Concat(Classes.SelectMany(c => c.FromMappers.SelectMany(m => m.Params).Concat(c.ToMappers)).Select(p => (p.ClassReference as Reference, (object)p.Class)))
-        .Concat(Classes.SelectMany(c => c.FromMappers.SelectMany(m => m.Params).Concat(c.ToMappers).SelectMany(m => m.MappingReferences.SelectMany(mr => new[] { (mr.Key, (object)c.Properties.FirstOrDefault(k => k.Name == mr.Key.ReferenceName)), (mr.Value, mr.Value.ReferenceName == "this" || mr.Value.ReferenceName == "false" ? new object() : m.Mappings.Values.FirstOrDefault(k => k.Name == mr.Value.ReferenceName)) }))))
+        .Concat(Classes.SelectMany(c => c.FromMappers.SelectMany(m => m.Params).Concat(c.ToMappers).SelectMany(m => m.MappingReferences.SelectMany(mr => new[] { (mr.Key, (object)c.Properties.FirstOrDefault(k => k.Name == mr.Key.ReferenceName)), (mr.Value, mr.Value.ReferenceName == "this" || mr.Value.ReferenceName == "false" ? new Keyword { ModelFile = c.ModelFile } : m.Mappings.Values.FirstOrDefault(k => k.Name == mr.Value.ReferenceName)) }))))
         .Concat(Aliases.SelectMany(a => a.Classes).Select(c => (c as Reference, ResolvedAliases.OfType<Class>().FirstOrDefault(ra => ra.Name == c.ReferenceName) as object)))
         .Where(t => t.Item1 != null && t.Item2 != null)
         .DistinctBy(t => t.Item1)
