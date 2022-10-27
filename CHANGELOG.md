@@ -1,21 +1,25 @@
 # TopModel.Generator (`modgen`)
 
+## 1.17.1
+
+- [`a43d4a42`](https://github.com/klee-contrib/topmodel/commit/a43d4a424644e753a3369ededb19255b42943722) - Fix erreurs random sur import inutilisé avec des mappings spéciaux (false et this)
+
 ## 1.17.0
 
-- [#166](https://github.com/klee-contrib/topmodel/pull/166) -  [JPA] : Ne pas générer de méthode `equals`
+- [#166](https://github.com/klee-contrib/topmodel/pull/166) - [JPA] : Ne pas générer de méthode `equals`
 - [#167](https://github.com/klee-contrib/topmodel/pull/167) - [Core] :
   - Donner la possibilité de templater les domaines : [voir la documentation](https://klee-contrib.github.io/topmodel/#/model/domains?id=templating)
   - Spécifier le scope d'une annotation et de ses imports dans le domaine : voir [voir la documentation](https://klee-contrib.github.io/topmodel/#/model/domains?id=sp%c3%a9cialisation)
 
 ## 1.16.0
 
-- [#162](https://github.com/klee-contrib/topmodel/pull/162) -  [JPA] : Respect de la convention de nommage des interfaces #161
+- [#162](https://github.com/klee-contrib/topmodel/pull/162) - [JPA] : Respect de la convention de nommage des interfaces #161
 - [#160](https://github.com/klee-contrib/topmodel/pull/160) - [JPA] : Mode Spring 3 : utilisation possible de l'API `jakarta` à la place de `javax`
 - [`9298c5ec`](https://github.com/klee-contrib/topmodel/commit/9298c5ec0b56098558d35f70e535409603382312) - [Doc] Ajustements sur les domains dans le tutoriel
 
 ## 1.15.11
 
-- [`4138e9f69`](https://github.com/klee-contrib/topmodel/commit/4138e9f69e9b941091245927bb5eff3634a9afa9) - [JPA] Ne pas générer de fichier de ressource vide
+- [`4138e9f6`](https://github.com/klee-contrib/topmodel/commit/4138e9f69e9b941091245927bb5eff3634a9afa9) - [JPA] Ne pas générer de fichier de ressource vide
 
 ## 1.15.10
 
