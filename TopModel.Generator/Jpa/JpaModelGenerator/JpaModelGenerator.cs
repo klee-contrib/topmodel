@@ -72,9 +72,8 @@ public class JpaModelGenerator : GeneratorBase
             var destFolder = GetDestinationFolder(classe);
             var dirInfo = Directory.CreateDirectory(destFolder);
             var packageName = GetPackageName(classe);
-            using var fw = new JavaWriter($"{destFolder}/{classe.Name}.java", _logger, null);
+            using var fw = new JavaWriter($"{destFolder}/{classe.Name}.java", _logger, packageName, null);
 
-            fw.WriteLine($"package {packageName};");
             WriteImports(fw, classe);
             fw.WriteLine();
 
@@ -174,6 +173,7 @@ public class JpaModelGenerator : GeneratorBase
                     fw.WriteLine(4, @$"this.{ap.GetAssociationName()} = new ArrayList<>();");
                     fw.WriteLine(3, "}");
                     fw.WriteLine(3, @$"this.{ap.GetAssociationName()}.addAll({propertyName}.stream().map(p -> new {ap.Association.Name}({constructorArgs})).collect(Collectors.toList()));");
+                    fw.AddImport("java.util.stream.Collectors");
                 }
 
                 fw.WriteLine(2, "} else {");
@@ -197,6 +197,7 @@ public class JpaModelGenerator : GeneratorBase
                 else
                 {
                     fw.WriteLine(2, @$"return this.{ap.GetAssociationName()} != null ? this.{ap.GetAssociationName()}.stream().map({ap.Association.Name}::get{ap.Property.Name}).collect(Collectors.toList()) : null;");
+                    fw.AddImport("java.util.stream.Collectors");
                 }
 
                 fw.WriteLine(1, "}");
@@ -350,7 +351,7 @@ public class JpaModelGenerator : GeneratorBase
             imports.Add(_config.PersistenceMode.ToString().ToLower() + ".persistence.Transient");
         }
 
-        fw.WriteImports(imports.Where(i => string.Join('.', i.Split('.').SkipLast(1).ToList()) != GetPackageName(classe)).Distinct().ToArray());
+        fw.AddImports(imports.Where(i => string.Join('.', i.Split('.').SkipLast(1).ToList()) != GetPackageName(classe)).Distinct().ToArray());
     }
 
     private void CheckClass(Class classe)

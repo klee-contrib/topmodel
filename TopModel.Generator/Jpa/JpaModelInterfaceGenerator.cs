@@ -66,8 +66,7 @@ public class JpaModelInterfaceGenerator : GeneratorBase
             var destFolder = GetDestinationFolder(classe);
             var dirInfo = Directory.CreateDirectory(destFolder);
             var packageName = $"{packageRoot}.{classe.Namespace.Module.ToLower()}.interfaces";
-            using var fw = new JavaWriter(GetFileClassName(classe), _logger, null);
-            fw.WriteLine($"package {packageName};");
+            using var fw = new JavaWriter(GetFileClassName(classe), _logger, packageName, null);
 
             WriteImports(fw, classe);
             fw.WriteLine();
@@ -122,6 +121,6 @@ public class JpaModelInterfaceGenerator : GeneratorBase
             }
         }
 
-        fw.WriteImports(imports.Distinct().ToArray());
+        fw.AddImports(imports);
     }
 }

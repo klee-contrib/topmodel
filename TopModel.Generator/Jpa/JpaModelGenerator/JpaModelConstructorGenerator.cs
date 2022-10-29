@@ -164,6 +164,7 @@ public class JpaModelConstructorGenerator
             {
                 var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
                 fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.Name.ToFirstLower()}.{getterPrefix}{property.GetJavaName().ToFirstUpper()}().stream().collect(Collectors.toList());");
+                fw.AddImport("java.util.stream.Collectors");
             }
         }
 
@@ -266,6 +267,7 @@ public class JpaModelConstructorGenerator
                                     else
                                     {
                                         fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().stream().filter(t -> t != null).map({ap.GetJavaName().ToFirstLower()} -> {ap.GetJavaName().ToFirstLower()}.{getterPrefix}{ap.Property.Name.ToFirstUpper()}()).collect(Collectors.toList());");
+                                        fw.AddImport("java.util.stream.Collectors");
                                     }
 
                                     fw.WriteLine(3, "}");
@@ -311,6 +313,7 @@ public class JpaModelConstructorGenerator
                                     else
                                     {
                                         fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().stream().filter(t -> t != null).map({ap.GetJavaName().ToFirstLower()} -> {ap.GetJavaName().ToFirstLower()}.{getterPrefix}{ap.Property.Name.ToFirstUpper()}()).collect(Collectors.toList());");
+                                        fw.AddImport("java.util.stream.Collectors");
                                     }
 
                                     fw.WriteLine(3, "}");

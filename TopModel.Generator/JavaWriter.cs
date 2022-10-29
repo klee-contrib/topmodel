@@ -9,20 +9,39 @@ namespace TopModel.Generator;
 /// </summary>
 public class JavaWriter : IDisposable
 {
-    private readonly FileWriter _writer;
+    private readonly ILogger _logger;
 
-    public JavaWriter(string name, ILogger logger, int? codePage = 1252)
+    private readonly string _name;
+
+    private readonly Encoding _encoding;
+
+    private List<string> _imports;
+
+    private string _packageName;
+
+    private List<JavaLine> _toWrite;
+
+    public JavaWriter(string name, ILogger logger, string packageName, int? codePage = 1252)
     {
-        _writer = new FileWriter(name, logger, codePage != null ? CodePagesEncodingProvider.Instance.GetEncoding(codePage.Value)! : new UTF8Encoding(false))
-        {
-            IndentValue = "	"
-        };
+        _logger = logger;
+        _encoding = codePage != null ? CodePagesEncodingProvider.Instance.GetEncoding(codePage.Value)! : new UTF8Encoding(false);
+        _name = name;
+        _imports = new List<string>();
+        _packageName = packageName;
+        _toWrite = new List<JavaLine>();
     }
 
     /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
     {
-        _writer.Dispose();
+        var writer = new FileWriter(_name, _logger, _encoding)
+        {
+            IndentValue = "	"
+        };
+        writer.WriteLine($"package {_packageName};");
+        this.WriteImports(writer);
+        _toWrite.ForEach(l => writer.WriteLine(l.Indent, l.Line));
+        writer.Dispose();
     }
 
     /// <summary>
@@ -99,7 +118,17 @@ public class JavaWriter : IDisposable
     /// <param name="value">Valeur à écrire dans le flux.</param>
     public void WriteLine(int indentationLevel, string value)
     {
-        _writer.WriteLine(indentationLevel, value);
+        _toWrite.Add(new JavaLine() { Line = value, Indent = indentationLevel });
+    }
+
+    public void AddImport(string value)
+    {
+        _imports.Add(value);
+    }
+
+    public void AddImports(IEnumerable<string> values)
+    {
+        _imports.AddRange(values);
     }
 
     /// <summary>
@@ -158,38 +187,6 @@ public class JavaWriter : IDisposable
     public void WriteDocEnd(int indentationLevel)
     {
         WriteLine(indentationLevel, " */");
-    }
-
-    /// <summary>
-    /// Ajoute les imports
-    /// </summary>
-    /// <param name="imports">Nom des classes à importer.</param>
-    public void WriteImports(params string[] imports)
-    {
-        var currentPackage = string.Empty;
-        foreach (var import in imports.Where(i => i.StartsWith("java") || i.StartsWith("org")).OrderBy(x => x))
-        {
-            var package = import.Split('.').First();
-            if (package != currentPackage)
-            {
-                WriteLine();
-                currentPackage = package;
-            }
-
-            WriteLine($"import {import};");
-        }
-
-        foreach (var import in imports.Where(i => !(i.StartsWith("java") || i.StartsWith("org"))).OrderBy(x => x))
-        {
-            var package = import.Split('.').First();
-            if (package != currentPackage)
-            {
-                WriteLine();
-                currentPackage = package;
-            }
-
-            WriteLine($"import {import};");
-        }
     }
 
     /// <summary>
@@ -292,5 +289,38 @@ public class JavaWriter : IDisposable
         }
 
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// Ajoute les imports
+    /// </summary>
+    /// <param name="imports">Nom des classes à importer.</param>
+    private void WriteImports(FileWriter fw)
+    {
+        _imports = _imports.Distinct().Where(i => string.Join('.', i.Split('.').SkipLast(1).ToList()) != this._packageName).Distinct().ToArray().ToList();
+        var currentPackage = string.Empty;
+        foreach (var import in this._imports.Where(i => i.StartsWith("java") || i.StartsWith("org")).OrderBy(x => x))
+        {
+            var package = import.Split('.').First();
+            if (package != currentPackage)
+            {
+                fw.WriteLine();
+                currentPackage = package;
+            }
+
+            fw.WriteLine($"import {import};");
+        }
+
+        foreach (var import in this._imports.Where(i => !(i.StartsWith("java") || i.StartsWith("org"))).OrderBy(x => x))
+        {
+            var package = import.Split('.').First();
+            if (package != currentPackage)
+            {
+                fw.WriteLine();
+                currentPackage = package;
+            }
+
+            fw.WriteLine($"import {import};");
+        }
     }
 }

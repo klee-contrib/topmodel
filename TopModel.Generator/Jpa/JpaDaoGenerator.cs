@@ -62,8 +62,7 @@ public class JpaDaoGenerator : GeneratorBase
                 continue;
             }
 
-            using var fw = new JavaWriter(fileName, _logger, null);
-            fw.WriteLine($"package {packageName};");
+            using var fw = new JavaWriter(fileName, _logger, packageName, null);
             fw.WriteLine();
             WriteImports(fw, classe);
             fw.WriteLine();
@@ -90,6 +89,6 @@ public class JpaDaoGenerator : GeneratorBase
             "org.springframework.data.jpa.repository.JpaRepository");
         }
 
-        fw.WriteImports(imports.Distinct().ToArray());
+        fw.AddImports(imports);
     }
 }

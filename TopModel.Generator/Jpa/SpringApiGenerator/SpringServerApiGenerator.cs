@@ -73,10 +73,8 @@ public class SpringServerApiGenerator : GeneratorBase
 
         var destFolder = GetDestinationFolder(file);
         Directory.CreateDirectory(destFolder);
-
-        using var fw = new JavaWriter($"{GetFilePath(file)}", _logger, null);
-
-        fw.WriteLine($"package {_config.ApiPackageName}.{file.Module.ToLower()};");
+        var packageName = $"{_config.ApiPackageName}.{file.Module.ToLower()}";
+        using var fw = new JavaWriter($"{GetFilePath(file)}", _logger, packageName, null);
 
         WriteImports(file, fw);
         fw.WriteLine();
@@ -215,7 +213,7 @@ public class SpringServerApiGenerator : GeneratorBase
             imports.Add("org.springframework.web.bind.annotation.RequestMapping");
         }
 
-        fw.WriteImports(imports.Distinct().ToArray());
+        fw.AddImports(imports);
     }
 
     private IEnumerable<string> GetTypeImports(ModelFile file)
