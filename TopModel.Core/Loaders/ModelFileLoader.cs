@@ -13,13 +13,15 @@ public class ModelFileLoader
     private readonly ModelConfig _config;
     private readonly DecoratorLoader _decoratorLoader;
     private readonly FileChecker _fileChecker;
+    private readonly EndpointLoader _endpointLoader;
 
-    public ModelFileLoader(ModelConfig config, ClassLoader classLoader, FileChecker fileChecker, DecoratorLoader decoratorLoader)
+    public ModelFileLoader(ModelConfig config, ClassLoader classLoader, FileChecker fileChecker, DecoratorLoader decoratorLoader, EndpointLoader endpointLoader)
     {
         _classLoader = classLoader;
         _config = config;
         _decoratorLoader = decoratorLoader;
         _fileChecker = fileChecker;
+        _endpointLoader = endpointLoader;
     }
 
     public ModelFile? LoadModelFile(string filePath, string? content = null)
@@ -163,13 +165,13 @@ public class ModelFileLoader
             }
             else if (scalar.Value == "class")
             {
-                var classe = _classLoader.LoadClass(parser, filePath);
+                var classe = _classLoader.LoadClass(parser);
                 classe.Location = new Reference(scalar);
                 file.Classes.Add(classe);
             }
             else if (scalar.Value == "endpoint")
             {
-                var endpoint = EndpointLoader.LoadEndpoint(parser);
+                var endpoint = _endpointLoader.LoadEndpoint(parser);
                 endpoint.Location = new Reference(scalar);
                 file.Endpoints.Add(endpoint);
             }

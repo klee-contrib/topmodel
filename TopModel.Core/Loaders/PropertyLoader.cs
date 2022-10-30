@@ -4,15 +4,22 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-internal static class PropertyLoader
+public class PropertyLoader
 {
-    public static IEnumerable<IProperty> LoadProperty(Parser parser)
+    private readonly ModelConfig _modelConfig;
+
+    public PropertyLoader(ModelConfig modelConfig)
+    {
+        _modelConfig = modelConfig;
+    }
+
+    public IEnumerable<IProperty> LoadProperty(Parser parser)
     {
         parser.Consume<MappingStart>();
         switch (parser.Current)
         {
             case Scalar { Value: "name" } s:
-                var rp = new RegularProperty();
+                var rp = new RegularProperty { UseLegacyRoleName = _modelConfig.UseLegacyRoleNames };
 
                 while (parser.Current is not MappingEnd)
                 {
@@ -62,7 +69,8 @@ internal static class PropertyLoader
             case Scalar { Value: "association" } s:
                 var ap = new AssociationProperty
                 {
-                    Location = new Reference(s)
+                    Location = new Reference(s),
+                    UseLegacyRoleName = _modelConfig.UseLegacyRoleNames
                 };
 
                 while (parser.Current is not MappingEnd)
@@ -200,7 +208,8 @@ internal static class PropertyLoader
 
                 var alp = new AliasProperty
                 {
-                    Location = new Reference(s)
+                    Location = new Reference(s),
+                    UseLegacyRoleName = _modelConfig.UseLegacyRoleNames
                 };
 
                 while (parser.Current is not MappingEnd)

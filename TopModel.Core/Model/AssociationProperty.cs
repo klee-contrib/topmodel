@@ -85,6 +85,8 @@ public class AssociationProperty : IFieldProperty
 #nullable disable
     public ClassReference Reference { get; set; }
 
+    public bool UseLegacyRoleName { get; init; }
+
     internal Reference Location { get; set; }
 
     public IProperty CloneWithClass(Class classe)

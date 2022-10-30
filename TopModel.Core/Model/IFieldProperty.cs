@@ -43,13 +43,15 @@ public interface IFieldProperty : IProperty
 
             string? prefix = prop.Trigram ?? (apPk != null ? apPkTrigram : prop.Class.Trigram);
             prefix = !string.IsNullOrWhiteSpace(prefix) ? $"{prefix}_" : string.Empty;
-            var suffix = prop is AssociationProperty { Role: string role } ? $"_{role.Replace(" ", "_").ToUpper()}" : string.Empty;
+            var suffix = prop is AssociationProperty { Role: string role }
+                ? UseLegacyRoleName
+                    ? $"_{role.Replace(" ", "_").ToUpper()}"
+                    : $"_{role.ToConstantCase()}"
+                : string.Empty;
 
             return $"{prefix}{sqlName}{suffix}";
         }
     }
 
-    string JavaName => this is AssociationProperty ap
-        ? (ap.Association.Trigram?.ToLower().ToFirstUpper() ?? string.Empty) + ap.Property.Name + (ap.Role?.Replace(" ", string.Empty) ?? string.Empty)
-        : (Class.Trigram?.ToLower().ToFirstUpper() ?? string.Empty) + Name;
+    bool UseLegacyRoleName { get; init; }
 }

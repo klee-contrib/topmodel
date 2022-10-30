@@ -85,6 +85,8 @@ public class AliasProperty : IFieldProperty
     public string? Suffix { get; set; }
 
 #nullable disable
+    public bool UseLegacyRoleName { get; init; }
+
     internal Reference Location { get; set; }
 
 #nullable enable
@@ -105,7 +107,8 @@ public class AliasProperty : IFieldProperty
             OriginalAliasProperty = OriginalAliasProperty,
             Prefix = Prefix,
             Property = _property,
-            Suffix = Suffix
+            Suffix = Suffix,
+            UseLegacyRoleName = UseLegacyRoleName
         };
 
         if (_required.HasValue)
@@ -133,7 +136,8 @@ public class AliasProperty : IFieldProperty
             Label = _label,
             ListDomain = _listDomain,
             ListDomainReference = ListDomainReference,
-            OriginalAliasProperty = this
+            OriginalAliasProperty = this,
+            UseLegacyRoleName = UseLegacyRoleName
         };
 
         if (_required.HasValue)
