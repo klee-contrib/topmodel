@@ -30,6 +30,7 @@ Chaque définition de mapping (qui correspond à un paramètre d'un `from` ou la
 - Un nom, `name`, facultatif :
   - Pour un `from`, il s'agit du nom du paramètre, qui est par défaut renseigné par le nom de la classe en camelCase. Il devient nécessaire si la même classe est utilisée pour plusieurs paramètres.
   - Pour un `to`, il s'agit du nom du mapper, par défaut `To{{ClasseCible}}`. Il devient nécessaire si plusieurs mappers `to` sont définis vers la même classe.
+- Un paramètre de mapper `from` peut également définir le caractère obligatoire du paramètre via `required`. **Tous les paramètres sont obligatoires** par défaut, il conviendra donc de spécifier `required: false` dans le cas contraire.
 - Des correspondances de champs personnalisées, `mappings`, facultatifs tant qu'il n'y a pas d'ambiguïté dans les correspondances.
 
 ## Mappings de champs entre classes

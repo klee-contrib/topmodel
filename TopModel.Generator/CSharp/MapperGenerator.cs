@@ -113,6 +113,16 @@ public class MapperGenerator : GeneratorBase
 
             w.WriteLine(2, $"public static {classe} Create{classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name}"))})");
             w.WriteLine(2, "{");
+
+            foreach (var param in mapper.Params.Where(p => p.Required))
+            {
+                w.WriteLine(3, $"if ({param.Name} is null)");
+                w.WriteLine(3, "{");
+                w.WriteLine(4, $"throw new ArgumentNullException(nameof({param.Name}));");
+                w.WriteLine(3, "}");
+                w.WriteLine();
+            }
+
             w.WriteLine(3, $"return new {classe}");
             w.WriteLine(3, "{");
 
@@ -133,10 +143,10 @@ public class MapperGenerator : GeneratorBase
                         {
                             if (mapping.Key is CompositionProperty cp)
                             {
-                                w.Write($"new() {{ {cp.Composition.PrimaryKey?.Name} = ");
+                                w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey?.Name} = ");
                             }
 
-                            w.Write($"{mapper.Params[mapper.ParentMapper.Params.IndexOf(param)].Name}.{mapping.Value.Name}");
+                            w.Write($"{mapper.Params[mapper.ParentMapper.Params.IndexOf(param)].Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.Name}");
 
                             if (mapping.Key is CompositionProperty)
                             {
@@ -169,10 +179,10 @@ public class MapperGenerator : GeneratorBase
                     {
                         if (mapping.Key is CompositionProperty cp)
                         {
-                            w.Write($"new() {{ {cp.Composition.PrimaryKey?.Name} = ");
+                            w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey?.Name} = ");
                         }
 
-                        w.Write($"{param.Name}.{mapping.Value.Name}");
+                        w.Write($"{param.Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.Name}");
 
                         if (mapping.Key is CompositionProperty)
                         {
