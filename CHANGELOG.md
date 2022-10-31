@@ -1,14 +1,19 @@
 # TopModel.Generator (`modgen`)
 
+## 1.18.0
+
+- [#169](https://github.com/klee-contrib/topmodel/pull/169) - `required` sur les paramètres de mapper `from`
+- [#170](https://github.com/klee-contrib/topmodel/pull/170) - `useLegacyRoleNames` (fix [#163](https://github.com/klee-contrib/topmodel/issues/163))
+
 ## 1.17.2
 
-- [`c314d20c5`](https://github.com/klee-contrib/topmodel/commit/c314d20c559b5c0274483fab9e73a4beb76ab3ec) -  [JPA] : Ne pas cascader les onToMany réciproques
+- [`c314d20c5`](https://github.com/klee-contrib/topmodel/commit/c314d20c559b5c0274483fab9e73a4beb76ab3ec) - [JPA] : Ne pas cascader les onToMany réciproques
 
 ## 1.17.1
 
 - [`a43d4a42`](https://github.com/klee-contrib/topmodel/commit/a43d4a424644e753a3369ededb19255b42943722) - Fix erreurs random sur import inutilisé avec des mappings spéciaux (false et this)
 
-- [`c314d20c5`](https://github.com/klee-contrib/topmodel/commit/c314d20c559b5c0274483fab9e73a4beb76ab3ec) -  [JPA] : Ne pas cascader les onToMany réciproques
+- [`c314d20c5`](https://github.com/klee-contrib/topmodel/commit/c314d20c559b5c0274483fab9e73a4beb76ab3ec) - [JPA] : Ne pas cascader les onToMany réciproques
 
 ## 1.17.0
 
