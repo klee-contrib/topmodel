@@ -186,6 +186,12 @@ public class JpaModelPropertyGenerator
 
         if (property.PrimaryKey && classe.Reference && classe.ReferenceValues.Any())
         {
+            var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+            fw.AddImports(new List<string>
+            {
+                $"{javaOrJakarta}.persistence.Enumerated",
+                $"{javaOrJakarta}.persistence.EnumType",
+            });
             fw.WriteLine(1, "@Enumerated(EnumType.STRING)");
         }
 
@@ -195,6 +201,7 @@ public class JpaModelPropertyGenerator
                 classe.IsPersistent && (Target.Persisted & a.Target) > 0
             || !classe.IsPersistent && (Target.Dto & a.Target) > 0))
             {
+                fw.AddImports(annotation.Imports.Select(i => i.ParseTemplate(property)));
                 fw.WriteLine(1, $"{(annotation.Text.StartsWith("@") ? string.Empty : '@')}{annotation.Text.ParseTemplate(property)}");
             }
         }

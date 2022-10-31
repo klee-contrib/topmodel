@@ -170,6 +170,7 @@ public class JpaModelGenerator : GeneratorBase
                     fw.WriteLine(3, @$"if (this.{ap.GetAssociationName()} != null) {{");
                     fw.WriteLine(4, @$"this.{ap.GetAssociationName()}.clear();");
                     fw.WriteLine(3, "} else {");
+                    fw.AddImport("java.util.ArrayList");
                     fw.WriteLine(4, @$"this.{ap.GetAssociationName()} = new ArrayList<>();");
                     fw.WriteLine(3, "}");
                     fw.WriteLine(3, @$"this.{ap.GetAssociationName()}.addAll({propertyName}.stream().map(p -> new {ap.Association.Name}({constructorArgs})).collect(Collectors.toList()));");
@@ -324,14 +325,15 @@ public class JpaModelGenerator : GeneratorBase
         imports.AddRange(classe.Decorators.SelectMany(d => d.Java!.Imports.Select(i => i.ParseTemplate(classe))));
         foreach (var property in classe.GetProperties(_config, AvailableClasses))
         {
-            imports.AddRange(property.GetImports(_config));
+            imports.AddRange(property.GetTypeImports(_config));
+            imports.AddRange(property.GetPersistenceImports(_config));
         }
 
         if (classe.Extends != null)
         {
             foreach (var property in classe.Extends.GetProperties(_config, AvailableClasses))
             {
-                imports.AddRange(property.GetImports(_config));
+                imports.AddRange(property.GetTypeImports(_config));
             }
         }
 
@@ -384,12 +386,14 @@ public class JpaModelGenerator : GeneratorBase
         fw.WriteDocEnd(0);
 
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
 
         if (classe.IsPersistent)
         {
             var table = @$"@Table(name = ""{classe.SqlName}""";
-            if (classe.UniqueKeys.Count > 0)
+            if (classe.UniqueKeys.Any())
             {
+                fw.AddImport($"{javaOrJakarta}.persistence.UniqueConstraint");
                 table += ", uniqueConstraints = {";
                 var isFirstConstraint = true;
                 foreach (var unique in classe.UniqueKeys)
@@ -429,6 +433,11 @@ public class JpaModelGenerator : GeneratorBase
         {
             if (classe.IsStatic())
             {
+                fw.AddImports(new List<string>(){
+                    "org.hibernate.annotations.Immutable",
+                    "org.hibernate.annotations.Cache",
+                    "org.hibernate.annotations.CacheConcurrencyStrategy"
+                });
                 fw.WriteLine("@Immutable");
                 fw.WriteLine("@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)");
             }
@@ -462,6 +471,7 @@ public class JpaModelGenerator : GeneratorBase
             if (property is AssociationProperty ap && (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany))
             {
                 fw.WriteLine(2, $"if(this.{property.GetJavaName()} == null)");
+                fw.AddImport("java.util.ArrayList");
                 fw.WriteLine(3, $"this.{property.GetJavaName()} = new ArrayList<>();");
             }
 

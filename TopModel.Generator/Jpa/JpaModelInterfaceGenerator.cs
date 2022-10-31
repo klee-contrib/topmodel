@@ -105,7 +105,7 @@ public class JpaModelInterfaceGenerator : GeneratorBase
             };
         foreach (var property in classe.Properties)
         {
-            imports.AddRange(property.GetImports(_config));
+            imports.AddRange(property.GetTypeImports(_config));
 
             if (property is CompositionProperty cp && cp.Composition.Namespace.Module == cp.Class?.Namespace.Module)
             {
@@ -117,7 +117,7 @@ public class JpaModelInterfaceGenerator : GeneratorBase
         {
             foreach (var property in classe.Extends.Properties)
             {
-                imports.AddRange(property.GetImports(_config));
+                imports.AddRange(property.GetTypeImports(_config));
             }
         }
 

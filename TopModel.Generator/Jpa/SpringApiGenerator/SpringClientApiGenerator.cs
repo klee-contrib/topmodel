@@ -285,7 +285,7 @@ public class SpringClientApiGenerator : GeneratorBase
     private IEnumerable<string> GetTypeImports(ModelFile file)
     {
         var properties = file.Endpoints.SelectMany(endpoint => endpoint.Params).Concat(file.Endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
-        return properties.SelectMany(property => property!.GetImports(_config));
+        return properties.SelectMany(property => property!.GetTypeImports(_config));
     }
 
     private void CheckEndpoint(Endpoint endpoint)
