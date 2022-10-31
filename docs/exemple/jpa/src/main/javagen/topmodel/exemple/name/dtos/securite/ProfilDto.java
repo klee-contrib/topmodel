@@ -106,22 +106,22 @@ public class ProfilDto implements Serializable {
 	 * @param profil Instance de 'Profil'.
 	 */
 	protected void from(Profil profil) {
-		if(profil != null) {
+		if (profil != null) {
 			this.id = profil.getId();
-			if(profil.getTypeProfil() != null) {
+			if (profil.getTypeProfil() != null) {
 				this.typeProfilCode = profil.getTypeProfil().getCode();
 			}
 
-			if(profil.getDroits() != null) {
+			if (profil.getDroits() != null) {
 				this.droits = profil.getDroits().stream().filter(t -> t != null).map(droits -> droits.getCode()).collect(Collectors.toList());
 			}
 
-			if(profil.getSecteurs() != null) {
+			if (profil.getSecteurs() != null) {
 				this.secteurs = profil.getSecteurs().stream().filter(t -> t != null).map(secteurs -> secteurs.getId()).collect(Collectors.toList());
 			}
-
+		} else {
+			throw new IllegalArgumentException("profil cannot not be null");
 		}
-
 	}
 
 	/**

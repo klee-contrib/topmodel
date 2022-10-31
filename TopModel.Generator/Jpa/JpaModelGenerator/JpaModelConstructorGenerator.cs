@@ -246,7 +246,7 @@ public class JpaModelConstructorGenerator
 
             foreach (var param in mapper.Params.Where(p => p.Mappings.Count > 0))
             {
-                fw.WriteLine(2, $"if({param.Name.ToFirstLower()} != null) {{");
+                fw.WriteLine(2, $"if ({param.Name.ToFirstLower()} != null) {{");
                 var mappings = param.Mappings.ToList();
                 foreach (var mapping in mappings)
                 {
@@ -259,7 +259,7 @@ public class JpaModelConstructorGenerator
                             {
                                 if (mapping.Key is IFieldProperty)
                                 {
-                                    fw.WriteLine(3, $"if({param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value.GetJavaName().ToFirstUpper()}() != null) {{");
+                                    fw.WriteLine(3, $"if ({param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value.GetJavaName().ToFirstUpper()}() != null) {{");
                                     if (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)
                                     {
                                         fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().{getterPrefix}{ap.Property.Name.ToFirstUpper()}();");
@@ -271,7 +271,11 @@ public class JpaModelConstructorGenerator
                                     }
 
                                     fw.WriteLine(3, "}");
-                                    fw.WriteLine();
+
+                                    if (mappings.IndexOf(mapping) < mappings.Count - 1)
+                                    {
+                                        fw.WriteLine();
+                                    }
                                 }
                                 else if (mapping.Key is CompositionProperty cp)
                                 {
@@ -282,7 +286,8 @@ public class JpaModelConstructorGenerator
                                     else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association))
                                     {
                                         var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association);
-                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = new {cp.Composition.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}());");
+                                        var getter = $"{param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}()";
+                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} != null ? null : new {cp.Composition.Name.ToFirstUpper()}({getter});");
                                     }
                                     else
                                     {
@@ -305,7 +310,7 @@ public class JpaModelConstructorGenerator
                                 }
                                 else if (mapping.Key is IFieldProperty)
                                 {
-                                    fw.WriteLine(3, $"if({param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}() != null) {{");
+                                    fw.WriteLine(3, $"if ({param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}() != null) {{");
                                     if (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)
                                     {
                                         fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().{getterPrefix}{ap.Property.Name.ToFirstUpper()}();");
@@ -317,7 +322,11 @@ public class JpaModelConstructorGenerator
                                     }
 
                                     fw.WriteLine(3, "}");
-                                    fw.WriteLine();
+
+                                    if (mappings.IndexOf(mapping) < mappings.Count - 1)
+                                    {
+                                        fw.WriteLine();
+                                    }
                                 }
                                 else if (mapping.Key is CompositionProperty cp)
                                 {
@@ -328,7 +337,16 @@ public class JpaModelConstructorGenerator
                                     else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association))
                                     {
                                         var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association);
-                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = new {cp.Composition.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}());");
+                                        var getter = $"{param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}()";
+                                        if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
+                                        {
+                                            fw.AddImport("java.util.stream.Collectors");
+                                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} == null ? null : {getter}.stream().map({cp.Composition.Name.ToFirstUpper()}::new).collect(Collectors.toList());");
+                                        }
+                                        else
+                                        {
+                                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} == null ? null : new {cp.Composition.Name.ToFirstUpper()}({getter});");
+                                        }
                                     }
                                     else
                                     {
@@ -348,8 +366,18 @@ public class JpaModelConstructorGenerator
                     }
                 }
 
+                if (param.Required)
+                {
+                    fw.WriteLine(2, "} else {");
+                    fw.WriteLine(3, $"throw new IllegalArgumentException(\"{param.Name} cannot not be null\");");
+                }
+
                 fw.WriteLine(2, "}");
-                fw.WriteLine();
+
+                if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1)
+                {
+                    fw.WriteLine();
+                }
             }
 
             fw.WriteLine(1, "}");

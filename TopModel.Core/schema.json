@@ -754,6 +754,10 @@
                               "type": "string",
                               "description": "Classe depuis laquelle recopier des propriétés."
                             },
+                            "required": {
+                              "type": "boolean",
+                              "description": "Paramètre obligatoire. 'true' par défaut."
+                            },
                             "comment": {
                               "type": "string",
                               "description": "Commentaire facultatif du mapper."

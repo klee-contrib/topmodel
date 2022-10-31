@@ -133,23 +133,23 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * @param utilisateur Instance de 'Utilisateur'.
 	 */
 	protected void from(Utilisateur utilisateur) {
-		if(utilisateur != null) {
+		if (utilisateur != null) {
 			this.utilisateurParent = new UtilisateurDto(utilisateur.getUtilisateurParent());
 			this.dateCreation = utilisateur.getDateCreation();
 			this.dateModification = utilisateur.getDateModification();
 			this.id = utilisateur.getId();
 			this.age = utilisateur.getAge();
-			if(utilisateur.getProfil() != null) {
+			if (utilisateur.getProfil() != null) {
 				this.profilId = utilisateur.getProfil().getId();
 			}
 
 			this.email = utilisateur.getEmail();
-			if(utilisateur.getTypeUtilisateur() != null) {
+			if (utilisateur.getTypeUtilisateur() != null) {
 				this.typeUtilisateurCode = utilisateur.getTypeUtilisateur().getCode();
 			}
-
+		} else {
+			throw new IllegalArgumentException("utilisateur cannot not be null");
 		}
-
 	}
 
 	/**

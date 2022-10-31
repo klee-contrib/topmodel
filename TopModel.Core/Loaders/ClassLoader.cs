@@ -138,6 +138,9 @@ public class ClassLoader
                                                                 classScalar = parser.Consume<Scalar>();
                                                                 param.ClassReference = new ClassReference(classScalar);
                                                                 break;
+                                                            case "required":
+                                                                param.Required = parser.Consume<Scalar>().Value == "true";
+                                                                break;
                                                             case "comment":
                                                                 param.Comment = parser.Consume<Scalar>().Value;
                                                                 break;

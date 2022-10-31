@@ -11,6 +11,8 @@ public class ClassMappings
 
     public ClassReference ClassReference { get; set; }
 
+    public bool Required { get; set; } = true;
+
 #nullable enable
     public string? Comment { get; set; }
 
