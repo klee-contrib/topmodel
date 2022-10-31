@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
+using TopModel.Utils;
 using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.ProceduralSql;
@@ -42,7 +43,7 @@ public class ProceduralSqlGenerator : GeneratorBase
             {
                 Comment = ap.Comment,
                 Label = ap.Label,
-                SqlName = $"{ap.Class.SqlName}_{ap.Association.SqlName}{(ap.Role != null ? $"_{ap.Role.ToUpper()}" : string.Empty)}"
+                SqlName = $"{ap.Class.SqlName}_{ap.Association.SqlName}{(ap.Role != null ? $"_{ap.Role.ToConstantCase()}" : string.Empty)}"
             };
             traClass.Properties.Add(new AssociationProperty()
             {
