@@ -286,7 +286,8 @@ public class JpaModelConstructorGenerator
                                     else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association))
                                     {
                                         var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association);
-                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = new {cp.Composition.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}());");
+                                        var getter = $"{param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}()";
+                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} != null ? null : new {cp.Composition.Name.ToFirstUpper()}({getter});");
                                     }
                                     else
                                     {
@@ -336,7 +337,16 @@ public class JpaModelConstructorGenerator
                                     else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association))
                                     {
                                         var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association);
-                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = new {cp.Composition.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}());");
+                                        var getter = $"{param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}()";
+                                        if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
+                                        {
+                                            fw.AddImport("java.util.stream.Collectors");
+                                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} == null ? null : {getter}.stream().map({cp.Composition.Name.ToFirstUpper()}::new).collect(Collectors.toList());");
+                                        }
+                                        else
+                                        {
+                                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} == null ? null : new {cp.Composition.Name.ToFirstUpper()}({getter});");
+                                        }
                                     }
                                     else
                                     {
