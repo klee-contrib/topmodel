@@ -7,10 +7,12 @@ namespace TopModel.Core.Loaders;
 public class DecoratorLoader
 {
     private readonly FileChecker _fileChecker;
+    private readonly PropertyLoader _propertyLoader;
 
-    public DecoratorLoader(FileChecker fileChecker)
+    public DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
     {
         _fileChecker = fileChecker;
+        _propertyLoader = propertyLoader;
     }
 
     public Decorator LoadDecorator(Parser parser)
@@ -39,7 +41,7 @@ public class DecoratorLoader
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        foreach (var property in PropertyLoader.LoadProperty(parser))
+                        foreach (var property in _propertyLoader.LoadProperty(parser))
                         {
                             decorator.Properties.Add(property);
                         }

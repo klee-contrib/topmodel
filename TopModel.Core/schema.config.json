@@ -38,6 +38,10 @@
       "type": "boolean",
       "description": "Utilise le nom au pluriel des classes pour générer leur noms de table SQL."
     },
+    "useLegacyRoleNames": {
+      "type": "boolean",
+      "description": "Transforme les noms de rôles d'associations en upper case (au lieu de constant case) pour déterminer le nom SQL des propriétés"
+    },
     "proceduralSql": {
       "type": "array",
       "description": "Liste de configs pour la génération de SQL 'procédurale' (sans SSDT)",

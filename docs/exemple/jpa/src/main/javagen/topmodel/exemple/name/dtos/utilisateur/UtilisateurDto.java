@@ -134,7 +134,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 */
 	protected void from(Utilisateur utilisateur) {
 		if (utilisateur != null) {
-			this.utilisateurParent = new UtilisateurDto(utilisateur.getUtilisateurParent());
+			this.utilisateurParent = utilisateur.getUtilisateurParent() != null ? null : new UtilisateurDto(utilisateur.getUtilisateurParent());
 			this.dateCreation = utilisateur.getDateCreation();
 			this.dateModification = utilisateur.getDateModification();
 			this.id = utilisateur.getId();

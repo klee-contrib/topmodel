@@ -3,9 +3,16 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-internal static class EndpointLoader
+public class EndpointLoader
 {
-    public static Endpoint LoadEndpoint(Parser parser)
+    private readonly PropertyLoader _propertyLoader;
+
+    public EndpointLoader(PropertyLoader propertyLoader)
+    {
+        _propertyLoader = propertyLoader;
+    }
+
+    public Endpoint LoadEndpoint(Parser parser)
     {
         var endpoint = new Endpoint();
 
@@ -31,7 +38,7 @@ internal static class EndpointLoader
                 case "params":
                     parser.ConsumeSequence(() =>
                     {
-                        foreach (var property in PropertyLoader.LoadProperty(parser))
+                        foreach (var property in _propertyLoader.LoadProperty(parser))
                         {
                             property.Endpoint = endpoint;
                             endpoint.Params.Add(property);
@@ -39,7 +46,7 @@ internal static class EndpointLoader
                     });
                     break;
                 case "returns":
-                    endpoint.Returns = PropertyLoader.LoadProperty(parser).First();
+                    endpoint.Returns = _propertyLoader.LoadProperty(parser).First();
                     endpoint.Returns.Endpoint = endpoint;
                     parser.Consume<MappingEnd>();
                     break;

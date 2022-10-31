@@ -87,7 +87,7 @@ public class JpaModelPropertyGenerator
 
     private void WriteManyToMany(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        var role = property.Role is not null ? "_" + property.Role.ToUpper() : string.Empty;
+        var role = property.Role is not null ? "_" + property.Role.ToConstantCase() : string.Empty;
         var fk = ((IFieldProperty)property).SqlName;
         var pk = classe.PrimaryKey!.SqlName + role;
         var cascade = property.Association.IsStatic() ? string.Empty : $", cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }}";
@@ -98,7 +98,7 @@ public class JpaModelPropertyGenerator
         else
         {
             fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY{cascade})");
-            fw.WriteLine(1, @$"@JoinTable(name = ""{property.Class.SqlName}_{property.Association.SqlName}{(property.Role != null ? "_" + property.Role.ToUpper() : string.Empty)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
+            fw.WriteLine(1, @$"@JoinTable(name = ""{property.Class.SqlName}_{property.Association.SqlName}{(property.Role != null ? "_" + property.Role.ToConstantCase() : string.Empty)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
         }
     }
 

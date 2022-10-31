@@ -7,16 +7,16 @@ namespace TopModel.Core.Loaders;
 
 public class ClassLoader
 {
-    private readonly FileChecker _fileChecker;
     private readonly ModelConfig _modelConfig;
+    private readonly PropertyLoader _propertyLoader;
 
-    public ClassLoader(FileChecker fileChecker, ModelConfig modelConfig)
+    public ClassLoader(ModelConfig modelConfig, PropertyLoader propertyLoader)
     {
-        _fileChecker = fileChecker;
         _modelConfig = modelConfig;
+        _propertyLoader = propertyLoader;
     }
 
-    internal Class LoadClass(Parser parser, string filePath)
+    internal Class LoadClass(Parser parser)
     {
         var classe = new Class();
 
@@ -69,7 +69,7 @@ public class ClassLoader
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        foreach (var property in PropertyLoader.LoadProperty(parser))
+                        foreach (var property in _propertyLoader.LoadProperty(parser))
                         {
                             classe.Properties.Add(property);
                         }
