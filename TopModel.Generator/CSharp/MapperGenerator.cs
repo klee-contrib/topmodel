@@ -111,7 +111,7 @@ public class MapperGenerator : GeneratorBase
 
             w.WriteReturns(2, $"Une nouvelle instance de '{classe}'");
 
-            w.WriteLine(2, $"public static {classe} Create{classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name}"))})");
+            w.WriteLine(2, $"public static {classe} Create{classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name}{(!p.Required ? " = null" : string.Empty)}"))})");
             w.WriteLine(2, "{");
 
             foreach (var param in mapper.Params.Where(p => p.Required))
