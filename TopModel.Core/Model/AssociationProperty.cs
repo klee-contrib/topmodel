@@ -76,7 +76,7 @@ public class AssociationProperty : IFieldProperty
         }
     }
 
-    public Domain Domain => Property.Domain;
+    public Domain Domain => Property?.Domain!;
 
     public bool PrimaryKey => false;
 

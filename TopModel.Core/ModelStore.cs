@@ -991,7 +991,7 @@ public class ModelStore
                         {
                             foreach (var p in param.Class.Properties.OfType<IFieldProperty>())
                             {
-                                if (p.Name == property.Name && p.Domain == property.Domain)
+                                if (p.Name == property.Name && p.Domain == property.Domain && p.Domain != null)
                                 {
                                     param.Mappings.Add(property, p);
                                 }
@@ -1032,7 +1032,7 @@ public class ModelStore
                 {
                     foreach (var p in mapper.Class.Properties.OfType<IFieldProperty>())
                     {
-                        if (p.Name == property.Name && p.Domain == property.Domain)
+                        if (p.Name == property.Name && p.Domain == property.Domain && p.Domain != null)
                         {
                             mapper.Mappings.Add(property, p);
                         }
