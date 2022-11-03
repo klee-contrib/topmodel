@@ -192,7 +192,7 @@ public class DbContextGenerator : GeneratorBase
 
                     string WriteEnumValue(Class targetClass, string value)
                     {
-                        return $"{(targetClass.Name == targetClass.PluralName ? $"{string.Join(".", _config.GetNamespace(targetClass).Split(".").Except(contextNs.Split(".")))}.{targetClass.Name}" : targetClass.Name)}.{targetClass.PrimaryKey!.Name}s.{value}";
+                        return $"{(targetClass.Name == targetClass.PluralName ? $"{_config.GetNamespace(targetClass)}.{targetClass.Name}" : targetClass.Name)}.{targetClass.PrimaryKey!.Name}s.{value}";
                     }
 
                     foreach (var prop in refValue.Value.ToList())
