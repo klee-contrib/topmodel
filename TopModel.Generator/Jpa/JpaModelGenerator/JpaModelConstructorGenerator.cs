@@ -369,7 +369,7 @@ public class JpaModelConstructorGenerator
                 if (param.Required)
                 {
                     fw.WriteLine(2, "} else {");
-                    fw.WriteLine(3, $"throw new IllegalArgumentException(\"{param.Name} cannot not be null\");");
+                    fw.WriteLine(3, $"throw new IllegalArgumentException(\"{param.Name} cannot be null\");");
                 }
 
                 fw.WriteLine(2, "}");
