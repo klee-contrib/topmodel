@@ -1,5 +1,13 @@
 # TopModel.Generator (`modgen`)
 
+## 1.18.1
+
+- [`0b67988c`](https://github.com/klee-contrib/topmodel/commit/0b67988cc61b78d896661bad97173f6b73cd2a70) - JPA : Suppression import inutiles
+- [`a3fe1b92`](https://github.com/klee-contrib/topmodel/commit/a3fe1b92f3b0e54b184e5d048bb49658561815f7) - JS : Ne pas générer les valeurs undefined des listes de ref
+- [`0ec63f6e`](https://github.com/klee-contrib/topmodel/commit/0ec63f6eadde8f13a7b60444d159588d21a54826) - JPA: Correction typo 'cannot not be null'
+- [`ee0ca15e`](https://github.com/klee-contrib/topmodel/commit/ee0ca15e16c2b1c77d022840c535cea438a8e50e) - [C#] Namespace complet pour les enums dans le dbContext si name == pluralName
+- [`01a970b7`](https://github.com/klee-contrib/topmodel/commit/01a970b7f780906d7077572d7c066490d4524622) - Fix plantage si mapper avec association non résolue
+
 ## 1.18.0
 
 - [#169](https://github.com/klee-contrib/topmodel/pull/169) - `required` sur les paramètres de mapper `from`
