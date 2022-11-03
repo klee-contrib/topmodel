@@ -12,7 +12,7 @@ options:
     fileName: UtilisateurApi
 ---
 endpoint:
-  name: GetUtilisateur
+  name: find
   method: GET
   route: /{utiId}
   description: Charge le détail d'un utilisateur
@@ -30,7 +30,7 @@ endpoint:
     comment: Le détail de l'utilisateur
 ---
 endpoint:
-  name: GetUtilisateurList
+  name: findAllByType
   method: GET
   route: /list
   description: Charge une liste d'utilisateurs par leur type
@@ -45,7 +45,7 @@ endpoint:
     comment: Liste des utilisateurs
 ---
 endpoint:
-  name: SaveUtilisateur
+  name: save
   method: POST
   route: /save
   description: Sauvegarde un utilisateur
@@ -61,23 +61,7 @@ endpoint:
     comment: Utilisateur sauvegardé
 ---
 endpoint:
-  name: SaveAllUtilisateur
-  method: POST
-  route: /saveAll
-  description: Sauvegarde une liste d'utilisateurs
-  params:
-    - composition: UtilisateurDto
-      comment: Utilisateur à sauvegarder
-      name: utilisateur
-      kind: list
-  returns:
-    composition: UtilisateurDto
-    name: utilisateurList
-    kind: list
-    comment: Utilisateur sauvegardé
----
-endpoint:
-  name: Search
+  name: search
   method: POST
   route: /search
   description: Recherche des utilisateurs

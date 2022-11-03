@@ -37,8 +37,23 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>jakarta.validation</groupId>
-			<artifactId>jakarta.validation-api</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<!-- Dependance POSTGRESQL ... -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jcache</artifactId>
+			<version>6.1.5.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>3.9.9</version>
 		</dependency>
 	</dependencies>
 

@@ -22,7 +22,7 @@ export class UtilisateurApiService {
      * @param options Options pour 'fetch'.
      * @returns Le détail de l'utilisateur
      */
-    getUtilisateur(utilisateurId?: number , queryParams: any = {}): Observable<UtilisateurDto> {
+    find(utilisateurId?: number , queryParams: any = {}): Observable<UtilisateurDto> {
         const httpParams = new HttpParams({fromObject : queryParams});
         const httpOptions = { params: httpParams }
         if(utilisateurId !== null) {
@@ -38,7 +38,7 @@ export class UtilisateurApiService {
      * @param options Options pour 'fetch'.
      * @returns Liste des utilisateurs
      */
-    getUtilisateurList(typeUtilisateurCode?: TypeUtilisateurCode , queryParams: any = {}): Observable<UtilisateurDto[]> {
+    findAllByType(typeUtilisateurCode?: TypeUtilisateurCode , queryParams: any = {}): Observable<UtilisateurDto[]> {
         const httpParams = new HttpParams({fromObject : queryParams});
         const httpOptions = { params: httpParams }
         if(typeUtilisateurCode !== null) {
@@ -54,18 +54,8 @@ export class UtilisateurApiService {
      * @param options Options pour 'fetch'.
      * @returns Utilisateur sauvegardé
      */
-    saveUtilisateur(utilisateur: UtilisateurDto ): Observable<UtilisateurDto> {
+    save(utilisateur: UtilisateurDto ): Observable<UtilisateurDto> {
         return this.http.post<UtilisateurDto>(`/utilisateur/save`, utilisateur);
-    }
-
-    /**
-     * Sauvegarde une liste d'utilisateurs
-     * @param utilisateur Utilisateur à sauvegarder
-     * @param options Options pour 'fetch'.
-     * @returns Utilisateur sauvegardé
-     */
-    saveAllUtilisateur(utilisateur: UtilisateurDto[] ): Observable<UtilisateurDto[]> {
-        return this.http.post<UtilisateurDto[]>(`/utilisateur/saveAll`, utilisateur);
     }
 
     /**
