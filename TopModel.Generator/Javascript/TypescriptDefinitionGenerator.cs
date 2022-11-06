@@ -459,7 +459,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         {
             fw.WriteLine("    {");
             fw.Write("        ");
-            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.Name.ToFirstLower()}: {(property.Key.Domain.TS!.Type == "string" ? @$"""{property.Value}""" : @$"{(property.Value)}")}")));
+            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.Name.ToFirstLower()}: {(property.Key.Domain.TS!.Type == "string" ? @$"""{property.Value}""" : @$"{property.Value}")}")));
             fw.WriteLine();
             fw.WriteLine("    },");
         }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Utils;
 using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.Generator.ProceduralSql;
 

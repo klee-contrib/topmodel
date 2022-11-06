@@ -433,7 +433,8 @@ public class JpaModelGenerator : GeneratorBase
         {
             if (classe.IsStatic())
             {
-                fw.AddImports(new List<string>(){
+                fw.AddImports(new List<string>
+                {
                     "org.hibernate.annotations.Immutable",
                     "org.hibernate.annotations.Cache",
                     "org.hibernate.annotations.CacheConcurrencyStrategy"
