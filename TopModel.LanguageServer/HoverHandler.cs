@@ -43,6 +43,7 @@ class HoverHandler : HoverHandlerBase
                         AliasProperty p => p.Comment,
                         Domain d => d.Label,
                         Decorator d => d.Description,
+                        (Decorator d, _) => d.Description,
                         _ => string.Empty
                     }))
                 });

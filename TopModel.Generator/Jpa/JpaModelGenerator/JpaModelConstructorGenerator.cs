@@ -21,7 +21,7 @@ public class JpaModelConstructorGenerator
         fw.WriteDocStart(1, "No arg constructor");
         fw.WriteDocEnd(1);
         fw.WriteLine(1, $"public {classe.Name}() {{");
-        if (classe.Extends != null || classe.Decorators.Any(d => d.Java?.Extends is not null))
+        if (classe.Extends != null || classe.Decorators.Any(d => d.Decorator.Java?.Extends is not null))
         {
             fw.WriteLine(2, $"super();");
         }
@@ -54,7 +54,7 @@ public class JpaModelConstructorGenerator
             var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses).Select(p => $"{p.GetJavaName()}"));
             fw.WriteLine(2, $"super({parentAllArgConstructorArguments});");
         }
-        else if (classe.Decorators.Any(d => d.Java?.Extends is not null))
+        else if (classe.Decorators.Any(d => d.Decorator.Java?.Extends is not null))
         {
             fw.WriteLine(2, $"super();");
         }
@@ -97,7 +97,7 @@ public class JpaModelConstructorGenerator
             var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses).Select(p => $"{p.GetJavaName()}"));
             fw.WriteLine(2, $"super({parentAllArgConstructorArguments});");
         }
-        else if (classe.Decorators.Any(d => d.Java?.Extends is not null))
+        else if (classe.Decorators.Any(d => d.Decorator.Java?.Extends is not null))
         {
             fw.WriteLine(2, $"super();");
         }
@@ -130,7 +130,7 @@ public class JpaModelConstructorGenerator
             var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses).Select(p => $"{p.GetJavaName()}"));
             fw.WriteLine(2, $"super({classe.Name.ToFirstLower()});");
         }
-        else if (classe.Decorators.Any(d => d.Java?.Extends is not null))
+        else if (classe.Decorators.Any(d => d.Decorator.Java?.Extends is not null))
         {
             fw.WriteLine(2, $"super();");
         }
@@ -236,7 +236,7 @@ public class JpaModelConstructorGenerator
 
             fw.WriteDocEnd(1);
             fw.WriteLine(1, $"protected void from({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToFirstLower()}"))}) {{");
-            if (classe.Extends != null || classe.Decorators.Any(d => d.Java?.Extends is not null))
+            if (classe.Extends != null || classe.Decorators.Any(d => d.Decorator.Java?.Extends is not null))
             {
                 if (mapper.ParentMapper != null)
                 {

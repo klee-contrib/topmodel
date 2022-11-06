@@ -400,12 +400,16 @@ public class CSharpClassGenerator : GeneratorBase
             }
         }
 
-        foreach (var annotation in item.Decorators.SelectMany(d => d.CSharp?.Annotations ?? Array.Empty<string>()).Select(a => a.ParseTemplate(item)).Distinct())
+        foreach (var annotation in item.Decorators.SelectMany(d => (d.Decorator.CSharp?.Annotations ?? Array.Empty<string>()).Select(a => a.ParseTemplate(item, d.Parameters)).Distinct()))
         {
             w.WriteAttribute(1, annotation);
         }
 
-        w.WriteClassDeclaration(item.Name, item.Extends?.Name ?? item.Decorators.SingleOrDefault(d => d.CSharp?.Extends != null)?.CSharp?.Extends!.ParseTemplate(item), item.Decorators.SelectMany(d => d.CSharp?.Implements ?? Array.Empty<string>()).Distinct().Select(i => i.ParseTemplate(item)).ToArray());
+        var extendsDecorator = item.Decorators.SingleOrDefault(d => d.Decorator.CSharp?.Extends != null);
+        w.WriteClassDeclaration(
+            item.Name,
+            item.Extends?.Name ?? extendsDecorator.Decorator?.CSharp?.Extends!.ParseTemplate(item, extendsDecorator.Parameters),
+            item.Decorators.SelectMany(d => (d.Decorator.CSharp?.Implements ?? Array.Empty<string>()).Select(i => i.ParseTemplate(item, d.Parameters)).Distinct()).ToArray());
 
         if (!_config.CanClassUseEnums(item))
         {
@@ -599,7 +603,7 @@ public class CSharpClassGenerator : GeneratorBase
             usings.Add(_config.GetNamespace(item.Extends));
         }
 
-        foreach (var @using in item.Decorators.SelectMany(d => d.CSharp?.Usings ?? Array.Empty<string>()).Select(u => u.ParseTemplate(item)).Distinct())
+        foreach (var @using in item.Decorators.SelectMany(d => (d.Decorator.CSharp?.Usings ?? Array.Empty<string>()).Select(u => u.ParseTemplate(item, d.Parameters)).Distinct()))
         {
             usings.Add(@using);
         }

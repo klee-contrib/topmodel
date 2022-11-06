@@ -414,20 +414,20 @@ public class ModelStore
                 }
                 else
                 {
-                    if (classe.Decorators.Contains(decorator))
+                    if (classe.Decorators.Any(d => d.Decorator == decorator))
                     {
                         isError = true;
                         yield return new ModelError(classe, $"Le décorateur '{decoratorRef.ReferenceName}' est déjà présent dans la liste des décorateurs de la classe '{classe}'.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1009 };
                     }
                     else
                     {
-                        if ((decorator.CSharp?.Extends != null || decorator.Java?.Extends != null) && (classe.Extends != null || classe.Decorators.Any(d => decorator.CSharp?.Extends != null && d.CSharp?.Extends != null || decorator.Java?.Extends != null && d.Java?.Extends != null)))
+                        if ((decorator.CSharp?.Extends != null || decorator.Java?.Extends != null) && (classe.Extends != null || classe.Decorators.Any(d => decorator.CSharp?.Extends != null && d.Decorator.CSharp?.Extends != null || decorator.Java?.Extends != null && d.Decorator.Java?.Extends != null)))
                         {
                             isError = true;
                             yield return new ModelError(classe, $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à la classe '{classe}' : seul un 'extends' peut être spécifié.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1010 };
                         }
 
-                        classe.Decorators.Add(decorator);
+                        classe.Decorators.Add((decorator, decoratorRef.ParameterReferences.Select(p => p.ReferenceName).ToArray()));
                     }
                 }
             }
@@ -673,7 +673,7 @@ public class ModelStore
                     classe.Properties.Remove(prop);
                 }
 
-                foreach (var prop in classe.Decorators.SelectMany(d => d.Properties).Reverse())
+                foreach (var prop in classe.Decorators.SelectMany(d => d.Decorator.Properties).Reverse())
                 {
                     classe.Properties.Insert(0, prop.CloneWithClass(classe));
                 }

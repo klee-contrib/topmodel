@@ -52,7 +52,7 @@ public static class TemplateExtension
         return result;
     }
 
-    public static string ParseTemplate(this string template, Class c)
+    public static string ParseTemplate(this string template, Class c, string[] parameters)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains("{"))
         {
@@ -62,7 +62,7 @@ public static class TemplateExtension
         var result = template;
         foreach (Match t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), c));
+            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), c, parameters));
         }
 
         return result;
@@ -126,32 +126,37 @@ public static class TemplateExtension
     private static string ResolveVariable(this string input, CompositionProperty cp)
     {
         var transform = input.GetTransformation();
-        var result = input.Split(':').First()
+        return input.Split(':').First()
             .Replace("class.name", transform(cp.Class?.Name.ToString() ?? string.Empty))
             .Replace("composition.name", transform(cp.Composition?.Name.ToString() ?? string.Empty))
             .Replace("name", transform(cp.Name ?? string.Empty))
             .Replace("label", transform(cp.Label ?? string.Empty))
             .Replace("comment", transform(cp.Comment));
-        return result;
     }
 
-    private static string ResolveVariable(this string input, Class c)
+    private static string ResolveVariable(this string input, Class c, string[] parameters)
     {
         var transform = input.GetTransformation();
         var result = input.Split(':').First()
-            .Replace("primaryKey.name", transform(c.PrimaryKey?.Name ?? string.Empty))
-            .Replace("trigram", transform(c.Trigram))
-            .Replace("name", transform(c.Name))
-            .Replace("comment", transform(c.Comment))
-            .Replace("label", transform(c.Label ?? string.Empty))
-            .Replace("pluralName", transform(c.PluralName ?? string.Empty))
-            .Replace("module", transform(c.ModelFile.Module ?? string.Empty));
+             .Replace("primaryKey.name", transform(c.PrimaryKey?.Name ?? string.Empty))
+             .Replace("trigram", transform(c.Trigram))
+             .Replace("name", transform(c.Name))
+             .Replace("comment", transform(c.Comment))
+             .Replace("label", transform(c.Label ?? string.Empty))
+             .Replace("pluralName", transform(c.PluralName ?? string.Empty))
+             .Replace("module", transform(c.ModelFile.Module ?? string.Empty));
+
+        for (var i = 0; i < parameters.Length; i++)
+        {
+            result = result.Replace($"${i}", parameters[i]);
+        }
+
         return result;
     }
 
     private static MatchCollection ExtractVariables(this string input)
     {
-        var regex = new Regex(@"(\{[a-zA-Z0-9:.]+\})");
+        var regex = new Regex(@"(\{[$a-zA-Z0-9:.]+\})");
         return regex.Matches(input);
     }
 }

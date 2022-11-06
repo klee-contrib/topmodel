@@ -17,6 +17,7 @@ public static class ModelExtensions
             Alias alias => alias.ModelFile,
             Domain domain => domain.ModelFile,
             Decorator decorator => decorator.ModelFile,
+            (Decorator decorator, _) => decorator.ModelFile,
             Keyword keyword => keyword.ModelFile,
             _ => throw new ArgumentException("Type d'objet non supporté.")
         };
@@ -37,6 +38,7 @@ public static class ModelExtensions
             Domain d => d.Location,
             LocatedString l => l.Location,
             Decorator d => d.Location,
+            (Decorator d, _) => d.Location,
             FromMapper m => m.Reference.Location,
             ClassMappings c => c.Name.Location,
             _ => null
@@ -98,7 +100,7 @@ public static class ModelExtensions
 
     public static IEnumerable<(DecoratorReference Reference, ModelFile File)> GetDecoratorReferences(this ModelStore modelStore, Decorator decorator)
     {
-        return modelStore.Classes.Where(c => c.Decorators.Contains(decorator))
+        return modelStore.Classes.Where(c => c.Decorators.Select(d => d.Decorator).Contains(decorator))
             .Select(c => (
                 Reference: c.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
                 File: c.GetFile()))
