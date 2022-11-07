@@ -20,7 +20,7 @@ public class Class
 #nullable enable
     public Class? Extends { get; set; }
 
-    public List<Decorator> Decorators { get; } = new();
+    public List<(Decorator Decorator, string[] Parameters)> Decorators { get; } = new();
 
     public string? Label { get; set; }
 

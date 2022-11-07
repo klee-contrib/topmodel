@@ -8,4 +8,6 @@ public class DecoratorReference : Reference
         : base(scalar)
     {
     }
+
+    public List<Reference> ParameterReferences { get; set; } = new();
 }

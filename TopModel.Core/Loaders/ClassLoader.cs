@@ -63,7 +63,24 @@ public class ClassLoader
                 case "decorators":
                     parser.ConsumeSequence(() =>
                     {
-                        classe.DecoratorReferences.Add(new DecoratorReference(parser.Consume<Scalar>()));
+                        if (parser.Current is MappingStart)
+                        {
+                            parser.ConsumeMapping(() =>
+                            {
+                                var decorator = new DecoratorReference(parser.Consume<Scalar>());
+
+                                parser.ConsumeSequence(() =>
+                                {
+                                    decorator.ParameterReferences.Add(new Reference(parser.Consume<Scalar>()));
+                                });
+
+                                classe.DecoratorReferences.Add(decorator);
+                            });
+                        }
+                        else
+                        {
+                            classe.DecoratorReferences.Add(new DecoratorReference(parser.Consume<Scalar>()));
+                        }
                     });
                     break;
                 case "properties":

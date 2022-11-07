@@ -78,15 +78,17 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteLine();
 
             WriteAnnotations(module, fw, classe);
-            var extends = (classe.Extends?.Name ?? classe.Decorators.Find(d => d.Java?.Extends is not null)?.Java!.Extends!.ParseTemplate(classe)) ?? null;
 
-            var implements = classe.Decorators.SelectMany(d => d.Java!.Implements).Select(i => i.ParseTemplate(classe)).Distinct().ToList();
+            var extendsDecorator = classe.Decorators.SingleOrDefault(d => d.Decorator.Java?.Extends != null);
+            var extends = (classe.Extends?.Name ?? extendsDecorator.Decorator?.Java!.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
+
+            var implements = classe.Decorators.SelectMany(d => d.Decorator.Java!.Implements.Select(i => i.ParseTemplate(classe, d.Parameters))).Distinct().ToList();
             if (!classe.IsPersistent)
             {
                 implements.Add("Serializable");
             }
 
-            if (classe.Decorators.Any(d => d.Java != null && d.Java.GenerateInterface))
+            if (classe.Decorators.Any(d => d.Decorator.Java != null && d.Decorator.Java.GenerateInterface))
             {
                 implements.Add($"I{classe.Name}");
             }
@@ -322,7 +324,7 @@ public class JpaModelGenerator : GeneratorBase
     private void WriteImports(JavaWriter fw, Class classe)
     {
         var imports = classe.GetImports(Files.SelectMany(f => f.Value.Classes).ToList(), _config);
-        imports.AddRange(classe.Decorators.SelectMany(d => d.Java!.Imports.Select(i => i.ParseTemplate(classe))));
+        imports.AddRange(classe.Decorators.SelectMany(d => d.Decorator.Java!.Imports.Select(i => i.ParseTemplate(classe, d.Parameters))));
         foreach (var property in classe.GetProperties(_config, AvailableClasses))
         {
             imports.AddRange(property.GetTypeImports(_config));
@@ -337,7 +339,7 @@ public class JpaModelGenerator : GeneratorBase
             }
         }
 
-        if (classe.Decorators.Any(d => d.Java != null && d.Java.GenerateInterface))
+        if (classe.Decorators.Any(d => d.Decorator.Java != null && d.Decorator.Java.GenerateInterface))
         {
             var entityDto = classe.IsPersistent ? "entities" : "dtos";
             imports.Add($"{string.Join('.', classe.GetImport(_config).Split('.').SkipLast(1))}.interfaces.I{classe.Name}");
@@ -448,9 +450,9 @@ public class JpaModelGenerator : GeneratorBase
             }
         }
 
-        foreach (var a in classe.Decorators.SelectMany(d => d.Java!.Annotations).Select(a => a.ParseTemplate(classe)).Distinct())
+        foreach (var a in classe.Decorators.SelectMany(d => d.Decorator.Java!.Annotations.Select(a => a.ParseTemplate(classe, d.Parameters))).Distinct())
         {
-            fw.WriteLine($"{(a.StartsWith("@") ? string.Empty : "@")}{a.ParseTemplate(classe)}");
+            fw.WriteLine($"{(a.StartsWith("@") ? string.Empty : "@")}{a}");
         }
     }
 
@@ -462,7 +464,7 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
             fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config)}#{property.GetJavaName()} {property.GetJavaName()}}}");
             fw.WriteDocEnd(1);
-            if (classe.Decorators.Any(d => d.Java != null && d.Java.GenerateInterface))
+            if (classe.Decorators.Any(d => d.Decorator.Java != null && d.Decorator.Java.GenerateInterface))
             {
                 fw.WriteLine(1, "@Override");
             }

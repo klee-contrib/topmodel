@@ -1,4 +1,5 @@
 ﻿#nullable disable
+#pragma warning disable SA1402
 
 namespace TopModel.Core.FileModel;
 

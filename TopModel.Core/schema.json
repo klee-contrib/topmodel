@@ -692,8 +692,23 @@
               "type": "array",
               "description": "Décorateurs de la classe",
               "items": {
-                "type": "string",
-                "description": "Nom du décorateur"
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "description": "Nom du décorateur"
+                  },
+                  {
+                    "type": "object",
+                    "description": "Nom du décorateur",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Paramètre du décorator"
+                      }
+                    }
+                  }
+                ]          
               }
             },
             "properties": {

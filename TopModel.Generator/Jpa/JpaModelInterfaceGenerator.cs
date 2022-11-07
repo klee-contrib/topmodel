@@ -58,7 +58,7 @@ public class JpaModelInterfaceGenerator : GeneratorBase
     private void GenerateModule(string module)
     {
         var classes = Classes
-            .Where(c => c.Decorators.Any(d => d.Java != null && d.Java.GenerateInterface))
+            .Where(c => c.Decorators.Any(d => d.Decorator.Java != null && d.Decorator.Java.GenerateInterface))
             .Where(c => c.Namespace.Module == module);
         foreach (var classe in classes)
         {
@@ -71,9 +71,10 @@ public class JpaModelInterfaceGenerator : GeneratorBase
             WriteImports(fw, classe);
             fw.WriteLine();
 
-            var extends = (classe.Extends?.Name ?? classe.Decorators.Find(d => d.Java?.Extends is not null)?.Java!.Extends!.ParseTemplate(classe)) ?? null;
+            var extendsDecorator = classe.Decorators.SingleOrDefault(d => d.Decorator.Java?.Extends != null);
+            var extends = (classe.Extends?.Name ?? extendsDecorator.Decorator?.Java!.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
 
-            var implements = classe.Decorators.SelectMany(d => d.Java!.Implements).Select(i => i.ParseTemplate(classe)).Distinct().ToList();
+            var implements = classe.Decorators.SelectMany(d => d.Decorator.Java!.Implements.Select(i => i.ParseTemplate(classe, d.Parameters))).Distinct().ToList();
 
             fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
             fw.WriteLine($"public interface I{classe.Name} {{");

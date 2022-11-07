@@ -27,7 +27,7 @@ public class ModelFile
     public List<object> ResolvedAliases { get; } = new();
 
     public IDictionary<Reference, object> References => Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object))
-        .Concat(Classes.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Name == dr.ReferenceName) as object))))
+        .Concat(Classes.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
         .Concat(Properties.OfType<RegularProperty>().Select(p => (p.DomainReference as Reference, p.Domain as object)))
         .Concat(Properties.OfType<AssociationProperty>().SelectMany(p => new (Reference, object)[]
         {
@@ -55,7 +55,7 @@ public class ModelFile
         .Concat(Classes.SelectMany(c => c.FromMappers.SelectMany(m => m.Params).Concat(c.ToMappers)).Select(p => (p.ClassReference as Reference, (object)p.Class)))
         .Concat(Classes.SelectMany(c => c.FromMappers.SelectMany(m => m.Params).Concat(c.ToMappers).SelectMany(m => m.MappingReferences.SelectMany(mr => new[] { (mr.Key, (object)c.Properties.FirstOrDefault(k => k.Name == mr.Key.ReferenceName)), (mr.Value, mr.Value.ReferenceName == "this" || mr.Value.ReferenceName == "false" ? new Keyword { ModelFile = c.ModelFile } : m.Mappings.Values.FirstOrDefault(k => k.Name == mr.Value.ReferenceName)) }))))
         .Concat(Aliases.SelectMany(a => a.Classes).Select(c => (c as Reference, ResolvedAliases.OfType<Class>().FirstOrDefault(ra => ra.Name == c.ReferenceName) as object)))
-        .Where(t => t.Item1 != null && t.Item2 != null)
+        .Where(t => t.Item1 is not null && t.Item2 is not null && t.Item2 is not (null, null))
         .DistinctBy(t => t.Item1)
         .ToDictionary(t => t.Item1, t => t.Item2);
 
