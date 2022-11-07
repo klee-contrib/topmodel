@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.18.2
+
+- [#171](https://github.com/klee-contrib/topmodel/pull/171) - Paramètres de décorateurs
+- [`a98ec1bf`](https://github.com/klee-contrib/topmodel/commit/a98ec1bf0b6fb0d7045b13c512a6e526bba44170) - [C#] Fix ordre génération des mappers
+
 ## 1.18.1
 
 - [`0b67988c`](https://github.com/klee-contrib/topmodel/commit/0b67988cc61b78d896661bad97173f6b73cd2a70) - JPA : Suppression import inutiles

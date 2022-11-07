@@ -66,7 +66,7 @@ public class Utilisateur {
   @Column(name = "UTI_DATE_CREATION", nullable = true)
   @CreatedDate
   private DateTime dateCreation;
-  
+
   /**
    * Date de modification de l'utilisateur.
    */
@@ -78,7 +78,7 @@ public class Utilisateur {
 
 ## Templating
 
-## Variables
+### Variables
 
 Il est possible que certaines propriétés des décorateurs dépendent de la classe sur laquelle vous l'ajouter. Vous pourriez par exemple ajouter une interface `java` générique de la classe sur laquelle est ajouté le décorateur.
 
@@ -144,7 +144,31 @@ Dans ces propriétés :
 
 Les templates des domaines des propriétés sont également valorisés.
 
-## Transformation
+### Paramètres
+
+Il est également possible de passer des paramètres lors de l'instanciation d'un décorateur :
+
+```yaml
+class:
+  name: MyClass
+  decorators:
+    - MyDecorator: [Param1, Param2]
+    - OtherDecorator
+```
+
+Les paramètres seront utilisés dans la résolution des variables `$0`, `$1`... Par exemple :
+
+```yaml
+decorator:
+  name: MyDecorator
+  csharp:
+    annotations:
+      - MyAnnotation("{$0}", "{$1}"))
+```
+
+Génèrera l'annotation `[MyAnnotation("Param1", "Param2")]` sur `MyClass`. Si les paramètres ne sont pas renseignés, les variables `$0`, `$1` ne seront simplement pas remplacées. Et bien entendu, rien ne se passera si on passe des paramètres alors que le décorateur ne les utilise pas.
+
+### Transformation
 
 Il est possible que la variable que vous utilisez dans votre template ne corresponde pas tout à fait à votre besoin. TopModel gère l'ajout de `transformateurs` sur les templates. Vous pouvez ajouter un `transformateur` après le nom de la variable que vous référencez, précédé de `:`. Le code généré tiendra compte de cette transformation.
 
