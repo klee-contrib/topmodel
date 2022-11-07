@@ -140,7 +140,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(2, "}");
         fw.WriteLine();
 
-        foreach (var property in classe.GetProperties(_config, availableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference)))
+        foreach (var property in classe.GetProperties(_config, availableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.IsStatic())))
         {
             if (!(property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list"))
             {
@@ -150,7 +150,7 @@ public class JpaModelConstructorGenerator
         }
 
         var propertyListToCopy = classe.GetProperties(_config, availableClasses)
-        .Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference))
+        .Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.IsStatic()))
         .Where(property => property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list");
 
         if (propertyListToCopy.Any())
@@ -171,7 +171,7 @@ public class JpaModelConstructorGenerator
         if (_config.EnumShortcutMode)
         {
             fw.WriteLine();
-            foreach (var ap in classe.GetProperties(_config, availableClasses).OfType<AssociationProperty>().Where(ap => ap.Association.Reference))
+            foreach (var ap in classe.GetProperties(_config, availableClasses).OfType<AssociationProperty>().Where(ap => ap.Association.IsStatic()))
             {
                 var propertyName = ap.Name.ToFirstLower();
                 var getterPrefix = ap.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";

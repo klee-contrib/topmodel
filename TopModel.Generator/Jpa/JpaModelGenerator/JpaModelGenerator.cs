@@ -138,7 +138,7 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteEnumShortcuts(JavaWriter fw, Class classe)
     {
-        foreach (var ap in classe.GetProperties(_config, AvailableClasses).OfType<AssociationProperty>().Where(ap => ap.Association.Reference))
+        foreach (var ap in classe.GetProperties(_config, AvailableClasses).OfType<AssociationProperty>().Where(ap => ap.Association.IsStatic()))
         {
             var isMultiple = ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany;
             {
@@ -433,14 +433,14 @@ public class JpaModelGenerator : GeneratorBase
 
         if (classe.Reference)
         {
-            if (classe.IsStatic())
-            {
-                fw.AddImports(new List<string>
+            fw.AddImports(new List<string>()
                 {
-                    "org.hibernate.annotations.Immutable",
                     "org.hibernate.annotations.Cache",
                     "org.hibernate.annotations.CacheConcurrencyStrategy"
                 });
+            if (classe.IsStatic())
+            {
+                fw.AddImport("org.hibernate.annotations.Immutable");
                 fw.WriteLine("@Immutable");
                 fw.WriteLine("@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)");
             }
@@ -458,7 +458,7 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteGetters(JavaWriter fw, Class classe)
     {
-        foreach (var property in classe.GetProperties(_config, AvailableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference)))
+        foreach (var property in classe.GetProperties(_config, AvailableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.IsStatic())))
         {
             fw.WriteLine();
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
@@ -567,7 +567,7 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteSetters(JavaWriter fw, Class classe)
     {
-        foreach (var property in classe.GetProperties(_config, AvailableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference)))
+        foreach (var property in classe.GetProperties(_config, AvailableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.IsStatic())))
         {
             var propertyName = property.GetJavaName();
             fw.WriteLine();
