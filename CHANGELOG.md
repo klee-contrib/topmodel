@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.18.3
+
+- [`430d9a3b`](https://github.com/klee-contrib/topmodel/commit/430d9a3b2f943) - [JPA] Fix bugs dans le cas des listes de référénces non statiques
+
 ## 1.18.2
 
 - [#171](https://github.com/klee-contrib/topmodel/pull/171) - Paramètres de décorateurs
