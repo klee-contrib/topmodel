@@ -81,15 +81,15 @@ public class MapperGenerator : GeneratorBase
         w.WriteLine(1, $"public static class {firstClass.Namespace.Module}Mappers");
         w.WriteLine(1, "{");
 
-        var classList = classes.OrderBy(c => c.Name).ToList();
+        var classList = classes.OrderBy(c => c.Name, StringComparer.Ordinal).ToList();
 
         var fromMappers = classes
             .SelectMany(classe => classe.FromMappers.Where(c => c.Params.All(p => availableClasses.Contains(p.Class))).Select(m => (classe, m)))
-            .OrderBy(m => m.classe.Name)
+            .OrderBy(m => m.classe.Name, StringComparer.Ordinal)
             .ToList();
         var toMappers = classes
             .SelectMany(classe => classe.ToMappers.Where(p => availableClasses.Contains(p.Class)).Select(m => (classe, m)))
-            .OrderBy(m => m.m.Name)
+            .OrderBy(m => m.m.Name, StringComparer.Ordinal)
             .ToList();
 
         foreach (var fromMapper in fromMappers)
