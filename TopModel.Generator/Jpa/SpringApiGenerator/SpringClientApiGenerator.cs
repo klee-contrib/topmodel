@@ -98,7 +98,11 @@ public class SpringClientApiGenerator : GeneratorBase
         fw.WriteLine(1, $"}}");
 
         GetClassName(file);
-
+        fw.WriteLine();
+        fw.WriteDocStart(1, "Méthode de récupération des headers");
+        fw.WriteLine(1, " * @return les headers à ajouter à la requête");
+        fw.WriteDocEnd(1);
+        fw.WriteLine(1, $"abstract protected HttpHeaders getHeaders();");
         foreach (var endpoint in file.Endpoints)
         {
             WriteEndPoint(fw, endpoint);
@@ -178,6 +182,7 @@ public class SpringClientApiGenerator : GeneratorBase
 
         fw.WriteLine(1, $"protected {returnType} {endpoint.Name.ToFirstLower()}UriComponentsBuilder({string.Join(", ", methodParams)}) {{");
         var fullRoute = endpoint.FullRoute;
+        fullRoute = "/" + fullRoute;
         foreach (IProperty p in endpoint.GetRouteParams())
         {
             fullRoute = fullRoute.Replace(@$"{{{p.GetParamName()}}}", "%s");
@@ -252,7 +257,8 @@ public class SpringClientApiGenerator : GeneratorBase
         }
 
         var methodParams = GetMethodParams(endpoint, true, false);
-        fw.WriteLine(1, $"public {returnType} {endpoint.Name.ToFirstLower()}({string.Join(", ", GetMethodParams(endpoint).Concat(new List<string>() { "HttpHeaders headers" }))}){{");
+        fw.WriteLine(1, $"public {returnType} {endpoint.Name.ToFirstLower()}({string.Join(", ", GetMethodParams(endpoint))}){{");
+        fw.WriteLine(2, $"HttpHeaders headers = this.getHeaders();");
         fw.WriteLine(2, $"UriComponentsBuilder uri = this.{endpoint.Name.ToFirstLower()}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, false, false))});");
         var body = $"new HttpEntity<>({(endpoint.GetBodyParam()?.GetParamName() != null ? $"{endpoint.GetBodyParam()?.GetParamName()}, " : string.Empty)}headers)";
         if (endpoint.Returns != null)
