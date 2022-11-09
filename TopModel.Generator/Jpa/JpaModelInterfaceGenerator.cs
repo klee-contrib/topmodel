@@ -22,7 +22,11 @@ public class JpaModelInterfaceGenerator : GeneratorBase
 
     public override string Name => "JpaInterfaceGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files.SelectMany(f => f.Value.Classes).Select(c => GetFileClassName(c));
+    public override IEnumerable<string> GeneratedFiles => Files
+        .SelectMany(f => f.Value.Classes)
+        .Where(c => c.Decorators
+            .Any(d => d.Decorator.Java != null && d.Decorator.Java.GenerateInterface))
+        .Select(c => GetFileClassName(c));
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
