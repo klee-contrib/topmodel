@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.18.4
+
+- [`7791a9de`](https://github.com/klee-contrib/topmodel/commit/7791a9deea0df5ba5114a83f24c40f21fbb90b7e) - [JPA] : API client factorisation `getHeaders`
+
 ## 1.18.3
 
 - [`430d9a3b`](https://github.com/klee-contrib/topmodel/commit/430d9a3b2f943) - [JPA] Fix bugs dans le cas des listes de référénces non statiques
