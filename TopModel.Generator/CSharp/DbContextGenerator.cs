@@ -279,7 +279,7 @@ public class DbContextGenerator : GeneratorBase
             foreach (var classe in classes)
             {
                 cw.WriteLine(3, $"var {classe.Name.ToFirstLower()} = modelBuilder.Entity<{classe.Name}>();");
-                cw.WriteLine(3, $"{classe.Name.ToFirstLower()}.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\");");
+                cw.WriteLine(3, $"{classe.Name.ToFirstLower()}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));");
 
                 foreach (var property in classe.Properties.OfType<IFieldProperty>())
                 {
