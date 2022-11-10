@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.18.5
+
+- [`45c6077d`](https://github.com/klee-contrib/topmodel/commit/45c6077d4adefbaaf77f80cdd14817f69a132737) - [C# DbContext] Fix définition des commentaires sur les tables
+- [`34586b42`](https://github.com/klee-contrib/topmodel/commit/34586b42d2f3ed0ad6fb09796f2be5b7f36733c6) - [C#ServerApiGen] Fix returns en trop si noAsyncControllers + void
+
 ## 1.18.4
 
 - [`7791a9de`](https://github.com/klee-contrib/topmodel/commit/7791a9deea0df5ba5114a83f24c40f21fbb90b7e) - [JPA] : API client factorisation `getHeaders`
