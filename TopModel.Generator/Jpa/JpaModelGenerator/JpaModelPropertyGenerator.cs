@@ -81,7 +81,7 @@ public class JpaModelPropertyGenerator
     {
         var fk = ((IFieldProperty)property).SqlName;
         var apk = property.Association.PrimaryKey!.SqlName;
-        fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = {property.Required.ToString().ToLower()}, optional = {(!property.Required).ToString().ToLower()})");
+        fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = {(!property.Required).ToString().ToLower()})");
         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"", unique = true)");
     }
 
@@ -107,12 +107,12 @@ public class JpaModelPropertyGenerator
         var pk = classe.PrimaryKey!.SqlName;
         if (property is JpaAssociationProperty jap)
         {
-            fw.WriteLine(1, @$"@{property.Type}(cascade = {{CascadeType.PERSIST, CascadeType.MERGE}}, orphanRemoval = {property.Required.ToString().ToLower()}, fetch = FetchType.LAZY, mappedBy = ""{jap.ReverseProperty.GetJavaName()}"")");
+            fw.WriteLine(1, @$"@{property.Type}(cascade = {{CascadeType.PERSIST, CascadeType.MERGE}}, fetch = FetchType.LAZY, mappedBy = ""{jap.ReverseProperty.GetJavaName()}"")");
         }
         else
         {
             var hasRerverse = property.Class.Namespace.Module.Split('.').First() == property.Association.Namespace.Module.Split('.').First();
-            fw.WriteLine(1, @$"@{property.Type}(cascade = CascadeType.ALL, orphanRemoval = {property.Required.ToString().ToLower()}, fetch = FetchType.LAZY{(hasRerverse ? @$", mappedBy = ""{property.Class.Name.ToFirstLower()}{property.Role ?? string.Empty}""" : string.Empty)})");
+            fw.WriteLine(1, @$"@{property.Type}(cascade = CascadeType.ALL, fetch = FetchType.LAZY{(hasRerverse ? @$", mappedBy = ""{property.Class.Name.ToFirstLower()}{property.Role ?? string.Empty}""" : string.Empty)})");
             if (!hasRerverse)
             {
                 fw.WriteLine(1, @$"@JoinColumn(name = ""{pk}"", referencedColumnName = ""{pk}"")");
