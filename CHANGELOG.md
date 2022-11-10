@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.18.7
+
+- [`54f04681`](https://github.com/klee-contrib/topmodel/commit/54f04681e10cb124b65b31d841ce28bc60b44963) - [JPA] : Suppression des orphanRemoval
+
 ## 1.18.6
 
 - [`4121f67e`](https://github.com/klee-contrib/topmodel/commit/4121f67eebf66414bd9823e45cbe05f30d7aef47) - [JPA] : orphan removal oneToOne
