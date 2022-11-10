@@ -81,7 +81,7 @@ public class JpaModelPropertyGenerator
     {
         var fk = ((IFieldProperty)property).SqlName;
         var apk = property.Association.PrimaryKey!.SqlName;
-        fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = {(property.Required ? "false" : "true")})");
+        fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = {property.Required.ToString().ToLower()}, optional = {(!property.Required).ToString().ToLower()})");
         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"", unique = true)");
     }
 
