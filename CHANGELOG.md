@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.18.6
+
+- [`4121f67e`](https://github.com/klee-contrib/topmodel/commit/4121f67eebf66414bd9823e45cbe05f30d7aef47) - [JPA] : orphan removal oneToOne
+
 ## 1.18.5
 
 - [`45c6077d`](https://github.com/klee-contrib/topmodel/commit/45c6077d4adefbaaf77f80cdd14817f69a132737) - [C# DbContext] Fix définition des commentaires sur les tables
@@ -20,9 +24,9 @@
 
 ## 1.18.1
 
-- [`0b67988c`](https://github.com/klee-contrib/topmodel/commit/0b67988cc61b78d896661bad97173f6b73cd2a70) - JPA : Suppression import inutiles
-- [`a3fe1b92`](https://github.com/klee-contrib/topmodel/commit/a3fe1b92f3b0e54b184e5d048bb49658561815f7) - JS : Ne pas générer les valeurs undefined des listes de ref
-- [`0ec63f6e`](https://github.com/klee-contrib/topmodel/commit/0ec63f6eadde8f13a7b60444d159588d21a54826) - JPA: Correction typo 'cannot not be null'
+- [`0b67988c`](https://github.com/klee-contrib/topmodel/commit/0b67988cc61b78d896661bad97173f6b73cd2a70) - [JPA] : Suppression import inutiles
+- [`a3fe1b92`](https://github.com/klee-contrib/topmodel/commit/a3fe1b92f3b0e54b184e5d048bb49658561815f7) - [JS] : Ne pas générer les valeurs undefined des listes de ref
+- [`0ec63f6e`](https://github.com/klee-contrib/topmodel/commit/0ec63f6eadde8f13a7b60444d159588d21a54826) - [JPA]: Correction typo 'cannot not be null'
 - [`ee0ca15e`](https://github.com/klee-contrib/topmodel/commit/ee0ca15e16c2b1c77d022840c535cea438a8e50e) - [C#] Namespace complet pour les enums dans le dbContext si name == pluralName
 - [`01a970b7`](https://github.com/klee-contrib/topmodel/commit/01a970b7f780906d7077572d7c066490d4524622) - Fix plantage si mapper avec association non résolue
 
@@ -126,7 +130,7 @@ Les 4 premiers explicitent des conventions plus ou moins obscures (qu'ils rempla
 ## 1.14.2
 
 - [`ca79975`](https://github.com/klee-contrib/topmodel/commit/ca79975663cd95f403419e72965259c30bfa014a) - [C#Gen] Fix génération enums sur les FK
-- [`bcd76d4`](https://github.com/klee-contrib/topmodel/commit/bcd76d4485460cfbe0e61ae1a7349c2d3b26d80b) - Core : Correction récupération Label dans cas alias d'alias
+- [`bcd76d4`](https://github.com/klee-contrib/topmodel/commit/bcd76d4485460cfbe0e61ae1a7349c2d3b26d80b) - [Core] : Correction récupération Label dans cas alias d'alias
 - [`7ed8ef6`](https://github.com/klee-contrib/topmodel/commit/7ed8ef6c5f7c8409c8b0ced8ccab9a41122b2217) - [JPA] Correction utilisation trigram dans le cas des manyToMany
 - [`d9dec2d`](https://github.com/klee-contrib/topmodel/commit/7ed8ef6c5f7c8409c8b0ced8ccab9a41122b2217) - [VSCode] Ne fonctionne pas sur des fichiers en LF si Environment.NewLine = 'CRLF'
 - [`d9dec2d`](https://github.com/klee-contrib/topmodel/commit/ca1c1d4c4e05baffeb0055df81c1700c7f01d3c3) - [JPA] Ajout du générateur de resources
@@ -167,7 +171,7 @@ _Remarque : Générer du SSDT pour PostgreSQL n'a évidemment pas de sens, mais 
 
 ## 1.13.1
 
-- [`e3a8a3f1`](https://github.com/klee-contrib/topmodel/commit/e3a8a3f1d45a3ee8a3d862fcaa4e0360406f30bd) JPA : Correction mapping associations - compositions
+- [`e3a8a3f1`](https://github.com/klee-contrib/topmodel/commit/e3a8a3f1d45a3ee8a3d862fcaa4e0360406f30bd) [JPA] : Correction mapping associations - compositions
 
 ## 1.13.0
 
@@ -176,7 +180,7 @@ _Remarque : Générer du SSDT pour PostgreSQL n'a évidemment pas de sens, mais 
 
 ## 1.12.3
 
-- [`bc2207fa`](https://github.com/klee-contrib/topmodel/commit/bc2207faf0a3b7e73c0e2f93e00fbf93d96ec53b) - JPA : Génération de toutes les associations réciproques des oneToMany.
+- [`bc2207fa`](https://github.com/klee-contrib/topmodel/commit/bc2207faf0a3b7e73c0e2f93e00fbf93d96ec53b) - [JPA] : Génération de toutes les associations réciproques des oneToMany.
 
 ## 1.12.2
 
@@ -251,11 +255,11 @@ _Remarque : Générer du SSDT pour PostgreSQL n'a évidemment pas de sens, mais 
 - [`f41f1fd`](https://github.com/klee-contrib/topmodel/commit/f41f1fd1a9b3264804d71d2bf1a67598bef7bd7e) - Fix [#120](https://github.com/klee-contrib/topmodel/issues/120) (erreurs mal positionnées sur les propriétés)
 - [`5fae0b1`](https://github.com/klee-contrib/topmodel/commit/5fae0b134c9a7f94df4e02bf8316b403b11800cb) - Warning décorateur non utilisé ([#119](https://github.com/klee-contrib/topmodel/issues/119))
 - [`fae6e99`](https://github.com/klee-contrib/topmodel/commit/fae6e9904e71438a330e2c28eb723aa892aaf6b0) - Amélioration détection mappings
-- [`26a989b`](https://github.com/klee-contrib/topmodel/commit/26a989bb231dbb29b7f27c3dbb2523ee9ad72481) - PG: Suppression des anciens fichiers [#114](https://github.com/klee-contrib/topmodel/issues/114)
+- [`26a989b`](https://github.com/klee-contrib/topmodel/commit/26a989bb231dbb29b7f27c3dbb2523ee9ad72481) - [PG]: Suppression des anciens fichiers [#114](https://github.com/klee-contrib/topmodel/issues/114)
 
 ## 1.9.6
 
-- [`32601d4`](https://github.com/klee-contrib/topmodel/commit/32601d4a8f27177144a0888223b438cf8f12400d) JPA - Ne plus utiliser le stream().toList() car la liste renvoyée est immutable.
+- [`32601d4`](https://github.com/klee-contrib/topmodel/commit/32601d4a8f27177144a0888223b438cf8f12400d) [JPA] - Ne plus utiliser le stream().toList() car la liste renvoyée est immutable.
 
 ## 1.9.5
 
@@ -266,7 +270,7 @@ _Remarque : Générer du SSDT pour PostgreSQL n'a évidemment pas de sens, mais 
 
 ## 1.9.4
 
-[`2547b6`](https://github.com/klee-contrib/topmodel/commit/2547b691ce42d67b2f66caaab6f1f50d43e56b0a) JPA :
+[`2547b6`](https://github.com/klee-contrib/topmodel/commit/2547b691ce42d67b2f66caaab6f1f50d43e56b0a) [JPA] :
 
 - Ajout de la propriété `required` dans les requests params
 - Passage de `emptyList` à `new ArrayList()` en cas de nullité de la liste
