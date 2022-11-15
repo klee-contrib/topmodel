@@ -121,7 +121,7 @@ public class JavascriptResourceGenerator : GeneratorBase
 
         var i = 1;
 
-        foreach (var property in classe)
+        foreach (var property in classe.OrderBy(p => p.Name, StringComparer.Ordinal))
         {
             fw.Write($"        {Quote(property.Name)}: ");
 

@@ -85,11 +85,11 @@ public class MapperGenerator : GeneratorBase
 
         var fromMappers = classes
             .SelectMany(classe => classe.FromMappers.Where(c => c.Params.All(p => availableClasses.Contains(p.Class))).Select(m => (classe, m)))
-            .OrderBy(m => m.classe.Name, StringComparer.Ordinal)
+            .OrderBy(m => $"{m.classe.Name} {string.Join(',', m.m.Params.Select(p => p.Name))}", StringComparer.Ordinal)
             .ToList();
         var toMappers = classes
             .SelectMany(classe => classe.ToMappers.Where(p => availableClasses.Contains(p.Class)).Select(m => (classe, m)))
-            .OrderBy(m => m.m.Name, StringComparer.Ordinal)
+            .OrderBy(m => $"{m.m.Name} {m.classe.Name}", StringComparer.Ordinal)
             .ToList();
 
         foreach (var fromMapper in fromMappers)
