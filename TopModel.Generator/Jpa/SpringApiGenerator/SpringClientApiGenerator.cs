@@ -102,7 +102,7 @@ public class SpringClientApiGenerator : GeneratorBase
         fw.WriteDocStart(1, "Méthode de récupération des headers");
         fw.WriteLine(1, " * @return les headers à ajouter à la requête");
         fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"abstract protected HttpHeaders getHeaders();");
+        fw.WriteLine(1, $"protected abstract HttpHeaders getHeaders();");
         foreach (var endpoint in file.Endpoints)
         {
             WriteEndPoint(fw, endpoint);
