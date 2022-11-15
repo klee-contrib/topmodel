@@ -147,7 +147,7 @@ public class FileWriter : TextWriter
         }
 
         string? currentContent = null;
-        var fileExists = File.Exists(_fileName);
+        var fileExists = File.Exists(_fileName.Replace("\\", "/"));
         if (fileExists)
         {
             using var reader = new StreamReader(_fileName, Encoding);
@@ -164,7 +164,7 @@ public class FileWriter : TextWriter
         }
 
         var newContent = _sb.ToString();
-        if (newContent == currentContent)
+        if (newContent.ReplaceLineEndings() == currentContent?.ReplaceLineEndings())
         {
             return;
         }

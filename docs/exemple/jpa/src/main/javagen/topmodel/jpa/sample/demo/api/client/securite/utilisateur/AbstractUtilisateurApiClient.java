@@ -39,12 +39,18 @@ public abstract class AbstractUtilisateurApiClient {
 	}
 
 	/**
+	 * Méthode de récupération des headers.
+	 * @return les headers à ajouter à la requête
+	 */
+	abstract protected HttpHeaders getHeaders();
+
+	/**
 	 * UriComponentsBuilder pour la méthode find.
 	 * @param utilisateurId Id technique
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder findUriComponentsBuilder(Long utilisateurId) {
-		String uri = host + "utilisateur/{utiId}";
+		String uri = host + "/utilisateur/{utiId}";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("utilisateurId", utilisateurId);
 		return uriBuilder;
@@ -55,7 +61,8 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utilisateurId Id technique
 	 * @return Le détail de l'utilisateur
 	 */
-	public ResponseEntity<UtilisateurDto> find(Long utilisateurId, HttpHeaders headers){
+	public ResponseEntity<UtilisateurDto> find(Long utilisateurId){
+		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.findUriComponentsBuilder(utilisateurId);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), UtilisateurDto.class);
 	}
@@ -66,7 +73,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder findAllByTypeUriComponentsBuilder(TypeUtilisateur.Values typeUtilisateurCode) {
-		String uri = host + "utilisateur/list";
+		String uri = host + "/utilisateur/list";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		if (typeUtilisateurCode != null) {
 			uriBuilder.queryParam("typeUtilisateurCode", typeUtilisateurCode);
@@ -80,7 +87,8 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Liste des utilisateurs
 	 */
-	public ResponseEntity<List> findAllByType(TypeUtilisateur.Values typeUtilisateurCode, HttpHeaders headers){
+	public ResponseEntity<List> findAllByType(TypeUtilisateur.Values typeUtilisateurCode){
+		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.findAllByTypeUriComponentsBuilder(typeUtilisateurCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), List.class);
 	}
@@ -90,7 +98,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder saveUriComponentsBuilder() {
-		String uri = host + "utilisateur/save";
+		String uri = host + "/utilisateur/save";
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 
@@ -99,7 +107,8 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utilisateur Utilisateur à sauvegarder
 	 * @return Utilisateur sauvegardé
 	 */
-	public ResponseEntity<UtilisateurDto> save(UtilisateurDto utilisateur, HttpHeaders headers){
+	public ResponseEntity<UtilisateurDto> save(UtilisateurDto utilisateur){
+		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.saveUriComponentsBuilder();
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(utilisateur, headers), UtilisateurDto.class);
 	}
@@ -116,7 +125,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder searchUriComponentsBuilder(LocalDate dateCreation, LocalDateTime dateModification, Long utilisateurId, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode) {
-		String uri = host + "utilisateur/search";
+		String uri = host + "/utilisateur/search";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		if (dateCreation != null) {
 			uriBuilder.queryParam("dateCreation", dateCreation);
@@ -157,7 +166,8 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<Page> search(LocalDate dateCreation, LocalDateTime dateModification, Long utilisateurId, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, HttpHeaders headers){
+	public ResponseEntity<Page> search(LocalDate dateCreation, LocalDateTime dateModification, Long utilisateurId, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode){
+		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.searchUriComponentsBuilder(dateCreation, dateModification, utilisateurId, age, profilId, email, typeUtilisateurCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), Page.class);
 	}

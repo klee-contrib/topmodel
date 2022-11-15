@@ -65,7 +65,7 @@ public abstract class AbstractSchemaGenerator
 
         writerInsert.WriteLine("-- =========================================================================================== ");
         writerInsert.WriteLine($"--   Application Name	:	{classes.First().Namespace.App} ");
-        writerInsert.WriteLine("--   Script Name		:	" + _config.InitListFile.Split(Path.DirectorySeparatorChar).Last());
+        writerInsert.WriteLine("--   Script Name		:	" + _config.InitListFile.Split('/').Last());
         writerInsert.WriteLine("--   Description		:	Script d'insertion des données de références");
         writerInsert.WriteLine("-- ===========================================================================================");
 
@@ -111,19 +111,19 @@ public abstract class AbstractSchemaGenerator
 
         writerCrebas.WriteLine("-- =========================================================================================== ");
         writerCrebas.WriteLine($"--   Application Name	:	{appName} ");
-        writerCrebas.WriteLine("--   Script Name		:	" + _config.CrebasFile.Split(Path.DirectorySeparatorChar).Last());
+        writerCrebas.WriteLine("--   Script Name		:	" + _config.CrebasFile.Split('/').Last());
         writerCrebas.WriteLine("--   Description		:	Script de création des tables.");
         writerCrebas.WriteLine("-- =========================================================================================== ");
 
         writerUk?.WriteLine("-- =========================================================================================== ");
         writerUk?.WriteLine($"--   Application Name	:	{appName} ");
-        writerUk?.WriteLine("--   Script Name		:	" + _config.UniqueKeysFile?.Split(Path.DirectorySeparatorChar).Last());
+        writerUk?.WriteLine("--   Script Name		:	" + _config.UniqueKeysFile?.Split('/').Last());
         writerUk?.WriteLine("--   Description		:	Script de création des index uniques.");
         writerUk?.WriteLine("-- =========================================================================================== ");
 
         writerType?.WriteLine("-- =========================================================================================== ");
         writerType?.WriteLine($"--   Application Name	:	{appName} ");
-        writerType?.WriteLine("--   Script Name		:	" + _config.TypeFile?.Split(Path.DirectorySeparatorChar).Last());
+        writerType?.WriteLine("--   Script Name		:	" + _config.TypeFile?.Split('/').Last());
         writerType?.WriteLine("--   Description		:	Script de création des types. ");
         writerType?.WriteLine("-- =========================================================================================== ");
 
@@ -147,7 +147,7 @@ public abstract class AbstractSchemaGenerator
 
         writer.WriteLine("-- =========================================================================================== ");
         writer.WriteLine($"--   Application Name	:	{appName} ");
-        writer.WriteLine("--   Script Name		:	" + _config.IndexFKFile.Split(Path.DirectorySeparatorChar).Last());
+        writer.WriteLine("--   Script Name		:	" + _config.IndexFKFile.Split('/').Last());
         writer.WriteLine("--   Description		:	Script de création des indexes et des clef étrangères. ");
         writer.WriteLine("-- =========================================================================================== ");
 

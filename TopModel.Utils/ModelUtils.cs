@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
-using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace TopModel.Utils;
 
@@ -16,7 +16,7 @@ public static class ModelUtils
 
         if (property.GetValue(classe) != null)
         {
-            property.SetValue(classe, Path.GetFullPath(Path.Combine(directoryName, (string)property.GetValue(classe)!).Trim('/')));
+            property.SetValue(classe, Path.GetFullPath(Path.Combine(directoryName, (string)property.GetValue(classe)!)).TrimEnd('/').Replace("\\", "/"));
         }
     }
 
@@ -168,6 +168,6 @@ public static class ModelUtils
             relative = $".\\{relative}";
         }
 
-        return relative;
+        return relative.Replace("\\", "/");
     }
 }

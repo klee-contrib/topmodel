@@ -233,6 +233,7 @@ public class ModelStore
         var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         var generatedFiles = GetGeneratedFiles();
         var filesToPrune = _topModelLock.GeneratedFiles
+            .Select(f => f.Replace("\\", "/"))
             .Where(f => !generatedFiles.Select(gf => isWindows ? gf.ToLowerInvariant() : gf).Contains(isWindows ? f.ToLowerInvariant() : f))
             .Select(f => Path.Combine(_config.ModelRoot, f));
 

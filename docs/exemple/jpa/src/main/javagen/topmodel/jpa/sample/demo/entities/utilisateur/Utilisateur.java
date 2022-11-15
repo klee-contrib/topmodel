@@ -89,7 +89,7 @@ public class Utilisateur {
 	/**
 	 * Utilisateur parent.
 	 */
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, optional = true)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
 	@JoinColumn(name = "ID_PARENT", referencedColumnName = "ID", unique = true)
 	private Utilisateur utilisateurParent;
 

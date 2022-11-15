@@ -70,11 +70,11 @@ public class LoggerProvider : ILoggerProvider
 
                 if (logLevel != LogLevel.Error && logLevel != LogLevel.Warning)
                 {
-                    var split2 = message.Split(Path.DirectorySeparatorChar);
+                    var split2 = message.Split('/');
                     if (split2.Length > 1)
                     {
                         Console.ForegroundColor = ConsoleColor.White;
-                        Console.Write($"{string.Join(Path.DirectorySeparatorChar, split2[0..^1])}{Path.DirectorySeparatorChar}");
+                        Console.Write($"{string.Join('/', split2[0..^1])}/");
                         Console.ForegroundColor = ConsoleColor.Blue;
                     }
 

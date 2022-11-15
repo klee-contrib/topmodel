@@ -56,7 +56,7 @@ public class Profil {
 	/**
 	 * Liste des secteurs de l'utilisateur.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.LAZY, mappedBy = "profil")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "profil")
 	private List<Secteur> secteurs;
 
 	/**
