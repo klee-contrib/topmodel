@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.18.8
+
+- [`76f48ad4`](https://github.com/klee-contrib/topmodel/commit/76f48ad4f6ea74fb2197d6c5463bb4d6bd34fc17) - Ajustement génération pour Linux
+  _Remarque : Cette modification va changer le sens des slashs du `topmodel.lock` sous Windows_
+- [`e3f5d22a`](https://github.com/klee-contrib/topmodel/commit/e3f5d22ab92a54f2557287376ca9519d94f08f9c) - JPA : inversion protected abstract api client
+
 ## 1.18.7
 
 - [`54f04681`](https://github.com/klee-contrib/topmodel/commit/54f04681e10cb124b65b31d841ce28bc60b44963) - [JPA] : Suppression des orphanRemoval
