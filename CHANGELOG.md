@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.18.9
+
+- [`163558d2`](https://github.com/klee-contrib/topmodel/commit/163558d298b559ed9ab48c84d139acddbec37f9c) - [C#/JS] Tri déterministe sur les mappers C# et les propriétés de ressources JS
+
 ## 1.18.8
 
 - [`76f48ad4`](https://github.com/klee-contrib/topmodel/commit/76f48ad4f6ea74fb2197d6c5463bb4d6bd34fc17) - Ajustement génération pour Linux
