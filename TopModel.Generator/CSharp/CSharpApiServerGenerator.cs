@@ -88,16 +88,42 @@ namespace {apiPath.Replace("/", ".")}
 
         foreach (var endpoint in endpoints)
         {
-            var method = (MethodDeclarationSyntax)ParseMemberDeclaration($@"
-{indent}/// <summary>
-{indent}/// {endpoint.Description}
-{indent}/// </summary>{string.Join(Environment.NewLine, new[] { string.Empty }.Concat(endpoint.Params.Select(param => $@"{indent}/// <param name=""{param.GetParamName()}"">{param.Comment}</param>")))}{(!_config.NoAsyncControllers || endpoint.Returns != null ? $@"{Environment.NewLine}{indent}/// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>" : string.Empty)}{(endpoint.Returns is IFieldProperty { Domain.MediaType: string mediaType } ? $@"{Environment.NewLine}{indent}[Produces(""{mediaType}"")]" : string.Empty)}
-{indent}[Http{endpoint.Method.ToLower().ToFirstUpper()}(""{GetRoute(endpoint)}"")]
-{indent}public {_config.GetReturnTypeName(endpoint.Returns)} {endpoint.Name}({string.Join(", ", endpoint.Params.Select(GetParam))})
-{indent}{{
+            var wd = new StringBuilder();
+            wd.AppendLine();
+            wd.AppendLine($"{indent}/// <summary>");
+            wd.AppendLine($"{indent}/// {endpoint.Description}");
+            wd.AppendLine($"{indent}/// </summary>");
 
-{indent}}}
-")!;
+            foreach (var param in endpoint.Params)
+            {
+                wd.AppendLine($@"{indent}/// <param name=""{param.GetParamName()}"">{param.Comment}</param>");
+            }
+
+            if (!_config.NoAsyncControllers || endpoint.Returns != null)
+            {
+                wd.AppendLine($"{indent}/// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>");
+            }
+
+            if (endpoint.Returns is IFieldProperty { Domain.MediaType: string mediaType })
+            {
+                wd.AppendLine($@"{indent}[Produces(""{mediaType}"")]");
+            }
+
+            foreach (var d in endpoint.Decorators)
+            {
+                foreach (var a in d.Decorator.CSharp?.Annotations ?? Array.Empty<string>())
+                {
+                    wd.AppendLine($"{indent}[{a.ParseTemplate(endpoint, d.Parameters)}]");
+                }
+            }
+
+            wd.AppendLine($@"{indent}[Http{endpoint.Method.ToLower().ToFirstUpper()}(""{GetRoute(endpoint)}"")]");
+            wd.AppendLine($"{indent}public {_config.GetReturnTypeName(endpoint.Returns)} {endpoint.Name}({string.Join(", ", endpoint.Params.Select(GetParam))})");
+            wd.AppendLine($"{indent}{{");
+            wd.AppendLine();
+            wd.AppendLine($"{indent}}}");
+
+            var method = (MethodDeclarationSyntax)ParseMemberDeclaration(wd.ToString())!;
 
             var existingMethod = controller.DescendantNodes().OfType<MethodDeclarationSyntax>().SingleOrDefault(method => method.Identifier.Text == endpoint.Name);
             if (existingMethod != null)

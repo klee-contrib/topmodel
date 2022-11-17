@@ -7,13 +7,13 @@ public static class TemplateExtension
 {
     public static string ParseTemplate(this string template, IFieldProperty fp)
     {
-        if (string.IsNullOrEmpty(template) || !template.Contains("{"))
+        if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
             return template;
         }
 
         var result = template;
-        foreach (Match t in template.ExtractVariables())
+        foreach (var t in template.ExtractVariables())
         {
             result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), fp));
         }
@@ -38,13 +38,13 @@ public static class TemplateExtension
 
     public static string ParseTemplate(this string template, CompositionProperty fp)
     {
-        if (string.IsNullOrEmpty(template) || !template.Contains("{"))
+        if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
             return template;
         }
 
         var result = template;
-        foreach (Match t in template.ExtractVariables())
+        foreach (var t in template.ExtractVariables())
         {
             result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), fp));
         }
@@ -54,15 +54,31 @@ public static class TemplateExtension
 
     public static string ParseTemplate(this string template, Class c, string[] parameters)
     {
-        if (string.IsNullOrEmpty(template) || !template.Contains("{"))
+        if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
             return template;
         }
 
         var result = template;
-        foreach (Match t in template.ExtractVariables())
+        foreach (var t in template.ExtractVariables())
         {
             result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), c, parameters));
+        }
+
+        return result;
+    }
+
+    public static string ParseTemplate(this string template, Endpoint e, string[] parameters)
+    {
+        if (string.IsNullOrEmpty(template) || !template.Contains('{'))
+        {
+            return template;
+        }
+
+        var result = template;
+        foreach (var t in template.ExtractVariables())
+        {
+            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), e, parameters));
         }
 
         return result;
@@ -154,9 +170,27 @@ public static class TemplateExtension
         return result;
     }
 
-    private static MatchCollection ExtractVariables(this string input)
+    private static string ResolveVariable(this string input, Endpoint e, string[] parameters)
+    {
+        var transform = input.GetTransformation();
+        var result = input.Split(':').First()
+             .Replace("name", transform(e.Name))
+             .Replace("method", transform(e.Method))
+             .Replace("route", transform(e.Route))
+             .Replace("description", transform(e.Description))
+             .Replace("module", transform(e.ModelFile.Module ?? string.Empty));
+
+        for (var i = 0; i < parameters.Length; i++)
+        {
+            result = result.Replace($"${i}", parameters[i]);
+        }
+
+        return result;
+    }
+
+    private static IEnumerable<Match> ExtractVariables(this string input)
     {
         var regex = new Regex(@"(\{[$a-zA-Z0-9:.]+\})");
-        return regex.Matches(input);
+        return regex.Matches(input).Cast<Match>();
     }
 }
