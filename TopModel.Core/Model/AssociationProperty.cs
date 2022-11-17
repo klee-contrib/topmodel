@@ -88,8 +88,9 @@ public class AssociationProperty : IFieldProperty
     public bool UseLegacyRoleName { get; init; }
 
     internal Reference Location { get; set; }
+#nullable enable
 
-    public IProperty CloneWithClass(Class classe)
+    public IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null)
     {
         return new AssociationProperty
         {
@@ -98,6 +99,7 @@ public class AssociationProperty : IFieldProperty
             Comment = Comment,
             Decorator = Decorator,
             DefaultValue = DefaultValue,
+            Endpoint = endpoint,
             Label = Label,
             Location = Location,
             Required = Required,

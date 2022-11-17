@@ -439,6 +439,39 @@ public class ModelStore
             }
         }
 
+        // Résolution des décorateurs sur les endpoints.
+        foreach (var endpoint in fileEndpoints.Where(c => c.DecoratorReferences.Any()))
+        {
+            endpoint.Decorators.Clear();
+
+            var isError = false;
+            foreach (var decoratorRef in endpoint.DecoratorReferences)
+            {
+                if (!referencedDecorators.TryGetValue(decoratorRef.ReferenceName, out var decorator))
+                {
+                    isError = true;
+                    yield return new ModelError(endpoint, $"Le décorateur '{decoratorRef.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1008 };
+                }
+                else
+                {
+                    if (endpoint.Decorators.Any(d => d.Decorator == decorator))
+                    {
+                        isError = true;
+                        yield return new ModelError(endpoint, $"Le décorateur '{decoratorRef.ReferenceName}' est déjà présent dans la liste des décorateurs du endpoint '{endpoint}'.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1009 };
+                    }
+                    else
+                    {
+                        endpoint.Decorators.Add((decorator, decoratorRef.ParameterReferences.Select(p => p.ReferenceName).ToArray()));
+                    }
+                }
+            }
+
+            if (isError)
+            {
+                continue;
+            }
+        }
+
         // Résolutions des références sur les propriétés (hors alias).
         // On ne touche pas aux propriétés liées à une classe et un décorateur en même temps car
         // ces propriétés sont déjà résolues sur les décorateurs avant d'être recopiées sur les classes.
@@ -674,9 +707,26 @@ public class ModelStore
                     classe.Properties.Remove(prop);
                 }
 
-                foreach (var prop in classe.Decorators.SelectMany(d => d.Decorator.Properties).Reverse())
+                foreach (var prop in classe.Decorators.SelectMany(d => d.Decorator.Properties))
                 {
-                    classe.Properties.Insert(0, prop.CloneWithClass(classe));
+                    classe.Properties.Add(prop.CloneWithClassOrEndpoint(classe: classe));
+                }
+            }
+        }
+
+        // Recopie des propriétés des décorateurs dans les endpoints.
+        foreach (var endpoint in fileEndpoints)
+        {
+            if (endpoint.Decorators.Any())
+            {
+                foreach (var prop in endpoint.Params.Where(p => p.Decorator is not null).ToList())
+                {
+                    endpoint.Params.Remove(prop);
+                }
+
+                foreach (var prop in endpoint.Decorators.SelectMany(d => d.Decorator.Properties))
+                {
+                    endpoint.Params.Add(prop.CloneWithClassOrEndpoint(endpoint: endpoint));
                 }
             }
         }

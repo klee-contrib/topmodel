@@ -28,6 +28,7 @@ public class ModelFile
 
     public IDictionary<Reference, object> References => Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object))
         .Concat(Classes.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
+        .Concat(Endpoints.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
         .Concat(Properties.OfType<RegularProperty>().Select(p => (p.DomainReference as Reference, p.Domain as object)))
         .Concat(Properties.OfType<AssociationProperty>().SelectMany(p => new (Reference, object)[]
         {

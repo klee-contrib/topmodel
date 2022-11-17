@@ -104,6 +104,10 @@ public static class ModelExtensions
             .Select(c => (
                 Reference: c.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
                 File: c.GetFile()))
+            .Concat(modelStore.Endpoints.Where(e => e.Decorators.Select(d => d.Decorator).Contains(decorator))
+            .Select(e => (
+                Reference: e.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
+                File: e.GetFile())))
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 }

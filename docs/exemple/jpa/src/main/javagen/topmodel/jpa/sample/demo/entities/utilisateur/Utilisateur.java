@@ -39,20 +39,6 @@ import topmodel.jpa.sample.demo.entities.securite.Profil;
 public class Utilisateur {
 
 	/**
-	 * Date de création de l'utilisateur.
-	 */
-	@Column(name = "DATE_CREATION", nullable = true)
-	@CreatedDate
-	private LocalDate dateCreation;
-
-	/**
-	 * Date de modification de l'utilisateur.
-	 */
-	@Column(name = "DATE_MODIFICATION", nullable = true)
-	@LastModifiedDate
-	private LocalDateTime dateModification;
-
-	/**
 	 * Id technique.
 	 */
 	@Id
@@ -94,6 +80,20 @@ public class Utilisateur {
 	private Utilisateur utilisateurParent;
 
 	/**
+	 * Date de création de l'utilisateur.
+	 */
+	@Column(name = "DATE_CREATION", nullable = true)
+	@CreatedDate
+	private LocalDate dateCreation;
+
+	/**
+	 * Date de modification de l'utilisateur.
+	 */
+	@Column(name = "DATE_MODIFICATION", nullable = true)
+	@LastModifiedDate
+	private LocalDateTime dateModification;
+
+	/**
 	 * No arg constructor.
 	 */
 	public Utilisateur() {
@@ -108,54 +108,36 @@ public class Utilisateur {
 			return;
 		}
 
-		this.dateCreation = utilisateur.getDateCreation();
-		this.dateModification = utilisateur.getDateModification();
 		this.id = utilisateur.getId();
 		this.age = utilisateur.getAge();
 		this.profil = utilisateur.getProfil();
 		this.email = utilisateur.getEmail();
 		this.typeUtilisateur = utilisateur.getTypeUtilisateur();
 		this.utilisateurParent = utilisateur.getUtilisateurParent();
+		this.dateCreation = utilisateur.getDateCreation();
+		this.dateModification = utilisateur.getDateModification();
 	}
 
 	/**
 	 * All arg constructor.
-	 * @param dateCreation Date de création de l'utilisateur
-	 * @param dateModification Date de modification de l'utilisateur
 	 * @param id Id technique
 	 * @param age Age en années de l'utilisateur
 	 * @param profil Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
 	 * @param typeUtilisateur Type d'utilisateur en Many to one
 	 * @param utilisateurParent Utilisateur parent
+	 * @param dateCreation Date de création de l'utilisateur
+	 * @param dateModification Date de modification de l'utilisateur
 	 */
-	public Utilisateur(LocalDate dateCreation, LocalDateTime dateModification, Long id, Long age, Profil profil, String email, TypeUtilisateur typeUtilisateur, Utilisateur utilisateurParent) {
-		this.dateCreation = dateCreation;
-		this.dateModification = dateModification;
+	public Utilisateur(Long id, Long age, Profil profil, String email, TypeUtilisateur typeUtilisateur, Utilisateur utilisateurParent, LocalDate dateCreation, LocalDateTime dateModification) {
 		this.id = id;
 		this.age = age;
 		this.profil = profil;
 		this.email = email;
 		this.typeUtilisateur = typeUtilisateur;
 		this.utilisateurParent = utilisateurParent;
-	}
-
-	/**
-	 * Getter for dateCreation.
-	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#dateCreation dateCreation}.
-	 */
-	public LocalDate getDateCreation() {
-		return this.dateCreation;
-	}
-
-	/**
-	 * Getter for dateModification.
-	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#dateModification dateModification}.
-	 */
-	public LocalDateTime getDateModification() {
-		return this.dateModification;
+		this.dateCreation = dateCreation;
+		this.dateModification = dateModification;
 	}
 
 	/**
@@ -213,19 +195,21 @@ public class Utilisateur {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#dateCreation dateCreation}.
-	 * @param dateCreation value to set
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#dateCreation dateCreation}.
 	 */
-	public void setDateCreation(LocalDate dateCreation) {
-		this.dateCreation = dateCreation;
+	public LocalDate getDateCreation() {
+		return this.dateCreation;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#dateModification dateModification}.
-	 * @param dateModification value to set
+	 * Getter for dateModification.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#dateModification dateModification}.
 	 */
-	public void setDateModification(LocalDateTime dateModification) {
-		this.dateModification = dateModification;
+	public LocalDateTime getDateModification() {
+		return this.dateModification;
 	}
 
 	/**
@@ -277,17 +261,33 @@ public class Utilisateur {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#dateCreation dateCreation}.
+	 * @param dateCreation value to set
+	 */
+	public void setDateCreation(LocalDate dateCreation) {
+		this.dateCreation = dateCreation;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#dateModification dateModification}.
+	 * @param dateModification value to set
+	 */
+	public void setDateModification(LocalDateTime dateModification) {
+		this.dateModification = dateModification;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur Utilisateur}.
 	 */
 	public enum Fields  {
-        DATE_CREATION(LocalDate.class), //
-        DATE_MODIFICATION(LocalDateTime.class), //
         ID(Long.class), //
         AGE(Long.class), //
         PROFIL(Profil.class), //
         EMAIL(String.class), //
         TYPE_UTILISATEUR(TypeUtilisateur.class), //
-        UTILISATEUR_PARENT(Utilisateur.class);
+        UTILISATEUR_PARENT(Utilisateur.class), //
+        DATE_CREATION(LocalDate.class), //
+        DATE_MODIFICATION(LocalDateTime.class);
 
 		private Class<?> type;
 

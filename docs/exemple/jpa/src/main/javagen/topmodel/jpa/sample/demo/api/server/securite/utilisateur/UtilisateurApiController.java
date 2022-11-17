@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,20 +48,21 @@ public interface UtilisateurApiController {
 	 * @param utilisateur Utilisateur à sauvegarder
 	 * @return Utilisateur sauvegardé
 	 */
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PostMapping(path = "/save")
 	UtilisateurDto save(@RequestBody @Valid UtilisateurDto utilisateur);
 
 	/**
 	 * Recherche des utilisateurs.
-	 * @param dateCreation Date de création de l'utilisateur
-	 * @param dateModification Date de modification de l'utilisateur
 	 * @param utilisateurId Id technique
 	 * @param age Age en années de l'utilisateur
 	 * @param profilId Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
+	 * @param dateCreation Date de création de l'utilisateur
+	 * @param dateModification Date de modification de l'utilisateur
 	 * @return Utilisateurs matchant les critères
 	 */
 	@PostMapping(path = "/search")
-	Page<UtilisateurDto> search(@RequestParam(value = "dateCreation", required = false) LocalDate dateCreation, @RequestParam(value = "dateModification", required = false) LocalDateTime dateModification, @RequestParam(value = "utilisateurId", required = true) Long utilisateurId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) Long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode);
+	Page<UtilisateurDto> search(@RequestParam(value = "utilisateurId", required = true) Long utilisateurId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) Long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode, @RequestParam(value = "dateCreation", required = false) LocalDate dateCreation, @RequestParam(value = "dateModification", required = false) LocalDateTime dateModification);
 }

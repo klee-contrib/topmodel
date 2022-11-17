@@ -31,11 +31,13 @@ public class CompositionProperty : IProperty
 
 #nullable enable
     public DomainReference? DomainKindReference { get; set; }
+
 #nullable disable
 
     internal Reference Location { get; set; }
+#nullable enable
 
-    public IProperty CloneWithClass(Class classe)
+    public IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null)
     {
         return new CompositionProperty
         {
@@ -44,6 +46,7 @@ public class CompositionProperty : IProperty
             Composition = Composition,
             Decorator = Decorator,
             DomainKind = DomainKind,
+            Endpoint = endpoint,
             Kind = Kind,
             Location = Location,
             Name = Name

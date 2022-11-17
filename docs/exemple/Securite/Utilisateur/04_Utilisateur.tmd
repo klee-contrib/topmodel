@@ -6,6 +6,7 @@ tags:
 uses:
   - Securite/Utilisateur/02_Entities
   - Securite/Utilisateur/03_Dtos
+  - decorators
 options:
   endpoints:
     prefix: utilisateur
@@ -49,6 +50,8 @@ endpoint:
   method: POST
   route: /save
   description: Sauvegarde un utilisateur
+  decorators:
+    - Security: ["hasRole('ROLE_ADMIN')"]
   params:
     - composition: UtilisateurDto
       comment: Utilisateur à sauvegarder

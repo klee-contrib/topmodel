@@ -60,25 +60,19 @@ export class UtilisateurApiService {
 
     /**
      * Recherche des utilisateurs
-     * @param dateCreation Date de création de l'utilisateur
-     * @param dateModification Date de modification de l'utilisateur
      * @param utilisateurId Id technique
      * @param age Age en années de l'utilisateur
      * @param profilId Profil de l'utilisateur
      * @param email Email de l'utilisateur
      * @param typeUtilisateurCode Type d'utilisateur en Many to one
+     * @param dateCreation Date de création de l'utilisateur
+     * @param dateModification Date de modification de l'utilisateur
      * @param options Options pour 'fetch'.
      * @returns Utilisateurs matchant les critères
      */
-    search(dateCreation?: string dateModification?: string utilisateurId?: number age?: number profilId?: number email?: string typeUtilisateurCode?: TypeUtilisateurCode , queryParams: any = {}): Observable<Page<UtilisateurDto>> {
+    search(utilisateurId?: number age?: number profilId?: number email?: string typeUtilisateurCode?: TypeUtilisateurCode dateCreation?: string dateModification?: string , queryParams: any = {}): Observable<Page<UtilisateurDto>> {
         const httpParams = new HttpParams({fromObject : queryParams});
         const httpOptions = { params: httpParams }
-        if(dateCreation !== null) {
-            httpOptions.params.set('dateCreation', dateCreation)
-        }
-        if(dateModification !== null) {
-            httpOptions.params.set('dateModification', dateModification)
-        }
         if(utilisateurId !== null) {
             httpOptions.params.set('utilisateurId', utilisateurId)
         }
@@ -93,6 +87,12 @@ export class UtilisateurApiService {
         }
         if(typeUtilisateurCode !== null) {
             httpOptions.params.set('typeUtilisateurCode', typeUtilisateurCode)
+        }
+        if(dateCreation !== null) {
+            httpOptions.params.set('dateCreation', dateCreation)
+        }
+        if(dateModification !== null) {
+            httpOptions.params.set('dateModification', dateModification)
         }
 
         return this.http.post<Page<UtilisateurDto>>(`/utilisateur/search`, httpOptions);

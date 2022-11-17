@@ -32,9 +32,13 @@ public class Endpoint
 
     public IList<IProperty> Params { get; set; } = new List<IProperty>();
 
+    public List<(Decorator Decorator, string[] Parameters)> Decorators { get; } = new();
+
     public IEnumerable<ClassDependency> ClassDependencies => Params.Concat(new[] { Returns! }).Where(p => p != null).GetClassDependencies();
 
     public IEnumerable<DomainDependency> DomainDependencies => Params.Concat(new[] { Returns! }).Where(p => p != null).GetDomainDependencies();
+
+    public List<DecoratorReference> DecoratorReferences { get; } = new();
 
 #nullable disable
     internal Reference Location { get; set; }

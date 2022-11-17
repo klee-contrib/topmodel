@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 1.18.8
+version: 1.19.0
 generatedFiles:
   - ./jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/utilisateur/AbstractUtilisateurApiClient.java
   - ./jpa/src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/utilisateur/UtilisateurApiController.java

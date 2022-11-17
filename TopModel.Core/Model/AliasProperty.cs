@@ -94,13 +94,14 @@ public class AliasProperty : IFieldProperty
 
     internal AliasProperty? OriginalAliasProperty { get; private set; }
 
-    public IProperty CloneWithClass(Class classe)
+    public IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null)
     {
         var alp = new AliasProperty
         {
             Class = classe,
             Comment = _comment!,
             Decorator = Decorator,
+            Endpoint = endpoint,
             Label = _label,
             Location = Location,
             ListDomain = _listDomain,

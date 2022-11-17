@@ -1,4 +1,5 @@
-﻿using YamlDotNet.Core;
+﻿using TopModel.Core.FileModel;
+using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
@@ -49,6 +50,29 @@ public class EndpointLoader
                     endpoint.Returns = _propertyLoader.LoadProperty(parser).First();
                     endpoint.Returns.Endpoint = endpoint;
                     parser.Consume<MappingEnd>();
+                    break;
+                case "decorators":
+                    parser.ConsumeSequence(() =>
+                    {
+                        if (parser.Current is MappingStart)
+                        {
+                            parser.ConsumeMapping(() =>
+                            {
+                                var decorator = new DecoratorReference(parser.Consume<Scalar>());
+
+                                parser.ConsumeSequence(() =>
+                                {
+                                    decorator.ParameterReferences.Add(new Reference(parser.Consume<Scalar>()));
+                                });
+
+                                endpoint.DecoratorReferences.Add(decorator);
+                            });
+                        }
+                        else
+                        {
+                            endpoint.DecoratorReferences.Add(new DecoratorReference(parser.Consume<Scalar>()));
+                        }
+                    });
                     break;
                 default:
                     throw new ModelException(endpoint, $"Propriété ${prop} inconnue pour un endpoint");
