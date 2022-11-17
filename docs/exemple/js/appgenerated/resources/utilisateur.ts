@@ -8,12 +8,12 @@ export const utilisateur = {
         libelle: "Libelle"
     },
     utilisateur: {
+        age: "Age",
+        id: "Id technique",
+        profilId: "ProfilId",
+        typeUtilisateurCode: "TypeUtilisateurCode",
         dateCreation: "dateCreation",
         dateModification: "dateModification",
-        id: "Id technique",
-        age: "Age",
-        profilId: "ProfilId",
-        email: "email",
-        typeUtilisateurCode: "TypeUtilisateurCode"
+        email: "email"
     }
 };

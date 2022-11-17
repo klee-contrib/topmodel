@@ -7,31 +7,17 @@ import {DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_NUM
 import {TypeUtilisateurCode} from "./references";
 
 export interface UtilisateurDto {
-    dateCreation?: string,
-    dateModification?: string,
     id?: number,
     age?: number,
     profilId?: number,
     email?: string,
     typeUtilisateurCode?: TypeUtilisateurCode,
+    dateCreation?: string,
+    dateModification?: string,
     utilisateurParent?: UtilisateurDto
 }
 
 export const UtilisateurDtoEntity = {
-    dateCreation: {
-        type: "field",
-        name: "dateCreation",
-        domain: DO_DATE_CREATION,
-        isRequired: false,
-        label: "utilisateur.utilisateur.dateCreation"
-    },
-    dateModification: {
-        type: "field",
-        name: "dateModification",
-        domain: DO_DATE_MODIFICATION,
-        isRequired: false,
-        label: "utilisateur.utilisateur.dateModification"
-    },
     id: {
         type: "field",
         name: "id",
@@ -66,6 +52,20 @@ export const UtilisateurDtoEntity = {
         domain: DO_CODE,
         isRequired: false,
         label: "utilisateur.utilisateur.typeUtilisateurCode"
+    },
+    dateCreation: {
+        type: "field",
+        name: "dateCreation",
+        domain: DO_DATE_CREATION,
+        isRequired: false,
+        label: "utilisateur.utilisateur.dateCreation"
+    },
+    dateModification: {
+        type: "field",
+        name: "dateModification",
+        domain: DO_DATE_MODIFICATION,
+        isRequired: false,
+        label: "utilisateur.utilisateur.dateModification"
     },
     utilisateurParent: {
         type: "object",

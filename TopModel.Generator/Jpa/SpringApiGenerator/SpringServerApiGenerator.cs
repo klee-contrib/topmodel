@@ -50,7 +50,6 @@ public class SpringServerApiGenerator : GeneratorBase
 
     private string GetFileName(ModelFile file)
     {
-        var filePath = file.Name.Split("/").Last();
         return $"{GetClassName(file)}.java";
     }
 
@@ -139,6 +138,14 @@ public class SpringServerApiGenerator : GeneratorBase
                 consumes = @$", consumes = {{ {string.Join(", ", endpoint.Params.Where(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null).Select(p => $@"""{((IFieldProperty)p).Domain.MediaType}"""))} }}";
             }
 
+            foreach (var d in endpoint.Decorators)
+            {
+                foreach (var a in d.Decorator.Java?.Annotations ?? Array.Empty<string>())
+                {
+                    fw.WriteLine(1, $"{(a.StartsWith("@") ? string.Empty : "@")}{a.ParseTemplate(endpoint, d.Parameters)}");
+                }
+            }
+
             fw.WriteLine(1, @$"@{endpoint.Method.ToLower().ToFirstUpper()}Mapping(path = ""{endpoint.Route}""{consumes}{produces})");
         }
 
@@ -212,6 +219,8 @@ public class SpringServerApiGenerator : GeneratorBase
         {
             imports.Add("org.springframework.web.bind.annotation.RequestMapping");
         }
+
+        imports.AddRange(file.Endpoints.SelectMany(e => e.Decorators.SelectMany(d => (d.Decorator.Java?.Imports ?? Array.Empty<string>()).Select(i => i.ParseTemplate(e, d.Parameters)))).Distinct());
 
         fw.AddImports(imports);
     }

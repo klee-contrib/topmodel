@@ -42,7 +42,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * Méthode de récupération des headers.
 	 * @return les headers à ajouter à la requête
 	 */
-	abstract protected HttpHeaders getHeaders();
+	protected abstract HttpHeaders getHeaders();
 
 	/**
 	 * UriComponentsBuilder pour la méthode find.
@@ -115,26 +115,18 @@ public abstract class AbstractUtilisateurApiClient {
 
 	/**
 	 * UriComponentsBuilder pour la méthode search.
-	 * @param dateCreation Date de création de l'utilisateur
-	 * @param dateModification Date de modification de l'utilisateur
 	 * @param utilisateurId Id technique
 	 * @param age Age en années de l'utilisateur
 	 * @param profilId Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
+	 * @param dateCreation Date de création de l'utilisateur
+	 * @param dateModification Date de modification de l'utilisateur
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder searchUriComponentsBuilder(LocalDate dateCreation, LocalDateTime dateModification, Long utilisateurId, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode) {
+	protected UriComponentsBuilder searchUriComponentsBuilder(Long utilisateurId, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, LocalDate dateCreation, LocalDateTime dateModification) {
 		String uri = host + "/utilisateur/search";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
-		if (dateCreation != null) {
-			uriBuilder.queryParam("dateCreation", dateCreation);
-		}
-
-		if (dateModification != null) {
-			uriBuilder.queryParam("dateModification", dateModification);
-		}
-
 		uriBuilder.queryParam("utilisateurId", utilisateurId);
 		if (age != null) {
 			uriBuilder.queryParam("age", age);
@@ -152,23 +144,31 @@ public abstract class AbstractUtilisateurApiClient {
 			uriBuilder.queryParam("typeUtilisateurCode", typeUtilisateurCode);
 		}
 
+		if (dateCreation != null) {
+			uriBuilder.queryParam("dateCreation", dateCreation);
+		}
+
+		if (dateModification != null) {
+			uriBuilder.queryParam("dateModification", dateModification);
+		}
+
 		return uriBuilder;
 	}
 
 	/**
 	 * Recherche des utilisateurs.
-	 * @param dateCreation Date de création de l'utilisateur
-	 * @param dateModification Date de modification de l'utilisateur
 	 * @param utilisateurId Id technique
 	 * @param age Age en années de l'utilisateur
 	 * @param profilId Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
+	 * @param dateCreation Date de création de l'utilisateur
+	 * @param dateModification Date de modification de l'utilisateur
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<Page> search(LocalDate dateCreation, LocalDateTime dateModification, Long utilisateurId, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode){
+	public ResponseEntity<Page> search(Long utilisateurId, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, LocalDate dateCreation, LocalDateTime dateModification){
 		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.searchUriComponentsBuilder(dateCreation, dateModification, utilisateurId, age, profilId, email, typeUtilisateurCode);
+		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utilisateurId, age, profilId, email, typeUtilisateurCode, dateCreation, dateModification);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), Page.class);
 	}
 }

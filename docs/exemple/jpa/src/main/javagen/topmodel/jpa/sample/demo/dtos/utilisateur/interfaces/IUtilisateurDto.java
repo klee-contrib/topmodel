@@ -16,20 +16,6 @@ import topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur;
 public interface IUtilisateurDto {
 
 	/**
-	 * Getter for dateCreation.
-	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#dateCreation dateCreation}.
-	 */
-	LocalDate getDateCreation();
-
-	/**
-	 * Getter for dateModification.
-	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#dateModification dateModification}.
-	 */
-	LocalDateTime getDateModification();
-
-	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#id id}.
@@ -63,6 +49,20 @@ public interface IUtilisateurDto {
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#typeUtilisateurCode typeUtilisateurCode}.
 	 */
 	TypeUtilisateur.Values getTypeUtilisateurCode();
+
+	/**
+	 * Getter for dateCreation.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#dateCreation dateCreation}.
+	 */
+	LocalDate getDateCreation();
+
+	/**
+	 * Getter for dateModification.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#dateModification dateModification}.
+	 */
+	LocalDateTime getDateModification();
 
 	/**
 	 * Getter for utilisateurParent.

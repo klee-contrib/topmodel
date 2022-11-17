@@ -25,3 +25,12 @@ decorator:
   description: Ajoute la génération de l'interface
   java:
     generateInterface: true
+---
+decorator:
+  name: Security
+  description: Ajoute une annotation de sécurité sur un endpoint.
+  java:
+    annotations:
+      - PreAuthorize("{$0}")
+    imports:
+      - org.springframework.web.bind.annotation.PreAuthorize
