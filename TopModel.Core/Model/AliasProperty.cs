@@ -42,7 +42,7 @@ public class AliasProperty : IFieldProperty
 
     public string? Label
     {
-        get => _label ?? _property.Label;
+        get => _label ?? _property?.Label;
         set => _label = value;
     }
 

@@ -83,6 +83,10 @@
             "description": "Template du chemin des dossiers de traductions sortants (manquants). Doit contenir le template {lang}",
             "default": "{lang}"
           },
+          "defaultLang": {
+            "type": "string",
+            "description": "Langue par défaut (celle dans laquelle sont écris les labels dans les fichiers .tmd"
+          },
           "langs": {
             "type": "array",
             "items": {

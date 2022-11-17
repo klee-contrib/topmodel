@@ -2,7 +2,7 @@
     "droits": {
         "code": "Rights",
         "libelle": "Rights",
-        "typeProfilCode": "TypeProfilCode",
+        "typeProfilCode": "",
         "values": {
             "CRE": "Créer",
             "MOD": "Update",
@@ -12,7 +12,7 @@
     "profil": {
         "droits": "Rights",
         "id": "Technical id of profile",
-        "secteurs": "Secteurs",
+        "secteurs": "",
         "typeProfilCode": "Profile"
     },
     "typeProfil": {

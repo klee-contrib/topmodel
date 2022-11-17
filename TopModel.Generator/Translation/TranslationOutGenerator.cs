@@ -1,5 +1,4 @@
-using System.Text;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Utils;
@@ -27,7 +26,7 @@ public class TranslationOutGenerator : GeneratorBase
         _translationStore = translationStore;
     }
 
-    public override string Name => "TranslationOutGenerator";
+    public override string Name => "TranslationOutGen";
 
     public override IEnumerable<string> GeneratedFiles => _config.Langs.SelectMany(lang => GetModules(lang).Select(m => GetFilePath(m, lang)));
 

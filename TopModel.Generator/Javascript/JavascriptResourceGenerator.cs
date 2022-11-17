@@ -39,7 +39,6 @@ public class JavascriptResourceGenerator : GeneratorBase
     {
         foreach (var module in files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct())
         {
-            GenerateModule(module);
             foreach (var lang in _translationStore.Translations)
             {
                 GenerateModule(module, lang.Key);
@@ -47,7 +46,7 @@ public class JavascriptResourceGenerator : GeneratorBase
         }
     }
 
-    private void GenerateModule(string module, string lang = "")
+    private void GenerateModule(string module, string lang)
     {
         if (_config.ResourceRootPath == null)
         {
@@ -104,7 +103,7 @@ public class JavascriptResourceGenerator : GeneratorBase
     /// <param name="fw">Flux de sortie.</param>
     /// <param name="classe">Classe.</param>
     /// <param name="isLast">True s'il s'agit de al dernière classe du namespace.</param>
-    private void WriteClasseNode(FileWriter fw, IGrouping<Class, IFieldProperty> classe, bool isLast, string lang = "")
+    private void WriteClasseNode(FileWriter fw, IGrouping<Class, IFieldProperty> classe, bool isLast, string lang)
     {
         fw.WriteLine($"    {Quote(classe.Key.Name)}: {{");
 
@@ -113,9 +112,8 @@ public class JavascriptResourceGenerator : GeneratorBase
         foreach (var property in classe.OrderBy(p => p.Name, StringComparer.Ordinal))
         {
             fw.Write($"        {Quote(property.Name)}: ");
-            fw.Write($@"""{(_translationStore.Translations.TryGetValue(lang, out var dict) && dict.TryGetValue(property.ResourceKey, out var translatedValue) ? translatedValue : property.Label ?? property.Name)}""");
-            fw.WriteLine(classe.Count() == i++
-                && !(_config.TranslateReferences && classe.Key.DefaultProperty != null && classe.Key.ReferenceValues.Any()) ? string.Empty : ",");
+            fw.Write($@"""{_translationStore.GetTranslation(property, lang)}""");
+            fw.WriteLine(classe.Count() == i++ && !(_config.TranslateReferences && classe.Key.DefaultProperty != null && classe.Key.ReferenceValues.Any()) ? string.Empty : ",");
         }
 
         if (_config.TranslateReferences && classe.Key.DefaultProperty != null)
@@ -125,7 +123,7 @@ public class JavascriptResourceGenerator : GeneratorBase
             foreach (var refValue in classe.Key.ReferenceValues)
             {
                 fw.Write($@"            ""{refValue.Name}"": ");
-                fw.Write($@"""{(_translationStore.Translations.TryGetValue(lang, out var dict) && dict.TryGetValue(refValue.ResourceKey, out var translatedValue) ? translatedValue : refValue.Value[classe.Key.DefaultProperty])}""");
+                fw.Write($@"""{_translationStore.GetTranslation(refValue, lang)}""");
                 fw.WriteLine(classe.Key.ReferenceValues.Count() == i++ ? string.Empty : ",");
             }
 

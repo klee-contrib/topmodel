@@ -1,0 +1,26 @@
+{
+    "droits": {
+        "code": "Droit",
+        "libelle": "Droit",
+        "typeProfilCode": "",
+        "values": {
+            "CRE": "Créer",
+            "MOD": "Modifier",
+            "SUP": "Supprimer"
+        }
+    },
+    "profil": {
+        "droits": "Droits",
+        "id": "Id technique du profil",
+        "secteurs": "",
+        "typeProfilCode": "Profil"
+    },
+    "typeProfil": {
+        "code": "Type Profil code",
+        "libelle": "Libelle",
+        "values": {
+            "ADM": "Administrateur",
+            "GES": "Gestionnaire"
+        }
+    }
+}

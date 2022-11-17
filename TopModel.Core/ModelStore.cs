@@ -1234,6 +1234,28 @@ public class ModelStore
 
     private void LoadTranslations()
     {
+        { // Chargement des traductions par défaut
+            var dictionary = new Dictionary<string, string>();
+            foreach (var c in Files
+                .SelectMany(f => f.Classes))
+            {
+                foreach (var p in c.Properties.OfType<IFieldProperty>().Where(p => p.Label != null))
+                {
+                    dictionary[p.ResourceKey] = p.Label;
+                }
+
+                if (c.DefaultProperty != null)
+                {
+                    foreach (var r in c.ReferenceValues)
+                    {
+                        dictionary[r.ResourceKey] = r.Value[c.DefaultProperty];
+                    }
+                }
+            }
+
+            this._translationStore.Translations[_config.Langs!.DefaultLang] = dictionary;
+        }
+
         if (_config.Langs!.Langs.Any())
         {
             foreach (var lang in _config.Langs.Langs)

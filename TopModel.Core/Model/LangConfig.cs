@@ -7,6 +7,11 @@ public class LangConfig
     /// <summary>
     /// liste des langues de l'application
     /// </summary>
+    public string DefaultLang { get; set; }
+
+    /// <summary>
+    /// liste des langues de l'application
+    /// </summary>
     public List<string> Langs { get; set; } = new();
 
     /// <summary>

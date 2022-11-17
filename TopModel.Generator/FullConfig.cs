@@ -20,5 +20,5 @@ public class FullConfig : ModelConfig
 
     public IList<JpaConfig>? Jpa { get; set; }
 
-    public IList<TranslationConfig>? Translation {get;set;}
+    public IList<TranslationConfig>? Translation { get; set; }
 }

@@ -10,7 +10,7 @@
     },
     "utilisateur": {
         "age": "Age",
-        "id": "User",
+        "id": "Id technique",
         "profilId": "",
         "typeUtilisateurCode": "",
         "dateCreation": "dateCreation",
