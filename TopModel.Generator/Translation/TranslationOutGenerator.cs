@@ -27,7 +27,7 @@ public class TranslationOutGenerator : GeneratorBase
         _translationStore = translationStore;
     }
 
-    public override string Name => "ResourcesGenerator";
+    public override string Name => "TranslationOutGenerator";
 
     public override IEnumerable<string> GeneratedFiles => _config.Langs.SelectMany(lang => GetModules(lang).Select(m => GetFilePath(m, lang)));
 
