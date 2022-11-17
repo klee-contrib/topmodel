@@ -2,17 +2,17 @@
 
 Afin d'enrichir de manière plus personnalisée le code généré (en Java et C#), il est possible de définir des décorateurs (`decorator`). On peut y déclarer un ensemble d'interfaces implémentées, une classe étendue (hors TopModel), des annotations à ajouter.
 
-Ces décorateurs s'ajoutent ensuite à la définition des classes, sous forme de liste. Les décorateurs ne sont pas automatiquement disponibles dans tous les fichiers comme les domaines, donc il faudra qu'ils soient soit importés, soit définis dans le même fichier (comme une classe).
+Ces décorateurs s'ajoutent ensuite à la définition d'une classe ou d'un endpoint, sous forme de liste. Les décorateurs ne sont pas automatiquement disponibles dans tous les fichiers comme les domaines, donc il faudra qu'ils soient soit importés, soit définis dans le même fichier (comme une classe).
 
 ## Propriétés
 
 Il est également possible de renseigner des propriétés sur les décorateurs. Il n'y a aucune limitation sur les propriétés que l'on peut définir dans un décorateur (on peut mettre des alias, des compositions...).
 
-Ces propriétés sont ensuite recopiées sur les classes décorées (littéralement recopiées, il n'y a pas d'alias vers la propriété du décorateur par exemple). Ce sont par la suite des propriétés à part entière de la classe, qui peuvent être référencées par la suite sans problème (par exemple dans un alias). Leur "location" est en revanche bien dans le décorateur, donc le hover + la navigation dans l'IDE pointe bien vers la déclaration dans le décorateur.
+Ces propriétés sont ensuite recopiées sur les classes ou les endpoints (en tant que paramètres) décorés (littéralement recopiées, il n'y a pas d'alias vers la propriété du décorateur par exemple). Ce sont par la suite des propriétés à part entière de la classe ou du endpoint, qui peuvent être référencées par la suite sans problème (par exemple dans un alias). Leur "location" est en revanche bien dans le décorateur, donc le hover + la navigation dans l'IDE pointe bien vers la déclaration dans le décorateur.
 
-Elles sont ajoutées en premier dans la liste des propriétés, principalement pour avoir l'erreur de nom de propriété en double (si elle existe) sur la propriété définie dans la classe et non sur le décorateur.
+Elles sont ajoutées en dernier dans la liste des propriétés de la classe ou des paramètres du décorateur (attention du coup à l'erreur de doublon de nom de propriété qui s'affichera sur la propriété du décorateur...)
 
-## Exemple
+## Exemple pour une classe
 
 En Java, nous pouvons ajouter le décorateur EntityListener, pour ajouter l'annotation `EntityListeners` et les imports y afférent :
 
@@ -76,6 +76,49 @@ public class Utilisateur {
 }
 ```
 
+## Exemple pour un décorateur
+
+En C#, on pourrait définir un décorateur et son utilisation dans un endpoint comme ceci par exemple :
+
+```yaml
+---
+decorator:
+  name: Authorize
+  description: Authorize
+  csharp:
+    annotations:
+      - Authorize("{$0}") # Le templating est décrit dans la section suivante.
+  properties:
+    - name: AdditionalParam
+      domain: DO_BOOLEEN
+      comment: Param
+---
+endpoint:
+  name: Get
+  method: GET
+  route: /
+  description: Get
+  decorators:
+    - Authorize: ["interne"] # Les paramètres sont décrits dans la section suivante.
+```
+
+Cela générera la route suivante dans un contrôleur :
+
+```cs
+/// <summary>
+/// Get
+/// </summary>
+/// <param name="additionalParam">Param</param>
+/// <returns>Task.</returns>
+[Authorize("interne")]
+[HttpGet("/")]
+public async Task Get(bool? additionalParam = null)
+```
+
+_Remarque : les décorateurs d'endpoints ne fonctionnent que pour la génération serveur des endpoints (C# ou Java)._
+
+_Remarque 2 : `extends`, `implements` et `generateInterface` ne sont évidemment pas utilisés lorsqu'un endpoint est décoré_
+
 ## Templating
 
 ### Variables
@@ -121,7 +164,7 @@ decorator:
 
 Permet de généraliser le comportement du décorateur `MonInterface` à toutes les classes qui voudraient l'utiliser.
 
-Actuellement il est possible d'utiliser ces variables
+Actuellement, il est possible d'utiliser ces variables dans une classe :
 
 - `primaryKey.name`
 - `trigram`
@@ -129,6 +172,14 @@ Actuellement il est possible d'utiliser ces variables
 - `comment`
 - `label`
 - `pluralName`
+- `module`
+
+Et ces variables dans un endpoint :
+
+- `name`
+- `description`
+- `route`
+- `method`
 - `module`
 
 Dans ces propriétés :
