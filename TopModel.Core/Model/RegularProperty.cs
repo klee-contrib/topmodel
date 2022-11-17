@@ -42,8 +42,9 @@ public class RegularProperty : IFieldProperty
     public bool UseLegacyRoleName { get; init; }
 
     internal Reference Location { get; set; }
+#nullable enable
 
-    public IProperty CloneWithClass(Class classe)
+    public IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null)
     {
         return new RegularProperty
         {
@@ -52,6 +53,7 @@ public class RegularProperty : IFieldProperty
             Decorator = Decorator,
             DefaultValue = DefaultValue,
             Domain = Domain,
+            Endpoint = endpoint,
             Label = Label,
             Location = Location,
             Name = Name,

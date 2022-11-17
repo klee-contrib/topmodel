@@ -901,6 +901,29 @@
               "items": {
                 "$ref": "#/definitions/property"
               }
+            },
+            "decorators": {
+              "type": "array",
+              "description": "Décorateurs du endpoint",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "description": "Nom du décorateur"
+                  },
+                  {
+                    "type": "object",
+                    "description": "Nom du décorateur",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Paramètre du décorator"
+                      }
+                    }
+                  }
+                ]
+              }
             }
           }
         }

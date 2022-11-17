@@ -16,5 +16,5 @@ public interface IProperty
 
     Decorator Decorator { get; set; }
 
-    IProperty CloneWithClass(Class classe);
+    IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null);
 }
