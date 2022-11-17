@@ -64,13 +64,6 @@ public class JavascriptResourceGenerator : GeneratorBase
                 if (_config.ResourceMode != ResourceMode.JS)
                 {
                     fw.WriteLine("{");
-
-                    if (_config.ResourceMode == ResourceMode.Schema)
-                    {
-                        fw.WriteLine($"  \"$id\": \"{string.Join('/', module.Split('.').Select(m => m.ToKebabCase()))}_translation.json\",");
-                        fw.WriteLine("  \"$schema\": \"http://json-schema.org/draft-07/schema#\",");
-                        fw.WriteLine("  \"properties\": {");
-                    }
                 }
                 else
                 {
@@ -83,11 +76,6 @@ public class JavascriptResourceGenerator : GeneratorBase
                 foreach (var classe in classes.OrderBy(c => c.Key.Name))
                 {
                     WriteClasseNode(fw, classe, classes.Count() == i++);
-                }
-
-                if (_config.ResourceMode == ResourceMode.Schema)
-                {
-                    fw.WriteLine("  }");
                 }
 
                 if (_config.ResourceMode != ResourceMode.JS)
@@ -112,37 +100,13 @@ public class JavascriptResourceGenerator : GeneratorBase
     {
         fw.WriteLine($"    {Quote(classe.Key.Name)}: {{");
 
-        if (_config.ResourceMode == ResourceMode.Schema)
-        {
-            fw.WriteLine("      \"type\": \"object\",");
-            fw.WriteLine($"      \"description\": \"{classe.Key.Comment.Replace("\"", "\\\"")}\",");
-            fw.WriteLine("      \"properties\": {");
-        }
-
         var i = 1;
 
         foreach (var property in classe.OrderBy(p => p.Name, StringComparer.Ordinal))
         {
             fw.Write($"        {Quote(property.Name)}: ");
-
-            if (_config.ResourceMode == ResourceMode.Schema)
-            {
-                fw.WriteLine("{");
-                fw.WriteLine("          \"type\": \"string\",");
-                fw.WriteLine($"          \"description\": \"{property.Comment.Replace("\"", "\\\"")}\"");
-                fw.Write("        }");
-            }
-            else
-            {
-                fw.Write($@"""{property.Label ?? property.Name}""");
-            }
-
+            fw.Write($@"""{property.Label ?? property.Name}""");
             fw.WriteLine(classe.Count() == i++ ? string.Empty : ",");
-        }
-
-        if (_config.ResourceMode == ResourceMode.Schema)
-        {
-            fw.WriteLine("      }");
         }
 
         fw.Write("    }");

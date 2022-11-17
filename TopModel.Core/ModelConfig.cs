@@ -15,15 +15,15 @@ public class ModelConfig
 
     public bool UseLegacyRoleNames { get; set; }
 
+    /// <summary>
+    /// liste des langues de l'application
+    /// </summary>
+    public Dictionary<string, string> Langs { get; set; } = new();
+
     public string GetFileName(string filePath)
     {
         return Path.GetRelativePath(Path.Combine(Directory.GetCurrentDirectory(), ModelRoot), filePath)
             .Replace(".tmd", string.Empty)
             .Replace("\\", "/");
     }
-
-    /// <summary>
-    /// liste des langues de l'application
-    /// </summary>
-    public Dictionary<string, string> Langs { get; set; } = new ();
 }

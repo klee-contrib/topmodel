@@ -390,6 +390,11 @@
               "schema"
             ]
           },
+          "translateReferences": {
+            "type": "boolean",
+            "description": "Si les listes de référence doivent être traduites",
+            "default": "true"
+          },
           "referenceMode": {
             "type": "string",
             "description": "Mode de génération des listes de références (définitions ou valeurs).",

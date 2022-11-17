@@ -121,40 +121,11 @@ public class ModelStore
                 LoadFile(file);
             }
         }
+
         LoadTranslations();
         TryApplyUpdates();
 
         return fsWatcher;
-    }
-
-    private void LoadTranslations()
-    {
-        if (_config.Langs.Any())
-        {
-            foreach (var lang in _config.Langs)
-            {
-                var dictionary = new Dictionary<string, string>();
-                var exists = Directory.Exists(lang.Value);
-                if(!exists){
-                    return;
-                }
-
-                var files = Directory.GetFiles(lang.Value, "*.properties", SearchOption.AllDirectories);
-                foreach (var file in files)
-                {
-                    var lines = File.ReadAllLines(file);
-                    foreach (var line in lines)
-                    {
-                        if (line != null && line != string.Empty)
-                        {
-                            dictionary[line.Split("=")[0]] = line.Split("=")[1];
-                        }
-                    }
-                }
-
-                this._translationStore.Translations[lang.Key] = dictionary;
-            }
-        }
     }
 
     public Dictionary<string, Class> GetReferencedClasses(ModelFile modelFile)
@@ -1254,6 +1225,37 @@ public class ModelStore
         foreach (var decorator in Decorators.Where(decorator => !this.GetDecoratorReferences(decorator).Any()))
         {
             yield return new ModelError(decorator, $"Le décorateur '{decorator.Name}' n'est pas utilisé.") { IsError = false, ModelErrorType = ModelErrorType.TMD9005 };
+        }
+    }
+
+    private void LoadTranslations()
+    {
+        if (_config.Langs.Any())
+        {
+            foreach (var lang in _config.Langs)
+            {
+                var dictionary = new Dictionary<string, string>();
+                var exists = Directory.Exists(lang.Value);
+                if (!exists)
+                {
+                    return;
+                }
+
+                var files = Directory.GetFiles(lang.Value, "*.properties", SearchOption.AllDirectories);
+                foreach (var file in files)
+                {
+                    var lines = File.ReadAllLines(file);
+                    foreach (var line in lines)
+                    {
+                        if (line != null && line != string.Empty)
+                        {
+                            dictionary[line.Split("=")[0]] = line.Split("=")[1];
+                        }
+                    }
+                }
+
+                this._translationStore.Translations[lang.Key] = dictionary;
+            }
         }
     }
 }

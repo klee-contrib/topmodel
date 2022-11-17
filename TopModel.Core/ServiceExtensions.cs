@@ -20,17 +20,15 @@ public static class ServiceExtensions
             .AddSingleton<TranslationStore>()
             .AddSingleton<ModelStore>();
 
-
         if (config != null && rootDir != null)
         {
             config.ModelRoot ??= string.Empty;
 
             ModelUtils.CombinePath(rootDir, config, c => c.ModelRoot);
-            foreach(var lang in config.Langs)
+            foreach (var lang in config.Langs)
             {
                 config.Langs[lang.Key] = Path.GetFullPath(Path.Combine(rootDir, lang.Value));
             }
-
 
             services.AddSingleton(config);
         }
