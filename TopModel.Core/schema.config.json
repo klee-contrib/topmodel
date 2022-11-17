@@ -44,7 +44,21 @@
     },
     "langs": {
       "type": "object",
-      "description": "Dictionnaire langue in - chemin (relatif du répertoire de génération)"
+      "description": "Configuration des traductions entrantes",
+      "properties": {
+        "rootPath": {
+          "type": "string",
+          "description": "Template du chemin des dossiers de traductions entrants. Doit contenir le template {lang}",
+          "default": "{lang}"
+        },
+        "langs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Code du langage"
+          }
+        }
+      }
     },
     "translation": {
       "type": "array",
@@ -64,9 +78,17 @@
             "type": "string",
             "description": "Racine du répertoire de génération."
           },
+          "rootPath": {
+            "type": "string",
+            "description": "Template du chemin des dossiers de traductions sortants (manquants). Doit contenir le template {lang}",
+            "default": "{lang}"
+          },
           "langs": {
-            "type": "object",
-            "description": "Dictionnaire langue out - chemin (relatif du répertoire de génération)"
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Code du angage"
+            }
           }
         }
       }

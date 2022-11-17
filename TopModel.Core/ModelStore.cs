@@ -122,7 +122,11 @@ public class ModelStore
             }
         }
 
-        LoadTranslations();
+        if (_config.Langs != null)
+        {
+            LoadTranslations();
+        }
+
         TryApplyUpdates();
 
         return fsWatcher;
@@ -1230,18 +1234,19 @@ public class ModelStore
 
     private void LoadTranslations()
     {
-        if (_config.Langs.Any())
+        if (_config.Langs!.Langs.Any())
         {
-            foreach (var lang in _config.Langs)
+            foreach (var lang in _config.Langs.Langs)
             {
                 var dictionary = new Dictionary<string, string>();
-                var exists = Directory.Exists(lang.Value);
+                var directoryPath = _config.Langs.RootPath.Replace("{lang}", lang);
+                var exists = Directory.Exists(directoryPath);
                 if (!exists)
                 {
                     return;
                 }
 
-                var files = Directory.GetFiles(lang.Value, "*.properties", SearchOption.AllDirectories);
+                var files = Directory.GetFiles(directoryPath, "*.properties", SearchOption.AllDirectories);
                 foreach (var file in files)
                 {
                     var lines = File.ReadAllLines(file);
@@ -1254,7 +1259,7 @@ public class ModelStore
                     }
                 }
 
-                this._translationStore.Translations[lang.Key] = dictionary;
+                this._translationStore.Translations[lang] = dictionary;
             }
         }
     }

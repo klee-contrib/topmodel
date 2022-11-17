@@ -141,8 +141,8 @@ public class JavascriptConfig : GeneratorConfigBase
         return $"{rootPath}/{string.Join('/', module.Split('.').Select(m => m.ToKebabCase()))}/references.ts";
     }
 
-    public string GetResourcesFilePath(string module, string tag)
+    public string GetResourcesFilePath(string module, string tag, string lang)
     {
-        return Path.Combine(OutputDirectory, ResourceRootPath!.Replace("{tag}", tag.ToKebabCase()), Path.Combine(module.Split(".").Select(part => part.ToKebabCase()).ToArray())) + (ResourceMode == ResourceMode.JS ? ".ts" : ".json");
+        return Path.Combine(OutputDirectory, ResourceRootPath!.Replace("{tag}", tag.ToKebabCase()), lang, Path.Combine(module.Split(".").Select(part => part.ToKebabCase()).ToArray())) + (ResourceMode == ResourceMode.JS ? ".ts" : ".json");
     }
 }

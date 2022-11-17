@@ -15,10 +15,10 @@ public class ModelConfig
 
     public bool UseLegacyRoleNames { get; set; }
 
-    /// <summary>
-    /// liste des langues de l'application
-    /// </summary>
-    public Dictionary<string, string> Langs { get; set; } = new();
+    #nullable enable
+    public LangConfig? Langs { get; set; }
+
+    #nullable disable
 
     public string GetFileName(string filePath)
     {

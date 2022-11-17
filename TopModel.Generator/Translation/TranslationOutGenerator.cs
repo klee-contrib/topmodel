@@ -29,16 +29,16 @@ public class TranslationOutGenerator : GeneratorBase
 
     public override string Name => "ResourcesGenerator";
 
-    public override IEnumerable<string> GeneratedFiles => _config.Langs.SelectMany(lang => GetModules(lang.Key).Select(m => GetFilePath(m, lang.Key)));
+    public override IEnumerable<string> GeneratedFiles => _config.Langs.SelectMany(lang => GetModules(lang).Select(m => GetFilePath(m, lang)));
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var lang in _config.Langs)
         {
-            var modules = GetModules(lang.Key);
+            var modules = GetModules(lang);
             foreach (var module in modules)
             {
-                GenerateModule(module, lang.Key);
+                GenerateModule(module, lang);
             }
         }
     }
@@ -105,6 +105,6 @@ public class TranslationOutGenerator : GeneratorBase
 
     private string GetFilePath(IGrouping<string, IFieldProperty> module, string lang)
     {
-        return Path.Combine(_config.OutputDirectory, _config.Langs[lang], Path.Combine(module.Key.Split(".").Select(part => part.ToKebabCase()).ToArray()) + "_" + lang + ".properties");
+        return Path.Combine(_config.OutputDirectory, _config.RootPath.Replace("{lang}", lang), Path.Combine(module.Key.Split(".").Select(part => part.ToKebabCase()).ToArray()) + "_" + lang + ".properties");
     }
 }

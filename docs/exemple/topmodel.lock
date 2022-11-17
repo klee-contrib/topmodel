@@ -4,8 +4,9 @@
 
 version: 1.19.0
 generatedFiles:
-  - ./i18n/en/out/securite_en.properties
-  - ./i18n/en/out/utilisateur_en.properties
+  - ./i18n/de_DE/out/securite_de_DE.properties
+  - ./i18n/de_DE/out/utilisateur_de_DE.properties
+  - ./i18n/en_US/out/securite_en_US.properties
   - ./jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/utilisateur/AbstractUtilisateurApiClient.java
   - ./jpa/src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/utilisateur/UtilisateurApiController.java
   - ./jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/DroitsDAO.java
@@ -32,8 +33,10 @@ generatedFiles:
   - ./js/appgenerated/model/securite/references.ts
   - ./js/appgenerated/model/utilisateur/references.ts
   - ./js/appgenerated/model/utilisateur/utilisateur-dto.ts
-  - ./js/appgenerated/resources/securite.ts
-  - ./js/appgenerated/resources/utilisateur.ts
+  - ./js/appgenerated/resources/en_US/securite.json
+  - ./js/appgenerated/resources/en_US/utilisateur.json
+  - ./js/appgenerated/resources/securite.json
+  - ./js/appgenerated/resources/utilisateur.json
   - ./pg/01_tables.sql
   - ./pg/02_fk_indexes.sql
   - ./pg/03_unique_keys.sql

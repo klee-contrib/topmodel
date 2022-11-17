@@ -1,4 +1,4 @@
-namespace TopModel.Core;
+﻿namespace TopModel.Core;
 
 public class TranslationStore
 {

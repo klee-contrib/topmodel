@@ -23,11 +23,10 @@ public static class ServiceExtensions
         if (config != null && rootDir != null)
         {
             config.ModelRoot ??= string.Empty;
-
             ModelUtils.CombinePath(rootDir, config, c => c.ModelRoot);
-            foreach (var lang in config.Langs)
+            if (config.Langs != null)
             {
-                config.Langs[lang.Key] = Path.GetFullPath(Path.Combine(rootDir, lang.Value));
+                ModelUtils.CombinePath(rootDir, config.Langs, c => c.RootPath);
             }
 
             services.AddSingleton(config);

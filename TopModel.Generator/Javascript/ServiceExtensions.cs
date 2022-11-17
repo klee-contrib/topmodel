@@ -47,7 +47,7 @@ public static class ServiceExtensions
                 if (config.ResourceRootPath != null)
                 {
                     services.AddSingleton<IModelWatcher>(p =>
-                        new JavascriptResourceGenerator(p.GetRequiredService<ILogger<JavascriptResourceGenerator>>(), config) { Number = number });
+                        new JavascriptResourceGenerator(p.GetRequiredService<ILogger<JavascriptResourceGenerator>>(), config, p.GetRequiredService<TranslationStore>()) { Number = number });
                 }
             }
         }

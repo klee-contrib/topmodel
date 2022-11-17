@@ -20,7 +20,6 @@ public static class ServiceExtensions
                 services
                     .AddSingleton<IModelWatcher>(p =>
                         new TranslationOutGenerator(p.GetRequiredService<ILogger<TranslationOutGenerator>>(), config, p.GetRequiredService<TranslationStore>()));
-
             }
         }
 

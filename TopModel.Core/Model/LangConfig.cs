@@ -1,8 +1,8 @@
 ﻿#nullable disable
 
-namespace TopModel.Generator.Translation;
+namespace TopModel.Core;
 
-public class TranslationConfig : GeneratorConfigBase
+public class LangConfig
 {
     /// <summary>
     /// liste des langues de l'application
@@ -10,7 +10,7 @@ public class TranslationConfig : GeneratorConfigBase
     public List<string> Langs { get; set; } = new();
 
     /// <summary>
-    /// liste des langues de l'application
+    /// Chemin de la génération des fichiers langues manquantes
     /// </summary>
     public string RootPath { get; set; } = "{lang}";
 }
