@@ -21,4 +21,9 @@ public class ModelConfig
             .Replace(".tmd", string.Empty)
             .Replace("\\", "/");
     }
+
+    /// <summary>
+    /// liste des langues de l'application
+    /// </summary>
+    public Dictionary<string, string> Langs { get; set; } = new ();
 }

@@ -25,13 +25,16 @@ public class ModelStore
 
     private ModelStoreConfig? _storeConfig;
 
-    public ModelStore(IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers)
+    private TranslationStore _translationStore;
+
+    public ModelStore(IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers, TranslationStore translationStore)
     {
         _config = config;
         _fsCache = fsCache;
         _logger = logger;
         _modelFileLoader = modelFileLoader;
         _modelWatchers = modelWatchers;
+        _translationStore = translationStore;
 
         var topModelFile = new FileInfo(Path.Combine(_config.ModelRoot, "topmodel.lock"));
         if (topModelFile.Exists)
@@ -118,10 +121,40 @@ public class ModelStore
                 LoadFile(file);
             }
         }
-
+        LoadTranslations();
         TryApplyUpdates();
 
         return fsWatcher;
+    }
+
+    private void LoadTranslations()
+    {
+        if (_config.Langs.Any())
+        {
+            foreach (var lang in _config.Langs)
+            {
+                var dictionary = new Dictionary<string, string>();
+                var exists = Directory.Exists(lang.Value);
+                if(!exists){
+                    return;
+                }
+
+                var files = Directory.GetFiles(lang.Value, "*.properties", SearchOption.AllDirectories);
+                foreach (var file in files)
+                {
+                    var lines = File.ReadAllLines(file);
+                    foreach (var line in lines)
+                    {
+                        if (line != null && line != string.Empty)
+                        {
+                            dictionary[line.Split("=")[0]] = line.Split("=")[1];
+                        }
+                    }
+                }
+
+                this._translationStore.Translations[lang.Key] = dictionary;
+            }
+        }
     }
 
     public Dictionary<string, Class> GetReferencedClasses(ModelFile modelFile)
@@ -839,7 +872,7 @@ public class ModelStore
 
             foreach (var valueRef in classe.ReferenceValueReferences)
             {
-                var referenceValue = new ReferenceValue { Name = valueRef.Key.ReferenceName };
+                var referenceValue = new ReferenceValue { Name = valueRef.Key.ReferenceName, Class = classe };
                 classe.ReferenceValues.Add(referenceValue);
 
                 foreach (var value in valueRef.Value)

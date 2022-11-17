@@ -42,6 +42,35 @@
       "type": "boolean",
       "description": "Transforme les noms de rôles d'associations en upper case (au lieu de constant case) pour déterminer le nom SQL des propriétés"
     },
+    "langs": {
+      "type": "object",
+      "description": "Dictionnaire langue in - chemin (relatif du répertoire de génération)"
+    },
+    "translation": {
+      "type": "array",
+      "description": "Traductions",
+      "items": {
+        "type": "object",
+        "properties": {
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "outputDirectory": {
+            "type": "string",
+            "description": "Racine du répertoire de génération."
+          },
+          "langs": {
+            "type": "object",
+            "description": "Dictionnaire langue out - chemin (relatif du répertoire de génération)"
+          }
+        }
+      }
+    },
     "proceduralSql": {
       "type": "array",
       "description": "Liste de configs pour la génération de SQL 'procédurale' (sans SSDT)",

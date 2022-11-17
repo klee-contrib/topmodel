@@ -15,7 +15,7 @@ export const securite = {
         typeProfilCode: "Profil"
     },
     typeProfil: {
-        code: "Code",
+        code: "Type Profil code",
         libelle: "Libelle"
     }
 };

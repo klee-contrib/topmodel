@@ -2,7 +2,7 @@
 .vscode
 bin
 obj
-out
+TopModel.VSCode/out
 node_modules
 language-server
 nupkg
