@@ -1241,7 +1241,7 @@ public class ModelStore
             {
                 foreach (var p in c.Properties.OfType<IFieldProperty>().Where(p => p.Label != null))
                 {
-                    dictionary[p.ResourceKey] = p.Label;
+                    dictionary[p.ResourceKey] = p.Label!;
                 }
 
                 if (c.DefaultProperty != null)

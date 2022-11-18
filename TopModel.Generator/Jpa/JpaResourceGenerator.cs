@@ -42,7 +42,7 @@ public class JpaResourceGenerator : GeneratorBase
 
     private string GetFilePath(IGrouping<string, IFieldProperty> module, string lang)
     {
-        return Path.Combine(_config.OutputDirectory, _config.ResourceRootPath.Replace("{lang}", lang), Path.Combine(module.Key.Split(".").Select(part => part.ToKebabCase()).ToArray()) + $"_{lang}.properties");
+        return Path.Combine(_config.OutputDirectory, _config.ResourceRootPath.Replace("{lang}", lang).Replace("{module}", module.Key.Replace(".", "/")).ToLower(), Path.Combine(module.Key.Split(".").Last().ToKebabCase()) + $"_{lang}.properties");
     }
 
     private IEnumerable<IGrouping<string, IFieldProperty>> GetModules()
@@ -50,7 +50,7 @@ public class JpaResourceGenerator : GeneratorBase
         return Files
                     .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
                     .Select(c => c.ResourceProperty)
-                    .Where(p => p.Label != null || p.Class.ReferenceValues.Any())
+                    .Where(p => p.Label != null || p.Class.ReferenceValues.Any() && p.Class.DefaultProperty != null)
                     .Distinct()
                     .GroupBy(prop => prop.Class.Namespace.Module);
     }

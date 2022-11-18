@@ -8,7 +8,7 @@ public class TranslationStore
     {
         return Translations.TryGetValue(lang, out var dict)
             && dict.TryGetValue(property.ResourceKey, out var translatedValue)
-            ? translatedValue : property.Label ?? property.Name;
+            ? translatedValue : property.Label ?? string.Empty;
     }
 
     public string GetTranslation(ReferenceValue refValue, string lang)

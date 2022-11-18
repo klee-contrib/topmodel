@@ -20,7 +20,7 @@ public class AssociationProperty : IFieldProperty
 
 #nullable enable
 
-    public string? Label { get; set; }
+    public string Label { get; set; }
 
 #nullable disable
     public string Comment { get; set; }

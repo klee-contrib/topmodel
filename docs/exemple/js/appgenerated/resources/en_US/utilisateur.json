@@ -1,7 +1,7 @@
 {
     "typeUtilisateur": {
-        "code": "Code",
-        "libelle": "Libelle",
+        "code": "",
+        "libelle": "",
         "values": {
             "ADM": "Administrateur",
             "GES": "Gestionnaire",
@@ -13,8 +13,8 @@
         "id": "User",
         "profilId": "",
         "typeUtilisateurCode": "",
-        "dateCreation": "dateCreation",
-        "dateModification": "dateModification",
-        "email": "email"
+        "dateCreation": "",
+        "dateModification": "",
+        "email": ""
     }
 }

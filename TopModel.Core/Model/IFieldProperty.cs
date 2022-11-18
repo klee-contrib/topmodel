@@ -12,7 +12,7 @@ public interface IFieldProperty : IProperty
 
     public LocatedString? Trigram { get; set; }
 
-    IFieldProperty ResourceProperty => this is AliasProperty alp && alp.Label == alp.OriginalProperty!.Label
+    IFieldProperty ResourceProperty => this is AliasProperty alp && alp.Label == alp.OriginalProperty?.Label
         ? alp.OriginalProperty!.ResourceProperty
         : this;
 

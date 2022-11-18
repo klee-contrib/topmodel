@@ -17,7 +17,7 @@
     },
     "typeProfil": {
         "code": "Profile",
-        "libelle": "Libelle",
+        "libelle": "",
         "values": {
             "ADM": "Administrator",
             "GES": "Manager"

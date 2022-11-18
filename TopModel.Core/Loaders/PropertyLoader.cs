@@ -63,11 +63,6 @@ public class PropertyLoader
                     rp.Required = true;
                 }
 
-                if (rp.Label == null)
-                {
-                    rp.Label = rp.Name;
-                }
-
                 yield return rp;
                 break;
 
@@ -121,12 +116,6 @@ public class PropertyLoader
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                     }
-                }
-
-
-                if (ap.Label == null)
-                {
-                    ap.Label = ap.Name;
                 }
 
                 yield return ap;
