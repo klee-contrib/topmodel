@@ -13,11 +13,14 @@ public class TypescriptDefinitionGenerator : GeneratorBase
     private readonly JavascriptConfig _config;
     private readonly ILogger<TypescriptDefinitionGenerator> _logger;
 
-    public TypescriptDefinitionGenerator(ILogger<TypescriptDefinitionGenerator> logger, JavascriptConfig config)
+    private readonly ModelConfig _modelConfig;
+
+    public TypescriptDefinitionGenerator(ILogger<TypescriptDefinitionGenerator> logger, JavascriptConfig config, ModelConfig modelConfig)
         : base(logger, config)
     {
         _config = config;
         _logger = logger;
+        _modelConfig = modelConfig;
     }
 
     public override string Name => "JSDefinitionGen";
@@ -459,7 +462,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         {
             fw.WriteLine("    {");
             fw.Write("        ");
-            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.Name.ToFirstLower()}: {(property.Key.Domain.TS!.Type == "string" ? @$"""{(_config.TranslateReferences && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}")));
+            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.Name.ToFirstLower()}: {(property.Key.Domain.TS!.Type == "string" ? @$"""{((_modelConfig.Langs?.TranslateReferences ?? false) && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}")));
             fw.WriteLine();
             fw.WriteLine("    },");
         }

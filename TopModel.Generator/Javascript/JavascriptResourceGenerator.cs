@@ -13,13 +13,15 @@ public class JavascriptResourceGenerator : GeneratorBase
     private readonly JavascriptConfig _config;
     private readonly ILogger<JavascriptResourceGenerator> _logger;
     private readonly TranslationStore _translationStore;
+    private readonly ModelConfig _modelConfig;
 
-    public JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> logger, JavascriptConfig config, TranslationStore translationStore)
+    public JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> logger, JavascriptConfig config, TranslationStore translationStore, ModelConfig modelConfig)
         : base(logger, config)
     {
         _config = config;
         _logger = logger;
         _translationStore = translationStore;
+        _modelConfig = modelConfig;
     }
 
     public override string Name => "JSResourceGen";
@@ -144,10 +146,10 @@ public class JavascriptResourceGenerator : GeneratorBase
 
             fw.Write(indentLevel + 1, $"{Quote(property.Name)}: ");
             fw.Write($@"""{translation}""");
-            fw.WriteLine(classe.Count() == i++ && !(_config.TranslateReferences && classe.Key.DefaultProperty != null && classe.Key.ReferenceValues.Any()) ? string.Empty : ",");
+            fw.WriteLine(classe.Count() == i++ && !((_modelConfig.Langs?.TranslateReferences ?? false) && classe.Key.DefaultProperty != null && classe.Key.ReferenceValues.Any()) ? string.Empty : ",");
         }
 
-        if (_config.TranslateReferences && classe.Key.DefaultProperty != null)
+        if ((_modelConfig.Langs?.TranslateReferences ?? false)  && classe.Key.DefaultProperty != null)
         {
             i = 1;
             fw.WriteLine(indentLevel + 1, @$"""values"": {{");

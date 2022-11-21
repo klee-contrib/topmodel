@@ -18,4 +18,9 @@ public class LangConfig
     /// Chemin de la génération des fichiers langues manquantes
     /// </summary>
     public string RootPath { get; set; } = "{lang}";
+
+    /// <summary>
+    /// Si les libelles des listes de références doivent être traduits
+    /// </summary>
+    public bool TranslateReferences { get; set; } = true;
 }

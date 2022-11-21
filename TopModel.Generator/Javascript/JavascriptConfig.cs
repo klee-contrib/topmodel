@@ -50,11 +50,6 @@ public class JavascriptConfig : GeneratorConfigBase
     public ResourceMode ResourceMode { get; set; }
 
     /// <summary>
-    /// Mode de génération (JS, JSON ou JSON Schema).
-    /// </summary>
-    public bool TranslateReferences { get; set; } = true;
-
-    /// <summary>
     /// Mode de génération des listes de références (définitions ou valeurs).
     /// </summary>
     public ReferenceMode ReferenceMode { get; set; } = ReferenceMode.DEFINITION;

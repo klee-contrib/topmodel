@@ -27,7 +27,7 @@ public static class ServiceExtensions
                 if (config.ModelRootPath != null)
                 {
                     services.AddSingleton<IModelWatcher>(p =>
-                        new TypescriptDefinitionGenerator(p.GetRequiredService<ILogger<TypescriptDefinitionGenerator>>(), config) { Number = number });
+                        new TypescriptDefinitionGenerator(p.GetRequiredService<ILogger<TypescriptDefinitionGenerator>>(), config, p.GetRequiredService<ModelConfig>()) { Number = number });
 
                     if (config.ApiClientRootPath != null)
                     {
@@ -39,7 +39,7 @@ public static class ServiceExtensions
                         else
                         {
                             services.AddSingleton<IModelWatcher>(p =>
-                               new JavascriptApiClientGenerator(p.GetRequiredService<ILogger<JavascriptApiClientGenerator>>(), config) { Number = number });
+                            new JavascriptApiClientGenerator(p.GetRequiredService<ILogger<JavascriptApiClientGenerator>>(), config) { Number = number });
                         }
                     }
                 }
@@ -47,7 +47,7 @@ public static class ServiceExtensions
                 if (config.ResourceRootPath != null)
                 {
                     services.AddSingleton<IModelWatcher>(p =>
-                        new JavascriptResourceGenerator(p.GetRequiredService<ILogger<JavascriptResourceGenerator>>(), config, p.GetRequiredService<TranslationStore>()) { Number = number });
+                        new JavascriptResourceGenerator(p.GetRequiredService<ILogger<JavascriptResourceGenerator>>(), config, p.GetRequiredService<TranslationStore>(), p.GetRequiredService<ModelConfig>()) { Number = number });
                 }
             }
         }
