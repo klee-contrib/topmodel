@@ -43,8 +43,6 @@ generatedFiles:
   - ./js/appgenerated/resources/en_US/utilisateur.json
   - ./js/appgenerated/resources/fr_FR/securite.json
   - ./js/appgenerated/resources/fr_FR/utilisateur.json
-  - ./js/appgenerated/resources/securite.json
-  - ./js/appgenerated/resources/utilisateur.json
   - ./pg/01_tables.sql
   - ./pg/02_fk_indexes.sql
   - ./pg/03_unique_keys.sql

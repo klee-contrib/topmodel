@@ -30,16 +30,14 @@ public class JavascriptResourceGenerator : GeneratorBase
                 .Where(c => c.ModelFile.Tags.Contains(tag))
                 .SelectMany(c => c.Properties.OfType<IFieldProperty>())
                 .Select(c => c.ResourceProperty)
-                .SelectMany(c =>
-                new List<string> { _config.GetResourcesFilePath(c.Class.Namespace.Module, tag, string.Empty) }.Union(
-                _translationStore.Translations.Select(lang => _config.GetResourcesFilePath(c.Class.Namespace.Module, tag, lang.Key)))))
+                .SelectMany(c => _translationStore.Translations.Select(lang => _config.GetResourcesFilePath(c.Class.Namespace.Module, tag, lang.Key))))
                 .Distinct();
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var module in files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct())
+        foreach (var lang in _translationStore.Translations)
         {
-            foreach (var lang in _translationStore.Translations)
+            foreach (var module in files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module.Split('.').First())).Distinct())
             {
                 GenerateModule(module, lang.Key);
             }
@@ -62,7 +60,7 @@ public class JavascriptResourceGenerator : GeneratorBase
                 .SelectMany(c => c.Properties.OfType<IFieldProperty>())
                 .Select(c => c.ResourceProperty)
                 .Distinct()
-                .Where(prop => prop.Class.Namespace.Module == module);
+                .Where(prop => prop.Class.Namespace.Module.Split('.').First() == module);
 
             if (properties.Any())
             {
@@ -77,13 +75,7 @@ public class JavascriptResourceGenerator : GeneratorBase
                     fw.WriteLine($"export const {module.Split('.').Last().ToFirstLower()} = {{");
                 }
 
-                var classes = properties.GroupBy(prop => prop.Class);
-
-                var i = 1;
-                foreach (var classe in classes.OrderBy(c => c.Key.Name))
-                {
-                    WriteClasseNode(fw, classe, classes.Count() == i++, lang);
-                }
+                WriteSubModule(fw, lang, properties, 1, true);
 
                 if (_config.ResourceMode != ResourceMode.JS)
                 {
@@ -97,40 +89,79 @@ public class JavascriptResourceGenerator : GeneratorBase
         }
     }
 
+    private void WriteSubModule(FileWriter fw, string lang, IEnumerable<IFieldProperty> properties, int level, bool isLastSubModule)
+    {
+        var classes = properties.GroupBy(prop => prop.Class);
+        var modules = classes
+            .GroupBy(c => string.Join('.', c.Key.Namespace.Module.Split('.').Skip(level)));
+        var u = 1;
+        foreach (var submodule in modules)
+        {
+            var isLast = u++ == modules.Count();
+            if (submodule.Key == string.Empty)
+            {
+                var i = 1;
+                foreach (var classe in submodule.OrderBy(c => c.Key.Name))
+                {
+                    WriteClasseNode(fw, classe, classes.Count() == i++ && isLast, lang, level);
+                }
+            }
+            else
+            {
+                fw.WriteLine(level, $@"""{submodule.Key.ToLower()}"": {{");
+                WriteSubModule(fw, lang, submodule.Select(m => m.Key).SelectMany(c => c.Properties).OfType<IFieldProperty>(), level + 1, isLast && isLastSubModule);
+                if (isLastSubModule && isLast)
+                {
+                    fw.WriteLine(level, "}");
+                }
+                else
+                {
+                    fw.WriteLine(level, "},");
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// Générère le noeus de classe.
     /// </summary>
     /// <param name="fw">Flux de sortie.</param>
     /// <param name="classe">Classe.</param>
     /// <param name="isLast">True s'il s'agit de al dernière classe du namespace.</param>
-    private void WriteClasseNode(FileWriter fw, IGrouping<Class, IFieldProperty> classe, bool isLast, string lang)
+    private void WriteClasseNode(FileWriter fw, IGrouping<Class, IFieldProperty> classe, bool isLast, string lang, int indentLevel)
     {
-        fw.WriteLine($"    {Quote(classe.Key.Name)}: {{");
+        fw.WriteLine(indentLevel, $"{Quote(classe.Key.Name)}: {{");
 
         var i = 1;
 
         foreach (var property in classe.OrderBy(p => p.Name, StringComparer.Ordinal))
         {
-            fw.Write($"        {Quote(property.Name)}: ");
-            fw.Write($@"""{_translationStore.GetTranslation(property, lang)}""");
+            var translation = _translationStore.GetTranslation(property, lang);
+            if (translation == string.Empty)
+            {
+                translation = property.Name;
+            }
+
+            fw.Write(indentLevel + 1, $"{Quote(property.Name)}: ");
+            fw.Write($@"""{translation}""");
             fw.WriteLine(classe.Count() == i++ && !(_config.TranslateReferences && classe.Key.DefaultProperty != null && classe.Key.ReferenceValues.Any()) ? string.Empty : ",");
         }
 
         if (_config.TranslateReferences && classe.Key.DefaultProperty != null)
         {
             i = 1;
-            fw.WriteLine(@$"        ""values"": {{");
+            fw.WriteLine(indentLevel + 1, @$"""values"": {{");
             foreach (var refValue in classe.Key.ReferenceValues)
             {
-                fw.Write($@"            ""{refValue.Name}"": ");
+                fw.Write(indentLevel + 2, $@"""{refValue.Name}"": ");
                 fw.Write($@"""{_translationStore.GetTranslation(refValue, lang)}""");
                 fw.WriteLine(classe.Key.ReferenceValues.Count() == i++ ? string.Empty : ",");
             }
 
-            fw.WriteLine("        }");
+            fw.WriteLine(indentLevel + 1, "}");
         }
 
-        fw.Write("    }");
+        fw.Write(indentLevel, "}");
         fw.WriteLine(!isLast ? "," : string.Empty);
     }
 

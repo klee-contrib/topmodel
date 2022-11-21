@@ -2,7 +2,7 @@
     "droits": {
         "code": "Droit",
         "libelle": "Droit",
-        "typeProfilCode": "",
+        "typeProfilCode": "TypeProfilCode",
         "values": {
             "CRE": "Créer",
             "MOD": "Modifier",
@@ -12,12 +12,12 @@
     "profil": {
         "droits": "Droits",
         "id": "Id technique du profil",
-        "secteurs": "",
+        "secteurs": "Secteurs",
         "typeProfilCode": "Profil"
     },
     "typeProfil": {
         "code": "Type Profil code",
-        "libelle": "",
+        "libelle": "Libelle",
         "values": {
             "ADM": "Administrateur",
             "GES": "Gestionnaire"
