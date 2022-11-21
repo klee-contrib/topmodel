@@ -75,7 +75,7 @@ public class JavascriptResourceGenerator : GeneratorBase
                     fw.WriteLine($"export const {module.Split('.').Last().ToFirstLower()} = {{");
                 }
 
-                WriteSubModule(fw, lang, properties, 1, true);
+                WriteSubModule(fw, lang, properties, 1);
 
                 if (_config.ResourceMode != ResourceMode.JS)
                 {
@@ -89,16 +89,16 @@ public class JavascriptResourceGenerator : GeneratorBase
         }
     }
 
-    private void WriteSubModule(FileWriter fw, string lang, IEnumerable<IFieldProperty> properties, int level, bool isLastSubModule)
+    private void WriteSubModule(FileWriter fw, string lang, IEnumerable<IFieldProperty> properties, int level)
     {
         var classes = properties.GroupBy(prop => prop.Class);
         var modules = classes
-            .GroupBy(c => string.Join('.', c.Key.Namespace.Module.Split('.').Skip(level)));
+            .GroupBy(c => c.Key.Namespace.Module.Split('.').Skip(level).ElementAtOrDefault(0));
         var u = 1;
-        foreach (var submodule in modules)
+        foreach (var submodule in modules.OrderBy(m => m.Key, StringComparer.Ordinal))
         {
             var isLast = u++ == modules.Count();
-            if (submodule.Key == string.Empty)
+            if (submodule.Key == null)
             {
                 var i = 1;
                 foreach (var classe in submodule.OrderBy(c => c.Key.Name))
@@ -108,9 +108,9 @@ public class JavascriptResourceGenerator : GeneratorBase
             }
             else
             {
-                fw.WriteLine(level, $@"""{submodule.Key.ToLower()}"": {{");
-                WriteSubModule(fw, lang, submodule.Select(m => m.Key).SelectMany(c => c.Properties).OfType<IFieldProperty>(), level + 1, isLast && isLastSubModule);
-                if (isLastSubModule && isLast)
+                fw.WriteLine(level, $@"""{submodule.Key.Split('.').First().ToLower()}"": {{");
+                WriteSubModule(fw, lang, submodule.Select(m => m.Key).SelectMany(c => c.Properties).OfType<IFieldProperty>(), level + 1);
+                if (isLast)
                 {
                     fw.WriteLine(level, "}");
                 }
