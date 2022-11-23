@@ -15,10 +15,7 @@ public class ModelConfig
 
     public bool UseLegacyRoleNames { get; set; }
 
-    #nullable enable
-    public LangConfig? Langs { get; set; }
-
-    #nullable disable
+    public I18nConfig I18n { get; set; } = new();
 
     public string GetFileName(string filePath)
     {

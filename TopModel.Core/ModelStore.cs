@@ -122,11 +122,7 @@ public class ModelStore
             }
         }
 
-        if (_config.Langs != null)
-        {
-            LoadTranslations();
-        }
-
+        LoadTranslations();
         TryApplyUpdates();
 
         return fsWatcher;
@@ -1234,55 +1230,49 @@ public class ModelStore
 
     private void LoadTranslations()
     {
-        { // Chargement des traductions par défaut
-            var dictionary = new Dictionary<string, string>();
-            foreach (var c in Files
-                .SelectMany(f => f.Classes))
+        var defaultLangMap = new Dictionary<string, string>();
+        foreach (var classe in Files.SelectMany(f => f.Classes))
+        {
+            foreach (var p in classe.Properties.OfType<IFieldProperty>().Where(p => p.Label != null))
             {
-                foreach (var p in c.Properties.OfType<IFieldProperty>().Where(p => p.Label != null))
-                {
-                    dictionary[p.ResourceKey] = p.Label!;
-                }
-
-                if (c.DefaultProperty != null)
-                {
-                    foreach (var r in c.ReferenceValues)
-                    {
-                        dictionary[r.ResourceKey] = r.Value[c.DefaultProperty];
-                    }
-                }
+                defaultLangMap[p.ResourceKey] = p.Label!;
             }
 
-            this._translationStore.Translations[_config.Langs!.DefaultLang] = dictionary;
+            if (classe.DefaultProperty != null)
+            {
+                foreach (var r in classe.ReferenceValues)
+                {
+                    defaultLangMap[r.ResourceKey] = r.Value[classe.DefaultProperty];
+                }
+            }
         }
 
-        if (_config.Langs!.Langs.Any())
-        {
-            foreach (var lang in _config.Langs.Langs)
-            {
-                var dictionary = new Dictionary<string, string>();
-                var directoryPath = _config.Langs.RootPath.Replace("{lang}", lang);
-                var exists = Directory.Exists(directoryPath);
-                if (!exists)
-                {
-                    return;
-                }
+        _translationStore.Translations[_config.I18n.DefaultLang] = defaultLangMap;
 
-                var files = Directory.GetFiles(directoryPath, "*.properties", SearchOption.AllDirectories);
-                foreach (var file in files)
+        foreach (var lang in _config.I18n.Langs)
+        {
+            var langMap = new Dictionary<string, string>();
+            var directoryPath = _config.I18n.RootPath.Replace("{lang}", lang);
+            var exists = Directory.Exists(directoryPath);
+            if (!exists)
+            {
+                return;
+            }
+
+            var files = Directory.GetFiles(directoryPath, "*.properties", SearchOption.AllDirectories);
+            foreach (var file in files)
+            {
+                var lines = File.ReadAllLines(file);
+                foreach (var line in lines)
                 {
-                    var lines = File.ReadAllLines(file);
-                    foreach (var line in lines)
+                    if (line != null && line != string.Empty)
                     {
-                        if (line != null && line != string.Empty)
-                        {
-                            dictionary[line.Split("=")[0]] = line.Split("=")[1];
-                        }
+                        langMap[line.Split("=")[0]] = line.Split("=")[1];
                     }
                 }
-
-                this._translationStore.Translations[lang] = dictionary;
             }
+
+            _translationStore.Translations[lang] = langMap;
         }
     }
 }

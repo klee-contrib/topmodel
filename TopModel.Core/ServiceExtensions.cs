@@ -24,11 +24,7 @@ public static class ServiceExtensions
         {
             config.ModelRoot ??= string.Empty;
             ModelUtils.CombinePath(rootDir, config, c => c.ModelRoot);
-            if (config.Langs != null)
-            {
-                ModelUtils.CombinePath(rootDir, config.Langs, c => c.RootPath);
-            }
-
+            ModelUtils.CombinePath(rootDir, config.I18n, c => c.RootPath);
             services.AddSingleton(config);
         }
 

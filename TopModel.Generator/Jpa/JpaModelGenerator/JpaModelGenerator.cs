@@ -239,7 +239,7 @@ public class JpaModelGenerator : GeneratorBase
                             value = ap.Association.Name + ".Values." + value;
                         }
 
-                        if ((_modelConfig.Langs?.TranslateReferences ?? false) && classe.DefaultProperty == prop)
+                        if (_modelConfig.I18n.TranslateReferences && classe.DefaultProperty == prop)
                         {
                             value = refValue.ResourceKey;
                         }

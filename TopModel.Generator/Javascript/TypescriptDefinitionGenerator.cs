@@ -462,7 +462,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
         {
             fw.WriteLine("    {");
             fw.Write("        ");
-            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.Name.ToFirstLower()}: {(property.Key.Domain.TS!.Type == "string" ? @$"""{((_modelConfig.Langs?.TranslateReferences ?? false) && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}")));
+            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.Name.ToFirstLower()}: {(property.Key.Domain.TS!.Type == "string" ? @$"""{(_modelConfig.I18n.TranslateReferences && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}")));
             fw.WriteLine();
             fw.WriteLine("    },");
         }

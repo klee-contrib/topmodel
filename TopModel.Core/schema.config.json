@@ -42,21 +42,32 @@
       "type": "boolean",
       "description": "Transforme les noms de rôles d'associations en upper case (au lieu de constant case) pour déterminer le nom SQL des propriétés"
     },
-    "langs": {
+    "i18n": {
       "type": "object",
-      "description": "Configuration des traductions entrantes",
+      "description": "Configuration de la localisation de l'application.",
+      "additionalProperties": false,
       "properties": {
         "rootPath": {
           "type": "string",
           "description": "Template du chemin des dossiers de traductions entrants. Doit contenir le template {lang}",
           "default": "{lang}"
         },
+        "defaultLang": {
+          "type": "string",
+          "description": "Langue par défaut de l'application."
+        },
         "langs": {
           "type": "array",
+          "description": "Liste des langues de l'application (autre que la langue par défaut).",
           "items": {
             "type": "string",
             "description": "Code du langage"
           }
+        },
+        "translateReferences": {
+          "type": "boolean",
+          "description": "Si les libellés des listes de références doivent être traduits.",
+          "default": "true"
         }
       }
     },
