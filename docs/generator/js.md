@@ -12,12 +12,6 @@ La génération des listes de références se met en mode **JavaScript** lorsque
 
 La génération des listes de références se met en mode **JSON** lorsque le paramètre `resourceMode` est défini à `json`.
 
-#### SCHEMA
-
-La génération des listes de références se met en mode **SCHEMA** lorsque le paramètre `resourceMode` est défini à `schema`.
-
-Il permet de générer un schéma de validation JSON. Celui-ci permet de créer plus facilement un fichier de traduction. Il donne la possibilité d'avoir de l'auto-complétion, et donne la description du champ à traduire
-
 ### Modes de génération des listes de références
 
 #### Définition (défaut)
@@ -60,11 +54,13 @@ export interface TypeProfil {
 export const typeProfilList: TypeProfil[] = [
   {
     code: "ADM",
-    libelle: "Administrateur",
+    libelle: "typeProfil.values.ADM",
   },
   {
     code: "GES",
-    libelle: "Gestionnaire",
+    libelle: "typeProfil.values.GES",
   },
 ];
 ```
+
+Si le paramètre `translateReferences` est passé à `false`, les clés de traductions ci-dessus seront remplacées par les libellés correspondant.
