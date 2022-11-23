@@ -14,4 +14,6 @@ On retrouve dans ce repository :
 - **TopModel.LanguageServer**, le language serveur utilisé dans l'extension VSCode.
 - **TopModel.VSCode**, l'extension VSCode qui fournit des fonctionnalités d'auto-complétion, validation, auto-import etc.
 
+> Désactiver AdBlock pour voir la documentation (mais promis ya pas de pub)
+
 [La documentation est par ici](https://klee-contrib.github.io/topmodel)
