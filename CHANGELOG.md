@@ -4,6 +4,8 @@
 
 - [#172](https://github.com/klee-contrib/topmodel/pull/172) - Décorateurs d'endpoints (fix [#124](https://github.com/klee-contrib/topmodel/issues/124))
 
+- [#173](https://github.com/klee-contrib/topmodel/pull/173) - Donne la possibilité de gérer le multilinguisme dans TopModel
+
 ## 1.18.9
 
 - [`163558d2`](https://github.com/klee-contrib/topmodel/commit/163558d298b559ed9ab48c84d139acddbec37f9c) - [C#/JS] Tri déterministe sur les mappers C# et les propriétés de ressources JS
