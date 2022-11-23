@@ -7,4 +7,18 @@ export interface TypeUtilisateur {
     code: TypeUtilisateurCode;
     libelle: string;
 }
-export const typeUtilisateur = {type: {} as TypeUtilisateur, valueKey: "code", labelKey: "libelle"} as const;
+export const typeUtilisateurList: TypeUtilisateur[] = [
+    {
+        code: "ADM",
+        libelle: "utilisateur.typeUtilisateur.values.ADM"
+    },
+    {
+        code: "GES",
+        libelle: "utilisateur.typeUtilisateur.values.GES"
+    },
+    {
+        code: "CLI",
+        libelle: "utilisateur.typeUtilisateur.values.CLI"
+    },
+];
+

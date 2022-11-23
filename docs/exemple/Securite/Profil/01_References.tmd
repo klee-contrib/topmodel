@@ -12,6 +12,7 @@ class:
   properties:
     - name: Code
       comment: Code du type d'utilisateur
+      label: Type Profil code
       primaryKey: true
       required: true
       domain: DO_CODE
@@ -21,8 +22,8 @@ class:
       required: true
       domain: DO_LIBELLE
   values:
-    value1: { Code: ADM, Libelle: Administrateur }
-    value2: { Code: GES, Libelle: Gestionnaire }
+    ADM: { Code: ADM, Libelle: Administrateur }
+    GES: { Code: GES, Libelle: Gestionnaire }
 ---
 class:
   name: Droits

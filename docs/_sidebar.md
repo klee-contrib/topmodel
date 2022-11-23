@@ -20,6 +20,7 @@
   - [Mappers](/model/mappers.md)
   - [Décorateurs](/model/decorators.md)
   - [Personnalisation fine](/model/customs.md)
+  - [Multilinguisme](/model/i18n.md)
 
 - **[Génération](/generator.md)**
 

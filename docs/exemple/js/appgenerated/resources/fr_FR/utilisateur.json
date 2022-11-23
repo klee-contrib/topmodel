@@ -1,0 +1,20 @@
+{
+    "typeUtilisateur": {
+        "code": "Code",
+        "libelle": "Libelle",
+        "values": {
+            "ADM": "Administrateur",
+            "GES": "Gestionnaire",
+            "CLI": "Client"
+        }
+    },
+    "utilisateur": {
+        "age": "Age",
+        "id": "Id technique",
+        "profilId": "ProfilId",
+        "typeUtilisateurCode": "TypeUtilisateurCode",
+        "dateCreation": "dateCreation",
+        "dateModification": "dateModification",
+        "email": "email"
+    }
+}

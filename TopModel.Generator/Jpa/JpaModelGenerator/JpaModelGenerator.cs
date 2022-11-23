@@ -15,13 +15,16 @@ public class JpaModelGenerator : GeneratorBase
     private readonly JpaModelConstructorGenerator _jpaModelConstructorGenerator;
     private readonly JpaModelPropertyGenerator _jpaModelPropertyGenerator;
 
-    public JpaModelGenerator(ILogger<JpaModelGenerator> logger, JpaConfig config)
+    private readonly ModelConfig _modelConfig;
+
+    public JpaModelGenerator(ILogger<JpaModelGenerator> logger, JpaConfig config, ModelConfig modelConfig)
         : base(logger, config)
     {
         _config = config;
         _logger = logger;
         _jpaModelConstructorGenerator = new JpaModelConstructorGenerator(config);
         _jpaModelPropertyGenerator = new JpaModelPropertyGenerator(config);
+        _modelConfig = modelConfig;
     }
 
     public override string Name => "JpaModelGen";
@@ -234,6 +237,11 @@ public class JpaModelGenerator : GeneratorBase
                         if (prop is AssociationProperty ap && ap.IsEnum() && ap.Association.ReferenceValues.Any(r => r.Value.ContainsKey(ap.Association.PrimaryKey) && r.Value[ap.Association.PrimaryKey] == value))
                         {
                             value = ap.Association.Name + ".Values." + value;
+                        }
+
+                        if (_modelConfig.I18n.TranslateReferences && classe.DefaultProperty == prop)
+                        {
+                            value = refValue.ResourceKey;
                         }
 
                         return fix + value + fix;

@@ -17,13 +17,14 @@ public static class ServiceExtensions
             .AddSingleton<PropertyLoader>()
             .AddSingleton<ModelFileLoader>()
             .AddSingleton<ModelConfig>()
+            .AddSingleton<TranslationStore>()
             .AddSingleton<ModelStore>();
 
         if (config != null && rootDir != null)
         {
             config.ModelRoot ??= string.Empty;
-
             ModelUtils.CombinePath(rootDir, config, c => c.ModelRoot);
+            ModelUtils.CombinePath(rootDir, config.I18n, c => c.RootPath);
             services.AddSingleton(config);
         }
 

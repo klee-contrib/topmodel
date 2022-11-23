@@ -25,13 +25,16 @@ public class ModelStore
 
     private ModelStoreConfig? _storeConfig;
 
-    public ModelStore(IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers)
+    private TranslationStore _translationStore;
+
+    public ModelStore(IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers, TranslationStore translationStore)
     {
         _config = config;
         _fsCache = fsCache;
         _logger = logger;
         _modelFileLoader = modelFileLoader;
         _modelWatchers = modelWatchers;
+        _translationStore = translationStore;
 
         var topModelFile = new FileInfo(Path.Combine(_config.ModelRoot, "topmodel.lock"));
         if (topModelFile.Exists)
@@ -119,6 +122,7 @@ public class ModelStore
             }
         }
 
+        LoadTranslations();
         TryApplyUpdates();
 
         return fsWatcher;
@@ -839,7 +843,7 @@ public class ModelStore
 
             foreach (var valueRef in classe.ReferenceValueReferences)
             {
-                var referenceValue = new ReferenceValue { Name = valueRef.Key.ReferenceName };
+                var referenceValue = new ReferenceValue { Name = valueRef.Key.ReferenceName, Class = classe };
                 classe.ReferenceValues.Add(referenceValue);
 
                 foreach (var value in valueRef.Value)
@@ -1221,6 +1225,54 @@ public class ModelStore
         foreach (var decorator in Decorators.Where(decorator => !this.GetDecoratorReferences(decorator).Any()))
         {
             yield return new ModelError(decorator, $"Le décorateur '{decorator.Name}' n'est pas utilisé.") { IsError = false, ModelErrorType = ModelErrorType.TMD9005 };
+        }
+    }
+
+    private void LoadTranslations()
+    {
+        var defaultLangMap = new Dictionary<string, string>();
+        foreach (var classe in Files.SelectMany(f => f.Classes))
+        {
+            foreach (var p in classe.Properties.OfType<IFieldProperty>().Where(p => p.Label != null))
+            {
+                defaultLangMap[p.ResourceKey] = p.Label!;
+            }
+
+            if (classe.DefaultProperty != null)
+            {
+                foreach (var r in classe.ReferenceValues)
+                {
+                    defaultLangMap[r.ResourceKey] = r.Value[classe.DefaultProperty];
+                }
+            }
+        }
+
+        _translationStore.Translations[_config.I18n.DefaultLang] = defaultLangMap;
+
+        foreach (var lang in _config.I18n.Langs)
+        {
+            var langMap = new Dictionary<string, string>();
+            var directoryPath = _config.I18n.RootPath.Replace("{lang}", lang);
+            var exists = Directory.Exists(directoryPath);
+            if (!exists)
+            {
+                return;
+            }
+
+            var files = Directory.GetFiles(directoryPath, "*.properties", SearchOption.AllDirectories);
+            foreach (var file in files)
+            {
+                var lines = File.ReadAllLines(file);
+                foreach (var line in lines)
+                {
+                    if (line != null && line != string.Empty)
+                    {
+                        langMap[line.Split("=")[0]] = line.Split("=")[1];
+                    }
+                }
+            }
+
+            _translationStore.Translations[lang] = langMap;
         }
     }
 }

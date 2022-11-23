@@ -25,7 +25,7 @@ public static class ServiceExtensions
                 {
                     services
                         .AddSingleton<IModelWatcher>(p =>
-                            new JpaModelGenerator(p.GetRequiredService<ILogger<JpaModelGenerator>>(), config) { Number = number });
+                            new JpaModelGenerator(p.GetRequiredService<ILogger<JpaModelGenerator>>(), config, p.GetRequiredService<ModelConfig>()) { Number = number });
                     services
                         .AddSingleton<IModelWatcher>(p =>
                             new JpaModelInterfaceGenerator(p.GetRequiredService<ILogger<JpaModelInterfaceGenerator>>(), config) { Number = number });
@@ -42,7 +42,7 @@ public static class ServiceExtensions
                 {
                     services
                         .AddSingleton<IModelWatcher>(p =>
-                            new JpaResourceGenerator(p.GetRequiredService<ILogger<JpaResourceGenerator>>(), config) { Number = number });
+                            new JpaResourceGenerator(p.GetRequiredService<ILogger<JpaResourceGenerator>>(), config, p.GetRequiredService<TranslationStore>()) { Number = number });
                 }
 
                 if (config.ApiRootPath != null)

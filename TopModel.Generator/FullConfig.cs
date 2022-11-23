@@ -4,6 +4,7 @@ using TopModel.Generator.Javascript;
 using TopModel.Generator.Jpa;
 using TopModel.Generator.ProceduralSql;
 using TopModel.Generator.Ssdt;
+using TopModel.Generator.Translation;
 
 namespace TopModel.Generator;
 
@@ -18,4 +19,6 @@ public class FullConfig : ModelConfig
     public IList<CSharpConfig>? Csharp { get; set; }
 
     public IList<JpaConfig>? Jpa { get; set; }
+
+    public IList<TranslationConfig>? Translation { get; set; }
 }

@@ -15,6 +15,8 @@ public class ModelConfig
 
     public bool UseLegacyRoleNames { get; set; }
 
+    public I18nConfig I18n { get; set; } = new();
+
     public string GetFileName(string filePath)
     {
         return Path.GetRelativePath(Path.Combine(Directory.GetCurrentDirectory(), ModelRoot), filePath)

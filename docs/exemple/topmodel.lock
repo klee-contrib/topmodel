@@ -2,8 +2,11 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 1.19.0
+version: 1.18.9
 generatedFiles:
+  - ./i18n/de_DE/out/securite_de_DE.properties
+  - ./i18n/de_DE/out/utilisateur_de_DE.properties
+  - ./i18n/en_US/out/securite_en_US.properties
   - ./jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/utilisateur/AbstractUtilisateurApiClient.java
   - ./jpa/src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/utilisateur/UtilisateurApiController.java
   - ./jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/DroitsDAO.java
@@ -23,15 +26,23 @@ generatedFiles:
   - ./jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/TypeProfil.java
   - ./jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/utilisateur/TypeUtilisateur.java
   - ./jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/utilisateur/Utilisateur.java
-  - ./jpa/src/main/resources/i18n/model/fr/securite_fr_FR.properties
-  - ./jpa/src/main/resources/i18n/model/fr/utilisateur_fr_FR.properties
+  - ./jpa/src/main/resources/i18n/model/securite/securite_de_DE.properties
+  - ./jpa/src/main/resources/i18n/model/securite/securite_en_US.properties
+  - ./jpa/src/main/resources/i18n/model/securite/securite_fr_FR.properties
+  - ./jpa/src/main/resources/i18n/model/utilisateur/utilisateur_de_DE.properties
+  - ./jpa/src/main/resources/i18n/model/utilisateur/utilisateur_en_US.properties
+  - ./jpa/src/main/resources/i18n/model/utilisateur/utilisateur_fr_FR.properties
   - ./js/appgenerated/api/securite/utilisateur/utilisateur-api.ts
   - ./js/appgenerated/model/securite/profil-dto.ts
   - ./js/appgenerated/model/securite/references.ts
   - ./js/appgenerated/model/utilisateur/references.ts
   - ./js/appgenerated/model/utilisateur/utilisateur-dto.ts
-  - ./js/appgenerated/resources/securite.ts
-  - ./js/appgenerated/resources/utilisateur.ts
+  - ./js/appgenerated/resources/de_DE/securite.json
+  - ./js/appgenerated/resources/de_DE/utilisateur.json
+  - ./js/appgenerated/resources/en_US/securite.json
+  - ./js/appgenerated/resources/en_US/utilisateur.json
+  - ./js/appgenerated/resources/fr_FR/securite.json
+  - ./js/appgenerated/resources/fr_FR/utilisateur.json
   - ./pg/01_tables.sql
   - ./pg/02_fk_indexes.sql
   - ./pg/03_unique_keys.sql

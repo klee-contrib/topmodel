@@ -42,6 +42,72 @@
       "type": "boolean",
       "description": "Transforme les noms de rôles d'associations en upper case (au lieu de constant case) pour déterminer le nom SQL des propriétés"
     },
+    "i18n": {
+      "type": "object",
+      "description": "Configuration de la localisation de l'application.",
+      "additionalProperties": false,
+      "properties": {
+        "rootPath": {
+          "type": "string",
+          "description": "Template du chemin des dossiers de traductions entrants. Doit contenir le template {lang}",
+          "default": "{lang}"
+        },
+        "defaultLang": {
+          "type": "string",
+          "description": "Langue par défaut de l'application."
+        },
+        "langs": {
+          "type": "array",
+          "description": "Liste des langues de l'application (autre que la langue par défaut).",
+          "items": {
+            "type": "string",
+            "description": "Code du langage"
+          }
+        },
+        "translateReferences": {
+          "type": "boolean",
+          "description": "Si les libellés des listes de références doivent être traduits.",
+          "default": "true"
+        }
+      }
+    },
+    "translation": {
+      "type": "array",
+      "description": "Traductions",
+      "items": {
+        "type": "object",
+        "properties": {
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "outputDirectory": {
+            "type": "string",
+            "description": "Racine du répertoire de génération."
+          },
+          "rootPath": {
+            "type": "string",
+            "description": "Template du chemin des dossiers de traductions sortants (manquants). Doit contenir le template {lang}",
+            "default": "{lang}"
+          },
+          "defaultLang": {
+            "type": "string",
+            "description": "Langue par défaut (celle dans laquelle sont écris les labels dans les fichiers .tmd"
+          },
+          "langs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Code du angage"
+            }
+          }
+        }
+      }
+    },
     "proceduralSql": {
       "type": "array",
       "description": "Liste de configs pour la génération de SQL 'procédurale' (sans SSDT)",
@@ -360,6 +426,11 @@
               "json",
               "schema"
             ]
+          },
+          "translateReferences": {
+            "type": "boolean",
+            "description": "Si les listes de référence doivent être traduites",
+            "default": "true"
           },
           "referenceMode": {
             "type": "string",

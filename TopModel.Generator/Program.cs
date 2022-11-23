@@ -11,6 +11,7 @@ using TopModel.Generator.Javascript;
 using TopModel.Generator.Jpa;
 using TopModel.Generator.ProceduralSql;
 using TopModel.Generator.Ssdt;
+using TopModel.Generator.Translation;
 
 var fileChecker = new FileChecker("schema.config.json");
 
@@ -116,7 +117,8 @@ for (var i = 0; i < configs.Count; i++)
         .AddSsdt(dn, config.Ssdt)
         .AddCSharp(dn, config.App, config.Csharp)
         .AddJavascript(dn, config.Javascript)
-        .AddJpa(dn, config.Jpa);
+        .AddJpa(dn, config.Jpa)
+        .AddTranslationOut(dn, config.Translation);
 
     var provider = services.BuildServiceProvider();
     disposables.Add(provider);

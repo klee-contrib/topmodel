@@ -13,17 +13,19 @@ public class JpaResourceGenerator : GeneratorBase
 {
     private readonly JpaConfig _config;
     private readonly ILogger<JpaResourceGenerator> _logger;
+    private readonly TranslationStore _translationStore;
 
-    public JpaResourceGenerator(ILogger<JpaResourceGenerator> logger, JpaConfig config)
+    public JpaResourceGenerator(ILogger<JpaResourceGenerator> logger, JpaConfig config, TranslationStore translationStore)
         : base(logger, config)
     {
         _config = config;
         _logger = logger;
+        _translationStore = translationStore;
     }
 
     public override string Name => "JpaResourceGen";
 
-    public override IEnumerable<string> GeneratedFiles => GetModules().Select(m => GetFilePath(m));
+    public override IEnumerable<string> GeneratedFiles => _translationStore.Translations.SelectMany(dict => GetModules().Select(module => GetFilePath(module, dict.Key)));
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
@@ -31,13 +33,16 @@ public class JpaResourceGenerator : GeneratorBase
 
         foreach (var module in modules)
         {
-            GenerateModule(module);
+            foreach (var lang in _translationStore.Translations)
+            {
+                GenerateModule(module, lang.Key);
+            }
         }
     }
 
-    private string GetFilePath(IGrouping<string, IFieldProperty> module)
+    private string GetFilePath(IGrouping<string, IFieldProperty> module, string lang)
     {
-        return Path.Combine(_config.OutputDirectory, _config.ResourceRootPath, Path.Combine(module.Key.Split(".").Select(part => part.ToKebabCase()).ToArray()) + "_fr_FR.properties");
+        return Path.Combine(_config.OutputDirectory, _config.ResourceRootPath.Replace("{lang}", lang).Replace("{module}", module.Key.Replace(".", "/")).ToLower(), Path.Combine(module.Key.Split(".").Last().ToKebabCase()) + $"_{lang}.properties");
     }
 
     private IEnumerable<IGrouping<string, IFieldProperty>> GetModules()
@@ -45,27 +50,26 @@ public class JpaResourceGenerator : GeneratorBase
         return Files
                     .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
                     .Select(c => c.ResourceProperty)
-                    .Where(p => p.Label != null || p.Class.ReferenceValues.Any())
+                    .Where(p => p.Label != null || p.Class.ReferenceValues.Any() && p.Class.DefaultProperty != null)
                     .Distinct()
                     .GroupBy(prop => prop.Class.Namespace.Module);
     }
 
-    private void GenerateModule(IGrouping<string, IFieldProperty> module)
+    private void GenerateModule(IGrouping<string, IFieldProperty> module, string lang)
     {
         if (_config.ResourceRootPath == null)
         {
             return;
         }
 
-        var dirInfo = Directory.CreateDirectory(Path.Combine(_config.OutputDirectory, _config.ResourceRootPath));
-        var filePath = GetFilePath(module);
+        var filePath = GetFilePath(module, lang);
 
         using var fw = new FileWriter(filePath, _logger, Encoding.Latin1) { EnableHeader = false };
         var classes = module.GroupBy(prop => prop.Class);
 
         foreach (var classe in classes.OrderBy(c => c.Key.Name))
         {
-            WriteClasse(fw, classe);
+            WriteClasse(fw, classe, lang);
         }
     }
 
@@ -74,23 +78,13 @@ public class JpaResourceGenerator : GeneratorBase
     /// </summary>
     /// <param name="fw">Flux de sortie.</param>
     /// <param name="classe">Classe.</param>
-    private void WriteClasse(FileWriter fw, IGrouping<Class, IFieldProperty> classe)
+    private void WriteClasse(FileWriter fw, IGrouping<Class, IFieldProperty> classe, string lang)
     {
         foreach (var property in classe)
         {
             if (property.Label != null)
             {
-                string name;
-                if (property is AssociationProperty ap)
-                {
-                    name = ap.GetAssociationName().ToConstantCase();
-                }
-                else
-                {
-                    name = property.Name.ToConstantCase();
-                }
-
-                fw.WriteLine($"{classe.Key.Name.ToString().ToConstantCase()}.{name}={property.Label}");
+                fw.WriteLine($"{property.ResourceKey}={_translationStore.GetTranslation(property, lang)}");
             }
         }
 
@@ -98,9 +92,7 @@ public class JpaResourceGenerator : GeneratorBase
         {
             foreach (var val in classe.Key.ReferenceValues)
             {
-                var key = val.Value[classe.Key.PrimaryKey];
-                var value = val.Value[classe.Key.DefaultProperty];
-                fw.WriteLine($"{classe.Key.Name.ToString().ToConstantCase()}.VALUES.{key}={value}");
+                fw.WriteLine($"{val.ResourceKey}={_translationStore.GetTranslation(val, lang)}");
             }
         }
     }
