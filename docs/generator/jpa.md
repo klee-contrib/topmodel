@@ -316,8 +316,23 @@ public class UtilisateurService {
 
   public UtilisateurDto getUtilisateur(Long id){
     var headers = new HttpHeaders();
-    headers.add("token-sécurisé", "MON_TOKEN_SECURISE");
+    headers.add("token-securise", "MON_TOKEN_SECURISE");
     return utilisateurApiClient.getUtilisateur(id, headers);
   }
 }
 ```
+
+## Générateur de resources
+
+Le générateur de resources s'appuie sur les `Label` des propriétés, ainsi que sur les traductions récupérées dans le cadre de la configuration du [multilinguisme](/model/i18n.md).
+
+Il suffit d'ajouter la configguration `resourceRootPath` au générateur comme suit :
+
+```yaml
+jpa:
+  - tags:
+      - dto
+    resourceRootPath: resources/i18n/model/{module} # Chemin des fichiers de ressource générés. Ici {module} sera remplacé par le nom du module
+```
+
+Pour que, pour chaque module, soit généré les fichiers de resources dans les différentes langues configurées globalement.
