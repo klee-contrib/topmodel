@@ -83,7 +83,7 @@ public class ModelFileLoader
                                     file.Options.Endpoints.FileName = value!.Value;
                                     break;
                                 case "prefix":
-                                    file.Options.Endpoints.Prefix = value!.Value;
+                                    file.Options.Endpoints.Prefix = new LocatedString(value!);
                                     break;
                             }
                         });

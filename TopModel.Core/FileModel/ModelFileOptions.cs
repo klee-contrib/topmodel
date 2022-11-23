@@ -13,5 +13,5 @@ public class EndpointOptions
     public string FileName { get; set; }
 #nullable enable
 
-    public string? Prefix { get; set; }
+    public LocatedString? Prefix { get; set; }
 }

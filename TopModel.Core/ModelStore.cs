@@ -1226,6 +1226,21 @@ public class ModelStore
         {
             yield return new ModelError(decorator, $"Le décorateur '{decorator.Name}' n'est pas utilisé.") { IsError = false, ModelErrorType = ModelErrorType.TMD9005 };
         }
+
+        foreach (var files in Files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }).Where(files => files.Select(file => file.Options.Endpoints.Prefix).Distinct().Count() > 1))
+        {
+            foreach (var file in files)
+            {
+                if (file.Options.Endpoints.Prefix != null)
+                {
+                    yield return new ModelError(file, $"Le préfixe d'endpoint '{file.Options.Endpoints.Prefix}' doit être identique à celui de tous les fichiers de même nom et de même module.", file.Options.Endpoints.Prefix?.GetLocation()) { ModelErrorType = ModelErrorType.TMD1021 };
+                }
+                else
+                {
+                    yield return new ModelError(file, $"Le fichier ne définit pas de préfixe d'endpoint alors que d'autres fichiers de même nom et de même module le font.") { ModelErrorType = ModelErrorType.TMD1021 };
+                }
+            }
+        }
     }
 
     private void LoadTranslations()
