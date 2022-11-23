@@ -26,5 +26,6 @@
 
   - [Jpa](/generator/jpa.md)
   - [Javascript / Typescript](/generator/js.md)
+  - [Traductions manquantes](/generator/translation.md)
 
 - **[Visualisation](/ui.md)**
