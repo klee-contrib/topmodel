@@ -71,7 +71,6 @@ public class ModelFileLoader
                 case "options":
                     parser.Consume<MappingStart>();
                     var scalar = parser.Consume<Scalar>();
-                    var fileOptions = new ModelFileOptions();
                     if (scalar.Value == "endpoints")
                     {
                         parser.ConsumeMapping(() =>
@@ -81,16 +80,15 @@ public class ModelFileLoader
                             switch (prop)
                             {
                                 case "fileName":
-                                    fileOptions.Endpoints.FileName = value!.Value;
+                                    file.Options.Endpoints.FileName = value!.Value;
                                     break;
                                 case "prefix":
-                                    fileOptions.Endpoints.Prefix = value!.Value;
+                                    file.Options.Endpoints.Prefix = value!.Value;
                                     break;
                             }
                         });
                     }
 
-                    file.Options = fileOptions;
                     parser.Consume<MappingEnd>();
                     break;
             }
@@ -229,6 +227,8 @@ public class ModelFileLoader
             endpoint.ModelFile = file;
             endpoint.Namespace = ns;
         }
+
+        file.Options.Endpoints.FileName ??= file.Name.Split('/').Last();
 
         return file;
     }

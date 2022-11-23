@@ -29,23 +29,30 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in files)
+        foreach (var file in files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }))
         {
-            GenerateClientFile(file);
+            GenerateClientFile(file.First());
         }
     }
 
     private void GenerateClientFile(ModelFile file)
     {
-        if (!file.Endpoints.Any())
-        {
-            return;
-        }
-
         foreach (var (tag, fileName) in _config.Tags.Intersect(file.Tags)
            .Select(tag => (tag, fileName: _config.GetEndpointsFileName(file, tag)))
            .DistinctBy(t => t.fileName))
         {
+            var files = Files.Values.Where(f => f.Options.Endpoints.FileName == file.Options.Endpoints.FileName && f.Module == file.Module && f.Tags.Contains(tag));
+
+            var endpoints = files
+                .SelectMany(f => f.Endpoints)
+                .OrderBy(e => e.Name, StringComparer.Ordinal)
+                .ToList();
+
+            if (!endpoints.Any())
+            {
+                continue;
+            }
+
             var fetch = _config.FetchImportPath != "@focus4/core" ? "fetch" : "coreFetch";
             var fetchImport = _config.FetchImportPath.StartsWith("@")
                 ? _config.FetchImportPath
@@ -55,7 +62,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
             fw.WriteLine($@"import {{{fetch}}} from ""{fetchImport}"";");
 
-            var imports = _config.GetEndpointImports(file, tag, Classes);
+            var imports = _config.GetEndpointImports(files, tag, Classes);
             if (imports.Any())
             {
                 fw.WriteLine();
@@ -66,7 +73,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
                 }
             }
 
-            foreach (var endpoint in file.Endpoints)
+            foreach (var endpoint in endpoints)
             {
                 fw.WriteLine();
                 fw.WriteLine("/**");
@@ -174,7 +181,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
                 fw.WriteLine("}");
             }
 
-            if (file.Endpoints.Any(endpoint => endpoint.Params.Any(p => p is IFieldProperty fp && fp.Domain.TS!.Type.Contains("File"))))
+            if (endpoints.Any(endpoint => endpoint.Params.Any(p => p is IFieldProperty fp && fp.Domain.TS!.Type.Contains("File"))))
             {
                 fw.WriteLine(@"
 function fillFormData(data: any, formData: FormData, prefix = """") {

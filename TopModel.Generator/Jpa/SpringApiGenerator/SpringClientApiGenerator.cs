@@ -22,65 +22,66 @@ public class SpringClientApiGenerator : GeneratorBase
 
     public override string Name => "SpringApiClientGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files.Where(f => f.Value.Endpoints.Any()).Select(f => GetFilePath(f.Value));
+    public override IEnumerable<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any()).Select(f => GetFilePath(f.Options.Endpoints.FileName, f.Module)).Distinct();
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in files)
+        foreach (var file in files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }))
         {
-            GenerateClient(file);
+            GenerateClient(file.Key.FileName, file.Key.Module);
         }
     }
 
-    private string GetDestinationFolder(ModelFile file)
+    private string GetDestinationFolder(string module)
     {
-        return Path.Combine(_config.OutputDirectory, Path.Combine(_config.ApiRootPath!.ToLower().Split(".")), Path.Combine(_config.ApiPackageName.Split('.')), Path.Combine(file.Module.ToLower().Split(".")));
+        return Path.Combine(_config.OutputDirectory, Path.Combine(_config.ApiRootPath!.ToLower().Split(".")), Path.Combine(_config.ApiPackageName.Split('.')), Path.Combine(module.ToLower().Split(".")));
     }
 
-    private string GetClassName(ModelFile file)
+    private string GetClassName(string fileName)
     {
-        if (file.Options?.Endpoints?.FileName != null)
-        {
-            return $"Abstract{file.Options.Endpoints.FileName.ToFirstUpper()}Client";
-        }
-
-        var filePath = file.Name.Split("/").Last();
-        return $"Abstract{string.Join('_', filePath.Split("_").Skip(filePath.Contains('_') ? 1 : 0)).ToFirstUpper().Replace("-", string.Empty)}Client";
+        return $"Abstract{fileName.ToFirstUpper()}Client";
     }
 
-    private string GetFileName(ModelFile file)
+    private string GetFileName(string fileName)
     {
-        var filePath = file.Name.Split("/").Last();
-        return $"{GetClassName(file)}.java";
+        return $"{GetClassName(fileName)}.java";
     }
 
-    private string GetFilePath(ModelFile file)
+    private string GetFilePath(string fileName, string module)
     {
-        return Path.Combine(GetDestinationFolder(file), GetFileName(file));
+        return Path.Combine(GetDestinationFolder(module), GetFileName(fileName));
     }
 
-    private void GenerateClient(ModelFile file)
+    private void GenerateClient(string fileName, string module)
     {
-        if (!file.Endpoints.Any() || _config.ApiRootPath == null)
+        var files = Files.Values
+            .Where(file => file.Options.Endpoints.FileName == fileName && file.Module == module);
+
+        var endpoints = files
+            .SelectMany(file => file.Endpoints)
+            .OrderBy(endpoint => endpoint.Name, StringComparer.Ordinal)
+            .ToList();
+
+        if (!endpoints.Any() || _config.ApiRootPath == null)
         {
             return;
         }
 
-        foreach (var endpoint in file.Endpoints)
+        foreach (var endpoint in endpoints)
         {
             CheckEndpoint(endpoint);
         }
 
-        var destFolder = GetDestinationFolder(file);
+        var destFolder = GetDestinationFolder(module);
         Directory.CreateDirectory(destFolder);
-        var packageName = $"{_config.ApiPackageName}.{file.Module.ToLower()}";
-        using var fw = new JavaWriter($"{GetFilePath(file)}", _logger, packageName, null);
+        var packageName = $"{_config.ApiPackageName}.{module.ToLower()}";
+        using var fw = new JavaWriter($"{GetFilePath(fileName, module)}", _logger, packageName, null);
 
-        WriteImports(file, fw);
+        WriteImports(files, fw);
         fw.WriteLine();
 
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
-        fw.WriteLine($"public abstract class {GetClassName(file)} {{");
+        fw.WriteLine($"public abstract class {GetClassName(fileName)} {{");
 
         fw.WriteLine();
 
@@ -92,18 +93,18 @@ public class SpringClientApiGenerator : GeneratorBase
         fw.WriteLine(1, " * @param restTemplate");
         fw.WriteLine(1, " * @param host");
         fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"protected {GetClassName(file)}(RestTemplate restTemplate, String host) {{");
+        fw.WriteLine(1, $"protected {GetClassName(fileName)}(RestTemplate restTemplate, String host) {{");
         fw.WriteLine(2, $"this.restTemplate = restTemplate;");
         fw.WriteLine(2, $"this.host = host;");
         fw.WriteLine(1, $"}}");
 
-        GetClassName(file);
+        GetClassName(fileName);
         fw.WriteLine();
         fw.WriteDocStart(1, "Méthode de récupération des headers");
         fw.WriteLine(1, " * @return les headers à ajouter à la requête");
         fw.WriteDocEnd(1);
         fw.WriteLine(1, $"protected abstract HttpHeaders getHeaders();");
-        foreach (var endpoint in file.Endpoints)
+        foreach (var endpoint in endpoints)
         {
             WriteEndPoint(fw, endpoint);
         }
@@ -273,10 +274,10 @@ public class SpringClientApiGenerator : GeneratorBase
         fw.WriteLine(1, "}");
     }
 
-    private void WriteImports(ModelFile file, JavaWriter fw)
+    private void WriteImports(IEnumerable<ModelFile> files, JavaWriter fw)
     {
         var imports = new List<string>();
-        imports.AddRange(GetTypeImports(file));
+        imports.AddRange(files.SelectMany(GetTypeImports).Distinct());
         imports.Add(_config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
         imports.Add("org.springframework.web.util.UriComponentsBuilder");
         imports.Add("org.springframework.web.client.RestTemplate");

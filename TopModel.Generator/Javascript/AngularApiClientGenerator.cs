@@ -37,17 +37,24 @@ public class AngularApiClientGenerator : GeneratorBase
 
     private void GenerateClientFile(ModelFile file)
     {
-        if (!file.Endpoints.Any())
-        {
-            return;
-        }
-
         foreach (var (tag, fileName) in _config.Tags.Intersect(file.Tags)
             .Select(tag => (tag, fileName: _config.GetEndpointsFileName(file, tag)))
             .DistinctBy(t => t.fileName))
         {
+            var files = Files.Values.Where(f => f.Options.Endpoints.FileName == file.Options.Endpoints.FileName && f.Module == file.Module && f.Tags.Contains(tag));
+
+            var endpoints = files
+                .SelectMany(f => f.Endpoints)
+                .OrderBy(e => e.Name, StringComparer.Ordinal)
+                .ToList();
+
+            if (!endpoints.Any())
+            {
+                continue;
+            }
+
             using var fw = new FileWriter(fileName, _logger, false);
-            var imports = _config.GetEndpointImports(file, tag, Classes);
+            var imports = _config.GetEndpointImports(files, tag, Classes);
 
             imports.AddRange(new List<(string Import, string Path)>()
             {
@@ -56,7 +63,7 @@ public class AngularApiClientGenerator : GeneratorBase
                 (Import: "Observable", Path: "rxjs"),
             });
 
-            if (file.Endpoints.Any(e => e.GetQueryParams().Any()))
+            if (endpoints.Any(e => e.GetQueryParams().Any()))
             {
                 imports.Add((Import: "HttpParams", Path: "@angular/common/http"));
             }
@@ -80,7 +87,7 @@ public class AngularApiClientGenerator : GeneratorBase
             fw.WriteLine(@$"export class {GetClassName(file)} {{");
             fw.WriteLine();
             fw.WriteLine(1, "constructor(private http: HttpClient) {}");
-            foreach (var endpoint in file.Endpoints)
+            foreach (var endpoint in endpoints)
             {
                 WriteEndpoint(endpoint, fw);
             }
@@ -175,12 +182,6 @@ public class AngularApiClientGenerator : GeneratorBase
 
     private string GetClassName(ModelFile file)
     {
-        if (file.Options?.Endpoints?.FileName != null)
-        {
-            return $"{file.Options.Endpoints.FileName.ToFirstUpper()}Service";
-        }
-
-        var filePath = file.Name.Split("/").Last();
-        return $"{string.Join('_', filePath.Split("_").Skip(filePath.Contains('_') ? 1 : 0)).ToFirstUpper()}Service";
+        return $"{file.Options.Endpoints.FileName.ToFirstUpper()}Service";
     }
 }

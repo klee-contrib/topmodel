@@ -22,72 +22,74 @@ public class SpringServerApiGenerator : GeneratorBase
 
     public override string Name => "SpringApiServerGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files.Where(f => f.Value.Endpoints.Any()).Select(f => GetFilePath(f.Value));
+    public override IEnumerable<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any()).Select(f => GetFilePath(f.Options.Endpoints.FileName, f.Module)).Distinct();
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in files)
+        foreach (var file in files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }))
         {
-            GenerateController(file);
+            GenerateController(file.Key.FileName, file.Key.Module);
         }
     }
 
-    private string GetDestinationFolder(ModelFile file)
+    private string GetDestinationFolder(string module)
     {
-        return Path.Combine(_config.OutputDirectory, Path.Combine(_config.ApiRootPath.ToLower().Split(".")), Path.Combine(_config.ApiPackageName.Split('.')), Path.Combine(file.Module.ToLower().Split(".")));
+        return Path.Combine(_config.OutputDirectory, Path.Combine(_config.ApiRootPath!.ToLower().Split(".")), Path.Combine(_config.ApiPackageName.Split('.')), Path.Combine(module.ToLower().Split(".")));
     }
 
-    private string GetClassName(ModelFile file)
+    private string GetClassName(string fileName)
     {
-        if (file.Options?.Endpoints?.FileName != null)
-        {
-            return $"{file.Options.Endpoints.FileName.ToFirstUpper()}Controller";
-        }
-
-        var filePath = file.Name.Split("/").Last();
-        return $"{string.Join('_', filePath.Split("_").Skip(filePath.Contains('_') ? 1 : 0)).ToFirstUpper()}Controller";
+        return $"{fileName.ToFirstUpper()}Controller";
     }
 
-    private string GetFileName(ModelFile file)
+    private string GetFileName(string fileName)
     {
-        return $"{GetClassName(file)}.java";
+        return $"{GetClassName(fileName)}.java";
     }
 
-    private string GetFilePath(ModelFile file)
+    private string GetFilePath(string fileName, string module)
     {
-        return Path.Combine(GetDestinationFolder(file), GetFileName(file));
+        return Path.Combine(GetDestinationFolder(module), GetFileName(fileName));
     }
 
-    private void GenerateController(ModelFile file)
+    private void GenerateController(string fileName, string module)
     {
-        if (!file.Endpoints.Any() || _config.ApiRootPath == null)
+        var files = Files.Values
+            .Where(file => file.Options.Endpoints.FileName == fileName && file.Module == module);
+
+        var endpoints = files
+            .SelectMany(file => file.Endpoints)
+            .OrderBy(endpoint => endpoint.Name, StringComparer.Ordinal)
+            .ToList();
+
+        if (!endpoints.Any() || _config.ApiRootPath == null)
         {
             return;
         }
 
-        foreach (var endpoint in file.Endpoints)
+        foreach (var endpoint in endpoints)
         {
             CheckEndpoint(endpoint);
         }
 
-        var destFolder = GetDestinationFolder(file);
+        var destFolder = GetDestinationFolder(module);
         Directory.CreateDirectory(destFolder);
-        var packageName = $"{_config.ApiPackageName}.{file.Module.ToLower()}";
-        using var fw = new JavaWriter($"{GetFilePath(file)}", _logger, packageName, null);
+        var packageName = $"{_config.ApiPackageName}.{module.ToLower()}";
+        using var fw = new JavaWriter($"{GetFilePath(fileName, module)}", _logger, packageName, null);
 
-        WriteImports(file, fw);
+        WriteImports(files, fw);
         fw.WriteLine();
-        if (file.Options?.Endpoints.Prefix != null)
+        if (files.First().Options.Endpoints.Prefix != null)
         {
-            fw.WriteLine($@"@RequestMapping(""{file.Options.Endpoints.Prefix}"")");
+            fw.WriteLine($@"@RequestMapping(""{files.First().Options.Endpoints.Prefix}"")");
         }
 
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
-        fw.WriteLine($"public interface {GetClassName(file)} {{");
+        fw.WriteLine($"public interface {GetClassName(fileName)} {{");
 
         fw.WriteLine();
 
-        foreach (var endpoint in file.Endpoints)
+        foreach (var endpoint in endpoints)
         {
             WriteEndPoint(fw, endpoint);
         }
@@ -199,44 +201,46 @@ public class SpringServerApiGenerator : GeneratorBase
         }
     }
 
-    private void WriteImports(ModelFile file, JavaWriter fw)
+    private void WriteImports(IEnumerable<ModelFile> files, JavaWriter fw)
     {
-        var imports = file.Endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToLower().ToFirstUpper()}Mapping").ToList();
-        imports.AddRange(GetTypeImports(file));
+        var endpoints = files.SelectMany(file => file.Endpoints);
+
+        var imports = endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToLower().ToFirstUpper()}Mapping").ToList();
+        imports.AddRange(GetTypeImports(files));
         imports.Add(_config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
-        if (file.Endpoints.Any(e => e.GetRouteParams().Any()))
+        if (endpoints.Any(e => e.GetRouteParams().Any()))
         {
             imports.Add("org.springframework.web.bind.annotation.PathVariable");
         }
 
-        if (file.Endpoints.Any(e => e.GetQueryParams().Any()))
+        if (endpoints.Any(e => e.GetQueryParams().Any()))
         {
             imports.Add("org.springframework.web.bind.annotation.RequestParam");
         }
 
-        if (file.Endpoints.Any(e => e.GetBodyParam() != null))
+        if (endpoints.Any(e => e.GetBodyParam() != null))
         {
             imports.Add("org.springframework.web.bind.annotation.RequestBody");
             imports.Add(_config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
         }
 
-        if (file.Options?.Endpoints.Prefix != null)
+        if (files.First().Options?.Endpoints.Prefix != null)
         {
             imports.Add("org.springframework.web.bind.annotation.RequestMapping");
         }
 
-        imports.AddRange(file.Endpoints.SelectMany(e => e.Decorators.SelectMany(d => (d.Decorator.Java?.Imports ?? Array.Empty<string>()).Select(i => i.ParseTemplate(e, d.Parameters)))).Distinct());
+        imports.AddRange(endpoints.SelectMany(e => e.Decorators.SelectMany(d => (d.Decorator.Java?.Imports ?? Array.Empty<string>()).Select(i => i.ParseTemplate(e, d.Parameters)))).Distinct());
 
         fw.AddImports(imports);
     }
 
-    private IEnumerable<string> GetTypeImports(ModelFile file)
+    private IEnumerable<string> GetTypeImports(IEnumerable<ModelFile> files)
     {
-        var properties = file.Endpoints.SelectMany(endpoint => endpoint.Params)
-            .Concat(file.Endpoints.Where(endpoint => endpoint.Returns is not null && !(endpoint.Returns is CompositionProperty cp && cp.Composition.Decorators.Any(d => d.Decorator.Java?.GenerateInterface == true)))
+        var properties = files.SelectMany(file => file.Endpoints).SelectMany(endpoint => endpoint.Params)
+            .Concat(files.SelectMany(file => file.Endpoints).Where(endpoint => endpoint.Returns is not null && !(endpoint.Returns is CompositionProperty cp && cp.Composition.Decorators.Any(d => d.Decorator.Java?.GenerateInterface == true)))
             .Select(endpoint => endpoint.Returns));
         return properties.SelectMany(property => property!.GetTypeImports(_config))
-                .Concat(file.Endpoints.Where(endpoint => endpoint.Returns is not null && (endpoint.Returns is CompositionProperty cp && cp.Composition.Decorators.Any(d => d.Decorator.Java?.GenerateInterface == true)))
+                .Concat(files.SelectMany(file => file.Endpoints).Where(endpoint => endpoint.Returns is not null && (endpoint.Returns is CompositionProperty cp && cp.Composition.Decorators.Any(d => d.Decorator.Java?.GenerateInterface == true)))
                 .Select(e => e.Returns).OfType<CompositionProperty>()
                 .SelectMany(c => c.GetKindImports(_config)));
     }
