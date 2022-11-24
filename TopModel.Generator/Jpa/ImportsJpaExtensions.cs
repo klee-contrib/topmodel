@@ -254,7 +254,7 @@ public static class ImportsJpaExtensions
         return imports;
     }
 
-     public static List<string> GetKindImports(this CompositionProperty cp, JpaConfig config)
+    public static List<string> GetKindImports(this CompositionProperty cp, JpaConfig config)
     {
         var imports = new List<string>();
 

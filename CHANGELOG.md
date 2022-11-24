@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.19.2
+
+- [`a207f380d5`](https://github.com/klee-contrib/topmodel/commit/a207f380ded20a87ed2e0a59870e5c329e6aab35) - [JPA] : Condensation des resources par module
+
 ## 1.19.1
 
 - [`6f38bf76`](https://github.com/klee-contrib/topmodel/commit/6f38bf76ba8a08b8f0baff6518dfe4f45dbb382e) - [JPA] : Utiliser l'interface dans le return de l'API si elle est disponible
