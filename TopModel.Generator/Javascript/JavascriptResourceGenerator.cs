@@ -110,7 +110,7 @@ public class JavascriptResourceGenerator : GeneratorBase
             }
             else
             {
-                fw.WriteLine(level, $@"""{submodule.Key.Split('.').First().ToLower()}"": {{");
+                fw.WriteLine(level, $@"""{submodule.Key.Split('.').First().ToFirstLower()}"": {{");
                 WriteSubModule(fw, lang, submodule.Select(m => m.Key).SelectMany(c => c.Properties).OfType<IFieldProperty>(), level + 1);
                 if (isLast)
                 {

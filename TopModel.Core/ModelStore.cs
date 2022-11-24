@@ -1254,20 +1254,18 @@ public class ModelStore
             var langMap = new Dictionary<string, string>();
             var directoryPath = _config.I18n.RootPath.Replace("{lang}", lang);
             var exists = Directory.Exists(directoryPath);
-            if (!exists)
+            if (exists)
             {
-                return;
-            }
-
-            var files = Directory.GetFiles(directoryPath, "*.properties", SearchOption.AllDirectories);
-            foreach (var file in files)
-            {
-                var lines = File.ReadAllLines(file);
-                foreach (var line in lines)
+                var files = Directory.GetFiles(directoryPath, "*.properties", SearchOption.AllDirectories);
+                foreach (var file in files)
                 {
-                    if (line != null && line != string.Empty)
+                    var lines = File.ReadAllLines(file);
+                    foreach (var line in lines)
                     {
-                        langMap[line.Split("=")[0]] = line.Split("=")[1];
+                        if (line != null && line != string.Empty)
+                        {
+                            langMap[line.Split("=")[0]] = line.Split("=")[1];
+                        }
                     }
                 }
             }
