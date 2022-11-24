@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.19.3
+
+- [`cf1af1cb`](https://github.com/klee-contrib/topmodel/commit/a207f380ded20a87ed2e0a59870e5c329e6aab35) - [JS] : Ressources :correction chemin sous-module
+
 ## 1.19.2
 
 - [`a207f380d5`](https://github.com/klee-contrib/topmodel/commit/a207f380ded20a87ed2e0a59870e5c329e6aab35) - [JPA] : Condensation des resources par module
