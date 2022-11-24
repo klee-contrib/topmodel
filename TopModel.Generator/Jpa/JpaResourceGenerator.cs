@@ -52,7 +52,7 @@ public class JpaResourceGenerator : GeneratorBase
                     .Select(c => c.ResourceProperty)
                     .Where(p => p.Label != null || p.Class.ReferenceValues.Any() && p.Class.DefaultProperty != null)
                     .Distinct()
-                    .GroupBy(prop => prop.Class.Namespace.Module);
+                    .GroupBy(prop => prop.Class.Namespace.Module.Split('.').First());
     }
 
     private void GenerateModule(IGrouping<string, IFieldProperty> module, string lang)
