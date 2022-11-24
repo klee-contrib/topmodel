@@ -254,6 +254,22 @@ public static class ImportsJpaExtensions
         return imports;
     }
 
+     public static List<string> GetKindImports(this CompositionProperty cp, JpaConfig config)
+    {
+        var imports = new List<string>();
+
+        if (cp.Kind == "list")
+        {
+            imports.Add("java.util.List");
+        }
+        else if (cp.DomainKind != null)
+        {
+            imports.AddRange(cp.DomainKind.Java!.Imports.Select(i => i.ParseTemplate(cp)));
+        }
+
+        return imports;
+    }
+
     public static string GetImport(this Class classe, JpaConfig config)
     {
         var packageRootName = classe.IsPersistent ? config.EntitiesPackageName : config.DtosPackageName;
