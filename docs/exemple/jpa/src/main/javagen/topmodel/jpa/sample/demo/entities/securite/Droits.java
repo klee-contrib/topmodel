@@ -153,9 +153,9 @@ public class Droits {
 	}
 
 	public enum Values {
-		CRE("Créer", TypeProfil.Values.ADM), //
-		MOD("Modifier", null), //
-		SUP("Supprimer", null); 
+		CRE("securite.droits.values.CRE", TypeProfil.Values.ADM), //
+		MOD("securite.droits.values.MOD", null), //
+		SUP("securite.droits.values.SUP", null); 
 
 		/**
 		 * Libellé du droit.

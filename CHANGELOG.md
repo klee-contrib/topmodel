@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.19.1
+
+- [`6f38bf76`](https://github.com/klee-contrib/topmodel/commit/6f38bf76ba8a08b8f0baff6518dfe4f45dbb382e) - [JPA] : Utiliser l'interface dans le return de l'API si elle est disponible
+
 ## 1.19.0
 
 - [#172](https://github.com/klee-contrib/topmodel/pull/172) - Décorateurs d'endpoints (fix [#124](https://github.com/klee-contrib/topmodel/issues/124))

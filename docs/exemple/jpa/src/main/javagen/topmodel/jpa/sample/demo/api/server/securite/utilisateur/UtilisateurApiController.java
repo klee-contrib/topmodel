@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 
+import topmodel.jpa.sample.demo.dtos.utilisateur.interfaces.IUtilisateurDto;
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
 import topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur;
 
@@ -33,7 +34,7 @@ public interface UtilisateurApiController {
 	 * @return Le détail de l'utilisateur
 	 */
 	@GetMapping(path = "/{utiId}")
-	UtilisateurDto find(@RequestParam(value = "utilisateurId", required = true) Long utilisateurId);
+	IUtilisateurDto find(@RequestParam(value = "utilisateurId", required = true) Long utilisateurId);
 
 	/**
 	 * Charge une liste d'utilisateurs par leur type.
@@ -41,7 +42,7 @@ public interface UtilisateurApiController {
 	 * @return Liste des utilisateurs
 	 */
 	@GetMapping(path = "/list")
-	List<UtilisateurDto> findAllByType(@RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode);
+	List<IUtilisateurDto> findAllByType(@RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode);
 
 	/**
 	 * Sauvegarde un utilisateur.
@@ -50,7 +51,7 @@ public interface UtilisateurApiController {
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@PostMapping(path = "/save")
-	UtilisateurDto save(@RequestBody @Valid UtilisateurDto utilisateur);
+	IUtilisateurDto save(@RequestBody @Valid UtilisateurDto utilisateur);
 
 	/**
 	 * Recherche des utilisateurs.
@@ -64,5 +65,5 @@ public interface UtilisateurApiController {
 	 * @return Utilisateurs matchant les critères
 	 */
 	@PostMapping(path = "/search")
-	Page<UtilisateurDto> search(@RequestParam(value = "utilisateurId", required = true) Long utilisateurId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) Long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode, @RequestParam(value = "dateCreation", required = false) LocalDate dateCreation, @RequestParam(value = "dateModification", required = false) LocalDateTime dateModification);
+	Page<IUtilisateurDto> search(@RequestParam(value = "utilisateurId", required = true) Long utilisateurId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) Long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode, @RequestParam(value = "dateCreation", required = false) LocalDate dateCreation, @RequestParam(value = "dateModification", required = false) LocalDateTime dateModification);
 }

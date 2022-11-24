@@ -122,9 +122,9 @@ public class TypeUtilisateur {
 	}
 
 	public enum Values {
-		ADM("Administrateur"), //
-		CLI("Client"), //
-		GES("Gestionnaire"); 
+		ADM("utilisateur.typeUtilisateur.values.ADM"), //
+		CLI("utilisateur.typeUtilisateur.values.CLI"), //
+		GES("utilisateur.typeUtilisateur.values.GES"); 
 
 		/**
 		 * Libellé du type d'utilisateur.

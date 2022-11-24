@@ -122,8 +122,8 @@ public class TypeProfil {
 	}
 
 	public enum Values {
-		ADM("Administrateur"), //
-		GES("Gestionnaire"); 
+		ADM("securite.typeProfil.values.ADM"), //
+		GES("securite.typeProfil.values.GES"); 
 
 		/**
 		 * Libellé du type d'utilisateur.
