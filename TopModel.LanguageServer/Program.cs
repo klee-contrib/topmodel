@@ -30,6 +30,7 @@ var server = await LanguageServer.From(options =>
         .WithHandler<DefinitionHandler>()
         .WithHandler<CompletionHandler>()
         .WithHandler<WorkspaceSymbolHandler>()
+        .WithHandler<DocumentSymbolHandler>()
         .WithHandler<CodeActionHandler>()
         .WithHandler<ReferencesHandler>()
         .WithHandler<CodeLensHandler>()
