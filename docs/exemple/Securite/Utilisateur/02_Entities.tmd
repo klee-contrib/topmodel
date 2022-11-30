@@ -5,7 +5,7 @@ uses:
   - Securite/Utilisateur/01_References
   - decorators
 tags:
-  - entity
+  - back
 ---
 class:
   name: Utilisateur

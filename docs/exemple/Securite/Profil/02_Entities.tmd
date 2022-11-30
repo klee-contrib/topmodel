@@ -1,7 +1,7 @@
 ---
 module: Securite
 tags:
-  - entity
+  - back
 uses:
   - Securite/Profil/01_References
 ---

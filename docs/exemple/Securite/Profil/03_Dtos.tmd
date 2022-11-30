@@ -1,7 +1,8 @@
 ---
 module: Securite
 tags:
-  - dto
+  - front
+  - back
 uses:
   - Securite/Profil/02_Entities
   - Securite/Utilisateur/03_Dtos

@@ -55,7 +55,7 @@ public class JavascriptApiClientGenerator : GeneratorBase
 
             fw.WriteLine($@"import {{{fetch}}} from ""{fetchImport}"";");
 
-            var imports = _config.GetEndpointImports(file, tag);
+            var imports = _config.GetEndpointImports(file, tag, Classes);
             if (imports.Any())
             {
                 fw.WriteLine();

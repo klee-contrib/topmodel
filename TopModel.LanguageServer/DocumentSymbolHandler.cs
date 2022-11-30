@@ -22,7 +22,11 @@ public class DocumentSymbolHandler : DocumentSymbolHandlerBase
     public override Task<SymbolInformationOrDocumentSymbolContainer> Handle(DocumentSymbolParams request, CancellationToken cancellationToken)
     {
 
-        var file = _modelStore.Files.Where(f => _facade.GetFilePath(f) == request.TextDocument.Uri).First();
+        var file = _modelStore.Files.Where(f => _facade.GetFilePath(f) == request.TextDocument.Uri).SingleOrDefault();
+        if (file == null)
+        {
+            return Task.FromResult<SymbolInformationOrDocumentSymbolContainer>(new SymbolInformationOrDocumentSymbolContainer());
+        }
 
         return Task.FromResult<SymbolInformationOrDocumentSymbolContainer>(new SymbolInformationOrDocumentSymbolContainer(
             file.Classes.Select(c =>

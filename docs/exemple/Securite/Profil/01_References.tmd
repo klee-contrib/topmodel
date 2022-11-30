@@ -1,8 +1,8 @@
 ---
 module: Securite
 tags:
-  - entity
-  - dto
+  - back
+  - front
 ---
 class:
   name: TypeProfil

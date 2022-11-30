@@ -1,7 +1,8 @@
 ---
 module: Securite.Utilisateur
 tags:
-  - dto
+  - front
+  - back
   - api-client
 uses:
   - Securite/Utilisateur/02_Entities

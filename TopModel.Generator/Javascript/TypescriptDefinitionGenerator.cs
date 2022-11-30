@@ -143,7 +143,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                     : dep is { Source: IFieldProperty fp }
                     ? fp.GetPropertyTypeName(Classes).Replace("[]", string.Empty)
                     : $"{dep.Classe.Name}Entity, {dep.Classe.Name}{(_config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}",
-                Path: _config.GetImportPathForClass(dep, tag)!))
+                Path: _config.GetImportPathForClass(dep, tag, Classes)!))
             .Concat(classe.DomainDependencies.Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(p => p.Path != null && p.Path != "@focus4/stores")
             .GroupAndSort();
@@ -367,7 +367,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                     Class c => c.Name,
                     _ => null!
                 },
-                Path: _config.GetImportPathForClass(dep, tag)!))
+                Path: _config.GetImportPathForClass(dep, tag, Classes)!))
             .Concat(references.SelectMany(r => r.DomainDependencies).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(i => i.Path != null && i.Path != $"./references")
             .GroupAndSort();

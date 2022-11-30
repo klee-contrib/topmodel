@@ -47,7 +47,7 @@ public class AngularApiClientGenerator : GeneratorBase
             .DistinctBy(t => t.fileName))
         {
             using var fw = new FileWriter(fileName, _logger, false);
-            var imports = _config.GetEndpointImports(file, tag);
+            var imports = _config.GetEndpointImports(file, tag, Classes);
 
             imports.AddRange(new List<(string Import, string Path)>()
             {

@@ -4,8 +4,8 @@ uses:
   - Securite/Utilisateur/02_Entities
   - decorators
 tags:
-  - dto
-
+  - front
+  - back
 ---
 class:
   name: UtilisateurDto
