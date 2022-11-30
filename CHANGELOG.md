@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.19.4
+
+- [`86371afec`](https://github.com/klee-contrib/topmodel/commit/86371afec406dd4115466179c288967a2abeadff) - [JS] : Correction import foireux si liste de ref non accessible
+
 ## 1.19.3
 
 - [`cf1af1cb`](https://github.com/klee-contrib/topmodel/commit/a207f380ded20a87ed2e0a59870e5c329e6aab35) - [JS] : Ressources :correction chemin sous-module
