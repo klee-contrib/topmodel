@@ -356,7 +356,35 @@ public class JpaModelConstructorGenerator
                             }
                             else
                             {
-                                fw.WriteLine(3, $"this.set{mapping.Key.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value.Name.ToFirstUpper()}());");
+                                if (mapping.Key is CompositionProperty cp)
+                                {
+                                    if (mapping.Value == null)
+                                    {
+                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name};");
+                                    }
+                                    else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association))
+                                    {
+                                        var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association);
+                                        var getter = $"{param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}()";
+                                        if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
+                                        {
+                                            fw.AddImport("java.util.stream.Collectors");
+                                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} == null ? null : {getter}.stream().map({cp.Composition.Name.ToFirstUpper()}::new).collect(Collectors.toList());");
+                                        }
+                                        else
+                                        {
+                                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} == null ? null : new {cp.Composition.Name.ToFirstUpper()}({getter});");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        throw new ModelException(classe, $"La propriété {mapping.Key.Name} ne peut pas être mappée avec la propriété {mapping.Value.Name} car il n'existe pas de mapper {ap.Association.Name} -> {cp.Composition.Name}");
+                                    }
+                                }
+                                else
+                                {
+                                    fw.WriteLine(3, $"this.set{mapping.Key.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value.Name.ToFirstUpper()}());");
+                                }
                             }
                         }
                     }

@@ -466,7 +466,7 @@ public class JpaModelGenerator : GeneratorBase
 
     private void WriteGetters(JavaWriter fw, Class classe)
     {
-        foreach (var property in classe.GetProperties(_config, AvailableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.IsStatic())))
+        foreach (var property in classe.GetProperties(_config, AvailableClasses))
         {
             fw.WriteLine();
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
