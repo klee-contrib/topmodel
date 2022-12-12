@@ -31,7 +31,12 @@ class CompletionHandler : CompletionHandlerBase
         var completionList = new CompletionList(isIncomplete: false);
 
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
-        var currentLine = text.ElementAt(request.Position.Line);
+        var currentLine = text.ElementAtOrDefault(request.Position.Line);
+
+        if (currentLine == null)
+        {
+            return Task.FromResult(new CompletionList());
+        }
 
         if (currentLine.Contains("domain: ") || currentLine.Contains("asListWithDomain: ") || currentLine.Contains("kind: "))
         {
@@ -106,7 +111,7 @@ class CompletionHandler : CompletionHandlerBase
 
             // Use
             if (currentLine.TrimStart().StartsWith("-") && (
-                text.ElementAt(request.Position.Line - 1) == "uses:"
+                text.ElementAtOrDefault(request.Position.Line - 1) == "uses:"
                 || file.Uses.Select(u => u.Start.Line).Any(l => l == request.Position.Line)))
             {
                 var searchText = currentLine.TrimStart()[1..].Trim();
@@ -135,7 +140,7 @@ class CompletionHandler : CompletionHandlerBase
 
             // Décorateur
             else if (currentLine.TrimStart().StartsWith("-") && (
-                text.ElementAt(request.Position.Line - 1)?.TrimStart() == "decorators:"
+                text.ElementAtOrDefault(request.Position.Line - 1)?.TrimStart() == "decorators:"
                 || file.Classes.SelectMany(c => c.DecoratorReferences).Any(dr => dr.Start.Line == request.Position.Line)))
             {
                 var searchText = currentLine.TrimStart()[1..].Trim();
@@ -184,28 +189,28 @@ class CompletionHandler : CompletionHandlerBase
                 var classLine = currentLine;
                 var requestLine = request.Position.Line;
 
-                while (requestLine > 0 && (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('[')))
+                while (requestLine > 0 && classLine != null && (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('[')))
                 {
                     requestLine--;
-                    classLine = text.ElementAt(requestLine);
+                    classLine = text.ElementAtOrDefault(requestLine);
                 }
 
-                if (classLine.Contains("class:") || classLine.Contains("association:"))
+                if (classLine != null && (classLine.Contains("class:") || classLine.Contains("association:")))
                 {
                     className = classLine.Split(':')[1].Trim();
                 }
 
                 if (className == null)
                 {
-                    classLine = text.ElementAt(request.Position.Line);
+                    classLine = text.ElementAtOrDefault(request.Position.Line);
 
-                    while (requestLine < text.Length - 1 && (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('[')))
+                    while (requestLine < text.Length - 1 && classLine != null && (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('[')))
                     {
                         requestLine++;
-                        classLine = text.ElementAt(requestLine);
+                        classLine = text.ElementAtOrDefault(requestLine);
                     }
 
-                    if (classLine.Contains("class:"))
+                    if (classLine != null && classLine.Contains("class:"))
                     {
                         className = classLine.Split(':')[1].Trim();
                     }
@@ -256,7 +261,7 @@ class CompletionHandler : CompletionHandlerBase
                         break;
                     }
 
-                    classLine = text.ElementAt(requestLine);
+                    classLine = text.ElementAtOrDefault(requestLine);
                 }
 
                 if (classLine == "class:")
@@ -275,8 +280,8 @@ class CompletionHandler : CompletionHandlerBase
                         else
                         {
                             requestLine = request.Position.Line - 1;
-                            var ukValuesLine = text.ElementAt(requestLine);
-                            while (!Regex.IsMatch(ukValuesLine, "^  \\w") && !ukValuesLine.Contains("mappings:"))
+                            var ukValuesLine = text.ElementAtOrDefault(requestLine);
+                            while (ukValuesLine != null && !Regex.IsMatch(ukValuesLine, "^  \\w") && !ukValuesLine.Contains("mappings:"))
                             {
                                 requestLine--;
                                 if (requestLine < 0)
@@ -284,12 +289,12 @@ class CompletionHandler : CompletionHandlerBase
                                     break;
                                 }
 
-                                ukValuesLine = text.ElementAt(requestLine);
+                                ukValuesLine = text.ElementAtOrDefault(requestLine);
                             }
 
-                            var isUk = ukValuesLine.Contains("unique:");
-                            var isValues = ukValuesLine.Contains("values:");
-                            var isMappings = ukValuesLine.Contains("mappings:");
+                            var isUk = ukValuesLine != null && ukValuesLine.Contains("unique:");
+                            var isValues = ukValuesLine != null && ukValuesLine.Contains("values:");
+                            var isMappings = ukValuesLine != null && ukValuesLine.Contains("mappings:");
                             var pC = currentLine[..request.Position.Character].LastOrDefault();
                             var pCT = currentLine[..request.Position.Character].TrimEnd().LastOrDefault();
                             if (
@@ -315,13 +320,13 @@ class CompletionHandler : CompletionHandlerBase
                                 string? className = null;
                                 classLine = ukValuesLine;
 
-                                while (requestLine > 0 && !classLine.TrimStart().StartsWith('-') && !classLine.Contains("class:"))
+                                while (requestLine > 0 && classLine != null && !classLine.TrimStart().StartsWith('-') && !classLine.Contains("class:"))
                                 {
                                     requestLine--;
-                                    classLine = text.ElementAt(requestLine);
+                                    classLine = text.ElementAtOrDefault(requestLine);
                                 }
 
-                                if (classLine.Contains("class:"))
+                                if (classLine != null && classLine.Contains("class:"))
                                 {
                                     className = classLine.Split(':')[1].Trim();
                                 }
@@ -329,15 +334,15 @@ class CompletionHandler : CompletionHandlerBase
                                 if (className == null)
                                 {
                                     requestLine = request.Position.Line;
-                                    classLine = text.ElementAt(requestLine);
+                                    classLine = text.ElementAtOrDefault(requestLine);
 
-                                    while (requestLine < text.Length - 1 && !classLine.Contains("class:"))
+                                    while (requestLine < text.Length - 1 && classLine != null && !classLine.Contains("class:"))
                                     {
                                         requestLine++;
-                                        classLine = text.ElementAt(requestLine);
+                                        classLine = text.ElementAtOrDefault(requestLine);
                                     }
 
-                                    if (classLine.Contains("class:"))
+                                    if (classLine != null && classLine.Contains("class:"))
                                     {
                                         className = classLine.Split(':')[1].Trim();
                                     }
