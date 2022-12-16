@@ -295,17 +295,19 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
             if (property is IFieldProperty field)
             {
-                fw.Write("        name: \"");
-                fw.Write(field.Name.ToFirstLower());
-                fw.Write("\"");
-                fw.Write(",\r\n        domain: ");
+                fw.WriteLine($"        name: \"{field.Name.ToFirstLower()}\",");
                 var domain = (field as AliasProperty)?.ListDomain ?? field.Domain;
-                fw.Write(domain.Name);
-                fw.Write(",\r\n        isRequired: ");
-                fw.Write((field.Required && !field.PrimaryKey).ToString().ToFirstLower());
-                fw.Write(",\r\n        label: \"");
-                fw.Write(field.ResourceKey);
-                fw.Write("\"\r\n");
+                fw.WriteLine($"        domain: {domain.Name},");
+                fw.WriteLine($"        isRequired: {(field.Required && !field.PrimaryKey).ToString().ToFirstLower()},");
+
+                var defaultValue = _config.GetDefaultValue(field);
+                if (defaultValue != "undefined")
+                {
+                    fw.WriteLine($"        defaultValue: {defaultValue},");
+                }
+
+                fw.WriteLine($"        label: \"{field.ResourceKey}\"");
+
             }
             else if (property is CompositionProperty cp3 && cp3.DomainKind != null)
             {
