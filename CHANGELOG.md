@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.19.5
+
+- [#175](https://github.com/klee-contrib/topmodel/pull/175) - Fusion des fichiers d'endpoints de même nom et de même module
+
 ## 1.19.4
 
 - [`86371afec`](https://github.com/klee-contrib/topmodel/commit/86371afec406dd4115466179c288967a2abeadff) - [JS] : Correction import foireux si liste de ref non accessible
