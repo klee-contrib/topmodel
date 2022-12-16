@@ -38,7 +38,7 @@ Le type de paramètre (body, query, route) est automatiquement déterminé :
 
 Tous les générateurs vont générer **un fichier client ou serveur par fichier de modèle qui contient des endpoints**, qui reflétera le chemin et le nom du fichier de modèle en question. A l'inverse des générateurs de classes qui vont utiliser le module, ici il n'est pas important.
 
-Il est possible de paramétrer le nom du fichier généré, ainsi que d'ajouter un préfix aux routes. Pour cela, dans les méta-data du fichier (au niveau de `module`,`tags`, `uses`...), vous pouvez ajouter des options :
+Il est possible de paramétrer le nom du fichier généré, ainsi que d'ajouter un préfixe aux routes. Pour cela, dans les méta-data du fichier (au niveau de `module`,`tags`, `uses`...), vous pouvez ajouter des options :
 
 ```yaml
 ---
@@ -54,4 +54,8 @@ options:
     fileName: UtilisateurApi
 ```
 
-Ainsi, toutes les routes décrites dans ce fichier auront le préfix `utilisateur`. Le fichier généré se nommera `UtilisateurApi` (en fonction des spécificité des générateurs).
+Ainsi, toutes les routes décrites dans ce fichier auront le préfixe `utilisateur`. Le fichier généré se nommera `UtilisateurApi` (éventuellement complété du suffixe du générateur utilisé, par exemple `Controller` ou `Client`).
+
+**Si des fichiers de modèle de même module ont le même nom** (que ça soit le vrai nom de fichier dans des dossiers différents où bien une surcharge comme décrite précédemment), alors **les endpoints générés pour ces fichiers seront regroupés dans le même fichier cible**, pour tous les générateurs clients et serveurs.
+
+Une erreur sera levée si des fichiers de même nom ne définissent pas le même préfixe pour les routes. De même, deux endpoints de même fichier cible ne peuvent pas avoir le même nom.

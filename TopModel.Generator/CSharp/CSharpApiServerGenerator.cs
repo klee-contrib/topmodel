@@ -13,7 +13,6 @@ namespace TopModel.Generator.CSharp;
 public class CSharpApiServerGenerator : GeneratorBase
 {
     private readonly CSharpConfig _config;
-    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
     private readonly ILogger<CSharpApiServerGenerator> _logger;
 
     public CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, CSharpConfig config)
@@ -25,36 +24,39 @@ public class CSharpApiServerGenerator : GeneratorBase
 
     public override string Name => "CSharpApiServerGen";
 
-    public override IEnumerable<string> GeneratedFiles => _files.Values.Where(f => f.Endpoints.Any(endpoint => endpoint.ModelFile == f || !_files.ContainsKey(endpoint.ModelFile.Name))).Select(GetFilePath);
+    public override IEnumerable<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any(endpoint => endpoint.ModelFile == f || !Files.ContainsKey(endpoint.ModelFile.Name))).Select(GetFilePath).Distinct();
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in files)
+        foreach (var file in files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }))
         {
-            _files[file.Name] = file;
-            HandleFile(file);
+            HandleFile(file.Key.FileName, file.Key.Module);
         }
     }
 
     private string GetFilePath(ModelFile file)
     {
-        var fileSplit = file.Name.Split("/");
+        var fileSplit = file.Options.Endpoints.FileName.Split("/");
         var className = $"{fileSplit.Last()}Controller";
         var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), "Controllers", _config.ApiFilePath.Replace("{module}", file.Module)).Replace("\\", "/");
         return $"{_config.OutputDirectory}/{apiPath}/{className}.cs";
     }
 
-    private void HandleFile(ModelFile file)
+    private void HandleFile(string fileName, string module)
     {
-        var endpoints = file.Endpoints.Where(endpoint => endpoint.ModelFile == file || !_files.ContainsKey(endpoint.ModelFile.Name));
+        var endpoints = Files.Values
+            .Where(file => file.Options.Endpoints.FileName == fileName && file.Module == module)
+            .SelectMany(file => file.Endpoints.Where(endpoint => endpoint.ModelFile == file || !Files.ContainsKey(endpoint.ModelFile.Name)))
+            .OrderBy(endpoint => endpoint.Name, StringComparer.Ordinal)
+            .ToList();
+
         if (!endpoints.Any())
         {
             return;
         }
 
-        var fileSplit = file.Name.Split("/");
-        var className = $"{file.Options?.Endpoints?.FileName ?? fileSplit.Last()}Controller";
-        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), "Controllers", _config.ApiFilePath.Replace("{module}", file.Module)).Replace("\\", "/");
+        var className = $"{fileName}Controller";
+        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", endpoints.First().Namespace.App), "Controllers", _config.ApiFilePath.Replace("{module}", module)).Replace("\\", "/");
         var filePath = $"{_config.OutputDirectory}/{apiPath}/{className}.cs";
 
         var text = File.Exists(filePath)
@@ -133,7 +135,7 @@ namespace {apiPath.Replace("/", ".")}
             }
             else
             {
-                var index = file.Endpoints.IndexOf(endpoint);
+                var index = endpoints.IndexOf(endpoint);
                 var firstMethod = controller.Members.OfType<MethodDeclarationSyntax>().FirstOrDefault();
                 var start = firstMethod != null ? controller.Members.IndexOf(firstMethod) : 0;
                 controller = controller.WithMembers(List(controller.Members.Take(start + index).Concat(new[] { method }).Concat(controller.Members.Skip(start + index))));
@@ -142,7 +144,7 @@ namespace {apiPath.Replace("/", ".")}
 
         foreach (var method in controller.DescendantNodes().OfType<MethodDeclarationSyntax>())
         {
-            if (method.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PublicKeyword)) && !file.Endpoints.Where(endpoint => endpoint.ModelFile == file || !_files.ContainsKey(endpoint.ModelFile.Name)).Any(endpoint => endpoint.Name == method.Identifier.Text))
+            if (method.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PublicKeyword)) && !endpoints.Any(endpoint => endpoint.Name == method.Identifier.Text))
             {
                 controller = controller.WithMembers(List(controller.Members.Where(member => ((member as MethodDeclarationSyntax)?.Identifier.Text ?? string.Empty) != method.Identifier.Text)));
             }

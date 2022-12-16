@@ -9,7 +9,6 @@ namespace TopModel.Generator.CSharp;
 public class CSharpApiClientGenerator : GeneratorBase
 {
     private readonly CSharpConfig _config;
-    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
     private readonly ILogger<CSharpApiClientGenerator> _logger;
 
     public CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, CSharpConfig config)
@@ -21,39 +20,44 @@ public class CSharpApiClientGenerator : GeneratorBase
 
     public override string Name => "CSharpApiClientGen";
 
-    public override IEnumerable<string> GeneratedFiles => _files.Values.Where(f => f.Endpoints.Any()).Select(GetFilePath);
+    public override IEnumerable<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any()).Select(GetFilePath).Distinct();
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in files)
+        foreach (var file in files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }))
         {
-            _files[file.Name] = file;
-            HandleFile(file);
+            HandleFile(file.Key.FileName, file.Key.Module);
         }
     }
 
     private string GetFilePath(ModelFile file)
     {
-        var className = $"{file.Options?.Endpoints?.FileName ?? file.Name.Split("/").Last()}Client";
+        var className = $"{file.Options.Endpoints.FileName}Client";
         var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), _config.ApiFilePath.Replace("{module}", file.Module)).Replace("\\", "/");
         return $"{_config.OutputDirectory}/{apiPath}/generated/{className}.cs";
     }
 
-    private void HandleFile(ModelFile file)
+    private void HandleFile(string fileName, string module)
     {
-        if (!file.Endpoints.Any())
+        var endpoints = Files.Values
+            .Where(file => file.Options.Endpoints.FileName == fileName && file.Module == module)
+            .SelectMany(file => file.Endpoints)
+            .OrderBy(endpoint => endpoint.Name, StringComparer.Ordinal)
+            .ToList();
+
+        if (!endpoints.Any())
         {
             return;
         }
 
-        var className = $"{file.Options?.Endpoints?.FileName ?? file.Name.Split("/").Last()}Client";
-        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), _config.ApiFilePath.Replace("{module}", file.Module)).Replace("\\", "/");
+        var className = $"{fileName}Client";
+        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", endpoints.First().Namespace.App), _config.ApiFilePath.Replace("{module}", module)).Replace("\\", "/");
         var filePath = $"{_config.OutputDirectory}/{apiPath}/generated/{className}.cs";
 
         using var fw = new CSharpWriter(filePath, _logger, _config.UseLatestCSharp);
 
-        var hasBody = file.Endpoints.Any(e => e.GetBodyParam() != null);
-        var hasReturn = file.Endpoints.Any(e => e.Returns != null);
+        var hasBody = endpoints.Any(e => e.GetBodyParam() != null);
+        var hasReturn = endpoints.Any(e => e.Returns != null);
         var hasJson = hasReturn || hasBody;
 
         var usings = new List<string>();
@@ -84,14 +88,14 @@ public class CSharpApiClientGenerator : GeneratorBase
             }
         }
 
-        if (file.Endpoints.Any(e => e.GetQueryParams().Any()))
+        if (endpoints.Any(e => e.GetQueryParams().Any()))
         {
             if (!_config.UseLatestCSharp)
             {
                 usings.AddRange(new[] { "System.Collections.Generic", "System.Linq" });
             }
 
-            if (file.Endpoints.Any(e => e.GetQueryParams().Any(qp =>
+            if (endpoints.Any(e => e.GetQueryParams().Any(qp =>
             {
                 var typeName = _config.GetPropertyTypeName(qp);
                 return !typeName.StartsWith("string") && !typeName.StartsWith("Guid");
@@ -101,7 +105,7 @@ public class CSharpApiClientGenerator : GeneratorBase
             }
         }
 
-        foreach (var property in file.Endpoints.SelectMany(e => e.Params.Concat(new[] { e.Returns }).Where(p => p != null)))
+        foreach (var property in endpoints.SelectMany(e => e.Params.Concat(new[] { e.Returns }).Where(p => p != null)))
         {
             if (property is IFieldProperty fp)
             {
@@ -111,9 +115,9 @@ public class CSharpApiClientGenerator : GeneratorBase
                 }
 
                 foreach (var @using in fp.Domain.CSharp!.Annotations
-                .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
-                .SelectMany(a => a.Usings)
-                .Select(u => u.ParseTemplate(fp)))
+                    .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
+                    .SelectMany(a => a.Usings)
+                    .Select(u => u.ParseTemplate(fp)))
                 {
                     usings.Add(@using);
                 }
@@ -160,7 +164,7 @@ public class CSharpApiClientGenerator : GeneratorBase
 
         fw.WriteNamespace(ns);
 
-        fw.WriteSummary(1, $"Client {file.Module}");
+        fw.WriteSummary(1, $"Client {module}");
         fw.WriteClassDeclaration(className, null);
 
         fw.WriteLine(2, "private readonly HttpClient _client;");
@@ -184,7 +188,7 @@ public class CSharpApiClientGenerator : GeneratorBase
         fw.WriteLine(3, "_client = client;");
         fw.WriteLine(2, "}");
 
-        foreach (var endpoint in file.Endpoints.OrderBy(endpoint => endpoint.Name))
+        foreach (var endpoint in endpoints.OrderBy(endpoint => endpoint.Name))
         {
             fw.WriteLine();
             fw.WriteSummary(2, endpoint.Description);

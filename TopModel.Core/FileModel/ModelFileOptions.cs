@@ -1,5 +1,4 @@
-﻿#nullable disable
-#pragma warning disable SA1402
+﻿#pragma warning disable SA1402
 
 namespace TopModel.Core.FileModel;
 
@@ -10,8 +9,9 @@ public class ModelFileOptions
 
 public class EndpointOptions
 {
+#nullable disable
+    public string FileName { get; set; }
 #nullable enable
-    public string? FileName { get; set; }
 
-    public string? Prefix { get; set; }
+    public LocatedString? Prefix { get; set; }
 }

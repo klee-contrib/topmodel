@@ -1,4 +1,5 @@
-﻿using TopModel.Core;
+﻿using System.Collections.Generic;
+using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Utils;
 
@@ -62,28 +63,21 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public string GetEndpointsFileName(ModelFile file, string tag)
     {
-        var fileSplit = file.Name.Split("/");
         var modulePath = Path.Combine(file.Module.Split('.').Select(m => m.ToKebabCase()).ToArray());
         var filePath = ApiClientFilePath.Replace("{module}", modulePath);
-        var fileName = string.Join('_', fileSplit.Last().Split("_").Skip(fileSplit.Last().Contains('_') ? 1 : 0)).ToKebabCase();
-
-        if (file.Options?.Endpoints?.FileName != null)
-        {
-            fileName = file.Options?.Endpoints?.FileName.ToKebabCase();
-        }
-
+        var fileName = file.Options.Endpoints.FileName.ToKebabCase();
         return Path.Combine(OutputDirectory, ApiClientRootPath!.Replace("{tag}", tag.ToKebabCase()), filePath, $"{fileName}.ts").Replace("\\", "/");
     }
 
-    public List<(string Import, string Path)> GetEndpointImports(ModelFile file, string tag, IEnumerable<Class> availableClasses)
+    public List<(string Import, string Path)> GetEndpointImports(IEnumerable<ModelFile> files, string tag, IEnumerable<Class> availableClasses)
     {
-        return file.Endpoints.SelectMany(e => e.ClassDependencies)
+        return files.SelectMany(f => f.Endpoints.SelectMany(e => e.ClassDependencies))
             .Select(dep => (
                 Import: dep is { Source: IFieldProperty fp }
                     ? fp.GetPropertyTypeName().Replace("[]", string.Empty)
                     : dep.Classe.Name,
                 Path: GetImportPathForClass(dep, tag, availableClasses)!))
-            .Concat(file.Endpoints.SelectMany(d => d.DomainDependencies).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
+            .Concat(files.SelectMany(f => f.Endpoints.SelectMany(d => d.DomainDependencies)).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(i => i.Path != null)
             .GroupAndSort();
     }
