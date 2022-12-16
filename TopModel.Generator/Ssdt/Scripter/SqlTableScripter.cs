@@ -153,18 +153,6 @@ public class SqlTableScripter : ISqlScripter<Class>
         {
             sb.Append(" not null");
         }
-
-        if (property is { Domain: var domain, DefaultValue: var dv } && !string.IsNullOrWhiteSpace(dv))
-        {
-            if (domain.ShouldQuoteSqlValue)
-            {
-                sb.Append($" default '{dv}'");
-            }
-            else
-            {
-                sb.Append($" default {dv}");
-            }
-        }
     }
 
     /// <summary>

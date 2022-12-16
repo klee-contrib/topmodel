@@ -206,11 +206,11 @@ namespace {apiPath.Replace("/", ".")}
             }
         }
 
-        sb.Append($@"{_config.GetPropertyTypeName(param, param.IsRouteParam())} {param.GetParamName().Verbatim()}");
+        sb.Append($@"{_config.GetPropertyTypeName(param, param.IsRouteParam() || param.IsQueryParam() && !hasForm && _config.GetDefaultValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
 
         if (param.IsQueryParam() && !hasForm)
         {
-            sb.Append(" = null");
+            sb.Append($" = {_config.GetDefaultValue(param, Classes)}");
         }
 
         return sb.ToString();

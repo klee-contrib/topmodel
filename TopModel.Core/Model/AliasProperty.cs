@@ -5,6 +5,7 @@ namespace TopModel.Core;
 public class AliasProperty : IFieldProperty
 {
     private string? _comment;
+    private string? _defaultValue;
     private string? _label;
     private Domain? _listDomain;
     private bool? _required;
@@ -64,7 +65,11 @@ public class AliasProperty : IFieldProperty
         set => _comment = value;
     }
 
-    public string? DefaultValue => null;
+    public string? DefaultValue
+    {
+        get => _defaultValue ?? _property?.DefaultValue;
+        set => _defaultValue = value;
+    }
 
     public Domain? ListDomain
     {
@@ -101,6 +106,7 @@ public class AliasProperty : IFieldProperty
             Class = classe,
             Comment = _comment!,
             Decorator = Decorator,
+            DefaultValue = _defaultValue,
             Endpoint = endpoint,
             Label = _label,
             Location = Location,
@@ -134,6 +140,7 @@ public class AliasProperty : IFieldProperty
             Prefix = Prefix,
             Suffix = Suffix,
             Comment = _comment!,
+            DefaultValue = _defaultValue,
             Label = _label,
             ListDomain = _listDomain,
             ListDomainReference = ListDomainReference,

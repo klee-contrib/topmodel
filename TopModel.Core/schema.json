@@ -62,7 +62,7 @@
                 "number",
                 "boolean"
               ],
-              "description": "Valeur par défaut de la propriété, dans la base de données."
+              "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
             }
           }
         },
@@ -107,7 +107,7 @@
                 "number",
                 "boolean"
               ],
-              "description": "Valeur par défaut de la propriété, dans la base de données."
+              "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
             },
             "comment": {
               "type": "string",
@@ -262,6 +262,14 @@
             "asListWithDomain": {
               "type": "string",
               "description": "Crée un array pour la propriété aliasée, avec le domaine donné. Le type du champ sera un array du type de la propriété, indépendemment du type spécifié dans le domaine."
+            },
+            "defaultValue": {
+              "type": [
+                "string",
+                "number",
+                "boolean"
+              ],
+              "description": "Surcharge la valeur par défaut de la propriété."
             }
           }
         },
