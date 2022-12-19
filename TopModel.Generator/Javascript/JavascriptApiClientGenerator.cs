@@ -31,13 +31,13 @@ public class JavascriptApiClientGenerator : GeneratorBase
     {
         foreach (var file in files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }))
         {
-            GenerateClientFile(file.First());
+            GenerateClientFile(file.First(), file.SelectMany(f => f.Tags).Distinct());
         }
     }
 
-    private void GenerateClientFile(ModelFile file)
+    private void GenerateClientFile(ModelFile file, IEnumerable<string> tags)
     {
-        foreach (var (tag, fileName) in _config.Tags.Intersect(file.Tags)
+        foreach (var (tag, fileName) in _config.Tags.Intersect(tags)
            .Select(tag => (tag, fileName: _config.GetEndpointsFileName(file, tag)))
            .DistinctBy(t => t.fileName))
         {

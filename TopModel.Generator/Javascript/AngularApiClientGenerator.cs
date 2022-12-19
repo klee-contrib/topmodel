@@ -29,17 +29,17 @@ public class AngularApiClientGenerator : GeneratorBase
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in files)
+        foreach (var file in files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }))
         {
-            GenerateClientFile(file);
+            GenerateClientFile(file.First(), file.SelectMany(f => f.Tags).Distinct());
         }
     }
 
-    private void GenerateClientFile(ModelFile file)
+    private void GenerateClientFile(ModelFile file, IEnumerable<string> tags)
     {
-        foreach (var (tag, fileName) in _config.Tags.Intersect(file.Tags)
-            .Select(tag => (tag, fileName: _config.GetEndpointsFileName(file, tag)))
-            .DistinctBy(t => t.fileName))
+        foreach (var (tag, fileName) in _config.Tags.Intersect(tags)
+           .Select(tag => (tag, fileName: _config.GetEndpointsFileName(file, tag)))
+           .DistinctBy(t => t.fileName))
         {
             var files = Files.Values.Where(f => f.Options.Endpoints.FileName == file.Options.Endpoints.FileName && f.Module == file.Module && f.Tags.Contains(tag));
 
