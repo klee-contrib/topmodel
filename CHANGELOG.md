@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+
+## 1.19.7
+
+- [`d46d76f2`](https://github.com/klee-contrib/topmodel/commit/d46d76f2b37a55677889a67842c2c056390e4eb9) - Fix nom de fichier endpoints préfixés par un XX_
+
 ## 1.19.6
 
 - [`6e832101`](https://github.com/klee-contrib/topmodel/commit/6e832101eccfca44e512d82ccb4f12bd386e799a) - Fix génération client d'API JS en multi fichiers/multi tags
