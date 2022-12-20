@@ -228,7 +228,11 @@ public class ModelFileLoader
             endpoint.Namespace = ns;
         }
 
-        file.Options.Endpoints.FileName ??= file.Name.Split('/').Last();
+        if (file.Options.Endpoints.FileName == null)
+        {
+            var fileSplit = file.Name.Split("/").Last();
+            file.Options.Endpoints.FileName = string.Join('_', fileSplit.Split("_").Skip(fileSplit.Contains('_') ? 1 : 0));
+        }
 
         return file;
     }
