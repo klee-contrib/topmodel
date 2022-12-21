@@ -57,11 +57,6 @@
               "description": "Description de la propriété."
             },
             "defaultValue": {
-              "type": [
-                "string",
-                "number",
-                "boolean"
-              ],
               "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
             }
           }
@@ -102,11 +97,6 @@
               "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."
             },
             "defaultValue": {
-              "type": [
-                "string",
-                "number",
-                "boolean"
-              ],
               "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
             },
             "comment": {
@@ -264,11 +254,6 @@
               "description": "Crée un array pour la propriété aliasée, avec le domaine donné. Le type du champ sera un array du type de la propriété, indépendemment du type spécifié dans le domaine."
             },
             "defaultValue": {
-              "type": [
-                "string",
-                "number",
-                "boolean"
-              ],
               "description": "Surcharge la valeur par défaut de la propriété."
             }
           }

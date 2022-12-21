@@ -133,7 +133,7 @@ public class CSharpConfig : GeneratorConfigBase
     {
         var fp = property as IFieldProperty;
 
-        if (fp?.DefaultValue == null || fp.DefaultValue == "undefined")
+        if (fp?.DefaultValue == null || fp.DefaultValue == "null" || fp.DefaultValue == "undefined")
         {
             return "null";
         }
