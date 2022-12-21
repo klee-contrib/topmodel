@@ -267,7 +267,7 @@
         },
         {
           "type": "object",
-          "description": "Propriété de composition d'une sous classe ou d'une sous liste de classe. Ne peut être utilisé que dans les modules métier.",
+          "description": "Propriété de composition avec une autre classe.",
           "required": [
             "composition",
             "name",

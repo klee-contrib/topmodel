@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
+using System.Text;
 using NJsonSchema;
+using NJsonSchema.Validation;
 using TopModel.Utils;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
@@ -92,8 +94,33 @@ public class FileChecker
 
             if (errors.Any())
             {
-                throw new ModelException($@"Erreur dans le fichier {fileName.ToRelative()} :
-{string.Join("\r\n", errors.Select(e => $"[{e.LinePosition}]: {e.Kind} - {e.Path}"))}.");
+                var erreur = new StringBuilder();
+                erreur.Append($"Erreur dans le fichier {fileName.ToRelative()} :");
+
+                void HandleErrors(IEnumerable<ValidationError> validationErrors, string indent = "")
+                {
+                    foreach (var e in validationErrors)
+                    {
+                        erreur.Append($"{Environment.NewLine}{indent}[{e.LinePosition}]: {e.Kind} - {e.Path}");
+                        if (e is ChildSchemaValidationError csve)
+                        {
+                            foreach (var schema in csve.Errors)
+                            {
+                                var newIndent = indent + "  ";
+                                if (csve.Errors.Count > 1)
+                                {
+                                    erreur.Append($"{Environment.NewLine}{newIndent}{schema.Key.Description}");
+                                    newIndent += "  ";
+                                }
+
+                                HandleErrors(schema.Value, newIndent);
+                            }
+                        }
+                    }
+                }
+
+                HandleErrors(errors);
+                throw new ModelException(erreur.ToString());
             }
 
             firstObject = false;
