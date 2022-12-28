@@ -39,7 +39,7 @@ public class SpringClientApiGenerator : GeneratorBase
 
     private string GetClassName(string fileName)
     {
-        return $"Abstract{fileName.ToFirstUpper()}Client";
+        return $"Abstract{fileName.ToPascalCase()}Client";
     }
 
     private string GetFileName(string fileName)
