@@ -1,5 +1,8 @@
 # TopModel.Generator (`modgen`)
 
+## 1.19.8
+
+- [`ec88aea2`](https://github.com/klee-contrib/topmodel/commit/ec88aea2bb29faed3faa808d516b2fccf6611cfb) - [JPA] Correction nom classe API client (PascalCase)
 
 ## 1.19.7
 
