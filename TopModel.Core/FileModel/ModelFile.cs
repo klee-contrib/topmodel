@@ -44,12 +44,12 @@ public class ModelFile
         }))
         .Concat(Properties.OfType<AliasProperty>().SelectMany(p => new (Reference, object)[]
         {
-            (p.ClassReference, p.OriginalProperty?.Class),
+            (p.Reference, p.OriginalProperty?.Class),
             (p.PropertyReference, p.OriginalProperty),
             (p.ListDomainReference, p.ListDomain)
         }))
         .Concat(Properties.OfType<AliasProperty>()
-            .SelectMany(p => (p?.ClassReference as AliasReference)?.ExcludeReferences?
+            .SelectMany(p => p?.Reference?.ExcludeReferences?
                 .Select(er => (er, p?.OriginalProperty?.Class?.Properties?.FirstOrDefault(p => p?.Name == er?.ReferenceName) as object))
             ?? new List<(Reference, object)>()))
         .Concat(Classes.SelectMany(c => new[] { c.DefaultPropertyReference, c.OrderPropertyReference, c.FlagPropertyReference }.Select(r => (r, (object)c.Properties.FirstOrDefault(p => p.Name == r?.ReferenceName)))))
@@ -70,7 +70,7 @@ public class ModelFile
             .Contains(use.ReferenceName))
         .ToList();
 
-    internal IList<IProperty> Properties => Classes.Where(c => !ResolvedAliases.Contains(c)).SelectMany(c => c.Properties)
+    public IList<IProperty> Properties => Classes.Where(c => !ResolvedAliases.Contains(c)).SelectMany(c => c.Properties)
         .Concat(Endpoints.Where(e => !ResolvedAliases.Contains(e)).SelectMany(e => e.Params))
         .Concat(Endpoints.Where(e => !ResolvedAliases.Contains(e)).Select(e => e.Returns))
         .Concat(Decorators.SelectMany(e => e.Properties))

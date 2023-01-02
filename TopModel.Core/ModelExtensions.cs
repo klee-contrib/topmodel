@@ -62,7 +62,7 @@ public static class ModelExtensions
                 {
                     AssociationProperty ap => ap.Reference,
                     CompositionProperty cp => cp.Reference,
-                    AliasProperty alp => alp.ClassReference!,
+                    AliasProperty alp => alp.Reference!,
                     _ => null! // Impossible
                 }, File: p.GetFile());
             })
@@ -112,5 +112,36 @@ public static class ModelExtensions
                 Reference: e.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
                 File: e.GetFile())))
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
+    }
+
+    public static IEnumerable<(Reference Reference, ModelFile File)> GetPropertyReferences(this ModelStore modelStore, IProperty property)
+    {
+        return modelStore.GetPropertyReferencesCore(property).Distinct();
+    }
+
+    private static IEnumerable<(Reference Reference, ModelFile File)> GetPropertyReferencesCore(this ModelStore modelStore, IProperty property)
+    {
+        if (property is IFieldProperty fp)
+        {
+            foreach (var alp in modelStore.Files.SelectMany(c => c.Properties).OfType<AliasProperty>())
+            {
+                if (alp.OriginalProperty == fp)
+                {
+                    var reference = alp.PropertyReference ?? alp.Reference;
+                    if (reference != null)
+                    {
+                        yield return (reference, alp.GetFile());
+                    }
+                }
+                else if (alp.OriginalProperty?.Class == fp.Class)
+                {
+                    var excludeReference = alp.OriginalAliasProperty?.Reference?.ExcludeReferences.FirstOrDefault(er => er.ReferenceName == fp.Name);
+                    if (excludeReference != null)
+                    {
+                        yield return (excludeReference, alp.GetFile());
+                    }
+                }
+            }
+        }
     }
 }

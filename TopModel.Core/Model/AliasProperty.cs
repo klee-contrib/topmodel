@@ -79,8 +79,6 @@ public class AliasProperty : IFieldProperty
 
     public IFieldProperty? OriginalProperty => _property;
 
-    public ClassReference? ClassReference { get; set; }
-
     public AliasReference? Reference { get; set; }
 
     public Reference? PropertyReference { get; set; }
@@ -137,7 +135,7 @@ public class AliasProperty : IFieldProperty
         {
             Property = prop,
             Location = Location,
-            ClassReference = Reference,
+            Reference = Reference,
             PropertyReference = includeReference,
             Class = Class,
             Decorator = Decorator,

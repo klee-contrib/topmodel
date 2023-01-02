@@ -160,7 +160,7 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                 break;
 
             case Scalar { Value: "alias" } s:
-                var aliasRelation = new AliasReference();
+                var aliasReference = new AliasReference();
 
                 parser.Consume<Scalar>();
                 parser.Consume<MappingStart>();
@@ -173,20 +173,20 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                     switch (prop)
                     {
                         case "class":
-                            aliasRelation.Start = ((Scalar)next).Start;
-                            aliasRelation.End = ((Scalar)next).End;
-                            aliasRelation.ReferenceName = ((Scalar)next).Value;
+                            aliasReference.Start = ((Scalar)next).Start;
+                            aliasReference.End = ((Scalar)next).End;
+                            aliasReference.ReferenceName = ((Scalar)next).Value;
                             break;
                         case "include" or "property" when next is Scalar pValue:
-                            aliasRelation.AddInclude(pValue);
+                            aliasReference.AddInclude(pValue);
                             break;
                         case "exclude" when next is Scalar eValue:
-                            aliasRelation.AddExclude(eValue);
+                            aliasReference.AddExclude(eValue);
                             break;
                         case "include" or "property" when next is SequenceStart:
                             while (parser.Current is not SequenceEnd)
                             {
-                                aliasRelation.AddInclude(parser.Consume<Scalar>());
+                                aliasReference.AddInclude(parser.Consume<Scalar>());
                             }
 
                             parser.Consume<SequenceEnd>();
@@ -194,7 +194,7 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                         case "exclude" when next is SequenceStart:
                             while (parser.Current is not SequenceEnd)
                             {
-                                aliasRelation.AddExclude(parser.Consume<Scalar>());
+                                aliasReference.AddExclude(parser.Consume<Scalar>());
                             }
 
                             parser.Consume<SequenceEnd>();
@@ -220,10 +220,10 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                     switch (prop)
                     {
                         case "prefix":
-                            alp.Prefix = value.Value == "true" ? aliasRelation.ReferenceName : value.Value == "false" ? null : value.Value;
+                            alp.Prefix = value.Value == "true" ? aliasReference.ReferenceName : value.Value == "false" ? null : value.Value;
                             break;
                         case "suffix":
-                            alp.Suffix = value.Value == "true" ? aliasRelation.ReferenceName : value.Value == "false" ? null : value.Value;
+                            alp.Suffix = value.Value == "true" ? aliasReference.ReferenceName : value.Value == "false" ? null : value.Value;
                             break;
                         case "label":
                             alp.Label = value.Value;
@@ -248,7 +248,7 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                     }
                 }
 
-                alp.Reference = aliasRelation;
+                alp.Reference = aliasReference;
                 yield return alp;
                 break;
 
