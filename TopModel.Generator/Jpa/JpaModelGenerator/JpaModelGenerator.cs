@@ -232,7 +232,7 @@ public class JpaModelGenerator : GeneratorBase
                     .Select(prop =>
                     {
                         var isString = ((IFieldProperty)prop).GetJavaType() == "String";
-                        var fix = isString ? "\"" : string.Empty;
+                        var quote = isString ? "\"" : string.Empty;
                         var value = refValue.Value.ContainsKey((IFieldProperty)prop) ? refValue.Value[(IFieldProperty)prop] : "null";
                         if (prop is AssociationProperty ap && ap.IsEnum() && ap.Association.ReferenceValues.Any(r => r.Value.ContainsKey(ap.Association.PrimaryKey) && r.Value[ap.Association.PrimaryKey] == value))
                         {
@@ -244,7 +244,7 @@ public class JpaModelGenerator : GeneratorBase
                             value = refValue.ResourceKey;
                         }
 
-                        return fix + value + fix;
+                        return quote + value + quote;
                     }));
                 lineToWrite += ")";
                 lineToWrite += i == classe.ReferenceValues.Count ? "; " : ", //";

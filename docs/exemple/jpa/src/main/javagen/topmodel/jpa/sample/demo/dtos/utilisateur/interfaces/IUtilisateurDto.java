@@ -44,6 +44,13 @@ public interface IUtilisateurDto {
 	String getEmail();
 
 	/**
+	 * Getter for nom.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#nom nom}.
+	 */
+	String getNom();
+
+	/**
 	 * Getter for typeUtilisateurCode.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#typeUtilisateurCode typeUtilisateurCode}.

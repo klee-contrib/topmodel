@@ -65,8 +65,28 @@ public class JpaModelPropertyGenerator
                 WriteOneToOne(fw, classe, property);
                 break;
         }
+        var defaultValue = string.Empty;
+        if (!(property.DefaultValue == null || property.DefaultValue == "null" || property.DefaultValue == "undefined"))
+        {
+            defaultValue += " = ";
+            var quote = string.Empty;
+            if (property.GetJavaType() == "String")
+            {
+                quote = @"""";
+            }
 
-        fw.WriteLine(1, $"private {property.GetJavaType()} {property.GetAssociationName()};");
+            if (property is AssociationProperty ap && ap.IsEnum() && ap.Association.ReferenceValues.Any(r => r.Value.ContainsKey(ap.Association.PrimaryKey) && r.Value[ap.Association.PrimaryKey] == property.DefaultValue))
+            {
+                defaultValue += ap.Association.Name + ".Values." + property.DefaultValue;
+            }
+            else
+            {
+                defaultValue += quote + property.DefaultValue + quote;
+            }
+
+        }
+
+        fw.WriteLine(1, $"private {property.GetJavaType()} {property.GetAssociationName()}{defaultValue};");
     }
 
     private void WriteManyToOne(JavaWriter fw, Class classe, AssociationProperty property)
@@ -205,7 +225,19 @@ public class JpaModelPropertyGenerator
                 fw.WriteLine(1, $"{(annotation.Text.StartsWith("@") ? string.Empty : '@')}{annotation.Text.ParseTemplate(property)}");
             }
         }
+        var defaultValue = string.Empty;
+        if (!(property.DefaultValue == null || property.DefaultValue == "null" || property.DefaultValue == "undefined"))
+        {
+            defaultValue += " = ";
+            var quote = string.Empty;
+            if (property.GetJavaType() == "String")
+            {
+                quote = @"""";
+            }
 
-        fw.WriteLine(1, $"private {property.GetJavaType()} {property.GetJavaName()};");
+            defaultValue += quote + property.DefaultValue + quote;
+        }
+
+        fw.WriteLine(1, $"private {property.GetJavaType()} {property.GetJavaName()}{defaultValue};");
     }
 }

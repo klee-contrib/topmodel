@@ -119,12 +119,13 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param age Age en années de l'utilisateur
 	 * @param profilId Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
+	 * @param nom Nom de l'utilisateur
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder searchUriComponentsBuilder(Long utilisateurId, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, LocalDate dateCreation, LocalDateTime dateModification) {
+	protected UriComponentsBuilder searchUriComponentsBuilder(Long utilisateurId, Long age, Long profilId, String email, String nom, TypeUtilisateur.Values typeUtilisateurCode, LocalDate dateCreation, LocalDateTime dateModification) {
 		String uri = host + "/utilisateur/search";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("utilisateurId", utilisateurId);
@@ -138,6 +139,10 @@ public abstract class AbstractUtilisateurApiClient {
 
 		if (email != null) {
 			uriBuilder.queryParam("email", email);
+		}
+
+		if (nom != null) {
+			uriBuilder.queryParam("nom", nom);
 		}
 
 		if (typeUtilisateurCode != null) {
@@ -161,14 +166,15 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param age Age en années de l'utilisateur
 	 * @param profilId Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
+	 * @param nom Nom de l'utilisateur
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<Page> search(Long utilisateurId, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, LocalDate dateCreation, LocalDateTime dateModification){
+	public ResponseEntity<Page> search(Long utilisateurId, Long age, Long profilId, String email, String nom, TypeUtilisateur.Values typeUtilisateurCode, LocalDate dateCreation, LocalDateTime dateModification){
 		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utilisateurId, age, profilId, email, typeUtilisateurCode, dateCreation, dateModification);
+		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utilisateurId, age, profilId, email, nom, typeUtilisateurCode, dateCreation, dateModification);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), Page.class);
 	}
 }

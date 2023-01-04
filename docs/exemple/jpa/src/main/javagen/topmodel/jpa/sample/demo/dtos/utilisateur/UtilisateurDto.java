@@ -33,7 +33,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * Age en années de l'utilisateur.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getAge() Utilisateur#getAge()} 
 	 */
-	private Long age;
+	private Long age = 6;
 
 	/**
 	 * Profil de l'utilisateur.
@@ -49,10 +49,16 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	private String email;
 
 	/**
+	 * Nom de l'utilisateur.
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getNom() Utilisateur#getNom()} 
+	 */
+	private String nom = "Jabx";
+
+	/**
 	 * Type d'utilisateur en Many to one.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()} 
 	 */
-	private TypeUtilisateur.Values typeUtilisateurCode;
+	private TypeUtilisateur.Values typeUtilisateurCode = ADM;
 
 	/**
 	 * Date de création de l'utilisateur.
@@ -90,6 +96,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 		this.age = utilisateurDto.getAge();
 		this.profilId = utilisateurDto.getProfilId();
 		this.email = utilisateurDto.getEmail();
+		this.nom = utilisateurDto.getNom();
 		this.typeUtilisateurCode = utilisateurDto.getTypeUtilisateurCode();
 		this.dateCreation = utilisateurDto.getDateCreation();
 		this.dateModification = utilisateurDto.getDateModification();
@@ -103,16 +110,18 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * @param age Age en années de l'utilisateur
 	 * @param profilId Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
+	 * @param nom Nom de l'utilisateur
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur
 	 * @param utilisateurParent UtilisateurParent
 	 */
-	public UtilisateurDto(Long id, Long age, Long profilId, String email, TypeUtilisateur.Values typeUtilisateurCode, LocalDate dateCreation, LocalDateTime dateModification, UtilisateurDto utilisateurParent) {
+	public UtilisateurDto(Long id, Long age, Long profilId, String email, String nom, TypeUtilisateur.Values typeUtilisateurCode, LocalDate dateCreation, LocalDateTime dateModification, UtilisateurDto utilisateurParent) {
 		this.id = id;
 		this.age = age;
 		this.profilId = profilId;
 		this.email = email;
+		this.nom = nom;
 		this.typeUtilisateurCode = typeUtilisateurCode;
 		this.dateCreation = dateCreation;
 		this.dateModification = dateModification;
@@ -143,6 +152,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 			}
 
 			this.email = utilisateur.getEmail();
+			this.nom = utilisateur.getNom();
 			this.setTypeUtilisateurCode(utilisateur.getTypeUtilisateurCode());
 			this.dateCreation = utilisateur.getDateCreation();
 			this.dateModification = utilisateur.getDateModification();
@@ -189,6 +199,16 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	@Override
 	public String getEmail() {
 		return this.email;
+	}
+
+	/**
+	 * Getter for nom.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#nom nom}.
+	 */
+	@Override
+	public String getNom() {
+		return this.nom;
 	}
 
 	/**
@@ -264,6 +284,14 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#nom nom}.
+	 * @param nom value to set
+	 */
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	/**
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#typeUtilisateurCode typeUtilisateurCode}.
 	 * @param typeUtilisateurCode value to set
 	 */
@@ -312,6 +340,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 		dest.setId(this.getId());
 		dest.setAge(this.getAge());
 		dest.setEmail(this.getEmail());
+		dest.setNom(this.getNom());
 		dest.setTypeUtilisateurCode(this.getTypeUtilisateurCode());
 		dest.setDateCreation(this.getDateCreation());
 		dest.setDateModification(this.getDateModification());

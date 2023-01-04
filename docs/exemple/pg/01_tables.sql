@@ -76,6 +76,7 @@ create table UTILISATEUR (
 	AGE numeric(20, 9),
 	PRO_ID int8,
 	EMAIL varchar(50),
+	NOM varchar(3),
 	TUT_CODE varchar(3),
 	ID_PARENT int8,
 	DATE_CREATION date,

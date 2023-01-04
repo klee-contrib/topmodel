@@ -51,7 +51,7 @@ public class Utilisateur {
 	 * Age en années de l'utilisateur.
 	 */
 	@Column(name = "AGE", nullable = true, precision = 20, scale = 9)
-	private Long age;
+	private Long age = 6;
 
 	/**
 	 * Profil de l'utilisateur.
@@ -67,11 +67,17 @@ public class Utilisateur {
 	private String email;
 
 	/**
+	 * Nom de l'utilisateur.
+	 */
+	@Column(name = "NOM", nullable = true, length = 3)
+	private String nom = "Jabx";
+
+	/**
 	 * Type d'utilisateur en Many to one.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeUtilisateur.class)
 	@JoinColumn(name = "TUT_CODE", referencedColumnName = "TUT_CODE")
-	private TypeUtilisateur typeUtilisateur;
+	private TypeUtilisateur typeUtilisateur = TypeUtilisateur.Values.ADM;
 
 	/**
 	 * Utilisateur parent.
@@ -113,6 +119,7 @@ public class Utilisateur {
 		this.age = utilisateur.getAge();
 		this.profil = utilisateur.getProfil();
 		this.email = utilisateur.getEmail();
+		this.nom = utilisateur.getNom();
 		this.utilisateurParent = utilisateur.getUtilisateurParent();
 		this.dateCreation = utilisateur.getDateCreation();
 		this.dateModification = utilisateur.getDateModification();
@@ -126,16 +133,18 @@ public class Utilisateur {
 	 * @param age Age en années de l'utilisateur
 	 * @param profil Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
+	 * @param nom Nom de l'utilisateur
 	 * @param typeUtilisateur Type d'utilisateur en Many to one
 	 * @param utilisateurParent Utilisateur parent
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur
 	 */
-	public Utilisateur(Long id, Long age, Profil profil, String email, TypeUtilisateur typeUtilisateur, Utilisateur utilisateurParent, LocalDate dateCreation, LocalDateTime dateModification) {
+	public Utilisateur(Long id, Long age, Profil profil, String email, String nom, TypeUtilisateur typeUtilisateur, Utilisateur utilisateurParent, LocalDate dateCreation, LocalDateTime dateModification) {
 		this.id = id;
 		this.age = age;
 		this.profil = profil;
 		this.email = email;
+		this.nom = nom;
 		this.typeUtilisateur = typeUtilisateur;
 		this.utilisateurParent = utilisateurParent;
 		this.dateCreation = dateCreation;
@@ -148,16 +157,18 @@ public class Utilisateur {
 	 * @param age Age en années de l'utilisateur
 	 * @param profil Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
+	 * @param nom Nom de l'utilisateur
 	 * @param typeUtilisateur Type d'utilisateur en Many to one
 	 * @param utilisateurParent Utilisateur parent
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur
 	 */
-	public Utilisateur(Long id, Long age, Profil profil, String email, TypeUtilisateur.Values typeUtilisateurCode, Utilisateur utilisateurParent, LocalDate dateCreation, LocalDateTime dateModification) {
+	public Utilisateur(Long id, Long age, Profil profil, String email, String nom, TypeUtilisateur.Values typeUtilisateurCode, Utilisateur utilisateurParent, LocalDate dateCreation, LocalDateTime dateModification) {
 		this.id = id;
 		this.age = age;
 		this.profil = profil;
 		this.email = email;
+		this.nom = nom;
 		this.setTypeUtilisateurCode(typeUtilisateurCode);
 		this.utilisateurParent = utilisateurParent;
 		this.dateCreation = dateCreation;
@@ -198,6 +209,15 @@ public class Utilisateur {
 	 */
 	public String getEmail() {
 		return this.email;
+	}
+
+	/**
+	 * Getter for nom.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#nom nom}.
+	 */
+	public String getNom() {
+		return this.nom;
 	}
 
 	/**
@@ -269,6 +289,14 @@ public class Utilisateur {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#nom nom}.
+	 * @param nom value to set
+	 */
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	/**
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#typeUtilisateur typeUtilisateur}.
 	 * @param typeUtilisateur value to set
 	 */
@@ -332,6 +360,7 @@ public class Utilisateur {
         AGE(Long.class), //
         PROFIL(Profil.class), //
         EMAIL(String.class), //
+        NOM(String.class), //
         TYPE_UTILISATEUR(TypeUtilisateur.class), //
         UTILISATEUR_PARENT(Utilisateur.class), //
         DATE_CREATION(LocalDate.class), //

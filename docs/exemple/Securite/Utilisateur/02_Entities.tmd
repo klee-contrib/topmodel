@@ -25,15 +25,21 @@ class:
       required: false
       domain: DO_NUMBER
       comment: Age en années de l'utilisateur
+      defaultValue: 6
     - association: Profil
       comment: Profil de l'utilisateur
       type: manyToOne
     - name: email
       comment: Email de l'utilisateur
       domain: DO_EMAIL
+    - name: Nom
+      comment: Nom de l'utilisateur
+      domain: DO_LIBELLE
+      defaultValue: Jabx
     - association: TypeUtilisateur
       comment: Type d'utilisateur en Many to one
       type: manyToOne
+      defaultValue: ADM
     - association: Utilisateur
       comment: Utilisateur parent
       role: Parent

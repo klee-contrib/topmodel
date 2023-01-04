@@ -59,11 +59,12 @@ public interface UtilisateurApiController {
 	 * @param age Age en années de l'utilisateur
 	 * @param profilId Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
+	 * @param nom Nom de l'utilisateur
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur
 	 * @return Utilisateurs matchant les critères
 	 */
 	@PostMapping(path = "/search")
-	Page<IUtilisateurDto> search(@RequestParam(value = "utilisateurId", required = true) Long utilisateurId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) Long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode, @RequestParam(value = "dateCreation", required = false) LocalDate dateCreation, @RequestParam(value = "dateModification", required = false) LocalDateTime dateModification);
+	Page<IUtilisateurDto> search(@RequestParam(value = "utilisateurId", required = true) Long utilisateurId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) Long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "nom", required = false) String nom, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode, @RequestParam(value = "dateCreation", required = false) LocalDate dateCreation, @RequestParam(value = "dateModification", required = false) LocalDateTime dateModification);
 }

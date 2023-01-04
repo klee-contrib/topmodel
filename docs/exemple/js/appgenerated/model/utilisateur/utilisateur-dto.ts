@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_NUMBER} from "@domains";
+import {DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_LIBELLE, DO_NUMBER} from "@domains";
 
 import {TypeUtilisateurCode} from "./references";
 
@@ -11,6 +11,7 @@ export interface UtilisateurDto {
     age?: number,
     profilId?: number,
     email?: string,
+    nom?: string,
     typeUtilisateurCode?: TypeUtilisateurCode,
     dateCreation?: string,
     dateModification?: string,
@@ -30,6 +31,7 @@ export const UtilisateurDtoEntity = {
         name: "age",
         domain: DO_NUMBER,
         isRequired: false,
+        defaultValue: 6,
         label: "utilisateur.utilisateur.age"
     },
     profilId: {
@@ -46,11 +48,20 @@ export const UtilisateurDtoEntity = {
         isRequired: false,
         label: "utilisateur.utilisateur.email"
     },
+    nom: {
+        type: "field",
+        name: "nom",
+        domain: DO_LIBELLE,
+        isRequired: false,
+        defaultValue: "Jabx",
+        label: "utilisateur.utilisateur.nom"
+    },
     typeUtilisateurCode: {
         type: "field",
         name: "typeUtilisateurCode",
         domain: DO_CODE,
         isRequired: false,
+        defaultValue: "ADM",
         label: "utilisateur.utilisateur.typeUtilisateurCode"
     },
     dateCreation: {
