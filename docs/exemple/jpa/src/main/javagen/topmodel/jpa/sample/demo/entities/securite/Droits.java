@@ -18,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * Droits de l'application.
@@ -67,7 +68,8 @@ public class Droits {
 
 		this.code = droits.getCode();
 		this.libelle = droits.getLibelle();
-		this.typeProfil = droits.getTypeProfil();
+
+		this.setTypeProfilCode(droits.getTypeProfilCode());
 	}
 
 	/**
@@ -80,6 +82,18 @@ public class Droits {
 		this.code = code;
 		this.libelle = libelle;
 		this.typeProfil = typeProfil;
+	}
+
+	/**
+	 * All arg constructor when Enum shortcut mode is set.
+	 * @param code Code du droit
+	 * @param libelle Libellé du droit
+	 * @param typeProfil Type de profil pouvant faire l'action
+	 */
+	public Droits(Droits.Values code, String libelle, TypeProfil.Values typeProfilCode) {
+		this.code = code;
+		this.libelle = libelle;
+		this.setTypeProfilCode(typeProfilCode);
 	}
 
 	/**
@@ -126,11 +140,27 @@ public class Droits {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Droits#typeProfil typeProfil}.
-	 * @param typeProfil value to set
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Droits#typeProfilCode typeProfilCode}.
+	 * Cette méthode permet définir la valeur de la FK directement
+	 * @param typeProfilCode value to set
 	 */
-	public void setTypeProfil(TypeProfil typeProfil) {
-		this.typeProfil = typeProfil;
+	public void setTypeProfilCode(TypeProfil.Values typeProfilCode) {
+		if (typeProfilCode != null) {
+			this.typeProfil = new TypeProfil(typeProfilCode, typeProfilCode.getLibelle());
+		} else {
+			this.typeProfil = null;
+		}
+	}
+
+	/**
+	 * Getter for typeProfilCode.
+	 * Cette méthode permet de manipuler directement la foreign key de la liste de référence
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Droits#typeProfil typeProfil}.
+	 */
+	@Transient
+	public TypeProfil.Values getTypeProfilCode() {
+		return this.typeProfil != null ? this.typeProfil.getCode() : null;
 	}
 
 	/**

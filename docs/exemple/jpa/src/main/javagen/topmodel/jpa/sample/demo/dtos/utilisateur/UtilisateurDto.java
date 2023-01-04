@@ -94,6 +94,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 		this.dateCreation = utilisateurDto.getDateCreation();
 		this.dateModification = utilisateurDto.getDateModification();
 		this.utilisateurParent = utilisateurDto.getUtilisateurParent();
+
 	}
 
 	/**
@@ -134,7 +135,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 */
 	protected void from(Utilisateur utilisateur) {
 		if (utilisateur != null) {
-			this.utilisateurParent = utilisateur.getUtilisateurParent() != null ? null : new UtilisateurDto(utilisateur.getUtilisateurParent());
+			this.utilisateurParent = utilisateur.getUtilisateurParent() == null ? null : new UtilisateurDto(utilisateur.getUtilisateurParent());
 			this.id = utilisateur.getId();
 			this.age = utilisateur.getAge();
 			if (utilisateur.getProfil() != null) {
@@ -142,10 +143,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 			}
 
 			this.email = utilisateur.getEmail();
-			if (utilisateur.getTypeUtilisateur() != null) {
-				this.typeUtilisateurCode = utilisateur.getTypeUtilisateur().getCode();
-			}
-
+			this.setTypeUtilisateurCode(utilisateur.getTypeUtilisateurCode());
 			this.dateCreation = utilisateur.getDateCreation();
 			this.dateModification = utilisateur.getDateModification();
 		} else {
@@ -314,6 +312,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 		dest.setId(this.getId());
 		dest.setAge(this.getAge());
 		dest.setEmail(this.getEmail());
+		dest.setTypeUtilisateurCode(this.getTypeUtilisateurCode());
 		dest.setDateCreation(this.getDateCreation());
 		dest.setDateModification(this.getDateModification());
 

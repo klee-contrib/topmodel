@@ -9,7 +9,7 @@ import {DroitsCode, TypeProfilCode} from "./references";
 
 export interface ProfilDto {
     id?: number,
-    typeProfilCode?: TypeProfilCode,
+    typeProfils?: TypeProfilCode[],
     droits?: DroitsCode[],
     secteurs?: number[],
     utilisateurs?: UtilisateurDto[]
@@ -23,12 +23,12 @@ export const ProfilDtoEntity = {
         isRequired: false,
         label: "securite.profil.id"
     },
-    typeProfilCode: {
+    typeProfils: {
         type: "field",
-        name: "typeProfilCode",
+        name: "typeProfils",
         domain: DO_CODE,
         isRequired: false,
-        label: "securite.profil.typeProfilCode"
+        label: "securite.profil.typeProfils"
     },
     droits: {
         type: "field",

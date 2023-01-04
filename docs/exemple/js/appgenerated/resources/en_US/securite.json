@@ -13,7 +13,7 @@
         "droits": "Rights",
         "id": "Technical id of profile",
         "secteurs": "Secteurs",
-        "typeProfilCode": "Profile"
+        "typeProfils": "Profil"
     },
     "typeProfil": {
         "code": "Profile",

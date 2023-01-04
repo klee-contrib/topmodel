@@ -57,6 +57,7 @@ public class TypeProfil {
 
 		this.code = typeProfil.getCode();
 		this.libelle = typeProfil.getLibelle();
+
 	}
 
 	/**

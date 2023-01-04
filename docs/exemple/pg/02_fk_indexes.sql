@@ -56,22 +56,6 @@ alter table DROITS
 ;
 
 /**
-  * Création de l'index de clef étrangère pour PROFIL.TPR_CODE
- **/
-create index IDX_PROFIL_TPR_CODE_FK on PROFIL (
-	TPR_CODE ASC
-)
-;
-
-/**
-  * Génération de la contrainte de clef étrangère pour PROFIL.TPR_CODE
- **/
-alter table PROFIL
-	add constraint FK_PROFIL_TPR_CODE foreign key (TPR_CODE)
-		references TYPE_PROFIL (TPR_CODE)
-;
-
-/**
   * Création de l'index de clef étrangère pour SECTEUR.PRO_ID
  **/
 create index IDX_SEC_PRO_ID_FK on SECTEUR (
@@ -84,6 +68,22 @@ create index IDX_SEC_PRO_ID_FK on SECTEUR (
  **/
 alter table SECTEUR
 	add constraint FK_SEC_PRO_ID foreign key (PRO_ID)
+		references PROFIL (PRO_ID)
+;
+
+/**
+  * Création de l'index de clef étrangère pour TYPE_PROFIL.PRO_ID
+ **/
+create index IDX_TPR_PRO_ID_FK on TYPE_PROFIL (
+	PRO_ID ASC
+)
+;
+
+/**
+  * Génération de la contrainte de clef étrangère pour TYPE_PROFIL.PRO_ID
+ **/
+alter table TYPE_PROFIL
+	add constraint FK_TPR_PRO_ID foreign key (PRO_ID)
 		references PROFIL (PRO_ID)
 ;
 

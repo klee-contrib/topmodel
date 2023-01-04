@@ -55,6 +55,7 @@ public class Secteur {
 
 		this.id = secteur.getId();
 		this.profil = secteur.getProfil();
+
 	}
 
 	/**
