@@ -140,6 +140,14 @@ public class Droits {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Droits#typeProfil typeProfil}.
+	 * @param typeProfil value to set
+	 */
+	public void setTypeProfil(TypeProfil typeProfil) {
+		this.typeProfil = typeProfil;
+	}
+
+	/**
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Droits#typeProfilCode typeProfilCode}.
 	 * Cette méthode permet définir la valeur de la FK directement
 	 * @param typeProfilCode value to set

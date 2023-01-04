@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 1.19.8
+version: 1.19.9
 generatedFiles:
   - ./i18n/de_DE/out/securite_de_DE.properties
   - ./i18n/de_DE/out/utilisateur_de_DE.properties

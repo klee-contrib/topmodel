@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.19.9
+
+- [`bb195e52`](https://github.com/klee-contrib/topmodel/commit/bb195e529d9127e522f1758478452a24938af2b9) - [JPA] EnumShortcut : remettre setter originaux et gestion cas associations multiples
+
 ## 1.19.8
 
 - [`ec88aea2`](https://github.com/klee-contrib/topmodel/commit/ec88aea2bb29faed3faa808d516b2fccf6611cfb) - [JPA] Correction nom classe API client (PascalCase)

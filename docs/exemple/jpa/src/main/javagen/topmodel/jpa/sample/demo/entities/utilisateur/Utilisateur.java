@@ -269,6 +269,14 @@ public class Utilisateur {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#typeUtilisateur typeUtilisateur}.
+	 * @param typeUtilisateur value to set
+	 */
+	public void setTypeUtilisateur(TypeUtilisateur typeUtilisateur) {
+		this.typeUtilisateur = typeUtilisateur;
+	}
+
+	/**
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#utilisateurParent utilisateurParent}.
 	 * @param utilisateurParent value to set
 	 */

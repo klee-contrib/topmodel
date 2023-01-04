@@ -146,6 +146,22 @@ public class Profil {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#typeProfils typeProfils}.
+	 * @param typeProfils value to set
+	 */
+	public void setTypeProfils(List<TypeProfil> typeProfils) {
+		this.typeProfils = typeProfils;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#droits droits}.
+	 * @param droits value to set
+	 */
+	public void setDroits(List<Droits> droits) {
+		this.droits = droits;
+	}
+
+	/**
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#secteurs secteurs}.
 	 * @param secteurs value to set
 	 */
