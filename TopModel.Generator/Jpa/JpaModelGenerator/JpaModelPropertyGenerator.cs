@@ -77,7 +77,7 @@ public class JpaModelPropertyGenerator
 
             if (property is AssociationProperty ap && ap.IsEnum() && ap.Association.ReferenceValues.Any(r => r.Value.ContainsKey(ap.Association.PrimaryKey) && r.Value[ap.Association.PrimaryKey] == property.DefaultValue))
             {
-                defaultValue += ap.Association.Name + ".Values." + property.DefaultValue;
+                defaultValue += ap.Association.Name + ".Values." + property.DefaultValue + ".getEntity()";
             }
             else
             {
@@ -229,13 +229,26 @@ public class JpaModelPropertyGenerator
         if (!(property.DefaultValue == null || property.DefaultValue == "null" || property.DefaultValue == "undefined"))
         {
             defaultValue += " = ";
-            var quote = string.Empty;
-            if (property.GetJavaType() == "String")
+            if (property.IsEnum())
             {
-                quote = @"""";
+                defaultValue += "Values." + property.DefaultValue;
+            }
+            else if (property is AliasProperty aslp && aslp.Property.IsEnum())
+            {
+                defaultValue += aslp.Property.Class.Name + ".Values." + property.DefaultValue;
+
+            }
+            else
+            {
+                var quote = string.Empty;
+                if (property.GetJavaType() == "String")
+                {
+                    quote = @"""";
+                }
+
+                defaultValue += quote + property.DefaultValue + quote;
             }
 
-            defaultValue += quote + property.DefaultValue + quote;
         }
 
         fw.WriteLine(1, $"private {property.GetJavaType()} {property.GetJavaName()}{defaultValue};");

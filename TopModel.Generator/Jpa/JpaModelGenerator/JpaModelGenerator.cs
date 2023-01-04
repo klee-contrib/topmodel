@@ -155,14 +155,7 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteLine(2, $"if ({propertyName} != null) {{");
                 if (!isMultiple)
                 {
-                    var constructorArgs = $"{propertyName}";
-                    foreach (var p in ap.Association.GetProperties(_config, AvailableClasses).Where(pr => !pr.PrimaryKey))
-                    {
-                        var getterPrefix = p.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
-                        constructorArgs += $", {propertyName}.{getterPrefix}{p.GetJavaName().ToFirstUpper()}()";
-                    }
-
-                    fw.WriteLine(3, @$"this.{ap.GetAssociationName()} = new {ap.Association.Name}({constructorArgs});");
+                    fw.WriteLine(3, @$"this.{ap.GetAssociationName()} = {propertyName}.getEntity();");
                 }
                 else
                 {
@@ -306,7 +299,25 @@ public class JpaModelGenerator : GeneratorBase
 
             fw.WriteLine(2, $"}}");
         }
+        fw.WriteLine();
+        fw.WriteDocStart(2, "Méthode permettant de récupérer l'entité correspondant au code");
+        fw.WriteReturns(2, @$"instance de {{@link {classe.GetImport(_config)}}} correspondant au code courant");
+        fw.WriteDocEnd(2);
+        fw.WriteLine(2, $"public {classe.Name} getEntity() {{");
+        var properties = string.Join(", ", classe.GetProperties(_config, AvailableClasses).Where(p => !p.PrimaryKey).Select(prop =>
+        {
+            if (prop is AssociationProperty ap && ap.IsEnum())
+            {
+                return prop.Name.ToString().ToFirstLower();
+            }
+            else
+            {
+                return prop.GetJavaName().ToFirstLower();
+            }
+        }));
 
+        fw.WriteLine(3, $"return new {classe.Name}(this{(classe.GetProperties(_config, AvailableClasses).Count > 1 ? ", " + properties : string.Empty)});");
+        fw.WriteLine(2, $"}}");
         foreach (var prop in classe.GetProperties(_config, AvailableClasses).Where(p => !p.PrimaryKey))
         {
             fw.WriteLine();

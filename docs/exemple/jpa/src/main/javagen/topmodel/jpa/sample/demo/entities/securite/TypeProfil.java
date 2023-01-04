@@ -139,6 +139,15 @@ public class TypeProfil {
 		}
 
 		/**
+		 * Méthode permettant de récupérer l'entité correspondant au code.
+		 *
+		 * @return instance de {@link topmodel.jpa.sample.demo.entities.securite.TypeProfil} correspondant au code courant.
+		 */
+		public TypeProfil getEntity() {
+			return new TypeProfil(this, libelle);
+		}
+
+		/**
 		 * Libellé du type d'utilisateur.
 		 */
 		public String getLibelle(){

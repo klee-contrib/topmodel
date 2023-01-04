@@ -77,7 +77,7 @@ public class Utilisateur {
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeUtilisateur.class)
 	@JoinColumn(name = "TUT_CODE", referencedColumnName = "TUT_CODE")
-	private TypeUtilisateur typeUtilisateur = TypeUtilisateur.Values.ADM;
+	private TypeUtilisateur typeUtilisateur = TypeUtilisateur.Values.ADM.getEntity();
 
 	/**
 	 * Utilisateur parent.
@@ -335,7 +335,7 @@ public class Utilisateur {
 	 */
 	public void setTypeUtilisateurCode(TypeUtilisateur.Values typeUtilisateurCode) {
 		if (typeUtilisateurCode != null) {
-			this.typeUtilisateur = new TypeUtilisateur(typeUtilisateurCode, typeUtilisateurCode.getLibelle());
+			this.typeUtilisateur = typeUtilisateurCode.getEntity();
 		} else {
 			this.typeUtilisateur = null;
 		}

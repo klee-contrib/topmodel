@@ -154,7 +154,7 @@ public class Droits {
 	 */
 	public void setTypeProfilCode(TypeProfil.Values typeProfilCode) {
 		if (typeProfilCode != null) {
-			this.typeProfil = new TypeProfil(typeProfilCode, typeProfilCode.getLibelle());
+			this.typeProfil = typeProfilCode.getEntity();
 		} else {
 			this.typeProfil = null;
 		}
@@ -211,6 +211,15 @@ public class Droits {
 		private Values(String libelle, TypeProfil.Values typeProfilCode) {
 			this.libelle = libelle;
 			this.typeProfilCode = typeProfilCode;
+		}
+
+		/**
+		 * Méthode permettant de récupérer l'entité correspondant au code.
+		 *
+		 * @return instance de {@link topmodel.jpa.sample.demo.entities.securite.Droits} correspondant au code courant.
+		 */
+		public Droits getEntity() {
+			return new Droits(this, libelle, typeProfilCode);
 		}
 
 		/**
