@@ -19,9 +19,6 @@ public class OpenApiSource
     [YamlMember("path")]
     public string? Path { get; set; }
 
-    [YamlMember("login")]
-    public string? Login { get; set; }
-
     [YamlMember("include")]
     public string[]? Include { get; set; }
 

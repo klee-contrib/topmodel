@@ -79,6 +79,10 @@
         "url": "./language-server/schema.config.json"
       },
       {
+        "fileMatch": "tmdgen*.config",
+        "url": "./language-server/schema.tmdgen.config.json"
+      },
+      {
         "fileMatch": "*.tmd",
         "url": "./language-server/schema.json"
       }
@@ -90,7 +94,8 @@
           "tmd"
         ],
         "filenamePatterns": [
-          "topmodel*.config"
+          "topmodel*.config",
+          "tmdgen*.config"
         ]
       }
     ],

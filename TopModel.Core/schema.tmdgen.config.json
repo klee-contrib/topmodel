@@ -1,0 +1,67 @@
+{
+  "$id": "schema.tmdgen.config.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "description": "Fichier de config du générateur de modèle tmdgen",
+  "additionalProperties": false,
+  "properties": {
+    "outputDirectory": {
+      "type": "string",
+      "description": "Répertoire de génération du modèle"
+    },
+    "modelRoot": {
+      "type": "string",
+      "description": "Chemin relatif du répertoire de génération du modèle vis-à-vis du répertoire racine du modèle cible"
+    },
+    "openApi": {
+      "type": "object",
+      "description": "Configuration de la génération de fichiers Topmodel à partir de fichiers au format OpenApi",
+      "properties": {
+        "domains": {
+          "type": "object",
+          "description": "Liste des correspondance entre les types définis dans la spécification openapi et les domaines dans le modèle cible",
+          "additionalProperties": {
+            "type": "string",
+            "description": "Correspondance entre le type défini dans la spécification openapi et les domaines dans le modèle cible"
+          }
+        },
+        "sources": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "description": "Liste des tags à placer dans le fichier de modèle généré",
+            "properties": {
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "Tag à placer dans le fichier de modèle généré"
+                }
+              },
+              "path": {
+                "type": "string",
+                "description": "Chemin relatif du fichier json ou yaml de spécification openapi"
+              },
+              "url": {
+                "type": "string",
+                "description": "Url pour télécharger le fichier json ou yaml de spécification openapi"
+              },
+              "include": {
+                "type": "array",
+                "description": "Liste des tags de la spécification qu'il faut générer dans le modèle cible",
+                "items": {
+                  "type": "string",
+                  "description": "Tag de la spécification qu'il faut générer dans le modèle cible"
+                }
+              },
+              "modelFileName": {
+                "type": "string",
+                "description": "Nom du fichier dans lequel sera déclaré le modèle"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
