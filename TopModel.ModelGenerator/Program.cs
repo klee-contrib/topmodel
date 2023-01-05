@@ -32,6 +32,11 @@ command.Handler = CommandHandler.Create<FileInfo>((configFile) =>
     }
 });
 
+
+var fullVersion = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Version!;
+var version = $"{fullVersion.Major}.{fullVersion.Minor}.{fullVersion.Build}";
+
+Console.WriteLine($"========= ModelGenerator v{version} =========");
 command.Invoke(args);
 
 ModelUtils.CombinePath(dn, config, c => c.OutputDirectory);
@@ -41,18 +46,22 @@ if (config.OpenApi is null)
 {
     return;
 }
-
 using var loggerFactory = LoggerFactory.Create(l => l.AddSimpleConsole(c => c.SingleLine = true));
-var logger = loggerFactory.CreateLogger("open-api");
-
+var logger = loggerFactory.CreateLogger("ModelGenerator");
+var i = 0;
 foreach (var source in config.OpenApi.Sources)
 {
-    if (source.Value.ModelTags.Count == 0) 
+    Console.ForegroundColor = ConsoleColor.Magenta;
+    Console.Write($"#{i++}");
+    Console.ForegroundColor = ConsoleColor.DarkCyan;
+    Console.WriteLine($" OpenApiGen .......@{source.Key}");
+
+    if (source.Value.ModelTags.Count == 0)
     {
         source.Value.ModelTags.Add("OpenApi");
     }
 
-    if (source.Value.EndpointTags.Count == 0) 
+    if (source.Value.EndpointTags.Count == 0)
     {
         source.Value.EndpointTags.Add("OpenApi");
     }
@@ -372,3 +381,6 @@ void WriteProperty(FileWriter sw, KeyValuePair<string, OpenApiSchema> property, 
 
     sw.WriteLine($"    {(noList ? string.Empty : "  ")}comment: {FormatDescription(property.Value.Description ?? property.Key)}");
 }
+
+Console.ForegroundColor = ConsoleColor.DarkGray;
+Console.WriteLine($"Mise à jour terminée avec succès.");
