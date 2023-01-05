@@ -15,7 +15,7 @@
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <ToolCommandName>modgen</ToolCommandName>
     <Version>1.19.9</Version>
-    <Authors>JabX</Authors>
+    <Authors>JabX;gideruette</Authors>
     <Description>Générateur de modèle TopModel.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>

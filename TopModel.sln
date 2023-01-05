@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.LanguageServer", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.Utils", "TopModel.Utils\TopModel.Utils.csproj", "{527A62DB-BD1E-4AB6-89AD-3CD7C21E6253}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.ModelGenerator", "TopModel.ModelGenerator\TopModel.ModelGenerator.csproj", "{23029356-10A1-4691-B6D2-E1C6001932C9}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2EFE61CF-A34D-4926-9CAD-FE6F8A41F623}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -44,6 +46,10 @@ Global
 		{527A62DB-BD1E-4AB6-89AD-3CD7C21E6253}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{527A62DB-BD1E-4AB6-89AD-3CD7C21E6253}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{527A62DB-BD1E-4AB6-89AD-3CD7C21E6253}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23029356-10A1-4691-B6D2-E1C6001932C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23029356-10A1-4691-B6D2-E1C6001932C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23029356-10A1-4691-B6D2-E1C6001932C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23029356-10A1-4691-B6D2-E1C6001932C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
