@@ -106,7 +106,7 @@ async function checkTopModelInsall() {
     await loadlatestVersionVersion();
     let result;
     try {
-        result = await execute('dotnet tool list -g | find /C /I "topmodel"');
+        result = await execute('dotnet tool list -g | find /C /I "topmodel.generator"');
     } catch (error: any) {
         result = "Not Installed";
     }
