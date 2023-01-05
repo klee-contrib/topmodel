@@ -13,9 +13,9 @@
   <PropertyGroup>
     <PackAsTool>true</PackAsTool>
     <PackageOutputPath>./nupkg</PackageOutputPath>
-    <ToolCommandName>modmodgen</ToolCommandName>
+    <ToolCommandName>tmdgen</ToolCommandName>
     <Version>1.0.0</Version>
-    <Authors>JabX</Authors>
+    <Authors>JabX;gideruette</Authors>
     <Description>Générateur de modèle TopModel à partir de sources externes (OpenAPI...).</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>

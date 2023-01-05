@@ -1,7 +1,5 @@
 ﻿using System.CommandLine;
 using System.CommandLine.Invocation;
-using System.Net.Http.Headers;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
@@ -10,18 +8,16 @@ using TopModel.ModelGenerator;
 using TopModel.Utils;
 
 ModelGeneratorConfig config = null!;
-var secrets = new Dictionary<string, string>();
 string dn = null!;
 
 var command = new RootCommand
 {
-    new Argument<FileInfo>("configFile", () => new FileInfo("topmodel.yaml"), "Chemin vers le fichier de config."),
-    new Argument<FileInfo>("secretsFile", () => new FileInfo("topmodel.secrets"), "Chemin vers le fichier de secrets.")
+    new Argument<FileInfo>("configFile", () => new FileInfo("tmdgen.config"), "Chemin vers le fichier de config."),
 };
 
-command.Name = "modmodgen";
+command.Name = "tmdgen";
 
-command.Handler = CommandHandler.Create<FileInfo, FileInfo>((configFile, secretsFile) =>
+command.Handler = CommandHandler.Create<FileInfo>((configFile) =>
 {
     if (!configFile.Exists)
     {
@@ -32,11 +28,6 @@ command.Handler = CommandHandler.Create<FileInfo, FileInfo>((configFile, secrets
     {
         config = new Serializer().Deserialize<ModelGeneratorConfig>(configFile.OpenText().ReadToEnd());
         dn = configFile.DirectoryName!;
-    }
-
-    if (secretsFile.Exists)
-    {
-        secrets = File.ReadAllLines(secretsFile.FullName).ToDictionary(l => l.Split(':')[0], l => l.Split(':')[1]);
     }
 });
 
@@ -55,22 +46,12 @@ var logger = loggerFactory.CreateLogger("open-api");
 
 foreach (var source in config.OpenApi.Sources)
 {
-    var client = new HttpClient();
-
-    if (!string.IsNullOrEmpty(source.Value.Login))
-    {
-        if (!secrets.TryGetValue(source.Value.Login, out var secret))
-        {
-            throw new Exception($"Pas de mot de passe associé au login '{source.Value.Login}'");
-        }
-
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{source.Value.Login}:{secret}")));
-    }
 
     OpenApiDocument model;
     var modelReader = new OpenApiStreamReader();
     if (source.Value.Url != null)
     {
+        using var client = new HttpClient();
         var openApi = await client.GetAsync(source.Value.Url);
         model = modelReader.Read(await openApi.Content.ReadAsStreamAsync(), out var diagnostic);
     }
