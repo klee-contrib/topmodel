@@ -14,7 +14,7 @@
     <PackAsTool>true</PackAsTool>
     <PackageOutputPath>./nupkg</PackageOutputPath>
     <ToolCommandName>tmdgen</ToolCommandName>
-    <Version>1.0.0-rc01</Version>
+    <Version>1.0.0-rc.0</Version>
     <Authors>JabX;gideruette</Authors>
     <Description>Générateur de modèle TopModel à partir de sources externes (OpenAPI...).</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
