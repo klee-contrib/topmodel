@@ -478,18 +478,6 @@ public abstract class AbstractSchemaGenerator
                 writerCrebas.Write(" not null");
             }
 
-            if (property is { Domain: var domain, DefaultValue: var dv } && !string.IsNullOrWhiteSpace(dv))
-            {
-                if (domain.ShouldQuoteSqlValue)
-                {
-                    writerCrebas.Write($" default '{dv}'");
-                }
-                else
-                {
-                    writerCrebas.Write($" default {dv}");
-                }
-            }
-
             writerCrebas.Write(",");
             writerCrebas.WriteLine();
 

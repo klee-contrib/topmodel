@@ -140,6 +140,15 @@ public class TypeUtilisateur {
 		}
 
 		/**
+		 * Méthode permettant de récupérer l'entité correspondant au code.
+		 *
+		 * @return instance de {@link topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur} correspondant au code courant.
+		 */
+		public TypeUtilisateur getEntity() {
+			return new TypeUtilisateur(this, libelle);
+		}
+
+		/**
 		 * Libellé du type d'utilisateur.
 		 */
 		public String getLibelle(){

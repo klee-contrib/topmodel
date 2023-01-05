@@ -240,6 +240,9 @@ public class PropertyLoader
                         case "trigram":
                             alp.Trigram = new LocatedString(value);
                             break;
+                        case "defaultValue":
+                            alp.DefaultValue = value.Value;
+                            break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                     }

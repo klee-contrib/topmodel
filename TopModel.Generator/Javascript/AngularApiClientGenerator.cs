@@ -122,7 +122,8 @@ public class AngularApiClientGenerator : GeneratorBase
         foreach (var param in endpoint.Params)
         {
             hasProperty = true;
-            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm ? "?" : string.Empty)}: {param.GetPropertyTypeName(Classes)} ");
+            var defaultValue = _config.GetDefaultValue(param);
+            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {param.GetPropertyTypeName(Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, ");
         }
 
         string returnType;

@@ -527,11 +527,6 @@ public class CSharpClassGenerator : GeneratorBase
             {
                 w.WriteAttribute(2, annotation);
             }
-
-            if (fp.DefaultValue != null)
-            {
-                w.WriteAttribute(2, "DatabaseGenerated", "DatabaseGeneratedOption.Identity");
-            }
         }
         else
         {
@@ -543,7 +538,9 @@ public class CSharpClassGenerator : GeneratorBase
             w.WriteAttribute(2, "Key");
         }
 
-        w.WriteLine(2, $"public {type} {property.Name} {{ get; set; }}");
+        var defaultValue = _config.GetDefaultValue(property, Classes);
+
+        w.WriteLine(2, $"public {type} {property.Name} {{ get; set; }}{(defaultValue != "null" ? $" = {defaultValue};" : string.Empty)}");
     }
 
     /// <summary>

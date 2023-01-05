@@ -11,6 +11,7 @@
     "utilisateur": {
         "age": "Age",
         "id": "Id technique",
+        "nom": "Nom",
         "profilId": "ProfilId",
         "typeUtilisateurCode": "TypeUtilisateurCode",
         "dateCreation": "dateCreation",

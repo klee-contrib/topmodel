@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TopModel.Core;
+﻿using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Utils;
 
@@ -59,6 +58,28 @@ public class JavascriptConfig : GeneratorConfigBase
     {
         var rootPath = Path.Combine(OutputDirectory, ModelRootPath!.Replace("{tag}", tag.ToKebabCase())).Replace("\\", "/");
         return $"{rootPath}/{string.Join('/', classe.Namespace.Module.Split('.').Select(m => m.ToKebabCase()))}/{classe.Name.ToDashCase()}.ts";
+    }
+
+    /// <summary>
+    /// Récupère la valeur par défaut d'une propriété en JS.
+    /// </summary>
+    /// <param name="property">La propriété.</param>
+    /// <returns>La valeur par défaut.</returns>
+    public string GetDefaultValue(IProperty property)
+    {
+        var fp = property as IFieldProperty;
+
+        if (fp?.DefaultValue == null || fp.DefaultValue == "null" || fp.DefaultValue == "undefined")
+        {
+            return "undefined";
+        }
+
+        if (fp.Domain?.TS?.Type == "string")
+        {
+            return $@"""{fp.DefaultValue}""";
+        }
+
+        return fp.DefaultValue;
     }
 
     public string GetEndpointsFileName(ModelFile file, string tag)

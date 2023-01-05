@@ -222,11 +222,11 @@ public class CSharpApiClientGenerator : GeneratorBase
 
             foreach (var param in endpoint.Params)
             {
-                fw.Write($"{_config.GetPropertyTypeName(param, param.IsRouteParam())} {param.GetParamName().Verbatim()}");
+                fw.Write($"{_config.GetPropertyTypeName(param, param.IsRouteParam() || param.IsQueryParam() && _config.GetDefaultValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
 
                 if (param.IsQueryParam())
                 {
-                    fw.Write(" = null");
+                    fw.Write($" = {_config.GetDefaultValue(param, Classes)}");
                 }
 
                 if (endpoint.Params.Last() != param)
