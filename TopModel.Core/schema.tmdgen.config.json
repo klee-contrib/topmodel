@@ -18,24 +18,67 @@
       "description": "Configuration de la génération de fichiers Topmodel à partir de fichiers au format OpenApi",
       "properties": {
         "domains": {
-          "type": "object",
+          "type": "array",
           "description": "Liste des correspondance entre les types définis dans la spécification openapi et les domaines dans le modèle cible",
-          "additionalProperties": {
-            "type": "string",
-            "description": "Correspondance entre le type défini dans la spécification openapi et les domaines dans le modèle cible"
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "description": "Correspondance entre le nom défini dans la spécification openapi et un modèle dans le modèle cible",
+                "required": [
+                  "domain",
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nom de propriété ou regexp de nom de propriété à matcher"
+                  },
+                  "domain": {
+                    "type": "string",
+                    "description": "Domain cible correspondant au nom"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "description": "Correspondance entre le type défini dans la spécification openapi et un modèle dans le modèle cible",
+                "required": [
+                  "type",
+                  "domain"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "description": "Type de propriété ou regexp de type de propriété à matcher"
+                  },
+                  "domain": {
+                    "type": "string",
+                    "description": "Domain cible correspondant au type"
+                  }
+                }
+              }
+            ]
           }
         },
         "sources": {
           "type": "object",
+          "description": "Configuration des fichiers sources de spécifivation openapi",
           "additionalProperties": {
             "type": "object",
-            "description": "Liste des tags à placer dans le fichier de modèle généré",
             "properties": {
-              "tags": {
+              "modelTags": {
                 "type": "array",
                 "items": {
                   "type": "string",
                   "description": "Tag à placer dans le fichier de modèle généré"
+                }
+              },
+              "endpointTags": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "Tag à placer dans le fichier de endpoint généré"
                 }
               },
               "path": {

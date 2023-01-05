@@ -66,7 +66,7 @@ public static class ModelUtils
         var upperCaseInside = new Regex("(?<=[A-Z])[A-Z]+?((?=[A-Z][a-z])|(?=[0-9]))");
 
         // replace white spaces with undescore, then replace all invalid chars with empty string
-        var pascalCase = invalidCharsRgx.Replace(whiteSpace.Replace(text, "_"), string.Empty)
+        var pascalCase = invalidCharsRgx.Replace(whiteSpace.Replace(text.Replace("-", "_"), "_"), string.Empty)
 
             // split by underscores
             .Split(new char[] { '_' }, StringSplitOptions.RemoveEmptyEntries)
