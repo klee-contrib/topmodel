@@ -28,4 +28,6 @@
   - [Javascript / Typescript](/generator/js.md)
   - [Traductions manquantes](/generator/translation.md)
 
+- **[Migrer un modèle externe (`openApi`)](/tmdgen.md)**
+
 - **[Visualisation](/ui.md)**
