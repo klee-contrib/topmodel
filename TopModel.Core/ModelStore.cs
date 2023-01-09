@@ -103,6 +103,7 @@ public class ModelStore
             fsWatcher.Changed += OnFSChangedEvent;
             fsWatcher.Created += OnFSChangedEvent;
             fsWatcher.Deleted += OnFSChangedEvent;
+            fsWatcher.Renamed += OnFSChangedEvent;
             fsWatcher.IncludeSubdirectories = true;
             fsWatcher.EnableRaisingEvents = true;
         }

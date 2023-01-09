@@ -71,7 +71,7 @@ if (!regularCommand)
 if (!configs.Any())
 {
     Console.ForegroundColor = ConsoleColor.Red;
-    Console.WriteLine("Aucun fichier de config trouvé.");
+    Console.WriteLine("Aucun fichier de configuration trouvé.");
     return;
 }
 
@@ -92,7 +92,7 @@ if (watchMode)
     Console.WriteLine("activé.");
 }
 
-Console.WriteLine("Configuration trouvées :");
+Console.WriteLine("Fichiers de configuration trouvés :");
 
 for (var i = 0; i < configs.Count; i++)
 {
