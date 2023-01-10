@@ -85,14 +85,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
             usings.Add(_config.GetNamespace(firstPersistedClass));
         }
 
-        if (_config.Kinetix == KinetixVersion.Core)
-        {
-            usings.Add("Kinetix.Services.Annotations");
-        }
-        else
-        {
-            usings.Add("System.ServiceModel");
-        }
+        usings.Add("Kinetix.Services.Annotations");
 
         if (_config.DbContextPath == null)
         {
@@ -123,15 +116,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
         w.WriteNamespace(implementationNamespace);
 
         w.WriteSummary(1, "This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + firstClass.Namespace.Module + ".");
-
-        if (_config.Kinetix == KinetixVersion.Core)
-        {
-            w.WriteLine(1, "[RegisterImpl]");
-        }
-        else
-        {
-            w.WriteLine(1, "[ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode = InstanceContextMode.PerCall, IncludeExceptionDetailInFaults = true)]");
-        }
+        w.WriteLine(1, "[RegisterImpl]");
 
         w.WriteClassDeclaration(implementationName, null, interfaceName);
 
@@ -149,7 +134,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
             w.WriteLine(2, "}");
             w.WriteLine();
         }
-        else if (_config.Kinetix == KinetixVersion.Core)
+        else
         {
             w.WriteLine(2, $"private readonly BrokerManager _brokerManager;");
             w.WriteLine();
@@ -207,31 +192,14 @@ public class ReferenceAccessorGenerator : GeneratorBase
             usings.Add(_config.GetNamespace(firstPersistedClass));
         }
 
-        if (_config.Kinetix == KinetixVersion.Core)
-        {
-            usings.Add("Kinetix.Services.Annotations");
-        }
-        else
-        {
-            usings.Add("Kinetix.ServiceModel");
-            usings.Add("System.ServiceModel");
-        }
+        usings.Add("Kinetix.Services.Annotations");
 
         w.WriteUsings(usings.ToArray());
 
         w.WriteLine();
         w.WriteNamespace(interfaceNamespace);
         w.WriteSummary(1, "This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + firstClass.Namespace.Module + ".");
-
-        if (_config.Kinetix == KinetixVersion.Core)
-        {
-            w.WriteLine(1, "[RegisterContract]");
-        }
-        else
-        {
-            w.WriteLine(1, "[ServiceContract]");
-        }
-
+        w.WriteLine(1, "[RegisterContract]");
         w.WriteLine(1, "public partial interface " + interfaceName + "\r\n{");
 
         var count = 0;
@@ -241,11 +209,6 @@ public class ReferenceAccessorGenerator : GeneratorBase
             w.WriteSummary(2, "Reference accessor for type " + classe.Name);
             w.WriteReturns(2, "List of " + classe.Name);
             w.WriteLine(2, "[ReferenceAccessor]");
-            if (_config.Kinetix != KinetixVersion.Core)
-            {
-                w.WriteLine(2, "[OperationContract]");
-            }
-
             w.WriteLine(2, "ICollection<" + classe.Name + "> Load" + (_config.DbContextPath == null ? $"{classe.Name}List" : classe.PluralName) + "();");
 
             if (count != classList.Count())
@@ -292,9 +255,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
                 queryParameter = "new QueryParameter(" + classe.Name + ".Cols." + defaultProperty.SqlName + ", SortOrder.Asc)";
             }
 
-            return _config.Kinetix == KinetixVersion.Core
-                ? "return _brokerManager.GetBroker<" + classe.Name + ">().GetAll(" + queryParameter + ");"
-                : "return BrokerManager.GetStandardBroker<" + classe.Name + ">().GetAll(" + queryParameter + ");";
+            return "return _brokerManager.GetBroker<" + classe.Name + ">().GetAll(" + queryParameter + ");";
         }
     }
 }

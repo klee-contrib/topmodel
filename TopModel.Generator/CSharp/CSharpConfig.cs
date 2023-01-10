@@ -84,12 +84,12 @@ public class CSharpConfig : GeneratorConfigBase
     /// <summary>
     /// Utilise les features C# 10 dans la génération.
     /// </summary>
-    public bool UseLatestCSharp { get; set; }
+    public bool UseLatestCSharp { get; set; } = true;
 
     /// <summary>
-    /// Version de kinetix utilisée: Core, Framework ou None.
+    /// Si on génère avec Kinetix.
     /// </summary>
-    public KinetixVersion Kinetix { get; set; }
+    public bool Kinetix { get; set; } = true;
 
     /// <summary>
     /// Retire les attributs de colonnes sur les alias.

@@ -40,7 +40,7 @@ public static class ServiceExtensions
                         new DbContextGenerator(p.GetRequiredService<ILogger<DbContextGenerator>>(), config, app) { Number = number });
                 }
 
-                if (config.Kinetix != KinetixVersion.None)
+                if (config.Kinetix)
                 {
                     services.AddSingleton<IModelWatcher>(p =>
                         new ReferenceAccessorGenerator(p.GetRequiredService<ILogger<ReferenceAccessorGenerator>>(), config) { Number = number });

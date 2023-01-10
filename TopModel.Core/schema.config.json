@@ -331,13 +331,8 @@
             "description": "Utilise les features C# 10 dans la génération."
           },
           "kinetix": {
-            "type": "string",
-            "description": "Version de kinetix utilisée: Core, Framework ou None.",
-            "enum": [
-              "Core",
-              "Framework",
-              "None"
-            ]
+            "type": "boolean",
+            "description": "Si on génère avec Kinetix."
           },
           "noColumnOnAlias": {
             "type": "boolean",

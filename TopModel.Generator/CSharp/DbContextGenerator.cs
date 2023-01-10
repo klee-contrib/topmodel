@@ -35,17 +35,7 @@ public class DbContextGenerator : GeneratorBase
 
         using var w = new CSharpWriter(targetFileName, _logger, _config.UseLatestCSharp);
 
-        var usings = new List<string>();
-        if (_config.Kinetix != KinetixVersion.Framework)
-        {
-            usings.Add("Microsoft.EntityFrameworkCore");
-        }
-        else
-        {
-            usings.Add("System.Data.Entity");
-            usings.Add("System.Transactions");
-            usings.Add("Kinetix.DataAccess.Sql");
-        }
+        var usings = new List<string> { "Microsoft.EntityFrameworkCore" };
 
         foreach (var ns in classes.Select(_config.GetNamespace).Distinct())
         {
@@ -59,39 +49,16 @@ public class DbContextGenerator : GeneratorBase
         w.WriteLine();
         w.WriteNamespace(contextNs);
 
-        if (_config.Kinetix != KinetixVersion.Framework)
-        {
-            w.WriteSummary(1, "DbContext généré pour Entity Framework Core.");
-            w.WriteLine(1, $"public partial class {dbContextName} : DbContext");
-            w.WriteLine(1, "{");
+        w.WriteSummary(1, "DbContext généré pour Entity Framework Core.");
+        w.WriteLine(1, $"public partial class {dbContextName} : DbContext");
+        w.WriteLine(1, "{");
 
-            w.WriteSummary(2, "Constructeur par défaut.");
-            w.WriteParam("options", "Options du DbContext.");
-            w.WriteLine(2, $"public {dbContextName}(DbContextOptions<{dbContextName}> options)");
-            w.WriteLine(3, ": base(options)");
-            w.WriteLine(2, "{");
-            w.WriteLine(2, "}");
-        }
-        else
-        {
-            w.WriteSummary(1, "DbContext généré pour Entity Framework 6.");
-            w.WriteLine(1, $"public partial class {dbContextName}DbContext");
-            w.WriteLine(1, "{");
-
-            w.WriteSummary(2, "Constructeur par défaut.");
-            w.WriteLine(2, $"public {dbContextName}()");
-            w.WriteLine(3, ": base(SqlServerManager.Instance.ObtainConnection(\"default\"), false)");
-            w.WriteLine(2, "{");
-            w.WriteLine(2, "}");
-
-            w.WriteLine();
-            w.WriteSummary(2, "Constructeur par défaut.");
-            w.WriteParam("scope", "Transaction scope.");
-            w.WriteLine(2, $"public {dbContextName}(TransactionScope scope)");
-            w.WriteLine(3, ": this()");
-            w.WriteLine(2, "{");
-            w.WriteLine(2, "}");
-        }
+        w.WriteSummary(2, "Constructeur par défaut.");
+        w.WriteParam("options", "Options du DbContext.");
+        w.WriteLine(2, $"public {dbContextName}(DbContextOptions<{dbContextName}> options)");
+        w.WriteLine(3, ": base(options)");
+        w.WriteLine(2, "{");
+        w.WriteLine(2, "}");
 
         foreach (var classe in classes)
         {
@@ -105,18 +72,8 @@ public class DbContextGenerator : GeneratorBase
             w.WriteLine();
             w.WriteSummary(2, "Personalisation du modèle.");
             w.WriteParam("modelBuilder", "L'objet de construction du modèle.");
-
-            if (_config.Kinetix == KinetixVersion.Framework)
-            {
-                w.WriteLine(2, "protected override void OnModelCreating(DbModelBuilder modelBuilder)");
-                w.WriteLine(2, "{");
-                w.WriteLine(3, "base.OnModelCreating(modelBuilder);");
-            }
-            else
-            {
-                w.WriteLine(2, "protected override void OnModelCreating(ModelBuilder modelBuilder)");
-                w.WriteLine(2, "{");
-            }
+            w.WriteLine(2, "protected override void OnModelCreating(ModelBuilder modelBuilder)");
+            w.WriteLine(2, "{");
 
             var hasPropConfig = false;
             foreach (var prop in classes.Distinct().OrderBy(c => c.Name).SelectMany(c => c.Properties.OfType<IFieldProperty>()))
