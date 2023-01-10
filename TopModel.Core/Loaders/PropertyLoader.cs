@@ -4,7 +4,7 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class PropertyLoader
+public class PropertyLoader : ILoader<IEnumerable<IProperty>>
 {
     private readonly ModelConfig _modelConfig;
 
@@ -13,7 +13,7 @@ public class PropertyLoader
         _modelConfig = modelConfig;
     }
 
-    public IEnumerable<IProperty> LoadProperty(Parser parser)
+    public IEnumerable<IProperty> Load(Parser parser)
     {
         parser.Consume<MappingStart>();
         switch (parser.Current)

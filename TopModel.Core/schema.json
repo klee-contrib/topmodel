@@ -479,7 +479,9 @@
                 "annotations": {
                   "type": "array",
                   "description": "Annotations à ajouter sur toutes les propriétés C# de ce domaine (par exemple pour aider l'ORM a mapper le type correctement).",
-                  "required": ["text"],
+                  "required": [
+                    "text"
+                  ],
                   "items": {
                     "type": "object",
                     "description": "Annotations à ajouter  (ex : `@CreatedDate`)",
@@ -511,6 +513,73 @@
             "mediaType": {
               "type": "string",
               "description": "Type de médias (utilisé si retourné par un endpoint)."
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "description": "Définition d'un convertisseur de domaine",
+      "required": [
+        "converter"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "converter": {
+          "type": "object",
+          "required": [
+            "from",
+            "to"
+          ],
+          "properties": {
+            "from": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "Domains sources du convertisseur"
+              }
+            },
+            "to": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "Domains cibles du convertisseur"
+              }
+            },
+            "csharp": {
+              "type": "object",
+              "description": "Description du convertisseur C# dans le cas où la conversion n'est pas implicite",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "description": "Implémentation du convertisseur. Accepte les templates. Utiliser {value} pour la valeur du paramètre d'entrée, et {to.type} ou {from.type} pour les propriétés du domaine source ou cible"
+                },
+                "usings": {
+                  "type": "array",
+                  "description": "Usings à ajouter pour utiliser ce décorateur.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "java": {
+              "type": "object",
+              "description": "Description du convertisseur java dans le cas où la conversion n'est pas implicite",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "description": "Implémentation du convertisseur. Accepte les templates. Utiliser {value} pour la valeur du paramètre d'entrée, et {to.type} ou {from.type} pour les propriétés du domaine source ou cible"
+                },
+                "imports": {
+                  "type": "array",
+                  "description": "Imports à ajouter pour utiliser ce décorateur.",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         }
@@ -702,7 +771,7 @@
                       }
                     }
                   }
-                ]          
+                ]
               }
             },
             "properties": {

@@ -153,16 +153,16 @@ class CompletionHandler : CompletionHandlerBase
                         : 0;
 
                 return Task.FromResult(new CompletionList(
-                     _modelStore.Decorators
-                         .OrderBy(decorator => decorator.Name)
-                         .Where(decorator => decorator.Name.ToLower().ShouldMatch(searchText))
-                         .Select(decorator => new CompletionItem
-                         {
-                             Kind = CompletionItemKind.Class,
-                             Label = availableDecorators.Contains(decorator) ? decorator.Name : $"{decorator.Name} - ({decorator.ModelFile.Name})",
-                             InsertText = decorator.Name,
-                             SortText = availableDecorators.Contains(decorator) ? "0000" + decorator.Name : decorator.Name,
-                             TextEdit = !string.IsNullOrWhiteSpace(searchText)
+                    _modelStore.Decorators
+                        .OrderBy(decorator => decorator.Name)
+                        .Where(decorator => decorator.Name.ToLower().ShouldMatch(searchText))
+                        .Select(decorator => new CompletionItem
+                        {
+                            Kind = CompletionItemKind.Class,
+                            Label = availableDecorators.Contains(decorator) ? decorator.Name : $"{decorator.Name} - ({decorator.ModelFile.Name})",
+                            InsertText = decorator.Name,
+                            SortText = availableDecorators.Contains(decorator) ? "0000" + decorator.Name : decorator.Name,
+                            TextEdit = !string.IsNullOrWhiteSpace(searchText)
                                 ? new TextEditOrInsertReplaceEdit(new TextEdit
                                 {
                                     NewText = decorator.Name,
@@ -173,14 +173,14 @@ class CompletionHandler : CompletionHandlerBase
                                         currentLine.IndexOf(searchText) + searchText.Length)
                                 })
                                 : null,
-                             AdditionalTextEdits = !availableDecorators.Contains(decorator) ?
+                            AdditionalTextEdits = !availableDecorators.Contains(decorator) ?
                                 new TextEditContainer(new TextEdit
                                 {
                                     NewText = file.Uses.Any() ? $"  - {decorator.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {decorator.ModelFile.Name}{Environment.NewLine}",
                                     Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
                                 })
                                 : null
-                         })));
+                        })));
             }
             else
             {

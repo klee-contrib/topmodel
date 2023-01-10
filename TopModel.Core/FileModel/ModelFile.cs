@@ -20,6 +20,8 @@ public class ModelFile
 
     public List<Domain> Domains { get; } = new();
 
+    public List<Converter> Converters { get; } = new();
+
     public List<Decorator> Decorators { get; } = new();
 
     public List<Endpoint> Endpoints { get; } = new();

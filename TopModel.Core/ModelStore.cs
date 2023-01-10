@@ -55,6 +55,8 @@ public class ModelStore
 
     public IDictionary<string, Domain> Domains => _modelFiles.SelectMany(mf => mf.Value.Domains).ToDictionary(d => (string)d.Name, d => d);
 
+    public IEnumerable<Converter> Converters => _modelFiles.SelectMany(mf => mf.Value.Converters);
+
     public IEnumerable<Decorator> Decorators => _modelFiles.SelectMany(mf => mf.Value.Decorators).Distinct();
 
     public IEnumerable<ModelFile> Files => _modelFiles.Values;
@@ -916,6 +918,32 @@ public class ModelStore
             }
         }
 
+        // Résolution des domaines converters
+        foreach (var converter in Converters)
+        {
+            foreach (var dom in converter.DomainsFromReferences)
+            {
+                if (!Domains.TryGetValue(dom.ReferenceName, out var domain))
+                {
+                    yield return new ModelError(converter, "Le domaine '{0}' est introuvable.", dom) { ModelErrorType = ModelErrorType.TMD1005 };
+                    break;
+                }
+
+                converter.From.Add(domain);
+            }
+
+            foreach (var dom in converter.DomainsToReferences)
+            {
+                if (!Domains.TryGetValue(dom.ReferenceName, out var domain))
+                {
+                    yield return new ModelError(converter, "Le domaine '{0}' est introuvable.", dom) { ModelErrorType = ModelErrorType.TMD1005 };
+                    break;
+                }
+
+                converter.To.Add(domain);
+            }
+        }
+
         // Résolutions des mappers
         foreach (var classe in fileClasses)
         {
@@ -968,7 +996,9 @@ public class ModelStore
                     {
                         mappings.Mappings.Add(currentProperty, mappedProperty);
 
-                        if (currentProperty is IFieldProperty fp && fp.Domain != mappedProperty.Domain)
+                        if (currentProperty is IFieldProperty fp
+                            && fp.Domain != mappedProperty.Domain
+                            && !this.Converters.Any(c => c.From.Any(cf => cf == fp.Domain) && c.To.Any(ct => ct == mappedProperty.Domain)))
                         {
                             yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine ('{mappedProperty.Domain.Name}' au lieu de '{fp.Domain.Name}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1014 };
                         }
@@ -997,7 +1027,8 @@ public class ModelStore
                                 var compositionPKs = cp.Composition.Properties.OfType<IFieldProperty>().Where(p => p.PrimaryKey);
                                 var compositionPK = compositionPKs.Count() == 1 ? compositionPKs.Single() : null;
 
-                                if (compositionPK?.Domain != mappedAp.Domain)
+                                if (compositionPK?.Domain != mappedAp.Domain
+                                    && !this.Converters.Any(c => c.From.Any(cf => cf == compositionPK?.Domain) && c.To.Any(ct => ct == mappedAp.Domain)))
                                 {
                                     yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la clé primaire de la classe '{cp.Composition.Name}' composée ('{mappedProperty.Domain.Name}' au lieu de '{compositionPK?.Domain.Name ?? string.Empty}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1019 };
                                 }

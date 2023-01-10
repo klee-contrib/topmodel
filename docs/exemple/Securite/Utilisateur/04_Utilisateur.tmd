@@ -7,7 +7,7 @@ tags:
 uses:
   - Securite/Utilisateur/02_Entities
   - Securite/Utilisateur/03_Dtos
-  - decorators
+  - meta/decorators
 options:
   endpoints:
     prefix: utilisateur

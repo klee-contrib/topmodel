@@ -1,5 +1,5 @@
 ---
-module: Voiture
+module: none
 tags:
   - ""
 ---

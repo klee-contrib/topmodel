@@ -2,7 +2,7 @@
 module: Utilisateur
 uses:
   - Securite/Utilisateur/02_Entities
-  - decorators
+  - meta/decorators
 tags:
   - front
   - back
@@ -28,6 +28,7 @@ class:
           - class: Utilisateur
             mappings:
               UtilisateurParent: UtilisateurIdParent
+              email: Nom
     to:
       - class: Utilisateur
         mappings:

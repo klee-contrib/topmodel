@@ -5,7 +5,7 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class ClassLoader
+public class ClassLoader : ILoader<Class>
 {
     private readonly ModelConfig _modelConfig;
     private readonly PropertyLoader _propertyLoader;
@@ -16,7 +16,7 @@ public class ClassLoader
         _propertyLoader = propertyLoader;
     }
 
-    internal Class LoadClass(Parser parser)
+    public Class Load(Parser parser)
     {
         var classe = new Class();
 
@@ -86,7 +86,7 @@ public class ClassLoader
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        foreach (var property in _propertyLoader.LoadProperty(parser))
+                        foreach (var property in _propertyLoader.Load(parser))
                         {
                             classe.Properties.Add(property);
                         }

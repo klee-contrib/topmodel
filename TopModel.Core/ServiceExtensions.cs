@@ -13,6 +13,7 @@ public static class ServiceExtensions
             .AddSingleton(fileChecker)
             .AddSingleton<ClassLoader>()
             .AddSingleton<DecoratorLoader>()
+            .AddSingleton<ConverterLoader>()
             .AddSingleton<EndpointLoader>()
             .AddSingleton<PropertyLoader>()
             .AddSingleton<ModelFileLoader>()
