@@ -307,7 +307,6 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                 }
 
                 fw.WriteLine($"        label: \"{field.ResourceKey}\"");
-
             }
             else if (property is CompositionProperty cp3 && cp3.DomainKind != null)
             {

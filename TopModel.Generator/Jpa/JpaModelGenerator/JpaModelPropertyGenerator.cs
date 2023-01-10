@@ -65,6 +65,7 @@ public class JpaModelPropertyGenerator
                 WriteOneToOne(fw, classe, property);
                 break;
         }
+
         var defaultValue = string.Empty;
         if (!(property.DefaultValue == null || property.DefaultValue == "null" || property.DefaultValue == "undefined"))
         {
@@ -83,7 +84,6 @@ public class JpaModelPropertyGenerator
             {
                 defaultValue += quote + property.DefaultValue + quote;
             }
-
         }
 
         fw.WriteLine(1, $"private {property.GetJavaType()} {property.GetAssociationName()}{defaultValue};");
@@ -225,6 +225,7 @@ public class JpaModelPropertyGenerator
                 fw.WriteLine(1, $"{(annotation.Text.StartsWith("@") ? string.Empty : '@')}{annotation.Text.ParseTemplate(property)}");
             }
         }
+
         var defaultValue = string.Empty;
         if (!(property.DefaultValue == null || property.DefaultValue == "null" || property.DefaultValue == "undefined"))
         {
@@ -236,7 +237,6 @@ public class JpaModelPropertyGenerator
             else if (property is AliasProperty aslp && aslp.Property.IsEnum())
             {
                 defaultValue += aslp.Property.Class.Name + ".Values." + property.DefaultValue;
-
             }
             else
             {
@@ -248,7 +248,6 @@ public class JpaModelPropertyGenerator
 
                 defaultValue += quote + property.DefaultValue + quote;
             }
-
         }
 
         fw.WriteLine(1, $"private {property.GetJavaType()} {property.GetJavaName()}{defaultValue};");

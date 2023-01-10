@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Utils;
@@ -300,11 +299,7 @@ public class CSharpClassGenerator : GeneratorBase
         var refs = item.ReferenceValues.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
         foreach (var refValue in refs)
         {
-            var code = (string)refValue.Value[item.PrimaryKey];
-            if (Regex.IsMatch(code, "^\\d"))
-            {
-                code = "_" + code;
-            }
+            var code = refValue.Value[item.PrimaryKey];
 
             var label = item.DefaultProperty != null
                 ? refValue.Value[item.DefaultProperty]

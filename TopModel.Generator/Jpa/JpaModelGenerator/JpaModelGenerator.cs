@@ -299,6 +299,7 @@ public class JpaModelGenerator : GeneratorBase
 
             fw.WriteLine(2, $"}}");
         }
+
         fw.WriteLine();
         fw.WriteDocStart(2, "Méthode permettant de récupérer l'entité correspondant au code");
         fw.WriteReturns(2, @$"instance de {{@link {classe.GetImport(_config)}}} correspondant au code courant");
