@@ -58,6 +58,8 @@ public class ModelFile
         .Concat(Classes.SelectMany(c => c.FromMappers.SelectMany(m => m.Params).Concat(c.ToMappers)).Select(p => (p.ClassReference as Reference, (object)p.Class)))
         .Concat(Classes.SelectMany(c => c.FromMappers.SelectMany(m => m.Params).Concat(c.ToMappers).SelectMany(m => m.MappingReferences.SelectMany(mr => new[] { (mr.Key, (object)c.Properties.FirstOrDefault(k => k.Name == mr.Key.ReferenceName)), (mr.Value, mr.Value.ReferenceName == "this" || mr.Value.ReferenceName == "false" ? new Keyword { ModelFile = c.ModelFile } : m.Mappings.Values.FirstOrDefault(k => k.Name == mr.Value.ReferenceName)) }))))
         .Concat(Aliases.SelectMany(a => a.Classes).Select(c => (c as Reference, ResolvedAliases.OfType<Class>().FirstOrDefault(ra => ra.Name == c.ReferenceName) as object)))
+        .Concat(Converters.SelectMany(c => c.DomainsFromReferences.Select(d => (d as Reference, c.From.FirstOrDefault(dom => dom.Name == d.ReferenceName) as object))))
+        .Concat(Converters.SelectMany(c => c.DomainsToReferences.Select(d => (d as Reference, c.To.FirstOrDefault(dom => dom.Name == d.ReferenceName) as object))))
         .Where(t => t.Item1 is not null && t.Item2 is not null && t.Item2 is not (null, null))
         .DistinctBy(t => t.Item1)
         .ToDictionary(t => t.Item1, t => t.Item2);

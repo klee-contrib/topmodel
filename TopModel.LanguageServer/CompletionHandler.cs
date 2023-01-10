@@ -25,6 +25,31 @@ class CompletionHandler : CompletionHandlerBase
     {
         return Task.FromResult(request);
     }
+    private string GetRootObject(CompletionParams request)
+    {
+
+        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var currentLine = text.ElementAtOrDefault(request.Position.Line);
+        var currentPositionLine = request.Position.Line + 1;
+        var requestLine = request.Position.Line;
+        var rootLine = currentLine ?? string.Empty;
+        while (
+            !(rootLine.StartsWith("class")
+            || rootLine.StartsWith("domain")
+            || rootLine.StartsWith("decorator")
+            || rootLine.StartsWith("converter")
+            || rootLine.StartsWith("endpoint")))
+        {
+            requestLine--;
+            if (requestLine < 0 || rootLine.StartsWith("---"))
+            {
+                break;
+            }
+
+            rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
+        }
+        return rootLine.Split(":")[0];
+    }
 
     public override Task<CompletionList> Handle(CompletionParams request, CancellationToken cancellationToken)
     {
@@ -38,36 +63,49 @@ class CompletionHandler : CompletionHandlerBase
             return Task.FromResult(new CompletionList());
         }
 
-        if (currentLine.Contains("domain: ") || currentLine.Contains("asListWithDomain: ") || currentLine.Contains("kind: "))
-        {
-            var searchText = currentLine.Split(":")[1].Trim();
-            return Task.FromResult(new CompletionList(
-                _modelStore.Domains
-                    .Select(domain => domain.Key)
-                    .Concat(currentLine.Contains("kind: ") ? new[] { "object", "list" } : Array.Empty<string>())
-                    .OrderBy(domain => domain)
-                    .Where(domain => domain.ToLower().ShouldMatch(searchText))
-                    .Select(domain => new CompletionItem
-                    {
-                        Kind = CompletionItemKind.EnumMember,
-                        Label = domain,
-                        TextEdit = !string.IsNullOrWhiteSpace(searchText)
-                            ? new TextEditOrInsertReplaceEdit(new TextEdit
-                            {
-                                NewText = domain,
-                                Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                                    request.Position.Line,
-                                    currentLine.IndexOf(searchText),
-                                    request.Position.Line,
-                                    currentLine.IndexOf(searchText) + searchText.Length)
-                            })
-                            : null,
-                    })));
-        }
-
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
+            if (currentLine.Contains("domain: ") || currentLine.Contains("asListWithDomain: ") || currentLine.Contains("kind: ")
+                || currentLine.TrimStart().StartsWith("-")
+                    && GetRootObject(request) == "converter"
+                     && (text.ElementAtOrDefault(request.Position.Line - 1)?.Trim() == "to:"
+                        || text.ElementAtOrDefault(request.Position.Line - 1)?.Trim() == "from:"
+                        || file.Converters.SelectMany(c => c.DomainsFromReferences).Union(file.Converters.SelectMany(c => c.DomainsToReferences)).Any(dr => dr.Start.Line == request.Position.Line)))
+            {
+                string searchText;
+                if (currentLine.TrimStart().StartsWith("-"))
+                {
+                    searchText = currentLine.TrimStart()[1..].Trim();
+                }
+                else
+                {
+                    searchText = currentLine.Split(":")[1].Trim();
+                }
+                return Task.FromResult(new CompletionList(
+                    _modelStore.Domains
+                        .Select(domain => domain.Key)
+                        .Concat(currentLine.Contains("kind: ") ? new[] { "object", "list" } : Array.Empty<string>())
+                        .OrderBy(domain => domain)
+                        .Where(domain => domain.ToLower().ShouldMatch(searchText))
+                        .Select(domain => new CompletionItem
+                        {
+                            Kind = CompletionItemKind.EnumMember,
+                            Label = domain,
+                            TextEdit = !string.IsNullOrWhiteSpace(searchText)
+                                ? new TextEditOrInsertReplaceEdit(new TextEdit
+                                {
+                                    NewText = domain,
+                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText),
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText) + searchText.Length)
+                                })
+                                : null,
+                        })));
+            }
+
             if (currentLine.Contains("association: ") || currentLine.Contains("composition: ") || currentLine.Contains("    class:") || currentLine.Contains("    - class:") || currentLine.Contains("extends: "))
             {
                 var searchText = currentLine.Split(":")[1].Trim();
