@@ -8,13 +8,20 @@ namespace TopModel.Generator.CSharp;
 /// </summary>
 public class CSharpConfig : GeneratorConfigBase
 {
+    private string? _referencesModelPath;
+
     /// <summary>
     /// Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models.
     /// </summary>
     public string PersistantModelPath { get; set; } = "{app}.{module}.Models";
 
     /// <summary>
-    /// Localisation du modèle non-persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models/Dto.
+    /// Localisation des classes de références persistées, relative au répertoire de génération. Par défaut égal à "PersistantModelPath".
+    /// </summary>
+    public string PersistantReferencesModelPath { get => _referencesModelPath ?? PersistantModelPath; set => _referencesModelPath = value; }
+
+    /// <summary>
+    /// Localisation du modèle non persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models/Dto.
     /// </summary>
     public string NonPersistantModelPath { get; set; } = "{app}.{module}.Models/Dto";
 
@@ -191,7 +198,11 @@ public class CSharpConfig : GeneratorConfigBase
     /// <returns>Chemin.</returns>
     public string GetModelPath(Class classe)
     {
-        var baseModelPath = classe.IsPersistent && !NoPersistance ? PersistantModelPath : NonPersistantModelPath;
+        var baseModelPath = classe.IsPersistent && !NoPersistance
+            ? classe.Reference
+                ? PersistantReferencesModelPath
+                : PersistantModelPath
+            : NonPersistantModelPath;
         return baseModelPath.Replace("{app}", classe.Namespace.App).Replace("{module}", classe.Namespace.Module);
     }
 
@@ -202,7 +213,11 @@ public class CSharpConfig : GeneratorConfigBase
     /// <returns>Namespace.</returns>
     public string GetNamespace(Class classe)
     {
-        var baseModelPath = classe.IsPersistent && !NoPersistance ? PersistantModelPath : NonPersistantModelPath;
+        var baseModelPath = classe.IsPersistent && !NoPersistance
+            ? classe.Reference
+                ? PersistantReferencesModelPath
+                : PersistantModelPath
+            : NonPersistantModelPath;
         var ns = baseModelPath.Replace("/", ".")
             .Replace(".Dto", string.Empty);
         return ns[Math.Max(0, ns.IndexOf("{app}"))..]

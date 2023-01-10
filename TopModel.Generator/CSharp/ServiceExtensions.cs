@@ -24,6 +24,7 @@ public static class ServiceExtensions
                 TrimSlashes(config, c => c.ReferenceAccessorsInterfacePath);
                 TrimSlashes(config, c => c.NonPersistantModelPath);
                 TrimSlashes(config, c => c.PersistantModelPath);
+                TrimSlashes(config, c => c.PersistantReferencesModelPath);
 
                 config.ReferenceAccessorsImplementationPath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
                 config.ReferenceAccessorsInterfacePath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
