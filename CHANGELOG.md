@@ -1,5 +1,15 @@
 # TopModel.Generator (`modgen`)
 
+## 1.20.0
+
+- [#176](https://github.com/klee-contrib/topmodel/pull/176) - Valeurs par défaut pour les propriétés
+
+  Les valeurs par défaut (`defaultValue`) sur les propriétés ne sont plus interprétées comme des valeurs par défaut en SQL mais comme des valeurs par défaut sur tout le reste (propriétés de classe, paramètres d'endpoints, en C#/Java/Javascript). C'est un **breaking change** mais à priori la fonctionnalité n'était pas vraiment utilisée de cette façon.
+
+- [`458d0b9d`](https://github.com/klee-contrib/topmodel/commit/458d0b9dcdb0f700b320b290c00c6210dbcd33b6) - [C#] Génération d'enums que si aucune valeur ne commence par un chiffre.
+- [`4e39a208`](https://github.com/klee-contrib/topmodel/commit/4e39a208624492b86ba3f9a21a94cbde4847b4ab) - [C#] Maj config générateur (kinetix true/false, useLatestCSharp = true par défaut) (**léger breaking change dans la config**)
+- [`aa1d8caa`](https://github.com/klee-contrib/topmodel/commit/aa1d8caa5f7f95421f0ba17a82cb7becba9142e3) - [C#] PersistantReferencesModelPath
+
 ## 1.19.9
 
 - [`bb195e52`](https://github.com/klee-contrib/topmodel/commit/bb195e529d9127e522f1758478452a24938af2b9) - [JPA] EnumShortcut : remettre setter originaux et gestion cas associations multiples
@@ -10,7 +20,7 @@
 
 ## 1.19.7
 
-- [`d46d76f2`](https://github.com/klee-contrib/topmodel/commit/d46d76f2b37a55677889a67842c2c056390e4eb9) - Fix nom de fichier endpoints préfixés par un XX_
+- [`d46d76f2`](https://github.com/klee-contrib/topmodel/commit/d46d76f2b37a55677889a67842c2c056390e4eb9) - Fix nom de fichier endpoints préfixés par un XX\_
 
 ## 1.19.6
 
