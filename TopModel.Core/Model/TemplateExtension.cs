@@ -165,13 +165,14 @@ public static class TemplateExtension
 
     private static string ResolveVariable(this string input, Domain d, string prefix = "")
     {
-        if (!
-        (input.Contains($"{prefix}mediaType"))
-        || (input.Contains($"{prefix}length"))
-        || (input.Contains($"{prefix}scale"))
-        || (input.Contains($"{prefix}name"))
-        || (input.Contains($"{prefix}sqlType"))
-        ) return "{" + input + "}";
+        if (!input.Contains($"{prefix}mediaType")
+            || input.Contains($"{prefix}length")
+            || input.Contains($"{prefix}scale")
+            || input.Contains($"{prefix}name")
+            || input.Contains($"{prefix}sqlType"))
+        {
+            return "{" + input + "}";
+        }
 
         var transform = input.GetTransformation();
         var result = input.Split(':').First()

@@ -12,9 +12,9 @@ public class Domain
     public string Label { get; set; }
 
     // Liste des converter pour lesquels le converter est présent dans la liste des domains From
-    public IList<Converter> ConvertersFrom { get; set; } = new List<Converter>();
+    public HashSet<Converter> ConvertersFrom { get; set; } = new HashSet<Converter>();
 
-    public IList<Converter> ConvertersTo { get; set; } = new List<Converter>();
+    public HashSet<Converter> ConvertersTo { get; set; } = new HashSet<Converter>();
 
 #nullable enable
 

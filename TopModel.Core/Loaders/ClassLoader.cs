@@ -184,7 +184,7 @@ public class ClassLoader : ILoader<Class>
                             case "to":
                                 parser.ConsumeSequence(() =>
                                 {
-                                    var mapper = new ClassMappings();
+                                    var mapper = new ClassMappings { To = true };
                                     classe.ToMappers.Add(mapper);
 
                                     parser.ConsumeMapping(() =>

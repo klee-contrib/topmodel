@@ -132,8 +132,6 @@ public enum ModelErrorType
     /// </summary>
     TMD1020,
 
-
-
     /// <summary>
     /// Le préfixe d'endpoint '{file.Options.Endpoints.Prefix}' doit être identique à celui de tous les fichiers de même nom et de même module.
     /// </summary>

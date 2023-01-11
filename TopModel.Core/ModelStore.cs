@@ -21,11 +21,10 @@ public class ModelStore
     private readonly object _puLock = new();
     private readonly HashSet<string> _pendingUpdates = new();
 
+    private readonly TranslationStore _translationStore;
     private readonly TopModelLock _topModelLock;
 
     private ModelStoreConfig? _storeConfig;
-
-    private TranslationStore _translationStore;
 
     public ModelStore(IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers, TranslationStore translationStore)
     {
@@ -167,7 +166,7 @@ public class ModelStore
             {
                 var referenceErrors = new List<ModelError>();
 
-                var affectedFiles = _pendingUpdates.Select(pu => _modelFiles.TryGetValue(pu, out var mf) ? mf : null).Any(mf => mf?.Domains.Any() ?? false)
+                var affectedFiles = _pendingUpdates.Select(pu => _modelFiles.TryGetValue(pu, out var mf) ? mf : null).Any(mf => (mf?.Domains.Any() ?? false) || (mf?.Converters.Any() ?? false))
                     ? _modelFiles.Values
                     : GetAffectedFiles(_pendingUpdates).Distinct();
 
@@ -299,8 +298,9 @@ public class ModelStore
     private IEnumerable<ModelFile> GetDependencies(ModelFile modelFile)
     {
         return modelFile.Uses
-           .Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
-           .Where(dep => dep != null);
+            .Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
+            .Where(dep => dep != null)
+            .Concat(Files.Where(f => f != modelFile && f.Converters.Any() && modelFile.Classes.Any(c => c.FromMappers.Any() || c.ToMappers.Any())));
     }
 
     private void OnFSChangedEvent(object sender, FileSystemEventArgs e)
@@ -487,7 +487,7 @@ public class ModelStore
             switch (prop)
             {
                 case RegularProperty rp:
-                    if (!Domains.TryGetValue(rp.DomainReference.ReferenceName, out var domain))
+                    if (rp.DomainReference == null || !Domains.TryGetValue(rp.DomainReference.ReferenceName, out var domain))
                     {
                         yield return new ModelError(rp, "Le domaine '{0}' est introuvable.", rp.DomainReference) { ModelErrorType = ModelErrorType.TMD1005 };
                         break;
@@ -691,9 +691,9 @@ public class ModelStore
                 {
                     alp.Endpoint.Params.Remove(alp);
                 }
-                else if (alp.Decorator != null)
+                else
                 {
-                    alp.Decorator.Properties.Remove(alp);
+                    alp.Decorator?.Properties.Remove(alp);
                 }
             }
         }
@@ -921,6 +921,15 @@ public class ModelStore
         // Résolution des domaines converters
         foreach (var converter in Converters)
         {
+            converter.From.Clear();
+            converter.To.Clear();
+
+            foreach (var domain in Domains.Values)
+            {
+                domain.ConvertersFrom.Remove(converter);
+                domain.ConvertersTo.Remove(converter);
+            }
+
             foreach (var dom in converter.DomainsFromReferences)
             {
                 if (!Domains.TryGetValue(dom.ReferenceName, out var domain))
@@ -1008,9 +1017,9 @@ public class ModelStore
 
                         if (currentProperty is IFieldProperty fp
                             && fp.Domain != mappedProperty.Domain
-                            && !this.Converters.Any(c => c.From.Any(cf => cf == fp.Domain) && c.To.Any(ct => ct == mappedProperty.Domain)))
+                            && !Converters.Any(c => c.From.Any(cf => cf == (mappings.To ? mappedProperty.Domain : fp.Domain)) && c.To.Any(ct => ct == (mappings.To ? fp.Domain : mappedProperty.Domain))))
                         {
-                            yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine ('{mappedProperty.Domain.Name}' au lieu de '{fp.Domain.Name}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1014 };
+                            yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine ('{mappedProperty.Domain.Name}' au lieu de '{fp.Domain.Name}') et qu'il n'existe pas de convertisseur entre les deux.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1014 };
                         }
                         else if (currentProperty is CompositionProperty cp)
                         {
@@ -1088,7 +1097,7 @@ public class ModelStore
                         {
                             foreach (var p in param.Class.Properties.OfType<IFieldProperty>())
                             {
-                                if (p.Name == property.Name && p.Domain == property.Domain && p.Domain != null)
+                                if (p.Name == property.Name && p.Domain != null && (p.Domain == property.Domain || Converters.Any(c => c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain))))
                                 {
                                     param.Mappings.Add(property, p);
                                 }
@@ -1129,7 +1138,7 @@ public class ModelStore
                 {
                     foreach (var p in mapper.Class.Properties.OfType<IFieldProperty>())
                     {
-                        if (p.Name == property.Name && p.Domain == property.Domain && p.Domain != null)
+                        if (p.Name == property.Name && p.Domain != null && (p.Domain == property.Domain || Converters.Any(c => c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain))))
                         {
                             mapper.Mappings.Add(property, p);
                         }
@@ -1255,12 +1264,12 @@ public class ModelStore
     {
         foreach (var converter in Converters)
         {
-            var dup = Converters.FirstOrDefault(c => Converters.IndexOf(c) < Converters.IndexOf(converter) && c.Conversions.Intersect(converter.Conversions).Count() > 0);
+            var dup = Converters.FirstOrDefault(c => Converters.IndexOf(c) < Converters.IndexOf(converter) && c.Conversions.Intersect(converter.Conversions).Any());
             if (dup != null)
             {
-                foreach (var conversion in dup.Conversions.Intersect(converter.Conversions))
+                foreach (var (from, to) in dup.Conversions.Intersect(converter.Conversions))
                 {
-                    yield return new ModelError(converter, $"La définition de la conversion entre {conversion.From.Name} et {conversion.To.Name} est déjà définie dans un autre converter") { ModelErrorType = ModelErrorType.TMD1022, IsError = true };
+                    yield return new ModelError(converter, $"La définition de la conversion entre {from.Name} et {to.Name} est déjà définie dans un autre converter") { ModelErrorType = ModelErrorType.TMD1022, IsError = true };
                 }
             }
         }
