@@ -3,7 +3,7 @@ module: Utilisateur
 uses:
   - Securite/Profil/02_Entities
   - Securite/Utilisateur/01_References
-  - decorators
+  - meta/decorators
 tags:
   - back
 ---

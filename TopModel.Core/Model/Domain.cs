@@ -10,6 +10,12 @@ public class Domain
     public LocatedString Name { get; set; }
 
     public string Label { get; set; }
+
+    // Liste des converter pour lesquels le converter est présent dans la liste des domains From
+    public HashSet<Converter> ConvertersFrom { get; set; } = new HashSet<Converter>();
+
+    public HashSet<Converter> ConvertersTo { get; set; } = new HashSet<Converter>();
+
 #nullable enable
 
     public int? Length { get; set; }

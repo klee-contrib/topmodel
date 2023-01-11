@@ -138,6 +138,11 @@ public enum ModelErrorType
     TMD1021,
 
     /// <summary>
+    /// La définition de la conversion entre {df.Name} et {dt.Name} est déjà définie dans un autre converter
+    /// </summary>
+    TMD1022,
+
+    /// <summary>
     /// L'import {} n'est pas utilisé.
     /// </summary>
     TMD9001,

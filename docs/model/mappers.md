@@ -38,7 +38,7 @@ Chaque définition de mapping (qui correspond à un paramètre d'un `from` ou la
 TopModel va déterminer automatiquement les correspondances de champs entre classes via les règles suivantes :
 
 1. La propriété de la classe courante est un alias de la propriété de la classe cible (y compris s'il y a plusieurs niveaux d'alias entre les deux).
-2. La propriété de la classe courante a le même nom et le même domaine que la propriété de la classe cible.
+2. La propriété de la classe courante a le même nom et le même domaine que la propriété de la classe cible (ou bien il existe un converter entre ces deux domaines).
 
 Il n'est **pas possible d'initialiser deux fois la même propriété dans un mapper** (quelque soit le sens). En revanche, il est bien possible d'initialiser deux propriétés à partir de la même propriété.
 
@@ -63,7 +63,48 @@ La propriété à gauche est toujours celle de la classe courante (pour un `from
         Propriete: false
 ```
 
-En dehors des mappings automatiques qui respectent forcément cette règle, **tous les mappings manuels ne peuvent être définis qu'entre deux propriétés de même domaine**.
+En dehors des mappings automatiques qui respectent forcément cette règle, **tous les mappings manuels ne peuvent être définis qu'entre deux propriétés de même domaine**. A moins qu'il existe un `converter` entre les deux domaines.
+
+## Converters
+
+Pour mapper deux champs de domaine différent, il est possible de définir un `converter`. Si la conversion ne nécessite pas d'opération particulière (mapper un champ `email` vers `libelle` par exemple), alors la définition est simple :
+
+```yaml
+converter:
+  from:
+    - DO_EMAIL
+  to:
+    - DO_LIBELLE
+```
+
+Si la conversion nécessite une opération en `java` ou en `csharp`, par exemple pour appeler la méthode `toString()`, alors il est possible d'écrire le template de la conversion :
+
+```yaml
+converter:
+  from:
+    - DO_LONG
+  to:
+    - DO_LIBELLE
+  java:
+    text: "{value}.toString()"
+```
+
+Ce template peut prendre les variables du domaine `from` ou du domain `to`, en précisant `from.type` par exemple, pour obtenir le type `java` ou `csharp` du domaine.
+
+Il est interdit de définir plusieurs converters pour le même couple de domaines `from` - `to`. En revanche, dans une seule définition de converter, il est possible de définir plusieurs conversions identiques. Par exemple :
+
+```yaml
+converter:
+  from:
+    - DO_LONG
+    - DO_DECIMAL
+    - DO_MONTANT
+  to:
+    - DO_LIBELLE
+    - DO_LIBELLE_COURT
+  java:
+    text: "{value} != null ? {value}.toString() : null"
+```
 
 ## Mappings de compositions
 

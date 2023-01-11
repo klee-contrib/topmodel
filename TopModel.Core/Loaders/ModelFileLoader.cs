@@ -12,16 +12,18 @@ public class ModelFileLoader
     private readonly ClassLoader _classLoader;
     private readonly ModelConfig _config;
     private readonly DecoratorLoader _decoratorLoader;
+    private readonly ConverterLoader _converterLoader;
     private readonly FileChecker _fileChecker;
     private readonly EndpointLoader _endpointLoader;
 
-    public ModelFileLoader(ModelConfig config, ClassLoader classLoader, FileChecker fileChecker, DecoratorLoader decoratorLoader, EndpointLoader endpointLoader)
+    public ModelFileLoader(ModelConfig config, ClassLoader classLoader, FileChecker fileChecker, DecoratorLoader decoratorLoader, ConverterLoader converterLoader, EndpointLoader endpointLoader)
     {
         _classLoader = classLoader;
         _config = config;
         _decoratorLoader = decoratorLoader;
         _fileChecker = fileChecker;
         _endpointLoader = endpointLoader;
+        _converterLoader = converterLoader;
     }
 
     public ModelFile? LoadModelFile(string filePath, string? content = null)
@@ -156,20 +158,27 @@ public class ModelFileLoader
             }
             else if (scalar.Value == "decorator")
             {
-                var decorator = _decoratorLoader.LoadDecorator(parser);
+                var decorator = _decoratorLoader.Load(parser);
                 decorator.ModelFile = file;
                 decorator.Location = new Reference(scalar);
                 file.Decorators.Add(decorator);
             }
+            else if (scalar.Value == "converter")
+            {
+                var converter = _converterLoader.Load(parser);
+                converter.ModelFile = file;
+                converter.Location = new Reference(scalar);
+                file.Converters.Add(converter);
+            }
             else if (scalar.Value == "class")
             {
-                var classe = _classLoader.LoadClass(parser);
+                var classe = _classLoader.Load(parser);
                 classe.Location = new Reference(scalar);
                 file.Classes.Add(classe);
             }
             else if (scalar.Value == "endpoint")
             {
-                var endpoint = _endpointLoader.LoadEndpoint(parser);
+                var endpoint = _endpointLoader.Load(parser);
                 endpoint.Location = new Reference(scalar);
                 file.Endpoints.Add(endpoint);
             }

@@ -16,6 +16,7 @@ public static class ModelExtensions
             IProperty { Endpoint: Endpoint endpoint } => endpoint.ModelFile,
             Alias alias => alias.ModelFile,
             Domain domain => domain.ModelFile,
+            Converter converter => converter.ModelFile,
             Decorator decorator => decorator.ModelFile,
             (Decorator decorator, _) => decorator.ModelFile,
             Keyword keyword => keyword.ModelFile,
@@ -41,6 +42,7 @@ public static class ModelExtensions
             (Decorator d, _) => d.Location,
             FromMapper m => m.Reference.Location,
             ClassMappings c => c.Name.Location,
+            Converter c => c.Location,
             _ => null
         };
     }
@@ -94,6 +96,7 @@ public static class ModelExtensions
                     _ => null! // Impossible
                 }, File: p.GetFile());
             })
+            .Concat(modelStore.Converters.SelectMany(c => c.DomainsFromReferences.Union(c.DomainsToReferences).Select(d => (Reference: d, File: c.ModelFile))).Where(r => r.Reference.ReferenceName == domain.Name))
             .Where(l => l.Reference is not null)
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }

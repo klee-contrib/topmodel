@@ -4,7 +4,7 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class DecoratorLoader
+public class DecoratorLoader : ILoader<Decorator>
 {
     private readonly FileChecker _fileChecker;
     private readonly PropertyLoader _propertyLoader;
@@ -15,7 +15,7 @@ public class DecoratorLoader
         _propertyLoader = propertyLoader;
     }
 
-    public Decorator LoadDecorator(Parser parser)
+    public Decorator Load(Parser parser)
     {
         var decorator = new Decorator();
 
@@ -41,7 +41,7 @@ public class DecoratorLoader
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        foreach (var property in _propertyLoader.LoadProperty(parser))
+                        foreach (var property in _propertyLoader.Load(parser))
                         {
                             decorator.Properties.Add(property);
                         }
