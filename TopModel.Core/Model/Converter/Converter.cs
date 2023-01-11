@@ -25,6 +25,8 @@ public class Converter
     /// </summary>
     public IList<Domain> To { get; set; } = new List<Domain>();
 
+    public IEnumerable<(Domain From, Domain To)> Conversions => From.SelectMany(f => To.Select(t => (f, t))).Distinct();
+
 #nullable enable
 
     /// <summary>

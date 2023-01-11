@@ -132,10 +132,17 @@ public enum ModelErrorType
     /// </summary>
     TMD1020,
 
+
+
     /// <summary>
     /// Le préfixe d'endpoint '{file.Options.Endpoints.Prefix}' doit être identique à celui de tous les fichiers de même nom et de même module.
     /// </summary>
     TMD1021,
+
+    /// <summary>
+    /// La définition de la conversion entre {df.Name} et {dt.Name} est déjà définie dans un autre converter
+    /// </summary>
+    TMD1022,
 
     /// <summary>
     /// L'import {} n'est pas utilisé.

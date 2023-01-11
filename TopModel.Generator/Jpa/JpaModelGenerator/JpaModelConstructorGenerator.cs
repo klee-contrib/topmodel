@@ -393,16 +393,16 @@ public class JpaModelConstructorGenerator
                         if (mapping.Key is IFieldProperty ifpFrom && mapping.Value is IFieldProperty ifpTo && ifpFrom.Domain != ifpTo.Domain)
                         {
                             var converter = ifpFrom.Domain.ConvertersFrom.FirstOrDefault(c => c.To.Any(t => t == ifpTo.Domain));
-                            string convertion = $@"{param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value!.Name.ToFirstUpper()}()";
+                            string conversion = $@"{param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value!.Name.ToFirstUpper()}()";
                             if (converter != null && converter.Java?.Text != null)
                             {
                                 var convert = converter.Java.Text;
-                                convertion = convert.Replace("{value}", convertion)
+                                conversion = convert.Replace("{value}", conversion)
                                     .ParseTemplate(ifpFrom.Domain, "java", "from.")
                                     .ParseTemplate(ifpTo.Domain, "java", "to.");
                             }
 
-                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {convertion};");
+                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {conversion};");
                         }
                         else
                         {

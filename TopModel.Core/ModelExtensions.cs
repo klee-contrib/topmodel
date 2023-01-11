@@ -42,6 +42,7 @@ public static class ModelExtensions
             (Decorator d, _) => d.Location,
             FromMapper m => m.Reference.Location,
             ClassMappings c => c.Name.Location,
+            Converter c => c.Location,
             _ => null
         };
     }

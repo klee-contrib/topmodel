@@ -573,16 +573,16 @@ public class JpaModelGenerator : GeneratorBase
                     if (mapping.Key is IFieldProperty ifpTo && mapping.Value is IFieldProperty ifpFrom && ifpFrom.Domain != ifpTo.Domain)
                     {
                         var converter = ifpFrom.Domain.ConvertersFrom.FirstOrDefault(c => c.To.Any(t => t == ifpTo.Domain));
-                        string convertion = $@"this.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}()";
+                        string conversion = $@"this.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}()";
                         if (converter != null && converter.Java?.Text != null)
                         {
                             var convert = converter.Java.Text;
-                            convertion = convert.Replace("{value}", convertion)
+                            conversion = convert.Replace("{value}", conversion)
                                 .ParseTemplate(ifpFrom.Domain, "java", "from.")
                                 .ParseTemplate(ifpTo.Domain, "java", "to.");
                         }
 
-                        fw.WriteLine(2, $"this.{mapping.Key.GetJavaName()} = {convertion};");
+                        fw.WriteLine(2, $"this.{mapping.Key.GetJavaName()} = {conversion};");
                     }
                     else
                     {
