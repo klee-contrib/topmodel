@@ -12,16 +12,4 @@ export type Mermaid = {
     module: string;
 };
 
-export type ExtensionState = "LOADING" | "ERROR" | "RUNNING" | "UPDATING" | "INSTALLING";
-
-
-export type TmdTool = ({
-    name: "TopModel.Generator";
-    command: "modgen";
-} | {
-    name: "TopModel.ModelGenerator";
-    command: "tmdgen";
-}) & {
-    currentVersion?: string;
-    latestVersion?: string;
-};
+export type Status = "LOADING" | "ERROR" | "READY" | "INSTALLING";
