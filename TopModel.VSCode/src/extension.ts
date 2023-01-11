@@ -9,42 +9,34 @@ import {
     Position,
 } from "vscode";
 import * as fs from "fs";
-import { ExtensionState, TmdTool, TopModelConfig, TopModelException } from "./types";
+import { ExtensionStatus, TmdTool, TopModelConfig, TopModelException } from "./types";
 import { registerPreview } from "./preview";
 import { Application } from "./application";
 import { COMMANDS, COMMANDS_OPTIONS } from "./const";
 import { execute } from "./utils";
 import { Global } from "./global";
+import { ExtensionState } from "./extensionState";
+import { autorun } from "mobx";
 
 const open = require("open");
 const yaml = require("js-yaml");
 
 let topModelStatusBar: StatusBarItem;
-let extentionState: ExtensionState = "LOADING";
-let context: ExtensionContext;
-const applications: Application[] = [];
-const tools = {
-    topmodel: {
-        name: "TopModel.Generator",
-        command: "modgen"
-    } as TmdTool,
-    tmdgen: {
-        name: "TopModel.ModelGenerator",
-        command: "tmdgen"
-    } as TmdTool
-} as const;
+let state: ExtensionState;
 
 export async function activate(ctx: ExtensionContext) {
-    context = ctx;
+    state = new ExtensionState(ctx);
+    autorun(() => updateStatusBar());
     createStatusBar();
+    await loadlatestVersion(state.tools.topmodel);
+    await loadlatestVersion(state.tools.tmdgen);
+
     checkInstall();
-    await loadlatestVersion(tools.topmodel);
-    await loadlatestVersion(tools.tmdgen);
-    if (applications.length === 0) {
+    if (state.applications.length === 0) {
         const confs = await findConfFiles();
         try {
-            applications.push(...confs.map((conf) => new Application(conf.file.path, conf.config, ctx)));
-            applications.forEach(async (app) => {
+            state.applications.push(...confs.map((conf) => new Application(conf.file.path, conf.config, ctx)));
+            state.applications.forEach(async (app) => {
                 await app.start();
                 refreshState();
             });
@@ -58,20 +50,20 @@ export async function activate(ctx: ExtensionContext) {
 }
 
 function refreshState() {
-    let status: ExtensionState = "RUNNING";
-    applications.forEach((a) => {
+    let status: ExtensionStatus = "RUNNING";
+    state.applications.forEach((a) => {
         if (a.status === "LOADING") {
             status = "LOADING";
         }
     });
-    extentionState = status;
-    updateStatusBar();
+    state.status = status;
 }
 
 function createStatusBar() {
     topModelStatusBar = window.createStatusBarItem(StatusBarAlignment.Right, 100);
-    context.subscriptions.push(topModelStatusBar);
+    state.context.subscriptions.push(topModelStatusBar);
     updateStatusBar();
+    topModelStatusBar.show();
 }
 
 /********************************************************* */
@@ -85,8 +77,8 @@ async function checkInstall() {
             open("https://dotnet.microsoft.com/download/dotnet/6.0");
         }
     } else {
-        await checkToollInsall(tools.topmodel);
-        await checkToollInsall(tools.tmdgen);
+        await checkToollInsall(state.tools.topmodel);
+        await checkToollInsall(state.tools.tmdgen);
     }
 }
 
@@ -121,11 +113,11 @@ async function checkToollInsall(tool: TmdTool) {
         result = "Not Installed";
     }
     if (result !== "1\r\n") {
-        if (tool.name === "TopModel.Generator") {
+        if (tool === state.tools.topmodel) {
             const option = "Installer TopModel";
             const selection = await window.showInformationMessage("TopModel n'est pas installé", option);
             if (selection === option) {
-                installTool(tools.topmodel);
+                installTool(state.tools.topmodel);
             }
         }
     } else {
@@ -162,7 +154,6 @@ async function loadCurrentVersion(tool: TmdTool) {
         console.error("Erreur pendant le chargement de la version courante de l'outil", tool, error);
     }
 
-    updateStatusBar();
 }
 
 /***********************************************************/
@@ -172,12 +163,10 @@ async function loadCurrentVersion(tool: TmdTool) {
 async function installTool(tool: TmdTool) {
     // Recherche de mise à jour 
     await loadlatestVersion(tool);
-    extentionState = "INSTALLING";
-    updateStatusBar();
+    state.status = "INSTALLING";
     await execute(`dotnet tool install --global TopModel.Generator`);
     loadCurrentVersion(tool);
-    extentionState = "RUNNING";
-    updateStatusBar();
+    state.status = "RUNNING";
     const selection = await window.showInformationMessage(
         `Le générateur TopModel v${tool.latestVersion} a été installé`,
         "Voir la release note"
@@ -188,14 +177,12 @@ async function installTool(tool: TmdTool) {
 }
 
 async function updateTool(tool: TmdTool) {
-    extentionState = "UPDATING";
-    updateStatusBar();
+    state.status = "UPDATING";
     await execute(`dotnet nuget locals http-cache --clear`);
     await execute(`dotnet tool update --global ${tool.name}`);
     const oldVersion = tool.currentVersion;
     await loadCurrentVersion(tool);
-    extentionState = "RUNNING";
-    updateStatusBar();
+    state.status = "RUNNING";
     if (tool.latestVersion) {
         const selection = await window.showInformationMessage(
             `TopModel a été mis à jour ${oldVersion} --> ${tool.latestVersion}`,
@@ -208,16 +195,16 @@ async function updateTool(tool: TmdTool) {
 }
 
 function registerGlobalCommands() {
-    const modgenUpdate = commands.registerCommand(COMMANDS.updateModgen, () => updateTool(tools.topmodel));
-    context.subscriptions.push(modgenUpdate);
+    const modgenUpdate = commands.registerCommand(COMMANDS.updateModgen, () => updateTool(state.tools.topmodel));
+    state.context.subscriptions.push(modgenUpdate);
     COMMANDS_OPTIONS.update = {
         title: "Mettre à jour le générateur",
         description: "Mise à jour manuelle de l'outil de génération",
         command: COMMANDS.updateModgen,
         detail: "L'extension et le générateur sont versionnés séparément. Vous pouvez activer la mise à jour automatique dans les paramètres de l'extension.",
     };
-    const tmdgenUpdate = commands.registerCommand(COMMANDS.updateTmdgen, () => updateTool(tools.topmodel));
-    context.subscriptions.push(tmdgenUpdate);
+    const tmdgenUpdate = commands.registerCommand(COMMANDS.updateTmdgen, () => updateTool(state.tools.topmodel));
+    state.context.subscriptions.push(tmdgenUpdate);
     COMMANDS_OPTIONS.update = {
         title: "Mettre à jour le générateur",
         description: "Mise à jour manuelle de l'outil de génération",
@@ -233,14 +220,14 @@ function registerGlobalCommands() {
         );
         await commands.executeCommand("editor.action.goToReferences");
     });
-    registerPreview(context);
+    registerPreview(state.context);
     registerChooseCommand();
-    new Global(context).registerCommands();
+    new Global(state.context).registerCommands();
     refreshState();
 }
 
 function registerChooseCommand() {
-    context.subscriptions.push(
+    state.context.subscriptions.push(
         commands.registerCommand(COMMANDS.chooseCommand, async () => {
             const options = COMMANDS_OPTIONS;
             const quickPick = window.createQuickPick();
@@ -278,22 +265,22 @@ async function findConfFiles(): Promise<{ config: TopModelConfig; file: Uri }[]>
     return configs;
 }
 
-function updateStatusBar() {
-    switch (extentionState) {
+export function updateStatusBar() {
+    switch (state.status) {
         case "LOADING":
             topModelStatusBar.text = `$(loading~spin)`;
             topModelStatusBar.tooltip = "L'extension TopModel est en cours de chargement";
             break;
         case "RUNNING":
-            if (tools.topmodel.currentVersion !== tools.topmodel.latestVersion && tools.topmodel.latestVersion) {
+            if (state.tools.topmodel.currentVersion !== state.tools.topmodel.latestVersion && state.tools.topmodel.latestVersion) {
                 topModelStatusBar.text = `$(warning)`;
-                topModelStatusBar.tooltip = `Le générateur n\'est pas à jour (dernière version v${tools.topmodel.latestVersion})`;
-            } else if (tools.tmdgen.currentVersion !== tools.tmdgen.latestVersion && tools.tmdgen.latestVersion) {
+                topModelStatusBar.tooltip = `Le générateur n\'est pas à jour (dernière version v${state.tools.topmodel.latestVersion})`;
+            } else if (state.tools.tmdgen.currentVersion !== state.tools.tmdgen.latestVersion && state.tools.tmdgen.latestVersion && state.tools.tmdgen.currentVersion) {
                 topModelStatusBar.text = `$(warning)`;
-                topModelStatusBar.tooltip = `Le générateur tmd n\'est pas à jour (dernière version v${tools.tmdgen.latestVersion})`;
+                topModelStatusBar.tooltip = `Le générateur tmd n\'est pas à jour (dernière version v${state.tools.tmdgen.latestVersion})`;
             } else {
                 topModelStatusBar.text = `$(check-all)`;
-                topModelStatusBar.tooltip = `L\'extension TopModel est démarrée (${applications
+                topModelStatusBar.tooltip = `L\'extension TopModel est démarrée (${state.applications
                     .map((app) => app.config.app)
                     .join(", ")})`;
             }
@@ -310,10 +297,10 @@ function updateStatusBar() {
             topModelStatusBar.text = "$(loading~spin) Installation du générateur";
             break;
     }
-    if (extentionState !== "UPDATING" && extentionState !== "INSTALLING") {
+    if (state.status !== "UPDATING" && state.status !== "INSTALLING") {
         topModelStatusBar.text += ` TopModel`;
-        if (tools.topmodel.currentVersion) {
-            topModelStatusBar.text += ` v${tools.topmodel.currentVersion}`;
+        if (state.tools.topmodel.currentVersion) {
+            topModelStatusBar.text += ` v${state.tools.topmodel.currentVersion}`;
         }
     }
 
@@ -322,6 +309,5 @@ function updateStatusBar() {
 
 function handleError(exception: TopModelException) {
     window.showErrorMessage(exception.message);
-    extentionState = "ERROR";
-    updateStatusBar();
+    state.status = "ERROR";
 }

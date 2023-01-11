@@ -12,7 +12,7 @@ export type Mermaid = {
     module: string;
 };
 
-export type ExtensionState = "LOADING" | "ERROR" | "RUNNING" | "UPDATING" | "INSTALLING";
+export type ExtensionStatus = "LOADING" | "ERROR" | "RUNNING" | "UPDATING" | "INSTALLING";
 
 
 export type TmdTool = ({
