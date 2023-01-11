@@ -136,12 +136,29 @@ public class MapperGenerator : GeneratorBase
                         }
                         else
                         {
+                            var value = $"{mapper.Params[mapper.ParentMapper.Params.IndexOf(param)].Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.Name}";
+
                             if (mapping.Key is CompositionProperty cp)
                             {
                                 w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey?.Name} = ");
                             }
+                            else
+                            {
+                                var fromDomain = ((IFieldProperty)mapping.Key).Domain;
+                                var toDomain = mapping.Value.Domain;
+                                if (fromDomain != toDomain)
+                                {
+                                    var converter = fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
+                                    if (converter?.CSharp?.Text != null)
+                                    {
+                                        value = converter.CSharp.Text.Replace("{value}", value)
+                                            .ParseTemplate(fromDomain, "csharp", "from.")
+                                            .ParseTemplate(toDomain, "csharp", "to.");
+                                    }
+                                }
+                            }
 
-                            w.Write($"{mapper.Params[mapper.ParentMapper.Params.IndexOf(param)].Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.Name}");
+                            w.Write(value);
 
                             if (mapping.Key is CompositionProperty)
                             {
@@ -172,12 +189,29 @@ public class MapperGenerator : GeneratorBase
                     }
                     else
                     {
+                        var value = $"{param.Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.Name}";
+
                         if (mapping.Key is CompositionProperty cp)
                         {
                             w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey?.Name} = ");
                         }
+                        else
+                        {
+                            var fromDomain = ((IFieldProperty)mapping.Key).Domain;
+                            var toDomain = mapping.Value.Domain;
+                            if (fromDomain != toDomain)
+                            {
+                                var converter = fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
+                                if (converter?.CSharp?.Text != null)
+                                {
+                                    value = converter.CSharp.Text.Replace("{value}", value)
+                                        .ParseTemplate(fromDomain, "csharp", "from.")
+                                        .ParseTemplate(toDomain, "csharp", "to.");
+                                }
+                            }
+                        }
 
-                        w.Write($"{param.Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.Name}");
+                        w.Write(value);
 
                         if (mapping.Key is CompositionProperty)
                         {
@@ -228,17 +262,24 @@ public class MapperGenerator : GeneratorBase
                 }
             }
 
-            if (mapper.ParentMapper != null)
+            foreach (var mapping in (mapper.ParentMapper?.Mappings ?? new Dictionary<IProperty, IFieldProperty?>()).Concat(mapper.Mappings))
             {
-                foreach (var mapping in mapper.ParentMapper.Mappings)
-                {
-                    w.WriteLine(3, $"dest.{mapping.Value?.Name} = source.{GetSourceMapping(mapping.Key)};");
-                }
-            }
+                var value = $"source.{GetSourceMapping(mapping.Key)}";
 
-            foreach (var mapping in mapper.Mappings)
-            {
-                w.WriteLine(3, $"dest.{mapping.Value?.Name} = source.{GetSourceMapping(mapping.Key)};");
+                var fromDomain = mapping.Value?.Domain;
+                var toDomain = (mapping.Key as IFieldProperty)?.Domain;
+                if (fromDomain != null && toDomain != null && fromDomain != toDomain)
+                {
+                    var converter = fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
+                    if (converter?.CSharp?.Text != null)
+                    {
+                        value = converter.CSharp.Text.Replace("{value}", value)
+                            .ParseTemplate(fromDomain, "csharp", "from.")
+                            .ParseTemplate(toDomain, "csharp", "to.");
+                    }
+                }
+
+                w.WriteLine(3, $"dest.{mapping.Value?.Name} = {value};");
             }
 
             w.WriteLine(3, "return dest;");
