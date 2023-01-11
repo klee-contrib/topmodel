@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.20.1
+
+- [`5060edfd`](https://github.com/klee-contrib/topmodel/commit/5060edfd013ada7bbf01fa886fe21ad4b74fff3a) - [C#] Séparation des mappers avec moins une classe persistée des autres et retrait de [ReferencedType] pour tout sauf les références
+
 ## 1.20.0
 
 - [#176](https://github.com/klee-contrib/topmodel/pull/176) - Valeurs par défaut pour les propriétés
