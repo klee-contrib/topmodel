@@ -61,4 +61,9 @@ public class RegularProperty : IFieldProperty
             Required = Required
         };
     }
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }

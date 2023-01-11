@@ -126,6 +126,11 @@ public class AliasProperty : IFieldProperty
         return alp;
     }
 
+    public override string ToString()
+    {
+        return Name;
+    }
+
     internal AliasProperty Clone(IFieldProperty prop, Reference? includeReference)
     {
         var alp = new AliasProperty

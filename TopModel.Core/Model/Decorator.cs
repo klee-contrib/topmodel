@@ -23,4 +23,9 @@ public class Decorator
     public IList<IProperty> Properties { get; } = new List<IProperty>();
 
     internal Reference Location { get; set; }
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }

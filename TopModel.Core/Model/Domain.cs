@@ -45,4 +45,9 @@ public class Domain
     public ModelFile ModelFile { get; set; }
 
     internal Reference Location { get; set; }
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }

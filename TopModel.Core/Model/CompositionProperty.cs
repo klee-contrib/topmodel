@@ -52,4 +52,9 @@ public class CompositionProperty : IProperty
             Name = Name
         };
     }
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }

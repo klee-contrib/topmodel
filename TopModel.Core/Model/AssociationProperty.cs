@@ -107,4 +107,9 @@ public class AssociationProperty : IFieldProperty
             Type = Type
         };
     }
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }
