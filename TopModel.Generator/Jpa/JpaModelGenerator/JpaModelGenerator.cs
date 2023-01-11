@@ -17,6 +17,7 @@ public class JpaModelGenerator : GeneratorBase
 
     private readonly ModelConfig _modelConfig;
 
+
     public JpaModelGenerator(ILogger<JpaModelGenerator> logger, JpaConfig config, ModelConfig modelConfig)
         : base(logger, config)
     {
@@ -569,7 +570,24 @@ public class JpaModelGenerator : GeneratorBase
                 }
                 else
                 {
-                    fw.WriteLine(2, $"dest.set{mapping.Value!.GetJavaName().ToFirstUpper()}(this.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}());");
+                    if (mapping.Key is IFieldProperty ifpTo && mapping.Value is IFieldProperty ifpFrom && ifpFrom.Domain != ifpTo.Domain)
+                    {
+                        var converter = ifpFrom.Domain.ConvertersFrom.FirstOrDefault(c => c.To.Any(t => t == ifpTo.Domain));
+                        string convertion = $@"this.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}()";
+                        if (converter != null && converter.Java?.Text != null)
+                        {
+                            var convert = converter.Java.Text;
+                            convertion = convert.Replace("{value}", convertion)
+                                .ParseTemplate(ifpFrom.Domain, "java", "from.")
+                                .ParseTemplate(ifpTo.Domain, "java", "to.");
+                        }
+
+                        fw.WriteLine(2, $"this.{mapping.Key.GetJavaName()} = {convertion};");
+                    }
+                    else
+                    {
+                        fw.WriteLine(2, $"dest.set{mapping.Value!.GetJavaName().ToFirstUpper()}(this.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}());");
+                    }
                 }
             }
 

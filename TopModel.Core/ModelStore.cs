@@ -942,6 +942,16 @@ public class ModelStore
 
                 converter.To.Add(domain);
             }
+
+            foreach (var f in converter.From)
+            {
+                f.ConvertersFrom.Add(converter);
+            }
+
+            foreach (var f in converter.To)
+            {
+                f.ConvertersTo.Add(converter);
+            }
         }
 
         // Résolutions des mappers

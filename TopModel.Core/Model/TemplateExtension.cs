@@ -21,6 +21,30 @@ public static class TemplateExtension
         return result;
     }
 
+    public static string ParseTemplate(this string template, Domain d, string targetLanguage, string prefix = "")
+    {
+        if (string.IsNullOrEmpty(template) || !template.Contains('{'))
+        {
+            return template;
+        }
+
+        var result = template;
+        foreach (var t in template.ExtractVariables())
+        {
+            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), d, prefix));
+            if (targetLanguage == "java")
+            {
+                result = result.Replace(t.Value, ResolveVariableJava(t.Value.Trim('{', '}'), d, prefix));
+            }
+            else
+            {
+                result = result.Replace(t.Value, ResolveVariableCSharp(t.Value.Trim('{', '}'), d, prefix));
+            }
+        }
+
+        return result;
+    }
+
     public static string ParseTemplate(this string template, IProperty p)
     {
         if (p is IFieldProperty fp)
@@ -139,6 +163,42 @@ public static class TemplateExtension
         return result;
     }
 
+    private static string ResolveVariable(this string input, Domain d, string prefix = "")
+    {
+        if (!
+        (input.Contains($"{prefix}mediaType"))
+        || (input.Contains($"{prefix}length"))
+        || (input.Contains($"{prefix}scale"))
+        || (input.Contains($"{prefix}name"))
+        || (input.Contains($"{prefix}sqlType"))
+        ) return "{" + input + "}";
+
+        var transform = input.GetTransformation();
+        var result = input.Split(':').First()
+            .Replace($"{prefix}mediaType", transform(d.MediaType ?? string.Empty))
+            .Replace($"{prefix}length", transform(d.Length?.ToString() ?? string.Empty))
+            .Replace($"{prefix}scale", transform(d.Scale?.ToString() ?? string.Empty))
+            .Replace($"{prefix}name", transform(d.Name ?? string.Empty))
+            .Replace($"{prefix}sqlType", transform(d.SqlType ?? string.Empty));
+        return result;
+    }
+
+    private static string ResolveVariableJava(this string input, Domain d, string prefix = "")
+    {
+        var transform = input.GetTransformation();
+        var result = input.Split(':').First()
+            .Replace($"{prefix}type", transform(d.Java?.Type ?? string.Empty));
+        return result;
+    }
+
+    private static string ResolveVariableCSharp(this string input, Domain d, string prefix = "")
+    {
+        var transform = input.GetTransformation();
+        var result = input.Split(':').First()
+            .Replace($"{prefix}type", transform(d.CSharp?.Type ?? string.Empty));
+        return result;
+    }
+
     private static string ResolveVariable(this string input, CompositionProperty cp)
     {
         var transform = input.GetTransformation();
@@ -154,13 +214,13 @@ public static class TemplateExtension
     {
         var transform = input.GetTransformation();
         var result = input.Split(':').First()
-             .Replace("primaryKey.name", transform(c.PrimaryKey?.Name ?? string.Empty))
-             .Replace("trigram", transform(c.Trigram))
-             .Replace("name", transform(c.Name))
-             .Replace("comment", transform(c.Comment))
-             .Replace("label", transform(c.Label ?? string.Empty))
-             .Replace("pluralName", transform(c.PluralName ?? string.Empty))
-             .Replace("module", transform(c.ModelFile.Module ?? string.Empty));
+            .Replace("primaryKey.name", transform(c.PrimaryKey?.Name ?? string.Empty))
+            .Replace("trigram", transform(c.Trigram))
+            .Replace("name", transform(c.Name))
+            .Replace("comment", transform(c.Comment))
+            .Replace("label", transform(c.Label ?? string.Empty))
+            .Replace("pluralName", transform(c.PluralName ?? string.Empty))
+            .Replace("module", transform(c.ModelFile.Module ?? string.Empty));
 
         for (var i = 0; i < parameters.Length; i++)
         {
@@ -174,11 +234,11 @@ public static class TemplateExtension
     {
         var transform = input.GetTransformation();
         var result = input.Split(':').First()
-             .Replace("name", transform(e.Name))
-             .Replace("method", transform(e.Method))
-             .Replace("route", transform(e.Route))
-             .Replace("description", transform(e.Description))
-             .Replace("module", transform(e.ModelFile.Module ?? string.Empty));
+            .Replace("name", transform(e.Name))
+            .Replace("method", transform(e.Method))
+            .Replace("route", transform(e.Route))
+            .Replace("description", transform(e.Description))
+            .Replace("module", transform(e.ModelFile.Module ?? string.Empty));
 
         for (var i = 0; i < parameters.Length; i++)
         {

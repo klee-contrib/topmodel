@@ -28,7 +28,6 @@ class:
           - class: Utilisateur
             mappings:
               UtilisateurParent: UtilisateurIdParent
-              email: Nom
     to:
       - class: Utilisateur
         mappings:

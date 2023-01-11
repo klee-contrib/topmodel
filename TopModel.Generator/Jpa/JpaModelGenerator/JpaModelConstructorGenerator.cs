@@ -390,7 +390,24 @@ public class JpaModelConstructorGenerator
                     }
                     else
                     {
-                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value!.Name.ToFirstUpper()}();");
+                        if (mapping.Key is IFieldProperty ifpFrom && mapping.Value is IFieldProperty ifpTo && ifpFrom.Domain != ifpTo.Domain)
+                        {
+                            var converter = ifpFrom.Domain.ConvertersFrom.FirstOrDefault(c => c.To.Any(t => t == ifpTo.Domain));
+                            string convertion = $@"{param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value!.Name.ToFirstUpper()}()";
+                            if (converter != null && converter.Java?.Text != null)
+                            {
+                                var convert = converter.Java.Text;
+                                convertion = convert.Replace("{value}", convertion)
+                                    .ParseTemplate(ifpFrom.Domain, "java", "from.")
+                                    .ParseTemplate(ifpTo.Domain, "java", "to.");
+                            }
+
+                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {convertion};");
+                        }
+                        else
+                        {
+                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value!.Name.ToFirstUpper()}();");
+                        }
                     }
                 }
 
