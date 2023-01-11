@@ -3,6 +3,7 @@ import { ExtensionContext, workspace, commands, window, Terminal } from "vscode"
 import { TopModelConfig } from "./types";
 import { addPreviewApplication } from "./preview";
 import { COMMANDS, COMMANDS_OPTIONS, SERVER_EXE } from "./const";
+import { makeAutoObservable } from "mobx";
 
 export class Application {
     private _terminal?: Terminal;
@@ -19,22 +20,25 @@ export class Application {
         return this._terminal;
     }
 
-    public status: "LOADING" | "STARTED" = "LOADING";
+    public status: "LOADING" | "STARTED" | "ERROR" = "LOADING";
     constructor(
         private readonly configPath: string,
         public readonly config: TopModelConfig,
         public readonly extensionContext: ExtensionContext
     ) {
+        makeAutoObservable(this);
         window.onDidCloseTerminal((terminal) => {
             if (terminal === this._terminal) {
                 this._terminal = undefined;
             }
         });
+        this.start();
     }
 
     public async start() {
         await this.startLanguageServer();
         this.registerCommands();
+        this.status = "STARTED";
     }
 
     public startModgen(watch: boolean) {
@@ -62,7 +66,6 @@ export class Application {
         configFolderA.pop();
         const configFolder = configFolderA.join("/");
         this.modelRoot = this.config.modelRoot || configFolder;
-        // Create the language client and start the client.
         this.client = new LanguageClient(
             `TopModel - ${this.config.app}`,
             `TopModel - ${this.config.app}`,
@@ -71,7 +74,6 @@ export class Application {
         );
         await this.client.start();
         addPreviewApplication(this);
-        this.status = "STARTED";
     }
 
     private registerCommands() {
