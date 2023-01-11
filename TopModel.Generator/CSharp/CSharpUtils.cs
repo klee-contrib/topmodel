@@ -137,19 +137,17 @@ public static class CSharpUtils
              .Replace("{app}", appName);
     }
 
-    public static string? GetMapperFilePath(this CSharpConfig config, IEnumerable<Class> classList)
+    public static string? GetMapperFilePath(this CSharpConfig config, Class? sampleClass)
     {
-        var firstClass = classList.FirstOrDefault();
-
-        if (firstClass == null)
+        if (sampleClass == null)
         {
             return null;
         }
 
-        var directory = Path.Combine(config.OutputDirectory, config.GetModelPath(firstClass), "Mappers/generated");
+        var directory = Path.Combine(config.OutputDirectory, config.GetModelPath(sampleClass), "generated");
         Directory.CreateDirectory(directory);
 
-        return Path.Combine(directory, $"{firstClass.Namespace.Module}Mappers.cs");
+        return Path.Combine(directory, $"{sampleClass.Namespace.Module}{(sampleClass.IsPersistent ? string.Empty : "DTO")}Mappers.cs");
     }
 
     public static string GetReferenceAccessorName(this CSharpConfig config, Class classe)

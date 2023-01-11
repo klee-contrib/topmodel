@@ -492,11 +492,11 @@ public class CSharpClassGenerator : GeneratorBase
 
             if (_config.Kinetix)
             {
-                if (prop is AssociationProperty ap && ap.Association.IsPersistent)
+                if (prop is AssociationProperty ap && ap.Association.IsPersistent && ap.Association.Reference)
                 {
                     w.WriteAttribute(2, "ReferencedType", $"typeof({ap.Association.Name})");
                 }
-                else if (fp is AliasProperty alp2 && !alp2.PrimaryKey && alp2.Property.PrimaryKey)
+                else if (fp is AliasProperty alp2 && !alp2.PrimaryKey && alp2.Property.PrimaryKey && alp2.Property.Class.Reference)
                 {
                     w.WriteAttribute(2, "ReferencedType", $"typeof({alp2.Property.Class.Name})");
                 }
@@ -609,13 +609,13 @@ public class CSharpClassGenerator : GeneratorBase
 
             switch (property)
             {
-                case AssociationProperty { Association.IsPersistent: true } ap:
+                case AssociationProperty { Association.IsPersistent: true, Association.Reference: true } ap:
                     usings.Add(_config.GetNamespace(ap.Association));
                     break;
-                case AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } ap2 }:
+                case AliasProperty { Property: AssociationProperty { Association.IsPersistent: true, Association.Reference: true } ap2 }:
                     usings.Add(_config.GetNamespace(ap2.Association));
                     break;
-                case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp }:
+                case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true, Class.Reference: true } rp }:
                     usings.Add(_config.GetNamespace(rp.Class));
                     break;
                 case CompositionProperty cp:
