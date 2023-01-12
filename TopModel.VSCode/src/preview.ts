@@ -21,8 +21,8 @@ export class TopModelPreviewPanel {
     public readonly panel: WebviewPanel;
     private readonly context: ExtensionContext;
 
-    private mermaidSrcUri: Uri;
-    private previewSrcUri: Uri;
+    private readonly mermaidSrcUri: Uri;
+    private readonly previewSrcUri: Uri;
     public currentFsPath: string = "";
     private matrix: { scale: number; x: number; y: number };
 
@@ -36,6 +36,7 @@ export class TopModelPreviewPanel {
             { viewColumn: ViewColumn.Beside, preserveFocus: true }, // Editor column to show the new webview panel in.
             { enableScripts: true } // Webview options. More on these later.
         );
+
         this.matrix = {
             x: -1,
             y: -1,
@@ -47,7 +48,16 @@ export class TopModelPreviewPanel {
         this.previewSrcUri = this.panel.webview.asWebviewUri(
             Uri.file(path.join(this.context.extensionPath, "out", "topmodel-preview.js"))
         );
-        context.subscriptions.push(
+
+        this.initSubscriptions();
+
+        if (window.activeTextEditor) {
+            this.currentFsPath = window.activeTextEditor.document.uri.fsPath;
+        }
+    }
+
+    private initSubscriptions() {
+        this.context.subscriptions.push(
             window.onDidChangeActiveTextEditor(async (textEditor?: TextEditor) => {
                 if (textEditor) {
                     this.currentFsPath = textEditor.document.uri.fsPath;
@@ -56,25 +66,19 @@ export class TopModelPreviewPanel {
                     this.matrix.scale = 1;
                 }
             })
-        );
-        context.subscriptions.push(
+            ,
             workspace.onDidChangeTextDocument(async (textDocumentChangeEvent?: TextDocumentChangeEvent) => {
                 if (textDocumentChangeEvent) {
                     this.currentFsPath = textDocumentChangeEvent.document.uri.fsPath;
                 }
-            })
-        );
-        if (window.activeTextEditor) {
-            this.currentFsPath = window.activeTextEditor.document.uri.fsPath;
-        }
-        context.subscriptions.push(
+            }),
             this.panel.webview.onDidReceiveMessage((message) => {
                 this.handleMessage(message);
             })
         );
     }
 
-    get currentApplication(): Application | undefined {
+    get currentApplication(): Application {
         if (this.currentFsPath) {
             return this.applications.find((c) => {
                 if (this.currentFsPath.indexOf(c.modelRoot || "") >= 0) {
@@ -148,8 +152,7 @@ export class TopModelPreviewPanel {
         <title>TopModel</title>  
     </head>   
     <body>
-        <h1>${this.applications.length > 1 ? "[" + this.currentApplication.config.app + "] : " : ""}${this.diagramMap[this.currentFsPath].module
-            }</h1>
+        <h1>${this.diagramTitle}</h1>
         <div>
             <button onclick="zoomClick(false)">-</button>
             <button onclick="zoomClick(true)">+</button>
@@ -162,7 +165,10 @@ export class TopModelPreviewPanel {
     </body>
     </html>`;
     }
-
+    get diagramTitle() {
+        const currentAppTitle = this.applications.length > 1 ? "[" + (this.currentApplication.config.app) + "] : " : "";
+        return `${currentAppTitle}${this.diagramMap[this.currentFsPath].module}`;
+    }
     get mermaidContent() {
         if (this.diagramMap[this.currentFsPath]?.diagram && this.diagramMap[this.currentFsPath].diagram !== "classDiagram\n\n") {
             return `<div class="mermaid"> 

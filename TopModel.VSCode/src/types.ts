@@ -12,4 +12,4 @@ export type Mermaid = {
     module: string;
 };
 
-export type Status = "LOADING" | "ERROR" | "READY" | "INSTALLING";
+export type Status = "LOADING" | "ERROR" | "WARNING" | "READY" | "INSTALLING";

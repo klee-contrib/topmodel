@@ -51,17 +51,17 @@
       {
         "command": "topmodel.modgen.update",
         "title": "Mettre à jour TopModel.Generator",
-        "category": "TopModel"
+        "category": "TopModel.Generator"
       },
       {
         "command": "topmodel.modgen",
         "title": "Lancer la génération du modèle",
-        "category": "TopModel"
+        "category": "TopModel.Generator"
       },
       {
         "command": "topmodel.modgen.watch",
         "title": "Lancer la génération du modèle en continu",
-        "category": "TopModel"
+        "category": "TopModel.Generator"
       },
       {
         "command": "topmodel.preview",

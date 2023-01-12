@@ -1,15 +1,20 @@
 import { autorun, makeAutoObservable } from "mobx";
 import { execute } from "./utils";
 import {
+    commands,
+    ExtensionContext,
     window, workspace
 } from "vscode";
 import { Status } from "./types";
+import { COMMANDS } from "./const";
+import { Disposable } from "vscode-jsonrpc";
 export class TmdTool {
     currentVersion?: string;
     latestVersion?: string;
     error?: string;
     installed?: boolean;
     status: Status;
+    updateCommandDisposable?: Disposable;
     constructor(
         public readonly name: "TopModel.Generator" | "TopModel.ModelGenerator",
         public readonly command: "modgen" | "tmdgen") {
@@ -26,16 +31,15 @@ export class TmdTool {
     }
 
     get statusText(): string {
-        let text: string = `${this.command} v${this.currentVersion ?? "..."} `;
-        let icon: string = "";
+        let text: string = `${this.command}${this.currentVersion ? ' v' + this.currentVersion : ""} `;
+        let icon: string | undefined;
         switch (this.status) {
             case "ERROR":
                 icon = "diff-review-close";
                 text += "en erreur";
                 break;
             case "INSTALLING":
-                icon = "loading~spin";
-                text += `installation de la v${this.latestVersion}`;
+                text += `-> v${this.latestVersion}`;
                 break;
             case "LOADING":
                 icon = "loading~spin";
@@ -44,8 +48,11 @@ export class TmdTool {
             case "READY":
                 return text;
         }
-
-        return `$(${icon}) ${text}`;
+        if (icon) {
+            return `$(${icon}) ${text}`;
+        } else {
+            return text;
+        }
     }
 
     public async loadLatestVersion() {
@@ -103,6 +110,7 @@ export class TmdTool {
         } catch (error: any) {
             result = "Not Installed";
         }
+
         this.installed = result === "1\r\n";
     }
 
@@ -136,7 +144,8 @@ export class TmdTool {
         const oldVersion = this.currentVersion;
         await execute(`dotnet nuget locals http-cache --clear`);
         await execute(`dotnet tool update --global ${this.name}`);
-        this.loadCurrentVersion();
+        await this.loadCurrentVersion();
+        this.status = "READY";
         if (this.latestVersion) {
             const selection = await window.showInformationMessage(
                 `TopModel a été mis à jour ${oldVersion} --> ${this.latestVersion}`,
@@ -145,7 +154,6 @@ export class TmdTool {
             if (selection === "Voir la release note") {
                 open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
             }
-            this.status = "READY";
         }
     }
 
@@ -157,5 +165,10 @@ export class TmdTool {
                 this.install();
             }
         }
+    }
+
+    public registerUpdateCommand(context: ExtensionContext) {
+        this.updateCommandDisposable = commands.registerCommand(`topmodel.${this.command}.update`, () => this.update());
+        context.subscriptions.push(this.updateCommandDisposable);
     }
 }

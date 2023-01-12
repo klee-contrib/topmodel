@@ -27,7 +27,7 @@ export class Application {
     ) {
         makeAutoObservable(this);
         window.onDidCloseTerminal((terminal) => {
-            if (terminal === this._terminal) {
+            if (terminal.name === this._terminal?.name) {
                 this._terminal = undefined;
             }
         });
@@ -83,9 +83,9 @@ export class Application {
         const modgenCommand = (watch ? COMMANDS.modgenWatch : COMMANDS.modgen) + " - " + this.config.app;
         const modgen = commands.registerCommand(modgenCommand, () => this.startModgen(watch));
         COMMANDS_OPTIONS[modgenCommand] = {
-            title: `${this.config.app} - Lancer la génération ${watch ? "en continu" : ""}`,
+            title: `${this.config.app} - modgen - Lancer la génération ${watch ? "en continu" : ""}`,
             description: `Lancer la génération ${watch ? "continue " : ""} de ${this.config.app}`,
-            command: modgenCommand,
+            command: modgenCommand
         };
         this.extensionContext.subscriptions.push(modgen);
     }
