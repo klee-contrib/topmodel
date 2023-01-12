@@ -1,8 +1,10 @@
 import { makeAutoObservable } from "mobx";
-import { ExtensionContext } from "vscode";
+import { commands, ExtensionContext } from "vscode";
 import { Application } from "./application";
+import { TopModelPreviewPanel } from "./preview";
 import { TmdTool } from "./tool";
 import { Status } from "./types";
+import { COMMANDS } from "./const";
 
 export class State {
     tools = {
@@ -12,15 +14,22 @@ export class State {
 
     applications: Application[] = [];
     error?: string;
+
+    preview?: TopModelPreviewPanel;
     constructor(public readonly context: ExtensionContext) {
         makeAutoObservable(this);
+        commands.registerCommand(COMMANDS.preview, () => {
+            if (!this.preview) {
+                this.preview = new TopModelPreviewPanel(context, this.applications); 
+                this.preview.panel.onDidDispose(() => (this.preview = undefined), undefined, context.subscriptions);
+            }
+            this.preview?.panel.reveal();
+        });
     }
 
     get status(): Status {
         let status: Status = "LOADING";
-        if (this.appStatus === "LOADING" || this.applications.length === 0 || this.toolsStatus === "LOADING") {
-            status = "LOADING";
-        } else if (this.appStatus === "READY" && this.toolsStatus === "READY") {
+        if (this.appStatus === "READY" && this.toolsStatus === "READY") {
             status = "READY";
         }
 

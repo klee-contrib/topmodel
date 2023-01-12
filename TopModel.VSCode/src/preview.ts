@@ -1,3 +1,4 @@
+import { autorun, makeAutoObservable } from "mobx";
 import path = require("path");
 import {
     WebviewPanel,
@@ -13,49 +14,21 @@ import {
     Position,
 } from "vscode";
 import { Application } from "./application";
-import { COMMANDS } from "./const";
 import { Mermaid } from "./types";
 
-let currentPanel: TopModelPreviewPanel | null;
-let currentApplication: Application;
-const APPLICATIONS: Application[] = [];
-
-export function registerPreview(context: ExtensionContext) {
-    context.subscriptions.push(
-        commands.registerCommand(COMMANDS.preview, () => {
-            if (!currentPanel) {
-                currentPanel = new TopModelPreviewPanel(context);
-            } else {
-                currentPanel.panel.reveal();
-            }
-        })
-    );
-}
-
-export function addPreviewApplication(application: Application) {
-    currentApplication = application;
-    APPLICATIONS.push(application);
-}
-
-function updateCurrentApplication(currentFsPath: string) {
-    APPLICATIONS.forEach((c) => {
-        if (currentFsPath.indexOf(c.modelRoot || "") >= 0) {
-            currentApplication = c;
-        }
-    });
-}
-
-class TopModelPreviewPanel {
+export class TopModelPreviewPanel {
     private readonly diagramMap: Record<string, Mermaid> = {};
     public readonly panel: WebviewPanel;
     private readonly context: ExtensionContext;
 
     private mermaidSrcUri: Uri;
     private previewSrcUri: Uri;
-    private currentFsPath: string = "";
+    public currentFsPath: string = "";
     private matrix: { scale: number; x: number; y: number };
 
-    constructor(context: ExtensionContext) {
+    constructor(context: ExtensionContext, private readonly applications: Application[]) {
+        makeAutoObservable(this);
+        autorun(() => this.refresh());
         this.context = context;
         this.panel = window.createWebviewPanel(
             "preview", // Identifies the type of the webview. Used internally
@@ -81,7 +54,6 @@ class TopModelPreviewPanel {
                     this.matrix.x = -1;
                     this.matrix.y = -1;
                     this.matrix.scale = 1;
-                    this.refresh();
                 }
             })
         );
@@ -89,29 +61,37 @@ class TopModelPreviewPanel {
             workspace.onDidChangeTextDocument(async (textDocumentChangeEvent?: TextDocumentChangeEvent) => {
                 if (textDocumentChangeEvent) {
                     this.currentFsPath = textDocumentChangeEvent.document.uri.fsPath;
-                    this.refresh();
                 }
             })
         );
         if (window.activeTextEditor) {
-            const textEditor = window.activeTextEditor;
-            this.currentFsPath = textEditor.document.uri.fsPath;
-            this.refresh();
+            this.currentFsPath = window.activeTextEditor.document.uri.fsPath;
         }
         context.subscriptions.push(
             this.panel.webview.onDidReceiveMessage((message) => {
                 this.handleMessage(message);
             })
         );
-        this.panel.onDidDispose(() => (currentPanel = null), undefined, context.subscriptions);
     }
+
+    get currentApplication(): Application | undefined {
+        if (this.currentFsPath) {
+            return this.applications.find((c) => {
+                if (this.currentFsPath.indexOf(c.modelRoot || "") >= 0) {
+                    return c;
+                }
+            }) ?? this.applications[0];
+        }
+        return this.applications[0];
+    }
+
     handleMessage(message: any) {
         if (message.type === "update:matrix") {
             this.matrix = message.matrix;
         }
         if (message.type === "click:class") {
             const className = message.className;
-            currentApplication.client!.sendRequest("workspace/symbol", { query: className }).then((value) => {
+            this.currentApplication?.client?.sendRequest("workspace/symbol", { query: className }).then((value) => {
                 const symbol = (value as SymbolInformation[]).filter((s) => s.name === className)[0];
                 const uri = Uri.file((symbol.location.uri as any).replace("file:///", ""));
                 commands.executeCommand(
@@ -124,18 +104,17 @@ class TopModelPreviewPanel {
         }
     }
     async refresh() {
-        updateCurrentApplication(this.currentFsPath);
-        await this.refreshDiagram();
-        this.refreshContent();
+        if (this.currentApplication?.client) {
+            const data = await this.currentApplication.client.sendRequest("mermaid", { uri: this.currentFsPath });
+            this.diagramMap[this.currentFsPath] = data as Mermaid;
+            this.panel.webview.html = this.webviewContent;
+        }
     }
-    async refreshDiagram() {
-        const data = await currentApplication.client!.sendRequest("mermaid", { uri: this.currentFsPath });
-        this.diagramMap[this.currentFsPath] = data as Mermaid;
-    }
-    refreshContent() {
-        this.panel.webview.html = this.getWebviewContent();
-    }
-    getWebviewContent() {
+
+    get webviewContent() {
+        if (!(this.diagramMap[this.currentFsPath] && this.currentApplication)) {
+            return "";
+        }
         return `<!DOCTYPE html>
         <html lang="en">
         <head>
@@ -169,24 +148,23 @@ class TopModelPreviewPanel {
         <title>TopModel</title>  
     </head>   
     <body>
-        <h1>${APPLICATIONS.length > 1 ? "[" + currentApplication.config.app + "] : " : ""}${
-            this.diagramMap[this.currentFsPath].module
-        }</h1>
+        <h1>${this.applications.length > 1 ? "[" + this.currentApplication.config.app + "] : " : ""}${this.diagramMap[this.currentFsPath].module
+            }</h1>
         <div>
             <button onclick="zoomClick(false)">-</button>
             <button onclick="zoomClick(true)">+</button>
         </div>
         <div class="cadre">
             <div id="draggable" class="dragme">
-                ${this.getMermaidContent()}
+                ${this.mermaidContent}
             </div>
         </div>
     </body>
     </html>`;
     }
 
-    getMermaidContent() {
-        if (this.diagramMap[this.currentFsPath].diagram !== "classDiagram\n\n") {
+    get mermaidContent() {
+        if (this.diagramMap[this.currentFsPath]?.diagram && this.diagramMap[this.currentFsPath].diagram !== "classDiagram\n\n") {
             return `<div class="mermaid"> 
             %%{init: {'securityLevel': 'loose', 'theme': 'base', 'themeVariables': { 'darkMode': true,  'primaryColor': '#333f85', 'lineColor': '#2d9cdb'}}}%%
                 ${this.diagramMap[this.currentFsPath].diagram}

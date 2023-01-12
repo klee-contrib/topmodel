@@ -1,7 +1,6 @@
 import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
 import { ExtensionContext, workspace, commands, window, Terminal } from "vscode";
 import { TopModelConfig } from "./types";
-import { addPreviewApplication } from "./preview";
 import { COMMANDS, COMMANDS_OPTIONS, SERVER_EXE } from "./const";
 import { makeAutoObservable } from "mobx";
 
@@ -73,7 +72,6 @@ export class Application {
             {}
         );
         await this.client.start();
-        addPreviewApplication(this);
     }
 
     private registerCommands() {

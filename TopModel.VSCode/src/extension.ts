@@ -10,7 +10,6 @@ import {
 } from "vscode";
 import * as fs from "fs";
 import { TopModelConfig, TopModelException } from "./types";
-import { registerPreview } from "./preview";
 import { Application } from "./application";
 import { COMMANDS, COMMANDS_OPTIONS } from "./const";
 import { execute } from "./utils";
@@ -92,7 +91,6 @@ function registerGlobalCommands() {
         );
         await commands.executeCommand("editor.action.goToReferences");
     });
-    registerPreview(state.context);
     registerChooseCommand();
     new Global(state.context).registerCommands();
 }
