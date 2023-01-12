@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.21.0
+
+- [`ca2aaae7`](https://github.com/klee-contrib/topmodel/commit/ca2aaae7843aae405eec147eea12f699509eb71a) - [Core] Ajout de la notion de converter
+- [`648267a2`](https://github.com/klee-contrib/topmodel/commit/ca2aaae7843aae405eec147eea12f699509eb71a) - [VSCode] Refactorisation extension
+
 ## 1.20.1
 
 - [`5060edfd`](https://github.com/klee-contrib/topmodel/commit/5060edfd013ada7bbf01fa886fe21ad4b74fff3a) - [C#] Séparation des mappers avec moins une classe persistée des autres et retrait de [ReferencedType] pour tout sauf les références
