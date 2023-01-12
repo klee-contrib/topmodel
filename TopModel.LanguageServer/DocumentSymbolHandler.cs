@@ -85,6 +85,20 @@ public class DocumentSymbolHandler : DocumentSymbolHandlerBase
                     }
                 };
             }))
+            .Concat(file.Converters.Select(c =>
+            {
+                return new SymbolInformation
+                {
+                    Deprecated = false,
+                    Kind = SymbolKind.Function,
+                    Name = "Converter#" + file.Converters.IndexOf(c),
+                    Location = new Location
+                    {
+                        Range = c.GetLocation()?.ToRange()!,
+                        Uri = request.TextDocument.Uri
+                    }
+                };
+            }))
             .Where(d => d.Location.Range != null)
             .Select(t => new SymbolInformationOrDocumentSymbol(t))));
     }
