@@ -1,4 +1,5 @@
 import { autorun, makeAutoObservable } from "mobx";
+import { request } from "https";
 import { execute } from "./utils";
 import { commands, ExtensionContext, window, workspace } from "vscode";
 import { Status } from "./types";
@@ -48,24 +49,22 @@ export class TmdTool {
         }
     }
 
-    
     public async init() {
         await Promise.all([this.loadLatestVersion(), this.loadCurrentVersion(), this.checkInstall()]);
         this.status = "READY";
     }
 
     private async loadLatestVersion() {
-        const https = require("https");
         const options = {
             hostname: "api.nuget.org",
             port: 443,
-            path: `/v3-flatcontainer/${this.name}/index.json`,
+            path: `/v3-flatcontainer/${this.name.toLowerCase()}/index.json`,
             method: "GET",
         };
 
-        const req = await https.request(options, (res: any) => {
-            res.on("data", async (reponse: string) => {
-                const { versions }: { versions: string[] } = JSON.parse(reponse);
+        const req = request(options, res => {
+            res.on("data", async response => {
+                const { versions }: { versions: string[] } = JSON.parse(response);
                 this.latestVersion = versions[versions.length - 1];
             });
         });
