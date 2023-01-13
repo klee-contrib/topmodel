@@ -19,7 +19,7 @@ Les mappers sont générés comme des méthodes statiques dans une classe statiq
 
 De plus, pour un module, on sépare les mappers en deux fichiers potentiels :
 
-- Tous les mappers qui référencent au moins une classe persistées seront générés dans un fichier `ModuleMappers`, qui sera généré à côté des classes persistées du module.
+- Tous les mappers qui référencent au moins une classe persistée seront générés dans un fichier `ModuleMappers`, qui sera généré à côté des classes persistées du module.
 - Les autres (ceux qui référencent uniquement des classes non persistées) seront générés dans un fichier `ModuleDTOMappers`, qui sera généré à côté des classes non-persistées du module.
 
 ### Génération du DbContext
@@ -32,7 +32,7 @@ Les contrôleurs sont **partiellement générés**. TopModel va initialiser un c
 
 Les générations successives du contrôleur vont essayer de retrouver chaque endpoint dans le contrôleur préalablement généré :
 
-- Si on le trouve, alors on récupère le corps de la méthode existante, on remplace l'ancienne méthode par l'ancienne, puis on remet l'ancien corps
+- Si on le trouve, alors on récupère le corps de la méthode existante, on remplace l'ancienne méthode par l'ancienne, puis on remet l'ancien corps.
 - Si on ne le trouve pas, alors on l'ajoute vide.
 
 De plus, on va **supprimer toutes les méthodes publiques du contrôleur qui ne correspondent pas à un endpoint dans le modèle**. Par conséquent, **un renommage d'endpoint ne va pas conserver son implémentation dans le contrôleur**. Il conviendra donc de faire attention à ne pas perdre du code lors d'une telle opération (il faudra donc faire le copier/coller manuellement).
@@ -160,7 +160,7 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
 - `dbSchema`
 
-  Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo'/"public').
+  Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo'/'public').
 
 - `useLatestCSharp`
 
@@ -179,7 +179,7 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
 - `noColumnOnAlias`
 
-  Retire les attributs de colonnes sur les alias (ça ne plaît pas à EF Core mais ça peut être utile pour d'autres ORM pour mapper directement les colonnes)
+  Retire les attributs de colonnes sur les alias (ça ne plaît pas à EF Core mais ça peut être utile pour d'autres ORMs pour mapper directement les colonnes)
 
 - `noPersistance`
 
@@ -187,7 +187,7 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
 - `enumsForStaticReferences`
 
-  Utilise des enums C# à la place du type original pour les listes de références statiques (= clé primaire non-autogénérée)
+  Utilise des enums C# à la place du type original pour les listes de références statiques (= clé primaire non-autogénérée).
 
 - `useEFComments`
 
