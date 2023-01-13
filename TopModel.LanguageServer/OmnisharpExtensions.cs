@@ -24,9 +24,9 @@ public static class OmnisharpExtensions
     }
 
 
-    public static IEnumerable<(Reference Reference, ModelFile File)>? GetReferencesForPositionInFile(this ModelStore modelStore, Position position, ModelFile file)
+    public static References? GetReferencesForPositionInFile(this ModelStore modelStore, Position position, ModelFile file, bool includeTransitive = false)
     {
-        object? objet = null;
+        object? referencedObject = null;
 
         var matchedReference = file.References.Keys.SingleOrDefault(reference =>
             reference.Start.Line - 1 <= position.Line && position.Line <= reference.End.Line - 1
@@ -34,24 +34,42 @@ public static class OmnisharpExtensions
 
         if (matchedReference != null)
         {
-            objet = file.References[matchedReference];
-        }
-        else
-        {
-            objet =
-                (object?)file.Classes.SingleOrDefault(c => c.Name.GetLocation()!.Start.Line - 1 == position.Line || c.GetLocation()!.Start.Line - 1 == position.Line)
-                ?? (object?)file.Domains.SingleOrDefault(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line)
-                ?? file.Decorators.SingleOrDefault(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line);
+            referencedObject = file.References[matchedReference];
         }
 
+        var definedObjects = file.Classes.Where(c => c.Name.GetLocation()!.Start.Line - 1 == position.Line || c.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>()
+            .Concat(file.Domains.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
+            .Concat(file.Decorators.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
+            .Concat(file.Properties.Where(p => p.GetLocation()!.Start.Line - 1 == position.Line));
+
+        var definedObject = definedObjects.Count() == 1 ? definedObjects.Single() : null;
+
+        return new References(definedObject ?? referencedObject, new[] { definedObject!, referencedObject! }
+            .Where(o => o != null)
+            .SelectMany(objet => objet switch
+            {
+                Class classe => new[] { (Reference: classe.Name.GetLocation()!, File: classe.GetFile()!) }
+                    .Concat(modelStore.GetClassReferences(classe).Select(c => (Reference: (Reference)c.Reference, c.File))),
+                Domain domain => new[] { (Reference: domain.Name.GetLocation()!, File: domain.GetFile()!) }
+                    .Concat(modelStore.GetDomainReferences(domain).Select(d => (Reference: (Reference)d.Reference, d.File))),
+                Decorator decorator => new[] { (Reference: decorator.Name.GetLocation()!, File: decorator.GetFile()!) }
+                    .Concat(modelStore.GetDecoratorReferences(decorator).Select(d => (Reference: (Reference)d.Reference, d.File))),
+                IProperty property => new[] { (Reference: property.GetLocation()!, File: property.GetFile()!) }
+                    .Concat(modelStore.GetPropertyReferences(property, includeTransitive).Select(d => (d.Reference, d.File))),
+                _ => null!
+            })
+            .Distinct());
+    }
+
+    public static string? GetName(this object objet)
+    {
         return objet switch
         {
-            Class classe => new[] { (Reference: classe.Name.GetLocation()!, File: classe.GetFile()!) }
-                .Concat(modelStore.GetClassReferences(classe).Select(c => (Reference: (Reference)c.Reference, c.File))),
-            Domain domain => new[] { (Reference: domain.Name.GetLocation()!, File: domain.GetFile()!) }
-                .Concat(modelStore.GetDomainReferences(domain).Select(d => (Reference: (Reference)d.Reference, d.File))),
-            Decorator decorator => new[] { (Reference: decorator.Name.GetLocation()!, File: decorator.GetFile()!) }
-                .Concat(modelStore.GetDecoratorReferences(decorator).Select(d => (Reference: (Reference)d.Reference, d.File))),
+            Class classe => classe.Name,
+            Domain domain => domain.Name,
+            Decorator decorator => decorator.Name,
+            AliasProperty property => property.OriginalProperty?.Name ?? property.Name,
+            IProperty property => property.Name,
             _ => null
         };
     }

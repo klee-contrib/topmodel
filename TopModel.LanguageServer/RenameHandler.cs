@@ -3,6 +3,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
+using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer;
 
@@ -24,12 +25,13 @@ public class RenameHandler : RenameHandlerBase
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            var references = _modelStore.GetReferencesForPositionInFile(request.Position, file);
-            if (references != null)
+            var references = _modelStore.GetReferencesForPositionInFile(request.Position, file, true);
+            if (references != null && references.All(r => r.Reference.ReferenceName == references.Objet.GetName() || r.Reference is ClassReference))
             {
-                return Task.FromResult<WorkspaceEdit?>(new WorkspaceEdit()
+                return Task.FromResult<WorkspaceEdit?>(new WorkspaceEdit
                 {
                     Changes = references
+                        .Where(r => r.Reference.ReferenceName == references.Objet.GetName())
                         .Select(r => new Location { Uri = new Uri(_facade.GetFilePath(r.File)), Range = r.Reference.ToRange()! })
                         .Select(c => new
                         {
