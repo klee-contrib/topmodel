@@ -116,11 +116,21 @@ public static class ModelExtensions
 
     public static IEnumerable<(Reference Reference, ModelFile File)> GetPropertyReferences(this ModelStore modelStore, IProperty property, bool includeTransitive = false)
     {
-        return modelStore.GetPropertyReferencesCore(property, includeTransitive).Distinct();
+        return modelStore.GetPropertyReferencesCore(property, includeTransitive, includeTransitive).Distinct();
     }
 
-    private static IEnumerable<(Reference Reference, ModelFile File)> GetPropertyReferencesCore(this ModelStore modelStore, IProperty property, bool includeTransitive)
+    private static IEnumerable<(Reference Reference, ModelFile File)> GetPropertyReferencesCore(this ModelStore modelStore, IProperty property, bool collectBackward = false, bool collectForward = false)
     {
+        if (collectBackward && property is AliasProperty ap)
+        {
+            yield return (ap.OriginalProperty!.GetLocation()!, ap.OriginalProperty.GetFile());
+
+            foreach (var result in modelStore.GetPropertyReferencesCore(ap.OriginalProperty!, collectBackward: true))
+            {
+                yield return result;
+            }
+        }
+
         if (property is IFieldProperty fp)
         {
             foreach (var alp in modelStore.Files.SelectMany(c => c.Properties).OfType<AliasProperty>())
@@ -131,6 +141,14 @@ public static class ModelExtensions
                     if (reference != null)
                     {
                         yield return (reference, alp.GetFile());
+                    }
+
+                    if (collectForward)
+                    {
+                        foreach (var result in modelStore.GetPropertyReferencesCore(alp, collectForward: true))
+                        {
+                            yield return result;
+                        }
                     }
                 }
                 else if (alp.OriginalProperty?.Class == fp.Class)

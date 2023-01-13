@@ -25,7 +25,7 @@ public class RenameHandler : RenameHandlerBase
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            var references = _modelStore.GetReferencesForPositionInFile(request.Position, file);
+            var references = _modelStore.GetReferencesForPositionInFile(request.Position, file, true);
             if (references != null && references.All(r => r.Reference.ReferenceName == references.Objet.GetName() || r.Reference is ClassReference))
             {
                 return Task.FromResult<WorkspaceEdit?>(new WorkspaceEdit

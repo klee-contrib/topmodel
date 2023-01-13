@@ -24,7 +24,7 @@ public static class OmnisharpExtensions
     }
 
 
-    public static References? GetReferencesForPositionInFile(this ModelStore modelStore, Position position, ModelFile file)
+    public static References? GetReferencesForPositionInFile(this ModelStore modelStore, Position position, ModelFile file, bool includeTransitive = false)
     {
         object? referencedObject = null;
 
@@ -55,7 +55,7 @@ public static class OmnisharpExtensions
                 Decorator decorator => new[] { (Reference: decorator.Name.GetLocation()!, File: decorator.GetFile()!) }
                     .Concat(modelStore.GetDecoratorReferences(decorator).Select(d => (Reference: (Reference)d.Reference, d.File))),
                 IProperty property => new[] { (Reference: property.GetLocation()!, File: property.GetFile()!) }
-                    .Concat(modelStore.GetPropertyReferences(property).Select(d => (d.Reference, d.File))),
+                    .Concat(modelStore.GetPropertyReferences(property, includeTransitive).Select(d => (d.Reference, d.File))),
                 _ => null!
             })
             .Distinct());
