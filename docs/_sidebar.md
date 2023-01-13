@@ -24,6 +24,7 @@
 
 - **[Génération](/generator.md)**
 
+  - [C#](/generator/csharp.md)
   - [Jpa](/generator/jpa.md)
   - [Javascript / Typescript](/generator/js.md)
   - [Traductions manquantes](/generator/translation.md)
