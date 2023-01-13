@@ -18,6 +18,7 @@ export class State {
     preview?: TopModelPreviewPanel;
     constructor(public readonly context: ExtensionContext) {
         makeAutoObservable(this);
+        this.initTools();
         this.registerCommands();
         this.topModelStatusBar = window.createStatusBarItem(StatusBarAlignment.Right, 100);
         this.context.subscriptions.push(this.topModelStatusBar);
@@ -90,7 +91,6 @@ export class State {
             text += " | " + this.tools.tmdgen.statusText;
         }
 
-
         return text;
     }
 
@@ -109,14 +109,20 @@ export class State {
     get toolsStatus(): Status {
         if (this.tools.tmdgen.status === "INSTALLING" || this.tools.modgen.status === "INSTALLING") {
             return "INSTALLING";
-        }
-        else if (this.tools.tmdgen.installed && this.tools.tmdgen.status === "ERROR" || this.tools.modgen.status === "ERROR") {
+        } else if (
+            (this.tools.tmdgen.installed && this.tools.tmdgen.status === "ERROR") ||
+            this.tools.modgen.status === "ERROR"
+        ) {
             return "ERROR";
-        }
-        else if (this.tools.tmdgen.installed && this.tools.tmdgen.status === "LOADING" || this.tools.modgen.status === "LOADING") {
+        } else if (
+            (this.tools.tmdgen.installed && this.tools.tmdgen.status === "LOADING") ||
+            this.tools.modgen.status === "LOADING"
+        ) {
             return "LOADING";
-        }
-        else if (this.tools.tmdgen.installed && this.tools.tmdgen.updateAvailable || this.tools.modgen.updateAvailable) {
+        } else if (
+            (this.tools.tmdgen.installed && this.tools.tmdgen.updateAvailable) ||
+            this.tools.modgen.updateAvailable
+        ) {
             return "WARNING";
         }
 
@@ -126,12 +132,18 @@ export class State {
     public get terminal(): Terminal {
         if (!this._terminal) {
             this._terminal = window.createTerminal({
-                name: "TopModel"
+                name: "TopModel",
             });
         }
         this._terminal.show();
         return this._terminal;
     }
+
+    private async initTools() {
+        await this.tools.modgen.init();
+        await this.tools.tmdgen.init();
+    }
+
     private updateStatusBar() {
         this.topModelStatusBar.text = this.statusText;
         this.topModelStatusBar.tooltip = this.statusTooltip;
@@ -154,7 +166,11 @@ export class State {
         commands.registerCommand(COMMANDS.preview, () => {
             if (!this.preview) {
                 this.preview = new TopModelPreviewPanel(this.context, this.applications);
-                this.preview.panel.onDidDispose(() => (this.preview = undefined), undefined, this.context.subscriptions);
+                this.preview.panel.onDidDispose(
+                    () => (this.preview = undefined),
+                    undefined,
+                    this.context.subscriptions
+                );
             }
 
             this.preview?.panel.reveal();

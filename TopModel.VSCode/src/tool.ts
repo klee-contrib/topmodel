@@ -1,10 +1,6 @@
 import { autorun, makeAutoObservable } from "mobx";
 import { execute } from "./utils";
-import {
-    commands,
-    ExtensionContext,
-    window, workspace
-} from "vscode";
+import { commands, ExtensionContext, window, workspace } from "vscode";
 import { Status } from "./types";
 import { COMMANDS } from "./const";
 import { Disposable } from "vscode-jsonrpc";
@@ -13,25 +9,22 @@ export class TmdTool {
     latestVersion?: string;
     error?: string;
     installed?: boolean;
-    status: Status;
+    status?: Status;
     updateCommandDisposable?: Disposable;
     constructor(
         public readonly name: "TopModel.Generator" | "TopModel.ModelGenerator",
-        public readonly command: "modgen" | "tmdgen") {
+        public readonly command: "modgen" | "tmdgen"
+    ) {
         makeAutoObservable(this);
         if (this.name === "TopModel.Generator") {
             autorun(() => this.onInstalledChanged());
         }
 
         autorun(() => this.checkUpdate());
-        this.loadLatestVersion();
-        this.loadCurrentVersion();
-        this.checkInstall();
-        this.status = "READY";
     }
 
     get statusText(): string {
-        let text: string = `${this.command}${this.currentVersion ? ' v' + this.currentVersion : ""} `;
+        let text: string = `${this.command}${this.currentVersion ? " v" + this.currentVersion : ""} `;
         let icon: string | undefined;
         switch (this.status) {
             case "ERROR":
@@ -55,7 +48,13 @@ export class TmdTool {
         }
     }
 
-    public async loadLatestVersion() {
+    
+    public async init() {
+        await Promise.all([this.loadLatestVersion(), this.loadCurrentVersion(), this.checkInstall()]);
+        this.status = "READY";
+    }
+
+    private async loadLatestVersion() {
         const https = require("https");
         const options = {
             hostname: "api.nuget.org",
@@ -79,7 +78,8 @@ export class TmdTool {
 
         req.end();
     }
-    public async install() {
+
+    private async install() {
         this.status = "INSTALLING";
         await execute(`dotnet tool install --global ${this.name}`);
         this.loadCurrentVersion();
@@ -92,6 +92,7 @@ export class TmdTool {
         }
         this.status = "READY";
     }
+
     private async loadCurrentVersion() {
         try {
             const result = (await execute(`${this.command} --version`)) as string;
@@ -103,7 +104,7 @@ export class TmdTool {
         }
     }
 
-    public async checkInstall() {
+    private async checkInstall() {
         let result;
         try {
             result = await execute(`dotnet tool list -g | find /C /I "${this.name.toLowerCase()}"`);
@@ -115,10 +116,12 @@ export class TmdTool {
     }
 
     public get updateAvailable(): boolean {
-        return !!this.installed
-            && !!this.currentVersion
-            && !!this.latestVersion
-            && this.currentVersion !== this.latestVersion;
+        return (
+            !!this.installed &&
+            !!this.currentVersion &&
+            !!this.latestVersion &&
+            this.currentVersion !== this.latestVersion
+        );
     }
 
     public async checkUpdate() {
