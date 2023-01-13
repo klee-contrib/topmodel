@@ -114,12 +114,12 @@ public static class ModelExtensions
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 
-    public static IEnumerable<(Reference Reference, ModelFile File)> GetPropertyReferences(this ModelStore modelStore, IProperty property)
+    public static IEnumerable<(Reference Reference, ModelFile File)> GetPropertyReferences(this ModelStore modelStore, IProperty property, bool includeTransitive = false)
     {
-        return modelStore.GetPropertyReferencesCore(property).Distinct();
+        return modelStore.GetPropertyReferencesCore(property, includeTransitive).Distinct();
     }
 
-    private static IEnumerable<(Reference Reference, ModelFile File)> GetPropertyReferencesCore(this ModelStore modelStore, IProperty property)
+    private static IEnumerable<(Reference Reference, ModelFile File)> GetPropertyReferencesCore(this ModelStore modelStore, IProperty property, bool includeTransitive)
     {
         if (property is IFieldProperty fp)
         {
@@ -139,6 +139,59 @@ public static class ModelExtensions
                     if (excludeReference != null)
                     {
                         yield return (excludeReference, alp.GetFile());
+                    }
+                }
+            }
+
+            if (fp.Class != null)
+            {
+                foreach (var uk in fp.Class.UniqueKeyReferences)
+                {
+                    foreach (var prop in uk)
+                    {
+                        if (prop.ReferenceName == fp.Name)
+                        {
+                            yield return (prop, fp.Class.GetFile());
+                        }
+                    }
+                }
+
+                if (fp.Class.DefaultPropertyReference?.ReferenceName == fp.Name)
+                {
+                    yield return (fp.Class.DefaultPropertyReference, fp.Class.GetFile());
+                }
+
+                if (fp.Class.OrderPropertyReference?.ReferenceName == fp.Name)
+                {
+                    yield return (fp.Class.OrderPropertyReference, fp.Class.GetFile());
+                }
+
+                if (fp.Class.FlagPropertyReference?.ReferenceName == fp.Name)
+                {
+                    yield return (fp.Class.FlagPropertyReference, fp.Class.GetFile());
+                }
+            }
+
+            foreach (var classe in modelStore.Classes)
+            {
+                foreach (var mappings in classe.FromMappers.SelectMany(m => m.Params).Concat(classe.ToMappers))
+                {
+                    if (mappings.Mappings.ContainsKey(fp))
+                    {
+                        var reference = mappings.MappingReferences.Keys.FirstOrDefault(f => f.ReferenceName == fp.Name);
+                        if (reference != null)
+                        {
+                            yield return (reference, classe.GetFile());
+                        }
+                    }
+
+                    if (mappings.Mappings.ContainsValue(fp))
+                    {
+                        var reference = mappings.MappingReferences.Values.FirstOrDefault(f => f.ReferenceName == fp.Name);
+                        if (reference != null)
+                        {
+                            yield return (reference, classe.GetFile());
+                        }
                     }
                 }
             }
