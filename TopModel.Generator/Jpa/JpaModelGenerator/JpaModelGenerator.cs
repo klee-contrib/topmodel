@@ -17,9 +17,8 @@ public class JpaModelGenerator : GeneratorBase
 
     private readonly ModelConfig _modelConfig;
 
-
     public JpaModelGenerator(ILogger<JpaModelGenerator> logger, JpaConfig config, ModelConfig modelConfig)
-        : base(logger, config)
+    : base(logger, config)
     {
         _config = config;
         _logger = logger;
