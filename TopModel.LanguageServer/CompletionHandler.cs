@@ -66,7 +66,7 @@ class CompletionHandler : CompletionHandlerBase
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            if (currentLine.Contains("domain: ") || currentLine.Contains("asListWithDomain: ") || currentLine.Contains("kind: ")
+            if (currentLine.Contains("domain: ") || currentLine.Contains("listDomain: ") || currentLine.Contains("kind: ")
                 || currentLine.TrimStart().StartsWith("-")
                     && GetRootObject(request) == "converter"
                      && (text.ElementAtOrDefault(request.Position.Line - 1)?.Trim() == "to:"

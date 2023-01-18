@@ -249,9 +249,9 @@
               "type": "string",
               "description": "Surcharge le commentaire de la propriété aliasée."
             },
-            "asListWithDomain": {
-              "type": "string",
-              "description": "Crée un array pour la propriété aliasée, avec le domaine donné. Le type du champ sera un array du type de la propriété, indépendemment du type spécifié dans le domaine."
+            "asList": {
+              "type": "boolean",
+              "description": "Crée une liste du type de la propriété aliasée au lieu d'un champ simple."
             },
             "defaultValue": {
               "description": "Surcharge la valeur par défaut de la propriété."
@@ -387,6 +387,10 @@
             "bodyParam": {
               "type": "boolean",
               "description": "Passe un champ de ce domaine comme body param dans un endpoint."
+            },
+            "listDomain": {
+              "type": "string",
+              "description": "Domaine à utiliser lorsque l'on veut créer une liste d'un champ qui utilise ce domaine (alias avec `asList: true`, associations oneToMany et manyToMany)."
             },
             "csharp": {
               "type": "object",

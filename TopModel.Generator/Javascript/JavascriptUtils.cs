@@ -37,7 +37,7 @@ public static class JavascriptUtils
             fixedType = $"{prop.Class.Name}{prop.Name}";
         }
 
-        if (fp is AliasProperty { ListDomain: not null } or AliasProperty { Property: AssociationProperty { Type: AssociationType.ManyToMany or AssociationType.OneToMany } })
+        if (fp is AliasProperty { AsList: true } or AliasProperty { Property: AssociationProperty { Type: AssociationType.ManyToMany or AssociationType.OneToMany } })
         {
             fixedType += "[]";
         }

@@ -234,8 +234,8 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                         case "comment":
                             alp.Comment = value.Value;
                             break;
-                        case "asListWithDomain":
-                            alp.ListDomainReference = new DomainReference(value);
+                        case "asList":
+                            alp.AsList = value.Value == "true";
                             break;
                         case "trigram":
                             alp.Trigram = new LocatedString(value);

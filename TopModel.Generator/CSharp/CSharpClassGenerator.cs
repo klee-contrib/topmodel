@@ -469,10 +469,10 @@ public class CSharpClassGenerator : GeneratorBase
 
         if (property is IFieldProperty fp)
         {
-            var domain = (fp as AliasProperty)?.ListDomain ?? fp.Domain;
+            var domain = fp is AliasProperty { AsList: true } ? fp.Domain.ListDomain! : fp.Domain;
 
             var prop = fp is AliasProperty alp && (!fp.Class.IsPersistent || alp.Property is AssociationProperty) ? alp.Property : fp;
-            if ((!_config.NoColumnOnAlias || fp is not AliasProperty || fp.Class.IsPersistent) && fp is not AliasProperty { ListDomain: not null } && (prop.Class.IsPersistent || fp.Class.IsPersistent) && !_config.NoPersistance && !sameColumnSet.Contains(prop.SqlName))
+            if ((!_config.NoColumnOnAlias || fp is not AliasProperty || fp.Class.IsPersistent) && fp is not AliasProperty { AsList: true } && (prop.Class.IsPersistent || fp.Class.IsPersistent) && !_config.NoPersistance && !sameColumnSet.Contains(prop.SqlName))
             {
                 var sqlName = _config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
                 if (domain.CSharp!.UseSqlTypeName)
@@ -593,12 +593,12 @@ public class CSharpClassGenerator : GeneratorBase
         {
             if (property is IFieldProperty fp)
             {
-                foreach (var @using in (fp is AliasProperty { ListDomain: Domain ld } ? ld : fp.Domain).CSharp!.Usings.Select(u => u.ParseTemplate(fp)))
+                foreach (var @using in (fp is AliasProperty { AsList: true, Domain.ListDomain: Domain ld } ? ld : fp.Domain).CSharp!.Usings.Select(u => u.ParseTemplate(fp)))
                 {
                     usings.Add(@using);
                 }
 
-                foreach (var @using in (fp is AliasProperty { ListDomain: Domain ld } ? ld : fp.Domain).CSharp!.Annotations
+                foreach (var @using in (fp is AliasProperty { AsList: true, Domain.ListDomain: Domain ld } ? ld : fp.Domain).CSharp!.Annotations
                     .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
                     .SelectMany(a => a.Usings)
                     .Select(u => u.ParseTemplate(fp)))

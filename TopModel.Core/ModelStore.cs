@@ -300,7 +300,8 @@ public class ModelStore
         return modelFile.Uses
             .Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
             .Where(dep => dep != null)
-            .Concat(Files.Where(f => f != modelFile && f.Converters.Any() && modelFile.Classes.Any(c => c.FromMappers.Any() || c.ToMappers.Any())));
+            .Concat(Files.Where(f => f != modelFile && f.Converters.Any() && modelFile.Classes.Any(c => c.FromMappers.Any() || c.ToMappers.Any())))
+            .Concat(Files.Where(f => f != modelFile && f.Domains.Any() && (!modelFile.Domains.Any() || modelFile.Domains.Any(d => d.ListDomainReference != null))));
     }
 
     private void OnFSChangedEvent(object sender, FileSystemEventArgs e)
@@ -394,6 +395,21 @@ public class ModelStore
             .Concat(modelFile.Decorators)
             .Distinct()
             .ToDictionary(d => (string)d.Name, c => c);
+
+        // Résolution des "listDomain" sur les domaines
+        foreach (var domain in modelFile.Domains)
+        {
+            if (domain.ListDomainReference != null)
+            {
+                if (!Domains.TryGetValue(domain.ListDomainReference.ReferenceName, out var listDomain))
+                {
+                    yield return new ModelError(domain, "Le domaine '{0}' est introuvable.", domain.ListDomainReference) { ModelErrorType = ModelErrorType.TMD1005 };
+                    continue;
+                }
+
+                domain.ListDomain = listDomain;
+            }
+        }
 
         // Résolution des "extends" sur les classes.
         foreach (var classe in fileClasses.Where(c => c.ExtendsReference != null))
@@ -533,16 +549,6 @@ public class ModelStore
                     }
 
                     break;
-
-                case AliasProperty alp when alp.ListDomainReference != null:
-                    if (!Domains.TryGetValue(alp.ListDomainReference.ReferenceName, out var listDomain))
-                    {
-                        yield return new ModelError(alp, "Le domaine '{0}' est introuvable.", alp.ListDomainReference) { ModelErrorType = ModelErrorType.TMD1005 };
-                        break;
-                    }
-
-                    alp.ListDomain = listDomain;
-                    break;
             }
         }
 
@@ -653,6 +659,12 @@ public class ModelStore
                 foreach (var property in propertiesToAlias)
                 {
                     var prop = alp.Clone(property, alp.Reference.IncludeReferences.FirstOrDefault(ir => ir.ReferenceName == property.Name));
+
+                    if (prop.AsList && prop.Domain?.ListDomain == null)
+                    {
+                        yield return new ModelError(modelFile, $"Le domaine '{prop.Domain}' doit définir un domaine de liste pour définir un alias liste sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'", prop.PropertyReference ?? prop.Reference) { IsError = true, ModelErrorType = ModelErrorType.TMD1023 };
+                    }
+
                     if (alp.Class != null)
                     {
                         var index = alp.Class.Properties.IndexOf(alp);

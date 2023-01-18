@@ -28,7 +28,8 @@ public class ModelFile
 
     public List<object> ResolvedAliases { get; } = new();
 
-    public IDictionary<Reference, object> References => Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object))
+    public IDictionary<Reference, object> References => Domains.Select(d => (d.ListDomainReference as Reference, d.ListDomain as object))
+        .Concat(Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object)))
         .Concat(Classes.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
         .Concat(Endpoints.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
         .Concat(Properties.OfType<RegularProperty>().Select(p => (p.DomainReference as Reference, p.Domain as object)))
@@ -45,8 +46,7 @@ public class ModelFile
         .Concat(Properties.OfType<AliasProperty>().SelectMany(p => new (Reference, object)[]
         {
             (p.Reference, p.OriginalProperty?.Class),
-            (p.PropertyReference, p.OriginalProperty),
-            (p.ListDomainReference, p.ListDomain)
+            (p.PropertyReference, p.OriginalProperty)
         }))
         .Concat(Properties.OfType<AliasProperty>()
             .SelectMany(p => p?.Reference?.ExcludeReferences?

@@ -229,7 +229,7 @@ public static class CSharpUtils
             _ => string.Empty
         };
 
-        var isListDomain = prop is AliasProperty { ListDomain: not null };
+        var isListDomain = prop is AliasProperty { AsList: true };
 
         type = (nonNullable || isListDomain) && type.EndsWith("?") ? type[0..^1] : type;
 

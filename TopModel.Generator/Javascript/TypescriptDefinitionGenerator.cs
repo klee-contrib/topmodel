@@ -124,7 +124,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
         var domains = classe.DomainDependencies
             /* Cette vérification est nécessaire car pour un alias avec ListDomain les deux domaines sont dans les dépendances...*/
-            .Where(d => classe.Properties.Any(p => d.Domain == ((p as AliasProperty)?.ListDomain ?? (p as CompositionProperty)?.DomainKind ?? (p as IFieldProperty)?.Domain)))
+            .Where(d => classe.Properties.Any(p => d.Domain == ((p is AliasProperty { AsList: true, Domain.ListDomain: Domain ld } ? ld : null) ?? (p as CompositionProperty)?.DomainKind ?? (p as IFieldProperty)?.Domain)))
             .OrderBy(d => d.Domain.Name)
             .ToList();
 
@@ -222,7 +222,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                 }
                 else if (property is IFieldProperty field)
                 {
-                    var domain = (field as AliasProperty)?.ListDomain ?? field.Domain;
+                    var domain = field is AliasProperty { AsList: true } ? field.Domain.ListDomain! : field.Domain;
                     fw.Write($"FieldEntry2<typeof {domain.Name}, {field.GetPropertyTypeName(Classes)}>");
                 }
             }
@@ -296,7 +296,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             if (property is IFieldProperty field)
             {
                 fw.WriteLine($"        name: \"{field.Name.ToFirstLower()}\",");
-                var domain = (field as AliasProperty)?.ListDomain ?? field.Domain;
+                var domain = field is AliasProperty { AsList: true } ? field.Domain.ListDomain! : field.Domain;
                 fw.WriteLine($"        domain: {domain.Name},");
                 fw.WriteLine($"        isRequired: {(field.Required && !field.PrimaryKey).ToString().ToFirstLower()},");
 
