@@ -106,7 +106,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
         foreach (var p in classe.Properties.OfType<CompositionProperty>().Where(p => p.DomainKind?.TS?.Import == "@focus4/stores"))
         {
-            yield return p.DomainKind!.TS!.Type.ParseTemplate(p).Split('<').First();
+            yield return p.DomainKind!.TS!.Type.ParseTemplate(p).Replace("[]", string.Empty).Split('<').First();
         }
 
         yield return "EntityToType";
@@ -122,18 +122,12 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             fw.WriteLine($"import {{{string.Join(", ", GetFocusStoresImports(classe).OrderBy(x => x))}}} from \"@focus4/stores\";");
         }
 
-        var domains = classe.DomainDependencies
-            /* Cette vérification est nécessaire car pour un alias avec ListDomain les deux domaines sont dans les dépendances...*/
-            .Where(d => classe.Properties.Any(p => d.Domain == ((p is AliasProperty { AsList: true, Domain.ListDomain: Domain ld } ? ld : null) ?? (p as CompositionProperty)?.DomainKind ?? (p as IFieldProperty)?.Domain)))
-            .OrderBy(d => d.Domain.Name)
-            .ToList();
-
-        if (domains.Any())
+        if (classe.DomainDependencies.Any())
         {
             var domainImport = _config.DomainImportPath.StartsWith("@")
                 ? _config.DomainImportPath
                 : Path.GetRelativePath(string.Join('/', fileName.Split('/').SkipLast(1)), Path.Combine(_config.OutputDirectory, _config.ModelRootPath!.Replace("{tag}", tag.ToKebabCase()), _config.DomainImportPath)).Replace("\\", "/");
-            fw.WriteLine($"import {{{string.Join(", ", domains.Select(d => d.Domain.Name).Distinct())}}} from \"{domainImport}\";");
+            fw.WriteLine($"import {{{string.Join(", ", classe.DomainDependencies.OrderBy(d => d.Domain.Name).Select(d => d.Domain.Name).Distinct())}}} from \"{domainImport}\";");
         }
 
         var imports = classe.ClassDependencies
@@ -144,7 +138,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                     ? fp.GetPropertyTypeName(Classes).Replace("[]", string.Empty)
                     : $"{dep.Classe.Name}Entity, {dep.Classe.Name}{(_config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}",
                 Path: _config.GetImportPathForClass(dep, tag, Classes)!))
-            .Concat(classe.DomainDependencies.Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
+            .Concat(classe.DomainDependencies.Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Replace("[]", string.Empty).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(p => p.Path != null && p.Path != "@focus4/stores")
             .GroupAndSort();
 
@@ -222,8 +216,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                 }
                 else if (property is IFieldProperty field)
                 {
-                    var domain = field is AliasProperty { AsList: true } ? field.Domain.ListDomain! : field.Domain;
-                    fw.Write($"FieldEntry2<typeof {domain.Name}, {field.GetPropertyTypeName(Classes)}>");
+                    fw.Write($"FieldEntry2<typeof {field.Domain.Name}, {field.GetPropertyTypeName(Classes)}>");
                 }
             }
             else
@@ -296,8 +289,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             if (property is IFieldProperty field)
             {
                 fw.WriteLine($"        name: \"{field.Name.ToFirstLower()}\",");
-                var domain = field is AliasProperty { AsList: true } ? field.Domain.ListDomain! : field.Domain;
-                fw.WriteLine($"        domain: {domain.Name},");
+                fw.WriteLine($"        domain: {field.Domain.Name},");
                 fw.WriteLine($"        isRequired: {(field.Required && !field.PrimaryKey).ToString().ToFirstLower()},");
 
                 var defaultValue = _config.GetDefaultValue(field);
@@ -369,7 +361,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                     _ => null!
                 },
                 Path: _config.GetImportPathForClass(dep, tag, Classes)!))
-            .Concat(references.SelectMany(r => r.DomainDependencies).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
+            .Concat(references.SelectMany(r => r.DomainDependencies).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Replace("[]", string.Empty).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(i => i.Path != null && i.Path != $"./references")
             .GroupAndSort();
 

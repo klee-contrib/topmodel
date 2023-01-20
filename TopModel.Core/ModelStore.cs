@@ -660,9 +660,9 @@ public class ModelStore
                 {
                     var prop = alp.Clone(property, alp.Reference.IncludeReferences.FirstOrDefault(ir => ir.ReferenceName == property.Name));
 
-                    if (prop.AsList && prop.Domain?.ListDomain == null)
+                    if (prop.AsList && prop.Domain == null)
                     {
-                        yield return new ModelError(modelFile, $"Le domaine '{prop.Domain}' doit définir un domaine de liste pour définir un alias liste sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'", prop.PropertyReference ?? prop.Reference) { IsError = true, ModelErrorType = ModelErrorType.TMD1023 };
+                        yield return new ModelError(modelFile, $"Le domaine '{prop.OriginalProperty?.Domain}' doit définir un domaine de liste pour définir un alias liste sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'", prop.PropertyReference ?? prop.Reference) { IsError = true, ModelErrorType = ModelErrorType.TMD1023 };
                     }
 
                     if (alp.Class != null)

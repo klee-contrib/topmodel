@@ -55,7 +55,7 @@ public class AliasProperty : IFieldProperty
     }
 
 #nullable disable
-    public Domain Domain => _property?.Domain;
+    public Domain Domain => AsList ? _property?.Domain?.ListDomain : _property?.Domain;
 #nullable enable
 
     public string Comment

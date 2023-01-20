@@ -222,18 +222,15 @@ public static class CSharpUtils
                 string _ => $"{cp.DomainKind.CSharp.Type}<{{composition.name}}>".ParseTemplate(cp)
             },
             AssociationProperty { Association: var assoc } when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.PrimaryKey!.Name}s?",
-            AliasProperty { Property: AssociationProperty { Association: var assoc } } when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.PrimaryKey!.Name}s?",
+            AliasProperty { Property: AssociationProperty { Association: var assoc }, AsList: var asList } when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.PrimaryKey!.Name}s{(asList ? "[]" : "?")}",
             RegularProperty { PrimaryKey: true } when config.CanClassUseEnums(prop.Class) => $"{prop.Name}s?",
-            AliasProperty { Property: RegularProperty { PrimaryKey: true, Class: var alClass } } when config.CanClassUseEnums(alClass) => $"{alClass}.{alClass.PrimaryKey!.Name}s?",
+            AliasProperty { Property: RegularProperty { PrimaryKey: true, Class: var alClass }, AsList: var asList } when config.CanClassUseEnums(alClass) => $"{alClass}.{alClass.PrimaryKey!.Name}s{(asList ? "[]" : "?")}",
             IFieldProperty fp => fp.Domain.CSharp?.Type.ParseTemplate(fp) ?? string.Empty,
             _ => string.Empty
         };
 
-        var isListDomain = prop is AliasProperty { AsList: true };
-
-        type = (nonNullable || isListDomain) && type.EndsWith("?") ? type[0..^1] : type;
-
-        return isListDomain ? $"{type}[]" : type;
+        type = nonNullable && type.EndsWith("?") ? type[0..^1] : type;
+        return type;
     }
 
     public static string GetReturnTypeName(this CSharpConfig config, IProperty? prop)
