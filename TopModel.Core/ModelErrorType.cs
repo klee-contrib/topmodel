@@ -138,9 +138,14 @@ public enum ModelErrorType
     TMD1021,
 
     /// <summary>
-    /// La définition de la conversion entre {df.Name} et {dt.Name} est déjà définie dans un autre converter
+    /// La définition de la conversion entre {df.Name} et {dt.Name} est déjà définie dans un autre converter.
     /// </summary>
     TMD1022,
+
+    /// <summary>
+    /// Le domaine '{prop.Domain}' doit définir un domaine de liste pour définir un alias liste sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'.
+    /// </summary>
+    TMD1023,
 
     /// <summary>
     /// L'import {} n'est pas utilisé.

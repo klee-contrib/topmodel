@@ -469,15 +469,13 @@ public class CSharpClassGenerator : GeneratorBase
 
         if (property is IFieldProperty fp)
         {
-            var domain = (fp as AliasProperty)?.ListDomain ?? fp.Domain;
-
             var prop = fp is AliasProperty alp && (!fp.Class.IsPersistent || alp.Property is AssociationProperty) ? alp.Property : fp;
-            if ((!_config.NoColumnOnAlias || fp is not AliasProperty || fp.Class.IsPersistent) && fp is not AliasProperty { ListDomain: not null } && (prop.Class.IsPersistent || fp.Class.IsPersistent) && !_config.NoPersistance && !sameColumnSet.Contains(prop.SqlName))
+            if ((!_config.NoColumnOnAlias || fp is not AliasProperty || fp.Class.IsPersistent) && fp is not AliasProperty { AsList: true } && (prop.Class.IsPersistent || fp.Class.IsPersistent) && !_config.NoPersistance && !sameColumnSet.Contains(prop.SqlName))
             {
                 var sqlName = _config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
-                if (domain.CSharp!.UseSqlTypeName)
+                if (fp.Domain.CSharp!.UseSqlTypeName)
                 {
-                    w.WriteAttribute(2, "Column", $@"""{sqlName}""", $@"TypeName = ""{domain.SqlType}""");
+                    w.WriteAttribute(2, "Column", $@"""{sqlName}""", $@"TypeName = ""{fp.Domain.SqlType}""");
                 }
                 else
                 {
@@ -504,15 +502,15 @@ public class CSharpClassGenerator : GeneratorBase
 
             if (_config.Kinetix)
             {
-                w.WriteAttribute(2, "Domain", $@"Domains.{domain.CSharpName}");
+                w.WriteAttribute(2, "Domain", $@"Domains.{fp.Domain.CSharpName}");
             }
 
-            if (type == "string" && domain.Length != null)
+            if (type == "string" && fp.Domain.Length != null)
             {
-                w.WriteAttribute(2, "StringLength", $"{domain.Length}");
+                w.WriteAttribute(2, "StringLength", $"{fp.Domain.Length}");
             }
 
-            foreach (var annotation in domain.CSharp!.Annotations
+            foreach (var annotation in fp.Domain.CSharp!.Annotations
                 .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
                 .Select(a => a.Text.ParseTemplate(property)))
             {
@@ -593,12 +591,12 @@ public class CSharpClassGenerator : GeneratorBase
         {
             if (property is IFieldProperty fp)
             {
-                foreach (var @using in (fp is AliasProperty { ListDomain: Domain ld } ? ld : fp.Domain).CSharp!.Usings.Select(u => u.ParseTemplate(fp)))
+                foreach (var @using in fp.Domain.CSharp!.Usings.Select(u => u.ParseTemplate(fp)))
                 {
                     usings.Add(@using);
                 }
 
-                foreach (var @using in (fp is AliasProperty { ListDomain: Domain ld } ? ld : fp.Domain).CSharp!.Annotations
+                foreach (var @using in fp.Domain.CSharp!.Annotations
                     .Where(a => ((a.Target & Target.Dto) > 0) || ((a.Target & Target.Persisted) > 0) && (property.Class?.IsPersistent ?? false))
                     .SelectMany(a => a.Usings)
                     .Select(u => u.ParseTemplate(fp)))

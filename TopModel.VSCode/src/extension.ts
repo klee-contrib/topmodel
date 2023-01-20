@@ -44,7 +44,7 @@ async function checkInstall() {
     }
 }
 
-async function findConfFiles(): Promise<{ config: TopModelConfig; file: Uri }[]> {
+async function findConfFiles(): Promise<{ config: TopModelConfig; file: Uri }[]> { 
     const files = await workspace.findFiles("**/topmodel*.config");
     let configs: { config: TopModelConfig; file: Uri }[] = files.map((file) => {
         const doc = fs.readFileSync(file.path.substring(1), "utf8");

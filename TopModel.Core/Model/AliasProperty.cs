@@ -7,7 +7,6 @@ public class AliasProperty : IFieldProperty
     private string? _comment;
     private string? _defaultValue;
     private string? _label;
-    private Domain? _listDomain;
     private bool? _required;
 
 #nullable disable
@@ -56,7 +55,7 @@ public class AliasProperty : IFieldProperty
     }
 
 #nullable disable
-    public Domain Domain => _property?.Domain;
+    public Domain Domain => AsList ? _property?.Domain?.ListDomain : _property?.Domain;
 #nullable enable
 
     public string Comment
@@ -71,11 +70,7 @@ public class AliasProperty : IFieldProperty
         set => _defaultValue = value;
     }
 
-    public Domain? ListDomain
-    {
-        get => _listDomain ?? (_property as AliasProperty)?.ListDomain;
-        set => _listDomain = value;
-    }
+    public bool AsList { get; set; }
 
     public IFieldProperty? OriginalProperty => _property;
 
@@ -93,7 +88,6 @@ public class AliasProperty : IFieldProperty
     internal Reference Location { get; set; }
 
 #nullable enable
-    internal DomainReference? ListDomainReference { get; set; }
 
     internal AliasProperty? OriginalAliasProperty { get; private set; }
 
@@ -108,7 +102,7 @@ public class AliasProperty : IFieldProperty
             Endpoint = endpoint,
             Label = _label,
             Location = Location,
-            ListDomain = _listDomain,
+            AsList = AsList,
             OriginalAliasProperty = OriginalAliasProperty,
             Prefix = Prefix,
             Property = _property,
@@ -145,8 +139,7 @@ public class AliasProperty : IFieldProperty
             Comment = _comment!,
             DefaultValue = _defaultValue,
             Label = _label,
-            ListDomain = _listDomain,
-            ListDomainReference = ListDomainReference,
+            AsList = AsList,
             OriginalAliasProperty = this,
             UseLegacyRoleName = UseLegacyRoleName
         };

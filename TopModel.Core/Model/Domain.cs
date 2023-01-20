@@ -26,6 +26,10 @@ public class Domain
 
     public bool BodyParam { get; set; }
 
+    public Domain? ListDomain { get; set; }
+
+    public DomainReference? ListDomainReference { get; set; }
+
     public CSharpType? CSharp { get; set; }
 
     public TSType? TS { get; set; }
