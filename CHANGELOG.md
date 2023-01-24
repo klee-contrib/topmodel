@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.22.0
+
+- [#186](https://github.com/klee-contrib/topmodel/pull/186) - Remplace `asListWithDomain` sur les alias par `asList: true` et `listDomain` sur le domaine (**breaking change**).
+
 ## 1.21.0
 
 - [`ca2aaae7`](https://github.com/klee-contrib/topmodel/commit/ca2aaae7843aae405eec147eea12f699509eb71a) - [Core] Ajout de la notion de converter
