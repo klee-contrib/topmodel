@@ -419,11 +419,24 @@ public class ModelStore
         // Résolution des "extends" sur les classes.
         foreach (var classe in fileClasses.Where(c => c.ExtendsReference != null))
         {
+            if (classe.Abstract)
+            {
+                yield return new ModelError(classe, $"Impossible de définir un 'extends' sur la classe '{classe}' abstraite.", classe.ExtendsReference!) { ModelErrorType = ModelErrorType.TMD1026 };
+                continue;
+            }
+
             if (!referencedClasses.TryGetValue(classe.ExtendsReference!.ReferenceName, out var extends))
             {
                 yield return new ModelError(classe, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", classe.ExtendsReference!) { ModelErrorType = ModelErrorType.TMD1002 };
                 continue;
             }
+
+            if (extends.Abstract)
+            {
+                yield return new ModelError(classe, $"Impossible de définir la classe '{extends}' abstraite comme 'extends' sur la classe '{classe}'.", classe.ExtendsReference!) { ModelErrorType = ModelErrorType.TMD1026 };
+                continue;
+            }
+
 
             classe.Extends = extends;
         }

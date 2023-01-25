@@ -158,6 +158,11 @@ public enum ModelErrorType
     TMD1025,
 
     /// <summary>
+    /// Impossible de définir un 'extends' sur la classe '{classe}' abstraite.
+    /// </summary>
+    TMD1026,
+
+    /// <summary>
     /// Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.
     /// </summary>
     TMD1027,
