@@ -153,6 +153,11 @@ public enum ModelErrorType
     TMD1024,
 
     /// <summary>
+    /// Aucun mapping n'a été trouvé sur ce mapper.
+    /// </summary>
+    TMD1025,
+
+    /// <summary>
     /// Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.
     /// </summary>
     TMD1027,

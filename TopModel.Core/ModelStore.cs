@@ -1186,6 +1186,11 @@ public class ModelStore
                         yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Key.Name}' : {string.Join(", ", mapper.Params.SelectMany(p => p.Mappings.Where(m => m.Key == mapping.Key).Select(m => $"'{p.Name}.{m.Value.Name}'")))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
                     }
                 }
+
+                if (!mapper.Params.SelectMany(p => p.Mappings).Any())
+                {
+                    yield return new ModelError(classe, "Aucun mapping n'a été trouvé sur ce mapper.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1025 };
+                }
             }
 
             foreach (var mapper in classe.ToMappers.Where((e, i) => classe.ToMappers.Where((p, j) => p.Name == e.Name && j < i).Any()))
@@ -1233,6 +1238,11 @@ public class ModelStore
                 foreach (var mapping in mapper.Mappings.Where((e, i) => mapper.Mappings.Where((p, j) => p.Value == e.Value && j < i).Any()))
                 {
                     yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapper.Class}.{mapping.Value?.Name}' : {string.Join(", ", mapper.Mappings.Where(p => p.Value == mapping.Value).Select(p => $"'{p.Key.Name}'"))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
+                }
+
+                if (!mapper.Mappings.Any())
+                {
+                    yield return new ModelError(classe, "Aucun mapping n'a été trouvé sur ce mapper.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1025 };
                 }
             }
         }
