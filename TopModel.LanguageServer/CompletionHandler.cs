@@ -330,30 +330,31 @@ class CompletionHandler : CompletionHandlerBase
                                 ukValuesLine = text.ElementAtOrDefault(requestLine);
                             }
 
+                            var reqChar = Math.Min(request.Position.Character, currentLine.Length);
                             var isUk = ukValuesLine != null && ukValuesLine.Contains("unique:");
                             var isValues = ukValuesLine != null && ukValuesLine.Contains("values:");
                             var isMappings = ukValuesLine != null && ukValuesLine.Contains("mappings:");
-                            var pC = currentLine[..request.Position.Character].LastOrDefault();
-                            var pCT = currentLine[..request.Position.Character].TrimEnd().LastOrDefault();
+                            var pC = currentLine[..reqChar].LastOrDefault();
+                            var pCT = currentLine[..reqChar].TrimEnd().LastOrDefault();
                             if (
                                 isUk
-                                    && currentLine.Contains('[') && currentLine.IndexOf('[') < request.Position.Character
-                                    && (!currentLine.Contains(']') || currentLine.IndexOf(']') >= request.Position.Character)
+                                    && currentLine.Contains('[') && currentLine.IndexOf('[') < reqChar
+                                    && (!currentLine.Contains(']') || currentLine.IndexOf(']') >= reqChar)
                                     && (pC != ' ' || pCT == '[' || pCT == ',')
                                 || isValues
-                                    && currentLine.Contains('{') && currentLine.IndexOf('{') < request.Position.Character
-                                    && (!currentLine.Contains('}') || currentLine.IndexOf('}') >= request.Position.Character)
+                                    && currentLine.Contains('{') && currentLine.IndexOf('{') < reqChar
+                                    && (!currentLine.Contains('}') || currentLine.IndexOf('}') >= reqChar)
                                     && (pC != ' ' || pCT == '{' || pCT == ',')
                                 || isMappings)
                             {
                                 searchText = string.Join(
                                     string.Empty,
-                                    currentLine[..request.Position.Character].Reverse().TakeWhile(c => c != ',' && c != '[' && c != ' ' && c != '{').Reverse()
-                                        .Concat(currentLine[request.Position.Character..].TakeWhile(c => c != ',' && c != ']' && c != ' ' && c != '}' && c != ':')));
+                                    currentLine[..reqChar].Reverse().TakeWhile(c => c != ',' && c != '[' && c != ' ' && c != '{').Reverse()
+                                        .Concat(currentLine[reqChar..].TakeWhile(c => c != ',' && c != ']' && c != ' ' && c != '}' && c != ':')));
 
                             }
 
-                            if (isMappings && currentLine.Contains(':') && currentLine.IndexOf(':') < request.Position.Character)
+                            if (isMappings && currentLine.Contains(':') && currentLine.IndexOf(':') < reqChar)
                             {
                                 string? className = null;
                                 classLine = ukValuesLine;
