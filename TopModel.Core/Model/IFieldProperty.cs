@@ -10,7 +10,7 @@ public interface IFieldProperty : IProperty
 
     string? DefaultValue { get; }
 
-    public LocatedString? Trigram { get; set; }
+    LocatedString? Trigram { get; set; }
 
     IFieldProperty ResourceProperty => Decorator != null && Parent != Decorator
         ? Decorator.Properties.OfType<IFieldProperty>().First(p => p.Name == Name).ResourceProperty

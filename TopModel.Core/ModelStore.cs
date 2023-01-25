@@ -1073,11 +1073,22 @@ public class ModelStore
                     {
                         mappings.Mappings.Add(currentProperty, mappedProperty);
 
-                        if (currentProperty is IFieldProperty fp
-                            && fp.Domain != mappedProperty.Domain
-                            && !Converters.Any(c => c.From.Any(cf => cf == (mappings.To ? mappedProperty.Domain : fp.Domain)) && c.To.Any(ct => ct == (mappings.To ? fp.Domain : mappedProperty.Domain))))
+                        if (mappings.To && mappedProperty.Readonly)
                         {
-                            yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine ('{mappedProperty.Domain.Name}' au lieu de '{fp.Domain.Name}') et qu'il n'existe pas de convertisseur entre les deux.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1014 };
+                            yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1024 };
+                        }
+                        else if (!mappings.To && currentProperty.Readonly)
+                        {
+                            yield return new ModelError(classe, $"La propriété '{currentProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.", mapping.Key) { ModelErrorType = ModelErrorType.TMD1024 };
+                        }
+
+                        if (currentProperty is IFieldProperty fp)
+                        {
+                            if (fp.Domain != mappedProperty.Domain
+                                && !Converters.Any(c => c.From.Any(cf => cf == (mappings.To ? mappedProperty.Domain : fp.Domain)) && c.To.Any(ct => ct == (mappings.To ? fp.Domain : mappedProperty.Domain))))
+                            {
+                                yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine ('{mappedProperty.Domain.Name}' au lieu de '{fp.Domain.Name}') et qu'il n'existe pas de convertisseur entre les deux.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1014 };
+                            }
                         }
                         else if (currentProperty is CompositionProperty cp)
                         {
@@ -1106,7 +1117,7 @@ public class ModelStore
                                 var compositionDomain = cp.Kind == "list" ? compositionPK?.Domain.ListDomain : compositionPK?.Domain;
 
                                 if (compositionDomain != mappedAp.Domain
-                                    && !this.Converters.Any(c => c.From.Any(cf => cf == compositionPK?.Domain) && c.To.Any(ct => ct == mappedAp.Domain)))
+                                    && !Converters.Any(c => c.From.Any(cf => cf == compositionPK?.Domain) && c.To.Any(ct => ct == mappedAp.Domain)))
                                 {
                                     yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la clé primaire de la classe '{cp.Composition.Name}' composée ('{mappedProperty.Domain.Name}' au lieu de '{compositionPK?.Domain.Name ?? string.Empty}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1019 };
                                 }
@@ -1138,7 +1149,7 @@ public class ModelStore
 
                     foreach (var param in mapper.Params.Where(p => p.Class != null))
                     {
-                        foreach (var property in classe.Properties.OfType<AliasProperty>().Where(property => !explicitMappings.Any(m => m.Key == property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
+                        foreach (var property in classe.Properties.OfType<AliasProperty>().Where(property => !property.Readonly && !explicitMappings.Any(m => m.Key == property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
                         {
                             var matchingProperties = param.Class.Properties.OfType<IFieldProperty>().Where(p => property.Property == p || p is AliasProperty alp && property == alp.Property || p is AliasProperty alp2 && property.Property == alp2.Property);
                             if (matchingProperties.Count() == 1)
@@ -1156,7 +1167,7 @@ public class ModelStore
 
                     foreach (var param in mapper.Params.Where(p => p.Class != null))
                     {
-                        foreach (var property in classe.Properties.OfType<IFieldProperty>().Where(property => !explicitAndAliasMappings.Any(m => m.Key == property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
+                        foreach (var property in classe.Properties.OfType<IFieldProperty>().Where(property => !property.Readonly && !explicitAndAliasMappings.Any(m => m.Key == property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
                         {
                             foreach (var p in param.Class.Properties.OfType<IFieldProperty>())
                             {
@@ -1192,7 +1203,7 @@ public class ModelStore
                     if (matchingProperties.Count() == 1)
                     {
                         var p = matchingProperties.First();
-                        if (p.Domain != null && (p.Domain == property.Domain || Converters.Any(c => c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain))))
+                        if (!p.Readonly && p.Domain != null && (p.Domain == property.Domain || Converters.Any(c => c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain))))
                         {
                             mapper.Mappings.Add(property, p);
                         }
@@ -1211,7 +1222,10 @@ public class ModelStore
                                 || Converters.Any(c => c.From.Any(cf => cf == p.Domain)
                                     && c.To.Any(ct => ct == property.Domain))))
                         {
-                            mapper.Mappings.Add(property, p);
+                            if (!p.Readonly)
+                            {
+                                mapper.Mappings.Add(property, p);
+                            }
                         }
                     }
                 }

@@ -44,6 +44,10 @@
               "type": "boolean",
               "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."
             },
+            "readonly": {
+              "type": "boolean",
+              "description": "Une propriété 'readonly' ne pourra pas être renseignée par un mapper et aucun setter ne sera généré si la classe contenant la propriété est abstraite."
+            },
             "domain": {
               "type": "string",
               "description": "Le domaine lié à la propriété. Doit référencer un domaine défini dans le fichier de domaines."
@@ -99,6 +103,10 @@
             "primaryKey": {
               "type": "boolean",
               "description": "Précise si la propriété est la clé primaire de la table associée à la classe."
+            },
+            "readonly": {
+              "type": "boolean",
+              "description": "Une propriété 'readonly' ne pourra pas être renseignée par un mapper et aucun setter ne sera généré si la classe contenant la propriété est abstraite."
             },
             "defaultValue": {
               "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
@@ -253,6 +261,10 @@
               "type": "boolean",
               "description": "Surcharge le caractère obligatoire de la propriété aliasée."
             },
+            "readonly": {
+              "type": "boolean",
+              "description": "Surcharge le caractère readonly de la propriété aliasée."
+            },
             "comment": {
               "type": "string",
               "description": "Surcharge le commentaire de la propriété aliasée."
@@ -293,9 +305,9 @@
               "type": "string",
               "description": "Description de la propriété."
             },
-            "trigram": {
-              "type": "string",
-              "description": "Surcharge locale du trigram"
+            "readonly": {
+              "type": "boolean",
+              "description": "Une propriété 'readonly' ne pourra pas être renseignée par un mapper et aucun setter ne sera généré si la classe contenant la propriété est abstraite."
             }
           }
         }
@@ -761,6 +773,10 @@
             "flagProperty": {
               "type": "string",
               "description": "Propriété de la classe qui sera utilisée comme flag binaire, en plus du code dans une liste de référence statique. Renseigné par défaut par la propriété 'Flag', si elle existe sur la classe."
+            },
+            "abstract": {
+              "type": "boolean",
+              "description": "Permet de marquer la classe comme abstraite, pour laquelle aucune implémentation ne sera générée."
             },
             "comment": {
               "type": "string",

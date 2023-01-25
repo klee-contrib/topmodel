@@ -17,6 +17,8 @@ public class CompositionProperty : IProperty
 
     public string Comment { get; set; }
 
+    public bool Readonly { get; set; }
+
     public Class Class { get; set; }
 
     public Endpoint Endpoint { get; set; }

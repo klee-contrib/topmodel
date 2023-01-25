@@ -38,6 +38,8 @@ public class AssociationProperty : IFieldProperty
 
     public bool Required { get; set; }
 
+    public bool Readonly { get; set; }
+
     public string? DefaultValue { get; set; }
 
     public string Name

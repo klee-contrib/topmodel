@@ -8,6 +8,7 @@ public class AliasProperty : IFieldProperty
     private string? _defaultValue;
     private Domain? _domain;
     private string? _label;
+    private bool? _readonly;
     private bool? _required;
 
 #nullable disable
@@ -53,6 +54,12 @@ public class AliasProperty : IFieldProperty
     {
         get => _required ?? _property.Required;
         set => _required = value;
+    }
+
+    public bool Readonly
+    {
+        get => _readonly ?? _property.Readonly;
+        set => _readonly = value;
     }
 
 #nullable disable
@@ -132,6 +139,11 @@ public class AliasProperty : IFieldProperty
             alp.Required = _required.Value;
         }
 
+        if (_readonly.HasValue)
+        {
+            alp.Readonly = _readonly.Value;
+        }
+
         return alp;
     }
 
@@ -170,6 +182,11 @@ public class AliasProperty : IFieldProperty
         if (_required.HasValue)
         {
             alp.Required = _required.Value;
+        }
+
+        if (_readonly.HasValue)
+        {
+            alp.Readonly = _readonly.Value;
         }
 
         return alp;
