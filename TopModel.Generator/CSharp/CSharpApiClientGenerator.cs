@@ -305,7 +305,7 @@ public class CSharpApiClientGenerator : GeneratorBase
         {
             fw.WriteLine();
             fw.WriteSummary(2, "Déserialize le contenu d'une réponse HTTP.");
-            fw.WriteTypeParam("T", "Type de destination.");
+            fw.WriteTypeParam(2, "T", "Type de destination.");
             fw.WriteParam("response", "Réponse HTTP");
             fw.WriteReturns(2, "Contenu.");
             fw.WriteLine(2, "private async Task<T> Deserialize<T>(HttpResponseMessage response)");
@@ -333,7 +333,7 @@ public class CSharpApiClientGenerator : GeneratorBase
         {
             fw.WriteLine();
             fw.WriteSummary(2, "Récupère le body d'une requête pour l'objet donné.");
-            fw.WriteTypeParam("T", "Type source.");
+            fw.WriteTypeParam(2, "T", "Type source.");
             fw.WriteParam("input", "Entrée");
             fw.WriteReturns(2, "Contenu.");
             fw.WriteLine(2, "private StringContent GetBody<T>(T input)");

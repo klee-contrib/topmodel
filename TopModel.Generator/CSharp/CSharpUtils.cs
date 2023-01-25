@@ -118,7 +118,7 @@ public static class CSharpUtils
         var directory = Path.Combine(config.OutputDirectory, config.GetModelPath(classe), "generated");
         Directory.CreateDirectory(directory);
 
-        return Path.Combine(directory, classe.Name + ".cs");
+        return Path.Combine(directory, (classe.Abstract ? "I" : string.Empty) + classe.Name + ".cs");
     }
 
     public static string GetDbContextFilePath(this CSharpConfig config, string appName)
