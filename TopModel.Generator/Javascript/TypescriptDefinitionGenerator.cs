@@ -298,7 +298,12 @@ public class TypescriptDefinitionGenerator : GeneratorBase
                     fw.WriteLine($"        defaultValue: {defaultValue},");
                 }
 
-                fw.WriteLine($"        label: \"{field.ResourceKey}\"");
+                fw.WriteLine($"        label: \"{field.ResourceKey}\"{(_config.GenerateComments ? "," : string.Empty)}");
+
+                if (_config.GenerateComments)
+                {
+                    fw.WriteLine($"        comment: \"{field.CommentResourceKey}\"");
+                }
             }
             else if (property is CompositionProperty cp3 && cp3.DomainKind != null)
             {

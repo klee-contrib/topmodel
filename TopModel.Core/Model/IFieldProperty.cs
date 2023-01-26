@@ -18,6 +18,12 @@ public interface IFieldProperty : IProperty
 
     string ResourceKey => $"{string.Join('.', ResourceProperty.Class.Namespace.Module.Split('.').Select(e => e.ToFirstLower()))}.{ResourceProperty.Class.Name.ToFirstLower()}.{ResourceProperty.Name.ToFirstLower()}";
 
+    IFieldProperty CommentResourceProperty => this is AliasProperty alp && alp.Comment == alp.OriginalProperty?.Comment
+        ? alp.OriginalProperty!.CommentResourceProperty
+        : this;
+
+    string CommentResourceKey => $"comments.{string.Join('.', CommentResourceProperty.Class.Namespace.Module.Split('.').Select(e => e.ToFirstLower()))}.{CommentResourceProperty.Class.Name.ToFirstLower()}.{CommentResourceProperty.Name.ToFirstLower()}";
+
     string SqlName
     {
         get

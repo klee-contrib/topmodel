@@ -159,6 +159,7 @@ public static class TemplateExtension
             .Replace("comment", transform(rp.Comment))
             .Replace("required", transform(rp.Required.ToString().ToLower()))
             .Replace("resourceKey", transform(rp.ResourceKey.ToString()))
+            .Replace("commentResourceKey", transform(rp.CommentResourceKey.ToString()))
             .Replace("defaultValue", transform(rp.DefaultValue?.ToString() ?? string.Empty));
         return result;
     }
