@@ -14,7 +14,7 @@ public class SqlServerSchemaGenerator : AbstractSchemaGenerator
     {
     }
 
-    protected override string BatchSeparator => "go";
+    protected override string BatchSeparator => $"{Environment.NewLine}go";
 
     protected override bool SupportsClusteredKey => true;
 
@@ -25,6 +25,18 @@ public class SqlServerSchemaGenerator : AbstractSchemaGenerator
     protected override void WriteIdentityColumn(SqlFileWriter writerCrebas)
     {
         writerCrebas.Write(" identity(1, 1)");
+    }
+
+    protected override void WriteInsertStart(SqlFileWriter writerInsert)
+    {
+        writerInsert.WriteLine("set nocount on;");
+        writerInsert.WriteLine();
+    }
+
+    protected override void WriteInsertEnd(SqlFileWriter writerInsert)
+    {
+        writerInsert.WriteLine("set nocount off;");
+        writerInsert.WriteLine();
     }
 
     /// <summary>

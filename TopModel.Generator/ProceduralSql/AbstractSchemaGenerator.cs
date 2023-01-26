@@ -69,6 +69,8 @@ public abstract class AbstractSchemaGenerator
         writerInsert.WriteLine("--   Description		:	Script d'insertion des données de références");
         writerInsert.WriteLine("-- ===========================================================================================");
 
+        WriteInsertStart(writerInsert);
+
         // Construit la liste des Reference Class ordonnée.
         var orderList = SortUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
             .OfType<AssociationProperty>()
@@ -79,6 +81,8 @@ public abstract class AbstractSchemaGenerator
         {
             WriteInsert(writerInsert, classe);
         }
+
+        WriteInsertEnd(writerInsert);
     }
 
     /// <summary>
@@ -187,7 +191,7 @@ public abstract class AbstractSchemaGenerator
                 definition.TryGetValue(property, out var value);
                 nameValueDict[property.SqlName] = value switch
                 {
-                    null => "null",
+                    null or "null" => "null",
                     string s when property.Domain.SqlType!.Contains("varchar") || property.Domain.SqlType!.Contains("timestamp") => $"'{ScriptUtils.PrepareDataToSqlDisplay(s)}'",
                     object v => v.ToString()
                 };
@@ -202,6 +206,14 @@ public abstract class AbstractSchemaGenerator
     /// </summary>
     /// <param name="writerCrebas">Flux d'écriture création bases.</param>
     protected abstract void WriteIdentityColumn(SqlFileWriter writerCrebas);
+
+    protected virtual void WriteInsertStart(SqlFileWriter writerInsert)
+    {
+    }
+
+    protected virtual void WriteInsertEnd(SqlFileWriter writerInsert)
+    {
+    }
 
     /// <summary>
     /// Ecrit dans le writer le script de création du type.
@@ -225,15 +237,14 @@ public abstract class AbstractSchemaGenerator
         writer.WriteLine("  * Génération de la contrainte de clef étrangère pour " + tableName + "." + propertyName);
         writer.WriteLine(" **/");
         writer.WriteLine("alter table " + Quote(tableName));
-        var constraintName = Quote("FK_" + (property.Class.Trigram ?? property.Class.SqlName) + "_" + propertyName);
+        var constraintName = Quote($"FK_{property.Class.SqlName}_{propertyName}");
 
         writer.WriteLine("\tadd constraint " + constraintName + " foreign key (" + Quote(propertyName) + ")");
         writer.Write("\t\treferences " + Quote(property.Association.SqlName) + " (");
 
         writer.Write(Quote(property.Property.SqlName));
 
-        writer.WriteLine(")");
-        writer.WriteLine(BatchSeparator);
+        writer.WriteLine($"){BatchSeparator}");
         writer.WriteLine();
     }
 
@@ -251,8 +262,7 @@ public abstract class AbstractSchemaGenerator
         writer.WriteLine(" **/");
         writer.WriteLine("create index " + Quote("IDX_" + (property.Class.Trigram ?? property.Class.SqlName) + "_" + propertyName + "_FK") + " on " + tableName + " (");
         writer.WriteLine("\t" + Quote(propertyName) + " ASC");
-        writer.WriteLine(")");
-        writer.WriteLine(BatchSeparator);
+        writer.WriteLine($"){BatchSeparator}");
         writer.WriteLine();
     }
 
@@ -369,7 +379,7 @@ public abstract class AbstractSchemaGenerator
             writerCrebas.WriteLine(")");
         }
 
-        writerCrebas.WriteLine(")");
+        writerCrebas.WriteLine($"){BatchSeparator}");
     }
 
     /// <summary>
@@ -392,14 +402,14 @@ public abstract class AbstractSchemaGenerator
             writerCrebas.WriteLine(" **/");
             writerCrebas.Write($"create sequence SEQ_{tableName}");
 
-            if (this._config.Identity.Start != null)
+            if (_config.Identity.Start != null)
             {
-                writerCrebas.Write($"{$" start {this._config.Identity.Start}"}");
+                writerCrebas.Write($"{$" start {_config.Identity.Start}"}");
             }
 
-            if (this._config.Identity.Increment != null)
+            if (_config.Identity.Increment != null)
             {
-                writerCrebas.Write($"{$" increment {this._config.Identity.Increment}"}");
+                writerCrebas.Write($"{$" increment {_config.Identity.Increment}"}");
             }
 
             writerCrebas.WriteLine(BatchSeparator);
@@ -489,7 +499,6 @@ public abstract class AbstractSchemaGenerator
 
         WriteUniqueKeys(classe, writerUk);
         WritePrimaryKeyConstraint(writerCrebas, classe);
-        writerCrebas.WriteLine(BatchSeparator);
         writerCrebas.WriteLine();
 
         if (isContainsInsertKey)
@@ -507,8 +516,7 @@ public abstract class AbstractSchemaGenerator
 
             writerType.WriteLine('\t' + classe.Trigram + "_INSERT_KEY int");
             writerType.WriteLine();
-            writerType.WriteLine(")");
-            writerType.WriteLine(BatchSeparator);
+            writerType.WriteLine($"){BatchSeparator}");
             writerType.WriteLine();
         }
 
@@ -525,8 +533,7 @@ public abstract class AbstractSchemaGenerator
         foreach (var uk in classe.UniqueKeys
             .Concat(classe.Properties.OfType<AssociationProperty>().Where(ap => ap.Type == AssociationType.OneToOne).Select(ap => new List<IFieldProperty> { ap })))
         {
-            writerUk?.Write($"alter table {classe.SqlName} add constraint {Quote($"UK_{classe.SqlName}_{string.Join("_", uk.Select(p => p.SqlName))}")} unique ({string.Join(", ", uk.Select(p => Quote(p.SqlName)))})");
-            writerUk?.WriteLine(BatchSeparator);
+            writerUk?.WriteLine($"alter table {classe.SqlName} add constraint {Quote($"UK_{classe.SqlName}_{string.Join("_", uk.Select(p => p.SqlName))}")} unique ({string.Join(", ", uk.Select(p => Quote(p.SqlName)))}){BatchSeparator}");
             writerUk?.WriteLine();
         }
     }

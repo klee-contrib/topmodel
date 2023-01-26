@@ -81,7 +81,7 @@ public class InitReferenceListScripter : ISqlScripter<Class>
                 definition.TryGetValue(property, out var propValue);
                 nameValueDict[property.SqlName] = propValue switch
                 {
-                    null => "NULL",
+                    null or "null" => "NULL",
                     string bs when property.Domain.SqlType == "bit" => $"N'{bs}'",
                     string s when property.Domain.SqlType!.Contains("varchar") => $"{(_config.TargetDBMS == TargetDBMS.Sqlserver ? "N" : string.Empty)}'{ScriptUtils.PrepareDataToSqlDisplay(s)}'",
                     object v => v.ToString()
