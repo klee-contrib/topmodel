@@ -2,7 +2,7 @@
 
 namespace TopModel.Core;
 
-public class Class
+public class Class : IPropertyContainer
 {
     private string? _pluralName;
 

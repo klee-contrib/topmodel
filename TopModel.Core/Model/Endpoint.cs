@@ -2,7 +2,7 @@
 
 namespace TopModel.Core;
 
-public class Endpoint
+public class Endpoint : IPropertyContainer
 {
     public Namespace Namespace { get; set; }
 
@@ -32,11 +32,13 @@ public class Endpoint
 
     public IList<IProperty> Params { get; set; } = new List<IProperty>();
 
+    public IList<IProperty> Properties => Params.Concat(new[] { Returns! }).Where(p => p != null).ToList();
+
     public List<(Decorator Decorator, string[] Parameters)> Decorators { get; } = new();
 
-    public IEnumerable<ClassDependency> ClassDependencies => Params.Concat(new[] { Returns! }).Where(p => p != null).GetClassDependencies();
+    public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies();
 
-    public IEnumerable<DomainDependency> DomainDependencies => Params.Concat(new[] { Returns! }).Where(p => p != null).GetDomainDependencies();
+    public IEnumerable<DomainDependency> DomainDependencies => Properties.GetDomainDependencies();
 
     public List<DecoratorReference> DecoratorReferences { get; } = new();
 

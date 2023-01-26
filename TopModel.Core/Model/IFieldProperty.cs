@@ -12,17 +12,21 @@ public interface IFieldProperty : IProperty
 
     public LocatedString? Trigram { get; set; }
 
-    IFieldProperty ResourceProperty => this is AliasProperty alp && alp.Label == alp.OriginalProperty?.Label
+    IFieldProperty ResourceProperty => Decorator != null && Parent != Decorator
+        ? Decorator.Properties.OfType<IFieldProperty>().First(p => p.Name == Name).ResourceProperty
+        : this is AliasProperty alp && alp.Label == alp.OriginalProperty?.Label
         ? alp.OriginalProperty!.ResourceProperty
         : this;
 
-    string ResourceKey => $"{string.Join('.', ResourceProperty.Class.Namespace.Module.Split('.').Select(e => e.ToFirstLower()))}.{ResourceProperty.Class.Name.ToFirstLower()}.{ResourceProperty.Name.ToFirstLower()}";
+    string ResourceKey => $"{string.Join('.', ResourceProperty.Parent.Namespace.Module.Split('.').Select(e => e.ToFirstLower()))}.{ResourceProperty.Parent.Name.ToFirstLower()}.{ResourceProperty.Name.ToFirstLower()}";
 
-    IFieldProperty CommentResourceProperty => this is AliasProperty alp && alp.Comment == alp.OriginalProperty?.Comment
+    IFieldProperty CommentResourceProperty => Decorator != null && Parent != Decorator
+        ? Decorator.Properties.OfType<IFieldProperty>().First(p => p.Name == Name).CommentResourceProperty
+        : this is AliasProperty alp && alp.Comment == alp.OriginalProperty?.Comment
         ? alp.OriginalProperty!.CommentResourceProperty
         : this;
 
-    string CommentResourceKey => $"comments.{string.Join('.', CommentResourceProperty.Class.Namespace.Module.Split('.').Select(e => e.ToFirstLower()))}.{CommentResourceProperty.Class.Name.ToFirstLower()}.{CommentResourceProperty.Name.ToFirstLower()}";
+    string CommentResourceKey => $"comments.{string.Join('.', CommentResourceProperty.Parent.Namespace.Module.Split('.').Select(e => e.ToFirstLower()))}.{CommentResourceProperty.Parent.Name.ToFirstLower()}.{CommentResourceProperty.Name.ToFirstLower()}";
 
     string SqlName
     {

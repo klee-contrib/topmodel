@@ -113,7 +113,6 @@ public class ModelFileLoader
             else if (scalar.Value == "decorator")
             {
                 var decorator = _decoratorLoader.Load(parser);
-                decorator.ModelFile = file;
                 decorator.Location = new Reference(scalar);
                 file.Decorators.Add(decorator);
             }
@@ -189,6 +188,12 @@ public class ModelFileLoader
         {
             endpoint.ModelFile = file;
             endpoint.Namespace = ns;
+        }
+
+        foreach (var decorator in file.Decorators)
+        {
+            decorator.ModelFile = file;
+            decorator.Namespace = ns;
         }
 
         if (file.Options.Endpoints.FileName == null)
