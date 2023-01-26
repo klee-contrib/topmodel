@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.22.1
+
+- [`c216ac80`](https://github.com/klee-contrib/topmodel/commit/c216ac803a517c4c9337ce57d3bd16de3bd4d6a4) - [P-SQL] Fix mise en page et nommage des FKs (SqlName au lieu de Trigram)
+
 ## 1.22.0
 
 - [#186](https://github.com/klee-contrib/topmodel/pull/186) - Remplace `asListWithDomain` sur les alias par `asList: true` et `listDomain` sur le domaine (**breaking change**).
