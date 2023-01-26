@@ -69,14 +69,14 @@ export const UtilisateurDtoEntity = {
         name: "dateCreation",
         domain: DO_DATE_CREATION,
         isRequired: false,
-        label: "utilisateur.utilisateur.dateCreation"
+        label: "utilisateur.entityListeners.dateCreation"
     },
     dateModification: {
         type: "field",
         name: "dateModification",
         domain: DO_DATE_MODIFICATION,
         isRequired: false,
-        label: "utilisateur.utilisateur.dateModification"
+        label: "utilisateur.entityListeners.dateModification"
     },
     utilisateurParent: {
         type: "object",

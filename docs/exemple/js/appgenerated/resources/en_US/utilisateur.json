@@ -1,4 +1,8 @@
 {
+    "entityListeners": {
+        "dateCreation": "dateCreation",
+        "dateModification": "dateModification"
+    },
     "typeUtilisateur": {
         "code": "Code",
         "libelle": "Libelle",
@@ -14,8 +18,6 @@
         "nom": "Nom",
         "profilId": "ProfilId",
         "typeUtilisateurCode": "TypeUtilisateurCode",
-        "dateCreation": "dateCreation",
-        "dateModification": "dateModification",
         "email": "email"
     }
 }
