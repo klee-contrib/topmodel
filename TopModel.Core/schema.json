@@ -237,6 +237,10 @@
                 }
               ]
             },
+            "domain": {
+              "type": "string",
+              "description": "Surcharge le domaine de la propriété aliasée. Le domaine choisi doit être convertible depuis/vers le domaine initial. Incompatible avec 'asList'."
+            },
             "label": {
               "type": "string",
               "description": "Surcharge le libellé de la propriété aliasée."
@@ -251,7 +255,7 @@
             },
             "asList": {
               "type": "boolean",
-              "description": "Crée une liste du type de la propriété aliasée au lieu d'un champ simple."
+              "description": "Crée une liste du type de la propriété aliasée au lieu d'un champ simple. Incompatible avec 'domain'."
             },
             "defaultValue": {
               "description": "Surcharge la valeur par défaut de la propriété."

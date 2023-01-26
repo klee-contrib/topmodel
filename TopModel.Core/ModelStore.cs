@@ -300,7 +300,7 @@ public class ModelStore
         return modelFile.Uses
             .Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
             .Where(dep => dep != null)
-            .Concat(Files.Where(f => f != modelFile && f.Converters.Any() && modelFile.Classes.Any(c => c.FromMappers.Any() || c.ToMappers.Any())))
+            .Concat(Files.Where(f => f != modelFile && f.Converters.Any() && (modelFile.Classes.Any(c => c.FromMappers.Any() || c.ToMappers.Any()) || modelFile.Properties.OfType<AliasProperty>().Any(alp => alp.DomainReference != null))))
             .Concat(Files.Where(f => f != modelFile && f.Domains.Any() && (!modelFile.Domains.Any() || modelFile.Domains.Any(d => d.ListDomainReference != null))));
     }
 
@@ -549,6 +549,22 @@ public class ModelStore
                     }
 
                     break;
+
+                case AliasProperty alp when alp.DomainReference != null:
+                    if (!Domains.TryGetValue(alp.DomainReference.ReferenceName, out var aliasDomain))
+                    {
+                        yield return new ModelError(alp, "Le domaine '{0}' est introuvable.", alp.DomainReference) { ModelErrorType = ModelErrorType.TMD1005 };
+                        break;
+                    }
+
+                    alp.Domain = aliasDomain;
+
+                    if (alp.AsList)
+                    {
+                        yield return new ModelError(alp, "Impossible de surcharger un domaine sur un alias marqué `asList: true`.", alp.DomainReference) { ModelErrorType = ModelErrorType.TMD1027 };
+                    }
+
+                    break;
             }
         }
 
@@ -663,6 +679,13 @@ public class ModelStore
                     if (prop.AsList && prop.Domain == null)
                     {
                         yield return new ModelError(modelFile, $"Le domaine '{prop.OriginalProperty?.Domain}' doit définir un domaine de liste pour définir un alias liste sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'", prop.PropertyReference ?? prop.Reference) { IsError = true, ModelErrorType = ModelErrorType.TMD1023 };
+                    }
+
+                    if (!prop.AsList && prop.Domain != prop.OriginalProperty?.Domain
+                        && (!Converters.Any(c => c.From.Any(cf => cf == prop.Domain) && c.To.Any(ct => ct == prop.OriginalProperty?.Domain))
+                            || !Converters.Any(c => c.To.Any(cf => cf == prop.Domain) && c.From.Any(ct => ct == prop.OriginalProperty?.Domain))))
+                    {
+                        yield return new ModelError(alp, $"Le domain '{prop.Domain}' doit être convertible depuis et vers le domaine '{prop.OriginalProperty?.Domain}' pour être utilisé comme une surcharge dans un alias.", alp.DomainReference) { ModelErrorType = ModelErrorType.TMD1028 };
                     }
 
                     if (alp.Class != null)

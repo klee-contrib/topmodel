@@ -228,6 +228,9 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                         case "label":
                             alp.Label = value.Value;
                             break;
+                        case "domain":
+                            alp.DomainReference = new DomainReference(value);
+                            break;
                         case "required":
                             alp.Required = value.Value == "true";
                             break;
