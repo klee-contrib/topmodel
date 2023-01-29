@@ -3,7 +3,7 @@
 /// <summary>
 /// Paramètres pour la génération de SQL procédural.
 /// </summary>
-public class ProceduralSqlConfig : GeneratorConfigBase
+public class ProceduralSqlConfig : GeneratorConfigBase<object>
 {
     /// <summary>
     /// SGBD cible ("postgre" ou "sqlserver").

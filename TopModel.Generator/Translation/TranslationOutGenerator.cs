@@ -8,7 +8,7 @@ namespace TopModel.Generator.Translation;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class TranslationOutGenerator : GeneratorBase
+public class TranslationOutGenerator : GeneratorBase<object>
 {
     private readonly TranslationConfig _config;
 

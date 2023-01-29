@@ -7,7 +7,7 @@ namespace TopModel.Generator.Javascript;
 /// <summary>
 /// Paramètres pour la génération du Javascript.
 /// </summary>
-public class JavascriptConfig : GeneratorConfigBase
+public class JavascriptConfig : GeneratorConfigBase<JavascriptTagConfig>
 {
     /// <summary>
     /// Localisation du modèle, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré.
@@ -56,7 +56,7 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public string GetClassFileName(Class classe, string tag)
     {
-        var rootPath = Path.Combine(OutputDirectory, ModelRootPath!.Replace("{tag}", tag.ToKebabCase())).Replace("\\", "/");
+        var rootPath = Path.Combine(OutputDirectory, ModelRootPath!.Replace("{tag}", GetTagValue(tag, c => c.ModelRootPath).ToKebabCase())).Replace("\\", "/");
         return $"{rootPath}/{string.Join('/', classe.Namespace.Module.Split('.').Select(m => m.ToKebabCase()))}/{classe.Name.ToDashCase()}.ts";
     }
 
@@ -87,7 +87,7 @@ public class JavascriptConfig : GeneratorConfigBase
         var modulePath = Path.Combine(file.Module.Split('.').Select(m => m.ToKebabCase()).ToArray());
         var filePath = ApiClientFilePath.Replace("{module}", modulePath);
         var fileName = file.Options.Endpoints.FileName.ToKebabCase();
-        return Path.Combine(OutputDirectory, ApiClientRootPath!.Replace("{tag}", tag.ToKebabCase()), filePath, $"{fileName}.ts").Replace("\\", "/");
+        return Path.Combine(OutputDirectory, ApiClientRootPath!.Replace("{tag}", GetTagValue(tag, c => c.ApiClientRootPath).ToKebabCase()), filePath, $"{fileName}.ts").Replace("\\", "/");
     }
 
     public List<(string Import, string Path)> GetEndpointImports(IEnumerable<ModelFile> files, string tag, IEnumerable<Class> availableClasses)
@@ -147,12 +147,12 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public string GetReferencesFileName(string module, string tag)
     {
-        var rootPath = Path.Combine(OutputDirectory, ModelRootPath!.Replace("{tag}", tag.ToKebabCase())).Replace("\\", "/");
+        var rootPath = Path.Combine(OutputDirectory, ModelRootPath!.Replace("{tag}", GetTagValue(tag, c => c.ModelRootPath).ToKebabCase())).Replace("\\", "/");
         return $"{rootPath}/{string.Join('/', module.Split('.').Select(m => m.ToKebabCase()))}/references.ts";
     }
 
     public string GetResourcesFilePath(string module, string tag, string lang)
     {
-        return Path.Combine(OutputDirectory, ResourceRootPath!.Replace("{tag}", tag.ToKebabCase()), lang, Path.Combine(module.Split(".").Select(part => part.ToKebabCase()).ToArray())) + (ResourceMode == ResourceMode.JS ? ".ts" : ".json");
+        return Path.Combine(OutputDirectory, ResourceRootPath!.Replace("{tag}", GetTagValue(tag, c => c.ResourceRootPath).ToKebabCase()), lang, Path.Combine(module.Split(".").Select(part => part.ToKebabCase()).ToArray())) + (ResourceMode == ResourceMode.JS ? ".ts" : ".json");
     }
 }

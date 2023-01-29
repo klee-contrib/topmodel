@@ -2,7 +2,7 @@
 
 namespace TopModel.Generator.Translation;
 
-public class TranslationConfig : GeneratorConfigBase
+public class TranslationConfig : GeneratorConfigBase<object>
 {
     /// <summary>
     /// liste des langues de l'application

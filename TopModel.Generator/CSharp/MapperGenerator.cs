@@ -4,7 +4,7 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.CSharp;
 
-public class MapperGenerator : GeneratorBase
+public class MapperGenerator : GeneratorBase<object>
 {
     private readonly CSharpConfig _config;
     private readonly ILogger<MapperGenerator> _logger;

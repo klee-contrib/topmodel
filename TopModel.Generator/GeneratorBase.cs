@@ -4,12 +4,12 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.Generator;
 
-public abstract class GeneratorBase : IModelWatcher
+public abstract class GeneratorBase<T> : IModelWatcher
 {
-    private readonly GeneratorConfigBase _config;
+    private readonly GeneratorConfigBase<T> _config;
     private readonly ILogger _logger;
 
-    protected GeneratorBase(ILogger logger, GeneratorConfigBase config)
+    protected GeneratorBase(ILogger logger, GeneratorConfigBase<T> config)
     {
         _config = config;
         _logger = logger;

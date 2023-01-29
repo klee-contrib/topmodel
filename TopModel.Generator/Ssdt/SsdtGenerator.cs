@@ -5,7 +5,7 @@ using TopModel.Generator.Ssdt.Scripter;
 
 namespace TopModel.Generator.Ssdt;
 
-public class SsdtGenerator : GeneratorBase
+public class SsdtGenerator : GeneratorBase<object>
 {
     private readonly SsdtConfig _config;
     private readonly ILogger<SsdtGenerator> _logger;

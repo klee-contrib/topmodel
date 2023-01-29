@@ -8,7 +8,7 @@ namespace TopModel.Generator.Javascript;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class JavascriptResourceGenerator : GeneratorBase
+public class JavascriptResourceGenerator : GeneratorBase<JavascriptTagConfig>
 {
     private readonly JavascriptConfig _config;
     private readonly ILogger<JavascriptResourceGenerator> _logger;

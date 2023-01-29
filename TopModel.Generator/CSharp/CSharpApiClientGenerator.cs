@@ -6,7 +6,7 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.CSharp;
 
-public class CSharpApiClientGenerator : GeneratorBase
+public class CSharpApiClientGenerator : GeneratorBase<object>
 {
     private readonly CSharpConfig _config;
     private readonly ILogger<CSharpApiClientGenerator> _logger;

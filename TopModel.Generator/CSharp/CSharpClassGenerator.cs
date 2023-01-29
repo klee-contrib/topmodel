@@ -7,7 +7,7 @@ namespace TopModel.Generator.CSharp;
 
 using static CSharpUtils;
 
-public class CSharpClassGenerator : GeneratorBase
+public class CSharpClassGenerator : GeneratorBase<object>
 {
     private readonly CSharpConfig _config;
     private readonly ILogger<CSharpClassGenerator> _logger;

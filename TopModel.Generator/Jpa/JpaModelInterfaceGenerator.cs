@@ -8,7 +8,7 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// Générateur de DAOs JPA.
 /// </summary>
-public class JpaModelInterfaceGenerator : GeneratorBase
+public class JpaModelInterfaceGenerator : GeneratorBase<object>
 {
     private readonly JpaConfig _config;
     private readonly ILogger<JpaModelInterfaceGenerator> _logger;

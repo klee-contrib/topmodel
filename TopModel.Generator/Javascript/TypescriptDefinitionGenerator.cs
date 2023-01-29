@@ -8,7 +8,7 @@ namespace TopModel.Generator.Javascript;
 /// <summary>
 /// Générateur de définitions Typescript.
 /// </summary>
-public class TypescriptDefinitionGenerator : GeneratorBase
+public class TypescriptDefinitionGenerator : GeneratorBase<JavascriptTagConfig>
 {
     private readonly JavascriptConfig _config;
     private readonly ILogger<TypescriptDefinitionGenerator> _logger;

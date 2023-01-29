@@ -8,7 +8,7 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class SpringClientApiGenerator : GeneratorBase
+public class SpringClientApiGenerator : GeneratorBase<object>
 {
     private readonly JpaConfig _config;
     private readonly ILogger<SpringClientApiGenerator> _logger;

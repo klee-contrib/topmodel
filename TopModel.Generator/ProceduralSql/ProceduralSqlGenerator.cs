@@ -5,7 +5,7 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.ProceduralSql;
 
-public class ProceduralSqlGenerator : GeneratorBase
+public class ProceduralSqlGenerator : GeneratorBase<object>
 {
     private readonly ProceduralSqlConfig _config;
     private readonly ILogger<ProceduralSqlGenerator> _logger;

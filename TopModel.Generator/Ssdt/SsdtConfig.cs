@@ -5,7 +5,7 @@ namespace TopModel.Generator.Ssdt;
 /// <summary>
 /// Paramètres pour la génération SSDT.
 /// </summary>
-public class SsdtConfig : GeneratorConfigBase
+public class SsdtConfig : GeneratorConfigBase<object>
 {
     /// <summary>
     /// Dossier du projet pour les scripts de déclaration de table.

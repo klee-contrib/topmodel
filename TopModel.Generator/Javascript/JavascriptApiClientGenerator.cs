@@ -8,7 +8,7 @@ namespace TopModel.Generator.Javascript;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class JavascriptApiClientGenerator : GeneratorBase
+public class JavascriptApiClientGenerator : GeneratorBase<JavascriptTagConfig>
 {
     private readonly JavascriptConfig _config;
     private readonly ILogger<JavascriptApiClientGenerator> _logger;

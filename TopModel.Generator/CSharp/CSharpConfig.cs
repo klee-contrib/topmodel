@@ -6,7 +6,7 @@ namespace TopModel.Generator.CSharp;
 /// <summary>
 /// Paramètres pour la génération du C#.
 /// </summary>
-public class CSharpConfig : GeneratorConfigBase
+public class CSharpConfig : GeneratorConfigBase<object>
 {
     private string? _referencesModelPath;
 

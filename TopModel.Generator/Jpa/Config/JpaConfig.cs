@@ -2,7 +2,7 @@
 
 namespace TopModel.Generator.Jpa;
 
-public class JpaConfig : GeneratorConfigBase
+public class JpaConfig : GeneratorConfigBase<object>
 {
     /// <summary>
     /// Localisation du modèle, relative au répertoire de génération.

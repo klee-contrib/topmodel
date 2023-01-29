@@ -10,7 +10,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace TopModel.Generator.CSharp;
 
-public class CSharpApiServerGenerator : GeneratorBase
+public class CSharpApiServerGenerator : GeneratorBase<object>
 {
     private readonly CSharpConfig _config;
     private readonly ILogger<CSharpApiServerGenerator> _logger;

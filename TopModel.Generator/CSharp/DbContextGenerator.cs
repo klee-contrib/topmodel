@@ -4,7 +4,7 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.CSharp;
 
-public class DbContextGenerator : GeneratorBase
+public class DbContextGenerator : GeneratorBase<object>
 {
     private readonly string _appName;
     private readonly CSharpConfig _config;

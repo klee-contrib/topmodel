@@ -9,7 +9,7 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class JpaResourceGenerator : GeneratorBase
+public class JpaResourceGenerator : GeneratorBase<object>
 {
     private readonly JpaConfig _config;
     private readonly ILogger<JpaResourceGenerator> _logger;

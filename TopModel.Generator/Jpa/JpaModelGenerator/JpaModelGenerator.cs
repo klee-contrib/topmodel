@@ -8,7 +8,7 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// Générateur de fichiers de modèles JPA.
 /// </summary>
-public class JpaModelGenerator : GeneratorBase
+public class JpaModelGenerator : GeneratorBase<object>
 {
     private readonly JpaConfig _config;
     private readonly ILogger<JpaModelGenerator> _logger;

@@ -4,7 +4,7 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.CSharp;
 
-public class ReferenceAccessorGenerator : GeneratorBase
+public class ReferenceAccessorGenerator : GeneratorBase<object>
 {
     private readonly CSharpConfig _config;
     private readonly ILogger<ReferenceAccessorGenerator> _logger;

@@ -377,6 +377,26 @@
               "description": "Catégorie de fichier que le générateur doit lire."
             }
           },
+          "tagConfigOverrides": {
+            "type": "object",
+            "description": "Surcharge par tag du token {tag} pour les différents paramètres du générateur.",
+            "patternProperties": {
+              ".*": {
+                "type": "object",
+                "properties": {
+                  "modelRootPath": {
+                    "type": "string"
+                  },
+                  "resourceRootPath": {
+                    "type": "string"
+                  },
+                  "apiClientRootPath": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
           "outputDirectory": {
             "type": "string",
             "description": "Racine du répertoire de génération."
