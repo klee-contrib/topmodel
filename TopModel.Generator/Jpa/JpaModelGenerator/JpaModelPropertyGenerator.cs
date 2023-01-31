@@ -142,6 +142,7 @@ public class JpaModelPropertyGenerator
 
     private void WriteProperty(JavaWriter fw, Class classe, IFieldProperty property)
     {
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         if (property is AliasProperty alp)
         {
             fw.WriteLine(1, $" * Alias of {{@link {alp.Property.Class.GetImport(_config)}#get{alp.Property.Name.ToFirstUpper()}() {alp.Property.Class.Name}#get{alp.Property.Name.ToFirstUpper()}()}} ");
@@ -199,14 +200,14 @@ public class JpaModelPropertyGenerator
             column += ")";
             fw.WriteLine(1, column);
         }
-        else if (property.Required && !property.PrimaryKey)
+        else if (property.Required && !property.PrimaryKey && !classe.IsPersistent)
         {
             fw.WriteLine(1, @$"@NotNull");
+            fw.AddImport($"{javaOrJakarta}.validation.constraints.NotNull");
         }
 
         if (property.PrimaryKey && classe.Reference && classe.ReferenceValues.Any())
         {
-            var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
             fw.AddImports(new List<string>
             {
                 $"{javaOrJakarta}.persistence.Enumerated",
