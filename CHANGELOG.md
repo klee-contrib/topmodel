@@ -1,5 +1,7 @@
 # TopModel.Generator (`modgen`)
 
+- [`421a7c23`](https://github.com/klee-contrib/topmodel/commit/421a7c23a1005f3b6b5ee7aa87e85e989e867d05) - [JS] Angular Api client : Fix virgule surnuméraire
+
 ## 1.22.1
 
 - [`c216ac80`](https://github.com/klee-contrib/topmodel/commit/c216ac803a517c4c9337ce57d3bd16de3bd4d6a4) - [P-SQL] Fix mise en page et nommage des FKs (SqlName au lieu de Trigram)
