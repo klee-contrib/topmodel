@@ -38,8 +38,8 @@ public class AngularApiClientGenerator : GeneratorBase
     private void GenerateClientFile(ModelFile file, IEnumerable<string> tags)
     {
         foreach (var (tag, fileName) in _config.Tags.Intersect(tags)
-           .Select(tag => (tag, fileName: _config.GetEndpointsFileName(file, tag)))
-           .DistinctBy(t => t.fileName))
+        .Select(tag => (tag, fileName: _config.GetEndpointsFileName(file, tag)))
+        .DistinctBy(t => t.fileName))
         {
             var files = Files.Values.Where(f => f.Options.Endpoints.FileName == file.Options.Endpoints.FileName && f.Module == file.Module && f.Tags.Contains(tag));
 
@@ -121,9 +121,14 @@ public class AngularApiClientGenerator : GeneratorBase
         var hasProperty = false;
         foreach (var param in endpoint.Params)
         {
+            if (hasProperty)
+            {
+                fw.Write(", ");
+            }
+
             hasProperty = true;
             var defaultValue = _config.GetDefaultValue(param);
-            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {param.GetPropertyTypeName(Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, ");
+            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {param.GetPropertyTypeName(Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}");
         }
 
         string returnType;
