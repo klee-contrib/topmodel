@@ -148,6 +148,11 @@ public enum ModelErrorType
     TMD1023,
 
     /// <summary>
+    /// Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.
+    /// </summary>
+    TMD1027,
+
+    /// <summary>
     /// L'import {} n'est pas utilisé.
     /// </summary>
     TMD9001,

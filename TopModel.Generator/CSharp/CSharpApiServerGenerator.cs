@@ -163,12 +163,7 @@ namespace {apiPath.Replace("/", ".")}
             if (split[i].StartsWith("{"))
             {
                 var routeParamName = split[i][1..^1];
-                var param = endpoint.Params.OfType<IFieldProperty>().SingleOrDefault(param => param.GetParamName() == routeParamName);
-
-                if (param == null)
-                {
-                    throw new ModelException(endpoint, $"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.");
-                }
+                var param = endpoint.Params.OfType<IFieldProperty>().Single(param => param.GetParamName() == routeParamName);
 
                 var paramType = param.Domain.CSharp!.Type switch
                 {
