@@ -50,7 +50,7 @@ public static class ModelExtensions
     public static IEnumerable<(ClassReference Reference, ModelFile File)> GetClassReferences(this ModelStore modelStore, Class classe)
     {
         return modelStore.Classes.SelectMany(c => c.Properties)
-            .Concat(modelStore.Endpoints.SelectMany(e => e.Params.Concat(e.Returns != null ? new[] { e.Returns } : Array.Empty<IProperty>())))
+            .Concat(modelStore.Endpoints.SelectMany(e => e.Properties))
             .Concat(modelStore.Decorators.SelectMany(d => d.Properties))
             .Where(p =>
                 p is AliasProperty alp && alp.OriginalProperty?.Class == classe
@@ -81,7 +81,7 @@ public static class ModelExtensions
     {
         return modelStore.Classes.SelectMany(c => c.Properties)
             .Concat(modelStore.Decorators.SelectMany(c => c.Properties))
-            .Concat(modelStore.Endpoints.SelectMany(e => e.Params.Concat(e.Returns != null ? new[] { e.Returns } : Array.Empty<IProperty>())))
+            .Concat(modelStore.Endpoints.SelectMany(e => e.Properties))
             .Where(p =>
                 p is RegularProperty rp && rp.Domain == domain
                 || p is CompositionProperty cp && cp.DomainKind == domain)

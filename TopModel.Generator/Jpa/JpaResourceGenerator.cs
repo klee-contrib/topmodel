@@ -48,11 +48,11 @@ public class JpaResourceGenerator : GeneratorBase
     private IEnumerable<IGrouping<string, IFieldProperty>> GetModules()
     {
         return Files
-                    .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
-                    .Select(c => c.ResourceProperty)
-                    .Where(p => p.Label != null || p.Class.ReferenceValues.Any() && p.Class.DefaultProperty != null)
-                    .Distinct()
-                    .GroupBy(prop => prop.Class.Namespace.Module.Split('.').First());
+            .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
+            .Select(c => c.ResourceProperty)
+            .Where(p => p.Label != null || (p.Class?.ReferenceValues.Any() ?? false) && p.Class?.DefaultProperty != null)
+            .Distinct()
+            .GroupBy(prop => prop.Parent.Namespace.Module.Split('.').First());
     }
 
     private void GenerateModule(IGrouping<string, IFieldProperty> module, string lang)
@@ -65,11 +65,11 @@ public class JpaResourceGenerator : GeneratorBase
         var filePath = GetFilePath(module, lang);
 
         using var fw = new FileWriter(filePath, _logger, Encoding.Latin1) { EnableHeader = false };
-        var classes = module.GroupBy(prop => prop.Class);
+        var containers = module.GroupBy(prop => prop.Parent);
 
-        foreach (var classe in classes.OrderBy(c => c.Key.Name))
+        foreach (var container in containers.OrderBy(c => c.Key.Name))
         {
-            WriteClasse(fw, classe, lang);
+            WriteClasse(fw, container, lang);
         }
     }
 
@@ -77,10 +77,10 @@ public class JpaResourceGenerator : GeneratorBase
     /// Générère le noeus de classe.
     /// </summary>
     /// <param name="fw">Flux de sortie.</param>
-    /// <param name="classe">Classe.</param>
-    private void WriteClasse(FileWriter fw, IGrouping<Class, IFieldProperty> classe, string lang)
+    /// <param name="container">Classe.</param>
+    private void WriteClasse(FileWriter fw, IGrouping<IPropertyContainer, IFieldProperty> container, string lang)
     {
-        foreach (var property in classe)
+        foreach (var property in container)
         {
             if (property.Label != null)
             {
@@ -88,9 +88,9 @@ public class JpaResourceGenerator : GeneratorBase
             }
         }
 
-        if (classe.Key.DefaultProperty != null)
+        if (container.Key is Class classe && classe.DefaultProperty != null)
         {
-            foreach (var val in classe.Key.ReferenceValues)
+            foreach (var val in classe.ReferenceValues)
             {
                 fw.WriteLine($"{val.ResourceKey}={_translationStore.GetTranslation(val, lang)}");
             }

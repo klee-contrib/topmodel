@@ -16,8 +16,6 @@ public class TranslationOutGenerator : GeneratorBase
 
     private readonly TranslationStore _translationStore;
 
-    private readonly IDictionary<string, ModelFile> _files = new Dictionary<string, ModelFile>();
-
     public TranslationOutGenerator(ILogger<TranslationOutGenerator> logger, TranslationConfig config, TranslationStore translationStore)
         : base(logger, config)
     {
@@ -45,15 +43,15 @@ public class TranslationOutGenerator : GeneratorBase
     private IEnumerable<IGrouping<string, IFieldProperty>> GetModules(string lang)
     {
         return Files
-                    .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
-                    .Select(c => c.ResourceProperty)
-                    .Where(p => p.Label != null)
-                    .Where(p => !ExistsInStore(lang, p.ResourceKey)
-                    || !(
-                        p.Class.DefaultProperty == null ||
-                        p.Class.ReferenceValues.TrueForAll(r => ExistsInStore(lang, r.ResourceKey))))
-                    .Distinct()
-                    .GroupBy(prop => prop.Class.Namespace.Module);
+            .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
+            .Select(c => c.ResourceProperty)
+            .Where(p => p.Label != null)
+            .Where(p => !ExistsInStore(lang, p.ResourceKey)
+            || !(
+                p.Class?.DefaultProperty == null ||
+                (p.Class?.ReferenceValues.TrueForAll(r => ExistsInStore(lang, r.ResourceKey)) ?? false)))
+            .Distinct()
+            .GroupBy(prop => prop.Parent.Namespace.Module);
     }
 
     private void GenerateModule(IGrouping<string, IFieldProperty> module, string lang)
@@ -61,21 +59,21 @@ public class TranslationOutGenerator : GeneratorBase
         var filePath = GetFilePath(module, lang);
 
         using var fw = new FileWriter(filePath, _logger) { EnableHeader = false };
-        var classes = module.GroupBy(prop => prop.Class);
+        var containers = module.GroupBy(prop => prop.Parent);
 
-        foreach (var classe in classes.OrderBy(c => c.Key.Name))
+        foreach (var container in containers.OrderBy(c => c.Key.Name))
         {
-            WriteClasse(fw, classe, lang);
+            WriteClasse(fw, container, lang);
         }
     }
 
-    private void WriteClasse(FileWriter fw, IGrouping<Class, IFieldProperty> classe, string lang)
+    private void WriteClasse(FileWriter fw, IGrouping<IPropertyContainer, IFieldProperty> container, string lang)
     {
-        foreach (var property in classe)
+        foreach (var property in container)
         {
             if (property.Label != null
                 && !(_translationStore.Translations.TryGetValue(lang, out var langDict)
-                && langDict.TryGetValue(property.ResourceKey, out var label)))
+                && langDict.ContainsKey(property.ResourceKey)))
             {
                 if (!ExistsInStore(lang, property.ResourceKey))
                 {
@@ -84,13 +82,13 @@ public class TranslationOutGenerator : GeneratorBase
             }
         }
 
-        if (classe.Key.DefaultProperty != null)
+        if (container.Key is Class classe && classe.DefaultProperty != null)
         {
-            foreach (var reference in classe.Key.ReferenceValues)
+            foreach (var reference in classe.ReferenceValues)
             {
                 if (!ExistsInStore(lang, reference.ResourceKey))
                 {
-                    fw.WriteLine($"{reference.ResourceKey}={reference.Value[classe.Key.DefaultProperty]}");
+                    fw.WriteLine($"{reference.ResourceKey}={reference.Value[classe.DefaultProperty]}");
                 }
             }
         }
@@ -99,7 +97,7 @@ public class TranslationOutGenerator : GeneratorBase
     private bool ExistsInStore(string lang, string key)
     {
         return _translationStore.Translations.TryGetValue(lang, out var langDict)
-                && langDict.TryGetValue(key, out var label);
+                && langDict.ContainsKey(key);
     }
 
     private string GetFilePath(IGrouping<string, IFieldProperty> module, string lang)

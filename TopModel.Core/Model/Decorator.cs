@@ -4,7 +4,7 @@ using YamlDotNet.Serialization;
 
 namespace TopModel.Core;
 
-public class Decorator
+public class Decorator : IPropertyContainer
 {
 #nullable disable
     public LocatedString Name { get; set; }
@@ -19,6 +19,8 @@ public class Decorator
 
 #nullable disable
     public ModelFile ModelFile { get; set; }
+
+    public Namespace Namespace { get; set; }
 
     public IList<IProperty> Properties { get; } = new List<IProperty>();
 

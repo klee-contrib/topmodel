@@ -54,6 +54,11 @@ public class JavascriptConfig : GeneratorConfigBase
     /// </summary>
     public ReferenceMode ReferenceMode { get; set; } = ReferenceMode.DEFINITION;
 
+    /// <summary>
+    /// Ajoute les commentaires dans les entités JS générées.
+    /// </summary>
+    public bool GenerateComments { get; set; }
+
     public string GetClassFileName(Class classe, string tag)
     {
         var rootPath = Path.Combine(OutputDirectory, ModelRootPath!.Replace("{tag}", tag.ToKebabCase())).Replace("\\", "/");
@@ -154,5 +159,10 @@ public class JavascriptConfig : GeneratorConfigBase
     public string GetResourcesFilePath(string module, string tag, string lang)
     {
         return Path.Combine(OutputDirectory, ResourceRootPath!.Replace("{tag}", tag.ToKebabCase()), lang, Path.Combine(module.Split(".").Select(part => part.ToKebabCase()).ToArray())) + (ResourceMode == ResourceMode.JS ? ".ts" : ".json");
+    }
+
+    public string GetCommentResourcesFilePath(string module, string tag, string lang)
+    {
+        return Path.Combine(OutputDirectory, ResourceRootPath!.Replace("{tag}", tag.ToKebabCase()), lang, Path.Combine(module.Split(".").Select(part => part.ToKebabCase()).ToArray())) + ".comments" + (ResourceMode == ResourceMode.JS ? ".ts" : ".json");
     }
 }

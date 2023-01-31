@@ -431,6 +431,10 @@
             "description": "Si les listes de référence doivent être traduites",
             "default": "true"
           },
+          "generateComments": {
+            "type": "boolean",
+            "description": "Ajoute les commentaires dans les entités JS générées."
+          },
           "referenceMode": {
             "type": "string",
             "description": "Mode de génération des listes de références (définitions ou valeurs).",
