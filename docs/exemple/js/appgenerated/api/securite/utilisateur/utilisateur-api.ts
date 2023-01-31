@@ -18,18 +18,12 @@ export class UtilisateurApiService {
 
     /**
      * Charge le détail d'un utilisateur
-     * @param utilisateurId Id technique
+     * @param utiId Id technique
      * @param options Options pour 'fetch'.
      * @returns Le détail de l'utilisateur
      */
-    find(utilisateurId?: number, , queryParams: any = {}): Observable<UtilisateurDto> {
-        const httpParams = new HttpParams({fromObject : queryParams});
-        const httpOptions = { params: httpParams }
-        if(utilisateurId !== null) {
-            httpOptions.params.set('utilisateurId', utilisateurId)
-        }
-
-        return this.http.get<UtilisateurDto>(`/utilisateur/${utiId}`, httpOptions);
+    find(utiId: number): Observable<UtilisateurDto> {
+        return this.http.get<UtilisateurDto>(`/utilisateur/${utiId}`);
     }
 
     /**
@@ -38,7 +32,7 @@ export class UtilisateurApiService {
      * @param options Options pour 'fetch'.
      * @returns Liste des utilisateurs
      */
-    findAllByType(typeUtilisateurCode: TypeUtilisateurCode = "ADM", , queryParams: any = {}): Observable<UtilisateurDto[]> {
+    findAllByType(typeUtilisateurCode: TypeUtilisateurCode = "ADM", queryParams: any = {}): Observable<UtilisateurDto[]> {
         const httpParams = new HttpParams({fromObject : queryParams});
         const httpOptions = { params: httpParams }
         if(typeUtilisateurCode !== null) {
@@ -54,13 +48,13 @@ export class UtilisateurApiService {
      * @param options Options pour 'fetch'.
      * @returns Utilisateur sauvegardé
      */
-    save(utilisateur: UtilisateurDto, ): Observable<UtilisateurDto> {
+    save(utilisateur: UtilisateurDto): Observable<UtilisateurDto> {
         return this.http.post<UtilisateurDto>(`/utilisateur/save`, utilisateur);
     }
 
     /**
      * Recherche des utilisateurs
-     * @param utilisateurId Id technique
+     * @param utiId Id technique
      * @param age Age en années de l'utilisateur
      * @param profilId Profil de l'utilisateur
      * @param email Email de l'utilisateur
@@ -71,11 +65,11 @@ export class UtilisateurApiService {
      * @param options Options pour 'fetch'.
      * @returns Utilisateurs matchant les critères
      */
-    search(utilisateurId?: number, age: number = 6, profilId?: number, email?: string, nom: string = "Jabx", typeUtilisateurCode: TypeUtilisateurCode = "ADM", dateCreation?: string, dateModification?: string, , queryParams: any = {}): Observable<Page<UtilisateurDto>> {
+    search(utiId?: number, age: number = 6, profilId?: number, email?: string, nom: string = "Jabx", typeUtilisateurCode: TypeUtilisateurCode = "ADM", dateCreation?: string, dateModification?: string, queryParams: any = {}): Observable<Page<UtilisateurDto>> {
         const httpParams = new HttpParams({fromObject : queryParams});
         const httpOptions = { params: httpParams }
-        if(utilisateurId !== null) {
-            httpOptions.params.set('utilisateurId', utilisateurId)
+        if(utiId !== null) {
+            httpOptions.params.set('utiId', utiId)
         }
         if(age !== null) {
             httpOptions.params.set('age', age)

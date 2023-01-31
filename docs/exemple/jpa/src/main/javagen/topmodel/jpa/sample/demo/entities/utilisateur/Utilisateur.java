@@ -35,7 +35,7 @@ import topmodel.jpa.sample.demo.entities.securite.Profil;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
 @Table(name = "UTILISATEUR", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"EMAIL","ID_PARENT"})})
+    @UniqueConstraint(columnNames = {"UTI_EMAIL","UTI_ID_PARENT"})})
 @EntityListeners(AuditingEntityListener.class)
 public class Utilisateur {
 
@@ -44,13 +44,13 @@ public class Utilisateur {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ID", nullable = false)
+	@Column(name = "UTI_ID", nullable = false)
 	private Long id;
 
 	/**
 	 * Age en années de l'utilisateur.
 	 */
-	@Column(name = "AGE", nullable = true, precision = 20, scale = 9)
+	@Column(name = "UTI_AGE", nullable = true, precision = 20, scale = 9)
 	private Long age = 6;
 
 	/**
@@ -63,13 +63,13 @@ public class Utilisateur {
 	/**
 	 * Email de l'utilisateur.
 	 */
-	@Column(name = "EMAIL", nullable = true, length = 50)
+	@Column(name = "UTI_EMAIL", nullable = true, length = 50)
 	private String email;
 
 	/**
 	 * Nom de l'utilisateur.
 	 */
-	@Column(name = "NOM", nullable = true, length = 3)
+	@Column(name = "UTI_NOM", nullable = true, length = 3)
 	private String nom = "Jabx";
 
 	/**
@@ -83,20 +83,20 @@ public class Utilisateur {
 	 * Utilisateur parent.
 	 */
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
-	@JoinColumn(name = "ID_PARENT", referencedColumnName = "ID", unique = true)
+	@JoinColumn(name = "UTI_ID_PARENT", referencedColumnName = "UTI_ID", unique = true)
 	private Utilisateur utilisateurParent;
 
 	/**
 	 * Date de création de l'utilisateur.
 	 */
-	@Column(name = "DATE_CREATION", nullable = true)
+	@Column(name = "UTI_DATE_CREATION", nullable = true)
 	@CreatedDate
 	private LocalDate dateCreation;
 
 	/**
 	 * Date de modification de l'utilisateur.
 	 */
-	@Column(name = "DATE_MODIFICATION", nullable = true)
+	@Column(name = "UTI_DATE_MODIFICATION", nullable = true)
 	@LastModifiedDate
 	private LocalDateTime dateModification;
 

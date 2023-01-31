@@ -80,7 +80,7 @@ alter table TYPE_PROFIL
 /**
   * Création de l'index de clef étrangère pour UTILISATEUR.PRO_ID
  **/
-create index IDX_UTILISATEUR_PRO_ID_FK on UTILISATEUR (
+create index IDX_UTI_PRO_ID_FK on UTILISATEUR (
 	PRO_ID ASC
 );
 
@@ -94,7 +94,7 @@ alter table UTILISATEUR
 /**
   * Création de l'index de clef étrangère pour UTILISATEUR.TUT_CODE
  **/
-create index IDX_UTILISATEUR_TUT_CODE_FK on UTILISATEUR (
+create index IDX_UTI_TUT_CODE_FK on UTILISATEUR (
 	TUT_CODE ASC
 );
 
@@ -106,16 +106,16 @@ alter table UTILISATEUR
 		references TYPE_UTILISATEUR (TUT_CODE);
 
 /**
-  * Création de l'index de clef étrangère pour UTILISATEUR.ID_PARENT
+  * Création de l'index de clef étrangère pour UTILISATEUR.UTI_ID_PARENT
  **/
-create index IDX_UTILISATEUR_ID_PARENT_FK on UTILISATEUR (
-	ID_PARENT ASC
+create index IDX_UTI_UTI_ID_PARENT_FK on UTILISATEUR (
+	UTI_ID_PARENT ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour UTILISATEUR.ID_PARENT
+  * Génération de la contrainte de clef étrangère pour UTILISATEUR.UTI_ID_PARENT
  **/
 alter table UTILISATEUR
-	add constraint FK_UTILISATEUR_ID_PARENT foreign key (ID_PARENT)
-		references UTILISATEUR (ID);
+	add constraint FK_UTILISATEUR_UTI_ID_PARENT foreign key (UTI_ID_PARENT)
+		references UTILISATEUR (UTI_ID);
 
