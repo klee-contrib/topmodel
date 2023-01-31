@@ -3,8 +3,9 @@ import { request } from "https";
 import { execute } from "./utils";
 import { commands, ExtensionContext, window, workspace } from "vscode";
 import { Status } from "./types";
-import { COMMANDS } from "./const";
 import { Disposable } from "vscode-jsonrpc";
+const open = require("open");
+
 export class TmdTool {
     currentVersion?: string;
     latestVersion?: string;
@@ -30,7 +31,11 @@ export class TmdTool {
         switch (this.status) {
             case "ERROR":
                 icon = "diff-review-close";
-                text += "en erreur";
+                if (this.installed) {
+                    text += "en erreur";
+                } else {
+                    text += "n'est pas installé";
+                }
                 break;
             case "INSTALLING":
                 text += `-> v${this.latestVersion}`;
@@ -51,7 +56,11 @@ export class TmdTool {
 
     public async init() {
         await Promise.all([this.loadLatestVersion(), this.loadCurrentVersion(), this.checkInstall()]);
-        this.status = "READY";
+        if (this.installed) {
+            this.status = "READY";
+        } else {
+            this.status = "ERROR";
+        }
     }
 
     private async loadLatestVersion() {
@@ -78,17 +87,21 @@ export class TmdTool {
         req.end();
     }
 
+    private async showReleaseNote(text: string) {
+        const buttonText = "Voir la release note";
+        const selection = await window.showInformationMessage(
+            text,
+            buttonText
+        );
+        if (selection === buttonText) {
+            open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
+        }
+    }
     private async install() {
         this.status = "INSTALLING";
         await execute(`dotnet tool install --global ${this.name}`);
-        this.loadCurrentVersion();
-        const selection = await window.showInformationMessage(
-            `L'outil v${this.name} a été installé`,
-            "Voir la release note"
-        );
-        if (selection === "Voir la release note") {
-            open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
-        }
+        await this.loadCurrentVersion();
+        this.showReleaseNote(`L'outil ${this.name} (v${this.currentVersion}) a été installé`);
         this.status = "READY";
     }
 
@@ -124,7 +137,7 @@ export class TmdTool {
     }
 
     public async checkUpdate() {
-        if (this.updateAvailable) {
+        if (this.updateAvailable && this.installed) {
             const extensionConfiguration = workspace.getConfiguration("topmodel");
             if (extensionConfiguration.autoUpdate) {
                 this.update();
@@ -149,13 +162,7 @@ export class TmdTool {
         await this.loadCurrentVersion();
         this.status = "READY";
         if (this.latestVersion) {
-            const selection = await window.showInformationMessage(
-                `TopModel a été mis à jour ${oldVersion} --> ${this.latestVersion}`,
-                "Voir la release note"
-            );
-            if (selection === "Voir la release note") {
-                open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
-            }
+            this.showReleaseNote(`TopModel a été mis à jour ${oldVersion} --> ${this.latestVersion}`);
         }
     }
 
