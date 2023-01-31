@@ -35,9 +35,9 @@ public class JavascriptResourceGenerator : GeneratorBase
 
             return properties
                 .Select(c => c.ResourceProperty)
-                .SelectMany(c => _translationStore.Translations.Select(lang => _config.GetResourcesFilePath(c.Parent.Namespace.Module, tag, lang.Key)))
+                .SelectMany(c => _translationStore.Translations.Select(lang => _config.GetResourcesFilePath(c.Parent.Namespace.Module.Split('.').First(), tag, lang.Key)))
                 .Concat(_config.GenerateComments
-                    ? properties.Select(c => _config.GetCommentResourcesFilePath(c.CommentResourceProperty.Parent.Namespace.Module, tag, _modelConfig.I18n.DefaultLang))
+                    ? properties.Select(c => _config.GetCommentResourcesFilePath(c.CommentResourceProperty.Parent.Namespace.Module.Split('.').First(), tag, _modelConfig.I18n.DefaultLang))
                     : Array.Empty<string>());
         })
         .Distinct();
