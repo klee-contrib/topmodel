@@ -44,7 +44,10 @@ public class JavascriptResourceGenerator : GeneratorBase
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module.Split('.').First())).Distinct();
+        var modules = Classes
+            .SelectMany(c => c.Properties.OfType<IFieldProperty>())
+            .Select(c => c.ResourceProperty.Parent.Namespace.Module.Split('.').First())
+            .Distinct();
         foreach (var lang in _translationStore.Translations)
         {
             foreach (var module in modules)
@@ -79,7 +82,6 @@ public class JavascriptResourceGenerator : GeneratorBase
                 .Select(c => c.ResourceProperty)
                 .Distinct()
                 .Where(prop => prop.Parent.Namespace.Module.Split('.').First() == module);
-
             if (properties.Any())
             {
                 using var fw = new FileWriter(group.Key, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
