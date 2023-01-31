@@ -1,5 +1,6 @@
 # TopModel.Generator (`modgen`)
 
+- [`0a84b7ee`](https://github.com/klee-contrib/topmodel/commit/0a84b7ee5275d5a07b83ff7cf1fc7de8b6588a1a) - [JPA] Fix :claration d'une colonne déclenche l'ajout de l'annotation `@NotNull`
 - [`421a7c23`](https://github.com/klee-contrib/topmodel/commit/421a7c23a1005f3b6b5ee7aa87e85e989e867d05) - [JS] Angular Api client : Fix virgule surnuméraire
 
 ## 1.22.1
