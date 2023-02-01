@@ -300,7 +300,7 @@ public class ModelStore
         return modelFile.Uses
             .Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
             .Where(dep => dep != null)
-            .Concat(Files.Where(f => f != modelFile && f.Converters.Any() && (modelFile.Classes.Any(c => c.FromMappers.Any() || c.ToMappers.Any()) || modelFile.Properties.OfType<AliasProperty>().Any(alp => alp.DomainReference != null))))
+            .Concat(Files.Where(f => f != modelFile && f.Converters.Any() && modelFile.Classes.Any(c => c.FromMappers.Any() || c.ToMappers.Any())))
             .Concat(Files.Where(f => f != modelFile && f.Domains.Any() && (!modelFile.Domains.Any() || modelFile.Domains.Any(d => d.ListDomainReference != null))));
     }
 
@@ -558,12 +558,6 @@ public class ModelStore
                     }
 
                     alp.Domain = aliasDomain;
-
-                    if (alp.AsList)
-                    {
-                        yield return new ModelError(alp, "Impossible de surcharger un domaine sur un alias marqué `asList: true`.", alp.DomainReference) { ModelErrorType = ModelErrorType.TMD1027 };
-                    }
-
                     break;
             }
         }
@@ -679,13 +673,6 @@ public class ModelStore
                     if (prop.AsList && prop.Domain == null)
                     {
                         yield return new ModelError(modelFile, $"Le domaine '{prop.OriginalProperty?.Domain}' doit définir un domaine de liste pour définir un alias liste sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'", prop.PropertyReference ?? prop.Reference) { IsError = true, ModelErrorType = ModelErrorType.TMD1023 };
-                    }
-
-                    if (!prop.AsList && prop.Domain != prop.OriginalProperty?.Domain
-                        && (!Converters.Any(c => c.From.Any(cf => cf == prop.Domain) && c.To.Any(ct => ct == prop.OriginalProperty?.Domain))
-                            || !Converters.Any(c => c.To.Any(cf => cf == prop.Domain) && c.From.Any(ct => ct == prop.OriginalProperty?.Domain))))
-                    {
-                        yield return new ModelError(alp, $"Le domain '{prop.Domain}' doit être convertible depuis et vers le domaine '{prop.OriginalProperty?.Domain}' pour être utilisé comme une surcharge dans un alias.", alp.DomainReference) { ModelErrorType = ModelErrorType.TMD1028 };
                     }
 
                     if (alp.Class != null)
@@ -1119,7 +1106,11 @@ public class ModelStore
                             var matchingProperties = param.Class.Properties.OfType<IFieldProperty>().Where(p => property.Property == p || p is AliasProperty alp && property == alp.Property || p is AliasProperty alp2 && property.Property == alp2.Property);
                             if (matchingProperties.Count() == 1)
                             {
-                                param.Mappings.Add(property, matchingProperties.First());
+                                var p = matchingProperties.First();
+                                if (p.Domain != null && (p.Domain == property.Domain || Converters.Any(c => c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain))))
+                                {
+                                    param.Mappings.Add(property, p);
+                                }
                             }
                         }
                     }
@@ -1163,7 +1154,11 @@ public class ModelStore
                     var matchingProperties = mapper.Class.Properties.OfType<IFieldProperty>().Where(p => property.Property == p || p is AliasProperty alp && property == alp.Property || p is AliasProperty alp2 && property.Property == alp2.Property);
                     if (matchingProperties.Count() == 1)
                     {
-                        mapper.Mappings.Add(property, matchingProperties.First());
+                        var p = matchingProperties.First();
+                        if (p.Domain != null && (p.Domain == property.Domain || Converters.Any(c => c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain))))
+                        {
+                            mapper.Mappings.Add(property, p);
+                        }
                     }
                 }
 

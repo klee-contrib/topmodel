@@ -58,7 +58,12 @@ public class AliasProperty : IFieldProperty
 #nullable disable
     public Domain Domain
     {
-        get => _domain ?? (AsList ? _property?.Domain?.ListDomain : _property?.Domain);
+        get
+        {
+            var domain = _domain ?? _property?.Domain;
+            return AsList ? domain?.ListDomain : domain;
+        }
+
         set => _domain = value;
     }
 #nullable enable
