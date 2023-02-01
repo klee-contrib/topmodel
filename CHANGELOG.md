@@ -1,8 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## Prochaine version
+
 - [#191](https://github.com/klee-contrib/topmodel/pull/191) - Génération des commentaires en JS + décorateurs dans les fichiers de ressources
   
-  (**léger breaking change** dans les traductions générées pour les propriétés issues de décorateurs sui ne seront potentiellement plus dans les mêmes fichiers)
+  (**léger breaking change** dans les traductions générées pour les propriétés issues de décorateurs qui ne seront potentiellement plus dans les mêmes fichiers)
 
 - [#192](https://github.com/klee-contrib/topmodel/pull/192) - Surcharge de domaine dans un alias
 - [`0c1ac674`](https://github.com/klee-contrib/topmodel/commit/0c1ac674864d37891ec3aaff42eb5cbab75a48c3) - [VSCode] le bouton permettant de voir les release note ne fait plus rien
