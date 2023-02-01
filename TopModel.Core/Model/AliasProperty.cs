@@ -6,6 +6,7 @@ public class AliasProperty : IFieldProperty
 {
     private string? _comment;
     private string? _defaultValue;
+    private Domain? _domain;
     private string? _label;
     private bool? _required;
 
@@ -55,8 +56,19 @@ public class AliasProperty : IFieldProperty
     }
 
 #nullable disable
-    public Domain Domain => AsList ? _property?.Domain?.ListDomain : _property?.Domain;
+    public Domain Domain
+    {
+        get
+        {
+            var domain = _domain ?? _property?.Domain;
+            return AsList ? domain?.ListDomain : domain;
+        }
+
+        set => _domain = value;
+    }
 #nullable enable
+
+    public DomainReference? DomainReference { get; set; }
 
     public string Comment
     {
@@ -110,6 +122,11 @@ public class AliasProperty : IFieldProperty
             UseLegacyRoleName = UseLegacyRoleName
         };
 
+        if (_domain != null)
+        {
+            alp.Domain = _domain;
+        }
+
         if (_required.HasValue)
         {
             alp.Required = _required.Value;
@@ -133,6 +150,7 @@ public class AliasProperty : IFieldProperty
             PropertyReference = includeReference,
             Class = Class,
             Decorator = Decorator,
+            DomainReference = DomainReference,
             Endpoint = Endpoint,
             Prefix = Prefix,
             Suffix = Suffix,
@@ -143,6 +161,11 @@ public class AliasProperty : IFieldProperty
             OriginalAliasProperty = this,
             UseLegacyRoleName = UseLegacyRoleName
         };
+
+        if (_domain != null)
+        {
+            alp.Domain = _domain;
+        }
 
         if (_required.HasValue)
         {

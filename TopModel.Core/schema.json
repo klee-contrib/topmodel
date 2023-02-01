@@ -237,6 +237,10 @@
                 }
               ]
             },
+            "domain": {
+              "type": "string",
+              "description": "Surcharge le domaine de la propriété aliasée."
+            },
             "label": {
               "type": "string",
               "description": "Surcharge le libellé de la propriété aliasée."
@@ -251,7 +255,7 @@
             },
             "asList": {
               "type": "boolean",
-              "description": "Crée une liste du type de la propriété aliasée au lieu d'un champ simple."
+              "description": "Utilise le `listDomain` du domaine de la propriété (original ou surchargé) comme domaine de la propriété d'alias."
             },
             "defaultValue": {
               "description": "Surcharge la valeur par défaut de la propriété."

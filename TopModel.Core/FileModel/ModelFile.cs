@@ -46,7 +46,8 @@ public class ModelFile
         .Concat(Properties.OfType<AliasProperty>().SelectMany(p => new (Reference, object)[]
         {
             (p.Reference, p.OriginalProperty?.Class),
-            (p.PropertyReference, p.OriginalProperty)
+            (p.PropertyReference, p.OriginalProperty),
+            (p.DomainReference, p.Domain)
         }))
         .Concat(Properties.OfType<AliasProperty>()
             .SelectMany(p => p?.Reference?.ExcludeReferences?

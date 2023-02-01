@@ -549,6 +549,16 @@ public class ModelStore
                     }
 
                     break;
+
+                case AliasProperty alp when alp.DomainReference != null:
+                    if (!Domains.TryGetValue(alp.DomainReference.ReferenceName, out var aliasDomain))
+                    {
+                        yield return new ModelError(alp, "Le domaine '{0}' est introuvable.", alp.DomainReference) { ModelErrorType = ModelErrorType.TMD1005 };
+                        break;
+                    }
+
+                    alp.Domain = aliasDomain;
+                    break;
             }
         }
 
@@ -1096,7 +1106,11 @@ public class ModelStore
                             var matchingProperties = param.Class.Properties.OfType<IFieldProperty>().Where(p => property.Property == p || p is AliasProperty alp && property == alp.Property || p is AliasProperty alp2 && property.Property == alp2.Property);
                             if (matchingProperties.Count() == 1)
                             {
-                                param.Mappings.Add(property, matchingProperties.First());
+                                var p = matchingProperties.First();
+                                if (p.Domain != null && (p.Domain == property.Domain || Converters.Any(c => c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain))))
+                                {
+                                    param.Mappings.Add(property, p);
+                                }
                             }
                         }
                     }
@@ -1140,7 +1154,11 @@ public class ModelStore
                     var matchingProperties = mapper.Class.Properties.OfType<IFieldProperty>().Where(p => property.Property == p || p is AliasProperty alp && property == alp.Property || p is AliasProperty alp2 && property.Property == alp2.Property);
                     if (matchingProperties.Count() == 1)
                     {
-                        mapper.Mappings.Add(property, matchingProperties.First());
+                        var p = matchingProperties.First();
+                        if (p.Domain != null && (p.Domain == property.Domain || Converters.Any(c => c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain))))
+                        {
+                            mapper.Mappings.Add(property, p);
+                        }
                     }
                 }
 
