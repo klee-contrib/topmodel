@@ -18,7 +18,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 /**
  * Droits de l'application.
@@ -68,8 +67,7 @@ public class Droits {
 
 		this.code = droits.getCode();
 		this.libelle = droits.getLibelle();
-
-		this.setTypeProfilCode(droits.getTypeProfilCode());
+		this.typeProfil = droits.getTypeProfil();
 	}
 
 	/**
@@ -82,18 +80,6 @@ public class Droits {
 		this.code = code;
 		this.libelle = libelle;
 		this.typeProfil = typeProfil;
-	}
-
-	/**
-	 * All arg constructor when Enum shortcut mode is set.
-	 * @param code Code du droit
-	 * @param libelle Libellé du droit
-	 * @param typeProfil Type de profil pouvant faire l'action
-	 */
-	public Droits(Droits.Values code, String libelle, TypeProfil.Values typeProfilCode) {
-		this.code = code;
-		this.libelle = libelle;
-		this.setTypeProfilCode(typeProfilCode);
 	}
 
 	/**
@@ -148,30 +134,6 @@ public class Droits {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Droits#typeProfilCode typeProfilCode}.
-	 * Cette méthode permet définir la valeur de la FK directement
-	 * @param typeProfilCode value to set
-	 */
-	public void setTypeProfilCode(TypeProfil.Values typeProfilCode) {
-		if (typeProfilCode != null) {
-			this.typeProfil = typeProfilCode.getEntity();
-		} else {
-			this.typeProfil = null;
-		}
-	}
-
-	/**
-	 * Getter for typeProfilCode.
-	 * Cette méthode permet de manipuler directement la foreign key de la liste de référence
-	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Droits#typeProfil typeProfil}.
-	 */
-	@Transient
-	public TypeProfil.Values getTypeProfilCode() {
-		return this.typeProfil != null ? this.typeProfil.getCode() : null;
-	}
-
-	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.Droits Droits}.
 	 */
 	public enum Fields  {
@@ -219,7 +181,7 @@ public class Droits {
 		 * @return instance de {@link topmodel.jpa.sample.demo.entities.securite.Droits} correspondant au code courant.
 		 */
 		public Droits getEntity() {
-			return new Droits(this, libelle, typeProfilCode);
+			return new Droits(this, libelle, typeProfilCode.getEntity());
 		}
 
 		/**

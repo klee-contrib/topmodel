@@ -33,4 +33,4 @@ decorator:
     annotations:
       - PreAuthorize("{$0}")
     imports:
-      - org.springframework.web.bind.annotation.PreAuthorize
+      - org.springframework.security.access.prepost.PreAuthorize

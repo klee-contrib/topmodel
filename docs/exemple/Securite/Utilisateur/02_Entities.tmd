@@ -26,7 +26,7 @@ class:
       required: false
       domain: DO_NUMBER
       comment: Age en années de l'utilisateur
-      defaultValue: 6
+      defaultValue: 6l
     - association: Profil
       comment: Profil de l'utilisateur
       type: manyToOne

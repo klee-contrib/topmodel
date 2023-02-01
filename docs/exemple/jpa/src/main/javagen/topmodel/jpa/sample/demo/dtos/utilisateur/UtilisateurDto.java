@@ -33,7 +33,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * Age en années de l'utilisateur.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getAge() Utilisateur#getAge()} 
 	 */
-	private Long age = 6;
+	private Long age = 6l;
 
 	/**
 	 * Profil de l'utilisateur.
@@ -58,7 +58,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * Type d'utilisateur en Many to one.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()} 
 	 */
-	private TypeUtilisateur.Values typeUtilisateurCode = ADM;
+	private TypeUtilisateur.Values typeUtilisateurCode = TypeUtilisateur.Values.ADM;
 
 	/**
 	 * Date de création de l'utilisateur.
@@ -101,7 +101,6 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 		this.dateCreation = utilisateurDto.getDateCreation();
 		this.dateModification = utilisateurDto.getDateModification();
 		this.utilisateurParent = utilisateurDto.getUtilisateurParent();
-
 	}
 
 	/**
@@ -144,7 +143,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 */
 	protected void from(Utilisateur utilisateur) {
 		if (utilisateur != null) {
-			this.utilisateurParent = utilisateur.getUtilisateurParent() == null ? null : new UtilisateurDto(utilisateur.getUtilisateurParent());
+			this.utilisateurParent = utilisateur.getUtilisateurParent() != null ? null : new UtilisateurDto(utilisateur.getUtilisateurParent());
 			this.id = utilisateur.getId();
 			this.age = utilisateur.getAge();
 			if (utilisateur.getProfil() != null) {
@@ -153,7 +152,10 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 
 			this.email = utilisateur.getEmail();
 			this.nom = utilisateur.getNom();
-			this.setTypeUtilisateurCode(utilisateur.getTypeUtilisateurCode());
+			if (utilisateur.getTypeUtilisateur() != null) {
+				this.typeUtilisateurCode = utilisateur.getTypeUtilisateur().getCode();
+			}
+
 			this.dateCreation = utilisateur.getDateCreation();
 			this.dateModification = utilisateur.getDateModification();
 		} else {
@@ -341,7 +343,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 		dest.setAge(this.getAge());
 		dest.setEmail(this.getEmail());
 		dest.setNom(this.getNom());
-		dest.setTypeUtilisateurCode(this.getTypeUtilisateurCode());
+		dest.setTypeUtilisateur(this.getTypeUtilisateurCode().getEntity());
 		dest.setDateCreation(this.getDateCreation());
 		dest.setDateModification(this.getDateModification());
 

@@ -110,7 +110,8 @@ public class JpaModelConstructorGenerator
             }
             else
             {
-                fw.WriteLine(2, $"this.set{property.Name.ToFirstUpper()}({property.Name.ToFirstLower()});");
+                var isMultiple = aspr2.Type == AssociationType.OneToMany || aspr2.Type == AssociationType.ManyToMany;
+                fw.WriteLine(2, $"this.set{aspr2.Name.ToFirstUpper()}{(isMultiple ? aspr2.Association.PrimaryKey!.Name : string.Empty)}({property.Name.ToFirstLower()});");
             }
         }
 
@@ -253,139 +254,57 @@ public class JpaModelConstructorGenerator
                     var getterPrefix = mapping.Value!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
                     if (mapping.Value is AssociationProperty ap)
                     {
-                        if (!_config.EnumShortcutMode)
+                        if (!classe.IsPersistent)
                         {
-                            if (!classe.IsPersistent)
+                            if (mapping.Key is IFieldProperty)
                             {
-                                if (mapping.Key is IFieldProperty)
+                                fw.WriteLine(3, $"if ({param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value.GetJavaName().ToFirstUpper()}() != null) {{");
+                                if (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)
                                 {
-                                    fw.WriteLine(3, $"if ({param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value.GetJavaName().ToFirstUpper()}() != null) {{");
-                                    if (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)
+                                    fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().{getterPrefix}{ap.Property.Name.ToFirstUpper()}();");
+                                }
+                                else
+                                {
+                                    fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().stream().filter(t -> t != null).map({ap.GetJavaName().ToFirstLower()} -> {ap.GetJavaName().ToFirstLower()}.{getterPrefix}{ap.Property.Name.ToFirstUpper()}()).collect(Collectors.toList());");
+                                    fw.AddImport("java.util.stream.Collectors");
+                                }
+
+                                fw.WriteLine(3, "}");
+
+                                if (mappings.IndexOf(mapping) < mappings.Count - 1)
+                                {
+                                    fw.WriteLine();
+                                }
+                            }
+                            else if (mapping.Key is CompositionProperty cp)
+                            {
+                                if (mapping.Value == null)
+                                {
+                                    fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name};");
+                                }
+                                else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association))
+                                {
+                                    var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association);
+                                    var getter = $"{param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}()";
+                                    if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
                                     {
-                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().{getterPrefix}{ap.Property.Name.ToFirstUpper()}();");
+                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} == null ? null : {getter}.stream().map({cp.Composition.Name.ToFirstUpper()}::new).collect(Collectors.toList());");
+                                        fw.AddImport("java.util.stream.Collectors");
                                     }
                                     else
                                     {
-                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().stream().filter(t -> t != null).map({ap.GetJavaName().ToFirstLower()} -> {ap.GetJavaName().ToFirstLower()}.{getterPrefix}{ap.Property.Name.ToFirstUpper()}()).collect(Collectors.toList());");
-                                        fw.AddImport("java.util.stream.Collectors");
-                                    }
-
-                                    fw.WriteLine(3, "}");
-
-                                    if (mappings.IndexOf(mapping) < mappings.Count - 1)
-                                    {
-                                        fw.WriteLine();
-                                    }
-                                }
-                                else if (mapping.Key is CompositionProperty cp)
-                                {
-                                    if (mapping.Value == null)
-                                    {
-                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name};");
-                                    }
-                                    else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association))
-                                    {
-                                        var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association);
-                                        var getter = $"{param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}()";
                                         fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} != null ? null : new {cp.Composition.Name.ToFirstUpper()}({getter});");
-                                    }
-                                    else
-                                    {
-                                        throw new ModelException(classe, $"La propriété {mapping.Key.Name} ne peut pas être mappée avec la propriété {mapping.Value.Name} car il n'existe pas de mapper {ap.Association.Name} -> {cp.Composition.Name}");
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value.GetJavaName().ToFirstUpper()}();");
-                            }
-                        }
-                        else
-                        {
-                            if (!ap.IsEnum())
-                            {
-                                if (classe.IsPersistent)
-                                {
-                                    fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}();");
-                                }
-                                else if (mapping.Key is IFieldProperty)
-                                {
-                                    fw.WriteLine(3, $"if ({param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}() != null) {{");
-                                    if (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)
-                                    {
-                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().{getterPrefix}{ap.Property.Name.ToFirstUpper()}();");
-                                    }
-                                    else
-                                    {
-                                        fw.WriteLine(4, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().stream().filter(t -> t != null).map({ap.GetJavaName().ToFirstLower()} -> {ap.GetJavaName().ToFirstLower()}.{getterPrefix}{ap.Property.Name.ToFirstUpper()}()).collect(Collectors.toList());");
-                                        fw.AddImport("java.util.stream.Collectors");
-                                    }
-
-                                    fw.WriteLine(3, "}");
-
-                                    if (mappings.IndexOf(mapping) < mappings.Count - 1)
-                                    {
-                                        fw.WriteLine();
-                                    }
-                                }
-                                else if (mapping.Key is CompositionProperty cp)
-                                {
-                                    if (mapping.Value == null)
-                                    {
-                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name};");
-                                    }
-                                    else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association))
-                                    {
-                                        var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association);
-                                        var getter = $"{param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}()";
-                                        if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
-                                        {
-                                            fw.AddImport("java.util.stream.Collectors");
-                                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} == null ? null : {getter}.stream().map({cp.Composition.Name.ToFirstUpper()}::new).collect(Collectors.toList());");
-                                        }
-                                        else
-                                        {
-                                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} == null ? null : new {cp.Composition.Name.ToFirstUpper()}({getter});");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        throw new ModelException(classe, $"La propriété {mapping.Key.Name} ne peut pas être mappée avec la propriété {mapping.Value.Name} car il n'existe pas de mapper {ap.Association.Name} -> {cp.Composition.Name}");
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (mapping.Key is CompositionProperty cp)
-                                {
-                                    if (mapping.Value == null)
-                                    {
-                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name};");
-                                    }
-                                    else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association))
-                                    {
-                                        var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association);
-                                        var getter = $"{param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}()";
-                                        if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
-                                        {
-                                            fw.AddImport("java.util.stream.Collectors");
-                                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} == null ? null : {getter}.stream().map({cp.Composition.Name.ToFirstUpper()}::new).collect(Collectors.toList());");
-                                        }
-                                        else
-                                        {
-                                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} == null ? null : new {cp.Composition.Name.ToFirstUpper()}({getter});");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        throw new ModelException(classe, $"La propriété {mapping.Key.Name} ne peut pas être mappée avec la propriété {mapping.Value.Name} car il n'existe pas de mapper {ap.Association.Name} -> {cp.Composition.Name}");
                                     }
                                 }
                                 else
                                 {
-                                    fw.WriteLine(3, $"this.set{mapping.Key.Name.ToFirstUpper()}({param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value.Name.ToFirstUpper()}());");
+                                    throw new ModelException(classe, $"La propriété {mapping.Key.Name} ne peut pas être mappée avec la propriété {mapping.Value.Name} car il n'existe pas de mapper {ap.Association.Name} -> {cp.Composition.Name}");
                                 }
                             }
+                        }
+                        else
+                        {
+                            fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value.GetJavaName().ToFirstUpper()}();");
                         }
                     }
                     else

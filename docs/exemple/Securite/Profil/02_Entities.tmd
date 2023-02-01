@@ -20,7 +20,7 @@ class:
     - association: TypeProfil
       label: Profil
       comment: Type de profil
-      type: oneToMany
+      type: manyToOne
     - association: Droits
       label: Droits
       comment: Liste des droits de l'utilisateur

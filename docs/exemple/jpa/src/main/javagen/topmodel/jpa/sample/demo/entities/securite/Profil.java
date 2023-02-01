@@ -19,9 +19,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 
 /**
  * Profil des utilisateurs.
@@ -42,8 +42,9 @@ public class Profil {
 	/**
 	 * Type de profil.
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "profil")
-	private List<TypeProfil> typeProfils;
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeProfil.class)
+	@JoinColumn(name = "TPR_CODE", referencedColumnName = "TPR_CODE")
+	private TypeProfil typeProfil;
 
 	/**
 	 * Liste des droits de l'utilisateur.
@@ -74,23 +75,22 @@ public class Profil {
 		}
 
 		this.id = profil.getId();
+		this.typeProfil = profil.getTypeProfil();
 
+		this.droits = profil.getDroits().stream().collect(Collectors.toList());
 		this.secteurs = profil.getSecteurs().stream().collect(Collectors.toList());
-
-		this.setTypeProfils(profil.getTypeProfils());
-		this.setDroits(profil.getDroits());
 	}
 
 	/**
 	 * All arg constructor.
 	 * @param id Id technique
-	 * @param typeProfils Type de profil
+	 * @param typeProfil Type de profil
 	 * @param droits Liste des droits de l'utilisateur
 	 * @param secteurs Liste des secteurs de l'utilisateur
 	 */
-	public Profil(Long id, List<TypeProfil> typeProfils, List<Droits> droits, List<Secteur> secteurs) {
+	public Profil(Long id, TypeProfil typeProfil, List<Droits> droits, List<Secteur> secteurs) {
 		this.id = id;
-		this.typeProfils = typeProfils;
+		this.typeProfil = typeProfil;
 		this.droits = droits;
 		this.secteurs = secteurs;
 	}
@@ -105,14 +105,12 @@ public class Profil {
 	}
 
 	/**
-	 * Getter for typeProfils.
+	 * Getter for typeProfil.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#typeProfils typeProfils}.
+	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#typeProfil typeProfil}.
 	 */
-	public List<TypeProfil> getTypeProfils() {
-		if(this.typeProfils == null)
-			this.typeProfils = new ArrayList<>();
-		return this.typeProfils;
+	public TypeProfil getTypeProfil() {
+		return this.typeProfil;
 	}
 
 	/**
@@ -146,11 +144,11 @@ public class Profil {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#typeProfils typeProfils}.
-	 * @param typeProfils value to set
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#typeProfil typeProfil}.
+	 * @param typeProfil value to set
 	 */
-	public void setTypeProfils(List<TypeProfil> typeProfils) {
-		this.typeProfils = typeProfils;
+	public void setTypeProfil(TypeProfil typeProfil) {
+		this.typeProfil = typeProfil;
 	}
 
 	/**
@@ -170,64 +168,6 @@ public class Profil {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#typeProfils typeProfils}.
-	 * Cette méthode permet définir la valeur de la FK directement
-	 * @param typeProfils value to set
-	 */
-	public void setTypeProfilsCode(List<TypeProfil.Values> typeProfils) {
-		if (typeProfils != null) {
-			if (this.typeProfils != null) {
-				this.typeProfils.clear();
-			} else {
-				this.typeProfils = new ArrayList<>();
-			}
-			this.typeProfils.addAll(typeProfils.stream().map(p -> new TypeProfil(p, p.getLibelle())).collect(Collectors.toList()));
-		} else {
-			this.typeProfils = null;
-		}
-	}
-
-	/**
-	 * Getter for typeProfils.
-	 * Cette méthode permet de manipuler directement la foreign key de la liste de référence
-	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#typeProfils typeProfils}.
-	 */
-	@Transient
-	public List<TypeProfil.Values> getTypeProfilsCode() {
-		return this.typeProfils != null ? this.typeProfils.stream().map(TypeProfil::getCode).collect(Collectors.toList()) : null;
-	}
-
-	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#droits droits}.
-	 * Cette méthode permet définir la valeur de la FK directement
-	 * @param droits value to set
-	 */
-	public void setDroitsCode(List<Droits.Values> droits) {
-		if (droits != null) {
-			if (this.droits != null) {
-				this.droits.clear();
-			} else {
-				this.droits = new ArrayList<>();
-			}
-			this.droits.addAll(droits.stream().map(p -> new Droits(p, p.getLibelle(), p.getTypeProfilCode())).collect(Collectors.toList()));
-		} else {
-			this.droits = null;
-		}
-	}
-
-	/**
-	 * Getter for droits.
-	 * Cette méthode permet de manipuler directement la foreign key de la liste de référence
-	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#droits droits}.
-	 */
-	@Transient
-	public List<Droits.Values> getDroitsCode() {
-		return this.droits != null ? this.droits.stream().map(Droits::getCode).collect(Collectors.toList()) : null;
-	}
-
-	/**
 	 * Mappe 'Profil' vers 'Profil'.
 	 * @param source Instance de 'Profil'.
 	 * @param dest Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
@@ -238,7 +178,7 @@ public class Profil {
 		dest = dest == null ? new Profil() : dest;
 
 		dest.setId(this.getId());
-		dest.setTypeProfils(this.getTypeProfils());
+		dest.setTypeProfil(this.getTypeProfil());
 		dest.setDroits(this.getDroits());
 		dest.setSecteurs(this.getSecteurs());
 
@@ -250,7 +190,7 @@ public class Profil {
 	 */
 	public enum Fields  {
         ID(Long.class), //
-        TYPE_PROFILS(List.class), //
+        TYPE_PROFIL(TypeProfil.class), //
         DROITS(List.class), //
         SECTEURS(List.class);
 

@@ -57,7 +57,6 @@ public class TypeUtilisateur {
 
 		this.code = typeUtilisateur.getCode();
 		this.libelle = typeUtilisateur.getLibelle();
-
 	}
 
 	/**

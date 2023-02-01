@@ -235,9 +235,16 @@ public class JpaModelPropertyGenerator
             {
                 defaultValue += "Values." + property.DefaultValue;
             }
-            else if (property is AliasProperty aslp && aslp.Property.IsEnum())
+            else if (property is AliasProperty aslp && (aslp.Property.IsEnum() || aslp.IsAssociatedEnum()))
             {
-                defaultValue += aslp.Property.Class.Name + ".Values." + property.DefaultValue;
+                if (aslp.Property.IsEnum())
+                {
+                    defaultValue += aslp.Property.Class.Name + ".Values." + property.DefaultValue;
+                }
+                else if (aslp.Property is AssociationProperty aslpAss)
+                {
+                    defaultValue += aslpAss.Association.Name + ".Values." + property.DefaultValue;
+                }
             }
             else
             {

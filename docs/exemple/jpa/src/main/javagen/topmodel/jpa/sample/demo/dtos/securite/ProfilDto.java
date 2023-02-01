@@ -31,9 +31,9 @@ public class ProfilDto implements Serializable {
 
 	/**
 	 * Type de profil.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.Profil#getTypeProfils() Profil#getTypeProfils()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.Profil#getTypeProfilCode() Profil#getTypeProfilCode()} 
 	 */
-	private List<TypeProfil.Values> typeProfils;
+	private TypeProfil.Values typeProfilCode;
 
 	/**
 	 * Liste des droits de l'utilisateur.
@@ -68,25 +68,24 @@ public class ProfilDto implements Serializable {
 		}
 
 		this.id = profilDto.getId();
-		this.typeProfils = profilDto.getTypeProfils();
+		this.typeProfilCode = profilDto.getTypeProfilCode();
 		this.droits = profilDto.getDroits();
 		this.secteurs = profilDto.getSecteurs();
 
 		this.utilisateurs = profilDto.getUtilisateurs().stream().collect(Collectors.toList());
-
 	}
 
 	/**
 	 * All arg constructor.
 	 * @param id Id technique
-	 * @param typeProfils Type de profil
+	 * @param typeProfilCode Type de profil
 	 * @param droits Liste des droits de l'utilisateur
 	 * @param secteurs Liste des secteurs de l'utilisateur
 	 * @param utilisateurs Liste paginée des utilisateurs de ce profil
 	 */
-	public ProfilDto(Long id, List<TypeProfil.Values> typeProfils, List<Droits.Values> droits, List<Long> secteurs, List<UtilisateurDto> utilisateurs) {
+	public ProfilDto(Long id, TypeProfil.Values typeProfilCode, List<Droits.Values> droits, List<Long> secteurs, List<UtilisateurDto> utilisateurs) {
 		this.id = id;
-		this.typeProfils = typeProfils;
+		this.typeProfilCode = typeProfilCode;
 		this.droits = droits;
 		this.secteurs = secteurs;
 		this.utilisateurs = utilisateurs;
@@ -109,8 +108,14 @@ public class ProfilDto implements Serializable {
 	protected void from(Profil profil) {
 		if (profil != null) {
 			this.id = profil.getId();
-			this.setTypeProfils(profil.getTypeProfils());
-			this.setDroits(profil.getDroits());
+			if (profil.getTypeProfil() != null) {
+				this.typeProfilCode = profil.getTypeProfil().getCode();
+			}
+
+			if (profil.getDroits() != null) {
+				this.droits = profil.getDroits().stream().filter(t -> t != null).map(droits -> droits.getCode()).collect(Collectors.toList());
+			}
+
 			if (profil.getSecteurs() != null) {
 				this.secteurs = profil.getSecteurs().stream().filter(t -> t != null).map(secteurs -> secteurs.getId()).collect(Collectors.toList());
 			}
@@ -129,12 +134,12 @@ public class ProfilDto implements Serializable {
 	}
 
 	/**
-	 * Getter for typeProfils.
+	 * Getter for typeProfilCode.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#typeProfils typeProfils}.
+	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#typeProfilCode typeProfilCode}.
 	 */
-	public List<TypeProfil.Values> getTypeProfils() {
-		return this.typeProfils;
+	public TypeProfil.Values getTypeProfilCode() {
+		return this.typeProfilCode;
 	}
 
 	/**
@@ -173,11 +178,11 @@ public class ProfilDto implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#typeProfils typeProfils}.
-	 * @param typeProfils value to set
+	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#typeProfilCode typeProfilCode}.
+	 * @param typeProfilCode value to set
 	 */
-	public void setTypeProfils(List<TypeProfil.Values> typeProfils) {
-		this.typeProfils = typeProfils;
+	public void setTypeProfilCode(TypeProfil.Values typeProfilCode) {
+		this.typeProfilCode = typeProfilCode;
 	}
 
 	/**
@@ -215,8 +220,8 @@ public class ProfilDto implements Serializable {
 		dest = dest == null ? new Profil() : dest;
 
 		dest.setId(this.getId());
-		dest.setTypeProfils(this.getTypeProfils());
-		dest.setDroits(this.getDroits());
+		dest.setTypeProfil(this.getTypeProfilCode().getEntity());
+		dest.setDroits(this.getDroits().stream().map(Droits.Values::getEntity).collect(Collectors.toList()));
 
 		return dest;
 	}

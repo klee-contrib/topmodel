@@ -24,7 +24,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 
 import topmodel.jpa.sample.demo.entities.securite.Profil;
@@ -51,7 +50,7 @@ public class Utilisateur {
 	 * Age en années de l'utilisateur.
 	 */
 	@Column(name = "UTI_AGE", nullable = true, precision = 20, scale = 9)
-	private Long age = 6;
+	private Long age = 6l;
 
 	/**
 	 * Profil de l'utilisateur.
@@ -120,11 +119,10 @@ public class Utilisateur {
 		this.profil = utilisateur.getProfil();
 		this.email = utilisateur.getEmail();
 		this.nom = utilisateur.getNom();
+		this.typeUtilisateur = utilisateur.getTypeUtilisateur();
 		this.utilisateurParent = utilisateur.getUtilisateurParent();
 		this.dateCreation = utilisateur.getDateCreation();
 		this.dateModification = utilisateur.getDateModification();
-
-		this.setTypeUtilisateurCode(utilisateur.getTypeUtilisateurCode());
 	}
 
 	/**
@@ -146,30 +144,6 @@ public class Utilisateur {
 		this.email = email;
 		this.nom = nom;
 		this.typeUtilisateur = typeUtilisateur;
-		this.utilisateurParent = utilisateurParent;
-		this.dateCreation = dateCreation;
-		this.dateModification = dateModification;
-	}
-
-	/**
-	 * All arg constructor when Enum shortcut mode is set.
-	 * @param id Id technique
-	 * @param age Age en années de l'utilisateur
-	 * @param profil Profil de l'utilisateur
-	 * @param email Email de l'utilisateur
-	 * @param nom Nom de l'utilisateur
-	 * @param typeUtilisateur Type d'utilisateur en Many to one
-	 * @param utilisateurParent Utilisateur parent
-	 * @param dateCreation Date de création de l'utilisateur
-	 * @param dateModification Date de modification de l'utilisateur
-	 */
-	public Utilisateur(Long id, Long age, Profil profil, String email, String nom, TypeUtilisateur.Values typeUtilisateurCode, Utilisateur utilisateurParent, LocalDate dateCreation, LocalDateTime dateModification) {
-		this.id = id;
-		this.age = age;
-		this.profil = profil;
-		this.email = email;
-		this.nom = nom;
-		this.setTypeUtilisateurCode(typeUtilisateurCode);
 		this.utilisateurParent = utilisateurParent;
 		this.dateCreation = dateCreation;
 		this.dateModification = dateModification;
@@ -326,30 +300,6 @@ public class Utilisateur {
 	 */
 	public void setDateModification(LocalDateTime dateModification) {
 		this.dateModification = dateModification;
-	}
-
-	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#typeUtilisateurCode typeUtilisateurCode}.
-	 * Cette méthode permet définir la valeur de la FK directement
-	 * @param typeUtilisateurCode value to set
-	 */
-	public void setTypeUtilisateurCode(TypeUtilisateur.Values typeUtilisateurCode) {
-		if (typeUtilisateurCode != null) {
-			this.typeUtilisateur = typeUtilisateurCode.getEntity();
-		} else {
-			this.typeUtilisateur = null;
-		}
-	}
-
-	/**
-	 * Getter for typeUtilisateurCode.
-	 * Cette méthode permet de manipuler directement la foreign key de la liste de référence
-	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#typeUtilisateur typeUtilisateur}.
-	 */
-	@Transient
-	public TypeUtilisateur.Values getTypeUtilisateurCode() {
-		return this.typeUtilisateur != null ? this.typeUtilisateur.getCode() : null;
 	}
 
 	/**

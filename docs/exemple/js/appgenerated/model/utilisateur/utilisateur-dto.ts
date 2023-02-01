@@ -31,7 +31,7 @@ export const UtilisateurDtoEntity = {
         name: "age",
         domain: DO_NUMBER,
         isRequired: false,
-        defaultValue: 6,
+        defaultValue: 6l,
         label: "utilisateur.utilisateur.age"
     },
     profilId: {

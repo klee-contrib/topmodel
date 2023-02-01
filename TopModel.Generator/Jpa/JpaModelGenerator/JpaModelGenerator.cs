@@ -309,7 +309,7 @@ public class JpaModelGenerator : GeneratorBase
         {
             if (prop is AssociationProperty ap && ap.IsEnum())
             {
-                return prop.Name.ToString().ToFirstLower();
+                return prop.Name.ToString().ToFirstLower() + ".getEntity()";
             }
             else
             {
@@ -543,9 +543,19 @@ public class JpaModelGenerator : GeneratorBase
                 var getterPrefix = mapping.Value!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
                 if (mapping.Value is AssociationProperty ap)
                 {
-                    if (ap.Property.IsEnum() && _config.EnumShortcutMode)
+                    if (ap.Property.IsEnum())
                     {
-                        fw.WriteLine(2, $"dest.set{mapping.Value.Name.ToFirstUpper()}(this.{getterPrefix}{mapping.Key.Name.ToFirstUpper()}());");
+                        var isMultiple = ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany;
+                        if (isMultiple)
+                        {
+                            var getter = $@"this.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}(){(!mapping.Key.Class.IsPersistent ? $".stream().map({ap.Association.PrimaryKey!.GetJavaType()}::getEntity).collect(Collectors.toList())" : string.Empty)}";
+                            fw.WriteLine(2, $"dest.set{mapping.Value.GetJavaName().ToFirstUpper()}({getter});");
+                            fw.AddImport("java.util.stream.Collectors");
+                        }
+                        else
+                        {
+                            fw.WriteLine(2, $"dest.set{mapping.Value.GetJavaName().ToFirstUpper()}(this.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}(){(!mapping.Key.Class.IsPersistent ? ".getEntity()" : string.Empty)});");
+                        }
                     }
                     else if (mapping.Value.Class.IsPersistent && mapping.Key.Class.IsPersistent)
                     {
