@@ -328,9 +328,18 @@
             "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API. Par défaut : {module}."
           },
           "apiGeneration": {
-            "type": "string",
-            "description": "Mode de génération de l'API ('Client' ou 'Server')",
-            "pattern": "(Client|Server|^\\{.+\\}$)"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Mode de génération de l'API ('Client' ou 'Server')",
+                "enum": [ "Client", "Server" ]
+              },
+              {
+                "type": "string",
+                "description": "Mode de génération de l'API ('Client' ou 'Server')",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
           },
           "useEFMigrations": {
             "type": "boolean",
@@ -585,9 +594,18 @@
             "description": "Précise le nom du package dans lequel générer les controllers."
           },
           "apiGeneration": {
-            "type": "string",
-            "description": "Mode de génération de l'API ('Client' ou 'Server')",
-            "pattern": "(Client|Server|^\\{.+\\}$)"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Mode de génération de l'API ('Client' ou 'Server')",
+                "enum": [ "Client", "Server" ]
+              },
+              {
+                "type": "string",
+                "description": "Mode de génération de l'API ('Client' ou 'Server')",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
           },
           "persistenceMode": {
             "type": "string",
