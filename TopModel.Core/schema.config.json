@@ -76,6 +76,10 @@
       "description": "Traductions",
       "items": {
         "type": "object",
+        "required": [
+          "outputDirectory",
+          "tags"
+        ],
         "properties": {
           "tags": {
             "type": "array",
@@ -83,6 +87,15 @@
             "items": {
               "type": "string",
               "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
             }
           },
           "outputDirectory": {
@@ -126,6 +139,15 @@
             "items": {
               "type": "string",
               "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
             }
           },
           "outputDirectory": {
@@ -207,6 +229,15 @@
               "description": "Catégorie de fichier que le générateur doit lire."
             }
           },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
+            }
+          },
           "outputDirectory": {
             "type": "string",
             "description": "Racine du répertoire de génération."
@@ -262,6 +293,15 @@
               "description": "Catégorie de fichier que le générateur doit lire."
             }
           },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
+            }
+          },
           "outputDirectory": {
             "type": "string",
             "description": "Racine du répertoire de génération."
@@ -289,10 +329,7 @@
           "apiGeneration": {
             "type": "string",
             "description": "Mode de génération de l'API ('Client' ou 'Server')",
-            "enum": [
-              "Client",
-              "Server"
-            ]
+            "pattern": "(Client|Server|^\\{.+\\}$)"
           },
           "useEFMigrations": {
             "type": "boolean",
@@ -375,6 +412,15 @@
             "items": {
               "type": "string",
               "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
             }
           },
           "outputDirectory": {
@@ -468,6 +514,15 @@
               "description": "Catégorie de fichier que le générateur doit lire."
             }
           },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
+            }
+          },
           "outputDirectory": {
             "type": "string",
             "description": "Racine du répertoire de génération."
@@ -517,10 +572,7 @@
           "apiGeneration": {
             "type": "string",
             "description": "Mode de génération de l'API ('Client' ou 'Server')",
-            "enum": [
-              "Client",
-              "Server"
-            ]
+            "pattern": "(Client|Server|^\\{.+\\}$)"
           },
           "persistenceMode": {
             "type": "string",

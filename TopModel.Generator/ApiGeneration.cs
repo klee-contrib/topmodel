@@ -3,20 +3,20 @@
 /// <summary>
 /// Version de Kinetix.
 /// </summary>
-public enum ApiGeneration
+public static class ApiGeneration
 {
     /// <summary>
     /// Pas de génération.
     /// </summary>
-    None,
+    public const string None = nameof(None);
 
     /// <summary>
     /// Génération d'un serveur.
     /// </summary>
-    Server,
+    public const string Server = nameof(Server);
 
     /// <summary>
     /// Gébération d'un client.
     /// </summary>
-    Client
+    public const string Client = nameof(Client);
 }

@@ -38,7 +38,7 @@ public class CSharpConfig : GeneratorConfigBase
     /// <summary>
     /// Mode de génération de l'API ("client" ou "server").
     /// </summary>
-    public ApiGeneration ApiGeneration { get; set; }
+    public string ApiGeneration { get; set; } = Generator.ApiGeneration.None;
 
     /// <summary>
     /// Génère des contrôleurs d'API synchrones.
