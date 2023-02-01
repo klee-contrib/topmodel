@@ -1,5 +1,6 @@
 ﻿#nullable disable
 using System.Text.RegularExpressions;
+using TopModel.Core;
 
 namespace TopModel.Generator;
 
@@ -73,12 +74,12 @@ public abstract class GeneratorConfigBase
             {
                 foreach (var varName in GlobalVariableNames)
                 {
-                    value = value.Replace($"{{{varName}}}", Variables[varName]);
+                    value = ReplaceVariable(value, varName, Variables[varName]);
                 }
 
                 property.SetValue(this, value);
 
-                foreach (var match in Regex.Matches(value, @"\{([^\}]+)\}").Cast<Match>())
+                foreach (var match in Regex.Matches(value, @"\{([$a-zA-Z0-9_-]+)(:\w+)?\}").Cast<Match>())
                 {
                     var varName = match.Groups[1].Value;
                     if (varName == "app" || varName == "module")
@@ -124,10 +125,15 @@ public abstract class GeneratorConfigBase
         {
             foreach (var (varName, varValue) in tagVariables)
             {
-                value = value.Replace($"{{{varName}}}", varValue);
+                value = ReplaceVariable(value, varName, varValue);
             }
         }
 
         return value;
+    }
+
+    private static string ReplaceVariable(string value, string varName, string varValue)
+    {
+        return Regex.Replace(value, $$"""\{{{varName}}(:\w+)?\}""", m => m.Value.Trim('{', '}').GetTransformation()(varValue));
     }
 }
