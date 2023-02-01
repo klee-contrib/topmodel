@@ -42,7 +42,18 @@ command.SetHandler(
                 }
                 else
                 {
-                    configs.Add((fileChecker.Deserialize<FullConfig>(file.OpenText().ReadToEnd()), file.FullName, file.DirectoryName!));
+                    try
+                    {
+                        fileChecker.CheckConfigFile(file.FullName);
+                        configs.Add((fileChecker.Deserialize<FullConfig>(file.OpenText().ReadToEnd()), file.FullName, file.DirectoryName!));
+                    }
+                    catch (ModelException me)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine(me.Message);
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                    }
                 }
             }
         }
@@ -53,7 +64,18 @@ command.SetHandler(
                 var foundFile = new FileInfo(fileName);
                 if (foundFile != null)
                 {
-                    configs.Add((fileChecker.Deserialize<FullConfig>(foundFile.OpenText().ReadToEnd()), fileName, foundFile.DirectoryName!));
+                    try
+                    {
+                        fileChecker.CheckConfigFile(fileName);
+                        configs.Add((fileChecker.Deserialize<FullConfig>(foundFile.OpenText().ReadToEnd()), fileName, foundFile.DirectoryName!));
+                    }
+                    catch (ModelException me)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine(me.Message);
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                    }
                 }
             }
         }
@@ -72,6 +94,7 @@ if (!configs.Any())
 {
     Console.ForegroundColor = ConsoleColor.Red;
     Console.WriteLine("Aucun fichier de configuration trouvé.");
+    Console.ForegroundColor = ConsoleColor.Gray;
     return;
 }
 

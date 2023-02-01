@@ -1,4 +1,6 @@
 ﻿#nullable disable
+using System.Text.RegularExpressions;
+
 namespace TopModel.Generator;
 
 public abstract class GeneratorConfigBase
@@ -19,20 +21,113 @@ public abstract class GeneratorConfigBase
     public Dictionary<string, string> Variables { get; set; } = new();
 
     /// <summary>
+    /// Variables par tag du générateur.
+    /// </summary>
+    public Dictionary<string, Dictionary<string, string>> TagVariables { get; set; } = new();
+
+    public IEnumerable<string> TagVariableNames => TagVariables.Values.SelectMany(v => v.Keys).Distinct();
+
+    public IEnumerable<string> GlobalVariableNames => Variables.Select(v => v.Key).Except(TagVariableNames).Distinct();
+
+    /// <summary>
+    /// Propriétés qui supportent les variables par tag de la configuration courante.
+    /// </summary>
+    public virtual string[] PropertiesWithTagVariableSupport => Array.Empty<string>();
+
+    /// <summary>
     /// Résout les variables globales.
     /// </summary>
-    public void ResolveVariables()
+    /// <param name="number">Numéro du générateur.</param>
+    public void ResolveVariables(int number)
     {
-        foreach (var (varName, varValue) in Variables)
+        // Si on a défini au moins une variable par tag, alors on s'assure qu'elle est définie pour tous les tags (et on y met "" si ce n'est pas une variable globale).
+        if (TagVariableNames.Any())
         {
-            foreach (var property in GetType().GetProperties().Where(p => p.PropertyType == typeof(string)))
+            foreach (var tag in Tags)
             {
-                var value = (string)property.GetValue(this);
-                if (value != null)
+                if (!TagVariables.ContainsKey(tag))
                 {
-                    property.SetValue(this, value.Replace($"{{{varName}}}", varValue));
+                    TagVariables[tag] = new();
+                }
+            }
+
+            foreach (var variables in TagVariables.Values)
+            {
+                foreach (var varName in TagVariableNames)
+                {
+                    if (!variables.ContainsKey(varName))
+                    {
+                        Variables.TryGetValue(varName, out var globalVariable);
+                        variables[varName] = globalVariable ?? string.Empty;
+                    }
                 }
             }
         }
+
+        var hasMissingVar = false;
+
+        foreach (var property in GetType().GetProperties().Where(p => p.PropertyType == typeof(string)))
+        {
+            var value = (string)property.GetValue(this);
+            if (value != null)
+            {
+                foreach (var varName in GlobalVariableNames)
+                {
+                    value = value.Replace($"{{{varName}}}", Variables[varName]);
+                }
+
+                property.SetValue(this, value);
+
+                foreach (var match in Regex.Matches(value, @"\{([^\}]+)\}").Cast<Match>())
+                {
+                    var varName = match.Groups[1].Value;
+                    if (varName == "app" || varName == "module")
+                    {
+                        continue;
+                    }
+
+                    var hasTagSupport = PropertiesWithTagVariableSupport.Contains(property.Name);
+
+                    if (!hasTagSupport)
+                    {
+                        hasMissingVar = true;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"/!\\ {{{GetType().Name}[{number}].{property.Name}}} - La variable globale '{{{varName}}}' n'est pas définie pour ce générateur.");
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                    }
+                    else if (!TagVariableNames.Contains(varName))
+                    {
+                        hasMissingVar = true;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"/!\\ {{{GetType().Name}[{number}].{property.Name}}} - La variable '{{{varName}}}' n'est pas définie pour ce générateur.");
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                    }
+                }
+            }
+        }
+
+        if (hasMissingVar)
+        {
+            Console.WriteLine();
+        }
+    }
+
+    /// <summary>
+    /// Résout les variables de tag dans un chaîne de caractère.
+    /// </summary>
+    /// <param name="tag">Nom du tag.</param>
+    /// <param name="value">Chaîne de caractères.</param>
+    /// <returns>Value avec les variables remplacées..</returns>
+    public virtual string ResolveTagVariables(string tag, string value)
+    {
+        if (TagVariables.TryGetValue(tag, out var tagVariables))
+        {
+            foreach (var (varName, varValue) in tagVariables)
+            {
+                value = value.Replace($"{{{varName}}}", varValue);
+            }
+        }
+
+        return value;
     }
 }

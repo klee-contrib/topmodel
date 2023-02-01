@@ -76,6 +76,7 @@
       "description": "Traductions",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "required": [
           "outputDirectory",
           "tags"
@@ -423,6 +424,20 @@
               }
             }
           },
+          "tagVariables": {
+            "type": "object",
+            "description": "Définitions de variables par tag à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".*": {
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
           "outputDirectory": {
             "type": "string",
             "description": "Racine du répertoire de génération."
@@ -444,13 +459,13 @@
             "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.",
             "default": "{module}"
           },
-          "fetchImportPath": {
+          "fetchPath": {
             "type": "string",
-            "description": "Chemin (ou alias commençant par '@') vers un 'fetch' personnalisé, relatif à la racine de l'API."
+            "description": "Chemin (ou alias commençant par '@') vers un 'fetch' personnalisé, relatif au répertoire de génération."
           },
-          "domainImportPath": {
+          "domainPath": {
             "type": "string",
-            "description": "Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif à la racine du modèle.",
+            "description": "Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif au répertoire de génération.",
             "default": "../domains"
           },
           "targetFramework": {

@@ -13,8 +13,8 @@ public static class ServiceExtensions
         {
             TrimSlashes(config, c => c.ApiClientFilePath);
             TrimSlashes(config, c => c.ApiClientRootPath);
-            TrimSlashes(config, c => c.DomainImportPath);
-            TrimSlashes(config, c => c.FetchImportPath);
+            TrimSlashes(config, c => c.DomainPath);
+            TrimSlashes(config, c => c.FetchPath);
             TrimSlashes(config, c => c.ModelRootPath);
             TrimSlashes(config, c => c.ResourceRootPath);
 

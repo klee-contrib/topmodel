@@ -88,7 +88,7 @@ public class FileChecker
                 continue;
             }
 
-            var finalSchema = firstObject ? schema.OneOf.First() : schema;
+            var finalSchema = firstObject && schema.OneOf.Any() ? schema.OneOf.First() : schema;
 
             var errors = finalSchema.Validate(json);
 
