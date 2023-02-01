@@ -4,6 +4,7 @@
   
   (**léger breaking change** dans les traductions générées pour les propriétés issues de décorateurs sui ne seront potentiellement plus dans les mêmes fichiers)
 
+- [#192](https://github.com/klee-contrib/topmodel/pull/192) - Surcharge de domaine dans un alias
 - [`0c1ac674`](https://github.com/klee-contrib/topmodel/commit/0c1ac674864d37891ec3aaff42eb5cbab75a48c3) - [VSCode] le bouton permettant de voir les release note ne fait plus rien
 - [`0a84b7ee`](https://github.com/klee-contrib/topmodel/commit/0a84b7ee5275d5a07b83ff7cf1fc7de8b6588a1a) - [JPA] Fix claration d'une colonne déclenche l'ajout de l'annotation `@NotNull`
 - [`421a7c23`](https://github.com/klee-contrib/topmodel/commit/421a7c23a1005f3b6b5ee7aa87e85e989e867d05) - [JS] Angular Api client : Fix virgule surnuméraire
