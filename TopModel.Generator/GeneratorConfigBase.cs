@@ -82,7 +82,7 @@ public abstract class GeneratorConfigBase
                 foreach (var match in Regex.Matches(value, @"\{([$a-zA-Z0-9_-]+)(:\w+)?\}").Cast<Match>())
                 {
                     var varName = match.Groups[1].Value;
-                    if (varName == "app" || varName == "module")
+                    if (varName == "app" || varName == "module" || varName == "lang")
                     {
                         continue;
                     }
