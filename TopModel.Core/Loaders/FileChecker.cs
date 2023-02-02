@@ -82,13 +82,7 @@ public class FileChecker
 
             var json = _serializer.Serialize(yaml);
 
-            // La vérification du domaine ne marche pas à cause des nombres déserialisés en strings...
-            if (!firstObject && json.StartsWith("{\"domain\":"))
-            {
-                continue;
-            }
-
-            var finalSchema = firstObject ? schema.OneOf.First() : schema;
+            var finalSchema = firstObject && schema.OneOf.Any() ? schema.OneOf.First() : schema;
 
             var errors = finalSchema.Validate(json);
 

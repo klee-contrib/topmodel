@@ -62,9 +62,9 @@ public class JpaConfig : GeneratorConfigBase
 #nullable enable
 
     /// <summary>
-    /// Mode de génération de l'API ("client" ou "server").
+    /// Mode de génération de l'API ("Client" ou "Server").
     /// </summary>
-    public ApiGeneration ApiGeneration { get; set; }
+    public string? ApiGeneration { get; set; }
 
     /// <summary>
     /// Mode de génération des séquences.

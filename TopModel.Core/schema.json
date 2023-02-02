@@ -414,6 +414,9 @@
                   "items": {
                     "type": "object",
                     "description": "Annotations à ajouter  (ex : `CreatedDate`)",
+                    "required": [
+                      "text"
+                    ],
                     "properties": {
                       "text": {
                         "type": "string",
@@ -487,12 +490,12 @@
                 "annotations": {
                   "type": "array",
                   "description": "Annotations à ajouter sur toutes les propriétés C# de ce domaine (par exemple pour aider l'ORM a mapper le type correctement).",
-                  "required": [
-                    "text"
-                  ],
                   "items": {
                     "type": "object",
                     "description": "Annotations à ajouter  (ex : `@CreatedDate`)",
+                    "required": [
+                      "text"
+                    ],
                     "properties": {
                       "text": {
                         "type": "string",

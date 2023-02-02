@@ -76,6 +76,11 @@
       "description": "Traductions",
       "items": {
         "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "outputDirectory",
+          "tags"
+        ],
         "properties": {
           "tags": {
             "type": "array",
@@ -83,6 +88,15 @@
             "items": {
               "type": "string",
               "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
             }
           },
           "outputDirectory": {
@@ -126,6 +140,15 @@
             "items": {
               "type": "string",
               "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
             }
           },
           "outputDirectory": {
@@ -207,6 +230,15 @@
               "description": "Catégorie de fichier que le générateur doit lire."
             }
           },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
+            }
+          },
           "outputDirectory": {
             "type": "string",
             "description": "Racine du répertoire de génération."
@@ -262,6 +294,15 @@
               "description": "Catégorie de fichier que le générateur doit lire."
             }
           },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
+            }
+          },
           "outputDirectory": {
             "type": "string",
             "description": "Racine du répertoire de génération."
@@ -287,11 +328,17 @@
             "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API. Par défaut : {module}."
           },
           "apiGeneration": {
-            "type": "string",
-            "description": "Mode de génération de l'API ('Client' ou 'Server')",
-            "enum": [
-              "Client",
-              "Server"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Mode de génération de l'API ('Client' ou 'Server')",
+                "enum": [ "Client", "Server" ]
+              },
+              {
+                "type": "string",
+                "description": "Mode de génération de l'API ('Client' ou 'Server')",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
             ]
           },
           "useEFMigrations": {
@@ -377,6 +424,29 @@
               "description": "Catégorie de fichier que le générateur doit lire."
             }
           },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
+            }
+          },
+          "tagVariables": {
+            "type": "object",
+            "description": "Définitions de variables par tag à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".*": {
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
           "outputDirectory": {
             "type": "string",
             "description": "Racine du répertoire de génération."
@@ -398,13 +468,13 @@
             "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.",
             "default": "{module}"
           },
-          "fetchImportPath": {
+          "fetchPath": {
             "type": "string",
-            "description": "Chemin (ou alias commençant par '@') vers un 'fetch' personnalisé, relatif à la racine de l'API."
+            "description": "Chemin (ou alias commençant par '@') vers un 'fetch' personnalisé, relatif au répertoire de génération."
           },
-          "domainImportPath": {
+          "domainPath": {
             "type": "string",
-            "description": "Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif à la racine du modèle.",
+            "description": "Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif au répertoire de génération.",
             "default": "../domains"
           },
           "targetFramework": {
@@ -468,6 +538,15 @@
               "description": "Catégorie de fichier que le générateur doit lire."
             }
           },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
+            }
+          },
           "outputDirectory": {
             "type": "string",
             "description": "Racine du répertoire de génération."
@@ -515,11 +594,17 @@
             "description": "Précise le nom du package dans lequel générer les controllers."
           },
           "apiGeneration": {
-            "type": "string",
-            "description": "Mode de génération de l'API ('Client' ou 'Server')",
-            "enum": [
-              "Client",
-              "Server"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Mode de génération de l'API ('Client' ou 'Server')",
+                "enum": [ "Client", "Server" ]
+              },
+              {
+                "type": "string",
+                "description": "Mode de génération de l'API ('Client' ou 'Server')",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
             ]
           },
           "persistenceMode": {

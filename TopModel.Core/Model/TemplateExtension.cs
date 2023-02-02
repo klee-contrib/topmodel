@@ -108,7 +108,7 @@ public static class TemplateExtension
         return result;
     }
 
-    private static Func<string, string> GetTransformation(this string input)
+    public static Func<string, string> GetTransformation(this string input)
     {
         var transform = (string a) => a;
         var value = input;

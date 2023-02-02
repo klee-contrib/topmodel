@@ -36,9 +36,9 @@ public class CSharpConfig : GeneratorConfigBase
     public string ApiFilePath { get; set; } = "{module}";
 
     /// <summary>
-    /// Mode de génération de l'API ("client" ou "server").
+    /// Mode de génération de l'API ("Client" ou "Server").
     /// </summary>
-    public ApiGeneration ApiGeneration { get; set; }
+    public string? ApiGeneration { get; set; }
 
     /// <summary>
     /// Génère des contrôleurs d'API synchrones.

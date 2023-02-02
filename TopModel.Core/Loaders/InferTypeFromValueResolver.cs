@@ -14,6 +14,12 @@ public class InferTypeFromValueResolver : INodeTypeResolver
                 currentType = typeof(bool);
                 return true;
             }
+
+            if (int.TryParse(scalar.Value, out var _))
+            {
+                currentType = typeof(int);
+                return true;
+            }
         }
 
         return false;
