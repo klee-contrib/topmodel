@@ -2,25 +2,25 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-export type DroitsCode = "CRE" | "MOD" | "SUP";
-export interface Droits {
-    code: DroitsCode;
+export type DroitCode = "CRE" | "MOD" | "SUP";
+export interface Droit {
+    code: DroitCode;
     libelle: string;
     typeProfilCode?: TypeProfilCode;
 }
-export const droitsList: Droits[] = [
+export const droitList: Droit[] = [
     {
         code: "CRE",
-        libelle: "securite.droits.values.CRE",
+        libelle: "securite.droit.values.CRE",
         typeProfilCode: "ADM"
     },
     {
         code: "MOD",
-        libelle: "securite.droits.values.MOD"
+        libelle: "securite.droit.values.MOD"
     },
     {
         code: "SUP",
-        libelle: "securite.droits.values.SUP"
+        libelle: "securite.droit.values.SUP"
     },
 ];
 

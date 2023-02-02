@@ -8,22 +8,22 @@
 --   Description		:	Script de création des tables.
 -- =========================================================================================== 
 /**
-  * Création de la table PROFIL_DROITS
+  * Création de la table PROFIL_DROIT
  **/
-create table PROFIL_DROITS (
+create table PROFIL_DROIT (
 	PRO_ID int8 not null,
 	DRO_CODE varchar(3) not null,
-	constraint PK_PROFIL_DROITS primary key (PRO_ID,DRO_CODE)
+	constraint PK_PROFIL_DROIT primary key (PRO_ID,DRO_CODE)
 );
 
 /**
-  * Création de la table DROITS
+  * Création de la table DROIT
  **/
-create table DROITS (
+create table DROIT (
 	DRO_CODE varchar(3) not null,
 	DRO_LIBELLE varchar(3) not null,
 	TPR_CODE varchar(3),
-	constraint PK_DROITS primary key (DRO_CODE)
+	constraint PK_DROIT primary key (DRO_CODE)
 );
 
 /**

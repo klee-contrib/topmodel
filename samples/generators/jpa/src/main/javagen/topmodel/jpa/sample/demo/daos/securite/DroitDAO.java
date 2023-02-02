@@ -6,9 +6,9 @@ package topmodel.jpa.sample.demo.daos.securite;
 
 import org.springframework.data.repository.CrudRepository;
 
-import topmodel.jpa.sample.demo.entities.securite.Droits;
+import topmodel.jpa.sample.demo.entities.securite.Droit;
 
 
-public interface DroitsDAO extends CrudRepository<Droits, Droits.Values> {
+public interface DroitDAO extends CrudRepository<Droit, Droit.Values> {
 
 }

@@ -38,7 +38,7 @@ public class CSharpApiServerGenerator : GeneratorBase
     {
         var fileSplit = file.Options.Endpoints.FileName.Split("/");
         var className = $"{fileSplit.Last()}Controller";
-        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), "Controllers", _config.ApiFilePath.Replace("{module}", file.Module)).Replace("\\", "/");
+        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), "Controllers", _config.ApiFilePath.Replace("{module}", file.Module.Replace('.', Path.DirectorySeparatorChar))).Replace("\\", "/");
         return $"{_config.OutputDirectory}/{apiPath}/{className}.cs";
     }
 
@@ -56,7 +56,7 @@ public class CSharpApiServerGenerator : GeneratorBase
         }
 
         var className = $"{fileName}Controller";
-        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", endpoints.First().Namespace.App), "Controllers", _config.ApiFilePath.Replace("{module}", module)).Replace("\\", "/");
+        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", endpoints.First().Namespace.App), "Controllers", _config.ApiFilePath.Replace("{module}", module.Replace('.', Path.DirectorySeparatorChar))).Replace("\\", "/");
         var filePath = $"{_config.OutputDirectory}/{apiPath}/{className}.cs";
 
         var text = File.Exists(filePath)

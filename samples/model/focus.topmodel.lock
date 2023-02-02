@@ -1,0 +1,13 @@
+﻿#
+# ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+#
+
+version: 1.23.3
+generatedFiles:
+  - ../generators/focus/src/locale/securite.ts
+  - ../generators/focus/src/locale/utilisateur.ts
+  - ../generators/focus/src/model/securite/profil-dto.ts
+  - ../generators/focus/src/model/securite/references.ts
+  - ../generators/focus/src/model/utilisateur/references.ts
+  - ../generators/focus/src/model/utilisateur/utilisateur-dto.ts
+  - ../generators/focus/src/services/securite/utilisateur/utilisateur-api.ts

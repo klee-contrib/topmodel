@@ -462,11 +462,6 @@ public class CSharpClassGenerator : GeneratorBase
 
         var type = _config.GetPropertyTypeName(property, useIEnumerable: false);
 
-        if (property is AssociationProperty a && a.Type != AssociationType.ManyToOne && a.Type != AssociationType.OneToOne)
-        {
-            throw new ModelException(a, $"Le type d'association {a.Type} n'est pas supporté par le générateur C#");
-        }
-
         if (property is IFieldProperty fp)
         {
             var prop = fp is AliasProperty alp && (!fp.Class.IsPersistent || alp.Property is AssociationProperty) ? alp.Property : fp;

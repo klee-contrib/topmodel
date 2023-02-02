@@ -33,7 +33,7 @@ public class CSharpApiClientGenerator : GeneratorBase
     private string GetFilePath(ModelFile file)
     {
         var className = $"{file.Options.Endpoints.FileName}Client";
-        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), _config.ApiFilePath.Replace("{module}", file.Module)).Replace("\\", "/");
+        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), _config.ApiFilePath.Replace("{module}", file.Module.Replace('.', Path.DirectorySeparatorChar))).Replace("\\", "/");
         return $"{_config.OutputDirectory}/{apiPath}/generated/{className}.cs";
     }
 
@@ -51,7 +51,7 @@ public class CSharpApiClientGenerator : GeneratorBase
         }
 
         var className = $"{fileName}Client";
-        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", endpoints.First().Namespace.App), _config.ApiFilePath.Replace("{module}", module)).Replace("\\", "/");
+        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", endpoints.First().Namespace.App), _config.ApiFilePath.Replace("{module}", module.Replace('.', Path.DirectorySeparatorChar))).Replace("\\", "/");
         var filePath = $"{_config.OutputDirectory}/{apiPath}/generated/{className}.cs";
 
         using var fw = new CSharpWriter(filePath, _logger, _config.UseLatestCSharp);

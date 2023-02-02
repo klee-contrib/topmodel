@@ -8,45 +8,45 @@
 --   Description		:	Script de création des indexes et des clef étrangères. 
 -- =========================================================================================== 
 /**
-  * Création de l'index de clef étrangère pour PROFIL_DROITS.PRO_ID
+  * Création de l'index de clef étrangère pour PROFIL_DROIT.PRO_ID
  **/
-create index IDX_PROFIL_DROITS_PRO_ID_FK on PROFIL_DROITS (
+create index IDX_PROFIL_DROIT_PRO_ID_FK on PROFIL_DROIT (
 	PRO_ID ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour PROFIL_DROITS.PRO_ID
+  * Génération de la contrainte de clef étrangère pour PROFIL_DROIT.PRO_ID
  **/
-alter table PROFIL_DROITS
-	add constraint FK_PROFIL_DROITS_PRO_ID foreign key (PRO_ID)
+alter table PROFIL_DROIT
+	add constraint FK_PROFIL_DROIT_PRO_ID foreign key (PRO_ID)
 		references PROFIL (PRO_ID);
 
 /**
-  * Création de l'index de clef étrangère pour PROFIL_DROITS.DRO_CODE
+  * Création de l'index de clef étrangère pour PROFIL_DROIT.DRO_CODE
  **/
-create index IDX_PROFIL_DROITS_DRO_CODE_FK on PROFIL_DROITS (
+create index IDX_PROFIL_DROIT_DRO_CODE_FK on PROFIL_DROIT (
 	DRO_CODE ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour PROFIL_DROITS.DRO_CODE
+  * Génération de la contrainte de clef étrangère pour PROFIL_DROIT.DRO_CODE
  **/
-alter table PROFIL_DROITS
-	add constraint FK_PROFIL_DROITS_DRO_CODE foreign key (DRO_CODE)
-		references DROITS (DRO_CODE);
+alter table PROFIL_DROIT
+	add constraint FK_PROFIL_DROIT_DRO_CODE foreign key (DRO_CODE)
+		references DROIT (DRO_CODE);
 
 /**
-  * Création de l'index de clef étrangère pour DROITS.TPR_CODE
+  * Création de l'index de clef étrangère pour DROIT.TPR_CODE
  **/
-create index IDX_DRO_TPR_CODE_FK on DROITS (
+create index IDX_DRO_TPR_CODE_FK on DROIT (
 	TPR_CODE ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour DROITS.TPR_CODE
+  * Génération de la contrainte de clef étrangère pour DROIT.TPR_CODE
  **/
-alter table DROITS
-	add constraint FK_DROITS_TPR_CODE foreign key (TPR_CODE)
+alter table DROIT
+	add constraint FK_DROIT_TPR_CODE foreign key (TPR_CODE)
 		references TYPE_PROFIL (TPR_CODE);
 
 /**

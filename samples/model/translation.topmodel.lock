@@ -6,7 +6,7 @@ version: 1.23.3
 generatedFiles:
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/utilisateur/AbstractUtilisateurApiClient.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/utilisateur/UtilisateurApiController.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/DroitsDAO.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/DroitDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/ProfilDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/ProfilDtoDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/SecteurDAO.java
@@ -17,7 +17,7 @@ generatedFiles:
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/ProfilDto.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/interfaces/IUtilisateurDto.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/UtilisateurDto.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/Droits.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/Droit.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/Profil.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/Secteur.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/TypeProfil.java

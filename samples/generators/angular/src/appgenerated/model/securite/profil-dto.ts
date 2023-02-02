@@ -5,12 +5,12 @@
 import {DO_CODE, DO_ID} from "@domains";
 
 import {UtilisateurDtoEntity, UtilisateurDto} from "../utilisateur/utilisateur-dto";
-import {DroitsCode, TypeProfilCode} from "./references";
+import {DroitCode, TypeProfilCode} from "./references";
 
 export interface ProfilDto {
     id?: number,
     typeProfilCode?: TypeProfilCode,
-    droits?: DroitsCode[],
+    droits?: DroitCode[],
     secteurs?: number[],
     utilisateurs?: UtilisateurDto[]
 }

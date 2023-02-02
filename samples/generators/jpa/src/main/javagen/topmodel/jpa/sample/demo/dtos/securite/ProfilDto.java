@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import jakarta.annotation.Generated;
 
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
-import topmodel.jpa.sample.demo.entities.securite.Droits;
+import topmodel.jpa.sample.demo.entities.securite.Droit;
 import topmodel.jpa.sample.demo.entities.securite.Profil;
 import topmodel.jpa.sample.demo.entities.securite.TypeProfil;
 
@@ -39,7 +39,7 @@ public class ProfilDto implements Serializable {
 	 * Liste des droits de l'utilisateur.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.Profil#getDroits() Profil#getDroits()} 
 	 */
-	private List<Droits.Values> droits;
+	private List<Droit.Values> droits;
 
 	/**
 	 * Liste des secteurs de l'utilisateur.
@@ -83,7 +83,7 @@ public class ProfilDto implements Serializable {
 	 * @param secteurs Liste des secteurs de l'utilisateur
 	 * @param utilisateurs Liste paginée des utilisateurs de ce profil
 	 */
-	public ProfilDto(Long id, TypeProfil.Values typeProfilCode, List<Droits.Values> droits, List<Long> secteurs, List<UtilisateurDto> utilisateurs) {
+	public ProfilDto(Long id, TypeProfil.Values typeProfilCode, List<Droit.Values> droits, List<Long> secteurs, List<UtilisateurDto> utilisateurs) {
 		this.id = id;
 		this.typeProfilCode = typeProfilCode;
 		this.droits = droits;
@@ -147,7 +147,7 @@ public class ProfilDto implements Serializable {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#droits droits}.
 	 */
-	public List<Droits.Values> getDroits() {
+	public List<Droit.Values> getDroits() {
 		return this.droits;
 	}
 
@@ -189,7 +189,7 @@ public class ProfilDto implements Serializable {
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#droits droits}.
 	 * @param droits value to set
 	 */
-	public void setDroits(List<Droits.Values> droits) {
+	public void setDroits(List<Droit.Values> droits) {
 		this.droits = droits;
 	}
 
@@ -223,7 +223,7 @@ public class ProfilDto implements Serializable {
 		if (this.getTypeProfilCode() != null) {
 			dest.setTypeProfil(this.getTypeProfilCode().getEntity());
 		}
-		dest.setDroits(this.getDroits().stream().map(Droits.Values::getEntity).collect(Collectors.toList()));
+		dest.setDroits(this.getDroits().stream().map(Droit.Values::getEntity).collect(Collectors.toList()));
 
 		return dest;
 	}

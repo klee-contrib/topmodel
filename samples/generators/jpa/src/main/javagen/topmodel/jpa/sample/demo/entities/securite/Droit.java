@@ -24,10 +24,10 @@ import jakarta.persistence.Table;
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
-@Table(name = "DROITS")
+@Table(name = "DROIT")
 @Immutable
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-public class Droits {
+public class Droit {
 
 	/**
 	 * Code du droit.
@@ -35,7 +35,7 @@ public class Droits {
 	@Id
 	@Column(name = "DRO_CODE", nullable = false, length = 3)
 	@Enumerated(EnumType.STRING)
-	private Droits.Values code;
+	private Droit.Values code;
 
 	/**
 	 * Libellé du droit.
@@ -53,21 +53,21 @@ public class Droits {
 	/**
 	 * No arg constructor.
 	 */
-	public Droits() {
+	public Droit() {
 	}
 
 	/**
 	 * Copy constructor.
-	 * @param droits to copy
+	 * @param droit to copy
 	 */
-	public Droits(Droits droits) {
-		if(droits == null) {
+	public Droit(Droit droit) {
+		if(droit == null) {
 			return;
 		}
 
-		this.code = droits.getCode();
-		this.libelle = droits.getLibelle();
-		this.typeProfil = droits.getTypeProfil();
+		this.code = droit.getCode();
+		this.libelle = droit.getLibelle();
+		this.typeProfil = droit.getTypeProfil();
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class Droits {
 	 * @param libelle Libellé du droit
 	 * @param typeProfil Type de profil pouvant faire l'action
 	 */
-	public Droits(Droits.Values code, String libelle, TypeProfil typeProfil) {
+	public Droit(Droit.Values code, String libelle, TypeProfil typeProfil) {
 		this.code = code;
 		this.libelle = libelle;
 		this.typeProfil = typeProfil;
@@ -85,16 +85,16 @@ public class Droits {
 	/**
 	 * Getter for code.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Droits#code code}.
+	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Droit#code code}.
 	 */
-	public Droits.Values getCode() {
+	public Droit.Values getCode() {
 		return this.code;
 	}
 
 	/**
 	 * Getter for libelle.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Droits#libelle libelle}.
+	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Droit#libelle libelle}.
 	 */
 	public String getLibelle() {
 		return this.libelle;
@@ -103,22 +103,22 @@ public class Droits {
 	/**
 	 * Getter for typeProfil.
 	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Droits#typeProfil typeProfil}.
+	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Droit#typeProfil typeProfil}.
 	 */
 	public TypeProfil getTypeProfil() {
 		return this.typeProfil;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Droits#code code}.
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Droit#code code}.
 	 * @param code value to set
 	 */
-	public void setCode(Droits.Values code) {
+	public void setCode(Droit.Values code) {
 		this.code = code;
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Droits#libelle libelle}.
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Droit#libelle libelle}.
 	 * @param libelle value to set
 	 */
 	public void setLibelle(String libelle) {
@@ -126,7 +126,7 @@ public class Droits {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Droits#typeProfil typeProfil}.
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Droit#typeProfil typeProfil}.
 	 * @param typeProfil value to set
 	 */
 	public void setTypeProfil(TypeProfil typeProfil) {
@@ -134,10 +134,10 @@ public class Droits {
 	}
 
 	/**
-	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.Droits Droits}.
+	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.Droit Droit}.
 	 */
 	public enum Fields  {
-        CODE(Droits.Values.class), //
+        CODE(Droit.Values.class), //
         LIBELLE(String.class), //
         TYPE_PROFIL(TypeProfil.class);
 
@@ -153,9 +153,9 @@ public class Droits {
 	}
 
 	public enum Values {
-		CRE("securite.droits.values.CRE", TypeProfil.Values.ADM), //
-		MOD("securite.droits.values.MOD", null), //
-		SUP("securite.droits.values.SUP", null); 
+		CRE("securite.droit.values.CRE", TypeProfil.Values.ADM), //
+		MOD("securite.droit.values.MOD", null), //
+		SUP("securite.droit.values.SUP", null); 
 
 		/**
 		 * Libellé du droit.
@@ -178,10 +178,10 @@ public class Droits {
 		/**
 		 * Méthode permettant de récupérer l'entité correspondant au code.
 		 *
-		 * @return instance de {@link topmodel.jpa.sample.demo.entities.securite.Droits} correspondant au code courant.
+		 * @return instance de {@link topmodel.jpa.sample.demo.entities.securite.Droit} correspondant au code courant.
 		 */
-		public Droits getEntity() {
-			return new Droits(this, libelle, typeProfilCode.getEntity());
+		public Droit getEntity() {
+			return new Droit(this, libelle, typeProfilCode.getEntity());
 		}
 
 		/**

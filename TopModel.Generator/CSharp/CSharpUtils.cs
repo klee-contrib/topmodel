@@ -153,7 +153,7 @@ public static class CSharpUtils
     public static string GetReferenceAccessorName(this CSharpConfig config, Class classe)
     {
         return config.ReferenceAccessorsName
-            .Replace("{module}", classe.Namespace.Module)
+            .Replace("{module}", classe.Namespace.Module.Replace(".", string.Empty))
             .Replace("{app}", classe.Namespace.App);
     }
 
@@ -169,7 +169,7 @@ public static class CSharpUtils
         var projectDir = Path.Combine(
             config.OutputDirectory,
             config.ReferenceAccessorsInterfacePath
-                .Replace("{module}", firstClass.Namespace.Module)
+                .Replace("{module}", firstClass.Namespace.Module.Replace('.', Path.DirectorySeparatorChar))
                 .Replace("{app}", firstClass.Namespace.App));
         var className = config.GetReferenceAccessorName(firstClass);
         return Path.Combine(projectDir, "generated", $"I{className}.cs");
@@ -187,7 +187,7 @@ public static class CSharpUtils
         var projectDir = Path.Combine(
             config.OutputDirectory,
             config.ReferenceAccessorsImplementationPath
-                .Replace("{module}", firstClass.Namespace.Module)
+                .Replace("{module}", firstClass.Namespace.Module.Replace('.', Path.DirectorySeparatorChar))
                 .Replace("{app}", firstClass.Namespace.App));
         var className = config.GetReferenceAccessorName(firstClass);
         return Path.Combine(projectDir, "generated", $"{className}.cs");

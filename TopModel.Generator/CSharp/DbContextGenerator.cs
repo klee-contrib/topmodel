@@ -107,12 +107,7 @@ public class DbContextGenerator : GeneratorBase
                     _ => null!
                 };
 
-                if (ap.Type != AssociationType.ManyToOne && ap.Type != AssociationType.OneToOne)
-                {
-                    throw new ModelException(ap, $"Le type d'association {ap.Type} n'est pas supporté par le générateur C#");
-                }
-
-                w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().HasOne<{ap.Association}>().With{(ap.Type == AssociationType.ManyToOne ? "Many" : "One")}().HasForeignKey{(ap.Type == AssociationType.ManyToOne ? string.Empty : $"<{prop.Class}>")}(p => p.{prop.Name}).OnDelete(DeleteBehavior.Restrict);");
+                w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().Has{(ap.Type == AssociationType.ManyToOne || ap.Type == AssociationType.OneToOne ? "One" : "Many")}<{ap.Association}>().With{(ap.Type == AssociationType.ManyToOne || ap.Type == AssociationType.ManyToMany ? "Many" : "One")}(){(ap.Type == AssociationType.ManyToOne || ap.Type == AssociationType.OneToOne ? $".HasForeignKey{(ap.Type == AssociationType.ManyToOne ? string.Empty : $"<{prop.Class}>")}(p => p.{prop.Name})" : string.Empty)}.OnDelete(DeleteBehavior.Restrict);");
             }
 
             if (hasFk)

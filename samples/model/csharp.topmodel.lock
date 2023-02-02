@@ -1,0 +1,23 @@
+﻿#
+# ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+#
+
+version: 1.23.3
+generatedFiles:
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/generated/CSharpDbContext.comments.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/generated/CSharpDbContext.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Models/Securite/generated/Profil.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Models/Securite/generated/Secteur.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Models/Securite/generated/SecuriteMappers.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Models/Utilisateur/generated/Utilisateur.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Models/Utilisateur/generated/UtilisateurMappers.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/ISecuriteReferenceAccessors.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/IUtilisateurReferenceAccessors.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/SecuriteReferenceAccessors.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/UtilisateurReferenceAccessors.cs
+  - ../generators/csharp/src/CSharp.Api/Controllers/Securite/Utilisateur/UtilisateurApiController.cs
+  - ../generators/csharp/src/Models/CSharp.Securite.Models/generated/Droit.cs
+  - ../generators/csharp/src/Models/CSharp.Securite.Models/generated/ProfilDto.cs
+  - ../generators/csharp/src/Models/CSharp.Securite.Models/generated/TypeProfil.cs
+  - ../generators/csharp/src/Models/CSharp.Utilisateur.Models/generated/TypeUtilisateur.cs
+  - ../generators/csharp/src/Models/CSharp.Utilisateur.Models/generated/UtilisateurDto.cs

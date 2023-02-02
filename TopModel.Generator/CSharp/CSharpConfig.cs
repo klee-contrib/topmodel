@@ -203,7 +203,7 @@ public class CSharpConfig : GeneratorConfigBase
                 ? PersistantReferencesModelPath
                 : PersistantModelPath
             : NonPersistantModelPath;
-        return baseModelPath.Replace("{app}", classe.Namespace.App).Replace("{module}", classe.Namespace.Module);
+        return baseModelPath.Replace("{app}", classe.Namespace.App).Replace("{module}", classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar));
     }
 
     /// <summary>

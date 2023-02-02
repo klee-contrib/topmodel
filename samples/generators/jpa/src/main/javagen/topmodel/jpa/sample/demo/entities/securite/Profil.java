@@ -50,8 +50,8 @@ public class Profil {
 	 * Liste des droits de l'utilisateur.
 	 */
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "PROFIL_DROITS", joinColumns = @JoinColumn(name = "PRO_ID"), inverseJoinColumns = @JoinColumn(name = "DRO_CODE"))
-	private List<Droits> droits;
+	@JoinTable(name = "PROFIL_DROIT", joinColumns = @JoinColumn(name = "PRO_ID"), inverseJoinColumns = @JoinColumn(name = "DRO_CODE"))
+	private List<Droit> droits;
 
 	/**
 	 * Liste des secteurs de l'utilisateur.
@@ -88,7 +88,7 @@ public class Profil {
 	 * @param droits Liste des droits de l'utilisateur
 	 * @param secteurs Liste des secteurs de l'utilisateur
 	 */
-	public Profil(Long id, TypeProfil typeProfil, List<Droits> droits, List<Secteur> secteurs) {
+	public Profil(Long id, TypeProfil typeProfil, List<Droit> droits, List<Secteur> secteurs) {
 		this.id = id;
 		this.typeProfil = typeProfil;
 		this.droits = droits;
@@ -118,7 +118,7 @@ public class Profil {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#droits droits}.
 	 */
-	public List<Droits> getDroits() {
+	public List<Droit> getDroits() {
 		if(this.droits == null)
 			this.droits = new ArrayList<>();
 		return this.droits;
@@ -155,7 +155,7 @@ public class Profil {
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#droits droits}.
 	 * @param droits value to set
 	 */
-	public void setDroits(List<Droits> droits) {
+	public void setDroits(List<Droit> droits) {
 		this.droits = droits;
 	}
 

@@ -21,7 +21,7 @@ class:
       label: Profil
       comment: Type de profil
       type: manyToOne
-    - association: Droits
+    - association: Droit
       label: Droits
       comment: Liste des droits de l'utilisateur
       type: manyToMany
