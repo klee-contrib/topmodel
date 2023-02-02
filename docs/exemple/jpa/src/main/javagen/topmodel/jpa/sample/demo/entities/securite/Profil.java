@@ -178,7 +178,9 @@ public class Profil {
 		dest = dest == null ? new Profil() : dest;
 
 		dest.setId(this.getId());
-		dest.setTypeProfil(this.getTypeProfil());
+		if (this.getTypeProfil() != null) {
+			dest.setTypeProfil(this.getTypeProfil());
+		}
 		dest.setDroits(this.getDroits());
 		dest.setSecteurs(this.getSecteurs());
 

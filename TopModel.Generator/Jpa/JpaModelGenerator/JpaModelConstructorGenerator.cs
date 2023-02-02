@@ -293,7 +293,7 @@ public class JpaModelConstructorGenerator
                                     }
                                     else
                                     {
-                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} != null ? null : new {cp.Composition.Name.ToFirstUpper()}({getter});");
+                                        fw.WriteLine(3, $"this.{mapping.Key.GetJavaName()} = {getter} == null ? null : new {cp.Composition.Name.ToFirstUpper()}({getter});");
                                     }
                                 }
                                 else

@@ -554,7 +554,9 @@ public class JpaModelGenerator : GeneratorBase
                         }
                         else
                         {
-                            fw.WriteLine(2, $"dest.set{mapping.Value.GetJavaName().ToFirstUpper()}(this.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}(){(!mapping.Key.Class.IsPersistent ? ".getEntity()" : string.Empty)});");
+                            fw.WriteLine(2, $"if (this.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}() != null) {{");
+                            fw.WriteLine(3, $"dest.set{mapping.Value.GetJavaName().ToFirstUpper()}(this.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}(){(!mapping.Key.Class.IsPersistent ? ".getEntity()" : string.Empty)});");
+                            fw.WriteLine(2, $"}}");
                         }
                     }
                     else if (mapping.Value.Class.IsPersistent && mapping.Key.Class.IsPersistent)

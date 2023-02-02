@@ -143,7 +143,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 */
 	protected void from(Utilisateur utilisateur) {
 		if (utilisateur != null) {
-			this.utilisateurParent = utilisateur.getUtilisateurParent() != null ? null : new UtilisateurDto(utilisateur.getUtilisateurParent());
+			this.utilisateurParent = utilisateur.getUtilisateurParent() == null ? null : new UtilisateurDto(utilisateur.getUtilisateurParent());
 			this.id = utilisateur.getId();
 			this.age = utilisateur.getAge();
 			if (utilisateur.getProfil() != null) {
@@ -343,7 +343,9 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 		dest.setAge(this.getAge());
 		dest.setEmail(this.getEmail());
 		dest.setNom(this.getNom());
-		dest.setTypeUtilisateur(this.getTypeUtilisateurCode().getEntity());
+		if (this.getTypeUtilisateurCode() != null) {
+			dest.setTypeUtilisateur(this.getTypeUtilisateurCode().getEntity());
+		}
 		dest.setDateCreation(this.getDateCreation());
 		dest.setDateModification(this.getDateModification());
 

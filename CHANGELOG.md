@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.23.2
+
+- [JPA] Correction régression 1.23.0 : NPE sur les mappers, et mauvaise gestion nullabilité dans certains mappers
+
 ## 1.23.1
 
 - [`a3e9efc8`](https://github.com/klee-contrib/topmodel/commit/a3e9efc81c23ca2c51df9ce5a0a07f8dba37e406) - Fix parsing yaml int à la place d'un string

@@ -220,7 +220,9 @@ public class ProfilDto implements Serializable {
 		dest = dest == null ? new Profil() : dest;
 
 		dest.setId(this.getId());
-		dest.setTypeProfil(this.getTypeProfilCode().getEntity());
+		if (this.getTypeProfilCode() != null) {
+			dest.setTypeProfil(this.getTypeProfilCode().getEntity());
+		}
 		dest.setDroits(this.getDroits().stream().map(Droits.Values::getEntity).collect(Collectors.toList()));
 
 		return dest;
