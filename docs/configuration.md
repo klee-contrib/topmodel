@@ -1,4 +1,4 @@
-# Configuration
+# Configuration <!-- {docsify-ignore-all} -->
 
 Pour démarrer votre projet TopModel, vous devez d'abord écrire un fichier de configuration. Celui-ci contient notamment :
 
