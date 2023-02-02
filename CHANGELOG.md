@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.23.3
+
+- [`1a9dcb0`](https://github.com/klee-contrib/topmodel/commit/1a9dcb0ecff530b5aed0200b15213be9178b762d) - Possibilité de changer le nom du lockfile
+- [`b954b32`](https://github.com/klee-contrib/topmodel/commit/b954b32a918e289cf56bc278da31d59947680ac1) - modgen: return 1 si erreur de génération ou de parsing
+
 ## 1.23.2
 
 - [JPA] Correction régression 1.23.0 : NPE sur les mappers, et mauvaise gestion nullabilité dans certains mappers
