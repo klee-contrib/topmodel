@@ -1,14 +1,17 @@
 # TopModel.Generator (`modgen`)
 
-## Prochaine version
+## 1.23.0
+
+- [#199](https://github.com/klee-contrib/topmodel/pull/192) - Variables globales et par tags par générateur dans la configuration
+
+  **breaking change**: [JS] `domainImportPath` et `fetchImportPath` ont été remplacés par `domainPath` et `fetchPath`, qui sont des chemins relatifs à `outputDirectory` au lieu de `modelRootPath`/`apiClientRootPath`.
 
 - [#191](https://github.com/klee-contrib/topmodel/pull/191) - Génération des commentaires en JS + décorateurs dans les fichiers de ressources
-  
-  (**léger breaking change** dans les traductions générées pour les propriétés issues de décorateurs qui ne seront potentiellement plus dans les mêmes fichiers)
+
+  **breaking change** : [JS/JPA/TranslationOut] Les traductions générées pour les propriétés issues de décorateurs sont désormais générées pour le décorateur (et donc dans le fichier correspondant à son module, ce qui nécessitera peut être d'ajouter des fichiers à la config i18,) au lieu d'être recopiées sur chaque classe.
 
 - [#192](https://github.com/klee-contrib/topmodel/pull/192) - Surcharge de domaine dans un alias
-- [`0c1ac674`](https://github.com/klee-contrib/topmodel/commit/0c1ac674864d37891ec3aaff42eb5cbab75a48c3) - [VSCode] le bouton permettant de voir les release note ne fait plus rien
-- [`0a84b7ee`](https://github.com/klee-contrib/topmodel/commit/0a84b7ee5275d5a07b83ff7cf1fc7de8b6588a1a) - [JPA] Fix claration d'une colonne déclenche l'ajout de l'annotation `@NotNull`
+- [`0a84b7ee`](https://github.com/klee-contrib/topmodel/commit/0a84b7ee5275d5a07b83ff7cf1fc7de8b6588a1a) - [JPA] Fix déclaration d'une colonne déclenche l'ajout de l'annotation `@NotNull`
 - [`421a7c23`](https://github.com/klee-contrib/topmodel/commit/421a7c23a1005f3b6b5ee7aa87e85e989e867d05) - [JS] Angular Api client : Fix virgule surnuméraire
 
 ## 1.22.1
