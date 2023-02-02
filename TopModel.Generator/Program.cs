@@ -1,6 +1,4 @@
-﻿#pragma warning disable SA1516
-
-using System.CommandLine;
+﻿using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TopModel.Core;
@@ -18,6 +16,7 @@ var fileChecker = new FileChecker("schema.config.json");
 var configs = new List<(FullConfig Config, string FullPath, string DirectoryName)>();
 var watchMode = false;
 var regularCommand = false;
+var returnCode = 0;
 
 var command = new RootCommand("Lance le générateur topmodel.") { Name = "modgen" };
 
@@ -49,6 +48,7 @@ command.SetHandler(
                     }
                     catch (ModelException me)
                     {
+                        returnCode = 1;
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine(me.Message);
                         Console.WriteLine();
@@ -71,6 +71,7 @@ command.SetHandler(
                     }
                     catch (ModelException me)
                     {
+                        returnCode = 1;
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine(me.Message);
                         Console.WriteLine();
@@ -87,15 +88,16 @@ await command.InvokeAsync(args);
 
 if (!regularCommand)
 {
-    return;
+    return returnCode;
 }
 
 if (!configs.Any())
 {
+    returnCode = 1;
     Console.ForegroundColor = ConsoleColor.Red;
     Console.WriteLine("Aucun fichier de configuration trouvé.");
     Console.ForegroundColor = ConsoleColor.Gray;
-    return;
+    return returnCode;
 }
 
 var fullVersion = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Version!;
@@ -147,6 +149,8 @@ for (var i = 0; i < configs.Count; i++)
     disposables.Add(provider);
 
     var modelStore = provider.GetRequiredService<ModelStore>();
+    modelStore.OnResolve += hasError => returnCode = hasError ? 1 : 0;
+
     var watcher = modelStore.LoadFromConfig(watchMode, new(i + 1, colors[i % colors.Length]));
     if (watcher != null)
     {
@@ -169,3 +173,5 @@ foreach (var provider in disposables)
 {
     provider.Dispose();
 }
+
+return returnCode;

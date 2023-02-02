@@ -48,6 +48,8 @@ public class ModelStore
         }
     }
 
+    public event Action<bool>? OnResolve;
+
     public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes).Distinct();
 
     public IEnumerable<Endpoint> Endpoints => _modelFiles.SelectMany(mf => mf.Value.Endpoints).Distinct();
@@ -206,7 +208,10 @@ public class ModelStore
                     _logger.LogWarning(error.ToString());
                 }
 
-                if (referenceErrors.Any(r => r.IsError))
+                var hasError = referenceErrors.Any(r => r.IsError);
+                OnResolve?.Invoke(hasError);
+
+                if (hasError)
                 {
                     throw new ModelException("Erreur lors de la lecture du modèle.");
                 }
