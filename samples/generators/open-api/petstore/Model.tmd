@@ -1,0 +1,174 @@
+####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Petstore
+tags:
+  - petstore
+
+---
+class:
+  name: ApiResponse
+  comment: no description provided
+
+  properties:
+    - name: Code
+      domain: int32
+      required: true
+      comment: "code"
+
+    - name: Type
+      domain: string
+      required: true
+      comment: "type"
+
+    - name: Message
+      domain: string
+      required: true
+      comment: "message"
+---
+class:
+  name: Category
+  comment: no description provided
+
+  properties:
+    - name: Id
+      domain: int64
+      required: true
+      comment: "id"
+
+    - name: Name
+      domain: string
+      required: true
+      comment: "name"
+---
+class:
+  name: Order
+  comment: no description provided
+
+  properties:
+    - name: Id
+      domain: int64
+      required: true
+      comment: "id"
+
+    - name: PetId
+      domain: int64
+      required: true
+      comment: "petId"
+
+    - name: Quantity
+      domain: int32
+      required: true
+      comment: "quantity"
+
+    - name: ShipDate
+      domain: date-time
+      required: true
+      comment: "shipDate"
+
+    - name: Status
+      domain: string
+      required: true
+      comment: "Order Status"
+
+    - name: Complete
+      domain: boolean
+      required: true
+      comment: "complete"
+---
+class:
+  name: Pet
+  comment: no description provided
+
+  properties:
+    - name: Id
+      domain: int64
+      required: true
+      comment: "id"
+
+    - composition: Category
+      name: Category
+      kind: object
+      comment: "category"
+
+    - name: Name
+      domain: string
+      required: true
+      comment: "name"
+
+    - name: PhotoUrls
+      domain: string-array
+      required: true
+      comment: "photoUrls"
+
+    - composition: Tag
+      name: Tags
+      kind: list
+      comment: "tags"
+
+    - name: Status
+      domain: string
+      required: true
+      comment: "pet status in the store"
+---
+class:
+  name: Tag
+  comment: no description provided
+
+  properties:
+    - name: Id
+      domain: int64
+      required: true
+      comment: "id"
+
+    - name: Name
+      domain: string
+      required: true
+      comment: "name"
+---
+class:
+  name: User
+  comment: no description provided
+
+  properties:
+    - name: Id
+      domain: int64
+      required: true
+      comment: "id"
+
+    - name: Username
+      domain: string
+      required: true
+      comment: "username"
+
+    - name: FirstName
+      domain: string
+      required: true
+      comment: "firstName"
+
+    - name: LastName
+      domain: string
+      required: true
+      comment: "lastName"
+
+    - name: Email
+      domain: string
+      required: true
+      comment: "email"
+
+    - name: Password
+      domain: string
+      required: true
+      comment: "password"
+
+    - name: Phone
+      domain: string
+      required: true
+      comment: "phone"
+
+    - name: UserStatus
+      domain: int32
+      required: true
+      comment: "User Status"

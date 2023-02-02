@@ -1,1 +1,0 @@
-dotnet run --project ../../TopModel.Generator

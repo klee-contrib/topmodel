@@ -30,6 +30,11 @@
       "type": "string",
       "description": "Chemin du dossier racine qui contient tous les fichiers tmd du modèle, qui seront chargés par le générateur (à l'exception du fichier de domaines qui est chargé à part). Si non renseigné, le dossier contenant le fichier de config sera utilisé."
     },
+    "lockFileName": {
+      "type": "string",
+      "description": "Nom du fichier de lock",
+      "default": "topmodel.lock"
+    },
     "allowCompositePrimaryKey": {
       "type": "boolean",
       "description": "Autorise les clés primaires composites (incompatible avec une génération de C#)."
@@ -332,7 +337,10 @@
               {
                 "type": "string",
                 "description": "Mode de génération de l'API ('Client' ou 'Server')",
-                "enum": [ "Client", "Server" ]
+                "enum": [
+                  "Client",
+                  "Server"
+                ]
               },
               {
                 "type": "string",
@@ -598,7 +606,10 @@
               {
                 "type": "string",
                 "description": "Mode de génération de l'API ('Client' ou 'Server')",
-                "enum": [ "Client", "Server" ]
+                "enum": [
+                  "Client",
+                  "Server"
+                ]
               },
               {
                 "type": "string",

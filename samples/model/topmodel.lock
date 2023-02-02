@@ -1,0 +1,35 @@
+﻿#
+# ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+#
+
+version: 1.23.2
+generatedFiles:
+  - ../jpa/i18n/de_DE/out/securite_de_DE.properties
+  - ../jpa/i18n/de_DE/out/utilisateur_de_DE.properties
+  - ../jpa/i18n/en_US/out/securite_en_US.properties
+  - ../jpa/i18n/en_US/out/utilisateur_en_US.properties
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/utilisateur/AbstractUtilisateurApiClient.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/utilisateur/UtilisateurApiController.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/DroitsDAO.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/ProfilDAO.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/ProfilDtoDAO.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/SecteurDAO.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/TypeProfilDAO.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/TypeUtilisateurDAO.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/UtilisateurDAO.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/UtilisateurDtoDAO.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/ProfilDto.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/interfaces/IUtilisateurDto.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/UtilisateurDto.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/Droits.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/Profil.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/Secteur.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/TypeProfil.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/utilisateur/TypeUtilisateur.java
+  - ../jpa/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/utilisateur/Utilisateur.java
+  - ../jpa/jpa/src/main/resources/i18n/model/securite/securite_de_DE.properties
+  - ../jpa/jpa/src/main/resources/i18n/model/securite/securite_en_US.properties
+  - ../jpa/jpa/src/main/resources/i18n/model/securite/securite_fr_FR.properties
+  - ../jpa/jpa/src/main/resources/i18n/model/utilisateur/utilisateur_de_DE.properties
+  - ../jpa/jpa/src/main/resources/i18n/model/utilisateur/utilisateur_en_US.properties
+  - ../jpa/jpa/src/main/resources/i18n/model/utilisateur/utilisateur_fr_FR.properties

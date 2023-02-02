@@ -7,6 +7,8 @@ public class ModelConfig
 
     public string ModelRoot { get; set; }
 
+    public string LockFileName { get; set; } = "topmodel.lock";
+
     public IList<ModelErrorType> NoWarn { get; set; } = new List<ModelErrorType>();
 
     public bool AllowCompositePrimaryKey { get; set; }

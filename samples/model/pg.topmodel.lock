@@ -1,0 +1,10 @@
+﻿#
+# ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+#
+
+version: 1.23.2
+generatedFiles:
+  - ../generators/pg/src/01_tables.sql
+  - ../generators/pg/src/02_fk_indexes.sql
+  - ../generators/pg/src/03_unique_keys.sql
+  - ../generators/pg/src/04_references.sql

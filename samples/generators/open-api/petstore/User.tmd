@@ -1,0 +1,107 @@
+####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Petstore
+tags:
+  - petstore
+uses:
+  - open-api/petstore/Model
+
+---
+endpoint:
+  name: createUser
+  method: POST
+  route: user
+  description: "Create user"
+  params:
+    - composition: User
+      name: Body
+      kind: object
+      comment: "Body"
+---
+endpoint:
+  name: createUsersWithArrayInput
+  method: POST
+  route: user/createWithArray
+  description: "Creates list of users with given input array"
+  params:
+    - composition: User
+      name: Body
+      kind: list
+      comment: "Body"
+---
+endpoint:
+  name: createUsersWithListInput
+  method: POST
+  route: user/createWithList
+  description: "Creates list of users with given input array"
+  params:
+    - composition: User
+      name: Body
+      kind: list
+      comment: "Body"
+---
+endpoint:
+  name: deleteUser
+  method: DELETE
+  route: user/{username}
+  description: "Delete user"
+  params:
+    - name: Username
+      domain: string
+      comment: "The name that needs to be deleted"
+---
+endpoint:
+  name: getUserByName
+  method: GET
+  route: user/{username}
+  description: "Get user by user name"
+  params:
+    - name: Username
+      domain: string
+      comment: "The name that needs to be fetched. Use user1 for testing. "
+  returns:
+    composition: User
+    name: Result
+    kind: object
+    comment: "Result"
+---
+endpoint:
+  name: loginUser
+  method: GET
+  route: user/login
+  description: "Logs user into the system"
+  params:
+    - name: Username
+      domain: string
+      comment: "The user name for login"
+    - name: Password
+      domain: string
+      comment: "The password for login in clear text"
+  returns:
+    name: Result
+    domain: string
+    required: true
+    comment: "Result"
+---
+endpoint:
+  name: logoutUser
+  method: GET
+  route: user/logout
+  description: "Logs out current logged in user session"
+---
+endpoint:
+  name: updateUser
+  method: PUT
+  route: user/{username}
+  description: "Updated user"
+  params:
+    - composition: User
+      name: Body
+      kind: object
+      comment: "Body"
+    - name: Username
+      domain: string
+      comment: "name that need to be updated"

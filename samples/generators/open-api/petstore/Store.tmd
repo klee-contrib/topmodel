@@ -1,0 +1,63 @@
+####
+#### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+####
+
+---
+module: Petstore
+tags:
+  - petstore
+uses:
+  - open-api/petstore/Model
+
+---
+endpoint:
+  name: deleteOrder
+  method: DELETE
+  route: store/order/{orderId}
+  description: "Delete purchase order by ID"
+  params:
+    - name: OrderId
+      domain: int64
+      comment: "ID of the order that needs to be deleted"
+---
+endpoint:
+  name: getInventory
+  method: GET
+  route: store/inventory
+  description: "Returns pet inventories by status"
+  returns:
+    name: Result
+    domain: int32-map
+    required: true
+    comment: "Result"
+---
+endpoint:
+  name: getOrderById
+  method: GET
+  route: store/order/{orderId}
+  description: "Find purchase order by ID"
+  params:
+    - name: OrderId
+      domain: int64
+      comment: "ID of pet that needs to be fetched"
+  returns:
+    composition: Order
+    name: Result
+    kind: object
+    comment: "Result"
+---
+endpoint:
+  name: placeOrder
+  method: POST
+  route: store/order
+  description: "Place an order for a pet"
+  params:
+    - composition: Order
+      name: Body
+      kind: object
+      comment: "Body"
+  returns:
+    composition: Order
+    name: Result
+    kind: object
+    comment: "Result"

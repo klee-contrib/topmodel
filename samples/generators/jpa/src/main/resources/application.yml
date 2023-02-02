@@ -1,0 +1,45 @@
+spring:
+  sql:
+    init:
+      platform: postgresql
+  datasource:
+    hikari:
+      maxLifetime: "300000"
+      maximumPoolSize: "25"
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/demo
+    username: demo
+    password: demo
+  jpa:
+    generate-ddl: true # A ne pas utiliser en combinaison avec le générateur pg
+    properties:
+      hibernate:
+        default_schema: demo
+        use_jdbc_metadata_defaults: true # A ne pas utiliser en combinaison avec le générateur pg
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: "true"
+        naming:
+          implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+        order_updates: "true"
+        jdbc:
+          batch_size: "30"
+        batch_versioned_data: "true"
+        enable_lazy_load_no_trans: "true"
+        javax:
+          cache:
+            missing_cache_strategy: create
+            provider: org.ehcache.jsr107.EhcacheCachingProvider
+        order_inserts: "true"
+        temp:
+          use_jdbc_metadata_defaults: "false"
+        cache:
+          use_second_level_cache: "true"
+          use_query_cache: "true"
+          region:
+            factory_class: org.hibernate.cache.jcache.JCacheRegionFactory
+        show_sql: "false"
+    open-in-view: "false"
+
+server:
+  servlet:
+    contextPath: /demo/api

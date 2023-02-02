@@ -35,7 +35,7 @@ public class ModelStore
         _modelWatchers = modelWatchers;
         _translationStore = translationStore;
 
-        var topModelFile = new FileInfo(Path.Combine(_config.ModelRoot, "topmodel.lock"));
+        var topModelFile = new FileInfo(Path.Combine(_config.ModelRoot, _config.LockFileName));
         if (topModelFile.Exists)
         {
             var fileChecker = new FileChecker();
@@ -263,7 +263,7 @@ public class ModelStore
 
     private void WriteTopModelLock()
     {
-        using var fw = new FileWriter(Path.Combine(_config.ModelRoot, "topmodel.lock"), _logger)
+        using var fw = new FileWriter(Path.Combine(_config.ModelRoot, _config.LockFileName), _logger)
         {
             StartCommentToken = "#"
         };
