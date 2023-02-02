@@ -134,6 +134,6 @@ public abstract class GeneratorConfigBase
 
     private static string ReplaceVariable(string value, string varName, string varValue)
     {
-        return Regex.Replace(value, $$"""\{{{varName}}(:\w+)?\}""", m => m.Value.Trim('{', '}').GetTransformation()(varValue));
+        return Regex.Replace(value, $"\\{{{varName}(:\\w+)?\\}}", m => m.Value.Trim('{', '}').GetTransformation()(varValue));
     }
 }
