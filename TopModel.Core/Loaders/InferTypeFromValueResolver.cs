@@ -1,4 +1,5 @@
-﻿using YamlDotNet.Core.Events;
+﻿using YamlDotNet.Core;
+using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
 
 namespace TopModel.Core.Loaders;
@@ -15,7 +16,7 @@ public class InferTypeFromValueResolver : INodeTypeResolver
                 return true;
             }
 
-            if (int.TryParse(scalar.Value, out var _))
+            if (int.TryParse(scalar.Value, out var _) && scalar.Style == ScalarStyle.Plain)
             {
                 currentType = typeof(int);
                 return true;
