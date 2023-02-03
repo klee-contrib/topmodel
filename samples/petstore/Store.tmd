@@ -7,7 +7,7 @@ module: Petstore
 tags:
   - petstore
 uses:
-  - Model
+  - ../../../petstore/Model
 
 ---
 endpoint:
@@ -27,7 +27,7 @@ endpoint:
   description: "Returns pet inventories by status"
   returns:
     name: Result
-    domain: DO_ENTIER_MAP
+    domain: int32-map
     required: true
     comment: "Result"
 ---

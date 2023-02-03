@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
 using TopModel.Utils;
@@ -160,11 +161,51 @@ static class OpenApiTmdGenerator
 
                 foreach (var property in schema.Value.Properties)
                 {
-                    WriteProperty(config, fw, property, model);
+                    if (!property.Value.Enum.Any())
+                    {
+
+                        WriteProperty(config, fw, property, model);
+                    }
+                    else
+                    {
+                        fw.WriteLine();
+                        fw.WriteLine("    - alias:");
+                        fw.WriteLine($@"        class: {schema.Key.ToPascalCase()}{property.Key.ToPascalCase()}");
+                    }
 
                     if (schema.Value.Properties.Last().Key != property.Key)
                     {
                         fw.WriteLine();
+                    }
+                }
+            }
+
+            foreach (var schema in model.Components.Schemas.Where(sh => sh.Value.Properties.Where(p => (p.Value.Enum?.Any() ?? false)).Any()))
+            {
+                foreach (var property in schema.Value.Properties.Where(p => (p.Value.Enum?.Any() ?? false)))
+                {
+                    fw.WriteLine("---");
+                    fw.WriteLine("class:");
+                    fw.WriteLine($"  name: {schema.Key}{property.Key.ToPascalCase()}");
+                    fw.WriteLine($"  reference: true");
+                    if (property.Value.Description != null)
+                    {
+                        fw.WriteLine($"  comment: {FormatDescription(property.Value.Description ?? property.Key)}");
+                    }
+                    else
+                    {
+                        fw.WriteLine($"  comment: no description provided");
+                    }
+
+                    fw.WriteLine();
+                    fw.WriteLine($"  properties:");
+
+                    WriteProperty(config, fw, property, model);
+                    fw.WriteLine();
+                    fw.WriteLine($"  values:");
+                    foreach (var val in property.Value.Enum.OfType<OpenApiString>())
+                    {
+                        fw.WriteLine($@"    {val.Value}: {{ {property.Key.ToPascalCase()}: {val.Value} }}");
                     }
                 }
             }
@@ -182,7 +223,12 @@ static class OpenApiTmdGenerator
                 if (referenceMap[module.Key].Any())
                 {
                     sw.WriteLine("uses:");
-                    var use = $"{Path.GetRelativePath(modelRoot, config.OutputDirectory).Replace("\\", "/")}/{source.Key}/{source.Value.ModelFileName}".Replace("//", "/");
+                    var use = $"{Path.GetRelativePath(modelRoot, $"{config.OutputDirectory}/{source.Key}").Replace("\\", "/")}/{source.Value.ModelFileName}".Replace("//", "/");
+                    if (use.StartsWith("./"))
+                    {
+                        use = use.Replace("./", string.Empty);
+                    }
+
                     sw.WriteLine($"  - {use}");
                 }
                 sw.WriteLine();
