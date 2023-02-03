@@ -76,7 +76,7 @@ public class JpaModelPropertyGenerator
                 quote = @"""";
             }
 
-            if (property is AssociationProperty ap && ap.IsEnum() && ap.Association.ReferenceValues.Any(r => r.Value.ContainsKey(ap.Association.PrimaryKey) && r.Value[ap.Association.PrimaryKey] == property.DefaultValue))
+            if (property is AssociationProperty ap && ap.IsEnum() && ap.Association.ReferenceValues.Any(r => r.Value.ContainsKey(ap.Association.PrimaryKey.Single()) && r.Value[ap.Association.PrimaryKey.Single()] == property.DefaultValue))
             {
                 defaultValue += ap.Association.Name + ".Values." + property.DefaultValue + ".getEntity()";
             }
@@ -92,7 +92,7 @@ public class JpaModelPropertyGenerator
     private void WriteManyToOne(JavaWriter fw, Class classe, AssociationProperty property)
     {
         var fk = ((IFieldProperty)property).SqlName;
-        var apk = property.Association.PrimaryKey!.SqlName;
+        var apk = property.Association.PrimaryKey.Single().SqlName;
         fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, optional = {(property.Required ? "false" : "true")}, targetEntity = {property.Association.Name}.class)");
         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
     }
@@ -100,7 +100,7 @@ public class JpaModelPropertyGenerator
     private void WriteOneToOne(JavaWriter fw, Class classe, AssociationProperty property)
     {
         var fk = ((IFieldProperty)property).SqlName;
-        var apk = property.Association.PrimaryKey!.SqlName;
+        var apk = property.Association.PrimaryKey.Single().SqlName;
         fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = {(!property.Required).ToString().ToLower()})");
         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"", unique = true)");
     }
@@ -109,7 +109,7 @@ public class JpaModelPropertyGenerator
     {
         var role = property.Role is not null ? "_" + property.Role.ToConstantCase() : string.Empty;
         var fk = ((IFieldProperty)property).SqlName;
-        var pk = classe.PrimaryKey!.SqlName + role;
+        var pk = classe.PrimaryKey.Single().SqlName + role;
         var cascade = property.Association.IsStatic() ? string.Empty : $", cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }}";
         if (property is JpaAssociationProperty jap)
         {
@@ -124,7 +124,7 @@ public class JpaModelPropertyGenerator
 
     private void WriteOneToMany(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        var pk = classe.PrimaryKey!.SqlName;
+        var pk = classe.PrimaryKey.Single().SqlName;
         if (property is JpaAssociationProperty jap)
         {
             fw.WriteLine(1, @$"@{property.Type}(cascade = {{CascadeType.PERSIST, CascadeType.MERGE}}, fetch = FetchType.LAZY, mappedBy = ""{jap.ReverseProperty.GetJavaName()}"")");

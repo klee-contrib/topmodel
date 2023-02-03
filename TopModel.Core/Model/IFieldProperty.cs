@@ -37,7 +37,7 @@ public interface IFieldProperty : IProperty
             var apPk = prop is AssociationProperty ap
                 ? ap.Association switch
                 {
-                    { PrimaryKey: IFieldProperty pk } => pk,
+                    { PrimaryKey: IEnumerable<IFieldProperty> pk } when pk.Count() == 1 => pk.Single(),
                     Class classe => classe.Properties.OfType<IFieldProperty>().FirstOrDefault()
                 }
                 : null;

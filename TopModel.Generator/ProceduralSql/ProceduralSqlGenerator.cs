@@ -45,30 +45,35 @@ public class ProceduralSqlGenerator : GeneratorBase
                 Label = ap.Label,
                 SqlName = $"{ap.Class.SqlName}_{ap.Association.SqlName}{(ap.Role != null ? $"_{ap.Role.ToConstantCase()}" : string.Empty)}"
             };
-            traClass.Properties.Add(new AssociationProperty()
+
+            traClass.Properties.Add(new AssociationProperty
             {
                 Association = ap.Class,
                 Class = traClass,
                 Comment = ap.Comment,
                 Type = AssociationType.ManyToOne,
+                PrimaryKey = true,
                 Required = true,
                 Role = ap.Role,
                 DefaultValue = ap.DefaultValue,
                 Label = ap.Label,
-                Trigram = ap.Class.PrimaryKey!.Trigram
+                Trigram = ap.Class.PrimaryKey.Single().Trigram
             });
-            traClass.Properties.Add(new AssociationProperty()
+
+            traClass.Properties.Add(new AssociationProperty
             {
                 Association = ap.Association,
                 Class = traClass,
                 Comment = ap.Comment,
                 Type = AssociationType.ManyToOne,
+                PrimaryKey = true,
                 Required = true,
                 Role = ap.Role,
                 DefaultValue = ap.DefaultValue,
                 Label = ap.Label,
-                Trigram = ap.Trigram ?? ap.Association.PrimaryKey?.Trigram ?? ap.Association.Trigram
+                Trigram = ap.Trigram ?? ap.Association.PrimaryKey.Single().Trigram ?? ap.Association.Trigram
             });
+
             classes.Add(traClass);
         }
 

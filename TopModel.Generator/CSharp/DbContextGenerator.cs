@@ -96,6 +96,18 @@ public class DbContextGenerator : GeneratorBase
                 w.WriteLine();
             }
 
+            var hasPk = false;
+            foreach (var classe in classes.Distinct().OrderBy(c => c.Name).Where(c => c.PrimaryKey.Count() > 1))
+            {
+                hasPk = true;
+                w.WriteLine(3, $"modelBuilder.Entity<{classe}>().HasKey(p => new {{ {string.Join(", ", classe.PrimaryKey.Select(pk => $"p.{pk.Name}"))} }});");
+            }
+
+            if (hasPk)
+            {
+                w.WriteLine();
+            }
+
             var hasFk = false;
             foreach (var prop in classes.Distinct().OrderBy(c => c.Name).SelectMany(c => c.Properties).Where(p => p is AssociationProperty { Association.IsPersistent: true } || p is AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } }))
             {
@@ -144,7 +156,7 @@ public class DbContextGenerator : GeneratorBase
 
                     string WriteEnumValue(Class targetClass, string value)
                     {
-                        return $"{(targetClass.Name == targetClass.PluralName ? $"{_config.GetNamespace(targetClass)}.{targetClass.Name}" : targetClass.Name)}.{targetClass.PrimaryKey!.Name}s.{value}";
+                        return $"{(targetClass.Name == targetClass.PluralName ? $"{_config.GetNamespace(targetClass)}.{targetClass.Name}" : targetClass.Name)}.{targetClass.PrimaryKey.Single().Name}s.{value}";
                     }
 
                     foreach (var prop in refValue.Value.ToList())

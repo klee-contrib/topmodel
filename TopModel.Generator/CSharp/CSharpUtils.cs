@@ -221,10 +221,10 @@ public static class CSharpUtils
                 string _ when cp.DomainKind!.CSharp!.Type.Contains("{composition.name}") => cp.DomainKind.CSharp.Type.ParseTemplate(cp),
                 string _ => $"{cp.DomainKind.CSharp.Type}<{{composition.name}}>".ParseTemplate(cp)
             },
-            AssociationProperty { Association: var assoc } when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.PrimaryKey!.Name}s?",
-            AliasProperty { Property: AssociationProperty { Association: var assoc }, AsList: var asList } when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.PrimaryKey!.Name}s{(asList ? "[]" : "?")}",
+            AssociationProperty { Association: var assoc } when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.PrimaryKey.Single().Name}s?",
+            AliasProperty { Property: AssociationProperty { Association: var assoc }, AsList: var asList } when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.PrimaryKey.Single().Name}s{(asList ? "[]" : "?")}",
             RegularProperty { PrimaryKey: true } when config.CanClassUseEnums(prop.Class) => $"{prop.Name}s?",
-            AliasProperty { Property: RegularProperty { PrimaryKey: true, Class: var alClass }, AsList: var asList } when config.CanClassUseEnums(alClass) => $"{alClass}.{alClass.PrimaryKey!.Name}s{(asList ? "[]" : "?")}",
+            AliasProperty { Property: RegularProperty { PrimaryKey: true, Class: var alClass }, AsList: var asList } when config.CanClassUseEnums(alClass) => $"{alClass}.{alClass.PrimaryKey.Single().Name}s{(asList ? "[]" : "?")}",
             IFieldProperty fp => fp.Domain.CSharp?.Type.ParseTemplate(fp) ?? string.Empty,
             _ => string.Empty
         };

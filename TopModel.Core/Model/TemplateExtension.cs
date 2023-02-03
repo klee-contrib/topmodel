@@ -216,7 +216,7 @@ public static class TemplateExtension
     {
         var transform = input.GetTransformation();
         var result = input.Split(':').First()
-            .Replace("primaryKey.name", transform(c.PrimaryKey?.Name ?? string.Empty))
+            .Replace("primaryKey.name", transform(c.PrimaryKey.FirstOrDefault()?.Name ?? string.Empty))
             .Replace("trigram", transform(c.Trigram))
             .Replace("name", transform(c.Name))
             .Replace("comment", transform(c.Comment))

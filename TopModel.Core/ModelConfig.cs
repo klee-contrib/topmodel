@@ -11,8 +11,6 @@ public class ModelConfig
 
     public IList<ModelErrorType> NoWarn { get; set; } = new List<ModelErrorType>();
 
-    public bool AllowCompositePrimaryKey { get; set; }
-
     public bool PluralizeTableNames { get; set; }
 
     public bool UseLegacyRoleNames { get; set; }
