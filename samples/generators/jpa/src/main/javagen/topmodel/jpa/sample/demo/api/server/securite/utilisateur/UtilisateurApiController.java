@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,13 @@ import topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface UtilisateurApiController {
 
+
+	/**
+	 * Recherche des utilisateurs.
+	 * @param utiId Id technique
+	 */
+	@DeleteMapping(path = "/deleteAll")
+	void deleteAll(@RequestParam(value = "utiId", required = true) List<Long> utiId);
 
 	/**
 	 * Charge le détail d'un utilisateur.

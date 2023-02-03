@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_CODE, DO_ID} from "@domains";
+import {DO_CODE, DO_CODE_LIST, DO_ID, DO_ID_LIST} from "@domains";
 
 import {UtilisateurDtoEntity, UtilisateurDto} from "../utilisateur/utilisateur-dto";
 import {DroitCode, TypeProfilCode} from "./references";
@@ -33,14 +33,14 @@ export const ProfilDtoEntity = {
     droits: {
         type: "field",
         name: "droits",
-        domain: DO_CODE,
+        domain: DO_CODE_LIST,
         isRequired: false,
         label: "securite.profil.droits"
     },
     secteurs: {
         type: "field",
         name: "secteurs",
-        domain: DO_ID,
+        domain: DO_ID_LIST,
         isRequired: false,
         label: "securite.profil.secteurs"
     },

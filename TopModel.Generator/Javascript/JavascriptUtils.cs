@@ -47,7 +47,7 @@ public static class JavascriptUtils
             }
         }
 
-        if (fp is AliasProperty { Property: AssociationProperty { Type: AssociationType.ManyToMany or AssociationType.OneToMany } })
+        if (fp is AliasProperty { Property: AssociationProperty { Type: AssociationType.ManyToMany or AssociationType.OneToMany } } && fixedType != fp.Domain.TS.Type.ParseTemplate(fp))
         {
             fixedType += "[]";
         }

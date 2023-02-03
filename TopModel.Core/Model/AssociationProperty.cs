@@ -76,7 +76,7 @@ public class AssociationProperty : IFieldProperty
         }
     }
 
-    public Domain Domain => Property?.Domain!;
+    public Domain Domain => this.Type == AssociationType.ManyToMany || this.Type == AssociationType.OneToMany ? Property?.Domain.ListDomain! : Property?.Domain!;
 
     public bool PrimaryKey { get; set; }
 

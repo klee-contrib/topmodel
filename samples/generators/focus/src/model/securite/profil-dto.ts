@@ -3,7 +3,7 @@
 ////
 
 import {EntityToType, FieldEntry2, ListEntry, StoreNode} from "@focus4/stores";
-import {DO_CODE, DO_ID} from "../../domains";
+import {DO_CODE, DO_CODE_LIST, DO_ID, DO_ID_LIST} from "../../domains";
 
 import {UtilisateurDtoEntity, UtilisateurDtoEntityType} from "../utilisateur/utilisateur-dto";
 import {DroitCode, TypeProfilCode} from "./references";
@@ -13,8 +13,8 @@ export type ProfilDtoNode = StoreNode<ProfilDtoEntityType>;
 export interface ProfilDtoEntityType {
     id: FieldEntry2<typeof DO_ID, number>,
     typeProfilCode: FieldEntry2<typeof DO_CODE, TypeProfilCode>,
-    droits: FieldEntry2<typeof DO_CODE, DroitCode[]>,
-    secteurs: FieldEntry2<typeof DO_ID, number[]>,
+    droits: FieldEntry2<typeof DO_CODE_LIST, DroitCode[]>,
+    secteurs: FieldEntry2<typeof DO_ID_LIST, number[]>,
     utilisateurs: ListEntry<UtilisateurDtoEntityType>
 }
 
@@ -36,14 +36,14 @@ export const ProfilDtoEntity: ProfilDtoEntityType = {
     droits: {
         type: "field",
         name: "droits",
-        domain: DO_CODE,
+        domain: DO_CODE_LIST,
         isRequired: false,
         label: "securite.profil.droits"
     },
     secteurs: {
         type: "field",
         name: "secteurs",
-        domain: DO_ID,
+        domain: DO_ID_LIST,
         isRequired: false,
         label: "securite.profil.secteurs"
     },
