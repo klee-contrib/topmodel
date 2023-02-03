@@ -16,7 +16,7 @@ public class InferTypeFromValueResolver : INodeTypeResolver
                 return true;
             }
 
-            if (int.TryParse(scalar.Value, out var _) && scalar.Style == ScalarStyle.Plain)
+            if (int.TryParse(scalar.Value, out var _) && scalar.Style == ScalarStyle.Plain && !scalar.Value.StartsWith("0"))
             {
                 currentType = typeof(int);
                 return true;
