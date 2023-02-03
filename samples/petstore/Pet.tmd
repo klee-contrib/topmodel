@@ -7,7 +7,7 @@ module: Petstore
 tags:
   - petstore
 uses:
-  - Model
+  - ../../../petstore/Model
 
 ---
 endpoint:

@@ -68,9 +68,10 @@ class:
       required: true
       comment: "shipDate"
 
-
-    - alias:
-        class: OrderStatus
+    - name: Status
+      domain: DO_LIBELLE
+      required: true
+      comment: "Order Status"
 
     - name: Complete
       domain: DO_BOOLEAN
@@ -107,9 +108,10 @@ class:
       kind: list
       comment: "tags"
 
-
-    - alias:
-        class: PetStatus
+    - name: Status
+      domain: DO_LIBELLE
+      required: true
+      comment: "pet status in the store"
 ---
 class:
   name: Tag
