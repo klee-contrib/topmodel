@@ -2,6 +2,14 @@
 
 ## 1.23.4
 
+- [#204](https://github.com/klee-contrib/topmodel/pull/204) - Gestion de clés primaires composites pour de vrai
+
+  **breaking changes** : 
+  - `allowCompositePrimaryKeys` n'existe plus dans la config globale (il est toujours à `true` maintenant).
+  - topmodel ne considère plus une classe avec que des associations comme une n-n persistée : il faut explicitement marquer les propriétés comme `primaryKey: true` désormais
+
+  _(pardon cette PR n'était pas censée être déployée avec ce patch...)_
+  
 - [`156507f`](https://github.com/klee-contrib/topmodel/commit/156507fe39f6b32a725254656f3174baeab5a1c8) - Ne converti pas un "entier" avec un "0" au début en int lors du parsing pour la vérification du schéma JSON
 
 ## 1.23.3
