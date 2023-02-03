@@ -140,7 +140,7 @@ public class MapperGenerator : GeneratorBase
 
                             if (mapping.Key is CompositionProperty cp)
                             {
-                                w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey?.Name} = ");
+                                w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey.SingleOrDefault()?.Name} = ");
                             }
                             else
                             {
@@ -193,7 +193,7 @@ public class MapperGenerator : GeneratorBase
 
                         if (mapping.Key is CompositionProperty cp)
                         {
-                            w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey?.Name} = ");
+                            w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey.SingleOrDefault()?.Name} = ");
                         }
                         else
                         {
@@ -254,7 +254,7 @@ public class MapperGenerator : GeneratorBase
             {
                 if (property is CompositionProperty cp)
                 {
-                    return $"{cp.Name}?.{cp.Composition.PrimaryKey?.Name}";
+                    return $"{cp.Name}?.{cp.Composition.PrimaryKey.SingleOrDefault()?.Name}";
                 }
                 else
                 {

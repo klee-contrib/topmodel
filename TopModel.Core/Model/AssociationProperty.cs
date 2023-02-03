@@ -14,7 +14,7 @@ public class AssociationProperty : IFieldProperty
 
     public IFieldProperty Property
     {
-        get => _property ?? Association?.PrimaryKey!;
+        get => _property ?? Association?.PrimaryKey.Single();
         set => _property = value;
     }
 
@@ -78,7 +78,7 @@ public class AssociationProperty : IFieldProperty
 
     public Domain Domain => Property?.Domain!;
 
-    public bool PrimaryKey => false;
+    public bool PrimaryKey { get; set; }
 
     public Reference? PropertyReference { get; set; }
 

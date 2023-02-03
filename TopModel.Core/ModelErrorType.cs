@@ -8,7 +8,7 @@ public enum ModelErrorType
     TMD0000,
 
     /// <summary>
-    /// La classe doit avoir une seule clé primaire
+    /// La classe doit avoir une seule clé primaire pour être définie comme `reference` ou définir des `values`.
     /// </summary>
     TMD0001,
 

@@ -36,7 +36,7 @@ public class Class : IPropertyContainer
 
     public Namespace Namespace { get; set; }
 
-    public IFieldProperty? PrimaryKey => Properties.OfType<IFieldProperty>().SingleOrDefault(p => p.PrimaryKey);
+    public IEnumerable<IFieldProperty> PrimaryKey => Properties.OfType<IFieldProperty>().Where(p => p.PrimaryKey);
 
     public List<ReferenceValue> ReferenceValues { get; } = new();
 
@@ -52,7 +52,7 @@ public class Class : IPropertyContainer
         set => _pluralName = value;
     }
 
-    public bool IsPersistent => Properties.Any(p => p is not AliasProperty && p.PrimaryKey) || Properties.All(p => p is AssociationProperty);
+    public bool IsPersistent => Properties.Any(p => p is not AliasProperty && p.PrimaryKey);
 
     public ClassReference? ExtendsReference { get; set; }
 

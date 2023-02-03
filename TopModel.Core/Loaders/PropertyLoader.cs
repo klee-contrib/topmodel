@@ -101,6 +101,9 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                         case "required":
                             ap.Required = value.Value == "true";
                             break;
+                        case "primaryKey":
+                            ap.PrimaryKey = value.Value == "true";
+                            break;
                         case "defaultValue":
                             ap.DefaultValue = value.Value;
                             break;
@@ -116,6 +119,11 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                     }
+                }
+
+                if (ap.PrimaryKey)
+                {
+                    ap.Required = true;
                 }
 
                 yield return ap;

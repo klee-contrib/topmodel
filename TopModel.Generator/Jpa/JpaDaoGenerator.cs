@@ -66,7 +66,7 @@ public class JpaDaoGenerator : GeneratorBase
             fw.WriteLine();
             WriteImports(fw, classe);
             fw.WriteLine();
-            fw.WriteLine($"public interface {classe.Name}DAO extends {(classe.Reference ? "CrudRepository" : "JpaRepository")}<{classe.Name}, {classe.PrimaryKey!.GetJavaType()}> {{");
+            fw.WriteLine($"public interface {classe.Name}DAO extends {(classe.Reference ? "CrudRepository" : "JpaRepository")}<{classe.Name}, {classe.PrimaryKey.Single().GetJavaType()}> {{");
             fw.WriteLine();
             fw.WriteLine("}");
         }

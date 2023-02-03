@@ -139,9 +139,10 @@ public static class JpaUtils
 
     public static bool IsStatic(this Class c)
     {
-        return (c.PrimaryKey?.IsEnum() ?? false)
-        && c.ReferenceValues.Any()
-        && !c.Properties.OfType<AssociationProperty>().Any(a => !a.Association.IsStatic());
+        return c.PrimaryKey.Count() == 1
+            && c.PrimaryKey.Single().IsEnum()
+            && c.ReferenceValues.Any()
+            && !c.Properties.OfType<AssociationProperty>().Any(a => !a.Association.IsStatic());
     }
 
     public static bool IsEnum(this AliasProperty ap)
@@ -167,13 +168,13 @@ public static class JpaUtils
         }
 
         return availableClasses
-                    .SelectMany(c => c.Properties)
-                    .OfType<AssociationProperty>()
-                    .Where(p => !(p is JpaAssociationProperty))
-                    .Where(p => p.Type != AssociationType.OneToOne)
-                    .Where(p => p.Association == classe
-                                && (p.Type == AssociationType.OneToMany || p.Class.Namespace.Module.Split('.').First() == classe.Namespace.Module.Split('.').First()))
-                    .ToList();
+            .SelectMany(c => c.Properties)
+            .OfType<AssociationProperty>()
+            .Where(p => p is not JpaAssociationProperty)
+            .Where(p => p.Type != AssociationType.OneToOne)
+            .Where(p => p.Association == classe
+                && (p.Type == AssociationType.OneToMany || p.Class.Namespace.Module.Split('.').First() == classe.Namespace.Module.Split('.').First()))
+            .ToList();
     }
 
     public static IList<IProperty> GetProperties(this Class classe, JpaConfig config, List<Class> availableClasses)

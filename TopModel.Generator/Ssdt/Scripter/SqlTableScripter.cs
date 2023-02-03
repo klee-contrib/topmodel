@@ -173,12 +173,12 @@ public class SqlTableScripter : ISqlScripter<Class>
             var propertyConcat = "[" + propertyName + "]";
             sb.Append("constraint [").Append(constraintName).Append("] foreign key (").Append(propertyConcat).Append(") ");
             sb.Append("references [dbo].[").Append(referenceClass.SqlName).Append("] (");
-            sb.Append('[').Append(referenceClass.PrimaryKey!.SqlName).Append(']');
+            sb.Append('[').Append(referenceClass.PrimaryKey.Single().SqlName).Append(']');
             sb.Append(')');
         }
         else
         {
-            sb.Append($"constraint FK_{tableName}_{referenceClass.SqlName}_{propertyName} foreign key ({propertyName}) references {referenceClass.SqlName} ({referenceClass.PrimaryKey!.SqlName})");
+            sb.Append($"constraint FK_{tableName}_{referenceClass.SqlName}_{propertyName} foreign key ({propertyName}) references {referenceClass.SqlName} ({referenceClass.PrimaryKey.Single().SqlName})");
         }
     }
 
@@ -323,35 +323,25 @@ public class SqlTableScripter : ISqlScripter<Class>
             sb.Append($"constraint PK_{classe.SqlName} primary key (");
         }
 
-        if (classe.Properties.All(p => p is AssociationProperty))
+        foreach (var pk in classe.PrimaryKey)
         {
-            foreach (var fkProperty in classe.Properties.OfType<IFieldProperty>())
+            ++pkCount;
+            if (_config.TargetDBMS == TargetDBMS.Sqlserver)
             {
-                ++pkCount;
-                if (_config.TargetDBMS == TargetDBMS.Sqlserver)
-                {
-                    sb.Append($"[{fkProperty.SqlName}] ASC");
-                }
-                else
-                {
-                    sb.Append(fkProperty.SqlName);
-                }
+                sb.Append($"[{pk.SqlName}] ASC");
+            }
+            else
+            {
+                sb.Append(pk.SqlName);
+            }
 
-                if (pkCount < classe.Properties.Count)
-                {
-                    sb.Append(',');
-                }
-                else
-                {
-                    sb.Append(')');
-                }
+            if (pkCount < classe.PrimaryKey.Count())
+            {
+                sb.Append(", ");
             }
         }
-        else
-        {
-            sb.Append(string.Join(", ", classe.Properties.OfType<IFieldProperty>().Where(p => p.PrimaryKey).Select(p => _config.TargetDBMS == TargetDBMS.Sqlserver ? $"[{p.SqlName}] ASC" : p.SqlName)));
-            sb.Append(')');
-        }
+
+        sb.Append(')');
     }
 
     /// <summary>
