@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.23.4
+
+- [`156507f`](https://github.com/klee-contrib/topmodel/commit/156507fe39f6b32a725254656f3174baeab5a1c8) - Ne converti pas un "entier" avec un "0" au début en int lors du parsing pour la vérification du schéma JSON
+
 ## 1.23.3
 
 - [`1a9dcb0`](https://github.com/klee-contrib/topmodel/commit/1a9dcb0ecff530b5aed0200b15213be9178b762d) - Possibilité de changer le nom du lockfile
