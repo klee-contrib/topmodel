@@ -67,47 +67,47 @@ public class DbContextGenerator : GeneratorBase
             w.WriteLine(2, "public DbSet<" + classe.Name + "> " + classe.PluralName + " { get; set; }");
         }
 
-        if (_config.UseEFMigrations)
+        w.WriteLine();
+        w.WriteSummary(2, "Personalisation du modèle.");
+        w.WriteParam("modelBuilder", "L'objet de construction du modèle.");
+        w.WriteLine(2, "protected override void OnModelCreating(ModelBuilder modelBuilder)");
+        w.WriteLine(2, "{");
+
+        var hasPropConfig = false;
+        foreach (var prop in classes.Distinct().OrderBy(c => c.Name).SelectMany(c => c.Properties.OfType<IFieldProperty>()))
+        {
+            if (prop.PrimaryKey && _config.CanClassUseEnums(prop.Class) || prop is AssociationProperty ap && _config.CanClassUseEnums(ap.Association))
+            {
+                hasPropConfig = true;
+                w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().Property(p => p.{prop.Name}).HasConversion<string>(){(prop.Domain.Length != null ? $".HasMaxLength({prop.Domain.Length})" : string.Empty)};");
+            }
+
+            if (prop.Domain.Length != null && prop.Domain.Scale != null)
+            {
+                hasPropConfig = true;
+                w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().Property(x => x.{prop.Name}).HasPrecision({prop.Domain.Length}, {prop.Domain.Scale});");
+            }
+        }
+
+        if (hasPropConfig)
         {
             w.WriteLine();
-            w.WriteSummary(2, "Personalisation du modèle.");
-            w.WriteParam("modelBuilder", "L'objet de construction du modèle.");
-            w.WriteLine(2, "protected override void OnModelCreating(ModelBuilder modelBuilder)");
-            w.WriteLine(2, "{");
+        }
 
-            var hasPropConfig = false;
-            foreach (var prop in classes.Distinct().OrderBy(c => c.Name).SelectMany(c => c.Properties.OfType<IFieldProperty>()))
-            {
-                if (prop.PrimaryKey && _config.CanClassUseEnums(prop.Class) || prop is AssociationProperty ap && _config.CanClassUseEnums(ap.Association))
-                {
-                    hasPropConfig = true;
-                    w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().Property(p => p.{prop.Name}).HasConversion<string>(){(prop.Domain.Length != null ? $".HasMaxLength({prop.Domain.Length})" : string.Empty)};");
-                }
+        var hasPk = false;
+        foreach (var classe in classes.Distinct().OrderBy(c => c.Name).Where(c => c.PrimaryKey.Count() > 1))
+        {
+            hasPk = true;
+            w.WriteLine(3, $"modelBuilder.Entity<{classe}>().HasKey(p => new {{ {string.Join(", ", classe.PrimaryKey.Select(pk => $"p.{pk.Name}"))} }});");
+        }
 
-                if (prop.Domain.Length != null && prop.Domain.Scale != null)
-                {
-                    hasPropConfig = true;
-                    w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().Property(x => x.{prop.Name}).HasPrecision({prop.Domain.Length}, {prop.Domain.Scale});");
-                }
-            }
+        if (hasPk)
+        {
+            w.WriteLine();
+        }
 
-            if (hasPropConfig)
-            {
-                w.WriteLine();
-            }
-
-            var hasPk = false;
-            foreach (var classe in classes.Distinct().OrderBy(c => c.Name).Where(c => c.PrimaryKey.Count() > 1))
-            {
-                hasPk = true;
-                w.WriteLine(3, $"modelBuilder.Entity<{classe}>().HasKey(p => new {{ {string.Join(", ", classe.PrimaryKey.Select(pk => $"p.{pk.Name}"))} }});");
-            }
-
-            if (hasPk)
-            {
-                w.WriteLine();
-            }
-
+        if (_config.UseEFMigrations)
+        {
             var hasFk = false;
             foreach (var prop in classes.Distinct().OrderBy(c => c.Name).SelectMany(c => c.Properties).Where(p => p is AssociationProperty { Association.IsPersistent: true } || p is AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } }))
             {
@@ -196,26 +196,26 @@ public class DbContextGenerator : GeneratorBase
             {
                 w.WriteLine(3, "AddComments(modelBuilder);");
             }
-
-            w.WriteLine(3, "OnModelCreatingPartial(modelBuilder);");
-            w.WriteLine(2, "}");
-
-            if (_config.UseEFComments)
-            {
-                w.WriteLine();
-                w.WriteLine(2, "partial void AddComments(ModelBuilder modelBuilder);");
-            }
-
-            w.WriteLine();
-            w.WriteLine(2, "partial void OnModelCreatingPartial(ModelBuilder modelBuilder);");
         }
+
+        w.WriteLine(3, "OnModelCreatingPartial(modelBuilder);");
+        w.WriteLine(2, "}");
+
+        if (_config.UseEFMigrations && _config.UseEFComments)
+        {
+            w.WriteLine();
+            w.WriteLine(2, "partial void AddComments(ModelBuilder modelBuilder);");
+        }
+
+        w.WriteLine();
+        w.WriteLine(2, "partial void OnModelCreatingPartial(ModelBuilder modelBuilder);");
 
         w.WriteLine(1, "}");
         w.WriteNamespaceEnd();
 
         w.Dispose();
 
-        if (_config.UseEFComments)
+        if (_config.UseEFMigrations && _config.UseEFComments)
         {
             using var cw = new CSharpWriter(targetFileName.Replace(".cs", ".comments.cs"), _logger, _config.UseLatestCSharp);
 
