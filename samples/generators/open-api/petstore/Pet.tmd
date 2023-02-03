@@ -32,12 +32,12 @@ endpoint:
   route: pet/{petId}
   description: "Deletes a pet"
   params:
-    - name: Api_key
-      domain: DO_LIBELLE
-      comment: ""
-    - name: PetId
+    - name: petId
       domain: DO_ID
       comment: "Pet id to delete"
+    - name: api_key
+      domain: DO_LIBELLE
+      comment: ""
 ---
 endpoint:
   name: findPetsByStatus
@@ -45,7 +45,7 @@ endpoint:
   route: pet/findByStatus
   description: "Finds Pets by status"
   params:
-    - name: Status
+    - name: status
       domain: DO_LIBELLE
       comment: "Status values that need to be considered for filter"
   returns:
@@ -60,7 +60,7 @@ endpoint:
   route: pet/findByTags
   description: "Finds Pets by tags"
   params:
-    - name: Tags
+    - name: tags
       domain: DO_LIBELLE
       comment: "Tags to filter by"
   returns:
@@ -75,7 +75,7 @@ endpoint:
   route: pet/{petId}
   description: "Find pet by ID"
   params:
-    - name: PetId
+    - name: petId
       domain: DO_ID
       comment: "ID of pet to return"
   returns:
@@ -106,13 +106,13 @@ endpoint:
   route: pet/{petId}
   description: "Updates a pet in the store with form data"
   params:
-    - name: PetId
+    - name: petId
       domain: DO_ID
       comment: "ID of pet that needs to be updated"
-    - name: Name
+    - name: name
       domain: DO_LIBELLE
       comment: "Name of pet that needs to be updated"
-    - name: Status
+    - name: status
       domain: DO_LIBELLE
       comment: "Status of pet that needs to be updated"
 ---
@@ -122,16 +122,16 @@ endpoint:
   route: pet/{petId}/uploadImage
   description: "uploads an image"
   params:
+    - name: petId
+      domain: DO_ID
+      comment: "ID of pet to update"
+    - name: additionalMetadata
+      domain: DO_LIBELLE
+      comment: "Additional Metadata"
     - name: Body
       domain: DO_FILE
       required: true
       comment: "Body"
-    - name: PetId
-      domain: DO_ID
-      comment: "ID of pet to update"
-    - name: AdditionalMetadata
-      domain: DO_LIBELLE
-      comment: "Additional Metadata"
   returns:
     composition: ApiResponse
     name: Result

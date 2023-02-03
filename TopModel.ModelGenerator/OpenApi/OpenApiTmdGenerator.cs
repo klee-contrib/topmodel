@@ -255,14 +255,9 @@ static class OpenApiTmdGenerator
                     {
                         sw.WriteLine("  params:");
 
-                        if (operation.Value.RequestBody != null)
+                        foreach (var param in operation.Value.Parameters.OrderBy(p => path.Key.Contains($@"{{{p.Name}}}") ? 0 + p.Name : 1 + p.Name))
                         {
-                            WriteProperty(config, sw, new("Body", operation.Value.RequestBody.Content.First().Value.Schema), model);
-                        }
-
-                        foreach (var param in operation.Value.Parameters)
-                        {
-                            sw.WriteLine($"    - name: {param.Name.ToFirstUpper()}");
+                            sw.WriteLine($"    - name: {param.Name}");
                             sw.WriteLine($"      domain: {GetDomain(config, param.Name, param.Schema)}");
                             if (param.Description != null)
                             {
@@ -273,6 +268,12 @@ static class OpenApiTmdGenerator
                                 sw.WriteLine($"      comment: no description provided");
                             }
                         }
+
+                        if (operation.Value.RequestBody != null)
+                        {
+                            WriteProperty(config, sw, new("Body", operation.Value.RequestBody.Content.First().Value.Schema), model);
+                        }
+
                     }
 
                     var response = operation.Value.Responses.FirstOrDefault(r => r.Key == "200").Value;

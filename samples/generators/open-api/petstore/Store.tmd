@@ -16,7 +16,7 @@ endpoint:
   route: store/order/{orderId}
   description: "Delete purchase order by ID"
   params:
-    - name: OrderId
+    - name: orderId
       domain: DO_ID
       comment: "ID of the order that needs to be deleted"
 ---
@@ -37,7 +37,7 @@ endpoint:
   route: store/order/{orderId}
   description: "Find purchase order by ID"
   params:
-    - name: OrderId
+    - name: orderId
       domain: DO_ID
       comment: "ID of order that needs to be fetched"
   returns:
