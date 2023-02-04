@@ -21,6 +21,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
 /**
@@ -51,6 +52,7 @@ public class Profil {
 	 */
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "PROFIL_DROIT", joinColumns = @JoinColumn(name = "PRO_ID"), inverseJoinColumns = @JoinColumn(name = "DRO_CODE"))
+	@OrderBy("code ASC")
 	private List<Droit> droits;
 
 	/**

@@ -25,7 +25,7 @@ decorator:
       - EntityListeners(AuditingEntityListener.class)
     imports:
       - org.springframework.data.jpa.domain.support.AuditingEntityListener
-      - javax.persistence.EntityListeners
+      - jakarta.persistence.EntityListeners
   properties:
     - name: dateCreation
       comment: Date de création de l'utilisateur

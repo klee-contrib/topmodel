@@ -27,7 +27,7 @@ public partial class SecuriteReferenceAccessors : ISecuriteReferenceAccessors
     /// <inheritdoc cref="ISecuriteReferenceAccessors.LoadDroits" />
     public ICollection<Droit> LoadDroits()
     {
-        return _dbContext.Droits.OrderBy(row => row.Libelle).ToList();
+        return _dbContext.Droits.OrderBy(row => row.Code).ToList();
     }
 
     /// <inheritdoc cref="ISecuriteReferenceAccessors.LoadTypeProfils" />

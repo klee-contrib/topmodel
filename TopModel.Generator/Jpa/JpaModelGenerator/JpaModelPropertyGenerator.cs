@@ -49,6 +49,7 @@ public class JpaModelPropertyGenerator
 
     private void WriteProperty(JavaWriter fw, Class classe, AssociationProperty property)
     {
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         fw.WriteDocEnd(1);
         switch (property.Type)
         {
@@ -64,6 +65,15 @@ public class JpaModelPropertyGenerator
             case AssociationType.OneToOne:
                 WriteOneToOne(fw, classe, property);
                 break;
+        }
+
+        if (property.Type == AssociationType.ManyToMany || property.Type == AssociationType.OneToMany)
+        {
+            if (property.Association.OrderProperty != null)
+            {
+                fw.WriteLine(1, @$"@OrderBy(""{property.Association.OrderProperty.GetJavaName()} ASC"")");
+                fw.AddImport($"{javaOrJakarta}.persistence.OrderBy");
+            }
         }
 
         var defaultValue = string.Empty;

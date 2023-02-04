@@ -46,6 +46,7 @@ class:
     - association: TypeProfil
       comment: Type de profil pouvant faire l'action
       type: manyToOne
+  orderProperty: Code
   values:
     CRE: { Code: CRE, Libelle: Créer, TypeProfilCode: ADM }
     MOD: { Code: MOD, Libelle: Modifier }
