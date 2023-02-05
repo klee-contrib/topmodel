@@ -1,0 +1,17 @@
+﻿#
+# ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+#
+
+version: 1.23.4
+generatedFiles:
+  - ../generators/ssdt/src/init/DROIT.insert.sql
+  - ../generators/ssdt/src/init/main.sql
+  - ../generators/ssdt/src/init/TYPE_PROFIL.insert.sql
+  - ../generators/ssdt/src/init/TYPE_UTILISATEUR.insert.sql
+  - ../generators/ssdt/src/tables/DROIT.sql
+  - ../generators/ssdt/src/tables/PROFIL_DROIT.sql
+  - ../generators/ssdt/src/tables/PROFIL.sql
+  - ../generators/ssdt/src/tables/SECTEUR.sql
+  - ../generators/ssdt/src/tables/TYPE_PROFIL.sql
+  - ../generators/ssdt/src/tables/TYPE_UTILISATEUR.sql
+  - ../generators/ssdt/src/tables/UTILISATEUR.sql

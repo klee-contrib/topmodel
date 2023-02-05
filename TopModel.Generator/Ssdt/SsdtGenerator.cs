@@ -2,6 +2,7 @@
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Generator.Ssdt.Scripter;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Ssdt;
 
@@ -35,6 +36,14 @@ public class SsdtGenerator : GeneratorBase
             if (_config.TableScriptFolder != null)
             {
                 files.Add(Path.Combine(_config.TableScriptFolder, _tableScripter.GetScriptName(c)));
+
+                foreach (var ap in Classes.SelectMany(cl => cl.Properties).OfType<AssociationProperty>().Where(ap => ap.Type == AssociationType.ManyToMany))
+                {
+                    files.Add(Path.Combine(_config.TableScriptFolder, _tableScripter.GetScriptName(new Class
+                    {
+                        SqlName = $"{ap.Class.SqlName}_{ap.Association.SqlName}{(ap.Role != null ? $"_{ap.Role.ToConstantCase()}" : string.Empty)}"
+                    })));
+                }
             }
 
             if (c.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName) && _config.TableTypeScriptFolder != null)
@@ -72,15 +81,59 @@ public class SsdtGenerator : GeneratorBase
         {
             var tableCount = 0;
             var tableTypeCount = 0;
-            foreach (var classe in file.Classes.Where(c => c.IsPersistent))
+
+            var classes = file.Classes.Where(c => c.IsPersistent).ToList();
+
+            var manyToManyProperties = file.Classes.SelectMany(cl => cl.Properties).OfType<AssociationProperty>().Where(ap => ap.Type == AssociationType.ManyToMany);
+            foreach (var ap in manyToManyProperties)
+            {
+                var traClass = new Class
+                {
+                    Comment = ap.Comment,
+                    Label = ap.Label,
+                    SqlName = $"{ap.Class.SqlName}_{ap.Association.SqlName}{(ap.Role != null ? $"_{ap.Role.ToConstantCase()}" : string.Empty)}"
+                };
+
+                traClass.Properties.Add(new AssociationProperty
+                {
+                    Association = ap.Class,
+                    Class = traClass,
+                    Comment = ap.Comment,
+                    Type = AssociationType.ManyToOne,
+                    PrimaryKey = true,
+                    Required = true,
+                    Role = ap.Role,
+                    DefaultValue = ap.DefaultValue,
+                    Label = ap.Label,
+                    Trigram = ap.Class.PrimaryKey.Single().Trigram
+                });
+
+                traClass.Properties.Add(new AssociationProperty
+                {
+                    Association = ap.Association,
+                    Class = traClass,
+                    Comment = ap.Comment,
+                    Type = AssociationType.ManyToOne,
+                    PrimaryKey = true,
+                    Required = true,
+                    Role = ap.Role,
+                    DefaultValue = ap.DefaultValue,
+                    Label = ap.Label,
+                    Trigram = ap.Trigram ?? ap.Association.PrimaryKey.Single().Trigram ?? ap.Association.Trigram
+                });
+
+                classes.Add(traClass);
+            }
+
+            foreach (var classe in classes)
             {
                 tableCount++;
-                _tableScripter.Write(classe, _config.TableScriptFolder, _logger);
+                _tableScripter.Write(classe, _config.TableScriptFolder, _logger, Classes);
 
                 if (classe.Properties.Any(p => p.Name == ScriptUtils.InsertKeyName) && _config.TableTypeScriptFolder != null)
                 {
                     tableTypeCount++;
-                    _tableTypeScripter.Write(classe, _config.TableTypeScriptFolder, _logger);
+                    _tableTypeScripter.Write(classe, _config.TableTypeScriptFolder, _logger, Classes);
                 }
             }
         }
@@ -106,13 +159,13 @@ public class SsdtGenerator : GeneratorBase
         // Script un fichier par classe.
         foreach (var referenceClass in orderList)
         {
-            _initReferenceListScript.Write(referenceClass, _config.InitListScriptFolder, _logger);
+            _initReferenceListScript.Write(referenceClass, _config.InitListScriptFolder, _logger, Classes);
         }
 
         // Script le fichier appelant les fichiers dans le bon ordre.
         if (_config.InitListMainScriptName != null)
         {
-            _initReferenceListMainScripter.Write(orderList, _config.InitListScriptFolder, _logger);
+            _initReferenceListMainScripter.Write(orderList, _config.InitListScriptFolder, _logger, Classes);
         }
     }
 }

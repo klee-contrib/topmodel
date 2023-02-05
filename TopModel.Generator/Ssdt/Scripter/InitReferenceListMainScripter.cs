@@ -29,7 +29,8 @@ public class InitReferenceListMainScripter : ISqlScripter<IEnumerable<Class>>
     /// </summary>
     /// <param name="writer">Flux d'écriture.</param>
     /// <param name="item">Table à scripter.</param>
-    public void WriteItemScript(TextWriter writer, IEnumerable<Class> item)
+    /// <param name="availableClasses">Classes disponibles.</param>
+    public void WriteItemScript(TextWriter writer, IEnumerable<Class> item, IEnumerable<Class> availableClasses)
     {
         if (writer == null)
         {

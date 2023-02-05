@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using TopModel.Core;
 
 namespace TopModel.Generator.Ssdt.Scripter;
 
@@ -20,9 +21,10 @@ public interface ISqlScripter<T>
     /// </summary>
     /// <param name="writer">Flux d'écriture.</param>
     /// <param name="item">Table à scripter.</param>
-    void WriteItemScript(TextWriter writer, T item);
+    /// <param name="availableClasses">Classes disponibles.</param>
+    void WriteItemScript(TextWriter writer, T item, IEnumerable<Class> availableClasses);
 
-    void Write(T item, string folderPath, ILogger logger)
+    void Write(T item, string folderPath, ILogger logger, IEnumerable<Class> availableClasses)
     {
         // Génére le nom du fichier.
         var scriptName = GetScriptName(item);
@@ -34,6 +36,6 @@ public interface ISqlScripter<T>
         using var tw = new SqlFileWriter(scriptPath, logger);
 
         /*  Génére le script de l'item */
-        WriteItemScript(tw, item);
+        WriteItemScript(tw, item, availableClasses);
     }
 }

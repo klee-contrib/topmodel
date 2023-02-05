@@ -38,7 +38,8 @@ public class SqlTableScripter : ISqlScripter<Class>
     /// </summary>
     /// <param name="writer">Flux d'écriture.</param>
     /// <param name="item">Table à scripter.</param>
-    public void WriteItemScript(TextWriter writer, Class item)
+    /// <param name="availableClasses">Classes disponibles.</param>
+    public void WriteItemScript(TextWriter writer, Class item, IEnumerable<Class> availableClasses)
     {
         if (writer == null)
         {
@@ -60,7 +61,7 @@ public class SqlTableScripter : ISqlScripter<Class>
         WriteCreateTableOpening(writer, item);
 
         // Intérieur du create table.
-        var properties = WriteInsideInstructions(writer, item);
+        var properties = WriteInsideInstructions(writer, item, availableClasses);
 
         // Fin du create table.
         WriteCreateTableClosing(writer, item, useCompression);
@@ -246,14 +247,16 @@ public class SqlTableScripter : ISqlScripter<Class>
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="table">Table.</param>
-    private IList<IFieldProperty> WriteInsideInstructions(TextWriter writer, Class table)
+    /// <param name="availableClasses">Classes disponibles.</param>
+    private IList<IFieldProperty> WriteInsideInstructions(TextWriter writer, Class table, IEnumerable<Class> availableClasses)
     {
         // Construction d'une liste de toutes les instructions.
         var definitions = new List<string>();
         var sb = new StringBuilder();
 
         // Colonnes
-        var properties = table.Properties.OfType<IFieldProperty>().ToList();
+        var properties = table.Properties.OfType<IFieldProperty>().Where(p => p is not AssociationProperty ap || ap.Type == AssociationType.ManyToOne || ap.Type == AssociationType.OneToOne).ToList();
+
         if (table.Extends != null)
         {
             properties.Add(new AssociationProperty
@@ -262,6 +265,23 @@ public class SqlTableScripter : ISqlScripter<Class>
                 Class = table,
                 Required = true
             });
+        }
+
+        var oneToManyProperties = availableClasses.SelectMany(cl => cl.Properties).OfType<AssociationProperty>().Where(ap => ap.Type == AssociationType.OneToMany && ap.Association == table);
+        foreach (var ap in oneToManyProperties)
+        {
+            var asp = new AssociationProperty()
+            {
+                Association = ap.Class,
+                Class = ap.Association,
+                Comment = ap.Comment,
+                Type = AssociationType.ManyToOne,
+                Required = ap.Required,
+                Role = ap.Role,
+                DefaultValue = ap.DefaultValue,
+                Label = ap.Label
+            };
+            properties.Add(asp);
         }
 
         foreach (var property in properties)
@@ -280,11 +300,6 @@ public class SqlTableScripter : ISqlScripter<Class>
         // Foreign key constraints
         foreach (var property in properties.OfType<AssociationProperty>().Where(ap => ap.Association.IsPersistent))
         {
-            if (property.Type != AssociationType.ManyToOne && property.Type != AssociationType.OneToOne)
-            {
-                throw new ModelException(property, $"Le type d'association {property.Type} n'est pas supporté par le générateur SSDT");
-            }
-
             sb.Clear();
             WriteConstraintForeignKey(sb, property);
             definitions.Add(sb.ToString());

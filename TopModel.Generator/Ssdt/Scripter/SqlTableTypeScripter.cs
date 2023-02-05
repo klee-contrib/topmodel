@@ -28,7 +28,8 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     /// </summary>
     /// <param name="writer">Flux d'écriture.</param>
     /// <param name="item">Table à scripter.</param>
-    public void WriteItemScript(TextWriter writer, Class item)
+    /// <param name="availableClasses">Classes disponibles.</param>
+    public void WriteItemScript(TextWriter writer, Class item, IEnumerable<Class> availableClasses)
     {
         if (writer == null)
         {
