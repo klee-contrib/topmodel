@@ -22,7 +22,7 @@ domain:
   ts:
     type: number[]
   csharp:
-    type: List<int?>
+    type: int[]
   java:
     type: List<Long>
     imports:

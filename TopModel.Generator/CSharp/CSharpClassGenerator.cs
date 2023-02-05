@@ -512,7 +512,8 @@ public class CSharpClassGenerator : GeneratorBase
                 w.WriteAttribute(2, annotation);
             }
         }
-        else
+
+        if (property is CompositionProperty or AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany })
         {
             w.WriteAttribute(2, "NotMapped");
         }

@@ -15,7 +15,7 @@ public class UtilisateurApiController : Controller
     /// <param name="utiId">Id technique</param>
     /// <returns>Task.</returns>
     [HttpDelete("utilisateur/deleteAll")]
-    public async Task deleteAll(List<int?> utiId = null)
+    public async Task deleteAll(int[] utiId = null)
     {
 
     }

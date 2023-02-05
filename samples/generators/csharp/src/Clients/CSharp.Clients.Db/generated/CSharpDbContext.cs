@@ -71,8 +71,6 @@ public partial class CSharpDbContext : DbContext
 
         modelBuilder.Entity<Droit>().HasOne<TypeProfil>().WithMany().HasForeignKey(p => p.TypeProfilCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Profil>().HasOne<TypeProfil>().WithMany().HasForeignKey(p => p.TypeProfilCode).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<Profil>().HasMany<Droit>().WithMany().OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<Profil>().HasMany<Secteur>().WithOne().OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Utilisateur>().HasOne<Profil>().WithMany().HasForeignKey(p => p.ProfilId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Utilisateur>().HasOne<TypeUtilisateur>().WithMany().HasForeignKey(p => p.TypeUtilisateurCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Utilisateur>().HasOne<Utilisateur>().WithOne().HasForeignKey<Utilisateur>(p => p.UtilisateurIdParent).OnDelete(DeleteBehavior.Restrict);

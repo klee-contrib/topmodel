@@ -67,14 +67,14 @@ public partial class ProfilDto
     [Column("dro_code")]
     [ReferencedType(typeof(Droit))]
     [Domain(Domains.CodeList)]
-    public Droit.Codes? Droits { get; set; }
+    public Droit.Codes[] Droits { get; set; }
 
     /// <summary>
     /// Liste des secteurs de l'utilisateur.
     /// </summary>
     [Column("sec_id")]
     [Domain(Domains.IdList)]
-    public List<int?> Secteurs { get; set; }
+    public int[] Secteurs { get; set; }
 
     /// <summary>
     /// Liste paginée des utilisateurs de ce profil.

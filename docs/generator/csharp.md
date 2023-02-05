@@ -13,6 +13,12 @@ Le générateur C# peut générer les fichiers suivants :
 
 Le code généré n'a aucune dépendance externe à part EF Core et Kinetix, et uniquement s'ils sont explicitement demandés dans la configuration.
 
+### Génération des classes
+
+Le générateur C# fait peu de différences à la génération entre une classe persistée et non persistée. Seule l'annotation `[Table]` est ajoutée en plus sur une classe persistée, et les annotations `[Column]` sont conservées à moins de les désactiver explicitement sur les alias via le paramètre de config `noColumnOnAlias`.
+
+Les propriétés d'associations sont toujours gérées comme en SQL, avec la clé primaire de la classe cible. Les associations `oneToMany` et `manyToMany` auront le type du domaine liste de la clé primaire, munie d'une annotation `[NotMapped]` pour indiquer qu'elle ne seront pas implicitement supportées.
+
 ### Génération des mappers
 
 Les mappers sont générés comme des méthodes statiques dans une classe statique. Les mappers `to` peuvent être utilisés comme méthodes d'extensions sur la classe qui le définit. Il est conseillé d'utiliser un `using static ModuleMappers;` dans les fichiers où on utilise des mappers pour pouvoir référencer un mapper `from` directement avec son nom (par exemple `CreateMyClassDTO(myClass)` au lieu de `ModuleMappers.CreateMyClassDTO(myClass)`)
@@ -25,6 +31,8 @@ De plus, pour un module, on sépare les mappers en deux fichiers potentiels :
 ### Génération du DbContext
 
 Le DbContext peut être généré soit comme un simple "repository" avec juste la liste de tous les `DbSet` des classes persistées, ou alors il peut être complété avec l'ensemble des informations nécessaires pour générer les migrations de base de données avec EF Core. Dans le premier cas, le modèle de base de données devra être généré et mis à jour autrement (par exemple avec le générateur SQL de TopModel).
+
+Dans le cas ou les migrations sont générées, les associations `oneToMany` et `manyToMany` seront ignorées. Le générateur C# s'attend à ce qu'elles soient gérées explicitement comme si elles l'avaient été en SQL : via une `manyToOne` de l'autre côté pour la première, et via une table dédiée avec deux associations marquées comme `primaryKey` pour la deuxième.
 
 ### Génération des contrôleurs
 
