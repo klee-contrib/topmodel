@@ -1089,7 +1089,7 @@ public class ModelStore
                                 var compositionPK = compositionPKs.Count() == 1 ? compositionPKs.Single() : null;
                                 var compositionDomain = cp.Kind == "list" ? compositionPK?.Domain.ListDomain : compositionPK?.Domain;
 
-                                if (compositionDomain != (mappedAp.Domain)
+                                if (compositionDomain != mappedAp.Domain
                                     && !this.Converters.Any(c => c.From.Any(cf => cf == compositionPK?.Domain) && c.To.Any(ct => ct == mappedAp.Domain)))
                                 {
                                     yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la clé primaire de la classe '{cp.Composition.Name}' composée ('{mappedProperty.Domain.Name}' au lieu de '{compositionPK?.Domain.Name ?? string.Empty}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1019 };
@@ -1189,7 +1189,10 @@ public class ModelStore
                 {
                     foreach (var p in mapper.Class.Properties.OfType<IFieldProperty>())
                     {
-                        if (p.Name == property.Name && p.Domain != null && (p.Domain == property.Domain || Converters.Any(c => c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain))))
+                        if (p.Name == property.Name
+                            && p.Domain != null
+                            && (p.Domain == property.Domain || Converters.Any(c => c.From.Any(cf => cf == p.Domain)
+                            && c.To.Any(ct => ct == property.Domain))))
                         {
                             mapper.Mappings.Add(property, p);
                         }
