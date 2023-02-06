@@ -530,6 +530,12 @@ public class ModelStore
                         break;
                     }
 
+                    if ((ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany) && ap.Class.PrimaryKey.Single()?.Domain?.ListDomain is null)
+                    {
+                        yield return new ModelError(ap, $@"Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Class.PrimaryKey.Single().Domain} ne contient pas de définition de ListDomain", ap.Reference) { ModelErrorType = ModelErrorType.TMD1028 };
+                        continue;
+                    }
+
                     ap.Association = association;
                     break;
 
@@ -1081,8 +1087,9 @@ public class ModelStore
 
                                 var compositionPKs = cp.Composition.Properties.OfType<IFieldProperty>().Where(p => p.PrimaryKey);
                                 var compositionPK = compositionPKs.Count() == 1 ? compositionPKs.Single() : null;
+                                var compositionDomain = cp.Kind == "list" ? compositionPK?.Domain.ListDomain : compositionPK?.Domain;
 
-                                if (compositionPK?.Domain != mappedAp.Domain
+                                if (compositionDomain != (mappedAp.Domain)
                                     && !this.Converters.Any(c => c.From.Any(cf => cf == compositionPK?.Domain) && c.To.Any(ct => ct == mappedAp.Domain)))
                                 {
                                     yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la clé primaire de la classe '{cp.Composition.Name}' composée ('{mappedProperty.Domain.Name}' au lieu de '{compositionPK?.Domain.Name ?? string.Empty}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1019 };
