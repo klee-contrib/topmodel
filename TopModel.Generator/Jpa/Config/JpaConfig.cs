@@ -39,7 +39,7 @@ public class JpaConfig : GeneratorConfigBase
     /// <summary>
     /// Option pour générer une enum des champs des classes persistées
     /// </summary>
-    public Target FieldsEnum { get; set; } = Target.Persisted;
+    public Target FieldsEnum { get; set; } = Target.None;
 
     /// <summary>
     /// Option pour générer des getters et setters vers l'enum des références plutôt que sur la table

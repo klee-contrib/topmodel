@@ -582,7 +582,7 @@
           "fieldsEnum": {
             "type": "string",
             "description": "Option pour générer une enum des champs des classes persistées",
-            "default": "persisted",
+            "default": "None",
             "enum": [
               "None",
               "Persisted",
