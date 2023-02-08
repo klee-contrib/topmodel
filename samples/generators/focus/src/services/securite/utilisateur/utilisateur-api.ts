@@ -9,6 +9,15 @@ import {TypeUtilisateurCode} from "../../../model/utilisateur/references";
 import {UtilisateurDto} from "../../../model/utilisateur/utilisateur-dto";
 
 /**
+ * Recherche des utilisateurs
+ * @param utiId Id technique
+ * @param options Options pour 'fetch'.
+ */
+export function deleteAll(utiId?: number[], options: RequestInit = {}): Promise<void> {
+    return coreFetch("DELETE", `./utilisateur/deleteAll`, {query: {utiId}}, options);
+}
+
+/**
  * Charge le détail d'un utilisateur
  * @param utiId Id technique
  * @param options Options pour 'fetch'.

@@ -10,6 +10,17 @@ public class UtilisateurApiController : Controller
 {
 
     /// <summary>
+    /// Recherche des utilisateurs
+    /// </summary>
+    /// <param name="utiId">Id technique</param>
+    /// <returns>Task.</returns>
+    [HttpDelete("utilisateur/deleteAll")]
+    public async Task deleteAll(int[] utiId = null)
+    {
+
+    }
+
+    /// <summary>
     /// Charge le détail d'un utilisateur
     /// </summary>
     /// <param name="utiId">Id technique</param>

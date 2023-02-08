@@ -45,6 +45,27 @@ public abstract class AbstractUtilisateurApiClient {
 	protected abstract HttpHeaders getHeaders();
 
 	/**
+	 * UriComponentsBuilder pour la méthode deleteAll.
+	 * @param utiId Id technique
+	 */
+	protected UriComponentsBuilder deleteAllUriComponentsBuilder(List<Long> utiId) {
+		String uri = host + "/utilisateur/deleteAll";
+		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
+		uriBuilder.queryParam("utiId", utiId);
+		return uriBuilder;
+	}
+
+	/**
+	 * Recherche des utilisateurs.
+	 * @param utiId Id technique
+	 */
+	public ResponseEntity deleteAll(List<Long> utiId){
+		HttpHeaders headers = this.getHeaders();
+		UriComponentsBuilder uri = this.deleteAllUriComponentsBuilder(utiId);
+		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.DELETE, new HttpEntity<>(headers), (Class<?>) null);
+	}
+
+	/**
 	 * UriComponentsBuilder pour la méthode find.
 	 * @param utiId Id technique
 	 * @return uriBuilder avec les query params remplis

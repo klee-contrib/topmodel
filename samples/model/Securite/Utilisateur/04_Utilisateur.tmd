@@ -77,3 +77,14 @@ endpoint:
     name: utilisateurList
     kind: DO_PAGE
     comment: Utilisateurs matchant les critères
+---
+endpoint:
+  name: deleteAll
+  method: DELETE
+  route: /deleteAll
+  description: Recherche des utilisateurs
+  params:
+    - alias:
+        class: Utilisateur
+        property: Id
+      asList: true

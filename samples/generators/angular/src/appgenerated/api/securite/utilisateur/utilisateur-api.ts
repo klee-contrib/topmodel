@@ -17,6 +17,21 @@ export class UtilisateurApiService {
     constructor(private http: HttpClient) {}
 
     /**
+     * Recherche des utilisateurs
+     * @param utiId Id technique
+     * @param options Options pour 'fetch'.
+     */
+    deleteAll(utiId?: number[], queryParams: any = {}): Observable<void> {
+        const httpParams = new HttpParams({fromObject : queryParams});
+        const httpOptions = { params: httpParams }
+        if(utiId !== null) {
+            httpOptions.params.set('utiId', utiId)
+        }
+
+        return this.http.delete<void>(`/utilisateur/deleteAll`, httpOptions);
+    }
+
+    /**
      * Charge le détail d'un utilisateur
      * @param utiId Id technique
      * @param options Options pour 'fetch'.

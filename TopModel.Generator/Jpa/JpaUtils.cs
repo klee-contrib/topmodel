@@ -5,14 +5,14 @@ namespace TopModel.Generator.Jpa;
 
 public static class JpaUtils
 {
-    public static string GetJavaType(this IProperty prop)
+    public static string GetJavaType(this IProperty prop, bool asList = false)
     {
         return prop switch
         {
             AssociationProperty a => a.GetJavaType(),
             CompositionProperty c => c.GetJavaType(),
             AliasProperty l => l.GetJavaType(),
-            RegularProperty r => r.GetJavaType(),
+            RegularProperty r => r.GetJavaType(asList),
             _ => string.Empty,
         };
     }
@@ -59,7 +59,7 @@ public static class JpaUtils
             {
                 if (asp.IsEnum())
                 {
-                    return asp.Property.GetJavaType();
+                    return asp.Property.GetJavaType(ap.AsList || asp.Type == AssociationType.ManyToMany || asp.Type == AssociationType.OneToMany);
                 }
                 else
                 {
@@ -68,22 +68,17 @@ public static class JpaUtils
             }
             else
             {
-                return ap.Property.GetJavaType();
+                return ap.Property.GetJavaType(ap.AsList);
             }
         }
 
         if (ap.IsEnum())
         {
-            return ap.Property.GetJavaType();
+            return ap.Property.GetJavaType(ap.AsList);
         }
         else if (ap.Property is AssociationProperty apr)
         {
-            if (apr.Type == AssociationType.ManyToMany || apr.Type == AssociationType.OneToMany)
-            {
-                return $"List<{apr.Property.GetJavaType()}>";
-            }
-
-            return apr.Property.GetJavaType();
+            return apr.Property.GetJavaType(ap.AsList || apr.Type == AssociationType.ManyToMany || apr.Type == AssociationType.OneToMany);
         }
         else if (ap.Property is CompositionProperty cpo)
         {
@@ -110,9 +105,9 @@ public static class JpaUtils
         return ap.Domain.Java!.Type;
     }
 
-    public static string GetJavaType(this RegularProperty rp)
+    public static string GetJavaType(this RegularProperty rp, bool asList)
     {
-        return rp.IsEnum() ? $"{rp.Class.Name.ToFirstUpper()}.Values" : rp.Domain.Java!.Type.ParseTemplate(rp);
+        return rp.IsEnum() ? ((asList ? "List<" : string.Empty) + $"{rp.Class.Name.ToFirstUpper()}.Values") + (asList ? ">" : string.Empty) : (asList ? rp.Domain.ListDomain! : rp.Domain).Java!.Type.ParseTemplate(rp);
     }
 
     public static string GetJavaType(this CompositionProperty cp)

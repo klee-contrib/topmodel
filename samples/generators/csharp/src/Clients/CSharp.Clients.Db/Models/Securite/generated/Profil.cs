@@ -64,15 +64,17 @@ public partial class Profil
     /// </summary>
     [Column("dro_code")]
     [ReferencedType(typeof(Droit))]
-    [Domain(Domains.Code)]
-    public Droit.Codes? Droits { get; set; }
+    [Domain(Domains.CodeList)]
+    [NotMapped]
+    public Droit.Codes[] Droits { get; set; }
 
     /// <summary>
     /// Liste des secteurs de l'utilisateur.
     /// </summary>
     [Column("sec_id")]
-    [Domain(Domains.Id)]
-    public int? Secteurs { get; set; }
+    [Domain(Domains.IdList)]
+    [NotMapped]
+    public int[] Secteurs { get; set; }
 
     /// <summary>
     /// Methode d'extensibilité possible pour les constructeurs.
