@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## Prochaine version
+
+- [`156507f`](https://github.com/klee-contrib/topmodel/commit/05fcaf27163088ab6095f24612e8871582d27d71) - [JPA] Rendre paramétrable le fait de générer les fieldsEnum pour les classes non persistées
+
 ## 1.23.4
 
 - [#204](https://github.com/klee-contrib/topmodel/pull/204) - Gestion de clés primaires composites pour de vrai
