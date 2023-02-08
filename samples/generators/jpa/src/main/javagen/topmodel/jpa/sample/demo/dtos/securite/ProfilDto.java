@@ -227,4 +227,25 @@ public class ProfilDto implements Serializable {
 
 		return dest;
 	}
+
+	/**
+	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto ProfilDto}.
+	 */
+	public enum Fields  {
+        ID(Long.class), //
+        TYPE_PROFIL_CODE(TypeProfil.Values.class), //
+        DROITS(List.class), //
+        SECTEURS(List.class), //
+        UTILISATEURS(List.class);
+
+		private Class<?> type;
+
+		private Fields(Class<?> type) {
+			this.type = type;
+		}
+
+		public Class<?> getType() {
+			return this.type;
+		}
+	}
 }

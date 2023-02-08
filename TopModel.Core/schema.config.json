@@ -580,9 +580,15 @@
             "description": "Précise le nom du package dans lequel générer les classes non persistées du modèle."
           },
           "fieldsEnum": {
-            "type": "boolean",
+            "type": "string",
             "description": "Option pour générer une enum des champs des classes persistées",
-            "default": "false"
+            "default": "persisted",
+            "enum": [
+              "None",
+              "Persisted",
+              "Dto",
+              "Persisted_Dto"
+            ]
           },
           "enumShortcutMode": {
             "type": "boolean",

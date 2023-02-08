@@ -1,5 +1,7 @@
 ﻿#nullable disable
 
+using TopModel.Core;
+
 namespace TopModel.Generator.Jpa;
 
 public class JpaConfig : GeneratorConfigBase
@@ -37,7 +39,7 @@ public class JpaConfig : GeneratorConfigBase
     /// <summary>
     /// Option pour générer une enum des champs des classes persistées
     /// </summary>
-    public bool FieldsEnum { get; set; }
+    public Target FieldsEnum { get; set; } = Target.Persisted;
 
     /// <summary>
     /// Option pour générer des getters et setters vers l'enum des références plutôt que sur la table

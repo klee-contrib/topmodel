@@ -351,4 +351,29 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 
 		return dest;
 	}
+
+	/**
+	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto UtilisateurDto}.
+	 */
+	public enum Fields  {
+        ID(Long.class), //
+        AGE(Long.class), //
+        PROFIL_ID(Long.class), //
+        EMAIL(String.class), //
+        NOM(String.class), //
+        TYPE_UTILISATEUR_CODE(TypeUtilisateur.Values.class), //
+        DATE_CREATION(LocalDate.class), //
+        DATE_MODIFICATION(LocalDateTime.class), //
+        UTILISATEUR_PARENT(UtilisateurDto.class);
+
+		private Class<?> type;
+
+		private Fields(Class<?> type) {
+			this.type = type;
+		}
+
+		public Class<?> getType() {
+			return this.type;
+		}
+	}
 }
