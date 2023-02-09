@@ -125,13 +125,14 @@ public class JpaModelGenerator : GeneratorBase
 
             WriteToMappers(fw, classe);
 
-            if (((_config.FieldsEnum & Target.Persisted) > 0 && classe.IsPersistent
-            || (_config.FieldsEnum & Target.Dto) > 0 && !classe.IsPersistent))
+            if ((_config.FieldsEnum & Target.Persisted) > 0 && classe.IsPersistent
+                || (_config.FieldsEnum & Target.Dto) > 0 && !classe.IsPersistent)
             {
                 if (_config.FieldsEnumInterface != null)
                 {
                     fw.AddImport(_config.FieldsEnumInterface.Replace("<>", string.Empty));
                 }
+
                 WriteFieldsEnum(fw, classe, AvailableClasses);
             }
 
