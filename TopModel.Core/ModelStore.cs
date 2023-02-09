@@ -1191,8 +1191,9 @@ public class ModelStore
                     {
                         if (p.Name == property.Name
                             && p.Domain != null
-                            && (p.Domain == property.Domain || Converters.Any(c => c.From.Any(cf => cf == p.Domain)
-                            && c.To.Any(ct => ct == property.Domain))))
+                            && (p.Domain == property.Domain 
+                                || Converters.Any(c => c.From.Any(cf => cf == p.Domain) 
+                                    && c.To.Any(ct => ct == property.Domain))))
                         {
                             mapper.Mappings.Add(property, p);
                         }
