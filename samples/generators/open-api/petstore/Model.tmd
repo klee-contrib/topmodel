@@ -68,7 +68,6 @@ class:
       required: true
       comment: "shipDate"
 
-
     - alias:
         class: OrderStatus
 
@@ -106,7 +105,6 @@ class:
       name: Tags
       kind: list
       comment: "tags"
-
 
     - alias:
         class: PetStatus
@@ -173,8 +171,7 @@ class:
 ---
 class:
   name: OrderStatus
-  reference: true
-  comment: "Order Status"
+  comment: enum pour les valeurs de Status
 
   properties:
     - name: Status
@@ -183,14 +180,13 @@ class:
       comment: "Order Status"
 
   values:
-    placed: { Status: placed }
-    approved: { Status: approved }
-    delivered: { Status: delivered }
+    value0: { Status: placed }
+    value1: { Status: approved }
+    value2: { Status: delivered }
 ---
 class:
   name: PetStatus
-  reference: true
-  comment: "pet status in the store"
+  comment: enum pour les valeurs de Status
 
   properties:
     - name: Status
@@ -199,6 +195,6 @@ class:
       comment: "pet status in the store"
 
   values:
-    available: { Status: available }
-    pending: { Status: pending }
-    sold: { Status: sold }
+    value0: { Status: available }
+    value1: { Status: pending }
+    value2: { Status: sold }

@@ -45,4 +45,10 @@ public class UtilisateurApiControllerImpl implements UtilisateurApiController {
 		return null;
 	}
 
+	@Override
+	public void deleteAll(List<Long> utiId) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

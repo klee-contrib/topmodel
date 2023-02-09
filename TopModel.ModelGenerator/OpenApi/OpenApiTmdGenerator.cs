@@ -163,12 +163,10 @@ static class OpenApiTmdGenerator
                 {
                     if (!property.Value.Enum.Any())
                     {
-
                         WriteProperty(config, fw, property, model);
                     }
                     else
                     {
-                        fw.WriteLine();
                         fw.WriteLine("    - alias:");
                         fw.WriteLine($@"        class: {schema.Key.ToPascalCase()}{property.Key.ToPascalCase()}");
                     }
@@ -186,16 +184,8 @@ static class OpenApiTmdGenerator
                 {
                     fw.WriteLine("---");
                     fw.WriteLine("class:");
-                    fw.WriteLine($"  name: {schema.Key}{property.Key.ToPascalCase()}");
-                    fw.WriteLine($"  reference: true");
-                    if (property.Value.Description != null)
-                    {
-                        fw.WriteLine($"  comment: {FormatDescription(property.Value.Description ?? property.Key)}");
-                    }
-                    else
-                    {
-                        fw.WriteLine($"  comment: no description provided");
-                    }
+                    fw.WriteLine($"  name: {schema.Key.ToPascalCase()}{property.Key.ToPascalCase()}");
+                    fw.WriteLine($"  comment: enum pour les valeurs de {property.Key.ToPascalCase()}");
 
                     fw.WriteLine();
                     fw.WriteLine($"  properties:");
@@ -203,9 +193,10 @@ static class OpenApiTmdGenerator
                     WriteProperty(config, fw, property, model);
                     fw.WriteLine();
                     fw.WriteLine($"  values:");
+                    var u = 0;
                     foreach (var val in property.Value.Enum.OfType<OpenApiString>())
                     {
-                        fw.WriteLine($@"    {val.Value}: {{ {property.Key.ToPascalCase()}: {val.Value} }}");
+                        fw.WriteLine($@"    value{u++}: {{ {property.Key.ToPascalCase()}: {val.Value} }}");
                     }
                 }
             }
