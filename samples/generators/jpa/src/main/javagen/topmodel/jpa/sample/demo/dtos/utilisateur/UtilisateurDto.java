@@ -134,30 +134,30 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * @return Une nouvelle instance de 'UtilisateurDto'.
 	 */
 	public UtilisateurDto(Utilisateur utilisateur) {
-		this.from(utilisateur);
+		UtilisateurDto.map(this, utilisateur);
 	}
 
 	/**
 	 * Map les champs des classes passées en paramètre dans l'instance courante.
 	 * @param utilisateur Instance de 'Utilisateur'.
 	 */
-	protected void from(Utilisateur utilisateur) {
+	public static void map(UtilisateurDto target, Utilisateur utilisateur) {
 		if (utilisateur != null) {
-			this.utilisateurParent = utilisateur.getUtilisateurParent() == null ? null : new UtilisateurDto(utilisateur.getUtilisateurParent());
-			this.id = utilisateur.getId();
-			this.age = utilisateur.getAge();
+			target.utilisateurParent = utilisateur.getUtilisateurParent() == null ? null : new UtilisateurDto(utilisateur.getUtilisateurParent());
+			target.id = utilisateur.getId();
+			target.age = utilisateur.getAge();
 			if (utilisateur.getProfil() != null) {
-				this.profilId = utilisateur.getProfil().getId();
+				target.profilId = utilisateur.getProfil().getId();
 			}
 
-			this.email = utilisateur.getEmail();
-			this.nom = utilisateur.getNom();
+			target.email = utilisateur.getEmail();
+			target.nom = utilisateur.getNom();
 			if (utilisateur.getTypeUtilisateur() != null) {
-				this.typeUtilisateurCode = utilisateur.getTypeUtilisateur().getCode();
+				target.typeUtilisateurCode = utilisateur.getTypeUtilisateur().getCode();
 			}
 
-			this.dateCreation = utilisateur.getDateCreation();
-			this.dateModification = utilisateur.getDateModification();
+			target.dateCreation = utilisateur.getDateCreation();
+			target.dateModification = utilisateur.getDateModification();
 		} else {
 			throw new IllegalArgumentException("utilisateur cannot be null");
 		}

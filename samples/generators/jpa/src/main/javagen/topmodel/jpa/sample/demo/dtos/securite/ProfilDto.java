@@ -98,26 +98,26 @@ public class ProfilDto implements Serializable {
 	 * @return Une nouvelle instance de 'ProfilDto'.
 	 */
 	public ProfilDto(Profil profil) {
-		this.from(profil);
+		ProfilDto.map(this, profil);
 	}
 
 	/**
 	 * Map les champs des classes passées en paramètre dans l'instance courante.
 	 * @param profil Instance de 'Profil'.
 	 */
-	protected void from(Profil profil) {
+	public static void map(ProfilDto target, Profil profil) {
 		if (profil != null) {
-			this.id = profil.getId();
+			target.id = profil.getId();
 			if (profil.getTypeProfil() != null) {
-				this.typeProfilCode = profil.getTypeProfil().getCode();
+				target.typeProfilCode = profil.getTypeProfil().getCode();
 			}
 
 			if (profil.getDroits() != null) {
-				this.droits = profil.getDroits().stream().filter(t -> t != null).map(droits -> droits.getCode()).collect(Collectors.toList());
+				target.droits = profil.getDroits().stream().filter(t -> t != null).map(droits -> droits.getCode()).collect(Collectors.toList());
 			}
 
 			if (profil.getSecteurs() != null) {
-				this.secteurs = profil.getSecteurs().stream().filter(t -> t != null).map(secteurs -> secteurs.getId()).collect(Collectors.toList());
+				target.secteurs = profil.getSecteurs().stream().filter(t -> t != null).map(secteurs -> secteurs.getId()).collect(Collectors.toList());
 			}
 		} else {
 			throw new IllegalArgumentException("profil cannot be null");
