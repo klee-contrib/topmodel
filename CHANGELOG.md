@@ -1,21 +1,44 @@
 # TopModel.Generator (`modgen`)
 
-## Prochaine version
+## Prochaine version (1.24.0)
+
+- [#212](https://github.com/klee-contrib/topmodel/pull/212) - Clarification utilisation de `values` et `enum`s explicites
+
+  **Impacts génération** (ne devraient être des breaking changes, mais on sait jamais)
+
+  - [C#] On ne génère plus de constantes pour les values avec PK autogénérée sur la clé d'unicité (puisqu'elle n'est plus demandée)
+  - [C#] L'annotation `DefaultProperty` n'est désormais placée sur sur les classes `reference`.
+  - [JS] Dans `references.ts` :
+    - Ne génère plus de type pour la PK si la classe n'est pas une `enum` (le type était auparavant un alias inutile vers le type de la PK)
+    - Ne génère plus de définition de référence (le type + l'objet `{valueKey, labelKey}` ou la liste des valeurs) si la classe n'est pas une `reference`
+
+- [#208](https://github.com/klee-contrib/topmodel/pull/208) - Utilisation domain list pour oneToMany et ManyToMany
+
+  **Breaking change (JPA)** : Les domaines de propriétés de PK utilisées dans des associations _one to many_ et _many to many_ doivent maintenant spécifier un `listDomain` correspondant
+
+- [#196](https://github.com/klee-contrib/topmodel/pull/196) - [JPA] Valoriser le orderProperty dans les associations oneToMany et manyToMany
+
+- [#211](https://github.com/klee-contrib/topmodel/pull/211) - [JPA] Gestion des enums pour des codes non valides en Java
 
 - [`156507f`](https://github.com/klee-contrib/topmodel/commit/05fcaf27163088ab6095f24612e8871582d27d71) - [JPA] Rendre paramétrable le fait de générer les fieldsEnum pour les classes non persistées
 
-BREAKING_CHANGE : Pour les utilisateurs de la propriété `fieldsEnum: true`, remplacer `true` par `Persisted`.
+  **Breaking change (JPA)** : Pour les utilisateurs de la propriété `fieldsEnum: true`, remplacer `true` par `Persisted`.
+
+- [`81389b7`](https://github.com/klee-contrib/topmodel/commit/81389b71e90cecfa3d46bdb2afd0bce8eb103231) - [SSDT] Support pour oneToMany/manyToMany (idem proceduralSql)
+
+- [`be8f10e`](https://github.com/klee-contrib/topmodel/commit/be8f10e8dba8f3f5f7cb8a4c20f225d8f6b3ba3d) - [C#] Gestion oneToMany/manyToMany **minimale** (histoire que ça ne fasse pas d'erreurs de génération, mais ce n'est toujours pas, et ne sera jamais, géré par ce qu'on génère pour EF Core)
 
 ## 1.23.4
 
 - [#204](https://github.com/klee-contrib/topmodel/pull/204) - Gestion de clés primaires composites pour de vrai
 
-  **breaking changes** : 
+  **breaking changes** :
+
   - `allowCompositePrimaryKeys` n'existe plus dans la config globale (il est toujours à `true` maintenant).
   - topmodel ne considère plus une classe avec que des associations comme une n-n persistée : il faut explicitement marquer les propriétés comme `primaryKey: true` désormais
 
   _(pardon cette PR n'était pas censée être déployée avec ce patch...)_
-  
+
 - [`156507f`](https://github.com/klee-contrib/topmodel/commit/156507fe39f6b32a725254656f3174baeab5a1c8) - Ne converti pas un "entier" avec un "0" au début en int lors du parsing pour la vérification du schéma JSON
 
 ## 1.23.3
