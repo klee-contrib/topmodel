@@ -766,6 +766,10 @@
               "type": "string",
               "description": "Description de la classe."
             },
+            "enum": {
+              "type": "boolean",
+              "description": "Force la catégorisation de la classe comme enum (ou non). Une enum doit avoir au moins une `value` et ne peut pas avoir de clé primaire multiple. Si non renseigné, une classe sera une enum en plus de ces contraintes si le domaine de sa clé primaire n'a pas de valeur auto-générée."
+            },
             "decorators": {
               "type": "array",
               "description": "Décorateurs de la classe",

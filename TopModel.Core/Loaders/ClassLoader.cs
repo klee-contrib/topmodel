@@ -48,6 +48,9 @@ public class ClassLoader : ILoader<Class>
                 case "reference":
                     classe.Reference = value!.Value == "true";
                     break;
+                case "enum":
+                    classe.EnumOverride = new LocatedString(value);
+                    break;
                 case "orderProperty":
                     classe.OrderPropertyReference = new Reference(value!);
                     break;

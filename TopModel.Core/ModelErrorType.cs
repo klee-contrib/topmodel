@@ -33,6 +33,11 @@ public enum ModelErrorType
     TMD0005,
 
     /// <summary>
+    /// La classe '{classe}' doit avoir au moins une propriété non composée, au plus une clé primaire et au moins une `value` pour être définie comme `enum`.
+    /// </summary>
+    TMD0006,
+
+    /// <summary>
     /// La classe '{0}' doit avoir une (et une seule) clé primaire pour être référencée dans une association.
     /// </summary>
     TMD1001,
