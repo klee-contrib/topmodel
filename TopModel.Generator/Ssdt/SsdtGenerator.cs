@@ -53,7 +53,7 @@ public class SsdtGenerator : GeneratorBase
 
             return files;
         })
-        .Concat(Classes.Where(c => c.IsPersistent && c.ReferenceValues.Any()).Select(c =>
+        .Concat(Classes.Where(c => c.IsPersistent && c.Values.Any()).Select(c =>
         {
             if (_config.InitListScriptFolder != null)
             {
@@ -62,7 +62,7 @@ public class SsdtGenerator : GeneratorBase
 
             return null;
         }))
-        .Concat(Classes.Where(c => c.IsPersistent && c.ReferenceValues.Any()).Any() && _config.InitListScriptFolder != null && _config.InitListMainScriptName != null ? new[] { Path.Combine(_config.InitListScriptFolder, _config.InitListMainScriptName) } : Array.Empty<string>())
+        .Concat(Classes.Where(c => c.IsPersistent && c.Values.Any()).Any() && _config.InitListScriptFolder != null && _config.InitListMainScriptName != null ? new[] { Path.Combine(_config.InitListScriptFolder, _config.InitListMainScriptName) } : Array.Empty<string>())
         .Where(f => f != null)!;
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
@@ -141,7 +141,7 @@ public class SsdtGenerator : GeneratorBase
 
     private void GenerateListInitScript()
     {
-        var classes = Classes.Where(c => c.ReferenceValues.Any());
+        var classes = Classes.Where(c => c.Values.Any());
 
         if (!classes.Any() || _config.InitListScriptFolder == null)
         {
@@ -154,7 +154,7 @@ public class SsdtGenerator : GeneratorBase
         var orderList = SortUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
             .OfType<AssociationProperty>()
             .Select(a => a.Association)
-            .Where(a => a.ReferenceValues.Any()));
+            .Where(a => a.Values.Any()));
 
         // Script un fichier par classe.
         foreach (var referenceClass in orderList)

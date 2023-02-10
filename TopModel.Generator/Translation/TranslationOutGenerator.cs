@@ -49,7 +49,7 @@ public class TranslationOutGenerator : GeneratorBase
             .Where(p => !ExistsInStore(lang, p.ResourceKey)
             || !(
                 p.Class?.DefaultProperty == null ||
-                (p.Class?.ReferenceValues.TrueForAll(r => ExistsInStore(lang, r.ResourceKey)) ?? false)))
+                (p.Class?.Values.TrueForAll(r => ExistsInStore(lang, r.ResourceKey)) ?? false)))
             .Distinct()
             .GroupBy(prop => prop.Parent.Namespace.Module);
     }
@@ -84,7 +84,7 @@ public class TranslationOutGenerator : GeneratorBase
 
         if (container.Key is Class classe && classe.DefaultProperty != null)
         {
-            foreach (var reference in classe.ReferenceValues)
+            foreach (var reference in classe.Values)
             {
                 if (!ExistsInStore(lang, reference.ResourceKey))
                 {

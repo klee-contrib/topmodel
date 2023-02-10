@@ -110,7 +110,7 @@ public class ClassLoader : ILoader<Class>
                         var name = new Reference(parser.Consume<Scalar>());
                         var values = new Dictionary<Reference, string>();
 
-                        classe.ReferenceValueReferences.Add(name, values);
+                        classe.ValueReferences.Add(name, values);
 
                         parser.ConsumeMapping(() =>
                         {

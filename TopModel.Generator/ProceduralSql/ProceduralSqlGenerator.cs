@@ -84,7 +84,7 @@ public class ProceduralSqlGenerator : GeneratorBase
 
     private void GenerateListInitScript()
     {
-        var classes = Classes.Where(c => c.ReferenceValues.Any());
+        var classes = Classes.Where(c => c.Values.Any());
 
         if (classes.Any())
         {

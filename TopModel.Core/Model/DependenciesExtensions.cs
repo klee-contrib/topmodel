@@ -6,7 +6,7 @@ internal static class DependenciesExtensions
     {
         return properties.OfType<AssociationProperty>().Select(p => new ClassDependency(p.Association, p))
             .Concat(properties.OfType<AliasProperty>().Select(p => p.Property is AssociationProperty ap ? new ClassDependency(ap.Association, p) : null))
-            .Concat(properties.OfType<AliasProperty>().Select(p => p.Property is RegularProperty { ReferenceKey: true } rp ? new ClassDependency(rp.Class, p) : null))
+            .Concat(properties.OfType<AliasProperty>().Select(p => p.Property == p.Property.Class.EnumKey ? new ClassDependency(p.Property.Class, p) : null))
             .Concat(properties.OfType<CompositionProperty>().Where(p => p.Composition != currentClass).Select(p => new ClassDependency(p.Composition, p)))
             .Where(d => d != null)!;
     }

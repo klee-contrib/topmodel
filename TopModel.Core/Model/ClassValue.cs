@@ -3,7 +3,7 @@
 #nullable disable
 namespace TopModel.Core;
 
-public class ReferenceValue
+public class ClassValue
 {
     public string Name { get; set; }
 

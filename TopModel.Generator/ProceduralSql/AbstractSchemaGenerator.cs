@@ -75,7 +75,7 @@ public abstract class AbstractSchemaGenerator
         var orderList = SortUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
             .OfType<AssociationProperty>()
             .Select(a => a.Association)
-            .Where(a => a.ReferenceValues.Any()));
+            .Where(a => a.Values.Any()));
 
         foreach (var classe in orderList)
         {
@@ -180,7 +180,7 @@ public abstract class AbstractSchemaGenerator
     /// <param name="modelClass">Modele de la classe.</param>
     /// <param name="initItem">Item a insérer.</param>
     /// <returns>Dictionnaire contenant { nom de la propriété => valeur }.</returns>
-    protected Dictionary<string, string?> CreatePropertyValueDictionary(Class modelClass, ReferenceValue initItem)
+    protected Dictionary<string, string?> CreatePropertyValueDictionary(Class modelClass, ClassValue initItem)
     {
         var nameValueDict = new Dictionary<string, string?>();
         var definition = initItem.Value;
@@ -312,7 +312,7 @@ public abstract class AbstractSchemaGenerator
     /// <param name="modelClass">Modele de la classe.</param>
     /// <param name="initItem">Item a insérer.</param>
     /// <returns>Requête.</returns>
-    private string GetInsertLine(Class modelClass, ReferenceValue initItem)
+    private string GetInsertLine(Class modelClass, ClassValue initItem)
     {
         var propertyValueDict = CreatePropertyValueDictionary(modelClass, initItem);
         return GetInsertLine(modelClass.SqlName, propertyValueDict);
@@ -326,7 +326,7 @@ public abstract class AbstractSchemaGenerator
     private void WriteInsert(SqlFileWriter writer, Class modelClass)
     {
         writer.WriteLine("/**\t\tInitialisation de la table " + modelClass.Name + "\t\t**/");
-        foreach (var initItem in modelClass.ReferenceValues)
+        foreach (var initItem in modelClass.Values)
         {
             writer.WriteLine(GetInsertLine(modelClass, initItem));
         }

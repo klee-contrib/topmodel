@@ -70,7 +70,7 @@ public class InitReferenceListScripter : ISqlScripter<Class>
     /// <param name="modelClass">Modele de la classe.</param>
     /// <param name="initItem">Item a insérer.</param>
     /// <returns>Requête.</returns>
-    private string GetInsertLine(Class modelClass, ReferenceValue initItem)
+    private string GetInsertLine(Class modelClass, ClassValue initItem)
     {
         // Remplissage d'un dictionnaire nom de colonne => valeur.
         var definition = initItem.Value;
@@ -155,7 +155,7 @@ public class InitReferenceListScripter : ISqlScripter<Class>
     /// <param name="item">Liste de références.</param>
     private void WriteInsertLines(TextWriter writer, Class item)
     {
-        foreach (var initItem in item.ReferenceValues)
+        foreach (var initItem in item.Values)
         {
             writer.WriteLine(GetInsertLine(item, initItem));
         }

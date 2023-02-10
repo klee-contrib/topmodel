@@ -8,7 +8,7 @@ public enum ModelErrorType
     TMD0000,
 
     /// <summary>
-    /// La classe doit avoir une seule clé primaire pour être définie comme `reference` ou définir des `values`.
+    /// La classe doit avoir au moins une propriété non composée et au plus une clé primaire pour être définie comme `reference`.
     /// </summary>
     TMD0001,
 
@@ -91,11 +91,6 @@ public enum ModelErrorType
     /// La valeur '{valueRef.Key.ReferenceName}' n'initialise pas les propriétés obligatoires suivantes.
     /// </summary>
     TMD1012,
-
-    /// <summary>
-    /// La classe '{classe}' doit avoir une clé primaire non auto-générée ou une contrainte d'unicité sur une seule propriété en première position pour pouvoir définir des valeurs de références.
-    /// </summary>
-    TMD1013,
 
     /// <summary>
     /// La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine.
