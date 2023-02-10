@@ -48,6 +48,9 @@ public class ClassLoader : ILoader<Class>
                 case "reference":
                     classe.Reference = value!.Value == "true";
                     break;
+                case "enum":
+                    classe.EnumOverride = new LocatedString(value);
+                    break;
                 case "orderProperty":
                     classe.OrderPropertyReference = new Reference(value!);
                     break;
@@ -110,7 +113,7 @@ public class ClassLoader : ILoader<Class>
                         var name = new Reference(parser.Consume<Scalar>());
                         var values = new Dictionary<Reference, string>();
 
-                        classe.ReferenceValueReferences.Add(name, values);
+                        classe.ValueReferences.Add(name, values);
 
                         parser.ConsumeMapping(() =>
                         {

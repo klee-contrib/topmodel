@@ -86,7 +86,7 @@ public class JpaModelPropertyGenerator
                 quote = @"""";
             }
 
-            if (property is AssociationProperty ap && ap.IsEnum() && ap.Association.ReferenceValues.Any(r => r.Value.ContainsKey(ap.Association.PrimaryKey.Single()) && r.Value[ap.Association.PrimaryKey.Single()] == property.DefaultValue))
+            if (property is AssociationProperty ap && ap.IsEnum() && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Association.PrimaryKey.Single()) && r.Value[ap.Association.PrimaryKey.Single()] == property.DefaultValue))
             {
                 defaultValue += ap.Association.Name + ".Values." + property.DefaultValue + ".getEntity()";
             }
@@ -216,7 +216,7 @@ public class JpaModelPropertyGenerator
             fw.AddImport($"{javaOrJakarta}.validation.constraints.NotNull");
         }
 
-        if (property.PrimaryKey && classe.Reference && classe.ReferenceValues.Any())
+        if (property.PrimaryKey && classe.Reference && classe.Values.Any())
         {
             fw.AddImports(new List<string>
             {

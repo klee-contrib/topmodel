@@ -221,10 +221,10 @@ public static class CSharpUtils
                 string _ when cp.DomainKind!.CSharp!.Type.Contains("{composition.name}") => cp.DomainKind.CSharp.Type.ParseTemplate(cp),
                 string _ => $"{cp.DomainKind.CSharp.Type}<{{composition.name}}>".ParseTemplate(cp)
             },
-            AssociationProperty { Association: var assoc } ap when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.PrimaryKey.Single().Name}s{(ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : "?")}",
-            AliasProperty { Property: AssociationProperty { Association: var assoc } ap, AsList: var asList } when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.PrimaryKey.Single().Name}s{(asList || ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : "?")}",
+            AssociationProperty { Association: var assoc } ap when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.EnumKey!.Name}s{(ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : "?")}",
+            AliasProperty { Property: AssociationProperty { Association: var assoc } ap, AsList: var asList } when config.CanClassUseEnums(assoc) => $"{assoc}.{assoc.EnumKey!.Name}s{(asList || ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : "?")}",
             RegularProperty { PrimaryKey: true } when config.CanClassUseEnums(prop.Class) => $"{prop.Name}s?",
-            AliasProperty { Property: RegularProperty { PrimaryKey: true, Class: var alClass }, AsList: var asList } when config.CanClassUseEnums(alClass) => $"{alClass}.{alClass.PrimaryKey.Single().Name}s{(asList ? "[]" : "?")}",
+            AliasProperty { Property: RegularProperty { PrimaryKey: true, Class: var alClass }, AsList: var asList } when config.CanClassUseEnums(alClass) => $"{alClass}.{alClass.EnumKey!.Name}s{(asList ? "[]" : "?")}",
             IFieldProperty fp => fp.Domain.CSharp?.Type.ParseTemplate(fp) ?? string.Empty,
             _ => string.Empty
         };

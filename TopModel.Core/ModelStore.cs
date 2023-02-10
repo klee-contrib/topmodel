@@ -872,15 +872,15 @@ public class ModelStore
             }
         }
 
-        // Résolution des valeurs de références
-        foreach (var classe in fileClasses.Where(c => c.ReferenceValueReferences.Any()))
+        // Résolution des valeurs
+        foreach (var classe in fileClasses.Where(c => c.ValueReferences.Any()))
         {
-            classe.ReferenceValues.Clear();
+            classe.Values.Clear();
 
-            foreach (var valueRef in classe.ReferenceValueReferences)
+            foreach (var valueRef in classe.ValueReferences)
             {
-                var referenceValue = new ReferenceValue { Name = valueRef.Key.ReferenceName, Class = classe };
-                classe.ReferenceValues.Add(referenceValue);
+                var classValue = new ClassValue { Name = valueRef.Key.ReferenceName, Class = classe };
+                classe.Values.Add(classValue);
 
                 foreach (var value in valueRef.Value)
                 {
@@ -892,7 +892,7 @@ public class ModelStore
                     }
                     else
                     {
-                        referenceValue.Value.Add(property, value.Value);
+                        classValue.Value.Add(property, value.Value);
                     }
                 }
 
@@ -916,7 +916,7 @@ public class ModelStore
                     yield return new ModelError(classe, $"La propriété '{classe.DefaultPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.DefaultPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
                 }
             }
-            else if (classe.Reference || classe.ReferenceValues.Any())
+            else
             {
                 // Si la classe a une propriété "Label" ou "Libelle", alors on la considère par défaut (sic) comme propriété par défaut.
                 classe.DefaultProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == "Label" || fp.Name == "Libelle");
@@ -930,7 +930,7 @@ public class ModelStore
                     yield return new ModelError(classe, $"La propriété '{classe.OrderPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.OrderPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
                 }
             }
-            else if (classe.Reference || classe.ReferenceValues.Any())
+            else
             {
                 // Si la classe a une propriété "Order" ou "Ordre", alors on la considère par défaut comme propriété d'ordre.
                 classe.OrderProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == "Order" || fp.Name == "Ordre");
@@ -944,19 +944,35 @@ public class ModelStore
                     yield return new ModelError(classe, $"La propriété '{classe.FlagPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.FlagPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
                 }
             }
-            else if (classe.Reference || classe.ReferenceValues.Any())
+            else
             {
                 // Si la classe a une propriété "Flag", alors on la considère par défaut comme propriété de flag.
                 classe.FlagProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == "Flag");
             }
         }
 
-        // Check des PKs multiples sur les classes
-        foreach (var classe in fileClasses.Where(c => c.PrimaryKey.Count() > 1))
+        // Check de `reference` et `enum`
+        foreach (var classe in fileClasses.Where(c => c.Reference && c.ReferenceKey == null))
         {
-            if (classe.Reference || classe.ReferenceValues.Any())
+            yield return new ModelError(classe, $"La classe '{classe}' doit avoir au moins une propriété non composée et au plus une clé primaire pour être définie comme `reference`.") { ModelErrorType = ModelErrorType.TMD0001 };
+        }
+
+        foreach (var classe in fileClasses)
+        {
+            if (classe.EnumOverride != null)
             {
-                yield return new ModelError(classe, $"La classe '{classe}' doit avoir une seule clé primaire pour être définie comme `reference` ou définir des `values`.") { ModelErrorType = ModelErrorType.TMD0001 };
+                if (classe.EnumOverride == "true" && (!classe.Values.Any() || classe.ReferenceKey == null))
+                {
+                    yield return new ModelError(classe, $"La classe '{classe}' doit avoir au moins une propriété non composée, au plus une clé primaire et au moins une `value` pour être définie comme `enum`.", classe.EnumOverride.Location) { ModelErrorType = ModelErrorType.TMD0006 };
+                }
+                else
+                {
+                    classe.Enum = classe.EnumOverride == "true";
+                }
+            }
+            else
+            {
+                classe.Enum = classe.Values.Any() && classe.ReferenceKey != null && !classe.ReferenceKey.Domain.AutoGeneratedValue;
             }
         }
 
@@ -1275,15 +1291,6 @@ public class ModelStore
                     ModelErrorType = ModelErrorType.TMD0003
                 };
             }
-
-            if (classe.PrimaryKey.Count() <= 1 && classe.ReferenceValues.Any() && (classe.PrimaryKey.SingleOrDefault()?.Domain?.AutoGeneratedValue ?? false) == true)
-            {
-                var firstUk = classe.UniqueKeys.FirstOrDefault();
-                if (firstUk == null || firstUk.Count != 1)
-                {
-                    yield return new ModelError(classe, $"La classe '{classe}' doit avoir une clé primaire non auto-générée ou une contrainte d'unicité sur une seule propriété en première position pour pouvoir définir des valeurs de références.") { ModelErrorType = ModelErrorType.TMD1013 };
-                }
-            }
         }
 
         foreach (var use in modelFile.UselessImports.Where(u => dependencies.Any(d => d.Name == u.ReferenceName)))
@@ -1388,7 +1395,7 @@ public class ModelStore
 
             if (classe.DefaultProperty != null)
             {
-                foreach (var r in classe.ReferenceValues)
+                foreach (var r in classe.Values)
                 {
                     defaultLangMap[r.ResourceKey] = r.Value[classe.DefaultProperty];
                 }

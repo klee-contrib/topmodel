@@ -147,7 +147,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
             w.WriteLine();
         }
 
-        foreach (var classe in classList.Where(c => c.IsPersistent || c.ReferenceValues.Any()))
+        foreach (var classe in classList.Where(c => c.IsPersistent || c.Values.Any()))
         {
             var serviceName = "Load" + (_config.DbContextPath == null ? $"{classe.Name}List" : classe.PluralName);
             w.WriteLine(2, "/// <inheritdoc cref=\"" + interfaceName + "." + serviceName + "\" />");
@@ -232,7 +232,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
         {
             return $@"return new List<{classe.Name}>
 {{
-    {string.Join(",\r\n    ", classe.ReferenceValues.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.Name} = {(prop.Key.Domain.ShouldQuoteSqlValue ? $"\"{prop.Value}\"" : prop.Value)}"))} }}"))}
+    {string.Join(",\r\n    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.Name} = {(prop.Key.Domain.ShouldQuoteSqlValue ? $"\"{prop.Value}\"" : prop.Value)}"))} }}"))}
 }};";
         }
 

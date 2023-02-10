@@ -50,7 +50,7 @@ public class JpaResourceGenerator : GeneratorBase
         return Files
             .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
             .Select(c => c.ResourceProperty)
-            .Where(p => p.Label != null || (p.Class?.ReferenceValues.Any() ?? false) && p.Class?.DefaultProperty != null)
+            .Where(p => p.Label != null || (p.Class?.Values.Any() ?? false) && p.Class?.DefaultProperty != null)
             .Distinct()
             .GroupBy(prop => prop.Parent.Namespace.Module.Split('.').First());
     }
@@ -90,7 +90,7 @@ public class JpaResourceGenerator : GeneratorBase
 
         if (container.Key is Class classe && classe.DefaultProperty != null)
         {
-            foreach (var val in classe.ReferenceValues)
+            foreach (var val in classe.Values)
             {
                 fw.WriteLine($"{val.ResourceKey}={_translationStore.GetTranslation(val, lang)}");
             }

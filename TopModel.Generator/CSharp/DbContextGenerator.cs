@@ -144,11 +144,11 @@ public class DbContextGenerator : GeneratorBase
             }
 
             var hasData = false;
-            foreach (var classe in classes.Distinct().Where(c => c.ReferenceValues.Any()).OrderBy(c => c.Name))
+            foreach (var classe in classes.Distinct().Where(c => c.Values.Any()).OrderBy(c => c.Name))
             {
                 hasData = true;
                 w.WriteLine(3, $"modelBuilder.Entity<{classe.Name}>().HasData(");
-                foreach (var refValue in classe.ReferenceValues)
+                foreach (var refValue in classe.Values)
                 {
                     if (!_config.UseLatestCSharp)
                     {
@@ -159,7 +159,7 @@ public class DbContextGenerator : GeneratorBase
 
                     string WriteEnumValue(Class targetClass, string value)
                     {
-                        return $"{(targetClass.Name == targetClass.PluralName ? $"{_config.GetNamespace(targetClass)}.{targetClass.Name}" : targetClass.Name)}.{targetClass.PrimaryKey.Single().Name}s.{value}";
+                        return $"{(targetClass.Name == targetClass.PluralName ? $"{_config.GetNamespace(targetClass)}.{targetClass.Name}" : targetClass.Name)}.{targetClass.EnumKey!.Name}s.{value}";
                     }
 
                     foreach (var prop in refValue.Value.ToList())
@@ -181,7 +181,7 @@ public class DbContextGenerator : GeneratorBase
                     }
 
                     w.Write(" }");
-                    if (classe.ReferenceValues.IndexOf(refValue) < classe.ReferenceValues.Count - 1)
+                    if (classe.Values.IndexOf(refValue) < classe.Values.Count - 1)
                     {
                         w.Write(",\r\n");
                     }

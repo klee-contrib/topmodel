@@ -11,7 +11,7 @@ public class TranslationStore
             ? translatedValue : property.Label ?? string.Empty;
     }
 
-    public string GetTranslation(ReferenceValue refValue, string lang)
+    public string GetTranslation(ClassValue refValue, string lang)
     {
         return Translations.TryGetValue(lang, out var dict) && dict.TryGetValue(refValue.ResourceKey, out var translatedValue) ? translatedValue : refValue.Value[refValue.Class.DefaultProperty];
     }

@@ -38,7 +38,16 @@ public class Class : IPropertyContainer
 
     public IEnumerable<IFieldProperty> PrimaryKey => Properties.OfType<IFieldProperty>().Where(p => p.PrimaryKey);
 
-    public List<ReferenceValue> ReferenceValues { get; } = new();
+    public IFieldProperty? ReferenceKey =>
+        PrimaryKey.Count() <= 1
+            ? PrimaryKey.SingleOrDefault() ?? Properties.OfType<IFieldProperty>().FirstOrDefault()
+            : null;
+
+    public IFieldProperty? EnumKey => Enum ? ReferenceKey : null;
+
+    public bool Enum { get; set; }
+
+    public List<ClassValue> Values { get; } = new();
 
     public List<List<IFieldProperty>> UniqueKeys { get; } = new();
 
@@ -66,12 +75,14 @@ public class Class : IPropertyContainer
 
     public List<List<Reference>> UniqueKeyReferences { get; } = new();
 
-    public Dictionary<Reference, Dictionary<Reference, string>> ReferenceValueReferences { get; } = new();
+    public Dictionary<Reference, Dictionary<Reference, string>> ValueReferences { get; } = new();
 
     public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies(this)
         .Concat(Extends != null ? new[] { new ClassDependency(Extends, this) } : Array.Empty<ClassDependency>());
 
     public IEnumerable<DomainDependency> DomainDependencies => Properties.GetDomainDependencies();
+
+    internal LocatedString? EnumOverride { get; set; }
 
 #nullable disable
     internal Reference Location { get; set; }
