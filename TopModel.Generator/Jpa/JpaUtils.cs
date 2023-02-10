@@ -192,4 +192,48 @@ public static class JpaUtils
         var packageRoot = classe.IsPersistent ? config.EntitiesPackageName : config.DtosPackageName;
         return $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
     }
+
+
+    public static string? GetMapperFilePath(this JpaConfig config, Class? sampleClass)
+    {
+        if (sampleClass == null)
+        {
+            return null;
+        }
+
+        var directory = Path.Combine(config.OutputDirectory, string.Join('/', config.MappersPackageName.Split('.')));
+        Directory.CreateDirectory(directory);
+
+        return Path.Combine(directory, GetMapperClassFileName(config, sampleClass)!);
+    }
+
+    public static string? GetMapperClassName(this JpaConfig config, Class? sampleClass)
+    {
+        if (sampleClass == null)
+        {
+            return null;
+        }
+
+        return $@"{sampleClass.Namespace.Module.Split('.').First()}{(sampleClass.IsPersistent ? string.Empty : "DTO")}Mappers";
+    }
+
+    public static string? GetMapperClassFileName(this JpaConfig config, Class? sampleClass)
+    {
+        if (sampleClass == null)
+        {
+            return null;
+        }
+
+        return $@"{GetMapperClassName(config, sampleClass)}.java";
+    }
+
+    public static string? GetMapperImport(this JpaConfig config, Class? sampleClass)
+    {
+        if (sampleClass == null)
+        {
+            return null;
+        }
+
+        return $@"{config.MappersPackageName}.{GetMapperClassName(config, sampleClass)}";
+    }
 }

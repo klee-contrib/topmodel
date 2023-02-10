@@ -24,6 +24,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 
+import topmodel.jpa.sample.demo.mappers.SecuriteMappers;
+
 /**
  * Profil des utilisateurs.
  */
@@ -172,21 +174,14 @@ public class Profil {
 	/**
 	 * Mappe 'Profil' vers 'Profil'.
 	 * @param source Instance de 'Profil'.
-	 * @param dest Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
+	 * @param target Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
 	 *
 	 * @return Une instance de 'Profil'.
 	 */
-	public Profil toProfil(Profil dest) {
-		dest = dest == null ? new Profil() : dest;
-
-		dest.setId(this.getId());
-		if (this.getTypeProfil() != null) {
-			dest.setTypeProfil(this.getTypeProfil());
-		}
-		dest.setDroits(this.getDroits());
-		dest.setSecteurs(this.getSecteurs());
-
-		return dest;
+	public Profil toProfil(Profil target) {
+		target = target == null ? new Profil() : dest;
+		SecuriteMappers.ToProfil(source, target);
+		return target;
 	}
 
 	/**

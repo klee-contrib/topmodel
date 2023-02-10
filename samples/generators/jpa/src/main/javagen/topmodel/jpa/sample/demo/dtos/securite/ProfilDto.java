@@ -14,6 +14,7 @@ import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
 import topmodel.jpa.sample.demo.entities.securite.Droit;
 import topmodel.jpa.sample.demo.entities.securite.Profil;
 import topmodel.jpa.sample.demo.entities.securite.TypeProfil;
+import topmodel.jpa.sample.demo.mappers.SecuriteDTOMappers;
 
 /**
  * Objet métier non persisté représentant Profil.
@@ -212,20 +213,14 @@ public class ProfilDto implements Serializable {
 	/**
 	 * Mappe 'ProfilDto' vers 'Profil'.
 	 * @param source Instance de 'ProfilDto'.
-	 * @param dest Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
+	 * @param target Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
 	 *
 	 * @return Une instance de 'Profil'.
 	 */
-	public Profil toProfil(Profil dest) {
-		dest = dest == null ? new Profil() : dest;
-
-		dest.setId(this.getId());
-		if (this.getTypeProfilCode() != null) {
-			dest.setTypeProfil(this.getTypeProfilCode().getEntity());
-		}
-		dest.setDroits(this.getDroits().stream().map(Droit.Values::getEntity).collect(Collectors.toList()));
-
-		return dest;
+	public Profil toProfil(Profil target) {
+		target = target == null ? new Profil() : dest;
+		SecuriteDTOMappers.ToProfil(source, target);
+		return target;
 	}
 
 	/**

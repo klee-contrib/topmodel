@@ -25,3 +25,5 @@ generatedFiles:
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/utilisateur/Utilisateur.java
   - ../generators/jpa/src/main/resources/i18n/model/securite/securite_.properties
   - ../generators/jpa/src/main/resources/i18n/model/utilisateur/utilisateur_.properties
+  - ../generators/jpa/src/main/topmodel/jpa/sample/demo/mappers/SecuriteMappers.java
+  - ../generators/jpa/src/main/topmodel/jpa/sample/demo/mappers/UtilisateurMappers.java
