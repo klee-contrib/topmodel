@@ -8,7 +8,7 @@ namespace TopModel.Generator.Javascript;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class AngularApiClientGenerator : GeneratorBase
+public class AngularApiClientGenerator : EndpointsGeneratorBase
 {
     private readonly JavascriptConfig _config;
     private readonly ILogger<AngularApiClientGenerator> _logger;
@@ -22,78 +22,53 @@ public class AngularApiClientGenerator : GeneratorBase
 
     public override string Name => "JSNGApiClientGen";
 
-    public override List<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any())
-        .SelectMany(file => _config.Tags.Intersect(file.Tags).Select(tag => _config.GetEndpointsFileName(file, tag)))
-        .Distinct()
-        .ToList();
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override string GetFileName(ModelFile file, string tag)
     {
-        foreach (var file in files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }))
-        {
-            GenerateClientFile(file.First(), file.SelectMany(f => f.Tags).Distinct());
-        }
+        return _config.GetEndpointsFileName(file, tag);
     }
 
-    private void GenerateClientFile(ModelFile file, IEnumerable<string> tags)
+    protected override void HandleFile(string fileName, string tag, IEnumerable<ModelFile> files, IList<Endpoint> endpoints)
     {
-        foreach (var (tag, fileName) in _config.Tags.Intersect(tags)
-        .Select(tag => (tag, fileName: _config.GetEndpointsFileName(file, tag)))
-        .DistinctBy(t => t.fileName))
+        using var fw = new FileWriter(fileName, _logger, false);
+        var imports = _config.GetEndpointImports(files, tag, Classes);
+
+        imports.AddRange(new List<(string Import, string Path)>
         {
-            var files = Files.Values.Where(f => f.Options.Endpoints.FileName == file.Options.Endpoints.FileName && f.Module == file.Module && f.Tags.Contains(tag));
+            (Import: "Injectable", Path: "@angular/core"),
+            (Import: "HttpClient", Path: "@angular/common/http"),
+            (Import: "Observable", Path: "rxjs"),
+        });
 
-            var endpoints = files
-                .SelectMany(f => f.Endpoints)
-                .OrderBy(e => e.Name, StringComparer.Ordinal)
-                .ToList();
-
-            if (!endpoints.Any())
-            {
-                continue;
-            }
-
-            using var fw = new FileWriter(fileName, _logger, false);
-            var imports = _config.GetEndpointImports(files, tag, Classes);
-
-            imports.AddRange(new List<(string Import, string Path)>()
-            {
-                (Import: "Injectable", Path: "@angular/core"),
-                (Import: "HttpClient", Path: "@angular/common/http"),
-                (Import: "Observable", Path: "rxjs"),
-            });
-
-            if (endpoints.Any(e => e.GetQueryParams().Any()))
-            {
-                imports.Add((Import: "HttpParams", Path: "@angular/common/http"));
-            }
-
-            imports = imports.GroupAndSort();
-
-            if (imports.Any())
-            {
-                fw.WriteLine();
-
-                foreach (var (import, path) in imports)
-                {
-                    fw.WriteLine($@"import {{{import}}} from ""{path}"";");
-                }
-            }
-
-            fw.WriteLine("@Injectable({");
-            fw.WriteLine(1, "providedIn: 'root'");
-            fw.WriteLine("})");
-
-            fw.WriteLine(@$"export class {GetClassName(file)} {{");
-            fw.WriteLine();
-            fw.WriteLine(1, "constructor(private http: HttpClient) {}");
-            foreach (var endpoint in endpoints)
-            {
-                WriteEndpoint(endpoint, fw);
-            }
-
-            fw.WriteLine("}");
+        if (endpoints.Any(e => e.GetQueryParams().Any()))
+        {
+            imports.Add((Import: "HttpParams", Path: "@angular/common/http"));
         }
+
+        imports = imports.GroupAndSort();
+
+        if (imports.Any())
+        {
+            fw.WriteLine();
+
+            foreach (var (import, path) in imports)
+            {
+                fw.WriteLine($@"import {{{import}}} from ""{path}"";");
+            }
+        }
+
+        fw.WriteLine("@Injectable({");
+        fw.WriteLine(1, "providedIn: 'root'");
+        fw.WriteLine("})");
+
+        fw.WriteLine(@$"export class {files.First().Options.Endpoints.FileName.ToFirstUpper()}Service {{");
+        fw.WriteLine();
+        fw.WriteLine(1, "constructor(private http: HttpClient) {}");
+        foreach (var endpoint in endpoints)
+        {
+            WriteEndpoint(endpoint, fw);
+        }
+
+        fw.WriteLine("}");
     }
 
     private void WriteEndpoint(Endpoint endpoint, FileWriter fw)
@@ -184,10 +159,5 @@ public class AngularApiClientGenerator : GeneratorBase
 
         fw.WriteLine(");");
         fw.WriteLine(1, "}");
-    }
-
-    private string GetClassName(ModelFile file)
-    {
-        return $"{file.Options.Endpoints.FileName.ToFirstUpper()}Service";
     }
 }

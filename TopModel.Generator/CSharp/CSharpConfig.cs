@@ -118,6 +118,13 @@ public class CSharpConfig : GeneratorConfigBase
     /// </summary>
     public bool UseEFComments { get; set; }
 
+    public override string[] PropertiesWithTagVariableSupport => new[]
+    {
+        nameof(ApiGeneration),
+        nameof(ApiRootPath),
+        nameof(ApiFilePath)
+    };
+
     /// <summary>
     /// Détermine si une classe utilise une enum pour sa clé primaire.
     /// </summary>

@@ -426,6 +426,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
                 fw.WriteLine("\r\n}");
             }
+
             if (reference.Reference)
             {
                 fw.Write("export interface ");

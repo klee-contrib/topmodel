@@ -6,7 +6,7 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.CSharp;
 
-public class CSharpApiClientGenerator : GeneratorBase
+public class CSharpApiClientGenerator : EndpointsGeneratorBase
 {
     private readonly CSharpConfig _config;
     private readonly ILogger<CSharpApiClientGenerator> _logger;
@@ -20,41 +20,24 @@ public class CSharpApiClientGenerator : GeneratorBase
 
     public override string Name => "CSharpApiClientGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any()).Select(GetFilePath).Distinct();
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override bool FilterTag(string tag)
     {
-        foreach (var file in files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }))
-        {
-            HandleFile(file.Key.FileName, file.Key.Module);
-        }
+        return _config.ResolveTagVariables(tag, _config.ApiGeneration) == ApiGeneration.Client;
     }
 
-    private string GetFilePath(ModelFile file)
+    protected override string GetFileName(ModelFile file, string tag)
     {
         var className = $"{file.Options.Endpoints.FileName}Client";
-        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), _config.ApiFilePath.Replace("{module}", file.Module.Replace('.', Path.DirectorySeparatorChar))).Replace("\\", "/");
+        var apiPath = Path.Combine(
+            _config.ResolveTagVariables(tag, _config.ApiRootPath).Replace("{app}", file.Endpoints.First().Namespace.App),
+            _config.ResolveTagVariables(tag, _config.ApiFilePath).Replace("{module}", file.Module.Replace('.', Path.DirectorySeparatorChar)))
+        .Replace("\\", "/");
         return $"{_config.OutputDirectory}/{apiPath}/generated/{className}.cs";
     }
 
-    private void HandleFile(string fileName, string module)
+    protected override void HandleFile(string fileName, string tag, IEnumerable<ModelFile> files, IList<Endpoint> endpoints)
     {
-        var endpoints = Files.Values
-            .Where(file => file.Options.Endpoints.FileName == fileName && file.Module == module)
-            .SelectMany(file => file.Endpoints)
-            .OrderBy(endpoint => endpoint.Name, StringComparer.Ordinal)
-            .ToList();
-
-        if (!endpoints.Any())
-        {
-            return;
-        }
-
-        var className = $"{fileName}Client";
-        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", endpoints.First().Namespace.App), _config.ApiFilePath.Replace("{module}", module.Replace('.', Path.DirectorySeparatorChar))).Replace("\\", "/");
-        var filePath = $"{_config.OutputDirectory}/{apiPath}/generated/{className}.cs";
-
-        using var fw = new CSharpWriter(filePath, _logger, _config.UseLatestCSharp);
+        using var fw = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
 
         var hasBody = endpoints.Any(e => e.GetBodyParam() != null);
         var hasReturn = endpoints.Any(e => e.Returns != null);
@@ -154,6 +137,9 @@ public class CSharpApiClientGenerator : GeneratorBase
             }
         }
 
+        var className = $"{files.First().Options.Endpoints.FileName.Split("/").Last()}Client";
+        var apiPath = string.Join("/", fileName.Replace($"{_config.OutputDirectory}/", string.Empty).Split("/").SkipLast(2));
+
         var ns = apiPath.Replace("/", ".");
 
         fw.WriteUsings(usings.Distinct().Where(u => u != ns).ToArray());
@@ -164,7 +150,7 @@ public class CSharpApiClientGenerator : GeneratorBase
 
         fw.WriteNamespace(ns);
 
-        fw.WriteSummary(1, $"Client {module}");
+        fw.WriteSummary(1, $"Client {files.First().Module}");
         fw.WriteClassDeclaration(className, null);
 
         fw.WriteLine(2, "private readonly HttpClient _client;");

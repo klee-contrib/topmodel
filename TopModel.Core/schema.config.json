@@ -304,6 +304,20 @@
               }
             }
           },
+          "tagVariables": {
+            "type": "object",
+            "description": "Définitions de variables par tag à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".*": {
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
           "outputDirectory": {
             "type": "string",
             "description": "Racine du répertoire de génération."
