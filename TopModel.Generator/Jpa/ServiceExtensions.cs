@@ -39,15 +39,16 @@ public static class ServiceExtensions
                         new JpaResourceGenerator(p.GetRequiredService<ILogger<JpaResourceGenerator>>(), config, p.GetRequiredService<TranslationStore>()) { Number = number });
             }
 
-            if (config.ApiRootPath != null)
+            if (config.ApiRootPath != null && config.ApiGeneration != null)
             {
-                if (config.ApiGeneration == ApiGeneration.Server)
+                if (config.ApiGeneration != ApiGeneration.Client)
                 {
                     services
                         .AddSingleton<IModelWatcher>(p =>
                             new SpringServerApiGenerator(p.GetRequiredService<ILogger<SpringServerApiGenerator>>(), config) { Number = number });
                 }
-                else if (config.ApiGeneration == ApiGeneration.Client)
+
+                if (config.ApiGeneration != ApiGeneration.Server)
                 {
                     services
                         .AddSingleton<IModelWatcher>(p =>
