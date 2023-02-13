@@ -51,6 +51,9 @@ public class ClassLoader : ILoader<Class>
                 case "enum":
                     classe.EnumOverride = new LocatedString(value);
                     break;
+                case "abstract":
+                    classe.Abstract = value!.Value == "true";
+                    break;
                 case "orderProperty":
                     classe.OrderPropertyReference = new Reference(value!);
                     break;

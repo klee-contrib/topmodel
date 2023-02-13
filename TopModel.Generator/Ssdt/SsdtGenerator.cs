@@ -30,7 +30,7 @@ public class SsdtGenerator : GeneratorBase
     public override string Name => "SsdtGen";
 
     public override IEnumerable<string> GeneratedFiles =>
-        Classes.Where(c => c.IsPersistent).SelectMany(c =>
+        Classes.Where(c => c.IsPersistent && !c.Abstract).SelectMany(c =>
         {
             var files = new List<string>();
             if (_config.TableScriptFolder != null)
@@ -53,7 +53,7 @@ public class SsdtGenerator : GeneratorBase
 
             return files;
         })
-        .Concat(Classes.Where(c => c.IsPersistent && c.Values.Any()).Select(c =>
+        .Concat(Classes.Where(c => c.IsPersistent && !c.Abstract && c.Values.Any()).Select(c =>
         {
             if (_config.InitListScriptFolder != null)
             {
@@ -62,7 +62,7 @@ public class SsdtGenerator : GeneratorBase
 
             return null;
         }))
-        .Concat(Classes.Where(c => c.IsPersistent && c.Values.Any()).Any() && _config.InitListScriptFolder != null && _config.InitListMainScriptName != null ? new[] { Path.Combine(_config.InitListScriptFolder, _config.InitListMainScriptName) } : Array.Empty<string>())
+        .Concat(Classes.Where(c => c.IsPersistent && !c.Abstract && c.Values.Any()).Any() && _config.InitListScriptFolder != null && _config.InitListMainScriptName != null ? new[] { Path.Combine(_config.InitListScriptFolder, _config.InitListMainScriptName) } : Array.Empty<string>())
         .Where(f => f != null)!;
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
@@ -82,7 +82,7 @@ public class SsdtGenerator : GeneratorBase
             var tableCount = 0;
             var tableTypeCount = 0;
 
-            var classes = file.Classes.Where(c => c.IsPersistent).ToList();
+            var classes = file.Classes.Where(c => c.IsPersistent && !c.Abstract).ToList();
 
             var manyToManyProperties = file.Classes.SelectMany(cl => cl.Properties).OfType<AssociationProperty>().Where(ap => ap.Type == AssociationType.ManyToMany);
             foreach (var ap in manyToManyProperties)
@@ -141,7 +141,7 @@ public class SsdtGenerator : GeneratorBase
 
     private void GenerateListInitScript()
     {
-        var classes = Classes.Where(c => c.Values.Any());
+        var classes = Classes.Where(c => c.IsPersistent && !c.Abstract && c.Values.Any());
 
         if (!classes.Any() || _config.InitListScriptFolder == null)
         {

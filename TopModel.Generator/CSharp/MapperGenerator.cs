@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.Generator.CSharp;
 
@@ -106,7 +107,22 @@ public class MapperGenerator : GeneratorBase
 
             w.WriteReturns(2, $"Une nouvelle instance de '{classe}'");
 
-            w.WriteLine(2, $"public static {classe} Create{classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name}{(!p.Required ? " = null" : string.Empty)}"))})");
+            if (classe.Abstract)
+            {
+                w.Write(2, $"public static T Create{classe}<T>");
+            }
+            else
+            {
+                w.Write(2, $"public static {classe} Create{classe}");
+            }
+
+            w.WriteLine($"({string.Join(", ", mapper.Params.Select(p => $"{(p.Class.Abstract ? "I" : string.Empty)}{p.Class} {p.Name}{(!p.Required ? " = null" : string.Empty)}"))})");
+
+            if (classe.Abstract)
+            {
+                w.WriteLine(3, $"where T : I{classe}");
+            }
+
             w.WriteLine(2, "{");
 
             foreach (var param in mapper.Params.Where(p => p.Required))
@@ -118,8 +134,15 @@ public class MapperGenerator : GeneratorBase
                 w.WriteLine();
             }
 
-            w.WriteLine(3, $"return new {classe}");
-            w.WriteLine(3, "{");
+            if (classe.Abstract)
+            {
+                w.WriteLine(3, $"return (T)T.Create(");
+            }
+            else
+            {
+                w.WriteLine(3, $"return new {classe}");
+                w.WriteLine(3, "{");
+            }
 
             if (mapper.ParentMapper != null)
             {
@@ -181,7 +204,14 @@ public class MapperGenerator : GeneratorBase
                 var mappings = param.Mappings.ToList();
                 foreach (var mapping in mappings)
                 {
-                    w.Write(4, $"{mapping.Key.Name} = ");
+                    if (classe.Abstract)
+                    {
+                        w.Write(4, $"{mapping.Key.Name.ToFirstLower()}: ");
+                    }
+                    else
+                    {
+                        w.Write(4, $"{mapping.Key.Name} = ");
+                    }
 
                     if (mapping.Value == null)
                     {
@@ -223,12 +253,20 @@ public class MapperGenerator : GeneratorBase
                     {
                         w.Write(",");
                     }
+                    else if (classe.Abstract)
+                    {
+                        w.Write(");");
+                    }
 
                     w.WriteLine();
                 }
             }
 
-            w.WriteLine(3, "};");
+            if (!classe.Abstract)
+            {
+                w.WriteLine(3, "};");
+            }
+
             w.WriteLine(2, "}");
 
             if (toMappers.Any() || fromMappers.IndexOf(fromMapper) < fromMappers.Count - 1)
@@ -243,12 +281,33 @@ public class MapperGenerator : GeneratorBase
 
             w.WriteSummary(2, $"Mappe '{classe}' vers '{mapper.Class}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
             w.WriteParam("source", $"Instance de '{classe}'");
-            w.WriteParam("dest", $"Instance pré-existante de '{mapper.Class}'. Une nouvelle instance sera créée si non spécifié.");
+            if (!mapper.Class.Abstract)
+            {
+                w.WriteParam("dest", $"Instance pré-existante de '{mapper.Class}'. Une nouvelle instance sera créée si non spécifié.");
+            }
+
             w.WriteReturns(2, $"Une instance de '{mapper.Class}'");
 
-            w.WriteLine(2, $"public static {mapper.Class} {mapper.Name}(this {classe} source, {mapper.Class} dest = null)");
+            if (mapper.Class.Abstract)
+            {
+                w.WriteLine(2, $"public static T {mapper.Name}<T>(this {classe} source)");
+                w.WriteLine(3, $"where T : I{mapper.Class}");
+            }
+            else
+            {
+                w.WriteLine(2, $"public static {mapper.Class} {mapper.Name}(this {(classe.Abstract ? "I" : string.Empty)}{classe} source, {mapper.Class} dest = null)");
+            }
+
             w.WriteLine(2, "{");
-            w.WriteLine(3, $"dest ??= new {mapper.Class}();");
+
+            if (mapper.Class.Abstract)
+            {
+                w.WriteLine(3, $"return (T)T.Create(");
+            }
+            else
+            {
+                w.WriteLine(3, $"dest ??= new {mapper.Class}();");
+            }
 
             static string GetSourceMapping(IProperty property)
             {
@@ -262,7 +321,8 @@ public class MapperGenerator : GeneratorBase
                 }
             }
 
-            foreach (var mapping in (mapper.ParentMapper?.Mappings ?? new Dictionary<IProperty, IFieldProperty?>()).Concat(mapper.Mappings))
+            var mappings = (mapper.ParentMapper?.Mappings ?? new Dictionary<IProperty, IFieldProperty?>()).Concat(mapper.Mappings).ToList();
+            foreach (var mapping in mappings)
             {
                 var value = $"source.{GetSourceMapping(mapping.Key)}";
 
@@ -279,10 +339,29 @@ public class MapperGenerator : GeneratorBase
                     }
                 }
 
-                w.WriteLine(3, $"dest.{mapping.Value?.Name} = {value};");
+                if (mapper.Class.Abstract)
+                {
+                    w.Write(4, $"{mapping.Value?.Name.ToFirstLower()}: {value}");
+
+                    if (mappings.IndexOf(mapping) < mappings.Count - 1)
+                    {
+                        w.WriteLine(",");
+                    }
+                    else
+                    {
+                        w.WriteLine(");");
+                    }
+                }
+                else
+                {
+                    w.WriteLine(3, $"dest.{mapping.Value?.Name} = {value};");
+                }
             }
 
-            w.WriteLine(3, "return dest;");
+            if (!mapper.Class.Abstract)
+            {
+                w.WriteLine(3, "return dest;");
+            }
 
             w.WriteLine(2, "}");
 

@@ -148,6 +148,21 @@ public enum ModelErrorType
     TMD1023,
 
     /// <summary>
+    /// La propriété '{property}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.
+    /// </summary>
+    TMD1024,
+
+    /// <summary>
+    /// Aucun mapping n'a été trouvé sur ce mapper.
+    /// </summary>
+    TMD1025,
+
+    /// <summary>
+    /// Impossible de définir un 'extends' sur la classe '{classe}' abstraite.
+    /// </summary>
+    TMD1026,
+
+    /// <summary>
     /// Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.
     /// </summary>
     TMD1027,

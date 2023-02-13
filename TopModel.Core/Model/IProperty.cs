@@ -10,6 +10,8 @@ public interface IProperty
 
     string Comment { get; }
 
+    bool Readonly { get; set; }
+
     Class Class { get; set; }
 
     Endpoint Endpoint { get; set; }

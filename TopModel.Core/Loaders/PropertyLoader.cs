@@ -41,6 +41,9 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                         case "required":
                             rp.Required = value.Value == "true";
                             break;
+                        case "readonly":
+                            rp.Readonly = value.Value == "true";
+                            break;
                         case "domain":
                             rp.DomainReference = new DomainReference(value);
                             break;
@@ -104,6 +107,9 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                         case "primaryKey":
                             ap.PrimaryKey = value.Value == "true";
                             break;
+                        case "readonly":
+                            ap.Readonly = value.Value == "true";
+                            break;
                         case "defaultValue":
                             ap.DefaultValue = value.Value;
                             break;
@@ -158,6 +164,9 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                             break;
                         case "comment":
                             cp.Comment = value.Value;
+                            break;
+                        case "readonly":
+                            cp.Readonly = value.Value == "true";
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
@@ -241,6 +250,9 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                             break;
                         case "required":
                             alp.Required = value.Value == "true";
+                            break;
+                        case "readonly":
+                            alp.Readonly = value.Value == "true";
                             break;
                         case "comment":
                             alp.Comment = value.Value;

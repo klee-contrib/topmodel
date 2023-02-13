@@ -212,13 +212,14 @@ public class CSharpWriter : IDisposable
     /// <summary>
     /// Ecrit le commentaire de paramètre de type.
     /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
     /// <param name="paramName">Nom du paramètre.</param>
     /// <param name="value">Valeur du paramètre.</param>
-    public void WriteTypeParam(string paramName, string value)
+    public void WriteTypeParam(int indentationLevel, string paramName, string value)
     {
         if (!string.IsNullOrEmpty(paramName) && !string.IsNullOrEmpty(value))
         {
-            WriteLine(2, LoadParam(paramName, value, "typeparam"));
+            WriteLine(indentationLevel, LoadParam(paramName, value, "typeparam"));
         }
     }
 

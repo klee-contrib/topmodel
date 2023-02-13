@@ -26,6 +26,8 @@ public class Class : IPropertyContainer
 
     public bool Reference { get; set; }
 
+    public bool Abstract { get; set; }
+
     public IFieldProperty? OrderProperty { get; set; }
 
     public IFieldProperty? DefaultProperty { get; set; }
