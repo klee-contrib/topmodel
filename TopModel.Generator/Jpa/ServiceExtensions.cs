@@ -55,6 +55,8 @@ public static class ServiceExtensions
                             new SpringClientApiGenerator(p.GetRequiredService<ILogger<SpringClientApiGenerator>>(), config) { Number = number });
                 }
             }
+            services.AddSingleton<IModelWatcher>(p =>
+                new JpaMapperGenerator(p.GetRequiredService<ILogger<JpaMapperGenerator>>(), config) { Number = number });
         });
 
         return services;

@@ -14,6 +14,7 @@ import jakarta.validation.constraints.Email;
 import topmodel.jpa.sample.demo.dtos.utilisateur.interfaces.IUtilisateurDto;
 import topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur;
 import topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur;
+import topmodel.jpa.sample.demo.entities.utilisateur.UtilisateurMappers;
 
 /**
  * Objet non persisté de communication avec le serveur.
@@ -134,33 +135,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * @return Une nouvelle instance de 'UtilisateurDto'.
 	 */
 	public UtilisateurDto(Utilisateur utilisateur) {
-		this.from(utilisateur);
-	}
-
-	/**
-	 * Map les champs des classes passées en paramètre dans l'instance courante.
-	 * @param utilisateur Instance de 'Utilisateur'.
-	 */
-	protected void from(Utilisateur utilisateur) {
-		if (utilisateur != null) {
-			this.utilisateurParent = utilisateur.getUtilisateurParent() == null ? null : new UtilisateurDto(utilisateur.getUtilisateurParent());
-			this.id = utilisateur.getId();
-			this.age = utilisateur.getAge();
-			if (utilisateur.getProfil() != null) {
-				this.profilId = utilisateur.getProfil().getId();
-			}
-
-			this.email = utilisateur.getEmail();
-			this.nom = utilisateur.getNom();
-			if (utilisateur.getTypeUtilisateur() != null) {
-				this.typeUtilisateurCode = utilisateur.getTypeUtilisateur().getCode();
-			}
-
-			this.dateCreation = utilisateur.getDateCreation();
-			this.dateModification = utilisateur.getDateModification();
-		} else {
-			throw new IllegalArgumentException("utilisateur cannot be null");
-		}
+		UtilisateurMappers.createUtilisateurDto(utilisateur, this);
 	}
 
 	/**
@@ -327,29 +302,14 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 
 	/**
 	 * Mappe 'UtilisateurDto' vers 'Utilisateur'.
-	 * @param source Instance de 'UtilisateurDto'.
-	 * @param dest Instance pré-existante de 'Utilisateur'. Une nouvelle instance sera créée si non spécifié.
+	 * @param target Instance pré-existante de 'Utilisateur'. Une nouvelle instance sera créée si non spécifié.
 	 *
 	 * @return Une instance de 'Utilisateur'.
 	 */
-	public Utilisateur toUtilisateur(Utilisateur dest) {
-		dest = dest == null ? new Utilisateur() : dest;
-
-		if (this.getUtilisateurParent() != null) {
-			dest.setUtilisateurParent(this.getUtilisateurParent().toUtilisateur(dest.getUtilisateurParent()));
-		}
-
-		dest.setId(this.getId());
-		dest.setAge(this.getAge());
-		dest.setEmail(this.getEmail());
-		dest.setNom(this.getNom());
-		if (this.getTypeUtilisateurCode() != null) {
-			dest.setTypeUtilisateur(this.getTypeUtilisateurCode().getEntity());
-		}
-		dest.setDateCreation(this.getDateCreation());
-		dest.setDateModification(this.getDateModification());
-
-		return dest;
+	public Utilisateur toUtilisateur(Utilisateur target) {
+		target = target == null ? new Utilisateur() : target;
+		UtilisateurMappers.toUtilisateur(this, target);
+		return target;
 	}
 
 	/**

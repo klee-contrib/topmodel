@@ -171,22 +171,14 @@ public class Profil {
 
 	/**
 	 * Mappe 'Profil' vers 'Profil'.
-	 * @param source Instance de 'Profil'.
-	 * @param dest Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
+	 * @param target Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
 	 *
 	 * @return Une instance de 'Profil'.
 	 */
-	public Profil toProfil(Profil dest) {
-		dest = dest == null ? new Profil() : dest;
-
-		dest.setId(this.getId());
-		if (this.getTypeProfil() != null) {
-			dest.setTypeProfil(this.getTypeProfil());
-		}
-		dest.setDroits(this.getDroits());
-		dest.setSecteurs(this.getSecteurs());
-
-		return dest;
+	public Profil toProfil(Profil target) {
+		target = target == null ? new Profil() : target;
+		SecuriteMappers.toProfil(this, target);
+		return target;
 	}
 
 	/**

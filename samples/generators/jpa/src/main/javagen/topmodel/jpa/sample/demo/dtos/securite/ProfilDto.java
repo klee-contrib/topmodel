@@ -13,6 +13,7 @@ import jakarta.annotation.Generated;
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
 import topmodel.jpa.sample.demo.entities.securite.Droit;
 import topmodel.jpa.sample.demo.entities.securite.Profil;
+import topmodel.jpa.sample.demo.entities.securite.SecuriteMappers;
 import topmodel.jpa.sample.demo.entities.securite.TypeProfil;
 
 /**
@@ -98,30 +99,7 @@ public class ProfilDto implements Serializable {
 	 * @return Une nouvelle instance de 'ProfilDto'.
 	 */
 	public ProfilDto(Profil profil) {
-		this.from(profil);
-	}
-
-	/**
-	 * Map les champs des classes passées en paramètre dans l'instance courante.
-	 * @param profil Instance de 'Profil'.
-	 */
-	protected void from(Profil profil) {
-		if (profil != null) {
-			this.id = profil.getId();
-			if (profil.getTypeProfil() != null) {
-				this.typeProfilCode = profil.getTypeProfil().getCode();
-			}
-
-			if (profil.getDroits() != null) {
-				this.droits = profil.getDroits().stream().filter(t -> t != null).map(droits -> droits.getCode()).collect(Collectors.toList());
-			}
-
-			if (profil.getSecteurs() != null) {
-				this.secteurs = profil.getSecteurs().stream().filter(t -> t != null).map(secteurs -> secteurs.getId()).collect(Collectors.toList());
-			}
-		} else {
-			throw new IllegalArgumentException("profil cannot be null");
-		}
+		SecuriteMappers.createProfilDto(profil, this);
 	}
 
 	/**
@@ -211,21 +189,14 @@ public class ProfilDto implements Serializable {
 
 	/**
 	 * Mappe 'ProfilDto' vers 'Profil'.
-	 * @param source Instance de 'ProfilDto'.
-	 * @param dest Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
+	 * @param target Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
 	 *
 	 * @return Une instance de 'Profil'.
 	 */
-	public Profil toProfil(Profil dest) {
-		dest = dest == null ? new Profil() : dest;
-
-		dest.setId(this.getId());
-		if (this.getTypeProfilCode() != null) {
-			dest.setTypeProfil(this.getTypeProfilCode().getEntity());
-		}
-		dest.setDroits(this.getDroits().stream().map(Droit.Values::getEntity).collect(Collectors.toList()));
-
-		return dest;
+	public Profil toProfil(Profil target) {
+		target = target == null ? new Profil() : target;
+		SecuriteMappers.toProfil(this, target);
+		return target;
 	}
 
 	/**
