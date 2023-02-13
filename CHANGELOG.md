@@ -16,6 +16,10 @@
 
   **Breaking change (JPA)** : Les domaines de propriétés de PK utilisées dans des associations _one to many_ et _many to many_ doivent maintenant spécifier un `listDomain` correspondant
 
+- [#214](https://github.com/klee-contrib/topmodel/pull/214) - [JPA] Génération de mappers statiques
+  
+  **Impacts génération (JPA)** : Les mappers sont désormais générés dans des classes statiques, qui sont ensuite appelés dans les constructeurs (mappers `from`) et dans les méthodes `to` (mappers `to`), qui contenaient au prélable les implémentations. Leurs signatures sont inchangées donc cela ne devrait avoir aucun impact sur leur utilisation.
+
 - [#196](https://github.com/klee-contrib/topmodel/pull/196) - [JPA] Valoriser le orderProperty dans les associations oneToMany et manyToMany
 
 - [#211](https://github.com/klee-contrib/topmodel/pull/211) - [JPA] Gestion des enums pour des codes non valides en Java
