@@ -15,6 +15,7 @@ generatedFiles:
   - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/IUtilisateurReferenceAccessors.cs
   - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/SecuriteReferenceAccessors.cs
   - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/UtilisateurReferenceAccessors.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.External/Securite/Utilisateur/generated/UtilisateurApiClient.cs
   - ../generators/csharp/src/CSharp.Api/Controllers/Securite/Utilisateur/UtilisateurApiController.cs
   - ../generators/csharp/src/Models/CSharp.Securite.Models/generated/Droit.cs
   - ../generators/csharp/src/Models/CSharp.Securite.Models/generated/ProfilDto.cs

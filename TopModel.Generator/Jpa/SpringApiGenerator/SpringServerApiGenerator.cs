@@ -8,7 +8,7 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class SpringServerApiGenerator : GeneratorBase
+public class SpringServerApiGenerator : EndpointsGeneratorBase
 {
     private readonly JpaConfig _config;
     private readonly ILogger<SpringServerApiGenerator> _logger;
@@ -22,60 +22,26 @@ public class SpringServerApiGenerator : GeneratorBase
 
     public override string Name => "SpringApiServerGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any()).Select(f => GetFilePath(f.Options.Endpoints.FileName, f.Module)).Distinct();
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override bool FilterTag(string tag)
     {
-        foreach (var file in files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }))
-        {
-            GenerateController(file.Key.FileName, file.Key.Module);
-        }
+        return _config.ResolveTagVariables(tag, _config.ApiGeneration) == ApiGeneration.Server;
     }
 
-    private string GetDestinationFolder(string module)
+    protected override string GetFileName(ModelFile file, string tag)
     {
-        return Path.Combine(_config.OutputDirectory, Path.Combine(_config.ApiRootPath!.ToLower().Split(".")), Path.Combine(_config.ApiPackageName.Split('.')), Path.Combine(module.ToLower().Split(".")));
+        return Path.Combine(GetDestinationFolder(file.Module, tag), $"{GetClassName(file.Options.Endpoints.FileName)}.java");
     }
 
-    private string GetClassName(string fileName)
+    protected override void HandleFile(string fileName, string tag, IEnumerable<ModelFile> files, IList<Endpoint> endpoints)
     {
-        return $"{fileName.ToFirstUpper()}Controller";
-    }
-
-    private string GetFileName(string fileName)
-    {
-        return $"{GetClassName(fileName)}.java";
-    }
-
-    private string GetFilePath(string fileName, string module)
-    {
-        return Path.Combine(GetDestinationFolder(module), GetFileName(fileName));
-    }
-
-    private void GenerateController(string fileName, string module)
-    {
-        var files = Files.Values
-            .Where(file => file.Options.Endpoints.FileName == fileName && file.Module == module);
-
-        var endpoints = files
-            .SelectMany(file => file.Endpoints)
-            .OrderBy(endpoint => endpoint.Name, StringComparer.Ordinal)
-            .ToList();
-
-        if (!endpoints.Any() || _config.ApiRootPath == null)
-        {
-            return;
-        }
-
         foreach (var endpoint in endpoints)
         {
             CheckEndpoint(endpoint);
         }
 
-        var destFolder = GetDestinationFolder(module);
-        Directory.CreateDirectory(destFolder);
-        var packageName = $"{_config.ApiPackageName}.{module.ToLower()}";
-        using var fw = new JavaWriter($"{GetFilePath(fileName, module)}", _logger, packageName, null);
+        var className = GetClassName(files.First().Options.Endpoints.FileName);
+        var packageName = $"{_config.ResolveTagVariables(tag, _config.ApiPackageName)}.{files.First().Module.ToLower()}";
+        using var fw = new JavaWriter(fileName, _logger, packageName, null);
 
         WriteImports(files, fw);
         fw.WriteLine();
@@ -85,19 +51,33 @@ public class SpringServerApiGenerator : GeneratorBase
         }
 
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
-        fw.WriteLine($"public interface {GetClassName(fileName)} {{");
+        fw.WriteLine($"public interface {className} {{");
 
         fw.WriteLine();
 
         foreach (var endpoint in endpoints)
         {
-            WriteEndPoint(fw, endpoint);
+            WriteEndpoint(fw, endpoint);
         }
 
         fw.WriteLine("}");
     }
 
-    private void WriteEndPoint(JavaWriter fw, Endpoint endpoint)
+    private string GetClassName(string fileName)
+    {
+        return $"{fileName.ToFirstUpper()}Controller";
+    }
+
+    private string GetDestinationFolder(string module, string tag)
+    {
+        return Path.Combine(
+            _config.OutputDirectory,
+            Path.Combine(_config.ResolveTagVariables(tag, _config.ApiRootPath!).ToLower().Split(".")),
+            Path.Combine(_config.ResolveTagVariables(tag, _config.ApiPackageName).Split('.')),
+            Path.Combine(module.ToLower().Split(".")));
+    }
+
+    private void WriteEndpoint(JavaWriter fw, Endpoint endpoint)
     {
         fw.WriteLine();
         WriteEndPointMethod(fw, endpoint);

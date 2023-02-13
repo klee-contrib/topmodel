@@ -10,7 +10,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace TopModel.Generator.CSharp;
 
-public class CSharpApiServerGenerator : GeneratorBase
+public class CSharpApiServerGenerator : EndpointsGeneratorBase
 {
     private readonly CSharpConfig _config;
     private readonly ILogger<CSharpApiServerGenerator> _logger;
@@ -24,43 +24,30 @@ public class CSharpApiServerGenerator : GeneratorBase
 
     public override string Name => "CSharpApiServerGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files.Values.Where(f => f.Endpoints.Any(endpoint => endpoint.ModelFile == f || !Files.ContainsKey(endpoint.ModelFile.Name))).Select(GetFilePath).Distinct();
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override bool FilterTag(string tag)
     {
-        foreach (var file in files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }))
-        {
-            HandleFile(file.Key.FileName, file.Key.Module);
-        }
+        return _config.ResolveTagVariables(tag, _config.ApiGeneration) == ApiGeneration.Server;
     }
 
-    private string GetFilePath(ModelFile file)
+    protected override string GetFileName(ModelFile file, string tag)
     {
         var fileSplit = file.Options.Endpoints.FileName.Split("/");
         var className = $"{fileSplit.Last()}Controller";
-        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", file.Endpoints.First().Namespace.App), "Controllers", _config.ApiFilePath.Replace("{module}", file.Module.Replace('.', Path.DirectorySeparatorChar))).Replace("\\", "/");
+        var apiPath = Path.Combine(
+            _config.ResolveTagVariables(tag, _config.ApiRootPath).Replace("{app}", file.Endpoints.First().Namespace.App),
+            "Controllers",
+            _config.ResolveTagVariables(tag, _config.ApiFilePath).Replace("{module}", file.Module.Replace('.', Path.DirectorySeparatorChar)))
+        .Replace("\\", "/");
         return $"{_config.OutputDirectory}/{apiPath}/{className}.cs";
     }
 
-    private void HandleFile(string fileName, string module)
+    protected override void HandleFile(string fileName, string tag, IEnumerable<ModelFile> files, IList<Endpoint> endpoints)
     {
-        var endpoints = Files.Values
-            .Where(file => file.Options.Endpoints.FileName == fileName && file.Module == module)
-            .SelectMany(file => file.Endpoints.Where(endpoint => endpoint.ModelFile == file || !Files.ContainsKey(endpoint.ModelFile.Name)))
-            .OrderBy(endpoint => endpoint.Name, StringComparer.Ordinal)
-            .ToList();
+        var className = $"{files.First().Options.Endpoints.FileName.Split("/").Last()}Controller";
+        var apiPath = string.Join("/", fileName.Replace($"{_config.OutputDirectory}/", string.Empty).Split("/").SkipLast(1));
 
-        if (!endpoints.Any())
-        {
-            return;
-        }
-
-        var className = $"{fileName}Controller";
-        var apiPath = Path.Combine(_config.ApiRootPath.Replace("{app}", endpoints.First().Namespace.App), "Controllers", _config.ApiFilePath.Replace("{module}", module.Replace('.', Path.DirectorySeparatorChar))).Replace("\\", "/");
-        var filePath = $"{_config.OutputDirectory}/{apiPath}/{className}.cs";
-
-        var text = File.Exists(filePath)
-            ? File.ReadAllText(filePath)
+        var text = File.Exists(fileName)
+            ? File.ReadAllText(fileName)
             : _config.UseLatestCSharp
             ? $@"using Microsoft.AspNetCore.Mvc;
 
@@ -150,7 +137,7 @@ namespace {apiPath.Replace("/", ".")}
             }
         }
 
-        using var fw = new FileWriter(filePath, _logger, true) { HeaderMessage = "ATTENTION, CE FICHIER EST PARTIELLEMENT GENERE AUTOMATIQUEMENT !" };
+        using var fw = new FileWriter(fileName, _logger, true) { HeaderMessage = "ATTENTION, CE FICHIER EST PARTIELLEMENT GENERE AUTOMATIQUEMENT !" };
         fw.Write(syntaxTree.GetRoot().ReplaceNode(existingController, controller).ToString());
     }
 

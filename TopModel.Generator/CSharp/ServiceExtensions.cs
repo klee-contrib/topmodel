@@ -41,15 +41,19 @@ public static class ServiceExtensions
                     new ReferenceAccessorGenerator(p.GetRequiredService<ILogger<ReferenceAccessorGenerator>>(), config) { Number = number });
             }
 
-            if (config.ApiGeneration == ApiGeneration.Server)
+            if (config.ApiGeneration != null)
             {
-                services.AddSingleton<IModelWatcher>(p =>
-                    new CSharpApiServerGenerator(p.GetRequiredService<ILogger<CSharpApiServerGenerator>>(), config) { Number = number });
-            }
-            else if (config.ApiGeneration == ApiGeneration.Client)
-            {
-                services.AddSingleton<IModelWatcher>(p =>
-                    new CSharpApiClientGenerator(p.GetRequiredService<ILogger<CSharpApiClientGenerator>>(), config) { Number = number });
+                if (config.ApiGeneration != ApiGeneration.Client)
+                {
+                    services.AddSingleton<IModelWatcher>(p =>
+                        new CSharpApiServerGenerator(p.GetRequiredService<ILogger<CSharpApiServerGenerator>>(), config) { Number = number });
+                }
+
+                if (config.ApiGeneration != ApiGeneration.Server)
+                {
+                    services.AddSingleton<IModelWatcher>(p =>
+                        new CSharpApiClientGenerator(p.GetRequiredService<ILogger<CSharpApiClientGenerator>>(), config) { Number = number });
+                }
             }
         });
 

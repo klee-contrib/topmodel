@@ -107,6 +107,17 @@ public abstract class GeneratorConfigBase
             }
         }
 
+        foreach (var tagVariables in TagVariables.Values)
+        {
+            foreach (var tagVarName in tagVariables.Keys)
+            {
+                foreach (var varName in GlobalVariableNames)
+                {
+                    tagVariables[tagVarName] = ReplaceVariable(tagVariables[tagVarName], varName, Variables[varName]);
+                }
+            }
+        }
+
         if (hasMissingVar)
         {
             Console.WriteLine();
