@@ -539,7 +539,6 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteLine(1, $" * {mapper.Comment}");
             }
 
-            fw.WriteParam("source", $"Instance de '{classe}'");
             fw.WriteParam("target", $"Instance pré-existante de '{mapper.Class}'. Une nouvelle instance sera créée si non spécifié.");
             fw.WriteReturns(1, $"Une instance de '{mapper.Class}'");
 
@@ -549,10 +548,10 @@ public class JpaModelGenerator : GeneratorBase
                 fw.WriteLine(1, $"@Override");
             }
 
-            fw.WriteLine(1, $"public {mapper.Class} {mapper.Name.ToFirstLower()}({mapper.Class} target) {{");
-            fw.WriteLine(2, $"target = target == null ? new {mapper.Class}() : dest;");
-            fw.WriteLine(2, $"{_config.GetMapperClassName(classe)}.{mapper.Name}(source, target);");
-            fw.AddImport(_config.GetMapperImport(classe)!);
+            fw.WriteLine(1, $"public {mapper.Class} {mapper.Name.Value.ToCamelCase()}({mapper.Class} target) {{");
+            fw.WriteLine(2, $"target = target == null ? new {mapper.Class}() : target;");
+            fw.WriteLine(2, $"{_config.GetMapperClassName(classe, mapper)}.{mapper.Name.Value.ToCamelCase()}(this, target);");
+            fw.AddImport(_config.GetMapperImport(classe, mapper)!);
             fw.WriteLine(2, "return target;");
             fw.WriteLine(1, "}");
 

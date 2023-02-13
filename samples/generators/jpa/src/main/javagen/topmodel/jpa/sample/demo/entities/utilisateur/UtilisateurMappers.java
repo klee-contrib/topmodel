@@ -2,60 +2,64 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-package topmodel.jpa.sample.demo.mappers;
+package topmodel.jpa.sample.demo.entities.utilisateur;
 
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
-import topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur;
 
-public static class UtilisateurMappers {
+public class UtilisateurMappers {
 
 	/**
 	 * Map les champs des classes passées en paramètre dans l'objet target'.
-	 * @param target Instance de 'UtilisateurDto'.
+	 * @param target Instance de 'UtilisateurDto' (ou null pour créer une nouvelle instance).
 	 * @param utilisateur Instance de 'Utilisateur'.
+	 *
+	 * @return Une nouvelle instance de 'UtilisateurDto' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée.
 	 */
-	public static void map(UtilisateurDto target, Utilisateur utilisateur) {
+	public static UtilisateurDto createUtilisateurDto(Utilisateur utilisateur, UtilisateurDto target) {
 		if (target == null) {
-			throw new IllegalArgumentException("target cannot be null");
+			target = new UtilisateurDto();
 		}
 
 		if (utilisateur != null) {
-			target.utilisateurParent = utilisateur.getUtilisateurParent() == null ? null : new UtilisateurDto(utilisateur.getUtilisateurParent());
-			target.id = utilisateur.getId();
-			target.age = utilisateur.getAge();
+			target.setUtilisateurParent(utilisateur.getUtilisateurParent() == null ? null : UtilisateurMappers.createUtilisateurDto(utilisateur.getUtilisateurParent(), target.getUtilisateurParent()));
+			target.setId(utilisateur.getId());
+			target.setAge(utilisateur.getAge());
 			if (utilisateur.getProfil() != null) {
 				target.setProfilId(utilisateur.getProfil().getId());
 			}
 
-			target.email = utilisateur.getEmail();
-			target.nom = utilisateur.getNom();
+			target.setEmail(utilisateur.getEmail());
+			target.setNom(utilisateur.getNom());
 			if (utilisateur.getTypeUtilisateur() != null) {
 				target.setTypeUtilisateurCode(utilisateur.getTypeUtilisateur().getCode());
 			}
 
-			target.dateCreation = utilisateur.getDateCreation();
-			target.dateModification = utilisateur.getDateModification();
+			target.setDateCreation(utilisateur.getDateCreation());
+			target.setDateModification(utilisateur.getDateModification());
 		} else {
 			throw new IllegalArgumentException("utilisateur cannot be null");
 		}
+		return target;
 	}
 
 	/**
 	 * Mappe 'UtilisateurDto' vers 'Utilisateur'.
 	 * @param source Instance de 'UtilisateurDto'.
 	 * @param target Instance pré-existante de 'Utilisateur'. Une nouvelle instance sera créée si non spécifié.
+	 *
+	 * @return Une nouvelle instance de 'Utilisateur' ou bien l'instance passée en paramètre dont les champs ont été surchargés.
 	 */
-	public void toUtilisateur(UtilisateurDto source, Utilisateur target) {
+	public static Utilisateur toUtilisateur(UtilisateurDto source, Utilisateur target) {
 		if (source == null) {
 			throw new IllegalArgumentException("source cannot be null");
 		}
 
 		if (target == null) {
-			throw new IllegalArgumentException("target cannot be null");
+			target = new Utilisateur();
 		}
 
 		if (source.getUtilisateurParent() != null) {
-			target.setUtilisateurParent(source.getUtilisateurParent().toUtilisateur(target.getUtilisateurParent()));
+			target.setUtilisateurParent(UtilisateurMappers.toUtilisateur(source.getUtilisateurParent(), target.getUtilisateurParent()));
 		}
 
 		target.setId(source.getId());
@@ -67,7 +71,6 @@ public static class UtilisateurMappers {
 		}
 		target.setDateCreation(source.getDateCreation());
 		target.setDateModification(source.getDateModification());
-
 		return target;
 	}
 }

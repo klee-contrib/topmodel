@@ -57,11 +57,6 @@ public class JpaConfig : GeneratorConfigBase
     public string ApiPackageName { get; set; }
 
     /// <summary>
-    /// Précise le nom du package dans lequel générer les mappers.
-    /// </summary>
-    public string MappersPackageName { get; set; }
-
-    /// <summary>
     /// Précise le nom du package dans lequel générer les controllers.
     /// </summary>
     public PersistenceMode PersistenceMode { get; set; } = PersistenceMode.Javax;

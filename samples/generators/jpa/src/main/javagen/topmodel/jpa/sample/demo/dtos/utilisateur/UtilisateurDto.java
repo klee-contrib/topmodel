@@ -14,7 +14,7 @@ import jakarta.validation.constraints.Email;
 import topmodel.jpa.sample.demo.dtos.utilisateur.interfaces.IUtilisateurDto;
 import topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur;
 import topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur;
-import topmodel.jpa.sample.demo.mappers.UtilisateurDTOMappers;
+import topmodel.jpa.sample.demo.entities.utilisateur.UtilisateurMappers;
 
 /**
  * Objet non persisté de communication avec le serveur.
@@ -135,33 +135,7 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 * @return Une nouvelle instance de 'UtilisateurDto'.
 	 */
 	public UtilisateurDto(Utilisateur utilisateur) {
-		UtilisateurDto.map(this, utilisateur);
-	}
-
-	/**
-	 * Map les champs des classes passées en paramètre dans l'instance courante.
-	 * @param utilisateur Instance de 'Utilisateur'.
-	 */
-	public static void map(UtilisateurDto target, Utilisateur utilisateur) {
-		if (utilisateur != null) {
-			target.utilisateurParent = utilisateur.getUtilisateurParent() == null ? null : new UtilisateurDto(utilisateur.getUtilisateurParent());
-			target.id = utilisateur.getId();
-			target.age = utilisateur.getAge();
-			if (utilisateur.getProfil() != null) {
-				target.profilId = utilisateur.getProfil().getId();
-			}
-
-			target.email = utilisateur.getEmail();
-			target.nom = utilisateur.getNom();
-			if (utilisateur.getTypeUtilisateur() != null) {
-				target.typeUtilisateurCode = utilisateur.getTypeUtilisateur().getCode();
-			}
-
-			target.dateCreation = utilisateur.getDateCreation();
-			target.dateModification = utilisateur.getDateModification();
-		} else {
-			throw new IllegalArgumentException("utilisateur cannot be null");
-		}
+		UtilisateurMappers.createUtilisateurDto(utilisateur, this);
 	}
 
 	/**
@@ -328,14 +302,13 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 
 	/**
 	 * Mappe 'UtilisateurDto' vers 'Utilisateur'.
-	 * @param source Instance de 'UtilisateurDto'.
 	 * @param target Instance pré-existante de 'Utilisateur'. Une nouvelle instance sera créée si non spécifié.
 	 *
 	 * @return Une instance de 'Utilisateur'.
 	 */
 	public Utilisateur toUtilisateur(Utilisateur target) {
-		target = target == null ? new Utilisateur() : dest;
-		UtilisateurDTOMappers.ToUtilisateur(source, target);
+		target = target == null ? new Utilisateur() : target;
+		UtilisateurMappers.toUtilisateur(this, target);
 		return target;
 	}
 

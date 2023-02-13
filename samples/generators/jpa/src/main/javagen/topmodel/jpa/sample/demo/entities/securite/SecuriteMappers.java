@@ -2,27 +2,28 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-package topmodel.jpa.sample.demo.mappers;
+package topmodel.jpa.sample.demo.entities.securite;
 
 import java.util.stream.Collectors;
 
 import topmodel.jpa.sample.demo.dtos.securite.ProfilDto;
-import topmodel.jpa.sample.demo.entities.securite.Profil;
 
-public static class SecuriteMappers {
+public class SecuriteMappers {
 
 	/**
 	 * Map les champs des classes passées en paramètre dans l'objet target'.
-	 * @param target Instance de 'ProfilDto'.
+	 * @param target Instance de 'ProfilDto' (ou null pour créer une nouvelle instance).
 	 * @param profil Instance de 'Profil'.
+	 *
+	 * @return Une nouvelle instance de 'ProfilDto' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée.
 	 */
-	public static void map(ProfilDto target, Profil profil) {
+	public static ProfilDto createProfilDto(Profil profil, ProfilDto target) {
 		if (target == null) {
-			throw new IllegalArgumentException("target cannot be null");
+			target = new ProfilDto();
 		}
 
 		if (profil != null) {
-			target.id = profil.getId();
+			target.setId(profil.getId());
 			if (profil.getTypeProfil() != null) {
 				target.setTypeProfilCode(profil.getTypeProfil().getCode());
 			}
@@ -37,20 +38,23 @@ public static class SecuriteMappers {
 		} else {
 			throw new IllegalArgumentException("profil cannot be null");
 		}
+		return target;
 	}
 
 	/**
 	 * Mappe 'Profil' vers 'Profil'.
 	 * @param source Instance de 'Profil'.
 	 * @param target Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
+	 *
+	 * @return Une nouvelle instance de 'Profil' ou bien l'instance passée en paramètre dont les champs ont été surchargés.
 	 */
-	public void toProfil(Profil source, Profil target) {
+	public static Profil toProfil(Profil source, Profil target) {
 		if (source == null) {
 			throw new IllegalArgumentException("source cannot be null");
 		}
 
 		if (target == null) {
-			throw new IllegalArgumentException("target cannot be null");
+			target = new Profil();
 		}
 
 		target.setId(source.getId());
@@ -59,7 +63,6 @@ public static class SecuriteMappers {
 		}
 		target.setDroits(source.getDroits());
 		target.setSecteurs(source.getSecteurs());
-
 		return target;
 	}
 
@@ -67,14 +70,16 @@ public static class SecuriteMappers {
 	 * Mappe 'ProfilDto' vers 'Profil'.
 	 * @param source Instance de 'ProfilDto'.
 	 * @param target Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
+	 *
+	 * @return Une nouvelle instance de 'Profil' ou bien l'instance passée en paramètre dont les champs ont été surchargés.
 	 */
-	public void toProfil(ProfilDto source, Profil target) {
+	public static Profil toProfil(ProfilDto source, Profil target) {
 		if (source == null) {
 			throw new IllegalArgumentException("source cannot be null");
 		}
 
 		if (target == null) {
-			throw new IllegalArgumentException("target cannot be null");
+			target = new Profil();
 		}
 
 		target.setId(source.getId());
@@ -82,7 +87,6 @@ public static class SecuriteMappers {
 			target.setTypeProfil(source.getTypeProfilCode().getEntity());
 		}
 		target.setDroits(source.getDroits().stream().map(Droit.Values::getEntity).collect(Collectors.toList()));
-
 		return target;
 	}
 }

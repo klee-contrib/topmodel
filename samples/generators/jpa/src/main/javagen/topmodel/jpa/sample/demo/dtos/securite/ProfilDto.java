@@ -13,8 +13,8 @@ import jakarta.annotation.Generated;
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
 import topmodel.jpa.sample.demo.entities.securite.Droit;
 import topmodel.jpa.sample.demo.entities.securite.Profil;
+import topmodel.jpa.sample.demo.entities.securite.SecuriteMappers;
 import topmodel.jpa.sample.demo.entities.securite.TypeProfil;
-import topmodel.jpa.sample.demo.mappers.SecuriteDTOMappers;
 
 /**
  * Objet métier non persisté représentant Profil.
@@ -99,30 +99,7 @@ public class ProfilDto implements Serializable {
 	 * @return Une nouvelle instance de 'ProfilDto'.
 	 */
 	public ProfilDto(Profil profil) {
-		ProfilDto.map(this, profil);
-	}
-
-	/**
-	 * Map les champs des classes passées en paramètre dans l'instance courante.
-	 * @param profil Instance de 'Profil'.
-	 */
-	public static void map(ProfilDto target, Profil profil) {
-		if (profil != null) {
-			target.id = profil.getId();
-			if (profil.getTypeProfil() != null) {
-				target.typeProfilCode = profil.getTypeProfil().getCode();
-			}
-
-			if (profil.getDroits() != null) {
-				target.droits = profil.getDroits().stream().filter(t -> t != null).map(droits -> droits.getCode()).collect(Collectors.toList());
-			}
-
-			if (profil.getSecteurs() != null) {
-				target.secteurs = profil.getSecteurs().stream().filter(t -> t != null).map(secteurs -> secteurs.getId()).collect(Collectors.toList());
-			}
-		} else {
-			throw new IllegalArgumentException("profil cannot be null");
-		}
+		SecuriteMappers.createProfilDto(profil, this);
 	}
 
 	/**
@@ -212,14 +189,13 @@ public class ProfilDto implements Serializable {
 
 	/**
 	 * Mappe 'ProfilDto' vers 'Profil'.
-	 * @param source Instance de 'ProfilDto'.
 	 * @param target Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
 	 *
 	 * @return Une instance de 'Profil'.
 	 */
 	public Profil toProfil(Profil target) {
-		target = target == null ? new Profil() : dest;
-		SecuriteDTOMappers.ToProfil(source, target);
+		target = target == null ? new Profil() : target;
+		SecuriteMappers.toProfil(this, target);
 		return target;
 	}
 

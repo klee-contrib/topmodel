@@ -607,10 +607,6 @@
             "type": "string",
             "description": "Précise le nom du package dans lequel générer les classes non persistées du modèle."
           },
-          "mappersPackageName": {
-            "type": "string",
-            "description": "Précise le nom du package dans lequel générer les mappers static."
-          },
           "fieldsEnum": {
             "type": "string",
             "description": "Option pour générer une enum des champs des classes persistées",
