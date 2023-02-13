@@ -2,6 +2,8 @@
 
 ## Prochaine version (1.24.0)
 
+- [#190](https://github.com/klee-contrib/topmodel/pull/190) - [Core + C#] Classes abstraites et propriétés readonly
+
 - [#212](https://github.com/klee-contrib/topmodel/pull/212) - Clarification utilisation de `values` et `enum`s explicites
 
   **Impacts génération** (ne devraient être des breaking changes, mais on sait jamais)
