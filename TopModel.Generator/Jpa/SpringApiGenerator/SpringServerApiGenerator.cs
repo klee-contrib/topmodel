@@ -32,22 +32,22 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
         return Path.Combine(GetDestinationFolder(file.Module, tag), $"{GetClassName(file.Options.Endpoints.FileName)}.java");
     }
 
-    protected override void HandleFile(string fileName, string tag, IEnumerable<ModelFile> files, IList<Endpoint> endpoints)
+    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         foreach (var endpoint in endpoints)
         {
             CheckEndpoint(endpoint);
         }
 
-        var className = GetClassName(files.First().Options.Endpoints.FileName);
-        var packageName = $"{_config.ResolveTagVariables(tag, _config.ApiPackageName)}.{files.First().Module.ToLower()}";
-        using var fw = new JavaWriter(fileName, _logger, packageName, null);
+        var className = GetClassName(fileName);
+        var packageName = $"{_config.ResolveTagVariables(tag, _config.ApiPackageName)}.{endpoints.First().Namespace.Module.ToLower()}";
+        using var fw = new JavaWriter(filePath, _logger, packageName, null);
 
-        WriteImports(files, fw);
+        WriteImports(endpoints, fw);
         fw.WriteLine();
-        if (files.First().Options.Endpoints.Prefix != null)
+        if (endpoints.First().ModelFile.Options.Endpoints.Prefix != null)
         {
-            fw.WriteLine($@"@RequestMapping(""{files.First().Options.Endpoints.Prefix}"")");
+            fw.WriteLine($@"@RequestMapping(""{endpoints.First().ModelFile.Options.Endpoints.Prefix}"")");
         }
 
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
@@ -181,12 +181,10 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
         }
     }
 
-    private void WriteImports(IEnumerable<ModelFile> files, JavaWriter fw)
+    private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw)
     {
-        var endpoints = files.SelectMany(file => file.Endpoints);
-
         var imports = endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToLower().ToFirstUpper()}Mapping").ToList();
-        imports.AddRange(GetTypeImports(files));
+        imports.AddRange(GetTypeImports(endpoints));
         imports.Add(_config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
         if (endpoints.Any(e => e.GetRouteParams().Any()))
         {
@@ -204,7 +202,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
             imports.Add(_config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
         }
 
-        if (files.First().Options?.Endpoints.Prefix != null)
+        if (endpoints.First().ModelFile.Options?.Endpoints.Prefix != null)
         {
             imports.Add("org.springframework.web.bind.annotation.RequestMapping");
         }
@@ -214,13 +212,13 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
         fw.AddImports(imports);
     }
 
-    private IEnumerable<string> GetTypeImports(IEnumerable<ModelFile> files)
+    private IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints)
     {
-        var properties = files.SelectMany(file => file.Endpoints).SelectMany(endpoint => endpoint.Params)
-            .Concat(files.SelectMany(file => file.Endpoints).Where(endpoint => endpoint.Returns is not null && !(endpoint.Returns is CompositionProperty cp && cp.Composition.Decorators.Any(d => d.Decorator.Java?.GenerateInterface == true)))
+        var properties = endpoints.SelectMany(endpoint => endpoint.Params)
+            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null && !(endpoint.Returns is CompositionProperty cp && cp.Composition.Decorators.Any(d => d.Decorator.Java?.GenerateInterface == true)))
             .Select(endpoint => endpoint.Returns));
         return properties.SelectMany(property => property!.GetTypeImports(_config))
-                .Concat(files.SelectMany(file => file.Endpoints).Where(endpoint => endpoint.Returns is not null && (endpoint.Returns is CompositionProperty cp && cp.Composition.Decorators.Any(d => d.Decorator.Java?.GenerateInterface == true)))
+                .Concat(endpoints.Where(endpoint => endpoint.Returns is not null && (endpoint.Returns is CompositionProperty cp && cp.Composition.Decorators.Any(d => d.Decorator.Java?.GenerateInterface == true)))
                 .Select(e => e.Returns).OfType<CompositionProperty>()
                 .SelectMany(c => c.GetKindImports(_config)));
     }

@@ -32,18 +32,18 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase
         return Path.Combine(GetDestinationFolder(file.Module, tag), $"{GetClassName(file.Options.Endpoints.FileName)}.java");
     }
 
-    protected override void HandleFile(string fileName, string tag, IEnumerable<ModelFile> files, IList<Endpoint> endpoints)
+    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         foreach (var endpoint in endpoints)
         {
             CheckEndpoint(endpoint);
         }
 
-        var className = GetClassName(files.First().Options.Endpoints.FileName);
-        var packageName = $"{_config.ResolveTagVariables(tag, _config.ApiPackageName)}.{files.First().Module.ToLower()}";
-        using var fw = new JavaWriter(fileName, _logger, packageName, null);
+        var className = GetClassName(fileName);
+        var packageName = $"{_config.ResolveTagVariables(tag, _config.ApiPackageName)}.{endpoints.First().Namespace.Module.ToLower()}";
+        using var fw = new JavaWriter(filePath, _logger, packageName, null);
 
-        WriteImports(files, fw);
+        WriteImports(endpoints, fw);
         fw.WriteLine();
 
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
@@ -254,10 +254,10 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase
         fw.WriteLine(1, "}");
     }
 
-    private void WriteImports(IEnumerable<ModelFile> files, JavaWriter fw)
+    private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw)
     {
         var imports = new List<string>();
-        imports.AddRange(files.SelectMany(GetTypeImports).Distinct());
+        imports.AddRange(GetTypeImports(endpoints).Distinct());
         imports.Add(_config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
         imports.Add("org.springframework.web.util.UriComponentsBuilder");
         imports.Add("org.springframework.web.client.RestTemplate");
@@ -269,9 +269,9 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase
         fw.AddImports(imports);
     }
 
-    private IEnumerable<string> GetTypeImports(ModelFile file)
+    private IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints)
     {
-        var properties = file.Endpoints.SelectMany(endpoint => endpoint.Params).Concat(file.Endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
+        var properties = endpoints.SelectMany(endpoint => endpoint.Params).Concat(endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
         return properties.SelectMany(property => property!.GetTypeImports(_config));
     }
 

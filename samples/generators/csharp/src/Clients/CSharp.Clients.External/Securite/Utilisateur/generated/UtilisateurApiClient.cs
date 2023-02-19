@@ -13,7 +13,7 @@ using Models.CSharp.Utilisateur.Models;
 namespace Clients.CSharp.Clients.External.Securite.Utilisateur;
 
 /// <summary>
-/// Client Securite.Utilisateur.
+/// Client UtilisateurApi.
 /// </summary>
 public partial class UtilisateurApiClient
 {

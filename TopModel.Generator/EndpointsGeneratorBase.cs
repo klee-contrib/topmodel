@@ -25,7 +25,7 @@ public abstract class EndpointsGeneratorBase : GeneratorBase
 
     protected abstract string GetFileName(ModelFile file, string tag);
 
-    protected abstract void HandleFile(string fileName, string tag, IEnumerable<ModelFile> files, IList<Endpoint> endpoints);
+    protected abstract void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints);
 
     protected virtual bool FilterTag(string tag)
     {
@@ -49,10 +49,11 @@ public abstract class EndpointsGeneratorBase : GeneratorBase
             var files = Files.Values.Where(f => f.Options.Endpoints.FileName == file.Options.Endpoints.FileName && f.Module == file.Module && f.Tags.Contains(tag));
             var endpoints = files
                 .SelectMany(f => f.Endpoints)
+                .Where(endpoint => files.Contains(endpoint.ModelFile) || !Files.ContainsKey(endpoint.ModelFile.Name))
                 .OrderBy(e => e.Name, StringComparer.Ordinal)
                 .ToList();
 
-            HandleFile(fileName, tag, files, endpoints);
+            HandleFile(fileName, files.First().Options.Endpoints.FileName, tag, endpoints);
         }
     }
 }

@@ -109,15 +109,15 @@ public class JavascriptConfig : GeneratorConfigBase
         return Path.Combine(OutputDirectory, ResolveTagVariables(tag, ApiClientRootPath!), filePath, $"{fileName}.ts").Replace("\\", "/");
     }
 
-    public List<(string Import, string Path)> GetEndpointImports(IEnumerable<ModelFile> files, string tag, IEnumerable<Class> availableClasses)
+    public List<(string Import, string Path)> GetEndpointImports(IEnumerable<Endpoint> endpoints, string tag, IEnumerable<Class> availableClasses)
     {
-        return files.SelectMany(f => f.Endpoints.SelectMany(e => e.ClassDependencies))
+        return endpoints.SelectMany(e => e.ClassDependencies)
             .Select(dep => (
                 Import: dep is { Source: IFieldProperty fp }
                     ? fp.GetPropertyTypeName().Replace("[]", string.Empty)
                     : dep.Classe.Name,
                 Path: GetImportPathForClass(dep, tag, availableClasses)!))
-            .Concat(files.SelectMany(f => f.Endpoints.SelectMany(d => d.DomainDependencies)).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Replace("[]", string.Empty).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
+            .Concat(endpoints.SelectMany(d => d.DomainDependencies).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Replace("[]", string.Empty).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(i => i.Path != null)
             .GroupAndSort();
     }

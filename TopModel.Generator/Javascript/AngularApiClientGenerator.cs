@@ -27,10 +27,10 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase
         return _config.GetEndpointsFileName(file, tag);
     }
 
-    protected override void HandleFile(string fileName, string tag, IEnumerable<ModelFile> files, IList<Endpoint> endpoints)
+    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        using var fw = new FileWriter(fileName, _logger, false);
-        var imports = _config.GetEndpointImports(files, tag, Classes);
+        using var fw = new FileWriter(filePath, _logger, false);
+        var imports = _config.GetEndpointImports(endpoints, tag, Classes);
 
         imports.AddRange(new List<(string Import, string Path)>
         {
@@ -60,7 +60,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase
         fw.WriteLine(1, "providedIn: 'root'");
         fw.WriteLine("})");
 
-        fw.WriteLine(@$"export class {files.First().Options.Endpoints.FileName.ToFirstUpper()}Service {{");
+        fw.WriteLine(@$"export class {fileName.ToFirstUpper()}Service {{");
         fw.WriteLine();
         fw.WriteLine(1, "constructor(private http: HttpClient) {}");
         foreach (var endpoint in endpoints)

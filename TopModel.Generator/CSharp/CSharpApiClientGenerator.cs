@@ -35,9 +35,9 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
         return $"{_config.OutputDirectory}/{apiPath}/generated/{className}.cs";
     }
 
-    protected override void HandleFile(string fileName, string tag, IEnumerable<ModelFile> files, IList<Endpoint> endpoints)
+    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        using var fw = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
+        using var fw = new CSharpWriter(filePath, _logger, _config.UseLatestCSharp);
 
         var hasBody = endpoints.Any(e => e.GetBodyParam() != null);
         var hasReturn = endpoints.Any(e => e.Returns != null);
@@ -137,8 +137,8 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
             }
         }
 
-        var className = $"{files.First().Options.Endpoints.FileName.Split("/").Last()}Client";
-        var apiPath = string.Join("/", fileName.Replace($"{_config.OutputDirectory}/", string.Empty).Split("/").SkipLast(2));
+        var className = $"{fileName.Split("/").Last()}Client";
+        var apiPath = string.Join("/", filePath.Replace($"{_config.OutputDirectory}/", string.Empty).Split("/").SkipLast(2));
 
         var ns = apiPath.Replace("/", ".");
 
@@ -150,7 +150,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
 
         fw.WriteNamespace(ns);
 
-        fw.WriteSummary(1, $"Client {files.First().Module}");
+        fw.WriteSummary(1, $"Client {fileName}");
         fw.WriteClassDeclaration(className, null);
 
         fw.WriteLine(2, "private readonly HttpClient _client;");

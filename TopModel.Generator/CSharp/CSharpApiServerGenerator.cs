@@ -41,13 +41,13 @@ public class CSharpApiServerGenerator : EndpointsGeneratorBase
         return $"{_config.OutputDirectory}/{apiPath}/{className}.cs";
     }
 
-    protected override void HandleFile(string fileName, string tag, IEnumerable<ModelFile> files, IList<Endpoint> endpoints)
+    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        var className = $"{files.First().Options.Endpoints.FileName.Split("/").Last()}Controller";
-        var apiPath = string.Join("/", fileName.Replace($"{_config.OutputDirectory}/", string.Empty).Split("/").SkipLast(1));
+        var className = $"{fileName.Split("/").Last()}Controller";
+        var apiPath = string.Join("/", filePath.Replace($"{_config.OutputDirectory}/", string.Empty).Split("/").SkipLast(1));
 
-        var text = File.Exists(fileName)
-            ? File.ReadAllText(fileName)
+        var text = File.Exists(filePath)
+            ? File.ReadAllText(filePath)
             : _config.UseLatestCSharp
             ? $@"using Microsoft.AspNetCore.Mvc;
 
@@ -137,7 +137,7 @@ namespace {apiPath.Replace("/", ".")}
             }
         }
 
-        using var fw = new FileWriter(fileName, _logger, true) { HeaderMessage = "ATTENTION, CE FICHIER EST PARTIELLEMENT GENERE AUTOMATIQUEMENT !" };
+        using var fw = new FileWriter(filePath, _logger, true) { HeaderMessage = "ATTENTION, CE FICHIER EST PARTIELLEMENT GENERE AUTOMATIQUEMENT !" };
         fw.Write(syntaxTree.GetRoot().ReplaceNode(existingController, controller).ToString());
     }
 

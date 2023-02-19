@@ -27,18 +27,18 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase
         return _config.GetEndpointsFileName(file, tag);
     }
 
-    protected override void HandleFile(string fileName, string tag, IEnumerable<ModelFile> files, IList<Endpoint> endpoints)
+    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         var fetch = _config.FetchPath != "@focus4/core" ? "fetch" : "coreFetch";
         var fetchImport = _config.FetchPath.StartsWith("@")
             ? _config.FetchPath
-            : Path.GetRelativePath(string.Join('/', fileName.Split('/').SkipLast(1)), Path.Combine(_config.OutputDirectory, _config.ResolveTagVariables(tag, _config.FetchPath))).Replace("\\", "/");
+            : Path.GetRelativePath(string.Join('/', filePath.Split('/').SkipLast(1)), Path.Combine(_config.OutputDirectory, _config.ResolveTagVariables(tag, _config.FetchPath))).Replace("\\", "/");
 
-        using var fw = new FileWriter(fileName, _logger, false);
+        using var fw = new FileWriter(filePath, _logger, false);
 
         fw.WriteLine($@"import {{{fetch}}} from ""{fetchImport}"";");
 
-        var imports = _config.GetEndpointImports(files, tag, Classes);
+        var imports = _config.GetEndpointImports(endpoints, tag, Classes);
         if (imports.Any())
         {
             fw.WriteLine();
