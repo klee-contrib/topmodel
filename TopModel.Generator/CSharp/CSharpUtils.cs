@@ -121,18 +121,18 @@ public static class CSharpUtils
         return Path.Combine(directory, (classe.Abstract ? "I" : string.Empty) + classe.Name + ".cs");
     }
 
-    public static string GetDbContextFilePath(this CSharpConfig config, string appName)
+    public static string GetDbContextFilePath(this CSharpConfig config, string appName, string tag)
     {
-        var dbContextName = config.GetDbContextName(appName);
-        var destDirectory = Path.Combine(config.OutputDirectory, config.DbContextPath!).Replace("{app}", appName);
+        var dbContextName = config.GetDbContextName(appName, tag);
+        var destDirectory = Path.Combine(config.OutputDirectory, config.ResolveTagVariables(tag, config.DbContextPath!)).Replace("{app}", appName);
         Directory.CreateDirectory(destDirectory);
 
         return Path.Combine(destDirectory, "generated", $"{dbContextName}.cs");
     }
 
-    public static string GetDbContextNamespace(this CSharpConfig config, string appName)
+    public static string GetDbContextNamespace(this CSharpConfig config, string appName, string tag)
     {
-        var ns = config.DbContextPath!.Replace("\\", "/").Replace("/", ".");
+        var ns = config.ResolveTagVariables(tag, config.DbContextPath!).Replace("\\", "/").Replace("/", ".").Trim('.');
         return ns[Math.Max(0, ns.IndexOf("{app}"))..]
              .Replace("{app}", appName);
     }
@@ -150,63 +150,49 @@ public static class CSharpUtils
         return Path.Combine(directory, $"{sampleClass.Namespace.Module}{(sampleClass.IsPersistent ? string.Empty : "DTO")}Mappers.cs");
     }
 
-    public static string GetReferenceAccessorName(this CSharpConfig config, Class classe)
+    public static string GetReferenceAccessorName(this CSharpConfig config, Namespace ns, string tag)
     {
-        return config.ReferenceAccessorsName
-            .Replace("{module}", classe.Namespace.Module.Replace(".", string.Empty))
-            .Replace("{app}", classe.Namespace.App);
+        return config.ResolveTagVariables(tag, config.ReferenceAccessorsName)
+            .Replace("{module}", ns.Module.Replace(".", string.Empty))
+            .Replace("{app}", ns.App);
     }
 
-    public static string GetReferenceInterfaceFilePath(this CSharpConfig config, IEnumerable<Class> classList)
+    public static string GetReferenceInterfaceFilePath(this CSharpConfig config, Namespace ns, string tag)
     {
-        var firstClass = classList.FirstOrDefault();
-
-        if (firstClass == null)
-        {
-            return null!;
-        }
-
         var projectDir = Path.Combine(
             config.OutputDirectory,
-            config.ReferenceAccessorsInterfacePath
-                .Replace("{module}", firstClass.Namespace.Module.Replace('.', Path.DirectorySeparatorChar))
-                .Replace("{app}", firstClass.Namespace.App));
-        var className = config.GetReferenceAccessorName(firstClass);
+            config.ResolveTagVariables(tag, config.ReferenceAccessorsInterfacePath)
+                .Replace("{module}", ns.Module.Replace('.', Path.DirectorySeparatorChar))
+                .Replace("{app}", ns.App));
+        var className = config.GetReferenceAccessorName(ns, tag);
         return Path.Combine(projectDir, "generated", $"I{className}.cs");
     }
 
-    public static string GetReferenceImplementationFilePath(this CSharpConfig config, IEnumerable<Class> classList)
+    public static string GetReferenceImplementationFilePath(this CSharpConfig config, Namespace ns, string tag)
     {
-        var firstClass = classList.FirstOrDefault();
-
-        if (firstClass == null)
-        {
-            return null!;
-        }
-
         var projectDir = Path.Combine(
             config.OutputDirectory,
-            config.ReferenceAccessorsImplementationPath
-                .Replace("{module}", firstClass.Namespace.Module.Replace('.', Path.DirectorySeparatorChar))
-                .Replace("{app}", firstClass.Namespace.App));
-        var className = config.GetReferenceAccessorName(firstClass);
+            config.ResolveTagVariables(tag, config.ReferenceAccessorsImplementationPath)
+                .Replace("{module}", ns.Module.Replace('.', Path.DirectorySeparatorChar))
+                .Replace("{app}", ns.App));
+        var className = config.GetReferenceAccessorName(ns, tag);
         return Path.Combine(projectDir, "generated", $"{className}.cs");
     }
 
-    public static string GetReferenceInterfaceNamespace(this CSharpConfig config, Class classe)
+    public static string GetReferenceInterfaceNamespace(this CSharpConfig config, Namespace ns, string tag)
     {
-        var ns = config.ReferenceAccessorsInterfacePath.Replace("\\", "/").Replace("/", ".");
-        return ns[Math.Max(0, ns.IndexOf("{app}"))..]
-            .Replace("{app}", classe.Namespace.App)
-            .Replace("{module}", classe.Namespace.Module);
+        var csns = config.ResolveTagVariables(tag, config.ReferenceAccessorsInterfacePath).Replace("\\", "/").Replace("/", ".").Replace("..", ".");
+        return csns[Math.Max(0, csns.IndexOf("{app}"))..]
+            .Replace("{app}", ns.App)
+            .Replace("{module}", ns.Module);
     }
 
-    public static string GetReferenceImplementationNamespace(this CSharpConfig config, Class classe)
+    public static string GetReferenceImplementationNamespace(this CSharpConfig config, Namespace ns, string tag)
     {
-        var ns = config.ReferenceAccessorsImplementationPath.Replace("\\", "/").Replace("/", ".");
-        return ns[Math.Max(0, ns.IndexOf("{app}"))..]
-            .Replace("{app}", classe.Namespace.App)
-            .Replace("{module}", classe.Namespace.Module);
+        var csns = config.ResolveTagVariables(tag, config.ReferenceAccessorsImplementationPath).Replace("\\", "/").Replace("/", ".").Replace("..", ".");
+        return csns[Math.Max(0, csns.IndexOf("{app}"))..]
+            .Replace("{app}", ns.App)
+            .Replace("{module}", ns.Module);
     }
 
     public static string GetPropertyTypeName(this CSharpConfig config, IProperty prop, bool nonNullable = false, bool useIEnumerable = true)
