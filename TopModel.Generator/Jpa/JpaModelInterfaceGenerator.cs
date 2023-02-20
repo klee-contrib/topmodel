@@ -24,8 +24,7 @@ public class JpaModelInterfaceGenerator : GeneratorBase
 
     public override IEnumerable<string> GeneratedFiles => Files
         .SelectMany(f => f.Value.Classes)
-        .Where(c => c.Decorators
-            .Any(d => d.Decorator.Java != null && d.Decorator.Java.GenerateInterface))
+        .Where(c => c.Abstract)
         .Select(c => GetFileClassName(c));
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
@@ -45,13 +44,12 @@ public class JpaModelInterfaceGenerator : GeneratorBase
                 _config.OutputDirectory,
                 _config.ModelRootPath,
                 Path.Combine(packageRoot.Split(".")),
-                classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower(),
-                "interfaces");
+                classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower());
     }
 
     private string GetClassName(Class classe)
     {
-        return $"I{classe.Name}";
+        return $"{classe.Name.Value.ToPascalCase()}";
     }
 
     private string GetFileClassName(Class classe)
@@ -62,14 +60,14 @@ public class JpaModelInterfaceGenerator : GeneratorBase
     private void GenerateModule(string module)
     {
         var classes = Classes
-            .Where(c => c.Decorators.Any(d => d.Decorator.Java != null && d.Decorator.Java.GenerateInterface))
+            .Where(c => c.Abstract)
             .Where(c => c.Namespace.Module == module);
         foreach (var classe in classes)
         {
             var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
             var destFolder = GetDestinationFolder(classe);
             var dirInfo = Directory.CreateDirectory(destFolder);
-            var packageName = $"{packageRoot}.{classe.Namespace.Module.ToLower()}.interfaces";
+            var packageName = $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
             using var fw = new JavaWriter(GetFileClassName(classe), _logger, packageName, null);
 
             WriteImports(fw, classe);
@@ -81,12 +79,47 @@ public class JpaModelInterfaceGenerator : GeneratorBase
             var implements = classe.Decorators.SelectMany(d => d.Decorator.Java!.Implements.Select(i => i.ParseTemplate(classe, d.Parameters))).Distinct().ToList();
 
             fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
-            fw.WriteLine($"public interface I{classe.Name} {{");
+            fw.WriteLine($"public interface {classe.Name} {{");
 
             WriteGetters(fw, classe);
 
+            if (classe.Properties.Any(p => !p.Readonly))
+            {
+                WriteHydrate(fw, classe);
+            }
+
             fw.WriteLine("}");
         }
+    }
+
+    private void WriteHydrate(JavaWriter fw, Class classe)
+    {
+        var properties = classe.Properties
+            .Where(p => !p.Readonly)
+            .Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne)));
+
+        if (!properties.Any())
+        {
+            return;
+        }
+
+        fw.WriteLine();
+        fw.WriteDocStart(1, $"hydrate values of instance");
+        foreach (var property in properties)
+        {
+            var propertyName = property.GetJavaName();
+            fw.WriteLine(1, $" * @param {propertyName} value to set");
+        }
+
+        fw.WriteDocEnd(1);
+        var signature = string.Join(", ",
+        properties.Select(property =>
+            {
+                var propertyName = property.GetJavaName();
+                return $@"{property.GetJavaType()} {property.GetJavaName()}";
+            }));
+
+        fw.WriteLine(1, $"void hydrate({signature});");
     }
 
     private void WriteGetters(JavaWriter fw, Class classe)

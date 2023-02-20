@@ -286,6 +286,7 @@ public static class JpaUtils
         {
             return null;
         }
+
         var isPersistant = IsPersistantMapper(classe, mapper);
 
         return $@"{(isPersistant ? config.EntitiesPackageName : config.DtosPackageName)}.{classe.ModelFile.Module.Split('.').First().ToLower()}.{GetMapperClassName(config, classe.ModelFile.Module, isPersistant)}";

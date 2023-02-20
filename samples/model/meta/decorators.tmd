@@ -21,12 +21,6 @@ decorator:
       domain: DO_DATE_MODIFICATION
 ---
 decorator:
-  name: Interface
-  description: Ajoute la génération de l'interface
-  java:
-    generateInterface: true
----
-decorator:
   name: Security
   description: Ajoute une annotation de sécurité sur un endpoint.
   java:

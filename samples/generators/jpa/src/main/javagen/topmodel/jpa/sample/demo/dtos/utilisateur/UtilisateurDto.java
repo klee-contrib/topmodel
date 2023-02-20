@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.Email;
 
-import topmodel.jpa.sample.demo.dtos.utilisateur.interfaces.IUtilisateurDto;
 import topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur;
 import topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur;
 import topmodel.jpa.sample.demo.entities.utilisateur.UtilisateurMappers;
@@ -20,7 +19,7 @@ import topmodel.jpa.sample.demo.entities.utilisateur.UtilisateurMappers;
  * Objet non persisté de communication avec le serveur.
  */
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public class UtilisateurDto implements Serializable, IUtilisateurDto {
+public class UtilisateurDto implements Serializable {
 	/** Serial ID */
 	private static final long serialVersionUID = 1L;
 
@@ -143,7 +142,6 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#id id}.
 	 */
-	@Override
 	public Long getId() {
 		return this.id;
 	}
@@ -153,7 +151,6 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#age age}.
 	 */
-	@Override
 	public Long getAge() {
 		return this.age;
 	}
@@ -163,7 +160,6 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#profilId profilId}.
 	 */
-	@Override
 	public Long getProfilId() {
 		return this.profilId;
 	}
@@ -173,7 +169,6 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#email email}.
 	 */
-	@Override
 	public String getEmail() {
 		return this.email;
 	}
@@ -183,7 +178,6 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#nom nom}.
 	 */
-	@Override
 	public String getNom() {
 		return this.nom;
 	}
@@ -193,7 +187,6 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#typeUtilisateurCode typeUtilisateurCode}.
 	 */
-	@Override
 	public TypeUtilisateur.Values getTypeUtilisateurCode() {
 		return this.typeUtilisateurCode;
 	}
@@ -203,7 +196,6 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#dateCreation dateCreation}.
 	 */
-	@Override
 	public LocalDate getDateCreation() {
 		return this.dateCreation;
 	}
@@ -213,7 +205,6 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#dateModification dateModification}.
 	 */
-	@Override
 	public LocalDateTime getDateModification() {
 		return this.dateModification;
 	}
@@ -223,7 +214,6 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#utilisateurParent utilisateurParent}.
 	 */
-	@Override
 	public UtilisateurDto getUtilisateurParent() {
 		return this.utilisateurParent;
 	}
@@ -301,15 +291,35 @@ public class UtilisateurDto implements Serializable, IUtilisateurDto {
 	}
 
 	/**
+	 * Mappe 'UtilisateurDto' vers 'IUtilisateur'.
+	 * @param target Instance pré-existante de 'IUtilisateur'. Une nouvelle instance sera créée si non spécifié.
+	 *
+	 * @return Une instance de 'IUtilisateur'.
+	 */
+	public IUtilisateur toIUtilisateur(IUtilisateur target) {
+		return UtilisateurDTOMappers.toIUtilisateur(this, target);
+	}
+
+
+	/**
 	 * Mappe 'UtilisateurDto' vers 'Utilisateur'.
 	 * @param target Instance pré-existante de 'Utilisateur'. Une nouvelle instance sera créée si non spécifié.
 	 *
 	 * @return Une instance de 'Utilisateur'.
 	 */
 	public Utilisateur toUtilisateur(Utilisateur target) {
-		target = target == null ? new Utilisateur() : target;
-		UtilisateurMappers.toUtilisateur(this, target);
-		return target;
+		return UtilisateurMappers.toUtilisateur(this, target);
+	}
+
+
+	/**
+	 * Mappe 'UtilisateurDto' vers 'UtilisateurDto'.
+	 * @param target Instance pré-existante de 'UtilisateurDto'. Une nouvelle instance sera créée si non spécifié.
+	 *
+	 * @return Une instance de 'UtilisateurDto'.
+	 */
+	public UtilisateurDto toUtilisateurDto(UtilisateurDto target) {
+		return UtilisateurDTOMappers.toUtilisateurDto(this, target);
 	}
 
 	/**

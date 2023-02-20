@@ -19,6 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.annotation.Generated;
 
+import topmodel.jpa.sample.demo.dtos.utilisateur.IUtilisateur;
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
 import topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur;
 

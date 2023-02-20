@@ -1200,7 +1200,7 @@ public class ModelStore
                     }
                 }
 
-                if (!mapper.Params.SelectMany(p => p.Mappings).Any())
+                if (!mapper.Params.SelectMany(p => p.Mappings).Any() && classe.Extends == null)
                 {
                     yield return new ModelError(classe, "Aucun mapping n'a été trouvé sur ce mapper.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1025 };
                 }
@@ -1253,7 +1253,7 @@ public class ModelStore
                     yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapper.Class}.{mapping.Value?.Name}' : {string.Join(", ", mapper.Mappings.Where(p => p.Value == mapping.Value).Select(p => $"'{p.Key.Name}'"))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
                 }
 
-                if (!mapper.Mappings.Any())
+                if (!mapper.Mappings.Any() && classe.Extends == null)
                 {
                     yield return new ModelError(classe, "Aucun mapping n'a été trouvé sur ce mapper.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1025 };
                 }

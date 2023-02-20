@@ -58,7 +58,7 @@ public class AliasProperty : IFieldProperty
 
     public bool Readonly
     {
-        get => _readonly ?? _property.Readonly;
+        get => _readonly ?? _property?.Readonly ?? false;
         set => _readonly = value;
     }
 

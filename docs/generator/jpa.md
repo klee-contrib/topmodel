@@ -206,18 +206,17 @@ Le générateur JPA constuit 3 par classe :
 
 Afin d'utiliser les [projections de Spring JPA](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#projections), il peut être nécessaire d'obtenir des interfaces représentant les Dtos (contenant uniquement les getters).
 
-Pour générer de telles interface, vous pouvez passer la propriété `generateInterface` d'un décorateur `Java` à `true`.
+Pour générer de telles interface, vous pouvez passer la propriété `abstract` d'une classe à `true`.
 
 ```yaml
 ---
-decorator:
-  name: Interface
-  description: Ajoute la génération de l'interface
-  java:
-    generateInterface: true
+class:
+  name: IUtilisateur
+  comment: Interface de projection
+  abstract: true
 ```
 
-Ajouté à une classe, il permet de générer une interface, implémentée par la classe.
+Ainsi, le fichier généré sera non plus une classe mais une interface ne contenant que des getters pour les propriétés. Si certaines d'entre ont `readonly: false`, alors une méthode `hydrate` sera générée, prenant en paramètre toutes les propriétés non `readonly`.
 
 Exemple :
 

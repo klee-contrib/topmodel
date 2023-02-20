@@ -176,9 +176,7 @@ public class Profil {
 	 * @return Une instance de 'Profil'.
 	 */
 	public Profil toProfil(Profil target) {
-		target = target == null ? new Profil() : target;
-		SecuriteMappers.toProfil(this, target);
-		return target;
+		return SecuriteMappers.toProfil(this, target);
 	}
 
 	/**

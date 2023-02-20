@@ -4,9 +4,30 @@
 
 package topmodel.jpa.sample.demo.entities.utilisateur;
 
+import topmodel.jpa.sample.demo.dtos.utilisateur.IUtilisateur;
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
 
 public class UtilisateurMappers {
+
+	/**
+	 * Map les champs des classes passées en paramètre dans l'objet target'.
+	 * @param target Instance de 'IUtilisateur' (ou null pour créer une nouvelle instance).
+	 * @param utilisateur Instance de 'Utilisateur'.
+	 *
+	 * @return Une nouvelle instance de 'IUtilisateur' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée.
+	 */
+	public static IUtilisateur createIUtilisateur(Utilisateur utilisateur, IUtilisateur target) {
+		if (target == null) {
+			throw new IllegalArgumentException("target cannot be null");
+		}
+
+		if (utilisateur != null) {
+		} else {
+			throw new IllegalArgumentException("utilisateur cannot be null");
+		}
+		target.hydrate(utilisateur.getId(), utilisateur.getAge(), utilisateur.getProfil() != null ? utilisateur.getProfil().getId() : null, utilisateur.getEmail(), utilisateur.getNom(), utilisateur.getTypeUtilisateur() != null ? utilisateur.getTypeUtilisateur().getCode() : null, utilisateur.getDateCreation(), utilisateur.getDateModification());
+		return target;
+	}
 
 	/**
 	 * Map les champs des classes passées en paramètre dans l'objet target'.
@@ -21,7 +42,10 @@ public class UtilisateurMappers {
 		}
 
 		if (utilisateur != null) {
-			target.setUtilisateurParent(utilisateur.getUtilisateurParent() == null ? null : UtilisateurMappers.createUtilisateurDto(utilisateur.getUtilisateurParent(), target.getUtilisateurParent()));
+			if (utilisateur.getUtilisateurParent() != null) {
+				target.setUtilisateurParent(UtilisateurMappers.createUtilisateurDto(utilisateur.getUtilisateurParent(), target.getUtilisateurParent()));
+			}
+
 			target.setId(utilisateur.getId());
 			target.setAge(utilisateur.getAge());
 			if (utilisateur.getProfil() != null) {
@@ -58,10 +82,6 @@ public class UtilisateurMappers {
 			target = new Utilisateur();
 		}
 
-		if (source.getUtilisateurParent() != null) {
-			target.setUtilisateurParent(UtilisateurMappers.toUtilisateur(source.getUtilisateurParent(), target.getUtilisateurParent()));
-		}
-
 		target.setId(source.getId());
 		target.setAge(source.getAge());
 		target.setEmail(source.getEmail());
@@ -69,8 +89,13 @@ public class UtilisateurMappers {
 		if (source.getTypeUtilisateurCode() != null) {
 			target.setTypeUtilisateur(source.getTypeUtilisateurCode().getEntity());
 		}
+
 		target.setDateCreation(source.getDateCreation());
 		target.setDateModification(source.getDateModification());
+		if (source.getUtilisateurParent() != null) {
+			target.setUtilisateurParent(UtilisateurMappers.toUtilisateur(source.getUtilisateurParent(), target.getUtilisateurParent()));
+		}
+
 		return target;
 	}
 }

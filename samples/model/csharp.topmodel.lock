@@ -20,5 +20,6 @@ generatedFiles:
   - ../generators/csharp/src/Models/CSharp.Securite.Models/generated/Droit.cs
   - ../generators/csharp/src/Models/CSharp.Securite.Models/generated/ProfilDto.cs
   - ../generators/csharp/src/Models/CSharp.Securite.Models/generated/TypeProfil.cs
+  - ../generators/csharp/src/Models/CSharp.Utilisateur.Models/generated/IIUtilisateur.cs
   - ../generators/csharp/src/Models/CSharp.Utilisateur.Models/generated/TypeUtilisateur.cs
   - ../generators/csharp/src/Models/CSharp.Utilisateur.Models/generated/UtilisateurDto.cs

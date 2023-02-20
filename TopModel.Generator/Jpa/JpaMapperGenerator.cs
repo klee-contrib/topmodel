@@ -54,7 +54,6 @@ public class JpaMapperGenerator : GeneratorBase
     /// <param name="isPersistent">Mappers à générer avec les classes persistées (ou non).</param>
     private void Generate(string module, bool isPersistent)
     {
-
         var package = string.Join('.', (isPersistent ? _config.EntitiesPackageName : _config.DtosPackageName).Split('.').Append(module.Split('.').First().ToLower()));
         var destFolder = Path.Combine(_config.OutputDirectory, string.Join('/', package.Split('.')));
         using var fw = new JavaWriter(_config.GetMapperFilePath(module, isPersistent)!, _logger, package, null);
@@ -118,7 +117,15 @@ public class JpaMapperGenerator : GeneratorBase
         fw.WriteLine(2, "}");
         fw.WriteLine();
         fw.WriteLine(2, "if (target == null) {");
-        fw.WriteLine(3, $"target = new {mapper.Class}();");
+        if (mapper.Class.Abstract)
+        {
+            fw.WriteLine(3, $"throw new IllegalArgumentException(\"target cannot be null\");");
+        }
+        else
+        {
+            fw.WriteLine(3, $"target = new {mapper.Class}();");
+        }
+
         fw.WriteLine(2, "}");
         fw.WriteLine();
         if (mapper.ParentMapper != null)
@@ -127,73 +134,186 @@ public class JpaMapperGenerator : GeneratorBase
             fw.WriteLine(2, $"{_config.GetMapperClassName(classe.Extends!, mapper)}.{mapper.ParentMapper.Name.Value.ToCamelCase()}(source, target);");
         }
 
-        foreach (var mapping in mapper.Mappings)
+        var hydrate = string.Empty;
+        if (mapper.Class.Abstract)
         {
-            var getterPrefix = mapping.Value!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
-            if (mapping.Value is AssociationProperty ap)
+            hydrate = "target.hydrate(";
+        }
+
+        var isFirst = true;
+        foreach (var mapping in mapper.Mappings.OrderBy(m => m.Key.Class.Properties.IndexOf(m.Key)))
+        {
+            var propertyTarget = mapping.Value;
+            var propertySource = mapping.Key;
+            var getterPrefix = propertyTarget!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+            var getter = GetSourceGetter(propertySource, propertyTarget!, classe, fw, "source");
+            if (mapper.Class.Abstract)
             {
-                if (ap.Property.IsEnum())
+                if (!isFirst)
                 {
-                    var isMultiple = ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany;
-                    if (isMultiple)
-                    {
-                        var getter = $@"source.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}(){(!mapping.Key.Class.IsPersistent ? $".stream().map({ap.Association.PrimaryKey.Single().GetJavaType()}::getEntity).collect(Collectors.toList())" : string.Empty)}";
-                        fw.WriteLine(2, $"target.set{mapping.Value.GetJavaName().ToFirstUpper()}({getter});");
-                        fw.AddImport("java.util.stream.Collectors");
-                    }
-                    else
-                    {
-                        fw.WriteLine(2, $"if (source.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}() != null) {{");
-                        fw.WriteLine(3, $"target.set{mapping.Value.GetJavaName().ToFirstUpper()}(source.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}(){(!mapping.Key.Class.IsPersistent ? ".getEntity()" : string.Empty)});");
-                        fw.WriteLine(2, $"}}");
-                    }
+                    hydrate += ", ";
                 }
-                else if (mapping.Value.Class.IsPersistent && mapping.Key.Class.IsPersistent)
+                else
                 {
-                    fw.WriteLine(2, $"target.set{mapping.Value.GetJavaName().ToFirstUpper()}(source.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}());");
+                    isFirst = false;
                 }
-                else if (mapping.Key is CompositionProperty cp)
+
+                if (getter.CheckSourceNull)
                 {
-                    if (cp.Composition.ToMappers.Any(t => t.Class == ap.Association))
-                    {
-                        var cpMapper = cp.Composition.ToMappers.Find(t => t.Class == ap.Association)!;
-                        fw.WriteLine(2, $@"if (source.get{cp.GetJavaName().ToFirstUpper()}() != null) {{");
-                        fw.WriteLine(3, $@"target.set{mapping.Value.GetJavaName().ToFirstUpper()}({_config.GetMapperClassName(cpMapper.Class, cpMapper)}.{cpMapper.Name.Value.ToCamelCase()}(source.{getterPrefix}{cp.GetJavaName().ToFirstUpper()}(), target.get{ap.GetJavaName().ToFirstUpper()}()));");
-                        fw.AddImport(_config.GetMapperImport(cpMapper.Class, cpMapper)!);
-                        fw.WriteLine(2, $@"}}");
-                        fw.WriteLine();
-                    }
-                    else
-                    {
-                        throw new ModelException(classe, $"La propriété {mapping.Key.Name} ne peut pas être mappée avec la propriété {mapping.Value.Name} car il n'existe pas de mapper {cp.Composition.Name} -> {ap.Association.Name}");
-                    }
+                    hydrate += $"source.{getterPrefix}{propertySource.GetJavaName().ToPascalCase()}() != null ? {getter.Getter} : null";
+                }
+                else
+                {
+                    hydrate += getter.Getter;
                 }
             }
             else
             {
-                if (mapping.Key is IFieldProperty ifpTo && mapping.Value is IFieldProperty ifpFrom && ifpFrom.Domain != ifpTo.Domain)
+                if (getter.Getter != string.Empty)
                 {
-                    var converter = ifpFrom.Domain.ConvertersFrom.FirstOrDefault(c => c.To.Any(t => t == ifpTo.Domain));
-                    string conversion = $@"source.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}()";
-                    if (converter != null && converter.Java?.Text != null)
+                    if (getter.CheckSourceNull)
                     {
-                        var convert = converter.Java.Text;
-                        conversion = convert.Replace("{value}", conversion)
-                            .ParseTemplate(ifpFrom.Domain, "java", "from.")
-                            .ParseTemplate(ifpTo.Domain, "java", "to.");
+                        fw.WriteLine(2, $"if (source.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}() != null) {{");
                     }
 
-                    fw.WriteLine(2, $"source.{mapping.Key.GetJavaName()} = {conversion};");
-                }
-                else
-                {
-                    fw.WriteLine(2, $"target.set{mapping.Value!.GetJavaName().ToFirstUpper()}(source.{getterPrefix}{mapping.Key.GetJavaName().ToFirstUpper()}());");
+                    fw.WriteLine(2 + (getter.CheckSourceNull ? 1 : 0), $"target.set{propertyTarget!.GetJavaName().ToFirstUpper()}({getter.Getter});");
+
+                    if (getter.CheckSourceNull)
+                    {
+                        fw.WriteLine(2, $"}}");
+                        fw.WriteLine();
+                    }
                 }
             }
         }
 
+        if (mapper.Class.Abstract)
+        {
+            hydrate += ");";
+            fw.WriteLine(2, hydrate);
+        }
+
         fw.WriteLine(2, "return target;");
         fw.WriteLine(1, "}");
+    }
+
+    private (string Getter, bool CheckSourceNull) GetSourceGetter(IProperty propertySource, IProperty propertyTarget, Class classe, JavaWriter fw, string sourceName)
+    {
+        var getterPrefix = propertyTarget!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+        var getter = string.Empty;
+        var checkSourceNull = false;
+        if ((!propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent)
+            || !(propertySource is AssociationProperty || propertyTarget is AssociationProperty))
+        {
+            getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}()";
+        }
+        else if (propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent && propertySource is AssociationProperty apSource)
+        {
+            checkSourceNull = true;
+            if (propertyTarget is CompositionProperty cp)
+            {
+                if (propertySource.Class.ToMappers.Any(t => t.Class == cp.Composition))
+                {
+                    var cpMapper = propertySource.Class.ToMappers.Find(t => t.Class == cp.Composition)!;
+                    getter = $"{_config.GetMapperClassName(cpMapper.Class, cpMapper)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterPrefix}{cp.GetJavaName().ToFirstUpper()}(), target.get{apSource.GetJavaName().ToFirstUpper()}())";
+                    fw.AddImport(_config.GetMapperImport(cpMapper.Class, cpMapper)!);
+                }
+                else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == apSource.Association))
+                {
+                    var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == apSource.Association);
+                    getter = $"{sourceName}.{getterPrefix}{apSource.GetJavaName().ToFirstUpper()}()";
+                    if (apSource.Type == AssociationType.OneToMany || apSource.Type == AssociationType.ManyToMany)
+                    {
+                        getter = $"{getter}.stream().map(item -> {_config.GetMapperClassName(cp.Composition, cpMapper)}.create{cp.Composition}(item, null)).collect(Collectors.toList())";
+                        fw.AddImport("java.util.stream.Collectors");
+                    }
+                    else
+                    {
+                        getter = $"{_config.GetMapperClassName(cp.Composition, cpMapper)}.create{cp.Composition}({getter}, target.get{propertyTarget.GetJavaName().ToFirstUpper()}())";
+                    }
+
+                    fw.AddImport(_config.GetMapperImport(cp.Composition, cpMapper!)!);
+                }
+                else
+                {
+                    throw new ModelException(classe, $"La propriété {propertySource.Name} ne peut pas être mappée avec la propriété {propertyTarget.Name} car il n'existe pas de mapper {cp.Composition.Name} -> {apSource.Association.Name}");
+                }
+            }
+            else
+            {
+                if (apSource.Type == AssociationType.OneToOne || apSource.Type == AssociationType.ManyToOne)
+                {
+                    getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}().get{apSource.Property.GetJavaName().ToFirstUpper()}()";
+                }
+                else
+                {
+                    getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}().stream().filter(Objects::nonNull).map({apSource.Association.Name.Value.ToPascalCase()}::get{apSource.Property.GetJavaName().ToFirstUpper()}).collect(Collectors.toList())";
+                    fw.AddImport("java.util.stream.Collectors");
+                    fw.AddImport("java.util.Objects");
+                    fw.AddImport(apSource.Association.GetImport(_config));
+                }
+            }
+        }
+        else if (!propertySource.Class.IsPersistent && propertyTarget.Class.IsPersistent && propertyTarget is AssociationProperty apTarget)
+        {
+            if (apTarget.Property.IsEnum())
+            {
+                var isMultiple = apTarget.Type == AssociationType.OneToMany || apTarget.Type == AssociationType.ManyToMany;
+                if (isMultiple)
+                {
+                    getter = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}(){(!propertySource.Class.IsPersistent ? $".stream().map({apTarget.Association.PrimaryKey.Single().GetJavaType()}::getEntity).collect(Collectors.toList())" : string.Empty)}";
+                    fw.AddImport("java.util.stream.Collectors");
+                }
+                else
+                {
+                    getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}(){(!propertySource.Class.IsPersistent ? ".getEntity()" : string.Empty)}";
+                    checkSourceNull = true;
+                }
+            }
+            else if (propertyTarget.Class.IsPersistent && propertySource.Class.IsPersistent)
+            {
+                getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}()";
+            }
+            else if (propertySource is CompositionProperty cp)
+            {
+                if (cp.Composition.ToMappers.Any(t => t.Class == apTarget.Association))
+                {
+                    var cpMapper = cp.Composition.ToMappers.Find(t => t.Class == apTarget.Association)!;
+                    getter = $"{_config.GetMapperClassName(cpMapper.Class, cpMapper)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterPrefix}{cp.GetJavaName().ToFirstUpper()}(), target.get{apTarget.GetJavaName().ToFirstUpper()}())";
+                    fw.AddImport(_config.GetMapperImport(cpMapper.Class, cpMapper)!);
+                    checkSourceNull = true;
+                }
+                else
+                {
+                    throw new ModelException(classe, $"La propriété {propertySource.Name} ne peut pas être mappée avec la propriété {propertyTarget.Name} car il n'existe pas de mapper {cp.Composition.Name} -> {apTarget.Association.Name}");
+                }
+            }
+        }
+        else
+        {
+            if (propertySource is IFieldProperty ifpTo && propertyTarget is IFieldProperty ifpFrom && ifpFrom.Domain != ifpTo.Domain)
+            {
+                var converter = ifpFrom.Domain.ConvertersFrom.FirstOrDefault(c => c.To.Any(t => t == ifpTo.Domain));
+                string conversion = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}()";
+                if (converter != null && converter.Java?.Text != null)
+                {
+                    var convert = converter.Java.Text;
+                    getter = convert.Replace("{value}", conversion)
+                        .ParseTemplate(ifpFrom.Domain, "java", "from.")
+                        .ParseTemplate(ifpTo.Domain, "java", "to.");
+                }
+                else
+                {
+                    getter = $"{sourceName}.{propertySource.GetJavaName().ToFirstUpper()}()";
+                }
+            }
+            else
+            {
+                getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToPascalCase()}()";
+            }
+        }
+
+        return (Getter: getter, CheckSourceNull: checkSourceNull);
     }
 
     private void WriteFromMapper(Class classe, FromMapper mapper, JavaWriter fw)
@@ -217,9 +337,24 @@ public class JpaMapperGenerator : GeneratorBase
         fw.WriteDocEnd(1);
         fw.WriteLine(1, $"public static {classe.Name.Value.ToPascalCase()} create{classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToFirstLower()}"))}, {classe} target) {{");
         fw.WriteLine(2, "if (target == null) {");
-        fw.WriteLine(3, $"target = new {classe.Name.Value.ToPascalCase()}();");
+        if (classe.Abstract)
+        {
+            fw.WriteLine(3, $"throw new IllegalArgumentException(\"target cannot be null\");");
+        }
+        else
+        {
+            fw.WriteLine(3, $"target = new {classe.Name.Value.ToPascalCase()}();");
+        }
+
         fw.WriteLine(2, "}");
         fw.WriteLine();
+        var hydrate = string.Empty;
+        if (classe.Abstract)
+        {
+            hydrate = "target.hydrate(";
+        }
+
+        var isFirst = true;
         if (classe.Extends != null)
         {
             if (mapper.ParentMapper != null)
@@ -232,85 +367,49 @@ public class JpaMapperGenerator : GeneratorBase
         {
             fw.WriteLine(2, $"if ({param.Name.ToFirstLower()} != null) {{");
             var mappings = param.Mappings.ToList();
+
             foreach (var mapping in mappings)
             {
-                var getterPrefix = mapping.Value!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
-                if (mapping.Value is AssociationProperty ap)
+                var propertyTarget = mapping.Key;
+                var propertySource = mapping.Value!;
+                var getterPrefix = propertyTarget!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+                var getter = GetSourceGetter(propertySource, propertyTarget, classe, fw, param.Name.ToFirstLower());
+                if (classe.Abstract)
                 {
-                    if (!classe.IsPersistent)
+                    if (!isFirst)
                     {
-                        if (mapping.Key is IFieldProperty)
-                        {
-                            fw.WriteLine(3, $"if ({param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value.GetJavaName().ToFirstUpper()}() != null) {{");
-                            if (ap.Type == AssociationType.OneToOne || ap.Type == AssociationType.ManyToOne)
-                            {
-                                fw.WriteLine(4, $"target.set{mapping.Key.GetJavaName().ToFirstUpper()}({param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().{getterPrefix}{ap.Property.Name.ToFirstUpper()}());");
-                            }
-                            else
-                            {
-                                fw.WriteLine(4, $"target.set{mapping.Key.GetJavaName().ToFirstUpper()}({param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}().stream().filter(t -> t != null).map({ap.GetJavaName().ToFirstLower()} -> {ap.GetJavaName().ToFirstLower()}.{getterPrefix}{ap.Property.Name.ToFirstUpper()}()).collect(Collectors.toList()));");
-                                fw.AddImport("java.util.stream.Collectors");
-                            }
-
-                            fw.WriteLine(3, "}");
-
-                            if (mappings.IndexOf(mapping) < mappings.Count - 1)
-                            {
-                                fw.WriteLine();
-                            }
-                        }
-                        else if (mapping.Key is CompositionProperty cp)
-                        {
-                            if (mapping.Value == null)
-                            {
-                                fw.WriteLine(3, $"target.set{mapping.Key.GetJavaName().ToFirstUpper()}({param.Name});");
-                            }
-                            else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association))
-                            {
-                                var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == ap.Association);
-                                var getter = $"{param.Name.ToFirstLower()}.{getterPrefix}{ap.GetJavaName().ToFirstUpper()}()";
-                                if (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany)
-                                {
-                                    fw.WriteLine(3, $"target.set{mapping.Key.GetJavaName().ToFirstUpper()}({getter} == null ? null : {getter}.stream().map(item -> {_config.GetMapperClassName(cp.Composition, cpMapper)}.create{cp.Composition}(item, null)).collect(Collectors.toList()));");
-                                    fw.AddImport("java.util.stream.Collectors");
-                                }
-                                else
-                                {
-                                    fw.WriteLine(3, $"target.set{mapping.Key.GetJavaName().ToFirstUpper()}({getter} == null ? null : {_config.GetMapperClassName(cp.Composition, cpMapper)}.create{cp.Composition}({getter}, target.get{mapping.Key.GetJavaName().ToFirstUpper()}()));");
-                                }
-
-                                fw.AddImport(_config.GetMapperImport(cp.Composition, cpMapper!)!);
-                            }
-                            else
-                            {
-                                throw new ModelException(classe, $"La propriété {mapping.Key.Name} ne peut pas être mappée avec la propriété {mapping.Value.Name} car il n'existe pas de mapper {ap.Association.Name} -> {cp.Composition.Name}");
-                            }
-                        }
+                        hydrate += ", ";
                     }
                     else
                     {
-                        fw.WriteLine(3, $"target.set{mapping.Key.GetJavaName().ToFirstUpper()}({param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value.GetJavaName().ToFirstUpper()}());");
+                        isFirst = false;
+                    }
+
+                    if (getter.CheckSourceNull)
+                    {
+                        hydrate += $"{param.Name}.{getterPrefix}{propertySource.GetJavaName().ToPascalCase()}() != null ? {getter.Getter} : null";
+                    }
+                    else
+                    {
+                        hydrate += getter.Getter;
                     }
                 }
                 else
                 {
-                    if (mapping.Key is IFieldProperty ifpFrom && mapping.Value is IFieldProperty ifpTo && ifpFrom.Domain != ifpTo.Domain)
+                    if (getter.Getter != string.Empty)
                     {
-                        var converter = ifpFrom.Domain.ConvertersFrom.FirstOrDefault(c => c.To.Any(t => t == ifpTo.Domain));
-                        string conversion = $@"{param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value!.Name.ToFirstUpper()}()";
-                        if (converter != null && converter.Java?.Text != null)
+                        if (getter.CheckSourceNull)
                         {
-                            var convert = converter.Java.Text;
-                            conversion = convert.Replace("{value}", conversion)
-                                .ParseTemplate(ifpFrom.Domain, "java", "from.")
-                                .ParseTemplate(ifpTo.Domain, "java", "to.");
+                            fw.WriteLine(3, $"if ({param.Name}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}() != null) {{");
                         }
 
-                        fw.WriteLine(3, $"target.set{mapping.Key.GetJavaName().ToFirstUpper()}({conversion});");
-                    }
-                    else
-                    {
-                        fw.WriteLine(3, $"target.set{mapping.Key.GetJavaName().ToFirstUpper()}({param.Name.ToFirstLower()}.{getterPrefix}{mapping.Value!.Name.ToFirstUpper()}());");
+                        fw.WriteLine(3 + (getter.CheckSourceNull ? 1 : 0), $"target.set{propertyTarget!.GetJavaName().ToFirstUpper()}({getter.Getter});");
+
+                        if (getter.CheckSourceNull)
+                        {
+                            fw.WriteLine(3, $"}}");
+                            fw.WriteLine();
+                        }
                     }
                 }
             }
@@ -327,6 +426,12 @@ public class JpaMapperGenerator : GeneratorBase
             {
                 fw.WriteLine();
             }
+        }
+
+        if (classe.Abstract)
+        {
+            hydrate += ");";
+            fw.WriteLine(2, hydrate);
         }
 
         fw.WriteLine(2, "return target;");

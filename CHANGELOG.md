@@ -2,6 +2,11 @@
 
 ## Prochaine version (1.24.0)
 
+- [#218](https://github.com/klee-contrib/topmodel/pull/218) - [JPA] Classes abstraites et propriétés readonly
+  - Suppression de l'option `generateInterface` dans les décorateurs `java`
+  
+**Breaking change (JPA)** : Pour générer une interface, l'option `generateInterface` sur les décorateurs a été remplacée par la propriété `abstract: true` dans la classe
+
 - [#190](https://github.com/klee-contrib/topmodel/pull/190) - [Core + C#] Classes abstraites et propriétés readonly
 
 - [#212](https://github.com/klee-contrib/topmodel/pull/212) - Clarification utilisation de `values` et `enum`s explicites

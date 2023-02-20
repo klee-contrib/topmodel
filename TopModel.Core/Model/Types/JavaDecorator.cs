@@ -9,6 +9,4 @@ public class JavaDecorator
     public IList<string> Annotations { get; set; } = new List<string>();
 
     public IList<string> Imports { get; set; } = new List<string>();
-
-    public bool GenerateInterface { get; set; }
 }
