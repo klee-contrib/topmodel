@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Javascript;
@@ -8,7 +7,7 @@ namespace TopModel.Generator.Javascript;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class JavascriptResourceGenerator : GeneratorBase
+public class JavascriptResourceGenerator : TranslationGeneratorBase
 {
     private readonly JavascriptConfig _config;
     private readonly ILogger<JavascriptResourceGenerator> _logger;
@@ -16,7 +15,7 @@ public class JavascriptResourceGenerator : GeneratorBase
     private readonly ModelConfig _modelConfig;
 
     public JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> logger, JavascriptConfig config, TranslationStore translationStore, ModelConfig modelConfig)
-        : base(logger, config)
+        : base(logger, config, translationStore)
     {
         _config = config;
         _logger = logger;
@@ -26,131 +25,72 @@ public class JavascriptResourceGenerator : GeneratorBase
 
     public override string Name => "JSResourceGen";
 
-    public override IEnumerable<string> GeneratedFiles => _config.Tags
-        .SelectMany(tag =>
-        {
-            var properties = Classes
-                .Where(c => c.ModelFile.Tags.Contains(tag))
-                .SelectMany(c => c.Properties.OfType<IFieldProperty>());
-
-            return properties
-                .Select(c => c.ResourceProperty)
-                .SelectMany(c => _translationStore.Translations.Select(lang => _config.GetResourcesFilePath(c.Parent.Namespace.Module.Split('.').First(), tag, lang.Key)))
-                .Concat(_config.GenerateComments
-                    ? properties.Select(c => _config.GetCommentResourcesFilePath(c.CommentResourceProperty.Parent.Namespace.Module.Split('.').First(), tag, _modelConfig.I18n.DefaultLang))
-                    : Array.Empty<string>());
-        })
-        .Distinct();
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override string? GetCommentResourceFilePath(IFieldProperty property, string tag, string lang)
     {
-        var modules = Classes
-            .SelectMany(c => c.Properties.OfType<IFieldProperty>())
-            .Select(c => c.ResourceProperty.Parent.Namespace.Module.Split('.').First())
-            .Distinct();
-        foreach (var lang in _translationStore.Translations)
+        if (!_config.GenerateComments)
         {
-            foreach (var module in modules)
-            {
-                GenerateModule(module, lang.Key);
-            }
+            return null;
         }
 
-        if (_config.GenerateComments)
+        return _config.GetCommentResourcesFilePath(property.Parent.Namespace.Module.Split('.').First(), tag, _modelConfig.I18n.DefaultLang);
+    }
+
+    protected override string GetResourceFilePath(IFieldProperty property, string tag, string lang)
+    {
+        return _config.GetResourcesFilePath(property.Parent.Namespace.Module.Split('.').First(), tag, lang);
+    }
+
+    protected override void HandleCommentResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties)
+    {
+        using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
+
+        var module = properties.First().Parent.Namespace.Module;
+
+        if (_config.ResourceMode != ResourceMode.JS)
         {
-            foreach (var module in modules)
-            {
-                GenerateCommentModule(module);
-            }
+            fw.WriteLine("{");
+        }
+        else
+        {
+            fw.WriteLine($"export const {module.Split('.').Last().ToFirstLower()} = {{");
+        }
+
+        WriteSubModule(fw, _modelConfig.I18n.DefaultLang, properties, true, 1);
+
+        if (_config.ResourceMode != ResourceMode.JS)
+        {
+            fw.WriteLine("}");
+        }
+        else
+        {
+            fw.WriteLine("};");
         }
     }
 
-    private void GenerateModule(string module, string lang)
+    protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties)
     {
-        if (_config.ResourceRootPath == null)
+        using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
+
+        var module = properties.First().Parent.Namespace.Module;
+
+        if (_config.ResourceMode != ResourceMode.JS)
         {
-            return;
+            fw.WriteLine("{");
+        }
+        else
+        {
+            fw.WriteLine($"export const {module.Split('.').Last().ToFirstLower()} = {{");
         }
 
-        foreach (var group in _config.Tags
-            .Select(tag => (tag, fileName: _config.GetResourcesFilePath(module, tag, lang)))
-            .GroupBy(t => t.fileName))
+        WriteSubModule(fw, lang, properties, false, 1);
+
+        if (_config.ResourceMode != ResourceMode.JS)
         {
-            var properties = Classes
-                .Where(c => c.ModelFile.Tags.Intersect(group.Select(t => t.tag)).Any())
-                .SelectMany(c => c.Properties.OfType<IFieldProperty>())
-                .Select(c => c.ResourceProperty)
-                .Distinct()
-                .Where(prop => prop.Parent.Namespace.Module.Split('.').First() == module);
-            if (properties.Any())
-            {
-                using var fw = new FileWriter(group.Key, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
-
-                if (_config.ResourceMode != ResourceMode.JS)
-                {
-                    fw.WriteLine("{");
-                }
-                else
-                {
-                    fw.WriteLine($"export const {module.Split('.').Last().ToFirstLower()} = {{");
-                }
-
-                WriteSubModule(fw, lang, properties, false, 1);
-
-                if (_config.ResourceMode != ResourceMode.JS)
-                {
-                    fw.WriteLine("}");
-                }
-                else
-                {
-                    fw.WriteLine("};");
-                }
-            }
+            fw.WriteLine("}");
         }
-    }
-
-    private void GenerateCommentModule(string module)
-    {
-        if (_config.ResourceRootPath == null)
+        else
         {
-            return;
-        }
-
-        foreach (var group in _config.Tags
-            .Select(tag => (tag, fileName: _config.GetCommentResourcesFilePath(module, tag, _modelConfig.I18n.DefaultLang)))
-            .GroupBy(t => t.fileName))
-        {
-            var properties = Classes
-                .Where(c => c.ModelFile.Tags.Intersect(group.Select(t => t.tag)).Any())
-                .SelectMany(c => c.Properties.OfType<IFieldProperty>())
-                .Select(c => c.CommentResourceProperty)
-                .Distinct()
-                .Where(prop => prop.Parent.Namespace.Module.Split('.').First() == module);
-
-            if (properties.Any())
-            {
-                using var fw = new FileWriter(group.Key, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
-
-                if (_config.ResourceMode != ResourceMode.JS)
-                {
-                    fw.WriteLine("{");
-                }
-                else
-                {
-                    fw.WriteLine($"export const {module.Split('.').Last().ToFirstLower()} = {{");
-                }
-
-                WriteSubModule(fw, _modelConfig.I18n.DefaultLang, properties, true, 1);
-
-                if (_config.ResourceMode != ResourceMode.JS)
-                {
-                    fw.WriteLine("}");
-                }
-                else
-                {
-                    fw.WriteLine("};");
-                }
-            }
+            fw.WriteLine("};");
         }
     }
 
