@@ -120,6 +120,11 @@ public class CSharpConfig : GeneratorConfigBase
 
     public override string[] PropertiesWithTagVariableSupport => new[]
     {
+        nameof(DbContextPath),
+        nameof(DbContextName),
+        nameof(ReferenceAccessorsName),
+        nameof(ReferenceAccessorsInterfacePath),
+        nameof(ReferenceAccessorsImplementationPath),
         nameof(ApiGeneration),
         nameof(ApiRootPath),
         nameof(ApiFilePath)
@@ -183,11 +188,11 @@ public class CSharpConfig : GeneratorConfigBase
     /// Récupère le nom du DbContext.
     /// </summary>
     /// <param name="appName">Nom de l'application.</param>
+    /// <param name="tag">tag</param>
     /// <returns>Nom.</returns>
-    public string GetDbContextName(string appName)
+    public string GetDbContextName(string appName, string tag)
     {
-        return DbContextName?.Replace("{app}", appName.Replace(".", string.Empty))
-            ?? throw new ModelException("Le DbContext doit être renseigné.");
+        return ResolveTagVariables(tag, DbContextName).Replace("{app}", appName.Replace(".", string.Empty));
     }
 
     /// <summary>

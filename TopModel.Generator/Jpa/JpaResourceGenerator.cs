@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
@@ -9,14 +8,14 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class JpaResourceGenerator : GeneratorBase
+public class JpaResourceGenerator : TranslationGeneratorBase
 {
     private readonly JpaConfig _config;
     private readonly ILogger<JpaResourceGenerator> _logger;
     private readonly TranslationStore _translationStore;
 
     public JpaResourceGenerator(ILogger<JpaResourceGenerator> logger, JpaConfig config, TranslationStore translationStore)
-        : base(logger, config)
+        : base(logger, config, translationStore)
     {
         _config = config;
         _logger = logger;
@@ -25,47 +24,25 @@ public class JpaResourceGenerator : GeneratorBase
 
     public override string Name => "JpaResourceGen";
 
-    public override IEnumerable<string> GeneratedFiles => _translationStore.Translations.SelectMany(dict => GetModules().Select(module => GetFilePath(module, dict.Key)));
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override string? GetResourceFilePath(IFieldProperty property, string tag, string lang)
     {
-        var modules = GetModules();
-
-        foreach (var module in modules)
+        var p = property.ResourceProperty;
+        if (p.Label != null || (p.Class?.Values.Any() ?? false) && p.Class?.DefaultProperty != null)
         {
-            foreach (var lang in _translationStore.Translations)
-            {
-                GenerateModule(module, lang.Key);
-            }
-        }
-    }
-
-    private string GetFilePath(IGrouping<string, IFieldProperty> module, string lang)
-    {
-        return Path.Combine(_config.OutputDirectory, _config.ResourceRootPath.Replace("{lang}", lang).Replace("{module}", module.Key.Replace(".", "/")).ToLower(), Path.Combine(module.Key.Split(".").Last().ToKebabCase()) + $"_{lang}.properties");
-    }
-
-    private IEnumerable<IGrouping<string, IFieldProperty>> GetModules()
-    {
-        return Files
-            .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
-            .Select(c => c.ResourceProperty)
-            .Where(p => p.Label != null || (p.Class?.Values.Any() ?? false) && p.Class?.DefaultProperty != null)
-            .Distinct()
-            .GroupBy(prop => prop.Parent.Namespace.Module.Split('.').First());
-    }
-
-    private void GenerateModule(IGrouping<string, IFieldProperty> module, string lang)
-    {
-        if (_config.ResourceRootPath == null)
-        {
-            return;
+            var module = p.Parent.Namespace.Module.Split('.').First();
+            return Path.Combine(
+                _config.OutputDirectory,
+                _config.ResolveTagVariables(tag, _config.ResourceRootPath).Replace("{lang}", lang).Replace("{module}", module.Replace(".", "/")).ToLower(),
+                Path.Combine(module.Split(".").Last().ToKebabCase()) + $"_{lang}.properties");
         }
 
-        var filePath = GetFilePath(module, lang);
+        return null;
+    }
 
+    protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties)
+    {
         using var fw = new FileWriter(filePath, _logger, Encoding.Latin1) { EnableHeader = false };
-        var containers = module.GroupBy(prop => prop.Parent);
+        var containers = properties.GroupBy(prop => prop.Parent);
 
         foreach (var container in containers.OrderBy(c => c.Key.Name))
         {

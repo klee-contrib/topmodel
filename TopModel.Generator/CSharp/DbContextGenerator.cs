@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.CSharp;
 
-public class DbContextGenerator : GeneratorBase
+public class DbContextGenerator : ClassGroupGeneratorBase
 {
     private readonly string _appName;
     private readonly CSharpConfig _config;
@@ -20,32 +19,50 @@ public class DbContextGenerator : GeneratorBase
 
     public override string Name => "CSharpDbContextGen";
 
-    public override IEnumerable<string> GeneratedFiles => new[]
+    protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        _config.GetDbContextFilePath(_appName),
-        _config.UseEFComments ? _config.GetDbContextFilePath(_appName).Replace(".cs", ".comments.cs") : null!
+        if (classe.IsPersistent && !classe.Abstract)
+        {
+            yield return ("main", _config.GetDbContextFilePath(_appName, tag));
+
+            if (_config.UseEFComments)
+            {
+                yield return ("comments", _config.GetDbContextFilePath(_appName, tag).Replace(".cs", ".comments.cs"));
+            }
+        }
     }
-    .Where(x => x != null);
 
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
     {
-        var classes = Classes.Where(c => c.IsPersistent && !c.Abstract).OrderBy(c => c.Name).ToList();
-        var dbContextName = _config.GetDbContextName(_appName);
-        var targetFileName = _config.GetDbContextFilePath(_appName);
-
-        using var w = new CSharpWriter(targetFileName, _logger, _config.UseLatestCSharp);
-
+        var dbContextName = _config.GetDbContextName(_appName, tag);
         var usings = new List<string> { "Microsoft.EntityFrameworkCore" };
+        var contextNs = _config.GetDbContextNamespace(_appName, tag);
 
-        foreach (var ns in classes.Select(_config.GetNamespace).Distinct())
+        foreach (var ns in classes
+            .Concat(GetAssociationProperties(classes).Select(ap => ap.AssociationProperty.Association))
+            .Select(_config.GetNamespace)
+            .Distinct())
         {
             usings.Add(ns);
         }
 
+        var classList = classes.OrderBy(c => c.Name).ToList();
+
+        if (fileType == "main")
+        {
+            HandleMainFile(fileName, dbContextName, contextNs, usings, classList);
+        }
+        else
+        {
+            HandleCommentsFile(fileName, dbContextName, contextNs, usings, classList);
+        }
+    }
+
+    private void HandleMainFile(string fileName, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
+    {
+        using var w = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
+
         w.WriteUsings(usings.ToArray());
-
-        var contextNs = _config.GetDbContextNamespace(_appName);
-
         w.WriteLine();
         w.WriteNamespace(contextNs);
 
@@ -109,20 +126,10 @@ public class DbContextGenerator : GeneratorBase
         if (_config.UseEFMigrations)
         {
             var hasFk = false;
-            foreach (var prop in classes.Distinct().OrderBy(c => c.Name).SelectMany(c => c.Properties).Where(p => p is AssociationProperty { Association.IsPersistent: true } || p is AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } }))
+            foreach (var (prop, ap) in GetAssociationProperties(classes))
             {
                 hasFk = true;
-                var ap = prop switch
-                {
-                    AssociationProperty a => a,
-                    AliasProperty { Property: AssociationProperty a } => a,
-                    _ => null!
-                };
-
-                if (ap.Type == AssociationType.ManyToOne || ap.Type == AssociationType.OneToOne)
-                {
-                    w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().HasOne<{ap.Association}>().With{(ap.Type == AssociationType.ManyToOne ? "Many" : "One")}().HasForeignKey{(ap.Type == AssociationType.ManyToOne ? string.Empty : $"<{prop.Class}>")}(p => p.{prop.Name}).OnDelete(DeleteBehavior.Restrict);");
-                }
+                w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().HasOne<{ap.Association}>().With{(ap.Type == AssociationType.ManyToOne ? "Many" : "One")}().HasForeignKey{(ap.Type == AssociationType.ManyToOne ? string.Empty : $"<{prop.Class}>")}(p => p.{prop.Name}).OnDelete(DeleteBehavior.Restrict);");
             }
 
             if (hasFk)
@@ -215,52 +222,66 @@ public class DbContextGenerator : GeneratorBase
 
         w.WriteLine(1, "}");
         w.WriteNamespaceEnd();
+    }
 
-        w.Dispose();
+    private void HandleCommentsFile(string fileName, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
+    {
+        using var cw = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
 
-        if (_config.UseEFMigrations && _config.UseEFComments)
-        {
-            using var cw = new CSharpWriter(targetFileName.Replace(".cs", ".comments.cs"), _logger, _config.UseLatestCSharp);
-
-            var cUsings = new List<string>
+        var cUsings = new List<string>
             {
                 "Microsoft.EntityFrameworkCore"
             };
 
-            foreach (var ns in classes.Select(_config.GetNamespace).Distinct())
-            {
-                cUsings.Add(ns);
-            }
-
-            cw.WriteUsings(usings.ToArray());
-
-            cw.WriteLine();
-            cw.WriteNamespace(contextNs);
-
-            cw.WriteSummary(1, "Partial pour ajouter les commentaires EF.");
-            cw.WriteLine(1, $"public partial class {dbContextName} : DbContext");
-            cw.WriteLine(1, "{");
-            cw.WriteLine(2, "partial void AddComments(ModelBuilder modelBuilder)");
-            cw.WriteLine(2, "{");
-
-            foreach (var classe in classes)
-            {
-                cw.WriteLine(3, $"var {classe.Name.ToFirstLower()} = modelBuilder.Entity<{classe.Name}>();");
-                cw.WriteLine(3, $"{classe.Name.ToFirstLower()}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));");
-
-                foreach (var property in classe.Properties.OfType<IFieldProperty>())
-                {
-                    cw.WriteLine(3, $"{classe.Name.ToFirstLower()}.Property(p => p.{property.Name}).HasComment(\"{property.Comment.Replace("\"", "\\\"")}\");");
-                }
-
-                if (classes.IndexOf(classe) < classes.Count - 1)
-                {
-                    cw.WriteLine();
-                }
-            }
-
-            cw.WriteLine(2, "}");
-            cw.WriteLine(1, "}");
+        foreach (var ns in classes.Select(_config.GetNamespace).Distinct())
+        {
+            cUsings.Add(ns);
         }
+
+        cw.WriteUsings(usings.ToArray());
+
+        cw.WriteLine();
+        cw.WriteNamespace(contextNs);
+
+        cw.WriteSummary(1, "Partial pour ajouter les commentaires EF.");
+        cw.WriteLine(1, $"public partial class {dbContextName} : DbContext");
+        cw.WriteLine(1, "{");
+        cw.WriteLine(2, "partial void AddComments(ModelBuilder modelBuilder)");
+        cw.WriteLine(2, "{");
+
+        foreach (var classe in classes)
+        {
+            cw.WriteLine(3, $"var {classe.Name.ToFirstLower()} = modelBuilder.Entity<{classe.Name}>();");
+            cw.WriteLine(3, $"{classe.Name.ToFirstLower()}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));");
+
+            foreach (var property in classe.Properties.OfType<IFieldProperty>())
+            {
+                cw.WriteLine(3, $"{classe.Name.ToFirstLower()}.Property(p => p.{property.Name}).HasComment(\"{property.Comment.Replace("\"", "\\\"")}\");");
+            }
+
+            if (classes.IndexOf(classe) < classes.Count - 1)
+            {
+                cw.WriteLine();
+            }
+        }
+
+        cw.WriteLine(2, "}");
+        cw.WriteLine(1, "}");
+    }
+
+    private IEnumerable<(IFieldProperty Property, AssociationProperty AssociationProperty)> GetAssociationProperties(IEnumerable<Class> classes)
+    {
+        return classes
+            .Distinct()
+            .OrderBy(c => c.Name)
+            .SelectMany(c => c.Properties)
+            .Where(p => p is AssociationProperty { Association.IsPersistent: true } || p is AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } })
+            .Select(p => p switch
+            {
+                AssociationProperty ap => ((IFieldProperty)p, ap),
+                AliasProperty { Property: AssociationProperty ap } => ((IFieldProperty)p, ap),
+                _ => (null!, null!)
+            })
+            .Where(p => p.ap.Type == AssociationType.ManyToOne || p.ap.Type == AssociationType.OneToOne);
     }
 }

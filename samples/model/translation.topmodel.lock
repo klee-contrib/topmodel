@@ -7,3 +7,4 @@ generatedFiles:
   - ../generators/translation/i18n/de_DE/out/securite_de_DE.properties
   - ../generators/translation/i18n/de_DE/out/utilisateur_de_DE.properties
   - ../generators/translation/i18n/en_US/out/securite_en_US.properties
+  - ../generators/translation/i18n/en_US/out/utilisateur_en_US.properties

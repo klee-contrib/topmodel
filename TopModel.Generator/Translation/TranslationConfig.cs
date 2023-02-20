@@ -13,4 +13,9 @@ public class TranslationConfig : GeneratorConfigBase
     /// liste des langues de l'application
     /// </summary>
     public string RootPath { get; set; } = "{lang}";
+
+    public override string[] PropertiesWithTagVariableSupport => new[]
+    {
+        nameof(RootPath)
+    };
 }

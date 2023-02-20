@@ -21,7 +21,9 @@ public static class ServiceExtensions
             if (config.ModelRootPath != null)
             {
                 services.AddSingleton<IModelWatcher>(p =>
-                    new TypescriptDefinitionGenerator(p.GetRequiredService<ILogger<TypescriptDefinitionGenerator>>(), config, p.GetRequiredService<ModelConfig>()) { Number = number });
+                    new TypescriptDefinitionGenerator(p.GetRequiredService<ILogger<TypescriptDefinitionGenerator>>(), config) { Number = number });
+                services.AddSingleton<IModelWatcher>(p =>
+                    new TypescriptReferenceGenerator(p.GetRequiredService<ILogger<TypescriptReferenceGenerator>>(), config, p.GetRequiredService<ModelConfig>()) { Number = number });
 
                 if (config.ApiClientRootPath != null)
                 {

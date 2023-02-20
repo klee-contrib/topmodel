@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Translation;
@@ -8,58 +7,51 @@ namespace TopModel.Generator.Translation;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class TranslationOutGenerator : GeneratorBase
+public class TranslationOutGenerator : TranslationGeneratorBase
 {
     private readonly TranslationConfig _config;
-
     private readonly ILogger<TranslationOutGenerator> _logger;
-
+    private readonly ModelConfig _modelConfig;
     private readonly TranslationStore _translationStore;
 
-    public TranslationOutGenerator(ILogger<TranslationOutGenerator> logger, TranslationConfig config, TranslationStore translationStore)
-        : base(logger, config)
+    public TranslationOutGenerator(ILogger<TranslationOutGenerator> logger, TranslationConfig config, ModelConfig modelConfig, TranslationStore translationStore)
+        : base(logger, config, translationStore)
     {
         _config = config;
         _logger = logger;
+        _modelConfig = modelConfig;
         _translationStore = translationStore;
     }
 
     public override string Name => "TranslationOutGen";
 
-    public override IEnumerable<string> GeneratedFiles => _config.Langs.SelectMany(lang => GetModules(lang).Select(m => GetFilePath(m, lang)));
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override string? GetResourceFilePath(IFieldProperty property, string tag, string lang)
     {
-        foreach (var lang in _config.Langs)
+        if (lang == _modelConfig.I18n.DefaultLang)
         {
-            var modules = GetModules(lang);
-            foreach (var module in modules)
-            {
-                GenerateModule(module, lang);
-            }
+            return null;
         }
-    }
 
-    private IEnumerable<IGrouping<string, IFieldProperty>> GetModules(string lang)
-    {
-        return Files
-            .SelectMany(file => file.Value.Classes.SelectMany(c => c.Properties.OfType<IFieldProperty>()))
-            .Select(c => c.ResourceProperty)
-            .Where(p => p.Label != null)
-            .Where(p => !ExistsInStore(lang, p.ResourceKey)
+        var p = property.ResourceProperty;
+        if (p.Label != null
+            && !ExistsInStore(lang, p.ResourceKey)
             || !(
                 p.Class?.DefaultProperty == null ||
                 (p.Class?.Values.TrueForAll(r => ExistsInStore(lang, r.ResourceKey)) ?? false)))
-            .Distinct()
-            .GroupBy(prop => prop.Parent.Namespace.Module);
+        {
+            return Path.Combine(
+                _config.OutputDirectory,
+                _config.ResolveTagVariables(tag, _config.RootPath).Replace("{lang}", lang),
+                Path.Combine(p.Parent.Namespace.Module.Split(".").Select(part => part.ToKebabCase()).ToArray()) + "_" + lang + ".properties");
+        }
+
+        return null;
     }
 
-    private void GenerateModule(IGrouping<string, IFieldProperty> module, string lang)
+    protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties)
     {
-        var filePath = GetFilePath(module, lang);
-
         using var fw = new FileWriter(filePath, _logger) { EnableHeader = false };
-        var containers = module.GroupBy(prop => prop.Parent);
+        var containers = properties.GroupBy(prop => prop.Parent);
 
         foreach (var container in containers.OrderBy(c => c.Key.Name))
         {
@@ -97,11 +89,6 @@ public class TranslationOutGenerator : GeneratorBase
     private bool ExistsInStore(string lang, string key)
     {
         return _translationStore.Translations.TryGetValue(lang, out var langDict)
-                && langDict.ContainsKey(key);
-    }
-
-    private string GetFilePath(IGrouping<string, IFieldProperty> module, string lang)
-    {
-        return Path.Combine(_config.OutputDirectory, _config.RootPath.Replace("{lang}", lang), Path.Combine(module.Key.Split(".").Select(part => part.ToKebabCase()).ToArray()) + "_" + lang + ".properties");
+            && langDict.ContainsKey(key);
     }
 }

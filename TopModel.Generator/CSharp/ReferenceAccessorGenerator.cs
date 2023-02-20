@@ -1,10 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.CSharp;
 
-public class ReferenceAccessorGenerator : GeneratorBase
+public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
 {
     private readonly CSharpConfig _config;
     private readonly ILogger<ReferenceAccessorGenerator> _logger;
@@ -18,55 +17,47 @@ public class ReferenceAccessorGenerator : GeneratorBase
 
     public override string Name => "CSharpRefAccessGen";
 
-    public override IEnumerable<string> GeneratedFiles => GetReferenceModules(Files.Values)
-        .Where(c => c.Any())
-        .SelectMany(module => new[] { _config.GetReferenceInterfaceFilePath(module), _config.GetReferenceImplementationFilePath(module) })
-        .Where(file => file != null)!;
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        foreach (var classes in GetReferenceModules(files))
+        if (classe.Reference)
         {
-            var classList = classes
-                .OrderBy(x => (_config.DbContextPath == null ? $"{x.Name}List" : x.PluralName), StringComparer.Ordinal)
-                .ToList();
-
-            if (!classList.Any())
-            {
-                continue;
-            }
-
-            GenerateReferenceAccessorsInterface(classList);
-            GenerateReferenceAccessorsImplementation(classList);
+            yield return ("interface", _config.GetReferenceInterfaceFilePath(classe.Namespace, tag));
+            yield return ("implementation", _config.GetReferenceImplementationFilePath(classe.Namespace, tag));
         }
     }
 
-    private IEnumerable<IEnumerable<Class>> GetReferenceModules(IEnumerable<ModelFile> files)
+    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
     {
-        return files
-            .SelectMany(f => f.Classes.Select(c => c.Namespace.Module))
-            .Distinct()
-            .Select(
-                module => Classes.Where(c => c.Reference && c.Namespace.Module == module));
+        var classList = classes
+            .OrderBy(x => (_config.DbContextPath == null ? $"{x.Name}List" : x.PluralName), StringComparer.Ordinal)
+            .ToList();
+
+        if (fileType == "interface")
+        {
+            GenerateReferenceAccessorsInterface(fileName, tag, classList);
+        }
+        else
+        {
+            GenerateReferenceAccessorsImplementation(fileName, tag, classList);
+        }
     }
 
     /// <summary>
     /// Génère l'implémentation des ReferenceAccessors.
     /// </summary>
     /// <param name="classList">Liste de ModelClass.</param>
-    private void GenerateReferenceAccessorsImplementation(List<Class> classList)
+    private void GenerateReferenceAccessorsImplementation(string fileName, string tag, List<Class> classList)
     {
-        var firstClass = classList.First();
+        var ns = classList.First().Namespace;
         var firstPersistedClass = classList.FirstOrDefault(c => c.IsPersistent);
 
-        var implementationFileName = _config.GetReferenceImplementationFilePath(classList);
-        var implementationName = _config.GetReferenceAccessorName(firstClass);
-        var implementationNamespace = _config.GetReferenceImplementationNamespace(firstClass);
+        var implementationName = _config.GetReferenceAccessorName(ns, tag);
+        var implementationNamespace = _config.GetReferenceImplementationNamespace(ns, tag);
 
         var interfaceName = $"I{implementationName}";
-        var interfaceNamespace = _config.GetReferenceInterfaceNamespace(firstClass);
+        var interfaceNamespace = _config.GetReferenceInterfaceNamespace(ns, tag);
 
-        using var w = new CSharpWriter(implementationFileName, _logger, _config.UseLatestCSharp);
+        using var w = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
 
         var usings = new List<string>();
 
@@ -103,7 +94,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
                 usings.Add("System.Linq");
             }
 
-            var contextNs = _config.GetDbContextNamespace(firstClass.Namespace.App);
+            var contextNs = _config.GetDbContextNamespace(ns.App, tag);
             if (!implementationNamespace.Contains(contextNs))
             {
                 usings.Add(contextNs);
@@ -115,14 +106,14 @@ public class ReferenceAccessorGenerator : GeneratorBase
         w.WriteLine();
         w.WriteNamespace(implementationNamespace);
 
-        w.WriteSummary(1, "This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + firstClass.Namespace.Module + ".");
+        w.WriteSummary(1, "This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + ns.Module + ".");
         w.WriteLine(1, "[RegisterImpl]");
 
         w.WriteClassDeclaration(implementationName, null, interfaceName);
 
         if (_config.DbContextPath != null)
         {
-            var dbContextName = _config.GetDbContextName(firstClass.Namespace.App);
+            var dbContextName = _config.GetDbContextName(ns.App, tag);
 
             w.WriteLine(2, $"private readonly {dbContextName} _dbContext;");
             w.WriteLine();
@@ -169,16 +160,15 @@ public class ReferenceAccessorGenerator : GeneratorBase
     /// Génère l'interface déclarant les ReferenceAccessors d'un namespace.
     /// </summary>
     /// <param name="classList">Liste de ModelClass.</param>
-    private void GenerateReferenceAccessorsInterface(IEnumerable<Class> classList)
+    private void GenerateReferenceAccessorsInterface(string fileName, string tag, IEnumerable<Class> classList)
     {
-        var firstClass = classList.First();
+        var ns = classList.First().Namespace;
         var firstPersistedClass = classList.FirstOrDefault(c => c.IsPersistent);
 
-        var interfaceFileName = _config.GetReferenceInterfaceFilePath(classList)!;
-        var interfaceNamespace = _config.GetReferenceInterfaceNamespace(firstClass);
-        var interfaceName = $"I{_config.GetReferenceAccessorName(firstClass)}";
+        var interfaceNamespace = _config.GetReferenceInterfaceNamespace(ns, tag);
+        var interfaceName = $"I{_config.GetReferenceAccessorName(ns, tag)}";
 
-        using var w = new CSharpWriter(interfaceFileName, _logger, _config.UseLatestCSharp);
+        using var w = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
 
         var usings = new List<string>();
 
@@ -198,7 +188,7 @@ public class ReferenceAccessorGenerator : GeneratorBase
 
         w.WriteLine();
         w.WriteNamespace(interfaceNamespace);
-        w.WriteSummary(1, "This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + firstClass.Namespace.Module + ".");
+        w.WriteSummary(1, "This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + ns.Module + ".");
         w.WriteLine(1, "[RegisterContract]");
         w.WriteLine(1, "public partial interface " + interfaceName + "\r\n{");
 
