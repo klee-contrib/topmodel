@@ -29,7 +29,7 @@ public abstract class TranslationGeneratorBase : GeneratorBase
         })
         .Distinct();
 
-    protected abstract string GetResourceFilePath(IFieldProperty property, string tag, string lang);
+    protected abstract string? GetResourceFilePath(IFieldProperty property, string tag, string lang);
 
     protected virtual string? GetCommentResourceFilePath(IFieldProperty property, string tag, string lang)
     {
@@ -75,6 +75,7 @@ public abstract class TranslationGeneratorBase : GeneratorBase
     private IEnumerable<(string Lang, string FilePath)> GetResourceFileNames(IFieldProperty property, string tag)
     {
         return _translationStore.Translations
-            .Select(lang => (lang: lang.Key, file: GetResourceFilePath(property.ResourceProperty, tag, lang.Key)));
+            .Select(lang => (lang: lang.Key, file: GetResourceFilePath(property.ResourceProperty, tag, lang.Key)!))
+            .Where(g => g.file != null);
     }
 }

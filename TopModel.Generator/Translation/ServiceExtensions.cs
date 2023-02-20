@@ -12,7 +12,7 @@ public static class ServiceExtensions
         {
             services
                 .AddSingleton<IModelWatcher>(p =>
-                    new TranslationOutGenerator(p.GetRequiredService<ILogger<TranslationOutGenerator>>(), config, p.GetRequiredService<TranslationStore>()));
+                    new TranslationOutGenerator(p.GetRequiredService<ILogger<TranslationOutGenerator>>(), config, p.GetRequiredService<ModelConfig>(), p.GetRequiredService<TranslationStore>()));
         });
 
         return services;
