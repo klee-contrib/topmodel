@@ -78,6 +78,7 @@ public class JpaConfig : GeneratorConfigBase
 
     public override string[] PropertiesWithTagVariableSupport => new[]
     {
+        nameof(ResourceRootPath),
         nameof(ApiGeneration),
         nameof(ApiRootPath),
         nameof(ApiPackageName)
