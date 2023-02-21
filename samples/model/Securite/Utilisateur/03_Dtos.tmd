@@ -30,12 +30,10 @@ class:
         mappings:
           UtilisateurParent: UtilisateurIdParent
     to:
-      - class: IUtilisateur
-    to:
       - class: UtilisateurDto
 ---
 class:
-  name: IUtilisateur
+  name: UtilisateurSearch
   label: Utilisateur
   comment: Classe abstraite servant à faire des projections spring
   abstract: true
@@ -44,7 +42,4 @@ class:
         class: Utilisateur
         exclude:
           - UtilisateurIdParent
-  mappers:
-    from:
-      - params:
-          - class: Utilisateur
+      readonly: true

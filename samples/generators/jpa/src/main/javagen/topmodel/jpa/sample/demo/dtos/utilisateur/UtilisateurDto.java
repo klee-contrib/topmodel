@@ -291,17 +291,6 @@ public class UtilisateurDto implements Serializable {
 	}
 
 	/**
-	 * Mappe 'UtilisateurDto' vers 'IUtilisateur'.
-	 * @param target Instance pré-existante de 'IUtilisateur'. Une nouvelle instance sera créée si non spécifié.
-	 *
-	 * @return Une instance de 'IUtilisateur'.
-	 */
-	public IUtilisateur toIUtilisateur(IUtilisateur target) {
-		return UtilisateurDTOMappers.toIUtilisateur(this, target);
-	}
-
-
-	/**
 	 * Mappe 'UtilisateurDto' vers 'Utilisateur'.
 	 * @param target Instance pré-existante de 'Utilisateur'. Une nouvelle instance sera créée si non spécifié.
 	 *

@@ -112,8 +112,7 @@ public class JpaModelInterfaceGenerator : GeneratorBase
         }
 
         fw.WriteDocEnd(1);
-        var signature = string.Join(", ",
-        properties.Select(property =>
+        var signature = string.Join(", ", properties.Select(property =>
             {
                 var propertyName = property.GetJavaName();
                 return $@"{property.GetJavaType()} {property.GetJavaName()}";
