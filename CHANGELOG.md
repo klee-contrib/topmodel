@@ -1,31 +1,43 @@
 # TopModel.Generator (`modgen`)
 
-## Prochaine version (1.24.0)
+## 1.24.0
 
-- [#218](https://github.com/klee-contrib/topmodel/pull/218) - [JPA] Classes abstraites et propriétés readonly
-  - Suppression de l'option `generateInterface` dans les décorateurs `java`
-  
-**Breaking change (JPA)** : Pour générer une interface, l'option `generateInterface` sur les décorateurs a été remplacée par la propriété `abstract: true` dans la classe, et ajouter l'attribut `readonly: true` sur toutes les propriétés.
+- Classes abstraites et propriétés readonly :
 
-- [#190](https://github.com/klee-contrib/topmodel/pull/190) - [Core + C#] Classes abstraites et propriétés readonly
+  - [#190](https://github.com/klee-contrib/topmodel/pull/190) - Core + C#
+  - [#218](https://github.com/klee-contrib/topmodel/pull/218) - JPA
 
-- [#212](https://github.com/klee-contrib/topmodel/pull/212) - Clarification utilisation de `values` et `enum`s explicites
+  **Breaking change (JPA)** : Pour générer une interface, l'option `generateInterface` sur les décorateurs a été retirée. Il est possible de faire la même chose via une classe abstraite (`abstract: true` dans la classe, et ajouter l'attribut `readonly: true` sur toutes les propriétés).
 
-  **Impacts génération** (ne devraient être des breaking changes, mais on sait jamais)
+- Évolutions sur `values` et `enum`s explicites :
 
-  - [C#] On ne génère plus de constantes pour les values avec PK autogénérée sur la clé d'unicité (puisqu'elle n'est plus demandée)
-  - [C#] L'annotation `DefaultProperty` n'est désormais placée sur sur les classes `reference`.
+  - [#212](https://github.com/klee-contrib/topmodel/pull/212) - Clarification utilisation de `values` et `enum`s explicites
+  - [#219](https://github.com/klee-contrib/topmodel/pull/219) - [C#/JS] Values pour clés uniques simples
+
+  **Breaking changes (C#)** :
+
+  - Les constantes générées pour les values avec une clé d'unicité sont désormais suffixées du nom de la propriété.
+  - Avec `enumForStaticReferences: true`, on génère désormais une vraie enum pour les propriétés de classe enum qui ont une clé d'unicité simple.
+
+  **Autres impacts génération** (qui ne sont normalement pas des breaking changes)
+
+  - [C#]
+    - On génère des constantes pour toutes les clés d'unicité simple d'une classe si elle a des values et qu'on ne peut pas générer d'enum dessus (le cas enum est décrit dans le breaking change juste au-dessus)
+    - L'annotation `DefaultProperty` n'est désormais placée que sur les classes `reference`.
   - [JS] Dans `references.ts` :
     - Ne génère plus de type pour la PK si la classe n'est pas une `enum` (le type était auparavant un alias inutile vers le type de la PK)
     - Ne génère plus de définition de référence (le type + l'objet `{valueKey, labelKey}` ou la liste des valeurs) si la classe n'est pas une `reference`
+    - On génère un type pour les propriétés de classe enum qui ont une clé d'unicité simple.
 
 - [#208](https://github.com/klee-contrib/topmodel/pull/208) - Utilisation domain list pour oneToMany et ManyToMany
 
   **Breaking change (JPA)** : Les domaines de propriétés de PK utilisées dans des associations _one to many_ et _many to many_ doivent maintenant spécifier un `listDomain` correspondant
 
 - [#214](https://github.com/klee-contrib/topmodel/pull/214) - [JPA] Génération de mappers statiques
-  
+
   **Impacts génération (JPA)** : Les mappers sont désormais générés dans des classes statiques, qui sont ensuite appelés dans les constructeurs (mappers `from`) et dans les méthodes `to` (mappers `to`), qui contenaient au prélable les implémentations. Leurs signatures sont inchangées donc cela ne devrait avoir aucun impact sur leur utilisation.
+
+- [#217](https://github.com/klee-contrib/topmodel/pull/217) - Variables par tag pour traductions (JPA/TranslationOut) + DbContext/ReferenceAccessor en C#
 
 - [#196](https://github.com/klee-contrib/topmodel/pull/196) - [JPA] Valoriser le orderProperty dans les associations oneToMany et manyToMany
 
@@ -36,6 +48,8 @@
   **Breaking change (JPA)** : Pour les utilisateurs de la propriété `fieldsEnum: true`, remplacer `true` par `Persisted`.
 
 - [`81389b7`](https://github.com/klee-contrib/topmodel/commit/81389b71e90cecfa3d46bdb2afd0bce8eb103231) - [SSDT] Support pour oneToMany/manyToMany (idem proceduralSql)
+
+- [`354b869`](https://github.com/klee-contrib/topmodel/commit/354b8697d1f535539416ed33314319dfed76bffb) - **Impact génération** : [C#] Ce commit technique modifie le contenu du summary des clients d'API (d'un truc inutile vers un autre truc un peu moins inutile...).
 
 - [`be8f10e`](https://github.com/klee-contrib/topmodel/commit/be8f10e8dba8f3f5f7cb8a4c20f225d8f6b3ba3d) - [C#] Gestion oneToMany/manyToMany **minimale** (histoire que ça ne fasse pas d'erreurs de génération, mais ce n'est toujours pas, et ne sera jamais, géré par ce qu'on génère pour EF Core)
 
