@@ -91,18 +91,24 @@ public class DbContextGenerator : ClassGroupGeneratorBase
         w.WriteLine(2, "{");
 
         var hasPropConfig = false;
-        foreach (var prop in classes.Distinct().OrderBy(c => c.Name).SelectMany(c => c.Properties.OfType<IFieldProperty>()))
+        foreach (var fp in classes.Distinct().OrderBy(c => c.Name).SelectMany(c => c.Properties.OfType<IFieldProperty>()))
         {
-            if (prop.PrimaryKey && _config.CanClassUseEnums(prop.Class) || prop is AssociationProperty ap && _config.CanClassUseEnums(ap.Association))
+            var prop = fp is AliasProperty alp ? alp.Property : fp;
+            var ap = prop as AssociationProperty;
+
+            var classe = ap != null ? ap.Association : prop.Class;
+            var targetProp = ap != null ? ap.Property : prop;
+
+            if (_config.CanClassUseEnums(classe, targetProp))
             {
                 hasPropConfig = true;
-                w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().Property(p => p.{prop.Name}).HasConversion<string>(){(prop.Domain.Length != null ? $".HasMaxLength({prop.Domain.Length})" : string.Empty)};");
+                w.WriteLine(3, $"modelBuilder.Entity<{fp.Class}>().Property(p => p.{fp.Name}).HasConversion<{fp.Domain.CSharp!.Type}>(){(fp.Domain.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};");
             }
 
-            if (prop.Domain.Length != null && prop.Domain.Scale != null)
+            if (fp.Domain.Length != null && fp.Domain.Scale != null)
             {
                 hasPropConfig = true;
-                w.WriteLine(3, $"modelBuilder.Entity<{prop.Class}>().Property(x => x.{prop.Name}).HasPrecision({prop.Domain.Length}, {prop.Domain.Scale});");
+                w.WriteLine(3, $"modelBuilder.Entity<{fp.Class}>().Property(x => x.{fp.Name}).HasPrecision({fp.Domain.Length}, {fp.Domain.Scale});");
             }
         }
 
@@ -164,24 +170,28 @@ public class DbContextGenerator : ClassGroupGeneratorBase
 
                     w.Write($"            new {classe.Name} {{");
 
-                    string WriteEnumValue(Class targetClass, string value)
+                    string WriteEnumValue(Class targetClass, IFieldProperty targetProp, string value)
                     {
-                        return $"{(targetClass.Name == targetClass.PluralName ? $"{_config.GetNamespace(targetClass)}.{targetClass.Name}" : targetClass.Name)}.{targetClass.EnumKey!.Name}s.{value}";
+                        return $"{(targetClass.Name == targetClass.PluralName ? $"{_config.GetNamespace(targetClass)}.{targetClass.Name}" : targetClass.Name)}.{targetProp}s.{value}";
                     }
 
-                    foreach (var prop in refValue.Value.ToList())
+                    foreach (var refProp in refValue.Value.ToList())
                     {
-                        var value = _config.CanClassUseEnums(classe) && prop.Key.PrimaryKey
-                            ? WriteEnumValue(classe, prop.Value)
-                            : prop.Key is AssociationProperty ap && _config.CanClassUseEnums(ap.Association)
-                            ? WriteEnumValue(ap.Association, prop.Value)
-                            : prop.Key.Domain.CSharp!.Type.Contains("Date")
-                            ? $"{prop.Key.Domain.CSharp.Type.ParseTemplate(prop.Key).TrimEnd('?')}.Parse(\"{prop.Value}\"){(prop.Key.Domain.CSharp.Type.Contains("Time") ? ".ToUniversalTime()" : string.Empty)}"
-                            : prop.Key.Domain.ShouldQuoteSqlValue
-                            ? $"\"{prop.Value}\""
-                            : prop.Value;
-                        w.Write($" {prop.Key.Name} = {value}");
-                        if (refValue.Value.ToList().IndexOf(prop) < refValue.Value.Count - 1)
+                        var prop = refProp.Key is AliasProperty alp ? alp.Property : refProp.Key;
+                        var ap = prop as AssociationProperty;
+
+                        var targetClass = ap != null ? ap.Association : prop.Class;
+                        var targetProp = ap != null ? ap.Property : prop;
+
+                        var value = _config.CanClassUseEnums(targetClass, targetProp)
+                            ? WriteEnumValue(targetClass, targetProp, refProp.Value)
+                            : refProp.Key.Domain.CSharp!.Type.Contains("Date")
+                            ? $"{refProp.Key.Domain.CSharp.Type.ParseTemplate(refProp.Key).TrimEnd('?')}.Parse(\"{refProp.Value}\"){(refProp.Key.Domain.CSharp.Type.Contains("Time") ? ".ToUniversalTime()" : string.Empty)}"
+                            : refProp.Key.Domain.ShouldQuoteSqlValue
+                            ? $"\"{refProp.Value}\""
+                            : refProp.Value;
+                        w.Write($" {refProp.Key.Name} = {value}");
+                        if (refValue.Value.ToList().IndexOf(refProp) < refValue.Value.Count - 1)
                         {
                             w.Write(",");
                         }
