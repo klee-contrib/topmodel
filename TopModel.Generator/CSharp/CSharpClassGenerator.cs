@@ -305,18 +305,18 @@ public class CSharpClassGenerator : GeneratorBase
     /// <param name="item">La classe générée.</param>
     private void GenerateConstProperties(CSharpWriter w, Class item)
     {
-        foreach (var refValue in item.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
+        var consts = new List<(string Name, string Code, string Label)>();
+
+        foreach (var refValue in item.Values)
         {
+            var label = item.DefaultProperty != null
+                ? refValue.Value[item.DefaultProperty]
+                : refValue.Name;
+
             if (!_config.CanClassUseEnums(item) && item.EnumKey != null)
             {
                 var code = refValue.Value[item.EnumKey];
-                var label = item.DefaultProperty != null
-                    ? refValue.Value[item.DefaultProperty]
-                    : refValue.Name;
-
-                w.WriteSummary(2, label);
-                w.WriteLine(2, $"public const string {refValue.Name} = \"{code}\";");
-                w.WriteLine();
+                consts.Add((refValue.Name, code, label));
             }
 
             foreach (var uk in item.UniqueKeys.Where(uk =>
@@ -329,15 +329,16 @@ public class CSharpClassGenerator : GeneratorBase
                 if (!_config.CanClassUseEnums(item, prop))
                 {
                     var code = refValue.Value[prop];
-                    var label = item.DefaultProperty != null
-                        ? refValue.Value[item.DefaultProperty]
-                        : refValue.Name;
-
-                    w.WriteSummary(2, label);
-                    w.WriteLine(2, $"public const string {refValue.Name}{prop.Name} = \"{code}\";");
-                    w.WriteLine();
+                    consts.Add(($"{refValue.Name}{prop}", code, label));
                 }
             }
+        }
+
+        foreach (var @const in consts.OrderBy(x => x.Name, StringComparer.Ordinal))
+        {
+            w.WriteSummary(2, @const.Label);
+            w.WriteLine(2, $"public const string {@const.Name} = \"{@const.Code}\";");
+            w.WriteLine();
         }
     }
 
