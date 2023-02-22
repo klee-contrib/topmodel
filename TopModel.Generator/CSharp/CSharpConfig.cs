@@ -131,15 +131,22 @@ public class CSharpConfig : GeneratorConfigBase
     };
 
     /// <summary>
-    /// Détermine si une classe utilise une enum pour sa clé primaire.
+    /// Détermine si une classe peut utiliser une enum pour sa clé primaire.
     /// </summary>
     /// <param name="classe">Classe.</param>
+    /// <param name="prop">Propriété à vérifier (si c'est pas la clé primaire).</param>
     /// <returns>Oui/non.</returns>
-    public bool CanClassUseEnums(Class classe)
+    public bool CanClassUseEnums(Class classe, IFieldProperty? prop = null)
     {
-        return EnumsForStaticReferences
-            && classe.EnumKey != null
-            && classe.Values.All(r => !Regex.IsMatch(r.Value[classe.EnumKey].ToString() ?? string.Empty, "^\\d"));
+        prop ??= classe.EnumKey;
+
+        bool CheckProperty(IFieldProperty fp)
+        {
+            return (fp == classe.EnumKey || classe.UniqueKeys.Where(uk => uk.Count == 1).Select(uk => uk.Single()).Contains(prop))
+                && classe.Values.All(r => r.Value.ContainsKey(fp) && !Regex.IsMatch(r.Value[fp].ToString() ?? string.Empty, "^\\d"));
+        }
+
+        return EnumsForStaticReferences && classe.Enum && CheckProperty(prop!);
     }
 
     /// <summary>
@@ -160,18 +167,21 @@ public class CSharpConfig : GeneratorConfigBase
         var prop = fp is AliasProperty alp ? alp.Property : fp;
         var ap = prop as AssociationProperty;
 
-        if (ap?.Association.EnumKey != null && availableClasses.Contains(ap!.Association))
+        var classe = ap != null ? ap.Association : prop.Class;
+        var targetProp = ap != null ? ap.Property : prop;
+
+        if (classe.Enum && availableClasses.Contains(classe))
         {
-            if (CanClassUseEnums(ap.Association))
+            if (CanClassUseEnums(classe, targetProp))
             {
-                return $"{ap.Association.Name}.{ap.Association.EnumKey.Name}s.{fp.DefaultValue}";
+                return $"{classe}.{targetProp}s.{fp.DefaultValue}";
             }
             else
             {
-                var refName = ap.Association.Values.SingleOrDefault(rv => rv.Value[ap.Association.EnumKey] == fp.DefaultValue)?.Name;
+                var refName = classe.Values.SingleOrDefault(rv => rv.Value[targetProp] == fp.DefaultValue)?.Name;
                 if (refName != null)
                 {
-                    return $"{ap.Association.Name}.{refName}";
+                    return $"{classe}.{refName}";
                 }
             }
         }

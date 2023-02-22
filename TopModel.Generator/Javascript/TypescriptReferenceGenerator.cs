@@ -94,6 +94,15 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
                 fw.Write($"{reference.EnumKey.Name} = ");
                 fw.Write(string.Join(" | ", reference.Values.Select(r => $@"""{r.Value[reference.EnumKey]}""").OrderBy(x => x, StringComparer.Ordinal)));
                 fw.WriteLine(";");
+
+                foreach (var uk in reference.UniqueKeys.Where(uk => uk.Count == 1 && uk.Single().Required).Select(uk => uk.Single()))
+                {
+                    fw.Write("export type ");
+                    fw.Write(reference.Name);
+                    fw.Write($"{uk} = ");
+                    fw.Write(string.Join(" | ", reference.Values.Select(r => $@"""{r.Value[uk]}""").OrderBy(x => x, StringComparer.Ordinal)));
+                    fw.WriteLine(";");
+                }
             }
 
             if (reference.FlagProperty != null)

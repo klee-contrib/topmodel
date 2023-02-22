@@ -74,29 +74,6 @@ public class CSharpClassGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// Génération des constantes statiques.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">La classe générée.</param>
-    private static void GenerateConstProperties(CSharpWriter w, Class item)
-    {
-        if (item.EnumKey != null)
-        {
-            foreach (var refValue in item.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
-            {
-                var code = refValue.Value[item.EnumKey];
-                var label = item.DefaultProperty != null
-                    ? refValue.Value[item.DefaultProperty]
-                    : refValue.Name;
-
-                w.WriteSummary(2, label);
-                w.WriteLine(2, string.Format("public const string {0} = \"{1}\";", refValue.Name, code));
-                w.WriteLine();
-            }
-        }
-    }
-
-    /// <summary>
     /// Génère les constructeurs.
     /// </summary>
     /// <param name="w">Writer.</param>
@@ -284,40 +261,6 @@ public class CSharpClassGenerator : GeneratorBase
     }
 
     /// <summary>
-    /// Génère l'enum pour les valeurs statiques de références.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">La classe générée.</param>
-    private static void GenerateEnumValues(CSharpWriter w, Class item)
-    {
-        w.WriteSummary(2, $"Valeurs possibles de la liste de référence {item}.");
-        w.WriteLine(2, $"public enum {item.EnumKey!.Name}s");
-        w.WriteLine(2, "{");
-
-        var refs = item.Values.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
-        foreach (var refValue in refs)
-        {
-            var code = refValue.Value[item.EnumKey];
-
-            var label = item.DefaultProperty != null
-                ? refValue.Value[item.DefaultProperty]
-                : refValue.Name;
-
-            w.WriteSummary(3, label);
-            w.Write(3, code);
-
-            if (refs.IndexOf(refValue) != refs.Count - 1)
-            {
-                w.WriteLine(",");
-            }
-
-            w.WriteLine();
-        }
-
-        w.WriteLine(2, "}");
-    }
-
-    /// <summary>
     /// Génère les flags d'une liste de référence statique.
     /// </summary>
     /// <param name="w">Writer.</param>
@@ -352,6 +295,96 @@ public class CSharpClassGenerator : GeneratorBase
             w.WriteLine(2, "}");
             w.WriteLine();
             w.WriteLine(2, "#endregion");
+        }
+    }
+
+    /// <summary>
+    /// Génération des constantes statiques.
+    /// </summary>
+    /// <param name="w">Writer.</param>
+    /// <param name="item">La classe générée.</param>
+    private void GenerateConstProperties(CSharpWriter w, Class item)
+    {
+        var consts = new List<(string Name, string Code, string Label)>();
+
+        foreach (var refValue in item.Values)
+        {
+            var label = item.DefaultProperty != null
+                ? refValue.Value[item.DefaultProperty]
+                : refValue.Name;
+
+            if (!_config.CanClassUseEnums(item) && item.EnumKey != null)
+            {
+                var code = refValue.Value[item.EnumKey];
+                consts.Add((refValue.Name, code, label));
+            }
+
+            foreach (var uk in item.UniqueKeys.Where(uk =>
+                uk.Count == 1
+                && uk.Single().Domain.CSharp!.Type == "string"
+                && refValue.Value.ContainsKey(uk.Single())))
+            {
+                var prop = uk.Single();
+
+                if (!_config.CanClassUseEnums(item, prop))
+                {
+                    var code = refValue.Value[prop];
+                    consts.Add(($"{refValue.Name}{prop}", code, label));
+                }
+            }
+        }
+
+        foreach (var @const in consts.OrderBy(x => x.Name, StringComparer.Ordinal))
+        {
+            w.WriteSummary(2, @const.Label);
+            w.WriteLine(2, $"public const string {@const.Name} = \"{@const.Code}\";");
+            w.WriteLine();
+        }
+    }
+
+    /// <summary>
+    /// Génère l'enum pour les valeurs statiques de références.
+    /// </summary>
+    /// <param name="w">Writer.</param>
+    /// <param name="item">La classe générée.</param>
+    private void GenerateEnumValues(CSharpWriter w, Class item)
+    {
+        var refs = item.Values.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
+
+        void WriteEnum(IFieldProperty prop)
+        {
+            w.WriteSummary(2, $"Valeurs possibles de la liste de référence {item}.");
+            w.WriteLine(2, $"public enum {prop}s");
+            w.WriteLine(2, "{");
+
+            foreach (var refValue in refs)
+            {
+                var code = refValue.Value[prop];
+
+                var label = item.DefaultProperty != null
+                    ? refValue.Value[item.DefaultProperty]
+                    : refValue.Name;
+
+                w.WriteSummary(3, label);
+                w.Write(3, code);
+
+                if (refs.IndexOf(refValue) != refs.Count - 1)
+                {
+                    w.WriteLine(",");
+                }
+
+                w.WriteLine();
+            }
+
+            w.WriteLine(2, "}");
+        }
+
+        WriteEnum(item.EnumKey!);
+
+        foreach (var uk in item.UniqueKeys.Where(uk => uk.Count == 1 && _config.CanClassUseEnums(item, uk.Single())))
+        {
+            w.WriteLine();
+            WriteEnum(uk.Single());
         }
     }
 
@@ -423,11 +456,7 @@ public class CSharpClassGenerator : GeneratorBase
                 extends,
                 implements);
 
-            if (!_config.CanClassUseEnums(item))
-            {
-                GenerateConstProperties(w, item);
-            }
-
+            GenerateConstProperties(w, item);
             GenerateConstructors(w, item);
 
             if (_config.DbContextPath == null && item.IsPersistent && !_config.NoPersistance)
