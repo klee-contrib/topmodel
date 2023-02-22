@@ -1,4 +1,4 @@
-# Générateur C#
+# Générateur `C#`
 
 ## Présentation
 

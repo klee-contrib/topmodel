@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import topmodel.jpa.sample.demo.daos.utilisateur.UtilisateurDAO;
+import topmodel.jpa.sample.demo.dtos.utilisateur.IUtilisateur;
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
 import topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur;
 
@@ -28,11 +29,8 @@ public class UtilisateurService {
 	 * @param typeUtilisateurCode
 	 * @return
 	 */
-	public List<UtilisateurDto> findAllByType(TypeUtilisateur.Values typeUtilisateurCode) {
-		return utilisateurDAO.findAllByTypeUtilisateur_Code(typeUtilisateurCode) //
-				.stream() //
-				.map(UtilisateurDto::new) //
-				.toList();
+	public List<IUtilisateur> findAllByType(TypeUtilisateur.Values typeUtilisateurCode) {
+		return utilisateurDAO.findAllByTypeUtilisateur_Code(typeUtilisateurCode);
 	}
 
 	/**

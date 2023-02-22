@@ -4,6 +4,7 @@
 
 package topmodel.jpa.sample.demo.entities.securite;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import topmodel.jpa.sample.demo.dtos.securite.ProfilDto;
@@ -29,12 +30,13 @@ public class SecuriteMappers {
 			}
 
 			if (profil.getDroits() != null) {
-				target.setDroits(profil.getDroits().stream().filter(t -> t != null).map(droits -> droits.getCode()).collect(Collectors.toList()));
+				target.setDroits(profil.getDroits().stream().filter(Objects::nonNull).map(Droit::getCode).collect(Collectors.toList()));
 			}
 
 			if (profil.getSecteurs() != null) {
-				target.setSecteurs(profil.getSecteurs().stream().filter(t -> t != null).map(secteurs -> secteurs.getId()).collect(Collectors.toList()));
+				target.setSecteurs(profil.getSecteurs().stream().filter(Objects::nonNull).map(Secteur::getId).collect(Collectors.toList()));
 			}
+
 		} else {
 			throw new IllegalArgumentException("profil cannot be null");
 		}
@@ -58,9 +60,7 @@ public class SecuriteMappers {
 		}
 
 		target.setId(source.getId());
-		if (source.getTypeProfil() != null) {
-			target.setTypeProfil(source.getTypeProfil());
-		}
+		target.setTypeProfil(source.getTypeProfil());
 		target.setDroits(source.getDroits());
 		target.setSecteurs(source.getSecteurs());
 		return target;
@@ -86,6 +86,7 @@ public class SecuriteMappers {
 		if (source.getTypeProfilCode() != null) {
 			target.setTypeProfil(source.getTypeProfilCode().getEntity());
 		}
+
 		target.setDroits(source.getDroits().stream().map(Droit.Values::getEntity).collect(Collectors.toList()));
 		return target;
 	}

@@ -29,7 +29,10 @@ public class JpaModelGenerator : GeneratorBase
 
     public override string Name => "JpaModelGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files.SelectMany(f => f.Value.Classes).Select(c => GetFileClassName(c));
+    public override IEnumerable<string> GeneratedFiles =>
+        Files.SelectMany(f => f.Value.Classes)
+        .Where(c => !c.Abstract)
+        .Select(c => GetFileClassName(c));
 
     private List<Class> AvailableClasses => Classes.ToList();
 
@@ -70,7 +73,7 @@ public class JpaModelGenerator : GeneratorBase
     {
         var classes = Classes.Where(c => c.Namespace.Module == module);
 
-        foreach (var classe in classes)
+        foreach (var classe in classes.Where(c => !c.Abstract))
         {
             var destFolder = GetDestinationFolder(classe);
             var dirInfo = Directory.CreateDirectory(destFolder);
@@ -89,11 +92,6 @@ public class JpaModelGenerator : GeneratorBase
             if (!classe.IsPersistent)
             {
                 implements.Add("Serializable");
-            }
-
-            if (classe.Decorators.Any(d => d.Decorator.Java != null && d.Decorator.Java.GenerateInterface))
-            {
-                implements.Add($"I{classe.Name}");
             }
 
             fw.WriteClassDeclaration(classe.Name, null, extends, implements);
@@ -383,12 +381,6 @@ public class JpaModelGenerator : GeneratorBase
             }
         }
 
-        if (classe.Decorators.Any(d => d.Decorator.Java != null && d.Decorator.Java.GenerateInterface))
-        {
-            var entityDto = classe.IsPersistent ? "entities" : "dtos";
-            imports.Add($"{string.Join('.', classe.GetImport(_config).Split('.').SkipLast(1))}.interfaces.I{classe.Name}");
-        }
-
         if (_config.EnumShortcutMode && classe.GetProperties(_config, AvailableClasses).Where(p => p is AssociationProperty apo && apo.IsEnum()).Any())
         {
             imports.Add(_config.PersistenceMode.ToString().ToLower() + ".persistence.Transient");
@@ -503,10 +495,6 @@ public class JpaModelGenerator : GeneratorBase
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
             fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config)}#{property.GetJavaName()} {property.GetJavaName()}}}");
             fw.WriteDocEnd(1);
-            if (classe.Decorators.Any(d => d.Decorator.Java != null && d.Decorator.Java.GenerateInterface))
-            {
-                fw.WriteLine(1, "@Override");
-            }
 
             var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
             fw.WriteLine(1, @$"public {property.GetJavaType()} {getterPrefix}{property.GetJavaName().ToFirstUpper()}() {{");
@@ -549,10 +537,8 @@ public class JpaModelGenerator : GeneratorBase
             }
 
             fw.WriteLine(1, $"public {mapper.Class} {mapper.Name.Value.ToCamelCase()}({mapper.Class} target) {{");
-            fw.WriteLine(2, $"target = target == null ? new {mapper.Class}() : target;");
-            fw.WriteLine(2, $"{_config.GetMapperClassName(classe, mapper)}.{mapper.Name.Value.ToCamelCase()}(this, target);");
+            fw.WriteLine(2, $"return {_config.GetMapperClassName(classe, mapper)}.{mapper.Name.Value.ToCamelCase()}(this, target);");
             fw.AddImport(_config.GetMapperImport(classe, mapper)!);
-            fw.WriteLine(2, "return target;");
             fw.WriteLine(1, "}");
 
             if (toMappers.IndexOf(toMapper) < toMappers.Count - 1)

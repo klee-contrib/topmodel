@@ -103,11 +103,6 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
         if (endpoint.Returns != null)
         {
             returnType = endpoint.Returns.GetJavaType();
-            if (endpoint.Returns is CompositionProperty cp && cp.Composition.Decorators.Any(d => d.Decorator.Java?.GenerateInterface == true))
-            {
-                fw.AddImport(cp.Composition.GetImport(_config).Replace(cp.Composition.Name, "interfaces.I" + cp.Composition.Name));
-                returnType = endpoint.Returns.GetJavaType().Replace(cp.Composition.Name, "I" + cp.Composition.Name);
-            }
         }
 
         var hasForm = endpoint.Params.Any(p => p is IFieldProperty { Domain.Java.Type: "MultipartFile" });
@@ -215,10 +210,10 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
     private IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints)
     {
         var properties = endpoints.SelectMany(endpoint => endpoint.Params)
-            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null && !(endpoint.Returns is CompositionProperty cp && cp.Composition.Decorators.Any(d => d.Decorator.Java?.GenerateInterface == true)))
+            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
             .Select(endpoint => endpoint.Returns));
         return properties.SelectMany(property => property!.GetTypeImports(_config))
-                .Concat(endpoints.Where(endpoint => endpoint.Returns is not null && (endpoint.Returns is CompositionProperty cp && cp.Composition.Decorators.Any(d => d.Decorator.Java?.GenerateInterface == true)))
+                .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
                 .Select(e => e.Returns).OfType<CompositionProperty>()
                 .SelectMany(c => c.GetKindImports(_config)));
     }

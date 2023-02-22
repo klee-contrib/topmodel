@@ -21,7 +21,10 @@ public class UtilisateurMappers {
 		}
 
 		if (utilisateur != null) {
-			target.setUtilisateurParent(utilisateur.getUtilisateurParent() == null ? null : UtilisateurMappers.createUtilisateurDto(utilisateur.getUtilisateurParent(), target.getUtilisateurParent()));
+			if (utilisateur.getUtilisateurParent() != null) {
+				target.setUtilisateurParent(UtilisateurMappers.createUtilisateurDto(utilisateur.getUtilisateurParent(), target.getUtilisateurParent()));
+			}
+
 			target.setId(utilisateur.getId());
 			target.setAge(utilisateur.getAge());
 			if (utilisateur.getProfil() != null) {
@@ -58,10 +61,6 @@ public class UtilisateurMappers {
 			target = new Utilisateur();
 		}
 
-		if (source.getUtilisateurParent() != null) {
-			target.setUtilisateurParent(UtilisateurMappers.toUtilisateur(source.getUtilisateurParent(), target.getUtilisateurParent()));
-		}
-
 		target.setId(source.getId());
 		target.setAge(source.getAge());
 		target.setEmail(source.getEmail());
@@ -69,8 +68,13 @@ public class UtilisateurMappers {
 		if (source.getTypeUtilisateurCode() != null) {
 			target.setTypeUtilisateur(source.getTypeUtilisateurCode().getEntity());
 		}
+
 		target.setDateCreation(source.getDateCreation());
 		target.setDateModification(source.getDateModification());
+		if (source.getUtilisateurParent() != null) {
+			target.setUtilisateurParent(UtilisateurMappers.toUtilisateur(source.getUtilisateurParent(), target.getUtilisateurParent()));
+		}
+
 		return target;
 	}
 }

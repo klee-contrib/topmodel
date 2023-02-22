@@ -2,7 +2,6 @@
 module: Utilisateur
 uses:
   - Securite/Utilisateur/02_Entities
-  - meta/decorators
 tags:
   - front
   - back
@@ -11,8 +10,6 @@ class:
   name: UtilisateurDto
   label: Utilisateur
   comment: Objet non persisté de communication avec le serveur
-  decorators:
-    - Interface
   properties:
     - alias:
         class: Utilisateur
@@ -32,3 +29,17 @@ class:
       - class: Utilisateur
         mappings:
           UtilisateurParent: UtilisateurIdParent
+    to:
+      - class: UtilisateurDto
+---
+class:
+  name: UtilisateurSearch
+  label: Utilisateur
+  comment: Classe abstraite servant à faire des projections spring
+  abstract: true
+  properties:
+    - alias:
+        class: Utilisateur
+        exclude:
+          - UtilisateurIdParent
+      readonly: true

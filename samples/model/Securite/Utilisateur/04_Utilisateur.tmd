@@ -41,7 +41,7 @@ endpoint:
         property: TypeUtilisateurCode
         class: Utilisateur
   returns:
-    composition: UtilisateurDto
+    composition: UtilisateurSearch
     name: utilisateurList # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
     kind: list
     comment: Liste des utilisateurs
@@ -73,7 +73,7 @@ endpoint:
     - alias:
         class: UtilisateurDto
   returns:
-    composition: UtilisateurDto
+    composition: UtilisateurSearch
     name: utilisateurList
     kind: DO_PAGE
     comment: Utilisateurs matchant les critères

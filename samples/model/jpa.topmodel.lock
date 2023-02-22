@@ -14,9 +14,11 @@ generatedFiles:
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/TypeUtilisateurDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/UtilisateurDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/UtilisateurDtoDAO.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/UtilisateurSearchDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/ProfilDto.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/interfaces/IUtilisateurDto.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/UtilisateurDto.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/UtilisateurDTOMappers.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/UtilisateurSearch.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/Droit.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/Profil.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/Secteur.java
