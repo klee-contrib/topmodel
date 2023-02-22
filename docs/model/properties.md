@@ -117,5 +117,5 @@ Ainsi, les propriétés de composition générées avec le `kind: DO_DICTIONNAIR
 ## Autres informations de propriétés
 
 - `defaultValue` : toutes les propriétés hors composition peuvent définir une valeur par défaut, qui pourra être utilisée dans les définitions de classes et d'endpoints générées. Cette valeur par défaut ne sera en revanche pas définie en base de données.
-- `readonly` : Une propriété readonly ne pourra jamais être la cible d'un [mapper](./mappers), et ne sera pas ajoutée dans le setter unique d'une [classe abstraite](./classes#classe-abstraite)
+- `readonly` : Une propriété readonly ne pourra jamais être la cible d'un [mapper](/model/mappers.md), et ne sera pas ajoutée dans le setter unique d'une [classe abstraite](/model/classes.md#classe-abstraite)
 - `trigram` : toutes les propriétés non composées peuvent surcharger le trigramme de la classe (ou de la classe associée dans une association).

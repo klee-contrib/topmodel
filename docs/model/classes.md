@@ -17,7 +17,7 @@ Une classe doit au minimum avoir un **nom** (`name`), un **commentaire** (`comme
 
 ## Propriétés d'une classe
 
-- `properties` : Liste des [**propriétés**](./properties) de la classe.
+- `properties` : Liste des [**propriétés**](/model/properties.md) de la classe.
 - `defaultProperty` : Propriété "par défaut" de la classe, parfois utilisée comme libellé ou pour le tri. Doit référencer une propriété existante de la classe. Si non renseignée et qu'il existe une propriété nommée `Label` ou `Libelle`, elle sera automatiquement ajoutée comme `defaultProperty`.
 - `orderProperty` : Propriété de tri de la classe, remplace `defaultProperty` pour cet usage. Si non renseignée et qu'il existe une propriété nommée `Order` ou `Ordre`, elle sera automatiquement ajoutée comme `orderProperty`.
 - `flagProperty` : Propriété de la classe à utiliser comme flag binaire (ayant des valeurs comme 1, 10, 100, 1000...). Si non renseignée et qu'il existe une propriété nommée `Flag`, elle sera automatiquement ajoutée comme `flagProperty`.
@@ -64,4 +64,4 @@ _Remarque : en particulier, une classe enum, une classe de référence, une clas
 
 ## Décorateurs et mappers
 
-Une classe peut implémenter des **[décorateurs](./decorators)** et définir des **[mappers](./mappers)**.
+Une classe peut implémenter des **[décorateurs](/model/decorators.md)** et définir des **[mappers](/model/mappers.md)**.
