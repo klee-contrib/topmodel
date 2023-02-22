@@ -7,53 +7,40 @@ public static class JavascriptUtils
 {
     public static string GetPropertyTypeName(this IProperty property, IEnumerable<Class>? availableClasses = null)
     {
-        if (property is CompositionProperty cp)
+        return property switch
         {
-            return cp.Kind switch
+            CompositionProperty cp => cp.Kind switch
             {
                 "object" => cp.Composition.Name,
                 "list" or "async-list" => $"{cp.Composition.Name}[]",
                 string _ when cp.DomainKind!.TS!.Type.Contains("{composition.name}") => cp.DomainKind.TS.Type.ParseTemplate(cp),
                 string _ => $"{cp.DomainKind.TS.Type}<{{composition.name}}>".ParseTemplate(cp)
-            };
-        }
+            },
+            AssociationProperty { Association: Class assoc } ap when assoc.IsEnum(availableClasses, ap.Property) => $"{assoc}{ap.Property}{(ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : string.Empty)}",
+            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when assoc.IsEnum(availableClasses, ap.Property) => $"{assoc}{ap.Property}{(asList || ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : string.Empty)}",
+            RegularProperty { Class: Class classe } rp when classe.IsEnum(availableClasses, rp) => $"{classe}{rp}",
+            AliasProperty { Property: RegularProperty { Class: Class alClass } rp, AsList: var asList } when alClass.IsEnum(availableClasses, rp) => $"{alClass}{rp}{(asList ? "[]" : string.Empty)}",
+            IFieldProperty fp => fp.Domain.TS?.Type.ParseTemplate(fp) ?? string.Empty,
+            _ => string.Empty
+        };
+    }
 
-        var fp = (IFieldProperty)property;
-
-        if (fp.Domain.TS == null)
+    public static bool IsEnum(this Class classe, IEnumerable<Class>? availableClasses, IFieldProperty? prop = null)
+    {
+        if (availableClasses != null && !availableClasses.Contains(classe))
         {
-            throw new ModelException(fp.Domain, $"Le type Typescript du domaine doit être renseigné.");
+            return false;
         }
 
-        var fixedType = fp.Domain.TS.Type.ParseTemplate(fp);
+        prop ??= classe.EnumKey;
 
-        var prop = fp is AliasProperty alp ? alp.Property : fp;
-
-        if (prop is AssociationProperty { Association.EnumKey: not null } ap && (availableClasses == null || availableClasses.Contains(ap.Association)))
+        bool CheckProperty(IFieldProperty fp)
         {
-            fixedType = $"{ap.Association.Name}{ap.Property.Name}";
-
-            if (fp is AliasProperty { AsList: true })
-            {
-                fixedType += "[]";
-            }
-        }
-        else if (prop == prop.Class?.EnumKey && (availableClasses == null || availableClasses.Contains(prop.Class)))
-        {
-            fixedType = $"{prop.Class.Name}{prop.Name}";
-
-            if (fp is AliasProperty { AsList: true })
-            {
-                fixedType += "[]";
-            }
+            return (fp == classe.EnumKey || classe.UniqueKeys.Where(uk => uk.Count == 1).Select(uk => uk.Single()).Contains(prop))
+                && classe.Values.All(r => r.Value.ContainsKey(fp));
         }
 
-        if (fp is AliasProperty { Property: AssociationProperty { Type: AssociationType.ManyToMany or AssociationType.OneToMany } } && fixedType != fp.Domain.TS.Type.ParseTemplate(fp))
-        {
-            fixedType += "[]";
-        }
-
-        return fixedType;
+        return classe.Enum && CheckProperty(prop!);
     }
 
     public static bool IsJSReference(this Class classe)
