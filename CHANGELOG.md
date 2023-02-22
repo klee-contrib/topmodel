@@ -29,6 +29,10 @@
     - Ne génère plus de définition de référence (le type + l'objet `{valueKey, labelKey}` ou la liste des valeurs) si la classe n'est pas une `reference`
     - On génère un type pour les propriétés de classe enum qui ont une clé d'unicité simple.
 
+  **Remarque** :
+
+  Si vous avez défini une clé d'unicité sur la PK, vous aurez probablement des choses générés en double, et qui peuvent avoir le même nom (les enums C#/unions TS en particulier). Il est inutile de déclarer une clé d'unicité sur une PK donc vous pouvez simplement la supprimer (peut être que topmodel devrait mettre une erreur dessus ?).
+
 - [#208](https://github.com/klee-contrib/topmodel/pull/208) - Utilisation domain list pour oneToMany et ManyToMany
 
   **Breaking change (JPA)** : Les domaines de propriétés de PK utilisées dans des associations _one to many_ et _many to many_ doivent maintenant spécifier un `listDomain` correspondant
