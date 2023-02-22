@@ -32,6 +32,8 @@ Il n'y a pas besoin de préciser les dépendances aux fichiers contenant des dom
 
 Il est possible de définir le `mediaType` du domaine. Cette information pourra être prise en compte par certains générateurs (notamment les générateurs d'API).
 
+Un domaine peut également définir un `listDomain`, qui est le domaine à utiliser lorsque l'on veut construire une liste d'un champ de son domaine. Il est utilisé par les alias `asList: true` et les associations `oneToMany` et `manyToMany`.
+
 Exemple :
 
 ```yaml
@@ -115,7 +117,7 @@ domain:
   java:
     type: Integer
     annotations:
-      - text: "@Label(\"{label:lower}\")"
+      - text: '@Label("{label:lower}")'
         imports:
           - topmodel.sample.custom.annotation.Label
 ```
@@ -155,7 +157,7 @@ domain:
   java:
     type: Integer
     annotations:
-      - text: "@Label(\"{label:lower}\")"
+      - text: '@Label("{label:lower}")'
         imports: # Using pour les annotations C#
           - topmodel.sample.custom.annotation.Label
         target: Dto

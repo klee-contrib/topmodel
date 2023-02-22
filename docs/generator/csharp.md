@@ -19,6 +19,10 @@ Le générateur C# fait peu de différences à la génération entre une classe 
 
 Les propriétés d'associations sont toujours gérées comme en SQL, avec la clé primaire de la classe cible. Les associations `oneToMany` et `manyToMany` auront le type du domaine liste de la clé primaire, munie d'une annotation `[NotMapped]` pour indiquer qu'elle ne seront pas implicitement supportées.
 
+Pour les classes `enum`, le générateur peut soit générer des constantes pour chacune des valeurs possibles de la clé primaire (comportement par défaut), soit, si l'option `enumForStaticReferences` est activée, générer une vraie enum C# dans la classe (dont le nom est `{prop}s`) et remplacer le type de la propriété par cette enum. Cette enum sera évidemment utilisé pour toutes les références de cette propriété (association, alias...). Les constantes auront le nom de la `value`, tandis que les valeurs de l'enum auront la valeur de la clé primaire (ce qui conditionne donc également la génération de l'enum au fait que la valeur est un identifiant C# valide).
+
+De plus, si la classe définit des `values` et une clé d'unicité simple sur un des champs de la classe, alors des constantes seront aussi générées pour chaque valeur définie dans `values`. Si la classe est une `enum` et que l'option `enumForStaticReferences` est activée, alors une vraie enum C# sera générée à la place, comme pour la clé primaire. Les constantes auront le nom de la `value`, suffixée par le nom de la propriété.
+
 ### Génération des mappers
 
 Les mappers sont générés comme des méthodes statiques dans une classe statique. Les mappers `to` peuvent être utilisés comme méthodes d'extensions sur la classe qui le définit. Il est conseillé d'utiliser un `using static ModuleMappers;` dans les fichiers où on utilise des mappers pour pouvoir référencer un mapper `from` directement avec son nom (par exemple `CreateMyClassDTO(myClass)` au lieu de `ModuleMappers.CreateMyClassDTO(myClass)`)
@@ -54,7 +58,7 @@ Les clients d'API sont générés comme des classes partielles avec 2 méthodes 
 
 ### Génération des accesseurs de références
 
-Les implémentations d'accesseurs de listes de références pour Kinetix utilisent EF Core si un DbContext est configuré et l'ORM Kinetix (`Kinetix.DataAccess.Sql`) dans le cas contraire.
+Les implémentations d'accesseurs de listes de références pour Kinetix utilisent EF Core si un DbContext est configuré et l'ORM Kinetix (`Kinetix.DataAccess.Sql`) dans le cas contraire. Ils sont générés pour les classes marquées comme `reference`.
 
 ## Configuration
 
@@ -96,6 +100,8 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   _Valeur par défaut_: `"{app}.Web"`
 
+  _Variables par tag_: **oui** (plusieurs clients/serveurs pourraient être générés si un fichier à plusieurs tags)
+
 - `apiFilePath`
 
   Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.
@@ -104,9 +110,13 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   _Valeur par défaut_: `"{module}"`
 
+  _Variables par tag_: **oui** (plusieurs clients/serveurs pourraient être générés si un fichier à plusieurs tags)
+
 - `apiGeneration`
 
   Mode de génération de l'API (`"client"` ou `"server"`).
+
+  _Variables par tag_: **oui** (la valeur de la variable doit être `"client"` ou `"server"`. le client et le serveur pourraient être générés si un fichier à plusieurs tags)
 
 - `noAsyncControllers`
 
@@ -118,6 +128,8 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   C'est ce paramètre qui décide si le DbContext est généré ou non.
 
+  _Variables par tag_: **oui** (plusieurs contextes pourraient être générés si un fichier à plusieurs tags)
+
 - `dbContextName`
 
   Nom du DbContext.
@@ -125,6 +137,8 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
   _Templating_: `{app}`
 
   _Valeur par défaut_: `"{app}DbContext"`
+
+  _Variables par tag_: **oui** (plusieurs contextes pourraient être générés si un fichier à plusieurs tags)
 
 - `referenceAccessorsInterfacePath`
 
@@ -136,6 +150,8 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   _Valeur par défaut_: `"{DbContextPath}/Reference"`
 
+  _Variables par tag_: **oui** (plusieurs accesseurs pourraient être générés si un fichier à plusieurs tags)
+
 - `referenceAccessorsImplementationPath`
 
   Chemin vers lequel générer les implémentation d'accesseurs de référence.
@@ -146,6 +162,8 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   _Valeur par défaut_: `"{DbContextPath}/Reference"`
 
+  _Variables par tag_: **oui** (plusieurs accesseurs pourraient être générés si un fichier à plusieurs tags)
+
 - `referenceAccessorsName`
 
   Nom des accesseurs de référence (préfixé par 'I' pour l'interface).
@@ -155,6 +173,8 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
   _Templating_: `{app}`, `{module}`
 
   _Valeur par défaut_: `"{module}ReferenceAccessors"`
+
+  _Variables par tag_: **oui** (plusieurs accesseurs pourraient être générés si un fichier à plusieurs tags)
 
 - `useEFMigrations`
 

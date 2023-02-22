@@ -17,7 +17,7 @@ alias:
 prefix: true
 ```
 
-Il est possible de préfixer ou suffixer le nom de la propriété recopiée (`true` est une valeur spéciale qui correspond au nom de la classe), et même de surcharger son libellé, commentaire et caractère obligatoire.
+Il est possible de préfixer ou suffixer le nom de la propriété recopiée (`true` est une valeur spéciale qui correspond au nom de la classe), et même de surcharger son libellé, commentaire, caractère obligatoire, domaine, valeur par défaut, caractère readonly...
 
 Plusieurs propriétés peuvent être recopiées par la même définition d'alias, par exemple :
 
@@ -47,16 +47,16 @@ La classe référencée par l'alias doit être connue du fichier de modèle cour
 
 Il n'est pas possible de définir un alias sur une propriété de type composition, mais en revanche il est possible de définir un alias d'alias.
 
-Enfin, via la propriété `asListWithDomain`, il est possible de recopier une propriété en tant que liste, en spécifiant un domaine qui devra correspondre au type "généré" par cet alias. Le type défini dans le domaine sera ignoré.
+Enfin, via la propriété `asList`, il est possible de recopier une propriété en tant que liste, en utilisant le `listDomain` défini sur le domaine de la propriété aliasée au lieu de son domaine.
 
 Exemple :
 
 ```yaml
-# Génère une propriété MyClassCodeList, de domaine DO_CODE_LIST et de type string[] (ou MyClassCode[] si le language/générateur supporte les enums), en supposant que Code est un string et MyClass est une liste de référence
+# Génère une propriété MyClassCodeList, de domaine DO_CODE_LIST et de type string[] (ou MyClassCode[] si le language/générateur supporte les enums), en supposant que Code est du domaine DO_CODE et MyClass est une classe enum.
 alias:
   class: MyClass
   include: Code
-asListWithDomain: DO_CODE_LIST
+asList: true
 prefix: true
 suffix: List
 ```
