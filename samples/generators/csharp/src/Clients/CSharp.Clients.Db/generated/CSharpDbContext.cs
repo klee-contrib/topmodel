@@ -63,7 +63,7 @@ public partial class CSharpDbContext : DbContext
         modelBuilder.Entity<Droit>().Property(p => p.Code).HasConversion<string>().HasMaxLength(3);
         modelBuilder.Entity<Droit>().Property(p => p.TypeProfilCode).HasConversion<string>().HasMaxLength(3);
         modelBuilder.Entity<Profil>().Property(p => p.TypeProfilCode).HasConversion<string>().HasMaxLength(3);
-        modelBuilder.Entity<Profil>().Property(p => p.Droits).HasConversion<string>().HasMaxLength(3);
+        modelBuilder.Entity<Profil>().Property(p => p.Droits).HasConversion<string[]>().HasMaxLength(3);
         modelBuilder.Entity<TypeProfil>().Property(p => p.Code).HasConversion<string>().HasMaxLength(3);
         modelBuilder.Entity<TypeUtilisateur>().Property(p => p.Code).HasConversion<string>().HasMaxLength(3);
         modelBuilder.Entity<Utilisateur>().Property(x => x.Age).HasPrecision(20, 9);

@@ -2,13 +2,13 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 1.23.4
+version: 1.24.0
 generatedFiles:
   - ../generators/angular/src/appgenerated/api/securite/utilisateur/utilisateur-api.ts
   - ../generators/angular/src/appgenerated/model/securite/profil-dto.ts
   - ../generators/angular/src/appgenerated/model/securite/references.ts
-  - ../generators/angular/src/appgenerated/model/utilisateur/i-utilisateur.ts
   - ../generators/angular/src/appgenerated/model/utilisateur/references.ts
   - ../generators/angular/src/appgenerated/model/utilisateur/utilisateur-dto.ts
+  - ../generators/angular/src/appgenerated/model/utilisateur/utilisateur-search.ts
   - ../generators/angular/src/appgenerated/resources/securite.json
   - ../generators/angular/src/appgenerated/resources/utilisateur.json

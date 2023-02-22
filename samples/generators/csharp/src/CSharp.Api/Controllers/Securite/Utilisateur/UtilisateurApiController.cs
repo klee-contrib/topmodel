@@ -37,7 +37,7 @@ public class UtilisateurApiController : Controller
     /// <param name="typeUtilisateurCode">Type d'utilisateur en Many to one</param>
     /// <returns>Liste des utilisateurs</returns>
     [HttpGet("utilisateur/list")]
-    public async Task<IEnumerable<UtilisateurDto>> findAllByType(TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM)
+    public async Task<IEnumerable<UtilisateurSearch>> findAllByType(TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM)
     {
 
     }
@@ -66,7 +66,7 @@ public class UtilisateurApiController : Controller
     /// <param name="dateModification">Date de modification de l'utilisateur</param>
     /// <returns>Utilisateurs matchant les critères</returns>
     [HttpPost("utilisateur/search")]
-    public async Task<ICollection<UtilisateurDto>> search(int? utiId = null, decimal age = 6l, int? profilId = null, string email = null, string nom = "Jabx", TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM, DateOnly? dateCreation = null, DateOnly? dateModification = null)
+    public async Task<ICollection<UtilisateurSearch>> search(int? utiId = null, decimal age = 6l, int? profilId = null, string email = null, string nom = "Jabx", TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM, DateOnly? dateCreation = null, DateOnly? dateModification = null)
     {
 
     }

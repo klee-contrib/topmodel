@@ -7,9 +7,9 @@ import {DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_LIB
 
 import {TypeUtilisateurCode} from "./references";
 
-export type IUtilisateur = EntityToType<IUtilisateurEntityType>;
-export type IUtilisateurNode = StoreNode<IUtilisateurEntityType>;
-export interface IUtilisateurEntityType {
+export type UtilisateurSearch = EntityToType<UtilisateurSearchEntityType>;
+export type UtilisateurSearchNode = StoreNode<UtilisateurSearchEntityType>;
+export interface UtilisateurSearchEntityType {
     id: FieldEntry2<typeof DO_ID, number>,
     age: FieldEntry2<typeof DO_NUMBER, number>,
     profilId: FieldEntry2<typeof DO_ID, number>,
@@ -20,7 +20,7 @@ export interface IUtilisateurEntityType {
     dateModification: FieldEntry2<typeof DO_DATE_MODIFICATION, string>
 }
 
-export const IUtilisateurEntity: IUtilisateurEntityType = {
+export const UtilisateurSearchEntity: UtilisateurSearchEntityType = {
     id: {
         type: "field",
         name: "id",

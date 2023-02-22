@@ -7,6 +7,7 @@ import {coreFetch} from "@focus4/core";
 import {Page} from "@/types";
 import {TypeUtilisateurCode} from "../../../model/utilisateur/references";
 import {UtilisateurDto} from "../../../model/utilisateur/utilisateur-dto";
+import {UtilisateurSearch} from "../../../model/utilisateur/utilisateur-search";
 
 /**
  * Recherche des utilisateurs
@@ -33,7 +34,7 @@ export function find(utiId: number, options: RequestInit = {}): Promise<Utilisat
  * @param options Options pour 'fetch'.
  * @returns Liste des utilisateurs
  */
-export function findAllByType(typeUtilisateurCode: TypeUtilisateurCode = "ADM", options: RequestInit = {}): Promise<UtilisateurDto[]> {
+export function findAllByType(typeUtilisateurCode: TypeUtilisateurCode = "ADM", options: RequestInit = {}): Promise<UtilisateurSearch[]> {
     return coreFetch("GET", `./utilisateur/list`, {query: {typeUtilisateurCode}}, options);
 }
 
@@ -60,6 +61,6 @@ export function save(utilisateur: UtilisateurDto, options: RequestInit = {}): Pr
  * @param options Options pour 'fetch'.
  * @returns Utilisateurs matchant les critères
  */
-export function search(utiId?: number, age: number = 6l, profilId?: number, email?: string, nom: string = "Jabx", typeUtilisateurCode: TypeUtilisateurCode = "ADM", dateCreation?: string, dateModification?: string, options: RequestInit = {}): Promise<Page<UtilisateurDto>> {
+export function search(utiId?: number, age: number = 6l, profilId?: number, email?: string, nom: string = "Jabx", typeUtilisateurCode: TypeUtilisateurCode = "ADM", dateCreation?: string, dateModification?: string, options: RequestInit = {}): Promise<Page<UtilisateurSearch>> {
     return coreFetch("POST", `./utilisateur/search`, {query: {utiId, age, profilId, email, nom, typeUtilisateurCode, dateCreation, dateModification}}, options);
 }

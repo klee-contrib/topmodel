@@ -63,7 +63,7 @@ public partial class UtilisateurApiClient
     /// </summary>
     /// <param name="typeUtilisateurCode">Type d'utilisateur en Many to one.</param>
     /// <returns>Liste des utilisateurs.</returns>
-    public async Task<IEnumerable<UtilisateurDto>> findAllByType(TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM)
+    public async Task<IEnumerable<UtilisateurSearch>> findAllByType(TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM)
     {
         await EnsureAuthentication();
         var query = await new FormUrlEncodedContent(new Dictionary<string, string>
@@ -72,7 +72,7 @@ public partial class UtilisateurApiClient
         }.Where(kv => kv.Value != null)).ReadAsStringAsync();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"utilisateur/list?{query}"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
-        return await Deserialize<IEnumerable<UtilisateurDto>>(res);
+        return await Deserialize<IEnumerable<UtilisateurSearch>>(res);
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ public partial class UtilisateurApiClient
     /// <param name="dateCreation">Date de création de l'utilisateur.</param>
     /// <param name="dateModification">Date de modification de l'utilisateur.</param>
     /// <returns>Utilisateurs matchant les critères.</returns>
-    public async Task<ICollection<UtilisateurDto>> search(int? utiId = null, decimal age = 6l, int? profilId = null, string email = null, string nom = "Jabx", TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM, DateOnly? dateCreation = null, DateOnly? dateModification = null)
+    public async Task<ICollection<UtilisateurSearch>> search(int? utiId = null, decimal age = 6l, int? profilId = null, string email = null, string nom = "Jabx", TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM, DateOnly? dateCreation = null, DateOnly? dateModification = null)
     {
         await EnsureAuthentication();
         var query = await new FormUrlEncodedContent(new Dictionary<string, string>
@@ -116,7 +116,7 @@ public partial class UtilisateurApiClient
         }.Where(kv => kv.Value != null)).ReadAsStringAsync();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"utilisateur/search?{query}"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
-        return await Deserialize<ICollection<UtilisateurDto>>(res);
+        return await Deserialize<ICollection<UtilisateurSearch>>(res);
     }
 
     /// <summary>

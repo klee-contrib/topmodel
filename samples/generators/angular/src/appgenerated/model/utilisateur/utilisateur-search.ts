@@ -6,7 +6,7 @@ import {DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_LIB
 
 import {TypeUtilisateurCode} from "./references";
 
-export interface IUtilisateur {
+export interface UtilisateurSearch {
     id?: number,
     age?: number,
     profilId?: number,
@@ -17,7 +17,7 @@ export interface IUtilisateur {
     dateModification?: string
 }
 
-export const IUtilisateurEntity = {
+export const UtilisateurSearchEntity = {
     id: {
         type: "field",
         name: "id",

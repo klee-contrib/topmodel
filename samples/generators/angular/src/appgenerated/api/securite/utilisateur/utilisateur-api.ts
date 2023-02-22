@@ -9,6 +9,7 @@ import {Injectable} from "@angular/core";
 import {Observable} from "rxjs";
 import {TypeUtilisateurCode} from "../../../model/utilisateur/references";
 import {UtilisateurDto} from "../../../model/utilisateur/utilisateur-dto";
+import {UtilisateurSearch} from "../../../model/utilisateur/utilisateur-search";
 @Injectable({
     providedIn: 'root'
 })
@@ -47,14 +48,14 @@ export class UtilisateurApiService {
      * @param options Options pour 'fetch'.
      * @returns Liste des utilisateurs
      */
-    findAllByType(typeUtilisateurCode: TypeUtilisateurCode = "ADM", queryParams: any = {}): Observable<UtilisateurDto[]> {
+    findAllByType(typeUtilisateurCode: TypeUtilisateurCode = "ADM", queryParams: any = {}): Observable<UtilisateurSearch[]> {
         const httpParams = new HttpParams({fromObject : queryParams});
         const httpOptions = { params: httpParams }
         if(typeUtilisateurCode !== null) {
             httpOptions.params.set('typeUtilisateurCode', typeUtilisateurCode)
         }
 
-        return this.http.get<UtilisateurDto[]>(`/utilisateur/list`, httpOptions);
+        return this.http.get<UtilisateurSearch[]>(`/utilisateur/list`, httpOptions);
     }
 
     /**
@@ -80,7 +81,7 @@ export class UtilisateurApiService {
      * @param options Options pour 'fetch'.
      * @returns Utilisateurs matchant les critères
      */
-    search(utiId?: number, age: number = 6l, profilId?: number, email?: string, nom: string = "Jabx", typeUtilisateurCode: TypeUtilisateurCode = "ADM", dateCreation?: string, dateModification?: string, queryParams: any = {}): Observable<Page<UtilisateurDto>> {
+    search(utiId?: number, age: number = 6l, profilId?: number, email?: string, nom: string = "Jabx", typeUtilisateurCode: TypeUtilisateurCode = "ADM", dateCreation?: string, dateModification?: string, queryParams: any = {}): Observable<Page<UtilisateurSearch>> {
         const httpParams = new HttpParams({fromObject : queryParams});
         const httpOptions = { params: httpParams }
         if(utiId !== null) {
@@ -108,6 +109,6 @@ export class UtilisateurApiService {
             httpOptions.params.set('dateModification', dateModification)
         }
 
-        return this.http.post<Page<UtilisateurDto>>(`/utilisateur/search`, httpOptions);
+        return this.http.post<Page<UtilisateurSearch>>(`/utilisateur/search`, httpOptions);
     }
 }

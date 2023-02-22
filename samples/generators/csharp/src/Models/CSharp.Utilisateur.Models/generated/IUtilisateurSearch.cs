@@ -6,9 +6,9 @@
 namespace Models.CSharp.Utilisateur.Models;
 
 /// <summary>
-/// Objet non persisté de communication avec le serveur.
+/// Classe abstraite servant à faire des projections spring.
 /// </summary>
-public interface IIUtilisateur
+public interface IUtilisateurSearch
 {
     /// <summary>
     /// Id technique.
@@ -49,18 +49,4 @@ public interface IIUtilisateur
     /// Date de modification de l'utilisateur.
     /// </summary>
     DateOnly? dateModification { get; }
-
-    /// <summary>
-    /// Factory pour instancier la classe.
-    /// </summary>
-    /// <param name="id">Id technique.</param>
-    /// <param name="age">Age en années de l'utilisateur.</param>
-    /// <param name="profilId">Profil de l'utilisateur.</param>
-    /// <param name="email">Email de l'utilisateur.</param>
-    /// <param name="nom">Nom de l'utilisateur.</param>
-    /// <param name="typeUtilisateurCode">Type d'utilisateur en Many to one.</param>
-    /// <param name="dateCreation">Date de création de l'utilisateur.</param>
-    /// <param name="dateModification">Date de modification de l'utilisateur.</param>
-    /// <returns>Instance de la classe.</returns>
-    static abstract IIUtilisateur Create(int? id = null, decimal? age = null, int? profilId = null, string email = null, string nom = null, TypeUtilisateur.Codes? typeUtilisateurCode = null, DateOnly? dateCreation = null, DateOnly? dateModification = null);
 }
