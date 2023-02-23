@@ -5,13 +5,15 @@ namespace TopModel.Generator;
 
 public class LoggerProvider : ILoggerProvider
 {
+    public int Changes { get; private set; }
+
     public void Dispose()
     {
     }
 
     public ILogger CreateLogger(string categoryName)
     {
-        return new ConsoleLogger(categoryName.Split(".").Last());
+        return new ConsoleLogger(categoryName.Split(".").Last(), () => Changes++);
     }
 
     public class ConsoleLogger : ILogger
@@ -19,13 +21,15 @@ public class LoggerProvider : ILoggerProvider
         private static readonly object _lock = new();
 
         private readonly string _categoryName;
+        private readonly Action _registerChange;
         private string? _generatorName;
         private int? _storeNumber;
         private ConsoleColor? _storeColor;
 
-        public ConsoleLogger(string categoryName)
+        public ConsoleLogger(string categoryName, Action registerChange)
         {
             _categoryName = categoryName;
+            _registerChange = registerChange;
         }
 
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
@@ -102,6 +106,7 @@ public class LoggerProvider : ILoggerProvider
                 message = message.Split(action)[1];
                 Console.Write(action);
                 Console.ForegroundColor = ConsoleColor.DarkGray;
+                _registerChange();
             }
 
             return message;

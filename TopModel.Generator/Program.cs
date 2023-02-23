@@ -15,6 +15,7 @@ var fileChecker = new FileChecker("schema.config.json");
 
 var configs = new List<(FullConfig Config, string FullPath, string DirectoryName)>();
 var watchMode = false;
+var checkMode = false;
 var regularCommand = false;
 var returnCode = 0;
 
@@ -22,13 +23,16 @@ var command = new RootCommand("Lance le générateur topmodel.") { Name = "modge
 
 var fileOption = new Option<IEnumerable<FileInfo>>(new[] { "-f", "--file" }, "Chemin vers un fichier de config.");
 var watchOption = new Option<bool>(new[] { "-w", "--watch" }, "Lance le générateur en mode 'watch'");
+var checkOption = new Option<bool>(new[] { "-c", "--check" }, "Vérifie que le code généré est conforme au modèle.");
 command.AddOption(fileOption);
 command.AddOption(watchOption);
+command.AddOption(checkOption);
 command.SetHandler(
-    (files, watch) =>
+    (files, watch, check) =>
     {
         regularCommand = true;
         watchMode = watch;
+        checkMode = check;
 
         if (files.Any())
         {
@@ -82,7 +86,8 @@ command.SetHandler(
         }
     },
     fileOption,
-    watchOption);
+    watchOption,
+    checkOption);
 
 await command.InvokeAsync(args);
 
@@ -93,11 +98,10 @@ if (!regularCommand)
 
 if (!configs.Any())
 {
-    returnCode = 1;
     Console.ForegroundColor = ConsoleColor.Red;
     Console.WriteLine("Aucun fichier de configuration trouvé.");
     Console.ForegroundColor = ConsoleColor.Gray;
-    return returnCode;
+    return 1;
 }
 
 var fullVersion = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Version!;
@@ -117,6 +121,15 @@ if (watchMode)
     Console.WriteLine("activé.");
 }
 
+if (checkMode)
+{
+    Console.Write("Mode");
+    Console.ForegroundColor = ConsoleColor.DarkCyan;
+    Console.Write(" check ");
+    Console.ForegroundColor = ConsoleColor.Gray;
+    Console.WriteLine("activé.");
+}
+
 Console.WriteLine("Fichiers de configuration trouvés :");
 
 for (var i = 0; i < configs.Count; i++)
@@ -128,6 +141,8 @@ for (var i = 0; i < configs.Count; i++)
 }
 
 var disposables = new List<IDisposable>();
+var loggerProvider = new LoggerProvider();
+var hasErrors = Enumerable.Range(0, configs.Count).Select(_ => false).ToArray();
 
 for (var i = 0; i < configs.Count; i++)
 {
@@ -136,7 +151,7 @@ for (var i = 0; i < configs.Count; i++)
     Console.WriteLine();
 
     var services = new ServiceCollection()
-        .AddLogging(builder => builder.AddProvider(new LoggerProvider()))
+        .AddLogging(builder => builder.AddProvider(loggerProvider))
         .AddModelStore(fileChecker, config, dn)
         .AddProceduralSql(dn, config.ProceduralSql)
         .AddSsdt(dn, config.Ssdt)
@@ -149,7 +164,7 @@ for (var i = 0; i < configs.Count; i++)
     disposables.Add(provider);
 
     var modelStore = provider.GetRequiredService<ModelStore>();
-    modelStore.OnResolve += hasError => returnCode = hasError ? 1 : 0;
+    modelStore.OnResolve += hasError => hasErrors[i] = hasError;
 
     var watcher = modelStore.LoadFromConfig(watchMode, new(i + 1, colors[i % colors.Length]));
     if (watcher != null)
@@ -174,4 +189,27 @@ foreach (var provider in disposables)
     provider.Dispose();
 }
 
-return returnCode;
+if (hasErrors.Any(he => he))
+{
+    return 1;
+}
+
+if (checkMode && loggerProvider.Changes > 0)
+{
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine();
+    if (loggerProvider.Changes == 1)
+    {
+        Console.WriteLine($"1 fichier généré a été modifié ou supprimé. Le code généré n'était pas à jour.");
+    }
+    else
+    {
+        Console.WriteLine($"{loggerProvider.Changes} fichiers générés ont été modifiés ou supprimés. Le code généré n'était pas à jour.");
+    }
+
+    Console.ForegroundColor = ConsoleColor.Gray;
+
+    return 1;
+}
+
+return 0;
