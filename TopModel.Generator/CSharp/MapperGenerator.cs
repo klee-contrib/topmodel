@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Utils;
 
 namespace TopModel.Generator.CSharp;
 
-public class MapperGenerator : GeneratorBase
+public class MapperGenerator : MapperGeneratorBase
 {
     private readonly CSharpConfig _config;
     private readonly ILogger<MapperGenerator> _logger;
@@ -19,60 +18,32 @@ public class MapperGenerator : GeneratorBase
 
     public override string Name => "CSharpMapperGen";
 
-    public override IEnumerable<string> GeneratedFiles => Mappers
-        .Select(g => _config.GetMapperFilePath(Classes.OrderBy(c => c.Reference ? 1 : 0).FirstOrDefault(c => c.Namespace.Module == g.Module && c.IsPersistent == g.IsPersistant)))
-        .Where(f => f != null)!;
-
-    private IDictionary<(string Module, bool IsPersistant), IEnumerable<(Class Classe, FromMapper Mapper)>> FromMappers => Classes
-        .SelectMany(classe => classe.FromMappers.Select(mapper => (classe, mapper)))
-        .Where(mapper => mapper.mapper.Params.All(p => Classes.Contains(p.Class)))
-        .Select(c => (c.classe.Namespace.Module, isPersistant: c.classe.IsPersistent || c.mapper.Params.Any(p => p.Class.IsPersistent), c.classe, c.mapper))
-        .GroupBy(c => (c.Module, c.isPersistant))
-        .ToDictionary(g => g.Key, g => g.Select(c => (c.classe, c.mapper)));
-
-    private IDictionary<(string Module, bool IsPersistant), IEnumerable<(Class Classe, ClassMappings Mapper)>> ToMappers => Classes
-        .SelectMany(classe => classe.ToMappers.Select(mapper => (classe, mapper))
-        .Where(mapper => Classes.Contains(mapper.mapper.Class)))
-        .Select(c => (c.classe.Namespace.Module, isPersistant: c.classe.IsPersistent || c.mapper.Class.IsPersistent, c.classe, c.mapper))
-        .GroupBy(c => (c.Module, c.isPersistant))
-        .ToDictionary(g => g.Key, g => g.Select(c => (c.classe, c.mapper)));
-
-    private IEnumerable<(string Module, bool IsPersistant)> Mappers => FromMappers.Select(c => c.Key).Concat(ToMappers.Select(c => c.Key));
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override string GetFileName(Class classe, bool isPersistant, string tag)
     {
-        foreach (var (module, isPersistant) in Mappers)
-        {
-            Generate(module, isPersistant);
-        }
+        return _config.GetMapperFilePath(classe, isPersistant);
     }
 
-    /// <summary>
-    /// Génère les mappers.
-    /// </summary>
-    /// <param name="module">Module.</param>
-    /// <param name="isPersistant">Mappers à générer avec les classes persistées (ou non).</param>
-    private void Generate(string module, bool isPersistant)
+    protected override void HandleFile(bool isPersistant, string fileName, string tag, IEnumerable<Class> classes)
     {
-        var sampleClass = Classes.OrderBy(c => c.Reference ? 1 : 0).First(c => c.Namespace.Module == module && c.IsPersistent == isPersistant);
-        using var w = new CSharpWriter(_config.GetMapperFilePath(sampleClass)!, _logger, _config.UseLatestCSharp);
+        var sampleClass = classes.First();
+        using var w = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
 
-        var ns = _config.GetNamespace(sampleClass);
+        var ns = _config.GetNamespace(sampleClass, isPersistant);
 
-        FromMappers.TryGetValue((module, isPersistant), out var fm);
-        ToMappers.TryGetValue((module, isPersistant), out var tm);
+        var fm = FromMappers.Where(fm => fm.IsPersistant == isPersistant && classes.Contains(fm.Classe));
+        var tm = ToMappers.Where(fm => fm.IsPersistant == isPersistant && classes.Contains(fm.Classe));
 
-        var fromMappers = (fm ?? Array.Empty<(Class, FromMapper)>())
+        var fromMappers = (fm ?? Array.Empty<(Class, FromMapper, bool)>())
             .OrderBy(m => $"{m.Classe.Name} {string.Join(',', m.Mapper.Params.Select(p => p.Name))}", StringComparer.Ordinal)
             .ToList();
-        var toMappers = (tm ?? Array.Empty<(Class, ClassMappings)>())
+        var toMappers = (tm ?? Array.Empty<(Class, ClassMappings, bool)>())
             .OrderBy(m => $"{m.Mapper.Name} {m.Classe.Name}", StringComparer.Ordinal)
             .ToList();
 
         var usings = fromMappers.SelectMany(m => m.Mapper.Params.Select(p => p.Class).Concat(new[] { m.Classe }))
             .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
             .Where(c => Classes.Contains(c))
-            .Select(_config.GetNamespace)
+            .Select(c => _config.GetNamespace(c))
             .Where(@using => !ns.Contains(@using))
             .Distinct()
             .ToArray();
@@ -85,12 +56,12 @@ public class MapperGenerator : GeneratorBase
 
         w.WriteNamespace(ns);
         w.WriteSummary(1, $"Mappers pour le module '{sampleClass.Namespace.Module}'.");
-        w.WriteLine(1, $"public static class {sampleClass.Namespace.Module}{(sampleClass.IsPersistent ? string.Empty : "DTO")}Mappers");
+        w.WriteLine(1, $"public static class {sampleClass.Namespace.Module}{(isPersistant ? string.Empty : "DTO")}Mappers");
         w.WriteLine(1, "{");
 
         foreach (var fromMapper in fromMappers)
         {
-            var (classe, mapper) = fromMapper;
+            var (classe, mapper, _) = fromMapper;
 
             w.WriteSummary(2, $"Crée une nouvelle instance de '{classe}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
             foreach (var param in mapper.Params)
@@ -277,7 +248,7 @@ public class MapperGenerator : GeneratorBase
 
         foreach (var toMapper in toMappers)
         {
-            var (classe, mapper) = toMapper;
+            var (classe, mapper, _) = toMapper;
 
             w.WriteSummary(2, $"Mappe '{classe}' vers '{mapper.Class}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
             w.WriteParam("source", $"Instance de '{classe}'");

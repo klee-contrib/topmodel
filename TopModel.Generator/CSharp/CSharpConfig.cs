@@ -224,14 +224,19 @@ public class CSharpConfig : GeneratorConfigBase
     /// Récupère le namespace d'une classe.
     /// </summary>
     /// <param name="classe">La classe.</param>
+    /// <param name="isPersistant">Surcharge le caractère persistant</param>
     /// <returns>Namespace.</returns>
-    public string GetNamespace(Class classe)
+    public string GetNamespace(Class classe, bool? isPersistant = null)
     {
-        var baseModelPath = classe.IsPersistent && !NoPersistance
-            ? classe.Reference
-                ? PersistantReferencesModelPath
-                : PersistantModelPath
-            : NonPersistantModelPath;
+        var baseModelPath = isPersistant.HasValue
+                ? isPersistant.Value
+                    ? PersistantModelPath
+                    : NonPersistantModelPath
+                : classe.IsPersistent && !NoPersistance
+                    ? classe.Reference
+                        ? PersistantReferencesModelPath
+                        : PersistantModelPath
+                    : NonPersistantModelPath;
         var ns = baseModelPath.Replace("/", ".")
             .Replace(".Dto", string.Empty);
         return ns[Math.Max(0, ns.IndexOf("{app}"))..]

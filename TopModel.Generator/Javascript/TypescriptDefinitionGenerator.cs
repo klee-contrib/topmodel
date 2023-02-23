@@ -25,7 +25,7 @@ public class TypescriptDefinitionGenerator : GeneratorBase
     public override string Name => "JSDefinitionGen";
 
     public override IEnumerable<string> GeneratedFiles => Files.Values.SelectMany(f => f.Classes.Where(c => !c.IsJSReference()))
-        .SelectMany(c => _config.Tags.Intersect(c.ModelFile.Tags).Select(tag => _config.GetClassFileName(c, tag)))
+        .SelectMany(c => _config.Tags.Intersect(GetClassTags(c)).Select(tag => _config.GetClassFileName(c, tag)))
         .Distinct();
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)

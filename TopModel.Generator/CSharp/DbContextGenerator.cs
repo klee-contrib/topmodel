@@ -40,7 +40,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase
 
         foreach (var ns in classes
             .Concat(GetAssociationProperties(classes).Select(ap => ap.AssociationProperty.Association))
-            .Select(_config.GetNamespace)
+            .Select(c => _config.GetNamespace(c))
             .Distinct())
         {
             usings.Add(ns);
@@ -243,7 +243,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase
                 "Microsoft.EntityFrameworkCore"
             };
 
-        foreach (var ns in classes.Select(_config.GetNamespace).Distinct())
+        foreach (var ns in classes.Select(c => _config.GetNamespace(c)).Distinct())
         {
             cUsings.Add(ns);
         }

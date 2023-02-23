@@ -20,7 +20,7 @@ public abstract class TranslationGeneratorBase : GeneratorBase
         .SelectMany(tag =>
         {
             var properties = Classes
-                .Where(c => c.ModelFile.Tags.Contains(tag))
+                .Where(c => GetClassTags(c).Contains(tag))
                 .SelectMany(c => c.Properties.OfType<IFieldProperty>());
 
             return properties.SelectMany(p => GetResourceFileNames(p, tag))
@@ -45,7 +45,7 @@ public abstract class TranslationGeneratorBase : GeneratorBase
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var resources in Classes
-            .SelectMany(classe => _config.Tags.Intersect(classe.ModelFile.Tags)
+            .SelectMany(classe => _config.Tags.Intersect(GetClassTags(classe))
                 .SelectMany(tag => classe.Properties.OfType<IFieldProperty>()
                     .SelectMany(p => GetResourceFileNames(p, tag)
                     .Select(f => (key: (f.FilePath, f.Lang), p)))))
@@ -55,7 +55,7 @@ public abstract class TranslationGeneratorBase : GeneratorBase
         }
 
         foreach (var resources in Classes
-            .SelectMany(classe => _config.Tags.Intersect(classe.ModelFile.Tags)
+            .SelectMany(classe => _config.Tags.Intersect(GetClassTags(classe))
                 .SelectMany(tag => classe.Properties.OfType<IFieldProperty>()
                     .SelectMany(p => GetCommentResourceFileNames(p, tag)
                     .Select(f => (key: (f.FilePath, f.Lang), p)))))

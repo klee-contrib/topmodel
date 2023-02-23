@@ -193,21 +193,14 @@ public static class JpaUtils
         return $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
     }
 
-    public static string? GetMapperFilePath(this JpaConfig config, Class? sampleClass)
+    public static string GetMapperFilePath(this JpaConfig config, Class classe, bool isPersistant)
     {
-        if (sampleClass == null)
-        {
-            return null;
-        }
-
-        return GetMapperFilePath(config, sampleClass.ModelFile.Module, sampleClass.IsPersistent);
+        return GetMapperFilePath(config, classe.ModelFile.Module, isPersistant);
     }
 
-    public static string? GetMapperFilePath(this JpaConfig config, string module, bool isPersistent)
+    public static string GetMapperFilePath(this JpaConfig config, string module, bool isPersistent)
     {
         var directory = Path.Combine(config.OutputDirectory, config.ModelRootPath, string.Join('/', (isPersistent ? config.EntitiesPackageName : config.DtosPackageName).Split('.')), module.Split('.').First().ToLower());
-        Directory.CreateDirectory(directory);
-
         return Path.Combine(directory, GetMapperClassFileName(config, module, isPersistent)!);
     }
 

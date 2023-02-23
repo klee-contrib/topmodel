@@ -45,4 +45,9 @@ public abstract class GeneratorBase : IModelWatcher
     }
 
     protected abstract void HandleFiles(IEnumerable<ModelFile> files);
+
+    protected IEnumerable<string> GetClassTags(Class classe)
+    {
+        return Files.Values.Where(f => f.Classes.Contains(classe)).SelectMany(f => f.Tags).Distinct();
+    }
 }
