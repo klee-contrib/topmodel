@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## Prochaine version (à livrer)
+
+- [`de3809d3`](https://github.com/klee-contrib/topmodel/commit/de3809d3755a08ba4dfa9ae1818682fdbefa9566) - `modgen --check`
+
 ## 1.24.0
 
 - Classes abstraites et propriétés readonly :
