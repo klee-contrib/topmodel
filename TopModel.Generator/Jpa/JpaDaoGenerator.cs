@@ -29,8 +29,8 @@ public class JpaDaoGenerator : ClassGeneratorBase
     {
         return Path.Combine(
             _config.OutputDirectory,
-            _config.ModelRootPath,
-            Path.Combine(_config.DaosPackageName.Split(".")),
+            _config.ResolveTagVariables(tag, _config.ModelRootPath),
+            Path.Combine(_config.ResolveTagVariables(tag, _config.DaosPackageName).Split(".")),
             classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower(),
             $"{classe.Name}DAO.java");
     }
@@ -43,22 +43,22 @@ public class JpaDaoGenerator : ClassGeneratorBase
             return;
         }
 
-        var packageName = $"{_config.DaosPackageName}.{classe.Namespace.Module.ToLower()}";
+        var packageName = $"{_config.ResolveTagVariables(tag, _config.DaosPackageName)}.{classe.Namespace.Module.ToLower()}";
 
         using var fw = new JavaWriter(fileName, _logger, packageName, null);
         fw.WriteLine();
-        WriteImports(fw, classe);
+        WriteImports(fw, classe, tag);
         fw.WriteLine();
         fw.WriteLine($"public interface {classe.Name}DAO extends {(classe.Reference ? "CrudRepository" : "JpaRepository")}<{classe.Name}, {classe.PrimaryKey.Single().GetJavaType()}> {{");
         fw.WriteLine();
         fw.WriteLine("}");
     }
 
-    private void WriteImports(JavaWriter fw, Class classe)
+    private void WriteImports(JavaWriter fw, Class classe, string tag)
     {
         var imports = new List<string>
         {
-            $"{_config.EntitiesPackageName}.{classe.Namespace.Module.ToLower()}.{classe.Name}"
+            $"{_config.ResolveTagVariables(tag, _config.EntitiesPackageName)}.{classe.Namespace.Module.ToLower()}.{classe.Name}"
         };
 
         if (classe.Reference)

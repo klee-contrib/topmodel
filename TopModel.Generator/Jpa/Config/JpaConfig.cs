@@ -78,6 +78,10 @@ public class JpaConfig : GeneratorConfigBase
 
     public override string[] PropertiesWithTagVariableSupport => new[]
     {
+        nameof(ModelRootPath),
+        nameof(EntitiesPackageName),
+        nameof(DaosPackageName),
+        nameof(DtosPackageName),
         nameof(ResourceRootPath),
         nameof(ApiGeneration),
         nameof(ApiRootPath),

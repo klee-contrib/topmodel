@@ -29,11 +29,11 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"}}");
     }
 
-    public void WriteAllArgConstructor(JavaWriter fw, Class classe, List<Class> availableClasses)
+    public void WriteAllArgConstructor(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
     {
         fw.WriteLine();
         fw.WriteDocStart(1, "All arg constructor");
-        var properties = GetAllArgsProperties(classe, availableClasses);
+        var properties = GetAllArgsProperties(classe, availableClasses, tag);
 
         if (properties.Count == 0)
         {
@@ -51,7 +51,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"public {classe.Name}({propertiesSignature}) {{");
         if (classe.Extends != null)
         {
-            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses).Select(p => $"{p.GetJavaName()}"));
+            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.GetJavaName()}"));
             fw.WriteLine(2, $"super({parentAllArgConstructorArguments});");
         }
         else if (classe.Decorators.Any(d => d.Decorator.Java?.Extends is not null))
@@ -59,7 +59,7 @@ public class JpaModelConstructorGenerator
             fw.WriteLine(2, $"super();");
         }
 
-        foreach (var property in classe.GetProperties(_config, availableClasses))
+        foreach (var property in classe.GetProperties(_config, availableClasses, tag))
         {
             fw.WriteLine(2, $"this.{property.GetJavaName()} = {property.GetJavaName()};");
         }
@@ -67,9 +67,9 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"}}");
     }
 
-    public void WriteAllArgConstructorEnumShortcut(JavaWriter fw, Class classe, List<Class> availableClasses)
+    public void WriteAllArgConstructorEnumShortcut(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
     {
-        var properties = GetAllArgsProperties(classe, availableClasses);
+        var properties = GetAllArgsProperties(classe, availableClasses, tag);
         if (!properties.OfType<AssociationProperty>().Any(p => p.IsEnum() && (p.Type == AssociationType.OneToOne || p.Type == AssociationType.ManyToOne)))
         {
             return;
@@ -94,7 +94,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"public {classe.Name}({propertiesSignature}) {{");
         if (classe.Extends != null)
         {
-            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses).Select(p => $"{p.GetJavaName()}"));
+            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.GetJavaName()}"));
             fw.WriteLine(2, $"super({parentAllArgConstructorArguments});");
         }
         else if (classe.Decorators.Any(d => d.Decorator.Java?.Extends is not null))
@@ -102,7 +102,7 @@ public class JpaModelConstructorGenerator
             fw.WriteLine(2, $"super();");
         }
 
-        foreach (var property in classe.GetProperties(_config, availableClasses))
+        foreach (var property in classe.GetProperties(_config, availableClasses, tag))
         {
             if (!(property is AssociationProperty aspr2 && aspr2.IsEnum()))
             {
@@ -118,17 +118,17 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"}}");
     }
 
-    public void WriteCopyConstructor(JavaWriter fw, Class classe, List<Class> availableClasses)
+    public void WriteCopyConstructor(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
     {
         fw.WriteLine();
         fw.WriteDocStart(1, "Copy constructor");
         fw.WriteLine(1, $" * @param {classe.Name.ToFirstLower()} to copy");
-        var properties = classe.GetProperties(_config, availableClasses);
+        var properties = classe.GetProperties(_config, availableClasses, tag);
         fw.WriteDocEnd(1);
         fw.WriteLine(1, $"public {classe.Name}({classe.Name} {classe.Name.ToFirstLower()}) {{");
         if (classe.Extends != null)
         {
-            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses).Select(p => $"{p.GetJavaName()}"));
+            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.GetJavaName()}"));
             fw.WriteLine(2, $"super({classe.Name.ToFirstLower()});");
         }
         else if (classe.Decorators.Any(d => d.Decorator.Java?.Extends is not null))
@@ -141,7 +141,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(2, "}");
         fw.WriteLine();
 
-        foreach (var property in classe.GetProperties(_config, availableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.IsStatic())))
+        foreach (var property in classe.GetProperties(_config, availableClasses, tag).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.IsStatic())))
         {
             if (!(property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list"))
             {
@@ -150,7 +150,7 @@ public class JpaModelConstructorGenerator
             }
         }
 
-        var propertyListToCopy = classe.GetProperties(_config, availableClasses)
+        var propertyListToCopy = classe.GetProperties(_config, availableClasses, tag)
         .Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.IsStatic()))
         .Where(property => property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list");
 
@@ -172,7 +172,7 @@ public class JpaModelConstructorGenerator
         if (_config.EnumShortcutMode)
         {
             fw.WriteLine();
-            foreach (var ap in classe.GetProperties(_config, availableClasses).OfType<AssociationProperty>().Where(ap => ap.Association.IsStatic()))
+            foreach (var ap in classe.GetProperties(_config, availableClasses, tag).OfType<AssociationProperty>().Where(ap => ap.Association.IsStatic()))
             {
                 var propertyName = ap.Name.ToFirstLower();
                 var getterPrefix = ap.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
@@ -183,7 +183,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"}}");
     }
 
-    public void WriteFromMappers(JavaWriter fw, Class classe, List<Class> availableClasses)
+    public void WriteFromMappers(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
     {
         var fromMappers = classe.FromMappers.Where(c => c.Params.All(p => availableClasses.Contains(p.Class))).Select(m => (classe, m))
         .OrderBy(m => m.classe.Name)
@@ -218,20 +218,20 @@ public class JpaModelConstructorGenerator
             }
 
             fw.WriteLine(2, $"{_config.GetMapperClassName(classe, mapper)}.create{classe}({string.Join(", ", mapper.Params.Select(p => p.Name.ToFirstLower()))}, this);");
-            fw.AddImport(_config.GetMapperImport(classe, mapper)!);
+            fw.AddImport(_config.GetMapperImport(classe, mapper, tag)!);
             fw.WriteLine(1, "}");
         }
     }
 
-    private IList<IProperty> GetAllArgsProperties(Class classe, List<Class> availableClasses)
+    private IList<IProperty> GetAllArgsProperties(Class classe, List<Class> availableClasses, string tag)
     {
         if (classe.Extends is null)
         {
-            return classe.GetProperties(_config, availableClasses);
+            return classe.GetProperties(_config, availableClasses, tag);
         }
         else
         {
-            return GetAllArgsProperties(classe.Extends, availableClasses).Concat(classe.GetProperties(_config, availableClasses)).ToList();
+            return GetAllArgsProperties(classe.Extends, availableClasses, tag).Concat(classe.GetProperties(_config, availableClasses, tag)).ToList();
         }
     }
 }

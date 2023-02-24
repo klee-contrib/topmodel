@@ -30,19 +30,19 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
     {
         return Path.Combine(
             _config.OutputDirectory,
-            _config.ModelRootPath,
-            Path.Combine((classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName).Split(".")),
+            _config.ResolveTagVariables(tag, _config.ModelRootPath),
+            Path.Combine(_config.ResolveTagVariables(tag, classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName).Split(".")),
             classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower(),
             $"{classe.Name.Value.ToPascalCase()}.java");
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
+        var packageRoot = _config.ResolveTagVariables(tag, classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName);
         var packageName = $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
         using var fw = new JavaWriter(fileName, _logger, packageName, null);
 
-        WriteImports(fw, classe);
+        WriteImports(fw, classe, tag);
         fw.WriteLine();
 
         var extendsDecorator = classe.Decorators.SingleOrDefault(d => d.Decorator.Java?.Extends != null);
@@ -53,7 +53,7 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
         fw.WriteLine($"public interface {classe.Name} {{");
 
-        WriteGetters(fw, classe);
+        WriteGetters(fw, classe, tag);
 
         if (classe.Properties.Any(p => !p.Readonly))
         {
@@ -92,20 +92,20 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
         fw.WriteLine(1, $"void hydrate({signature});");
     }
 
-    private void WriteGetters(JavaWriter fw, Class classe)
+    private void WriteGetters(JavaWriter fw, Class classe, string tag)
     {
         foreach (var property in classe.Properties.Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
         {
             var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
             fw.WriteLine();
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
-            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config)}#{property.GetJavaName()} {property.GetJavaName()}}}");
+            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config, tag)}#{property.GetJavaName()} {property.GetJavaName()}}}");
             fw.WriteDocEnd(1);
             fw.WriteLine(1, @$"{property.GetJavaType()} {getterPrefix}{property.GetJavaName().ToFirstUpper()}();");
         }
     }
 
-    private void WriteImports(JavaWriter fw, Class classe)
+    private void WriteImports(JavaWriter fw, Class classe, string tag)
     {
         var imports = new List<string>
             {
@@ -113,11 +113,11 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
             };
         foreach (var property in classe.Properties)
         {
-            imports.AddRange(property.GetTypeImports(_config));
+            imports.AddRange(property.GetTypeImports(_config, tag));
 
             if (property is CompositionProperty cp && cp.Composition.Namespace.Module == cp.Class?.Namespace.Module)
             {
-                imports.Add(cp.Composition.GetImport(_config));
+                imports.Add(cp.Composition.GetImport(_config, tag));
             }
         }
 
@@ -125,7 +125,7 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
         {
             foreach (var property in classe.Extends.Properties)
             {
-                imports.AddRange(property.GetTypeImports(_config));
+                imports.AddRange(property.GetTypeImports(_config, tag));
             }
         }
 

@@ -39,23 +39,23 @@ public class JpaModelGenerator : ClassGeneratorBase
     {
         return Path.Combine(
             _config.OutputDirectory,
-            _config.ModelRootPath,
-            Path.Combine((classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName).Split(".")),
+            _config.ResolveTagVariables(tag, _config.ModelRootPath),
+            Path.Combine(_config.ResolveTagVariables(tag, classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName).Split(".")),
             classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower(),
             $"{classe.Name}.java");
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        CheckClass(classe);
+        CheckClass(classe, tag);
 
-        var packageName = GetPackageName(classe);
+        var packageName = GetPackageName(classe, tag);
         using var fw = new JavaWriter(fileName, _logger, packageName, null);
 
-        WriteImports(fw, classe);
+        WriteImports(fw, classe, tag);
         fw.WriteLine();
 
-        WriteAnnotations(classe.Namespace.Module, fw, classe);
+        WriteAnnotations(fw, classe);
 
         var extendsDecorator = classe.Decorators.SingleOrDefault(d => d.Decorator.Java?.Extends != null);
         var extends = (classe.Extends?.Name ?? extendsDecorator.Decorator?.Java!.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
@@ -74,26 +74,26 @@ public class JpaModelGenerator : ClassGeneratorBase
             fw.WriteLine(1, "private static final long serialVersionUID = 1L;");
         }
 
-        _jpaModelPropertyGenerator.WriteProperties(fw, classe, AvailableClasses);
+        _jpaModelPropertyGenerator.WriteProperties(fw, classe, AvailableClasses, tag);
 
         _jpaModelConstructorGenerator.WriteNoArgConstructor(fw, classe);
-        _jpaModelConstructorGenerator.WriteCopyConstructor(fw, classe, AvailableClasses);
-        _jpaModelConstructorGenerator.WriteAllArgConstructor(fw, classe, AvailableClasses);
+        _jpaModelConstructorGenerator.WriteCopyConstructor(fw, classe, AvailableClasses, tag);
+        _jpaModelConstructorGenerator.WriteAllArgConstructor(fw, classe, AvailableClasses, tag);
         if (_config.EnumShortcutMode)
         {
-            _jpaModelConstructorGenerator.WriteAllArgConstructorEnumShortcut(fw, classe, AvailableClasses);
+            _jpaModelConstructorGenerator.WriteAllArgConstructorEnumShortcut(fw, classe, AvailableClasses, tag);
         }
 
-        _jpaModelConstructorGenerator.WriteFromMappers(fw, classe, AvailableClasses);
+        _jpaModelConstructorGenerator.WriteFromMappers(fw, classe, AvailableClasses, tag);
 
-        WriteGetters(fw, classe);
-        WriteSetters(fw, classe);
+        WriteGetters(fw, classe, tag);
+        WriteSetters(fw, classe, tag);
         if (_config.EnumShortcutMode)
         {
-            WriteEnumShortcuts(fw, classe);
+            WriteEnumShortcuts(fw, classe, tag);
         }
 
-        WriteToMappers(fw, classe);
+        WriteToMappers(fw, classe, tag);
 
         if ((_config.FieldsEnum & Target.Persisted) > 0 && classe.IsPersistent
             || (_config.FieldsEnum & Target.Dto) > 0 && !classe.IsPersistent)
@@ -103,32 +103,32 @@ public class JpaModelGenerator : ClassGeneratorBase
                 fw.AddImport(_config.FieldsEnumInterface.Replace("<>", string.Empty));
             }
 
-            WriteFieldsEnum(fw, classe, AvailableClasses);
+            WriteFieldsEnum(fw, classe, tag);
         }
 
         if (classe.EnumKey != null)
         {
-            WriteReferenceValues(fw, classe);
+            WriteReferenceValues(fw, classe, tag);
         }
 
         fw.WriteLine("}");
     }
 
-    private string GetPackageName(Class classe)
+    private string GetPackageName(Class classe, string tag)
     {
-        var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
+        var packageRoot = _config.ResolveTagVariables(tag, classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName);
         return $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
     }
 
-    private void WriteEnumShortcuts(JavaWriter fw, Class classe)
+    private void WriteEnumShortcuts(JavaWriter fw, Class classe, string tag)
     {
-        foreach (var ap in classe.GetProperties(_config, AvailableClasses).OfType<AssociationProperty>().Where(ap => ap.Association.IsStatic()))
+        foreach (var ap in classe.GetProperties(_config, AvailableClasses, tag).OfType<AssociationProperty>().Where(ap => ap.Association.IsStatic()))
         {
             var isMultiple = ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany;
             {
                 var propertyName = ap.Name.ToFirstLower();
                 fw.WriteLine();
-                fw.WriteDocStart(1, $"Set the value of {{@link {classe.GetImport(_config)}#{propertyName} {propertyName}}}");
+                fw.WriteDocStart(1, $"Set the value of {{@link {classe.GetImport(_config, tag)}#{propertyName} {propertyName}}}");
                 fw.WriteLine(1, " * Cette méthode permet définir la valeur de la FK directement");
                 fw.WriteLine(1, $" * @param {propertyName} value to set");
                 fw.WriteDocEnd(1);
@@ -141,7 +141,7 @@ public class JpaModelGenerator : ClassGeneratorBase
                 else
                 {
                     var constructorArgs = "p";
-                    foreach (var p in ap.Association.GetProperties(_config, AvailableClasses).Where(pr => !pr.PrimaryKey))
+                    foreach (var p in ap.Association.GetProperties(_config, AvailableClasses, tag).Where(pr => !pr.PrimaryKey))
                     {
                         constructorArgs += $", p.get{((p is AssociationProperty asp && asp.IsEnum()) ? p.Name : p.GetJavaName()).ToFirstUpper()}()";
                     }
@@ -166,7 +166,7 @@ public class JpaModelGenerator : ClassGeneratorBase
                 fw.WriteLine();
                 fw.WriteDocStart(1, $"Getter for {ap.Name.ToFirstLower()}");
                 fw.WriteLine(1, " * Cette méthode permet de manipuler directement la foreign key de la liste de référence");
-                fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config)}#{ap.GetJavaName()} {ap.GetJavaName()}}}");
+                fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config, tag)}#{ap.GetJavaName()} {ap.GetJavaName()}}}");
                 fw.WriteDocEnd(1);
                 fw.WriteLine(1, "@Transient");
                 fw.WriteLine(1, @$"public {(isMultiple ? $"List<{ap.Property.GetJavaType()}>" : ap.Property.GetJavaType())} get{(isMultiple ? ap.Name + ap.Property.Name : ap.Name)}() {{");
@@ -185,7 +185,7 @@ public class JpaModelGenerator : ClassGeneratorBase
         }
     }
 
-    private void WriteReferenceValues(JavaWriter fw, Class classe)
+    private void WriteReferenceValues(JavaWriter fw, Class classe, string tag)
     {
         fw.WriteLine();
         var codeProperty = classe.EnumKey!;
@@ -200,10 +200,10 @@ public class JpaModelGenerator : ClassGeneratorBase
                 ++i;
                 var code = refValue.Value[codeProperty];
 
-                if (classe.GetProperties(_config, AvailableClasses).Count > 1)
+                if (classe.GetProperties(_config, AvailableClasses, tag).Count > 1)
                 {
                     var lineToWrite = @$"{code.ToUpper()}(";
-                    lineToWrite += string.Join(", ", classe.GetProperties(_config, AvailableClasses)
+                    lineToWrite += string.Join(", ", classe.GetProperties(_config, AvailableClasses, tag)
                         .Where(p => p != codeProperty)
                         .Select(prop =>
                         {
@@ -213,7 +213,7 @@ public class JpaModelGenerator : ClassGeneratorBase
                             {
                                 value = ap.Association.Name + ".Values." + value;
                                 isString = false;
-                                fw.AddImport(ap.Association.GetImport(_config));
+                                fw.AddImport(ap.Association.GetImport(_config, tag));
                             }
 
                             if (_modelConfig.I18n.TranslateReferences && classe.DefaultProperty == prop)
@@ -234,7 +234,7 @@ public class JpaModelGenerator : ClassGeneratorBase
                 }
             }
 
-            foreach (var prop in classe.GetProperties(_config, AvailableClasses).Where(p => p != codeProperty))
+            foreach (var prop in classe.GetProperties(_config, AvailableClasses, tag).Where(p => p != codeProperty))
             {
                 fw.WriteLine();
                 fw.WriteDocStart(2, ((IFieldProperty)prop).Comment);
@@ -250,12 +250,12 @@ public class JpaModelGenerator : ClassGeneratorBase
                 fw.WriteLine(2, $"private final {type} {name};");
             }
 
-            if (classe.GetProperties(_config, AvailableClasses).Count > 1)
+            if (classe.GetProperties(_config, AvailableClasses, tag).Count > 1)
             {
                 fw.WriteLine();
                 fw.WriteDocStart(2, "All arg constructor");
                 fw.WriteDocEnd(2);
-                var propertiesSignature = string.Join(", ", classe.GetProperties(_config, AvailableClasses).Where(p => p != codeProperty).Select(prop =>
+                var propertiesSignature = string.Join(", ", classe.GetProperties(_config, AvailableClasses, tag).Where(p => p != codeProperty).Select(prop =>
                 {
                     var type = ((IFieldProperty)prop).GetJavaType();
                     var name = prop.GetJavaName().ToFirstLower();
@@ -269,7 +269,7 @@ public class JpaModelGenerator : ClassGeneratorBase
                 }));
 
                 fw.WriteLine(2, $"private Values({propertiesSignature}) {{");
-                foreach (var prop in classe.GetProperties(_config, AvailableClasses).Where(p => p != codeProperty))
+                foreach (var prop in classe.GetProperties(_config, AvailableClasses, tag).Where(p => p != codeProperty))
                 {
                     var type = ((IFieldProperty)prop).GetJavaType();
                     var name = prop.GetJavaName().ToFirstLower();
@@ -287,10 +287,10 @@ public class JpaModelGenerator : ClassGeneratorBase
 
             fw.WriteLine();
             fw.WriteDocStart(2, "Méthode permettant de récupérer l'entité correspondant au code");
-            fw.WriteReturns(2, @$"instance de {{@link {classe.GetImport(_config)}}} correspondant au code courant");
+            fw.WriteReturns(2, @$"instance de {{@link {classe.GetImport(_config, tag)}}} correspondant au code courant");
             fw.WriteDocEnd(2);
             fw.WriteLine(2, $"public {classe.Name} getEntity() {{");
-            var properties = string.Join(", ", classe.GetProperties(_config, AvailableClasses).Where(p => p != codeProperty).Select(prop =>
+            var properties = string.Join(", ", classe.GetProperties(_config, AvailableClasses, tag).Where(p => p != codeProperty).Select(prop =>
             {
                 if (prop is AssociationProperty ap && ap.IsEnum())
                 {
@@ -302,9 +302,9 @@ public class JpaModelGenerator : ClassGeneratorBase
                 }
             }));
 
-            fw.WriteLine(3, $"return new {classe.Name}(this{(classe.GetProperties(_config, AvailableClasses).Count > 1 ? ", " + properties : string.Empty)});");
+            fw.WriteLine(3, $"return new {classe.Name}(this{(classe.GetProperties(_config, AvailableClasses, tag).Count > 1 ? ", " + properties : string.Empty)});");
             fw.WriteLine(2, $"}}");
-            foreach (var prop in classe.GetProperties(_config, AvailableClasses).Where(p => p != codeProperty))
+            foreach (var prop in classe.GetProperties(_config, AvailableClasses, tag).Where(p => p != codeProperty))
             {
                 fw.WriteLine();
                 fw.WriteDocStart(2, ((IFieldProperty)prop).Comment);
@@ -326,7 +326,7 @@ public class JpaModelGenerator : ClassGeneratorBase
         else
         {
             fw.WriteLine();
-            fw.WriteDocStart(1, @$"Classe static encapsulant les différentes valeurs que peut prendre {{@link {classe.GetImport(_config)}#{codeProperty.GetJavaName()} {codeProperty.GetJavaName()}}}");
+            fw.WriteDocStart(1, @$"Classe static encapsulant les différentes valeurs que peut prendre {{@link {classe.GetImport(_config, tag)}#{codeProperty.GetJavaName()} {codeProperty.GetJavaName()}}}");
             fw.WriteDocEnd(1);
             fw.WriteLine(1, @$"public static class Values {{");
             foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
@@ -340,35 +340,35 @@ public class JpaModelGenerator : ClassGeneratorBase
         fw.WriteLine(1, "}");
     }
 
-    private void WriteImports(JavaWriter fw, Class classe)
+    private void WriteImports(JavaWriter fw, Class classe, string tag)
     {
-        var imports = classe.GetImports(Files.SelectMany(f => f.Value.Classes).ToList(), _config);
+        var imports = classe.GetImports(Files.SelectMany(f => f.Value.Classes).ToList(), _config, tag);
         imports.AddRange(classe.Decorators.SelectMany(d => d.Decorator.Java!.Imports.Select(i => i.ParseTemplate(classe, d.Parameters))));
-        foreach (var property in classe.GetProperties(_config, AvailableClasses))
+        foreach (var property in classe.GetProperties(_config, AvailableClasses, tag))
         {
-            imports.AddRange(property.GetTypeImports(_config));
+            imports.AddRange(property.GetTypeImports(_config, tag));
             imports.AddRange(property.GetPersistenceImports(_config));
         }
 
         if (classe.Extends != null)
         {
-            foreach (var property in classe.Extends.GetProperties(_config, AvailableClasses))
+            foreach (var property in classe.Extends.GetProperties(_config, AvailableClasses, tag))
             {
-                imports.AddRange(property.GetTypeImports(_config));
+                imports.AddRange(property.GetTypeImports(_config, tag));
             }
         }
 
-        if (_config.EnumShortcutMode && classe.GetProperties(_config, AvailableClasses).Where(p => p is AssociationProperty apo && apo.IsEnum()).Any())
+        if (_config.EnumShortcutMode && classe.GetProperties(_config, AvailableClasses, tag).Where(p => p is AssociationProperty apo && apo.IsEnum()).Any())
         {
             imports.Add(_config.PersistenceMode.ToString().ToLower() + ".persistence.Transient");
         }
 
-        fw.AddImports(imports.Where(i => string.Join('.', i.Split('.').SkipLast(1).ToList()) != GetPackageName(classe)).Distinct().ToArray());
+        fw.AddImports(imports.Where(i => string.Join('.', i.Split('.').SkipLast(1).ToList()) != GetPackageName(classe, tag)).Distinct().ToArray());
     }
 
-    private void CheckClass(Class classe)
+    private void CheckClass(Class classe, string tag)
     {
-        foreach (var property in classe.GetProperties(_config, AvailableClasses).OfType<CompositionProperty>())
+        foreach (var property in classe.GetProperties(_config, AvailableClasses, tag).OfType<CompositionProperty>())
         {
             if (!classe.IsPersistent && property.Composition.IsPersistent)
             {
@@ -376,7 +376,7 @@ public class JpaModelGenerator : ClassGeneratorBase
             }
         }
 
-        foreach (var property in classe.GetProperties(_config, AvailableClasses).OfType<AssociationProperty>())
+        foreach (var property in classe.GetProperties(_config, AvailableClasses, tag).OfType<AssociationProperty>())
         {
             if (!classe.IsPersistent)
             {
@@ -390,7 +390,7 @@ public class JpaModelGenerator : ClassGeneratorBase
         }
     }
 
-    private void WriteAnnotations(string module, JavaWriter fw, Class classe)
+    private void WriteAnnotations(JavaWriter fw, Class classe)
     {
         fw.WriteDocStart(0, classe.Comment);
         fw.WriteDocEnd(0);
@@ -464,13 +464,13 @@ public class JpaModelGenerator : ClassGeneratorBase
         }
     }
 
-    private void WriteGetters(JavaWriter fw, Class classe)
+    private void WriteGetters(JavaWriter fw, Class classe, string tag)
     {
-        foreach (var property in classe.GetProperties(_config, AvailableClasses))
+        foreach (var property in classe.GetProperties(_config, AvailableClasses, tag))
         {
             fw.WriteLine();
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
-            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config)}#{property.GetJavaName()} {property.GetJavaName()}}}");
+            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config, tag)}#{property.GetJavaName()} {property.GetJavaName()}}}");
             fw.WriteDocEnd(1);
 
             var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
@@ -487,7 +487,7 @@ public class JpaModelGenerator : ClassGeneratorBase
         }
     }
 
-    private void WriteToMappers(JavaWriter fw, Class classe)
+    private void WriteToMappers(JavaWriter fw, Class classe, string tag)
     {
         var toMappers = classe.ToMappers.Where(p => AvailableClasses.Contains(p.Class)).Select(m => (classe, m))
         .OrderBy(m => m.m.Name)
@@ -515,7 +515,7 @@ public class JpaModelGenerator : ClassGeneratorBase
 
             fw.WriteLine(1, $"public {mapper.Class} {mapper.Name.Value.ToCamelCase()}({mapper.Class} target) {{");
             fw.WriteLine(2, $"return {_config.GetMapperClassName(classe, mapper)}.{mapper.Name.Value.ToCamelCase()}(this, target);");
-            fw.AddImport(_config.GetMapperImport(classe, mapper)!);
+            fw.AddImport(_config.GetMapperImport(classe, mapper, tag)!);
             fw.WriteLine(1, "}");
 
             if (toMappers.IndexOf(toMapper) < toMappers.Count - 1)
@@ -525,13 +525,13 @@ public class JpaModelGenerator : ClassGeneratorBase
         }
     }
 
-    private void WriteSetters(JavaWriter fw, Class classe)
+    private void WriteSetters(JavaWriter fw, Class classe, string tag)
     {
-        foreach (var property in classe.GetProperties(_config, AvailableClasses))
+        foreach (var property in classe.GetProperties(_config, AvailableClasses, tag))
         {
             var propertyName = property.GetJavaName();
             fw.WriteLine();
-            fw.WriteDocStart(1, $"Set the value of {{@link {classe.GetImport(_config)}#{propertyName} {propertyName}}}");
+            fw.WriteDocStart(1, $"Set the value of {{@link {classe.GetImport(_config, tag)}#{propertyName} {propertyName}}}");
             fw.WriteLine(1, $" * @param {propertyName} value to set");
             fw.WriteDocEnd(1);
             fw.WriteLine(1, @$"public void set{propertyName.ToFirstUpper()}({property.GetJavaType()} {propertyName}) {{");
@@ -540,10 +540,10 @@ public class JpaModelGenerator : ClassGeneratorBase
         }
     }
 
-    private void WriteFieldsEnum(JavaWriter fw, Class classe, List<Class> allClasses)
+    private void WriteFieldsEnum(JavaWriter fw, Class classe, string tag)
     {
         fw.WriteLine();
-        fw.WriteDocStart(1, $"Enumération des champs de la classe {{@link {classe.GetImport(_config)} {classe.Name}}}");
+        fw.WriteDocStart(1, $"Enumération des champs de la classe {{@link {classe.GetImport(_config, tag)} {classe.Name}}}");
         fw.WriteDocEnd(1);
         string enumDeclaration = @$"public enum Fields ";
         if (_config.FieldsEnumInterface != null)
@@ -554,7 +554,7 @@ public class JpaModelGenerator : ClassGeneratorBase
         enumDeclaration += " {";
         fw.WriteLine(1, enumDeclaration);
 
-        var props = classe.GetProperties(_config, AvailableClasses).Select(prop =>
+        var props = classe.GetProperties(_config, AvailableClasses, tag).Select(prop =>
         {
             string name;
             if (prop is AssociationProperty ap)

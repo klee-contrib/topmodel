@@ -43,7 +43,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase
         var packageName = $"{_config.ResolveTagVariables(tag, _config.ApiPackageName)}.{endpoints.First().Namespace.Module.ToLower()}";
         using var fw = new JavaWriter(filePath, _logger, packageName, null);
 
-        WriteImports(endpoints, fw);
+        WriteImports(endpoints, fw, tag);
         fw.WriteLine();
 
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
@@ -254,10 +254,10 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase
         fw.WriteLine(1, "}");
     }
 
-    private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw)
+    private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
     {
         var imports = new List<string>();
-        imports.AddRange(GetTypeImports(endpoints).Distinct());
+        imports.AddRange(GetTypeImports(endpoints, tag).Distinct());
         imports.Add(_config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
         imports.Add("org.springframework.web.util.UriComponentsBuilder");
         imports.Add("org.springframework.web.client.RestTemplate");
@@ -269,10 +269,10 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase
         fw.AddImports(imports);
     }
 
-    private IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints)
+    private IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
     {
         var properties = endpoints.SelectMany(endpoint => endpoint.Params).Concat(endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
-        return properties.SelectMany(property => property!.GetTypeImports(_config));
+        return properties.SelectMany(property => property!.GetTypeImports(_config, tag));
     }
 
     private void CheckEndpoint(Endpoint endpoint)

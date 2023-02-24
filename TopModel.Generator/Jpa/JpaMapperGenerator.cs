@@ -20,13 +20,13 @@ public class JpaMapperGenerator : MapperGeneratorBase
 
     protected override string GetFileName(Class classe, bool isPersistant, string tag)
     {
-        return _config.GetMapperFilePath(classe, isPersistant);
+        return _config.GetMapperFilePath(classe, isPersistant, tag);
     }
 
     protected override void HandleFile(bool isPersistant, string fileName, string tag, IEnumerable<Class> classes)
     {
         var sampleClass = classes.First();
-        var package = string.Join('.', (isPersistant ? _config.EntitiesPackageName : _config.DtosPackageName).Split('.').Append(sampleClass.Namespace.Module.Split('.').First().ToLower()));
+        var package = string.Join('.', _config.ResolveTagVariables(tag, isPersistant ? _config.EntitiesPackageName : _config.DtosPackageName).Split('.').Append(sampleClass.Namespace.Module.Split('.').First().ToLower()));
         var destFolder = Path.Combine(_config.OutputDirectory, string.Join('/', package.Split('.')));
         using var fw = new JavaWriter(fileName, _logger, package, null);
 
@@ -43,7 +43,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
         var imports = fromMappers.SelectMany(m => m.Mapper.Params.Select(p => p.Class).Concat(new[] { m.Classe }))
             .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
             .Where(c => Classes.Contains(c))
-            .Select(c => c.GetImport(_config))
+            .Select(c => c.GetImport(_config, tag))
             .Distinct()
             .ToArray();
 
@@ -57,18 +57,18 @@ public class JpaMapperGenerator : MapperGeneratorBase
 
         foreach (var fromMapper in fromMappers)
         {
-            WriteFromMapper(fromMapper.Classe, fromMapper.Mapper, fw);
+            WriteFromMapper(fromMapper.Classe, fromMapper.Mapper, fw, tag);
         }
 
         foreach (var toMapper in toMappers)
         {
-            WriteToMapper(toMapper.Classe, toMapper.Mapper, fw);
+            WriteToMapper(toMapper.Classe, toMapper.Mapper, fw, tag);
         }
 
         fw.WriteLine("}");
     }
 
-    private void WriteToMapper(Class classe, ClassMappings mapper, JavaWriter fw)
+    private void WriteToMapper(Class classe, ClassMappings mapper, JavaWriter fw, string tag)
     {
         fw.WriteLine();
         fw.WriteDocStart(1, $"Mappe '{classe}' vers '{mapper.Class}'");
@@ -102,7 +102,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
         fw.WriteLine();
         if (mapper.ParentMapper != null)
         {
-            fw.AddImport(_config.GetMapperImport(classe.Extends!, mapper.ParentMapper)!);
+            fw.AddImport(_config.GetMapperImport(classe.Extends!, mapper.ParentMapper, tag)!);
             fw.WriteLine(2, $"{_config.GetMapperClassName(classe.Extends!, mapper)}.{mapper.ParentMapper.Name.Value.ToCamelCase()}(source, target);");
         }
 
@@ -118,7 +118,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
             var propertyTarget = mapping.Value;
             var propertySource = mapping.Key;
             var getterPrefix = propertyTarget!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
-            var getter = GetSourceGetter(propertySource, propertyTarget!, classe, fw, "source");
+            var getter = GetSourceGetter(propertySource, propertyTarget!, classe, fw, "source", tag);
             if (mapper.Class.Abstract)
             {
                 if (!isFirst)
@@ -169,7 +169,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
         fw.WriteLine(1, "}");
     }
 
-    private (string Getter, bool CheckSourceNull) GetSourceGetter(IProperty propertySource, IProperty propertyTarget, Class classe, JavaWriter fw, string sourceName)
+    private (string Getter, bool CheckSourceNull) GetSourceGetter(IProperty propertySource, IProperty propertyTarget, Class classe, JavaWriter fw, string sourceName, string tag)
     {
         var getterPrefix = propertyTarget!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
         var getter = string.Empty;
@@ -188,7 +188,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
                 {
                     var cpMapper = propertySource.Class.ToMappers.Find(t => t.Class == cp.Composition)!;
                     getter = $"{_config.GetMapperClassName(cpMapper.Class, cpMapper)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterPrefix}{cp.GetJavaName().ToFirstUpper()}(), target.get{apSource.GetJavaName().ToFirstUpper()}())";
-                    fw.AddImport(_config.GetMapperImport(cpMapper.Class, cpMapper)!);
+                    fw.AddImport(_config.GetMapperImport(cpMapper.Class, cpMapper, tag)!);
                 }
                 else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == apSource.Association))
                 {
@@ -204,7 +204,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
                         getter = $"{_config.GetMapperClassName(cp.Composition, cpMapper)}.create{cp.Composition}({getter}, target.get{propertyTarget.GetJavaName().ToFirstUpper()}())";
                     }
 
-                    fw.AddImport(_config.GetMapperImport(cp.Composition, cpMapper!)!);
+                    fw.AddImport(_config.GetMapperImport(cp.Composition, cpMapper!, tag)!);
                 }
                 else
                 {
@@ -222,7 +222,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
                     getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}().stream().filter(Objects::nonNull).map({apSource.Association.Name.Value.ToPascalCase()}::get{apSource.Property.GetJavaName().ToFirstUpper()}).collect(Collectors.toList())";
                     fw.AddImport("java.util.stream.Collectors");
                     fw.AddImport("java.util.Objects");
-                    fw.AddImport(apSource.Association.GetImport(_config));
+                    fw.AddImport(apSource.Association.GetImport(_config, tag));
                 }
             }
         }
@@ -252,7 +252,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
                 {
                     var cpMapper = cp.Composition.ToMappers.Find(t => t.Class == apTarget.Association)!;
                     getter = $"{_config.GetMapperClassName(cpMapper.Class, cpMapper)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterPrefix}{cp.GetJavaName().ToFirstUpper()}(), target.get{apTarget.GetJavaName().ToFirstUpper()}())";
-                    fw.AddImport(_config.GetMapperImport(cpMapper.Class, cpMapper)!);
+                    fw.AddImport(_config.GetMapperImport(cpMapper.Class, cpMapper, tag)!);
                     checkSourceNull = true;
                 }
                 else
@@ -288,7 +288,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
         return (Getter: getter, CheckSourceNull: checkSourceNull);
     }
 
-    private void WriteFromMapper(Class classe, FromMapper mapper, JavaWriter fw)
+    private void WriteFromMapper(Class classe, FromMapper mapper, JavaWriter fw, string tag)
     {
         fw.WriteLine();
         fw.WriteDocStart(1, $"Map les champs des classes passées en paramètre dans l'objet target'");
@@ -345,7 +345,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
                 var propertyTarget = mapping.Key;
                 var propertySource = mapping.Value!;
                 var getterPrefix = propertyTarget!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
-                var getter = GetSourceGetter(propertySource, propertyTarget, classe, fw, param.Name.ToFirstLower());
+                var getter = GetSourceGetter(propertySource, propertyTarget, classe, fw, param.Name.ToFirstLower(), tag);
                 if (classe.Abstract)
                 {
                     if (!isFirst)
