@@ -40,7 +40,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase
 
         foreach (var ns in classes
             .Concat(GetAssociationProperties(classes).Select(ap => ap.AssociationProperty.Association))
-            .Select(c => _config.GetNamespace(c))
+            .Select(c => _config.GetNamespace(c, tag))
             .Distinct())
         {
             usings.Add(ns);
@@ -50,15 +50,15 @@ public class DbContextGenerator : ClassGroupGeneratorBase
 
         if (fileType == "main")
         {
-            HandleMainFile(fileName, dbContextName, contextNs, usings, classList);
+            HandleMainFile(fileName, tag, dbContextName, contextNs, usings, classList);
         }
         else
         {
-            HandleCommentsFile(fileName, dbContextName, contextNs, usings, classList);
+            HandleCommentsFile(fileName, tag, dbContextName, contextNs, usings, classList);
         }
     }
 
-    private void HandleMainFile(string fileName, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
+    private void HandleMainFile(string fileName, string tag, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
     {
         using var w = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
 
@@ -172,7 +172,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase
 
                     string WriteEnumValue(Class targetClass, IFieldProperty targetProp, string value)
                     {
-                        return $"{(targetClass.Name == targetClass.PluralName ? $"{_config.GetNamespace(targetClass)}.{targetClass.Name}" : targetClass.Name)}.{targetProp}s.{value}";
+                        return $"{(targetClass.Name == targetClass.PluralName ? $"{_config.GetNamespace(targetClass, tag)}.{targetClass.Name}" : targetClass.Name)}.{targetProp}s.{value}";
                     }
 
                     foreach (var refProp in refValue.Value.ToList())
@@ -234,16 +234,16 @@ public class DbContextGenerator : ClassGroupGeneratorBase
         w.WriteNamespaceEnd();
     }
 
-    private void HandleCommentsFile(string fileName, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
+    private void HandleCommentsFile(string fileName, string tag, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
     {
         using var cw = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
 
         var cUsings = new List<string>
-            {
-                "Microsoft.EntityFrameworkCore"
-            };
+        {
+            "Microsoft.EntityFrameworkCore"
+        };
 
-        foreach (var ns in classes.Select(c => _config.GetNamespace(c)).Distinct())
+        foreach (var ns in classes.Select(c => _config.GetNamespace(c, tag)).Distinct())
         {
             cUsings.Add(ns);
         }

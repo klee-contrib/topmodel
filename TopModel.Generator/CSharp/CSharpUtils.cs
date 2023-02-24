@@ -113,9 +113,9 @@ public static class CSharpUtils
         return res;
     }
 
-    public static string GetClassFileName(this CSharpConfig config, Class classe)
+    public static string GetClassFileName(this CSharpConfig config, Class classe, string tag)
     {
-        var directory = Path.Combine(config.OutputDirectory, config.GetModelPath(classe), "generated");
+        var directory = Path.Combine(config.OutputDirectory, config.GetModelPath(classe, tag), "generated");
         Directory.CreateDirectory(directory);
 
         return Path.Combine(directory, (classe.Abstract ? "I" : string.Empty) + classe.Name + ".cs");
@@ -137,11 +137,11 @@ public static class CSharpUtils
              .Replace("{app}", appName);
     }
 
-    public static string GetMapperFilePath(this CSharpConfig config, Class classe, bool isPersistant)
+    public static string GetMapperFilePath(this CSharpConfig config, Class classe, bool isPersistant, string tag)
     {
         var directory = Path.Combine(
             config.OutputDirectory,
-            (isPersistant ? config.PersistantModelPath : config.NonPersistantModelPath)
+            config.ResolveTagVariables(tag, isPersistant ? config.PersistantModelPath : config.NonPersistantModelPath)
                 .Replace("{app}", classe.Namespace.App)
                 .Replace("{module}", classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar)),
             "generated");

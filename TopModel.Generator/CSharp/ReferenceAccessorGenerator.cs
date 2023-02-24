@@ -73,7 +73,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
 
         if (firstPersistedClass != null)
         {
-            usings.Add(_config.GetNamespace(firstPersistedClass));
+            usings.Add(_config.GetNamespace(firstPersistedClass, tag));
         }
 
         usings.Add("Kinetix.Services.Annotations");
@@ -179,7 +179,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
 
         if (firstPersistedClass != null)
         {
-            usings.Add(_config.GetNamespace(firstPersistedClass));
+            usings.Add(_config.GetNamespace(firstPersistedClass, tag));
         }
 
         usings.Add("Kinetix.Services.Annotations");

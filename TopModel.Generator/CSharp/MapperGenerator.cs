@@ -20,7 +20,7 @@ public class MapperGenerator : MapperGeneratorBase
 
     protected override string GetFileName(Class classe, bool isPersistant, string tag)
     {
-        return _config.GetMapperFilePath(classe, isPersistant);
+        return _config.GetMapperFilePath(classe, isPersistant, tag);
     }
 
     protected override void HandleFile(bool isPersistant, string fileName, string tag, IEnumerable<Class> classes)
@@ -28,7 +28,7 @@ public class MapperGenerator : MapperGeneratorBase
         var sampleClass = classes.First();
         using var w = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
 
-        var ns = _config.GetNamespace(sampleClass, isPersistant);
+        var ns = _config.GetNamespace(sampleClass, tag, isPersistant);
 
         var fm = FromMappers.Where(fm => fm.IsPersistant == isPersistant && classes.Contains(fm.Classe));
         var tm = ToMappers.Where(fm => fm.IsPersistant == isPersistant && classes.Contains(fm.Classe));
@@ -43,7 +43,7 @@ public class MapperGenerator : MapperGeneratorBase
         var usings = fromMappers.SelectMany(m => m.Mapper.Params.Select(p => p.Class).Concat(new[] { m.Classe }))
             .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
             .Where(c => Classes.Contains(c))
-            .Select(c => _config.GetNamespace(c))
+            .Select(c => _config.GetNamespace(c, tag))
             .Where(@using => !ns.Contains(@using))
             .Distinct()
             .ToArray();

@@ -27,12 +27,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
 
     protected override string GetFileName(ModelFile file, string tag)
     {
-        var className = $"{file.Options.Endpoints.FileName}Client";
-        var apiPath = Path.Combine(
-            _config.ResolveTagVariables(tag, _config.ApiRootPath).Replace("{app}", file.Endpoints.First().Namespace.App),
-            _config.ResolveTagVariables(tag, _config.ApiFilePath).Replace("{module}", file.Module.Replace('.', Path.DirectorySeparatorChar)))
-        .Replace("\\", "/");
-        return $"{_config.OutputDirectory}/{apiPath}/generated/{className}.cs";
+        return $"{_config.GetApiPath(file, tag)}/generated/{file.Options.Endpoints.FileName}Client.cs";
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
@@ -109,16 +104,16 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
             switch (property)
             {
                 case AssociationProperty ap:
-                    usings.Add(_config.GetNamespace(ap.Association));
+                    usings.Add(_config.GetNamespace(ap.Association, tag));
                     break;
                 case AliasProperty { Property: AssociationProperty ap2 }:
-                    usings.Add(_config.GetNamespace(ap2.Association));
+                    usings.Add(_config.GetNamespace(ap2.Association, tag));
                     break;
                 case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp }:
-                    usings.Add(_config.GetNamespace(rp.Class));
+                    usings.Add(_config.GetNamespace(rp.Class, tag));
                     break;
                 case CompositionProperty cp:
-                    usings.Add(_config.GetNamespace(cp.Composition));
+                    usings.Add(_config.GetNamespace(cp.Composition, tag));
 
                     if (cp.DomainKind != null)
                     {
@@ -137,10 +132,8 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
             }
         }
 
-        var className = $"{fileName.Split("/").Last()}Client";
-        var apiPath = string.Join("/", filePath.Replace($"{_config.OutputDirectory}/", string.Empty).Split("/").SkipLast(2));
-
-        var ns = apiPath.Replace("/", ".");
+        var className = $"{fileName}Client";
+        var ns = _config.GetNamespace(endpoints.First(), tag);
 
         fw.WriteUsings(usings.Distinct().Where(u => u != ns).ToArray());
         if (usings.Any())

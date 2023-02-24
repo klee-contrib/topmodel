@@ -10,7 +10,7 @@ using System.Text.Json.Serialization;
 using CSharp.Clients.Db.Models.Securite;
 using Models.CSharp.Utilisateur.Models;
 
-namespace Clients.CSharp.Clients.External.Securite.Utilisateur;
+namespace CSharp.Clients.External.Securite.Utilisateur;
 
 /// <summary>
 /// Client UtilisateurApi.
