@@ -32,7 +32,7 @@ public class JpaResourceGenerator : TranslationGeneratorBase
             var module = p.Parent.Namespace.Module.Split('.').First();
             return Path.Combine(
                 _config.OutputDirectory,
-                _config.ResolveTagVariables(tag, _config.ResourceRootPath).Replace("{lang}", lang).Replace("{module}", module.Replace(".", "/")).ToLower(),
+                _config.ResolveVariables(_config.ResourceRootPath, tag: tag, lang: lang, module: module.Replace(".", "/")).ToLower(),
                 Path.Combine(module.Split(".").Last().ToKebabCase()) + $"_{lang}.properties");
         }
 

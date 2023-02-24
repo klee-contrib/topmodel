@@ -189,7 +189,7 @@ public static class JpaUtils
 
     public static string GetPackageName(this Class classe, JpaConfig config, string tag)
     {
-        var packageRoot = config.ResolveTagVariables(tag, classe.IsPersistent ? config.EntitiesPackageName : config.DtosPackageName);
+        var packageRoot = config.ResolveVariables(classe.IsPersistent ? config.EntitiesPackageName : config.DtosPackageName, tag);
         return $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
     }
 
@@ -202,8 +202,8 @@ public static class JpaUtils
     {
         var directory = Path.Combine(
             config.OutputDirectory,
-            config.ResolveTagVariables(tag, config.ModelRootPath),
-            string.Join('/', config.ResolveTagVariables(tag, isPersistent ? config.EntitiesPackageName : config.DtosPackageName).Split('.')),
+            config.ResolveVariables(config.ModelRootPath, tag),
+            string.Join('/', config.ResolveVariables(isPersistent ? config.EntitiesPackageName : config.DtosPackageName, tag).Split('.')),
             module.Split('.').First().ToLower());
         return Path.Combine(directory, GetMapperClassFileName(config, module, isPersistent)!);
     }
@@ -269,7 +269,7 @@ public static class JpaUtils
 
         var isPersistant = IsPersistantMapper(classe, mapper);
 
-        return $@"{config.ResolveTagVariables(tag, isPersistant ? config.EntitiesPackageName : config.DtosPackageName)}.{classe.ModelFile.Module.Split('.').First().ToLower()}.{GetMapperClassName(config, classe.ModelFile.Module, isPersistant)}";
+        return $@"{config.ResolveVariables(isPersistant ? config.EntitiesPackageName : config.DtosPackageName, tag)}.{classe.ModelFile.Module.Split('.').First().ToLower()}.{GetMapperClassName(config, classe.ModelFile.Module, isPersistant)}";
     }
 
     public static string? GetMapperImport(this JpaConfig config, Class? classe, ClassMappings mapper, string tag)
@@ -281,7 +281,7 @@ public static class JpaUtils
 
         var isPersistant = IsPersistantMapper(classe, mapper);
 
-        return $@"{config.ResolveTagVariables(tag, isPersistant ? config.EntitiesPackageName : config.DtosPackageName)}.{classe.ModelFile.Module.Split('.').First().ToLower()}.{GetMapperClassName(config, classe.ModelFile.Module, isPersistant)}";
+        return $@"{config.ResolveVariables(isPersistant ? config.EntitiesPackageName : config.DtosPackageName, tag)}.{classe.ModelFile.Module.Split('.').First().ToLower()}.{GetMapperClassName(config, classe.ModelFile.Module, isPersistant)}";
     }
 
     private static bool IsPersistantMapper(Class classe, FromMapper mapper)

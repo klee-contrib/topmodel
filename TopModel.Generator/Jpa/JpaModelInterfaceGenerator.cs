@@ -30,15 +30,15 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
     {
         return Path.Combine(
             _config.OutputDirectory,
-            _config.ResolveTagVariables(tag, _config.ModelRootPath),
-            Path.Combine(_config.ResolveTagVariables(tag, classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName).Split(".")),
+            _config.ResolveVariables(_config.ModelRootPath, tag),
+            Path.Combine(_config.ResolveVariables(classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName, tag).Split(".")),
             classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower(),
             $"{classe.Name.Value.ToPascalCase()}.java");
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        var packageRoot = _config.ResolveTagVariables(tag, classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName);
+        var packageRoot = _config.ResolveVariables(classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName, tag);
         var packageName = $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
         using var fw = new JavaWriter(fileName, _logger, packageName, null);
 

@@ -39,8 +39,8 @@ public class JpaModelGenerator : ClassGeneratorBase
     {
         return Path.Combine(
             _config.OutputDirectory,
-            _config.ResolveTagVariables(tag, _config.ModelRootPath),
-            Path.Combine(_config.ResolveTagVariables(tag, classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName).Split(".")),
+            _config.ResolveVariables(_config.ModelRootPath, tag),
+            Path.Combine(_config.ResolveVariables(classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName, tag).Split(".")),
             classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower(),
             $"{classe.Name}.java");
     }
@@ -116,7 +116,7 @@ public class JpaModelGenerator : ClassGeneratorBase
 
     private string GetPackageName(Class classe, string tag)
     {
-        var packageRoot = _config.ResolveTagVariables(tag, classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName);
+        var packageRoot = _config.ResolveVariables(classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName, tag);
         return $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
     }
 

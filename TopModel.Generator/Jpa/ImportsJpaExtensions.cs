@@ -272,7 +272,7 @@ public static class ImportsJpaExtensions
 
     public static string GetImport(this Class classe, JpaConfig config, string tag)
     {
-        var packageRootName = config.ResolveTagVariables(tag, classe.IsPersistent ? config.EntitiesPackageName : config.DtosPackageName);
+        var packageRootName = config.ResolveVariables(classe.IsPersistent ? config.EntitiesPackageName : config.DtosPackageName, tag);
         var packageName = $"{packageRootName}.{classe.Namespace.Module.ToLower()}";
         return $"{packageName}.{classe.Name}";
     }

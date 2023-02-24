@@ -76,6 +76,16 @@ public class JpaConfig : GeneratorConfigBase
         Mode = IdentityMode.IDENTITY
     };
 
+    public override string[] PropertiesWithModuleVariableSupport => new[]
+    {
+        nameof(ResourceRootPath)
+    };
+
+    public override string[] PropertiesWithLangVariableSupport => new[]
+    {
+        nameof(ResourceRootPath)
+    };
+
     public override string[] PropertiesWithTagVariableSupport => new[]
     {
         nameof(ModelRootPath),

@@ -18,4 +18,9 @@ public class TranslationConfig : GeneratorConfigBase
     {
         nameof(RootPath)
     };
+
+    public override string[] PropertiesWithLangVariableSupport => new[]
+    {
+        nameof(RootPath)
+    };
 }

@@ -24,7 +24,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
 
     protected override bool FilterTag(string tag)
     {
-        return _config.ResolveTagVariables(tag, _config.ApiGeneration) == ApiGeneration.Server;
+        return _config.ResolveVariables(_config.ApiGeneration!, tag) == ApiGeneration.Server;
     }
 
     protected override string GetFileName(ModelFile file, string tag)
@@ -40,7 +40,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
         }
 
         var className = GetClassName(fileName);
-        var packageName = $"{_config.ResolveTagVariables(tag, _config.ApiPackageName)}.{endpoints.First().Namespace.Module.ToLower()}";
+        var packageName = $"{_config.ResolveVariables(_config.ApiPackageName, tag)}.{endpoints.First().Namespace.Module.ToLower()}";
         using var fw = new JavaWriter(filePath, _logger, packageName, null);
 
         WriteImports(endpoints, fw, tag);
@@ -72,8 +72,8 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
     {
         return Path.Combine(
             _config.OutputDirectory,
-            Path.Combine(_config.ResolveTagVariables(tag, _config.ApiRootPath!).ToLower().Split(".")),
-            Path.Combine(_config.ResolveTagVariables(tag, _config.ApiPackageName).Split('.')),
+            Path.Combine(_config.ResolveVariables(_config.ApiRootPath!, tag).ToLower().Split(".")),
+            Path.Combine(_config.ResolveVariables(_config.ApiPackageName, tag).Split('.')),
             Path.Combine(module.ToLower().Split(".")));
     }
 

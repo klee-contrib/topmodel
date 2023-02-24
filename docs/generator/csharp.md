@@ -136,6 +136,8 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   C'est ce paramètre qui décide si le DbContext est généré ou non.
 
+  _Templating_: `{app}`
+
   _Variables par tag_: **oui** (plusieurs contextes pourraient être générés si un fichier à plusieurs tags)
 
 - `dbContextName`

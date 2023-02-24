@@ -119,6 +119,31 @@ public class CSharpConfig : GeneratorConfigBase
     /// </summary>
     public bool UseEFComments { get; set; }
 
+    public override string[] PropertiesWithAppVariableSupport => new[]
+    {
+        nameof(PersistantModelPath),
+        nameof(PersistantReferencesModelPath),
+        nameof(NonPersistantModelPath),
+        nameof(ApiRootPath),
+        nameof(DbContextName),
+        nameof(DbContextPath),
+        nameof(ReferenceAccessorsName),
+        nameof(ReferenceAccessorsInterfacePath),
+        nameof(ReferenceAccessorsImplementationPath)
+    };
+
+    public override string[] PropertiesWithModuleVariableSupport => new[]
+    {
+        nameof(PersistantModelPath),
+        nameof(PersistantReferencesModelPath),
+        nameof(NonPersistantModelPath),
+        nameof(ApiFilePath),
+        nameof(DbSchema),
+        nameof(ReferenceAccessorsName),
+        nameof(ReferenceAccessorsInterfacePath),
+        nameof(ReferenceAccessorsImplementationPath)
+    };
+
     public override string[] PropertiesWithTagVariableSupport => new[]
     {
         nameof(PersistantModelPath),
@@ -207,7 +232,7 @@ public class CSharpConfig : GeneratorConfigBase
     /// <returns>Nom.</returns>
     public string GetDbContextName(string appName, string tag)
     {
-        return ResolveTagVariables(tag, DbContextName).Replace("{app}", appName.Replace(".", string.Empty));
+        return ResolveVariables(DbContextName, tag: tag, app: appName.Replace(".", string.Empty));
     }
 
     /// <summary>
@@ -218,23 +243,24 @@ public class CSharpConfig : GeneratorConfigBase
     /// <returns>Chemin.</returns>
     public string GetModelPath(Class classe, string tag)
     {
-        var baseModelPath = classe.IsPersistent && !NoPersistance
-            ? classe.Reference
-                ? PersistantReferencesModelPath
-                : PersistantModelPath
-            : NonPersistantModelPath;
-        return ResolveTagVariables(tag, baseModelPath)
-            .Replace("{app}", classe.Namespace.App)
-            .Replace("{module}", classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar));
+        return ResolveVariables(
+            classe.IsPersistent && !NoPersistance
+                ? classe.Reference
+                    ? PersistantReferencesModelPath
+                    : PersistantModelPath
+                : NonPersistantModelPath,
+            tag: tag,
+            app: classe.Namespace.App,
+            module: classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar));
     }
 
     public string GetApiPath(ModelFile file, string tag, bool withControllers = false)
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveTagVariables(tag, ApiRootPath).Replace("{app}", file.Endpoints.First().Namespace.App),
+            ResolveVariables(ApiRootPath, tag: tag, app: file.Endpoints.First().Namespace.App),
             withControllers ? "Controllers" : string.Empty,
-            ResolveTagVariables(tag, ApiFilePath).Replace("{module}", file.Module.Replace('.', Path.DirectorySeparatorChar)))
+            ResolveVariables(ApiFilePath, tag: tag, module: file.Module.Replace('.', Path.DirectorySeparatorChar)))
        .Replace("\\", "/");
     }
 
@@ -247,21 +273,22 @@ public class CSharpConfig : GeneratorConfigBase
     /// <returns>Namespace.</returns>
     public string GetNamespace(Class classe, string tag, bool? isPersistant = null)
     {
-        var baseModelPath = isPersistant.HasValue
-            ? isPersistant.Value
-                ? PersistantModelPath
-                : NonPersistantModelPath
-            : classe.IsPersistent && !NoPersistance
-                ? classe.Reference
-                    ? PersistantReferencesModelPath
-                    : PersistantModelPath
-                : NonPersistantModelPath;
-        var ns = ResolveTagVariables(tag, baseModelPath)
-            .Replace("/", ".")
-            .Replace(".Dto", string.Empty);
-        return ns[Math.Max(0, ns.IndexOf("{app}"))..]
-            .Replace("{app}", classe.Namespace.App)
-            .Replace("{module}", classe.Namespace.Module);
+        return ResolveVariables(
+            isPersistant.HasValue
+                ? isPersistant.Value
+                    ? PersistantModelPath
+                    : NonPersistantModelPath
+                : classe.IsPersistent && !NoPersistance
+                    ? classe.Reference
+                        ? PersistantReferencesModelPath
+                        : PersistantModelPath
+                    : NonPersistantModelPath,
+            tag: tag,
+            app: classe.Namespace.App,
+            module: classe.Namespace.Module,
+            trimBeforeApp: true)
+        .Replace("/", ".")
+        .Replace(".Dto", string.Empty);
     }
 
     /// <summary>
@@ -272,11 +299,13 @@ public class CSharpConfig : GeneratorConfigBase
     /// <returns>Namespace.</returns>
     public string GetNamespace(Endpoint endpoint, string tag)
     {
-        var ns = Path.Combine(ResolveTagVariables(tag, ApiRootPath), ResolveTagVariables(tag, ApiFilePath))
-            .Replace("\\", "/")
-            .Replace("/", ".");
-        return ns[Math.Max(0, ns.IndexOf("{app}"))..]
-            .Replace("{app}", endpoint.Namespace.App)
-            .Replace("{module}", endpoint.ModelFile.Module);
+        return ResolveVariables(
+             Path.Combine(ApiRootPath, ApiFilePath),
+             tag: tag,
+             app: endpoint.Namespace.App,
+             module: endpoint.ModelFile.Module,
+             trimBeforeApp: true)
+        .Replace("\\", "/")
+        .Replace("/", ".");
     }
 }

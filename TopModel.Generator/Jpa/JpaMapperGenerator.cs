@@ -26,7 +26,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
     protected override void HandleFile(bool isPersistant, string fileName, string tag, IEnumerable<Class> classes)
     {
         var sampleClass = classes.First();
-        var package = string.Join('.', _config.ResolveTagVariables(tag, isPersistant ? _config.EntitiesPackageName : _config.DtosPackageName).Split('.').Append(sampleClass.Namespace.Module.Split('.').First().ToLower()));
+        var package = string.Join('.', _config.ResolveVariables(isPersistant ? _config.EntitiesPackageName : _config.DtosPackageName, tag).Split('.').Append(sampleClass.Namespace.Module.Split('.').First().ToLower()));
         var destFolder = Path.Combine(_config.OutputDirectory, string.Join('/', package.Split('.')));
         using var fw = new JavaWriter(fileName, _logger, package, null);
 

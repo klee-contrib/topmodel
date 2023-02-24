@@ -22,7 +22,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
 
     protected override bool FilterTag(string tag)
     {
-        return _config.ResolveTagVariables(tag, _config.ApiGeneration) == ApiGeneration.Client;
+        return _config.ResolveVariables(_config.ApiGeneration!, tag) == ApiGeneration.Client;
     }
 
     protected override string GetFileName(ModelFile file, string tag)

@@ -32,7 +32,7 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase
         var fetch = _config.FetchPath != "@focus4/core" ? "fetch" : "coreFetch";
         var fetchImport = _config.FetchPath.StartsWith("@")
             ? _config.FetchPath
-            : Path.GetRelativePath(string.Join('/', filePath.Split('/').SkipLast(1)), Path.Combine(_config.OutputDirectory, _config.ResolveTagVariables(tag, _config.FetchPath))).Replace("\\", "/");
+            : Path.GetRelativePath(string.Join('/', filePath.Split('/').SkipLast(1)), Path.Combine(_config.OutputDirectory, _config.ResolveVariables(_config.FetchPath, tag))).Replace("\\", "/");
 
         using var fw = new FileWriter(filePath, _logger, false);
 
