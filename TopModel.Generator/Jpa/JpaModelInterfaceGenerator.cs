@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
@@ -8,7 +7,7 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// Générateur de DAOs JPA.
 /// </summary>
-public class JpaModelInterfaceGenerator : GeneratorBase
+public class JpaModelInterfaceGenerator : ClassGeneratorBase
 {
     private readonly JpaConfig _config;
     private readonly ILogger<JpaModelInterfaceGenerator> _logger;
@@ -22,74 +21,46 @@ public class JpaModelInterfaceGenerator : GeneratorBase
 
     public override string Name => "JpaInterfaceGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files
-        .SelectMany(f => f.Value.Classes)
-        .Where(c => c.Abstract)
-        .Select(c => GetFileClassName(c));
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override bool FilterClass(Class classe)
     {
-        var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
-
-        foreach (var module in modules)
-        {
-            GenerateModule(module);
-        }
+        return classe.Abstract;
     }
 
-    private string GetDestinationFolder(Class classe)
+    protected override string GetFileName(Class classe, string tag)
+    {
+        return Path.Combine(
+            _config.OutputDirectory,
+            _config.ModelRootPath,
+            Path.Combine((classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName).Split(".")),
+            classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower(),
+            $"{classe.Name.Value.ToPascalCase()}.java");
+    }
+
+    protected override void HandleClass(string fileName, Class classe, string tag)
     {
         var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
-        return Path.Combine(
-                _config.OutputDirectory,
-                _config.ModelRootPath,
-                Path.Combine(packageRoot.Split(".")),
-                classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower());
-    }
+        var packageName = $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
+        using var fw = new JavaWriter(fileName, _logger, packageName, null);
 
-    private string GetClassName(Class classe)
-    {
-        return $"{classe.Name.Value.ToPascalCase()}";
-    }
+        WriteImports(fw, classe);
+        fw.WriteLine();
 
-    private string GetFileClassName(Class classe)
-    {
-        return Path.Combine(GetDestinationFolder(classe), $"{GetClassName(classe)}.java");
-    }
+        var extendsDecorator = classe.Decorators.SingleOrDefault(d => d.Decorator.Java?.Extends != null);
+        var extends = (classe.Extends?.Name ?? extendsDecorator.Decorator?.Java!.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
 
-    private void GenerateModule(string module)
-    {
-        var classes = Classes
-            .Where(c => c.Abstract)
-            .Where(c => c.Namespace.Module == module);
-        foreach (var classe in classes)
+        var implements = classe.Decorators.SelectMany(d => d.Decorator.Java!.Implements.Select(i => i.ParseTemplate(classe, d.Parameters))).Distinct().ToList();
+
+        fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        fw.WriteLine($"public interface {classe.Name} {{");
+
+        WriteGetters(fw, classe);
+
+        if (classe.Properties.Any(p => !p.Readonly))
         {
-            var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
-            var destFolder = GetDestinationFolder(classe);
-            var dirInfo = Directory.CreateDirectory(destFolder);
-            var packageName = $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
-            using var fw = new JavaWriter(GetFileClassName(classe), _logger, packageName, null);
-
-            WriteImports(fw, classe);
-            fw.WriteLine();
-
-            var extendsDecorator = classe.Decorators.SingleOrDefault(d => d.Decorator.Java?.Extends != null);
-            var extends = (classe.Extends?.Name ?? extendsDecorator.Decorator?.Java!.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
-
-            var implements = classe.Decorators.SelectMany(d => d.Decorator.Java!.Implements.Select(i => i.ParseTemplate(classe, d.Parameters))).Distinct().ToList();
-
-            fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
-            fw.WriteLine($"public interface {classe.Name} {{");
-
-            WriteGetters(fw, classe);
-
-            if (classe.Properties.Any(p => !p.Readonly))
-            {
-                WriteHydrate(fw, classe);
-            }
-
-            fw.WriteLine("}");
+            WriteHydrate(fw, classe);
         }
+
+        fw.WriteLine("}");
     }
 
     private void WriteHydrate(JavaWriter fw, Class classe)

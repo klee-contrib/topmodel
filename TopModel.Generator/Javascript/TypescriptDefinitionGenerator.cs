@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Javascript;
@@ -10,7 +9,7 @@ using static JavascriptUtils;
 /// <summary>
 /// Générateur de définitions Typescript.
 /// </summary>
-public class TypescriptDefinitionGenerator : GeneratorBase
+public class TypescriptDefinitionGenerator : ClassGeneratorBase
 {
     private readonly JavascriptConfig _config;
     private readonly ILogger<TypescriptDefinitionGenerator> _logger;
@@ -24,63 +23,17 @@ public class TypescriptDefinitionGenerator : GeneratorBase
 
     public override string Name => "JSDefinitionGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files.Values.SelectMany(f => f.Classes.Where(c => !c.IsJSReference()))
-        .SelectMany(c => _config.Tags.Intersect(GetClassTags(c)).Select(tag => _config.GetClassFileName(c, tag)))
-        .Distinct();
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override bool FilterClass(Class classe)
     {
-        foreach (var file in files)
-        {
-            GenerateClasses(file);
-        }
+        return !classe.IsJSReference();
     }
 
-    private void GenerateClasses(ModelFile file)
+    protected override string GetFileName(Class classe, string tag)
     {
-        foreach (var classe in file.Classes.Where(c => !c.IsJSReference()))
-        {
-            foreach (var (tag, fileName) in _config.Tags.Intersect(file.Tags)
-                 .Select(tag => (tag, fileName: _config.GetClassFileName(classe, tag)))
-                 .DistinctBy(t => t.fileName))
-            {
-                GenerateClassFile(fileName, classe, tag);
-            }
-        }
+        return _config.GetClassFileName(classe, tag);
     }
 
-    private IEnumerable<string> GetFocusStoresImports(Class classe)
-    {
-        if (classe.Properties.Any(p => p is IFieldProperty || p is CompositionProperty cp && cp.DomainKind != null))
-        {
-            yield return "FieldEntry2";
-        }
-
-        if (classe.Properties.Any(p => p is CompositionProperty { Kind: "list" } cp && cp.Class == classe))
-        {
-            yield return "ListEntry";
-        }
-
-        if (classe.Properties.Any(p => p is CompositionProperty { Kind: "object" }))
-        {
-            yield return "ObjectEntry";
-        }
-
-        if (classe.Properties.Any(p => p is CompositionProperty { Kind: "list" } cp && cp.Composition == classe))
-        {
-            yield return "RecursiveListEntry";
-        }
-
-        foreach (var p in classe.Properties.OfType<CompositionProperty>().Where(p => p.DomainKind?.TS?.Import == "@focus4/stores"))
-        {
-            yield return p.DomainKind!.TS!.Type.ParseTemplate(p).Replace("[]", string.Empty).Split('<').First();
-        }
-
-        yield return "EntityToType";
-        yield return "StoreNode";
-    }
-
-    private void GenerateClassFile(string fileName, Class classe, string tag)
+    protected override void HandleClass(string fileName, Class classe, string tag)
     {
         using var fw = new FileWriter(fileName, _logger, false);
 
@@ -313,5 +266,36 @@ public class TypescriptDefinitionGenerator : GeneratorBase
             fw.WriteLine();
             WriteReferenceDefinition(fw, classe);
         }
+    }
+
+    private static IEnumerable<string> GetFocusStoresImports(Class classe)
+    {
+        if (classe.Properties.Any(p => p is IFieldProperty || p is CompositionProperty cp && cp.DomainKind != null))
+        {
+            yield return "FieldEntry2";
+        }
+
+        if (classe.Properties.Any(p => p is CompositionProperty { Kind: "list" } cp && cp.Class == classe))
+        {
+            yield return "ListEntry";
+        }
+
+        if (classe.Properties.Any(p => p is CompositionProperty { Kind: "object" }))
+        {
+            yield return "ObjectEntry";
+        }
+
+        if (classe.Properties.Any(p => p is CompositionProperty { Kind: "list" } cp && cp.Composition == classe))
+        {
+            yield return "RecursiveListEntry";
+        }
+
+        foreach (var p in classe.Properties.OfType<CompositionProperty>().Where(p => p.DomainKind?.TS?.Import == "@focus4/stores"))
+        {
+            yield return p.DomainKind!.TS!.Type.ParseTemplate(p).Replace("[]", string.Empty).Split('<').First();
+        }
+
+        yield return "EntityToType";
+        yield return "StoreNode";
     }
 }

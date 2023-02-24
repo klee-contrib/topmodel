@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Utils;
 
 namespace TopModel.Generator.CSharp;
 
 using static CSharpUtils;
 
-public class CSharpClassGenerator : GeneratorBase
+public class CSharpClassGenerator : ClassGeneratorBase
 {
     private readonly CSharpConfig _config;
     private readonly ILogger<CSharpClassGenerator> _logger;
@@ -21,35 +20,24 @@ public class CSharpClassGenerator : GeneratorBase
 
     public override string Name => "CSharpClassGen";
 
-    public override IEnumerable<string> GeneratedFiles => Classes.Select(c => _config.GetClassFileName(c));
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override string GetFileName(Class classe, string tag)
     {
-        foreach (var classe in files.SelectMany(file => file.Classes))
-        {
-            Generate(classe);
-        }
+        return _config.GetClassFileName(classe);
     }
 
-    /// <summary>
-    /// Méthode générant le code d'une classe.
-    /// </summary>
-    /// <param name="item">Classe concernée.</param>
-    protected void Generate(Class item)
+    protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        if (item.Properties.OfType<IFieldProperty>().Any(p => p.Domain.CSharp == null))
+        if (classe.Properties.OfType<IFieldProperty>().Any(p => p.Domain.CSharp == null))
         {
-            throw new ModelException(item, $"Le type C# de tous les domaines des propriétés de {item.Name} doit être défini.");
+            throw new ModelException(classe, $"Le type C# de tous les domaines des propriétés de {classe} doit être défini.");
         }
-
-        var fileName = _config.GetClassFileName(item);
 
         using var w = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
 
-        GenerateUsings(w, item);
-        w.WriteNamespace(_config.GetNamespace(item));
-        w.WriteSummary(1, item.Comment);
-        GenerateClassDeclaration(w, item);
+        GenerateUsings(w, classe);
+        w.WriteNamespace(_config.GetNamespace(classe));
+        w.WriteSummary(1, classe.Comment);
+        GenerateClassDeclaration(w, classe);
         w.WriteNamespaceEnd();
     }
 

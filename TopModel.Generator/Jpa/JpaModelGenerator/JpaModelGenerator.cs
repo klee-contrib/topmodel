@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
@@ -8,7 +7,7 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// Générateur de fichiers de modèles JPA.
 /// </summary>
-public class JpaModelGenerator : GeneratorBase
+public class JpaModelGenerator : ClassGeneratorBase
 {
     private readonly JpaConfig _config;
     private readonly ILogger<JpaModelGenerator> _logger;
@@ -18,7 +17,7 @@ public class JpaModelGenerator : GeneratorBase
     private readonly ModelConfig _modelConfig;
 
     public JpaModelGenerator(ILogger<JpaModelGenerator> logger, JpaConfig config, ModelConfig modelConfig)
-    : base(logger, config)
+        : base(logger, config)
     {
         _config = config;
         _logger = logger;
@@ -29,118 +28,96 @@ public class JpaModelGenerator : GeneratorBase
 
     public override string Name => "JpaModelGen";
 
-    public override IEnumerable<string> GeneratedFiles =>
-        Files.SelectMany(f => f.Value.Classes)
-        .Where(c => !c.Abstract)
-        .Select(c => GetFileClassName(c));
-
     private List<Class> AvailableClasses => Classes.ToList();
 
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override bool FilterClass(Class classe)
     {
-        foreach (var c in Classes)
-        {
-            CheckClass(c);
-        }
-
-        var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
-
-        foreach (var module in modules)
-        {
-            GenerateModule(module);
-        }
+        return !classe.Abstract;
     }
 
-    private string GetDestinationFolder(Class classe)
+    protected override string GetFileName(Class classe, string tag)
     {
-        var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
-        var destFolder = Path.Combine(_config.OutputDirectory, _config.ModelRootPath, Path.Combine(packageRoot.Split(".")), classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower());
-        return $"{destFolder}";
+        return Path.Combine(
+            _config.OutputDirectory,
+            _config.ModelRootPath,
+            Path.Combine((classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName).Split(".")),
+            classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower(),
+            $"{classe.Name}.java");
     }
 
-    private string GetFileClassName(Class classe)
+    protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        return Path.Combine(GetDestinationFolder(classe), $"{classe.Name}.java");
+        CheckClass(classe);
+
+        var packageName = GetPackageName(classe);
+        using var fw = new JavaWriter(fileName, _logger, packageName, null);
+
+        WriteImports(fw, classe);
+        fw.WriteLine();
+
+        WriteAnnotations(classe.Namespace.Module, fw, classe);
+
+        var extendsDecorator = classe.Decorators.SingleOrDefault(d => d.Decorator.Java?.Extends != null);
+        var extends = (classe.Extends?.Name ?? extendsDecorator.Decorator?.Java!.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
+
+        var implements = classe.Decorators.SelectMany(d => d.Decorator.Java!.Implements.Select(i => i.ParseTemplate(classe, d.Parameters))).Distinct().ToList();
+        if (!classe.IsPersistent)
+        {
+            implements.Add("Serializable");
+        }
+
+        fw.WriteClassDeclaration(classe.Name, null, extends, implements);
+
+        if (!classe.IsPersistent)
+        {
+            fw.WriteLine("	/** Serial ID */");
+            fw.WriteLine(1, "private static final long serialVersionUID = 1L;");
+        }
+
+        _jpaModelPropertyGenerator.WriteProperties(fw, classe, AvailableClasses);
+
+        _jpaModelConstructorGenerator.WriteNoArgConstructor(fw, classe);
+        _jpaModelConstructorGenerator.WriteCopyConstructor(fw, classe, AvailableClasses);
+        _jpaModelConstructorGenerator.WriteAllArgConstructor(fw, classe, AvailableClasses);
+        if (_config.EnumShortcutMode)
+        {
+            _jpaModelConstructorGenerator.WriteAllArgConstructorEnumShortcut(fw, classe, AvailableClasses);
+        }
+
+        _jpaModelConstructorGenerator.WriteFromMappers(fw, classe, AvailableClasses);
+
+        WriteGetters(fw, classe);
+        WriteSetters(fw, classe);
+        if (_config.EnumShortcutMode)
+        {
+            WriteEnumShortcuts(fw, classe);
+        }
+
+        WriteToMappers(fw, classe);
+
+        if ((_config.FieldsEnum & Target.Persisted) > 0 && classe.IsPersistent
+            || (_config.FieldsEnum & Target.Dto) > 0 && !classe.IsPersistent)
+        {
+            if (_config.FieldsEnumInterface != null)
+            {
+                fw.AddImport(_config.FieldsEnumInterface.Replace("<>", string.Empty));
+            }
+
+            WriteFieldsEnum(fw, classe, AvailableClasses);
+        }
+
+        if (classe.EnumKey != null)
+        {
+            WriteReferenceValues(fw, classe);
+        }
+
+        fw.WriteLine("}");
     }
 
     private string GetPackageName(Class classe)
     {
         var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
         return $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
-    }
-
-    private void GenerateModule(string module)
-    {
-        var classes = Classes.Where(c => c.Namespace.Module == module);
-
-        foreach (var classe in classes.Where(c => !c.Abstract))
-        {
-            var destFolder = GetDestinationFolder(classe);
-            var dirInfo = Directory.CreateDirectory(destFolder);
-            var packageName = GetPackageName(classe);
-            using var fw = new JavaWriter($"{destFolder}/{classe.Name}.java", _logger, packageName, null);
-
-            WriteImports(fw, classe);
-            fw.WriteLine();
-
-            WriteAnnotations(module, fw, classe);
-
-            var extendsDecorator = classe.Decorators.SingleOrDefault(d => d.Decorator.Java?.Extends != null);
-            var extends = (classe.Extends?.Name ?? extendsDecorator.Decorator?.Java!.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
-
-            var implements = classe.Decorators.SelectMany(d => d.Decorator.Java!.Implements.Select(i => i.ParseTemplate(classe, d.Parameters))).Distinct().ToList();
-            if (!classe.IsPersistent)
-            {
-                implements.Add("Serializable");
-            }
-
-            fw.WriteClassDeclaration(classe.Name, null, extends, implements);
-
-            if (!classe.IsPersistent)
-            {
-                fw.WriteLine("	/** Serial ID */");
-                fw.WriteLine(1, "private static final long serialVersionUID = 1L;");
-            }
-
-            _jpaModelPropertyGenerator.WriteProperties(fw, classe, AvailableClasses);
-
-            _jpaModelConstructorGenerator.WriteNoArgConstructor(fw, classe);
-            _jpaModelConstructorGenerator.WriteCopyConstructor(fw, classe, AvailableClasses);
-            _jpaModelConstructorGenerator.WriteAllArgConstructor(fw, classe, AvailableClasses);
-            if (_config.EnumShortcutMode)
-            {
-                _jpaModelConstructorGenerator.WriteAllArgConstructorEnumShortcut(fw, classe, AvailableClasses);
-            }
-
-            _jpaModelConstructorGenerator.WriteFromMappers(fw, classe, AvailableClasses);
-
-            WriteGetters(fw, classe);
-            WriteSetters(fw, classe);
-            if (_config.EnumShortcutMode)
-            {
-                WriteEnumShortcuts(fw, classe);
-            }
-
-            WriteToMappers(fw, classe);
-
-            if ((_config.FieldsEnum & Target.Persisted) > 0 && classe.IsPersistent
-                || (_config.FieldsEnum & Target.Dto) > 0 && !classe.IsPersistent)
-            {
-                if (_config.FieldsEnumInterface != null)
-                {
-                    fw.AddImport(_config.FieldsEnumInterface.Replace("<>", string.Empty));
-                }
-
-                WriteFieldsEnum(fw, classe, AvailableClasses);
-            }
-
-            if (classe.EnumKey != null)
-            {
-                WriteReferenceValues(fw, classe);
-            }
-
-            fw.WriteLine("}");
-        }
     }
 
     private void WriteEnumShortcuts(JavaWriter fw, Class classe)
