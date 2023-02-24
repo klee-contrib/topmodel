@@ -30,7 +30,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
     {
         if (classe.IsJSReference())
         {
-            yield return ("main", _config.GetReferencesFileName(classe.ModelFile.Module, tag));
+            yield return ("main", _config.GetReferencesFileName(classe.Namespace.Module, tag));
         }
     }
 

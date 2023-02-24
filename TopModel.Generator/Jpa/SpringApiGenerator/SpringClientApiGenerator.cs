@@ -29,7 +29,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase
 
     protected override string GetFileName(ModelFile file, string tag)
     {
-        return Path.Combine(GetDestinationFolder(file.Module, tag), $"{GetClassName(file.Options.Endpoints.FileName)}.java");
+        return Path.Combine(GetDestinationFolder(file.Namespace.Module, tag), $"{GetClassName(file.Options.Endpoints.FileName)}.java");
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)

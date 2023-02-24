@@ -195,7 +195,7 @@ public static class JpaUtils
 
     public static string GetMapperFilePath(this JpaConfig config, Class classe, bool isPersistant, string tag)
     {
-        return GetMapperFilePath(config, classe.ModelFile.Module, isPersistant, tag);
+        return GetMapperFilePath(config, classe.Namespace.Module, isPersistant, tag);
     }
 
     public static string GetMapperFilePath(this JpaConfig config, string module, bool isPersistent, string tag)
@@ -226,7 +226,7 @@ public static class JpaUtils
         }
 
         var isPersistant = classe.IsPersistent || mapper.Params.Any(m => m.Class.IsPersistent);
-        return GetMapperClassName(config, classe.ModelFile.Module, isPersistant);
+        return GetMapperClassName(config, classe.Namespace.Module, isPersistant);
     }
 
     public static string? GetMapperClassName(this JpaConfig config, Class classe, ClassMappings? mapper)
@@ -237,7 +237,7 @@ public static class JpaUtils
         }
 
         var isPersistant = classe.IsPersistent || mapper.Class.IsPersistent;
-        return GetMapperClassName(config, classe.ModelFile.Module, isPersistant);
+        return GetMapperClassName(config, classe.Namespace.Module, isPersistant);
     }
 
     public static string? GetMapperClassFileName(this JpaConfig config, Class? sampleClass)
@@ -247,7 +247,7 @@ public static class JpaUtils
             return null;
         }
 
-        return $@"{GetMapperClassName(config, sampleClass.ModelFile.Module, sampleClass.IsPersistent)}.java";
+        return $@"{GetMapperClassName(config, sampleClass.Namespace.Module, sampleClass.IsPersistent)}.java";
     }
 
     public static string? GetMapperClassFileName(this JpaConfig config, string module, bool isPersistant)
@@ -269,7 +269,7 @@ public static class JpaUtils
 
         var isPersistant = IsPersistantMapper(classe, mapper);
 
-        return $@"{config.ResolveVariables(isPersistant ? config.EntitiesPackageName : config.DtosPackageName, tag)}.{classe.ModelFile.Module.Split('.').First().ToLower()}.{GetMapperClassName(config, classe.ModelFile.Module, isPersistant)}";
+        return $@"{config.ResolveVariables(isPersistant ? config.EntitiesPackageName : config.DtosPackageName, tag)}.{classe.Namespace.Module.Split('.').First().ToLower()}.{GetMapperClassName(config, classe.Namespace.Module, isPersistant)}";
     }
 
     public static string? GetMapperImport(this JpaConfig config, Class? classe, ClassMappings mapper, string tag)
@@ -281,7 +281,7 @@ public static class JpaUtils
 
         var isPersistant = IsPersistantMapper(classe, mapper);
 
-        return $@"{config.ResolveVariables(isPersistant ? config.EntitiesPackageName : config.DtosPackageName, tag)}.{classe.ModelFile.Module.Split('.').First().ToLower()}.{GetMapperClassName(config, classe.ModelFile.Module, isPersistant)}";
+        return $@"{config.ResolveVariables(isPersistant ? config.EntitiesPackageName : config.DtosPackageName, tag)}.{classe.Namespace.Module.Split('.').First().ToLower()}.{GetMapperClassName(config, classe.Namespace.Module, isPersistant)}";
     }
 
     private static bool IsPersistantMapper(Class classe, FromMapper mapper)

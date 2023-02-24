@@ -34,7 +34,7 @@ public abstract class EndpointsGeneratorBase : GeneratorBase
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in files.Where(file => EndpointsFiles.Contains(file)).GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }))
+        foreach (var file in files.Where(file => EndpointsFiles.Contains(file)).GroupBy(file => new { file.Options.Endpoints.FileName, file.Namespace.Module }))
         {
             HandleFileBase(file.First(), file.SelectMany(f => f.Tags.Where(FilterTag)).Distinct());
         }
@@ -46,7 +46,7 @@ public abstract class EndpointsGeneratorBase : GeneratorBase
            .Select(tag => (tag, fileName: GetFileName(file, tag)))
            .DistinctBy(t => t.fileName))
         {
-            var files = Files.Values.Where(f => f.Options.Endpoints.FileName == file.Options.Endpoints.FileName && f.Module == file.Module && f.Tags.Contains(tag));
+            var files = Files.Values.Where(f => f.Options.Endpoints.FileName == file.Options.Endpoints.FileName && f.Namespace.Module == file.Namespace.Module && f.Tags.Contains(tag));
             var endpoints = files
                 .SelectMany(f => f.Endpoints)
                 .Where(endpoint => files.Contains(endpoint.ModelFile) || !Files.ContainsKey(endpoint.ModelFile.Name))

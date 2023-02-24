@@ -4,7 +4,7 @@ namespace TopModel.Core.FileModel;
 
 public class ModelFile
 {
-    public string Module { get; set; }
+    public Namespace Namespace { get; set; }
 
     public List<string> Tags { get; set; } = new();
 

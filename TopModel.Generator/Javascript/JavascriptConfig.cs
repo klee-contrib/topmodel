@@ -103,7 +103,7 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public string GetEndpointsFileName(ModelFile file, string tag)
     {
-        var modulePath = Path.Combine(file.Module.Split('.').Select(m => m.ToKebabCase()).ToArray());
+        var modulePath = Path.Combine(file.Namespace.Module.Split('.').Select(m => m.ToKebabCase()).ToArray());
         var filePath = ResolveVariables(ApiClientFilePath, module: modulePath);
         var fileName = file.Options.Endpoints.FileName.ToKebabCase();
         return Path.Combine(OutputDirectory, ResolveVariables(ApiClientRootPath!, tag), filePath, $"{fileName}.ts").Replace("\\", "/");

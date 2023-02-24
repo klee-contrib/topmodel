@@ -222,7 +222,7 @@ public static class TemplateExtension
             .Replace("comment", transform(c.Comment))
             .Replace("label", transform(c.Label ?? string.Empty))
             .Replace("pluralName", transform(c.PluralName ?? string.Empty))
-            .Replace("module", transform(c.ModelFile.Module ?? string.Empty));
+            .Replace("module", transform(c.Namespace.Module ?? string.Empty));
 
         for (var i = 0; i < parameters.Length; i++)
         {
@@ -240,7 +240,7 @@ public static class TemplateExtension
             .Replace("method", transform(e.Method))
             .Replace("route", transform(e.Route))
             .Replace("description", transform(e.Description))
-            .Replace("module", transform(e.ModelFile.Module ?? string.Empty));
+            .Replace("module", transform(e.Namespace.Module ?? string.Empty));
 
         for (var i = 0; i < parameters.Length; i++)
         {

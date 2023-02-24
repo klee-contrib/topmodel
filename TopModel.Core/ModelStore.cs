@@ -1403,7 +1403,7 @@ public class ModelStore
             yield return new ModelError(decorator, $"Le décorateur '{decorator.Name}' n'est pas utilisé.") { IsError = false, ModelErrorType = ModelErrorType.TMD9005 };
         }
 
-        foreach (var files in Files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }))
+        foreach (var files in Files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Namespace.Module }))
         {
             var endpoints = files.SelectMany(f => f.Endpoints.Where(c => !f.ResolvedAliases.Contains(c)));
 

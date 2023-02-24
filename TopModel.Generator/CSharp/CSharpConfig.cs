@@ -260,7 +260,7 @@ public class CSharpConfig : GeneratorConfigBase
             OutputDirectory,
             ResolveVariables(ApiRootPath, tag: tag, app: file.Endpoints.First().Namespace.App),
             withControllers ? "Controllers" : string.Empty,
-            ResolveVariables(ApiFilePath, tag: tag, module: file.Module.Replace('.', Path.DirectorySeparatorChar)))
+            ResolveVariables(ApiFilePath, tag: tag, module: file.Namespace.Module.Replace('.', Path.DirectorySeparatorChar)))
        .Replace("\\", "/");
     }
 
@@ -303,7 +303,7 @@ public class CSharpConfig : GeneratorConfigBase
              Path.Combine(ApiRootPath, ApiFilePath),
              tag: tag,
              app: endpoint.Namespace.App,
-             module: endpoint.ModelFile.Module,
+             module: endpoint.Namespace.Module,
              trimBeforeApp: true)
         .Replace("\\", "/")
         .Replace("/", ".");
