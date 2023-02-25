@@ -37,19 +37,14 @@ public class JpaModelGenerator : ClassGeneratorBase
 
     protected override string GetFileName(Class classe, string tag)
     {
-        return Path.Combine(
-            _config.OutputDirectory,
-            _config.ResolveVariables(_config.ModelRootPath, tag),
-            Path.Combine(_config.ResolveVariables(classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName, tag).Split(".")),
-            classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower(),
-            $"{classe.Name}.java");
+        return _config.GetClassFileName(classe, tag);
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         CheckClass(classe, tag);
 
-        var packageName = GetPackageName(classe, tag);
+        var packageName = _config.GetPackageName(classe, tag);
         using var fw = new JavaWriter(fileName, _logger, packageName, null);
 
         WriteImports(fw, classe, tag);
@@ -112,12 +107,6 @@ public class JpaModelGenerator : ClassGeneratorBase
         }
 
         fw.WriteLine("}");
-    }
-
-    private string GetPackageName(Class classe, string tag)
-    {
-        var packageRoot = _config.ResolveVariables(classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName, tag);
-        return $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
     }
 
     private void WriteEnumShortcuts(JavaWriter fw, Class classe, string tag)
@@ -363,7 +352,7 @@ public class JpaModelGenerator : ClassGeneratorBase
             imports.Add(_config.PersistenceMode.ToString().ToLower() + ".persistence.Transient");
         }
 
-        fw.AddImports(imports.Where(i => string.Join('.', i.Split('.').SkipLast(1).ToList()) != GetPackageName(classe, tag)).Distinct().ToArray());
+        fw.AddImports(imports.Where(i => string.Join('.', i.Split('.').SkipLast(1).ToList()) != _config.GetPackageName(classe, tag)).Distinct().ToArray());
     }
 
     private void CheckClass(Class classe, string tag)
@@ -514,7 +503,7 @@ public class JpaModelGenerator : ClassGeneratorBase
             }
 
             fw.WriteLine(1, $"public {mapper.Class} {mapper.Name.Value.ToCamelCase()}({mapper.Class} target) {{");
-            fw.WriteLine(2, $"return {_config.GetMapperClassName(classe, mapper)}.{mapper.Name.Value.ToCamelCase()}(this, target);");
+            fw.WriteLine(2, $"return {classe.GetMapperClassName(mapper)}.{mapper.Name.Value.ToCamelCase()}(this, target);");
             fw.AddImport(_config.GetMapperImport(classe, mapper, tag)!);
             fw.WriteLine(1, "}");
 

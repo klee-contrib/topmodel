@@ -5,14 +5,12 @@ namespace TopModel.Generator.CSharp;
 
 public class DbContextGenerator : ClassGroupGeneratorBase
 {
-    private readonly string _appName;
     private readonly CSharpConfig _config;
     private readonly ILogger<DbContextGenerator> _logger;
 
-    public DbContextGenerator(ILogger<DbContextGenerator> logger, CSharpConfig config, string appName)
+    public DbContextGenerator(ILogger<DbContextGenerator> logger, CSharpConfig config)
         : base(logger, config)
     {
-        _appName = appName;
         _config = config;
         _logger = logger;
     }
@@ -23,20 +21,20 @@ public class DbContextGenerator : ClassGroupGeneratorBase
     {
         if (classe.IsPersistent && !classe.Abstract)
         {
-            yield return ("main", _config.GetDbContextFilePath(_appName, tag));
+            yield return ("main", _config.GetDbContextFilePath(classe.Namespace, tag));
 
             if (_config.UseEFComments)
             {
-                yield return ("comments", _config.GetDbContextFilePath(_appName, tag).Replace(".cs", ".comments.cs"));
+                yield return ("comments", _config.GetDbContextFilePath(classe.Namespace, tag).Replace(".cs", ".comments.cs"));
             }
         }
     }
 
     protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
     {
-        var dbContextName = _config.GetDbContextName(_appName, tag);
+        var dbContextName = _config.GetDbContextName(classes.First().Namespace, tag);
         var usings = new List<string> { "Microsoft.EntityFrameworkCore" };
-        var contextNs = _config.GetDbContextNamespace(_appName, tag);
+        var contextNs = _config.GetDbContextNamespace(classes.First().Namespace, tag);
 
         foreach (var ns in classes
             .Concat(GetAssociationProperties(classes).Select(ap => ap.AssociationProperty.Association))

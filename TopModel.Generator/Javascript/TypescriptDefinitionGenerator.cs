@@ -234,7 +234,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
                 fw.Write(cp3.DomainKind.Name);
                 fw.Write(",\r\n        isRequired: true");
                 fw.Write(",\r\n        label: \"");
-                fw.Write(classe.Namespace.Module.ToFirstLower());
+                fw.Write(classe.Namespace.ModuleFirstLower);
                 fw.Write(".");
                 fw.Write(classe.Name.ToFirstLower());
                 fw.Write(".");

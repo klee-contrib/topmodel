@@ -56,7 +56,7 @@ public class MapperGenerator : MapperGeneratorBase
 
         w.WriteNamespace(ns);
         w.WriteSummary(1, $"Mappers pour le module '{sampleClass.Namespace.Module}'.");
-        w.WriteLine(1, $"public static class {sampleClass.Namespace.Module}{(isPersistant ? string.Empty : "DTO")}Mappers");
+        w.WriteLine(1, $"public static class {sampleClass.GetMapperName(isPersistant)}");
         w.WriteLine(1, "{");
 
         foreach (var fromMapper in fromMappers)

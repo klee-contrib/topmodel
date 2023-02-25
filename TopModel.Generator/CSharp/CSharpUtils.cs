@@ -115,24 +115,25 @@ public static class CSharpUtils
 
     public static string GetClassFileName(this CSharpConfig config, Class classe, string tag)
     {
-        var directory = Path.Combine(config.OutputDirectory, config.GetModelPath(classe, tag), "generated");
-        Directory.CreateDirectory(directory);
-
-        return Path.Combine(directory, (classe.Abstract ? "I" : string.Empty) + classe.Name + ".cs");
+        return Path.Combine(
+            config.OutputDirectory,
+            config.GetModelPath(classe, tag),
+            "generated",
+            (classe.Abstract ? "I" : string.Empty) + classe.Name + ".cs");
     }
 
-    public static string GetDbContextFilePath(this CSharpConfig config, string appName, string tag)
+    public static string GetDbContextFilePath(this CSharpConfig config, Namespace ns, string tag)
     {
         return Path.Combine(
             config.OutputDirectory,
-            config.ResolveVariables(config.DbContextPath!, tag: tag, app: appName),
+            config.ResolveVariables(config.DbContextPath!, tag: tag, app: ns.App),
             "generated",
-            $"{config.GetDbContextName(appName, tag)}.cs");
+            $"{config.GetDbContextName(ns, tag)}.cs");
     }
 
-    public static string GetDbContextNamespace(this CSharpConfig config, string appName, string tag)
+    public static string GetDbContextNamespace(this CSharpConfig config, Namespace ns, string tag)
     {
-        return config.ResolveVariables(config.DbContextPath!, tag: tag, app: appName, trimBeforeApp: true)
+        return config.ResolveVariables(config.DbContextPath!, tag: tag, app: ns.App, trimBeforeApp: true)
             .Replace("\\", "/")
             .Replace("/", ".")
             .Trim('.');
@@ -140,15 +141,20 @@ public static class CSharpUtils
 
     public static string GetMapperFilePath(this CSharpConfig config, Class classe, bool isPersistant, string tag)
     {
-        var directory = Path.Combine(
+        return Path.Combine(
             config.OutputDirectory,
             config.ResolveVariables(
                 isPersistant ? config.PersistantModelPath : config.NonPersistantModelPath,
                 tag: tag,
                 app: classe.Namespace.App,
-                module: classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar)),
-            "generated");
-        return Path.Combine(directory, $"{classe.Namespace.Module}{(isPersistant ? string.Empty : "DTO")}Mappers.cs");
+                module: classe.Namespace.ModulePath),
+            "generated",
+            $"{classe.GetMapperName(isPersistant)}.cs");
+    }
+
+    public static string GetMapperName(this Class classe, bool isPersistant)
+    {
+        return $"{classe.Namespace.ModuleFlat}{(isPersistant ? string.Empty : "DTO")}Mappers";
     }
 
     public static string GetReferenceAccessorName(this CSharpConfig config, Namespace ns, string tag)
@@ -157,33 +163,33 @@ public static class CSharpUtils
             config.ReferenceAccessorsName,
             tag: tag,
             app: ns.App,
-            module: ns.Module.Replace(".", string.Empty));
+            module: ns.ModuleFlat);
     }
 
     public static string GetReferenceInterfaceFilePath(this CSharpConfig config, Namespace ns, string tag)
     {
-        var projectDir = Path.Combine(
+        return Path.Combine(
             config.OutputDirectory,
             config.ResolveVariables(
                 config.ReferenceAccessorsInterfacePath,
                 tag: tag,
                 app: ns.App,
-                module: ns.Module.Replace('.', Path.DirectorySeparatorChar)));
-        var className = config.GetReferenceAccessorName(ns, tag);
-        return Path.Combine(projectDir, "generated", $"I{className}.cs");
+                module: ns.ModulePath),
+            "generated",
+            $"I{config.GetReferenceAccessorName(ns, tag)}.cs");
     }
 
     public static string GetReferenceImplementationFilePath(this CSharpConfig config, Namespace ns, string tag)
     {
-        var projectDir = Path.Combine(
+        return Path.Combine(
             config.OutputDirectory,
             config.ResolveVariables(
                 config.ReferenceAccessorsImplementationPath,
                 tag: tag,
                 app: ns.App,
-                module: ns.Module.Replace('.', Path.DirectorySeparatorChar)));
-        var className = config.GetReferenceAccessorName(ns, tag);
-        return Path.Combine(projectDir, "generated", $"{className}.cs");
+                module: ns.ModulePath),
+            "generated",
+            $"{config.GetReferenceAccessorName(ns, tag)}.cs");
     }
 
     public static string GetReferenceInterfaceNamespace(this CSharpConfig config, Namespace ns, string tag)

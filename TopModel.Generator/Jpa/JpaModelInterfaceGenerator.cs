@@ -28,18 +28,12 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
 
     protected override string GetFileName(Class classe, string tag)
     {
-        return Path.Combine(
-            _config.OutputDirectory,
-            _config.ResolveVariables(_config.ModelRootPath, tag),
-            Path.Combine(_config.ResolveVariables(classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName, tag).Split(".")),
-            classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower(),
-            $"{classe.Name.Value.ToPascalCase()}.java");
+        return _config.GetClassFileName(classe, tag);
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        var packageRoot = _config.ResolveVariables(classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName, tag);
-        var packageName = $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
+        var packageName = _config.GetPackageName(classe, tag);
         using var fw = new JavaWriter(fileName, _logger, packageName, null);
 
         WriteImports(fw, classe, tag);

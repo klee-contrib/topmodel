@@ -114,7 +114,7 @@ public static class ImportsJpaExtensions
             case AssociationType.OneToMany:
                 imports.Add($"{persistenceRoot}FetchType");
                 imports.Add($"{persistenceRoot}CascadeType");
-                if (!(ap is JpaAssociationProperty jap && jap.IsReverse) && ap.Association.Namespace.Module.Split('.').First() != ap.Class.Namespace.Module.Split('.').First())
+                if (!(ap is JpaAssociationProperty jap && jap.IsReverse) && ap.Association.Namespace.RootModule != ap.Class.Namespace.RootModule)
                 {
                     imports.Add($"{persistenceRoot}JoinColumn");
                 }
@@ -272,9 +272,7 @@ public static class ImportsJpaExtensions
 
     public static string GetImport(this Class classe, JpaConfig config, string tag)
     {
-        var packageRootName = config.ResolveVariables(classe.IsPersistent ? config.EntitiesPackageName : config.DtosPackageName, tag);
-        var packageName = $"{packageRootName}.{classe.Namespace.Module.ToLower()}";
-        return $"{packageName}.{classe.Name}";
+        return $"{config.GetPackageName(classe, tag)}.{classe.Name}";
     }
 
     public static List<string> GetImports(this Class classe, List<Class> classes, JpaConfig config, string tag)

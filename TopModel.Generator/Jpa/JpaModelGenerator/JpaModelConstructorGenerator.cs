@@ -217,7 +217,7 @@ public class JpaModelConstructorGenerator
                 fw.WriteLine(2, $"super();");
             }
 
-            fw.WriteLine(2, $"{_config.GetMapperClassName(classe, mapper)}.create{classe}({string.Join(", ", mapper.Params.Select(p => p.Name.ToFirstLower()))}, this);");
+            fw.WriteLine(2, $"{classe.GetMapperClassName(mapper)}.create{classe}({string.Join(", ", mapper.Params.Select(p => p.Name.ToFirstLower()))}, this);");
             fw.AddImport(_config.GetMapperImport(classe, mapper, tag)!);
             fw.WriteLine(1, "}");
         }

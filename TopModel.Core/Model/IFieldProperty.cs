@@ -18,7 +18,7 @@ public interface IFieldProperty : IProperty
         ? alp.OriginalProperty!.ResourceProperty
         : this;
 
-    string ResourceKey => $"{string.Join('.', ResourceProperty.Parent.Namespace.Module.Split('.').Select(e => e.ToFirstLower()))}.{ResourceProperty.Parent.Name.ToFirstLower()}.{ResourceProperty.Name.ToFirstLower()}";
+    string ResourceKey => $"{ResourceProperty.Parent.Namespace.ModuleFirstLower}.{ResourceProperty.Parent.Name.ToFirstLower()}.{ResourceProperty.Name.ToFirstLower()}";
 
     IFieldProperty CommentResourceProperty => Decorator != null && Parent != Decorator
         ? Decorator.Properties.OfType<IFieldProperty>().First(p => p.Name == Name).CommentResourceProperty
@@ -26,7 +26,7 @@ public interface IFieldProperty : IProperty
         ? alp.OriginalProperty!.CommentResourceProperty
         : this;
 
-    string CommentResourceKey => $"comments.{string.Join('.', CommentResourceProperty.Parent.Namespace.Module.Split('.').Select(e => e.ToFirstLower()))}.{CommentResourceProperty.Parent.Name.ToFirstLower()}.{CommentResourceProperty.Name.ToFirstLower()}";
+    string CommentResourceKey => $"comments.{CommentResourceProperty.Parent.Namespace.ModuleFirstLower}.{CommentResourceProperty.Parent.Name.ToFirstLower()}.{CommentResourceProperty.Name.ToFirstLower()}";
 
     string SqlName
     {

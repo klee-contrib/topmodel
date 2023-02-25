@@ -1,8 +1,20 @@
-﻿namespace TopModel.Core;
+﻿using TopModel.Utils;
+
+namespace TopModel.Core;
 
 public struct Namespace
 {
     public string App { get; set; }
 
     public string Module { get; set; }
+
+    public string ModuleFlat => Module.Replace(".", string.Empty);
+
+    public string ModuleFirstLower => string.Join('.', Module.Split('.').Select(m => m.ToFirstLower()));
+
+    public string ModulePath => Module.Replace('.', Path.DirectorySeparatorChar);
+
+    public string ModulePathKebab => string.Join(Path.DirectorySeparatorChar, Module.Split('.').Select(m => m.ToKebabCase()));
+
+    public string RootModule => Module.Split('.').First();
 }

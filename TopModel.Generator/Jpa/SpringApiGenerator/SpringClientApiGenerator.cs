@@ -29,7 +29,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase
 
     protected override string GetFileName(ModelFile file, string tag)
     {
-        return Path.Combine(GetDestinationFolder(file.Namespace.Module, tag), $"{GetClassName(file.Options.Endpoints.FileName)}.java");
+        return Path.Combine(_config.GetApiPath(file, tag), $"{GetClassName(file.Options.Endpoints.FileName)}.java");
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
@@ -40,7 +40,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase
         }
 
         var className = GetClassName(fileName);
-        var packageName = $"{_config.ResolveVariables(_config.ApiPackageName, tag)}.{endpoints.First().Namespace.Module.ToLower()}";
+        var packageName = _config.GetPackageName(endpoints.First(), tag);
         using var fw = new JavaWriter(filePath, _logger, packageName, null);
 
         WriteImports(endpoints, fw, tag);
@@ -81,15 +81,6 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase
     private string GetClassName(string fileName)
     {
         return $"Abstract{fileName.ToPascalCase()}Client";
-    }
-
-    private string GetDestinationFolder(string module, string tag)
-    {
-        return Path.Combine(
-            _config.OutputDirectory,
-            Path.Combine(_config.ResolveVariables(_config.ApiRootPath!, tag).ToLower().Split(".")),
-            Path.Combine(_config.ResolveVariables(_config.ApiPackageName, tag).Split('.')),
-            Path.Combine(module.ToLower().Split(".")));
     }
 
     private void WriteEndpoint(JavaWriter fw, Endpoint endpoint)

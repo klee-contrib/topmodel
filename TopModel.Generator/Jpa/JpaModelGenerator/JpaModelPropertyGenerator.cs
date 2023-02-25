@@ -141,9 +141,9 @@ public class JpaModelPropertyGenerator
         }
         else
         {
-            var hasRerverse = property.Class.Namespace.Module.Split('.').First() == property.Association.Namespace.Module.Split('.').First();
-            fw.WriteLine(1, @$"@{property.Type}(cascade = CascadeType.ALL, fetch = FetchType.LAZY{(hasRerverse ? @$", mappedBy = ""{property.Class.Name.ToFirstLower()}{property.Role ?? string.Empty}""" : string.Empty)})");
-            if (!hasRerverse)
+            var hasReverse = property.Class.Namespace.RootModule == property.Association.Namespace.RootModule;
+            fw.WriteLine(1, @$"@{property.Type}(cascade = CascadeType.ALL, fetch = FetchType.LAZY{(hasReverse ? @$", mappedBy = ""{property.Class.Name.ToFirstLower()}{property.Role ?? string.Empty}""" : string.Empty)})");
+            if (!hasReverse)
             {
                 fw.WriteLine(1, @$"@JoinColumn(name = ""{pk}"", referencedColumnName = ""{pk}"")");
             }

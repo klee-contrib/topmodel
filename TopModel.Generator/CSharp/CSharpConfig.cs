@@ -227,12 +227,12 @@ public class CSharpConfig : GeneratorConfigBase
     /// <summary>
     /// Récupère le nom du DbContext.
     /// </summary>
-    /// <param name="appName">Nom de l'application.</param>
+    /// <param name="ns">Nom de l'application.</param>
     /// <param name="tag">tag</param>
     /// <returns>Nom.</returns>
-    public string GetDbContextName(string appName, string tag)
+    public string GetDbContextName(Namespace ns, string tag)
     {
-        return ResolveVariables(DbContextName, tag: tag, app: appName.Replace(".", string.Empty));
+        return ResolveVariables(DbContextName, tag: tag, app: ns.App.Replace(".", string.Empty));
     }
 
     /// <summary>
@@ -251,16 +251,16 @@ public class CSharpConfig : GeneratorConfigBase
                 : NonPersistantModelPath,
             tag: tag,
             app: classe.Namespace.App,
-            module: classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar));
+            module: classe.Namespace.ModulePath);
     }
 
     public string GetApiPath(ModelFile file, string tag, bool withControllers = false)
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(ApiRootPath, tag: tag, app: file.Endpoints.First().Namespace.App),
+            ResolveVariables(ApiRootPath, tag: tag, app: file.Namespace.App),
             withControllers ? "Controllers" : string.Empty,
-            ResolveVariables(ApiFilePath, tag: tag, module: file.Namespace.Module.Replace('.', Path.DirectorySeparatorChar)))
+            ResolveVariables(ApiFilePath, tag: tag, module: file.Namespace.ModulePath))
        .Replace("\\", "/");
     }
 
