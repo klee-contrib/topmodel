@@ -50,7 +50,7 @@ public partial class ProfilDto
     /// </summary>
     [Column("pro_id")]
     [Required]
-    [Domain(Domains.Id)]
+    [Domain(Domains.ID)]
     public int? Id { get; set; }
 
     /// <summary>
@@ -58,7 +58,7 @@ public partial class ProfilDto
     /// </summary>
     [Column("tpr_code")]
     [ReferencedType(typeof(TypeProfil))]
-    [Domain(Domains.Code)]
+    [Domain(Domains.CODE)]
     public TypeProfil.Codes? TypeProfilCode { get; set; }
 
     /// <summary>
@@ -66,14 +66,14 @@ public partial class ProfilDto
     /// </summary>
     [Column("dro_code")]
     [ReferencedType(typeof(Droit))]
-    [Domain(Domains.CodeList)]
+    [Domain(Domains.CODELIST)]
     public Droit.Codes[] Droits { get; set; }
 
     /// <summary>
     /// Liste des secteurs de l'utilisateur.
     /// </summary>
     [Column("sec_id")]
-    [Domain(Domains.IdList)]
+    [Domain(Domains.IDLIST)]
     public int[] Secteurs { get; set; }
 
     /// <summary>

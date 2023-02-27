@@ -43,7 +43,7 @@ public partial class Secteur
     /// Id technique.
     /// </summary>
     [Column("sec_id")]
-    [Domain(Domains.Id)]
+    [Domain(Domains.ID)]
     [Key]
     public int? Id { get; set; }
 

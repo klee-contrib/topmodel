@@ -52,7 +52,7 @@ public partial class Utilisateur
     /// Id technique.
     /// </summary>
     [Column("uti_id")]
-    [Domain(Domains.Id)]
+    [Domain(Domains.ID)]
     [Key]
     public int? Id { get; set; }
 
@@ -60,21 +60,21 @@ public partial class Utilisateur
     /// Age en années de l'utilisateur.
     /// </summary>
     [Column("uti_age")]
-    [Domain(Domains.Number)]
+    [Domain(Domains.NUMBER)]
     public decimal? Age { get; set; } = 6l;
 
     /// <summary>
     /// Profil de l'utilisateur.
     /// </summary>
     [Column("pro_id")]
-    [Domain(Domains.Id)]
+    [Domain(Domains.ID)]
     public int? ProfilId { get; set; }
 
     /// <summary>
     /// Email de l'utilisateur.
     /// </summary>
     [Column("uti_email")]
-    [Domain(Domains.Email)]
+    [Domain(Domains.EMAIL)]
     [StringLength(50)]
     public string email { get; set; }
 
@@ -82,7 +82,7 @@ public partial class Utilisateur
     /// Nom de l'utilisateur.
     /// </summary>
     [Column("uti_nom")]
-    [Domain(Domains.Libelle)]
+    [Domain(Domains.LIBELLE)]
     [StringLength(3)]
     public string Nom { get; set; } = "Jabx";
 
@@ -91,28 +91,28 @@ public partial class Utilisateur
     /// </summary>
     [Column("tut_code")]
     [ReferencedType(typeof(TypeUtilisateur))]
-    [Domain(Domains.Code)]
+    [Domain(Domains.CODE)]
     public TypeUtilisateur.Codes? TypeUtilisateurCode { get; set; } = TypeUtilisateur.Codes.ADM;
 
     /// <summary>
     /// Utilisateur parent.
     /// </summary>
     [Column("uti_id_parent")]
-    [Domain(Domains.Id)]
+    [Domain(Domains.ID)]
     public int? UtilisateurIdParent { get; set; }
 
     /// <summary>
     /// Date de création de l'utilisateur.
     /// </summary>
     [Column("uti_date_creation")]
-    [Domain(Domains.DateCreation)]
+    [Domain(Domains.DATECREATION)]
     public DateOnly? dateCreation { get; set; }
 
     /// <summary>
     /// Date de modification de l'utilisateur.
     /// </summary>
     [Column("uti_date_modification")]
-    [Domain(Domains.DateModification)]
+    [Domain(Domains.DATEMODIFICATION)]
     public DateOnly? dateModification { get; set; }
 
     /// <summary>

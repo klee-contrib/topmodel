@@ -63,7 +63,7 @@ public partial class TypeProfil
     /// Code du type d'utilisateur.
     /// </summary>
     [Column("tpr_code")]
-    [Domain(Domains.Code)]
+    [Domain(Domains.CODE)]
     [Key]
     public Codes? Code { get; set; }
 
@@ -72,7 +72,7 @@ public partial class TypeProfil
     /// </summary>
     [Column("tpr_libelle")]
     [Required]
-    [Domain(Domains.Libelle)]
+    [Domain(Domains.LIBELLE)]
     [StringLength(3)]
     public string Libelle { get; set; }
 

@@ -47,7 +47,7 @@ public partial class Profil
     /// Id technique.
     /// </summary>
     [Column("pro_id")]
-    [Domain(Domains.Id)]
+    [Domain(Domains.ID)]
     [Key]
     public int? Id { get; set; }
 
@@ -56,7 +56,7 @@ public partial class Profil
     /// </summary>
     [Column("tpr_code")]
     [ReferencedType(typeof(TypeProfil))]
-    [Domain(Domains.Code)]
+    [Domain(Domains.CODE)]
     public TypeProfil.Codes? TypeProfilCode { get; set; }
 
     /// <summary>
@@ -64,7 +64,7 @@ public partial class Profil
     /// </summary>
     [Column("dro_code")]
     [ReferencedType(typeof(Droit))]
-    [Domain(Domains.CodeList)]
+    [Domain(Domains.CODELIST)]
     [NotMapped]
     public Droit.Codes[] Droits { get; set; }
 
@@ -72,7 +72,7 @@ public partial class Profil
     /// Liste des secteurs de l'utilisateur.
     /// </summary>
     [Column("sec_id")]
-    [Domain(Domains.IdList)]
+    [Domain(Domains.IDLIST)]
     [NotMapped]
     public int[] Secteurs { get; set; }
 
