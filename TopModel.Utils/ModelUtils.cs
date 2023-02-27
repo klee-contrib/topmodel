@@ -121,14 +121,10 @@ public static class ModelUtils
     /// <returns>Le texte en sortie.</returns>
     public static string ToConstantCase(this string text)
     {
-        if (text.Contains('_'))
-        {
-            return text.ToUpperInvariant();
-        }
-
         var sb = new StringBuilder();
         var c = text.ToCharArray();
         var lastIsUp = true;
+        var lastIsUnderscore = false;
 
         for (var i = 0; i < c.Length; ++i)
         {
@@ -136,15 +132,16 @@ public static class ModelUtils
             var isLastChar = i == c.Length - 1;
             var nextIsLow = !isLastChar && char.ToUpper(c[i + 1]) != c[i + 1];
 
-            if (upperChar == c[i])
+            if (upperChar == c[i] && upperChar != '_')
             {
-                if (sb.Length != 0 && (!lastIsUp || nextIsLow))
+                if (sb.Length != 0 && !lastIsUnderscore && (!lastIsUp || nextIsLow))
                 {
                     sb.Append('_');
                 }
             }
 
             lastIsUp = upperChar == c[i];
+            lastIsUnderscore = c[i] == '_';
 
             sb.Append(upperChar);
         }
