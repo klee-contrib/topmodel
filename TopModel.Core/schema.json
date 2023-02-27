@@ -637,6 +637,10 @@
               "type": "string",
               "description": "Description du décorateur."
             },
+            "preservePropertyCasing": {
+              "type": "boolean",
+              "description": "Garde les noms de propriétés tels quels lors de la génération, au lieu de les convertir dans le format du langage cible."
+            },
             "csharp": {
               "type": "object",
               "description": "Implémentation du décorateur en C#.",
@@ -769,6 +773,10 @@
             "flagProperty": {
               "type": "string",
               "description": "Propriété de la classe qui sera utilisée comme flag binaire, en plus du code dans une liste de référence statique. Renseigné par défaut par la propriété 'Flag', si elle existe sur la classe."
+            },
+            "preservePropertyCasing": {
+              "type": "boolean",
+              "description": "Garde les noms de propriétés tels quels lors de la génération, au lieu de les convertir dans le format du langage cible."
             },
             "abstract": {
               "type": "boolean",
@@ -985,6 +993,10 @@
             "description": {
               "type": "string",
               "description": "Description du endpoint."
+            },
+            "preservePropertyCasing": {
+              "type": "boolean",
+              "description": "Garde les noms de propriétés tels quels lors de la génération, au lieu de les convertir dans le format du langage cible."
             },
             "returns": {
               "$ref": "#/definitions/property"

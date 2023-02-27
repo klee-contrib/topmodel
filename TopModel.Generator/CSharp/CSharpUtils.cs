@@ -1,4 +1,5 @@
 ﻿using TopModel.Core;
+using TopModel.Utils;
 
 namespace TopModel.Generator.CSharp;
 
@@ -230,10 +231,10 @@ public static class CSharpUtils
                 string _ when cp.DomainKind!.CSharp!.Type.Contains("{composition.name}") => cp.DomainKind.CSharp.Type.ParseTemplate(cp),
                 string _ => $"{cp.DomainKind.CSharp.Type}<{{composition.name}}>".ParseTemplate(cp)
             },
-            AssociationProperty { Association: Class assoc } ap when config.CanClassUseEnums(assoc, ap.Property) => $"{assoc}.{ap.Property}s{(ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : "?")}",
-            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when config.CanClassUseEnums(assoc) => $"{assoc}.{ap.Property}s{(asList || ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : "?")}",
-            RegularProperty { Class: Class classe } rp when config.CanClassUseEnums(classe, rp) => $"{rp}s?",
-            AliasProperty { Property: RegularProperty { Class: Class alClass } rp, AsList: var asList } when config.CanClassUseEnums(alClass, rp) => $"{alClass}.{rp}s{(asList ? "[]" : "?")}",
+            AssociationProperty { Association: Class assoc } ap when config.CanClassUseEnums(assoc, ap.Property) => $"{assoc.NamePascal}.{ap.Property.Name.ToPascalCase()}s{(ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : "?")}",
+            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when config.CanClassUseEnums(assoc) => $"{assoc.NamePascal}.{ap.Property.Name.ToPascalCase()}s{(asList || ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : "?")}",
+            RegularProperty { Class: Class classe } rp when config.CanClassUseEnums(classe, rp) => $"{rp.Name.ToPascalCase()}s?",
+            AliasProperty { Property: RegularProperty { Class: Class alClass } rp, AsList: var asList } when config.CanClassUseEnums(alClass, rp) => $"{alClass.NamePascal}.{rp.Name.ToPascalCase()}s{(asList ? "[]" : "?")}",
             IFieldProperty fp => fp.Domain.CSharp?.Type.ParseTemplate(fp) ?? string.Empty,
             _ => string.Empty
         };

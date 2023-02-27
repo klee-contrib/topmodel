@@ -111,7 +111,7 @@ public class JpaModelConstructorGenerator
             else
             {
                 var isMultiple = aspr2.Type == AssociationType.OneToMany || aspr2.Type == AssociationType.ManyToMany;
-                fw.WriteLine(2, $"this.set{aspr2.NamePascal}{(isMultiple ? aspr2.Association.PrimaryKey.Single().NamePascal : string.Empty)}({property.NameCamel});");
+                fw.WriteLine(2, $"this.set{aspr2.NameCamel.ToFirstUpper()}{(isMultiple ? aspr2.Association.PrimaryKey.Single().NameCamel.ToFirstUpper() : string.Empty)}({property.NameCamel});");
             }
         }
 
@@ -176,7 +176,7 @@ public class JpaModelConstructorGenerator
             {
                 var propertyName = ap.NameCamel;
                 var getterPrefix = ap.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
-                fw.WriteLine(2, $"this.set{ap.NamePascal}({classe.NameCamel}.{getterPrefix}{ap.NamePascal}());");
+                fw.WriteLine(2, $"this.set{ap.NameCamel.ToFirstUpper()}({classe.NameCamel}.{getterPrefix}{ap.NameCamel.ToFirstUpper()}());");
             }
         }
 

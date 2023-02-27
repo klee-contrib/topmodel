@@ -1,4 +1,6 @@
-﻿namespace TopModel.Core;
+﻿using TopModel.Utils;
+
+namespace TopModel.Core;
 
 public static class EndpointExtensions
 {
@@ -20,18 +22,16 @@ public static class EndpointExtensions
         return endpoint.Params.Where(param => endpoint.Route.Contains($"{{{param.GetParamName()}}}"));
     }
 
-    public static string GetParamName(this IProperty property, bool inQuery = false)
+    public static string GetParamName(this IProperty property)
     {
         if (property is AliasProperty { Property: null })
         {
             return string.Empty;
         }
 
-        var preserveCase = property.Name.StartsWith("_") && inQuery;
-
         return property is not AliasProperty alp || !alp.Property.PrimaryKey
-            ? (preserveCase ? property.Name : property.NameCamel).TrimStart('_')
-            : $"{alp.Property.Class.Trigram?.ToLower() ?? alp.Property.Class.NameCamel}{property.NamePascal}";
+            ? property.NameCamel
+            : $"{alp.Property.Class.Trigram?.ToLower() ?? alp.Property.Class.NameCamel}{property.NameCamel.ToFirstUpper()}";
     }
 
     public static bool IsBodyParam(this IProperty property)

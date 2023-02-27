@@ -147,6 +147,7 @@ static class OpenApiTmdGenerator
                 fw.WriteLine("---");
                 fw.WriteLine("class:");
                 fw.WriteLine($"  name: {schema.Key}");
+                fw.WriteLine($"  preservePropertyCasing: true");
                 if (schema.Value.Description != null)
                 {
                     fw.WriteLine($"  comment: {FormatDescription(schema.Value.Description ?? schema.Key)}");
@@ -185,6 +186,7 @@ static class OpenApiTmdGenerator
                     fw.WriteLine("---");
                     fw.WriteLine("class:");
                     fw.WriteLine($"  name: {schema.Key.ToPascalCase()}{property.Key.ToPascalCase()}");
+                    fw.WriteLine($"  preservePropertyCasing: true");
                     fw.WriteLine($"  comment: enum pour les valeurs de {property.Key.ToPascalCase()}");
 
                     fw.WriteLine();
@@ -241,6 +243,8 @@ static class OpenApiTmdGenerator
                     {
                         sw.WriteLine($"  description: no description provided");
                     }
+
+                    sw.WriteLine($"  preservePropertyCasing: true");
 
                     if (operation.Value.Parameters.Any() || operation.Value.RequestBody != null)
                     {

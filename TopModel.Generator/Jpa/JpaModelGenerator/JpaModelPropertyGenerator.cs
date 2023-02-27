@@ -155,7 +155,7 @@ public class JpaModelPropertyGenerator
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         if (property is AliasProperty alp)
         {
-            fw.WriteLine(1, $" * Alias of {{@link {alp.Property.Class.GetImport(_config, tag)}#get{alp.Property.NamePascal}() {alp.Property.Class.NamePascal}#get{alp.Property.NamePascal}()}} ");
+            fw.WriteLine(1, $" * Alias of {{@link {alp.Property.Class.GetImport(_config, tag)}#get{alp.Property.NameCamel.ToFirstUpper()}() {alp.Property.Class.NamePascal}#get{alp.Property.NameCamel.ToFirstUpper()}()}} ");
         }
 
         fw.WriteDocEnd(1);

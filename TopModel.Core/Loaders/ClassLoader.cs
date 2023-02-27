@@ -66,6 +66,9 @@ public class ClassLoader : ILoader<Class>
                 case "comment":
                     classe.Comment = value!.Value;
                     break;
+                case "preservePropertyCasing":
+                    classe.PreservePropertyCasing = value!.Value == "true";
+                    break;
                 case "decorators":
                     parser.ConsumeSequence(() =>
                     {

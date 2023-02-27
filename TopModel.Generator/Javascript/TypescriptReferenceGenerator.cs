@@ -90,7 +90,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
             {
                 fw.Write("export type ");
                 fw.Write(reference.NamePascal);
-                fw.Write($"{reference.EnumKey.NamePascal} = ");
+                fw.Write($"{reference.EnumKey.Name.ToPascalCase()} = ");
                 fw.Write(string.Join(" | ", reference.Values.Select(r => $@"""{r.Value[reference.EnumKey]}""").OrderBy(x => x, StringComparer.Ordinal)));
                 fw.WriteLine(";");
 

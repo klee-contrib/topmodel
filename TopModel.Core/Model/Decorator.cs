@@ -29,6 +29,8 @@ public class Decorator : IPropertyContainer
 
     public IList<IProperty> Properties { get; } = new List<IProperty>();
 
+    public bool PreservePropertyCasing { get; set; }
+
     internal Reference Location { get; set; }
 
     public override string ToString()

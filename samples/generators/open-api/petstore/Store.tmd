@@ -15,6 +15,7 @@ endpoint:
   method: DELETE
   route: store/order/{orderId}
   description: "Delete purchase order by ID"
+  preservePropertyCasing: true
   params:
     - name: orderId
       domain: DO_ID
@@ -25,6 +26,7 @@ endpoint:
   method: GET
   route: store/inventory
   description: "Returns pet inventories by status"
+  preservePropertyCasing: true
   returns:
     name: Result
     domain: DO_ENTIER_MAP
@@ -36,6 +38,7 @@ endpoint:
   method: GET
   route: store/order/{orderId}
   description: "Find purchase order by ID"
+  preservePropertyCasing: true
   params:
     - name: orderId
       domain: DO_ID
@@ -51,6 +54,7 @@ endpoint:
   method: POST
   route: store/order
   description: "Place an order for a pet"
+  preservePropertyCasing: true
   params:
     - composition: Order
       name: Body

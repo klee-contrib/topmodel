@@ -36,6 +36,9 @@ public class EndpointLoader : ILoader<Endpoint>
                 case "description":
                     endpoint.Description = value!.Value;
                     break;
+                case "preservePropertyCasing":
+                    endpoint.PreservePropertyCasing = value!.Value == "true";
+                    break;
                 case "params":
                     parser.ConsumeSequence(() =>
                     {

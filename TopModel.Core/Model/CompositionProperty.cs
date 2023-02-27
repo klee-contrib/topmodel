@@ -10,9 +10,9 @@ public class CompositionProperty : IProperty
 
     public string Name { get; set; }
 
-    public string NamePascal => Name.ToPascalCase();
+    public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToPascalCase();
 
-    public string NameCamel => Name.ToCamelCase();
+    public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase();
 
     public string Kind { get; set; }
 

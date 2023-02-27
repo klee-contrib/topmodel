@@ -15,4 +15,6 @@ public interface IPropertyContainer
     Namespace Namespace { get; }
 
     IList<IProperty> Properties { get; }
+
+    bool PreservePropertyCasing { get; }
 }

@@ -39,6 +39,8 @@ public class Endpoint : IPropertyContainer
 
     public IList<IProperty> Properties => Params.Concat(new[] { Returns! }).Where(p => p != null).ToList();
 
+    public bool PreservePropertyCasing { get; set; }
+
     public List<(Decorator Decorator, string[] Parameters)> Decorators { get; } = new();
 
     public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies();

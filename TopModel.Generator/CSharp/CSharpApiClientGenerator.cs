@@ -235,7 +235,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
                         _ => $"?.ToString(CultureInfo.InvariantCulture)"
                     };
 
-                    fw.WriteLine(4, $@"[""{qp.GetParamName(true)}""] = {qp.GetParamName().Verbatim()}{toString},");
+                    fw.WriteLine(4, $@"[""{qp.GetParamName()}""] = {qp.GetParamName().Verbatim()}{toString},");
                 }
 
                 var listQPs = endpoint.GetQueryParams().Where(qp => _config.GetPropertyTypeName(qp).Contains("[]")).ToList();

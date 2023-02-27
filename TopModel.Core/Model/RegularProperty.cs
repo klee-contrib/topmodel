@@ -8,9 +8,9 @@ public class RegularProperty : IFieldProperty
 #nullable disable
     public string Name { get; set; }
 
-    public string NamePascal => Name.ToPascalCase();
+    public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToPascalCase();
 
-    public string NameCamel => Name.ToCamelCase();
+    public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase();
 #nullable enable
 
     public string? Label { get; set; }
