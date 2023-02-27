@@ -57,7 +57,7 @@ public class AliasProperty : IFieldProperty
 
     public bool Required
     {
-        get => _required ?? _property.Required;
+        get => _required ?? _property?.Required ?? false;
         set => _required = value;
     }
 
