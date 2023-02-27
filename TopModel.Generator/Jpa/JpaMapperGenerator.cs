@@ -70,19 +70,19 @@ public class JpaMapperGenerator : MapperGeneratorBase
     private void WriteToMapper(Class classe, ClassMappings mapper, JavaWriter fw, string tag)
     {
         fw.WriteLine();
-        fw.WriteDocStart(1, $"Mappe '{classe}' vers '{mapper.Class}'");
+        fw.WriteDocStart(1, $"Mappe '{classe}' vers '{mapper.Class.NamePascal}'");
         if (mapper.Comment != null)
         {
             fw.WriteLine(1, $" * {mapper.Comment}");
         }
 
         fw.WriteParam("source", $"Instance de '{classe}'");
-        fw.WriteParam("target", $"Instance pré-existante de '{mapper.Class}'. Une nouvelle instance sera créée si non spécifié.");
+        fw.WriteParam("target", $"Instance pré-existante de '{mapper.Class.NamePascal}'. Une nouvelle instance sera créée si non spécifié.");
 
-        fw.WriteReturns(1, $"Une nouvelle instance de '{mapper.Class}' ou bien l'instance passée en paramètre dont les champs ont été surchargés");
+        fw.WriteReturns(1, $"Une nouvelle instance de '{mapper.Class.NamePascal}' ou bien l'instance passée en paramètre dont les champs ont été surchargés");
         fw.WriteDocEnd(1);
 
-        fw.WriteLine(1, $"public static {mapper.Class} {mapper.Name.Value.ToCamelCase()}({classe} source, {mapper.Class} target) {{");
+        fw.WriteLine(1, $"public static {mapper.Class.NamePascal} {mapper.Name.Value.ToCamelCase()}({classe} source, {mapper.Class.NamePascal} target) {{");
         fw.WriteLine(2, "if (source == null) {");
         fw.WriteLine(3, $"throw new IllegalArgumentException(\"source cannot be null\");");
         fw.WriteLine(2, "}");
@@ -94,7 +94,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
         }
         else
         {
-            fw.WriteLine(3, $"target = new {mapper.Class}();");
+            fw.WriteLine(3, $"target = new {mapper.Class.NamePascal}();");
         }
 
         fw.WriteLine(2, "}");
@@ -102,7 +102,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
         if (mapper.ParentMapper != null)
         {
             fw.AddImport(_config.GetMapperImport(classe.Extends!, mapper.ParentMapper, tag)!);
-            fw.WriteLine(2, $"{classe.Extends!.GetMapperClassName(mapper)}.{mapper.ParentMapper.Name.Value.ToCamelCase()}(source, target);");
+            fw.WriteLine(2, $"{classe.Extends!.GetMapperClassName(mapper)}.{mapper.ParentMapper.Name.Value.ToCamelCase()}(({classe.Extends!.NamePascal}) source, ({mapper.ParentMapper.Class.NamePascal}) target);");
         }
 
         var hydrate = string.Empty;
@@ -306,7 +306,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
 
         fw.WriteReturns(1, $"Une nouvelle instance de '{classe}' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée");
         fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"public static {classe.Name.Value.ToPascalCase()} create{classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToFirstLower()}"))}, {classe} target) {{");
+        fw.WriteLine(1, $"public static {classe.NamePascal} create{classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToFirstLower()}"))}, {classe} target) {{");
         fw.WriteLine(2, "if (target == null) {");
         if (classe.Abstract)
         {
@@ -314,7 +314,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
         }
         else
         {
-            fw.WriteLine(3, $"target = new {classe.Name.Value.ToPascalCase()}();");
+            fw.WriteLine(3, $"target = new {classe.NamePascal}();");
         }
 
         fw.WriteLine(2, "}");
@@ -330,7 +330,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
         {
             if (mapper.ParentMapper != null)
             {
-                fw.WriteLine(2, $"{classe.Extends!.GetMapperClassName(mapper.ParentMapper)}.create{classe.Extends}({string.Join(", ", mapper.Params.Take(mapper.ParentMapper.Params.Count).Select(p => p.Name))}, target);");
+                fw.WriteLine(2, $"{classe.Extends!.GetMapperClassName(mapper.ParentMapper)}.create{classe.Extends}({string.Join(", ", mapper.Params.Take(mapper.ParentMapper.Params.Count).Select(p => $"({p.Class.NamePascal}) {p.Name}"))}, target);");
             }
         }
 

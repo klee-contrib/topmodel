@@ -116,9 +116,9 @@ public static class JpaUtils
     {
         return cp.Kind switch
         {
-            "object" => cp.Composition.Name,
-            "list" => $"List<{cp.Composition.Name}>",
-            "async-list" => $"IAsyncEnumerable<{cp.Composition.Name}>",
+            "object" => cp.Composition.NamePascal,
+            "list" => $"List<{cp.Composition.NamePascal}>",
+            "async-list" => $"IAsyncEnumerable<{cp.Composition.NamePascal}>",
             string _ when cp.DomainKind!.Java!.Type.Contains("{composition.name}") => cp.DomainKind.Java.Type.ParseTemplate(cp),
             string _ => $"{cp.DomainKind.Java.Type}<{{composition.name}}>".ParseTemplate(cp)
         };
@@ -195,7 +195,7 @@ public static class JpaUtils
             config.ResolveVariables(config.ModelRootPath, tag),
             Path.Combine(config.ResolveVariables(classe.IsPersistent ? config.EntitiesPackageName : config.DtosPackageName, tag).Split(".")),
             classe.Namespace.ModulePath.ToLower(),
-            $"{classe.Name.Value.ToPascalCase()}.java");
+            $"{classe.NamePascal}.java");
     }
 
     public static string GetApiPath(this JpaConfig config, ModelFile file, string tag)

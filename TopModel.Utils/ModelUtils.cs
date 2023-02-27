@@ -74,14 +74,8 @@ public static class ModelUtils
             // set first letter to uppercase
             .Select(w => startsWithLowerCaseChar.Replace(w, m => m.Value.ToUpper()))
 
-            // replace second and all following upper case letters to lower if there is no next lower (ABC -> Abc)
-            .Select(w => firstCharFollowedByUpperCasesOnly.Replace(w, m => m.Value.ToLower()))
-
             // set upper case the first lower case following a number (Ab9cd -> Ab9Cd)
-            .Select(w => lowerCaseNextToNumber.Replace(w, m => m.Value.ToUpper()))
-
-            // lower second and next upper case letters except the last if it follows by any lower (ABcDEf -> AbcDef)
-            .Select(w => upperCaseInside.Replace(w, m => m.Value.ToLower()));
+            .Select(w => lowerCaseNextToNumber.Replace(w, m => m.Value.ToUpper()));
 
         return string.Concat(pascalCase);
     }

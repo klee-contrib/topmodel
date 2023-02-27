@@ -236,7 +236,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
                 fw.Write(",\r\n        label: \"");
                 fw.Write(classe.Namespace.ModuleFirstLower);
                 fw.Write(".");
-                fw.Write(classe.Name.ToFirstLower());
+                fw.Write(classe.NameCamel);
                 fw.Write(".");
                 fw.Write(property.Name.ToFirstLower());
                 fw.Write("\"\r\n");

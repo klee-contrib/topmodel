@@ -60,7 +60,7 @@ public static class JavascriptUtils
     public static void WriteReferenceDefinition(FileWriter fw, Class classe)
     {
         fw.Write("export const ");
-        fw.Write(classe.Name.ToFirstLower());
+        fw.Write(classe.NameCamel);
         fw.Write(" = {type: {} as ");
         fw.Write(classe.Name);
         fw.Write(", valueKey: \"");

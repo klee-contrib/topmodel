@@ -61,7 +61,7 @@ public class JpaModelGenerator : ClassGeneratorBase
             implements.Add("Serializable");
         }
 
-        fw.WriteClassDeclaration(classe.Name, null, extends, implements);
+        fw.WriteClassDeclaration(classe.NamePascal, null, extends, implements);
 
         if (!classe.IsPersistent)
         {
@@ -487,14 +487,14 @@ public class JpaModelGenerator : ClassGeneratorBase
             var (clazz, mapper) = toMapper;
 
             fw.WriteLine();
-            fw.WriteDocStart(1, $"Mappe '{classe}' vers '{mapper.Class}'");
+            fw.WriteDocStart(1, $"Mappe '{classe}' vers '{mapper.Class.NamePascal}'");
             if (mapper.Comment != null)
             {
                 fw.WriteLine(1, $" * {mapper.Comment}");
             }
 
-            fw.WriteParam("target", $"Instance pré-existante de '{mapper.Class}'. Une nouvelle instance sera créée si non spécifié.");
-            fw.WriteReturns(1, $"Une instance de '{mapper.Class}'");
+            fw.WriteParam("target", $"Instance pré-existante de '{mapper.Class.NamePascal}'. Une nouvelle instance sera créée si non spécifié.");
+            fw.WriteReturns(1, $"Une instance de '{mapper.Class.NamePascal}'");
 
             fw.WriteDocEnd(1);
             if (mapper.ParentMapper != null && mapper.ParentMapper.Name == mapper.Name)
@@ -502,7 +502,7 @@ public class JpaModelGenerator : ClassGeneratorBase
                 fw.WriteLine(1, $"@Override");
             }
 
-            fw.WriteLine(1, $"public {mapper.Class} {mapper.Name.Value.ToCamelCase()}({mapper.Class} target) {{");
+            fw.WriteLine(1, $"public {mapper.Class.NamePascal} {mapper.Name.Value.ToCamelCase()}({mapper.Class.NamePascal} target) {{");
             fw.WriteLine(2, $"return {classe.GetMapperClassName(mapper)}.{mapper.Name.Value.ToCamelCase()}(this, target);");
             fw.AddImport(_config.GetMapperImport(classe, mapper, tag)!);
             fw.WriteLine(1, "}");

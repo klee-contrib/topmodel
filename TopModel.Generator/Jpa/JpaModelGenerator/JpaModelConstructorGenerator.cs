@@ -20,7 +20,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine();
         fw.WriteDocStart(1, "No arg constructor");
         fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"public {classe.Name}() {{");
+        fw.WriteLine(1, $"public {classe.NamePascal}() {{");
         if (classe.Extends != null || classe.Decorators.Any(d => d.Decorator.Java?.Extends is not null))
         {
             fw.WriteLine(2, $"super();");
@@ -48,7 +48,7 @@ public class JpaModelConstructorGenerator
         }
 
         fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"public {classe.Name}({propertiesSignature}) {{");
+        fw.WriteLine(1, $"public {classe.NamePascal}({propertiesSignature}) {{");
         if (classe.Extends != null)
         {
             var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.GetJavaName()}"));
@@ -91,7 +91,7 @@ public class JpaModelConstructorGenerator
         }
 
         fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"public {classe.Name}({propertiesSignature}) {{");
+        fw.WriteLine(1, $"public {classe.NamePascal}({propertiesSignature}) {{");
         if (classe.Extends != null)
         {
             var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.GetJavaName()}"));
@@ -122,21 +122,21 @@ public class JpaModelConstructorGenerator
     {
         fw.WriteLine();
         fw.WriteDocStart(1, "Copy constructor");
-        fw.WriteLine(1, $" * @param {classe.Name.ToFirstLower()} to copy");
+        fw.WriteLine(1, $" * @param {classe.NameCamel} to copy");
         var properties = classe.GetProperties(_config, availableClasses, tag);
         fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"public {classe.Name}({classe.Name} {classe.Name.ToFirstLower()}) {{");
+        fw.WriteLine(1, $"public {classe.NamePascal}({classe.NamePascal} {classe.NameCamel}) {{");
         if (classe.Extends != null)
         {
             var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.GetJavaName()}"));
-            fw.WriteLine(2, $"super({classe.Name.ToFirstLower()});");
+            fw.WriteLine(2, $"super({classe.NameCamel});");
         }
         else if (classe.Decorators.Any(d => d.Decorator.Java?.Extends is not null))
         {
             fw.WriteLine(2, $"super();");
         }
 
-        fw.WriteLine(2, $"if({classe.Name.ToFirstLower()} == null) {{");
+        fw.WriteLine(2, $"if({classe.NameCamel} == null) {{");
         fw.WriteLine(3, $"return;");
         fw.WriteLine(2, "}");
         fw.WriteLine();
@@ -146,7 +146,7 @@ public class JpaModelConstructorGenerator
             if (!(property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list"))
             {
                 var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
-                fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.Name.ToFirstLower()}.{getterPrefix}{property.GetJavaName().ToFirstUpper()}();");
+                fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName().ToFirstUpper()}();");
             }
         }
 
@@ -164,7 +164,7 @@ public class JpaModelConstructorGenerator
             if (property is AssociationProperty ap || property is CompositionProperty cp && cp.Kind == "list")
             {
                 var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
-                fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.Name.ToFirstLower()}.{getterPrefix}{property.GetJavaName().ToFirstUpper()}().stream().collect(Collectors.toList());");
+                fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName().ToPascalCase()}().stream().collect(Collectors.toList());");
                 fw.AddImport("java.util.stream.Collectors");
             }
         }
@@ -176,7 +176,7 @@ public class JpaModelConstructorGenerator
             {
                 var propertyName = ap.Name.ToFirstLower();
                 var getterPrefix = ap.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
-                fw.WriteLine(2, $"this.set{ap.Name}({classe.Name.ToFirstLower()}.{getterPrefix}{ap.Name.ToFirstUpper()}());");
+                fw.WriteLine(2, $"this.set{ap.Name}({classe.NameCamel}.{getterPrefix}{ap.Name.ToFirstUpper()}());");
             }
         }
 

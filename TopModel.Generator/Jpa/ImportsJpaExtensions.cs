@@ -272,7 +272,7 @@ public static class ImportsJpaExtensions
 
     public static string GetImport(this Class classe, JpaConfig config, string tag)
     {
-        return $"{config.GetPackageName(classe, tag)}.{classe.Name}";
+        return $"{config.GetPackageName(classe, tag)}.{classe.NamePascal}";
     }
 
     public static List<string> GetImports(this Class classe, List<Class> classes, JpaConfig config, string tag)

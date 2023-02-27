@@ -259,12 +259,12 @@ public class DbContextGenerator : ClassGroupGeneratorBase
 
         foreach (var classe in classes)
         {
-            cw.WriteLine(3, $"var {classe.Name.ToFirstLower()} = modelBuilder.Entity<{classe.Name}>();");
-            cw.WriteLine(3, $"{classe.Name.ToFirstLower()}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));");
+            cw.WriteLine(3, $"var {classe.NameCamel} = modelBuilder.Entity<{classe.Name}>();");
+            cw.WriteLine(3, $"{classe.NameCamel}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));");
 
             foreach (var property in classe.Properties.OfType<IFieldProperty>())
             {
-                cw.WriteLine(3, $"{classe.Name.ToFirstLower()}.Property(p => p.{property.Name}).HasComment(\"{property.Comment.Replace("\"", "\\\"")}\");");
+                cw.WriteLine(3, $"{classe.NameCamel}.Property(p => p.{property.Name}).HasComment(\"{property.Comment.Replace("\"", "\\\"")}\");");
             }
 
             if (classes.IndexOf(classe) < classes.Count - 1)
