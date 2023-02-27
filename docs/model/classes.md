@@ -27,6 +27,7 @@ Une classe doit au minimum avoir un **nom** (`name`), un **commentaire** (`comme
     - [Code]
     - [TypeProfilCode, TypeDroitCode]
   ```
+- `preservePropertyCasing` : Par défaut, TopModel converti les noms de propriétés dans la casse du langage cible. Cela veut dire par exemple qu'en C#, tous les noms de propriétés vont être convertis en `PascalCase`, même si la propriété a été déclarée en `camelCase` dans TopModel, et inversement en Java (ce qui était déjà le cas en revanche). De même, si vous avez des noms avec des `_` dans votre modèle (une classe `Profil_utilisateur` ou une propriété `utilisateur_id`), ils seront également convertis de la même façon (en Java par exemple, ça donnerait `ProfilUtilisateur` et `utilisateurId`). Cette propriété, si renseignée à `true`, permet de désactiver ce comportement s'il est important de garder la casse telle qu'elle a été définie dans le modèle (par exemple pour s'interfacer avec une API externe qui n'a pas les mêmes conventions de nommage).
 
 ## Valeurs d'une classe
 

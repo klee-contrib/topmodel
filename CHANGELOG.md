@@ -1,6 +1,23 @@
 # TopModel.Generator (`modgen`)
 
-## Prochaine version (à livrer)
+## 1.25.0
+
+- [#225](https://github.com/klee-contrib/topmodel/pull/225) - Génération de classes C#/Java par tag + variables app/module/lang propres + plein de nettoyage
+
+  **breaking changes (JPA uniquement)**
+
+  - Les mappers sont générés par module complet et non par module racine (ex : les mappers du module `Securite.Utilisateur` sont désormais dans `SecuriteUtilisateurMappers` au lieu de `SecuriteMappers`)
+  - Le répertoire cible de génération des fichiers de ressources ne supporte plus la variable `{module}` (qui n'était pas le module mais le module racine). On génère toujours un fichier par module racine et par langue, mais tous dans le même répertoire cible.
+
+- [#226](https://github.com/klee-contrib/topmodel/pull/226) - Uniformisation des conventions de nommage dans le code généré
+
+  **breaking change**
+
+  TopModel va désormais convertir les noms de classes, endpoints et propriétés dans la casse du langage cible de façon systématique, au lieu de le faire de temps en temps. Cela veut dire par exemple qu'en C#, tous les noms de propriétés vont être convertis en `PascalCase`, même si la propriété a été déclarée en `camelCase` dans TopModel, et inversement en Java (ce qui était déjà le cas en revanche). De même, si vous avez des noms avec des `_` dans votre modèle (une classe `Profil_utilisateur` ou une propriété `utilisateur_id`), ils seront également convertis de la même façon (en Java par exemple, ça donnerait `ProfilUtilisateur` et `utilisateurId`).
+
+  En théorie, si vos conventions de nommage étaient correctement respectées dans vos fichiers de modèle, ça ne devrait rien changer dans le code généré. Si vous aviez du modèle généré par un autre outil (par exemple `tmdgen`), il est possible que le modèle généré (et donc le code généré) ne respectait pas la casse cible. Avec cette évolution, il va désormais le faire, donc c'est une source de breaking change possible.
+
+  Parfois, il est important de conserver la casse telle qu'elle a été écrite dans le modèle, en particulier si votre modèle est utilisé avec une API externe qui ne respecte pas les conventions de nommage attendues (par exemple une API dont les propriétés de modèle sont en `snake_case` au lieu de `camelCase`). Il est donc maintenant possible de spécifier `preservePropertyCasing: true` sur une classe ou un endpoint pour que les noms de propriétés ne soit pas convertis. `tmdgen` va désormais renseigner cette propriété sur tout le modèle généré, afin de garantir que les noms de propriétés générés seront bien les mêmes que dans le schéma OpenAPI en entrée.
 
 - [`de3809d3`](https://github.com/klee-contrib/topmodel/commit/de3809d3755a08ba4dfa9ae1818682fdbefa9566) - `modgen --check`
 
