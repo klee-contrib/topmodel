@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using TopModel.Core;
+using TopModel.Core.FileModel;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
@@ -163,11 +164,11 @@ public static class JpaUtils
             .Where(p => p is not JpaAssociationProperty)
             .Where(p => p.Type != AssociationType.OneToOne)
             .Where(p => p.Association == classe
-                && (p.Type == AssociationType.OneToMany || p.Class.Namespace.Module.Split('.').First() == classe.Namespace.Module.Split('.').First()))
+                && (p.Type == AssociationType.OneToMany || p.Class.Namespace.RootModule == classe.Namespace.RootModule))
             .ToList();
     }
 
-    public static IList<IProperty> GetProperties(this Class classe, JpaConfig config, List<Class> availableClasses)
+    public static IList<IProperty> GetProperties(this Class classe, JpaConfig config, List<Class> availableClasses, string tag)
     {
         if (classe.Reference)
         {
@@ -178,110 +179,104 @@ public static class JpaUtils
         {
             Association = p.Class,
             Type = p.Type == AssociationType.OneToMany ? AssociationType.ManyToOne
-                                : p.Type == AssociationType.ManyToOne ? AssociationType.OneToMany
-                                : AssociationType.ManyToMany,
-            Comment = $"Association réciproque de {{@link {p.Class.GetPackageName(config)}.{p.Class}#{p.GetJavaName()} {p.Class.Name}.{p.GetJavaName()}}}",
+                : p.Type == AssociationType.ManyToOne ? AssociationType.OneToMany
+                : AssociationType.ManyToMany,
+            Comment = $"Association réciproque de {{@link {config.GetPackageName(p.Class, tag)}.{p.Class}#{p.GetJavaName()} {p.Class.Name}.{p.GetJavaName()}}}",
             Class = classe,
             ReverseProperty = p,
             Role = p.Role
         })).ToList();
     }
 
-    public static string GetPackageName(this Class classe, JpaConfig config)
+    public static string GetClassFileName(this JpaConfig config, Class classe, string tag)
     {
-        var packageRoot = classe.IsPersistent ? config.EntitiesPackageName : config.DtosPackageName;
+        return Path.Combine(
+            config.OutputDirectory,
+            config.ResolveVariables(config.ModelRootPath, tag),
+            Path.Combine(config.ResolveVariables(classe.IsPersistent ? config.EntitiesPackageName : config.DtosPackageName, tag).Split(".")),
+            classe.Namespace.ModulePath.ToLower(),
+            $"{classe.Name.Value.ToPascalCase()}.java");
+    }
+
+    public static string GetApiPath(this JpaConfig config, ModelFile file, string tag)
+    {
+        return Path.Combine(
+            config.OutputDirectory,
+            Path.Combine(config.ResolveVariables(config.ApiRootPath!, tag).ToLower().Split(".")),
+            Path.Combine(config.ResolveVariables(config.ApiPackageName, tag).Split('.')),
+            file.Namespace.ModulePath.ToLower());
+    }
+
+    public static string GetPackageName(this JpaConfig config, Class classe, string tag, bool? isPersistant = null)
+    {
+        var packageRoot = config.ResolveVariables(
+            isPersistant.HasValue
+                ? isPersistant.Value
+                    ? config.EntitiesPackageName
+                    : config.DtosPackageName
+                : classe.IsPersistent
+                    ? config.EntitiesPackageName
+                    : config.DtosPackageName,
+            tag);
         return $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
     }
 
-    public static string GetMapperFilePath(this JpaConfig config, Class classe, bool isPersistant)
+    public static string GetPackageName(this JpaConfig config, Endpoint endpoint, string tag)
     {
-        return GetMapperFilePath(config, classe.ModelFile.Module, isPersistant);
+        return $"{config.ResolveVariables(config.ApiPackageName, tag)}.{endpoint.Namespace.Module.ToLower()}";
     }
 
-    public static string GetMapperFilePath(this JpaConfig config, string module, bool isPersistent)
+    public static string GetMapperFilePath(this JpaConfig config, Class classe, bool isPersistant, string tag)
     {
-        var directory = Path.Combine(config.OutputDirectory, config.ModelRootPath, string.Join('/', (isPersistent ? config.EntitiesPackageName : config.DtosPackageName).Split('.')), module.Split('.').First().ToLower());
-        return Path.Combine(directory, GetMapperClassFileName(config, module, isPersistent)!);
+        return Path.Combine(
+            config.OutputDirectory,
+            config.ResolveVariables(config.ModelRootPath, tag),
+            Path.Combine(GetMapperPackage(config, classe, isPersistant, tag).Split('.')),
+            $"{GetMapperClassName(classe, isPersistant)}.java");
     }
 
-    public static string? GetMapperClassName(this JpaConfig config, string module, bool isPersistant)
+    public static string GetMapperClassName(this Class classe, FromMapper mapper)
     {
-        if (module == null)
-        {
-            return null;
-        }
-
-        return $@"{module.Split('.').First()}{(isPersistant ? string.Empty : "DTO")}Mappers";
+        return GetMapperClassName(classe, IsPersistantMapper(classe, mapper));
     }
 
-    public static string? GetMapperClassName(this JpaConfig config, Class classe, FromMapper? mapper)
+    public static string GetMapperClassName(this Class classe, ClassMappings mapper)
     {
-        if (mapper == null)
-        {
-            return null;
-        }
-
-        var isPersistant = classe.IsPersistent || mapper.Params.Any(m => m.Class.IsPersistent);
-        return GetMapperClassName(config, classe.ModelFile.Module, isPersistant);
+        return GetMapperClassName(classe, IsPersistantMapper(classe, mapper));
     }
 
-    public static string? GetMapperClassName(this JpaConfig config, Class classe, ClassMappings? mapper)
+    public static string GetMapperClassName(this Class classe, bool isPersistant)
     {
-        if (mapper == null)
-        {
-            return null;
-        }
-
-        var isPersistant = classe.IsPersistent || mapper.Class.IsPersistent;
-        return GetMapperClassName(config, classe.ModelFile.Module, isPersistant);
+        return $@"{classe.Namespace.ModuleFlat}{(isPersistant ? string.Empty : "DTO")}Mappers";
     }
 
-    public static string? GetMapperClassFileName(this JpaConfig config, Class? sampleClass)
+    public static string GetMapperImport(this JpaConfig config, Class classe, FromMapper mapper, string tag)
     {
-        if (sampleClass == null)
-        {
-            return null;
-        }
-
-        return $@"{GetMapperClassName(config, sampleClass.ModelFile.Module, sampleClass.IsPersistent)}.java";
+        return GetMapperImport(config, classe, IsPersistantMapper(classe, mapper), tag);
     }
 
-    public static string? GetMapperClassFileName(this JpaConfig config, string module, bool isPersistant)
+    public static string GetMapperImport(this JpaConfig config, Class classe, ClassMappings mapper, string tag)
     {
-        return $@"{GetMapperClassName(config, module, isPersistant)}.java";
+        return GetMapperImport(config, classe, IsPersistantMapper(classe, mapper), tag);
     }
 
-    public static bool IsPersistantMapper(Class classe, ClassMappings mapper)
+    public static string GetMapperPackage(this JpaConfig config, Class classe, bool isPersistant, string tag)
     {
-        return classe.IsPersistent || mapper.Class.IsPersistent;
+        return GetPackageName(config, classe, tag, isPersistant);
     }
 
-    public static string? GetMapperImport(this JpaConfig config, Class? classe, FromMapper mapper)
+    private static string GetMapperImport(JpaConfig config, Class classe, bool isPersistant, string tag)
     {
-        if (classe == null)
-        {
-            return null;
-        }
-
-        var isPersistant = IsPersistantMapper(classe, mapper);
-
-        return $@"{(isPersistant ? config.EntitiesPackageName : config.DtosPackageName)}.{classe.ModelFile.Module.Split('.').First().ToLower()}.{GetMapperClassName(config, classe.ModelFile.Module, isPersistant)}";
-    }
-
-    public static string? GetMapperImport(this JpaConfig config, Class? classe, ClassMappings mapper)
-    {
-        if (classe == null)
-        {
-            return null;
-        }
-
-        var isPersistant = IsPersistantMapper(classe, mapper);
-
-        return $@"{(isPersistant ? config.EntitiesPackageName : config.DtosPackageName)}.{classe.ModelFile.Module.Split('.').First().ToLower()}.{GetMapperClassName(config, classe.ModelFile.Module, isPersistant)}";
+        return $@"{GetMapperPackage(config, classe, isPersistant, tag)}.{GetMapperClassName(classe, isPersistant)}";
     }
 
     private static bool IsPersistantMapper(Class classe, FromMapper mapper)
     {
         return classe.IsPersistent || mapper.Params.Any(m => m.Class.IsPersistent);
+    }
+
+    private static bool IsPersistantMapper(Class classe, ClassMappings mapper)
+    {
+        return classe.IsPersistent || mapper.Class.IsPersistent;
     }
 }

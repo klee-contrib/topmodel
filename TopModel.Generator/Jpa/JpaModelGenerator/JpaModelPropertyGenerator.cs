@@ -15,35 +15,35 @@ public class JpaModelPropertyGenerator
         _config = config;
     }
 
-    public void WriteProperty(JavaWriter fw, Class classe, IProperty property)
+    public void WriteProperty(JavaWriter fw, Class classe, IProperty property, string tag)
     {
         fw.WriteLine();
         fw.WriteDocStart(1, property.Comment);
         switch (property)
         {
             case CompositionProperty cp:
-                WriteProperty(fw, classe, cp);
+                WriteProperty(fw, cp);
                 break;
             case AssociationProperty { Association.IsPersistent: true } ap:
                 WriteProperty(fw, classe, ap);
                 break;
             case IFieldProperty fp:
-                WriteProperty(fw, classe, fp);
+                WriteProperty(fw, classe, fp, tag);
                 break;
         }
     }
 
-    public void WriteProperty(JavaWriter fw, Class classe, CompositionProperty property)
+    public void WriteProperty(JavaWriter fw, CompositionProperty property)
     {
         fw.WriteDocEnd(1);
         fw.WriteLine(1, $"private {property.GetJavaType()} {property.Name.ToFirstLower()};");
     }
 
-    public void WriteProperties(JavaWriter fw, Class classe, List<Class> availableClasses)
+    public void WriteProperties(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
     {
-        foreach (var property in classe.GetProperties(_config, availableClasses))
+        foreach (var property in classe.GetProperties(_config, availableClasses, tag))
         {
-            WriteProperty(fw, classe, property);
+            WriteProperty(fw, classe, property, tag);
         }
     }
 
@@ -141,21 +141,21 @@ public class JpaModelPropertyGenerator
         }
         else
         {
-            var hasRerverse = property.Class.Namespace.Module.Split('.').First() == property.Association.Namespace.Module.Split('.').First();
-            fw.WriteLine(1, @$"@{property.Type}(cascade = CascadeType.ALL, fetch = FetchType.LAZY{(hasRerverse ? @$", mappedBy = ""{property.Class.Name.ToFirstLower()}{property.Role ?? string.Empty}""" : string.Empty)})");
-            if (!hasRerverse)
+            var hasReverse = property.Class.Namespace.RootModule == property.Association.Namespace.RootModule;
+            fw.WriteLine(1, @$"@{property.Type}(cascade = CascadeType.ALL, fetch = FetchType.LAZY{(hasReverse ? @$", mappedBy = ""{property.Class.Name.ToFirstLower()}{property.Role ?? string.Empty}""" : string.Empty)})");
+            if (!hasReverse)
             {
                 fw.WriteLine(1, @$"@JoinColumn(name = ""{pk}"", referencedColumnName = ""{pk}"")");
             }
         }
     }
 
-    private void WriteProperty(JavaWriter fw, Class classe, IFieldProperty property)
+    private void WriteProperty(JavaWriter fw, Class classe, IFieldProperty property, string tag)
     {
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         if (property is AliasProperty alp)
         {
-            fw.WriteLine(1, $" * Alias of {{@link {alp.Property.Class.GetImport(_config)}#get{alp.Property.Name.ToFirstUpper()}() {alp.Property.Class.Name}#get{alp.Property.Name.ToFirstUpper()}()}} ");
+            fw.WriteLine(1, $" * Alias of {{@link {alp.Property.Class.GetImport(_config, tag)}#get{alp.Property.Name.ToFirstUpper()}() {alp.Property.Class.Name}#get{alp.Property.Name.ToFirstUpper()}()}} ");
         }
 
         fw.WriteDocEnd(1);

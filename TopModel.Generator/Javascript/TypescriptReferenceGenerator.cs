@@ -30,7 +30,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
     {
         if (classe.IsJSReference())
         {
-            yield return ("main", _config.GetReferencesFileName(classe.ModelFile.Module, tag));
+            yield return ("main", _config.GetReferencesFileName(classe.Namespace, tag));
         }
     }
 
@@ -46,7 +46,6 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
     {
         using var fw = new FileWriter(fileName, _logger, false);
 
-        var module = references.First().Namespace.Module;
         var imports = references
             .SelectMany(r => r.ClassDependencies)
             .Select(dep => (

@@ -72,7 +72,7 @@ public class LocatedString : IComparable
         return base.GetHashCode();
     }
 
-    public string ToDashCase()
+    public string ToKebabCase()
     {
         return Value.ToKebabCase();
     }

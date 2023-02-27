@@ -59,6 +59,11 @@ public class JavascriptConfig : GeneratorConfigBase
     /// </summary>
     public bool GenerateComments { get; set; }
 
+    public override string[] PropertiesWithModuleVariableSupport => new[]
+    {
+        nameof(ApiClientFilePath)
+    };
+
     public override string[] PropertiesWithTagVariableSupport => new[]
     {
         nameof(ModelRootPath),
@@ -68,15 +73,14 @@ public class JavascriptConfig : GeneratorConfigBase
         nameof(DomainPath)
     };
 
-    public override string ResolveTagVariables(string tag, string value)
-    {
-        return base.ResolveTagVariables(tag, value).Trim('/');
-    }
-
     public string GetClassFileName(Class classe, string tag)
     {
-        var rootPath = Path.Combine(OutputDirectory, ResolveTagVariables(tag, ModelRootPath!)).Replace("\\", "/");
-        return $"{rootPath}/{string.Join('/', classe.Namespace.Module.Split('.').Select(m => m.ToKebabCase()))}/{classe.Name.ToDashCase()}.ts";
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(ModelRootPath!, tag),
+            classe.Namespace.ModulePathKebab,
+            $"{classe.Name.ToKebabCase()}.ts")
+        .Replace("\\", "/");
     }
 
     /// <summary>
@@ -103,10 +107,12 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public string GetEndpointsFileName(ModelFile file, string tag)
     {
-        var modulePath = Path.Combine(file.Module.Split('.').Select(m => m.ToKebabCase()).ToArray());
-        var filePath = ApiClientFilePath.Replace("{module}", modulePath);
-        var fileName = file.Options.Endpoints.FileName.ToKebabCase();
-        return Path.Combine(OutputDirectory, ResolveTagVariables(tag, ApiClientRootPath!), filePath, $"{fileName}.ts").Replace("\\", "/");
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(ApiClientRootPath!, tag),
+            ResolveVariables(ApiClientFilePath, module: file.Namespace.ModulePathKebab),
+            $"{file.Options.Endpoints.FileName.ToKebabCase()}.ts")
+        .Replace("\\", "/");
     }
 
     public List<(string Import, string Path)> GetEndpointImports(IEnumerable<Endpoint> endpoints, string tag, IEnumerable<Class> availableClasses)
@@ -129,7 +135,7 @@ public class JavascriptConfig : GeneratorConfigBase
         {
             if (fp.GetPropertyTypeName(availableClasses) != fp.Domain.TS!.Type && dep.Classe.EnumKey != null)
             {
-                target = GetReferencesFileName(dep.Classe.Namespace.Module, tag);
+                target = GetReferencesFileName(dep.Classe.Namespace, tag);
             }
             else
             {
@@ -164,19 +170,33 @@ public class JavascriptConfig : GeneratorConfigBase
         return path;
     }
 
-    public string GetReferencesFileName(string module, string tag)
+    public string GetReferencesFileName(Namespace ns, string tag)
     {
-        var rootPath = Path.Combine(OutputDirectory, ResolveTagVariables(tag, ModelRootPath!)).Replace("\\", "/");
-        return $"{rootPath}/{string.Join('/', module.Split('.').Select(m => m.ToKebabCase()))}/references.ts";
+        return Path.Combine(OutputDirectory, ResolveVariables(ModelRootPath!, tag), ns.ModulePathKebab, "references.ts").Replace("\\", "/");
     }
 
-    public string GetResourcesFilePath(string module, string tag, string lang)
+    public string GetResourcesFilePath(Namespace ns, string tag, string lang)
     {
-        return Path.Combine(OutputDirectory, ResolveTagVariables(tag, ResourceRootPath!), lang, Path.Combine(module.Split(".").Select(part => part.ToKebabCase()).ToArray())) + (ResourceMode == ResourceMode.JS ? ".ts" : ".json");
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(ResourceRootPath!, tag),
+            lang,
+            $"{ns.RootModule.ToKebabCase()}{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}")
+        .Replace("\\", "/");
     }
 
-    public string GetCommentResourcesFilePath(string module, string tag, string lang)
+    public string GetCommentResourcesFilePath(Namespace ns, string tag, string lang)
     {
-        return Path.Combine(OutputDirectory, ResolveTagVariables(tag, ResourceRootPath!), lang, Path.Combine(module.Split(".").Select(part => part.ToKebabCase()).ToArray())) + ".comments" + (ResourceMode == ResourceMode.JS ? ".ts" : ".json");
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(ResourceRootPath!, tag),
+            lang,
+            $"{ns.RootModule.ToKebabCase()}.comments{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}")
+        .Replace("\\", "/");
+    }
+
+    protected override string ResolveTagVariables(string value, string tag)
+    {
+        return base.ResolveTagVariables(value, tag).Trim('/');
     }
 }

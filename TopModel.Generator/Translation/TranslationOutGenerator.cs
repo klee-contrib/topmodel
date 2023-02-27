@@ -41,8 +41,8 @@ public class TranslationOutGenerator : TranslationGeneratorBase
         {
             return Path.Combine(
                 _config.OutputDirectory,
-                _config.ResolveTagVariables(tag, _config.RootPath).Replace("{lang}", lang),
-                Path.Combine(p.Parent.Namespace.Module.Split(".").Select(part => part.ToKebabCase()).ToArray()) + "_" + lang + ".properties");
+                _config.ResolveVariables(_config.RootPath, tag: tag, lang: lang),
+                $"{p.Parent.Namespace.RootModule.ToKebabCase()}_{lang}.properties");
         }
 
         return null;

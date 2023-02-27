@@ -36,7 +36,7 @@ javascript:
       - Interne
       - Externe
       - Common
-    variables:      
+    variables:
       root: ../sources/front
     outputDirectory: "{root}/src"
     domainPath: common/domains
@@ -44,19 +44,31 @@ javascript:
 
 ## Variables
 
-### Variables globales (à une configuration)
-
-Lorsqu'une variable est ajoutée à une configuration, elle peut être utilisée dans les autres paramètres de cette même configuration. A la génération, les `template` dans les différents paramètres de configuration seront résolus à l'aide des variables déclarées. Dans l'exemple précédent, le paramètre  `"{root}/src"` sera résolu en `../sources/front/src`.
+Chaque générateur peut définir et utiliser des **variables** dans sa configuration. Une variable n'est donc scopée qu'au générateur qui la définit.
 
 Les variables sont nécessairement des strings et ne peuvent donc être utilisées que dans des paramètres de type string. Il n'est pas exclu par la suite de gérer par la suite les nombres et les booléens, mais pour rester simple dans un premier temps ils ont été exclus.
 
-Les variables peuvent faire l'objet de transformations (`:upper`, `:pascal`, `:camel`...) de la même façon que les variables des templates dans les domaines et décorateurs. Par exemple `{root:lower}`.
+Elles se définissent entre crochets (`{variable}`) et peuvent faire l'objet de transformations (`:upper`, `:pascal`, `:camel`...) de la même façon que les variables des templates dans les domaines et décorateurs (par exemple : `{root:lower}`).
+
+Il existe **3 types de variables** :
+
+### Variables globales
+
+Les variables globales sont utilisables dans tous les paramètres (string) de toutes les générateurs, sans restriction. Elles seront remplacées à l'initialisation du générateur par la valeur qui a été définie dans la section `variables` de la configuration.
+
+### Variables contextuelles
+
+Il existe 3 variables "contextuelles", dont la valeur est automatiquement renseignée selon l'objet qui est généré, et qui sont utilisables dans certaines propriétés spécifiques des générateurs (selon leur implémentation). Ce sont :
+
+- `{app}`, qui aura toujours pour valeur la valeur de la propriété `app` de la configuration du modèle. Outre son utilisation dans certaines valeurs par défaut de paramètres, certains d'entre-eux implémentent également une règle qui retire tout ce qui précède `{app}` pour générer une valeur. Par exemple, le générateur C# construira le namespace des classes générés de cette façon : si la classe est configurée pour être générée dans `./Sources/Models/{app}.Models`, son namespace sera `{app}.Models`.
+
+- `{module}`, qui sera renseigné avec la valeur du module du fichier courant lors de la génération d'une classe ou d'un endpoint.
+
+- `{lang}`, qui est utilisé lors de la génération de fichiers de ressources pour identifier la langue courante.
 
 ### Variables par tag
 
 Un générateur peut choisir d'implémenter des variables qui ont des valeurs différentes **selon le tag** du fichier. De ce fait, un fichier ayant plusieurs tags résultant en des valeurs de paramètres différentes sera à priori généré plusieurs fois pour correspondre à chacune des valeurs possibles.
-
-Seul le générateur `javascript` implémente cette fonctionnalité pour l'instant. En voici un exemple :
 
 ```yaml
 javascript:
@@ -64,7 +76,7 @@ javascript:
       - Interne
       - Externe
       - Common
-    variables:      
+    variables:
       root: ../sources/front
     tagVariables:
       Externe:
@@ -81,10 +93,12 @@ javascript:
     domainPath: common/domains
 ```
 
-`tagVariables` permet pour un tag de définir une liste de variables qui ne seront appliquées que lors de la génération de fichiers avec ce tag-là. Toutes les propriétés du générateur ne supportent pas les variables par tag. Pour le générateur `javascript`, il s'agit de `modelRootPath`, `apiClientRootPath`, `resourceRootPath`, `fetchPath` et `domainPath`.
+`tagVariables` permet pour un tag de définir une liste de variables qui ne seront appliquées que lors de la génération de fichiers avec ce tag-là. Toutes les propriétés du générateur ne supportent pas les variables par tag.
 
-Une variable **globale** peut être **surchargée** par une variable par tag, mais dans ce cas cette variable devient une variable par tag (et par conséquent n'est plus supportée dans les champs qui ne peuvent pas avoir de variables par tag). Une variable par tag existe dès lors qu'elle est définie par au moins un tag, et si un tag ne renseigne pas une variable par tag définie dans un autre tag, alors sa valeur pour ce tag sera automatiquement renseignée à `""` (ce qui effacera effectivement la variable lors de la résolution de valeur du paramètre).
+**Une variable globale peut être surchargée par une variable par tag**, mais dans ce cas cette variable devient une variable par tag (et par conséquent n'est plus supportée dans les champs qui ne peuvent pas avoir de variables par tag). Une variable par tag existe dès lors qu'elle est définie par au moins un tag, et si un tag ne renseigne pas une variable par tag définie dans un autre tag, alors sa valeur pour ce tag sera automatiquement renseignée à `""` (ce qui effacera effectivement la variable lors de la résolution de valeur du paramètre).
 
-`modgen` affichera un warning s'il trouve une variable non définie dans un paramètre (et précisera qu'il cherche une variable globale dans un paramètre qui ne supporte pas les variables par tag). Les variables non définies seront gardées telles quelles dans la génération.
+### Résolution des variables
 
-Toutes ces variables s'ajoutent aux variables prédéfinies `{app}`, `{module}` et `{lang}` qui sont utilisées dans certains paramètres. Idéalement, il ne faudrait pas les redéfinir (elles sont renseignées d'une manière qu'il n'est pas possible de reproduire avec la solution présentée), mais en théorie, puisque les variables de générateurs sont résolues en premier, une redéfinition agirait comme une surcharge.
+Les variables globales sont résolues en premier (une fois que celles qui devaient être transformées en variables par tag l'ont été), puis les variables par tag, et enfin les variables contextuelles. Cela implique en particulier que les variables contextuelles (`{app}`, `{module}` et `{lang}`) peuvent être "écrasées" par d'autres variables, et ainsi perdre leur contextualité. C'est rarement souhaitable, donc il vaut mieux en général éviter de provoquer des surcharges non intentionnelles.
+
+`modgen` affichera un warning s'il trouve une variable non définie ou non supportée dans un paramètre (et précisera pourquoi, en particulier si la variable contextuelle ou par tag n'est pas supportée par le paramètre). Les variables non définies seront gardées telles quelles dans la génération, avec leurs `{}` (au cas où ça soit le comportement voulu dans ce cas précis, ce qui reste peu probable).

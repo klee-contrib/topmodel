@@ -32,19 +32,19 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
             return null;
         }
 
-        return _config.GetCommentResourcesFilePath(property.Parent.Namespace.Module.Split('.').First(), tag, _modelConfig.I18n.DefaultLang);
+        return _config.GetCommentResourcesFilePath(property.Parent.Namespace, tag, _modelConfig.I18n.DefaultLang);
     }
 
     protected override string GetResourceFilePath(IFieldProperty property, string tag, string lang)
     {
-        return _config.GetResourcesFilePath(property.Parent.Namespace.Module.Split('.').First(), tag, lang);
+        return _config.GetResourcesFilePath(property.Parent.Namespace, tag, lang);
     }
 
     protected override void HandleCommentResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties)
     {
         using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
 
-        var module = properties.First().Parent.Namespace.Module;
+        var module = properties.First().Parent.Namespace.RootModule;
 
         if (_config.ResourceMode != ResourceMode.JS)
         {
@@ -52,7 +52,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
         }
         else
         {
-            fw.WriteLine($"export const {module.Split('.').Last().ToFirstLower()} = {{");
+            fw.WriteLine($"export const {module.ToFirstLower()} = {{");
         }
 
         WriteSubModule(fw, _modelConfig.I18n.DefaultLang, properties, true, 1);
@@ -71,7 +71,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
     {
         using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
 
-        var module = properties.First().Parent.Namespace.Module;
+        var module = properties.First().Parent.Namespace.RootModule;
 
         if (_config.ResourceMode != ResourceMode.JS)
         {
@@ -79,7 +79,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
         }
         else
         {
-            fw.WriteLine($"export const {module.Split('.').Last().ToFirstLower()} = {{");
+            fw.WriteLine($"export const {module.ToFirstLower()} = {{");
         }
 
         WriteSubModule(fw, lang, properties, false, 1);

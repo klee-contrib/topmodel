@@ -7,7 +7,7 @@ namespace TopModel.Generator.CSharp;
 
 public static class ServiceExtensions
 {
-    public static IServiceCollection AddCSharp(this IServiceCollection services, string dn, string app, IEnumerable<CSharpConfig>? configs)
+    public static IServiceCollection AddCSharp(this IServiceCollection services, string dn, IEnumerable<CSharpConfig>? configs)
     {
         GeneratorUtils.HandleConfigs(dn, configs, (config, number) =>
         {
@@ -32,7 +32,7 @@ public static class ServiceExtensions
             if (config.DbContextPath != null)
             {
                 services.AddSingleton<IModelWatcher>(p =>
-                    new DbContextGenerator(p.GetRequiredService<ILogger<DbContextGenerator>>(), config, app) { Number = number });
+                    new DbContextGenerator(p.GetRequiredService<ILogger<DbContextGenerator>>(), config) { Number = number });
             }
 
             if (config.Kinetix)

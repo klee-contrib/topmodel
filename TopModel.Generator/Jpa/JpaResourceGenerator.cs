@@ -29,11 +29,10 @@ public class JpaResourceGenerator : TranslationGeneratorBase
         var p = property.ResourceProperty;
         if (p.Label != null || (p.Class?.Values.Any() ?? false) && p.Class?.DefaultProperty != null)
         {
-            var module = p.Parent.Namespace.Module.Split('.').First();
             return Path.Combine(
                 _config.OutputDirectory,
-                _config.ResolveTagVariables(tag, _config.ResourceRootPath).Replace("{lang}", lang).Replace("{module}", module.Replace(".", "/")).ToLower(),
-                Path.Combine(module.Split(".").Last().ToKebabCase()) + $"_{lang}.properties");
+                _config.ResolveVariables(_config.ResourceRootPath, tag: tag, lang: lang).ToLower(),
+                $"{p.Parent.Namespace.RootModule.ToKebabCase()}{(string.IsNullOrEmpty(lang) ? string.Empty : $"_{lang}")}.properties");
         }
 
         return null;

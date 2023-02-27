@@ -26,32 +26,25 @@ public class CSharpApiServerGenerator : EndpointsGeneratorBase
 
     protected override bool FilterTag(string tag)
     {
-        return _config.ResolveTagVariables(tag, _config.ApiGeneration) == ApiGeneration.Server;
+        return _config.ResolveVariables(_config.ApiGeneration!, tag) == ApiGeneration.Server;
     }
 
     protected override string GetFileName(ModelFile file, string tag)
     {
-        var fileSplit = file.Options.Endpoints.FileName.Split("/");
-        var className = $"{fileSplit.Last()}Controller";
-        var apiPath = Path.Combine(
-            _config.ResolveTagVariables(tag, _config.ApiRootPath).Replace("{app}", file.Endpoints.First().Namespace.App),
-            "Controllers",
-            _config.ResolveTagVariables(tag, _config.ApiFilePath).Replace("{module}", file.Module.Replace('.', Path.DirectorySeparatorChar)))
-        .Replace("\\", "/");
-        return $"{_config.OutputDirectory}/{apiPath}/{className}.cs";
+        return $"{_config.GetApiPath(file, tag, withControllers: true)}/{file.Options.Endpoints.FileName}Controller.cs";
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        var className = $"{fileName.Split("/").Last()}Controller";
-        var apiPath = string.Join("/", filePath.Replace($"{_config.OutputDirectory}/", string.Empty).Split("/").SkipLast(1));
+        var className = $"{fileName}Controller";
+        var ns = _config.GetNamespace(endpoints.First(), tag);
 
         var text = File.Exists(filePath)
             ? File.ReadAllText(filePath)
             : _config.UseLatestCSharp
             ? $@"using Microsoft.AspNetCore.Mvc;
 
-namespace {apiPath.Replace("/", ".")};
+namespace {ns};
 
 public class {className} : Controller
 {{
@@ -60,7 +53,7 @@ public class {className} : Controller
             : $@"using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace {apiPath.Replace("/", ".")}
+namespace {ns}
 {{
     public class {className} : Controller
     {{

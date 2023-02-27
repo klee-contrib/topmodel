@@ -56,7 +56,7 @@ public class ModelFileLoader
             switch (prop)
             {
                 case "module":
-                    file.Module = value!.Value;
+                    file.Namespace = new Namespace { App = _config.App, Module = value!.Value };
                     break;
                 case "tags":
                     parser.ConsumeSequence(() =>
@@ -177,23 +177,22 @@ public class ModelFileLoader
             parser.Consume<DocumentEnd>();
         }
 
-        var ns = new Namespace { App = _config.App, Module = file.Module };
         foreach (var classe in file.Classes)
         {
             classe.ModelFile = file;
-            classe.Namespace = ns;
+            classe.Namespace = file.Namespace;
         }
 
         foreach (var endpoint in file.Endpoints)
         {
             endpoint.ModelFile = file;
-            endpoint.Namespace = ns;
+            endpoint.Namespace = file.Namespace;
         }
 
         foreach (var decorator in file.Decorators)
         {
             decorator.ModelFile = file;
-            decorator.Namespace = ns;
+            decorator.Namespace = file.Namespace;
         }
 
         if (file.Options.Endpoints.FileName == null)

@@ -8,13 +8,10 @@ generatedFiles:
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/utilisateur/UtilisateurApiController.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/DroitDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/ProfilDAO.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/ProfilDtoDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/SecteurDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/TypeProfilDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/TypeUtilisateurDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/UtilisateurDAO.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/UtilisateurDtoDAO.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/UtilisateurSearchDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/ProfilDto.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/UtilisateurDto.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/UtilisateurDTOMappers.java
@@ -27,5 +24,5 @@ generatedFiles:
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/utilisateur/TypeUtilisateur.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/utilisateur/Utilisateur.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/utilisateur/UtilisateurMappers.java
-  - ../generators/jpa/src/main/resources/i18n/model/securite/securite_.properties
-  - ../generators/jpa/src/main/resources/i18n/model/utilisateur/utilisateur_.properties
+  - ../generators/jpa/src/main/resources/i18n/model/securite.properties
+  - ../generators/jpa/src/main/resources/i18n/model/utilisateur.properties

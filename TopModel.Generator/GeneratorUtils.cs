@@ -14,7 +14,7 @@ public static class GeneratorUtils
                 var config = configs.ElementAt(i);
                 var number = i + 1;
 
-                config.ResolveVariables(number);
+                config.InitVariables(number);
 
                 ModelUtils.CombinePath(dn, config, c => c.OutputDirectory);
 

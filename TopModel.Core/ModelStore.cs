@@ -1195,7 +1195,7 @@ public class ModelStore
 
                     foreach (var mapping in finalMappings.Where((e, i) => finalMappings.Where((p, j) => p.Key == e.Key && j < i).Any()))
                     {
-                        yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Key.Name}' : {string.Join(", ", mapper.Params.SelectMany(p => p.Mappings.Where(m => m.Key == mapping.Key).Select(m => $"'{p.Name}.{m.Value.Name}'")))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
+                        yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Key.Name}' : {string.Join(", ", mapper.Params.SelectMany(p => p.Mappings.Where(m => m.Key == mapping.Key).Select(m => $"'{p.Name}.{m.Value}'")))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
                     }
                 }
             }
@@ -1403,7 +1403,7 @@ public class ModelStore
             yield return new ModelError(decorator, $"Le décorateur '{decorator.Name}' n'est pas utilisé.") { IsError = false, ModelErrorType = ModelErrorType.TMD9005 };
         }
 
-        foreach (var files in Files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Module }))
+        foreach (var files in Files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Namespace.Module }))
         {
             var endpoints = files.SelectMany(f => f.Endpoints.Where(c => !f.ResolvedAliases.Contains(c)));
 

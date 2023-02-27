@@ -72,6 +72,8 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   _Valeur par défaut_: `"{app}.{module}.Models"`
 
+  _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
+
 - `persistantReferencesModelPath`
 
   Localisation des classes de références persistées, relative au répertoire de génération.
@@ -81,6 +83,8 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
   _Templating_: `{app}`, `{module}`
 
   _Valeur par défaut_: Valeur de `persistantModelPath`
+
+  _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
 
 - `nonPersistantModelPath`
 
@@ -92,9 +96,13 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   _Valeur par défaut_: `"{app}.{module}.Models/Dto"`
 
+  _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
+
 - `apiRootPath`
 
   Localisation du l'API générée (client ou serveur), relatif au répertoire de génération.
+
+  Le namespace des classes d'API générées sera déterminé à partir de cette localisation, en retirant tout ce qui précède `{app}` dans le chemin.
 
   _Templating_: `{app}`
 
@@ -127,6 +135,8 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
   Localisation du DbContext, relatif au répertoire de génération.
 
   C'est ce paramètre qui décide si le DbContext est généré ou non.
+
+  _Templating_: `{app}`
 
   _Variables par tag_: **oui** (plusieurs contextes pourraient être générés si un fichier à plusieurs tags)
 
@@ -189,6 +199,10 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 - `dbSchema`
 
   Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo'/'public').
+
+  _Templating_: `{module}`
+
+  _Variables par tag_: **oui** (à faire correspondre avec les valeurs de différents `modelPath`)
 
 - `useLatestCSharp`
 

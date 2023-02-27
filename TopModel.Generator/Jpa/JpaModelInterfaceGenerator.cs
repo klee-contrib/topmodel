@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
@@ -8,7 +7,7 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// Générateur de DAOs JPA.
 /// </summary>
-public class JpaModelInterfaceGenerator : GeneratorBase
+public class JpaModelInterfaceGenerator : ClassGeneratorBase
 {
     private readonly JpaConfig _config;
     private readonly ILogger<JpaModelInterfaceGenerator> _logger;
@@ -22,74 +21,40 @@ public class JpaModelInterfaceGenerator : GeneratorBase
 
     public override string Name => "JpaInterfaceGen";
 
-    public override IEnumerable<string> GeneratedFiles => Files
-        .SelectMany(f => f.Value.Classes)
-        .Where(c => c.Abstract)
-        .Select(c => GetFileClassName(c));
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override bool FilterClass(Class classe)
     {
-        var modules = files.SelectMany(f => f.Classes.Select(c => c.Namespace.Module)).Distinct();
+        return classe.Abstract;
+    }
 
-        foreach (var module in modules)
+    protected override string GetFileName(Class classe, string tag)
+    {
+        return _config.GetClassFileName(classe, tag);
+    }
+
+    protected override void HandleClass(string fileName, Class classe, string tag)
+    {
+        var packageName = _config.GetPackageName(classe, tag);
+        using var fw = new JavaWriter(fileName, _logger, packageName, null);
+
+        WriteImports(fw, classe, tag);
+        fw.WriteLine();
+
+        var extendsDecorator = classe.Decorators.SingleOrDefault(d => d.Decorator.Java?.Extends != null);
+        var extends = (classe.Extends?.Name ?? extendsDecorator.Decorator?.Java!.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
+
+        var implements = classe.Decorators.SelectMany(d => d.Decorator.Java!.Implements.Select(i => i.ParseTemplate(classe, d.Parameters))).Distinct().ToList();
+
+        fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        fw.WriteLine($"public interface {classe.Name} {{");
+
+        WriteGetters(fw, classe, tag);
+
+        if (classe.Properties.Any(p => !p.Readonly))
         {
-            GenerateModule(module);
+            WriteHydrate(fw, classe);
         }
-    }
 
-    private string GetDestinationFolder(Class classe)
-    {
-        var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
-        return Path.Combine(
-                _config.OutputDirectory,
-                _config.ModelRootPath,
-                Path.Combine(packageRoot.Split(".")),
-                classe.Namespace.Module.Replace('.', Path.DirectorySeparatorChar).ToLower());
-    }
-
-    private string GetClassName(Class classe)
-    {
-        return $"{classe.Name.Value.ToPascalCase()}";
-    }
-
-    private string GetFileClassName(Class classe)
-    {
-        return Path.Combine(GetDestinationFolder(classe), $"{GetClassName(classe)}.java");
-    }
-
-    private void GenerateModule(string module)
-    {
-        var classes = Classes
-            .Where(c => c.Abstract)
-            .Where(c => c.Namespace.Module == module);
-        foreach (var classe in classes)
-        {
-            var packageRoot = classe.IsPersistent ? _config.EntitiesPackageName : _config.DtosPackageName;
-            var destFolder = GetDestinationFolder(classe);
-            var dirInfo = Directory.CreateDirectory(destFolder);
-            var packageName = $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
-            using var fw = new JavaWriter(GetFileClassName(classe), _logger, packageName, null);
-
-            WriteImports(fw, classe);
-            fw.WriteLine();
-
-            var extendsDecorator = classe.Decorators.SingleOrDefault(d => d.Decorator.Java?.Extends != null);
-            var extends = (classe.Extends?.Name ?? extendsDecorator.Decorator?.Java!.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
-
-            var implements = classe.Decorators.SelectMany(d => d.Decorator.Java!.Implements.Select(i => i.ParseTemplate(classe, d.Parameters))).Distinct().ToList();
-
-            fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
-            fw.WriteLine($"public interface {classe.Name} {{");
-
-            WriteGetters(fw, classe);
-
-            if (classe.Properties.Any(p => !p.Readonly))
-            {
-                WriteHydrate(fw, classe);
-            }
-
-            fw.WriteLine("}");
-        }
+        fw.WriteLine("}");
     }
 
     private void WriteHydrate(JavaWriter fw, Class classe)
@@ -121,20 +86,20 @@ public class JpaModelInterfaceGenerator : GeneratorBase
         fw.WriteLine(1, $"void hydrate({signature});");
     }
 
-    private void WriteGetters(JavaWriter fw, Class classe)
+    private void WriteGetters(JavaWriter fw, Class classe, string tag)
     {
         foreach (var property in classe.Properties.Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
         {
             var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
             fw.WriteLine();
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
-            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config)}#{property.GetJavaName()} {property.GetJavaName()}}}");
+            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config, tag)}#{property.GetJavaName()} {property.GetJavaName()}}}");
             fw.WriteDocEnd(1);
             fw.WriteLine(1, @$"{property.GetJavaType()} {getterPrefix}{property.GetJavaName().ToFirstUpper()}();");
         }
     }
 
-    private void WriteImports(JavaWriter fw, Class classe)
+    private void WriteImports(JavaWriter fw, Class classe, string tag)
     {
         var imports = new List<string>
             {
@@ -142,11 +107,11 @@ public class JpaModelInterfaceGenerator : GeneratorBase
             };
         foreach (var property in classe.Properties)
         {
-            imports.AddRange(property.GetTypeImports(_config));
+            imports.AddRange(property.GetTypeImports(_config, tag));
 
             if (property is CompositionProperty cp && cp.Composition.Namespace.Module == cp.Class?.Namespace.Module)
             {
-                imports.Add(cp.Composition.GetImport(_config));
+                imports.Add(cp.Composition.GetImport(_config, tag));
             }
         }
 
@@ -154,7 +119,7 @@ public class JpaModelInterfaceGenerator : GeneratorBase
         {
             foreach (var property in classe.Extends.Properties)
             {
-                imports.AddRange(property.GetTypeImports(_config));
+                imports.AddRange(property.GetTypeImports(_config, tag));
             }
         }
 

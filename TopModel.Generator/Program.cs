@@ -155,7 +155,7 @@ for (var i = 0; i < configs.Count; i++)
         .AddModelStore(fileChecker, config, dn)
         .AddProceduralSql(dn, config.ProceduralSql)
         .AddSsdt(dn, config.Ssdt)
-        .AddCSharp(dn, config.App, config.Csharp)
+        .AddCSharp(dn, config.Csharp)
         .AddJavascript(dn, config.Javascript)
         .AddJpa(dn, config.Jpa)
         .AddTranslationOut(dn, config.Translation);

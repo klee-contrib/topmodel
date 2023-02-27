@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 using TopModel.Utils;
 
 namespace TopModel.Generator.CSharp;
 
 using static CSharpUtils;
 
-public class CSharpClassGenerator : GeneratorBase
+public class CSharpClassGenerator : ClassGeneratorBase
 {
     private readonly CSharpConfig _config;
     private readonly ILogger<CSharpClassGenerator> _logger;
@@ -21,35 +20,24 @@ public class CSharpClassGenerator : GeneratorBase
 
     public override string Name => "CSharpClassGen";
 
-    public override IEnumerable<string> GeneratedFiles => Classes.Select(c => _config.GetClassFileName(c));
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    protected override string GetFileName(Class classe, string tag)
     {
-        foreach (var classe in files.SelectMany(file => file.Classes))
-        {
-            Generate(classe);
-        }
+        return _config.GetClassFileName(classe, tag);
     }
 
-    /// <summary>
-    /// Méthode générant le code d'une classe.
-    /// </summary>
-    /// <param name="item">Classe concernée.</param>
-    protected void Generate(Class item)
+    protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        if (item.Properties.OfType<IFieldProperty>().Any(p => p.Domain.CSharp == null))
+        if (classe.Properties.OfType<IFieldProperty>().Any(p => p.Domain.CSharp == null))
         {
-            throw new ModelException(item, $"Le type C# de tous les domaines des propriétés de {item.Name} doit être défini.");
+            throw new ModelException(classe, $"Le type C# de tous les domaines des propriétés de {classe} doit être défini.");
         }
-
-        var fileName = _config.GetClassFileName(item);
 
         using var w = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
 
-        GenerateUsings(w, item);
-        w.WriteNamespace(_config.GetNamespace(item));
-        w.WriteSummary(1, item.Comment);
-        GenerateClassDeclaration(w, item);
+        GenerateUsings(w, classe, tag);
+        w.WriteNamespace(_config.GetNamespace(classe, tag));
+        w.WriteSummary(1, classe.Comment);
+        GenerateClassDeclaration(w, classe, tag);
         w.WriteNamespaceEnd();
     }
 
@@ -393,7 +381,8 @@ public class CSharpClassGenerator : GeneratorBase
     /// </summary>
     /// <param name="w">Writer</param>
     /// <param name="item">Classe à générer.</param>
-    private void GenerateClassDeclaration(CSharpWriter w, Class item)
+    /// <param name="tag">Tag.</param>
+    private void GenerateClassDeclaration(CSharpWriter w, Class item, string tag)
     {
         if (!item.Abstract)
         {
@@ -419,7 +408,7 @@ public class CSharpClassGenerator : GeneratorBase
                 var sqlName = _config.UseLowerCaseSqlNames ? item.SqlName.ToLower() : item.SqlName;
                 if (_config.DbSchema != null)
                 {
-                    w.WriteAttribute(1, "Table", $@"""{sqlName}""", $@"Schema = ""{_config.DbSchema.Replace("{module}", item.Namespace.Module.ToSnakeCase())}""");
+                    w.WriteAttribute(1, "Table", $@"""{sqlName}""", $@"Schema = ""{_config.ResolveVariables(_config.DbSchema, tag, module: item.Namespace.Module.ToSnakeCase())}""");
                 }
                 else
                 {
@@ -621,7 +610,8 @@ public class CSharpClassGenerator : GeneratorBase
     /// </summary>
     /// <param name="w">Writer.</param>
     /// <param name="item">Classe concernée.</param>
-    private void GenerateUsings(CSharpWriter w, Class item)
+    /// <param name="tag">Tag.</param>
+    private void GenerateUsings(CSharpWriter w, Class item, string tag)
     {
         var usings = new List<string>();
 
@@ -665,7 +655,7 @@ public class CSharpClassGenerator : GeneratorBase
 
             if (item.Extends != null)
             {
-                usings.Add(_config.GetNamespace(item.Extends));
+                usings.Add(_config.GetNamespace(item.Extends, tag));
             }
         }
 
@@ -695,16 +685,16 @@ public class CSharpClassGenerator : GeneratorBase
             switch (property)
             {
                 case AssociationProperty { Association.IsPersistent: true, Association.Reference: true } ap:
-                    usings.Add(_config.GetNamespace(ap.Association));
+                    usings.Add(_config.GetNamespace(ap.Association, tag));
                     break;
                 case AliasProperty { Property: AssociationProperty { Association.IsPersistent: true, Association.Reference: true } ap2 }:
-                    usings.Add(_config.GetNamespace(ap2.Association));
+                    usings.Add(_config.GetNamespace(ap2.Association, tag));
                     break;
                 case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true, Class.Reference: true } rp }:
-                    usings.Add(_config.GetNamespace(rp.Class));
+                    usings.Add(_config.GetNamespace(rp.Class, tag));
                     break;
                 case CompositionProperty cp:
-                    usings.Add(_config.GetNamespace(cp.Composition));
+                    usings.Add(_config.GetNamespace(cp.Composition, tag));
                     if (cp.DomainKind != null)
                     {
                         usings.AddRange(cp.DomainKind.CSharp!.Usings.Select(u => u.ParseTemplate(cp)));
@@ -719,7 +709,7 @@ public class CSharpClassGenerator : GeneratorBase
         }
 
         w.WriteUsings(usings
-            .Where(u => u != _config.GetNamespace(item))
+            .Where(u => u != _config.GetNamespace(item, tag))
             .Distinct()
             .ToArray());
 
