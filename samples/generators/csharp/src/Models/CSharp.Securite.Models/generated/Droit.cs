@@ -69,7 +69,7 @@ public partial class Droit
     /// Code du droit.
     /// </summary>
     [Column("dro_code")]
-    [Domain(Domains.CODE)]
+    [Domain(Domains.Code)]
     [Key]
     public Codes? Code { get; set; }
 
@@ -78,7 +78,7 @@ public partial class Droit
     /// </summary>
     [Column("dro_libelle")]
     [Required]
-    [Domain(Domains.LIBELLE)]
+    [Domain(Domains.Libelle)]
     [StringLength(3)]
     public string Libelle { get; set; }
 
@@ -87,7 +87,7 @@ public partial class Droit
     /// </summary>
     [Column("tpr_code")]
     [ReferencedType(typeof(TypeProfil))]
-    [Domain(Domains.CODE)]
+    [Domain(Domains.Code)]
     public TypeProfil.Codes? TypeProfilCode { get; set; }
 
     /// <summary>

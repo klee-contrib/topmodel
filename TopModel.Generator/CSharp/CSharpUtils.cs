@@ -119,7 +119,7 @@ public static class CSharpUtils
             config.OutputDirectory,
             config.GetModelPath(classe, tag),
             "generated",
-            (classe.Abstract ? "I" : string.Empty) + classe.Name + ".cs");
+            (classe.Abstract ? "I" : string.Empty) + classe.NamePascal + ".cs");
     }
 
     public static string GetDbContextFilePath(this CSharpConfig config, Namespace ns, string tag)
@@ -224,9 +224,9 @@ public static class CSharpUtils
         {
             CompositionProperty cp => cp.Kind switch
             {
-                "object" => cp.Composition.Name,
-                "list" => $"{(useIEnumerable ? "IEnumerable" : "ICollection")}<{cp.Composition.Name}>",
-                "async-list" => $"IAsyncEnumerable<{cp.Composition.Name}>",
+                "object" => cp.Composition.NamePascal,
+                "list" => $"{(useIEnumerable ? "IEnumerable" : "ICollection")}<{cp.Composition.NamePascal}>",
+                "async-list" => $"IAsyncEnumerable<{cp.Composition.NamePascal}>",
                 string _ when cp.DomainKind!.CSharp!.Type.Contains("{composition.name}") => cp.DomainKind.CSharp.Type.ParseTemplate(cp),
                 string _ => $"{cp.DomainKind.CSharp.Type}<{{composition.name}}>".ParseTemplate(cp)
             },

@@ -75,7 +75,7 @@ public partial class CSharpDbContext : DbContext
         modelBuilder.Entity<Utilisateur>().HasOne<TypeUtilisateur>().WithMany().HasForeignKey(p => p.TypeUtilisateurCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Utilisateur>().HasOne<Utilisateur>().WithOne().HasForeignKey<Utilisateur>(p => p.UtilisateurIdParent).OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<Utilisateur>().HasIndex(p => new { p.email, p.UtilisateurIdParent }).IsUnique();
+        modelBuilder.Entity<Utilisateur>().HasIndex(p => new { p.Email, p.UtilisateurIdParent }).IsUnique();
 
         modelBuilder.Entity<Droit>().HasData(
             new Droit { Code = Droit.Codes.CRE, Libelle = "Créer", TypeProfilCode = TypeProfil.Codes.ADM },

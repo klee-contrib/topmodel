@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.Core;
 
@@ -10,6 +11,10 @@ public class Endpoint : IPropertyContainer
     public ModelFile ModelFile { get; set; }
 
     public LocatedString Name { get; set; }
+
+    public string NamePascal => Name.Value.ToPascalCase();
+
+    public string NameCamel => Name.Value.ToCamelCase();
 
     public string Method { get; set; }
 

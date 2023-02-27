@@ -4,6 +4,10 @@ public interface IProperty
 {
     string Name { get; }
 
+    string NamePascal { get; }
+
+    string NameCamel { get; }
+
     string? Label { get; }
 
     bool PrimaryKey { get; }

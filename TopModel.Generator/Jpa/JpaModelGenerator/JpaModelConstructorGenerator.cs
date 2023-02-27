@@ -83,7 +83,7 @@ public class JpaModelConstructorGenerator
             return;
         }
 
-        var propertiesSignature = string.Join(", ", properties.Select(p => $"{(p is AssociationProperty ap && ap.IsEnum() ? (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) ? $"List<{ap.Association.Name}.Values>" : $"{p.GetJavaType()}.Values" : p.GetJavaType())} {(p is AssociationProperty asp && asp.IsEnum() ? p.Name.ToFirstLower() : p.GetJavaName())}"));
+        var propertiesSignature = string.Join(", ", properties.Select(p => $"{(p is AssociationProperty ap && ap.IsEnum() ? (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) ? $"List<{ap.Association.NamePascal}.Values>" : $"{p.GetJavaType()}.Values" : p.GetJavaType())} {(p is AssociationProperty asp && asp.IsEnum() ? p.NameCamel : p.GetJavaName())}"));
 
         foreach (var property in properties)
         {
@@ -111,7 +111,7 @@ public class JpaModelConstructorGenerator
             else
             {
                 var isMultiple = aspr2.Type == AssociationType.OneToMany || aspr2.Type == AssociationType.ManyToMany;
-                fw.WriteLine(2, $"this.set{aspr2.Name.ToFirstUpper()}{(isMultiple ? aspr2.Association.PrimaryKey.Single().Name : string.Empty)}({property.Name.ToFirstLower()});");
+                fw.WriteLine(2, $"this.set{aspr2.NamePascal}{(isMultiple ? aspr2.Association.PrimaryKey.Single().NamePascal : string.Empty)}({property.NameCamel});");
             }
         }
 
@@ -146,7 +146,7 @@ public class JpaModelConstructorGenerator
             if (!(property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list"))
             {
                 var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
-                fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName().ToFirstUpper()}();");
+                fw.WriteLine(2, $"this.{property.GetJavaName()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName(true)}();");
             }
         }
 
@@ -164,7 +164,7 @@ public class JpaModelConstructorGenerator
             if (property is AssociationProperty ap || property is CompositionProperty cp && cp.Kind == "list")
             {
                 var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
-                fw.WriteLine(2, $"this.{property.GetJavaName().ToFirstLower()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName().ToPascalCase()}().stream().collect(Collectors.toList());");
+                fw.WriteLine(2, $"this.{property.GetJavaName()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName(true)}().stream().collect(Collectors.toList());");
                 fw.AddImport("java.util.stream.Collectors");
             }
         }
@@ -174,9 +174,9 @@ public class JpaModelConstructorGenerator
             fw.WriteLine();
             foreach (var ap in classe.GetProperties(_config, availableClasses, tag).OfType<AssociationProperty>().Where(ap => ap.Association.IsStatic()))
             {
-                var propertyName = ap.Name.ToFirstLower();
+                var propertyName = ap.NameCamel;
                 var getterPrefix = ap.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
-                fw.WriteLine(2, $"this.set{ap.Name}({classe.NameCamel}.{getterPrefix}{ap.Name.ToFirstUpper()}());");
+                fw.WriteLine(2, $"this.set{ap.NamePascal}({classe.NameCamel}.{getterPrefix}{ap.NamePascal}());");
             }
         }
 
@@ -186,7 +186,7 @@ public class JpaModelConstructorGenerator
     public void WriteFromMappers(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
     {
         var fromMappers = classe.FromMappers.Where(c => c.Params.All(p => availableClasses.Contains(p.Class))).Select(m => (classe, m))
-        .OrderBy(m => m.classe.Name)
+        .OrderBy(m => m.classe.NamePascal)
         .ToList();
 
         foreach (var fromMapper in fromMappers)
@@ -206,18 +206,18 @@ public class JpaModelConstructorGenerator
                     fw.WriteLine(1, $" * {param.Comment}");
                 }
 
-                fw.WriteParam(param.Name.ToFirstLower(), $"Instance de '{param.Class}'");
+                fw.WriteParam(param.Name.ToCamelCase(), $"Instance de '{param.Class}'");
             }
 
             fw.WriteReturns(1, $"Une nouvelle instance de '{classe}'");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, $"public {classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToFirstLower()}"))}) {{");
+            fw.WriteLine(1, $"public {classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToCamelCase()}"))}) {{");
             if (classe.Extends != null)
             {
                 fw.WriteLine(2, $"super();");
             }
 
-            fw.WriteLine(2, $"{classe.GetMapperClassName(mapper)}.create{classe}({string.Join(", ", mapper.Params.Select(p => p.Name.ToFirstLower()))}, this);");
+            fw.WriteLine(2, $"{classe.GetMapperClassName(mapper)}.create{classe}({string.Join(", ", mapper.Params.Select(p => p.Name.ToCamelCase()))}, this);");
             fw.AddImport(_config.GetMapperImport(classe, mapper, tag)!);
             fw.WriteLine(1, "}");
         }

@@ -40,12 +40,12 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
         fw.WriteLine();
 
         var extendsDecorator = classe.Decorators.SingleOrDefault(d => d.Decorator.Java?.Extends != null);
-        var extends = (classe.Extends?.Name ?? extendsDecorator.Decorator?.Java!.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
+        var extends = (classe.Extends?.NamePascal ?? extendsDecorator.Decorator?.Java!.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
 
         var implements = classe.Decorators.SelectMany(d => d.Decorator.Java!.Implements.Select(i => i.ParseTemplate(classe, d.Parameters))).Distinct().ToList();
 
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
-        fw.WriteLine($"public interface {classe.Name} {{");
+        fw.WriteLine($"public interface {classe.NamePascal} {{");
 
         WriteGetters(fw, classe, tag);
 
@@ -95,7 +95,7 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
             fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config, tag)}#{property.GetJavaName()} {property.GetJavaName()}}}");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, @$"{property.GetJavaType()} {getterPrefix}{property.GetJavaName().ToFirstUpper()}();");
+            fw.WriteLine(1, @$"{property.GetJavaType()} {getterPrefix}{property.GetJavaName(true)}();");
         }
     }
 

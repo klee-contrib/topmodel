@@ -10,7 +10,7 @@ public struct Namespace
 
     public string ModuleFlat => Module.Replace(".", string.Empty);
 
-    public string ModuleFirstLower => string.Join('.', Module.Split('.').Select(m => m.ToFirstLower()));
+    public string ModuleCamel => string.Join('.', Module.Split('.').Select(m => m.ToCamelCase()));
 
     public string ModulePath => Module.Replace('.', Path.DirectorySeparatorChar);
 

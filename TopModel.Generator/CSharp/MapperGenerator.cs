@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Utils;
 
 namespace TopModel.Generator.CSharp;
 
@@ -34,10 +33,10 @@ public class MapperGenerator : MapperGeneratorBase
         var tm = ToMappers.Where(fm => fm.IsPersistant == isPersistant && classes.Contains(fm.Classe));
 
         var fromMappers = (fm ?? Array.Empty<(Class, FromMapper, bool)>())
-            .OrderBy(m => $"{m.Classe.Name} {string.Join(',', m.Mapper.Params.Select(p => p.Name))}", StringComparer.Ordinal)
+            .OrderBy(m => $"{m.Classe.NamePascal} {string.Join(',', m.Mapper.Params.Select(p => p.Name))}", StringComparer.Ordinal)
             .ToList();
         var toMappers = (tm ?? Array.Empty<(Class, ClassMappings, bool)>())
-            .OrderBy(m => $"{m.Mapper.Name} {m.Classe.Name}", StringComparer.Ordinal)
+            .OrderBy(m => $"{m.Mapper.Name} {m.Classe.NamePascal}", StringComparer.Ordinal)
             .ToList();
 
         var usings = fromMappers.SelectMany(m => m.Mapper.Params.Select(p => p.Class).Concat(new[] { m.Classe }))
@@ -122,7 +121,7 @@ public class MapperGenerator : MapperGeneratorBase
                     var mappings = param.Mappings.ToList();
                     foreach (var mapping in mappings)
                     {
-                        w.Write(4, $"{mapping.Key.Name} = ");
+                        w.Write(4, $"{mapping.Key.NamePascal} = ");
 
                         if (mapping.Value == null)
                         {
@@ -130,11 +129,11 @@ public class MapperGenerator : MapperGeneratorBase
                         }
                         else
                         {
-                            var value = $"{mapper.Params[mapper.ParentMapper.Params.IndexOf(param)].Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.Name}";
+                            var value = $"{mapper.Params[mapper.ParentMapper.Params.IndexOf(param)].Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
 
                             if (mapping.Key is CompositionProperty cp)
                             {
-                                w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey.SingleOrDefault()?.Name} = ");
+                                w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey.SingleOrDefault()?.NamePascal} = ");
                             }
                             else
                             {
@@ -177,11 +176,11 @@ public class MapperGenerator : MapperGeneratorBase
                 {
                     if (classe.Abstract)
                     {
-                        w.Write(4, $"{mapping.Key.Name.ToFirstLower()}: ");
+                        w.Write(4, $"{mapping.Key.NameCamel}: ");
                     }
                     else
                     {
-                        w.Write(4, $"{mapping.Key.Name} = ");
+                        w.Write(4, $"{mapping.Key.NamePascal} = ");
                     }
 
                     if (mapping.Value == null)
@@ -190,11 +189,11 @@ public class MapperGenerator : MapperGeneratorBase
                     }
                     else
                     {
-                        var value = $"{param.Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.Name}";
+                        var value = $"{param.Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
 
                         if (mapping.Key is CompositionProperty cp)
                         {
-                            w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey.SingleOrDefault()?.Name} = ");
+                            w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey.SingleOrDefault()?.NamePascal} = ");
                         }
                         else
                         {
@@ -284,11 +283,11 @@ public class MapperGenerator : MapperGeneratorBase
             {
                 if (property is CompositionProperty cp)
                 {
-                    return $"{cp.Name}?.{cp.Composition.PrimaryKey.SingleOrDefault()?.Name}";
+                    return $"{cp.NamePascal}?.{cp.Composition.PrimaryKey.SingleOrDefault()?.NamePascal}";
                 }
                 else
                 {
-                    return property.Name;
+                    return property.NamePascal;
                 }
             }
 
@@ -312,7 +311,7 @@ public class MapperGenerator : MapperGeneratorBase
 
                 if (mapper.Class.Abstract)
                 {
-                    w.Write(4, $"{mapping.Value?.Name.ToFirstLower()}: {value}");
+                    w.Write(4, $"{mapping.Value?.NameCamel}: {value}");
 
                     if (mappings.IndexOf(mapping) < mappings.Count - 1)
                     {
@@ -325,7 +324,7 @@ public class MapperGenerator : MapperGeneratorBase
                 }
                 else
                 {
-                    w.WriteLine(3, $"dest.{mapping.Value?.Name} = {value};");
+                    w.WriteLine(3, $"dest.{mapping.Value?.NamePascal} = {value};");
                 }
             }
 

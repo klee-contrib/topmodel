@@ -36,7 +36,7 @@ public class JpaModelPropertyGenerator
     public void WriteProperty(JavaWriter fw, CompositionProperty property)
     {
         fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"private {property.GetJavaType()} {property.Name.ToFirstLower()};");
+        fw.WriteLine(1, $"private {property.GetJavaType()} {property.NameCamel};");
     }
 
     public void WriteProperties(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
@@ -88,7 +88,7 @@ public class JpaModelPropertyGenerator
 
             if (property is AssociationProperty ap && ap.IsEnum() && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Association.PrimaryKey.Single()) && r.Value[ap.Association.PrimaryKey.Single()] == property.DefaultValue))
             {
-                defaultValue += ap.Association.Name + ".Values." + property.DefaultValue + ".getEntity()";
+                defaultValue += ap.Association.NamePascal + ".Values." + property.DefaultValue + ".getEntity()";
             }
             else
             {
@@ -103,7 +103,7 @@ public class JpaModelPropertyGenerator
     {
         var fk = ((IFieldProperty)property).SqlName;
         var apk = property.Association.PrimaryKey.Single().SqlName;
-        fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, optional = {(property.Required ? "false" : "true")}, targetEntity = {property.Association.Name}.class)");
+        fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, optional = {(property.Required ? "false" : "true")}, targetEntity = {property.Association.NamePascal}.class)");
         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
     }
 
@@ -142,7 +142,7 @@ public class JpaModelPropertyGenerator
         else
         {
             var hasReverse = property.Class.Namespace.RootModule == property.Association.Namespace.RootModule;
-            fw.WriteLine(1, @$"@{property.Type}(cascade = CascadeType.ALL, fetch = FetchType.LAZY{(hasReverse ? @$", mappedBy = ""{property.Class.Name.ToFirstLower()}{property.Role ?? string.Empty}""" : string.Empty)})");
+            fw.WriteLine(1, @$"@{property.Type}(cascade = CascadeType.ALL, fetch = FetchType.LAZY{(hasReverse ? @$", mappedBy = ""{property.Class.NameCamel}{property.Role ?? string.Empty}""" : string.Empty)})");
             if (!hasReverse)
             {
                 fw.WriteLine(1, @$"@JoinColumn(name = ""{pk}"", referencedColumnName = ""{pk}"")");
@@ -155,7 +155,7 @@ public class JpaModelPropertyGenerator
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         if (property is AliasProperty alp)
         {
-            fw.WriteLine(1, $" * Alias of {{@link {alp.Property.Class.GetImport(_config, tag)}#get{alp.Property.Name.ToFirstUpper()}() {alp.Property.Class.Name}#get{alp.Property.Name.ToFirstUpper()}()}} ");
+            fw.WriteLine(1, $" * Alias of {{@link {alp.Property.Class.GetImport(_config, tag)}#get{alp.Property.NamePascal}() {alp.Property.Class.NamePascal}#get{alp.Property.NamePascal}()}} ");
         }
 
         fw.WriteDocEnd(1);
@@ -249,11 +249,11 @@ public class JpaModelPropertyGenerator
             {
                 if (aslp.Property.IsEnum())
                 {
-                    defaultValue += aslp.Property.Class.Name + ".Values." + property.DefaultValue;
+                    defaultValue += aslp.Property.Class.NamePascal + ".Values." + property.DefaultValue;
                 }
                 else if (aslp.Property is AssociationProperty aslpAss)
                 {
-                    defaultValue += aslpAss.Association.Name + ".Values." + property.DefaultValue;
+                    defaultValue += aslpAss.Association.NamePascal + ".Values." + property.DefaultValue;
                 }
             }
             else

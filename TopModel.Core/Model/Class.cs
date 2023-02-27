@@ -12,9 +12,9 @@ public class Class : IPropertyContainer
 #nullable disable
     public LocatedString Name { get; set; }
 
-    public string NameCamel => Name.Value.ToCamelCase();
-
     public string NamePascal => Name.Value.ToPascalCase();
+
+    public string NameCamel => Name.Value.ToCamelCase();
 
     public string SqlName { get; set; }
 
@@ -67,6 +67,8 @@ public class Class : IPropertyContainer
         get => _pluralName ?? (Name.EndsWith("s") ? Name : $"{Name}s");
         set => _pluralName = value;
     }
+
+    public string PluralNamePascal => PluralName.ToPascalCase();
 
     public bool IsPersistent => Properties.Any(p => p is not AliasProperty && p.PrimaryKey);
 

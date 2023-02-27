@@ -43,7 +43,7 @@ public class JpaResourceGenerator : TranslationGeneratorBase
         using var fw = new FileWriter(filePath, _logger, Encoding.Latin1) { EnableHeader = false };
         var containers = properties.GroupBy(prop => prop.Parent);
 
-        foreach (var container in containers.OrderBy(c => c.Key.Name))
+        foreach (var container in containers.OrderBy(c => c.Key.NameCamel))
         {
             WriteClasse(fw, container, lang);
         }

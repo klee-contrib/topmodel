@@ -60,7 +60,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase
         fw.WriteLine(1, "providedIn: 'root'");
         fw.WriteLine("})");
 
-        fw.WriteLine(@$"export class {fileName.ToFirstUpper()}Service {{");
+        fw.WriteLine(@$"export class {fileName.ToPascalCase()}Service {{");
         fw.WriteLine();
         fw.WriteLine(1, "constructor(private http: HttpClient) {}");
         foreach (var endpoint in endpoints)
@@ -90,7 +90,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase
         }
 
         fw.WriteLine(1, " */");
-        fw.Write(1, $"{endpoint.Name.ToFirstLower()}(");
+        fw.Write(1, $"{endpoint.NameCamel}(");
 
         var hasForm = endpoint.Params.Any(p => p is IFieldProperty fp && fp.Domain.TS!.Type.Contains("File"));
         var hasProperty = false;

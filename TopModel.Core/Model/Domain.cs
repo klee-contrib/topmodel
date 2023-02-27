@@ -40,7 +40,7 @@ public class Domain
 
     public string? MediaType { get; set; }
 
-    public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCase();
+    public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCaseStrict();
 
     public bool ShouldQuoteSqlValue =>
         (SqlType ?? string.Empty).Contains("varchar")

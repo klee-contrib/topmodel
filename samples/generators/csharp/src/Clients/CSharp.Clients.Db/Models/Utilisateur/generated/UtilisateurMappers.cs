@@ -29,11 +29,11 @@ public static class UtilisateurMappers
             Id = utilisateur.Id,
             Age = utilisateur.Age,
             ProfilId = utilisateur.ProfilId,
-            email = utilisateur.email,
+            Email = utilisateur.Email,
             Nom = utilisateur.Nom,
             TypeUtilisateurCode = utilisateur.TypeUtilisateurCode,
-            dateCreation = utilisateur.dateCreation,
-            dateModification = utilisateur.dateModification
+            DateCreation = utilisateur.DateCreation,
+            DateModification = utilisateur.DateModification
         };
     }
 
@@ -50,11 +50,11 @@ public static class UtilisateurMappers
         dest.Id = source.Id;
         dest.Age = source.Age;
         dest.ProfilId = source.ProfilId;
-        dest.email = source.email;
+        dest.Email = source.Email;
         dest.Nom = source.Nom;
         dest.TypeUtilisateurCode = source.TypeUtilisateurCode;
-        dest.dateCreation = source.dateCreation;
-        dest.dateModification = source.dateModification;
+        dest.DateCreation = source.DateCreation;
+        dest.DateModification = source.DateModification;
         return dest;
     }
 }

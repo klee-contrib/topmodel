@@ -20,7 +20,7 @@ public partial class ProfilDto
     /// </summary>
     public ProfilDto()
     {
-        utilisateurs = new List<UtilisateurDto>();
+        Utilisateurs = new List<UtilisateurDto>();
 
         OnCreated();
     }
@@ -36,7 +36,7 @@ public partial class ProfilDto
             throw new ArgumentNullException(nameof(bean));
         }
 
-        utilisateurs = new List<UtilisateurDto>(bean.utilisateurs);
+        Utilisateurs = new List<UtilisateurDto>(bean.Utilisateurs);
         Id = bean.Id;
         TypeProfilCode = bean.TypeProfilCode;
         Droits = bean.Droits;
@@ -50,7 +50,7 @@ public partial class ProfilDto
     /// </summary>
     [Column("pro_id")]
     [Required]
-    [Domain(Domains.ID)]
+    [Domain(Domains.Id)]
     public int? Id { get; set; }
 
     /// <summary>
@@ -58,7 +58,7 @@ public partial class ProfilDto
     /// </summary>
     [Column("tpr_code")]
     [ReferencedType(typeof(TypeProfil))]
-    [Domain(Domains.CODE)]
+    [Domain(Domains.Code)]
     public TypeProfil.Codes? TypeProfilCode { get; set; }
 
     /// <summary>
@@ -66,21 +66,21 @@ public partial class ProfilDto
     /// </summary>
     [Column("dro_code")]
     [ReferencedType(typeof(Droit))]
-    [Domain(Domains.CODELIST)]
+    [Domain(Domains.CodeList)]
     public Droit.Codes[] Droits { get; set; }
 
     /// <summary>
     /// Liste des secteurs de l'utilisateur.
     /// </summary>
     [Column("sec_id")]
-    [Domain(Domains.IDLIST)]
+    [Domain(Domains.IdList)]
     public int[] Secteurs { get; set; }
 
     /// <summary>
     /// Liste paginée des utilisateurs de ce profil.
     /// </summary>
     [NotMapped]
-    public ICollection<UtilisateurDto> utilisateurs { get; set; }
+    public ICollection<UtilisateurDto> Utilisateurs { get; set; }
 
     /// <summary>
     /// Methode d'extensibilité possible pour les constructeurs.

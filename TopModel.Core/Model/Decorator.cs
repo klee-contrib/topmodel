@@ -1,5 +1,6 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Core.Types;
+using TopModel.Utils;
 using YamlDotNet.Serialization;
 
 namespace TopModel.Core;
@@ -8,6 +9,10 @@ public class Decorator : IPropertyContainer
 {
 #nullable disable
     public LocatedString Name { get; set; }
+
+    public string NamePascal => Name.Value.ToPascalCase();
+
+    public string NameCamel => Name.Value.ToCamelCase();
 
     public string Description { get; set; }
 #nullable enable

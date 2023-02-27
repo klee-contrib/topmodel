@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.Core;
 
@@ -41,6 +42,10 @@ public class AliasProperty : IFieldProperty
     public LocatedString? Trigram { get; set; }
 
     public string Name => (Prefix ?? string.Empty) + _property?.Name + (Suffix ?? string.Empty);
+
+    public string NamePascal => Name.ToPascalCase();
+
+    public string NameCamel => Name.ToCamelCase();
 
     public string? Label
     {

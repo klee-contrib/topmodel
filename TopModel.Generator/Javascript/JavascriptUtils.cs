@@ -11,8 +11,8 @@ public static class JavascriptUtils
         {
             CompositionProperty cp => cp.Kind switch
             {
-                "object" => cp.Composition.Name,
-                "list" or "async-list" => $"{cp.Composition.Name}[]",
+                "object" => cp.Composition.NamePascal,
+                "list" or "async-list" => $"{cp.Composition.NamePascal}[]",
                 string _ when cp.DomainKind!.TS!.Type.Contains("{composition.name}") => cp.DomainKind.TS.Type.ParseTemplate(cp),
                 string _ => $"{cp.DomainKind.TS.Type}<{{composition.name}}>".ParseTemplate(cp)
             },
@@ -62,11 +62,11 @@ public static class JavascriptUtils
         fw.Write("export const ");
         fw.Write(classe.NameCamel);
         fw.Write(" = {type: {} as ");
-        fw.Write(classe.Name);
+        fw.Write(classe.NamePascal);
         fw.Write(", valueKey: \"");
-        fw.Write(classe.ReferenceKey!.Name.ToFirstLower());
+        fw.Write(classe.ReferenceKey!.NameCamel);
         fw.Write("\", labelKey: \"");
-        fw.Write(classe.DefaultProperty?.Name.ToFirstLower());
+        fw.Write(classe.DefaultProperty?.NameCamel);
         fw.Write("\"} as const;\r\n");
     }
 }

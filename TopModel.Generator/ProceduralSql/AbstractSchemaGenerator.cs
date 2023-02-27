@@ -72,7 +72,7 @@ public abstract class AbstractSchemaGenerator
         WriteInsertStart(writerInsert);
 
         // Construit la liste des Reference Class ordonnée.
-        var orderList = SortUtils.Sort(classes.OrderBy(c => c.Name), c => c.Properties
+        var orderList = SortUtils.Sort(classes.OrderBy(c => c.SqlName), c => c.Properties
             .OfType<AssociationProperty>()
             .Select(a => a.Association)
             .Where(a => a.Values.Any()));
@@ -132,7 +132,7 @@ public abstract class AbstractSchemaGenerator
         writerType?.WriteLine("-- =========================================================================================== ");
 
         var foreignKeys = classes
-            .OrderBy(c => c.Name)
+            .OrderBy(c => c.SqlName)
             .Where(c => c.IsPersistent && !c.Abstract)
             .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType, classes.ToList()))
             .ToList();
@@ -325,7 +325,7 @@ public abstract class AbstractSchemaGenerator
     /// <param name="modelClass">Modele de la classe.</param>
     private void WriteInsert(SqlFileWriter writer, Class modelClass)
     {
-        writer.WriteLine("/**\t\tInitialisation de la table " + modelClass.Name + "\t\t**/");
+        writer.WriteLine("/**\t\tInitialisation de la table " + modelClass.SqlName + "\t\t**/");
         foreach (var initItem in modelClass.Values)
         {
             writer.WriteLine(GetInsertLine(modelClass, initItem));

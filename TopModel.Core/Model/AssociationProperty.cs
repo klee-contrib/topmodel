@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.Core;
 
@@ -77,6 +78,10 @@ public class AssociationProperty : IFieldProperty
             return name.ToString();
         }
     }
+
+    public string NamePascal => Name.ToPascalCase();
+
+    public string NameCamel => Name.ToCamelCase();
 
     public Domain Domain => this.Type == AssociationType.ManyToMany || this.Type == AssociationType.OneToMany ? Property?.Domain.ListDomain! : Property?.Domain!;
 

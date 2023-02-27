@@ -34,12 +34,12 @@ public partial class UtilisateurApiClient
     /// </summary>
     /// <param name="utiId">Id technique.</param>
     /// <returns>Task.</returns>
-    public async Task deleteAll(int[] utiId = null)
+    public async Task DeleteAll(int[] utiId = null)
     {
         await EnsureAuthentication();
         var query = await new FormUrlEncodedContent(new Dictionary<string, string>
         {
-        }.Concat(Id?.Select(i => new KeyValuePair<string, string>("Id", i.ToString(CultureInfo.InvariantCulture))) ?? new Dictionary<string, string>())
+        }.Concat(utiId?.Select(i => new KeyValuePair<string, string>("utiId", i.ToString(CultureInfo.InvariantCulture))) ?? new Dictionary<string, string>())
          .Where(kv => kv.Value != null)).ReadAsStringAsync();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, $"utilisateur/deleteAll?{query}"));
         await EnsureSuccess(res);
@@ -50,7 +50,7 @@ public partial class UtilisateurApiClient
     /// </summary>
     /// <param name="utiId">Id technique.</param>
     /// <returns>Le détail de l'utilisateur.</returns>
-    public async Task<UtilisateurDto> find(int utiId)
+    public async Task<UtilisateurDto> Find(int utiId)
     {
         await EnsureAuthentication();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"utilisateur/{utiId}"), HttpCompletionOption.ResponseHeadersRead);
@@ -63,7 +63,7 @@ public partial class UtilisateurApiClient
     /// </summary>
     /// <param name="typeUtilisateurCode">Type d'utilisateur en Many to one.</param>
     /// <returns>Liste des utilisateurs.</returns>
-    public async Task<IEnumerable<UtilisateurSearch>> findAllByType(TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM)
+    public async Task<IEnumerable<UtilisateurSearch>> FindAllByType(TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM)
     {
         await EnsureAuthentication();
         var query = await new FormUrlEncodedContent(new Dictionary<string, string>
@@ -80,7 +80,7 @@ public partial class UtilisateurApiClient
     /// </summary>
     /// <param name="utilisateur">Utilisateur à sauvegarder.</param>
     /// <returns>Utilisateur sauvegardé.</returns>
-    public async Task<UtilisateurDto> save(UtilisateurDto utilisateur)
+    public async Task<UtilisateurDto> Save(UtilisateurDto utilisateur)
     {
         await EnsureAuthentication();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"utilisateur/save") { Content = GetBody(utilisateur) }, HttpCompletionOption.ResponseHeadersRead);
@@ -100,7 +100,7 @@ public partial class UtilisateurApiClient
     /// <param name="dateCreation">Date de création de l'utilisateur.</param>
     /// <param name="dateModification">Date de modification de l'utilisateur.</param>
     /// <returns>Utilisateurs matchant les critères.</returns>
-    public async Task<ICollection<UtilisateurSearch>> search(int? utiId = null, decimal age = 6l, int? profilId = null, string email = null, string nom = "Jabx", TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM, DateOnly? dateCreation = null, DateOnly? dateModification = null)
+    public async Task<ICollection<UtilisateurSearch>> Search(int? utiId = null, decimal age = 6l, int? profilId = null, string email = null, string nom = "Jabx", TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM, DateOnly? dateCreation = null, DateOnly? dateModification = null)
     {
         await EnsureAuthentication();
         var query = await new FormUrlEncodedContent(new Dictionary<string, string>

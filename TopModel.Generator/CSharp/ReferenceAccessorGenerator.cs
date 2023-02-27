@@ -29,7 +29,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
     protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
     {
         var classList = classes
-            .OrderBy(x => (_config.DbContextPath == null ? $"{x.Name}List" : x.PluralName), StringComparer.Ordinal)
+            .OrderBy(x => (_config.DbContextPath == null ? $"{x.NamePascal}List" : x.PluralNamePascal), StringComparer.Ordinal)
             .ToList();
 
         if (fileType == "interface")
@@ -82,7 +82,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
         {
             usings.Add("Kinetix.DataAccess.Sql.Broker");
 
-            if (classList.Any(classe => classe.OrderProperty != null || classe.DefaultProperty != null && classe.DefaultProperty.Name != "Libelle"))
+            if (classList.Any(classe => classe.OrderProperty != null || classe.DefaultProperty != null && classe.DefaultProperty.NamePascal != "Libelle"))
             {
                 usings.Add("Kinetix.DataAccess.Sql");
             }
@@ -140,9 +140,9 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
 
         foreach (var classe in classList.Where(c => c.IsPersistent || c.Values.Any()))
         {
-            var serviceName = "Load" + (_config.DbContextPath == null ? $"{classe.Name}List" : classe.PluralName);
+            var serviceName = "Load" + (_config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal);
             w.WriteLine(2, "/// <inheritdoc cref=\"" + interfaceName + "." + serviceName + "\" />");
-            w.WriteLine(2, "public ICollection<" + classe.Name + "> " + serviceName + "()\r\n{");
+            w.WriteLine(2, "public ICollection<" + classe.NamePascal + "> " + serviceName + "()\r\n{");
             w.WriteLine(3, LoadReferenceAccessorBody(classe));
             w.WriteLine(2, "}");
 
@@ -196,10 +196,10 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
         foreach (var classe in classList)
         {
             count++;
-            w.WriteSummary(2, "Reference accessor for type " + classe.Name);
-            w.WriteReturns(2, "List of " + classe.Name);
+            w.WriteSummary(2, "Reference accessor for type " + classe.NamePascal);
+            w.WriteReturns(2, "List of " + classe.NamePascal);
             w.WriteLine(2, "[ReferenceAccessor]");
-            w.WriteLine(2, "ICollection<" + classe.Name + "> Load" + (_config.DbContextPath == null ? $"{classe.Name}List" : classe.PluralName) + "();");
+            w.WriteLine(2, "ICollection<" + classe.NamePascal + "> Load" + (_config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal) + "();");
 
             if (count != classList.Count())
             {
@@ -220,9 +220,9 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
     {
         if (!classe.IsPersistent)
         {
-            return $@"return new List<{classe.Name}>
+            return $@"return new List<{classe.NamePascal}>
 {{
-    {string.Join(",\r\n    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.Name} = {(prop.Key.Domain.ShouldQuoteSqlValue ? $"\"{prop.Value}\"" : prop.Value)}"))} }}"))}
+    {string.Join(",\r\n    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.NamePascal} = {(prop.Key.Domain.ShouldQuoteSqlValue ? $"\"{prop.Value}\"" : prop.Value)}"))} }}"))}
 }};";
         }
 
@@ -233,19 +233,19 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
         {
             if (defaultProperty != null)
             {
-                queryParameter = $".OrderBy(row => row.{defaultProperty.Name})";
+                queryParameter = $".OrderBy(row => row.{defaultProperty.NamePascal})";
             }
 
-            return $"return _dbContext.{classe.PluralName}{queryParameter}.ToList();";
+            return $"return _dbContext.{classe.PluralNamePascal}{queryParameter}.ToList();";
         }
         else
         {
             if (defaultProperty != null)
             {
-                queryParameter = "new QueryParameter(" + classe.Name + ".Cols." + defaultProperty.SqlName + ", SortOrder.Asc)";
+                queryParameter = "new QueryParameter(" + classe.NamePascal + ".Cols." + defaultProperty.SqlName + ", SortOrder.Asc)";
             }
 
-            return "return _brokerManager.GetBroker<" + classe.Name + ">().GetAll(" + queryParameter + ");";
+            return "return _brokerManager.GetBroker<" + classe.NamePascal + ">().GetAll(" + queryParameter + ");";
         }
     }
 }

@@ -27,7 +27,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
 
     protected override string GetFileName(ModelFile file, string tag)
     {
-        return $"{_config.GetApiPath(file, tag)}/generated/{file.Options.Endpoints.FileName}Client.cs";
+        return $"{_config.GetApiPath(file, tag)}/generated/{file.Options.Endpoints.FileName.ToPascalCase()}Client.cs";
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
@@ -132,7 +132,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
             }
         }
 
-        var className = $"{fileName}Client";
+        var className = $"{fileName.ToPascalCase()}Client";
         var ns = _config.GetNamespace(endpoints.First(), tag);
 
         fw.WriteUsings(usings.Distinct().Where(u => u != ns).ToArray());
@@ -167,7 +167,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
         fw.WriteLine(3, "_client = client;");
         fw.WriteLine(2, "}");
 
-        foreach (var endpoint in endpoints.OrderBy(endpoint => endpoint.Name))
+        foreach (var endpoint in endpoints.OrderBy(endpoint => endpoint.NamePascal))
         {
             fw.WriteLine();
             fw.WriteSummary(2, endpoint.Description);
@@ -197,7 +197,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
                 fw.Write($"<{returnType}>");
             }
 
-            fw.Write($" {endpoint.Name}(");
+            fw.Write($" {endpoint.NamePascal}(");
 
             foreach (var param in endpoint.Params)
             {
@@ -235,7 +235,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
                         _ => $"?.ToString(CultureInfo.InvariantCulture)"
                     };
 
-                    fw.WriteLine(4, $@"[""{qp.GetParamName()}""] = {qp.GetParamName().Verbatim()}{toString},");
+                    fw.WriteLine(4, $@"[""{qp.GetParamName(true)}""] = {qp.GetParamName().Verbatim()}{toString},");
                 }
 
                 var listQPs = endpoint.GetQueryParams().Where(qp => _config.GetPropertyTypeName(qp).Contains("[]")).ToList();
@@ -262,14 +262,14 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
                         };
 
                         var first = listQPs.IndexOf(qp) == 0;
-                        fw.WriteLine(first ? 0 : 3, $@"{(first ? string.Empty : " ")}.Concat({qp.Name}?.Select(i => new KeyValuePair<string, string>(""{qp.Name}"", i{toString})) ?? new Dictionary<string, string>())");
+                        fw.WriteLine(first ? 0 : 3, $@"{(first ? string.Empty : " ")}.Concat({qp.GetParamName()}?.Select(i => new KeyValuePair<string, string>(""{qp.GetParamName()}"", i{toString})) ?? new Dictionary<string, string>())");
                     }
 
                     fw.WriteLine(3, " .Where(kv => kv.Value != null)).ReadAsStringAsync();");
                 }
             }
 
-            fw.WriteLine(3, $"using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.{endpoint.Method.ToLower().ToFirstUpper()}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = GetBody({bodyParam.Name}) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)});");
+            fw.WriteLine(3, $"using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.{endpoint.Method.ToPascalCaseStrict()}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = GetBody({bodyParam.NameCamel}) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)});");
             fw.WriteLine(3, $"await EnsureSuccess(res);");
 
             if (returnType != null)

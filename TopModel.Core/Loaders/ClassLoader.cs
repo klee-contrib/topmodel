@@ -179,7 +179,7 @@ public class ClassLoader : ILoader<Class>
                                                         }
                                                     });
 
-                                                    param.Name ??= new LocatedString(classScalar) { Value = param.ClassReference.ReferenceName.ToFirstLower() };
+                                                    param.Name ??= new LocatedString(classScalar) { Value = param.ClassReference.ReferenceName.ToCamelCase() };
                                                 });
                                                 break;
                                         }

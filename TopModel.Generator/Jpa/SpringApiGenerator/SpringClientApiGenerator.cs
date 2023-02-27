@@ -136,7 +136,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase
 
     private void WriteUriBuilderMethod(JavaWriter fw, Endpoint endpoint)
     {
-        fw.WriteDocStart(1, $"UriComponentsBuilder pour la méthode {endpoint.Name}");
+        fw.WriteDocStart(1, $"UriComponentsBuilder pour la méthode {endpoint.NameCamel}");
 
         foreach (var param in endpoint.GetRouteParams().Concat(endpoint.GetQueryParams()))
         {
@@ -152,7 +152,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase
         var returnType = "UriComponentsBuilder";
         var methodParams = GetMethodParams(endpoint, true, false);
 
-        fw.WriteLine(1, $"protected {returnType} {endpoint.Name.ToFirstLower()}UriComponentsBuilder({string.Join(", ", methodParams)}) {{");
+        fw.WriteLine(1, $"protected {returnType} {endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", methodParams)}) {{");
         var fullRoute = endpoint.FullRoute;
         fullRoute = "/" + fullRoute;
         foreach (IProperty p in endpoint.GetRouteParams())
@@ -229,9 +229,9 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase
         }
 
         var methodParams = GetMethodParams(endpoint, true, false);
-        fw.WriteLine(1, $"public {returnType} {endpoint.Name.ToFirstLower()}({string.Join(", ", GetMethodParams(endpoint))}){{");
+        fw.WriteLine(1, $"public {returnType} {endpoint.NameCamel}({string.Join(", ", GetMethodParams(endpoint))}){{");
         fw.WriteLine(2, $"HttpHeaders headers = this.getHeaders();");
-        fw.WriteLine(2, $"UriComponentsBuilder uri = this.{endpoint.Name.ToFirstLower()}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, false, false))});");
+        fw.WriteLine(2, $"UriComponentsBuilder uri = this.{endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, false, false))});");
         var body = $"new HttpEntity<>({(endpoint.GetBodyParam()?.GetParamName() != null ? $"{endpoint.GetBodyParam()?.GetParamName()}, " : string.Empty)}headers)";
         if (endpoint.Returns != null)
         {
