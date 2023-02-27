@@ -36,7 +36,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
 
     protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
     {
-        GenerateReferenceFile(fileName, classes.OrderBy(r => r.Name), tag);
+        GenerateReferenceFile(fileName, classes.OrderBy(r => r.NameCamel), tag);
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
                 Import: dep.Source switch
                 {
                     IProperty fp => fp.GetPropertyTypeName(Classes),
-                    Class c => c.Name,
+                    Class c => c.NamePascal,
                     _ => null!
                 },
                 Path: _config.GetImportPathForClass(dep, tag, Classes)!))
@@ -89,15 +89,15 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
             if (reference.EnumKey != null)
             {
                 fw.Write("export type ");
-                fw.Write(reference.Name);
-                fw.Write($"{reference.EnumKey.Name} = ");
+                fw.Write(reference.NamePascal);
+                fw.Write($"{reference.EnumKey.Name.ToPascalCase()} = ");
                 fw.Write(string.Join(" | ", reference.Values.Select(r => $@"""{r.Value[reference.EnumKey]}""").OrderBy(x => x, StringComparer.Ordinal)));
                 fw.WriteLine(";");
 
                 foreach (var uk in reference.UniqueKeys.Where(uk => uk.Count == 1 && uk.Single().Required).Select(uk => uk.Single()))
                 {
                     fw.Write("export type ");
-                    fw.Write(reference.Name);
+                    fw.Write(reference.NamePascal);
                     fw.Write($"{uk} = ");
                     fw.Write(string.Join(" | ", reference.Values.Select(r => $@"""{r.Value[uk]}""").OrderBy(x => x, StringComparer.Ordinal)));
                     fw.WriteLine(";");
@@ -106,7 +106,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
 
             if (reference.FlagProperty != null)
             {
-                fw.Write($"export enum {reference.Name}Flag {{\r\n");
+                fw.Write($"export enum {reference.NamePascal}Flag {{\r\n");
 
                 var flagValues = reference.Values.Where(refValue => refValue.Value.ContainsKey(reference.FlagProperty) && int.TryParse(refValue.Value[reference.FlagProperty], out var _)).ToList();
                 foreach (var refValue in flagValues)
@@ -125,13 +125,13 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
             if (reference.Reference)
             {
                 fw.Write("export interface ");
-                fw.Write(reference.Name);
+                fw.Write(reference.NamePascal);
                 fw.Write(" {\r\n");
 
                 foreach (var property in reference.Properties.OfType<IFieldProperty>())
                 {
                     fw.Write("    ");
-                    fw.Write(property.Name.ToFirstLower());
+                    fw.Write(property.NameCamel);
                     fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
                     fw.Write(": ");
                     fw.Write(property.GetPropertyTypeName(Classes));
@@ -155,14 +155,14 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
     private void WriteReferenceValues(FileWriter fw, Class reference)
     {
         fw.Write("export const ");
-        fw.Write(reference.Name.ToFirstLower());
-        fw.Write($"List: {reference.Name}[] = [");
+        fw.Write(reference.NameCamel);
+        fw.Write($"List: {reference.NamePascal}[] = [");
         fw.WriteLine();
         foreach (var refValue in reference.Values)
         {
             fw.WriteLine("    {");
             fw.Write("        ");
-            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.Name.ToFirstLower()}: {(property.Key.Domain.TS!.Type == "string" ? @$"""{(_modelConfig.I18n.TranslateReferences && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}")));
+            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.NameCamel}: {(property.Key.Domain.TS!.Type == "string" ? @$"""{(_modelConfig.I18n.TranslateReferences && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}")));
             fw.WriteLine();
             fw.WriteLine("    },");
         }

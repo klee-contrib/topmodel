@@ -147,6 +147,7 @@ static class OpenApiTmdGenerator
                 fw.WriteLine("---");
                 fw.WriteLine("class:");
                 fw.WriteLine($"  name: {schema.Key}");
+                fw.WriteLine($"  preservePropertyCasing: true");
                 if (schema.Value.Description != null)
                 {
                     fw.WriteLine($"  comment: {FormatDescription(schema.Value.Description ?? schema.Key)}");
@@ -185,6 +186,7 @@ static class OpenApiTmdGenerator
                     fw.WriteLine("---");
                     fw.WriteLine("class:");
                     fw.WriteLine($"  name: {schema.Key.ToPascalCase()}{property.Key.ToPascalCase()}");
+                    fw.WriteLine($"  preservePropertyCasing: true");
                     fw.WriteLine($"  comment: enum pour les valeurs de {property.Key.ToPascalCase()}");
 
                     fw.WriteLine();
@@ -196,7 +198,7 @@ static class OpenApiTmdGenerator
                     var u = 0;
                     foreach (var val in property.Value.Enum.OfType<OpenApiString>())
                     {
-                        fw.WriteLine($@"    value{u++}: {{ {property.Key.ToPascalCase()}: {val.Value} }}");
+                        fw.WriteLine($@"    value{u++}: {{ {property.Key}: {val.Value} }}");
                     }
                 }
             }
@@ -242,6 +244,8 @@ static class OpenApiTmdGenerator
                         sw.WriteLine($"  description: no description provided");
                     }
 
+                    sw.WriteLine($"  preservePropertyCasing: true");
+
                     if (operation.Value.Parameters.Any() || operation.Value.RequestBody != null)
                     {
                         sw.WriteLine("  params:");
@@ -262,7 +266,7 @@ static class OpenApiTmdGenerator
 
                         if (operation.Value.RequestBody != null)
                         {
-                            WriteProperty(config, sw, new("Body", operation.Value.RequestBody.Content.First().Value.Schema), model);
+                            WriteProperty(config, sw, new("body", operation.Value.RequestBody.Content.First().Value.Schema), model);
                         }
 
                     }
@@ -371,12 +375,12 @@ static class OpenApiTmdGenerator
         {
             var domainKind = GetDomainString(config, kind);
             sw.WriteLine($"    {(noList ? string.Empty : "- ")}composition: {property.Value.AdditionalProperties?.Items?.Reference.Id ?? property.Value.AdditionalProperties?.Reference.Id ?? property.Value.Items?.Reference.Id ?? property.Value.Reference!.Id}");
-            sw.WriteLine($"    {(noList ? string.Empty : "  ")}name: {property.Key.ToFirstUpper()}");
+            sw.WriteLine($"    {(noList ? string.Empty : "  ")}name: {property.Key}");
             sw.WriteLine($"    {(noList ? string.Empty : "  ")}kind: {domainKind ?? kind}");
         }
         else
         {
-            sw.WriteLine($"    {(noList ? string.Empty : "- ")}name: {property.Key.ToFirstUpper()}");
+            sw.WriteLine($"    {(noList ? string.Empty : "- ")}name: {property.Key}");
             sw.WriteLine($"    {(noList ? string.Empty : "  ")}domain: {GetDomain(config, property.Key, property.Value)}");
             sw.WriteLine($"    {(noList ? string.Empty : "  ")}required: {(!property.Value.Nullable).ToString().ToLower()}");
         }

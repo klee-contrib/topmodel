@@ -66,6 +66,9 @@ public class ClassLoader : ILoader<Class>
                 case "comment":
                     classe.Comment = value!.Value;
                     break;
+                case "preservePropertyCasing":
+                    classe.PreservePropertyCasing = value!.Value == "true";
+                    break;
                 case "decorators":
                     parser.ConsumeSequence(() =>
                     {
@@ -179,7 +182,7 @@ public class ClassLoader : ILoader<Class>
                                                         }
                                                     });
 
-                                                    param.Name ??= new LocatedString(classScalar) { Value = param.ClassReference.ReferenceName.ToFirstLower() };
+                                                    param.Name ??= new LocatedString(classScalar) { Value = param.ClassReference.ReferenceName.ToCamelCase() };
                                                 });
                                                 break;
                                         }

@@ -65,7 +65,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
 
     private string GetClassName(string fileName)
     {
-        return $"{fileName.ToFirstUpper()}Controller";
+        return $"{fileName.ToPascalCase()}Controller";
     }
 
     private void WriteEndpoint(JavaWriter fw, Endpoint endpoint)
@@ -119,7 +119,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
                 }
             }
 
-            fw.WriteLine(1, @$"@{endpoint.Method.ToLower().ToFirstUpper()}Mapping(path = ""{endpoint.Route}""{consumes}{produces})");
+            fw.WriteLine(1, @$"@{endpoint.Method.ToPascalCaseStrict()}Mapping(path = ""{endpoint.Route}""{consumes}{produces})");
         }
 
         var methodParams = new List<string>();
@@ -148,7 +148,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
             methodParams.Add($"{ann}{bodyParam.GetJavaType()} {bodyParam.GetParamName()}");
         }
 
-        fw.WriteLine(1, $"{returnType} {endpoint.Name.ToFirstLower()}({string.Join(", ", methodParams)});");
+        fw.WriteLine(1, $"{returnType} {endpoint.NameCamel}({string.Join(", ", methodParams)});");
 
         var methodCallParams = new List<string>();
         foreach (var param in endpoint.GetRouteParams().OfType<IFieldProperty>())
@@ -169,7 +169,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
 
     private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
     {
-        var imports = endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToLower().ToFirstUpper()}Mapping").ToList();
+        var imports = endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToPascalCaseStrict()}Mapping").ToList();
         imports.AddRange(GetTypeImports(endpoints, tag));
         imports.Add(_config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
         if (endpoints.Any(e => e.GetRouteParams().Any()))

@@ -8,34 +8,6 @@
 --   Description		:	Script de création des indexes et des clef étrangères. 
 -- =========================================================================================== 
 /**
-  * Création de l'index de clef étrangère pour PROFIL_DROIT.PRO_ID
- **/
-create index IDX_PROFIL_DROIT_PRO_ID_FK on PROFIL_DROIT (
-	PRO_ID ASC
-);
-
-/**
-  * Génération de la contrainte de clef étrangère pour PROFIL_DROIT.PRO_ID
- **/
-alter table PROFIL_DROIT
-	add constraint FK_PROFIL_DROIT_PRO_ID foreign key (PRO_ID)
-		references PROFIL (PRO_ID);
-
-/**
-  * Création de l'index de clef étrangère pour PROFIL_DROIT.DRO_CODE
- **/
-create index IDX_PROFIL_DROIT_DRO_CODE_FK on PROFIL_DROIT (
-	DRO_CODE ASC
-);
-
-/**
-  * Génération de la contrainte de clef étrangère pour PROFIL_DROIT.DRO_CODE
- **/
-alter table PROFIL_DROIT
-	add constraint FK_PROFIL_DROIT_DRO_CODE foreign key (DRO_CODE)
-		references DROIT (DRO_CODE);
-
-/**
   * Création de l'index de clef étrangère pour DROIT.TPR_CODE
  **/
 create index IDX_DRO_TPR_CODE_FK on DROIT (
@@ -62,6 +34,34 @@ create index IDX_PROFIL_TPR_CODE_FK on PROFIL (
 alter table PROFIL
 	add constraint FK_PROFIL_TPR_CODE foreign key (TPR_CODE)
 		references TYPE_PROFIL (TPR_CODE);
+
+/**
+  * Création de l'index de clef étrangère pour PROFIL_DROIT.PRO_ID
+ **/
+create index IDX_PROFIL_DROIT_PRO_ID_FK on PROFIL_DROIT (
+	PRO_ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour PROFIL_DROIT.PRO_ID
+ **/
+alter table PROFIL_DROIT
+	add constraint FK_PROFIL_DROIT_PRO_ID foreign key (PRO_ID)
+		references PROFIL (PRO_ID);
+
+/**
+  * Création de l'index de clef étrangère pour PROFIL_DROIT.DRO_CODE
+ **/
+create index IDX_PROFIL_DROIT_DRO_CODE_FK on PROFIL_DROIT (
+	DRO_CODE ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour PROFIL_DROIT.DRO_CODE
+ **/
+alter table PROFIL_DROIT
+	add constraint FK_PROFIL_DROIT_DRO_CODE foreign key (DRO_CODE)
+		references DROIT (DRO_CODE);
 
 /**
   * Création de l'index de clef étrangère pour SECTEUR.PRO_ID

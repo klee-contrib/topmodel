@@ -32,7 +32,7 @@ public class JpaDaoGenerator : ClassGeneratorBase
             _config.ResolveVariables(_config.ModelRootPath, tag),
             Path.Combine(_config.ResolveVariables(_config.DaosPackageName, tag).Split(".")),
             classe.Namespace.ModulePath.ToLower(),
-            $"{classe.Name}DAO.java");
+            $"{classe.NamePascal}DAO.java");
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
@@ -49,7 +49,7 @@ public class JpaDaoGenerator : ClassGeneratorBase
         fw.WriteLine();
         WriteImports(fw, classe, tag);
         fw.WriteLine();
-        fw.WriteLine($"public interface {classe.Name}DAO extends {(classe.Reference ? "CrudRepository" : "JpaRepository")}<{classe.Name}, {classe.PrimaryKey.Single().GetJavaType()}> {{");
+        fw.WriteLine($"public interface {classe.NamePascal}DAO extends {(classe.Reference ? "CrudRepository" : "JpaRepository")}<{classe.NamePascal}, {classe.PrimaryKey.Single().GetJavaType()}> {{");
         fw.WriteLine();
         fw.WriteLine("}");
     }

@@ -31,12 +31,12 @@ public class CSharpApiServerGenerator : EndpointsGeneratorBase
 
     protected override string GetFileName(ModelFile file, string tag)
     {
-        return $"{_config.GetApiPath(file, tag, withControllers: true)}/{file.Options.Endpoints.FileName}Controller.cs";
+        return $"{_config.GetApiPath(file, tag, withControllers: true)}/{file.Options.Endpoints.FileName.ToPascalCase()}Controller.cs";
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        var className = $"{fileName}Controller";
+        var className = $"{fileName.ToPascalCase()}Controller";
         var ns = _config.GetNamespace(endpoints.First(), tag);
 
         var text = File.Exists(filePath)
@@ -99,15 +99,15 @@ namespace {ns}
                 }
             }
 
-            wd.AppendLine($@"{indent}[Http{endpoint.Method.ToLower().ToFirstUpper()}(""{GetRoute(endpoint)}"")]");
-            wd.AppendLine($"{indent}public {_config.GetReturnTypeName(endpoint.Returns)} {endpoint.Name}({string.Join(", ", endpoint.Params.Select(GetParam))})");
+            wd.AppendLine($@"{indent}[Http{endpoint.Method.ToPascalCaseStrict()}(""{GetRoute(endpoint)}"")]");
+            wd.AppendLine($"{indent}public {_config.GetReturnTypeName(endpoint.Returns)} {endpoint.NamePascal}({string.Join(", ", endpoint.Params.Select(GetParam))})");
             wd.AppendLine($"{indent}{{");
             wd.AppendLine();
             wd.AppendLine($"{indent}}}");
 
             var method = (MethodDeclarationSyntax)ParseMemberDeclaration(wd.ToString())!;
 
-            var existingMethod = controller.DescendantNodes().OfType<MethodDeclarationSyntax>().SingleOrDefault(method => method.Identifier.Text == endpoint.Name);
+            var existingMethod = controller.DescendantNodes().OfType<MethodDeclarationSyntax>().SingleOrDefault(method => method.Identifier.Text == endpoint.NamePascal);
             if (existingMethod != null)
             {
                 method = method.WithBody(existingMethod.Body);
@@ -124,7 +124,7 @@ namespace {ns}
 
         foreach (var method in controller.DescendantNodes().OfType<MethodDeclarationSyntax>())
         {
-            if (method.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PublicKeyword)) && !endpoints.Any(endpoint => endpoint.Name == method.Identifier.Text))
+            if (method.Modifiers.Any(modifier => modifier.IsKind(SyntaxKind.PublicKeyword)) && !endpoints.Any(endpoint => endpoint.NamePascal == method.Identifier.Text))
             {
                 controller = controller.WithMembers(List(controller.Members.Where(member => ((member as MethodDeclarationSyntax)?.Identifier.Text ?? string.Empty) != method.Identifier.Text)));
             }

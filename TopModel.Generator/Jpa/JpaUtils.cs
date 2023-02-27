@@ -19,15 +19,15 @@ public static class JpaUtils
         };
     }
 
-    public static string GetJavaName(this IProperty prop)
+    public static string GetJavaName(this IProperty prop, bool firstUpper = false)
     {
-        string propertyName = prop.Name.ToFirstLower();
+        string propertyName = prop.NameCamel;
         if (prop is AssociationProperty ap)
         {
             propertyName = ap.GetAssociationName();
         }
 
-        return propertyName;
+        return firstUpper ? propertyName.ToFirstUpper() : propertyName;
     }
 
     public static string GetJavaType(this AssociationProperty ap)
@@ -35,21 +35,21 @@ public static class JpaUtils
         var isList = ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany;
         if (isList)
         {
-            return $"List<{ap.Association.Name}>";
+            return $"List<{ap.Association.NamePascal}>";
         }
 
-        return ap.Association.Name;
+        return ap.Association.NamePascal;
     }
 
     public static string GetAssociationName(this AssociationProperty ap)
     {
         if (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany)
         {
-            return $"{ap.Name.ToFirstLower()}";
+            return $"{ap.NameCamel}";
         }
         else
         {
-            return $"{ap.Association.Name.ToFirstLower()}{ap.Role?.ToFirstUpper() ?? string.Empty}";
+            return $"{ap.Association.NameCamel}{ap.Role?.ToPascalCase() ?? string.Empty}";
         }
     }
 
@@ -86,11 +86,11 @@ public static class JpaUtils
         {
             if (cpo.Kind == "list")
             {
-                return $"List<{cpo.Composition.Name}>";
+                return $"List<{cpo.Composition.NamePascal}>";
             }
             else if (cpo.Kind == "object")
             {
-                return cpo.Composition.Name;
+                return cpo.Composition.NamePascal;
             }
             else if (cpo.DomainKind != null)
             {
@@ -109,7 +109,7 @@ public static class JpaUtils
 
     public static string GetJavaType(this RegularProperty rp, bool asList)
     {
-        return rp.IsEnum() ? ((asList ? "List<" : string.Empty) + $"{rp.Class.Name.ToFirstUpper()}.Values") + (asList ? ">" : string.Empty) : (asList ? rp.Domain.ListDomain! : rp.Domain).Java!.Type.ParseTemplate(rp);
+        return rp.IsEnum() ? ((asList ? "List<" : string.Empty) + $"{rp.Class.NamePascal}.Values") + (asList ? ">" : string.Empty) : (asList ? rp.Domain.ListDomain! : rp.Domain).Java!.Type.ParseTemplate(rp);
     }
 
     public static string GetJavaType(this CompositionProperty cp)
@@ -181,7 +181,7 @@ public static class JpaUtils
             Type = p.Type == AssociationType.OneToMany ? AssociationType.ManyToOne
                 : p.Type == AssociationType.ManyToOne ? AssociationType.OneToMany
                 : AssociationType.ManyToMany,
-            Comment = $"Association réciproque de {{@link {config.GetPackageName(p.Class, tag)}.{p.Class}#{p.GetJavaName()} {p.Class.Name}.{p.GetJavaName()}}}",
+            Comment = $"Association réciproque de {{@link {config.GetPackageName(p.Class, tag)}.{p.Class}#{p.GetJavaName()} {p.Class.NamePascal}.{p.GetJavaName()}}}",
             Class = classe,
             ReverseProperty = p,
             Role = p.Role

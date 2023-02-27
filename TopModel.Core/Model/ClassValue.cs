@@ -9,5 +9,5 @@ public class ClassValue
 
     public Dictionary<IFieldProperty, string> Value { get; } = new();
 
-    public string ResourceKey => $"{Class.Namespace.ModuleFirstLower}.{Class.Name.ToFirstLower()}.values.{Name}";
+    public string ResourceKey => $"{Class.Namespace.ModuleCamel}.{Class.NameCamel}.values.{Name}";
 }

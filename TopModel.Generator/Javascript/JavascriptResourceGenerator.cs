@@ -52,7 +52,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
         }
         else
         {
-            fw.WriteLine($"export const {module.ToFirstLower()} = {{");
+            fw.WriteLine($"export const {module.ToCamelCase()} = {{");
         }
 
         WriteSubModule(fw, _modelConfig.I18n.DefaultLang, properties, true, 1);
@@ -79,7 +79,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
         }
         else
         {
-            fw.WriteLine($"export const {module.ToFirstLower()} = {{");
+            fw.WriteLine($"export const {module.ToCamelCase()} = {{");
         }
 
         WriteSubModule(fw, lang, properties, false, 1);
@@ -106,14 +106,14 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
             if (submodule.Key == null)
             {
                 var i = 1;
-                foreach (var container in submodule.OrderBy(c => c.Key.Name))
+                foreach (var container in submodule.OrderBy(c => c.Key.NameCamel))
                 {
                     WriteClasseNode(fw, container, isComment, classes.Count() == i++ && isLast, lang, level);
                 }
             }
             else
             {
-                fw.WriteLine(level, $@"""{submodule.Key.Split('.').First().ToFirstLower()}"": {{");
+                fw.WriteLine(level, $@"""{submodule.Key.Split('.').First().ToCamelCase()}"": {{");
                 WriteSubModule(fw, lang, submodule.Select(m => m.Key).SelectMany(c => c.Properties).OfType<IFieldProperty>(), isComment, level + 1);
                 if (isLast)
                 {
@@ -129,11 +129,11 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
 
     private void WriteClasseNode(FileWriter fw, IGrouping<IPropertyContainer, IFieldProperty> container, bool isComment, bool isLast, string lang, int indentLevel)
     {
-        fw.WriteLine(indentLevel, $"{Quote(container.Key.Name)}: {{");
+        fw.WriteLine(indentLevel, $"{Quote(container.Key.NameCamel)}: {{");
 
         var i = 1;
 
-        foreach (var property in container.OrderBy(p => p.Name, StringComparer.Ordinal))
+        foreach (var property in container.OrderBy(p => p.NameCamel, StringComparer.Ordinal))
         {
             var translation = isComment
                 ? property.CommentResourceProperty.Comment.Replace(Environment.NewLine, " ").Replace("\"", "'")
@@ -144,7 +144,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
                 translation = property.Name;
             }
 
-            fw.Write(indentLevel + 1, $"{Quote(property.Name)}: ");
+            fw.Write(indentLevel + 1, $"{Quote(property.NameCamel)}: ");
             fw.Write($@"""{translation}""");
             fw.WriteLine(container.Count() == i++ && !(_modelConfig.I18n.TranslateReferences && (container.Key as Class)?.DefaultProperty != null && ((container.Key as Class)?.Values.Any() ?? false)) ? string.Empty : ",");
         }
@@ -155,7 +155,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
             fw.WriteLine(indentLevel + 1, @$"{Quote("values")}: {{");
             foreach (var refValue in classe.Values)
             {
-                fw.Write(indentLevel + 2, $@"{QuoteOnly(refValue.Name)}: ");
+                fw.Write(indentLevel + 2, $@"{Quote(refValue.Name)}: ");
                 fw.Write($@"""{_translationStore.GetTranslation(refValue, lang)}""");
                 fw.WriteLine(classe.Values.Count == i++ ? string.Empty : ",");
             }
@@ -169,15 +169,6 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
 
     private string Quote(string name)
     {
-        return _config.ResourceMode == ResourceMode.JS
-            ? name.ToFirstLower()
-            : $@"""{name.ToFirstLower()}""";
-    }
-
-    private string QuoteOnly(string name)
-    {
-        return _config.ResourceMode == ResourceMode.JS
-            ? name
-            : $@"""{name}""";
+        return _config.ResourceMode == ResourceMode.JS ? name : $@"""{name}""";
     }
 }

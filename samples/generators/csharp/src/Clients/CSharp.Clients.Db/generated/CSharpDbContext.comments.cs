@@ -49,11 +49,11 @@ public partial class CSharpDbContext : DbContext
         utilisateur.Property(p => p.Id).HasComment("Id technique");
         utilisateur.Property(p => p.Age).HasComment("Age en années de l'utilisateur");
         utilisateur.Property(p => p.ProfilId).HasComment("Profil de l'utilisateur");
-        utilisateur.Property(p => p.email).HasComment("Email de l'utilisateur");
+        utilisateur.Property(p => p.Email).HasComment("Email de l'utilisateur");
         utilisateur.Property(p => p.Nom).HasComment("Nom de l'utilisateur");
         utilisateur.Property(p => p.TypeUtilisateurCode).HasComment("Type d'utilisateur en Many to one");
         utilisateur.Property(p => p.UtilisateurIdParent).HasComment("Utilisateur parent");
-        utilisateur.Property(p => p.dateCreation).HasComment("Date de création de l'utilisateur");
-        utilisateur.Property(p => p.dateModification).HasComment("Date de modification de l'utilisateur");
+        utilisateur.Property(p => p.DateCreation).HasComment("Date de création de l'utilisateur");
+        utilisateur.Property(p => p.DateModification).HasComment("Date de modification de l'utilisateur");
     }
 }

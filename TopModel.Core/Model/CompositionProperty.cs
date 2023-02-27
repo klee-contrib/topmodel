@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.Core;
 
@@ -8,6 +9,10 @@ public class CompositionProperty : IProperty
     public Class Composition { get; set; }
 
     public string Name { get; set; }
+
+    public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToPascalCase();
+
+    public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase();
 
     public string Kind { get; set; }
 

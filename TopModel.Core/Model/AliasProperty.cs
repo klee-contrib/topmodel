@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.Core;
 
@@ -42,6 +43,10 @@ public class AliasProperty : IFieldProperty
 
     public string Name => (Prefix ?? string.Empty) + _property?.Name + (Suffix ?? string.Empty);
 
+    public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : (Prefix?.ToFirstUpper() ?? string.Empty) + _property?.NamePascal + (Suffix ?? string.Empty);
+
+    public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : (Prefix?.ToFirstLower() ?? string.Empty) + (string.IsNullOrWhiteSpace(Prefix) ? _property?.NameCamel : _property?.NameCamel.ToFirstUpper()) + (Suffix ?? string.Empty);
+
     public string? Label
     {
         get => _label ?? _property?.Label;
@@ -52,7 +57,7 @@ public class AliasProperty : IFieldProperty
 
     public bool Required
     {
-        get => _required ?? _property.Required;
+        get => _required ?? _property?.Required ?? false;
         set => _required = value;
     }
 

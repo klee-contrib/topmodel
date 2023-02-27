@@ -53,7 +53,7 @@ public class CSharpClassGenerator : ClassGeneratorBase
             w.WriteLine();
             w.WriteSummary(2, "Constructeur par base class.");
             w.WriteParam("bean", "Source.");
-            w.WriteLine(2, "public " + item.Name + "(" + item.Extends.Name + " bean)");
+            w.WriteLine(2, "public " + item.NamePascal + "(" + item.Extends.NamePascal + " bean)");
             w.WriteLine(3, ": base(bean)");
             w.WriteLine(2, "{");
             w.WriteLine(3, "OnCreated();");
@@ -85,13 +85,13 @@ public class CSharpClassGenerator : ClassGeneratorBase
         w.WriteParam("bean", "Source.");
         if (item.Extends != null)
         {
-            w.WriteLine(2, "public " + item.Name + "(" + item.Name + " bean)");
+            w.WriteLine(2, "public " + item.NamePascal + "(" + item.NamePascal + " bean)");
             w.WriteLine(3, ": base(bean)");
             w.WriteLine(2, "{");
         }
         else
         {
-            w.WriteLine(2, "public " + item.Name + "(" + item.Name + " bean)");
+            w.WriteLine(2, "public " + item.NamePascal + "(" + item.NamePascal + " bean)");
             w.WriteLine(2, "{");
         }
 
@@ -105,24 +105,24 @@ public class CSharpClassGenerator : ClassGeneratorBase
 
         foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => t.Domain.CSharp!.Type.Contains("ICollection")))
         {
-            initd.Add(property.Name);
+            initd.Add(property.NamePascal);
             var strip = property.Domain.CSharp!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
-            w.WriteLine(3, property.Name + " = new List<" + strip + ">(bean." + property.Name + ");");
+            w.WriteLine(3, property.NamePascal + " = new List<" + strip + ">(bean." + property.NamePascal + ");");
         }
 
         foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
         {
-            w.WriteLine(3, property.Name + " = new " + property.Composition.Name + "(bean." + property.Name + ");");
+            w.WriteLine(3, property.NamePascal + " = new " + property.Composition.NamePascal + "(bean." + property.NamePascal + ");");
         }
 
         foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
         {
-            w.WriteLine(3, property.Name + " = new List<" + property.Composition.Name + ">(bean." + property.Name + ");");
+            w.WriteLine(3, property.NamePascal + " = new List<" + property.Composition.NamePascal + ">(bean." + property.NamePascal + ");");
         }
 
-        foreach (var property in item.Properties.Where(p => p is not CompositionProperty && !initd.Contains(p.Name)))
+        foreach (var property in item.Properties.Where(p => p is not CompositionProperty && !initd.Contains(p.NamePascal)))
         {
-            w.WriteLine(3, property.Name + " = bean." + property.Name + ";");
+            w.WriteLine(3, property.NamePascal + " = bean." + property.NamePascal + ";");
         }
 
         w.WriteLine();
@@ -138,7 +138,7 @@ public class CSharpClassGenerator : ClassGeneratorBase
     private static void GenerateDefaultConstructor(CSharpWriter w, Class item)
     {
         w.WriteSummary(2, "Constructeur.");
-        w.WriteLine(2, $@"public {item.Name}()");
+        w.WriteLine(2, $@"public {item.NamePascal}()");
 
         if (item.Extends != null)
         {
@@ -152,19 +152,19 @@ public class CSharpClassGenerator : ClassGeneratorBase
         {
             line = true;
             var strip = property.Domain.CSharp!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
-            w.WriteLine(3, LoadPropertyInit(property.Name, "List<" + strip + ">"));
+            w.WriteLine(3, LoadPropertyInit(property.NamePascal, "List<" + strip + ">"));
         }
 
         foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
         {
             line = true;
-            w.WriteLine(3, LoadPropertyInit(property.Name, property.Composition.Name));
+            w.WriteLine(3, LoadPropertyInit(property.NamePascal, property.Composition.NamePascal));
         }
 
         foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
         {
             line = true;
-            w.WriteLine(3, LoadPropertyInit(property.Name, "List<" + property.Composition.Name + ">"));
+            w.WriteLine(3, LoadPropertyInit(property.NamePascal, "List<" + property.Composition.NamePascal + ">"));
         }
 
         if (line)
@@ -189,7 +189,7 @@ public class CSharpClassGenerator : ClassGeneratorBase
         w.WriteLine();
         w.WriteSummary(2, "Methode d'extensibilité possible pour les constructeurs par recopie.");
         w.WriteParam("bean", "Source.");
-        w.WriteLine(2, $"partial void OnCreated({item.Name} bean);");
+        w.WriteLine(2, $"partial void OnCreated({item.NamePascal} bean);");
     }
 
     /// <summary>
@@ -237,7 +237,7 @@ public class CSharpClassGenerator : ClassGeneratorBase
         var cols = item.Properties.OfType<IFieldProperty>().ToList();
         foreach (var property in cols)
         {
-            w.WriteSummary(3, "Nom de la colonne en base associée à la propriété " + property.Name + ".");
+            w.WriteSummary(3, "Nom de la colonne en base associée à la propriété " + property.NamePascal + ".");
             w.WriteLine(3, $"{property.SqlName},");
             if (cols.IndexOf(property) != cols.Count - 1)
             {
@@ -342,7 +342,7 @@ public class CSharpClassGenerator : ClassGeneratorBase
         void WriteEnum(IFieldProperty prop)
         {
             w.WriteSummary(2, $"Valeurs possibles de la liste de référence {item}.");
-            w.WriteLine(2, $"public enum {prop}s");
+            w.WriteLine(2, $"public enum {prop.Name.ToPascalCase()}s");
             w.WriteLine(2, "{");
 
             foreach (var refValue in refs)
@@ -400,7 +400,7 @@ public class CSharpClassGenerator : ClassGeneratorBase
 
             if (item.Reference && item.DefaultProperty != null)
             {
-                w.WriteAttribute(1, "DefaultProperty", $@"nameof({item.DefaultProperty.Name})");
+                w.WriteAttribute(1, "DefaultProperty", $@"nameof({item.DefaultProperty.NamePascal})");
             }
 
             if (item.IsPersistent && !_config.NoPersistance)
@@ -423,12 +423,12 @@ public class CSharpClassGenerator : ClassGeneratorBase
         }
 
         var extendsDecorator = item.Decorators.SingleOrDefault(d => d.Decorator.CSharp?.Extends != null);
-        var extends = item.Extends?.Name ?? extendsDecorator.Decorator?.CSharp?.Extends!.ParseTemplate(item, extendsDecorator.Parameters);
+        var extends = item.Extends?.NamePascal ?? extendsDecorator.Decorator?.CSharp?.Extends!.ParseTemplate(item, extendsDecorator.Parameters);
         var implements = item.Decorators.SelectMany(d => (d.Decorator.CSharp?.Implements ?? Array.Empty<string>()).Select(i => i.ParseTemplate(item, d.Parameters)).Distinct()).ToArray();
 
         if (item.Abstract)
         {
-            w.Write(1, $"public interface I{item.Name}");
+            w.Write(1, $"public interface I{item.NamePascal}");
 
             if (implements.Any())
             {
@@ -441,7 +441,7 @@ public class CSharpClassGenerator : ClassGeneratorBase
         else
         {
             w.WriteClassDeclaration(
-                item.Name,
+                item.NamePascal,
                 extends,
                 implements);
 
@@ -541,11 +541,11 @@ public class CSharpClassGenerator : ClassGeneratorBase
                 {
                     if (prop is AssociationProperty ap && ap.Association.IsPersistent && ap.Association.Reference)
                     {
-                        w.WriteAttribute(2, "ReferencedType", $"typeof({ap.Association.Name})");
+                        w.WriteAttribute(2, "ReferencedType", $"typeof({ap.Association.NamePascal})");
                     }
                     else if (fp is AliasProperty alp2 && !alp2.PrimaryKey && alp2.Property.PrimaryKey && alp2.Property.Class.Reference)
                     {
-                        w.WriteAttribute(2, "ReferencedType", $"typeof({alp2.Property.Class.Name})");
+                        w.WriteAttribute(2, "ReferencedType", $"typeof({alp2.Property.Class.NamePascal})");
                     }
                 }
 
@@ -579,11 +579,11 @@ public class CSharpClassGenerator : ClassGeneratorBase
 
             var defaultValue = _config.GetDefaultValue(property, Classes);
 
-            w.WriteLine(2, $"public {type} {property.Name} {{ get; set; }}{(defaultValue != "null" ? $" = {defaultValue};" : string.Empty)}");
+            w.WriteLine(2, $"public {type} {property.NamePascal} {{ get; set; }}{(defaultValue != "null" ? $" = {defaultValue};" : string.Empty)}");
         }
         else
         {
-            w.WriteLine(2, $"{type} {property.Name} {{ get; }}");
+            w.WriteLine(2, $"{type} {property.NamePascal} {{ get; }}");
         }
     }
 
@@ -597,11 +597,11 @@ public class CSharpClassGenerator : ClassGeneratorBase
             w.WriteSummary(2, "Factory pour instancier la classe.");
             foreach (var prop in writeProperties)
             {
-                w.WriteParam(prop.Name.ToFirstLower(), prop.Comment);
+                w.WriteParam(prop.NameCamel, prop.Comment);
             }
 
             w.WriteReturns(2, "Instance de la classe.");
-            w.WriteLine(2, $"static abstract I{item.Name} Create({string.Join(", ", writeProperties.Select(p => $"{_config.GetPropertyTypeName(p, useIEnumerable: false)} {p.Name.ToFirstLower()} = null"))});");
+            w.WriteLine(2, $"static abstract I{item.NamePascal} Create({string.Join(", ", writeProperties.Select(p => $"{_config.GetPropertyTypeName(p, useIEnumerable: false)} {p.NameCamel} = null"))});");
         }
     }
 

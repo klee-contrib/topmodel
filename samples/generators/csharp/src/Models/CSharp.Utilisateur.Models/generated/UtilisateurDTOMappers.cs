@@ -21,11 +21,11 @@ public static class UtilisateurDTOMappers
         dest.Id = source.Id;
         dest.Age = source.Age;
         dest.ProfilId = source.ProfilId;
-        dest.email = source.email;
+        dest.Email = source.Email;
         dest.Nom = source.Nom;
         dest.TypeUtilisateurCode = source.TypeUtilisateurCode;
-        dest.dateCreation = source.dateCreation;
-        dest.dateModification = source.dateModification;
+        dest.DateCreation = source.DateCreation;
+        dest.DateModification = source.DateModification;
         return dest;
     }
 }

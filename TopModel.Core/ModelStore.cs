@@ -931,7 +931,7 @@ public class ModelStore
             else
             {
                 // Si la classe a une propriété "Label" ou "Libelle", alors on la considère par défaut (sic) comme propriété par défaut.
-                classe.DefaultProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == "Label" || fp.Name == "Libelle");
+                classe.DefaultProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.NamePascal == "Label" || fp.NamePascal == "Libelle");
             }
 
             if (classe.OrderPropertyReference != null)
@@ -945,7 +945,7 @@ public class ModelStore
             else
             {
                 // Si la classe a une propriété "Order" ou "Ordre", alors on la considère par défaut comme propriété d'ordre.
-                classe.OrderProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == "Order" || fp.Name == "Ordre");
+                classe.OrderProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.NamePascal == "Order" || fp.NamePascal == "Ordre");
             }
 
             if (classe.FlagPropertyReference != null)
@@ -959,7 +959,7 @@ public class ModelStore
             else
             {
                 // Si la classe a une propriété "Flag", alors on la considère par défaut comme propriété de flag.
-                classe.FlagProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == "Flag");
+                classe.FlagProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.NamePascal == "Flag");
             }
         }
 

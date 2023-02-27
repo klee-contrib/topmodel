@@ -28,7 +28,7 @@ public interface IUtilisateurSearch
     /// <summary>
     /// Email de l'utilisateur.
     /// </summary>
-    string email { get; }
+    string Email { get; }
 
     /// <summary>
     /// Nom de l'utilisateur.
@@ -43,10 +43,10 @@ public interface IUtilisateurSearch
     /// <summary>
     /// Date de création de l'utilisateur.
     /// </summary>
-    DateOnly? dateCreation { get; }
+    DateOnly? DateCreation { get; }
 
     /// <summary>
     /// Date de modification de l'utilisateur.
     /// </summary>
-    DateOnly? dateModification { get; }
+    DateOnly? DateModification { get; }
 }

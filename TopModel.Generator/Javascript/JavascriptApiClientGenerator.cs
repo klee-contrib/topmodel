@@ -68,7 +68,7 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase
             }
 
             fw.WriteLine(" */");
-            fw.Write($"export function {endpoint.Name.ToFirstLower()}(");
+            fw.Write($"export function {endpoint.NameCamel}(");
 
             var hasForm = endpoint.Params.Any(p => p is IFieldProperty fp && fp.Domain.TS!.Type.Contains("File"));
 

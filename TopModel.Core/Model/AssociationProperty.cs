@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.Core;
 
@@ -52,16 +53,14 @@ public class AssociationProperty : IFieldProperty
             }
 
             var name = new StringBuilder();
-            if (Association.Extends == null)
+
+            if (Type == AssociationType.OneToMany || Type == AssociationType.ManyToMany)
             {
-                if (Type == AssociationType.OneToMany || Type == AssociationType.ManyToMany)
-                {
-                    name.Append(Association.PluralName);
-                }
-                else
-                {
-                    name.Append(Association.Name);
-                }
+                name.Append(Association.PluralName);
+            }
+            else if (Association.Extends == null)
+            {
+                name.Append(Association.Name);
             }
 
             if (Type == AssociationType.ManyToOne || Type == AssociationType.OneToOne)
@@ -78,7 +77,55 @@ public class AssociationProperty : IFieldProperty
         }
     }
 
-    public Domain Domain => this.Type == AssociationType.ManyToMany || this.Type == AssociationType.OneToMany ? Property?.Domain.ListDomain! : Property?.Domain!;
+    public string NameCamel
+    {
+        get
+        {
+            if (((IProperty)this).Parent.PreservePropertyCasing)
+            {
+                return Name;
+            }
+
+            if (Association == null)
+            {
+                return string.Empty;
+            }
+
+            var name = new StringBuilder();
+
+            if (Type == AssociationType.OneToMany || Type == AssociationType.ManyToMany)
+            {
+                name.Append(Association.PluralNameCamel);
+            }
+            else if (Association.Extends == null)
+            {
+                name.Append(Association.NameCamel);
+            }
+
+            if (Type == AssociationType.ManyToOne || Type == AssociationType.OneToOne)
+            {
+                if (Association.Extends == null)
+                {
+                    name.Append(Property?.NameCamel.ToFirstUpper());
+                }
+                else
+                {
+                    name.Append(Property?.NameCamel);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(Role))
+            {
+                name.Append(Role?.Replace(" ", string.Empty).ToPascalCase());
+            }
+
+            return name.ToString();
+        }
+    }
+
+    public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : NameCamel.ToFirstUpper();
+
+    public Domain Domain => Type == AssociationType.ManyToMany || Type == AssociationType.OneToMany ? Property?.Domain.ListDomain! : Property?.Domain!;
 
     public bool PrimaryKey { get; set; }
 

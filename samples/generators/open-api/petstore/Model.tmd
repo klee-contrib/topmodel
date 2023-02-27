@@ -10,6 +10,7 @@ tags:
 ---
 class:
   name: ApiResponse
+  preservePropertyCasing: true
   comment: no description provided
 
   properties:
@@ -30,6 +31,7 @@ class:
 ---
 class:
   name: Category
+  preservePropertyCasing: true
   comment: no description provided
 
   properties:
@@ -45,6 +47,7 @@ class:
 ---
 class:
   name: Order
+  preservePropertyCasing: true
   comment: no description provided
 
   properties:
@@ -78,6 +81,7 @@ class:
 ---
 class:
   name: Pet
+  preservePropertyCasing: true
   comment: no description provided
 
   properties:
@@ -111,6 +115,7 @@ class:
 ---
 class:
   name: Tag
+  preservePropertyCasing: true
   comment: no description provided
 
   properties:
@@ -126,6 +131,7 @@ class:
 ---
 class:
   name: User
+  preservePropertyCasing: true
   comment: no description provided
 
   properties:
@@ -171,6 +177,7 @@ class:
 ---
 class:
   name: OrderStatus
+  preservePropertyCasing: true
   comment: enum pour les valeurs de Status
 
   properties:
@@ -186,6 +193,7 @@ class:
 ---
 class:
   name: PetStatus
+  preservePropertyCasing: true
   comment: enum pour les valeurs de Status
 
   properties:

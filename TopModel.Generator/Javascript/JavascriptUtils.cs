@@ -11,15 +11,15 @@ public static class JavascriptUtils
         {
             CompositionProperty cp => cp.Kind switch
             {
-                "object" => cp.Composition.Name,
-                "list" or "async-list" => $"{cp.Composition.Name}[]",
+                "object" => cp.Composition.NamePascal,
+                "list" or "async-list" => $"{cp.Composition.NamePascal}[]",
                 string _ when cp.DomainKind!.TS!.Type.Contains("{composition.name}") => cp.DomainKind.TS.Type.ParseTemplate(cp),
                 string _ => $"{cp.DomainKind.TS.Type}<{{composition.name}}>".ParseTemplate(cp)
             },
-            AssociationProperty { Association: Class assoc } ap when assoc.IsEnum(availableClasses, ap.Property) => $"{assoc}{ap.Property}{(ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : string.Empty)}",
-            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when assoc.IsEnum(availableClasses, ap.Property) => $"{assoc}{ap.Property}{(asList || ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : string.Empty)}",
-            RegularProperty { Class: Class classe } rp when classe.IsEnum(availableClasses, rp) => $"{classe}{rp}",
-            AliasProperty { Property: RegularProperty { Class: Class alClass } rp, AsList: var asList } when alClass.IsEnum(availableClasses, rp) => $"{alClass}{rp}{(asList ? "[]" : string.Empty)}",
+            AssociationProperty { Association: Class assoc } ap when assoc.IsEnum(availableClasses, ap.Property) => $"{assoc}{ap.Property.Name.ToPascalCase()}{(ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : string.Empty)}",
+            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when assoc.IsEnum(availableClasses, ap.Property) => $"{assoc}{ap.Property.Name.ToPascalCase()}{(asList || ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : string.Empty)}",
+            RegularProperty { Class: Class classe } rp when classe.IsEnum(availableClasses, rp) => $"{classe.NamePascal}{rp.Name.ToPascalCase()}",
+            AliasProperty { Property: RegularProperty { Class: Class alClass } rp, AsList: var asList } when alClass.IsEnum(availableClasses, rp) => $"{alClass.NamePascal}{rp.Name.ToPascalCase()}{(asList ? "[]" : string.Empty)}",
             IFieldProperty fp => fp.Domain.TS?.Type.ParseTemplate(fp) ?? string.Empty,
             _ => string.Empty
         };
@@ -62,11 +62,11 @@ public static class JavascriptUtils
         fw.Write("export const ");
         fw.Write(classe.NameCamel);
         fw.Write(" = {type: {} as ");
-        fw.Write(classe.Name);
+        fw.Write(classe.NamePascal);
         fw.Write(", valueKey: \"");
-        fw.Write(classe.ReferenceKey!.Name.ToFirstLower());
+        fw.Write(classe.ReferenceKey!.NameCamel);
         fw.Write("\", labelKey: \"");
-        fw.Write(classe.DefaultProperty?.Name.ToFirstLower());
+        fw.Write(classe.DefaultProperty?.NameCamel);
         fw.Write("\"} as const;\r\n");
     }
 }

@@ -18,7 +18,7 @@ public interface IFieldProperty : IProperty
         ? alp.OriginalProperty!.ResourceProperty
         : this;
 
-    string ResourceKey => $"{ResourceProperty.Parent.Namespace.ModuleFirstLower}.{ResourceProperty.Parent.Name.ToFirstLower()}.{ResourceProperty.Name.ToFirstLower()}";
+    string ResourceKey => $"{ResourceProperty.Parent.Namespace.ModuleCamel}.{ResourceProperty.Parent.NameCamel}.{ResourceProperty.NameCamel}";
 
     IFieldProperty CommentResourceProperty => Decorator != null && Parent != Decorator
         ? Decorator.Properties.OfType<IFieldProperty>().First(p => p.Name == Name).CommentResourceProperty
@@ -26,7 +26,7 @@ public interface IFieldProperty : IProperty
         ? alp.OriginalProperty!.CommentResourceProperty
         : this;
 
-    string CommentResourceKey => $"comments.{CommentResourceProperty.Parent.Namespace.ModuleFirstLower}.{CommentResourceProperty.Parent.Name.ToFirstLower()}.{CommentResourceProperty.Name.ToFirstLower()}";
+    string CommentResourceKey => $"comments.{CommentResourceProperty.Parent.Namespace.ModuleCamel}.{CommentResourceProperty.Parent.NameCamel}.{CommentResourceProperty.NameCamel}";
 
     string SqlName
     {
@@ -47,7 +47,9 @@ public interface IFieldProperty : IProperty
             var sqlName = prop switch
             {
                 AssociationProperty => apPkTrigram != null ? apPk?.SqlName.Replace($"{apPkTrigram}_", string.Empty) : apPk?.SqlName,
+                { Class.Extends: not null, PrimaryKey: true } when Parent.PreservePropertyCasing => prop.Name.Replace(prop.Class.Name, string.Empty),
                 { Class.Extends: not null, PrimaryKey: true } => prop.Name.Replace(prop.Class.Name, string.Empty).ToConstantCase(),
+                _ when Parent.PreservePropertyCasing => prop.Name,
                 _ => prop.Name.ToConstantCase()
             };
 

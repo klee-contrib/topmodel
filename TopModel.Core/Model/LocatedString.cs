@@ -77,19 +77,9 @@ public class LocatedString : IComparable
         return Value.ToKebabCase();
     }
 
-    public string ToSnakeCase()
+    public string ToCamelCase()
     {
-        return Value.ToConstantCase();
-    }
-
-    public string ToFirstLower()
-    {
-        return Value.ToFirstLower();
-    }
-
-    public string ToFirstUpper()
-    {
-        return Value.ToFirstUpper();
+        return Value.ToCamelCase();
     }
 
     public string ToLower()

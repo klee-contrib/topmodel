@@ -29,16 +29,9 @@ public static class EndpointExtensions
             return string.Empty;
         }
 
-        var param = property is not AliasProperty alp || !alp.Property.PrimaryKey
-            ? property.Name.ToFirstLower()
-            : $"{alp.Property.Class.Trigram?.ToLower() ?? alp.Property.Class.Name.ToFirstLower()}{property.Name}";
-
-        if (param.StartsWith("_"))
-        {
-            return param[1..];
-        }
-
-        return param;
+        return property is not AliasProperty alp || !alp.Property.PrimaryKey
+            ? property.NameCamel
+            : $"{alp.Property.Class.Trigram?.ToLower() ?? alp.Property.Class.NameCamel}{property.NameCamel.ToFirstUpper()}";
     }
 
     public static bool IsBodyParam(this IProperty property)

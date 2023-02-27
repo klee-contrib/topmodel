@@ -53,10 +53,10 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
         var imports = classe.ClassDependencies
             .Select(dep => (
                 Import: dep is { Source: CompositionProperty { DomainKind: not null } }
-                    ? dep.Classe.Name
+                    ? dep.Classe.NamePascal
                     : dep is { Source: IFieldProperty fp }
                     ? fp.GetPropertyTypeName(Classes).Replace("[]", string.Empty)
-                    : $"{dep.Classe.Name}Entity, {dep.Classe.Name}{(_config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}",
+                    : $"{dep.Classe.NamePascal}Entity, {dep.Classe.NamePascal}{(_config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}",
                 Path: _config.GetImportPathForClass(dep, tag, Classes)!))
             .Concat(classe.DomainDependencies.Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Replace("[]", string.Empty).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(p => p.Path != null && p.Path != "@focus4/stores")
@@ -77,30 +77,30 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
         if (_config.TargetFramework == TargetFramework.FOCUS)
         {
             fw.Write("export type ");
-            fw.Write(classe.Name);
+            fw.Write(classe.NamePascal);
             fw.Write(" = EntityToType<");
-            fw.Write(classe.Name);
+            fw.Write(classe.NamePascal);
             fw.Write("EntityType>;\r\nexport type ");
-            fw.Write(classe.Name);
+            fw.Write(classe.NamePascal);
             fw.Write("Node = StoreNode<");
-            fw.Write(classe.Name);
+            fw.Write(classe.NamePascal);
             fw.Write("EntityType>;\r\n");
 
-            fw.Write($"export interface {classe.Name}EntityType ");
+            fw.Write($"export interface {classe.NamePascal}EntityType ");
 
             if (classe.Extends != null)
             {
-                fw.Write($"extends {classe.Extends.Name}EntityType ");
+                fw.Write($"extends {classe.Extends.NamePascal}EntityType ");
             }
         }
         else
         {
             fw.Write("export interface ");
-            fw.Write($"{classe.Name} ");
+            fw.Write($"{classe.NamePascal} ");
 
             if (classe.Extends != null)
             {
-                fw.Write($"extends {classe.Extends.Name} ");
+                fw.Write($"extends {classe.Extends.NamePascal} ");
             }
         }
 
@@ -108,7 +108,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
 
         foreach (var property in classe.Properties)
         {
-            fw.Write($"    {property.Name.ToFirstLower()}{(_config.TargetFramework == TargetFramework.FOCUS ? string.Empty : "?")}: ");
+            fw.Write($"    {property.NameCamel}{(_config.TargetFramework == TargetFramework.FOCUS ? string.Empty : "?")}: ");
 
             if (_config.TargetFramework == TargetFramework.FOCUS)
             {
@@ -122,12 +122,12 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
                         }
                         else
                         {
-                            fw.Write($"ListEntry<{cp.Composition.Name}EntityType>");
+                            fw.Write($"ListEntry<{cp.Composition.NamePascal}EntityType>");
                         }
                     }
                     else if (cp.Kind == "object")
                     {
-                        fw.Write($"ObjectEntry<{cp.Composition.Name}EntityType>");
+                        fw.Write($"ObjectEntry<{cp.Composition.NamePascal}EntityType>");
                     }
                     else
                     {
@@ -154,11 +154,11 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
 
         fw.Write("}\r\n\r\n");
 
-        fw.Write($"export const {classe.Name}Entity");
+        fw.Write($"export const {classe.NamePascal}Entity");
 
         if (_config.TargetFramework == TargetFramework.FOCUS)
         {
-            fw.Write($": {classe.Name}EntityType");
+            fw.Write($": {classe.NamePascal}EntityType");
         }
 
         fw.Write(" = {\r\n");
@@ -166,14 +166,14 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
         if (classe.Extends != null)
         {
             fw.Write("    ...");
-            fw.Write(classe.Extends.Name);
+            fw.Write(classe.Extends.NamePascal);
             fw.Write("Entity,\r\n");
         }
 
         foreach (var property in classe.Properties)
         {
             fw.Write("    ");
-            fw.Write(property.Name.ToFirstLower());
+            fw.Write(property.NameCamel);
             fw.Write(": {\r\n");
             fw.Write("        type: ");
 
@@ -208,7 +208,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
 
             if (property is IFieldProperty field)
             {
-                fw.WriteLine($"        name: \"{field.Name.ToFirstLower()}\",");
+                fw.WriteLine($"        name: \"{field.NameCamel}\",");
                 fw.WriteLine($"        domain: {field.Domain.Name},");
                 fw.WriteLine($"        isRequired: {(field.Required && !field.PrimaryKey).ToString().ToFirstLower()},");
 
@@ -228,23 +228,23 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
             else if (property is CompositionProperty cp3 && cp3.DomainKind != null)
             {
                 fw.Write("        name: \"");
-                fw.Write(cp3.Name.ToFirstLower());
+                fw.Write(cp3.NameCamel);
                 fw.Write("\"");
                 fw.Write(",\r\n        domain: ");
                 fw.Write(cp3.DomainKind.Name);
                 fw.Write(",\r\n        isRequired: true");
                 fw.Write(",\r\n        label: \"");
-                fw.Write(classe.Namespace.ModuleFirstLower);
+                fw.Write(classe.Namespace.ModuleCamel);
                 fw.Write(".");
                 fw.Write(classe.NameCamel);
                 fw.Write(".");
-                fw.Write(property.Name.ToFirstLower());
+                fw.Write(property.NameCamel);
                 fw.Write("\"\r\n");
             }
             else if (property is CompositionProperty cp2 && cp2.Composition.Name != classe.Name)
             {
                 fw.Write("        entity: ");
-                fw.Write(cp2.Composition.Name);
+                fw.Write(cp2.Composition.NamePascal);
                 fw.Write("Entity");
                 fw.Write("\r\n");
             }

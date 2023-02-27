@@ -15,7 +15,7 @@ public class UtilisateurApiController : Controller
     /// <param name="utiId">Id technique</param>
     /// <returns>Task.</returns>
     [HttpDelete("utilisateur/deleteAll")]
-    public async Task deleteAll(int[] utiId = null)
+    public async Task DeleteAll(int[] utiId = null)
     {
 
     }
@@ -26,7 +26,7 @@ public class UtilisateurApiController : Controller
     /// <param name="utiId">Id technique</param>
     /// <returns>Le détail de l'utilisateur</returns>
     [HttpGet("utilisateur/{utiId:int}")]
-    public async Task<UtilisateurDto> find(int utiId)
+    public async Task<UtilisateurDto> Find(int utiId)
     {
 
     }
@@ -37,7 +37,7 @@ public class UtilisateurApiController : Controller
     /// <param name="typeUtilisateurCode">Type d'utilisateur en Many to one</param>
     /// <returns>Liste des utilisateurs</returns>
     [HttpGet("utilisateur/list")]
-    public async Task<IEnumerable<UtilisateurSearch>> findAllByType(TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM)
+    public async Task<IEnumerable<UtilisateurSearch>> FindAllByType(TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM)
     {
 
     }
@@ -48,7 +48,7 @@ public class UtilisateurApiController : Controller
     /// <param name="utilisateur">Utilisateur à sauvegarder</param>
     /// <returns>Utilisateur sauvegardé</returns>
     [HttpPost("utilisateur/save")]
-    public async Task<UtilisateurDto> save([FromBody] UtilisateurDto utilisateur)
+    public async Task<UtilisateurDto> Save([FromBody] UtilisateurDto utilisateur)
     {
 
     }
@@ -66,7 +66,7 @@ public class UtilisateurApiController : Controller
     /// <param name="dateModification">Date de modification de l'utilisateur</param>
     /// <returns>Utilisateurs matchant les critères</returns>
     [HttpPost("utilisateur/search")]
-    public async Task<ICollection<UtilisateurSearch>> search(int? utiId = null, decimal age = 6l, int? profilId = null, string email = null, string nom = "Jabx", TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM, DateOnly? dateCreation = null, DateOnly? dateModification = null)
+    public async Task<ICollection<UtilisateurSearch>> Search(int? utiId = null, decimal age = 6l, int? profilId = null, string email = null, string nom = "Jabx", TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM, DateOnly? dateCreation = null, DateOnly? dateModification = null)
     {
 
     }

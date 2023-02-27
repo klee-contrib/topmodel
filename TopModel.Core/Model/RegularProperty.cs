@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.Core;
 
@@ -6,6 +7,10 @@ public class RegularProperty : IFieldProperty
 {
 #nullable disable
     public string Name { get; set; }
+
+    public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToPascalCase();
+
+    public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase();
 #nullable enable
 
     public string? Label { get; set; }

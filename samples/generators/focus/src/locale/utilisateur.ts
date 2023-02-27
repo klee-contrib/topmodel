@@ -18,10 +18,10 @@ export const utilisateur = {
     },
     utilisateur: {
         age: "Age",
+        email: "email",
         id: "Id technique",
         nom: "Nom",
         profilId: "ProfilId",
-        typeUtilisateurCode: "TypeUtilisateurCode",
-        email: "email"
+        typeUtilisateurCode: "TypeUtilisateurCode"
     }
 };

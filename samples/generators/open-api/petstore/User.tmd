@@ -15,6 +15,7 @@ endpoint:
   method: POST
   route: user
   description: "Create user"
+  preservePropertyCasing: true
   params:
     - composition: User
       name: Body
@@ -26,6 +27,7 @@ endpoint:
   method: POST
   route: user/createWithList
   description: "Creates list of users with given input array"
+  preservePropertyCasing: true
   params:
     - composition: User
       name: Body
@@ -42,6 +44,7 @@ endpoint:
   method: DELETE
   route: user/{username}
   description: "Delete user"
+  preservePropertyCasing: true
   params:
     - name: username
       domain: DO_LIBELLE
@@ -52,6 +55,7 @@ endpoint:
   method: GET
   route: user/{username}
   description: "Get user by user name"
+  preservePropertyCasing: true
   params:
     - name: username
       domain: DO_LIBELLE
@@ -67,6 +71,7 @@ endpoint:
   method: GET
   route: user/login
   description: "Logs user into the system"
+  preservePropertyCasing: true
   params:
     - name: password
       domain: DO_LIBELLE
@@ -85,12 +90,14 @@ endpoint:
   method: GET
   route: user/logout
   description: "Logs out current logged in user session"
+  preservePropertyCasing: true
 ---
 endpoint:
   name: updateUser
   method: PUT
   route: user/{username}
   description: "Update user"
+  preservePropertyCasing: true
   params:
     - name: username
       domain: DO_LIBELLE

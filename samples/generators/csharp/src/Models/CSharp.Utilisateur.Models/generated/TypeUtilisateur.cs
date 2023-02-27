@@ -68,7 +68,7 @@ public partial class TypeUtilisateur
     /// Code du type d'utilisateur.
     /// </summary>
     [Column("tut_code")]
-    [Domain(Domains.CODE)]
+    [Domain(Domains.Code)]
     [Key]
     public Codes? Code { get; set; }
 
@@ -77,7 +77,7 @@ public partial class TypeUtilisateur
     /// </summary>
     [Column("tut_libelle")]
     [Required]
-    [Domain(Domains.LIBELLE)]
+    [Domain(Domains.Libelle)]
     [StringLength(3)]
     public string Libelle { get; set; }
 

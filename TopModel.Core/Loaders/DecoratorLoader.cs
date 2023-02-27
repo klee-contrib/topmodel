@@ -32,6 +32,9 @@ public class DecoratorLoader : ILoader<Decorator>
                 case "description":
                     decorator.Description = value!.Value;
                     break;
+                case "preservePropertyCasing":
+                    decorator.PreservePropertyCasing = value!.Value == "true";
+                    break;
                 case "csharp":
                     decorator.CSharp = _fileChecker.Deserialize<CSharpDecorator>(parser);
                     break;

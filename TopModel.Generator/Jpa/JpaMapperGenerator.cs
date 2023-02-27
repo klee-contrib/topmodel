@@ -33,10 +33,10 @@ public class JpaMapperGenerator : MapperGeneratorBase
         var tm = ToMappers.Where(fm => fm.IsPersistant == isPersistant && classes.Contains(fm.Classe));
 
         var fromMappers = (fm ?? Array.Empty<(Class, FromMapper, bool)>())
-            .OrderBy(m => $"{m.Classe.Name} {string.Join(',', m.Mapper.Params.Select(p => p.Name))}", StringComparer.Ordinal)
+            .OrderBy(m => $"{m.Classe.NamePascal} {string.Join(',', m.Mapper.Params.Select(p => p.Name))}", StringComparer.Ordinal)
             .ToList();
         var toMappers = (tm ?? Array.Empty<(Class, ClassMappings, bool)>())
-            .OrderBy(m => $"{m.Mapper.Name} {m.Classe.Name}", StringComparer.Ordinal)
+            .OrderBy(m => $"{m.Mapper.Name} {m.Classe.NamePascal}", StringComparer.Ordinal)
             .ToList();
 
         var imports = fromMappers.SelectMany(m => m.Mapper.Params.Select(p => p.Class).Concat(new[] { m.Classe }))
@@ -131,7 +131,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
 
                 if (getter.CheckSourceNull)
                 {
-                    hydrate += $"source.{getterPrefix}{propertySource.GetJavaName().ToPascalCase()}() != null ? {getter.Getter} : null";
+                    hydrate += $"source.{getterPrefix}{propertySource.GetJavaName(true)}() != null ? {getter.Getter} : null";
                 }
                 else
                 {
@@ -144,10 +144,10 @@ public class JpaMapperGenerator : MapperGeneratorBase
                 {
                     if (getter.CheckSourceNull)
                     {
-                        fw.WriteLine(2, $"if (source.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}() != null) {{");
+                        fw.WriteLine(2, $"if (source.{getterPrefix}{propertySource.GetJavaName(true)}() != null) {{");
                     }
 
-                    fw.WriteLine(2 + (getter.CheckSourceNull ? 1 : 0), $"target.set{propertyTarget!.GetJavaName().ToFirstUpper()}({getter.Getter});");
+                    fw.WriteLine(2 + (getter.CheckSourceNull ? 1 : 0), $"target.set{propertyTarget!.GetJavaName(true)}({getter.Getter});");
 
                     if (getter.CheckSourceNull)
                     {
@@ -176,7 +176,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
         if ((!propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent)
             || !(propertySource is AssociationProperty || propertyTarget is AssociationProperty))
         {
-            getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}()";
+            getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}()";
         }
         else if (propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent && propertySource is AssociationProperty apSource)
         {
@@ -186,13 +186,13 @@ public class JpaMapperGenerator : MapperGeneratorBase
                 if (propertySource.Class.ToMappers.Any(t => t.Class == cp.Composition))
                 {
                     var cpMapper = propertySource.Class.ToMappers.Find(t => t.Class == cp.Composition)!;
-                    getter = $"{cpMapper.Class.GetMapperClassName(cpMapper)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterPrefix}{cp.GetJavaName().ToFirstUpper()}(), target.get{apSource.GetJavaName().ToFirstUpper()}())";
+                    getter = $"{cpMapper.Class.GetMapperClassName(cpMapper)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterPrefix}{cp.GetJavaName(true)}(), target.get{apSource.GetJavaName(true)}())";
                     fw.AddImport(_config.GetMapperImport(cpMapper.Class, cpMapper, tag)!);
                 }
                 else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == apSource.Association))
                 {
                     var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == apSource.Association)!;
-                    getter = $"{sourceName}.{getterPrefix}{apSource.GetJavaName().ToFirstUpper()}()";
+                    getter = $"{sourceName}.{getterPrefix}{apSource.GetJavaName(true)}()";
                     if (apSource.Type == AssociationType.OneToMany || apSource.Type == AssociationType.ManyToMany)
                     {
                         getter = $"{getter}.stream().map(item -> {cp.Composition.GetMapperClassName(cpMapper)}.create{cp.Composition}(item, null)).collect(Collectors.toList())";
@@ -200,7 +200,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
                     }
                     else
                     {
-                        getter = $"{cp.Composition.GetMapperClassName(cpMapper)}.create{cp.Composition}({getter}, target.get{propertyTarget.GetJavaName().ToFirstUpper()}())";
+                        getter = $"{cp.Composition.GetMapperClassName(cpMapper)}.create{cp.Composition}({getter}, target.get{propertyTarget.GetJavaName(true)}())";
                     }
 
                     fw.AddImport(_config.GetMapperImport(cp.Composition, cpMapper!, tag)!);
@@ -214,11 +214,11 @@ public class JpaMapperGenerator : MapperGeneratorBase
             {
                 if (apSource.Type == AssociationType.OneToOne || apSource.Type == AssociationType.ManyToOne)
                 {
-                    getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}().get{apSource.Property.GetJavaName().ToFirstUpper()}()";
+                    getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}().get{apSource.Property.GetJavaName(true)}()";
                 }
                 else
                 {
-                    getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}().stream().filter(Objects::nonNull).map({apSource.Association.Name.Value.ToPascalCase()}::get{apSource.Property.GetJavaName().ToFirstUpper()}).collect(Collectors.toList())";
+                    getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}().stream().filter(Objects::nonNull).map({apSource.Association.NamePascal}::get{apSource.Property.GetJavaName(true)}).collect(Collectors.toList())";
                     fw.AddImport("java.util.stream.Collectors");
                     fw.AddImport("java.util.Objects");
                     fw.AddImport(apSource.Association.GetImport(_config, tag));
@@ -232,25 +232,25 @@ public class JpaMapperGenerator : MapperGeneratorBase
                 var isMultiple = apTarget.Type == AssociationType.OneToMany || apTarget.Type == AssociationType.ManyToMany;
                 if (isMultiple)
                 {
-                    getter = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}(){(!propertySource.Class.IsPersistent ? $".stream().map({apTarget.Association.PrimaryKey.Single().GetJavaType()}::getEntity).collect(Collectors.toList())" : string.Empty)}";
+                    getter = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}(){(!propertySource.Class.IsPersistent ? $".stream().map({apTarget.Association.PrimaryKey.Single().GetJavaType()}::getEntity).collect(Collectors.toList())" : string.Empty)}";
                     fw.AddImport("java.util.stream.Collectors");
                 }
                 else
                 {
-                    getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}(){(!propertySource.Class.IsPersistent ? ".getEntity()" : string.Empty)}";
+                    getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}(){(!propertySource.Class.IsPersistent ? ".getEntity()" : string.Empty)}";
                     checkSourceNull = true;
                 }
             }
             else if (propertyTarget.Class.IsPersistent && propertySource.Class.IsPersistent)
             {
-                getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}()";
+                getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}()";
             }
             else if (propertySource is CompositionProperty cp)
             {
                 if (cp.Composition.ToMappers.Any(t => t.Class == apTarget.Association))
                 {
                     var cpMapper = cp.Composition.ToMappers.Find(t => t.Class == apTarget.Association)!;
-                    getter = $"{cpMapper.Class.GetMapperClassName(cpMapper)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterPrefix}{cp.GetJavaName().ToFirstUpper()}(), target.get{apTarget.GetJavaName().ToFirstUpper()}())";
+                    getter = $"{cpMapper.Class.GetMapperClassName(cpMapper)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterPrefix}{cp.GetJavaName(true)}(), target.get{apTarget.GetJavaName(true)}())";
                     fw.AddImport(_config.GetMapperImport(cpMapper.Class, cpMapper, tag)!);
                     checkSourceNull = true;
                 }
@@ -265,7 +265,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
             if (propertySource is IFieldProperty ifpTo && propertyTarget is IFieldProperty ifpFrom && ifpFrom.Domain != ifpTo.Domain)
             {
                 var converter = ifpFrom.Domain.ConvertersFrom.FirstOrDefault(c => c.To.Any(t => t == ifpTo.Domain));
-                string conversion = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}()";
+                string conversion = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}()";
                 if (converter != null && converter.Java?.Text != null)
                 {
                     var convert = converter.Java.Text;
@@ -275,12 +275,12 @@ public class JpaMapperGenerator : MapperGeneratorBase
                 }
                 else
                 {
-                    getter = $"{sourceName}.{propertySource.GetJavaName().ToFirstUpper()}()";
+                    getter = $"{sourceName}.{propertySource.GetJavaName(true)}()";
                 }
             }
             else
             {
-                getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName().ToPascalCase()}()";
+                getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}()";
             }
         }
 
@@ -296,17 +296,17 @@ public class JpaMapperGenerator : MapperGeneratorBase
         {
             if (param.Comment != null)
             {
-                fw.WriteParam(param.Name.ToFirstLower(), param.Comment);
+                fw.WriteParam(param.Name.ToCamelCase(), param.Comment);
             }
             else
             {
-                fw.WriteParam(param.Name.ToFirstLower(), $"Instance de '{param.Class}'");
+                fw.WriteParam(param.Name.ToCamelCase(), $"Instance de '{param.Class}'");
             }
         }
 
         fw.WriteReturns(1, $"Une nouvelle instance de '{classe}' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée");
         fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"public static {classe.NamePascal} create{classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToFirstLower()}"))}, {classe} target) {{");
+        fw.WriteLine(1, $"public static {classe.NamePascal} create{classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToCamelCase()}"))}, {classe} target) {{");
         fw.WriteLine(2, "if (target == null) {");
         if (classe.Abstract)
         {
@@ -336,7 +336,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
 
         foreach (var param in mapper.Params.Where(p => p.Mappings.Count > 0))
         {
-            fw.WriteLine(2, $"if ({param.Name.ToFirstLower()} != null) {{");
+            fw.WriteLine(2, $"if ({param.Name.ToCamelCase()} != null) {{");
             var mappings = param.Mappings.ToList();
 
             foreach (var mapping in mappings)
@@ -344,7 +344,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
                 var propertyTarget = mapping.Key;
                 var propertySource = mapping.Value!;
                 var getterPrefix = propertyTarget!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
-                var getter = GetSourceGetter(propertySource, propertyTarget, classe, fw, param.Name.ToFirstLower(), tag);
+                var getter = GetSourceGetter(propertySource, propertyTarget, classe, fw, param.Name.ToCamelCase(), tag);
                 if (classe.Abstract)
                 {
                     if (!isFirst)
@@ -358,7 +358,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
 
                     if (getter.CheckSourceNull)
                     {
-                        hydrate += $"{param.Name}.{getterPrefix}{propertySource.GetJavaName().ToPascalCase()}() != null ? {getter.Getter} : null";
+                        hydrate += $"{param.Name}.{getterPrefix}{propertySource.GetJavaName(true)}() != null ? {getter.Getter} : null";
                     }
                     else
                     {
@@ -371,10 +371,10 @@ public class JpaMapperGenerator : MapperGeneratorBase
                     {
                         if (getter.CheckSourceNull)
                         {
-                            fw.WriteLine(3, $"if ({param.Name}.{getterPrefix}{propertySource.GetJavaName().ToFirstUpper()}() != null) {{");
+                            fw.WriteLine(3, $"if ({param.Name}.{getterPrefix}{propertySource.GetJavaName(true)}() != null) {{");
                         }
 
-                        fw.WriteLine(3 + (getter.CheckSourceNull ? 1 : 0), $"target.set{propertyTarget!.GetJavaName().ToFirstUpper()}({getter.Getter});");
+                        fw.WriteLine(3 + (getter.CheckSourceNull ? 1 : 0), $"target.set{propertyTarget!.GetJavaName(true)}({getter.Getter});");
 
                         if (getter.CheckSourceNull)
                         {

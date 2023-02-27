@@ -121,7 +121,7 @@ public class JavascriptConfig : GeneratorConfigBase
             .Select(dep => (
                 Import: dep is { Source: IFieldProperty fp }
                     ? fp.GetPropertyTypeName().Replace("[]", string.Empty)
-                    : dep.Classe.Name,
+                    : dep.Classe.NamePascal,
                 Path: GetImportPathForClass(dep, tag, availableClasses)!))
             .Concat(endpoints.SelectMany(d => d.DomainDependencies).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Replace("[]", string.Empty).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(i => i.Path != null)
