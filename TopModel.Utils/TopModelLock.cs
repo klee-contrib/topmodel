@@ -1,4 +1,4 @@
-﻿namespace TopModel.Core;
+﻿namespace TopModel.Utils;
 
 public class TopModelLock
 {

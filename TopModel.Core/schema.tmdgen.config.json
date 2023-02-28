@@ -4,109 +4,220 @@
   "type": "object",
   "description": "Fichier de config du générateur de modèle tmdgen",
   "additionalProperties": false,
+  "definitions": {
+    "domain": {
+      "oneOf": [
+        {
+          "type": "object",
+          "description": "Correspondance entre le nom de la propriété et un modèle dans le modèle cible",
+          "required": [
+            "domain",
+            "name"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Nom de propriété ou regexp de nom de propriété à matcher"
+            },
+            "domain": {
+              "type": "string",
+              "description": "Domain cible correspondant au nom"
+            },
+            "scale": {
+              "type": "number",
+              "description": "Echelle du domain"
+            },
+            "precision": {
+              "type": "number",
+              "description": "Précision du domain"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "description": "Correspondance entre le type de données et un modèle dans le modèle cible",
+          "required": [
+            "type",
+            "domain"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Type de propriété ou regexp de type de propriété à matcher"
+            },
+            "domain": {
+              "type": "string",
+              "description": "Domain cible correspondant au type"
+            },
+            "scale": {
+              "type": "number",
+              "description": "Echelle du domain"
+            },
+            "precision": {
+              "type": "number",
+              "description": "Précision du domain"
+            }
+          }
+        }
+      ]
+    }
+  },
   "properties": {
-    "outputDirectory": {
-      "type": "string",
-      "description": "Répertoire de génération du modèle"
-    },
     "modelRoot": {
       "type": "string",
       "description": "Chemin relatif du répertoire de génération du modèle vis-à-vis du répertoire racine du modèle cible"
     },
-    "openApi": {
-      "type": "object",
-      "description": "Configuration de la génération de fichiers Topmodel à partir de fichiers au format OpenApi",
-      "properties": {
-        "domains": {
-          "type": "array",
-          "description": "Liste des correspondance entre les types définis dans la spécification openapi et les domaines dans le modèle cible",
-          "items": {
-            "oneOf": [
-              {
-                "type": "object",
-                "description": "Correspondance entre le nom défini dans la spécification openapi et un modèle dans le modèle cible",
-                "required": [
-                  "domain",
-                  "name"
-                ],
-                "properties": {
-                  "name": {
+    "database": {
+      "type": "array",
+      "description": "Liste des configurations de la génération de fichiers Topmodel à partir d'une base de données",
+      "items": {
+        "type": "object",
+        "description": "Configuration de la génération de fichiers Topmodel à partir d'une base de données",
+        "properties": {
+          "tags": {
+            "type": "array",
+            "description": "Liste des tags à ajouter dans les fichiers générés",
+            "items": {
+              "type": "string",
+              "description": "Tag à ajouter aux fichiers générés"
+            }
+          },
+          "modules": {
+            "type": "array",
+            "description": "Liste des modules et des classes qui devront en faire partie",
+            "items": {
+              "type": "object",
+              "description": "Module contenant des classes",
+              "required": [
+                "name",
+                "classes"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Nom du module"
+                },
+                "classes": {
+                  "type": "array",
+                  "description": "Liste des classes au format PascalCase qui devront faire partie du module",
+                  "items": {
                     "type": "string",
-                    "description": "Nom de propriété ou regexp de nom de propriété à matcher"
-                  },
-                  "domain": {
-                    "type": "string",
-                    "description": "Domain cible correspondant au nom"
-                  }
-                }
-              },
-              {
-                "type": "object",
-                "description": "Correspondance entre le type défini dans la spécification openapi et un modèle dans le modèle cible",
-                "required": [
-                  "type",
-                  "domain"
-                ],
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "description": "Type de propriété ou regexp de type de propriété à matcher"
-                  },
-                  "domain": {
-                    "type": "string",
-                    "description": "Domain cible correspondant au type"
+                    "description": "Nom d'une classe devant faire partie du module"
                   }
                 }
               }
-            ]
-          }
-        },
-        "sources": {
-          "type": "object",
-          "description": "Configuration des fichiers sources de spécifivation openapi",
-          "additionalProperties": {
+            }
+          },
+          "domains": {
+            "type": "array",
+            "description": "Liste des correspondance entre les types définis dans la spécification openapi et les domaines dans le modèle cible",
+            "items": {
+              "$ref": "#/definitions/domain"
+            }
+          },
+          "exclude": {
+            "type": "array",
+            "description": "Liste des tables à exclure de la génération",
+            "items": {
+              "type": "string",
+              "description": "Table à exclure de la génération"
+            }
+          },
+          "extractValues": {
+            "type": "array",
+            "description": "Liste des classes dont il faut extraire les valeurs",
+            "items": {
+              "type": "string",
+              "description": "Classe dont il faut extraire les valeurs"
+            }
+          },
+          "source": {
             "type": "object",
+            "description": "Informations de connexion à la base de données",
             "properties": {
-              "modelTags": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "description": "Tag à placer dans le fichier de modèle généré"
-                }
-              },
-              "endpointTags": {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "description": "Tag à placer dans le fichier de endpoint généré"
-                }
-              },
-              "path": {
+              "host": {
                 "type": "string",
-                "description": "Chemin relatif du fichier json ou yaml de spécification openapi"
+                "description": "Hôte",
+                "default": "localhost"
               },
-              "url": {
+              "port": {
                 "type": "string",
-                "description": "Url pour télécharger le fichier json ou yaml de spécification openapi"
+                "description": "Numéro du port",
+                "default": "5432"
               },
-              "include": {
-                "type": "array",
-                "description": "Liste des tags de la spécification qu'il faut générer dans le modèle cible",
-                "items": {
-                  "type": "string",
-                  "description": "Tag de la spécification qu'il faut générer dans le modèle cible"
-                }
-              },
-              "modelFileName": {
+              "dbName": {
                 "type": "string",
-                "description": "Nom du fichier dans lequel sera déclaré le modèle"
+                "description": "Nom de la base de donnée",
+                "default": "postgres"
               },
-              "preservePropertyCasing": {
-                "type": "boolean",
-                "description": "Garde les noms des propriétés générées tels quels pour la génération via `modgen`, au lieu de les convertir dans le format du langage cible. Par défaut : `true`."
+              "schema": {
+                "type": "string",
+                "description": "Nom du schéma",
+                "default": "public"
+              },
+              "user": {
+                "type": "string",
+                "description": "Utilisateur de connexion à la base de données",
+                "default": "postgres"
+              },
+              "password": {
+                "type": "string",
+                "description": "Mot de passe de connexion à la base de données",
+                "default": "postgres"
               }
             }
           }
+        }
+      }
+    },
+    "openApi": {
+      "type": "array",
+      "description": "Liste des configuration de la génération de fichiers Topmodel à partir de fichiers au format OpenApi",
+      "items": {
+        "type": "object",
+        "description": "Configuration de la génération de fichiers Topmodel à partir d'un fichier au format OpenApi",
+        "properties": {
+          "domains": {
+            "type": "array",
+            "description": "Liste des correspondance entre les types définis dans la spécification openapi et les domaines dans le modèle cible",
+            "items": {
+              "$ref": "#/definitions/domain"
+            }
+          },
+          "modelTags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Tag à placer dans le fichier de modèle généré"
+            }
+          },
+          "endpointTags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Tag à placer dans le fichier de endpoint généré"
+            }
+          },
+          "include": {
+            "type": "array",
+            "description": "Liste des tags de la spécification qu'il faut générer dans le modèle cible",
+            "items": {
+              "type": "string",
+              "description": "Tag de la spécification qu'il faut générer dans le modèle cible"
+            }
+          },
+          "modelFileName": {
+            "type": "string",
+            "description": "Nom du fichier dans lequel sera déclaré le modèle"
+          },
+          "preservePropertyCasing": {
+            "type": "boolean",
+            "description": "Garde les noms des propriétés générées tels quels pour la génération via `modgen`, au lieu de les convertir dans le format du langage cible. Par défaut : `true`."
+          }
+        },
+        "source": {
+          "type": "string",
+          "description": "Url ou chemin relatif du fichier json ou yaml de spécification openapi"
         }
       }
     }

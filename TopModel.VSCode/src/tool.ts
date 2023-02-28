@@ -162,7 +162,7 @@ export class TmdTool {
         await this.loadCurrentVersion();
         this.status = "READY";
         if (this.latestVersion) {
-            this.showReleaseNote(`TopModel a été mis à jour ${oldVersion} --> ${this.latestVersion}`);
+            this.showReleaseNote(`${this.name} a été mis à jour ${oldVersion} --> ${this.latestVersion}`);
         }
     }
 
