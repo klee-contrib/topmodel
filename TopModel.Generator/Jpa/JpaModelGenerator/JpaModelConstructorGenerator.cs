@@ -70,7 +70,7 @@ public class JpaModelConstructorGenerator
     public void WriteAllArgConstructorEnumShortcut(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
     {
         var properties = GetAllArgsProperties(classe, availableClasses, tag);
-        if (!properties.OfType<AssociationProperty>().Any(p => p.IsEnum() && (p.Type == AssociationType.OneToOne || p.Type == AssociationType.ManyToOne)))
+        if (!properties.OfType<AssociationProperty>().Any(p => p.IsEnum() && p.Association.IsStatic() && (p.Type == AssociationType.OneToOne || p.Type == AssociationType.ManyToOne)))
         {
             return;
         }
@@ -83,7 +83,7 @@ public class JpaModelConstructorGenerator
             return;
         }
 
-        var propertiesSignature = string.Join(", ", properties.Select(p => $"{(p is AssociationProperty ap && ap.IsEnum() ? (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) ? $"List<{ap.Association.NamePascal}.Values>" : $"{p.GetJavaType()}.Values" : p.GetJavaType())} {(p is AssociationProperty asp && asp.IsEnum() ? p.NameCamel : p.GetJavaName())}"));
+        var propertiesSignature = string.Join(", ", properties.Select(p => $"{(p is AssociationProperty ap && ap.IsEnum() && ap.Association.IsStatic() ? (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) ? $"List<{ap.Association.NamePascal}.Values>" : $"{p.GetJavaType()}.Values" : p.GetJavaType())} {(p is AssociationProperty asp && asp.IsEnum() && asp.Association.IsStatic() ? p.NameCamel : p.GetJavaName())}"));
 
         foreach (var property in properties)
         {
@@ -104,7 +104,7 @@ public class JpaModelConstructorGenerator
 
         foreach (var property in classe.GetProperties(_config, availableClasses, tag))
         {
-            if (!(property is AssociationProperty aspr2 && aspr2.IsEnum()))
+            if (!(property is AssociationProperty aspr2 && aspr2.IsEnum() && aspr2.Association.IsStatic()))
             {
                 fw.WriteLine(2, $"this.{property.GetJavaName()} = {property.GetJavaName()};");
             }
