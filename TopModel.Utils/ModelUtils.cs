@@ -181,6 +181,11 @@ public static class ModelUtils
     /// <returns>Le texte en sortie.</returns>
     public static string ToFirstUpper(this string text)
     {
+        if (string.IsNullOrEmpty(text))
+        {
+            return text;
+        }
+
         return char.ToUpper(text[0]) + text[1..];
     }
 
