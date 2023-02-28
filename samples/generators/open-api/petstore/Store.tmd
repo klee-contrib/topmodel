@@ -57,9 +57,9 @@ endpoint:
   preservePropertyCasing: true
   params:
     - composition: Order
-      name: Body
+      name: body
       kind: object
-      comment: "Body"
+      comment: "body"
   returns:
     composition: Order
     name: Result

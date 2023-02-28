@@ -14,17 +14,17 @@ class:
   comment: no description provided
 
   properties:
-    - name: Code
+    - name: code
       domain: DO_ENTIER
       required: true
       comment: "code"
 
-    - name: Type
+    - name: type
       domain: DO_LIBELLE
       required: true
       comment: "type"
 
-    - name: Message
+    - name: message
       domain: DO_LIBELLE
       required: true
       comment: "message"
@@ -35,12 +35,12 @@ class:
   comment: no description provided
 
   properties:
-    - name: Id
+    - name: id
       domain: DO_ID
       required: true
       comment: "id"
 
-    - name: Name
+    - name: name
       domain: DO_LIBELLE
       required: true
       comment: "name"
@@ -51,22 +51,22 @@ class:
   comment: no description provided
 
   properties:
-    - name: Id
+    - name: id
       domain: DO_ID
       required: true
       comment: "id"
 
-    - name: PetId
+    - name: petId
       domain: DO_ID
       required: true
       comment: "petId"
 
-    - name: Quantity
+    - name: quantity
       domain: DO_ENTIER
       required: true
       comment: "quantity"
 
-    - name: ShipDate
+    - name: shipDate
       domain: DO_DATE_TIME
       required: true
       comment: "shipDate"
@@ -74,7 +74,7 @@ class:
     - alias:
         class: OrderStatus
 
-    - name: Complete
+    - name: complete
       domain: DO_BOOLEAN
       required: true
       comment: "complete"
@@ -85,28 +85,28 @@ class:
   comment: no description provided
 
   properties:
-    - name: Id
+    - name: id
       domain: DO_ID
       required: true
       comment: "id"
 
-    - name: Name
+    - name: name
       domain: DO_LIBELLE
       required: true
       comment: "name"
 
     - composition: Category
-      name: Category
+      name: category
       kind: object
       comment: "category"
 
-    - name: PhotoUrls
+    - name: photoUrls
       domain: DO_LIBELLE
       required: true
       comment: "photoUrls"
 
     - composition: Tag
-      name: Tags
+      name: tags
       kind: list
       comment: "tags"
 
@@ -119,12 +119,12 @@ class:
   comment: no description provided
 
   properties:
-    - name: Id
+    - name: id
       domain: DO_ID
       required: true
       comment: "id"
 
-    - name: Name
+    - name: name
       domain: DO_LIBELLE
       required: true
       comment: "name"
@@ -135,42 +135,42 @@ class:
   comment: no description provided
 
   properties:
-    - name: Id
+    - name: id
       domain: DO_ID
       required: true
       comment: "id"
 
-    - name: Username
+    - name: username
       domain: DO_LIBELLE
       required: true
       comment: "username"
 
-    - name: FirstName
+    - name: firstName
       domain: DO_LIBELLE
       required: true
       comment: "firstName"
 
-    - name: LastName
+    - name: lastName
       domain: DO_LIBELLE
       required: true
       comment: "lastName"
 
-    - name: Email
+    - name: email
       domain: DO_LIBELLE
       required: true
       comment: "email"
 
-    - name: Password
+    - name: password
       domain: DO_LIBELLE
       required: true
       comment: "password"
 
-    - name: Phone
+    - name: phone
       domain: DO_LIBELLE
       required: true
       comment: "phone"
 
-    - name: UserStatus
+    - name: userStatus
       domain: DO_ENTIER
       required: true
       comment: "User Status"
@@ -181,15 +181,15 @@ class:
   comment: enum pour les valeurs de Status
 
   properties:
-    - name: Status
+    - name: status
       domain: DO_LIBELLE
       required: true
       comment: "Order Status"
 
   values:
-    value0: { Status: placed }
-    value1: { Status: approved }
-    value2: { Status: delivered }
+    value0: { status: placed }
+    value1: { status: approved }
+    value2: { status: delivered }
 ---
 class:
   name: PetStatus
@@ -197,12 +197,12 @@ class:
   comment: enum pour les valeurs de Status
 
   properties:
-    - name: Status
+    - name: status
       domain: DO_LIBELLE
       required: true
       comment: "pet status in the store"
 
   values:
-    value0: { Status: available }
-    value1: { Status: pending }
-    value2: { Status: sold }
+    value0: { status: available }
+    value1: { status: pending }
+    value2: { status: sold }

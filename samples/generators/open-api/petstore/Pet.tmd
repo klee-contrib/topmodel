@@ -18,9 +18,9 @@ endpoint:
   preservePropertyCasing: true
   params:
     - composition: Pet
-      name: Body
+      name: body
       kind: object
-      comment: "Body"
+      comment: "body"
   returns:
     composition: Pet
     name: Result
@@ -97,9 +97,9 @@ endpoint:
   preservePropertyCasing: true
   params:
     - composition: Pet
-      name: Body
+      name: body
       kind: object
-      comment: "Body"
+      comment: "body"
   returns:
     composition: Pet
     name: Result
@@ -136,10 +136,10 @@ endpoint:
     - name: additionalMetadata
       domain: DO_LIBELLE
       comment: "Additional Metadata"
-    - name: Body
+    - name: body
       domain: DO_FILE
       required: true
-      comment: "Body"
+      comment: "body"
   returns:
     composition: ApiResponse
     name: Result

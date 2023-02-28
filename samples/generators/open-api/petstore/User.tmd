@@ -18,9 +18,9 @@ endpoint:
   preservePropertyCasing: true
   params:
     - composition: User
-      name: Body
+      name: body
       kind: object
-      comment: "Body"
+      comment: "body"
 ---
 endpoint:
   name: createUsersWithListInput
@@ -30,9 +30,9 @@ endpoint:
   preservePropertyCasing: true
   params:
     - composition: User
-      name: Body
+      name: body
       kind: list
-      comment: "Body"
+      comment: "body"
   returns:
     composition: User
     name: Result
@@ -103,6 +103,6 @@ endpoint:
       domain: DO_LIBELLE
       comment: "name that need to be deleted"
     - composition: User
-      name: Body
+      name: body
       kind: object
-      comment: "Body"
+      comment: "body"

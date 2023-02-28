@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.25.2
+
+- [`9b91aa`](https://github.com/klee-contrib/topmodel/commit/9b91aac2600f74d4bf0e0aea7fbcd959f4f89729) - [JPA] Correction génération du allArgsConstructor dans le cas enum shortcut
+
 ## 1.25.1
 
 - [`d90967a`](https://github.com/klee-contrib/topmodel/commit/d90967aa538a77676c50833bab1ba1f333e4d969) - Correction NPE dans le `toFirstUpper()`
