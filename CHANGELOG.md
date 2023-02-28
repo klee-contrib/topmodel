@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.25.1
+
+- [`d90967a`](https://github.com/klee-contrib/topmodel/commit/d90967aa538a77676c50833bab1ba1f333e4d969) - Correction NPE dans le `toFirstUpper()`
+
 ## 1.25.0
 
 - [#225](https://github.com/klee-contrib/topmodel/pull/225) - Génération de classes C#/Java par tag + variables app/module/lang propres + plein de nettoyage
