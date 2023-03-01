@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.25.3
+
+- [`6a7caeaa7`](https://github.com/klee-contrib/topmodel/commit/6a7caeaa7087913286eb15db2bef816eb198e352) - [JPA] Correction génération enum static
+
 ## 1.25.2
 
 - [`9b91aa`](https://github.com/klee-contrib/topmodel/commit/9b91aac2600f74d4bf0e0aea7fbcd959f4f89729) - [JPA] Correction génération du allArgsConstructor dans le cas enum shortcut
