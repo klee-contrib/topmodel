@@ -241,7 +241,7 @@ public class JpaModelPropertyGenerator
         if (!(property.DefaultValue == null || property.DefaultValue == "null" || property.DefaultValue == "undefined"))
         {
             defaultValue += " = ";
-            if (property.IsEnum())
+            if (property.IsEnum() && classe.IsStatic())
             {
                 defaultValue += "Values." + property.DefaultValue;
             }

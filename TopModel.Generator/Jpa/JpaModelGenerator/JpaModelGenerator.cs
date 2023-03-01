@@ -179,7 +179,7 @@ public class JpaModelGenerator : ClassGeneratorBase
         fw.WriteLine();
         var codeProperty = classe.EnumKey!;
 
-        if (codeProperty.IsEnum())
+        if (codeProperty.IsEnum() && classe.IsStatic())
         {
             fw.WriteLine(1, $"public enum Values {{");
             var i = 0;

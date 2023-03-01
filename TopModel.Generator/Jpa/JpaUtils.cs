@@ -109,7 +109,7 @@ public static class JpaUtils
 
     public static string GetJavaType(this RegularProperty rp, bool asList)
     {
-        return rp.IsEnum() ? ((asList ? "List<" : string.Empty) + $"{rp.Class.NamePascal}.Values") + (asList ? ">" : string.Empty) : (asList ? rp.Domain.ListDomain! : rp.Domain).Java!.Type.ParseTemplate(rp);
+        return rp.IsEnum() && rp.Class.IsStatic() ? ((asList ? "List<" : string.Empty) + $"{rp.Class.NamePascal}.Values") + (asList ? ">" : string.Empty) : (asList ? rp.Domain.ListDomain! : rp.Domain).Java!.Type.ParseTemplate(rp);
     }
 
     public static string GetJavaType(this CompositionProperty cp)
@@ -132,7 +132,7 @@ public static class JpaUtils
 
     public static bool IsStatic(this Class c)
     {
-        return c.PrimaryKey.Single().IsEnum()
+        return c.Enum
             && !c.Properties.OfType<AssociationProperty>().Any(a => a.Association != c && !a.Association.IsStatic());
     }
 
