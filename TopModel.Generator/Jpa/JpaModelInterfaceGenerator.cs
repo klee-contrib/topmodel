@@ -90,7 +90,7 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
     {
         foreach (var property in classe.Properties.Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
         {
-            var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+            var getterPrefix = property.GetJavaType() == "boolean" ? "is" : "get";
             fw.WriteLine();
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
             fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config, tag)}#{property.GetJavaName()} {property.GetJavaName()}}}");

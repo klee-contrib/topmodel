@@ -147,3 +147,16 @@ domain:
   sqlType: numeric
   scale: 9
   length: 20
+---
+domain:
+  name: DO_BOOLEAN
+  label: boolean
+  ts:
+    type: bool
+  csharp:
+    type: bool?
+  java:
+    type: Boolean
+  sqlType: boolean
+  scale: 9
+  length: 20

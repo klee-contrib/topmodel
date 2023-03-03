@@ -37,6 +37,9 @@ class:
       comment: Nom de l'utilisateur
       domain: DO_LIBELLE
       defaultValue: Jabx
+    - name: Actif
+      comment: Si l'utilisateur est actif
+      domain: DO_BOOLEAN
     - association: TypeUtilisateur
       comment: Type d'utilisateur en Many to one
       type: manyToOne

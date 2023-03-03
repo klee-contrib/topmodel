@@ -8,8 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import topmodel.jpa.sample.demo.dtos.utilisateur.IUtilisateur;
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
+import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurSearch;
 import topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur.Values;
 import topmodel.jpa.sample.demo.services.UtilisateurService;
 
@@ -39,12 +39,12 @@ public class UtilisateurApiControllerImpl implements UtilisateurApiController {
 	}
 
 	@Override
-	public List<IUtilisateur> findAllByType(Values typeUtilisateurCode) {
+	public List<UtilisateurSearch> findAllByType(Values typeUtilisateurCode) {
 		return utilisateurService.findAllByType(typeUtilisateurCode);
 	}
 
 	@Override
-	public Page<IUtilisateur> search(Long utiId, Long age, Long profilId, String email, String nom,
+	public Page<UtilisateurSearch> search(Long utiId, Long age, Long profilId, String email, String nom,
 			Values typeUtilisateurCode, LocalDate dateCreation, LocalDateTime dateModification) {
 		// TODO Auto-generated method stub
 		return null;

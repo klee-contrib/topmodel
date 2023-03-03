@@ -145,7 +145,7 @@ public class JpaModelConstructorGenerator
         {
             if (!(property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list"))
             {
-                var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+                var getterPrefix = property.GetJavaType() == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"this.{property.GetJavaName()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName(true)}();");
             }
         }
@@ -163,7 +163,7 @@ public class JpaModelConstructorGenerator
         {
             if (property is AssociationProperty ap || property is CompositionProperty cp && cp.Kind == "list")
             {
-                var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+                var getterPrefix = property.GetJavaType() == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"this.{property.GetJavaName()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName(true)}().stream().collect(Collectors.toList());");
                 fw.AddImport("java.util.stream.Collectors");
             }
@@ -175,7 +175,7 @@ public class JpaModelConstructorGenerator
             foreach (var ap in classe.GetProperties(_config, availableClasses, tag).OfType<AssociationProperty>().Where(ap => ap.Association.IsStatic()))
             {
                 var propertyName = ap.NameCamel;
-                var getterPrefix = ap.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+                var getterPrefix = ap.GetJavaType() == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"this.set{ap.NameCamel.ToFirstUpper()}({classe.NameCamel}.{getterPrefix}{ap.NameCamel.ToFirstUpper()}());");
             }
         }

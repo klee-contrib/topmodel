@@ -306,7 +306,7 @@ public class JpaModelGenerator : ClassGeneratorBase
                     name = prop.NameCamel;
                 }
 
-                var getterPrefix = prop.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+                var getterPrefix = prop.GetJavaType() == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"public {type} {getterPrefix}{name.ToFirstUpper()}(){{");
                 fw.WriteLine(3, $"return this.{name};");
                 fw.WriteLine(2, $"}}");
@@ -462,7 +462,7 @@ public class JpaModelGenerator : ClassGeneratorBase
             fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config, tag)}#{property.GetJavaName()} {property.GetJavaName()}}}");
             fw.WriteDocEnd(1);
 
-            var getterPrefix = property.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+            var getterPrefix = property.GetJavaType() == "boolean" ? "is" : "get";
             fw.WriteLine(1, @$"public {property.GetJavaType()} {getterPrefix}{property.GetJavaName(true)}() {{");
             if (property is AssociationProperty ap && (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany))
             {

@@ -116,7 +116,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
         {
             var propertyTarget = mapping.Value;
             var propertySource = mapping.Key;
-            var getterPrefix = propertyTarget!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+            var getterPrefix = propertyTarget!.GetJavaType() == "boolean" ? "is" : "get";
             var getter = GetSourceGetter(propertySource, propertyTarget!, classe, fw, "source", tag);
             if (mapper.Class.Abstract)
             {
@@ -170,7 +170,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
 
     private (string Getter, bool CheckSourceNull) GetSourceGetter(IProperty propertySource, IProperty propertyTarget, Class classe, JavaWriter fw, string sourceName, string tag)
     {
-        var getterPrefix = propertyTarget!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+        var getterPrefix = propertyTarget!.GetJavaType() == "boolean" ? "is" : "get";
         var getter = string.Empty;
         var checkSourceNull = false;
         if ((!propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent)
@@ -343,7 +343,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
             {
                 var propertyTarget = mapping.Key;
                 var propertySource = mapping.Value!;
-                var getterPrefix = propertyTarget!.GetJavaType().ToUpper() == "BOOLEAN" ? "is" : "get";
+                var getterPrefix = propertyTarget!.GetJavaType() == "boolean" ? "is" : "get";
                 var getter = GetSourceGetter(propertySource, propertyTarget, classe, fw, param.Name.ToCamelCase(), tag);
                 if (classe.Abstract)
                 {
