@@ -542,12 +542,6 @@ public class ModelStore
                         break;
                     }
 
-                    if ((ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany) && ap.Class.PrimaryKey.Single()?.Domain?.ListDomain is null)
-                    {
-                        yield return new ModelError(ap, $@"Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Class.PrimaryKey.Single().Domain} ne contient pas de définition de ListDomain", ap.Reference) { ModelErrorType = ModelErrorType.TMD1028 };
-                        continue;
-                    }
-
                     ap.Association = association;
                     break;
 
@@ -790,15 +784,24 @@ public class ModelStore
         }
 
         // Résolution des propriétés d'association (pour clé étrangère).
-        foreach (var ap in fileClasses.SelectMany(c => c.Properties.OfType<AssociationProperty>()).Where(ap => ap.Association != null && ap.PropertyReference != null))
+        foreach (var ap in fileClasses.SelectMany(c => c.Properties.OfType<AssociationProperty>()).Where(ap => ap.Association != null))
         {
-            var referencedProperty = ap.Association.Properties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == ap.PropertyReference!.ReferenceName);
-            if (referencedProperty == null)
+            if ((ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany) && ap.Association.PrimaryKey.Single()?.Domain?.ListDomain is null)
             {
-                yield return new ModelError(ap, $"La propriété '{{0}}' est introuvable sur la classe '{ap.Association}'.", ap.PropertyReference) { ModelErrorType = ModelErrorType.TMD1004 };
+                yield return new ModelError(ap, $@"Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Class.PrimaryKey.Single().Domain} ne contient pas de définition de ListDomain", ap.Reference) { ModelErrorType = ModelErrorType.TMD1028 };
+                continue;
             }
 
-            ap.Property = referencedProperty;
+            if (ap.PropertyReference != null)
+            {
+                var referencedProperty = ap.Association.Properties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == ap.PropertyReference!.ReferenceName);
+                if (referencedProperty == null)
+                {
+                    yield return new ModelError(ap, $"La propriété '{{0}}' est introuvable sur la classe '{ap.Association}'.", ap.PropertyReference) { ModelErrorType = ModelErrorType.TMD1004 };
+                }
+
+                ap.Property = referencedProperty;
+            }
         }
 
         // Résolution des alias de classes et endpoints dans le fichier.

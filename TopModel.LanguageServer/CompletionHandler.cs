@@ -69,7 +69,7 @@ class CompletionHandler : CompletionHandlerBase
             if (currentLine.Contains("domain: ") || currentLine.Contains("listDomain: ") || currentLine.Contains("kind: ")
                 || currentLine.TrimStart().StartsWith("-")
                     && GetRootObject(request) == "converter"
-                     && (text.ElementAtOrDefault(request.Position.Line - 1)?.Trim() == "to:"
+                    && (text.ElementAtOrDefault(request.Position.Line - 1)?.Trim() == "to:"
                         || text.ElementAtOrDefault(request.Position.Line - 1)?.Trim() == "from:"
                         || file.Converters.SelectMany(c => c.DomainsFromReferences).Union(file.Converters.SelectMany(c => c.DomainsToReferences)).Any(dr => dr.Start.Line == request.Position.Line)))
             {
