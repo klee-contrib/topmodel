@@ -1,163 +1,102 @@
 # Jpa Generator
 
-## Configuration
+## Présentation
 
-Voici un exemple de configuration du générateur JPA
+Le générateur JPA peut générer les fichiers suivants :
 
-```yaml
-jpa:
-  - tags:
-      - dto
-      - entity
-    modelOutputDirectory: ./jpa/src/main/javagen # Dossier cible de la génération
-    daosPackageName: topmodel.exemple.name.daos # Package des DAO
-    dtosPackageName: topmodel.exemple.name.dtos # Package des objets non persistés
-    entitiesPackageName: topmodel.exemple.name.entities # Package des objets non persistés
-    apiOutputDirectory: ./jpa/src/main/javagen # Dossier cible des API
-    apiPackageName: topmodel.exemple.name.api # Package des l'API
-    apiGeneration: Server # Mode de génération de l'API (serveur ou client)
-    fieldsEnum: Persisted # Classes  dans lesquelles le générateur doit ajouter une enum des champs : jamais (None), dans les classes persistées (Persisted), dans les classes non persistées (Dto), ou les deux (Persisted_Dto)
-    fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<> # Classe dont doivent hériter ces enum
-```
+- Un fichier de définition de classe pour chaque classe dans le modèle.
+- Un fichier d'interface DAO `JpaRepository` pour chacune des classes persistées du modèle.
+- Un (ou deux) fichier(s) par module avec les mappers des classes du module.
+- Un fichier de contrôleur pour chaque fichier d'endpoints dans le modèle, si les APIs sont générées en mode serveur.
+- Un fichier de client d'API pour chaque fichier d'endpoints dans le modèle, si les APIs sont générées en mode client.
+- Des fichiers de resources contenant les traductions (`label`) du modèle
 
-### Dépendances obligatoires
+Sur toutes les classes, interfaces générées, est ajoutée l'annotation `@Generated("TopModel : https://github.com/klee-contrib/topmodel")` pour permettre de retrouver la doc au cas où 😜.
 
-#### Modèle
+## Génération des classes
 
-Le modèle généré par TopModel dépend d'une api de persistence. Par défaut, c'est l'API de persistence `javax` qui est utilisée, mais le mode `jakarta` est aussi disponible.
+Le générateur de classes distingue trois cas :
 
-La validation elle est gérée par le package `jakarta.validation-api`, dont les imports changent entre la version 2 et la version 3.
+- Les classes persistées : les classes qui possèdent une propriété avec `primaryKey: true`
+- Les classes non persistées
+- Les classes abstraites
 
-##### Javax (spring-boot < v3)
+Les propriétés sont générées sont `private`, du type défini dans le `domain`. Le commentaire leur étant associé correspond au commentaire défini dans le modèle.
 
-```xml
-<!-- https://mvnrepository.com/artifact/javax.persistence/javax.persistence-api -->
-<dependency>
-    <groupId>javax.persistence</groupId>
-    <artifactId>javax.persistence-api</artifactId>
-</dependency>
+Des `getter` et `setter` sont ajoutés automatiquement. Trois constructeurs sont ajoutés par défaut :
 
-<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
-<dependency>
-  <groupId>jakarta.validation</groupId>
-  <artifactId>jakarta.validation-api</artifactId>
-</dependency>
-```
+- Constructeur vide
+- Construteur tous arguments
+- Constructeur par recopie
 
-##### Jakarta (spring-boot > v3)
+### Classes persistées
 
-```xml
-<!-- https://mvnrepository.com/artifact/jakarta.persistence/jakarta.persistence-api -->
-<dependency>
-    <groupId>jakarta.persistence</groupId>
-    <artifactId>jakarta.persistence-api</artifactId>
-    <version>3.1.0</version>
-</dependency>
+Les classes persistées sont générées avec les annotations correspondant à ce qui est paramétré dans le modèle.
+Sur la classe :
 
-<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
-<dependency>
-  <groupId>jakarta.validation</groupId>
-  <artifactId>jakarta.validation-api</artifactId>
-</dependency>
-```
+| Annotation                                          | Paramètre correspondant dans le modèle                                               |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `@Entity`                                           | Automatique                                                                          |
+| `@Table("SQL_NAME")`                                | Automatique                                                                          |
+| `@UniqueConstraint`                                 | `unique` : pour chacune des contraintes d'unicité de la classe                       |
+| `Cache(usage = CacheConcurrencyStrategy.READ_ONLY)` | si la classe a `reference: true`. La stratégie dépend du `domain` de la clé primaire |
 
-#### Endpoints
+Sur chacune des propriété :
 
-Actuellement, la seule génération de endpoint cliente et serveur qui est gérée passe par les API de `Spring-web`
+| Annotation                     | Paramètre correspondant dans le modèle                                                                      |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `@Id`                          | `primaryKey: true` : sur la clé primaire                                                                    |
+| `@Enumerated(EnumType.STRING)` | Sur la clé primaire, si TopModel a détecté qu'il s'agissait bien d'une enum                                 |
+| `@SequenceGenerator`           | `primaryKey: true` : sur la clé primaire si `identity: mode: sequence` dans la configuration générale       |
+| `@GeneratedValue`              | `primaryKey: true` : sur la clé primaire si `identity: mode: sequence` dans la configuration générale       |
+| `@Column`                      | Sur les propriétés qui ne sont ni des compositions, ni des associations.                                    |
+| `@OneToOne`                    | `type: OneToOne` sur une associations                                                                       |
+| `@ManyToOne`                   | `type: ManyToOne` sur une associations                                                                      |
+| `@OneToMany`                   | `type: OneToMany` sur une associations                                                                      |
+| `@ManyToMany`                  | `type: ManyToMany` sur une associations                                                                     |
+| `@JoinColumn`                  | Sur les associations `manyToOne` et `oneToOne`                                                              |
+| `@JoinTable`                   | Sur les associations `manyToMany`                                                                           |
+| `@OrderBy`                     | Sur les associations `manyToMany` et `oneToMany` pour lesquelles la classe cible défini une `orderProperty` |
 
-```xml
-<!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
-<dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-web</artifactId>
-</dependency>
-```
+Les paramétrages de ces annotations correspondent à ce qui est défini dans le modèle ou dans la configuration, à l'exception de :
 
-### Version Java
+- `fetch = FetchType.LAZY` pour tous les types d'associations, pour optimisation des performances
+- `cascade = { CascadeType.PERSIST, CascadeType.MERGE }` pour les associations `ManyToMany` et `ManyToMany`
+- `cascade = { CascadeType.ALL }` pour les associations `OneToOne`
 
-Le cde Java généré est compatible avec toutes les versions de Java postérieures à `Java 11`.
+Par ailleurs, dès lors qu'une association est faite entre deux classes, si :
 
-### Utilisation combinée avec le générateur postgresql
+- Les deux classes ont même package racine
+- La classe de destination n'est pas une liste de référence
+- L'association n'est pas de type `oneToOne`
 
-Le mode de génération par défaut des générateur ne créé par de séquence, mais des colonnes auto-générées avec `identity`. Malheureusement, le `batch insert` de jdbc ne fonctionne pas correctement avec ce mode de génération d'ID. Il est donc recommandé d'utiliser le mode `sequence` de du générateur postgresql.
+alors l'association réciproque sera générée dans la classe cible.
 
-Le mode `sequence` dans la configuration jpa et dans la configuration postgresql se déclare de la même manière :
-
-```yaml
-## Configuration jpa et proceduralSql
-    identity:
-      increment: 50
-      start: 1000
-      mode: sequence
-```
-
-## Model
-
-Le générateur JPA construit les entités persistées, les entités non persistés, et initialise les DAO.
-
-### Entities
-
-Les entités sont générées contenant les annotations JPA représentant le modèle de données.
-
-#### Associations
-
-Dès lors qu'une association est faite entre deux classes, si celles-ci ont le même package racine et que la classe de destination n'est pas une liste de référence, alors l'association réciproque sera générée.
-
-> Les classes **`securite`**.Profil et **`utilisateur`**.Utilisateur n'ont pas le même package racine, au contraire de **`utilisateur`**.Utilisateur et **`utilisateur`**.Utilisateur
-
-##### ManyToMany
+#### ManyToMany
 
 L'association `ManyToMany` réciproque est générée dans la classe de destination. L'association "propriétaire" de la relation est celle déclarée dans le modèle TopModel.
 
-##### OneToMany
+#### OneToMany
 
 L'association `ManyToOne` réciproque est générée dans la classe de destination. L'association "propriétaire" de la relation est **toujours** l'association `ManyToOne`
 
-##### ManyToOne
+#### ManyToOne
 
 L'association `OneToMany` réciproque est générée dans la classe de destination. L'association "propriétaire" de la relation est **toujours** l'association `ManyToOne`
 
-##### OneToOne
+#### OneToOne
 
 Pour des raisons de performances, les associations oneToOne réciproques ne sont pas générées.
 
-#### Compositions
+#### Enum
 
-- Les compositions ne sont pas gérées dans le modèle persisté (n'utiliser que les associations)
-
-#### FieldsEnum
-
-Il est possible de générer dans la définition de la classe, la sous-classe (qui est une enum) `Fields`. Il s'agit d'une enumération des champs de la classe, au format const case.
-Il faut pour cela compléter la propriété `fieldsEnum:` A la configuration JPA. Sa valeur détermine dans quelles classes le générateur doit ajouter une enum des champs : aucune (`None`), dans les classes persistées (`Persisted`), dans les classes non persistées (`Dto`), ou les deux (`Persisted_Dto`)
-
-Il est également possible d'ajouter la référence d'une interface à cette configuration. Cette interface sera implémentée par la classe `Fields`. Vous pourrez ainsi la manipuler plus facilement. Si l'interface en question est suffixée par `<>`, alors elle sera considérée comme générique de la classe persistée.
-
-Exemple :
-
-La configuration suivante
-
-```yaml
-fieldsEnum: true
-fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<>
-```
-
-Génèrera, dans la classe `Departement`, l'enum suivante :
-
-```java
-    public enum Fields implements IFieldEnum<Departement> {
-         ID, //
-         CODE_POSTAL, //
-         LIBELLE
-    }
-```
-
-### References
-
-Lorsque sont ajoutées des listes de références, le générateur créé les `enum` correspondantes. Le domaine de clé primaire de la classe de référence est ignoré, et le champs prend le type de l'enum. L'enum est générée à l'intérieur de la classe de référence, et s'appelle  `[Nom de la classe].Values`. Les différents champs renseignés dans les valeurs sont également ajoutés en tant que propriétés de l'enum.
+Lorsque sont ajoutées des valeurs (`values`), le générateur créé les `enum` correspondantes. Le domaine de clé primaire de la classe est ignoré, et le champs prend le type de l'enum. L'enum est générée à l'intérieur de la classe de référence, et s'appelle  `[Nom de la classe].Values`. Les différents champs renseignés dans les valeurs sont également ajoutés en tant que propriétés de l'enum.
 
 Par ailleurs, si la classe possède une association avec une classe qui contient une liste de référence, alors il le type du champ dans l'enum sera le type de l'enum de la clé primaire de la classe associée.
 
-#### EnumShortcutMode
+Cette `enum` possède les différents attributs de la classe. Elle définit également une méthode `getEntity`, qui renvoit l'instance de la classe de référence correspondante.
+
+##### EnumShortcutMode
 
 Il peut être laborieux de toujours passer par la classe de référence lorsqu'on ne manipule le plus souvent que leurs clés primaires. CTopModel - JPA permet de créer des raccoucis pour rendre cette approche possible. Si la configuration `enumShortcutMode` est activée :
 
@@ -181,32 +120,32 @@ Exemple :
 
 En effet, pour les références dont toutes les valeurs sont connues à l'avance et identifiées par un code, celui-ci est beaucoup plus utilisé dans le code java. L'existence de la table correspondante en base de donnée n'est utile que pour la création d'une contrainte de valeur sur les tables qui la référencent.
 
-### DAO
+#### Classes non persistées
 
-Les DAO sont générés une seule fois pour chaque entité persistée (afin de ne pas perdre de code écrit)
+Les classes persistées sont générées de la même manière que les classes persistées, mais ne reçoivent pas les annotations JPA.
 
-### Objets non persistés (Dtos)
+Par ailleurs, elles implémentent toutes l'interface `java.io.Serializable`. Est ajouté la propriété suivante :
 
-Les dtos sont le reflet du modèle persité, sans les annotations JPA. Pour les utiliser :
+```java
+  /** Serial ID */
+  private static final long serialVersionUID = 1L;
+```
+
+De plus, toutes les propriétés `required: true` reçoivent l'annotation `javax.validation.constraints.NotNull` (ou `jakarata.validation.constraints.NotNull` selon la configuration choisie).
+
+Précautions d'emploi :
 
 - Ne pas ajouter d'association (non sens dans un modèle non persisté)
 - Ne pas composer avec une entité persitée
 
 Ceci afin d'éviter de mélanger les objets persistés et non persistés. En effet, si votre objet est sérializé, Hibernate risque de charger tout l'arbre de l'objet correspondant
 
-### Constructeurs
+#### Classes abstraites
 
-Le générateur JPA constuit 3 par classe :
+Pour générer des interfaces à partir d'une classe du modèle, vous pouvez passer la propriété `abstract` d'une classe à `true`.
+Ainsi, le fichier généré sera non plus une classe mais une interface ne contenant que des getters pour chacune des propriétés.
 
-- Constructeur vide
-- Construteur tout argument
-- Constructeur par recopie
-
-### Interfaces et projections
-
-Afin d'utiliser les [projections de Spring JPA](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#projections), il peut être nécessaire d'obtenir des interfaces représentant les Dtos (contenant uniquement les getters).
-
-Pour générer de telles interface, vous pouvez passer la propriété `abstract` d'une classe à `true`.
+Le cas d'usage typique est celui des [projections de Spring JPA](https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#projections).
 
 ```yaml
 ---
@@ -216,7 +155,7 @@ class:
   abstract: true
 ```
 
-Ainsi, le fichier généré sera non plus une classe mais une interface ne contenant que des getters pour les propriétés. Si certaines d'entre ont `readonly: false`, alors une méthode `hydrate` sera générée, prenant en paramètre toutes les propriétés non `readonly`.
+Si certaines d'entre ont `readonly: false`, qui est la valeur par défaut, alors une méthode `hydrate` sera générée, prenant en paramètre toutes les propriétés non `readonly`. Il s'agit d'un `setter` unique. Ce comportement est identique dans les autres langages pris en charge par TopModel.
 
 Exemple :
 
@@ -266,15 +205,36 @@ public interface IUtilisateurDto {
    */
   UtilisateurDto getUtilisateurParent();
 }
+
 ```
 
-## Api Server
+## Génération des DAO
 
-Le générateur créé des `interface` contenant, pour chaque endPoint paramétré, la méthode abstraite `Nom du endpoint`, à implémenter dans votre controller.
+Un fichier d'interface DAO est généré pour chacune des classes persistées du modèle. Cette interface hérite de `JpaRepository`, et est paramétrée pour gérer l'entité correspondante.
+
+**Ce fichier n'est généré qu'une seule fois !!**. Vous pouvez donc le modifier pour ajouter les différentes méthodes d'accès dont vous auriez besoin. C'est tout l'intérêt.
+
+## Génération des mappers
+
+Les mappers sont générés comme des méthodes statiques dans une classe statique. Cette classe rassemble tous les mappers d'un module racine. Elle est positionné dans le package des entités si l'une des deux classes est persistée, et dans le package des Dtos sinon.
+
+Les mappers `from` sont nommés `create[Nom de la classe à créer]`. Ils prennent en entrée la liste des paramètres d'entrée définis dans le mapper, plus une instance de la classe cible. Si ce dernier paramètre n'est pas renseigné, alors une nouvelle instance de la classe cible sera créée. Sinon, l'instance cible sera peuplée à partir des paramètres d'entrée renseignés.
+
+Il en va de même pour les mappers `to`. A la différence qu'ils s'appellent `to[Nom de la classe cible]`, ou bien du nom défini dans le `mapper`. Dans le cas des mappers `to`, le paramètre source est unique et obligatoire.
+
+Si un paramètre d'entrée obligatoire n'est pas renseigné, l'exception `IllegalArgumentException` est lancée.
+
+Par ailleurs, dans les classes qui définissent le `mapper`, des constructeurs sont générés pour tous les mappers `to`. Une méthode `toXXX` est générée pour chacun des mappers `to`.
+
+## Génération de l'Api Server (Spring)
+
+Le générateur créé des `interface` contenant, pour chaque `endpoint` paramétré, la méthode abstraite `Nom du endpoint`, à implémenter dans votre controller. En effet, cette méthode aura déjà l'annotation `XXXMapping` correspondant au verbe `HTTP` défini dans le `endpoint`.
 
 Pour créer votre API, il suffit donc de créer un nouveau controller qui implémente la classe générée. L'annotation `@RestController` reste nécessaire.
 
-## Api Client
+Si le domain du body du `endpoint` défini un `mediaType`, alors il sera valorisé dans l'annotation avec l'attribut `Consumes`. De la même manière pour le domain du paramètre de retour, avec l'attribut `Produces`.
+
+## Api Client (Spring)
 
 Le générateur créé des classes abstraites contenant, toutes les méthodes permettant d'accéder aux endpoints paramétrés.
 
@@ -321,6 +281,103 @@ public class UtilisateurService {
 }
 ```
 
+## Dépendances
+
+### Modèle
+
+Le modèle généré par TopModel dépend d'une api de persistence. Par défaut, c'est l'API de persistence `javax` qui est utilisée, mais le mode `jakarta` est aussi disponible.
+
+La validation elle est gérée par le package `jakarta.validation-api`, dont les imports changent entre la version 2 et la version 3.
+
+#### Javax (spring-boot < v3)
+
+```xml
+<!-- https://mvnrepository.com/artifact/javax.persistence/javax.persistence-api -->
+<dependency>
+    <groupId>javax.persistence</groupId>
+    <artifactId>javax.persistence-api</artifactId>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+<dependency>
+  <groupId>jakarta.validation</groupId>
+  <artifactId>jakarta.validation-api</artifactId>
+</dependency>
+```
+
+#### Jakarta (spring-boot > v3)
+
+```xml
+<!-- https://mvnrepository.com/artifact/jakarta.persistence/jakarta.persistence-api -->
+<dependency>
+    <groupId>jakarta.persistence</groupId>
+    <artifactId>jakarta.persistence-api</artifactId>
+    <version>3.1.0</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+<dependency>
+  <groupId>jakarta.validation</groupId>
+  <artifactId>jakarta.validation-api</artifactId>
+</dependency>
+```
+
+### Endpoints
+
+Actuellement, la seule génération de endpoint cliente et serveur qui est gérée passe par les API de `Spring-web`
+
+```xml
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-web</artifactId>
+</dependency>
+```
+
+### Version Java
+
+Le cde Java généré est compatible avec toutes les versions de Java postérieures à `Java 11`.
+
+## Utilisation combinée avec le générateur postgresql
+
+Le mode de génération par défaut des générateur ne créé par de séquence, mais des colonnes auto-générées avec `identity`. Malheureusement, le `batch insert` de jdbc ne fonctionne pas correctement avec ce mode de génération d'ID. Il est donc recommandé d'utiliser le mode `sequence` de du générateur postgresql.
+
+Le mode `sequence` dans la configuration jpa et dans la configuration postgresql se déclare de la même manière :
+
+```yaml
+## Configuration jpa et proceduralSql
+    identity:
+      increment: 50
+      start: 1000
+      mode: sequence
+```
+
+## FieldsEnum
+
+Il est possible de générer dans la définition de la classe, la sous-classe (qui est une enum) `Fields`. Il s'agit d'une enumération des champs de la classe, au format const case.
+Il faut pour cela compléter la propriété `fieldsEnum:` A la configuration JPA. Sa valeur détermine dans quelles classes le générateur doit ajouter une enum des champs : aucune (`None`), dans les classes persistées (`Persisted`), dans les classes non persistées (`Dto`), ou les deux (`Persisted_Dto`)
+
+Il est également possible d'ajouter la référence d'une interface à cette configuration. Cette interface sera implémentée par la classe `Fields`. Vous pourrez ainsi la manipuler plus facilement. Si l'interface en question est suffixée par `<>`, alors elle sera considérée comme générique de la classe persistée.
+
+Exemple :
+
+La configuration suivante
+
+```yaml
+fieldsEnum: true
+fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<>
+```
+
+Génèrera, dans la classe `Departement`, l'enum suivante :
+
+```java
+    public enum Fields implements IFieldEnum<Departement> {
+         ID, //
+         CODE_POSTAL, //
+         LIBELLE
+    }
+```
+
 ## Générateur de resources
 
 Le générateur de resources s'appuie sur les `Label` des propriétés, ainsi que sur les traductions récupérées dans le cadre de la configuration du [multilinguisme](/model/i18n.md).
@@ -335,3 +392,121 @@ jpa:
 ```
 
 Pour que, pour chaque module, soit généré les fichiers de resources dans les différentes langues configurées globalement.
+
+## Configuration
+
+### Fichier de configuration
+
+- `outputDirectory`
+
+  Racine du répertoire de génération
+
+- `apiRootPath`
+
+  Localisation du l'API générée (client ou serveur), relatif au répertoire de génération.
+
+  _Variables par tag_: **oui**
+
+- `resourceRootPath`
+
+  Localisation des ressources, relative au répertoire de génération.
+
+  _Variables par tag_: **oui**
+
+- `modelRootPath`
+
+  Localisation du modèle, relative au répertoire de génération.
+
+  _Variables par tag_: **oui**
+
+- `daosPackageName`
+
+  Précise le nom du package dans lequel générer les daos
+
+  _Variables par tag_: **oui**
+
+- `entitiesPackageName`
+
+  Précise le nom du package dans lequel générer les classes persistées du modèle."
+
+  _Variables par tag_: **oui**
+
+- `dtosPackageName`
+
+  Précise le nom du package dans lequel générer les classes non persistées du modèle.
+
+  _Variables par tag_: **oui**
+
+- `fieldsEnum`
+
+  Option pour générer une enum des champs de certaines classes. Les valeurs possibles sont :
+
+  - `None` : valeur par défaut, ne fait rien
+  - `Persisted` : ajoute l'enum des champs sur les classes persistées
+  - `Dto` : ajoute l'enum des champs sur les classes non persistées
+  - `Persisted_Dto` : ajoute l'enum des champs sur toutes le classes
+
+- `fieldsEnumInterface`
+
+  Précise l'interface des fields enum générés.
+
+  _Templating_: `<>` (remplace par `<NomDeLaClasse>`)
+
+- `enumShortcutMode`
+
+  Option pour générer des getters et setters vers l'enum des références plutôt que sur la table
+
+- `apiPackageName`
+
+  Précise le nom du package dans lequel générer les controllers
+
+  _Variables par tag_: **oui**
+
+- `apiGeneration`
+
+  Mode de génération de l'API (`"client"` ou `"server"`).
+
+  _Variables par tag_: **oui** (la valeur de la variable doit être `"client"` ou `"server"`. le client et le serveur pourraient être générés si un fichier à plusieurs tags)
+
+- `persistenceMode`
+
+  Mode de génération de la persistence (`"javax"` ou `"jakarta"`).
+
+  _Variables par tag_: **oui** (la valeur de la variable doit être `"javax"` ou `"jakarta"`)
+
+- `Identity`
+
+  Options de génération de la séquence
+
+  - `Mode`
+
+    Mode de génération de la persistence (`"none"` ou `"sequence"` ou `"identity"`).
+    _Valeur par défaut_: `identity`
+
+  - `Increment`
+
+    Incrément de la séquence générée.
+
+  - `Start`
+
+    Début de la séquence générée.
+
+### Exemple
+
+Voici un exemple de configuration du générateur JPA
+
+```yaml
+jpa:
+  - tags:
+      - dto
+      - entity
+    modelOutputDirectory: ./jpa/src/main/javagen # Dossier cible de la génération
+    daosPackageName: topmodel.exemple.name.daos # Package des DAO
+    dtosPackageName: topmodel.exemple.name.dtos # Package des objets non persistés
+    entitiesPackageName: topmodel.exemple.name.entities # Package des objets non persistés
+    apiOutputDirectory: ./jpa/src/main/javagen # Dossier cible des API
+    apiPackageName: topmodel.exemple.name.api # Package des l'API
+    apiGeneration: Server # Mode de génération de l'API (serveur ou client)
+    fieldsEnum: Persisted # Classes  dans lesquelles le générateur doit ajouter une enum des champs : jamais (None), dans les classes persistées (Persisted), dans les classes non persistées (Dto), ou les deux (Persisted_Dto)
+    fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<> # Classe dont doivent hériter ces enum
+```
