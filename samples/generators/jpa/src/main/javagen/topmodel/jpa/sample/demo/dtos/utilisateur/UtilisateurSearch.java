@@ -50,6 +50,13 @@ public interface UtilisateurSearch {
 	String getNom();
 
 	/**
+	 * Getter for actif.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurSearch#actif actif}.
+	 */
+	Boolean getActif();
+
+	/**
 	 * Getter for typeUtilisateurCode.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurSearch#typeUtilisateurCode typeUtilisateurCode}.

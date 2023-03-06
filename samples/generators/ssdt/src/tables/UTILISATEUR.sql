@@ -12,6 +12,7 @@ create table [dbo].[UTILISATEUR] (
 	[PRO_ID] int8,
 	[UTI_EMAIL] varchar,
 	[UTI_NOM] varchar,
+	[UTI_ACTIF] boolean,
 	[TUT_CODE] varchar,
 	[UTI_ID_PARENT] int8,
 	[UTI_DATE_CREATION] date,

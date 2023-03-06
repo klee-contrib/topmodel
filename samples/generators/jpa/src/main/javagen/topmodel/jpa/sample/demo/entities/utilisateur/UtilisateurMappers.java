@@ -33,6 +33,7 @@ public class UtilisateurMappers {
 
 			target.setEmail(utilisateur.getEmail());
 			target.setNom(utilisateur.getNom());
+			target.setActif(utilisateur.getActif());
 			if (utilisateur.getTypeUtilisateur() != null) {
 				target.setTypeUtilisateurCode(utilisateur.getTypeUtilisateur().getCode());
 			}
@@ -65,6 +66,7 @@ public class UtilisateurMappers {
 		target.setAge(source.getAge());
 		target.setEmail(source.getEmail());
 		target.setNom(source.getNom());
+		target.setActif(source.getActif());
 		if (source.getTypeUtilisateurCode() != null) {
 			target.setTypeUtilisateur(source.getTypeUtilisateurCode().getEntity());
 		}

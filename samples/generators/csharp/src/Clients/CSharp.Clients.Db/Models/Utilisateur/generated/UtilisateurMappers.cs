@@ -31,6 +31,7 @@ public static class UtilisateurMappers
             ProfilId = utilisateur.ProfilId,
             Email = utilisateur.Email,
             Nom = utilisateur.Nom,
+            Actif = utilisateur.Actif,
             TypeUtilisateurCode = utilisateur.TypeUtilisateurCode,
             DateCreation = utilisateur.DateCreation,
             DateModification = utilisateur.DateModification
@@ -52,6 +53,7 @@ public static class UtilisateurMappers
         dest.ProfilId = source.ProfilId;
         dest.Email = source.Email;
         dest.Nom = source.Nom;
+        dest.Actif = source.Actif;
         dest.TypeUtilisateurCode = source.TypeUtilisateurCode;
         dest.DateCreation = source.DateCreation;
         dest.DateModification = source.DateModification;

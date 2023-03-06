@@ -27,6 +27,7 @@ public class UtilisateurDTOMappers {
 		target.setProfilId(source.getProfilId());
 		target.setEmail(source.getEmail());
 		target.setNom(source.getNom());
+		target.setActif(source.getActif());
 		target.setTypeUtilisateurCode(source.getTypeUtilisateurCode());
 		target.setDateCreation(source.getDateCreation());
 		target.setDateModification(source.getDateModification());

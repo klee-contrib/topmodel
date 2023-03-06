@@ -67,6 +67,7 @@ public partial class CSharpDbContext : DbContext
         modelBuilder.Entity<TypeProfil>().Property(p => p.Code).HasConversion<string>().HasMaxLength(3);
         modelBuilder.Entity<TypeUtilisateur>().Property(p => p.Code).HasConversion<string>().HasMaxLength(3);
         modelBuilder.Entity<Utilisateur>().Property(x => x.Age).HasPrecision(20, 9);
+        modelBuilder.Entity<Utilisateur>().Property(x => x.Actif).HasPrecision(20, 9);
         modelBuilder.Entity<Utilisateur>().Property(p => p.TypeUtilisateurCode).HasConversion<string>().HasMaxLength(3);
 
         modelBuilder.Entity<Droit>().HasOne<TypeProfil>().WithMany().HasForeignKey(p => p.TypeProfilCode).OnDelete(DeleteBehavior.Restrict);

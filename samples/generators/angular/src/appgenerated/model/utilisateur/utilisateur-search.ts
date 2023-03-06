@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_LIBELLE, DO_NUMBER} from "@domains";
+import {DO_BOOLEAN, DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_LIBELLE, DO_NUMBER} from "@domains";
 
 import {TypeUtilisateurCode} from "./references";
 
@@ -12,6 +12,7 @@ export interface UtilisateurSearch {
     profilId?: number,
     email?: string,
     nom?: string,
+    actif?: bool,
     typeUtilisateurCode?: TypeUtilisateurCode,
     dateCreation?: string,
     dateModification?: string
@@ -54,6 +55,13 @@ export const UtilisateurSearchEntity = {
         isRequired: false,
         defaultValue: "Jabx",
         label: "utilisateur.utilisateur.nom"
+    },
+    actif: {
+        type: "field",
+        name: "actif",
+        domain: DO_BOOLEAN,
+        isRequired: false,
+        label: "utilisateur.utilisateur.actif"
     },
     typeUtilisateurCode: {
         type: "field",

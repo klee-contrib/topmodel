@@ -96,11 +96,12 @@ public partial class UtilisateurApiClient
     /// <param name="profilId">Profil de l'utilisateur.</param>
     /// <param name="email">Email de l'utilisateur.</param>
     /// <param name="nom">Nom de l'utilisateur.</param>
+    /// <param name="actif">Si l'utilisateur est actif.</param>
     /// <param name="typeUtilisateurCode">Type d'utilisateur en Many to one.</param>
     /// <param name="dateCreation">Date de création de l'utilisateur.</param>
     /// <param name="dateModification">Date de modification de l'utilisateur.</param>
     /// <returns>Utilisateurs matchant les critères.</returns>
-    public async Task<ICollection<UtilisateurSearch>> Search(int? utiId = null, decimal age = 6l, int? profilId = null, string email = null, string nom = "Jabx", TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM, DateOnly? dateCreation = null, DateOnly? dateModification = null)
+    public async Task<ICollection<UtilisateurSearch>> Search(int? utiId = null, decimal age = 6l, int? profilId = null, string email = null, string nom = "Jabx", bool? actif = null, TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM, DateOnly? dateCreation = null, DateOnly? dateModification = null)
     {
         await EnsureAuthentication();
         var query = await new FormUrlEncodedContent(new Dictionary<string, string>
@@ -110,6 +111,7 @@ public partial class UtilisateurApiClient
             ["profilId"] = profilId?.ToString(CultureInfo.InvariantCulture),
             ["email"] = email,
             ["nom"] = nom,
+            ["actif"] = actif?.ToString(CultureInfo.InvariantCulture),
             ["typeUtilisateurCode"] = typeUtilisateurCode?.ToString(CultureInfo.InvariantCulture),
             ["dateCreation"] = dateCreation?.ToString(CultureInfo.InvariantCulture),
             ["dateModification"] = dateModification?.ToString(CultureInfo.InvariantCulture),

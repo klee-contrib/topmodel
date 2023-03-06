@@ -55,6 +55,12 @@ public class UtilisateurDto implements Serializable {
 	private String nom = "Jabx";
 
 	/**
+	 * Si l'utilisateur est actif.
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getActif() Utilisateur#getActif()} 
+	 */
+	private Boolean actif;
+
+	/**
 	 * Type d'utilisateur en Many to one.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()} 
 	 */
@@ -97,6 +103,7 @@ public class UtilisateurDto implements Serializable {
 		this.profilId = utilisateurDto.getProfilId();
 		this.email = utilisateurDto.getEmail();
 		this.nom = utilisateurDto.getNom();
+		this.actif = utilisateurDto.getActif();
 		this.typeUtilisateurCode = utilisateurDto.getTypeUtilisateurCode();
 		this.dateCreation = utilisateurDto.getDateCreation();
 		this.dateModification = utilisateurDto.getDateModification();
@@ -110,17 +117,19 @@ public class UtilisateurDto implements Serializable {
 	 * @param profilId Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
 	 * @param nom Nom de l'utilisateur
+	 * @param actif Si l'utilisateur est actif
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur
 	 * @param utilisateurParent UtilisateurParent
 	 */
-	public UtilisateurDto(Long id, Long age, Long profilId, String email, String nom, TypeUtilisateur.Values typeUtilisateurCode, LocalDate dateCreation, LocalDateTime dateModification, UtilisateurDto utilisateurParent) {
+	public UtilisateurDto(Long id, Long age, Long profilId, String email, String nom, Boolean actif, TypeUtilisateur.Values typeUtilisateurCode, LocalDate dateCreation, LocalDateTime dateModification, UtilisateurDto utilisateurParent) {
 		this.id = id;
 		this.age = age;
 		this.profilId = profilId;
 		this.email = email;
 		this.nom = nom;
+		this.actif = actif;
 		this.typeUtilisateurCode = typeUtilisateurCode;
 		this.dateCreation = dateCreation;
 		this.dateModification = dateModification;
@@ -180,6 +189,15 @@ public class UtilisateurDto implements Serializable {
 	 */
 	public String getNom() {
 		return this.nom;
+	}
+
+	/**
+	 * Getter for actif.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#actif actif}.
+	 */
+	public Boolean getActif() {
+		return this.actif;
 	}
 
 	/**
@@ -259,6 +277,14 @@ public class UtilisateurDto implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#actif actif}.
+	 * @param actif value to set
+	 */
+	public void setActif(Boolean actif) {
+		this.actif = actif;
+	}
+
+	/**
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#typeUtilisateurCode typeUtilisateurCode}.
 	 * @param typeUtilisateurCode value to set
 	 */
@@ -320,6 +346,7 @@ public class UtilisateurDto implements Serializable {
         PROFIL_ID(Long.class), //
         EMAIL(String.class), //
         NOM(String.class), //
+        ACTIF(Boolean.class), //
         TYPE_UTILISATEUR_CODE(TypeUtilisateur.Values.class), //
         DATE_CREATION(LocalDate.class), //
         DATE_MODIFICATION(LocalDateTime.class), //

@@ -40,6 +40,7 @@ public partial class Utilisateur
         ProfilId = bean.ProfilId;
         Email = bean.Email;
         Nom = bean.Nom;
+        Actif = bean.Actif;
         TypeUtilisateurCode = bean.TypeUtilisateurCode;
         UtilisateurIdParent = bean.UtilisateurIdParent;
         DateCreation = bean.DateCreation;
@@ -85,6 +86,13 @@ public partial class Utilisateur
     [Domain(Domains.Libelle)]
     [StringLength(3)]
     public string Nom { get; set; } = "Jabx";
+
+    /// <summary>
+    /// Si l'utilisateur est actif.
+    /// </summary>
+    [Column("uti_actif")]
+    [Domain(Domains.Boolean)]
+    public bool? Actif { get; set; }
 
     /// <summary>
     /// Type d'utilisateur en Many to one.

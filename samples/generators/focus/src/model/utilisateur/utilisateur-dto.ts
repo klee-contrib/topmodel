@@ -3,7 +3,7 @@
 ////
 
 import {EntityToType, FieldEntry2, ObjectEntry, StoreNode} from "@focus4/stores";
-import {DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_LIBELLE, DO_NUMBER} from "../../domains";
+import {DO_BOOLEAN, DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_LIBELLE, DO_NUMBER} from "../../domains";
 
 import {TypeUtilisateurCode} from "./references";
 
@@ -15,6 +15,7 @@ export interface UtilisateurDtoEntityType {
     profilId: FieldEntry2<typeof DO_ID, number>,
     email: FieldEntry2<typeof DO_EMAIL, string>,
     nom: FieldEntry2<typeof DO_LIBELLE, string>,
+    actif: FieldEntry2<typeof DO_BOOLEAN, bool>,
     typeUtilisateurCode: FieldEntry2<typeof DO_CODE, TypeUtilisateurCode>,
     dateCreation: FieldEntry2<typeof DO_DATE_CREATION, string>,
     dateModification: FieldEntry2<typeof DO_DATE_MODIFICATION, string>,
@@ -58,6 +59,13 @@ export const UtilisateurDtoEntity: UtilisateurDtoEntityType = {
         isRequired: false,
         defaultValue: "Jabx",
         label: "utilisateur.utilisateur.nom"
+    },
+    actif: {
+        type: "field",
+        name: "actif",
+        domain: DO_BOOLEAN,
+        isRequired: false,
+        label: "utilisateur.utilisateur.actif"
     },
     typeUtilisateurCode: {
         type: "field",

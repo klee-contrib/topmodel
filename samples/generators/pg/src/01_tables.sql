@@ -83,6 +83,7 @@ create table UTILISATEUR (
 	PRO_ID int8,
 	UTI_EMAIL varchar(50),
 	UTI_NOM varchar(3),
+	UTI_ACTIF boolean,
 	TUT_CODE varchar(3),
 	UTI_ID_PARENT int8,
 	UTI_DATE_CREATION date,

@@ -72,6 +72,12 @@ public class Utilisateur {
 	private String nom = "Jabx";
 
 	/**
+	 * Si l'utilisateur est actif.
+	 */
+	@Column(name = "UTI_ACTIF", nullable = true, precision = 20, scale = 9)
+	private Boolean actif;
+
+	/**
 	 * Type d'utilisateur en Many to one.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeUtilisateur.class)
@@ -119,6 +125,7 @@ public class Utilisateur {
 		this.profil = utilisateur.getProfil();
 		this.email = utilisateur.getEmail();
 		this.nom = utilisateur.getNom();
+		this.actif = utilisateur.getActif();
 		this.typeUtilisateur = utilisateur.getTypeUtilisateur();
 		this.utilisateurParent = utilisateur.getUtilisateurParent();
 		this.dateCreation = utilisateur.getDateCreation();
@@ -132,17 +139,19 @@ public class Utilisateur {
 	 * @param profil Profil de l'utilisateur
 	 * @param email Email de l'utilisateur
 	 * @param nom Nom de l'utilisateur
+	 * @param actif Si l'utilisateur est actif
 	 * @param typeUtilisateur Type d'utilisateur en Many to one
 	 * @param utilisateurParent Utilisateur parent
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur
 	 */
-	public Utilisateur(Long id, Long age, Profil profil, String email, String nom, TypeUtilisateur typeUtilisateur, Utilisateur utilisateurParent, LocalDate dateCreation, LocalDateTime dateModification) {
+	public Utilisateur(Long id, Long age, Profil profil, String email, String nom, Boolean actif, TypeUtilisateur typeUtilisateur, Utilisateur utilisateurParent, LocalDate dateCreation, LocalDateTime dateModification) {
 		this.id = id;
 		this.age = age;
 		this.profil = profil;
 		this.email = email;
 		this.nom = nom;
+		this.actif = actif;
 		this.typeUtilisateur = typeUtilisateur;
 		this.utilisateurParent = utilisateurParent;
 		this.dateCreation = dateCreation;
@@ -192,6 +201,15 @@ public class Utilisateur {
 	 */
 	public String getNom() {
 		return this.nom;
+	}
+
+	/**
+	 * Getter for actif.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#actif actif}.
+	 */
+	public Boolean getActif() {
+		return this.actif;
 	}
 
 	/**
@@ -271,6 +289,14 @@ public class Utilisateur {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#actif actif}.
+	 * @param actif value to set
+	 */
+	public void setActif(Boolean actif) {
+		this.actif = actif;
+	}
+
+	/**
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#typeUtilisateur typeUtilisateur}.
 	 * @param typeUtilisateur value to set
 	 */
@@ -311,6 +337,7 @@ public class Utilisateur {
         PROFIL(Profil.class), //
         EMAIL(String.class), //
         NOM(String.class), //
+        ACTIF(Boolean.class), //
         TYPE_UTILISATEUR(TypeUtilisateur.class), //
         UTILISATEUR_PARENT(Utilisateur.class), //
         DATE_CREATION(LocalDate.class), //

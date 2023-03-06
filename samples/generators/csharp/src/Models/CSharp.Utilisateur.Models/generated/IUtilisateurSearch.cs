@@ -36,6 +36,11 @@ public interface IUtilisateurSearch
     string Nom { get; }
 
     /// <summary>
+    /// Si l'utilisateur est actif.
+    /// </summary>
+    bool? Actif { get; }
+
+    /// <summary>
     /// Type d'utilisateur en Many to one.
     /// </summary>
     TypeUtilisateur.Codes? TypeUtilisateurCode { get; }

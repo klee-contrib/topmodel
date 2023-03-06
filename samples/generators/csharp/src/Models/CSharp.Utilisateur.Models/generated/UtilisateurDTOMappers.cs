@@ -23,6 +23,7 @@ public static class UtilisateurDTOMappers
         dest.ProfilId = source.ProfilId;
         dest.Email = source.Email;
         dest.Nom = source.Nom;
+        dest.Actif = source.Actif;
         dest.TypeUtilisateurCode = source.TypeUtilisateurCode;
         dest.DateCreation = source.DateCreation;
         dest.DateModification = source.DateModification;

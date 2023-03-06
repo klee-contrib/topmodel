@@ -17,6 +17,7 @@ export const utilisateur = {
         }
     },
     utilisateur: {
+        actif: "Actif",
         age: "Age",
         email: "email",
         id: "Id technique",
