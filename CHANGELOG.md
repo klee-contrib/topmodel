@@ -1,5 +1,12 @@
 # TopModel.Generator (`modgen`)
 
+## 1.26.0
+
+- [`55cfbbda`](https://github.com/klee-contrib/topmodel/commit/55cfbbdaa49f064e80a28b3e66edf266525925c4) - [JPA] Le préfix du getter des Boolean doit être get et non is #200
+- [`27ea8085`](https://github.com/klee-contrib/topmodel/commit/27ea8085e20bba0618572d5677489bbd1b5503e0) - [Core] L'erreur concernant les `listDomain` pour les associations `oneToMany` ou `manyToMany` ne se déclanchait pas toujours
+
+  **breaking changes (JPA uniquement)** Les getters de propriétés `Boolean` sont maintenant préfixés par `get` et non `is`
+
 ## 1.25.3
 
 - [`6a7caeaa7`](https://github.com/klee-contrib/topmodel/commit/6a7caeaa7087913286eb15db2bef816eb198e352) - [JPA] Correction génération enum static
