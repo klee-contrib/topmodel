@@ -427,7 +427,7 @@ Pour que, pour chaque module, soit généré les fichiers de resources dans les 
 
 - `entitiesPackageName`
 
-  Précise le nom du package dans lequel générer les classes persistées du modèle."
+  Précise le nom du package dans lequel générer les classes persistées du modèle.
 
   _Variables par tag_: **oui**
 
@@ -481,6 +481,7 @@ Pour que, pour chaque module, soit généré les fichiers de resources dans les 
   - `Mode`
 
     Mode de génération de la persistence (`"none"` ou `"sequence"` ou `"identity"`).
+
     _Valeur par défaut_: `identity`
 
   - `Increment`
