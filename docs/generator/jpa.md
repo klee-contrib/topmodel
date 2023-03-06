@@ -16,7 +16,7 @@ jpa:
     apiOutputDirectory: ./jpa/src/main/javagen # Dossier cible des API
     apiPackageName: topmodel.exemple.name.api # Package des l'API
     apiGeneration: Server # Mode de génération de l'API (serveur ou client)
-    fieldsEnum: true # Si le générateur doit ajouter une enum des champs de la classe persistés
+    fieldsEnum: Persisted # Classes  dans lesquelles le générateur doit ajouter une enum des champs : jamais (None), dans les classes persistées (Persisted), dans les classes non persistées (Dto), ou les deux (Persisted_Dto)
     fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<> # Classe dont doivent hériter ces enum
 ```
 
@@ -127,8 +127,8 @@ Pour des raisons de performances, les associations oneToOne réciproques ne sont
 
 #### FieldsEnum
 
-Depuis la version 1.1.0, il est possible de générer dans la définition de la classe, la sous-classe (qui est une enum) `Fields`. Il s'agit d'une enumération des champs de la classe, au format const case.
-Il faut pour cela ajouter la propriété `fieldsEnum: true` A la configuration JPA.
+Il est possible de générer dans la définition de la classe, la sous-classe (qui est une enum) `Fields`. Il s'agit d'une enumération des champs de la classe, au format const case.
+Il faut pour cela compléter la propriété `fieldsEnum:` A la configuration JPA. Sa valeur détermine dans quelles classes le générateur doit ajouter une enum des champs : aucune (`None`), dans les classes persistées (`Persisted`), dans les classes non persistées (`Dto`), ou les deux (`Persisted_Dto`)
 
 Il est également possible d'ajouter la référence d'une interface à cette configuration. Cette interface sera implémentée par la classe `Fields`. Vous pourrez ainsi la manipuler plus facilement. Si l'interface en question est suffixée par `<>`, alors elle sera considérée comme générique de la classe persistée.
 
