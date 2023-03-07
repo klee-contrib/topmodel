@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.26.1
+
+- [`25bcdce4`](https://github.com/klee-contrib/topmodel/commit/25bcdce4eced6d41ea20ca64d9bfd3cbfcaebc96) - [Core] Correction message d'erreur listDomain
+
 ## 1.26.0
 
 - [`55cfbbda`](https://github.com/klee-contrib/topmodel/commit/55cfbbdaa49f064e80a28b3e66edf266525925c4) - [JPA] Le préfix du getter des Boolean doit être get et non is #200
