@@ -788,7 +788,7 @@ public class ModelStore
         {
             if ((ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany) && ap.Association.PrimaryKey.Single()?.Domain?.ListDomain is null)
             {
-                yield return new ModelError(ap, $@"Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Class.PrimaryKey.Single().Domain} ne contient pas de définition de ListDomain", ap.Reference) { ModelErrorType = ModelErrorType.TMD1028 };
+                yield return new ModelError(ap, $@"Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Association.PrimaryKey.Single().Domain} ne contient pas de définition de ListDomain", ap.Reference) { ModelErrorType = ModelErrorType.TMD1028 };
                 continue;
             }
 
