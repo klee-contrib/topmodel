@@ -20,7 +20,7 @@
     "directory": "TopModel.VSCode",
     "type": "git"
   },
-  "version": "1.26.1",
+  "version": "1.26.2",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -164,11 +164,11 @@
     "package": "vsce package",
     "extension-watch": "npm run build-extension -- --sourcemap --watch",
     "preview-watch": "tsc ./src/topmodel-preview.ts --outfile ./out/topmodel-preview.js --watch",
-    "start": "concurrently --kill-others \"npm run preview-watch\" \"npm run extension-watch\"",
+    "start": "cp ./node_modules/mermaid/dist/mermaid.min.js ./out/mermaid.js && concurrently --kill-others \"npm run preview-watch\" \"npm run extension-watch\"",
     "vscode:prepublish": "npm run build -- --minify"
   },
   "dependencies": {
-    "mermaid": "^9.3.0",
+    "mermaid": "^8.14.0",
     "mobx": "^6.7.0",
     "open": "^8.4.0",
     "vscode-jsonrpc": "8.0.2",

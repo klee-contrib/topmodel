@@ -171,10 +171,10 @@ export class TopModelPreviewPanel {
     }
     get mermaidContent() {
         if (this.diagramMap[this.currentFsPath]?.diagram && this.diagramMap[this.currentFsPath].diagram !== "classDiagram\n\n") {
-            return `<div class="mermaid"> 
+            return `<pre class="mermaid"> 
             %%{init: {'securityLevel': 'loose', 'theme': 'base', 'themeVariables': { 'darkMode': true,  'primaryColor': '#333f85', 'lineColor': '#2d9cdb'}}}%%
                 ${this.diagramMap[this.currentFsPath].diagram}
-            </div>`;
+            </pre>`;
         } else {
             return `<h1> Pas de classe persistée dans ce fichier</h1>`;
         }
