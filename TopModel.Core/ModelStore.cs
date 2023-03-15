@@ -40,7 +40,15 @@ public class ModelStore
         {
             var fileChecker = new FileChecker();
             using var topModelLockFile = topModelFile.OpenText();
-            _topModelLock = fileChecker.Deserialize<TopModelLock>(topModelLockFile.ReadToEnd());
+            try
+            {
+                _topModelLock = fileChecker.Deserialize<TopModelLock>(topModelLockFile.ReadToEnd());
+            }
+            catch
+            {
+                logger.LogError($"Erreur à la lecture du fichier {_config.LockFileName}. Merci de rétablir la version générée automatiquement.");
+                _topModelLock = new TopModelLock { Version = CurrentVersion };
+            }
         }
         else
         {
