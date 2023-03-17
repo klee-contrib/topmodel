@@ -100,6 +100,10 @@
               "modelFileName": {
                 "type": "string",
                 "description": "Nom du fichier dans lequel sera déclaré le modèle"
+              },
+              "preservePropertyCasing": {
+                "type": "boolean",
+                "description": "Garde les noms des propriétés générées tels quels pour la génération via `modgen`, au lieu de les convertir dans le format du langage cible. Par défaut : `true`."
               }
             }
           }

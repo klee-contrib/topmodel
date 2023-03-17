@@ -21,4 +21,7 @@ public class OpenApiSource
 
     [YamlMember("modelFileName")]
     public string ModelFileName { get; set; } = "Model";
+
+    [YamlMember("preservePropertyCasing")]
+    public bool PreservePropertyCasing { get; set; } = true;
 }
