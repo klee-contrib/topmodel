@@ -44,20 +44,81 @@ static class OpenApiTmdGenerator
                 model = modelReader.Read(stream, out var diagnostic);
             }
 
+            string GetOperationPath(OpenApiOperation operation)
+            {
+                return model.Paths.Single(p => p.Value.Operations.Any(o => o.Value == operation)).Key[1..];
+            }
 
-            string GetEndpointName(OpenApiOperation operation)
+            KeyValuePair<string, OpenApiSchema> GetRequestBodySchema(OpenApiOperation operation)
+            {
+                var bodySchema = operation.RequestBody?.Content.First().Value.Schema;
+                if (bodySchema != null)
+                {
+                    return model.Components.Schemas.FirstOrDefault(s => s.Value == bodySchema);
+                }
+
+                return default;
+            }
+
+            KeyValuePair<string, OpenApiSchema> GetResponseSchema(OpenApiOperation operation)
+            {
+                var response = operation.Responses.FirstOrDefault(r => r.Key == "200").Value;
+                if (response != null && response.Content.Any())
+                {
+                    return model.Components.Schemas.FirstOrDefault(s => s.Value == response.Content.First().Value.Schema);
+                }
+
+                return default;
+            }
+
+            string GetOperationId(KeyValuePair<OperationType, OpenApiOperation> operation)
+            {
+                if (operation.Value.OperationId != null)
+                {
+                    return operation.Value.OperationId;
+                }
+
+                if (!GetOperationPath(operation.Value).Contains('/'))
+                {
+                    return GetOperationPath(operation.Value);
+                }
+
+                var id = operation.Key.ToString().ToPascalCase();
+
+                if (operation.Key == OperationType.Get || operation.Key == OperationType.Head)
+                {
+                    var responseSchema = GetResponseSchema(operation.Value);
+                    if (responseSchema.Key != null)
+                    {
+                        id += responseSchema.Key;
+                    }
+                }
+                else
+                {
+                    var bodySchema = GetRequestBodySchema(operation.Value);
+                    if (bodySchema.Key != null)
+                    {
+                        id += bodySchema.Key;
+                    }
+                }
+
+                return id;
+            }
+
+
+            string GetEndpointName(KeyValuePair<OperationType, OpenApiOperation> operation)
             {
                 var operationsWithId = model!.Paths.OrderBy(p => p.Key).SelectMany(p => p.Value.Operations.OrderBy(o => o.Key))
-                    .Where(o => o.Value.OperationId == operation.OperationId)
+                    .Where(o => GetOperationId(o) == GetOperationId(operation))
                     .Select(o => o.Value)
                     .ToList();
 
                 if (operationsWithId.Count == 1)
                 {
-                    return operation.OperationId;
+                    return GetOperationId(operation);
                 }
 
-                return $"{operation.OperationId}{operationsWithId.IndexOf(operation) + 1}";
+                return $"{GetOperationId(operation)}{operationsWithId.IndexOf(operation.Value) + 1}";
             }
 
             var modules = model.Paths
@@ -236,15 +297,15 @@ static class OpenApiTmdGenerator
                 }
                 sw.WriteLine();
 
-                foreach (var operation in module.OrderBy(o => GetEndpointName(o.Value)))
+                foreach (var operation in module.OrderBy(o => GetEndpointName(o)))
                 {
-                    var path = model.Paths.Single(p => p.Value.Operations.Any(o => o.Value == operation.Value));
+                    var path = GetOperationPath(operation.Value);
 
                     sw.WriteLine("---");
                     sw.WriteLine("endpoint:");
-                    sw.WriteLine($"  name: {GetEndpointName(operation.Value)}");
+                    sw.WriteLine($"  name: {GetEndpointName(operation)}");
                     sw.WriteLine($"  method: {operation.Key.ToString().ToUpper()}");
-                    sw.WriteLine($"  route: {path.Key[1..]}");
+                    sw.WriteLine($"  route: {path}");
                     if (operation.Value.Summary != null)
                     {
                         sw.WriteLine($"  description: {FormatDescription(operation.Value.Summary)}");
@@ -263,7 +324,7 @@ static class OpenApiTmdGenerator
                     {
                         sw.WriteLine("  params:");
 
-                        foreach (var param in operation.Value.Parameters.OrderBy(p => path.Key.Contains($@"{{{p.Name}}}") ? 0 + p.Name : 1 + p.Name))
+                        foreach (var param in operation.Value.Parameters.OrderBy(p => path.Contains($@"{{{p.Name}}}") ? 0 + p.Name : 1 + p.Name))
                         {
                             sw.WriteLine($"    - name: {param.Name}");
                             sw.WriteLine($"      domain: {GetDomain(config, param.Name, param.Schema)}");
@@ -277,18 +338,19 @@ static class OpenApiTmdGenerator
                             }
                         }
 
-                        if (operation.Value.RequestBody != null)
+                        var bodySchema = GetRequestBodySchema(operation.Value);
+                        if (bodySchema.Key != null)
                         {
-                            WriteProperty(config, sw, new("body", operation.Value.RequestBody.Content.First().Value.Schema), model);
+                            WriteProperty(config, sw, new("body", bodySchema.Value), model);
                         }
 
                     }
 
-                    var response = operation.Value.Responses.FirstOrDefault(r => r.Key == "200").Value;
-                    if (response != null && response.Content.Any())
+                    var responseSchema = GetResponseSchema(operation.Value);
+                    if (responseSchema.Key != null)
                     {
                         sw.WriteLine("  returns:");
-                        WriteProperty(config, sw, new("Result", response.Content.First().Value.Schema), model, noList: true);
+                        WriteProperty(config, sw, new("Result", responseSchema.Value), model, noList: true);
                     }
                 }
             }
