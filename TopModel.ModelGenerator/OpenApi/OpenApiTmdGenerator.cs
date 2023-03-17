@@ -54,7 +54,7 @@ static class OpenApiTmdGenerator
                 var bodySchema = operation.RequestBody?.Content.First().Value.Schema;
                 if (bodySchema != null)
                 {
-                    return model.Components.Schemas.FirstOrDefault(s => s.Value == bodySchema);
+                    return new(model.Components.Schemas.FirstOrDefault(s => s.Value == bodySchema).Key, bodySchema);
                 }
 
                 return default;
@@ -65,7 +65,7 @@ static class OpenApiTmdGenerator
                 var response = operation.Responses.FirstOrDefault(r => r.Key == "200").Value;
                 if (response != null && response.Content.Any())
                 {
-                    return model.Components.Schemas.FirstOrDefault(s => s.Value == response.Content.First().Value.Schema);
+                    return new(model.Components.Schemas.FirstOrDefault(s => s.Value == response.Content.First().Value.Schema).Key, response.Content.First().Value.Schema);
                 }
 
                 return default;
@@ -338,19 +338,19 @@ static class OpenApiTmdGenerator
                             }
                         }
 
-                        var bodySchema = GetRequestBodySchema(operation.Value);
-                        if (bodySchema.Key != null)
+                        var bodySchema = GetRequestBodySchema(operation.Value).Value;
+                        if (bodySchema != null)
                         {
-                            WriteProperty(config, sw, new("body", bodySchema.Value), model);
+                            WriteProperty(config, sw, new("body", bodySchema), model);
                         }
 
                     }
 
-                    var responseSchema = GetResponseSchema(operation.Value);
-                    if (responseSchema.Key != null)
+                    var responseSchema = GetResponseSchema(operation.Value).Value;
+                    if (responseSchema != null)
                     {
                         sw.WriteLine("  returns:");
-                        WriteProperty(config, sw, new("Result", responseSchema.Value), model, noList: true);
+                        WriteProperty(config, sw, new("Result", responseSchema), model, noList: true);
                     }
                 }
             }
