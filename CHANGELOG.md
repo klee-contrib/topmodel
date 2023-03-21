@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.26.2
+
+- [`b72ba42`](https://github.com/klee-contrib/topmodel/commit/b72ba423877c5c9fef57e3fefb397ecc5e02aec7) - [JPA] Mapper to dans le cas de composition kind: list
+
 ## 1.26.1
 
 - [`25bcdce4`](https://github.com/klee-contrib/topmodel/commit/25bcdce4eced6d41ea20ca64d9bfd3cbfcaebc96) - [Core] Correction message d'erreur listDomain
