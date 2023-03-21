@@ -21,6 +21,7 @@ public partial class ProfilDto
     public ProfilDto()
     {
         Utilisateurs = new List<UtilisateurDto>();
+        Secteurs = new List<SecteurDto>();
 
         OnCreated();
     }
@@ -37,10 +38,10 @@ public partial class ProfilDto
         }
 
         Utilisateurs = new List<UtilisateurDto>(bean.Utilisateurs);
+        Secteurs = new List<SecteurDto>(bean.Secteurs);
         Id = bean.Id;
         TypeProfilCode = bean.TypeProfilCode;
         Droits = bean.Droits;
-        Secteurs = bean.Secteurs;
 
         OnCreated(bean);
     }
@@ -70,17 +71,16 @@ public partial class ProfilDto
     public Droit.Codes[] Droits { get; set; }
 
     /// <summary>
-    /// Liste des secteurs de l'utilisateur.
-    /// </summary>
-    [Column("sec_id")]
-    [Domain(Domains.IdList)]
-    public int[] Secteurs { get; set; }
-
-    /// <summary>
     /// Liste paginée des utilisateurs de ce profil.
     /// </summary>
     [NotMapped]
     public ICollection<UtilisateurDto> Utilisateurs { get; set; }
+
+    /// <summary>
+    /// Liste des secteurs du profil.
+    /// </summary>
+    [NotMapped]
+    public ICollection<SecteurDto> Secteurs { get; set; }
 
     /// <summary>
     /// Methode d'extensibilité possible pour les constructeurs.

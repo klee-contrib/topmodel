@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import topmodel.jpa.sample.demo.dtos.securite.ProfilDto;
+import topmodel.jpa.sample.demo.dtos.securite.SecteurDto;
 
 public class SecuriteMappers {
 
@@ -33,12 +34,28 @@ public class SecuriteMappers {
 				target.setDroits(profil.getDroits().stream().filter(Objects::nonNull).map(Droit::getCode).collect(Collectors.toList()));
 			}
 
-			if (profil.getSecteurs() != null) {
-				target.setSecteurs(profil.getSecteurs().stream().filter(Objects::nonNull).map(Secteur::getId).collect(Collectors.toList()));
-			}
-
 		} else {
 			throw new IllegalArgumentException("profil cannot be null");
+		}
+		return target;
+	}
+
+	/**
+	 * Map les champs des classes passées en paramètre dans l'objet target'.
+	 * @param target Instance de 'SecteurDto' (ou null pour créer une nouvelle instance).
+	 * @param secteur Instance de 'Secteur'.
+	 *
+	 * @return Une nouvelle instance de 'SecteurDto' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée.
+	 */
+	public static SecteurDto createSecteurDto(Secteur secteur, SecteurDto target) {
+		if (target == null) {
+			target = new SecteurDto();
+		}
+
+		if (secteur != null) {
+			target.setId(secteur.getId());
+		} else {
+			throw new IllegalArgumentException("secteur cannot be null");
 		}
 		return target;
 	}
@@ -88,6 +105,30 @@ public class SecuriteMappers {
 		}
 
 		target.setDroits(source.getDroits().stream().map(Droit.Values::getEntity).collect(Collectors.toList()));
+		if (source.getSecteurs() != null) {
+			target.setSecteurs(source.getSecteurs().stream().map(item -> SecuriteMappers.toSecteur(item, null)).collect(Collectors.toList()));
+		}
+
+		return target;
+	}
+
+	/**
+	 * Mappe 'SecteurDto' vers 'Secteur'.
+	 * @param source Instance de 'SecteurDto'.
+	 * @param target Instance pré-existante de 'Secteur'. Une nouvelle instance sera créée si non spécifié.
+	 *
+	 * @return Une nouvelle instance de 'Secteur' ou bien l'instance passée en paramètre dont les champs ont été surchargés.
+	 */
+	public static Secteur toSecteur(SecteurDto source, Secteur target) {
+		if (source == null) {
+			throw new IllegalArgumentException("source cannot be null");
+		}
+
+		if (target == null) {
+			target = new Secteur();
+		}
+
+		target.setId(source.getId());
 		return target;
 	}
 }

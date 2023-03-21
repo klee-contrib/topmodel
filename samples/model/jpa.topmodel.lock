@@ -13,6 +13,7 @@ generatedFiles:
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/TypeUtilisateurDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/UtilisateurDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/ProfilDto.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/SecteurDto.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/UtilisateurDto.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/UtilisateurDTOMappers.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/UtilisateurSearch.java

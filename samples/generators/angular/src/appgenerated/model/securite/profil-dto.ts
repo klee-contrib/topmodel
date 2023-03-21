@@ -2,17 +2,18 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_CODE, DO_CODE_LIST, DO_ID, DO_ID_LIST} from "@domains";
+import {DO_CODE, DO_CODE_LIST, DO_ID} from "@domains";
 
 import {UtilisateurDtoEntity, UtilisateurDto} from "../utilisateur/utilisateur-dto";
 import {DroitCode, TypeProfilCode} from "./references";
+import {SecteurDtoEntity, SecteurDto} from "./secteur-dto";
 
 export interface ProfilDto {
     id?: number,
     typeProfilCode?: TypeProfilCode,
     droits?: DroitCode[],
-    secteurs?: number[],
-    utilisateurs?: UtilisateurDto[]
+    utilisateurs?: UtilisateurDto[],
+    secteurs?: SecteurDto[]
 }
 
 export const ProfilDtoEntity = {
@@ -37,15 +38,12 @@ export const ProfilDtoEntity = {
         isRequired: false,
         label: "securite.profil.droits"
     },
-    secteurs: {
-        type: "field",
-        name: "secteurs",
-        domain: DO_ID_LIST,
-        isRequired: false,
-        label: "securite.profil.secteurs"
-    },
     utilisateurs: {
         type: "list",
         entity: UtilisateurDtoEntity
+    },
+    secteurs: {
+        type: "list",
+        entity: SecteurDtoEntity
     }
 } as const

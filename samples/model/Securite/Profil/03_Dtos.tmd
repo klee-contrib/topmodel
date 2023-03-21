@@ -14,13 +14,35 @@ class:
   properties:
     - alias:
         class: Profil
+        exclude:
+          - Secteurs
     - composition: UtilisateurDto
       name: utilisateurs # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
       kind: list
       comment: Liste paginée des utilisateurs de ce profil
+    - composition: SecteurDto
+      name: secteurs # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
+      kind: list
+      comment: Liste des secteurs du profil
   mappers:
     to:
       - class: Profil
+        mappings:
+          secteurs: Secteurs
     from:
       - params:
         - class: Profil
+---
+class:
+  name: SecteurDto
+  label: SecteurDto
+  comment: Objet métier non persisté représentant Profil
+  properties:
+    - alias:
+        class: Secteur
+  mappers:
+    to:
+      - class: Secteur
+    from:
+      - params:
+        - class: Secteur

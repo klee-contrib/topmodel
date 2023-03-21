@@ -250,7 +250,18 @@ public class JpaMapperGenerator : MapperGeneratorBase
                 if (cp.Composition.ToMappers.Any(t => t.Class == apTarget.Association))
                 {
                     var cpMapper = cp.Composition.ToMappers.Find(t => t.Class == apTarget.Association)!;
-                    getter = $"{cpMapper.Class.GetMapperClassName(cpMapper)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterPrefix}{cp.GetJavaName(true)}(), target.get{apTarget.GetJavaName(true)}())";
+                    var isMultiple = apTarget.Type == AssociationType.OneToMany || apTarget.Type == AssociationType.ManyToMany;
+                    if (isMultiple)
+                    {
+                        getter = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}(){(!propertySource.Class.IsPersistent ? $".stream().map(src -> {cpMapper.Class.GetMapperClassName(cpMapper)}.{cpMapper.Name.ToCamelCase()}(src, null)).collect(Collectors.toList())" : string.Empty)}";
+                        fw.AddImport("java.util.stream.Collectors");
+                    }
+                    else
+                    {
+                        getter = $"{cpMapper.Class.GetMapperClassName(cpMapper)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterPrefix}{cp.GetJavaName(true)}(), target.get{apTarget.GetJavaName(true)}())";
+                        checkSourceNull = true;
+                    }
+
                     fw.AddImport(_config.GetMapperImport(cpMapper.Class, cpMapper, tag)!);
                     checkSourceNull = true;
                 }

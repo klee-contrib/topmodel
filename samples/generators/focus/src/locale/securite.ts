@@ -16,8 +16,10 @@ export const securite = {
     profil: {
         droits: "Droits",
         id: "Id technique du profil",
-        secteurs: "Secteurs",
         typeProfilCode: "Profil"
+    },
+    secteur: {
+        id: "Id technique du secteur"
     },
     typeProfil: {
         code: "Type Profil code",

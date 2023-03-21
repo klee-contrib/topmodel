@@ -43,15 +43,14 @@ public class ProfilDto implements Serializable {
 	private List<Droit.Values> droits;
 
 	/**
-	 * Liste des secteurs de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.Profil#getSecteurs() Profil#getSecteurs()} 
-	 */
-	private List<Long> secteurs;
-
-	/**
 	 * Liste paginée des utilisateurs de ce profil.
 	 */
 	private List<UtilisateurDto> utilisateurs;
+
+	/**
+	 * Liste des secteurs du profil.
+	 */
+	private List<SecteurDto> secteurs;
 
 	/**
 	 * No arg constructor.
@@ -71,9 +70,9 @@ public class ProfilDto implements Serializable {
 		this.id = profilDto.getId();
 		this.typeProfilCode = profilDto.getTypeProfilCode();
 		this.droits = profilDto.getDroits();
-		this.secteurs = profilDto.getSecteurs();
 
 		this.utilisateurs = profilDto.getUtilisateurs().stream().collect(Collectors.toList());
+		this.secteurs = profilDto.getSecteurs().stream().collect(Collectors.toList());
 	}
 
 	/**
@@ -81,15 +80,15 @@ public class ProfilDto implements Serializable {
 	 * @param id Id technique
 	 * @param typeProfilCode Type de profil
 	 * @param droits Liste des droits de l'utilisateur
-	 * @param secteurs Liste des secteurs de l'utilisateur
 	 * @param utilisateurs Liste paginée des utilisateurs de ce profil
+	 * @param secteurs Liste des secteurs du profil
 	 */
-	public ProfilDto(Long id, TypeProfil.Values typeProfilCode, List<Droit.Values> droits, List<Long> secteurs, List<UtilisateurDto> utilisateurs) {
+	public ProfilDto(Long id, TypeProfil.Values typeProfilCode, List<Droit.Values> droits, List<UtilisateurDto> utilisateurs, List<SecteurDto> secteurs) {
 		this.id = id;
 		this.typeProfilCode = typeProfilCode;
 		this.droits = droits;
-		this.secteurs = secteurs;
 		this.utilisateurs = utilisateurs;
+		this.secteurs = secteurs;
 	}
 
 	/**
@@ -130,21 +129,21 @@ public class ProfilDto implements Serializable {
 	}
 
 	/**
-	 * Getter for secteurs.
-	 *
-	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#secteurs secteurs}.
-	 */
-	public List<Long> getSecteurs() {
-		return this.secteurs;
-	}
-
-	/**
 	 * Getter for utilisateurs.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#utilisateurs utilisateurs}.
 	 */
 	public List<UtilisateurDto> getUtilisateurs() {
 		return this.utilisateurs;
+	}
+
+	/**
+	 * Getter for secteurs.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#secteurs secteurs}.
+	 */
+	public List<SecteurDto> getSecteurs() {
+		return this.secteurs;
 	}
 
 	/**
@@ -172,19 +171,19 @@ public class ProfilDto implements Serializable {
 	}
 
 	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#secteurs secteurs}.
-	 * @param secteurs value to set
-	 */
-	public void setSecteurs(List<Long> secteurs) {
-		this.secteurs = secteurs;
-	}
-
-	/**
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#utilisateurs utilisateurs}.
 	 * @param utilisateurs value to set
 	 */
 	public void setUtilisateurs(List<UtilisateurDto> utilisateurs) {
 		this.utilisateurs = utilisateurs;
+	}
+
+	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#secteurs secteurs}.
+	 * @param secteurs value to set
+	 */
+	public void setSecteurs(List<SecteurDto> secteurs) {
+		this.secteurs = secteurs;
 	}
 
 	/**
@@ -204,8 +203,8 @@ public class ProfilDto implements Serializable {
         ID(Long.class), //
         TYPE_PROFIL_CODE(TypeProfil.Values.class), //
         DROITS(List.class), //
-        SECTEURS(List.class), //
-        UTILISATEURS(List.class);
+        UTILISATEURS(List.class), //
+        SECTEURS(List.class);
 
 		private Class<?> type;
 

@@ -7,6 +7,7 @@ generatedFiles:
   - ../generators/angular/src/appgenerated/api/securite/utilisateur/utilisateur-api.ts
   - ../generators/angular/src/appgenerated/model/securite/profil-dto.ts
   - ../generators/angular/src/appgenerated/model/securite/references.ts
+  - ../generators/angular/src/appgenerated/model/securite/secteur-dto.ts
   - ../generators/angular/src/appgenerated/model/utilisateur/references.ts
   - ../generators/angular/src/appgenerated/model/utilisateur/utilisateur-dto.ts
   - ../generators/angular/src/appgenerated/model/utilisateur/utilisateur-search.ts
