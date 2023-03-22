@@ -1,6 +1,7 @@
 - **[Présentation](/)**
 
 - **[Tutoriel](/getting-started/00_getting_started.md)**
+
   - [Intro](/getting-started/01_intro.md)
   - [Créer une classe persistée](/getting-started/02_classe_persistee.md)
   - [Liste de référence](/getting-started/03_liste_ref.md)
@@ -30,6 +31,9 @@
   - [Javascript / Typescript](/generator/js.md)
   - [Traductions manquantes](/generator/translation.md)
 
-- **[Migrer un modèle externe (`openApi`)](/tmdgen.md)**
+- **[Migrer un modèle externe](/tmdgen.md)**
+
+  - [open-api](/tmdgen/tmdgen.md)
+  - [database](/tmdgen/database.md)
 
 - **[Visualisation](/ui.md)**

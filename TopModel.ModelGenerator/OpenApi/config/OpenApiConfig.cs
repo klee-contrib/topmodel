@@ -2,18 +2,28 @@
 
 namespace TopModel.ModelGenerator.OpenApi;
 
-public class OpenApiSource
+public class OpenApiConfig
 {
-    [YamlMember("url")]
-    public string? Url { get; set; }
+    private string? _outputDirectory;
 
-    [YamlMember("path")]
-    public string? Path { get; set; }
+    [YamlMember("outputDirectory")]
+    public string OutputDirectory { get => _outputDirectory ?? Module; set => _outputDirectory = value; }
+    
+    [YamlMember("module")]
+    public string Module { get; set; } = "OpenApi";
+
+    [YamlMember("domains")]
+    public IList<DomainMapping> Domains { get; set; } = new List<DomainMapping>();
+
+    #nullable disable
+    [YamlMember("source")]
+    public string Source { get; set; }
 
     [YamlMember("include")]
     public string[]? Include { get; set; }
 
     [YamlMember("endpointTags")]
+
     public IList<string> EndpointTags { get; set; } = new List<string>();
 
     [YamlMember("modelTags")]
