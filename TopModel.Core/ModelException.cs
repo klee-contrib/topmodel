@@ -1,11 +1,12 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.Core;
 
 /// <summary>
 /// Exception dans la lecture/parsing du modèle.
 /// </summary>
-public class ModelException : Exception
+public class ModelException : LegitException
 {
     /// <summary>
     /// Constructeur.

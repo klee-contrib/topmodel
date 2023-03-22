@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core;
 
-namespace TopModel.Generator;
+namespace TopModel.Utils;
 
 public class LoggerProvider : ILoggerProvider
 {
@@ -89,7 +88,7 @@ public class LoggerProvider : ILoggerProvider
                     Console.WriteLine(message);
                 }
 
-                if (exception is not null and not ModelException)
+                if (exception is not null and not LegitException)
                 {
                     Console.WriteLine(exception.StackTrace);
                 }
@@ -119,7 +118,7 @@ public class LoggerProvider : ILoggerProvider
 
         public IDisposable BeginScope<TState>(TState state)
         {
-            if (state is ModelStoreConfig scope)
+            if (state is LoggingScope scope)
             {
                 _storeNumber = scope.Number;
                 _storeColor = scope.Color;

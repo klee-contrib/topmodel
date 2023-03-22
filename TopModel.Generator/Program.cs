@@ -10,6 +10,7 @@ using TopModel.Generator.Jpa;
 using TopModel.Generator.ProceduralSql;
 using TopModel.Generator.Ssdt;
 using TopModel.Generator.Translation;
+using TopModel.Utils;
 
 var fileChecker = new FileChecker("schema.config.json");
 

@@ -75,6 +75,8 @@ var fullVersion = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Versi
 var version = $"{fullVersion.Major}.{fullVersion.Minor}.{fullVersion.Build}";
 var colors = new[] { ConsoleColor.DarkCyan, ConsoleColor.DarkYellow, ConsoleColor.Cyan, ConsoleColor.Yellow };
 
+using var loggerFactory = LoggerFactory.Create(l => l.AddProvider(new LoggerProvider()));
+
 Console.WriteLine($"========= ModelGenerator v{version} =========");
 Console.WriteLine();
 if (watchMode)
@@ -99,16 +101,27 @@ var disposables = new List<IDisposable>();
 var fsCache = new MemoryCache(new MemoryCacheOptions());
 Dictionary<string, string> passwords = new();
 
-var startGeneration = async (string filePath, ILogger logger, string DirectoryName) =>
+var startGeneration = async (string filePath, string DirectoryName, int i) =>
 {
+    Console.WriteLine();
+
+    var mainLogger = loggerFactory.CreateLogger("ModelGenerator");
+    var loggingScope = new LoggingScope(i + 1, colors[i]);
+    using var scope = mainLogger.BeginScope(loggingScope);
+
     var file = new FileInfo(filePath);
     using var stream = file.OpenRead();
     var newConfig = new Serializer().Deserialize<ModelGeneratorConfig>(stream);
 
     ModelUtils.CombinePath(DirectoryName, newConfig, c => c.ModelRoot);
 
+    mainLogger.LogInformation($"Générateurs enregistrés :\n                          {string.Join("\n                          ", newConfig.OpenApi.Select((_, i) => $"- OpenApi@{i + 1}").Concat(newConfig.Database.Select((_, i) => $"- Database@{i + 1}")))}");
+
     foreach (var conf in newConfig.OpenApi)
     {
+        var logger = loggerFactory.CreateLogger("OpenApi");
+        using var genScope = logger.BeginScope($"OpenApi@{newConfig.OpenApi.IndexOf(conf) + 1}");
+        using var scope2 = logger.BeginScope(loggingScope);
         await OpenApiTmdGenerator.GenerateOpenApi(conf, logger, DirectoryName, newConfig.ModelRoot);
     }
 
@@ -130,7 +143,7 @@ var startGeneration = async (string filePath, ILogger logger, string DirectoryNa
                 Console.WriteLine($"Mot de passe pour l'utilisateur {conf.Source.User}:  ");
                 while (true)
                 {
-                    var key = System.Console.ReadKey(true);
+                    var key = Console.ReadKey(true);
                     if (key.Key == ConsoleKey.Enter)
                         break;
                     password += key.KeyChar;
@@ -141,40 +154,42 @@ var startGeneration = async (string filePath, ILogger logger, string DirectoryNa
             }
         }
 
+        var logger = loggerFactory.CreateLogger("Database");
+        using var scope1 = logger.BeginScope($"Database@{newConfig.Database.IndexOf(conf) + 1}");
+        using var scope2 = logger.BeginScope(loggingScope);
         using var dbGenerator = new DatabaseTmdGenerator(conf, logger, newConfig.ModelRoot);
         dbGenerator.Generate();
     }
 
-    logger.LogInformation("Mise à jour terminée avec succès.");
+    mainLogger.LogInformation("Mise à jour terminée avec succès.");
 };
 
 
-foreach (var (config, FullPath, DirectoryName) in configs)
+foreach (var config in configs)
 {
-    ModelUtils.CombinePath(DirectoryName, config, c => c.ModelRoot);
+    ModelUtils.CombinePath(config.DirectoryName, config.Config, c => c.ModelRoot);
 
-    using var loggerFactory = LoggerFactory.Create(l => l.AddSimpleConsole(c => c.SingleLine = true));
     var logger = loggerFactory.CreateLogger("ModelGenerator");
 
-    await startGeneration(FullPath, logger, DirectoryName);
+    await startGeneration(config.FullPath, config.DirectoryName, configs.IndexOf(config));
 
     if (watchMode)
     {
-        var fsWatcher = new FileSystemWatcher(DirectoryName, "tmdgen*.config");
+        var fsWatcher = new FileSystemWatcher(config.DirectoryName, "tmdgen*.config");
         fsWatcher.Changed += (sender, args) =>
         {
             fsCache.Set(args.FullPath, args, new MemoryCacheEntryOptions()
-            .AddExpirationToken(new CancellationChangeToken(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token))
-            .RegisterPostEvictionCallback(async (k, v, r, a) =>
-            {
-                if (r != EvictionReason.TokenExpired)
+                .AddExpirationToken(new CancellationChangeToken(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token))
+                .RegisterPostEvictionCallback(async (k, v, r, a) =>
                 {
-                    return;
-                }
+                    if (r != EvictionReason.TokenExpired)
+                    {
+                        return;
+                    }
 
-                await startGeneration(args.FullPath, logger, DirectoryName);
+                    await startGeneration(args.FullPath, config.DirectoryName, configs.IndexOf(config));
 
-            }));
+                }));
         };
         fsWatcher.IncludeSubdirectories = true;
         fsWatcher.EnableRaisingEvents = true;

@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.Core;
 
@@ -14,5 +15,5 @@ public interface IModelWatcher
 
     void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors);
 
-    void OnFilesChanged(IEnumerable<ModelFile> files, ModelStoreConfig? storeConfig = null);
+    void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null);
 }

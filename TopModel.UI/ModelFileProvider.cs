@@ -6,6 +6,7 @@ using Microsoft.Extensions.Caching.Memory;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.UI.Graphing;
+using TopModel.Utils;
 
 namespace TopModel.UI;
 
@@ -30,7 +31,7 @@ public class ModelFileProvider : IModelWatcher
 
     public IEnumerable<string>? GeneratedFiles => null;
 
-    public void OnFilesChanged(IEnumerable<ModelFile> files, ModelStoreConfig? storeConfig = null)
+    public void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null)
     {
         foreach (var file in files)
         {

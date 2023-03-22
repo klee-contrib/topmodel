@@ -3,6 +3,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.LanguageServer;
 
@@ -48,7 +49,7 @@ public class ModelWatcher : IModelWatcher
         }
     }
 
-    public void OnFilesChanged(IEnumerable<ModelFile> files, ModelStoreConfig? storeConfig = null)
+    public void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null)
     {
         _facade.SendNotification("filesChanged");
     }

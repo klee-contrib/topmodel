@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
@@ -11,12 +10,6 @@ static class OpenApiTmdGenerator
 {
     public async static Task GenerateOpenApi(OpenApiConfig config, ILogger logger, string directoryName, string modelRoot)
     {
-        var i = 0;
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.Write($"#{i++}");
-        Console.ForegroundColor = ConsoleColor.DarkCyan;
-        Console.WriteLine($" OpenApiGen .......");
-
         if (config.ModelTags.Count == 0)
         {
             config.ModelTags.Add("OpenApi");

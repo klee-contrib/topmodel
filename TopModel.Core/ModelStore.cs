@@ -24,7 +24,7 @@ public class ModelStore
     private readonly TranslationStore _translationStore;
     private readonly TopModelLock _topModelLock;
 
-    private ModelStoreConfig? _storeConfig;
+    private LoggingScope? _storeConfig;
 
     public ModelStore(IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers, TranslationStore translationStore)
     {
@@ -90,7 +90,7 @@ public class ModelStore
         return GetDependencies(file).SelectMany(m => m.Decorators).Concat(file.Decorators);
     }
 
-    public IDisposable? LoadFromConfig(bool watch = false, ModelStoreConfig? storeConfig = null)
+    public IDisposable? LoadFromConfig(bool watch = false, LoggingScope? storeConfig = null)
     {
         _storeConfig = storeConfig;
 
