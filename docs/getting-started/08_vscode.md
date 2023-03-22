@@ -26,7 +26,13 @@ Lorsque vous travaillez sur un fichier contenant des classes persistées, vous p
 
 Cela est rendu possible en utilisant le bouton de prévisualisation situé en haut à droite de votre IDE.
 
-Vous pouvez également utiliser le raccourcis `F1`, puis rechercher la commande `Ouvre la prévisualisation UML du modèle`.
+Vous pouvez également utiliser le raccourcis `F1`, puis rechercher la commande `Ouvrir la prévisualisation UML du modèle`.
+
+[preview](../media/preview.gif)
+
+Le schéma affiché présente l'ensemble des classes persistées définies dans le fichier courant, avec leurs propriétés et leurs associations. Au clic sur une classe, le curseur de l'éditeur courant se déplace vers la définition de la classe en question. S'il s'agit d'une classe définie dans un autre fichier, l'éditeur change de fichier courant. Le schéma se met à jour en conséquence.
+
+Il est possible de zoomer/dézoomer avec la molette de la souris, ou bien avec les boutons `+` et `-`. Il est également possible de se déplacer dans le schéma en maintenant le bouton gauche de la souris enfoncé et en la déplaçant horizontalement ou verticalement.
 
 ## Lancer la génération
 
