@@ -1,8 +1,8 @@
+using System.Text.RegularExpressions;
+using Dapper;
 using Microsoft.Extensions.Logging;
 using Npgsql;
-using Dapper;
 using TopModel.Utils;
-using System.Text.RegularExpressions;
 
 namespace TopModel.ModelGenerator.Database;
 
@@ -40,7 +40,7 @@ class DatabaseTmdGenerator : IDisposable
         _logger = logger;
         _modelRoot = modelRoot;
         // Connexion à la base de données {_config.Source.DbName}
-        _connection = new NpgsqlConnection(config.connectionString);
+        _connection = new NpgsqlConnection(config.ConnectionString);
         _classes = new();
     }
 

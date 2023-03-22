@@ -122,7 +122,15 @@ var startGeneration = async (string filePath, string DirectoryName, int i) =>
         var logger = loggerFactory.CreateLogger("OpenApi");
         using var genScope = logger.BeginScope($"OpenApi@{newConfig.OpenApi.IndexOf(conf) + 1}");
         using var scope2 = logger.BeginScope(loggingScope);
-        await OpenApiTmdGenerator.GenerateOpenApi(conf, logger, DirectoryName, newConfig.ModelRoot);
+
+        try
+        {
+            await OpenApiTmdGenerator.GenerateOpenApi(conf, logger, DirectoryName, newConfig.ModelRoot);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+        }
     }
 
     foreach (var conf in newConfig.Database)
@@ -135,7 +143,7 @@ var startGeneration = async (string filePath, string DirectoryName, int i) =>
         {
             try
             {
-                using var connection = new NpgsqlConnection(conf.connectionString);
+                using var connection = new NpgsqlConnection(conf.ConnectionString);
                 connection.Open();
             }
             catch (NpgsqlException)
@@ -157,8 +165,16 @@ var startGeneration = async (string filePath, string DirectoryName, int i) =>
         var logger = loggerFactory.CreateLogger("Database");
         using var scope1 = logger.BeginScope($"Database@{newConfig.Database.IndexOf(conf) + 1}");
         using var scope2 = logger.BeginScope(loggingScope);
-        using var dbGenerator = new DatabaseTmdGenerator(conf, logger, newConfig.ModelRoot);
-        dbGenerator.Generate();
+
+        try
+        {
+            using var dbGenerator = new DatabaseTmdGenerator(conf, logger, newConfig.ModelRoot);
+            dbGenerator.Generate();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, ex.Message);
+        }
     }
 
     mainLogger.LogInformation("Mise à jour terminée avec succès.");

@@ -25,5 +25,5 @@ public class DatabaseConfig
     [YamlMember("modules")]
     public List<ModuleConfig> Modules { get; set; } = new();
 
-    public string connectionString => @$"Host={Source.Host};Port={Source.Port};Database={Source.DbName};Username={Source.User}{(Source.Password != null ? $";Password={Source.Password}" : string.Empty)}";
+    public string ConnectionString => @$"Host={Source.Host};Port={Source.Port};Database={Source.DbName};Username={Source.User}{(Source.Password != null ? $";Password={Source.Password}" : string.Empty)}";
 }
