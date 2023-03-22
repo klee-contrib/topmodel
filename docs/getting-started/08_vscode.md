@@ -28,7 +28,7 @@ Cela est rendu possible en utilisant le bouton de prévisualisation situé en ha
 
 Vous pouvez également utiliser le raccourcis `F1`, puis rechercher la commande `Ouvrir la prévisualisation UML du modèle`.
 
-[preview](./_media/preview.gif)
+[preview](/getting-started/_media/preview.gif)
 
 Le schéma affiché présente l'ensemble des classes persistées définies dans le fichier courant, avec leurs propriétés et leurs associations. Au clic sur une classe, le curseur de l'éditeur courant se déplace vers la définition de la classe en question. S'il s'agit d'une classe définie dans un autre fichier, l'éditeur change de fichier courant. Le schéma se met à jour en conséquence.
 
