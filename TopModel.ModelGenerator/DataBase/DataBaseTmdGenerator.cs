@@ -6,20 +6,34 @@ using TopModel.Utils;
 
 namespace TopModel.ModelGenerator.Database;
 
-class DatabaseTmdGenerator : IDisposable
+public class DatabaseTmdGenerator : ModelGenerator, IDisposable
 {
-    private DatabaseConfig _config;
+    private readonly DatabaseConfig _config;
+    private readonly NpgsqlConnection _connection;
+    private readonly Dictionary<string, TmdClass> _classes = new();
+    private ILogger<DatabaseTmdGenerator> _logger;
 
-    private Dictionary<string, TmdClass> _classes = new();
-
-    private ILogger _logger;
-
-    private string _modelRoot;
-
-
+    private int _fileIndice = 10;
     private int _moduleIndice = 0;
 
-    private string moduleIndice
+#pragma warning disable CS8618 
+    public DatabaseTmdGenerator(ILogger<DatabaseTmdGenerator> logger, DatabaseConfig config)
+        : base(logger)
+    {
+        _config = config;
+        _logger = logger;
+        // Connexion à la base de données {_config.Source.DbName}
+        _connection = new NpgsqlConnection(config.ConnectionString);
+    }
+#pragma warning restore CS8618
+
+    public override string Name => "DatabaseGen";
+
+    public Dictionary<string, string> Passwords { get; init; }
+
+    private IEnumerable<TmdFile> Files => _classes.Select(c => c.Value.File!).Distinct().OrderBy(c => c.Name);
+
+    private string ModuleIndice
     {
         get
         {
@@ -28,40 +42,50 @@ class DatabaseTmdGenerator : IDisposable
         }
     }
 
-    private int _fileIndice = 10;
-
-    private IEnumerable<TmdFile> _files => _classes.Select(c => c.Value.File!).Distinct().OrderBy(c => c.Name);
-
-    private NpgsqlConnection _connection;
-
-    public DatabaseTmdGenerator(DatabaseConfig config, ILogger logger, string modelRoot)
-    {
-        _config = config;
-        _logger = logger;
-        _modelRoot = modelRoot;
-        // Connexion à la base de données {_config.Source.DbName}
-        _connection = new NpgsqlConnection(config.ConnectionString);
-        _classes = new();
-    }
-
     public void Dispose()
     {
         _connection.Dispose();
     }
 
-    public void Generate()
+    protected override async Task GenerateCore()
     {
-        var columns = GetColumns();
+        if (Passwords.TryGetValue(_config.Source.DbName, out var password))
+        {
+            _config.Source.Password = password;
+        }
+        else
+        {
+            try
+            {
+                using var connection = new NpgsqlConnection(_config.ConnectionString);
+                connection.Open();
+            }
+            catch (NpgsqlException)
+            {
+                _logger.LogInformation($"Mot de passe pour l'utilisateur {_config.Source.User}:  ");
+                while (true)
+                {
+                    var key = Console.ReadKey(true);
+                    if (key.Key == ConsoleKey.Enter)
+                        break;
+                    password += key.KeyChar;
+                }
+
+                Passwords.Add(_config.Source.DbName, password ?? "");
+                _config.Source.Password = password;
+            }
+        }
+
+        var columns = await GetColumns();
         var classGroups = columns.GroupBy(c => c.TableName);
+
         // Initialisation de {classGroups.Count()} classes
         InitClasses(classGroups);
 
         // Initialisation des propriétés
-        InitProperties(classGroups);
-
-        InitUniqConstraints(classGroups);
-
-        ReadValues();
+        await InitProperties(classGroups);
+        await InitUniqConstraints(classGroups);
+        await ReadValues();
 
         CreateFiles();
 
@@ -79,18 +103,13 @@ class DatabaseTmdGenerator : IDisposable
 
     }
 
-    private void ReadValues()
+    private async Task ReadValues()
     {
         // Extraction des valeurs pour les tables paramétrées
         foreach (var classe in _config.ExtractValues.Select(classe => _classes.FirstOrDefault(c => classe == c.Value.Name)).Where(c => c.Value != null))
         {
-            var values = _connection
-            .Query(@$"
-            select  *
-            from {classe.Key}
-                    ");
-
-            var val = values.Select(r =>
+            var values = await _connection.QueryAsync(@$"select * from {classe.Key}");
+            classe.Value.Values.AddRange(values.Select(r =>
             {
                 var d = new Dictionary<string, string?>();
                 foreach (var kv in r)
@@ -98,33 +117,32 @@ class DatabaseTmdGenerator : IDisposable
                     d.Add(classe.Value.Properties.First(p => p.SqlName == kv.Key).Name, kv.Value?.ToString());
                 }
                 return d;
-            });
-            classe.Value.Values.AddRange(val);
+            }));
         }
     }
 
-    private IEnumerable<DbColumn> GetColumns()
+    private async Task<IEnumerable<DbColumn>> GetColumns()
     {
         // Récupération des colonnes
-        return _connection
-            .Query<DbColumn>(@$"
-            select  table_name                                                              as TableName, 
-                    column_name                                                             as ColumnName, 
-                    data_type                                                               as DataType,
-                    is_nullable = 'YES'                                                     as Nullable,
-                    coalesce(numeric_precision, datetime_precision, interval_precision)     as Precision,
-                    coalesce(character_maximum_length, numeric_scale, interval_precision)   as Scale
-            from information_schema.columns 
-            where table_schema  = '{_config.Source.Schema}'
-            order by ordinal_position 
-                    ")
-            .Where(c => !_config.Exclude.Contains(c.TableName));
+        var columns = await _connection
+            .QueryAsync<DbColumn>(@$"
+                select  table_name                                                              as TableName, 
+                        column_name                                                             as ColumnName, 
+                        data_type                                                               as DataType,
+                        is_nullable = 'YES'                                                     as Nullable,
+                        coalesce(numeric_precision, datetime_precision, interval_precision)     as Precision,
+                        coalesce(character_maximum_length, numeric_scale, interval_precision)   as Scale
+                from information_schema.columns 
+                where table_schema  = '{_config.Source.Schema}'
+                order by ordinal_position 
+            ");
+        return columns.Where(c => !_config.Exclude.Contains(c.TableName));
     }
 
-    private void InitProperties(IEnumerable<IGrouping<string, DbColumn>> classGroups)
+    private async Task InitProperties(IEnumerable<IGrouping<string, DbColumn>> classGroups)
     {
-        var primaryKeys = GetPrimaryKeys();
-        var foreignKeys = GetForeignKeys();
+        var primaryKeys = await GetPrimaryKeys();
+        var foreignKeys = await GetForeignKeys();
         var foreignKeysGroups = foreignKeys.GroupBy(c => c.TableName);
         var primaryKeysGroups = primaryKeys.GroupBy(c => c.TableName);
         foreach (var group in classGroups)
@@ -139,60 +157,62 @@ class DatabaseTmdGenerator : IDisposable
         }
     }
 
-    private IEnumerable<ConstraintKey> GetForeignKeys()
+    private Task<IEnumerable<ConstraintKey>> GetForeignKeys()
     {
         // Récupération des contraintes de clés étrangères
-        return GetContraintKey("FOREIGN KEY");
+        return GetConstraintKey("FOREIGN KEY");
     }
 
-    private IEnumerable<ConstraintKey> GetPrimaryKeys()
+    private Task<IEnumerable<ConstraintKey>> GetPrimaryKeys()
     {
         // Récupération des contraintes de clés primaires
-        return GetContraintKey("PRIMARY KEY");
+        return GetConstraintKey("PRIMARY KEY");
     }
 
-    private IEnumerable<ConstraintKey> GetUniqueKeys()
+    private async Task<IEnumerable<ConstraintKey>> GetUniqueKeys()
     {
         // Récupération des contraintes d'unicité
-        return _connection
-            .Query<ConstraintKey>(@$"
-SELECT
-    tc.constraint_name  AS Name,
-    tc.table_name       AS TableName,
-    kcu.column_name     AS ColumnName
-FROM 
-    information_schema.table_constraints        AS tc 
-    JOIN information_schema.key_column_usage    AS kcu
-        ON  tc.constraint_name      = kcu.constraint_name
-        AND tc.table_schema         = kcu.table_schema
-WHERE       tc.constraint_type      = 'UNIQUE'
-    AND     tc.table_schema         = '{_config.Source.Schema}'
-                    ")
-            .Where(c => !_config.Exclude.Contains(c.TableName));
+        var keys = await _connection
+            .QueryAsync<ConstraintKey>(@$"
+                SELECT
+                    tc.constraint_name  AS Name,
+                    tc.table_name       AS TableName,
+                    kcu.column_name     AS ColumnName
+                FROM 
+                    information_schema.table_constraints        AS tc 
+                    JOIN information_schema.key_column_usage    AS kcu
+                        ON  tc.constraint_name      = kcu.constraint_name
+                        AND tc.table_schema         = kcu.table_schema
+                WHERE       tc.constraint_type      = 'UNIQUE'
+                    AND     tc.table_schema         = '{_config.Source.Schema}'
+            ");
+
+        return keys.Where(c => !_config.Exclude.Contains(c.TableName));
     }
 
-    private IEnumerable<ConstraintKey> GetContraintKey(string constraint)
+    private async Task<IEnumerable<ConstraintKey>> GetConstraintKey(string name)
     {
-        return _connection
-            .Query<ConstraintKey>(@$"
-SELECT
-    tc.table_name   AS TableName, 
-    kcu.column_name AS ColumnName, 
-    ccu.table_name  AS ForeignTableName,
-    ccu.column_name AS ForeignColumnName 
-FROM 
-            information_schema.table_constraints   AS tc 
-    JOIN    information_schema.key_column_usage    AS kcu
-        ON  tc.constraint_name   = kcu.constraint_name
-        AND tc.table_schema      = kcu.table_schema
-    JOIN information_schema.constraint_column_usage AS ccu
-        ON  ccu.constraint_name  = tc.constraint_name
-        AND ccu.table_schema     = tc.table_schema
-WHERE       tc.constraint_type   = '{constraint}'
-    AND     tc.table_schema      = '{_config.Source.Schema}'
-    AND     ccu.table_schema     = '{_config.Source.Schema}'
-                    ")
-            .Where(c => !_config.Exclude.Contains(c.TableName));
+        var constraint = await _connection
+            .QueryAsync<ConstraintKey>(@$"
+                SELECT
+                    tc.table_name   AS TableName, 
+                    kcu.column_name AS ColumnName, 
+                    ccu.table_name  AS ForeignTableName,
+                    ccu.column_name AS ForeignColumnName 
+                FROM 
+                            information_schema.table_constraints   AS tc 
+                    JOIN    information_schema.key_column_usage    AS kcu
+                        ON  tc.constraint_name   = kcu.constraint_name
+                        AND tc.table_schema      = kcu.table_schema
+                    JOIN information_schema.constraint_column_usage AS ccu
+                        ON  ccu.constraint_name  = tc.constraint_name
+                        AND ccu.table_schema     = tc.table_schema
+                WHERE       tc.constraint_type   = '{name}'
+                    AND     tc.table_schema      = '{_config.Source.Schema}'
+                    AND     ccu.table_schema     = '{_config.Source.Schema}'
+            ");
+
+        return constraint.Where(c => !_config.Exclude.Contains(c.TableName));
     }
 
     private void ResolveForeignProperties(IGrouping<string, DbColumn> group, IGrouping<string, ConstraintKey>? foreignKeys)
@@ -208,9 +228,9 @@ WHERE       tc.constraint_type   = '{constraint}'
         }
     }
 
-    private void InitUniqConstraints(IEnumerable<IGrouping<string, DbColumn>> classGroups)
+    private async Task InitUniqConstraints(IEnumerable<IGrouping<string, DbColumn>> classGroups)
     {
-        var uniqueKeys = GetUniqueKeys();
+        var uniqueKeys = await GetUniqueKeys();
         // Résolution des contraintes d'unicité
         var uniqueKeysGroups = uniqueKeys.GroupBy(c => c.TableName);
         foreach (var group in classGroups)
@@ -224,7 +244,7 @@ WHERE       tc.constraint_type   = '{constraint}'
         }
     }
 
-    private void AddUniqConstraints(TmdClass classe, IEnumerable<IGrouping<string, ConstraintKey>> groupings)
+    private static void AddUniqConstraints(TmdClass classe, IEnumerable<IGrouping<string, ConstraintKey>> groupings)
     {
         foreach (var group in groupings)
         {
@@ -382,7 +402,7 @@ WHERE       tc.constraint_type   = '{constraint}'
         // Recherche des modules forcés par la configuration
         foreach (var module in _config.Modules)
         {
-            var moduleName = $"{moduleIndice}_{module.Name}";
+            var moduleName = $"{ModuleIndice}_{module.Name}";
             foreach (var mainClass in module.Classes.Select(c => _classes.Where(cl => cl.Value.Name == c).FirstOrDefault()))
             {
                 if (mainClass.Value != null)
@@ -406,9 +426,9 @@ WHERE       tc.constraint_type   = '{constraint}'
 
     private void CreateAutomaticModules()
     {
-        while (_files.Any(f => f.Module is null && f.Classes.SelectMany(c => c.Dependencies).Count() > 2))
+        while (Files.Any(f => f.Module is null && f.Classes.SelectMany(c => c.Dependencies).Count() > 2))
         {
-            var rootFile = _files.Where(f => f.Module is null && f.Classes.SelectMany(c => c.Dependencies).Count() > 2)
+            var rootFile = Files.Where(f => f.Module is null && f.Classes.SelectMany(c => c.Dependencies).Count() > 2)
                 .OrderByDescending(f => f.Classes.Select(c => c.Dependencies.Count() + _classes.Select(cl => cl.Value.Dependencies.Contains(c)).Count()).Sum())
                 .First();
             var mainClass = rootFile.Classes.OrderByDescending(cl => cl.Dependencies.Count() + _classes.Select(c => c.Value.Dependencies.Contains(cl)).Count()).First();
@@ -419,8 +439,8 @@ WHERE       tc.constraint_type   = '{constraint}'
 
     private void CreateJoinModule()
     {
-        var joinModule = $"{moduleIndice}_Join";
-        foreach (var file in _files.Where(f => f.Module is null && f.Classes.SelectMany(c => c.Dependencies).Count() >= 1))
+        var joinModule = $"{ModuleIndice}_Join";
+        foreach (var file in Files.Where(f => f.Module is null && f.Classes.SelectMany(c => c.Dependencies).Count() >= 1))
         {
             var dep = file.Classes.SelectMany(c => c.Dependencies).Select(c => c.File!.Module).Distinct();
             if (dep.Count() == 1 && dep.First() != null)
@@ -436,8 +456,8 @@ WHERE       tc.constraint_type   = '{constraint}'
 
     private void CreateOtherModule()
     {
-        var trashModule = $"{moduleIndice}_Autres";
-        foreach (var file in _files.Where(f => f.Module is null))
+        var trashModule = $"{ModuleIndice}_Autres";
+        foreach (var file in Files.Where(f => f.Module is null))
         {
             file.Module = trashModule;
         }
@@ -448,7 +468,7 @@ WHERE       tc.constraint_type   = '{constraint}'
         var rootFile = mainClass.File!;
         if (module == null)
         {
-            module = $"{moduleIndice}_{mainClass.Name}";
+            module = $"{ModuleIndice}_{mainClass.Name}";
         }
 
         var stack = new Queue<TmdFile>();
@@ -473,9 +493,9 @@ WHERE       tc.constraint_type   = '{constraint}'
         while (hasChanged)
         {
             hasChanged = false;
-            foreach (var file in _files)
+            foreach (var file in Files)
             {
-                foreach (var f in _files.Where(f => f.Classes.Count() > 0 && _files.ToList().IndexOf(f) > _files.ToList().IndexOf(file)))
+                foreach (var f in Files.Where(f => f.Classes.Count() > 0 && Files.ToList().IndexOf(f) > Files.ToList().IndexOf(file)))
                 {
                     if (string.Join(string.Empty, f.Uses.Select(u => u.Name)) == string.Join(string.Empty, file.Uses.Select(u => u.Name)) && f.Module == file.Module)
                     {
@@ -498,7 +518,7 @@ WHERE       tc.constraint_type   = '{constraint}'
     private void RenameFiles()
     {
         // Renommage des fichiers
-        foreach (var group in _files.GroupBy(f => f.Module))
+        foreach (var group in Files.GroupBy(f => f.Module))
         {
             var indice = 1;
             foreach (var file in group.OrderBy(f => f.Name))
@@ -511,9 +531,9 @@ WHERE       tc.constraint_type   = '{constraint}'
 
     private void WriteFiles()
     {
-        foreach (var file in _files)
+        foreach (var file in Files)
         {
-            using var tmdFileWriter = new TmdWriter(Path.Combine(_modelRoot, _config.OutputDirectory), file!, _logger, _modelRoot);
+            using var tmdFileWriter = new TmdWriter(Path.Combine(ModelRoot, _config.OutputDirectory), file!, _logger, ModelRoot);
             tmdFileWriter.Write();
         }
     }

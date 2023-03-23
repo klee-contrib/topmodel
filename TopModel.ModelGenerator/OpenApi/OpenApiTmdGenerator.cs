@@ -6,31 +6,43 @@ using TopModel.Utils;
 
 namespace TopModel.ModelGenerator.OpenApi;
 
-static class OpenApiTmdGenerator
+public class OpenApiTmdGenerator : ModelGenerator
 {
-    public async static Task GenerateOpenApi(OpenApiConfig config, ILogger logger, string directoryName, string modelRoot)
+    private readonly OpenApiConfig _config;
+    private readonly ILogger<OpenApiTmdGenerator> _logger;
+
+    public OpenApiTmdGenerator(ILogger<OpenApiTmdGenerator> logger, OpenApiConfig config)
+        : base(logger)
     {
-        if (config.ModelTags.Count == 0)
+        _config = config;
+        _logger = logger;
+    }
+
+    public override string Name => "OpenApiGen";
+
+    protected override async Task GenerateCore()
+    {
+        if (_config.ModelTags.Count == 0)
         {
-            config.ModelTags.Add("OpenApi");
+            _config.ModelTags.Add("OpenApi");
         }
 
-        if (config.EndpointTags.Count == 0)
+        if (_config.EndpointTags.Count == 0)
         {
-            config.EndpointTags.Add("OpenApi");
+            _config.EndpointTags.Add("OpenApi");
         }
 
         OpenApiDocument model;
         var modelReader = new OpenApiStreamReader();
-        if (config.Source.StartsWith("http://") || config.Source.StartsWith("https://"))
+        if (_config.Source.StartsWith("http://") || _config.Source.StartsWith("https://"))
         {
             using var client = new HttpClient();
-            var openApi = await client.GetAsync(config.Source);
+            var openApi = await client.GetAsync(_config.Source);
             model = modelReader.Read(await openApi.Content.ReadAsStreamAsync(), out var diagnostic);
         }
         else
         {
-            using var stream = File.Open(directoryName + "/" + config.Source, FileMode.Open);
+            using var stream = File.Open(DirectoryName + "/" + _config.Source, FileMode.Open);
             model = modelReader.Read(stream, out var diagnostic);
         }
 
@@ -133,7 +145,7 @@ static class OpenApiTmdGenerator
         var modules = model.Paths
             .SelectMany(p => p.Value.Operations.Where(o => o.Value.Tags.Any()))
             .GroupBy(o => o.Value.Tags.First().Name.ToPascalCase())
-            .Where(m => m.Key != "Null" && (config.Include == null || config.Include.Contains(m.Key)));
+            .Where(m => m.Key != "Null" && (_config.Include == null || _config.Include.Contains(m.Key)));
 
         IEnumerable<OpenApiReference> GetModuleReferences(IEnumerable<KeyValuePair<OperationType, OpenApiOperation>> operations)
         {
@@ -201,11 +213,11 @@ static class OpenApiTmdGenerator
 
         var referenceMap = modules.ToDictionary(m => m.Key, m => GetModuleReferences(m));
 
-        using var fw = new FileWriter($"{Path.Combine(modelRoot, config.OutputDirectory, config.ModelFileName)}.tmd", logger, false) { StartCommentToken = "####" };
+        using var fw = new FileWriter($"{Path.Combine(ModelRoot, _config.OutputDirectory, _config.ModelFileName)}.tmd", _logger, false) { StartCommentToken = "####" };
         fw.WriteLine("---");
-        fw.WriteLine($"module: {config.Module}");
+        fw.WriteLine($"module: {_config.Module}");
         fw.WriteLine("tags:");
-        foreach (var tag in config.ModelTags)
+        foreach (var tag in _config.ModelTags)
         {
             fw.WriteLine($"  - {tag}");
         }
@@ -218,7 +230,7 @@ static class OpenApiTmdGenerator
             fw.WriteLine("class:");
             fw.WriteLine($"  name: {schema.Key}");
 
-            if (config.PreservePropertyCasing)
+            if (_config.PreservePropertyCasing)
             {
                 fw.WriteLine($"  preservePropertyCasing: true");
             }
@@ -239,7 +251,7 @@ static class OpenApiTmdGenerator
             {
                 if (!property.Value.Enum.Any())
                 {
-                    WriteProperty(config, fw, property, model);
+                    WriteProperty(_config, fw, property, model);
                 }
                 else
                 {
@@ -262,7 +274,7 @@ static class OpenApiTmdGenerator
                 fw.WriteLine("class:");
                 fw.WriteLine($"  name: {schema.Key.ToPascalCase()}{property.Key.ToPascalCase()}");
 
-                if (config.PreservePropertyCasing)
+                if (_config.PreservePropertyCasing)
                 {
                     fw.WriteLine($"  preservePropertyCasing: true");
                 }
@@ -272,7 +284,7 @@ static class OpenApiTmdGenerator
                 fw.WriteLine();
                 fw.WriteLine($"  properties:");
 
-                WriteProperty(config, fw, property, model);
+                WriteProperty(_config, fw, property, model);
                 fw.WriteLine();
                 fw.WriteLine($"  values:");
                 var u = 0;
@@ -285,18 +297,18 @@ static class OpenApiTmdGenerator
 
         foreach (var module in modules)
         {
-            using var sw = new FileWriter($"{Path.Combine(modelRoot, config.OutputDirectory, module.Key)}.tmd", logger, false) { StartCommentToken = "####" };
+            using var sw = new FileWriter($"{Path.Combine(ModelRoot, _config.OutputDirectory, module.Key)}.tmd", _logger, false) { StartCommentToken = "####" };
             sw.WriteLine("---");
-            sw.WriteLine($"module: {config.Module}");
+            sw.WriteLine($"module: {_config.Module}");
             sw.WriteLine("tags:");
-            foreach (var tag in config.EndpointTags)
+            foreach (var tag in _config.EndpointTags)
             {
                 sw.WriteLine($"  - {tag}");
             }
             if (referenceMap[module.Key].Any())
             {
                 sw.WriteLine("uses:");
-                var use = $"{config.OutputDirectory.Replace("\\", "/")}/{config.ModelFileName}".Replace("//", "/");
+                var use = $"{_config.OutputDirectory.Replace("\\", "/")}/{_config.ModelFileName}".Replace("//", "/");
                 if (use.StartsWith("./"))
                 {
                     use = use.Replace("./", string.Empty);
@@ -324,7 +336,7 @@ static class OpenApiTmdGenerator
                     sw.WriteLine($"  description: no description provided");
                 }
 
-                if (config.PreservePropertyCasing)
+                if (_config.PreservePropertyCasing)
                 {
                     sw.WriteLine($"  preservePropertyCasing: true");
                 }
@@ -336,7 +348,7 @@ static class OpenApiTmdGenerator
                     foreach (var param in operation.Value.Parameters.OrderBy(p => path.Contains($@"{{{p.Name}}}") ? 0 + p.Name : 1 + p.Name))
                     {
                         sw.WriteLine($"    - name: {param.Name}");
-                        sw.WriteLine($"      domain: {GetDomain(config, param.Name, param.Schema)}");
+                        sw.WriteLine($"      domain: {GetDomain(_config, param.Name, param.Schema)}");
                         if (param.Description != null)
                         {
                             sw.WriteLine($"      comment: {FormatDescription(param.Description)}");
@@ -350,7 +362,7 @@ static class OpenApiTmdGenerator
                     var bodySchema = GetRequestBodySchema(operation.Value).Value;
                     if (bodySchema != null)
                     {
-                        WriteProperty(config, sw, new("body", bodySchema), model);
+                        WriteProperty(_config, sw, new("body", bodySchema), model);
                     }
 
                 }
@@ -359,7 +371,7 @@ static class OpenApiTmdGenerator
                 if (responseSchema != null)
                 {
                     sw.WriteLine("  returns:");
-                    WriteProperty(config, sw, new("Result", responseSchema), model, noList: true);
+                    WriteProperty(_config, sw, new("Result", responseSchema), model, noList: true);
                 }
             }
         }

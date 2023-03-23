@@ -1,8 +1,8 @@
 ﻿using System.CommandLine;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using Npgsql;
 using SharpYaml.Serialization;
 using TopModel.ModelGenerator;
 using TopModel.ModelGenerator.Database;
@@ -75,8 +75,6 @@ var fullVersion = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Versi
 var version = $"{fullVersion.Major}.{fullVersion.Minor}.{fullVersion.Build}";
 var colors = new[] { ConsoleColor.DarkCyan, ConsoleColor.DarkYellow, ConsoleColor.Cyan, ConsoleColor.Yellow };
 
-using var loggerFactory = LoggerFactory.Create(l => l.AddProvider(new LoggerProvider()));
-
 Console.WriteLine($"========= ModelGenerator v{version} =========");
 Console.WriteLine();
 if (watchMode)
@@ -87,7 +85,9 @@ if (watchMode)
     Console.ForegroundColor = ConsoleColor.Gray;
     Console.WriteLine("activé.");
 }
+
 Console.WriteLine("Fichiers de configuration trouvés :");
+
 for (var p = 0; p < configs.Count; p++)
 {
     var (_, fullName, _) = configs[p];
@@ -101,80 +101,53 @@ var disposables = new List<IDisposable>();
 var fsCache = new MemoryCache(new MemoryCacheOptions());
 Dictionary<string, string> passwords = new();
 
-var startGeneration = async (string filePath, string DirectoryName, int i) =>
+async Task StartGeneration(string filePath, string directoryName, int i)
 {
     Console.WriteLine();
 
-    var mainLogger = loggerFactory.CreateLogger("ModelGenerator");
+    var file = new FileInfo(filePath);
+    using var stream = file.OpenRead();
+    var config = new Serializer().Deserialize<ModelGeneratorConfig>(stream);
+
+    ModelUtils.CombinePath(directoryName, config, c => c.ModelRoot);
+
+    var services = new ServiceCollection()
+        .AddLogging(builder => builder.AddProvider(new LoggerProvider()));
+
+    foreach (var conf in config.OpenApi)
+    {
+        services.AddSingleton<ModelGenerator>(p => new OpenApiTmdGenerator(p.GetRequiredService<ILogger<OpenApiTmdGenerator>>(), conf)
+        {
+            DirectoryName = directoryName,
+            ModelRoot = config.ModelRoot,
+            Number = config.OpenApi.IndexOf(conf) + 1
+        });
+    }
+
+    foreach (var conf in config.Database)
+    {
+        services.AddSingleton<ModelGenerator>(p => new DatabaseTmdGenerator(p.GetRequiredService<ILogger<DatabaseTmdGenerator>>(), conf)
+        {
+            DirectoryName = directoryName,
+            ModelRoot = config.ModelRoot,
+            Number = config.Database.IndexOf(conf) + 1,
+            Passwords = passwords
+        });
+    }
+
+    using var provider = services.BuildServiceProvider();
+
+    var mainLogger = provider.GetRequiredService<ILogger<ModelGenerator>>();
     var loggingScope = new LoggingScope(i + 1, colors[i]);
     using var scope = mainLogger.BeginScope(loggingScope);
 
-    var file = new FileInfo(filePath);
-    using var stream = file.OpenRead();
-    var newConfig = new Serializer().Deserialize<ModelGeneratorConfig>(stream);
+    var generators = provider.GetRequiredService<IEnumerable<ModelGenerator>>();
 
-    ModelUtils.CombinePath(DirectoryName, newConfig, c => c.ModelRoot);
+    mainLogger.LogInformation($"Générateurs enregistrés :\n                          {string.Join("\n                          ", generators.Select(g => $"- {g.Name}@{{{g.Number}}}"))}");
 
-    mainLogger.LogInformation($"Générateurs enregistrés :\n                          {string.Join("\n                          ", newConfig.OpenApi.Select((_, i) => $"- OpenApi@{i + 1}").Concat(newConfig.Database.Select((_, i) => $"- Database@{i + 1}")))}");
-
-    foreach (var conf in newConfig.OpenApi)
+    foreach (var generator in generators)
     {
-        var logger = loggerFactory.CreateLogger("OpenApi");
-        using var genScope = logger.BeginScope($"OpenApi@{newConfig.OpenApi.IndexOf(conf) + 1}");
-        using var scope2 = logger.BeginScope(loggingScope);
-
-        try
-        {
-            await OpenApiTmdGenerator.GenerateOpenApi(conf, logger, DirectoryName, newConfig.ModelRoot);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, ex.Message);
-        }
-    }
-
-    foreach (var conf in newConfig.Database)
-    {
-        if (passwords.TryGetValue(conf.Source.DbName, out var password))
-        {
-            conf.Source.Password = password;
-        }
-        else
-        {
-            try
-            {
-                using var connection = new NpgsqlConnection(conf.ConnectionString);
-                connection.Open();
-            }
-            catch (NpgsqlException)
-            {
-                Console.WriteLine($"Mot de passe pour l'utilisateur {conf.Source.User}:  ");
-                while (true)
-                {
-                    var key = Console.ReadKey(true);
-                    if (key.Key == ConsoleKey.Enter)
-                        break;
-                    password += key.KeyChar;
-                }
-
-                passwords.Add(conf.Source.DbName, password ?? "");
-                conf.Source.Password = password;
-            }
-        }
-
-        var logger = loggerFactory.CreateLogger("Database");
-        using var scope1 = logger.BeginScope($"Database@{newConfig.Database.IndexOf(conf) + 1}");
-        using var scope2 = logger.BeginScope(loggingScope);
-
-        try
-        {
-            using var dbGenerator = new DatabaseTmdGenerator(conf, logger, newConfig.ModelRoot);
-            dbGenerator.Generate();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, ex.Message);
-        }
+        await generator.Generate(loggingScope);
     }
 
     mainLogger.LogInformation("Mise à jour terminée avec succès.");
@@ -185,9 +158,7 @@ foreach (var config in configs)
 {
     ModelUtils.CombinePath(config.DirectoryName, config.Config, c => c.ModelRoot);
 
-    var logger = loggerFactory.CreateLogger("ModelGenerator");
-
-    await startGeneration(config.FullPath, config.DirectoryName, configs.IndexOf(config));
+    await StartGeneration(config.FullPath, config.DirectoryName, configs.IndexOf(config));
 
     if (watchMode)
     {
@@ -203,7 +174,7 @@ foreach (var config in configs)
                         return;
                     }
 
-                    await startGeneration(args.FullPath, config.DirectoryName, configs.IndexOf(config));
+                    await StartGeneration(args.FullPath, config.DirectoryName, configs.IndexOf(config));
 
                 }));
         };

@@ -8,16 +8,17 @@ public class OpenApiConfig
 
     [YamlMember("outputDirectory")]
     public string OutputDirectory { get => _outputDirectory ?? Module; set => _outputDirectory = value; }
-    
+
     [YamlMember("module")]
     public string Module { get; set; } = "OpenApi";
 
     [YamlMember("domains")]
     public IList<DomainMapping> Domains { get; set; } = new List<DomainMapping>();
 
-    #nullable disable
+#nullable disable
     [YamlMember("source")]
     public string Source { get; set; }
+#nullable enable
 
     [YamlMember("include")]
     public string[]? Include { get; set; }

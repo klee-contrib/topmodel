@@ -139,9 +139,7 @@ public class FileWriter : TextWriter
     {
         base.Dispose(disposing);
 
-#pragma warning disable CS0618
-        if (Marshal.GetExceptionCode() != 0)
-#pragma warning restore CS0618
+        if (Marshal.GetExceptionPointers() != IntPtr.Zero)
         {
             return;
         }

@@ -4,7 +4,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace CSharp.Api.Controllers.Securite.Utilisateur;
+namespace CSharp.Api.Securite.Utilisateur;
 
 public class UtilisateurApiController : Controller
 {
