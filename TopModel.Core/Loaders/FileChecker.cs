@@ -59,6 +59,11 @@ public class FileChecker
         return _deserializer.Deserialize<T>(yaml);
     }
 
+    public T Deserialize<T>(TextReader yaml)
+    {
+        return _deserializer.Deserialize<T>(yaml);
+    }
+
     public T Deserialize<T>(IParser parser)
     {
         return _deserializer.Deserialize<T>(parser);

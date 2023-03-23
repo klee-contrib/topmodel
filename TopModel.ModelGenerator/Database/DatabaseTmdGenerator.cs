@@ -47,7 +47,7 @@ public class DatabaseTmdGenerator : ModelGenerator, IDisposable
         _connection.Dispose();
     }
 
-    protected override async Task GenerateCore()
+    protected override async IAsyncEnumerable<string> GenerateCore()
     {
         if (Passwords.TryGetValue(_config.Source.DbName, out var password))
         {
@@ -99,8 +99,10 @@ public class DatabaseTmdGenerator : ModelGenerator, IDisposable
         RenameFiles();
 
         // Ecriture des fichiers
-        WriteFiles();
-
+        foreach (var file in WriteFiles())
+        {
+            yield return file;
+        }
     }
 
     private async Task ReadValues()
@@ -529,11 +531,14 @@ public class DatabaseTmdGenerator : ModelGenerator, IDisposable
         }
     }
 
-    private void WriteFiles()
+    private IEnumerable<string> WriteFiles()
     {
         foreach (var file in Files)
         {
-            using var tmdFileWriter = new TmdWriter(Path.Combine(ModelRoot, _config.OutputDirectory), file!, _logger, ModelRoot);
+            var fileName = Path.Combine(ModelRoot, _config.OutputDirectory);
+            yield return fileName;
+
+            using var tmdFileWriter = new TmdWriter(fileName, file!, _logger, ModelRoot);
             tmdFileWriter.Write();
         }
     }

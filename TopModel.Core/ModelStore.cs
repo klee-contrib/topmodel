@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using TopModel.Core.FileModel;
@@ -22,7 +21,7 @@ public class ModelStore
     private readonly HashSet<string> _pendingUpdates = new();
 
     private readonly TranslationStore _translationStore;
-    private readonly TopModelLock _topModelLock;
+    private readonly TopModelLock _topModelLock = new();
 
     private LoggingScope? _storeConfig;
 
@@ -35,24 +34,18 @@ public class ModelStore
         _modelWatchers = modelWatchers;
         _translationStore = translationStore;
 
-        var topModelFile = new FileInfo(Path.Combine(_config.ModelRoot, _config.LockFileName));
-        if (topModelFile.Exists)
+        var lockFile = new FileInfo(Path.Combine(_config.ModelRoot, _config.LockFileName));
+        if (lockFile.Exists)
         {
-            var fileChecker = new FileChecker();
-            using var topModelLockFile = topModelFile.OpenText();
             try
             {
-                _topModelLock = fileChecker.Deserialize<TopModelLock>(topModelLockFile.ReadToEnd());
+                using var file = lockFile.OpenText();
+                _topModelLock = new FileChecker().Deserialize<TopModelLock>(file);
             }
             catch
             {
                 logger.LogError($"Erreur à la lecture du fichier {_config.LockFileName}. Merci de rétablir la version générée automatiquement.");
-                _topModelLock = new TopModelLock { Version = CurrentVersion };
             }
-        }
-        else
-        {
-            _topModelLock = new TopModelLock { Version = CurrentVersion };
         }
     }
 
@@ -69,15 +62,6 @@ public class ModelStore
     public IEnumerable<Decorator> Decorators => _modelFiles.SelectMany(mf => mf.Value.Decorators).Distinct();
 
     public IEnumerable<ModelFile> Files => _modelFiles.Values;
-
-    private static string CurrentVersion
-    {
-        get
-        {
-            var version = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Version!;
-            return $"{version.Major}.{version.Minor}.{version.Build}";
-        }
-    }
 
     public IEnumerable<Class> GetAvailableClasses(ModelFile file)
     {
@@ -96,13 +80,7 @@ public class ModelStore
 
         using var scope = _logger.BeginScope(_storeConfig);
 
-        if (CurrentVersion != _topModelLock.Version)
-        {
-            _logger.LogWarning($"Ce modèle a été généré pour la dernière fois avec TopModel v{_topModelLock.Version}, qui n'est pas la version actuellement installée (v{CurrentVersion})");
-        }
-
-        _topModelLock.Version = CurrentVersion;
-        _topModelLock.GeneratedFiles ??= new();
+        _topModelLock.Init(_logger);
 
         var watchers = _modelWatchers.Select(mw => mw.FullName.Split("@")).GroupBy(split => split[0]).Select(grp => $"{grp.Key}@{{{string.Join(",", grp.Select(split => split[1]))}}}");
         _logger.LogInformation($"Watchers enregistrés : \n                          - {string.Join("\n                          - ", watchers.OrderBy(x => x))}");
@@ -223,6 +201,10 @@ public class ModelStore
                 {
                     throw new ModelException("Erreur lors de la lecture du modèle.");
                 }
+                else
+                {
+                    _logger.LogInformation("Modèle chargé avec succès.");
+                }
 
                 foreach (var modelWatcher in _modelWatchers)
                 {
@@ -231,9 +213,11 @@ public class ModelStore
 
                 if (_modelWatchers.Any(m => m.GeneratedFiles != null))
                 {
-                    DeleteOldFiles();
-                    _topModelLock.GeneratedFiles = GetGeneratedFiles();
-                    WriteTopModelLock();
+                    _topModelLock.Update(
+                        _config.ModelRoot,
+                        _config.LockFileName,
+                        _logger,
+                        _modelWatchers.Where(m => m.GeneratedFiles != null).SelectMany(m => m.GeneratedFiles!));
                 }
 
                 _logger.LogInformation($"Mise à jour terminée avec succès.");
@@ -244,48 +228,6 @@ public class ModelStore
             {
                 _logger.LogError(e, e.Message);
             }
-        }
-    }
-
-    private void DeleteOldFiles()
-    {
-        var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
-        var generatedFiles = GetGeneratedFiles();
-        var filesToPrune = _topModelLock.GeneratedFiles
-            .Select(f => f.Replace("\\", "/"))
-            .Where(f => !generatedFiles.Select(gf => isWindows ? gf.ToLowerInvariant() : gf).Contains(isWindows ? f.ToLowerInvariant() : f))
-            .Select(f => Path.Combine(_config.ModelRoot, f));
-
-        foreach (var fileToPrune in filesToPrune.Where(File.Exists))
-        {
-            File.Delete(fileToPrune);
-            _logger.LogInformation($"Supprimé: {fileToPrune.ToRelative()}");
-        }
-    }
-
-    private List<string> GetGeneratedFiles()
-    {
-        return _modelWatchers
-            .Where(m => m.GeneratedFiles != null)
-            .SelectMany(m => m.GeneratedFiles!)
-            .Select(f => f.ToRelative(_config.ModelRoot))
-            .Distinct()
-            .OrderBy(t => t)
-            .ToList();
-    }
-
-    private void WriteTopModelLock()
-    {
-        using var fw = new FileWriter(Path.Combine(_config.ModelRoot, _config.LockFileName), _logger)
-        {
-            StartCommentToken = "#"
-        };
-
-        fw.WriteLine($"version: {_topModelLock.Version}");
-        fw.WriteLine("generatedFiles:");
-        foreach (var genFile in _topModelLock.GeneratedFiles)
-        {
-            fw.WriteLine($"  - {genFile}");
         }
     }
 

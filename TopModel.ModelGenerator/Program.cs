@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using System.Reflection;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,6 +14,7 @@ var command = new RootCommand("Lance le générateur de fichiers tmd.") { Name =
 var watchMode = false;
 var regularCommand = false;
 var configs = new List<(ModelGeneratorConfig Config, string FullPath, string DirectoryName)>();
+var serializer = new Serializer(new() { NamingConvention = new CamelCaseNamingConvention() });
 
 var fileOption = new Option<IEnumerable<FileInfo>>(new[] { "-f", "--file" }, "Chemin vers un fichier de config.");
 var watchOption = new Option<bool>(new[] { "-w", "--watch" }, "Lance le générateur en mode 'watch'");
@@ -24,7 +26,7 @@ command.SetHandler(
         regularCommand = true;
         watchMode = watch;
 
-        if (files.Count() > 0)
+        if (files.Any())
         {
             foreach (var file in files)
             {
@@ -36,7 +38,7 @@ command.SetHandler(
                 else
                 {
                     using var stream = file.OpenRead();
-                    configs.Add((new Serializer().Deserialize<ModelGeneratorConfig>(stream), file.FullName, file.DirectoryName!));
+                    configs.Add((serializer.Deserialize<ModelGeneratorConfig>(stream)!, file.FullName, file.DirectoryName!));
                 }
             }
         }
@@ -48,7 +50,7 @@ command.SetHandler(
                 if (foundFile != null)
                 {
                     using var stream = foundFile.OpenText();
-                    configs.Add((new Serializer().Deserialize<ModelGeneratorConfig>(stream.ReadToEnd()), fileName, foundFile.DirectoryName!));
+                    configs.Add((serializer.Deserialize<ModelGeneratorConfig>(stream.ReadToEnd())!, fileName, foundFile.DirectoryName!));
                 }
             }
         }
@@ -70,12 +72,11 @@ if (!configs.Any())
     return;
 }
 
-
-var fullVersion = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Version!;
+var fullVersion = Assembly.GetEntryAssembly()!.GetName().Version!;
 var version = $"{fullVersion.Major}.{fullVersion.Minor}.{fullVersion.Build}";
 var colors = new[] { ConsoleColor.DarkCyan, ConsoleColor.DarkYellow, ConsoleColor.Cyan, ConsoleColor.Yellow };
 
-Console.WriteLine($"========= ModelGenerator v{version} =========");
+Console.WriteLine($"======= TopModel.ModelGenerator v{version} =======");
 Console.WriteLine();
 if (watchMode)
 {
@@ -105,9 +106,9 @@ async Task StartGeneration(string filePath, string directoryName, int i)
 {
     Console.WriteLine();
 
-    var file = new FileInfo(filePath);
-    using var stream = file.OpenRead();
-    var config = new Serializer().Deserialize<ModelGeneratorConfig>(stream);
+    var configFile = new FileInfo(filePath);
+    using var stream = configFile.OpenRead();
+    var config = serializer.Deserialize<ModelGeneratorConfig>(stream)!;
 
     ModelUtils.CombinePath(directoryName, config, c => c.ModelRoot);
 
@@ -116,6 +117,7 @@ async Task StartGeneration(string filePath, string directoryName, int i)
 
     foreach (var conf in config.OpenApi)
     {
+        ModelUtils.TrimSlashes(conf, c => c.OutputDirectory);
         services.AddSingleton<ModelGenerator>(p => new OpenApiTmdGenerator(p.GetRequiredService<ILogger<OpenApiTmdGenerator>>(), conf)
         {
             DirectoryName = directoryName,
@@ -126,6 +128,7 @@ async Task StartGeneration(string filePath, string directoryName, int i)
 
     foreach (var conf in config.Database)
     {
+        ModelUtils.TrimSlashes(conf, c => c.OutputDirectory);
         services.AddSingleton<ModelGenerator>(p => new DatabaseTmdGenerator(p.GetRequiredService<ILogger<DatabaseTmdGenerator>>(), conf)
         {
             DirectoryName = directoryName,
@@ -145,10 +148,31 @@ async Task StartGeneration(string filePath, string directoryName, int i)
 
     mainLogger.LogInformation($"Générateurs enregistrés :\n                          {string.Join("\n                          ", generators.Select(g => $"- {g.Name}@{{{g.Number}}}"))}");
 
+    TopModelLock tmdLock = new();
+    var lockFile = new FileInfo(Path.Combine(config.ModelRoot, config.LockFileName));
+    if (lockFile.Exists)
+    {
+        try
+        {
+            using var file = lockFile.OpenText();
+            tmdLock = serializer.Deserialize<TopModelLock>(file)!;
+        }
+        catch
+        {
+            mainLogger.LogError($"Erreur à la lecture du fichier {config.LockFileName}. Merci de rétablir la version générée automatiquement.");
+        }
+    }
+
+    tmdLock.Init(mainLogger);
+
+    var generatedFiles = new List<string>();
+
     foreach (var generator in generators)
     {
-        await generator.Generate(loggingScope);
+        generatedFiles.AddRange(await generator.Generate(loggingScope));
     }
+
+    tmdLock.Update(config.ModelRoot, config.LockFileName, mainLogger, generatedFiles);
 
     mainLogger.LogInformation("Mise à jour terminée avec succès.");
 };

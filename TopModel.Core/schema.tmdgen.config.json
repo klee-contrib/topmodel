@@ -69,6 +69,11 @@
       "type": "string",
       "description": "Chemin relatif du répertoire de génération du modèle vis-à-vis du répertoire racine du modèle cible"
     },
+    "lockFileName": {
+      "type": "string",
+      "description": "Nom du fichier de lock",
+      "default": "tmdgen.lock"
+    },
     "database": {
       "type": "array",
       "description": "Liste des configurations de la génération de fichiers Topmodel à partir d'une base de données",

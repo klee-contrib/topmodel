@@ -24,19 +24,28 @@ public abstract class ModelGenerator
 
     string FullName => $"{Name.PadRight(18, '.')}@{Number}";
 
-    public async Task Generate(LoggingScope scope)
+    public async Task<List<string>> Generate(LoggingScope scope)
     {
+
         using var scope1 = _logger.BeginScope(FullName);
         using var scope2 = _logger.BeginScope(scope);
         try
         {
-            await GenerateCore();
+            var files = new List<string>();
+
+            await foreach (var item in GenerateCore())
+            {
+                files.Add(item);
+            }
+
+            return files;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
+            return new List<string>();
         }
     }
 
-    protected abstract Task GenerateCore();
+    protected abstract IAsyncEnumerable<string> GenerateCore();
 }

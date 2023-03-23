@@ -1,0 +1,10 @@
+﻿#
+# ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+#
+
+version: 1.2.2
+generatedFiles:
+  - ./Petstore/Model.tmd
+  - ./Petstore/Pet.tmd
+  - ./Petstore/Store.tmd
+  - ./Petstore/User.tmd

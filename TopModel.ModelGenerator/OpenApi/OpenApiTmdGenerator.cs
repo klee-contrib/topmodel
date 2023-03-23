@@ -20,7 +20,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
     public override string Name => "OpenApiGen";
 
-    protected override async Task GenerateCore()
+    protected override async IAsyncEnumerable<string> GenerateCore()
     {
         if (_config.ModelTags.Count == 0)
         {
@@ -213,7 +213,10 @@ public class OpenApiTmdGenerator : ModelGenerator
 
         var referenceMap = modules.ToDictionary(m => m.Key, m => GetModuleReferences(m));
 
-        using var fw = new FileWriter($"{Path.Combine(ModelRoot, _config.OutputDirectory, _config.ModelFileName)}.tmd", _logger, false) { StartCommentToken = "####" };
+        var modelFileName = $"{Path.Combine(ModelRoot, _config.OutputDirectory, _config.ModelFileName)}.tmd";
+        yield return modelFileName;
+
+        using var fw = new FileWriter(modelFileName, _logger, false) { StartCommentToken = "####" };
         fw.WriteLine("---");
         fw.WriteLine($"module: {_config.Module}");
         fw.WriteLine("tags:");
@@ -297,7 +300,10 @@ public class OpenApiTmdGenerator : ModelGenerator
 
         foreach (var module in modules)
         {
-            using var sw = new FileWriter($"{Path.Combine(ModelRoot, _config.OutputDirectory, module.Key)}.tmd", _logger, false) { StartCommentToken = "####" };
+            var endpointFileName = $"{Path.Combine(ModelRoot, _config.OutputDirectory, module.Key)}.tmd";
+            yield return endpointFileName;
+
+            using var sw = new FileWriter(endpointFileName, _logger, false) { StartCommentToken = "####" };
             sw.WriteLine("---");
             sw.WriteLine($"module: {_config.Module}");
             sw.WriteLine("tags:");

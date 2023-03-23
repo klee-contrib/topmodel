@@ -110,7 +110,7 @@ var version = $"{fullVersion.Major}.{fullVersion.Minor}.{fullVersion.Build}";
 
 var colors = new[] { ConsoleColor.DarkCyan, ConsoleColor.DarkYellow, ConsoleColor.Cyan, ConsoleColor.Yellow };
 
-Console.WriteLine($"========= TopModel v{version} =========");
+Console.WriteLine($"========= TopModel.Generator v{version} =========");
 Console.WriteLine();
 
 if (watchMode)
