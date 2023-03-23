@@ -98,17 +98,34 @@ static class OpenApiTmdGenerator
 
         string GetEndpointName(KeyValuePair<OperationType, OpenApiOperation> operation)
         {
+            var operationId = GetOperationId(operation);
             var operationsWithId = model!.Paths.OrderBy(p => p.Key).SelectMany(p => p.Value.Operations.OrderBy(o => o.Key))
-                .Where(o => GetOperationId(o) == GetOperationId(operation))
-                .Select(o => o.Value)
+                .Where(o => GetOperationId(o) == operationId)
                 .ToList();
 
             if (operationsWithId.Count == 1)
             {
-                return GetOperationId(operation);
+                return operationId;
             }
 
-            return $"{GetOperationId(operation)}{operationsWithId.IndexOf(operation.Value) + 1}";
+            var suffix = operationsWithId.DistinctBy(o => o.Key).Count() > 1
+                ? operation.Key.ToString().ToPascalCase()
+                : string.Empty;
+
+            if (suffix == string.Empty)
+            {
+                suffix += operationsWithId.IndexOf(operation) + 1;
+            }
+            else
+            {
+                var operationWithIdAndMethod = operationsWithId.Where(o => o.Key == operation.Key).ToList();
+                if (operationWithIdAndMethod.Count > 1)
+                {
+                    suffix += operationWithIdAndMethod.IndexOf(operation) + 1;
+                }
+            }
+
+            return $"{operationId}{suffix}";
         }
 
         var modules = model.Paths

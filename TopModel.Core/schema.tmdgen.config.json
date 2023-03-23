@@ -10,6 +10,7 @@
         {
           "type": "object",
           "description": "Correspondance entre le nom de la propriété et un modèle dans le modèle cible",
+          "additionalProperties": false,
           "required": [
             "domain",
             "name"
@@ -36,6 +37,7 @@
         {
           "type": "object",
           "description": "Correspondance entre le type de données et un modèle dans le modèle cible",
+          "additionalProperties": false,
           "required": [
             "type",
             "domain"
@@ -73,6 +75,7 @@
       "items": {
         "type": "object",
         "description": "Configuration de la génération de fichiers Topmodel à partir d'une base de données",
+        "additionalProperties": false,
         "properties": {
           "tags": {
             "type": "array",
@@ -88,6 +91,7 @@
             "items": {
               "type": "object",
               "description": "Module contenant des classes",
+              "additionalProperties": false,
               "required": [
                 "name",
                 "classes"
@@ -134,6 +138,7 @@
           "source": {
             "type": "object",
             "description": "Informations de connexion à la base de données",
+            "additionalProperties": false,
             "properties": {
               "host": {
                 "type": "string",
@@ -176,6 +181,7 @@
       "items": {
         "type": "object",
         "description": "Configuration de la génération de fichiers Topmodel à partir d'un fichier au format OpenApi",
+        "additionalProperties": false,
         "properties": {
           "domains": {
             "type": "array",
