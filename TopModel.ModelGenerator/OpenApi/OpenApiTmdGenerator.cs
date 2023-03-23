@@ -108,11 +108,13 @@ static class OpenApiTmdGenerator
                 return operationId;
             }
 
-            var suffix = operationsWithId.DistinctBy(o => o.Key).Count() > 1
+            var prefix = operationsWithId.DistinctBy(o => o.Key).Count() > 1
                 ? operation.Key.ToString().ToPascalCase()
                 : string.Empty;
 
-            if (suffix == string.Empty)
+            var suffix = string.Empty;
+
+            if (prefix == string.Empty)
             {
                 suffix += operationsWithId.IndexOf(operation) + 1;
             }
@@ -125,7 +127,7 @@ static class OpenApiTmdGenerator
                 }
             }
 
-            return $"{operationId}{suffix}";
+            return $"{prefix}{operationId}{suffix}";
         }
 
         var modules = model.Paths
