@@ -12,19 +12,23 @@ using TopModel.Utils;
 
 var command = new RootCommand("Lance le générateur de fichiers tmd.") { Name = "tmdgen" };
 var watchMode = false;
+var checkMode = false;
 var regularCommand = false;
 var configs = new List<(ModelGeneratorConfig Config, string FullPath, string DirectoryName)>();
 var serializer = new Serializer(new() { NamingConvention = new CamelCaseNamingConvention() });
 
 var fileOption = new Option<IEnumerable<FileInfo>>(new[] { "-f", "--file" }, "Chemin vers un fichier de config.");
 var watchOption = new Option<bool>(new[] { "-w", "--watch" }, "Lance le générateur en mode 'watch'");
+var checkOption = new Option<bool>(new[] { "-c", "--check" }, "Vérifie que le modèle généré est conforme aux sources.");
 command.AddOption(fileOption);
 command.AddOption(watchOption);
+command.AddOption(checkOption);
 command.SetHandler(
-    (files, watch) =>
+    (files, watch, check) =>
     {
         regularCommand = true;
         watchMode = watch;
+        checkMode = check;
 
         if (files.Any())
         {
@@ -56,20 +60,21 @@ command.SetHandler(
         }
     },
     fileOption,
-    watchOption);
+    watchOption,
+    checkOption);
 
 await command.InvokeAsync(args);
 
 if (!regularCommand)
 {
-    return;
+    return 0;
 }
 
 if (!configs.Any())
 {
     Console.ForegroundColor = ConsoleColor.Red;
     Console.WriteLine("Aucun fichier de config trouvé.");
-    return;
+    return 1;
 }
 
 var fullVersion = Assembly.GetEntryAssembly()!.GetName().Version!;
@@ -78,11 +83,21 @@ var colors = new[] { ConsoleColor.DarkCyan, ConsoleColor.DarkYellow, ConsoleColo
 
 Console.WriteLine($"======= TopModel.ModelGenerator v{version} =======");
 Console.WriteLine();
+
 if (watchMode)
 {
     Console.Write("Mode");
     Console.ForegroundColor = ConsoleColor.DarkCyan;
     Console.Write(" watch ");
+    Console.ForegroundColor = ConsoleColor.Gray;
+    Console.WriteLine("activé.");
+}
+
+if (checkMode)
+{
+    Console.Write("Mode");
+    Console.ForegroundColor = ConsoleColor.DarkCyan;
+    Console.Write(" check ");
     Console.ForegroundColor = ConsoleColor.Gray;
     Console.WriteLine("activé.");
 }
@@ -98,6 +113,7 @@ for (var p = 0; p < configs.Count; p++)
 }
 
 var disposables = new List<IDisposable>();
+var loggerProvider = new LoggerProvider();
 
 var fsCache = new MemoryCache(new MemoryCacheOptions());
 Dictionary<string, string> passwords = new();
@@ -113,7 +129,7 @@ async Task StartGeneration(string filePath, string directoryName, int i)
     ModelUtils.CombinePath(directoryName, config, c => c.ModelRoot);
 
     var services = new ServiceCollection()
-        .AddLogging(builder => builder.AddProvider(new LoggerProvider()));
+        .AddLogging(builder => builder.AddProvider(loggerProvider));
 
     foreach (var conf in config.OpenApi)
     {
@@ -208,7 +224,6 @@ foreach (var config in configs)
     }
 }
 
-
 if (watchMode)
 {
     var autoResetEvent = new AutoResetEvent(false);
@@ -225,3 +240,22 @@ if (watchMode)
     }
 }
 
+if (checkMode && loggerProvider.Changes > 0)
+{
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine();
+    if (loggerProvider.Changes == 1)
+    {
+        Console.WriteLine($"1 fichier généré a été modifié ou supprimé. Le code généré n'était pas à jour.");
+    }
+    else
+    {
+        Console.WriteLine($"{loggerProvider.Changes} fichiers générés ont été modifiés ou supprimés. Le code généré n'était pas à jour.");
+    }
+
+    Console.ForegroundColor = ConsoleColor.Gray;
+
+    return 1;
+}
+
+return 0;
