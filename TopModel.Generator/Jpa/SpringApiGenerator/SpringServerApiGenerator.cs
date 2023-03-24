@@ -22,6 +22,11 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
 
     public override string Name => "SpringApiServerGen";
 
+    protected override object? GetDomainType(Domain domain)
+    {
+        return domain.Java;
+    }
+
     protected override bool FilterTag(string tag)
     {
         return _config.ResolveVariables(_config.ApiGeneration!, tag) == ApiGeneration.Server;

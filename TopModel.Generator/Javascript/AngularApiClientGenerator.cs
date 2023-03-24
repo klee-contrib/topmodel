@@ -22,6 +22,11 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase
 
     public override string Name => "JSNGApiClientGen";
 
+    protected override object? GetDomainType(Domain domain)
+    {
+        return domain.TS;
+    }
+
     protected override string GetFileName(ModelFile file, string tag)
     {
         return _config.GetEndpointsFileName(file, tag);

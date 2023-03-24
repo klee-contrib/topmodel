@@ -30,6 +30,11 @@ public class JpaModelGenerator : ClassGeneratorBase
 
     private List<Class> AvailableClasses => Classes.ToList();
 
+    protected override object? GetDomainType(Domain domain)
+    {
+        return domain.Java;
+    }
+
     protected override bool FilterClass(Class classe)
     {
         return !classe.Abstract;

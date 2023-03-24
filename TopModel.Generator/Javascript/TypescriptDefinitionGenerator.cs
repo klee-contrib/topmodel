@@ -23,6 +23,11 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
 
     public override string Name => "JSDefinitionGen";
 
+    protected override object? GetDomainType(Domain domain)
+    {
+        return domain.TS;
+    }
+
     protected override bool FilterClass(Class classe)
     {
         return !classe.IsJSReference();

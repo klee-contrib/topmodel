@@ -65,6 +65,11 @@ public class SsdtGenerator : GeneratorBase
         .Concat(Classes.Where(c => c.IsPersistent && !c.Abstract && c.Values.Any()).Any() && _config.InitListScriptFolder != null && _config.InitListMainScriptName != null ? new[] { Path.Combine(_config.InitListScriptFolder, _config.InitListMainScriptName) } : Array.Empty<string>())
         .Where(f => f != null)!;
 
+    protected override object? GetDomainType(Domain domain)
+    {
+        return domain.SqlType;
+    }
+
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in files)

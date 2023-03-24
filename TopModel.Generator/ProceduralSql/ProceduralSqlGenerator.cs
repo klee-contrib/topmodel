@@ -32,6 +32,11 @@ public class ProceduralSqlGenerator : GeneratorBase
         _config.UniqueKeysFile!,
     }.Where(t => !string.IsNullOrEmpty(t));
 
+    protected override object? GetDomainType(Domain domain)
+    {
+        return domain.SqlType;
+    }
+
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         var classes = Classes.ToList();

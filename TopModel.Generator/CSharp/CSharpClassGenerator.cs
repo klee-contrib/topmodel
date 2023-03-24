@@ -20,6 +20,11 @@ public class CSharpClassGenerator : ClassGeneratorBase
 
     public override string Name => "CSharpClassGen";
 
+    protected override object? GetDomainType(Domain domain)
+    {
+        return domain.CSharp;
+    }
+
     protected override string GetFileName(Class classe, string tag)
     {
         return _config.GetClassFileName(classe, tag);
@@ -27,11 +32,6 @@ public class CSharpClassGenerator : ClassGeneratorBase
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        if (classe.Properties.OfType<IFieldProperty>().Any(p => p.Domain.CSharp == null))
-        {
-            throw new ModelException(classe, $"Le type C# de tous les domaines des propriétés de {classe} doit être défini.");
-        }
-
         using var w = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
 
         GenerateUsings(w, classe, tag);

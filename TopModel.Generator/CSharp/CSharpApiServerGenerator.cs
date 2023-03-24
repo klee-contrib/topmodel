@@ -24,6 +24,11 @@ public class CSharpApiServerGenerator : EndpointsGeneratorBase
 
     public override string Name => "CSharpApiServerGen";
 
+    protected override object? GetDomainType(Domain domain)
+    {
+        return domain.CSharp;
+    }
+
     protected override bool FilterTag(string tag)
     {
         return _config.ResolveVariables(_config.ApiGeneration!, tag) == ApiGeneration.Server;

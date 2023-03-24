@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
 
@@ -20,6 +19,11 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
     }
 
     public override string Name => "JpaInterfaceGen";
+
+    protected override object? GetDomainType(Domain domain)
+    {
+        return domain.Java;
+    }
 
     protected override bool FilterClass(Class classe)
     {

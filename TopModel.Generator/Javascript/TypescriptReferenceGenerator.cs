@@ -26,6 +26,11 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
 
     public override string Name => "JSReferenceGen";
 
+    protected override object? GetDomainType(Domain domain)
+    {
+        return domain.TS;
+    }
+
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
         if (classe.IsJSReference())
