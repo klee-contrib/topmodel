@@ -99,10 +99,10 @@ endpoint:
   description: "Update user"
   preservePropertyCasing: true
   params:
-    - name: username
-      domain: DO_LIBELLE
-      comment: "name that need to be deleted"
     - composition: User
       name: body
       kind: object
       comment: "body"
+    - name: username
+      domain: DO_LIBELLE
+      comment: "name that need to be deleted"

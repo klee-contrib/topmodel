@@ -130,16 +130,16 @@ endpoint:
   description: "uploads an image"
   preservePropertyCasing: true
   params:
+    - name: body
+      domain: DO_FILE
+      required: true
+      comment: "body"
     - name: petId
       domain: DO_ID
       comment: "ID of pet to update"
     - name: additionalMetadata
       domain: DO_LIBELLE
       comment: "Additional Metadata"
-    - name: body
-      domain: DO_FILE
-      required: true
-      comment: "body"
   returns:
     composition: ApiResponse
     name: Result
