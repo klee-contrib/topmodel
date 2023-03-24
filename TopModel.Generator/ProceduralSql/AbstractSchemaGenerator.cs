@@ -425,10 +425,6 @@ public abstract class AbstractSchemaGenerator
         foreach (var property in properties)
         {
             var persistentType = property.Domain.SqlType!;
-            if (persistentType is null)
-            {
-                throw new ModelException(property.Domain, $"Le domaine {property.Domain.Name} n'a pas de définition du sqlType");
-            }
 
             if (persistentType.ToLower().Equals("varchar") && property.Domain.Length != null)
             {
