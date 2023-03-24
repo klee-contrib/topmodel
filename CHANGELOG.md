@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.26.3
+
+- [`a4b8757b`](https://github.com/klee-contrib/topmodel/commit/a4b8757b2f3846765214b3d61d108aa539496a54) - Contrôle des types de domaines définis par générateur
+- [`1d0c9a79`](https://github.com/klee-contrib/topmodel/commit/1d0c9a79c4ec3e72ca565e4eddb8ce2c41c202a5) - [C#] Gestion enum en constantes non string + fix XML dans les commentaires
+
 ## 1.26.2
 
 - [`b72ba42`](https://github.com/klee-contrib/topmodel/commit/b72ba423877c5c9fef57e3fefb397ecc5e02aec7) - [JPA] Mapper to dans le cas de composition kind: list
