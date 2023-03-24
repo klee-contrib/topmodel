@@ -123,7 +123,7 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
         // Colonnes
         foreach (var property in table.Properties.OfType<IFieldProperty>())
         {
-            if ((!property.PrimaryKey || property.Domain.ShouldQuoteSqlValue) && property.Name != ScriptUtils.InsertKeyName)
+            if ((!property.PrimaryKey || property.Domain.ShouldQuoteValue) && property.Name != ScriptUtils.InsertKeyName)
             {
                 sb.Clear();
                 WriteColumn(sb, property);

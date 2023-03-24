@@ -58,7 +58,7 @@ public static class ModelUtils
     /// <returns>Le texte en sortie.</returns>
     public static string ToPascalCase(this string text)
     {
-        var invalidCharsRgx = new Regex("[^_a-zA-Z0-9]");
+        var invalidCharsRgx = new Regex("[^_\\w]");
         var whiteSpace = new Regex(@"(?<=\s)");
         var startsWithLowerCaseChar = new Regex("^[a-z]");
         var lowerCaseNextToNumber = new Regex("(?<=[0-9])[a-z]");

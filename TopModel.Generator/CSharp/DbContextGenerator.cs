@@ -185,7 +185,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase
                             ? WriteEnumValue(targetClass, targetProp, refProp.Value)
                             : refProp.Key.Domain.CSharp!.Type.Contains("Date")
                             ? $"{refProp.Key.Domain.CSharp.Type.ParseTemplate(refProp.Key).TrimEnd('?')}.Parse(\"{refProp.Value}\"){(refProp.Key.Domain.CSharp.Type.Contains("Time") ? ".ToUniversalTime()" : string.Empty)}"
-                            : refProp.Key.Domain.ShouldQuoteSqlValue
+                            : refProp.Key.Domain.ShouldQuoteValue
                             ? $"\"{refProp.Value}\""
                             : refProp.Value;
                         w.Write($" {refProp.Key.NamePascal} = {value}");

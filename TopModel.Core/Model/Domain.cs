@@ -42,7 +42,7 @@ public class Domain
 
     public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCaseStrict();
 
-    public bool ShouldQuoteSqlValue =>
+    public bool ShouldQuoteValue =>
         (SqlType ?? string.Empty).Contains("varchar")
         || SqlType == "text"
         || SqlType == "uniqueidentifier"

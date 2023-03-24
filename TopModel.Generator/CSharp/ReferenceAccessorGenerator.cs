@@ -222,7 +222,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
         {
             return $@"return new List<{classe.NamePascal}>
 {{
-    {string.Join(",\r\n    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.NamePascal} = {(prop.Key.Domain.ShouldQuoteSqlValue ? $"\"{prop.Value}\"" : prop.Value)}"))} }}"))}
+    {string.Join(",\r\n    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.NamePascal} = {(prop.Key.Domain.ShouldQuoteValue ? $"\"{prop.Value}\"" : prop.Value)}"))} }}"))}
 }};";
         }
 

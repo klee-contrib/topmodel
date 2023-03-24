@@ -261,7 +261,7 @@ public class CSharpWriter : IDisposable
         sb.Append($"/// <{tag} name=\"");
         sb.Append(paramName);
         sb.Append("\">");
-        sb.Append(value);
+        sb.Append(value.Replace("<", "&lt;").Replace(">", "&gt;"));
         if (!value.EndsWith(".", StringComparison.OrdinalIgnoreCase))
         {
             sb.Append('.');
@@ -285,7 +285,7 @@ public class CSharpWriter : IDisposable
 
         var sb = new StringBuilder();
         sb.Append("/// <returns>");
-        sb.Append(value);
+        sb.Append(value.Replace("<", "&lt;").Replace(">", "&gt;"));
         if (!value.EndsWith(".", StringComparison.OrdinalIgnoreCase))
         {
             sb.Append('.');

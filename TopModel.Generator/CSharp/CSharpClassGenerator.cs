@@ -293,7 +293,7 @@ public class CSharpClassGenerator : ClassGeneratorBase
     /// <param name="item">La classe générée.</param>
     private void GenerateConstProperties(CSharpWriter w, Class item)
     {
-        var consts = new List<(string Name, string Code, string Label)>();
+        var consts = new List<(Domain Domain, string Name, string Code, string Label)>();
 
         foreach (var refValue in item.Values)
         {
@@ -304,7 +304,7 @@ public class CSharpClassGenerator : ClassGeneratorBase
             if (!_config.CanClassUseEnums(item) && item.EnumKey != null)
             {
                 var code = refValue.Value[item.EnumKey];
-                consts.Add((refValue.Name, code, label));
+                consts.Add((item.EnumKey.Domain, refValue.Name, code, label));
             }
 
             foreach (var uk in item.UniqueKeys.Where(uk =>
@@ -317,7 +317,7 @@ public class CSharpClassGenerator : ClassGeneratorBase
                 if (!_config.CanClassUseEnums(item, prop))
                 {
                     var code = refValue.Value[prop];
-                    consts.Add(($"{refValue.Name}{prop}", code, label));
+                    consts.Add((prop.Domain, $"{refValue.Name}{prop}", code, label));
                 }
             }
         }
@@ -325,7 +325,7 @@ public class CSharpClassGenerator : ClassGeneratorBase
         foreach (var @const in consts.OrderBy(x => x.Name, StringComparer.Ordinal))
         {
             w.WriteSummary(2, @const.Label);
-            w.WriteLine(2, $"public const string {@const.Name} = \"{@const.Code}\";");
+            w.WriteLine(2, $"public const {@const.Domain.CSharp!.Type.TrimEnd('?')} {@const.Name.ToPascalCase()} = {(@const.Domain.ShouldQuoteValue ? $@"""{@const.Code}""" : @const.Code)};");
             w.WriteLine();
         }
     }
