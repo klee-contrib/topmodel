@@ -5,15 +5,13 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
 
-public class JpaMapperGenerator : MapperGeneratorBase
+public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 {
-    private readonly JpaConfig _config;
     private readonly ILogger<JpaMapperGenerator> _logger;
 
-    public JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, JpaConfig config)
-        : base(logger, config)
+    public JpaMapperGenerator(ILogger<JpaMapperGenerator> logger)
+        : base(logger)
     {
-        _config = config;
         _logger = logger;
     }
 
@@ -21,13 +19,13 @@ public class JpaMapperGenerator : MapperGeneratorBase
 
     protected override string GetFileName(Class classe, bool isPersistant, string tag)
     {
-        return _config.GetMapperFilePath(classe, isPersistant, tag);
+        return Config.GetMapperFilePath(classe, isPersistant, tag);
     }
 
     protected override void HandleFile(bool isPersistant, string fileName, string tag, IEnumerable<Class> classes)
     {
         var sampleClass = classes.First();
-        var package = _config.GetMapperPackage(sampleClass, isPersistant, tag);
+        var package = Config.GetMapperPackage(sampleClass, isPersistant, tag);
         using var fw = new JavaWriter(fileName, _logger, package, null);
 
         var fm = FromMappers.Where(fm => fm.IsPersistant == isPersistant && classes.Contains(fm.Classe));
@@ -43,7 +41,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
         var imports = fromMappers.SelectMany(m => m.Mapper.Params.Select(p => p.Class).Concat(new[] { m.Classe }))
             .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
             .Where(c => Classes.Contains(c))
-            .Select(c => c.GetImport(_config, tag))
+            .Select(c => c.GetImport(Config, tag))
             .Distinct()
             .ToArray();
 
@@ -102,7 +100,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
         fw.WriteLine();
         if (mapper.ParentMapper != null)
         {
-            fw.AddImport(_config.GetMapperImport(classe.Extends!, mapper.ParentMapper, tag)!);
+            fw.AddImport(Config.GetMapperImport(classe.Extends!, mapper.ParentMapper, tag)!);
             fw.WriteLine(2, $"{classe.Extends!.GetMapperClassName(mapper)}.{mapper.ParentMapper.Name.Value.ToCamelCase()}(({classe.Extends!.NamePascal}) source, ({mapper.ParentMapper.Class.NamePascal}) target);");
         }
 
@@ -188,7 +186,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
                 {
                     var cpMapper = propertySource.Class.ToMappers.Find(t => t.Class == cp.Composition)!;
                     getter = $"{cpMapper.Class.GetMapperClassName(cpMapper)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterPrefix}{cp.GetJavaName(true)}(), target.get{apSource.GetJavaName(true)}())";
-                    fw.AddImport(_config.GetMapperImport(cpMapper.Class, cpMapper, tag)!);
+                    fw.AddImport(Config.GetMapperImport(cpMapper.Class, cpMapper, tag)!);
                 }
                 else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == apSource.Association))
                 {
@@ -204,7 +202,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
                         getter = $"{cp.Composition.GetMapperClassName(cpMapper)}.create{cp.Composition}({getter}, target.get{propertyTarget.GetJavaName(true)}())";
                     }
 
-                    fw.AddImport(_config.GetMapperImport(cp.Composition, cpMapper!, tag)!);
+                    fw.AddImport(Config.GetMapperImport(cp.Composition, cpMapper!, tag)!);
                 }
                 else
                 {
@@ -222,7 +220,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
                     getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}().stream().filter(Objects::nonNull).map({apSource.Association.NamePascal}::get{apSource.Property.GetJavaName(true)}).collect(Collectors.toList())";
                     fw.AddImport("java.util.stream.Collectors");
                     fw.AddImport("java.util.Objects");
-                    fw.AddImport(apSource.Association.GetImport(_config, tag));
+                    fw.AddImport(apSource.Association.GetImport(Config, tag));
                 }
             }
         }
@@ -263,7 +261,7 @@ public class JpaMapperGenerator : MapperGeneratorBase
                         checkSourceNull = true;
                     }
 
-                    fw.AddImport(_config.GetMapperImport(cpMapper.Class, cpMapper, tag)!);
+                    fw.AddImport(Config.GetMapperImport(cpMapper.Class, cpMapper, tag)!);
                     checkSourceNull = true;
                 }
                 else

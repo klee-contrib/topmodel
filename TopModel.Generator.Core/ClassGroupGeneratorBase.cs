@@ -4,18 +4,16 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.Core;
 
-public abstract class ClassGroupGeneratorBase : GeneratorBase
+public abstract class ClassGroupGeneratorBase<T> : GeneratorBase<T>
+    where T : GeneratorConfigBase
 {
-    private readonly GeneratorConfigBase _config;
-
-    public ClassGroupGeneratorBase(ILogger<ClassGroupGeneratorBase> logger, GeneratorConfigBase config)
-        : base(logger, config)
+    public ClassGroupGeneratorBase(ILogger<ClassGroupGeneratorBase<T>> logger)
+        : base(logger)
     {
-        _config = config;
     }
 
     public override List<string> GeneratedFiles => Classes
-        .SelectMany(c => _config.Tags.Intersect(GetClassTags(c)).SelectMany(tag => GetFileNames(c, tag)))
+        .SelectMany(c => Config.Tags.Intersect(GetClassTags(c)).SelectMany(tag => GetFileNames(c, tag)))
         .Select(f => f.FileName)
         .Distinct()
         .ToList();
@@ -27,7 +25,7 @@ public abstract class ClassGroupGeneratorBase : GeneratorBase
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in Classes
-            .SelectMany(classe => _config.Tags.Intersect(GetClassTags(classe))
+            .SelectMany(classe => Config.Tags.Intersect(GetClassTags(classe))
                 .SelectMany(tag => GetFileNames(classe, tag)
                     .Select(f => (key: (f.FileType, f.FileName), tag, classe))))
             .GroupBy(f => f.key))

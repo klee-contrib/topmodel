@@ -7,15 +7,13 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// Générateur de DAOs JPA.
 /// </summary>
-public class JpaModelInterfaceGenerator : ClassGeneratorBase
+public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
 {
-    private readonly JpaConfig _config;
     private readonly ILogger<JpaModelInterfaceGenerator> _logger;
 
-    public JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logger, JpaConfig config)
-        : base(logger, config)
+    public JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logger)
+        : base(logger)
     {
-        _config = config;
         _logger = logger;
     }
 
@@ -33,12 +31,12 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
 
     protected override string GetFileName(Class classe, string tag)
     {
-        return _config.GetClassFileName(classe, tag);
+        return Config.GetClassFileName(classe, tag);
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        var packageName = _config.GetPackageName(classe, tag);
+        var packageName = Config.GetPackageName(classe, tag);
         using var fw = new JavaWriter(fileName, _logger, packageName, null);
 
         WriteImports(fw, classe, tag);
@@ -66,7 +64,7 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
     {
         var properties = classe.Properties
             .Where(p => !p.Readonly)
-            .Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne)));
+            .Where(p => !Config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne)));
 
         if (!properties.Any())
         {
@@ -93,12 +91,12 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
 
     private void WriteGetters(JavaWriter fw, Class classe, string tag)
     {
-        foreach (var property in classe.Properties.Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
+        foreach (var property in classe.Properties.Where(p => !Config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
         {
             var getterPrefix = property.GetJavaType() == "boolean" ? "is" : "get";
             fw.WriteLine();
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
-            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(_config, tag)}#{property.GetJavaName()} {property.GetJavaName()}}}");
+            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{property.GetJavaName()} {property.GetJavaName()}}}");
             fw.WriteDocEnd(1);
             fw.WriteLine(1, @$"{property.GetJavaType()} {getterPrefix}{property.GetJavaName(true)}();");
         }
@@ -108,15 +106,15 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
     {
         var imports = new List<string>
             {
-                _config.PersistenceMode.ToString().ToLower() + ".annotation.Generated",
+                Config.PersistenceMode.ToString().ToLower() + ".annotation.Generated",
             };
         foreach (var property in classe.Properties)
         {
-            imports.AddRange(property.GetTypeImports(_config, tag));
+            imports.AddRange(property.GetTypeImports(Config, tag));
 
             if (property is CompositionProperty cp && cp.Composition.Namespace.Module == cp.Class?.Namespace.Module)
             {
-                imports.Add(cp.Composition.GetImport(_config, tag));
+                imports.Add(cp.Composition.GetImport(Config, tag));
             }
         }
 
@@ -124,7 +122,7 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase
         {
             foreach (var property in classe.Extends.Properties)
             {
-                imports.AddRange(property.GetTypeImports(_config, tag));
+                imports.AddRange(property.GetTypeImports(Config, tag));
             }
         }
 

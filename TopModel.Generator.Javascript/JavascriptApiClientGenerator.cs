@@ -9,15 +9,13 @@ namespace TopModel.Generator.Javascript;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class JavascriptApiClientGenerator : EndpointsGeneratorBase
+public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig>
 {
-    private readonly JavascriptConfig _config;
     private readonly ILogger<JavascriptApiClientGenerator> _logger;
 
-    public JavascriptApiClientGenerator(ILogger<JavascriptApiClientGenerator> logger, JavascriptConfig config)
-        : base(logger, config)
+    public JavascriptApiClientGenerator(ILogger<JavascriptApiClientGenerator> logger)
+        : base(logger)
     {
-        _config = config;
         _logger = logger;
     }
 
@@ -30,21 +28,21 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase
 
     protected override string GetFileName(ModelFile file, string tag)
     {
-        return _config.GetEndpointsFileName(file, tag);
+        return Config.GetEndpointsFileName(file, tag);
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        var fetch = _config.FetchPath != "@focus4/core" ? "fetch" : "coreFetch";
-        var fetchImport = _config.FetchPath.StartsWith("@")
-            ? _config.FetchPath
-            : Path.GetRelativePath(string.Join('/', filePath.Split('/').SkipLast(1)), Path.Combine(_config.OutputDirectory, _config.ResolveVariables(_config.FetchPath, tag))).Replace("\\", "/");
+        var fetch = Config.FetchPath != "@focus4/core" ? "fetch" : "coreFetch";
+        var fetchImport = Config.FetchPath.StartsWith("@")
+            ? Config.FetchPath
+            : Path.GetRelativePath(string.Join('/', filePath.Split('/').SkipLast(1)), Path.Combine(Config.OutputDirectory, Config.ResolveVariables(Config.FetchPath, tag))).Replace("\\", "/");
 
         using var fw = new FileWriter(filePath, _logger, false);
 
         fw.WriteLine($@"import {{{fetch}}} from ""{fetchImport}"";");
 
-        var imports = _config.GetEndpointImports(endpoints, tag, Classes);
+        var imports = Config.GetEndpointImports(endpoints, tag, Classes);
         if (imports.Any())
         {
             fw.WriteLine();
@@ -80,7 +78,7 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase
 
             foreach (var param in endpoint.Params)
             {
-                var defaultValue = _config.GetDefaultValue(param);
+                var defaultValue = Config.GetDefaultValue(param);
                 fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {param.GetPropertyTypeName(Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, ");
             }
 

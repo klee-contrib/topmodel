@@ -9,15 +9,13 @@ namespace TopModel.Generator.Javascript;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class AngularApiClientGenerator : EndpointsGeneratorBase
+public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig>
 {
-    private readonly JavascriptConfig _config;
     private readonly ILogger<AngularApiClientGenerator> _logger;
 
-    public AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger, JavascriptConfig config)
-        : base(logger, config)
+    public AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger)
+        : base(logger)
     {
-        _config = config;
         _logger = logger;
     }
 
@@ -30,13 +28,13 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase
 
     protected override string GetFileName(ModelFile file, string tag)
     {
-        return _config.GetEndpointsFileName(file, tag);
+        return Config.GetEndpointsFileName(file, tag);
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         using var fw = new FileWriter(filePath, _logger, false);
-        var imports = _config.GetEndpointImports(endpoints, tag, Classes);
+        var imports = Config.GetEndpointImports(endpoints, tag, Classes);
 
         imports.AddRange(new List<(string Import, string Path)>
         {
@@ -108,7 +106,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase
             }
 
             hasProperty = true;
-            var defaultValue = _config.GetDefaultValue(param);
+            var defaultValue = Config.GetDefaultValue(param);
             fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {param.GetPropertyTypeName(Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}");
         }
 

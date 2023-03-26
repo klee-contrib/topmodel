@@ -98,7 +98,7 @@ public abstract class GeneratorConfigBase
     /// Initialise les variables globales, et par tag manquantes.
     /// </summary>
     /// <param name="number">Numéro du générateur.</param>
-    internal void InitVariables(int number)
+    public void InitVariables(int number)
     {
         // Si on a défini au moins une variable par tag, alors on s'assure qu'elle est définie pour tous les tags (et on y met "" si ce n'est pas une variable globale).
         if (TagVariableNames.Any())

@@ -8,17 +8,15 @@ namespace TopModel.Generator.Javascript;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class JavascriptResourceGenerator : TranslationGeneratorBase
+public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptConfig>
 {
-    private readonly JavascriptConfig _config;
     private readonly ILogger<JavascriptResourceGenerator> _logger;
     private readonly TranslationStore _translationStore;
     private readonly ModelConfig _modelConfig;
 
-    public JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> logger, JavascriptConfig config, TranslationStore translationStore, ModelConfig modelConfig)
-        : base(logger, config, translationStore)
+    public JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> logger, TranslationStore translationStore, ModelConfig modelConfig)
+        : base(logger, translationStore)
     {
-        _config = config;
         _logger = logger;
         _translationStore = translationStore;
         _modelConfig = modelConfig;
@@ -28,26 +26,26 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
 
     protected override string? GetCommentResourceFilePath(IFieldProperty property, string tag, string lang)
     {
-        if (!_config.GenerateComments)
+        if (!Config.GenerateComments)
         {
             return null;
         }
 
-        return _config.GetCommentResourcesFilePath(property.Parent.Namespace, tag, _modelConfig.I18n.DefaultLang);
+        return Config.GetCommentResourcesFilePath(property.Parent.Namespace, tag, _modelConfig.I18n.DefaultLang);
     }
 
     protected override string GetResourceFilePath(IFieldProperty property, string tag, string lang)
     {
-        return _config.GetResourcesFilePath(property.Parent.Namespace, tag, lang);
+        return Config.GetResourcesFilePath(property.Parent.Namespace, tag, lang);
     }
 
     protected override void HandleCommentResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties)
     {
-        using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
+        using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = Config.ResourceMode == ResourceMode.JS };
 
         var module = properties.First().Parent.Namespace.RootModule;
 
-        if (_config.ResourceMode != ResourceMode.JS)
+        if (Config.ResourceMode != ResourceMode.JS)
         {
             fw.WriteLine("{");
         }
@@ -58,7 +56,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
 
         WriteSubModule(fw, _modelConfig.I18n.DefaultLang, properties, true, 1);
 
-        if (_config.ResourceMode != ResourceMode.JS)
+        if (Config.ResourceMode != ResourceMode.JS)
         {
             fw.WriteLine("}");
         }
@@ -70,11 +68,11 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
 
     protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties)
     {
-        using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = _config.ResourceMode == ResourceMode.JS };
+        using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = Config.ResourceMode == ResourceMode.JS };
 
         var module = properties.First().Parent.Namespace.RootModule;
 
-        if (_config.ResourceMode != ResourceMode.JS)
+        if (Config.ResourceMode != ResourceMode.JS)
         {
             fw.WriteLine("{");
         }
@@ -85,7 +83,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
 
         WriteSubModule(fw, lang, properties, false, 1);
 
-        if (_config.ResourceMode != ResourceMode.JS)
+        if (Config.ResourceMode != ResourceMode.JS)
         {
             fw.WriteLine("}");
         }
@@ -147,7 +145,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
 
             fw.Write(indentLevel + 1, $"{Quote(property.NameCamel)}: ");
             fw.Write($@"""{translation}""");
-            fw.WriteLine(container.Count() == i++ && !(_modelConfig.I18n.TranslateReferences && (container.Key as Class)?.DefaultProperty != null && ((container.Key as Class)?.Values.Any() ?? false)) ? string.Empty : ",");
+            fw.WriteLine(container.Count() == i++ && !(_modelConfig.I18n.TranslateReferences && container.Key is Class { DefaultProperty: not null } && ((container.Key as Class)?.Values.Any() ?? false)) ? string.Empty : ",");
         }
 
         if (container.Key is Class classe && _modelConfig.I18n.TranslateReferences && classe.EnumKey != null && classe.DefaultProperty != null)
@@ -170,6 +168,6 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase
 
     private string Quote(string name)
     {
-        return _config.ResourceMode == ResourceMode.JS ? name : $@"""{name}""";
+        return Config.ResourceMode == ResourceMode.JS ? name : $@"""{name}""";
     }
 }

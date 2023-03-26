@@ -4,18 +4,16 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.Core;
 
-public abstract class EndpointsGeneratorBase : GeneratorBase
+public abstract class EndpointsGeneratorBase<T> : GeneratorBase<T>
+    where T : GeneratorConfigBase
 {
-    private readonly GeneratorConfigBase _config;
-
-    public EndpointsGeneratorBase(ILogger<EndpointsGeneratorBase> logger, GeneratorConfigBase config)
-        : base(logger, config)
+    public EndpointsGeneratorBase(ILogger<EndpointsGeneratorBase<T>> logger)
+        : base(logger)
     {
-        _config = config;
     }
 
     public override List<string> GeneratedFiles => EndpointsFiles
-        .SelectMany(file => _config.Tags.Intersect(file.Tags.Where(FilterTag)).Select(tag => GetFileName(file, tag)))
+        .SelectMany(file => Config.Tags.Intersect(file.Tags.Where(FilterTag)).Select(tag => GetFileName(file, tag)))
         .Distinct()
         .ToList();
 
@@ -42,7 +40,7 @@ public abstract class EndpointsGeneratorBase : GeneratorBase
 
     private void HandleFileBase(ModelFile file, IEnumerable<string> tags)
     {
-        foreach (var (tag, fileName) in _config.Tags.Intersect(tags)
+        foreach (var (tag, fileName) in Config.Tags.Intersect(tags)
            .Select(tag => (tag, fileName: GetFileName(file, tag)))
            .DistinctBy(t => t.fileName))
         {

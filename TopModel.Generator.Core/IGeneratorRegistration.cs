@@ -13,7 +13,7 @@ public interface IGeneratorRegistration<T>
     /// Enregistre le générateur.
     /// </summary>
     /// <param name="services">ServiceCollection.</param>
-    /// <param name="dn">Répertoire de travail.</param>
-    /// <param name="configs">Configurations trouvées.</param>
-    void Register(IServiceCollection services, string dn, IEnumerable<T>? configs);
+    /// <param name="config">Config.</param>
+    /// <param name="number">Numéro de la config.</param>
+    void Register(IServiceCollection services, T config, int number);
 }

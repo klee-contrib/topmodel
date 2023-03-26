@@ -9,15 +9,13 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class SpringServerApiGenerator : EndpointsGeneratorBase
+public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
 {
-    private readonly JpaConfig _config;
     private readonly ILogger<SpringServerApiGenerator> _logger;
 
-    public SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, JpaConfig config)
-        : base(logger, config)
+    public SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger)
+        : base(logger)
     {
-        _config = config;
         _logger = logger;
     }
 
@@ -30,12 +28,12 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
 
     protected override bool FilterTag(string tag)
     {
-        return _config.ResolveVariables(_config.ApiGeneration!, tag) == ApiGeneration.Server;
+        return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Server;
     }
 
     protected override string GetFileName(ModelFile file, string tag)
     {
-        return Path.Combine(_config.GetApiPath(file, tag), $"{GetClassName(file.Options.Endpoints.FileName)}.java");
+        return Path.Combine(Config.GetApiPath(file, tag), $"{GetClassName(file.Options.Endpoints.FileName)}.java");
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
@@ -46,7 +44,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
         }
 
         var className = GetClassName(fileName);
-        var packageName = _config.GetPackageName(endpoints.First(), tag);
+        var packageName = Config.GetPackageName(endpoints.First(), tag);
         using var fw = new JavaWriter(filePath, _logger, packageName, null);
 
         WriteImports(endpoints, fw, tag);
@@ -177,7 +175,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
     {
         var imports = endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToPascalCaseStrict()}Mapping").ToList();
         imports.AddRange(GetTypeImports(endpoints, tag));
-        imports.Add(_config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
+        imports.Add(Config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
         if (endpoints.Any(e => e.GetRouteParams().Any()))
         {
             imports.Add("org.springframework.web.bind.annotation.PathVariable");
@@ -191,7 +189,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
         if (endpoints.Any(e => e.GetBodyParam() != null))
         {
             imports.Add("org.springframework.web.bind.annotation.RequestBody");
-            imports.Add(_config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
+            imports.Add(Config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
         }
 
         if (endpoints.First().ModelFile.Options?.Endpoints.Prefix != null)
@@ -209,10 +207,10 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase
         var properties = endpoints.SelectMany(endpoint => endpoint.Params)
             .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
             .Select(endpoint => endpoint.Returns));
-        return properties.SelectMany(property => property!.GetTypeImports(_config, tag))
+        return properties.SelectMany(property => property!.GetTypeImports(Config, tag))
                 .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
                 .Select(e => e.Returns).OfType<CompositionProperty>()
-                .SelectMany(c => c.GetKindImports(_config)));
+                .SelectMany(c => c.GetKindImports(Config)));
     }
 
     private void CheckEndpoint(Endpoint endpoint)

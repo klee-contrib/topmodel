@@ -10,17 +10,14 @@ using static JavascriptUtils;
 /// <summary>
 /// Générateur de définitions Typescript.
 /// </summary>
-public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
+public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptConfig>
 {
-    private readonly JavascriptConfig _config;
     private readonly ILogger<TypescriptReferenceGenerator> _logger;
-
     private readonly ModelConfig _modelConfig;
 
-    public TypescriptReferenceGenerator(ILogger<TypescriptReferenceGenerator> logger, JavascriptConfig config, ModelConfig modelConfig)
-        : base(logger, config)
+    public TypescriptReferenceGenerator(ILogger<TypescriptReferenceGenerator> logger, ModelConfig modelConfig)
+        : base(logger)
     {
-        _config = config;
         _logger = logger;
         _modelConfig = modelConfig;
     }
@@ -36,7 +33,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
     {
         if (classe.IsJSReference())
         {
-            yield return ("main", _config.GetReferencesFileName(classe.Namespace, tag));
+            yield return ("main", Config.GetReferencesFileName(classe.Namespace, tag));
         }
     }
 
@@ -61,7 +58,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
                     Class c => c.NamePascal,
                     _ => null!
                 },
-                Path: _config.GetImportPathForClass(dep, tag, Classes)!))
+                Path: Config.GetImportPathForClass(dep, tag, Classes)!))
             .Concat(references.SelectMany(r => r.DomainDependencies).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Replace("[]", string.Empty).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(i => i.Path != null && i.Path != $"./references")
             .GroupAndSort();
@@ -146,7 +143,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase
 
                 fw.Write("}\r\n");
 
-                if (_config.ReferenceMode == ReferenceMode.VALUES)
+                if (Config.ReferenceMode == ReferenceMode.VALUES)
                 {
                     WriteReferenceValues(fw, reference);
                 }

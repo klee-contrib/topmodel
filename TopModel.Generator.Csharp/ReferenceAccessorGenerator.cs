@@ -4,15 +4,13 @@ using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Csharp;
 
-public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
+public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
 {
-    private readonly CsharpConfig _config;
     private readonly ILogger<ReferenceAccessorGenerator> _logger;
 
-    public ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logger, CsharpConfig config)
-        : base(logger, config)
+    public ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logger)
+        : base(logger)
     {
-        _config = config;
         _logger = logger;
     }
 
@@ -22,15 +20,15 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
     {
         if (classe.Reference)
         {
-            yield return ("interface", _config.GetReferenceInterfaceFilePath(classe.Namespace, tag));
-            yield return ("implementation", _config.GetReferenceImplementationFilePath(classe.Namespace, tag));
+            yield return ("interface", Config.GetReferenceInterfaceFilePath(classe.Namespace, tag));
+            yield return ("implementation", Config.GetReferenceImplementationFilePath(classe.Namespace, tag));
         }
     }
 
     protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
     {
         var classList = classes
-            .OrderBy(x => _config.DbContextPath == null ? $"{x.NamePascal}List" : x.PluralNamePascal, StringComparer.Ordinal)
+            .OrderBy(x => Config.DbContextPath == null ? $"{x.NamePascal}List" : x.PluralNamePascal, StringComparer.Ordinal)
             .ToList();
 
         if (fileType == "interface")
@@ -52,17 +50,17 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
         var ns = classList.First().Namespace;
         var firstPersistedClass = classList.FirstOrDefault(c => c.IsPersistent);
 
-        var implementationName = _config.GetReferenceAccessorName(ns, tag);
-        var implementationNamespace = _config.GetReferenceImplementationNamespace(ns, tag);
+        var implementationName = Config.GetReferenceAccessorName(ns, tag);
+        var implementationNamespace = Config.GetReferenceImplementationNamespace(ns, tag);
 
         var interfaceName = $"I{implementationName}";
-        var interfaceNamespace = _config.GetReferenceInterfaceNamespace(ns, tag);
+        var interfaceNamespace = Config.GetReferenceInterfaceNamespace(ns, tag);
 
-        using var w = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
+        using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
 
         var usings = new List<string>();
 
-        if (!_config.UseLatestCSharp)
+        if (!Config.UseLatestCSharp)
         {
             usings.Add("System.Collections.Generic");
         }
@@ -74,12 +72,12 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
 
         if (firstPersistedClass != null)
         {
-            usings.Add(_config.GetNamespace(firstPersistedClass, tag));
+            usings.Add(Config.GetNamespace(firstPersistedClass, tag));
         }
 
         usings.Add("Kinetix.Services.Annotations");
 
-        if (_config.DbContextPath == null)
+        if (Config.DbContextPath == null)
         {
             usings.Add("Kinetix.DataAccess.Sql.Broker");
 
@@ -90,12 +88,12 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
         }
         else
         {
-            if (!_config.UseLatestCSharp)
+            if (!Config.UseLatestCSharp)
             {
                 usings.Add("System.Linq");
             }
 
-            var contextNs = _config.GetDbContextNamespace(ns, tag);
+            var contextNs = Config.GetDbContextNamespace(ns, tag);
             if (!implementationNamespace.Contains(contextNs))
             {
                 usings.Add(contextNs);
@@ -112,9 +110,9 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
 
         w.WriteClassDeclaration(implementationName, null, interfaceName);
 
-        if (_config.DbContextPath != null)
+        if (Config.DbContextPath != null)
         {
-            var dbContextName = _config.GetDbContextName(ns, tag);
+            var dbContextName = Config.GetDbContextName(ns, tag);
 
             w.WriteLine(2, $"private readonly {dbContextName} _dbContext;");
             w.WriteLine();
@@ -141,7 +139,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
 
         foreach (var classe in classList.Where(c => c.IsPersistent || c.Values.Any()))
         {
-            var serviceName = "Load" + (_config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal);
+            var serviceName = "Load" + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal);
             w.WriteLine(2, "/// <inheritdoc cref=\"" + interfaceName + "." + serviceName + "\" />");
             w.WriteLine(2, "public ICollection<" + classe.NamePascal + "> " + serviceName + "()\r\n{");
             w.WriteLine(3, LoadReferenceAccessorBody(classe));
@@ -166,21 +164,21 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
         var ns = classList.First().Namespace;
         var firstPersistedClass = classList.FirstOrDefault(c => c.IsPersistent);
 
-        var interfaceNamespace = _config.GetReferenceInterfaceNamespace(ns, tag);
-        var interfaceName = $"I{_config.GetReferenceAccessorName(ns, tag)}";
+        var interfaceNamespace = Config.GetReferenceInterfaceNamespace(ns, tag);
+        var interfaceName = $"I{Config.GetReferenceAccessorName(ns, tag)}";
 
-        using var w = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
+        using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
 
         var usings = new List<string>();
 
-        if (!_config.UseLatestCSharp)
+        if (!Config.UseLatestCSharp)
         {
             usings.Add("System.Collections.Generic");
         }
 
         if (firstPersistedClass != null)
         {
-            usings.Add(_config.GetNamespace(firstPersistedClass, tag));
+            usings.Add(Config.GetNamespace(firstPersistedClass, tag));
         }
 
         usings.Add("Kinetix.Services.Annotations");
@@ -200,7 +198,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
             w.WriteSummary(2, "Reference accessor for type " + classe.NamePascal);
             w.WriteReturns(2, "List of " + classe.NamePascal);
             w.WriteLine(2, "[ReferenceAccessor]");
-            w.WriteLine(2, "ICollection<" + classe.NamePascal + "> Load" + (_config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal) + "();");
+            w.WriteLine(2, "ICollection<" + classe.NamePascal + "> Load" + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal) + "();");
 
             if (count != classList.Count())
             {
@@ -230,7 +228,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase
         var defaultProperty = classe.OrderProperty ?? classe.DefaultProperty;
 
         var queryParameter = string.Empty;
-        if (_config.DbContextPath != null)
+        if (Config.DbContextPath != null)
         {
             if (defaultProperty != null)
             {

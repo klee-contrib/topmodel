@@ -4,15 +4,13 @@ using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Csharp;
 
-public class DbContextGenerator : ClassGroupGeneratorBase
+public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
 {
-    private readonly CsharpConfig _config;
     private readonly ILogger<DbContextGenerator> _logger;
 
-    public DbContextGenerator(ILogger<DbContextGenerator> logger, CsharpConfig config)
-        : base(logger, config)
+    public DbContextGenerator(ILogger<DbContextGenerator> logger)
+        : base(logger)
     {
-        _config = config;
         _logger = logger;
     }
 
@@ -22,24 +20,24 @@ public class DbContextGenerator : ClassGroupGeneratorBase
     {
         if (classe.IsPersistent && !classe.Abstract)
         {
-            yield return ("main", _config.GetDbContextFilePath(classe.Namespace, tag));
+            yield return ("main", Config.GetDbContextFilePath(classe.Namespace, tag));
 
-            if (_config.UseEFComments)
+            if (Config.UseEFComments)
             {
-                yield return ("comments", _config.GetDbContextFilePath(classe.Namespace, tag).Replace(".cs", ".comments.cs"));
+                yield return ("comments", Config.GetDbContextFilePath(classe.Namespace, tag).Replace(".cs", ".comments.cs"));
             }
         }
     }
 
     protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
     {
-        var dbContextName = _config.GetDbContextName(classes.First().Namespace, tag);
+        var dbContextName = Config.GetDbContextName(classes.First().Namespace, tag);
         var usings = new List<string> { "Microsoft.EntityFrameworkCore" };
-        var contextNs = _config.GetDbContextNamespace(classes.First().Namespace, tag);
+        var contextNs = Config.GetDbContextNamespace(classes.First().Namespace, tag);
 
         foreach (var ns in classes
             .Concat(GetAssociationProperties(classes).Select(ap => ap.AssociationProperty.Association))
-            .Select(c => _config.GetNamespace(c, tag))
+            .Select(c => Config.GetNamespace(c, tag))
             .Distinct())
         {
             usings.Add(ns);
@@ -59,7 +57,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase
 
     private void HandleMainFile(string fileName, string tag, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
     {
-        using var w = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
+        using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
 
         w.WriteUsings(usings.ToArray());
         w.WriteLine();
@@ -98,7 +96,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase
             var classe = ap != null ? ap.Association : prop.Class;
             var targetProp = ap != null ? ap.Property : prop;
 
-            if (_config.CanClassUseEnums(classe, targetProp))
+            if (Config.CanClassUseEnums(classe, targetProp))
             {
                 hasPropConfig = true;
                 w.WriteLine(3, $"modelBuilder.Entity<{fp.Class}>().Property(p => p.{fp.NamePascal}).HasConversion<{fp.Domain.CSharp!.Type}>(){(fp.Domain.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};");
@@ -128,7 +126,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase
             w.WriteLine();
         }
 
-        if (_config.UseEFMigrations)
+        if (Config.UseEFMigrations)
         {
             var hasFk = false;
             foreach (var (prop, ap) in GetAssociationProperties(classes))
@@ -162,7 +160,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase
                 w.WriteLine(3, $"modelBuilder.Entity<{classe.NamePascal}>().HasData(");
                 foreach (var refValue in classe.Values)
                 {
-                    if (!_config.UseLatestCSharp)
+                    if (!Config.UseLatestCSharp)
                     {
                         w.Write("    ");
                     }
@@ -171,7 +169,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase
 
                     string WriteEnumValue(Class targetClass, IFieldProperty targetProp, string value)
                     {
-                        return $"{(targetClass.NamePascal == targetClass.PluralNamePascal ? $"{_config.GetNamespace(targetClass, tag)}.{targetClass.NamePascal}" : targetClass.NamePascal)}.{targetProp}s.{value}";
+                        return $"{(targetClass.NamePascal == targetClass.PluralNamePascal ? $"{Config.GetNamespace(targetClass, tag)}.{targetClass.NamePascal}" : targetClass.NamePascal)}.{targetProp}s.{value}";
                     }
 
                     foreach (var refProp in refValue.Value.ToList())
@@ -182,7 +180,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase
                         var targetClass = ap != null ? ap.Association : prop.Class;
                         var targetProp = ap != null ? ap.Property : prop;
 
-                        var value = _config.CanClassUseEnums(targetClass, targetProp)
+                        var value = Config.CanClassUseEnums(targetClass, targetProp)
                             ? WriteEnumValue(targetClass, targetProp, refProp.Value)
                             : refProp.Key.Domain.CSharp!.Type.Contains("Date")
                             ? $"{refProp.Key.Domain.CSharp.Type.ParseTemplate(refProp.Key).TrimEnd('?')}.Parse(\"{refProp.Value}\"){(refProp.Key.Domain.CSharp.Type.Contains("Time") ? ".ToUniversalTime()" : string.Empty)}"
@@ -211,7 +209,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase
                 w.WriteLine();
             }
 
-            if (_config.UseEFComments)
+            if (Config.UseEFComments)
             {
                 w.WriteLine(3, "AddComments(modelBuilder);");
             }
@@ -220,7 +218,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase
         w.WriteLine(3, "OnModelCreatingPartial(modelBuilder);");
         w.WriteLine(2, "}");
 
-        if (_config.UseEFMigrations && _config.UseEFComments)
+        if (Config.UseEFMigrations && Config.UseEFComments)
         {
             w.WriteLine();
             w.WriteLine(2, "partial void AddComments(ModelBuilder modelBuilder);");
@@ -235,14 +233,14 @@ public class DbContextGenerator : ClassGroupGeneratorBase
 
     private void HandleCommentsFile(string fileName, string tag, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
     {
-        using var cw = new CSharpWriter(fileName, _logger, _config.UseLatestCSharp);
+        using var cw = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
 
         var cUsings = new List<string>
         {
             "Microsoft.EntityFrameworkCore"
         };
 
-        foreach (var ns in classes.Select(c => _config.GetNamespace(c, tag)).Distinct())
+        foreach (var ns in classes.Select(c => Config.GetNamespace(c, tag)).Distinct())
         {
             cUsings.Add(ns);
         }

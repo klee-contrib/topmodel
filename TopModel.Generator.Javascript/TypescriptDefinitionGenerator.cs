@@ -10,15 +10,13 @@ using static JavascriptUtils;
 /// <summary>
 /// Générateur de définitions Typescript.
 /// </summary>
-public class TypescriptDefinitionGenerator : ClassGeneratorBase
+public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig>
 {
-    private readonly JavascriptConfig _config;
     private readonly ILogger<TypescriptDefinitionGenerator> _logger;
 
-    public TypescriptDefinitionGenerator(ILogger<TypescriptDefinitionGenerator> logger, JavascriptConfig config)
-        : base(logger, config)
+    public TypescriptDefinitionGenerator(ILogger<TypescriptDefinitionGenerator> logger)
+        : base(logger)
     {
-        _config = config;
         _logger = logger;
     }
 
@@ -36,23 +34,23 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
 
     protected override string GetFileName(Class classe, string tag)
     {
-        return _config.GetClassFileName(classe, tag);
+        return Config.GetClassFileName(classe, tag);
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         using var fw = new FileWriter(fileName, _logger, false);
 
-        if (_config.TargetFramework == TargetFramework.FOCUS)
+        if (Config.TargetFramework == TargetFramework.FOCUS)
         {
             fw.WriteLine($"import {{{string.Join(", ", GetFocusStoresImports(classe).OrderBy(x => x))}}} from \"@focus4/stores\";");
         }
 
         if (classe.DomainDependencies.Any())
         {
-            var domainImport = _config.DomainPath.StartsWith("@")
-                ? _config.DomainPath
-                : Path.GetRelativePath(string.Join('/', fileName.Split('/').SkipLast(1)), Path.Combine(_config.OutputDirectory, _config.ResolveVariables(_config.DomainPath, tag))).Replace("\\", "/");
+            var domainImport = Config.DomainPath.StartsWith("@")
+                ? Config.DomainPath
+                : Path.GetRelativePath(string.Join('/', fileName.Split('/').SkipLast(1)), Path.Combine(Config.OutputDirectory, Config.ResolveVariables(Config.DomainPath, tag))).Replace("\\", "/");
             fw.WriteLine($"import {{{string.Join(", ", classe.DomainDependencies.OrderBy(d => d.Domain.Name).Select(d => d.Domain.Name).Distinct())}}} from \"{domainImport}\";");
         }
 
@@ -62,8 +60,8 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
                     ? dep.Classe.NamePascal
                     : dep is { Source: IFieldProperty fp }
                     ? fp.GetPropertyTypeName(Classes).Replace("[]", string.Empty)
-                    : $"{dep.Classe.NamePascal}Entity, {dep.Classe.NamePascal}{(_config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}",
-                Path: _config.GetImportPathForClass(dep, tag, Classes)!))
+                    : $"{dep.Classe.NamePascal}Entity, {dep.Classe.NamePascal}{(Config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}",
+                Path: Config.GetImportPathForClass(dep, tag, Classes)!))
             .Concat(classe.DomainDependencies.Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Replace("[]", string.Empty).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(p => p.Path != null && p.Path != "@focus4/stores")
             .GroupAndSort();
@@ -80,7 +78,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
             fw.WriteLine();
         }
 
-        if (_config.TargetFramework == TargetFramework.FOCUS)
+        if (Config.TargetFramework == TargetFramework.FOCUS)
         {
             fw.Write("export type ");
             fw.Write(classe.NamePascal);
@@ -114,9 +112,9 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
 
         foreach (var property in classe.Properties)
         {
-            fw.Write($"    {property.NameCamel}{(_config.TargetFramework == TargetFramework.FOCUS ? string.Empty : "?")}: ");
+            fw.Write($"    {property.NameCamel}{(Config.TargetFramework == TargetFramework.FOCUS ? string.Empty : "?")}: ");
 
-            if (_config.TargetFramework == TargetFramework.FOCUS)
+            if (Config.TargetFramework == TargetFramework.FOCUS)
             {
                 if (property is CompositionProperty cp)
                 {
@@ -162,7 +160,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
 
         fw.Write($"export const {classe.NamePascal}Entity");
 
-        if (_config.TargetFramework == TargetFramework.FOCUS)
+        if (Config.TargetFramework == TargetFramework.FOCUS)
         {
             fw.Write($": {classe.NamePascal}EntityType");
         }
@@ -218,15 +216,15 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
                 fw.WriteLine($"        domain: {field.Domain.Name},");
                 fw.WriteLine($"        isRequired: {(field.Required && !field.PrimaryKey).ToString().ToFirstLower()},");
 
-                var defaultValue = _config.GetDefaultValue(field);
+                var defaultValue = Config.GetDefaultValue(field);
                 if (defaultValue != "undefined")
                 {
                     fw.WriteLine($"        defaultValue: {defaultValue},");
                 }
 
-                fw.WriteLine($"        label: \"{field.ResourceKey}\"{(_config.GenerateComments ? "," : string.Empty)}");
+                fw.WriteLine($"        label: \"{field.ResourceKey}\"{(Config.GenerateComments ? "," : string.Empty)}");
 
-                if (_config.GenerateComments)
+                if (Config.GenerateComments)
                 {
                     fw.WriteLine($"        comment: \"{field.CommentResourceKey}\"");
                 }
@@ -265,7 +263,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase
             fw.Write("\r\n");
         }
 
-        fw.Write($"}}{(_config.TargetFramework == TargetFramework.FOCUS ? string.Empty : " as const")}\r\n");
+        fw.Write($"}}{(Config.TargetFramework == TargetFramework.FOCUS ? string.Empty : " as const")}\r\n");
 
         if (classe.Reference)
         {

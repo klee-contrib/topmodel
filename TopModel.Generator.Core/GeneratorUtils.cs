@@ -1,25 +1,29 @@
-﻿using TopModel.Utils;
+﻿using Microsoft.Extensions.DependencyInjection;
+using TopModel.Core;
 
 namespace TopModel.Generator.Core;
 
 public static class GeneratorUtils
 {
-    public static void HandleConfigs<T>(string dn, IEnumerable<T>? configs, Action<T, int> handler)
-        where T : GeneratorConfigBase
+    /// <summary>
+    /// Enregistre un générateur dans la DI.
+    /// </summary>
+    /// <typeparam name="TGenerator">Type du générateur.</typeparam>
+    /// <typeparam name="TConfig">Type de sa config.</typeparam>
+    /// <param name="services">ServiceCollection.</param>
+    /// <param name="config">Config.</param>
+    /// <param name="number">Numéro du générateur.</param>
+    /// <returns>ServiceCollection.</returns>
+    public static IServiceCollection AddGenerator<TGenerator, TConfig>(this IServiceCollection services, TConfig config, int number)
+        where TGenerator : GeneratorBase<TConfig>
+        where TConfig : GeneratorConfigBase
     {
-        if (configs != null)
+        return services.AddSingleton<IModelWatcher>(p =>
         {
-            for (var i = 0; i < configs.Count(); i++)
-            {
-                var config = configs.ElementAt(i);
-                var number = i + 1;
-
-                config.InitVariables(number);
-
-                ModelUtils.CombinePath(dn, config, c => c.OutputDirectory);
-
-                handler(config, number);
-            }
-        }
+            var generator = ActivatorUtilities.CreateInstance<TGenerator>(p)!;
+            generator.Config = config;
+            generator.Number = number;
+            return generator;
+        });
     }
 }

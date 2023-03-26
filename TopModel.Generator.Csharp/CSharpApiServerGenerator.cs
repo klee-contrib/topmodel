@@ -11,15 +11,13 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace TopModel.Generator.Csharp;
 
-public class CSharpApiServerGenerator : EndpointsGeneratorBase
+public class CSharpApiServerGenerator : EndpointsGeneratorBase<CsharpConfig>
 {
-    private readonly CsharpConfig _config;
     private readonly ILogger<CSharpApiServerGenerator> _logger;
 
-    public CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger, CsharpConfig config)
-        : base(logger, config)
+    public CSharpApiServerGenerator(ILogger<CSharpApiServerGenerator> logger)
+        : base(logger)
     {
-        _config = config;
         _logger = logger;
     }
 
@@ -32,22 +30,22 @@ public class CSharpApiServerGenerator : EndpointsGeneratorBase
 
     protected override bool FilterTag(string tag)
     {
-        return _config.ResolveVariables(_config.ApiGeneration!, tag) == ApiGeneration.Server;
+        return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Server;
     }
 
     protected override string GetFileName(ModelFile file, string tag)
     {
-        return $"{_config.GetApiPath(file, tag, withControllers: true)}/{file.Options.Endpoints.FileName.ToPascalCase()}Controller.cs";
+        return $"{Config.GetApiPath(file, tag, withControllers: true)}/{file.Options.Endpoints.FileName.ToPascalCase()}Controller.cs";
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         var className = $"{fileName.ToPascalCase()}Controller";
-        var ns = _config.GetNamespace(endpoints.First(), tag);
+        var ns = Config.GetNamespace(endpoints.First(), tag);
 
         var text = File.Exists(filePath)
             ? File.ReadAllText(filePath)
-            : _config.UseLatestCSharp
+            : Config.UseLatestCSharp
             ? $@"using Microsoft.AspNetCore.Mvc;
 
 namespace {ns};
@@ -72,7 +70,7 @@ namespace {ns}
 
         var controller = existingController;
 
-        var indent = _config.UseLatestCSharp ? "    " : "        ";
+        var indent = Config.UseLatestCSharp ? "    " : "        ";
 
         foreach (var endpoint in endpoints)
         {
@@ -87,7 +85,7 @@ namespace {ns}
                 wd.AppendLine($@"{indent}/// <param name=""{param.GetParamName()}"">{param.Comment}</param>");
             }
 
-            if (!_config.NoAsyncControllers || endpoint.Returns != null)
+            if (!Config.NoAsyncControllers || endpoint.Returns != null)
             {
                 wd.AppendLine($"{indent}/// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>");
             }
@@ -106,7 +104,7 @@ namespace {ns}
             }
 
             wd.AppendLine($@"{indent}[Http{endpoint.Method.ToPascalCaseStrict()}(""{GetRoute(endpoint)}"")]");
-            wd.AppendLine($"{indent}public {_config.GetReturnTypeName(endpoint.Returns)} {endpoint.NamePascal}({string.Join(", ", endpoint.Params.Select(GetParam))})");
+            wd.AppendLine($"{indent}public {Config.GetReturnTypeName(endpoint.Returns)} {endpoint.NamePascal}({string.Join(", ", endpoint.Params.Select(GetParam))})");
             wd.AppendLine($"{indent}{{");
             wd.AppendLine();
             wd.AppendLine($"{indent}}}");
@@ -187,11 +185,11 @@ namespace {ns}
             }
         }
 
-        sb.Append($@"{_config.GetPropertyTypeName(param, param.IsRouteParam() || param.IsQueryParam() && !hasForm && _config.GetDefaultValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
+        sb.Append($@"{Config.GetPropertyTypeName(param, param.IsRouteParam() || param.IsQueryParam() && !hasForm && Config.GetDefaultValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
 
         if (param.IsQueryParam() && !hasForm)
         {
-            sb.Append($" = {_config.GetDefaultValue(param, Classes)}");
+            sb.Append($" = {Config.GetDefaultValue(param, Classes)}");
         }
 
         return sb.ToString();

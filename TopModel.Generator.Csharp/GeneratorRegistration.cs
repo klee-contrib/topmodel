@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using TopModel.Core;
 using TopModel.Generator.Core;
 
 using static TopModel.Utils.ModelUtils;
@@ -9,54 +7,44 @@ namespace TopModel.Generator.Csharp;
 
 public class GeneratorRegistration : IGeneratorRegistration<CsharpConfig>
 {
-    public void Register(IServiceCollection services, string dn, IEnumerable<CsharpConfig>? configs)
+    public void Register(IServiceCollection services, CsharpConfig config, int number)
     {
-        GeneratorUtils.HandleConfigs(dn, configs, (config, number) =>
+        TrimSlashes(config, c => c.ApiFilePath);
+        TrimSlashes(config, c => c.ApiRootPath);
+        TrimSlashes(config, c => c.DbContextPath);
+        TrimSlashes(config, c => c.ReferenceAccessorsImplementationPath);
+        TrimSlashes(config, c => c.ReferenceAccessorsInterfacePath);
+        TrimSlashes(config, c => c.NonPersistantModelPath);
+        TrimSlashes(config, c => c.PersistantModelPath);
+        TrimSlashes(config, c => c.PersistantReferencesModelPath);
+
+        config.ReferenceAccessorsImplementationPath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
+        config.ReferenceAccessorsInterfacePath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
+
+        services.AddGenerator<CSharpClassGenerator, CsharpConfig>(config, number);
+        services.AddGenerator<MapperGenerator, CsharpConfig>(config, number);
+
+        if (config.DbContextPath != null)
         {
-            TrimSlashes(config, c => c.ApiFilePath);
-            TrimSlashes(config, c => c.ApiRootPath);
-            TrimSlashes(config, c => c.DbContextPath);
-            TrimSlashes(config, c => c.ReferenceAccessorsImplementationPath);
-            TrimSlashes(config, c => c.ReferenceAccessorsInterfacePath);
-            TrimSlashes(config, c => c.NonPersistantModelPath);
-            TrimSlashes(config, c => c.PersistantModelPath);
-            TrimSlashes(config, c => c.PersistantReferencesModelPath);
+            services.AddGenerator<DbContextGenerator, CsharpConfig>(config, number);
+        }
 
-            config.ReferenceAccessorsImplementationPath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
-            config.ReferenceAccessorsInterfacePath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
+        if (config.Kinetix)
+        {
+            services.AddGenerator<ReferenceAccessorGenerator, CsharpConfig>(config, number);
+        }
 
-            services.AddSingleton<IModelWatcher>(p =>
-                new CSharpClassGenerator(p.GetRequiredService<ILogger<CSharpClassGenerator>>(), config) { Number = number });
-
-            services.AddSingleton<IModelWatcher>(p =>
-                new MapperGenerator(p.GetRequiredService<ILogger<MapperGenerator>>(), config) { Number = number });
-
-            if (config.DbContextPath != null)
+        if (config.ApiGeneration != null)
+        {
+            if (config.ApiGeneration != ApiGeneration.Client)
             {
-                services.AddSingleton<IModelWatcher>(p =>
-                    new DbContextGenerator(p.GetRequiredService<ILogger<DbContextGenerator>>(), config) { Number = number });
+                services.AddGenerator<CSharpApiServerGenerator, CsharpConfig>(config, number);
             }
 
-            if (config.Kinetix)
+            if (config.ApiGeneration != ApiGeneration.Server)
             {
-                services.AddSingleton<IModelWatcher>(p =>
-                    new ReferenceAccessorGenerator(p.GetRequiredService<ILogger<ReferenceAccessorGenerator>>(), config) { Number = number });
+                services.AddGenerator<CSharpApiClientGenerator, CsharpConfig>(config, number);
             }
-
-            if (config.ApiGeneration != null)
-            {
-                if (config.ApiGeneration != ApiGeneration.Client)
-                {
-                    services.AddSingleton<IModelWatcher>(p =>
-                        new CSharpApiServerGenerator(p.GetRequiredService<ILogger<CSharpApiServerGenerator>>(), config) { Number = number });
-                }
-
-                if (config.ApiGeneration != ApiGeneration.Server)
-                {
-                    services.AddSingleton<IModelWatcher>(p =>
-                        new CSharpApiClientGenerator(p.GetRequiredService<ILogger<CSharpApiClientGenerator>>(), config) { Number = number });
-                }
-            }
-        });
+        }
     }
 }

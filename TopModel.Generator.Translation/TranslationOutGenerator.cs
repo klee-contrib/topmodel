@@ -8,17 +8,15 @@ namespace TopModel.Generator.Translation;
 /// <summary>
 /// Générateur des objets de traduction javascripts.
 /// </summary>
-public class TranslationOutGenerator : TranslationGeneratorBase
+public class TranslationOutGenerator : TranslationGeneratorBase<TranslationConfig>
 {
-    private readonly TranslationConfig _config;
     private readonly ILogger<TranslationOutGenerator> _logger;
     private readonly ModelConfig _modelConfig;
     private readonly TranslationStore _translationStore;
 
-    public TranslationOutGenerator(ILogger<TranslationOutGenerator> logger, TranslationConfig config, ModelConfig modelConfig, TranslationStore translationStore)
-        : base(logger, config, translationStore)
+    public TranslationOutGenerator(ILogger<TranslationOutGenerator> logger, ModelConfig modelConfig, TranslationStore translationStore)
+        : base(logger, translationStore)
     {
-        _config = config;
         _logger = logger;
         _modelConfig = modelConfig;
         _translationStore = translationStore;
@@ -41,8 +39,8 @@ public class TranslationOutGenerator : TranslationGeneratorBase
                 (p.Class?.Values.TrueForAll(r => ExistsInStore(lang, r.ResourceKey)) ?? false)))
         {
             return Path.Combine(
-                _config.OutputDirectory,
-                _config.ResolveVariables(_config.RootPath, tag: tag, lang: lang),
+                Config.OutputDirectory,
+                Config.ResolveVariables(Config.RootPath, tag: tag, lang: lang),
                 $"{p.Parent.Namespace.RootModule.ToKebabCase()}_{lang}.properties");
         }
 

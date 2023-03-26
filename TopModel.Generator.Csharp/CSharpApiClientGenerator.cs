@@ -7,15 +7,13 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Csharp;
 
-public class CSharpApiClientGenerator : EndpointsGeneratorBase
+public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 {
-    private readonly CsharpConfig _config;
     private readonly ILogger<CSharpApiClientGenerator> _logger;
 
-    public CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, CsharpConfig config)
-        : base(logger, config)
+    public CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger)
+        : base(logger)
     {
-        _config = config;
         _logger = logger;
     }
 
@@ -28,17 +26,17 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
 
     protected override bool FilterTag(string tag)
     {
-        return _config.ResolveVariables(_config.ApiGeneration!, tag) == ApiGeneration.Client;
+        return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Client;
     }
 
     protected override string GetFileName(ModelFile file, string tag)
     {
-        return $"{_config.GetApiPath(file, tag)}/generated/{file.Options.Endpoints.FileName.ToPascalCase()}Client.cs";
+        return $"{Config.GetApiPath(file, tag)}/generated/{file.Options.Endpoints.FileName.ToPascalCase()}Client.cs";
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        using var fw = new CSharpWriter(filePath, _logger, _config.UseLatestCSharp);
+        using var fw = new CSharpWriter(filePath, _logger, Config.UseLatestCSharp);
 
         var hasBody = endpoints.Any(e => e.GetBodyParam() != null);
         var hasReturn = endpoints.Any(e => e.Returns != null);
@@ -46,7 +44,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
 
         var usings = new List<string>();
 
-        if (!_config.UseLatestCSharp)
+        if (!Config.UseLatestCSharp)
         {
             usings.Add("System.Net.Http");
             usings.Add("System.Threading.Tasks");
@@ -66,7 +64,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
         {
             usings.Add("System.Text.Json");
 
-            if (_config.UseLatestCSharp)
+            if (Config.UseLatestCSharp)
             {
                 usings.Add("System.Text.Json.Serialization");
             }
@@ -74,14 +72,14 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
 
         if (endpoints.Any(e => e.GetQueryParams().Any()))
         {
-            if (!_config.UseLatestCSharp)
+            if (!Config.UseLatestCSharp)
             {
                 usings.AddRange(new[] { "System.Collections.Generic", "System.Linq" });
             }
 
             if (endpoints.Any(e => e.GetQueryParams().Any(qp =>
             {
-                var typeName = _config.GetPropertyTypeName(qp);
+                var typeName = Config.GetPropertyTypeName(qp);
                 return !typeName.StartsWith("string") && !typeName.StartsWith("Guid");
             })))
             {
@@ -110,16 +108,16 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
             switch (property)
             {
                 case AssociationProperty ap:
-                    usings.Add(_config.GetNamespace(ap.Association, tag));
+                    usings.Add(Config.GetNamespace(ap.Association, tag));
                     break;
                 case AliasProperty { Property: AssociationProperty ap2 }:
-                    usings.Add(_config.GetNamespace(ap2.Association, tag));
+                    usings.Add(Config.GetNamespace(ap2.Association, tag));
                     break;
                 case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp }:
-                    usings.Add(_config.GetNamespace(rp.Class, tag));
+                    usings.Add(Config.GetNamespace(rp.Class, tag));
                     break;
                 case CompositionProperty cp:
-                    usings.Add(_config.GetNamespace(cp.Composition, tag));
+                    usings.Add(Config.GetNamespace(cp.Composition, tag));
 
                     if (cp.DomainKind != null)
                     {
@@ -129,7 +127,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
                         .SelectMany(a => a.Usings));
                     }
 
-                    if (!_config.UseLatestCSharp && (cp.Kind == "list" || cp.Kind == "async-list"))
+                    if (!Config.UseLatestCSharp && (cp.Kind == "list" || cp.Kind == "async-list"))
                     {
                         usings.Add("System.Collections.Generic");
                     }
@@ -139,7 +137,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
         }
 
         var className = $"{fileName.ToPascalCase()}Client";
-        var ns = _config.GetNamespace(endpoints.First(), tag);
+        var ns = Config.GetNamespace(endpoints.First(), tag);
 
         fw.WriteUsings(usings.Distinct().Where(u => u != ns).ToArray());
         if (usings.Any())
@@ -155,7 +153,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
         fw.WriteLine(2, "private readonly HttpClient _client;");
         if (hasJson)
         {
-            if (_config.UseLatestCSharp)
+            if (Config.UseLatestCSharp)
             {
                 fw.WriteLine(2, "private readonly JsonSerializerOptions _jsOptions = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };");
             }
@@ -185,14 +183,14 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
 
             fw.WriteReturns(2, endpoint.Returns?.Comment ?? "Task.");
 
-            if (!_config.UseLatestCSharp)
+            if (!Config.UseLatestCSharp)
             {
                 fw.Write("    ");
             }
 
             fw.Write("    public async Task");
 
-            var returnType = endpoint.Returns != null ? _config.GetPropertyTypeName(endpoint.Returns) : null;
+            var returnType = endpoint.Returns != null ? Config.GetPropertyTypeName(endpoint.Returns) : null;
             if (returnType?.StartsWith("IAsyncEnumerable") ?? false)
             {
                 returnType = returnType.Replace("IAsyncEnumerable", "IEnumerable");
@@ -207,11 +205,11 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
 
             foreach (var param in endpoint.Params)
             {
-                fw.Write($"{_config.GetPropertyTypeName(param, param.IsRouteParam() || param.IsQueryParam() && _config.GetDefaultValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
+                fw.Write($"{Config.GetPropertyTypeName(param, param.IsRouteParam() || param.IsQueryParam() && Config.GetDefaultValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
 
                 if (param.IsQueryParam())
                 {
-                    fw.Write($" = {_config.GetDefaultValue(param, Classes)}");
+                    fw.Write($" = {Config.GetDefaultValue(param, Classes)}");
                 }
 
                 if (endpoint.Params.Last() != param)
@@ -232,9 +230,9 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
                 fw.WriteLine(3, "var query = await new FormUrlEncodedContent(new Dictionary<string, string>");
                 fw.WriteLine(3, "{");
 
-                foreach (var qp in endpoint.GetQueryParams().Where(qp => !_config.GetPropertyTypeName(qp).Contains("[]")))
+                foreach (var qp in endpoint.GetQueryParams().Where(qp => !Config.GetPropertyTypeName(qp).Contains("[]")))
                 {
-                    var toString = _config.GetPropertyTypeName(qp) switch
+                    var toString = Config.GetPropertyTypeName(qp) switch
                     {
                         "string" => string.Empty,
                         "Guid" or "Guid?" => "?.ToString()",
@@ -244,7 +242,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
                     fw.WriteLine(4, $@"[""{qp.GetParamName()}""] = {qp.GetParamName().Verbatim()}{toString},");
                 }
 
-                var listQPs = endpoint.GetQueryParams().Where(qp => _config.GetPropertyTypeName(qp).Contains("[]")).ToList();
+                var listQPs = endpoint.GetQueryParams().Where(qp => Config.GetPropertyTypeName(qp).Contains("[]")).ToList();
 
                 if (listQPs.Count == 0)
                 {
@@ -252,7 +250,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
                 }
                 else
                 {
-                    if (!_config.UseLatestCSharp)
+                    if (!Config.UseLatestCSharp)
                     {
                         fw.Write("    ");
                     }
@@ -260,7 +258,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase
                     fw.Write("        }");
                     foreach (var qp in listQPs)
                     {
-                        var toString = _config.GetPropertyTypeName(qp) switch
+                        var toString = Config.GetPropertyTypeName(qp) switch
                         {
                             "string[]" => string.Empty,
                             "Guid[]" => ".ToString()",

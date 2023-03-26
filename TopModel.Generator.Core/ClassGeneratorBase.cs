@@ -4,18 +4,16 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.Core;
 
-public abstract class ClassGeneratorBase : GeneratorBase
+public abstract class ClassGeneratorBase<T> : GeneratorBase<T>
+    where T : GeneratorConfigBase
 {
-    private readonly GeneratorConfigBase _config;
-
-    public ClassGeneratorBase(ILogger<ClassGeneratorBase> logger, GeneratorConfigBase config)
-        : base(logger, config)
+    public ClassGeneratorBase(ILogger<ClassGeneratorBase<T>> logger)
+        : base(logger)
     {
-        _config = config;
     }
 
     public override IEnumerable<string> GeneratedFiles => Files.Values.SelectMany(f => f.Classes.Where(FilterClass))
-        .SelectMany(c => _config.Tags.Intersect(GetClassTags(c)).Select(tag => GetFileName(c, tag)))
+        .SelectMany(c => Config.Tags.Intersect(GetClassTags(c)).Select(tag => GetFileName(c, tag)))
         .Distinct();
 
     protected virtual bool FilterClass(Class classe)
@@ -33,7 +31,7 @@ public abstract class ClassGeneratorBase : GeneratorBase
         {
             foreach (var classe in file.Classes.Where(FilterClass))
             {
-                foreach (var (tag, fileName) in _config.Tags.Intersect(file.Tags)
+                foreach (var (tag, fileName) in Config.Tags.Intersect(file.Tags)
                      .Select(tag => (tag, fileName: GetFileName(classe, tag)))
                      .DistinctBy(t => t.fileName))
                 {

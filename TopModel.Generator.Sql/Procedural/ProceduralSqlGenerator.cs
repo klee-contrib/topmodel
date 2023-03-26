@@ -6,32 +6,39 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural;
 
-public class ProceduralSqlGenerator : GeneratorBase
+public class ProceduralSqlGenerator : GeneratorBase<SqlConfig>
 {
-    private readonly SqlConfig _config;
     private readonly ILogger<ProceduralSqlGenerator> _logger;
 
-    private readonly AbstractSchemaGenerator? _schemaGenerator;
+    private AbstractSchemaGenerator? _schemaGenerator;
 
-    public ProceduralSqlGenerator(ILogger<ProceduralSqlGenerator> logger, SqlConfig config)
-        : base(logger, config)
+    public ProceduralSqlGenerator(ILogger<ProceduralSqlGenerator> logger)
+        : base(logger)
     {
-        _config = config;
         _logger = logger;
-        _schemaGenerator = _config.TargetDBMS == TargetDBMS.Postgre
-            ? new PostgreSchemaGenerator(_config, _logger)
-            : new SqlServerSchemaGenerator(_config, _logger);
     }
 
     public override string Name => "ProceduralSqlGen";
 
     public override IEnumerable<string> GeneratedFiles => new List<string>()
     {
-        _config.Procedural!.CrebasFile!,
-        _config.Procedural!.IndexFKFile!,
-        _config.Procedural!.InitListFile!,
-        _config.Procedural!.UniqueKeysFile!,
+        Config.Procedural!.CrebasFile!,
+        Config.Procedural!.IndexFKFile!,
+        Config.Procedural!.InitListFile!,
+        Config.Procedural!.UniqueKeysFile!,
     }.Where(t => !string.IsNullOrEmpty(t));
+
+    private AbstractSchemaGenerator SchemaGenerator
+    {
+        get
+        {
+            _schemaGenerator ??= Config.TargetDBMS == TargetDBMS.Postgre
+                ? new PostgreSchemaGenerator(Config, _logger)
+                : new SqlServerSchemaGenerator(Config, _logger);
+
+            return _schemaGenerator;
+        }
+    }
 
     protected override object? GetDomainType(Domain domain)
     {
@@ -83,7 +90,7 @@ public class ProceduralSqlGenerator : GeneratorBase
             classes.Add(traClass);
         }
 
-        _schemaGenerator?.GenerateSchemaScript(classes.OrderBy(c => c.SqlName));
+        SchemaGenerator.GenerateSchemaScript(classes.OrderBy(c => c.SqlName));
 
         GenerateListInitScript();
     }
@@ -94,7 +101,7 @@ public class ProceduralSqlGenerator : GeneratorBase
 
         if (classes.Any())
         {
-            _schemaGenerator?.GenerateListInitScript(classes);
+            SchemaGenerator.GenerateListInitScript(classes);
         }
     }
 }

@@ -7,15 +7,13 @@ namespace TopModel.Generator.Jpa;
 /// <summary>
 /// Générateur de DAOs JPA.
 /// </summary>
-public class JpaDaoGenerator : ClassGeneratorBase
+public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
 {
-    private readonly JpaConfig _config;
     private readonly ILogger<JpaDaoGenerator> _logger;
 
-    public JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, JpaConfig config)
-        : base(logger, config)
+    public JpaDaoGenerator(ILogger<JpaDaoGenerator> logger)
+        : base(logger)
     {
-        _config = config;
         _logger = logger;
     }
 
@@ -29,9 +27,9 @@ public class JpaDaoGenerator : ClassGeneratorBase
     protected override string GetFileName(Class classe, string tag)
     {
         return Path.Combine(
-            _config.OutputDirectory,
-            _config.ResolveVariables(_config.ModelRootPath, tag),
-            Path.Combine(_config.ResolveVariables(_config.DaosPackageName, tag).Split(".")),
+            Config.OutputDirectory,
+            Config.ResolveVariables(Config.ModelRootPath, tag),
+            Path.Combine(Config.ResolveVariables(Config.DaosPackageName, tag).Split(".")),
             classe.Namespace.ModulePath.ToLower(),
             $"{classe.NamePascal}DAO.java");
     }
@@ -44,7 +42,7 @@ public class JpaDaoGenerator : ClassGeneratorBase
             return;
         }
 
-        var packageName = $"{_config.ResolveVariables(_config.DaosPackageName, tag)}.{classe.Namespace.Module.ToLower()}";
+        var packageName = $"{Config.ResolveVariables(Config.DaosPackageName, tag)}.{classe.Namespace.Module.ToLower()}";
 
         using var fw = new JavaWriter(fileName, _logger, packageName, null);
         fw.WriteLine();
@@ -59,7 +57,7 @@ public class JpaDaoGenerator : ClassGeneratorBase
     {
         var imports = new List<string>
         {
-            classe.GetImport(_config, tag)
+            classe.GetImport(Config, tag)
         };
 
         if (classe.Reference)

@@ -106,7 +106,7 @@ public class FileChecker
                     config.I18n = _deserializer.Deserialize<I18nConfig>(parser);
                     break;
                 default:
-                    config.AdditionalProperties.Add(prop, _deserializer.Deserialize<IEnumerable<IDictionary<string, object>>>(parser));
+                    config.Generators.Add(prop, _deserializer.Deserialize<IEnumerable<IDictionary<string, object>>>(parser));
                     break;
             }
         });
@@ -117,11 +117,9 @@ public class FileChecker
         return config;
     }
 
-    public object GetGenConfigs(Type configType, IEnumerable<IDictionary<string, object>> genConfigMaps)
+    public object GetGenConfig(Type configType, IDictionary<string, object> genConfigMap)
     {
-        return _deserializer.Deserialize(
-            _serializer.Serialize(genConfigMaps),
-            typeof(IEnumerable<>).MakeGenericType(configType))!;
+        return _deserializer.Deserialize(_serializer.Serialize(genConfigMap), configType)!;
     }
 
     private void CheckCore(JsonSchema schema, string fileName, string? content = null)

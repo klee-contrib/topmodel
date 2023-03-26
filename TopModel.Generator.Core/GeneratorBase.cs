@@ -5,20 +5,23 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Core;
 
-public abstract class GeneratorBase : IModelWatcher
+public abstract class GeneratorBase<T> : IModelWatcher
+    where T : GeneratorConfigBase
 {
-    private readonly GeneratorConfigBase _config;
     private readonly ILogger _logger;
 
-    protected GeneratorBase(ILogger logger, GeneratorConfigBase config)
+    protected GeneratorBase(ILogger logger)
     {
-        _config = config;
         _logger = logger;
     }
 
     public abstract string Name { get; }
 
-    public int Number { get; init; }
+#nullable disable
+    public T Config { get; internal set; }
+#nullable enable
+
+    public int Number { get; internal set; }
 
     public virtual IEnumerable<string> GeneratedFiles => new List<string>();
 
@@ -35,7 +38,7 @@ public abstract class GeneratorBase : IModelWatcher
         using var scope = _logger.BeginScope(((IModelWatcher)this).FullName);
         using var scope2 = _logger.BeginScope(storeConfig);
 
-        var handledFiles = files.Where(file => _config.Tags.Intersect(file.Tags).Any());
+        var handledFiles = files.Where(file => Config.Tags.Intersect(file.Tags).Any());
 
         var missingDomains = handledFiles.SelectMany(f => f.Properties).OfType<IFieldProperty>().Where(fp => GetDomainType(fp.Domain) == null).Select(fp => fp.Domain).Distinct();
 

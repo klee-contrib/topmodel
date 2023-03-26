@@ -4,19 +4,18 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.Core;
 
-public abstract class TranslationGeneratorBase : GeneratorBase
+public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
+    where T : GeneratorConfigBase
 {
-    private readonly GeneratorConfigBase _config;
     private readonly TranslationStore _translationStore;
 
-    public TranslationGeneratorBase(ILogger<TranslationGeneratorBase> logger, GeneratorConfigBase config, TranslationStore translationStore)
-        : base(logger, config)
+    public TranslationGeneratorBase(ILogger<TranslationGeneratorBase<T>> logger, TranslationStore translationStore)
+        : base(logger)
     {
-        _config = config;
         _translationStore = translationStore;
     }
 
-    public override IEnumerable<string> GeneratedFiles => _config.Tags
+    public override IEnumerable<string> GeneratedFiles => Config.Tags
         .SelectMany(tag =>
         {
             var properties = Classes
@@ -45,7 +44,7 @@ public abstract class TranslationGeneratorBase : GeneratorBase
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var resources in Classes
-            .SelectMany(classe => _config.Tags.Intersect(GetClassTags(classe))
+            .SelectMany(classe => Config.Tags.Intersect(GetClassTags(classe))
                 .SelectMany(tag => classe.Properties.OfType<IFieldProperty>()
                     .SelectMany(p => GetResourceFileNames(p, tag)
                     .Select(f => (key: (f.FilePath, f.Lang), p)))))
@@ -55,7 +54,7 @@ public abstract class TranslationGeneratorBase : GeneratorBase
         }
 
         foreach (var resources in Classes
-            .SelectMany(classe => _config.Tags.Intersect(GetClassTags(classe))
+            .SelectMany(classe => Config.Tags.Intersect(GetClassTags(classe))
                 .SelectMany(tag => classe.Properties.OfType<IFieldProperty>()
                     .SelectMany(p => GetCommentResourceFileNames(p, tag)
                     .Select(f => (key: (f.FilePath, f.Lang), p)))))

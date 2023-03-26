@@ -4,18 +4,16 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.Generator.Core;
 
-public abstract class MapperGeneratorBase : GeneratorBase
+public abstract class MapperGeneratorBase<T> : GeneratorBase<T>
+    where T : GeneratorConfigBase
 {
-    private readonly GeneratorConfigBase _config;
-
-    public MapperGeneratorBase(ILogger<MapperGeneratorBase> logger, GeneratorConfigBase config)
-        : base(logger, config)
+    public MapperGeneratorBase(ILogger<MapperGeneratorBase<T>> logger)
+        : base(logger)
     {
-        _config = config;
     }
 
     public override IEnumerable<string> GeneratedFiles => Mappers
-        .SelectMany(m => _config.Tags.Intersect(GetClassTags(m.Classe)).Select(tag => GetFileName(m.Classe, m.IsPersistant, tag)))
+        .SelectMany(m => Config.Tags.Intersect(GetClassTags(m.Classe)).Select(tag => GetFileName(m.Classe, m.IsPersistant, tag)))
         .Distinct();
 
     protected IEnumerable<(Class Classe, FromMapper Mapper, bool IsPersistant)> FromMappers => Classes
@@ -39,7 +37,7 @@ public abstract class MapperGeneratorBase : GeneratorBase
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in Mappers
-            .SelectMany(m => _config.Tags.Intersect(GetClassTags(m.Classe))
+            .SelectMany(m => Config.Tags.Intersect(GetClassTags(m.Classe))
                 .Select(tag => (key: (FileName: GetFileName(m.Classe, m.IsPersistant, tag), m.IsPersistant), tag, m.Classe)))
             .GroupBy(f => f.key))
         {

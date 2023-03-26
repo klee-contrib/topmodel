@@ -1,51 +1,42 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using TopModel.Core;
 using TopModel.Generator.Core;
+
 using static TopModel.Utils.ModelUtils;
 
 namespace TopModel.Generator.Javascript;
 
 public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
 {
-    public void Register(IServiceCollection services, string dn, IEnumerable<JavascriptConfig>? configs)
+    public void Register(IServiceCollection services, JavascriptConfig config, int number)
     {
-        GeneratorUtils.HandleConfigs(dn, configs, (config, number) =>
+        TrimSlashes(config, c => c.ApiClientFilePath);
+        TrimSlashes(config, c => c.ApiClientRootPath);
+        TrimSlashes(config, c => c.DomainPath);
+        TrimSlashes(config, c => c.FetchPath);
+        TrimSlashes(config, c => c.ModelRootPath);
+        TrimSlashes(config, c => c.ResourceRootPath);
+
+        if (config.ModelRootPath != null)
         {
-            TrimSlashes(config, c => c.ApiClientFilePath);
-            TrimSlashes(config, c => c.ApiClientRootPath);
-            TrimSlashes(config, c => c.DomainPath);
-            TrimSlashes(config, c => c.FetchPath);
-            TrimSlashes(config, c => c.ModelRootPath);
-            TrimSlashes(config, c => c.ResourceRootPath);
+            services.AddGenerator<TypescriptDefinitionGenerator, JavascriptConfig>(config, number);
+            services.AddGenerator<TypescriptReferenceGenerator, JavascriptConfig>(config, number);
 
-            if (config.ModelRootPath != null)
+            if (config.ApiClientRootPath != null)
             {
-                services.AddSingleton<IModelWatcher>(p =>
-                    new TypescriptDefinitionGenerator(p.GetRequiredService<ILogger<TypescriptDefinitionGenerator>>(), config) { Number = number });
-                services.AddSingleton<IModelWatcher>(p =>
-                    new TypescriptReferenceGenerator(p.GetRequiredService<ILogger<TypescriptReferenceGenerator>>(), config, p.GetRequiredService<ModelConfig>()) { Number = number });
-
-                if (config.ApiClientRootPath != null)
+                if (config.TargetFramework == TargetFramework.ANGULAR)
                 {
-                    if (config.TargetFramework == TargetFramework.ANGULAR)
-                    {
-                        services.AddSingleton<IModelWatcher>(p =>
-                           new AngularApiClientGenerator(p.GetRequiredService<ILogger<AngularApiClientGenerator>>(), config) { Number = number });
-                    }
-                    else
-                    {
-                        services.AddSingleton<IModelWatcher>(p =>
-                        new JavascriptApiClientGenerator(p.GetRequiredService<ILogger<JavascriptApiClientGenerator>>(), config) { Number = number });
-                    }
+                    services.AddGenerator<AngularApiClientGenerator, JavascriptConfig>(config, number);
+                }
+                else
+                {
+                    services.AddGenerator<JavascriptApiClientGenerator, JavascriptConfig>(config, number);
                 }
             }
+        }
 
-            if (config.ResourceRootPath != null)
-            {
-                services.AddSingleton<IModelWatcher>(p =>
-                    new JavascriptResourceGenerator(p.GetRequiredService<ILogger<JavascriptResourceGenerator>>(), config, p.GetRequiredService<TranslationStore>(), p.GetRequiredService<ModelConfig>()) { Number = number });
-            }
-        });
+        if (config.ResourceRootPath != null)
+        {
+            services.AddGenerator<JavascriptResourceGenerator, JavascriptConfig>(config, number);
+        }
     }
 }

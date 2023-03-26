@@ -166,13 +166,25 @@ for (var i = 0; i < configs.Count; i++)
     foreach (var generator in generators)
     {
         var configType = GetIGenRegInterface(generator)!.GetGenericArguments()[0];
-        if (config.AdditionalProperties.TryGetValue(configType.Name.Replace("Config", string.Empty).ToCamelCase(), out var genConfigMaps))
+        if (config.Generators.TryGetValue(configType.Name.Replace("Config", string.Empty).ToCamelCase(), out var genConfigMaps))
         {
-            var instance = Activator.CreateInstance(generator);
-            instance!.GetType().GetMethod("Register")!
-                .Invoke(
-                    instance,
-                    new[] { services, dn, fileChecker.GetGenConfigs(configType, genConfigMaps) });
+            for (var j = 0; j < genConfigMaps.Count(); j++)
+            {
+                var genConfigMap = genConfigMaps.ElementAt(j);
+                var number = j + 1;
+
+                var genConfig = (GeneratorConfigBase)fileChecker.GetGenConfig(configType, genConfigMap);
+
+                genConfig.InitVariables(number);
+
+                ModelUtils.CombinePath(dn, genConfig, c => c.OutputDirectory);
+
+                var instance = Activator.CreateInstance(generator);
+                instance!.GetType().GetMethod("Register")!
+                    .Invoke(
+                        instance,
+                        new object[] { services, genConfig, number });
+            }
         }
     }
 
