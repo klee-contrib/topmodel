@@ -9,9 +9,9 @@ using static TopModel.Utils.ModelUtils;
 
 namespace TopModel.Generator.Sql;
 
-public static class ServiceExtensions
+public class GeneratorRegistration : IGeneratorRegistration<SqlConfig>
 {
-    public static IServiceCollection AddSql(this IServiceCollection services, string dn, IEnumerable<SqlConfig>? configs)
+    public void Register(IServiceCollection services, string dn, IEnumerable<SqlConfig>? configs)
     {
         GeneratorUtils.HandleConfigs(dn, configs, (config, number) =>
         {
@@ -37,7 +37,5 @@ public static class ServiceExtensions
                     new ProceduralSqlGenerator(p.GetRequiredService<ILogger<ProceduralSqlGenerator>>(), config) { Number = number });
             }
         });
-
-        return services;
     }
 }

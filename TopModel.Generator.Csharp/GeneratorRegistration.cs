@@ -7,9 +7,9 @@ using static TopModel.Utils.ModelUtils;
 
 namespace TopModel.Generator.Csharp;
 
-public static class ServiceExtensions
+public class GeneratorRegistration : IGeneratorRegistration<CsharpConfig>
 {
-    public static IServiceCollection AddCSharp(this IServiceCollection services, string dn, IEnumerable<CsharpConfig>? configs)
+    public void Register(IServiceCollection services, string dn, IEnumerable<CsharpConfig>? configs)
     {
         GeneratorUtils.HandleConfigs(dn, configs, (config, number) =>
         {
@@ -58,7 +58,5 @@ public static class ServiceExtensions
                 }
             }
         });
-
-        return services;
     }
 }

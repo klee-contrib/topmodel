@@ -7,9 +7,9 @@ using static TopModel.Utils.ModelUtils;
 
 namespace TopModel.Generator.Jpa;
 
-public static class ServiceExtensions
+public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
 {
-    public static IServiceCollection AddJpa(this IServiceCollection services, string dn, IEnumerable<JpaConfig>? configs)
+    public void Register(IServiceCollection services, string dn, IEnumerable<JpaConfig>? configs)
     {
         GeneratorUtils.HandleConfigs(dn, configs, (config, number) =>
         {
@@ -61,7 +61,5 @@ public static class ServiceExtensions
             services.AddSingleton<IModelWatcher>(p =>
                 new JpaMapperGenerator(p.GetRequiredService<ILogger<JpaMapperGenerator>>(), config) { Number = number });
         });
-
-        return services;
     }
 }

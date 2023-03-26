@@ -6,9 +6,9 @@ using static TopModel.Utils.ModelUtils;
 
 namespace TopModel.Generator.Javascript;
 
-public static class ServiceExtensions
+public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
 {
-    public static IServiceCollection AddJavascript(this IServiceCollection services, string dn, IEnumerable<JavascriptConfig>? configs)
+    public void Register(IServiceCollection services, string dn, IEnumerable<JavascriptConfig>? configs)
     {
         GeneratorUtils.HandleConfigs(dn, configs, (config, number) =>
         {
@@ -47,7 +47,5 @@ public static class ServiceExtensions
                     new JavascriptResourceGenerator(p.GetRequiredService<ILogger<JavascriptResourceGenerator>>(), config, p.GetRequiredService<TranslationStore>(), p.GetRequiredService<ModelConfig>()) { Number = number });
             }
         });
-
-        return services;
     }
 }

@@ -1,19 +1,26 @@
 ﻿using System.CommandLine;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.Loaders;
-using TopModel.Generator;
-using TopModel.Generator.Csharp;
-using TopModel.Generator.Javascript;
-using TopModel.Generator.Jpa;
-using TopModel.Generator.Sql;
-using TopModel.Generator.Translation;
+using TopModel.Generator.Core;
 using TopModel.Utils;
 
 var fileChecker = new FileChecker("schema.config.json");
 
-var configs = new List<(FullConfig Config, string FullPath, string DirectoryName)>();
+static Type? GetIGenRegInterface(Type t)
+{
+    return t.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IGeneratorRegistration<>));
+}
+
+var generators = new FileInfo(Assembly.GetEntryAssembly()!.Location).Directory!.GetFiles("TopModel.Generator.*.dll")
+    .Select(f => Assembly.LoadFrom(f.FullName))
+    .SelectMany(a => a.GetExportedTypes())
+    .Where(t => GetIGenRegInterface(t) != null)
+    .ToList();
+
+var configs = new List<(ModelConfig Config, string FullPath, string DirectoryName)>();
 var watchMode = false;
 var checkMode = false;
 var regularCommand = false;
@@ -48,7 +55,8 @@ command.SetHandler(
                     try
                     {
                         fileChecker.CheckConfigFile(file.FullName);
-                        configs.Add((fileChecker.Deserialize<FullConfig>(file.OpenText().ReadToEnd()), file.FullName, file.DirectoryName!));
+                        var text = file.OpenText().ReadToEnd();
+                        configs.Add((fileChecker.DeserializeConfig(text), file.FullName, file.DirectoryName!));
                     }
                     catch (ModelException me)
                     {
@@ -71,7 +79,8 @@ command.SetHandler(
                     try
                     {
                         fileChecker.CheckConfigFile(fileName);
-                        configs.Add((fileChecker.Deserialize<FullConfig>(foundFile.OpenText().ReadToEnd()), fileName, foundFile.DirectoryName!));
+                        var text = foundFile.OpenText().ReadToEnd();
+                        configs.Add((fileChecker.DeserializeConfig(text), fileName, foundFile.DirectoryName!));
                     }
                     catch (ModelException me)
                     {
@@ -104,7 +113,7 @@ if (!configs.Any())
     return 1;
 }
 
-var fullVersion = System.Reflection.Assembly.GetEntryAssembly()!.GetName().Version!;
+var fullVersion = Assembly.GetEntryAssembly()!.GetName().Version!;
 var version = $"{fullVersion.Major}.{fullVersion.Minor}.{fullVersion.Build}";
 
 var colors = new[] { ConsoleColor.DarkCyan, ConsoleColor.DarkYellow, ConsoleColor.Cyan, ConsoleColor.Yellow };
@@ -152,12 +161,20 @@ for (var i = 0; i < configs.Count; i++)
 
     var services = new ServiceCollection()
         .AddLogging(builder => builder.AddProvider(loggerProvider))
-        .AddModelStore(fileChecker, config, dn)
-        .AddSql(dn, config.Sql)
-        .AddCSharp(dn, config.Csharp)
-        .AddJavascript(dn, config.Javascript)
-        .AddJpa(dn, config.Jpa)
-        .AddTranslationOut(dn, config.Translation);
+        .AddModelStore(fileChecker, config, dn);
+
+    foreach (var generator in generators)
+    {
+        var configType = GetIGenRegInterface(generator)!.GetGenericArguments()[0];
+        if (config.AdditionalProperties.TryGetValue(configType.Name.Replace("Config", string.Empty).ToCamelCase(), out var genConfigMaps))
+        {
+            var instance = Activator.CreateInstance(generator);
+            instance!.GetType().GetMethod("Register")!
+                .Invoke(
+                    instance,
+                    new[] { services, dn, fileChecker.GetGenConfigs(configType, genConfigMaps) });
+        }
+    }
 
     var provider = services.BuildServiceProvider();
     disposables.Add(provider);

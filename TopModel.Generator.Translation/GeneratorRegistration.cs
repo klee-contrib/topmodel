@@ -5,9 +5,9 @@ using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Translation;
 
-public static class ServiceExtensions
+public class GeneratorRegistration : IGeneratorRegistration<TranslationConfig>
 {
-    public static IServiceCollection AddTranslationOut(this IServiceCollection services, string dn, IEnumerable<TranslationConfig>? configs)
+    public void Register(IServiceCollection services, string dn, IEnumerable<TranslationConfig>? configs)
     {
         GeneratorUtils.HandleConfigs(dn, configs, (config, _) =>
         {
@@ -15,7 +15,5 @@ public static class ServiceExtensions
                 .AddSingleton<IModelWatcher>(p =>
                     new TranslationOutGenerator(p.GetRequiredService<ILogger<TranslationOutGenerator>>(), config, p.GetRequiredService<ModelConfig>(), p.GetRequiredService<TranslationStore>()));
         });
-
-        return services;
     }
 }
