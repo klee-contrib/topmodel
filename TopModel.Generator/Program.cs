@@ -4,11 +4,10 @@ using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.Loaders;
 using TopModel.Generator;
-using TopModel.Generator.CSharp;
+using TopModel.Generator.Csharp;
 using TopModel.Generator.Javascript;
 using TopModel.Generator.Jpa;
-using TopModel.Generator.ProceduralSql;
-using TopModel.Generator.Ssdt;
+using TopModel.Generator.Sql;
 using TopModel.Generator.Translation;
 using TopModel.Utils;
 
@@ -154,8 +153,7 @@ for (var i = 0; i < configs.Count; i++)
     var services = new ServiceCollection()
         .AddLogging(builder => builder.AddProvider(loggerProvider))
         .AddModelStore(fileChecker, config, dn)
-        .AddProceduralSql(dn, config.ProceduralSql)
-        .AddSsdt(dn, config.Ssdt)
+        .AddSql(dn, config.Sql)
         .AddCSharp(dn, config.Csharp)
         .AddJavascript(dn, config.Javascript)
         .AddJpa(dn, config.Jpa)
