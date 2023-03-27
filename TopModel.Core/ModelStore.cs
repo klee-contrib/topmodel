@@ -31,7 +31,7 @@ public class ModelStore
         _fsCache = fsCache;
         _logger = logger;
         _modelFileLoader = modelFileLoader;
-        _modelWatchers = modelWatchers;
+        _modelWatchers = modelWatchers.Where(mw => !mw.Disabled);
         _translationStore = translationStore;
 
         var lockFile = new FileInfo(Path.Combine(_config.ModelRoot, _config.LockFileName));

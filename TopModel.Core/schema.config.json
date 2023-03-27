@@ -100,6 +100,14 @@
               }
             }
           },
+          "disable": {
+            "type": "array",
+            "description": "Désactive les générateurs demandés",
+            "items": {
+              "type": "string",
+              "enum": [ "JTranslationOutGen" ]
+            }
+          },
           "outputDirectory": {
             "type": "string",
             "description": "Racine du répertoire de génération."
@@ -150,6 +158,14 @@
               ".+": {
                 "type": "string"
               }
+            }
+          },
+          "disable": {
+            "type": "array",
+            "description": "Désactive les générateurs demandés",
+            "items": {
+              "type": "string",
+              "enum": [ "SsdtGen", "ProceduralSqlGen" ]
             }
           },
           "outputDirectory": {
@@ -286,6 +302,14 @@
                   }
                 }
               }
+            }
+          },
+          "disable": {
+            "type": "array",
+            "description": "Désactive les générateurs demandés",
+            "items": {
+              "type": "string",
+              "enum": [ "CSharpClassGen", "CSharpMapperGen", "CSharpDbContextGen", "CSharpRefAccessGen", "CSharpApiServerGen", "CSharpApiClientGen" ]
             }
           },
           "outputDirectory": {
@@ -435,6 +459,14 @@
               }
             }
           },
+          "disable": {
+            "type": "array",
+            "description": "Désactive les générateurs demandés",
+            "items": {
+              "type": "string",
+              "enum": [ "JSDefinitionGen", "JSReferenceGen", "JSNGApiClientGen", "JSApiClientGen", "JSResourceGen" ]
+            }
+          },
           "outputDirectory": {
             "type": "string",
             "description": "Racine du répertoire de génération."
@@ -546,6 +578,14 @@
                   }
                 }
               }
+            }
+          },
+          "disable": {
+            "type": "array",
+            "description": "Désactive les générateurs demandés",
+            "items": {
+              "type": "string",
+              "enum": [ "JpaModelGen", "JpaInterfaceGen", "JpaMapperGenerator", "JpaDaoGen", "JpaResourceGen", "SpringApiServerGen", "SpringApiClientGen" ]
             }
           },
           "outputDirectory": {

@@ -13,6 +13,8 @@ public interface IModelWatcher
 
     IEnumerable<string>? GeneratedFiles { get; }
 
+    bool Disabled { get; }
+
     void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors);
 
     void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null);

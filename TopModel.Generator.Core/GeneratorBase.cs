@@ -25,6 +25,8 @@ public abstract class GeneratorBase<T> : IModelWatcher
 
     public virtual IEnumerable<string> GeneratedFiles => new List<string>();
 
+    public bool Disabled => Config.Disable?.Contains(Name) ?? false;
+
     protected Dictionary<string, ModelFile> Files { get; } = new();
 
     protected IEnumerable<Class> Classes => Files.SelectMany(f => f.Value.Classes).Distinct();

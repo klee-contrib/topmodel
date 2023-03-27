@@ -19,6 +19,11 @@ public abstract class GeneratorConfigBase
 #nullable enable
 
     /// <summary>
+    /// Générateurs désactivés.
+    /// </summary>
+    public IList<string>? Disable { get; set; }
+
+    /// <summary>
     /// Variables globales du générateur.
     /// </summary>
     public Dictionary<string, string> Variables { get; set; } = new();
