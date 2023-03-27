@@ -321,7 +321,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
         }
 
-        foreach (var @const in consts.OrderBy(x => x.Name, StringComparer.Ordinal))
+        foreach (var @const in consts.OrderBy(x => x.Name.ToPascalCase(), StringComparer.Ordinal))
         {
             w.WriteSummary(2, @const.Label);
             w.WriteLine(2, $"public const {@const.Domain.CSharp!.Type.TrimEnd('?')} {@const.Name.ToPascalCase()} = {(@const.Domain.ShouldQuoteValue ? $@"""{@const.Code}""" : @const.Code)};");
