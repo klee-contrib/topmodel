@@ -192,11 +192,7 @@ public static class JpaUtils
     {
         return Path.Combine(
             config.OutputDirectory,
-            config.ResolveVariables(
-                classe.IsPersistent ? config.EntitiesPath : config.DtosPath,
-                tag,
-                app: classe.Namespace.AppPath,
-                module: classe.Namespace.ModulePath).ToLower(),
+            config.ResolveVariables(classe.IsPersistent ? config.EntitiesPath : config.DtosPath, tag, module: classe.Namespace.Module).ToFilePath(),
             $"{classe.NamePascal}.java");
     }
 
@@ -204,11 +200,7 @@ public static class JpaUtils
     {
         return Path.Combine(
             config.OutputDirectory,
-            config.ResolveVariables(
-                config.ApiPath!,
-                tag,
-                app: file.Namespace.AppPath,
-                module: file.Namespace.ModulePath).ToLower());
+            config.ResolveVariables(config.ApiPath!, tag, module: file.Namespace.Module).ToFilePath());
     }
 
     public static string GetPackageName(this JpaConfig config, Class classe, string tag, bool? isPersistant = null)
@@ -222,19 +214,12 @@ public static class JpaUtils
                     ? config.EntitiesPath
                     : config.DtosPath,
             tag,
-            app: classe.Namespace.App,
-            module: classe.Namespace.Module,
-            trimBeforeApp: true).ToPackageName();
+            module: classe.Namespace.Module).ToPackageName();
     }
 
     public static string GetPackageName(this JpaConfig config, Endpoint endpoint, string tag)
     {
-        return config.ResolveVariables(
-            config.ApiPath,
-            tag,
-            app: endpoint.Namespace.App,
-            module: endpoint.Namespace.Module,
-            trimBeforeApp: true).ToPackageName();
+        return config.ResolveVariables(config.ApiPath, tag, module: endpoint.Namespace.Module).ToPackageName();
     }
 
     public static string GetMapperFilePath(this JpaConfig config, Class classe, bool isPersistant, string tag)
@@ -244,8 +229,7 @@ public static class JpaUtils
             config.ResolveVariables(
                 isPersistant ? config.EntitiesPath : config.DtosPath,
                 tag: tag,
-                app: classe.Namespace.AppPath,
-                module: classe.Namespace.ModulePath).ToLower(),
+                module: classe.Namespace.Module).ToFilePath(),
             $"{GetMapperClassName(classe, isPersistant)}.java");
     }
 
@@ -279,9 +263,14 @@ public static class JpaUtils
         return GetPackageName(config, classe, tag, isPersistant);
     }
 
+    public static string ToFilePath(this string path)
+    {
+        return path.ToLower().Replace(':', '.').Replace('.', Path.DirectorySeparatorChar);
+    }
+
     public static string ToPackageName(this string path)
     {
-        return path.ToLower().Replace('/', '.').Replace('\\', '.');
+        return path.Split(':').Last().ToLower().Replace('/', '.').Replace('\\', '.');
     }
 
     private static string GetMapperImport(JpaConfig config, Class classe, bool isPersistant, string tag)

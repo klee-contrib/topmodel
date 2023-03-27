@@ -175,7 +175,7 @@ for (var i = 0; i < configs.Count; i++)
 
                 var genConfig = (GeneratorConfigBase)fileChecker.GetGenConfig(configType, genConfigMap);
 
-                genConfig.InitVariables(number);
+                genConfig.InitVariables(config.App, number);
 
                 ModelUtils.CombinePath(dn, genConfig, c => c.OutputDirectory);
 

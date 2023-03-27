@@ -56,11 +56,11 @@ Il existe **3 types de variables** :
 
 Les variables globales sont utilisables dans tous les paramètres (string) de toutes les générateurs, sans restriction. Elles seront remplacées à l'initialisation du générateur par la valeur qui a été définie dans la section `variables` de la configuration.
 
+La variable globale `{app}` est définie par défaut avec la valeur de la propriété `app` de la configuration est peut donc être utilisée partout. Elle peut bien sûr être surchargée si besoin.
+
 ### Variables contextuelles
 
-Il existe 3 variables "contextuelles", dont la valeur est automatiquement renseignée selon l'objet qui est généré, et qui sont utilisables dans certaines propriétés spécifiques des générateurs (selon leur implémentation). Ce sont :
-
-- `{app}`, qui aura toujours pour valeur la valeur de la propriété `app` de la configuration du modèle. Outre son utilisation dans certaines valeurs par défaut de paramètres, certains d'entre-eux implémentent également une règle qui retire tout ce qui précède `{app}` pour générer une valeur. Par exemple, le générateur C# construira le namespace des classes générés de cette façon : si la classe est configurée pour être générée dans `./Sources/Models/{app}.Models`, son namespace sera `{app}.Models`.
+Il existe 2 variables "contextuelles", dont la valeur est automatiquement renseignée selon l'objet qui est généré, et qui sont utilisables dans certaines propriétés spécifiques des générateurs (selon leur implémentation). Ce sont :
 
 - `{module}`, qui sera renseigné avec la valeur du module du fichier courant lors de la génération d'une classe ou d'un endpoint.
 

@@ -31,7 +31,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
     protected override string GetFileName(ModelFile file, string tag)
     {
-        return $"{Config.GetApiPath(file, tag)}/generated/{file.Options.Endpoints.FileName.ToPascalCase()}Client.cs";
+        return Path.Combine(Config.GetApiPath(file, tag), "generated", $"{file.Options.Endpoints.FileName.ToPascalCase()}Client.cs");
     }
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)

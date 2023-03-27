@@ -405,11 +405,11 @@ Pour que, pour chaque module, soit généré les fichiers de resources dans les 
 
   Localisation des classses persistées du modèle, relatif au répertoire de génération.
 
-  Le package des classes générées sera déterminé à partir de cette localisation, en retirant tout ce qui précède `{app}` dans le chemin.
+  Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Templating_: `{app}`, `{module}`
+  _Templating_: `{module}`
 
-  _Valeur par défaut_: `"javagen/{app}/entities/{module}"`
+  _Valeur par défaut_: `"javagen:{app}/entities/{module}"`
 
   _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
 
@@ -417,9 +417,9 @@ Pour que, pour chaque module, soit généré les fichiers de resources dans les 
 
   Localisation des DAOs, relative au répertoire de génération.
 
-  Le package des classes générées sera déterminé à partir de cette localisation, en retirant tout ce qui précède `{app}` dans le chemin.
+  Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Templating_: `{app}`, `{module}`
+  _Templating_: `{module}`
 
   _Variables par tag_: **oui** (plusieurs DAOs pourraient être générés si un fichier à plusieurs tags)
 
@@ -427,11 +427,11 @@ Pour que, pour chaque module, soit généré les fichiers de resources dans les 
 
   Localisation des classes non persistées du modèle, relative au répertoire de génération.
 
-  Le package des classes générées sera déterminé à partir de cette localisation, en retirant tout ce qui précède `{app}` dans le chemin.
+  Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Templating_: `{app}`, `{module}`
+  _Templating_: `{module}`
 
-  _Valeur par défaut_: `"javagen/{app}/dtos/{module}"`
+  _Valeur par défaut_: `"javagen:{app}/dtos/{module}"`
 
   _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
 
@@ -439,11 +439,11 @@ Pour que, pour chaque module, soit généré les fichiers de resources dans les 
 
   Localisation du l'API générée (client ou serveur), relative au répertoire de génération.
 
-  Le package des classes générées sera déterminé à partir de cette localisation, en retirant tout ce qui précède `{app}` dans le chemin.
+  Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Templating_: `{app}`, `{module}`
+  _Templating_: `{module}`
 
-  _Valeur par défaut_: `"javagen/{app}/api/{module}"`
+  _Valeur par défaut_: `"javagen:{app}/api/{module}"`
 
   _Variables par tag_: **oui** (plusieurs clients/serveurs pourraient être générés si un fichier à plusieurs tags)
 

@@ -93,7 +93,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
                 usings.Add("System.Linq");
             }
 
-            var contextNs = Config.GetDbContextNamespace(ns, tag);
+            var contextNs = Config.GetDbContextNamespace(tag);
             if (!implementationNamespace.Contains(contextNs))
             {
                 usings.Add(contextNs);
@@ -112,7 +112,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
 
         if (Config.DbContextPath != null)
         {
-            var dbContextName = Config.GetDbContextName(ns, tag);
+            var dbContextName = Config.GetDbContextName(tag);
 
             w.WriteLine(2, $"private readonly {dbContextName} _dbContext;");
             w.WriteLine();

@@ -8,7 +8,7 @@ public class JpaConfig : GeneratorConfigBase
     /// <summary>
     /// Localisation des classes persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen/{app}/entities/{module}'.
     /// </summary>
-    public string EntitiesPath { get; set; } = "javagen/{app}/entities/{module}";
+    public string EntitiesPath { get; set; } = "javagen:{app}/entities/{module}";
 
     /// <summary>
     /// Localisation des DAOs, relative au répertoire de génération.
@@ -18,12 +18,12 @@ public class JpaConfig : GeneratorConfigBase
     /// <summary>
     /// Localisation des classses non persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen/{app}/dtos/{module}'.
     /// </summary>
-    public string DtosPath { get; set; } = "javagen/{app}/dtos/{module}";
+    public string DtosPath { get; set; } = "javagen:{app}/dtos/{module}";
 
     /// <summary>
     /// Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut, 'javagen/{app}/api/{module}'.
     /// </summary>
-    public string ApiPath { get; set; } = "javagen/{app}/api/{module}";
+    public string ApiPath { get; set; } = "javagen:{app}/api/{module}";
 
     /// <summary>
     /// Mode de génération de l'API ("Client" ou "Server").
@@ -73,14 +73,6 @@ public class JpaConfig : GeneratorConfigBase
         nameof(ApiPath),
         nameof(ApiGeneration),
         nameof(ResourcesPath)
-    };
-
-    public override string[] PropertiesWithAppVariableSupport => new[]
-    {
-        nameof(EntitiesPath),
-        nameof(DaosPath),
-        nameof(DtosPath),
-        nameof(ApiPath)
     };
 
     public override string[] PropertiesWithModuleVariableSupport => new[]
