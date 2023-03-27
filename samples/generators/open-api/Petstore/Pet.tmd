@@ -37,9 +37,6 @@ endpoint:
     - name: petId
       domain: DO_ID
       comment: "Pet id to delete"
-    - name: api_key
-      domain: DO_LIBELLE
-      comment: ""
 ---
 endpoint:
   name: findPetsByStatus

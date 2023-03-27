@@ -197,7 +197,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                     sw.WriteLine($"  preservePropertyCasing: true");
                 }
 
-                if (operation.Value.Parameters.Any() || operation.Value.RequestBody != null)
+                if (operation.Value.Parameters.Any(p => p.In == ParameterLocation.Query || p.In == ParameterLocation.Path) || operation.Value.RequestBody != null)
                 {
                     sw.WriteLine("  params:");
 
@@ -207,7 +207,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                         WriteProperty(_config, sw, new("body", bodySchema), _model);
                     }
 
-                    foreach (var param in operation.Value.Parameters.OrderBy(p => path.Contains($@"{{{p.Name}}}") ? 0 + p.Name : 1 + p.Name))
+                    foreach (var param in operation.Value.Parameters.Where(p => p.In == ParameterLocation.Query || p.In == ParameterLocation.Path).OrderBy(p => path.Contains($@"{{{p.Name}}}") ? 0 + p.Name : 1 + p.Name))
                     {
                         sw.WriteLine($"    - name: {param.Name}");
                         sw.WriteLine($"      domain: {GetDomain(_config, param.Name, param.Schema)}");
