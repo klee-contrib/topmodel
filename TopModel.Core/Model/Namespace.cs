@@ -6,6 +6,8 @@ public struct Namespace
 {
     public string App { get; set; }
 
+    public string AppPath => App.Replace('.', Path.DirectorySeparatorChar);
+
     public string Module { get; set; }
 
     public string ModuleFlat => Module.Replace(".", string.Empty);

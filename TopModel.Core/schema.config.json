@@ -306,11 +306,11 @@
           },
           "apiRootPath": {
             "type": "string",
-            "description": "Localisation du l'API générée (client ou serveur), relatif au répertoire de génération. Par défaut : {app}.Web."
+            "description": "Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut : {app}.Web."
           },
           "apiFilePath": {
             "type": "string",
-            "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API. Par défaut : {module}."
+            "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relative à la racine de l'API. Par défaut : {module}."
           },
           "apiGeneration": {
             "oneOf": [
@@ -335,7 +335,7 @@
           },
           "dbContextPath": {
             "type": "string",
-            "description": "Localisation du DbContext, relatif au répertoire de génération."
+            "description": "Localisation du DbContext, relative au répertoire de génération."
           },
           "dbContextName": {
             "type": "string",
@@ -514,7 +514,6 @@
         "additionalProperties": false,
         "required": [
           "tags",
-          "modelRootPath",
           "outputDirectory"
         ],
         "properties": {
@@ -553,53 +552,21 @@
             "type": "string",
             "description": "Racine du répertoire de génération."
           },
-          "apiRootPath": {
+          "entitiesPath": {
             "type": "string",
-            "description": "Localisation du l'API générée (client ou serveur), relatif au répertoire de génération."
+            "description": "Localisation des classes persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen/{app}/entities/{module}'."
           },
-          "resourceRootPath": {
+          "daosPath": {
             "type": "string",
-            "description": "Localisation des ressources, relative au répertoire de génération."
+            "description": "Localisation des DAOs, relative au répertoire de génération."
           },
-          "modelRootPath": {
+          "dtosPath": {
             "type": "string",
-            "description": "Localisation du modèle, relative au répertoire de génération."
+            "description": "Localisation des classes non persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen/{app}/dtos/{module}'."
           },
-          "daosPackageName": {
+          "apiPath": {
             "type": "string",
-            "description": "Précise le nom du package dans lequel générer les daos."
-          },
-          "entitiesPackageName": {
-            "type": "string",
-            "description": "Précise le nom du package dans lequel générer les classes persistées du modèle."
-          },
-          "dtosPackageName": {
-            "type": "string",
-            "description": "Précise le nom du package dans lequel générer les classes non persistées du modèle."
-          },
-          "fieldsEnum": {
-            "type": "string",
-            "description": "Option pour générer une enum des champs des classes persistées",
-            "default": "None",
-            "enum": [
-              "None",
-              "Persisted",
-              "Dto",
-              "Persisted_Dto"
-            ]
-          },
-          "enumShortcutMode": {
-            "type": "boolean",
-            "description": "Option pour générer des getters et setters vers l'enum des références plutôt que sur la table",
-            "default": "false"
-          },
-          "fieldsEnumInterface": {
-            "type": "string",
-            "description": "Précise l'interface des fields enum générés."
-          },
-          "apiPackageName": {
-            "type": "string",
-            "description": "Précise le nom du package dans lequel générer les controllers."
+            "description": "Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut, 'javagen/{app}/api/{module}'."
           },
           "apiGeneration": {
             "oneOf": [
@@ -617,6 +584,30 @@
                 "pattern": "^\\{[^\\}]+\\}$"
               }
             ]
+          },
+          "resourcesPath": {
+            "type": "string",
+            "description": "Localisation des ressources, relative au répertoire de génération."
+          },
+          "enumShortcutMode": {
+            "type": "boolean",
+            "description": "Option pour générer des getters et setters vers l'enum des références plutôt que sur la table",
+            "default": "false"
+          },
+          "fieldsEnum": {
+            "type": "string",
+            "description": "Option pour générer une enum des champs des classes persistées",
+            "default": "None",
+            "enum": [
+              "None",
+              "Persisted",
+              "Dto",
+              "Persisted_Dto"
+            ]
+          },
+          "fieldsEnumInterface": {
+            "type": "string",
+            "description": "Précise l'interface des fields enum générés."
           },
           "persistenceMode": {
             "type": "string",

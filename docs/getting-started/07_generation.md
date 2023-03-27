@@ -41,7 +41,7 @@ Lorsque nous ajoutons un générateur, nous lui attribuons également une liste 
 Exemple dans le fichier `topmodel.config` :
 
 ```yaml
-proceduralSql:
+sql:
   - tags:
       - entity
 ```
@@ -54,7 +54,7 @@ Classiquement
 - `dto` est utilisé pour les fichiers contenant les classes non persistées
 - Les fichiers contenant les `endpoints` contiennent les deux tags pour que soient générées les API clientes et server
 
-## Générer du 'SQL' (posgresql)
+## Générer du 'SQL' (postgresql)
 
 Ajoutons tout d'abord un générateur SQL à notre application.
 
@@ -63,25 +63,27 @@ Dans le fichier de configuration `topmodel.config`, nous pouvons ajouter le gén
 ```yaml
 ---
 app: sample # Nom de l'application
-proceduralSql: # Nom du générateur
+sql: # Nom du générateur
   - tags: # Liste des tags des fichiers à filtrer pour ce paramétrage
       - entity # Tag des fichiers contenant des classes persistées
 ```
 
 ### Scripts de créations des tables
 
-Ajoutons au générateur posgres la configuration permettant de générer les fichiers de création de table, des indexes et des clés d'unicités
+Ajoutons au générateur postgres la configuration permettant de générer les fichiers de création de table, des indexes et des clés d'unicités
 
 ```yaml
 ---
 app: sample
-proceduralSql:
+sql:
   - tags:
       - entity
-    crebasFile: ./pg/model/01_crebas.sql
-    indexFKFile: ./pg/model/02_index-fk.sql
-    uniqueKeysFile: ./pg/model/03_uniq.sql
+    outputDirectory: ./pg/model/
     targetDBMS: postgre
+    procedural:
+      crebasFile: 01_crebas.sql
+      indexFKFile: 02_index-fk.sql
+      uniqueKeysFile: 03_uniq.sql
 ```
 
 Dans le répertoire du projet, contenant le fichier `topmodel.config`, lancer la commande `modgen`.
@@ -106,14 +108,18 @@ app: sample
 proceduralSql:
   - tags:
       - entity
-    crebasFile: ./pg/model/01_crebas.sql
-    indexFKFile: ./pg/model/02_index-fk.sql
-    uniqueKeysFile: ./pg/model/03_uniq.sql
+    outputDirectory: ./pg/model/
     targetDBMS: postgre
+    procedural:
+      crebasFile: 01_crebas.sql
+      indexFKFile: 02_index-fk.sql
+      uniqueKeysFile: 03_uniq.sql
   - tags:
       - entity
-    initListFile: ./pg/model/04_references.sql
+    outputDirectory: ./pg/model/
     targetDBMS: postgre
+    procedural:
+      initListFile: 04_references.sql
 ```
 
 Le fichier d'initialisation des listes de référence est créé.

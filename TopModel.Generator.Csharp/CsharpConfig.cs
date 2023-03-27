@@ -28,12 +28,12 @@ public class CsharpConfig : GeneratorConfigBase
     public string NonPersistantModelPath { get; set; } = "{app}.{module}.Models/Dto";
 
     /// <summary>
-    /// Localisation du l'API générée (client ou serveur), relatif au répertoire de génération. Par défaut : "{app}.Web".
+    /// Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut : "{app}.Web".
     /// </summary>
     public string ApiRootPath { get; set; } = "{app}.Web";
 
     /// <summary>
-    /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API. Par défaut : "{module}".
+    /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relative à la racine de l'API. Par défaut : "{module}".
     /// </summary>
     public string ApiFilePath { get; set; } = "{module}";
 
@@ -48,7 +48,7 @@ public class CsharpConfig : GeneratorConfigBase
     public bool NoAsyncControllers { get; set; }
 
     /// <summary>
-    /// Localisation du DbContext, relatif au répertoire de génération.
+    /// Localisation du DbContext, relative au répertoire de génération.
     /// </summary>
     public string? DbContextPath { get; set; }
 

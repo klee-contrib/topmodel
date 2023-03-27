@@ -90,7 +90,7 @@ Pour des raisons de performances, les associations oneToOne réciproques ne sont
 
 #### Enum
 
-Lorsque sont ajoutées des valeurs (`values`), le générateur créé les `enum` correspondantes. Le domaine de clé primaire de la classe est ignoré, et le champs prend le type de l'enum. L'enum est générée à l'intérieur de la classe de référence, et s'appelle  `[Nom de la classe].Values`. Les différents champs renseignés dans les valeurs sont également ajoutés en tant que propriétés de l'enum.
+Lorsque sont ajoutées des valeurs (`values`), le générateur créé les `enum` correspondantes. Le domaine de clé primaire de la classe est ignoré, et le champs prend le type de l'enum. L'enum est générée à l'intérieur de la classe de référence, et s'appelle `[Nom de la classe].Values`. Les différents champs renseignés dans les valeurs sont également ajoutés en tant que propriétés de l'enum.
 
 Par ailleurs, si la classe possède une association avec une classe qui contient une liste de référence, alors il le type du champ dans l'enum sera le type de l'enum de la clé primaire de la classe associée.
 
@@ -346,10 +346,10 @@ Le mode `sequence` dans la configuration jpa et dans la configuration postgresql
 
 ```yaml
 ## Configuration jpa et proceduralSql
-    identity:
-      increment: 50
-      start: 1000
-      mode: sequence
+identity:
+  increment: 50
+  start: 1000
+  mode: sequence
 ```
 
 ## FieldsEnum
@@ -382,13 +382,13 @@ Génèrera, dans la classe `Departement`, l'enum suivante :
 
 Le générateur de resources s'appuie sur les `Label` des propriétés, ainsi que sur les traductions récupérées dans le cadre de la configuration du [multilinguisme](/model/i18n.md).
 
-Il suffit d'ajouter la configguration `resourceRootPath` au générateur comme suit :
+Il suffit d'ajouter la configuration `resourcesPath` au générateur comme suit :
 
 ```yaml
 jpa:
   - tags:
       - dto
-    resourceRootPath: resources/i18n/model/{module} # Chemin des fichiers de ressource générés. Ici {module} sera remplacé par le nom du module
+    resourcesPath: resources/i18n/model # Chemin des fichiers de ressource générés.
 ```
 
 Pour que, pour chaque module, soit généré les fichiers de resources dans les différentes langues configurées globalement.
@@ -401,41 +401,67 @@ Pour que, pour chaque module, soit généré les fichiers de resources dans les 
 
   Racine du répertoire de génération
 
-- `apiRootPath`
+- `entitiesPath`
 
-  Localisation du l'API générée (client ou serveur), relatif au répertoire de génération.
+  Localisation des classses persistées du modèle, relatif au répertoire de génération.
 
-  _Variables par tag_: **oui**
+  Le package des classes générées sera déterminé à partir de cette localisation, en retirant tout ce qui précède `{app}` dans le chemin.
 
-- `resourceRootPath`
+  _Templating_: `{app}`, `{module}`
+
+  _Valeur par défaut_: `"javagen/{app}/entities/{module}"`
+
+  _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
+
+- `daosPath`
+
+  Localisation des DAOs, relative au répertoire de génération.
+
+  Le package des classes générées sera déterminé à partir de cette localisation, en retirant tout ce qui précède `{app}` dans le chemin.
+
+  _Templating_: `{app}`, `{module}`
+
+  _Variables par tag_: **oui** (plusieurs DAOs pourraient être générés si un fichier à plusieurs tags)
+
+- `dtosPath`
+
+  Localisation des classes non persistées du modèle, relative au répertoire de génération.
+
+  Le package des classes générées sera déterminé à partir de cette localisation, en retirant tout ce qui précède `{app}` dans le chemin.
+
+  _Templating_: `{app}`, `{module}`
+
+  _Valeur par défaut_: `"javagen/{app}/dtos/{module}"`
+
+  _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
+
+- `apiPath`
+
+  Localisation du l'API générée (client ou serveur), relative au répertoire de génération.
+
+  Le package des classes générées sera déterminé à partir de cette localisation, en retirant tout ce qui précède `{app}` dans le chemin.
+
+  _Templating_: `{app}`, `{module}`
+
+  _Valeur par défaut_: `"javagen/{app}/api/{module}"`
+
+  _Variables par tag_: **oui** (plusieurs clients/serveurs pourraient être générés si un fichier à plusieurs tags)
+
+- `apiGeneration`
+
+  Mode de génération de l'API (`"client"` ou `"server"`).
+
+  _Variables par tag_: **oui** (la valeur de la variable doit être `"client"` ou `"server"`. le client et le serveur pourraient être générés si un fichier à plusieurs tags)
+
+- `resourcesPath`
 
   Localisation des ressources, relative au répertoire de génération.
 
   _Variables par tag_: **oui**
 
-- `modelRootPath`
+- `enumShortcutMode`
 
-  Localisation du modèle, relative au répertoire de génération.
-
-  _Variables par tag_: **oui**
-
-- `daosPackageName`
-
-  Précise le nom du package dans lequel générer les daos
-
-  _Variables par tag_: **oui**
-
-- `entitiesPackageName`
-
-  Précise le nom du package dans lequel générer les classes persistées du modèle.
-
-  _Variables par tag_: **oui**
-
-- `dtosPackageName`
-
-  Précise le nom du package dans lequel générer les classes non persistées du modèle.
-
-  _Variables par tag_: **oui**
+  Option pour générer des getters et setters vers l'enum des références plutôt que sur la table
 
 - `fieldsEnum`
 
@@ -452,43 +478,27 @@ Pour que, pour chaque module, soit généré les fichiers de resources dans les 
 
   _Templating_: `<>` (remplace par `<NomDeLaClasse>`)
 
-- `enumShortcutMode`
-
-  Option pour générer des getters et setters vers l'enum des références plutôt que sur la table
-
-- `apiPackageName`
-
-  Précise le nom du package dans lequel générer les controllers
-
-  _Variables par tag_: **oui**
-
-- `apiGeneration`
-
-  Mode de génération de l'API (`"client"` ou `"server"`).
-
-  _Variables par tag_: **oui** (la valeur de la variable doit être `"client"` ou `"server"`. le client et le serveur pourraient être générés si un fichier à plusieurs tags)
-
 - `persistenceMode`
 
   Mode de génération de la persistence (`"javax"` ou `"jakarta"`).
 
   _Variables par tag_: **oui** (la valeur de la variable doit être `"javax"` ou `"jakarta"`)
 
-- `Identity`
+- `identity`
 
   Options de génération de la séquence
 
-  - `Mode`
+  - `mode`
 
     Mode de génération de la persistence (`"none"` ou `"sequence"` ou `"identity"`).
 
     _Valeur par défaut_: `identity`
 
-  - `Increment`
+  - `increment`
 
     Incrément de la séquence générée.
 
-  - `Start`
+  - `start`
 
     Début de la séquence générée.
 
@@ -501,12 +511,11 @@ jpa:
   - tags:
       - dto
       - entity
-    modelOutputDirectory: ./jpa/src/main/javagen # Dossier cible de la génération
-    daosPackageName: topmodel.exemple.name.daos # Package des DAO
-    dtosPackageName: topmodel.exemple.name.dtos # Package des objets non persistés
-    entitiesPackageName: topmodel.exemple.name.entities # Package des objets non persistés
-    apiOutputDirectory: ./jpa/src/main/javagen # Dossier cible des API
-    apiPackageName: topmodel.exemple.name.api # Package des l'API
+    outputDirectory: ./jpa/src/main/javagen # Dossier cible de la génération
+    entitiesPath: topmodel/exemple/name/entities # Dossier cible des objets non persistés
+    daosPath: topmodel/exemple/name/daos # Dossier cible des DAO
+    dtosPath: topmodel/exemple/name/dtos # Dossier cible des objets non persistés
+    apiPath: topmodel/exemple/name/api # Dossier cible des API
     apiGeneration: Server # Mode de génération de l'API (serveur ou client)
     fieldsEnum: Persisted # Classes  dans lesquelles le générateur doit ajouter une enum des champs : jamais (None), dans les classes persistées (Persisted), dans les classes non persistées (Dto), ou les deux (Persisted_Dto)
     fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<> # Classe dont doivent hériter ces enum

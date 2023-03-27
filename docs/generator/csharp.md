@@ -100,7 +100,7 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
 - `apiRootPath`
 
-  Localisation du l'API générée (client ou serveur), relatif au répertoire de génération.
+  Localisation du l'API générée (client ou serveur), relative au répertoire de génération.
 
   Le namespace des classes d'API générées sera déterminé à partir de cette localisation, en retirant tout ce qui précède `{app}` dans le chemin.
 
@@ -112,7 +112,7 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
 - `apiFilePath`
 
-  Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.
+  Chemin vers lequel sont créés les fichiers d'endpoints générés, relative à la racine de l'API.
 
   _Templating_: `{module}`
 
@@ -132,7 +132,7 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
 - `dbContextPath`
 
-  Localisation du DbContext, relatif au répertoire de génération.
+  Localisation du DbContext, relative au répertoire de génération.
 
   C'est ce paramètre qui décide si le DbContext est généré ou non.
 
