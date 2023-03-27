@@ -123,12 +123,12 @@
         }
       }
     },
-    "proceduralSql": {
+    "sql": {
       "type": "array",
-      "description": "Liste de configs pour la génération de SQL 'procédurale' (sans SSDT)",
+      "description": "Liste de configs pour la génération de SQL.",
       "items": {
         "type": "object",
-        "description": "Config pour la génération de SQL 'procédurale' (sans SSDT)",
+        "description": "Config pour la génération de SQL.",
         "additionalProperties": false,
         "required": [
           "outputDirectory",
@@ -164,113 +164,83 @@
               "postgre"
             ]
           },
-          "crebasFile": {
-            "type": "string",
-            "description": "Emplacement du fichier de création de base."
-          },
-          "uniqueKeysFile": {
-            "type": "string",
-            "description": "Emplacement du fichier de création des index uniques."
-          },
-          "indexFKFile": {
-            "type": "string",
-            "description": "Emplacement du fichier de création des clés étrangères."
-          },
-          "typeFile": {
-            "type": "string",
-            "description": "Emplacement du fichier de création des types."
-          },
-          "initListFile": {
-            "type": "string",
-            "description": "Emplacement du script d'insertion des données des listes de référence."
-          },
-          "identity": {
+          "procedural": {
             "type": "object",
-            "description": "Options de génération de la séquence",
+            "description": "Config pour la génération de SQL 'procédurale'.",
+            "additionalProperties": false,
             "properties": {
-              "mode": {
+              "crebasFile": {
                 "type": "string",
-                "description": "Mode de génération des séquences.",
-                "enum": [
-                  "none",
-                  "sequence",
-                  "identity"
-                ],
-                "default": "identity"
+                "description": "Emplacement du fichier de création de base."
               },
-              "increment": {
-                "type": "number",
-                "description": "Incrément de la séquence générée."
+              "uniqueKeysFile": {
+                "type": "string",
+                "description": "Emplacement du fichier de création des index uniques."
               },
-              "start": {
-                "type": "number",
-                "description": "Début de la séquence générée."
+              "indexFKFile": {
+                "type": "string",
+                "description": "Emplacement du fichier de création des clés étrangères."
+              },
+              "typeFile": {
+                "type": "string",
+                "description": "Emplacement du fichier de création des types."
+              },
+              "initListFile": {
+                "type": "string",
+                "description": "Emplacement du script d'insertion des données des listes de référence."
+              },
+              "identity": {
+                "type": "object",
+                "description": "Options de génération de la séquence",
+                "properties": {
+                  "mode": {
+                    "type": "string",
+                    "description": "Mode de génération des séquences.",
+                    "enum": [
+                      "none",
+                      "sequence",
+                      "identity"
+                    ],
+                    "default": "identity"
+                  },
+                  "increment": {
+                    "type": "number",
+                    "description": "Incrément de la séquence générée."
+                  },
+                  "start": {
+                    "type": "number",
+                    "description": "Début de la séquence générée."
+                  }
+                }
               }
             }
-          }
-        }
-      }
-    },
-    "ssdt": {
-      "type": "array",
-      "description": "Liste de configs pour la génération SSDT",
-      "items": {
-        "type": "object",
-        "description": "Config pour la génération SSDT",
-        "additionalProperties": false,
-        "required": [
-          "outputDirectory",
-          "tags"
-        ],
-        "properties": {
-          "tags": {
-            "type": "array",
-            "description": "Précise les tags de fichier que le générateur doit lire",
-            "items": {
-              "type": "string",
-              "description": "Catégorie de fichier que le générateur doit lire."
-            }
           },
-          "variables": {
+          "ssdt": {
             "type": "object",
-            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
-            "patternProperties": {
-              ".+": {
-                "type": "string"
+            "description": "Config pour la génération SSDT",
+            "additionalProperties": false,
+            "properties": {
+              "tableScriptFolder": {
+                "type": "string",
+                "description": "Dossier du projet pour les scripts de déclaration de table."
+              },
+              "tableTypeScriptFolder": {
+                "type": "string",
+                "description": " Dossier du projet pour les scripts de déclaration de type table."
+              },
+              "initListScriptFolder": {
+                "type": "string",
+                "description": "Dossier du projet pour les scripts d'initialisation des listes de références."
+              },
+              "initListMainScriptName": {
+                "type": "string",
+                "description": "Fichier du projet référençant les scripts d'initialisation des listes de références."
+              },
+              "disableIdentity": {
+                "type": "boolean",
+                "description": "Désactive les colonnes d'identité."
               }
             }
-          },
-          "outputDirectory": {
-            "type": "string",
-            "description": "Racine du répertoire de génération."
-          },
-          "tableScriptFolder": {
-            "type": "string",
-            "description": "Dossier du projet pour les scripts de déclaration de table."
-          },
-          "tableTypeScriptFolder": {
-            "type": "string",
-            "description": " Dossier du projet pour les scripts de déclaration de type table."
-          },
-          "initListScriptFolder": {
-            "type": "string",
-            "description": "Dossier du projet pour les scripts d'initialisation des listes de références."
-          },
-          "initListMainScriptName": {
-            "type": "string",
-            "description": "Fichier du projet référençant les scripts d'initialisation des listes de références."
-          },
-          "disableIdentity": {
-            "type": "boolean",
-            "description": "Désactive les colonnes d'identité."
-          },
-          "targetDBMS": {
-            "type": "string",
-            "description": "SGBD cible ('sqlserver' ou 'postgres'). SSDT en tant que tel n'existe évidemment pas pour PostgreSQL, mais le générateur peut quand même être utilisé pour générer les définitions de tables et les scripts d'inserts.'",
-            "enum": [
-              "sqlserver",
-              "postgre"
-            ]
           }
         }
       }

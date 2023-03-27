@@ -7,7 +7,7 @@ public interface IModelWatcher
 {
     string Name { get; }
 
-    int Number { get; init; }
+    int Number { get; }
 
     string FullName => $"{Name.PadRight(18, '.')}@{Number}";
 

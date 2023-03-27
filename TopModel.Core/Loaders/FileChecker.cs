@@ -69,6 +69,59 @@ public class FileChecker
         return _deserializer.Deserialize<T>(parser);
     }
 
+    public ModelConfig DeserializeConfig(string yaml)
+    {
+        var parser = new Parser(new StringReader(yaml));
+        var config = new ModelConfig();
+        parser.Consume<StreamStart>();
+        parser.Consume<DocumentStart>();
+        parser.ConsumeMapping(() =>
+        {
+            var prop = parser.Consume<Scalar>().Value;
+            parser.TryConsume<Scalar>(out var value);
+            switch (prop)
+            {
+                case "app":
+                    config.App = value!.Value;
+                    break;
+                case "modelRoot":
+                    config.ModelRoot = value!.Value;
+                    break;
+                case "lockFileName":
+                    config.LockFileName = value!.Value;
+                    break;
+                case "noWarn":
+                    parser.ConsumeSequence(() =>
+                    {
+                        config.NoWarn.Add(Enum.Parse<ModelErrorType>(parser.Consume<Scalar>().Value));
+                    });
+                    break;
+                case "pluralizeTableNames":
+                    config.PluralizeTableNames = value!.Value == "true";
+                    break;
+                case "useLegacyRoleNames":
+                    config.UseLegacyRoleNames = value!.Value == "true";
+                    break;
+                case "i18n":
+                    config.I18n = _deserializer.Deserialize<I18nConfig>(parser);
+                    break;
+                default:
+                    config.Generators.Add(prop, _deserializer.Deserialize<IEnumerable<IDictionary<string, object>>>(parser));
+                    break;
+            }
+        });
+
+        parser.Consume<DocumentEnd>();
+        parser.Consume<StreamEnd>();
+
+        return config;
+    }
+
+    public object GetGenConfig(Type configType, IDictionary<string, object> genConfigMap)
+    {
+        return _deserializer.Deserialize(_serializer.Serialize(genConfigMap), configType)!;
+    }
+
     private void CheckCore(JsonSchema schema, string fileName, string? content = null)
     {
         content ??= File.ReadAllText(fileName);
@@ -79,12 +132,8 @@ public class FileChecker
         var firstObject = true;
         while (parser.Current is DocumentStart)
         {
-            var yaml = _deserializer.Deserialize(parser);
-            if (yaml == null)
-            {
-                throw new ModelException($"Impossible de lire le fichier {fileName.ToRelative()}.");
-            }
-
+            var yaml = _deserializer.Deserialize(parser)
+                ?? throw new ModelException($"Impossible de lire le fichier {fileName.ToRelative()}.");
             var json = _serializer.Serialize(yaml);
 
             var finalSchema = firstObject && schema.OneOf.Any() ? schema.OneOf.First() : schema;
