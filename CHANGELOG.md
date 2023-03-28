@@ -1,5 +1,86 @@
 # TopModel.Generator (`modgen`)
 
+## 1.27.0
+
+- [#231](https://github.com/klee-contrib/topmodel/pull/231) - Modularisation modgen, partie 1
+- [#232](https://github.com/klee-contrib/topmodel/pull/232) - Evolutions config JPA + détermination des packages (Java)/namespaces (C#) + disable
+
+**Breaking changes**
+
+Cette release contient principalement du refactoring interne pour préparer des évolutions futures (#spoiler). Ce refactoring se traduit dans des **changements sur les configs** de plusieurs générateurs :
+
+- `proceduralSql`/`ssdt` : les configs de ces deux générateurs ont été fusionnées dans une seule config `sql` avec une section `procedural` et `ssdt`
+  Exemple :
+
+  ```yaml
+  proceduralSql:
+    - tags: []
+      outputDirectory: ./sql
+      targetDBMS: postgres
+      crebasFile: 01_tables.sql
+      indexFKFile: 02_fk_indexes.sql
+      uniqueKeysFile: 03_unique_keys.sql
+  ```
+
+  devient :
+
+  ```yaml
+  sql:
+    - tags: []
+      outputDirectory: ./sql
+      targetDBMS: postgres
+      procedural:
+        crebasFile: 01_tables.sql
+        indexFKFile: 02_fk_indexes.sql
+        uniqueKeysFile: 03_unique_keys.sql
+  ```
+
+- `jpa` :
+
+  - `modelRootPath` + `entitiesPackageName` ont été remplacés par `entitiesPath`
+  - `modelRootPath` + `daosPackageName` ont été remplacés par `daosPath`
+  - `modelRootPath` + `dtosPackageName` ont été remplacés par `dtosPath`
+  - `apiRootPath` + `apiPackageName` ont été remplacés par `apiPath`
+  - `resourceRootPath` a été remplacé par `resourcesPath`
+
+  Pour spécifier la partie du chemin de destination qui doit être utilisée pour constituer le nom du package Java, il faut utiliser le séparateur `:`. Il est aussi nécessaire d'inclure la variable `{module}` dans les chemins. Par exemple :
+
+  ```yaml
+  outputDirectory: src/main
+  entitiesPath: javagen:topmodel/sample/demo/entities/{module}
+  # le package sera topmodel.sample.demo.entities.{module}
+  # on peut utiliser des `.` et des `/` de manière interchangeable
+  ```
+
+  Exemple de migration :
+
+  ```yaml
+  outputDirectory: ../back
+  modelRootPath: back-dao/src/main/javagen
+  entitiesPackageName: back.dao.entities
+  daosPackageName: back.dao.daos
+  dtosPackageName: back.dao.dtos
+  apiRootPath: back-webapp/src/main/javagen
+  apiPackageName: back.webapp.controller
+  resourceRootPath: back-core/src/main/resources/i18n/model
+  ```
+
+  vers
+
+  ```yaml
+  variables:
+    # Vous n'êtes pas de définir d'utiliser cette variable mais c'est probablement le plus simple.
+    modelRootPath: back-dao/src/main/javagen
+  outputDirectory: ../back
+  entitiesPath: "{modelRootPath}:back.dao.entities.{module}"
+  daosPath: "{modelRootPath}:back.dao.daos.{module}"
+  dtosPath: "{modelRootPath}back.dao.dtos.{module}"
+  apiPath: back-webapp/src/main/javagen:back.webapp.controller.{module}
+  resourcesPath: back-core/src/main/resources/i18n/model
+  ```
+
+  - `csharp` : Si vous utilisiez la variable `{app}` dans vos chemins de modèle/api précédée par un `/`, il faut le remplacer par un `:` pour conserver le même namespace pour les classes générées (auparavant, il était déterminé à partir du chemin cible en retirant ce qui précède la variable `{app}`, maintenant ça marche avec les `:` comme en Java).
+
 ## 1.26.3
 
 - [`a4b8757b`](https://github.com/klee-contrib/topmodel/commit/a4b8757b2f3846765214b3d61d108aa539496a54) - Contrôle des types de domaines définis par générateur
