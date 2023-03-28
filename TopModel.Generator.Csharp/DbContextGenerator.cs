@@ -20,20 +20,20 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
     {
         if (classe.IsPersistent && !classe.Abstract)
         {
-            yield return ("main", Config.GetDbContextFilePath(classe.Namespace, tag));
+            yield return ("main", Config.GetDbContextFilePath(tag));
 
             if (Config.UseEFComments)
             {
-                yield return ("comments", Config.GetDbContextFilePath(classe.Namespace, tag).Replace(".cs", ".comments.cs"));
+                yield return ("comments", Config.GetDbContextFilePath(tag).Replace(".cs", ".comments.cs"));
             }
         }
     }
 
     protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
     {
-        var dbContextName = Config.GetDbContextName(classes.First().Namespace, tag);
+        var dbContextName = Config.GetDbContextName(tag);
         var usings = new List<string> { "Microsoft.EntityFrameworkCore" };
-        var contextNs = Config.GetDbContextNamespace(classes.First().Namespace, tag);
+        var contextNs = Config.GetDbContextNamespace(tag);
 
         foreach (var ns in classes
             .Concat(GetAssociationProperties(classes).Select(ap => ap.AssociationProperty.Association))

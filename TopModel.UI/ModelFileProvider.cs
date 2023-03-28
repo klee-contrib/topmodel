@@ -31,6 +31,8 @@ public class ModelFileProvider : IModelWatcher
 
     public IEnumerable<string>? GeneratedFiles => null;
 
+    public bool Disabled => false;
+
     public void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null)
     {
         foreach (var file in files)

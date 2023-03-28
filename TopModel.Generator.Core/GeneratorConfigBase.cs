@@ -19,6 +19,11 @@ public abstract class GeneratorConfigBase
 #nullable enable
 
     /// <summary>
+    /// Générateurs désactivés.
+    /// </summary>
+    public IList<string>? Disable { get; set; }
+
+    /// <summary>
     /// Variables globales du générateur.
     /// </summary>
     public Dictionary<string, string> Variables { get; set; } = new();
@@ -31,11 +36,6 @@ public abstract class GeneratorConfigBase
     public IEnumerable<string> TagVariableNames => TagVariables.Values.SelectMany(v => v.Keys).Distinct();
 
     public IEnumerable<string> GlobalVariableNames => Variables.Select(v => v.Key).Except(TagVariableNames).Distinct();
-
-    /// <summary>
-    /// Propriétés qui supportent la variable "app".
-    /// </summary>
-    public virtual string[] PropertiesWithAppVariableSupport => Array.Empty<string>();
 
     /// <summary>
     /// Propriétés qui supportent la variable "module".
@@ -57,28 +57,16 @@ public abstract class GeneratorConfigBase
     /// </summary>
     /// <param name="value">Valeur.</param>
     /// <param name="tag">Tag.</param>
-    /// <param name="app">App.</param>
     /// <param name="module">Module.</param>
     /// <param name="lang">Lang.</param>
-    /// <param name="trimBeforeApp">Supprime tout ce qui précède le premier {app}.</param>
     /// <returns>La valeur avec les variables résolues.</returns>
-    public virtual string ResolveVariables(string value, string? tag = null, string? app = null, string? module = null, string? lang = null, bool trimBeforeApp = false)
+    public virtual string ResolveVariables(string value, string? tag = null, string? module = null, string? lang = null)
     {
         var result = value;
 
         if (tag != null)
         {
             result = ResolveTagVariables(result, tag);
-        }
-
-        if (app != null)
-        {
-            if (trimBeforeApp)
-            {
-                result = result[Math.Max(0, result.IndexOf("{app}"))..];
-            }
-
-            result = ReplaceVariable(result, "app", app);
         }
 
         if (module != null)
@@ -97,9 +85,15 @@ public abstract class GeneratorConfigBase
     /// <summary>
     /// Initialise les variables globales, et par tag manquantes.
     /// </summary>
+    /// <param name="app">Valeur de la variable 'app'.</param>
     /// <param name="number">Numéro du générateur.</param>
-    public void InitVariables(int number)
+    public void InitVariables(string app, int number)
     {
+        if (!Variables.ContainsKey("app"))
+        {
+            Variables["app"] = app;
+        }
+
         // Si on a défini au moins une variable par tag, alors on s'assure qu'elle est définie pour tous les tags (et on y met "" si ce n'est pas une variable globale).
         if (TagVariableNames.Any())
         {
@@ -141,11 +135,10 @@ public abstract class GeneratorConfigBase
                 foreach (var match in Regex.Matches(value, @"\{([$a-zA-Z0-9_-]+)(:\w+)?\}").Cast<Match>())
                 {
                     var varName = match.Groups[1].Value;
-                    if (varName == "app" || varName == "module" || varName == "lang")
+                    if (varName == "module" || varName == "lang")
                     {
                         var supportedProperties = varName switch
                         {
-                            "app" => PropertiesWithAppVariableSupport,
                             "module" => PropertiesWithModuleVariableSupport,
                             "lang" => PropertiesWithLangVariableSupport,
                             _ => null!

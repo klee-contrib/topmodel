@@ -22,6 +22,8 @@ public class ModelWatcher : IModelWatcher
 
     public IEnumerable<string>? GeneratedFiles => null;
 
+    public bool Disabled => false;
+
     public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
     {
         foreach (var fileErrors in errors)

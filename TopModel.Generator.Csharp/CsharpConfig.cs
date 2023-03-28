@@ -28,12 +28,12 @@ public class CsharpConfig : GeneratorConfigBase
     public string NonPersistantModelPath { get; set; } = "{app}.{module}.Models/Dto";
 
     /// <summary>
-    /// Localisation du l'API générée (client ou serveur), relatif au répertoire de génération. Par défaut : "{app}.Web".
+    /// Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut : "{app}.Web".
     /// </summary>
     public string ApiRootPath { get; set; } = "{app}.Web";
 
     /// <summary>
-    /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API. Par défaut : "{module}".
+    /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relative à la racine de l'API. Par défaut : "{module}".
     /// </summary>
     public string ApiFilePath { get; set; } = "{module}";
 
@@ -48,7 +48,7 @@ public class CsharpConfig : GeneratorConfigBase
     public bool NoAsyncControllers { get; set; }
 
     /// <summary>
-    /// Localisation du DbContext, relatif au répertoire de génération.
+    /// Localisation du DbContext, relative au répertoire de génération.
     /// </summary>
     public string? DbContextPath { get; set; }
 
@@ -119,19 +119,6 @@ public class CsharpConfig : GeneratorConfigBase
     /// Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `UseEFMigrations`).
     /// </summary>
     public bool UseEFComments { get; set; }
-
-    public override string[] PropertiesWithAppVariableSupport => new[]
-    {
-        nameof(PersistantModelPath),
-        nameof(PersistantReferencesModelPath),
-        nameof(NonPersistantModelPath),
-        nameof(ApiRootPath),
-        nameof(DbContextName),
-        nameof(DbContextPath),
-        nameof(ReferenceAccessorsName),
-        nameof(ReferenceAccessorsInterfacePath),
-        nameof(ReferenceAccessorsImplementationPath)
-    };
 
     public override string[] PropertiesWithModuleVariableSupport => new[]
     {
@@ -228,12 +215,11 @@ public class CsharpConfig : GeneratorConfigBase
     /// <summary>
     /// Récupère le nom du DbContext.
     /// </summary>
-    /// <param name="ns">Nom de l'application.</param>
     /// <param name="tag">tag</param>
     /// <returns>Nom.</returns>
-    public string GetDbContextName(Namespace ns, string tag)
+    public string GetDbContextName(string tag)
     {
-        return ResolveVariables(DbContextName, tag: tag, app: ns.App.Replace(".", string.Empty));
+        return ResolveVariables(DbContextName, tag: tag).Replace(".", string.Empty);
     }
 
     /// <summary>
@@ -251,18 +237,16 @@ public class CsharpConfig : GeneratorConfigBase
                     : PersistantModelPath
                 : NonPersistantModelPath,
             tag: tag,
-            app: classe.Namespace.App,
-            module: classe.Namespace.ModulePath);
+            module: classe.Namespace.ModulePath).ToFilePath();
     }
 
     public string GetApiPath(ModelFile file, string tag, bool withControllers = false)
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(ApiRootPath, tag: tag, app: file.Namespace.App),
+            ResolveVariables(ApiRootPath, tag: tag).ToFilePath(),
             withControllers ? "Controllers" : string.Empty,
-            ResolveVariables(ApiFilePath, tag: tag, module: file.Namespace.ModulePath))
-       .Replace("\\", "/");
+            ResolveVariables(ApiFilePath, tag: tag, module: file.Namespace.ModulePath));
     }
 
     /// <summary>
@@ -285,10 +269,8 @@ public class CsharpConfig : GeneratorConfigBase
                         : PersistantModelPath
                     : NonPersistantModelPath,
             tag: tag,
-            app: classe.Namespace.App,
-            module: classe.Namespace.Module,
-            trimBeforeApp: true)
-        .Replace("/", ".")
+            module: classe.Namespace.Module)
+        .ToNamespace()
         .Replace(".Dto", string.Empty);
     }
 
@@ -303,10 +285,7 @@ public class CsharpConfig : GeneratorConfigBase
         return ResolveVariables(
              Path.Combine(ApiRootPath, ApiFilePath),
              tag: tag,
-             app: endpoint.Namespace.App,
-             module: endpoint.Namespace.Module,
-             trimBeforeApp: true)
-        .Replace("\\", "/")
-        .Replace("/", ".");
+             module: endpoint.Namespace.Module)
+        .ToNamespace();
     }
 }

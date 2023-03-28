@@ -30,7 +30,7 @@ public class JpaResourceGenerator : TranslationGeneratorBase<JpaConfig>
         {
             return Path.Combine(
                 Config.OutputDirectory,
-                Config.ResolveVariables(Config.ResourceRootPath, tag: tag, lang: lang).ToLower(),
+                Config.ResolveVariables(Config.ResourcesPath!, tag: tag, lang: lang).ToLower(),
                 $"{p.Parent.Namespace.RootModule.ToKebabCase()}{(string.IsNullOrEmpty(lang) ? string.Empty : $"_{lang}")}.properties");
         }
 

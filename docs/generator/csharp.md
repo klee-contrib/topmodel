@@ -66,9 +66,9 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   Localisation du modèle persisté, relative au répertoire de génération.
 
-  Le namespace des classes générées sera déterminé à partir de cette localisation, en retirant tout ce qui précède `{app}` dans le chemin.
+  Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Templating_: `{app}`, `{module}`
+  _Templating_: `{module}`
 
   _Valeur par défaut_: `"{app}.{module}.Models"`
 
@@ -78,9 +78,9 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   Localisation des classes de références persistées, relative au répertoire de génération.
 
-  Le namespace des classes générées sera déterminé à partir de cette localisation, en retirant tout ce qui précède `{app}` dans le chemin.
+  Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Templating_: `{app}`, `{module}`
+  _Templating_: `{module}`
 
   _Valeur par défaut_: Valeur de `persistantModelPath`
 
@@ -90,9 +90,9 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   Localisation du modèle non persisté, relative au répertoire de génération.
 
-  Le namespace des classes générées sera déterminé à partir de cette localisation, en retirant tout ce qui précède `{app}` dans le chemin.
+  Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
-  _Templating_: `{app}`, `{module}`
+  _Templating_: `{module}`
 
   _Valeur par défaut_: `"{app}.{module}.Models/Dto"`
 
@@ -100,11 +100,9 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
 - `apiRootPath`
 
-  Localisation du l'API générée (client ou serveur), relatif au répertoire de génération.
+  Localisation du l'API générée (client ou serveur), relative au répertoire de génération.
 
-  Le namespace des classes d'API générées sera déterminé à partir de cette localisation, en retirant tout ce qui précède `{app}` dans le chemin.
-
-  _Templating_: `{app}`
+  Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
   _Valeur par défaut_: `"{app}.Web"`
 
@@ -112,7 +110,7 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
 - `apiFilePath`
 
-  Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.
+  Chemin vers lequel sont créés les fichiers d'endpoints générés, relative à la racine de l'API.
 
   _Templating_: `{module}`
 
@@ -132,19 +130,15 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
 - `dbContextPath`
 
-  Localisation du DbContext, relatif au répertoire de génération.
+  Localisation du DbContext, relative au répertoire de génération.
 
   C'est ce paramètre qui décide si le DbContext est généré ou non.
-
-  _Templating_: `{app}`
 
   _Variables par tag_: **oui** (plusieurs contextes pourraient être générés si un fichier à plusieurs tags)
 
 - `dbContextName`
 
   Nom du DbContext.
-
-  _Templating_: `{app}`
 
   _Valeur par défaut_: `"{app}DbContext"`
 
@@ -154,9 +148,11 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   Chemin vers lequel générer les interfaces d'accesseurs de référence.
 
+  Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
+
   Les accesseurs de référence ne seront générés que si `kinetix: true`.
 
-  _Templating_: `{app}`, `{module}`
+  _Templating_: `{module}`
 
   _Valeur par défaut_: `"{DbContextPath}/Reference"`
 
@@ -166,9 +162,11 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   Chemin vers lequel générer les implémentation d'accesseurs de référence.
 
+  Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
+
   Les accesseurs de référence ne seront générés que si `kinetix: true`.
 
-  _Templating_: `{app}`, `{module}`
+  _Templating_: `{module}`
 
   _Valeur par défaut_: `"{DbContextPath}/Reference"`
 
@@ -180,7 +178,7 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   Les accesseurs de référence ne seront générés que si `kinetix: true`.
 
-  _Templating_: `{app}`, `{module}`
+  _Templating_: `{module}`
 
   _Valeur par défaut_: `"{module}ReferenceAccessors"`
 

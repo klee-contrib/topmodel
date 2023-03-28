@@ -123,21 +123,19 @@ public static class CSharpUtils
             (classe.Abstract ? "I" : string.Empty) + classe.NamePascal + ".cs");
     }
 
-    public static string GetDbContextFilePath(this CsharpConfig config, Namespace ns, string tag)
+    public static string GetDbContextFilePath(this CsharpConfig config, string tag)
     {
         return Path.Combine(
             config.OutputDirectory,
-            config.ResolveVariables(config.DbContextPath!, tag: tag, app: ns.App),
+            config.ResolveVariables(config.DbContextPath!, tag: tag).ToFilePath(),
             "generated",
-            $"{config.GetDbContextName(ns, tag)}.cs");
+            $"{config.GetDbContextName(tag)}.cs");
     }
 
-    public static string GetDbContextNamespace(this CsharpConfig config, Namespace ns, string tag)
+    public static string GetDbContextNamespace(this CsharpConfig config, string tag)
     {
-        return config.ResolveVariables(config.DbContextPath!, tag: tag, app: ns.App, trimBeforeApp: true)
-            .Replace("\\", "/")
-            .Replace("/", ".")
-            .Trim('.');
+        return config.ResolveVariables(config.DbContextPath!, tag: tag)
+            .ToNamespace();
     }
 
     public static string GetMapperFilePath(this CsharpConfig config, Class classe, bool isPersistant, string tag)
@@ -147,8 +145,7 @@ public static class CSharpUtils
             config.ResolveVariables(
                 isPersistant ? config.PersistantModelPath : config.NonPersistantModelPath,
                 tag: tag,
-                app: classe.Namespace.App,
-                module: classe.Namespace.ModulePath),
+                module: classe.Namespace.ModulePath).ToFilePath(),
             "generated",
             $"{classe.GetMapperName(isPersistant)}.cs");
     }
@@ -163,7 +160,6 @@ public static class CSharpUtils
         return config.ResolveVariables(
             config.ReferenceAccessorsName,
             tag: tag,
-            app: ns.App,
             module: ns.ModuleFlat);
     }
 
@@ -174,8 +170,7 @@ public static class CSharpUtils
             config.ResolveVariables(
                 config.ReferenceAccessorsInterfacePath,
                 tag: tag,
-                app: ns.App,
-                module: ns.ModulePath),
+                module: ns.ModulePath).ToFilePath(),
             "generated",
             $"I{config.GetReferenceAccessorName(ns, tag)}.cs");
     }
@@ -187,8 +182,7 @@ public static class CSharpUtils
             config.ResolveVariables(
                 config.ReferenceAccessorsImplementationPath,
                 tag: tag,
-                app: ns.App,
-                module: ns.ModulePath),
+                module: ns.ModulePath).ToFilePath(),
             "generated",
             $"{config.GetReferenceAccessorName(ns, tag)}.cs");
     }
@@ -198,12 +192,7 @@ public static class CSharpUtils
         return config.ResolveVariables(
             config.ReferenceAccessorsInterfacePath,
             tag: tag,
-            app: ns.App,
-            module: ns.Module,
-            trimBeforeApp: true)
-        .Replace("\\", "/")
-        .Replace("/", ".")
-        .Replace("..", ".");
+            module: ns.Module).ToNamespace();
     }
 
     public static string GetReferenceImplementationNamespace(this CsharpConfig config, Namespace ns, string tag)
@@ -211,12 +200,7 @@ public static class CSharpUtils
         return config.ResolveVariables(
             config.ReferenceAccessorsImplementationPath,
             tag: tag,
-            app: ns.App,
-            module: ns.Module,
-            trimBeforeApp: true)
-        .Replace("\\", "/")
-        .Replace("/", ".")
-        .Replace("..", ".");
+            module: ns.Module).ToNamespace();
     }
 
     public static string GetPropertyTypeName(this CsharpConfig config, IProperty prop, bool nonNullable = false, bool useIEnumerable = true)
@@ -274,6 +258,16 @@ public static class CSharpUtils
         }
 
         return regType!.ContainsKey(name);
+    }
+
+    public static string ToFilePath(this string path)
+    {
+        return path.TrimEnd('.').Replace(':', Path.DirectorySeparatorChar);
+    }
+
+    public static string ToNamespace(this string path)
+    {
+        return path.Split(':').Last().Replace('/', '.').Replace('\\', '.').Replace("..", ".").Trim('.');
     }
 
     /// <summary>

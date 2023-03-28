@@ -192,9 +192,7 @@ public static class JpaUtils
     {
         return Path.Combine(
             config.OutputDirectory,
-            config.ResolveVariables(config.ModelRootPath, tag),
-            Path.Combine(config.ResolveVariables(classe.IsPersistent ? config.EntitiesPackageName : config.DtosPackageName, tag).Split(".")),
-            classe.Namespace.ModulePath.ToLower(),
+            config.ResolveVariables(classe.IsPersistent ? config.EntitiesPath : config.DtosPath, tag, module: classe.Namespace.Module).ToFilePath(),
             $"{classe.NamePascal}.java");
     }
 
@@ -202,36 +200,36 @@ public static class JpaUtils
     {
         return Path.Combine(
             config.OutputDirectory,
-            Path.Combine(config.ResolveVariables(config.ApiRootPath!, tag).ToLower().Split(".")),
-            Path.Combine(config.ResolveVariables(config.ApiPackageName, tag).Split('.')),
-            file.Namespace.ModulePath.ToLower());
+            config.ResolveVariables(config.ApiPath!, tag, module: file.Namespace.Module).ToFilePath());
     }
 
     public static string GetPackageName(this JpaConfig config, Class classe, string tag, bool? isPersistant = null)
     {
-        var packageRoot = config.ResolveVariables(
+        return config.ResolveVariables(
             isPersistant.HasValue
                 ? isPersistant.Value
-                    ? config.EntitiesPackageName
-                    : config.DtosPackageName
+                    ? config.EntitiesPath
+                    : config.DtosPath
                 : classe.IsPersistent
-                    ? config.EntitiesPackageName
-                    : config.DtosPackageName,
-            tag);
-        return $"{packageRoot}.{classe.Namespace.Module.ToLower()}";
+                    ? config.EntitiesPath
+                    : config.DtosPath,
+            tag,
+            module: classe.Namespace.Module).ToPackageName();
     }
 
     public static string GetPackageName(this JpaConfig config, Endpoint endpoint, string tag)
     {
-        return $"{config.ResolveVariables(config.ApiPackageName, tag)}.{endpoint.Namespace.Module.ToLower()}";
+        return config.ResolveVariables(config.ApiPath, tag, module: endpoint.Namespace.Module).ToPackageName();
     }
 
     public static string GetMapperFilePath(this JpaConfig config, Class classe, bool isPersistant, string tag)
     {
         return Path.Combine(
             config.OutputDirectory,
-            config.ResolveVariables(config.ModelRootPath, tag),
-            Path.Combine(GetMapperPackage(config, classe, isPersistant, tag).Split('.')),
+            config.ResolveVariables(
+                isPersistant ? config.EntitiesPath : config.DtosPath,
+                tag: tag,
+                module: classe.Namespace.Module).ToFilePath(),
             $"{GetMapperClassName(classe, isPersistant)}.java");
     }
 
@@ -263,6 +261,16 @@ public static class JpaUtils
     public static string GetMapperPackage(this JpaConfig config, Class classe, bool isPersistant, string tag)
     {
         return GetPackageName(config, classe, tag, isPersistant);
+    }
+
+    public static string ToFilePath(this string path)
+    {
+        return path.ToLower().Replace(':', '.').Replace('.', Path.DirectorySeparatorChar);
+    }
+
+    public static string ToPackageName(this string path)
+    {
+        return path.Split(':').Last().ToLower().Replace('/', '.').Replace('\\', '.');
     }
 
     private static string GetMapperImport(JpaConfig config, Class classe, bool isPersistant, string tag)
