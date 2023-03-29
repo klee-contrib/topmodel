@@ -16,7 +16,7 @@ Cette release contient principalement du refactoring interne pour préparer des 
   proceduralSql:
     - tags: []
       outputDirectory: ./sql
-      targetDBMS: postgres
+      targetDBMS: postgre
       crebasFile: 01_tables.sql
       indexFKFile: 02_fk_indexes.sql
       uniqueKeysFile: 03_unique_keys.sql
@@ -28,7 +28,7 @@ Cette release contient principalement du refactoring interne pour préparer des 
   sql:
     - tags: []
       outputDirectory: ./sql
-      targetDBMS: postgres
+      targetDBMS: postgre
       procedural:
         crebasFile: 01_tables.sql
         indexFKFile: 02_fk_indexes.sql
@@ -74,7 +74,7 @@ Cette release contient principalement du refactoring interne pour préparer des 
   outputDirectory: ../back
   entitiesPath: "{modelRootPath}:back.dao.entities.{module}"
   daosPath: "{modelRootPath}:back.dao.daos.{module}"
-  dtosPath: "{modelRootPath}back.dao.dtos.{module}"
+  dtosPath: "{modelRootPath}:back.dao.dtos.{module}"
   apiPath: back-webapp/src/main/javagen:back.webapp.controller.{module}
   resourcesPath: back-core/src/main/resources/i18n/model
   ```
