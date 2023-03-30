@@ -44,8 +44,7 @@ public class UtilisateurApiControllerImpl implements UtilisateurApiController {
 	}
 
 	@Override
-	public Page<UtilisateurSearch> search(Long utiId, Long age, Long profilId, String email, String nom,
-			Values typeUtilisateurCode, LocalDate dateCreation, LocalDateTime dateModification) {
+	public Page<UtilisateurSearch> search(final Long utiId, final Long age, final Long profilId, final String email, final String nom, final Boolean actif, final Values typeUtilisateurCode, final LocalDate dateCreation, final LocalDateTime dateModification) {
 		// TODO Auto-generated method stub
 		return null;
 	}
