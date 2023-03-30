@@ -15,7 +15,7 @@ import jakarta.persistence.EntityManagerFactory;
 @Configuration
 @EnableJpaAuditing
 @EntityScan(basePackages = { "topmodel.jpa.sample.demo.entities" })
-//Gestion des transaction au niveau des composantns avec l'annotation @Transactionnal (ou @TransctionnalWithRollback)
+//Gestion des transaction au niveau des composants avec l'annotation @Transactionnal (ou @TransctionnalWithRollback)
 @EnableTransactionManagement
 //Liste des package comportant des repositories qui acc�s aux sources de donn�es JPA (BDD).
 @EnableJpaRepositories(basePackages = { "topmodel.jpa.sample.demo.daos" })

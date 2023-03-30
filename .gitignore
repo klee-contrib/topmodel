@@ -9,3 +9,9 @@ nupkg
 *.user
 *.vsix
 launchSettings.json
+
+# Intellij Idea
+.idea
+
+# Docker PostgreSQL
+postgres-data
