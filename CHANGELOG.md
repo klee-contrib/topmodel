@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.27.1
+
+- [`c05448b5`](https://github.com/klee-contrib/topmodel/commit/c05448b54d5d47a75a5c63c973c53f4ba8dc324f) - [JS] Fix import de réference dans un endpoint sans enum.
+
 ## 1.27.0
 
 - [#231](https://github.com/klee-contrib/topmodel/pull/231) - Modularisation modgen, partie 1
