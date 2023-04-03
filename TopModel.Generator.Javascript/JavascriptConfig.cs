@@ -134,7 +134,7 @@ public class JavascriptConfig : GeneratorConfigBase
         string target;
         if (dep.Source is IFieldProperty fp)
         {
-            if (fp.GetPropertyTypeName(availableClasses) != fp.Domain.TS!.Type && dep.Classe.EnumKey != null)
+            if (fp.GetPropertyTypeName(availableClasses) != fp.Domain.TS!.Type && dep.Classe.IsJSReference())
             {
                 target = GetReferencesFileName(dep.Classe.Namespace, tag);
             }
@@ -145,7 +145,9 @@ public class JavascriptConfig : GeneratorConfigBase
         }
         else
         {
-            target = GetClassFileName(dep.Classe, tag);
+            target = dep.Classe.IsJSReference()
+                ? GetReferencesFileName(dep.Classe.Namespace, tag)
+                : GetClassFileName(dep.Classe, tag);
         }
 
         var source = dep.Source switch
