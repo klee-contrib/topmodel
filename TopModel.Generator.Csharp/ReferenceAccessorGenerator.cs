@@ -18,7 +18,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.Reference)
+        if (classe.Reference && !Config.NoPersistance(tag))
         {
             yield return ("interface", Config.GetReferenceInterfaceFilePath(classe.Namespace, tag));
             yield return ("implementation", Config.GetReferenceImplementationFilePath(classe.Namespace, tag));
