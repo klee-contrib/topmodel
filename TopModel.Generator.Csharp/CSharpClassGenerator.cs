@@ -540,11 +540,11 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
                 if (Config.Kinetix)
                 {
-                    if (prop is AssociationProperty ap && ap.Association.IsPersistent && ap.Association.Reference)
+                    if (prop is AssociationProperty ap && Classes.Contains(ap.Association) && ap.Association.IsPersistent && ap.Association.Reference)
                     {
                         w.WriteAttribute(2, "ReferencedType", $"typeof({ap.Association.NamePascal})");
                     }
-                    else if (fp is AliasProperty alp2 && !alp2.PrimaryKey && alp2.Property.PrimaryKey && alp2.Property.Class.Reference)
+                    else if (fp is AliasProperty alp2 && !alp2.PrimaryKey && alp2.Property.PrimaryKey && Classes.Contains(alp2.Property.Class) && alp2.Property.Class.Reference)
                     {
                         w.WriteAttribute(2, "ReferencedType", $"typeof({alp2.Property.Class.NamePascal})");
                     }
