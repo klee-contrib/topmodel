@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.27.2
+
+- [`68ffa085`](https://github.com/klee-contrib/topmodel/commit/68ffa0850ee2882756e8f350b3891ddd0bef8cc1) - [C#] Ajout config `domainNamespace`
+- [`6db60654`](https://github.com/klee-contrib/topmodel/commit/6db606549aa6f13008ed4b5d388091f6566d62aa) - [Mappers] Fix génération mappers si les mappers persistés et non persistés sont générés dans le même fichier
+- [`08169b8e`](https://github.com/klee-contrib/topmodel/commit/08169b8e420b8896268a4ef017b8c3e5db7ab9fd) - [C#] `noPersistance` par tag
+
 ## 1.27.1
 
 - [`c05448b5`](https://github.com/klee-contrib/topmodel/commit/c05448b54d5d47a75a5c63c973c53f4ba8dc324f) - [JS] Fix import de réference dans un endpoint sans enum.

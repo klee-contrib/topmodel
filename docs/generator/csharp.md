@@ -217,6 +217,12 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   _Valeur par défaut_: `true`
 
+- `domainNamespace`
+
+  Namespace de l'enum de domaine pour Kinetix.
+
+  _Valeur par défaut_: `{app}.Common`
+
 - `noColumnOnAlias`
 
   Retire les attributs de colonnes sur les alias (ça ne plaît pas à EF Core mais ça peut être utile pour d'autres ORMs pour mapper directement les colonnes)
@@ -224,6 +230,8 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 - `noPersistance`
 
   Considère tous les classes comme étant non-persistantes (pas d'attributs SQL, génération vers le chemin non-persistant...).
+
+  _Variables par tag_: **oui**
 
 - `enumsForStaticReferences`
 
