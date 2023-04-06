@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.27.3
+
+- [`f3122fa2`](https://github.com/klee-contrib/topmodel/commit/f3122fa222da55869e7b2653beacb767ec297218) - Erreur claire en cas de doublon de domaine.
+- [`60246ee9`](https://github.com/klee-contrib/topmodel/commit/60246ee9ea498ae9e267ea7cd712937826bd054d) - [C#] Fix annotation kinetix référence en trop si classe non disponible
+- [`884ebc9f`](https://github.com/klee-contrib/topmodel/commit/884ebc9f5bd54180bdac2d804ed795b33b1a4b08) - [C#] Pas de referenceaccessor si noPersistance: true
+
 ## 1.27.2
 
 - [`68ffa085`](https://github.com/klee-contrib/topmodel/commit/68ffa0850ee2882756e8f350b3891ddd0bef8cc1) - [C#] Ajout config `domainNamespace`
