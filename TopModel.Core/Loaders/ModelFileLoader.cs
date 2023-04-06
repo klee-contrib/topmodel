@@ -170,7 +170,7 @@ public class ModelFileLoader
             }
             else
             {
-                throw new ModelException("Type de document inconnu.");
+                throw new ModelException(file, $"Type de document inconnu ('{scalar.Value}').", new Reference(scalar));
             }
 
             parser.Consume<MappingEnd>();

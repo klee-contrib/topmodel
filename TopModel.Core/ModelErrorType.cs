@@ -38,6 +38,11 @@ public enum ModelErrorType
     TMD0006,
 
     /// <summary>
+    /// Le domaine '{domain}' est déjà défini.
+    /// </summary>
+    TMD0007,
+
+    /// <summary>
     /// La classe '{0}' doit avoir une (et une seule) clé primaire pour être référencée dans une association.
     /// </summary>
     TMD1001,
