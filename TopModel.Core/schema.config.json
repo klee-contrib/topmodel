@@ -397,6 +397,10 @@
             "type": "boolean",
             "description": "Si on génère avec Kinetix."
           },
+          "domainNamespace": {
+            "type": "string",
+            "description": "Namespace de l'enum de domaine pour Kinetix. Par défaut : '{app}.Common'."
+          },
           "noColumnOnAlias": {
             "type": "boolean",
             "description": "Retire les attributs de colonnes sur les alias."

@@ -649,7 +649,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             if (item.Properties.OfType<IFieldProperty>().Any() && Config.Kinetix)
             {
                 usings.Add("Kinetix.Modeling.Annotations");
-                usings.Add($"{item.Namespace.App}.Common");
+                usings.Add(Config.DomainNamespace);
             }
 
             if (item.Extends != null)

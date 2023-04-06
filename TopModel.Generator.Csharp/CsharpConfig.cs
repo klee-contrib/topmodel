@@ -101,6 +101,11 @@ public class CsharpConfig : GeneratorConfigBase
     public bool Kinetix { get; set; } = true;
 
     /// <summary>
+    /// Namespace de l'enum de domaine pour Kinetix. Par défaut : '{app}.Common'.
+    /// </summary>
+    public string DomainNamespace { get; set; } = "{app}.Common";
+
+    /// <summary>
     /// Retire les attributs de colonnes sur les alias.
     /// </summary>
     public bool NoColumnOnAlias { get; set; }
