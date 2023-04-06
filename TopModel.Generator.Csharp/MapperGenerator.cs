@@ -18,7 +18,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
     protected override string GetFileName(Class classe, bool isPersistant, string tag)
     {
-        return Config.GetMapperFilePath(classe, !Config.NoPersistance && isPersistant, tag);
+        return Config.GetMapperFilePath(classe, !Config.NoPersistance(tag) && isPersistant, tag);
     }
 
     protected override void HandleFile(bool? isPersistant, string fileName, string tag, IEnumerable<Class> classes)

@@ -2,6 +2,7 @@
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Generator.Core;
+using YamlDotNet.Serialization;
 
 namespace TopModel.Generator.Csharp;
 
@@ -113,7 +114,8 @@ public class CsharpConfig : GeneratorConfigBase
     /// <summary>
     /// Considère tous les classes comme étant non-persistantes (= pas d'attribut SQL).
     /// </summary>
-    public bool NoPersistance { get; set; }
+    [YamlMember(Alias = "noPersistance")]
+    public string? NoPersistanceParam { get; set; }
 
     /// <summary>
     /// Utilise des enums au lieu de strings pour les PKs de listes de référence statiques.
@@ -142,6 +144,7 @@ public class CsharpConfig : GeneratorConfigBase
         nameof(PersistantModelPath),
         nameof(PersistantReferencesModelPath),
         nameof(NonPersistantModelPath),
+        nameof(NoPersistanceParam),
         nameof(DbContextPath),
         nameof(DbContextName),
         nameof(DbSchema),
@@ -236,7 +239,7 @@ public class CsharpConfig : GeneratorConfigBase
     public string GetModelPath(Class classe, string tag)
     {
         return ResolveVariables(
-            classe.IsPersistent && !NoPersistance
+            classe.IsPersistent && !NoPersistance(tag)
                 ? classe.Reference
                     ? PersistantReferencesModelPath
                     : PersistantModelPath
@@ -268,7 +271,7 @@ public class CsharpConfig : GeneratorConfigBase
                 ? isPersistant.Value
                     ? PersistantModelPath
                     : NonPersistantModelPath
-                : classe.IsPersistent && !NoPersistance
+                : classe.IsPersistent && !NoPersistance(tag)
                     ? classe.Reference
                         ? PersistantReferencesModelPath
                         : PersistantModelPath
@@ -292,5 +295,10 @@ public class CsharpConfig : GeneratorConfigBase
              tag: tag,
              module: endpoint.Namespace.Module)
         .ToNamespace();
+    }
+
+    public bool NoPersistance(string tag)
+    {
+        return ResolveVariables(NoPersistanceParam ?? string.Empty, tag) == true.ToString();
     }
 }

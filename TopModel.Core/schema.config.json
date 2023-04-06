@@ -286,7 +286,10 @@
             "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
             "patternProperties": {
               ".+": {
-                "type": "string"
+                "oneOf": [
+                  { "type": "string" },
+                  { "type": "boolean" }
+                ]
               }
             }
           },
@@ -298,7 +301,10 @@
                 "type": "object",
                 "patternProperties": {
                   ".*": {
-                    "type": "string"
+                    "oneOf": [
+                      { "type": "string" },
+                      { "type": "boolean" }
+                    ]
                   }
                 }
               }
@@ -406,8 +412,17 @@
             "description": "Retire les attributs de colonnes sur les alias."
           },
           "noPersistance": {
-            "type": "boolean",
-            "description": "Considère tous les classes comme étant non-persistantes (= pas d'attribut SQL)."
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "Considère tous les classes comme étant non-persistantes (= pas d'attribut SQL)."
+              },
+              {
+                "type": "string",
+                "description": "Considère tous les classes comme étant non-persistantes (= pas d'attribut SQL).",
+                "pattern": "^\\{[^\\}]+\\}$"
+              }
+            ]
           },
           "enumsForStaticReferences": {
             "type": "boolean",
