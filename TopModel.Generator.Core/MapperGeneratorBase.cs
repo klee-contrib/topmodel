@@ -32,16 +32,16 @@ public abstract class MapperGeneratorBase<T> : GeneratorBase<T>
 
     protected abstract string GetFileName(Class classe, bool isPersistant, string tag);
 
-    protected abstract void HandleFile(bool isPersistant, string fileName, string tag, IEnumerable<Class> classes);
+    protected abstract void HandleFile(bool? isPersistant, string fileName, string tag, IEnumerable<Class> classes);
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in Mappers
             .SelectMany(m => Config.Tags.Intersect(GetClassTags(m.Classe))
-                .Select(tag => (key: (FileName: GetFileName(m.Classe, m.IsPersistant, tag), m.IsPersistant), tag, m.Classe)))
-            .GroupBy(f => f.key))
+                .Select(tag => (FileName: GetFileName(m.Classe, m.IsPersistant, tag), Tag: tag, m.Classe, m.IsPersistant)))
+            .GroupBy(f => f.FileName))
         {
-            HandleFile(file.Key.IsPersistant, file.Key.FileName, file.First().tag, file.Select(f => f.Classe));
+            HandleFile(file.All(f => f.IsPersistant) ? true : file.All(f => !f.IsPersistant) ? false : null, file.Key, file.First().Tag, file.Select(f => f.Classe));
         }
     }
 }

@@ -22,7 +22,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         return Config.GetMapperFilePath(classe, isPersistant, tag);
     }
 
-    protected override void HandleFile(bool isPersistant, string fileName, string tag, IEnumerable<Class> classes)
+    protected override void HandleFile(bool? isPersistant, string fileName, string tag, IEnumerable<Class> classes)
     {
         var sampleClass = classes.First();
         var package = Config.GetMapperPackage(sampleClass, isPersistant, tag);

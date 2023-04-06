@@ -150,9 +150,9 @@ public static class CSharpUtils
             $"{classe.GetMapperName(isPersistant)}.cs");
     }
 
-    public static string GetMapperName(this Class classe, bool isPersistant)
+    public static string GetMapperName(this Class classe, bool? isPersistant)
     {
-        return $"{classe.Namespace.ModuleFlat}{(isPersistant ? string.Empty : "DTO")}Mappers";
+        return $"{classe.Namespace.ModuleFlat}{(isPersistant == true ? string.Empty : "DTO")}Mappers";
     }
 
     public static string GetReferenceAccessorName(this CsharpConfig config, Namespace ns, string tag)

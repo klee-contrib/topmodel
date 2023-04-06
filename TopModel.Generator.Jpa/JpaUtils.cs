@@ -243,9 +243,9 @@ public static class JpaUtils
         return GetMapperClassName(classe, IsPersistantMapper(classe, mapper));
     }
 
-    public static string GetMapperClassName(this Class classe, bool isPersistant)
+    public static string GetMapperClassName(this Class classe, bool? isPersistant)
     {
-        return $@"{classe.Namespace.ModuleFlat}{(isPersistant ? string.Empty : "DTO")}Mappers";
+        return $@"{classe.Namespace.ModuleFlat}{(isPersistant == true ? string.Empty : "DTO")}Mappers";
     }
 
     public static string GetMapperImport(this JpaConfig config, Class classe, FromMapper mapper, string tag)
@@ -258,7 +258,7 @@ public static class JpaUtils
         return GetMapperImport(config, classe, IsPersistantMapper(classe, mapper), tag);
     }
 
-    public static string GetMapperPackage(this JpaConfig config, Class classe, bool isPersistant, string tag)
+    public static string GetMapperPackage(this JpaConfig config, Class classe, bool? isPersistant, string tag)
     {
         return GetPackageName(config, classe, tag, isPersistant);
     }

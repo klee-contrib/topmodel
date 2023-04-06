@@ -18,18 +18,18 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
     protected override string GetFileName(Class classe, bool isPersistant, string tag)
     {
-        return Config.GetMapperFilePath(classe, isPersistant, tag);
+        return Config.GetMapperFilePath(classe, !Config.NoPersistance && isPersistant, tag);
     }
 
-    protected override void HandleFile(bool isPersistant, string fileName, string tag, IEnumerable<Class> classes)
+    protected override void HandleFile(bool? isPersistant, string fileName, string tag, IEnumerable<Class> classes)
     {
         var sampleClass = classes.First();
         using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
 
         var ns = Config.GetNamespace(sampleClass, tag, isPersistant);
 
-        var fm = FromMappers.Where(fm => fm.IsPersistant == isPersistant && classes.Contains(fm.Classe));
-        var tm = ToMappers.Where(fm => fm.IsPersistant == isPersistant && classes.Contains(fm.Classe));
+        var fm = FromMappers.Where(fm => (isPersistant == null || fm.IsPersistant == isPersistant) && classes.Contains(fm.Classe));
+        var tm = ToMappers.Where(fm => (isPersistant == null || fm.IsPersistant == isPersistant) && classes.Contains(fm.Classe));
 
         var fromMappers = (fm ?? Array.Empty<(Class, FromMapper, bool)>())
             .OrderBy(m => $"{m.Classe.NamePascal} {string.Join(',', m.Mapper.Params.Select(p => p.Name))}", StringComparer.Ordinal)
