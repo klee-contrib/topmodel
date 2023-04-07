@@ -32,6 +32,8 @@ De plus, pour un module, on sépare les mappers en deux fichiers potentiels :
 - Tous les mappers qui référencent au moins une classe persistée seront générés dans un fichier `ModuleMappers`, qui sera généré à côté des classes persistées du module.
 - Les autres (ceux qui référencent uniquement des classes non persistées) seront générés dans un fichier `ModuleDTOMappers`, qui sera généré à côté des classes non-persistées du module.
 
+_Remarque : le module utilisé pour un mapper est celui de la classe persistée qui a été trouvée, où à défaut celui de la classe qui définit le mapper. Dans le cas où toutes les classes sont non persistées, il est possible de spécifier un tag dans la liste du paramètre `moduleTagsOverrides` pour choisir les classes définies dans les fichiers avec ce tag._
+
 ### Génération du DbContext
 
 Le DbContext peut être généré soit comme un simple "repository" avec juste la liste de tous les `DbSet` des classes persistées, ou alors il peut être complété avec l'ensemble des informations nécessaires pour générer les migrations de base de données avec EF Core. Dans le premier cas, le modèle de base de données devra être généré et mis à jour autrement (par exemple avec le générateur SQL de TopModel).
@@ -234,6 +236,10 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
   Si `kinetix: true`, les accesseurs de liste de références ne seront pas générés.
 
   _Variables par tag_: **oui**
+
+- `mapperTagsOverrides`
+
+  Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).
 
 - `enumsForStaticReferences`
 

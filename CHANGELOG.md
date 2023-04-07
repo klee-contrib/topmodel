@@ -1,5 +1,17 @@
 # TopModel.Generator (`modgen`)
 
+## 1.28.0
+
+- [`87957382`](https://github.com/klee-contrib/topmodel/commit/8795738240650d176c7c8a44519bc5fe69e3dacc) - [Mappers] Génération des mappers à côté de la classe persistée au lieu des classes persistées du module de la classe du mapper + [C#] `moduleTagsOverrides`
+
+  **impacts génération (C#/JPA)** : Les mappers (statiques) qui utilisent des classes persistées sont désormais générés dans le module de la (première) classe persistée au lieu du module de la classe qui définit le mapper. Cela ne devrait pas causer de problème majeur, en particulier côté JPA si les mappers sont utilisés via les DTOs.
+
+- [`e7f24d1f`](https://github.com/klee-contrib/topmodel/commit/e7f24d1f37cb2e65e5d597a7064de578cec07ceb) - [C#] "persistant" > "persistent"
+
+  **breaking change (C#)** : j'ai corrigé mes fautes d'orthographe sur `persistentModelPath` et `nonPersistentModelPath` dans la configuration du générateur C# (en anglais ça s'écrit avec un `e` et non un `a`). Désolé.
+
+- [`86231438`](https://github.com/klee-contrib/topmodel/commit/862314387e3bb8c2c18e756120ee976db65277ad) - [C#ClassGen] Annotations de colonnes que si la classe persistée est dans la config
+
 ## 1.27.3
 
 - [`f3122fa2`](https://github.com/klee-contrib/topmodel/commit/f3122fa222da55869e7b2653beacb767ec297218) - Erreur claire en cas de doublon de domaine.

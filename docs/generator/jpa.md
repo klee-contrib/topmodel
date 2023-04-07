@@ -218,6 +218,8 @@ Un fichier d'interface DAO est généré pour chacune des classes persistées du
 
 Les mappers sont générés comme des méthodes statiques dans une classe statique. Cette classe rassemble tous les mappers d'un module racine. Elle est positionné dans le package des entités si l'une des deux classes est persistée, et dans le package des Dtos sinon.
 
+_Remarque : le module utilisé pour un mapper est celui de la classe persistée qui a été trouvée, où à défaut celui de la classe qui définit le mapper._
+
 Les mappers `from` sont nommés `create[Nom de la classe à créer]`. Ils prennent en entrée la liste des paramètres d'entrée définis dans le mapper, plus une instance de la classe cible. Si ce dernier paramètre n'est pas renseigné, alors une nouvelle instance de la classe cible sera créée. Sinon, l'instance cible sera peuplée à partir des paramètres d'entrée renseignés.
 
 Il en va de même pour les mappers `to`. A la différence qu'ils s'appellent `to[Nom de la classe cible]`, ou bien du nom défini dans le `mapper`. Dans le cas des mappers `to`, le paramètre source est unique et obligatoire.
