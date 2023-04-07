@@ -135,7 +135,7 @@ public abstract class AbstractSchemaGenerator
 
         var foreignKeys = classes
             .OrderBy(c => c.SqlName)
-            .Where(c => c.IsPersistent && !c.Abstract)
+            .Where(c => c.IsPersistent && !c.Abstract && classes.Contains(c))
             .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType, classes.ToList()))
             .ToList();
 

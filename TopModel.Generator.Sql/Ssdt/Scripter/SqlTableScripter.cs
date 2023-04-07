@@ -308,7 +308,7 @@ public class SqlTableScripter : ISqlScripter<Class>
         definitions.Add(sb.ToString());
 
         // Foreign key constraints
-        foreach (var property in properties.OfType<AssociationProperty>().Where(ap => ap.Association.IsPersistent))
+        foreach (var property in properties.OfType<AssociationProperty>().Where(ap => ap.Association.IsPersistent && availableClasses.Contains(ap.Association)))
         {
             sb.Clear();
             WriteConstraintForeignKey(sb, property);
