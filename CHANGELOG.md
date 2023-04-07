@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.28.1
+
+- [`c8d53f11`](https://github.com/klee-contrib/topmodel/commit/c8d53f1167142fbbc3a2c7fda17972c9e08b1a9f) - [SQL] Fix FK générées à tort pour des classes non disponibles
+
 ## 1.28.0
 
 - [`87957382`](https://github.com/klee-contrib/topmodel/commit/8795738240650d176c7c8a44519bc5fe69e3dacc) - [Mappers] Génération des mappers à côté de la classe persistée au lieu des classes persistées du module de la classe du mapper + [C#] `moduleTagsOverrides`
