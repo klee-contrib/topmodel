@@ -16,32 +16,32 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
     public override string Name => "CSharpMapperGen";
 
-    protected override string GetFileName(Class classe, bool isPersistent, string tag)
+    protected override string GetFileName((Class Classe, FromMapper Mapper) mapper, string tag)
     {
-        return Config.GetMapperFilePath(classe, !Config.NoPersistence(tag) && isPersistent, tag);
+        return Config.GetMapperFilePath(mapper, tag);
     }
 
-    protected override void HandleFile(bool? isPersistent, string fileName, string tag, IEnumerable<Class> classes)
+    protected override string GetFileName((Class Classe, ClassMappings Mapper) mapper, string tag)
     {
-        var sampleClass = classes.First();
+        return Config.GetMapperFilePath(mapper, tag);
+    }
+
+    protected override void HandleFile(string fileName, string tag, IList<(Class Classe, FromMapper Mapper)> fromMappers, IList<(Class Classe, ClassMappings Mapper)> toMappers)
+    {
         using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
 
-        var ns = Config.GetNamespace(sampleClass, tag, isPersistent);
+        var sampleFromMapper = fromMappers.FirstOrDefault();
+        var sampleToMapper = toMappers.FirstOrDefault();
 
-        var fm = FromMappers.Where(fm => (isPersistent == null || fm.IsPersistent == isPersistent) && classes.Contains(fm.Classe));
-        var tm = ToMappers.Where(fm => (isPersistent == null || fm.IsPersistent == isPersistent) && classes.Contains(fm.Classe));
+        var (mapperNs, modelPath) = sampleFromMapper != default
+            ? Config.GetMapperLocation(sampleFromMapper, tag)
+            : Config.GetMapperLocation(sampleToMapper, tag);
 
-        var fromMappers = (fm ?? Array.Empty<(Class, FromMapper, bool)>())
-            .OrderBy(m => $"{m.Classe.NamePascal} {string.Join(',', m.Mapper.Params.Select(p => p.Name))}", StringComparer.Ordinal)
-            .ToList();
-        var toMappers = (tm ?? Array.Empty<(Class, ClassMappings, bool)>())
-            .OrderBy(m => $"{m.Mapper.Name} {m.Classe.NamePascal}", StringComparer.Ordinal)
-            .ToList();
+        var ns = Config.GetNamespace(mapperNs, modelPath, tag);
 
         var usings = fromMappers.SelectMany(m => m.Mapper.Params.Select(p => p.Class).Concat(new[] { m.Classe }))
             .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
-            .Where(c => Classes.Contains(c))
-            .Select(c => Config.GetNamespace(c, tag))
+            .Select(c => Config.GetNamespace(c, GetClassTags(c).Contains(tag) ? tag : GetClassTags(c).Intersect(Config.Tags).First()))
             .Where(@using => !ns.Contains(@using))
             .Distinct()
             .ToArray();
@@ -53,13 +53,13 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
         }
 
         w.WriteNamespace(ns);
-        w.WriteSummary(1, $"Mappers pour le module '{sampleClass.Namespace.Module}'.");
-        w.WriteLine(1, $"public static class {sampleClass.GetMapperName(isPersistent)}");
+        w.WriteSummary(1, $"Mappers pour le module '{mapperNs.Module}'.");
+        w.WriteLine(1, $"public static class {Config.GetMapperName(mapperNs, modelPath)}");
         w.WriteLine(1, "{");
 
         foreach (var fromMapper in fromMappers)
         {
-            var (classe, mapper, _) = fromMapper;
+            var (classe, mapper) = fromMapper;
 
             w.WriteSummary(2, $"Crée une nouvelle instance de '{classe}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
             foreach (var param in mapper.Params)
@@ -246,7 +246,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
         foreach (var toMapper in toMappers)
         {
-            var (classe, mapper, _) = toMapper;
+            var (classe, mapper) = toMapper;
 
             w.WriteSummary(2, $"Mappe '{classe}' vers '{mapper.Class}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
             w.WriteParam("source", $"Instance de '{classe}'");
@@ -342,5 +342,10 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
         w.WriteLine(1, "}");
         w.WriteNamespaceEnd();
+    }
+
+    protected override bool IsPersistent(Class classe)
+    {
+        return GetClassTags(classe).Intersect(Config.MapperTagsOverrides).Any() || classe.IsPersistent;
     }
 }

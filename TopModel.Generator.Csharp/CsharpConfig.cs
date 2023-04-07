@@ -118,6 +118,11 @@ public class CsharpConfig : GeneratorConfigBase
     public string? NoPersistenceParam { get; set; }
 
     /// <summary>
+    /// Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).
+    /// </summary>
+    public string[] MapperTagsOverrides { get; set; } = Array.Empty<string>();
+
+    /// <summary>
     /// Utilise des enums au lieu de strings pour les PKs de listes de référence statiques.
     /// </summary>
     public bool EnumsForStaticReferences { get; set; }
@@ -266,20 +271,10 @@ public class CsharpConfig : GeneratorConfigBase
     /// <returns>Namespace.</returns>
     public string GetNamespace(Class classe, string tag, bool? isPersistent = null)
     {
-        return ResolveVariables(
-            isPersistent.HasValue
-                ? isPersistent.Value
-                    ? PersistentModelPath
-                    : NonPersistentModelPath
-                : classe.IsPersistent && !NoPersistence(tag)
-                    ? classe.Reference
-                        ? PersistentReferencesModelPath
-                        : PersistentModelPath
-                    : NonPersistentModelPath,
-            tag: tag,
-            module: classe.Namespace.Module)
-        .ToNamespace()
-        .Replace(".Dto", string.Empty);
+        return GetNamespace(
+            classe.Namespace,
+            isPersistent.HasValue ? isPersistent.Value ? PersistentModelPath : NonPersistentModelPath : classe.IsPersistent && !NoPersistence(tag) ? classe.Reference ? PersistentReferencesModelPath : PersistentModelPath : NonPersistentModelPath,
+            tag);
     }
 
     /// <summary>
@@ -290,11 +285,14 @@ public class CsharpConfig : GeneratorConfigBase
     /// <returns>Namespace.</returns>
     public string GetNamespace(Endpoint endpoint, string tag)
     {
-        return ResolveVariables(
-             Path.Combine(ApiRootPath, ApiFilePath),
-             tag: tag,
-             module: endpoint.Namespace.Module)
-        .ToNamespace();
+        return GetNamespace(endpoint.Namespace, Path.Combine(ApiRootPath, ApiFilePath), tag);
+    }
+
+    public string GetNamespace(Namespace ns, string modelPath, string tag)
+    {
+        return ResolveVariables(modelPath, tag: tag, module: ns.Module)
+            .ToNamespace()
+            .Replace(".Dto", string.Empty);
     }
 
     public bool NoPersistence(string tag)

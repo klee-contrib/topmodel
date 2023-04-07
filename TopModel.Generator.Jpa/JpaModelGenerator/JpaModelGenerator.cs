@@ -522,9 +522,11 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteLine(1, $"@Override");
             }
 
+            var (mapperNs, mapperModelPath) = Config.GetMapperLocation(toMapper);
+
             fw.WriteLine(1, $"public {mapper.Class.NamePascal} {mapper.Name.Value.ToCamelCase()}({mapper.Class.NamePascal} target) {{");
-            fw.WriteLine(2, $"return {classe.GetMapperClassName(mapper)}.{mapper.Name.Value.ToCamelCase()}(this, target);");
-            fw.AddImport(Config.GetMapperImport(classe, mapper, tag)!);
+            fw.WriteLine(2, $"return {Config.GetMapperName(mapperNs, mapperModelPath)}.{mapper.Name.Value.ToCamelCase()}(this, target);");
+            fw.AddImport(Config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
             fw.WriteLine(1, "}");
 
             if (toMappers.IndexOf(toMapper) < toMappers.Count - 1)

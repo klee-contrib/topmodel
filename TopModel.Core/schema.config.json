@@ -424,6 +424,13 @@
               }
             ]
           },
+          "mapperTagsOverrides": {
+            "type": "array",
+            "description": "Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).",
+            "items": {
+              "type": "string"
+            }
+          },
           "enumsForStaticReferences": {
             "type": "boolean",
             "description": "Utilise des enums au lieu de strings pour les PKs de listes de référence statiques."

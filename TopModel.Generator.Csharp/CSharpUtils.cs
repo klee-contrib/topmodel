@@ -138,21 +138,64 @@ public static class CSharpUtils
             .ToNamespace();
     }
 
-    public static string GetMapperFilePath(this CsharpConfig config, Class classe, bool isPersistent, string tag)
+    public static string GetMapperFilePath(this CsharpConfig config, (Class Classe, FromMapper Mapper) mapper, string tag)
     {
+        var (ns, modelPath) = config.GetMapperLocation(mapper, tag);
         return Path.Combine(
             config.OutputDirectory,
-            config.ResolveVariables(
-                isPersistent ? config.PersistentModelPath : config.NonPersistentModelPath,
-                tag: tag,
-                module: classe.Namespace.ModulePath).ToFilePath(),
+            config.ResolveVariables(modelPath, tag: tag, module: ns.ModulePath).ToFilePath(),
             "generated",
-            $"{classe.GetMapperName(isPersistent)}.cs");
+            $"{config.GetMapperName(ns, modelPath)}.cs");
     }
 
-    public static string GetMapperName(this Class classe, bool? isPersistent)
+    public static string GetMapperFilePath(this CsharpConfig config, (Class Classe, ClassMappings Mapper) mapper, string tag)
     {
-        return $"{classe.Namespace.ModuleFlat}{(isPersistent == true ? string.Empty : "DTO")}Mappers";
+        var (ns, modelPath) = config.GetMapperLocation(mapper, tag);
+        return Path.Combine(
+            config.OutputDirectory,
+            config.ResolveVariables(modelPath, tag: tag, module: ns.ModulePath).ToFilePath(),
+            "generated",
+            $"{config.GetMapperName(ns, modelPath)}.cs");
+    }
+
+    public static (Namespace Namespace, string ModelPath) GetMapperLocation(this CsharpConfig config, (Class Classe, FromMapper Mapper) mapper, string tag)
+    {
+        var pmp = config.NoPersistence(tag) ? config.NonPersistentModelPath : config.PersistentModelPath;
+
+        if (mapper.Classe.IsPersistent)
+        {
+            return (mapper.Classe.Namespace, pmp);
+        }
+
+        var persistentParam = mapper.Mapper.Params.FirstOrDefault(p => p.Class.IsPersistent);
+        if (persistentParam != null)
+        {
+            return (persistentParam.Class.Namespace, pmp);
+        }
+
+        return (mapper.Classe.Namespace, config.NonPersistentModelPath);
+    }
+
+    public static (Namespace Namespace, string ModelPath) GetMapperLocation(this CsharpConfig config, (Class Classe, ClassMappings Mapper) mapper, string tag)
+    {
+        var pmp = config.NoPersistence(tag) ? config.NonPersistentModelPath : config.PersistentModelPath;
+
+        if (mapper.Classe.IsPersistent)
+        {
+            return (mapper.Classe.Namespace, pmp);
+        }
+
+        if (mapper.Mapper.Class.IsPersistent)
+        {
+            return (mapper.Mapper.Class.Namespace, pmp);
+        }
+
+        return (mapper.Classe.Namespace, config.NonPersistentModelPath);
+    }
+
+    public static string GetMapperName(this CsharpConfig config, Namespace ns, string modelPath)
+    {
+        return $"{ns.ModuleFlat}{(modelPath == config.PersistentModelPath ? string.Empty : "DTO")}Mappers";
     }
 
     public static string GetReferenceAccessorName(this CsharpConfig config, Namespace ns, string tag)
