@@ -520,7 +520,12 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             if (property is IFieldProperty fp)
             {
                 var prop = fp is AliasProperty alp && (!fp.Class.IsPersistent || alp.Property is AssociationProperty) ? alp.Property : fp;
-                if ((!Config.NoColumnOnAlias || fp is not AliasProperty || fp.Class.IsPersistent) && fp is not AliasProperty { AsList: true } && (prop.Class.IsPersistent || fp.Class.IsPersistent) && !Config.NoPersistance(tag) && !sameColumnSet.Contains(prop.SqlName))
+                if (
+                    (!Config.NoColumnOnAlias || fp is not AliasProperty || fp.Class.IsPersistent)
+                    && fp is not AliasProperty { AsList: true }
+                    && (prop.Class.IsPersistent || fp.Class.IsPersistent)
+                    && !Config.NoPersistance(tag) && !sameColumnSet.Contains(prop.SqlName)
+                    && Classes.Contains(prop.Class))
                 {
                     var sqlName = Config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
                     if (fp.Domain.CSharp!.UseSqlTypeName)
