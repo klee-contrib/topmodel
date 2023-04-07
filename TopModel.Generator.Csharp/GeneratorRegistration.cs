@@ -14,9 +14,9 @@ public class GeneratorRegistration : IGeneratorRegistration<CsharpConfig>
         TrimSlashes(config, c => c.DbContextPath);
         TrimSlashes(config, c => c.ReferenceAccessorsImplementationPath);
         TrimSlashes(config, c => c.ReferenceAccessorsInterfacePath);
-        TrimSlashes(config, c => c.NonPersistantModelPath);
-        TrimSlashes(config, c => c.PersistantModelPath);
-        TrimSlashes(config, c => c.PersistantReferencesModelPath);
+        TrimSlashes(config, c => c.NonPersistentModelPath);
+        TrimSlashes(config, c => c.PersistentModelPath);
+        TrimSlashes(config, c => c.PersistentReferencesModelPath);
 
         config.ReferenceAccessorsImplementationPath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
         config.ReferenceAccessorsInterfacePath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");

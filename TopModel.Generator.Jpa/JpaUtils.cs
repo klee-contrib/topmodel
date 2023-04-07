@@ -203,11 +203,11 @@ public static class JpaUtils
             config.ResolveVariables(config.ApiPath!, tag, module: file.Namespace.Module).ToFilePath());
     }
 
-    public static string GetPackageName(this JpaConfig config, Class classe, string tag, bool? isPersistant = null)
+    public static string GetPackageName(this JpaConfig config, Class classe, string tag, bool? isPersistent = null)
     {
         return config.ResolveVariables(
-            isPersistant.HasValue
-                ? isPersistant.Value
+            isPersistent.HasValue
+                ? isPersistent.Value
                     ? config.EntitiesPath
                     : config.DtosPath
                 : classe.IsPersistent
@@ -222,45 +222,45 @@ public static class JpaUtils
         return config.ResolveVariables(config.ApiPath, tag, module: endpoint.Namespace.Module).ToPackageName();
     }
 
-    public static string GetMapperFilePath(this JpaConfig config, Class classe, bool isPersistant, string tag)
+    public static string GetMapperFilePath(this JpaConfig config, Class classe, bool isPersistent, string tag)
     {
         return Path.Combine(
             config.OutputDirectory,
             config.ResolveVariables(
-                isPersistant ? config.EntitiesPath : config.DtosPath,
+                isPersistent ? config.EntitiesPath : config.DtosPath,
                 tag: tag,
                 module: classe.Namespace.Module).ToFilePath(),
-            $"{GetMapperClassName(classe, isPersistant)}.java");
+            $"{GetMapperClassName(classe, isPersistent)}.java");
     }
 
     public static string GetMapperClassName(this Class classe, FromMapper mapper)
     {
-        return GetMapperClassName(classe, IsPersistantMapper(classe, mapper));
+        return GetMapperClassName(classe, IsPersistentMapper(classe, mapper));
     }
 
     public static string GetMapperClassName(this Class classe, ClassMappings mapper)
     {
-        return GetMapperClassName(classe, IsPersistantMapper(classe, mapper));
+        return GetMapperClassName(classe, IsPersistentMapper(classe, mapper));
     }
 
-    public static string GetMapperClassName(this Class classe, bool? isPersistant)
+    public static string GetMapperClassName(this Class classe, bool? isPersistent)
     {
-        return $@"{classe.Namespace.ModuleFlat}{(isPersistant == true ? string.Empty : "DTO")}Mappers";
+        return $@"{classe.Namespace.ModuleFlat}{(isPersistent == true ? string.Empty : "DTO")}Mappers";
     }
 
     public static string GetMapperImport(this JpaConfig config, Class classe, FromMapper mapper, string tag)
     {
-        return GetMapperImport(config, classe, IsPersistantMapper(classe, mapper), tag);
+        return GetMapperImport(config, classe, IsPersistentMapper(classe, mapper), tag);
     }
 
     public static string GetMapperImport(this JpaConfig config, Class classe, ClassMappings mapper, string tag)
     {
-        return GetMapperImport(config, classe, IsPersistantMapper(classe, mapper), tag);
+        return GetMapperImport(config, classe, IsPersistentMapper(classe, mapper), tag);
     }
 
-    public static string GetMapperPackage(this JpaConfig config, Class classe, bool? isPersistant, string tag)
+    public static string GetMapperPackage(this JpaConfig config, Class classe, bool? isPersistent, string tag)
     {
-        return GetPackageName(config, classe, tag, isPersistant);
+        return GetPackageName(config, classe, tag, isPersistent);
     }
 
     public static string ToFilePath(this string path)
@@ -273,17 +273,17 @@ public static class JpaUtils
         return path.Split(':').Last().ToLower().Replace('/', '.').Replace('\\', '.');
     }
 
-    private static string GetMapperImport(JpaConfig config, Class classe, bool isPersistant, string tag)
+    private static string GetMapperImport(JpaConfig config, Class classe, bool isPersistent, string tag)
     {
-        return $@"{GetMapperPackage(config, classe, isPersistant, tag)}.{GetMapperClassName(classe, isPersistant)}";
+        return $@"{GetMapperPackage(config, classe, isPersistent, tag)}.{GetMapperClassName(classe, isPersistent)}";
     }
 
-    private static bool IsPersistantMapper(Class classe, FromMapper mapper)
+    private static bool IsPersistentMapper(Class classe, FromMapper mapper)
     {
         return classe.IsPersistent || mapper.Params.Any(m => m.Class.IsPersistent);
     }
 
-    private static bool IsPersistantMapper(Class classe, ClassMappings mapper)
+    private static bool IsPersistentMapper(Class classe, ClassMappings mapper)
     {
         return classe.IsPersistent || mapper.Class.IsPersistent;
     }

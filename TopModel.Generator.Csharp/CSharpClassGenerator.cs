@@ -402,7 +402,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 w.WriteAttribute(1, "DefaultProperty", $@"nameof({item.DefaultProperty.NamePascal})");
             }
 
-            if (item.IsPersistent && !Config.NoPersistance(tag))
+            if (item.IsPersistent && !Config.NoPersistence(tag))
             {
                 var sqlName = Config.UseLowerCaseSqlNames ? item.SqlName.ToLower() : item.SqlName;
                 if (Config.DbSchema != null)
@@ -447,7 +447,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             GenerateConstProperties(w, item);
             GenerateConstructors(w, item);
 
-            if (Config.DbContextPath == null && item.IsPersistent && !Config.NoPersistance(tag))
+            if (Config.DbContextPath == null && item.IsPersistent && !Config.NoPersistence(tag))
             {
                 w.WriteLine();
                 w.WriteLine(2, "#region Meta données");
@@ -524,7 +524,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                     (!Config.NoColumnOnAlias || fp is not AliasProperty || fp.Class.IsPersistent)
                     && fp is not AliasProperty { AsList: true }
                     && (prop.Class.IsPersistent || fp.Class.IsPersistent)
-                    && !Config.NoPersistance(tag) && !sameColumnSet.Contains(prop.SqlName)
+                    && !Config.NoPersistence(tag) && !sameColumnSet.Contains(prop.SqlName)
                     && Classes.Contains(prop.Class))
                 {
                     var sqlName = Config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
@@ -647,7 +647,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 item.Properties.OfType<IFieldProperty>().Any(fp =>
                 {
                     var prop = fp is AliasProperty alp ? alp.Property : fp;
-                    return (!Config.NoColumnOnAlias || fp is not AliasProperty) && prop.Class.IsPersistent && !Config.NoPersistance(tag);
+                    return (!Config.NoColumnOnAlias || fp is not AliasProperty) && prop.Class.IsPersistent && !Config.NoPersistence(tag);
                 }))
             {
                 usings.Add("System.ComponentModel.DataAnnotations.Schema");
@@ -690,13 +690,13 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
             switch (property)
             {
-                case AssociationProperty { Association.IsPersistent: true, Association.Reference: true } ap:
+                case AssociationProperty { Association.IsPersistent: true, Association.Reference: true } ap when Classes.Contains(ap.Association):
                     usings.Add(Config.GetNamespace(ap.Association, tag));
                     break;
-                case AliasProperty { Property: AssociationProperty { Association.IsPersistent: true, Association.Reference: true } ap2 }:
+                case AliasProperty { Property: AssociationProperty { Association.IsPersistent: true, Association.Reference: true } ap2 } when Classes.Contains(ap2.Association):
                     usings.Add(Config.GetNamespace(ap2.Association, tag));
                     break;
-                case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true, Class.Reference: true } rp }:
+                case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true, Class.Reference: true } rp } when Classes.Contains(rp.Class):
                     usings.Add(Config.GetNamespace(rp.Class, tag));
                     break;
                 case CompositionProperty cp:

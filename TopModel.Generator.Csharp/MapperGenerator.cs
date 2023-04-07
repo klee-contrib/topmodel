@@ -16,20 +16,20 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
     public override string Name => "CSharpMapperGen";
 
-    protected override string GetFileName(Class classe, bool isPersistant, string tag)
+    protected override string GetFileName(Class classe, bool isPersistent, string tag)
     {
-        return Config.GetMapperFilePath(classe, !Config.NoPersistance(tag) && isPersistant, tag);
+        return Config.GetMapperFilePath(classe, !Config.NoPersistence(tag) && isPersistent, tag);
     }
 
-    protected override void HandleFile(bool? isPersistant, string fileName, string tag, IEnumerable<Class> classes)
+    protected override void HandleFile(bool? isPersistent, string fileName, string tag, IEnumerable<Class> classes)
     {
         var sampleClass = classes.First();
         using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
 
-        var ns = Config.GetNamespace(sampleClass, tag, isPersistant);
+        var ns = Config.GetNamespace(sampleClass, tag, isPersistent);
 
-        var fm = FromMappers.Where(fm => (isPersistant == null || fm.IsPersistant == isPersistant) && classes.Contains(fm.Classe));
-        var tm = ToMappers.Where(fm => (isPersistant == null || fm.IsPersistant == isPersistant) && classes.Contains(fm.Classe));
+        var fm = FromMappers.Where(fm => (isPersistent == null || fm.IsPersistent == isPersistent) && classes.Contains(fm.Classe));
+        var tm = ToMappers.Where(fm => (isPersistent == null || fm.IsPersistent == isPersistent) && classes.Contains(fm.Classe));
 
         var fromMappers = (fm ?? Array.Empty<(Class, FromMapper, bool)>())
             .OrderBy(m => $"{m.Classe.NamePascal} {string.Join(',', m.Mapper.Params.Select(p => p.Name))}", StringComparer.Ordinal)
@@ -54,7 +54,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
         w.WriteNamespace(ns);
         w.WriteSummary(1, $"Mappers pour le module '{sampleClass.Namespace.Module}'.");
-        w.WriteLine(1, $"public static class {sampleClass.GetMapperName(isPersistant)}");
+        w.WriteLine(1, $"public static class {sampleClass.GetMapperName(isPersistent)}");
         w.WriteLine(1, "{");
 
         foreach (var fromMapper in fromMappers)

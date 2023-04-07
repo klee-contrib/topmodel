@@ -138,21 +138,21 @@ public static class CSharpUtils
             .ToNamespace();
     }
 
-    public static string GetMapperFilePath(this CsharpConfig config, Class classe, bool isPersistant, string tag)
+    public static string GetMapperFilePath(this CsharpConfig config, Class classe, bool isPersistent, string tag)
     {
         return Path.Combine(
             config.OutputDirectory,
             config.ResolveVariables(
-                isPersistant ? config.PersistantModelPath : config.NonPersistantModelPath,
+                isPersistent ? config.PersistentModelPath : config.NonPersistentModelPath,
                 tag: tag,
                 module: classe.Namespace.ModulePath).ToFilePath(),
             "generated",
-            $"{classe.GetMapperName(isPersistant)}.cs");
+            $"{classe.GetMapperName(isPersistent)}.cs");
     }
 
-    public static string GetMapperName(this Class classe, bool? isPersistant)
+    public static string GetMapperName(this Class classe, bool? isPersistent)
     {
-        return $"{classe.Namespace.ModuleFlat}{(isPersistant == true ? string.Empty : "DTO")}Mappers";
+        return $"{classe.Namespace.ModuleFlat}{(isPersistent == true ? string.Empty : "DTO")}Mappers";
     }
 
     public static string GetReferenceAccessorName(this CsharpConfig config, Namespace ns, string tag)

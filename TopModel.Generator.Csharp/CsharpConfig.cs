@@ -16,17 +16,17 @@ public class CsharpConfig : GeneratorConfigBase
     /// <summary>
     /// Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models.
     /// </summary>
-    public string PersistantModelPath { get; set; } = "{app}.{module}.Models";
+    public string PersistentModelPath { get; set; } = "{app}.{module}.Models";
 
     /// <summary>
-    /// Localisation des classes de références persistées, relative au répertoire de génération. Par défaut égal à "PersistantModelPath".
+    /// Localisation des classes de références persistées, relative au répertoire de génération. Par défaut égal à "PersistentModelPath".
     /// </summary>
-    public string PersistantReferencesModelPath { get => _referencesModelPath ?? PersistantModelPath; set => _referencesModelPath = value; }
+    public string PersistentReferencesModelPath { get => _referencesModelPath ?? PersistentModelPath; set => _referencesModelPath = value; }
 
     /// <summary>
     /// Localisation du modèle non persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models/Dto.
     /// </summary>
-    public string NonPersistantModelPath { get; set; } = "{app}.{module}.Models/Dto";
+    public string NonPersistentModelPath { get; set; } = "{app}.{module}.Models/Dto";
 
     /// <summary>
     /// Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut : "{app}.Web".
@@ -112,10 +112,10 @@ public class CsharpConfig : GeneratorConfigBase
     public bool NoColumnOnAlias { get; set; }
 
     /// <summary>
-    /// Considère tous les classes comme étant non-persistantes (= pas d'attribut SQL).
+    /// Considère tous les classes comme étant non-Persistentes (= pas d'attribut SQL).
     /// </summary>
-    [YamlMember(Alias = "noPersistance")]
-    public string? NoPersistanceParam { get; set; }
+    [YamlMember(Alias = "noPersistence")]
+    public string? NoPersistenceParam { get; set; }
 
     /// <summary>
     /// Utilise des enums au lieu de strings pour les PKs de listes de référence statiques.
@@ -129,9 +129,9 @@ public class CsharpConfig : GeneratorConfigBase
 
     public override string[] PropertiesWithModuleVariableSupport => new[]
     {
-        nameof(PersistantModelPath),
-        nameof(PersistantReferencesModelPath),
-        nameof(NonPersistantModelPath),
+        nameof(PersistentModelPath),
+        nameof(PersistentReferencesModelPath),
+        nameof(NonPersistentModelPath),
         nameof(ApiFilePath),
         nameof(DbSchema),
         nameof(ReferenceAccessorsName),
@@ -141,10 +141,10 @@ public class CsharpConfig : GeneratorConfigBase
 
     public override string[] PropertiesWithTagVariableSupport => new[]
     {
-        nameof(PersistantModelPath),
-        nameof(PersistantReferencesModelPath),
-        nameof(NonPersistantModelPath),
-        nameof(NoPersistanceParam),
+        nameof(PersistentModelPath),
+        nameof(PersistentReferencesModelPath),
+        nameof(NonPersistentModelPath),
+        nameof(NoPersistenceParam),
         nameof(DbContextPath),
         nameof(DbContextName),
         nameof(DbSchema),
@@ -239,11 +239,11 @@ public class CsharpConfig : GeneratorConfigBase
     public string GetModelPath(Class classe, string tag)
     {
         return ResolveVariables(
-            classe.IsPersistent && !NoPersistance(tag)
+            classe.IsPersistent && !NoPersistence(tag)
                 ? classe.Reference
-                    ? PersistantReferencesModelPath
-                    : PersistantModelPath
-                : NonPersistantModelPath,
+                    ? PersistentReferencesModelPath
+                    : PersistentModelPath
+                : NonPersistentModelPath,
             tag: tag,
             module: classe.Namespace.ModulePath).ToFilePath();
     }
@@ -262,20 +262,20 @@ public class CsharpConfig : GeneratorConfigBase
     /// </summary>
     /// <param name="classe">La classe.</param>
     /// <param name="tag">Tag.</param>
-    /// <param name="isPersistant">Surcharge le caractère persistant</param>
+    /// <param name="isPersistent">Surcharge le caractère Persistent</param>
     /// <returns>Namespace.</returns>
-    public string GetNamespace(Class classe, string tag, bool? isPersistant = null)
+    public string GetNamespace(Class classe, string tag, bool? isPersistent = null)
     {
         return ResolveVariables(
-            isPersistant.HasValue
-                ? isPersistant.Value
-                    ? PersistantModelPath
-                    : NonPersistantModelPath
-                : classe.IsPersistent && !NoPersistance(tag)
+            isPersistent.HasValue
+                ? isPersistent.Value
+                    ? PersistentModelPath
+                    : NonPersistentModelPath
+                : classe.IsPersistent && !NoPersistence(tag)
                     ? classe.Reference
-                        ? PersistantReferencesModelPath
-                        : PersistantModelPath
-                    : NonPersistantModelPath,
+                        ? PersistentReferencesModelPath
+                        : PersistentModelPath
+                    : NonPersistentModelPath,
             tag: tag,
             module: classe.Namespace.Module)
         .ToNamespace()
@@ -297,8 +297,8 @@ public class CsharpConfig : GeneratorConfigBase
         .ToNamespace();
     }
 
-    public bool NoPersistance(string tag)
+    public bool NoPersistence(string tag)
     {
-        return ResolveVariables(NoPersistanceParam ?? string.Empty, tag) == true.ToString();
+        return ResolveVariables(NoPersistenceParam ?? string.Empty, tag) == true.ToString();
     }
 }

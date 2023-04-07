@@ -322,15 +322,15 @@
             "type": "string",
             "description": "Racine du répertoire de génération."
           },
-          "persistantModelPath": {
+          "persistentModelPath": {
             "type": "string",
             "description": "Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models."
           },
-          "persistantReferencesModelPath": {
+          "persistentReferencesModelPath": {
             "type": "string",
-            "description": "Localisation des classes de références persistées, relative au répertoire de génération. Par défaut égal à 'persistantModelPath'."
+            "description": "Localisation des classes de références persistées, relative au répertoire de génération. Par défaut égal à 'persistentModelPath'."
           },
-          "nonPersistantModelPath": {
+          "nonPersistentModelPath": {
             "type": "string",
             "description": "Localisation du modèle non persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models/Dto."
           },
@@ -411,7 +411,7 @@
             "type": "boolean",
             "description": "Retire les attributs de colonnes sur les alias."
           },
-          "noPersistance": {
+          "noPersistence": {
             "oneOf": [
               {
                 "type": "boolean",
