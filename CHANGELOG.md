@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.28.2
+
+- [`f6615535`](https://github.com/klee-contrib/topmodel/commit/f6615535d4ef349a11dc8735302dfb367d429d84) - [C#] Fix import en trop class gen
+- [`18a686e1`](https://github.com/klee-contrib/topmodel/commit/18a686e15e8ea486042cee2f3bcca864d67bf2d9) - [modgen/tmdgen] Cherche le fichier de config dans les répertoires parents si non trouvés dans les enfants
+
 ## 1.28.1
 
 - [`c8d53f11`](https://github.com/klee-contrib/topmodel/commit/c8d53f1167142fbbc3a2c7fda17972c9e08b1a9f) - [SQL] Fix FK générées à tort pour des classes non disponibles
