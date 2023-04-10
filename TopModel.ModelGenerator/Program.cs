@@ -30,6 +30,12 @@ command.SetHandler(
         watchMode = watch;
         checkMode = check;
 
+        void HandleFile(FileInfo file)
+        {
+            using var stream = file.OpenRead();
+            configs.Add((serializer.Deserialize<ModelGeneratorConfig>(stream)!, file.FullName, file.DirectoryName!));
+        }
+
         if (files.Any())
         {
             foreach (var file in files)
@@ -41,20 +47,33 @@ command.SetHandler(
                 }
                 else
                 {
-                    using var stream = file.OpenRead();
-                    configs.Add((serializer.Deserialize<ModelGeneratorConfig>(stream)!, file.FullName, file.DirectoryName!));
+                    HandleFile(file);
                 }
             }
         }
         else
         {
-            foreach (var fileName in Directory.GetFiles(Directory.GetCurrentDirectory(), "tmdgen*.config", SearchOption.AllDirectories))
+            var dir = Directory.GetCurrentDirectory();
+            var pattern = "tmdgen*.config";
+            foreach (var fileName in Directory.GetFiles(dir, pattern, SearchOption.AllDirectories))
             {
                 var foundFile = new FileInfo(fileName);
                 if (foundFile != null)
                 {
-                    using var stream = foundFile.OpenText();
-                    configs.Add((serializer.Deserialize<ModelGeneratorConfig>(stream.ReadToEnd())!, fileName, foundFile.DirectoryName!));
+                    HandleFile(foundFile);
+                }
+            }
+
+            if (!configs.Any())
+            {
+                dir = Directory.GetParent(dir)?.FullName;
+                while (dir != null)
+                {
+                    foreach (var fileName in Directory.GetFiles(dir, pattern))
+                    {
+                        HandleFile(new FileInfo(fileName));
+                        dir = null;
+                    }
                 }
             }
         }

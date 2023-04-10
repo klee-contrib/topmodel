@@ -41,6 +41,24 @@ command.SetHandler(
         watchMode = watch;
         checkMode = check;
 
+        void HandleFile(FileInfo file)
+        {
+            try
+            {
+                fileChecker.CheckConfigFile(file.FullName);
+                var text = file.OpenText().ReadToEnd();
+                configs.Add((fileChecker.DeserializeConfig(text), file.FullName, file.DirectoryName!));
+            }
+            catch (ModelException me)
+            {
+                returnCode = 1;
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(me.Message);
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Gray;
+            }
+        }
+
         if (files.Any())
         {
             foreach (var file in files)
@@ -52,43 +70,28 @@ command.SetHandler(
                 }
                 else
                 {
-                    try
-                    {
-                        fileChecker.CheckConfigFile(file.FullName);
-                        var text = file.OpenText().ReadToEnd();
-                        configs.Add((fileChecker.DeserializeConfig(text), file.FullName, file.DirectoryName!));
-                    }
-                    catch (ModelException me)
-                    {
-                        returnCode = 1;
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine(me.Message);
-                        Console.WriteLine();
-                        Console.ForegroundColor = ConsoleColor.Gray;
-                    }
+                    HandleFile(file);
                 }
             }
         }
         else
         {
-            foreach (var fileName in Directory.GetFiles(Directory.GetCurrentDirectory(), "topmodel*.config", SearchOption.AllDirectories))
+            var dir = Directory.GetCurrentDirectory();
+            var pattern = "topmodel*.config";
+            foreach (var fileName in Directory.GetFiles(dir, pattern, SearchOption.AllDirectories))
             {
-                var foundFile = new FileInfo(fileName);
-                if (foundFile != null)
+                HandleFile(new FileInfo(fileName));
+            }
+
+            if (!configs.Any())
+            {
+                dir = Directory.GetParent(dir)?.FullName;
+                while (dir != null)
                 {
-                    try
+                    foreach (var fileName in Directory.GetFiles(dir, pattern))
                     {
-                        fileChecker.CheckConfigFile(fileName);
-                        var text = foundFile.OpenText().ReadToEnd();
-                        configs.Add((fileChecker.DeserializeConfig(text), fileName, foundFile.DirectoryName!));
-                    }
-                    catch (ModelException me)
-                    {
-                        returnCode = 1;
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine(me.Message);
-                        Console.WriteLine();
-                        Console.ForegroundColor = ConsoleColor.Gray;
+                        HandleFile(new FileInfo(fileName));
+                        dir = null;
                     }
                 }
             }
