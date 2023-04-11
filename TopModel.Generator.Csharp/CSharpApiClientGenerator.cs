@@ -107,13 +107,13 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
             switch (property)
             {
-                case AssociationProperty ap:
+                case AssociationProperty ap when Config.CanClassUseEnums(ap.Association):
                     usings.Add(GetNamespace(ap.Association, tag));
                     break;
-                case AliasProperty { Property: AssociationProperty ap2 }:
+                case AliasProperty { Property: AssociationProperty ap2 } when Config.CanClassUseEnums(ap2.Association):
                     usings.Add(GetNamespace(ap2.Association, tag));
                     break;
-                case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp }:
+                case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp } when Config.CanClassUseEnums(rp.Class):
                     usings.Add(GetNamespace(rp.Class, tag));
                     break;
                 case CompositionProperty cp:
