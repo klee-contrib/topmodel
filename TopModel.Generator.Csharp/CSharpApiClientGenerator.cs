@@ -108,16 +108,16 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
             switch (property)
             {
                 case AssociationProperty ap:
-                    usings.Add(Config.GetNamespace(ap.Association, tag));
+                    usings.Add(GetNamespace(ap.Association, tag));
                     break;
                 case AliasProperty { Property: AssociationProperty ap2 }:
-                    usings.Add(Config.GetNamespace(ap2.Association, tag));
+                    usings.Add(GetNamespace(ap2.Association, tag));
                     break;
                 case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp }:
-                    usings.Add(Config.GetNamespace(rp.Class, tag));
+                    usings.Add(GetNamespace(rp.Class, tag));
                     break;
                 case CompositionProperty cp:
-                    usings.Add(Config.GetNamespace(cp.Composition, tag));
+                    usings.Add(GetNamespace(cp.Composition, tag));
 
                     if (cp.DomainKind != null)
                     {
@@ -327,5 +327,10 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
         fw.WriteLine(1, "}");
         fw.WriteNamespaceEnd();
+    }
+
+    private string GetNamespace(Class classe, string tag)
+    {
+        return Config.GetNamespace(classe, GetClassTags(classe).Contains(tag) ? tag : GetClassTags(classe).Intersect(Config.Tags).FirstOrDefault() ?? tag);
     }
 }

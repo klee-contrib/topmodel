@@ -233,7 +233,7 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   Considère tous les classes comme étant non-persistantes (pas d'attributs SQL, génération vers le chemin non-persistant...).
 
-  Si `kinetix: true`, les accesseurs de liste de références ne seront pas générés.
+  Si `kinetix: true`, les implémentations d'accesseurs de liste de références ne seront pas générés.
 
   _Variables par tag_: **oui**
 

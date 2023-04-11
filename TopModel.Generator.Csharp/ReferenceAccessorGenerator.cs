@@ -18,10 +18,13 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.Reference && !Config.NoPersistence(tag))
+        if (classe.Reference)
         {
             yield return ("interface", Config.GetReferenceInterfaceFilePath(classe.Namespace, tag));
-            yield return ("implementation", Config.GetReferenceImplementationFilePath(classe.Namespace, tag));
+            if (!Config.NoPersistence(tag) && (classe.IsPersistent || classe.Values.Any()))
+            {
+                yield return ("implementation", Config.GetReferenceImplementationFilePath(classe.Namespace, tag));
+            }
         }
     }
 
@@ -48,7 +51,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
     private void GenerateReferenceAccessorsImplementation(string fileName, string tag, List<Class> classList)
     {
         var ns = classList.First().Namespace;
-        var firstPersistedClass = classList.FirstOrDefault(c => c.IsPersistent);
+        var firstPersistedClass = classList.FirstOrDefault(c => c.IsPersistent && !Config.NoPersistence(tag));
 
         var implementationName = Config.GetReferenceAccessorName(ns, tag);
         var implementationNamespace = Config.GetReferenceImplementationNamespace(ns, tag);
@@ -137,7 +140,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
             w.WriteLine();
         }
 
-        foreach (var classe in classList.Where(c => c.IsPersistent || c.Values.Any()))
+        foreach (var classe in classList.Where(c => !Config.NoPersistence(tag) && (c.IsPersistent || c.Values.Any())))
         {
             var serviceName = "Load" + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal);
             w.WriteLine(2, "/// <inheritdoc cref=\"" + interfaceName + "." + serviceName + "\" />");

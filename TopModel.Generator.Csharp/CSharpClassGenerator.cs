@@ -661,7 +661,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
             if (item.Extends != null)
             {
-                usings.Add(Config.GetNamespace(item.Extends, tag));
+                usings.Add(GetNamespace(item.Extends, tag));
             }
         }
 
@@ -691,16 +691,16 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             switch (property)
             {
                 case AssociationProperty { Association.IsPersistent: true, Association.Reference: true } ap when Classes.Contains(ap.Association):
-                    usings.Add(Config.GetNamespace(ap.Association, tag));
+                    usings.Add(GetNamespace(ap.Association, tag));
                     break;
                 case AliasProperty { Property: AssociationProperty { Association.IsPersistent: true, Association.Reference: true } ap2 } when Classes.Contains(ap2.Association):
-                    usings.Add(Config.GetNamespace(ap2.Association, tag));
+                    usings.Add(GetNamespace(ap2.Association, tag));
                     break;
                 case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true, Class.Reference: true } rp } when Classes.Contains(rp.Class):
-                    usings.Add(Config.GetNamespace(rp.Class, tag));
+                    usings.Add(GetNamespace(rp.Class, tag));
                     break;
                 case CompositionProperty cp:
-                    usings.Add(Config.GetNamespace(cp.Composition, tag));
+                    usings.Add(GetNamespace(cp.Composition, tag));
                     if (cp.DomainKind != null)
                     {
                         usings.AddRange(cp.DomainKind.CSharp!.Usings.Select(u => u.ParseTemplate(cp)));
@@ -715,7 +715,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         }
 
         w.WriteUsings(usings
-            .Where(u => u != Config.GetNamespace(item, tag))
+            .Where(u => u != GetNamespace(item, tag))
             .Distinct()
             .ToArray());
 
@@ -723,5 +723,10 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         {
             w.WriteLine();
         }
+    }
+
+    private string GetNamespace(Class classe, string tag)
+    {
+        return Config.GetNamespace(classe, GetClassTags(classe).Contains(tag) ? tag : GetClassTags(classe).Intersect(Config.Tags).FirstOrDefault() ?? tag);
     }
 }
