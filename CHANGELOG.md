@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.28.3
+
+- [`350930b7`](https://github.com/klee-contrib/topmodel/commit/350930b703dad3627f8e346ad10de4add8b9ec91) - [C#] Fix génération liste de ref non persistées avec tag différent
+- [`10ce9a6c`](https://github.com/klee-contrib/topmodel/commit/10ce9a6c9156da3f6df00b4285ef8a432bbbadc6) - [C#ApiClient] Fix usings en trop si pas d'enums pour les enum
+
 ## 1.28.2
 
 - [`f6615535`](https://github.com/klee-contrib/topmodel/commit/f6615535d4ef349a11dc8735302dfb367d429d84) - [C#] Fix import en trop class gen
