@@ -66,13 +66,17 @@ command.SetHandler(
 
             if (!configs.Any())
             {
-                dir = Directory.GetParent(dir)?.FullName;
-                while (dir != null)
+                var found = false;
+                while (!found && dir != null)
                 {
-                    foreach (var fileName in Directory.GetFiles(dir, pattern))
+                    dir = Directory.GetParent(dir)?.FullName;
+                    if (dir != null)
                     {
-                        HandleFile(new FileInfo(fileName));
-                        dir = null;
+                        foreach (var fileName in Directory.GetFiles(dir, pattern))
+                        {
+                            HandleFile(new FileInfo(fileName));
+                            found = true;
+                        }
                     }
                 }
             }

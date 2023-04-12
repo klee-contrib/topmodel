@@ -85,13 +85,17 @@ command.SetHandler(
 
             if (!configs.Any())
             {
-                dir = Directory.GetParent(dir)?.FullName;
-                while (dir != null)
+                var found = false;
+                while (!found && dir != null)
                 {
-                    foreach (var fileName in Directory.GetFiles(dir, pattern))
+                    dir = Directory.GetParent(dir)?.FullName;
+                    if (dir != null)
                     {
-                        HandleFile(new FileInfo(fileName));
-                        dir = null;
+                        foreach (var fileName in Directory.GetFiles(dir, pattern))
+                        {
+                            HandleFile(new FileInfo(fileName));
+                            found = true;
+                        }
                     }
                 }
             }
@@ -195,7 +199,12 @@ for (var i = 0; i < configs.Count; i++)
     disposables.Add(provider);
 
     var modelStore = provider.GetRequiredService<ModelStore>();
-    modelStore.OnResolve += hasError => hasErrors[i] = hasError;
+
+    var k = i;
+    modelStore.OnResolve += hasError =>
+    {
+        hasErrors[k] = hasError;
+    };
 
     var watcher = modelStore.LoadFromConfig(watchMode, new(i + 1, colors[i % colors.Length]));
     if (watcher != null)
