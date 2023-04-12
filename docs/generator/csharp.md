@@ -64,7 +64,7 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
 ## Configuration
 
-- `persistantModelPath`
+- `persistentModelPath`
 
   Localisation du modèle persisté, relative au répertoire de génération.
 
@@ -76,7 +76,7 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
 
-- `persistantReferencesModelPath`
+- `persistentReferencesModelPath`
 
   Localisation des classes de références persistées, relative au répertoire de génération.
 
@@ -88,7 +88,7 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
 
-- `nonPersistantModelPath`
+- `nonPersistentModelPath`
 
   Localisation du modèle non persisté, relative au répertoire de génération.
 
@@ -229,7 +229,7 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   Retire les attributs de colonnes sur les alias (ça ne plaît pas à EF Core mais ça peut être utile pour d'autres ORMs pour mapper directement les colonnes)
 
-- `noPersistance`
+- `noPersistence`
 
   Considère tous les classes comme étant non-persistantes (pas d'attributs SQL, génération vers le chemin non-persistant...).
 
