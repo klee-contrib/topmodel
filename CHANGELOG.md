@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.28.4
+
+- [`73d275cd`](https://github.com/klee-contrib/topmodel/commit/73d275cd1658195fcc691ca50707ed347b64e80b) - [modgen/tmdgen] Fix bug détection fichiers de config + mode watch
+
 ## 1.28.3
 
 - [`350930b7`](https://github.com/klee-contrib/topmodel/commit/350930b703dad3627f8e346ad10de4add8b9ec91) - [C#] Fix génération liste de ref non persistées avec tag différent
