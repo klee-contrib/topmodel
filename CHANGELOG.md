@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.28.5
+
+- [`4d2ce224`](https://github.com/klee-contrib/topmodel/commit/4d2ce224b664fcd828438058b6e075e152007069) - [Mappers] Fix tri des mappers from dans la génération
+
 ## 1.28.4
 
 - [`73d275cd`](https://github.com/klee-contrib/topmodel/commit/73d275cd1658195fcc691ca50707ed347b64e80b) - [modgen/tmdgen] Fix bug détection fichiers de config + mode watch
