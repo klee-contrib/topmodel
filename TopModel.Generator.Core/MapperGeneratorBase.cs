@@ -44,7 +44,9 @@ public abstract class MapperGeneratorBase<T> : GeneratorBase<T>
                 return (
                     Mappers: f.Select(m => m.Mapper)
                         .Distinct()
-                        .OrderBy(m => $"{m.Classe.NamePascal} {string.Join(',', m.Mapper.Params.Select(p => p.Name))}", StringComparer.Ordinal)
+                        .OrderBy(m => m.Classe.NamePascal, StringComparer.Ordinal)
+                        .ThenBy(m => m.Mapper.Params.Count)
+                        .ThenBy(m => string.Join(',', m.Mapper.Params.Select(p => p.Name)), StringComparer.Ordinal)
                         .ToArray(),
                     Tags: tags);
             });
