@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 1.28.5
+version: 1.28.6
 generatedFiles:
   - ../generators/angular/src/appgenerated/api/securite/utilisateur/utilisateur-api.ts
   - ../generators/angular/src/appgenerated/model/securite/profil-dto.ts

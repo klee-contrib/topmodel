@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.28.6
+
+- [`e2486221`](https://github.com/klee-contrib/topmodel/commit/e248622147fb05268c3d6f74b7b81823c7387222) - [JS] Gestion des imports de classes avec des tags différents
+
 ## 1.28.5
 
 - [`4d2ce224`](https://github.com/klee-contrib/topmodel/commit/4d2ce224b664fcd828438058b6e075e152007069) - [Mappers] Fix tri des mappers from dans la génération
