@@ -116,27 +116,27 @@ public class JavascriptConfig : GeneratorConfigBase
         .Replace("\\", "/");
     }
 
-    public List<(string Import, string Path)> GetEndpointImports(IEnumerable<Endpoint> endpoints, string tag, IEnumerable<Class> availableClasses)
+    public List<(string Import, string Path)> GetEndpointImports(IEnumerable<Endpoint> endpoints, string tag, IEnumerable<Class> availableClasses, Func<Class, IEnumerable<string>> getClassTags)
     {
         return endpoints.SelectMany(e => e.ClassDependencies)
             .Select(dep => (
                 Import: dep is { Source: IFieldProperty fp }
                     ? fp.GetPropertyTypeName().Replace("[]", string.Empty)
                     : dep.Classe.NamePascal,
-                Path: GetImportPathForClass(dep, tag, availableClasses)!))
+                Path: GetImportPathForClass(dep, getClassTags(dep.Classe).Contains(tag) ? tag : getClassTags(dep.Classe).Intersect(Tags).FirstOrDefault() ?? tag, tag, availableClasses)!))
             .Concat(endpoints.SelectMany(d => d.DomainDependencies).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Replace("[]", string.Empty).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(i => i.Path != null)
             .GroupAndSort();
     }
 
-    public string? GetImportPathForClass(ClassDependency dep, string tag, IEnumerable<Class> availableClasses)
+    public string? GetImportPathForClass(ClassDependency dep, string targetTag, string sourceTag, IEnumerable<Class> availableClasses)
     {
         string target;
         if (dep.Source is IFieldProperty fp)
         {
             if (fp.GetPropertyTypeName(availableClasses) != fp.Domain.TS!.Type && dep.Classe.IsJSReference())
             {
-                target = GetReferencesFileName(dep.Classe.Namespace, tag);
+                target = GetReferencesFileName(dep.Classe.Namespace, targetTag);
             }
             else
             {
@@ -146,15 +146,15 @@ public class JavascriptConfig : GeneratorConfigBase
         else
         {
             target = dep.Classe.IsJSReference()
-                ? GetReferencesFileName(dep.Classe.Namespace, tag)
-                : GetClassFileName(dep.Classe, tag);
+                ? GetReferencesFileName(dep.Classe.Namespace, targetTag)
+                : GetClassFileName(dep.Classe, targetTag);
         }
 
         var source = dep.Source switch
         {
-            IProperty { Class: Class classe } => GetClassFileName(classe, tag),
-            IProperty { Endpoint: Endpoint endpoint } => GetEndpointsFileName(endpoint.ModelFile, tag),
-            Class classe => GetClassFileName(classe, tag),
+            IProperty { Class: Class classe } => GetClassFileName(classe, sourceTag),
+            IProperty { Endpoint: Endpoint endpoint } => GetEndpointsFileName(endpoint.ModelFile, sourceTag),
+            Class classe => GetClassFileName(classe, sourceTag),
             _ => null
         };
 

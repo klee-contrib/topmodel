@@ -61,7 +61,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                     : dep is { Source: IFieldProperty fp }
                     ? fp.GetPropertyTypeName(Classes).Replace("[]", string.Empty)
                     : $"{dep.Classe.NamePascal}Entity, {dep.Classe.NamePascal}{(Config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}",
-                Path: Config.GetImportPathForClass(dep, tag, Classes)!))
+                Path: Config.GetImportPathForClass(dep, GetClassTags(dep.Classe).Contains(tag) ? tag : GetClassTags(dep.Classe).Intersect(Config.Tags).FirstOrDefault() ?? tag, tag, Classes)!))
             .Concat(classe.DomainDependencies.Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Replace("[]", string.Empty).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
             .Where(p => p.Path != null && p.Path != "@focus4/stores")
             .GroupAndSort();
