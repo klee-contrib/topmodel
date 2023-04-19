@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.28.7
+
+- [`96112115`](https://github.com/klee-contrib/topmodel/commit/96112115c4486c91c8deda3c73f6213283a4bf96) - [C#ClassGen] Fix using en trop pour un StringLength si la propriété est une enum C#
+
 ## 1.28.6
 
 - [`e2486221`](https://github.com/klee-contrib/topmodel/commit/e248622147fb05268c3d6f74b7b81823c7387222) - [JS] Gestion des imports de classes avec des tags différents
