@@ -5,9 +5,9 @@ import { TopModelPreviewPanel } from "./preview";
 import { TmdTool } from "./tool";
 import { Status } from "./types";
 import { COMMANDS, COMMANDS_OPTIONS } from "./const";
+const open = require("open");
 
 export class State {
-    private _terminal?: Terminal;
     tools = {
         modgen: new TmdTool("TopModel.Generator", "modgen"),
         tmdgen: new TmdTool("TopModel.ModelGenerator", "tmdgen"),
@@ -22,12 +22,6 @@ export class State {
         this.registerCommands();
         this.topModelStatusBar = window.createStatusBarItem(StatusBarAlignment.Right, 100);
         this.context.subscriptions.push(this.topModelStatusBar);
-        window.onDidCloseTerminal((terminal) => {
-            if (terminal.name === this._terminal?.name) {
-                this._terminal = undefined;
-            }
-        });
-
         autorun(() => this.updateStatusBar());
     }
 
@@ -60,7 +54,7 @@ export class State {
                 return "Chargement en cours...";
             case "WARNING":
             case "READY":
-                let tooltip = `L\'extension TopModel est démarrée (${this.applications
+                let tooltip = `L'extension TopModel est démarrée (${this.applications
                     .map((app) => app.config.app)
                     .join(", ")})`;
 
@@ -129,19 +123,9 @@ export class State {
         return "READY";
     }
 
-    public get terminal(): Terminal {
-        if (!this._terminal) {
-            this._terminal = window.createTerminal({
-                name: "TopModel",
-            });
-        }
-        this._terminal.show();
-        return this._terminal;
-    }
-
     private async initTools() {
-        await this.tools.modgen.init();
-        await this.tools.tmdgen.init();
+        await this.tools.modgen.init(this.context);
+        await this.tools.tmdgen.init(this.context);
     }
 
     private updateStatusBar() {
@@ -152,14 +136,10 @@ export class State {
     }
 
     private registerCommands() {
-        this.registerModgen(false);
-        this.registerModgen(true);
         this.registerPreviewCommand();
-        this.tools.modgen.registerUpdateCommand(this.context);
-        this.tools.tmdgen.registerUpdateCommand(this.context);
-        this.registerModgenUpdate();
         this.registerGoToLocation();
         this.registerChooseCommand();
+        this.registerReleaseNote();
     }
 
     private registerPreviewCommand() {
@@ -177,15 +157,6 @@ export class State {
         });
     }
 
-    private registerModgenUpdate() {
-        COMMANDS_OPTIONS.update = {
-            title: "Mettre à jour le générateur",
-            description: "Mise à jour manuelle de TopModel.Generator (modgen)",
-            command: COMMANDS.updateModgen,
-            detail: "L'extension et le générateur sont versionnés séparément. Vous pouvez activer la mise à jour automatique dans les paramètres de l'extension.",
-        };
-    }
-
     private registerGoToLocation() {
         commands.registerCommand(COMMANDS.findRef, async (line: number) => {
             await commands.executeCommand(
@@ -195,6 +166,12 @@ export class State {
                 []
             );
             await commands.executeCommand("editor.action.goToReferences");
+        });
+    }
+
+    private registerReleaseNote() {
+        commands.registerCommand(COMMANDS.releaseNote, async () => {
+            open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
         });
     }
 
@@ -218,21 +195,5 @@ export class State {
                 quickPick.show();
             })
         );
-    }
-
-    private startModgen(watch: boolean) {
-        this.terminal.sendText(`modgen ${watch ? " --watch" : ""}`);
-        this.terminal.show();
-    }
-
-    private registerModgen(watch: boolean) {
-        const modgenCommand = watch ? COMMANDS.modgenWatch : COMMANDS.modgen;
-        const modgen = commands.registerCommand(modgenCommand, () => this.startModgen(watch));
-        COMMANDS_OPTIONS[modgenCommand] = {
-            title: `modgen - Lancer la génération ${watch ? "en continu" : ""}`,
-            description: `Lancer la génération ${watch ? "continue " : ""}`,
-            command: modgenCommand,
-        };
-        this.context.subscriptions.push(modgen);
     }
 }

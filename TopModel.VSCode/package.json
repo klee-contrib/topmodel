@@ -20,7 +20,7 @@
     "directory": "TopModel.VSCode",
     "type": "git"
   },
-  "version": "1.28.0",
+  "version": "1.28.1",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -64,9 +64,14 @@
         "category": "TopModel.Generator"
       },
       {
+        "command": "topmodel.releaseNote",
+        "title": "Ouvrir le changelog",
+        "category": "TopModel"
+      },
+      {
         "command": "topmodel.preview",
         "title": "Ouvrir la prévisualisation UML du modèle",
-        "category": "TopModel",
+        "category": "TopModel.Generator",
         "icon": {
           "light": "Preview.svg",
           "dark": "Preview_inverse.svg"

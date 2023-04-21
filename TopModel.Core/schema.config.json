@@ -538,8 +538,7 @@
             "description": "Mode de génération (JS, JSON ou JSON Schema).",
             "enum": [
               "js",
-              "json",
-              "schema"
+              "json"
             ]
           },
           "translateReferences": {

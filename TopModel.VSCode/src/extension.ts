@@ -37,8 +37,8 @@ export async function activate(ctx: ExtensionContext) {
 async function checkInstall() {
     const dotnetIsInstalled = await execute('echo ;%PATH%; | find /C /I "dotnet"');
     if (dotnetIsInstalled !== "1\r\n") {
-        const selection = await window.showInformationMessage("Dotnet is not installed", "Show download page");
-        if (selection === "Show download page") {
+        const selection = await window.showInformationMessage("Dotnet n'est pas installé", "Ouvrir la page de téléchargement");
+        if (selection === "Ouvrir la page de téléchargement") {
             open("https://dotnet.microsoft.com/download/dotnet/6.0");
         }
     }

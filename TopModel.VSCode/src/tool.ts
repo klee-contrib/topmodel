@@ -1,9 +1,9 @@
 import { autorun, makeAutoObservable } from "mobx";
 import { request } from "https";
 import { execute } from "./utils";
-import { commands, ExtensionContext, window, workspace } from "vscode";
+import { commands, ExtensionContext, Terminal, window, workspace } from "vscode";
 import { Status } from "./types";
-import { Disposable } from "vscode-jsonrpc";
+import { COMMANDS, COMMANDS_OPTIONS } from "./const";
 const open = require("open");
 
 export class TmdTool {
@@ -12,7 +12,7 @@ export class TmdTool {
     error?: string;
     installed?: boolean;
     status?: Status;
-    updateCommandDisposable?: Disposable;
+    private _terminal?: Terminal;
     constructor(
         public readonly name: "TopModel.Generator" | "TopModel.ModelGenerator",
         public readonly command: "modgen" | "tmdgen"
@@ -23,6 +23,11 @@ export class TmdTool {
         }
 
         autorun(() => this.checkUpdate());
+        window.onDidCloseTerminal((terminal) => {
+            if (terminal.name === this._terminal?.name) {
+                this._terminal = undefined;
+            }
+        });
     }
 
     get statusText(): string {
@@ -54,9 +59,10 @@ export class TmdTool {
         }
     }
 
-    public async init() {
+    public async init(context: ExtensionContext) {
         await Promise.all([this.loadLatestVersion(), this.loadCurrentVersion(), this.checkInstall()]);
         if (this.installed) {
+            this.registerCommands(context);
             this.status = "READY";
         } else {
             this.status = "ERROR";
@@ -71,8 +77,8 @@ export class TmdTool {
             method: "GET",
         };
 
-        const req = request(options, res => {
-            res.on("data", async response => {
+        const req = request(options, (res) => {
+            res.on("data", async (response) => {
                 const { versions }: { versions: string[] } = JSON.parse(response);
                 this.latestVersion = versions[versions.length - 1];
             });
@@ -89,14 +95,12 @@ export class TmdTool {
 
     private async showReleaseNote(text: string) {
         const buttonText = "Voir la release note";
-        const selection = await window.showInformationMessage(
-            text,
-            buttonText
-        );
+        const selection = await window.showInformationMessage(text, buttonText);
         if (selection === buttonText) {
-            open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
+            commands.executeCommand(COMMANDS.releaseNote);
         }
     }
+
     private async install() {
         this.status = "INSTALLING";
         await execute(`dotnet tool install --global ${this.name}`);
@@ -175,9 +179,44 @@ export class TmdTool {
             }
         }
     }
+    public registerCommands(context: ExtensionContext) {
+        if (this.installed) {
+            this.registerUpdateCommand(context);
+            this.registerStartCommand(true, context);
+            this.registerStartCommand(false, context);
+        }
+    }
 
-    public registerUpdateCommand(context: ExtensionContext) {
-        this.updateCommandDisposable = commands.registerCommand(`topmodel.${this.command}.update`, () => this.update());
-        context.subscriptions.push(this.updateCommandDisposable);
+    private registerUpdateCommand(context: ExtensionContext) {
+        const updateCommandDisposable = commands.registerCommand(`topmodel.${this.command}.update`, () =>
+            this.update()
+        );
+        context.subscriptions.push(updateCommandDisposable);
+    }
+
+    private registerStartCommand(watch: boolean, context: ExtensionContext) {
+        const startCommand = `topmodel.${this.command}${watch ? ".watch" : ""}`;
+        const modgen = commands.registerCommand(startCommand, () => this.start(watch));
+        COMMANDS_OPTIONS[startCommand] = {
+            title: `${this.command} - Lancer la génération ${watch ? "en continu" : ""}`,
+            description: `Lancer la génération ${watch ? "continue " : ""}`,
+            command: startCommand,
+        };
+        context.subscriptions.push(modgen);
+    }
+
+    private start(watch: boolean) {
+        this.terminal.sendText(`\n${this.command} ${watch ? " --watch" : ""}`);
+        this.terminal.show();
+    }
+
+    private get terminal(): Terminal {
+        if (!this._terminal) {
+            this._terminal = window.createTerminal({
+                name: this.name,
+                hideFromUser: true,
+            });
+        }
+        return this._terminal;
     }
 }

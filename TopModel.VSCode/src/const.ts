@@ -1,11 +1,11 @@
 export const SERVER_EXE = "dotnet";
 
 export const COMMANDS = {
-    updateModgen: "topmodel.modgen.update",
     modgen: "topmodel.modgen",
     modgenWatch: "topmodel.modgen.watch",
     preview: "topmodel.preview",
     findRef: "topmodel.findRef",
+    releaseNote: "topmodel.releaseNote",
     chooseCommand: "topmodel.chooseCommand",
 };
 
