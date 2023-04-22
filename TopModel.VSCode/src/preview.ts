@@ -65,8 +65,7 @@ export class TopModelPreviewPanel {
                     this.matrix.y = -1;
                     this.matrix.scale = 1;
                 }
-            })
-            ,
+            }),
             workspace.onDidChangeTextDocument(async (textDocumentChangeEvent?: TextDocumentChangeEvent) => {
                 if (textDocumentChangeEvent) {
                     this.currentFsPath = textDocumentChangeEvent.document.uri.fsPath;
@@ -80,31 +79,38 @@ export class TopModelPreviewPanel {
 
     get currentApplication(): Application {
         if (this.currentFsPath) {
-            return this.applications.find((c) => {
-                if (this.currentFsPath.indexOf(c.modelRoot || "") >= 0) {
-                    return c;
-                }
-            }) ?? this.applications[0];
+            return (
+                this.applications.find((c) => {
+                    if (this.currentFsPath.indexOf(c.modelRoot || "") >= 0) {
+                        return c;
+                    }
+                }) ?? this.applications[0]
+            );
         }
         return this.applications[0];
     }
 
-    handleMessage(message: any) {
+    async handleMessage(message: any) {
         if (message.type === "update:matrix") {
             this.matrix = message.matrix;
         }
         if (message.type === "click:class") {
             const className = message.className;
-            this.currentApplication?.client?.sendRequest("workspace/symbol", { query: className }).then((value) => {
-                const symbol = (value as SymbolInformation[]).filter((s) => s.name === className)[0];
-                const uri = Uri.file((symbol.location.uri as any).replace("file:///", ""));
-                commands.executeCommand(
-                    "editor.action.goToLocations",
-                    uri,
-                    new Position(symbol.location.range.start.line, 0),
-                    []
-                );
-            });
+            const symbolInformations: SymbolInformation[] = await this.currentApplication?.client?.sendRequest(
+                "workspace/symbol",
+                {
+                    query: className,
+                }
+            )!;
+            const symbol = symbolInformations.filter((s) => s.name === className)[0];
+            const uri = Uri.parse(symbol.location.uri as any);
+            
+            await commands.executeCommand(
+                "editor.action.goToLocations",
+                uri,
+                new Position(symbol.location.range.start.line, 0),
+                [symbol.location]
+            );
         }
     }
     async refresh() {
@@ -166,11 +172,14 @@ export class TopModelPreviewPanel {
     </html>`;
     }
     get diagramTitle() {
-        const currentAppTitle = this.applications.length > 1 ? "[" + (this.currentApplication.config.app) + "] : " : "";
+        const currentAppTitle = this.applications.length > 1 ? "[" + this.currentApplication.config.app + "] : " : "";
         return `${currentAppTitle}${this.diagramMap[this.currentFsPath].module}`;
     }
     get mermaidContent() {
-        if (this.diagramMap[this.currentFsPath]?.diagram && this.diagramMap[this.currentFsPath].diagram !== "classDiagram\n\n") {
+        if (
+            this.diagramMap[this.currentFsPath]?.diagram &&
+            this.diagramMap[this.currentFsPath].diagram !== "classDiagram\n\n"
+        ) {
             return `<pre class="mermaid"> 
             %%{init: {'securityLevel': 'loose', 'theme': 'base', 'themeVariables': { 'darkMode': true,  'primaryColor': '#333f85', 'lineColor': '#2d9cdb'}}}%%
                 ${this.diagramMap[this.currentFsPath].diagram}
