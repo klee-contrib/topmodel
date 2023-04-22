@@ -63,9 +63,19 @@ public abstract class GeneratorConfigBase
     /// </summary>
     /// <param name="decorator">Décorateur.</param>
     /// <returns>Implémentation.</returns>
-    public DecoratorImplementation? GetImplementation(Decorator decorator)
+    public DecoratorImplementation? GetImplementation(Decorator? decorator)
     {
         return decorator?.Implementations.GetValueOrDefault(Language);
+    }
+
+    /// <summary>
+    /// Récupère l'implémentation du convertisseur pour la config.
+    /// </summary>
+    /// <param name="converter">Convertisseur.</param>
+    /// <returns>Implémentation.</returns>
+    public ConverterImplementation? GetImplementation(Converter? converter)
+    {
+        return converter?.Implementations.GetValueOrDefault(Language);
     }
 
     /// <summary>

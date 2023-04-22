@@ -285,9 +285,9 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
             {
                 var converter = ifpFrom.Domain.ConvertersFrom.FirstOrDefault(c => c.To.Any(t => t == ifpTo.Domain));
                 string conversion = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}()";
-                if (converter != null && converter.Java?.Text != null)
+                if (converter != null && Config.GetImplementation(converter)?.Text != null)
                 {
-                    var convert = converter.Java.Text;
+                    var convert = Config.GetImplementation(converter)!.Text;
                     getter = convert.Replace("{value}", conversion)
                         .ParseTemplate(ifpFrom.Domain, "java", "from.")
                         .ParseTemplate(ifpTo.Domain, "java", "to.");

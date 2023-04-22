@@ -25,12 +25,6 @@ public class ConverterLoader : ILoader<Converter>
 
             switch (prop)
             {
-                case "csharp":
-                    converter.CSharp = _fileChecker.Deserialize<ConverterImplementation>(parser);
-                    break;
-                case "java":
-                    converter.Java = _fileChecker.Deserialize<ConverterImplementation>(parser);
-                    break;
                 case "from":
                     parser.ConsumeSequence(() =>
                     {
@@ -46,7 +40,8 @@ public class ConverterLoader : ILoader<Converter>
                     });
                     break;
                 default:
-                    throw new ModelException(converter, $"Propriété ${prop} inconnue pour un décoteur");
+                    converter.Implementations[prop] = _fileChecker.Deserialize<ConverterImplementation>(parser);
+                    break;
             }
         });
 

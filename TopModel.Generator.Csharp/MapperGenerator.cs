@@ -141,9 +141,9 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                                 if (fromDomain != toDomain)
                                 {
                                     var converter = fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
-                                    if (converter?.CSharp?.Text != null)
+                                    if (Config.GetImplementation(converter)?.Text != null)
                                     {
-                                        value = converter.CSharp.Text.Replace("{value}", value)
+                                        value = Config.GetImplementation(converter)!.Text.Replace("{value}", value)
                                             .ParseTemplate(fromDomain, "csharp", "from.")
                                             .ParseTemplate(toDomain, "csharp", "to.");
                                     }
@@ -201,9 +201,9 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                             if (fromDomain != toDomain)
                             {
                                 var converter = fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
-                                if (converter?.CSharp?.Text != null)
+                                if (Config.GetImplementation(converter)?.Text != null)
                                 {
-                                    value = converter.CSharp.Text.Replace("{value}", value)
+                                    value = Config.GetImplementation(converter)!.Text.Replace("{value}", value)
                                         .ParseTemplate(fromDomain, "csharp", "from.")
                                         .ParseTemplate(toDomain, "csharp", "to.");
                                 }
@@ -300,9 +300,9 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                 if (fromDomain != null && toDomain != null && fromDomain != toDomain)
                 {
                     var converter = fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
-                    if (converter?.CSharp?.Text != null)
+                    if (Config.GetImplementation(converter)?.Text != null)
                     {
-                        value = converter.CSharp.Text.Replace("{value}", value)
+                        value = Config.GetImplementation(converter)!.Text.Replace("{value}", value)
                             .ParseTemplate(fromDomain, "csharp", "from.")
                             .ParseTemplate(toDomain, "csharp", "to.");
                     }

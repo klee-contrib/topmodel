@@ -30,15 +30,7 @@ public class Converter
 
 #nullable enable
 
-    /// <summary>
-    /// Description du convertisseur C# dans le cas où la conversion n'est pas implicite
-    /// </summary>
-    public ConverterImplementation? CSharp { get; set; }
-
-    /// <summary>
-    /// Description du convertisseur java dans le cas où la conversion n'est pas implicite
-    /// </summary>
-    public ConverterImplementation? Java { get; set; }
+    public Dictionary<string, ConverterImplementation> Implementations { get; set; } = new();
 
 #nullable disable
     public ModelFile ModelFile { get; set; }
