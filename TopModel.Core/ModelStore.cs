@@ -414,7 +414,7 @@ public class ModelStore
                     }
                     else
                     {
-                        if ((decorator.CSharp?.Extends != null || decorator.Java?.Extends != null) && (classe.Extends != null || classe.Decorators.Any(d => decorator.CSharp?.Extends != null && d.Decorator.CSharp?.Extends != null || decorator.Java?.Extends != null && d.Decorator.Java?.Extends != null)))
+                        if (decorator.Implementations.Any(impl => impl.Value.Extends != null && (classe.Extends != null || classe.Decorators.Any(d => d.Decorator.Implementations.TryGetValue(impl.Key, out var dImpl) && dImpl.Extends != null))))
                         {
                             isError = true;
                             yield return new ModelError(classe, $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à la classe '{classe}' : seul un 'extends' peut être spécifié.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1010 };

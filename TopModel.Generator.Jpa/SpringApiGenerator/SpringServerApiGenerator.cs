@@ -117,7 +117,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
             foreach (var d in endpoint.Decorators)
             {
-                foreach (var a in d.Decorator.Java?.Annotations ?? Array.Empty<string>())
+                foreach (var a in Config.GetImplementation(d.Decorator)?.Annotations ?? Array.Empty<string>())
                 {
                     fw.WriteLine(1, $"{(a.StartsWith("@") ? string.Empty : "@")}{a.ParseTemplate(endpoint, d.Parameters)}");
                 }
@@ -197,7 +197,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
             imports.Add("org.springframework.web.bind.annotation.RequestMapping");
         }
 
-        imports.AddRange(endpoints.SelectMany(e => e.Decorators.SelectMany(d => (d.Decorator.Java?.Imports ?? Array.Empty<string>()).Select(i => i.ParseTemplate(e, d.Parameters)))).Distinct());
+        imports.AddRange(endpoints.SelectMany(e => e.Decorators.SelectMany(d => (Config.GetImplementation(d.Decorator)?.Imports ?? Array.Empty<string>()).Select(i => i.ParseTemplate(e, d.Parameters)))).Distinct());
 
         fw.AddImports(imports);
     }

@@ -35,12 +35,6 @@ public class DecoratorLoader : ILoader<Decorator>
                 case "preservePropertyCasing":
                     decorator.PreservePropertyCasing = value!.Value == "true";
                     break;
-                case "csharp":
-                    decorator.CSharp = _fileChecker.Deserialize<DecoratorImplementation>(parser);
-                    break;
-                case "java":
-                    decorator.Java = _fileChecker.Deserialize<DecoratorImplementation>(parser);
-                    break;
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
@@ -51,7 +45,8 @@ public class DecoratorLoader : ILoader<Decorator>
                     });
                     break;
                 default:
-                    throw new ModelException(decorator, $"Propriété ${prop} inconnue pour un décoteur");
+                    decorator.Implementations[prop] = _fileChecker.Deserialize<DecoratorImplementation>(parser);
+                    break;
             }
         });
 

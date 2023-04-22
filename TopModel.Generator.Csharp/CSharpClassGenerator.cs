@@ -417,14 +417,14 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
         }
 
-        foreach (var annotation in item.Decorators.SelectMany(d => (d.Decorator.CSharp?.Annotations ?? Array.Empty<string>()).Select(a => a.ParseTemplate(item, d.Parameters)).Distinct()))
+        foreach (var annotation in item.Decorators.SelectMany(d => (Config.GetImplementation(d.Decorator)?.Annotations ?? Array.Empty<string>()).Select(a => a.ParseTemplate(item, d.Parameters)).Distinct()))
         {
             w.WriteAttribute(1, annotation);
         }
 
-        var extendsDecorator = item.Decorators.SingleOrDefault(d => d.Decorator.CSharp?.Extends != null);
-        var extends = item.Extends?.NamePascal ?? extendsDecorator.Decorator?.CSharp?.Extends!.ParseTemplate(item, extendsDecorator.Parameters);
-        var implements = item.Decorators.SelectMany(d => (d.Decorator.CSharp?.Implements ?? Array.Empty<string>()).Select(i => i.ParseTemplate(item, d.Parameters)).Distinct()).ToArray();
+        var extendsDecorator = item.Decorators.SingleOrDefault(d => Config.GetImplementation(d.Decorator)?.Extends != null);
+        var extends = item.Extends?.NamePascal ?? Config.GetImplementation(extendsDecorator.Decorator)?.Extends!.ParseTemplate(item, extendsDecorator.Parameters);
+        var implements = item.Decorators.SelectMany(d => (Config.GetImplementation(d.Decorator)?.Implements ?? Array.Empty<string>()).Select(i => i.ParseTemplate(item, d.Parameters)).Distinct()).ToArray();
 
         if (item.Abstract)
         {
@@ -662,7 +662,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
         }
 
-        foreach (var @using in item.Decorators.SelectMany(d => (d.Decorator.CSharp?.Imports ?? Array.Empty<string>()).Select(u => u.ParseTemplate(item, d.Parameters)).Distinct()))
+        foreach (var @using in item.Decorators.SelectMany(d => (Config.GetImplementation(d.Decorator)?.Imports ?? Array.Empty<string>()).Select(u => u.ParseTemplate(item, d.Parameters)).Distinct()))
         {
             usings.Add(@using);
         }

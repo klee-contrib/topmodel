@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using TopModel.Core;
+using TopModel.Core.Model.Implementation;
 
 namespace TopModel.Generator.Core;
 
@@ -16,6 +17,11 @@ public abstract class GeneratorConfigBase
     /// Tags du générateur.
     /// </summary>
     public IList<string> Tags { get; set; }
+
+    /// <summary>
+    /// Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.
+    /// </summary>
+    public string Language { get; set; }
 #nullable enable
 
     /// <summary>
@@ -51,6 +57,16 @@ public abstract class GeneratorConfigBase
     /// Propriétés qui supportent les variables par tag de la configuration courante.
     /// </summary>
     public virtual string[] PropertiesWithTagVariableSupport => Array.Empty<string>();
+
+    /// <summary>
+    /// Récupère l'implémentation du décorateur pour la config.
+    /// </summary>
+    /// <param name="decorator">Décorateur.</param>
+    /// <returns>Implémentation.</returns>
+    public DecoratorImplementation? GetImplementation(Decorator decorator)
+    {
+        return decorator?.Implementations.GetValueOrDefault(Language);
+    }
 
     /// <summary>
     /// Résout toutes les variables pour une valeur donnée.

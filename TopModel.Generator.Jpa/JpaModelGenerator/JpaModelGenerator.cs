@@ -73,10 +73,10 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
         WriteAnnotations(fw, classe);
 
-        var extendsDecorator = classe.Decorators.SingleOrDefault(d => d.Decorator.Java?.Extends != null);
-        var extends = (classe.Extends?.NamePascal ?? extendsDecorator.Decorator?.Java!.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
+        var extendsDecorator = classe.Decorators.SingleOrDefault(d => Config.GetImplementation(d.Decorator)?.Extends != null);
+        var extends = (classe.Extends?.NamePascal ?? Config.GetImplementation(extendsDecorator.Decorator)?.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
 
-        var implements = classe.Decorators.SelectMany(d => d.Decorator.Java!.Implements.Select(i => i.ParseTemplate(classe, d.Parameters))).Distinct().ToList();
+        var implements = classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)?.Implements.Select(i => i.ParseTemplate(classe, d.Parameters)) ?? Array.Empty<string>()).Distinct().ToList();
         if (!classe.IsPersistent)
         {
             implements.Add("Serializable");
@@ -353,7 +353,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
     private void WriteImports(JavaWriter fw, Class classe, string tag)
     {
         var imports = classe.GetImports(Files.SelectMany(f => f.Value.Classes).ToList(), Config, tag);
-        imports.AddRange(classe.Decorators.SelectMany(d => d.Decorator.Java!.Imports.Select(i => i.ParseTemplate(classe, d.Parameters))));
+        imports.AddRange(classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)!.Imports.Select(i => i.ParseTemplate(classe, d.Parameters))));
         foreach (var property in classe.GetProperties(Config, AvailableClasses, tag))
         {
             imports.AddRange(property.GetTypeImports(Config, tag));
@@ -468,7 +468,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             }
         }
 
-        foreach (var a in classe.Decorators.SelectMany(d => d.Decorator.Java!.Annotations.Select(a => a.ParseTemplate(classe, d.Parameters))).Distinct())
+        foreach (var a in classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)!.Annotations.Select(a => a.ParseTemplate(classe, d.Parameters))).Distinct())
         {
             fw.WriteLine($"{(a.StartsWith("@") ? string.Empty : "@")}{a}");
         }

@@ -18,6 +18,8 @@ public class GeneratorRegistration : IGeneratorRegistration<CsharpConfig>
         TrimSlashes(config, c => c.PersistentModelPath);
         TrimSlashes(config, c => c.PersistentReferencesModelPath);
 
+        config.Language ??= "csharp";
+
         config.ReferenceAccessorsImplementationPath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
         config.ReferenceAccessorsInterfacePath ??= Path.Combine(config.DbContextPath ?? string.Empty, "Reference");
 

@@ -97,7 +97,7 @@ namespace {ns}
 
             foreach (var d in endpoint.Decorators)
             {
-                foreach (var a in d.Decorator.CSharp?.Annotations ?? Array.Empty<string>())
+                foreach (var a in Config.GetImplementation(d.Decorator)?.Annotations ?? Array.Empty<string>())
                 {
                     wd.AppendLine($"{indent}[{a.ParseTemplate(endpoint, d.Parameters)}]");
                 }
