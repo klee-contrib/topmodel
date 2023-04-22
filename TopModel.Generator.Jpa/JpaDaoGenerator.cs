@@ -49,7 +49,7 @@ public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
         fw.WriteLine();
         WriteImports(fw, classe, tag);
         fw.WriteLine();
-        fw.WriteLine($"public interface {classe.NamePascal}DAO extends {(classe.Reference ? "CrudRepository" : "JpaRepository")}<{classe.NamePascal}, {classe.PrimaryKey.Single().GetJavaType()}> {{");
+        fw.WriteLine($"public interface {classe.NamePascal}DAO extends {(classe.Reference ? "CrudRepository" : "JpaRepository")}<{classe.NamePascal}, {Config.GetJavaType(classe.PrimaryKey.Single())}> {{");
         fw.WriteLine();
         fw.WriteLine("}");
     }

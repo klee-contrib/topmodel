@@ -144,8 +144,8 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                                     if (Config.GetImplementation(converter)?.Text != null)
                                     {
                                         value = Config.GetImplementation(converter)!.Text.Replace("{value}", value)
-                                            .ParseTemplate(fromDomain, "csharp", "from.")
-                                            .ParseTemplate(toDomain, "csharp", "to.");
+                                            .ParseTemplate(fromDomain, Config.Language, "from.")
+                                            .ParseTemplate(toDomain, Config.Language, "to.");
                                     }
                                 }
                             }
@@ -204,8 +204,8 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                                 if (Config.GetImplementation(converter)?.Text != null)
                                 {
                                     value = Config.GetImplementation(converter)!.Text.Replace("{value}", value)
-                                        .ParseTemplate(fromDomain, "csharp", "from.")
-                                        .ParseTemplate(toDomain, "csharp", "to.");
+                                        .ParseTemplate(fromDomain, Config.Language, "from.")
+                                        .ParseTemplate(toDomain, Config.Language, "to.");
                                 }
                             }
                         }
@@ -303,8 +303,8 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                     if (Config.GetImplementation(converter)?.Text != null)
                     {
                         value = Config.GetImplementation(converter)!.Text.Replace("{value}", value)
-                            .ParseTemplate(fromDomain, "csharp", "from.")
-                            .ParseTemplate(toDomain, "csharp", "to.");
+                            .ParseTemplate(fromDomain, Config.Language, "from.")
+                            .ParseTemplate(toDomain, Config.Language, "to.");
                     }
                 }
 

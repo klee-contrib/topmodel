@@ -38,7 +38,7 @@ public class JpaModelPropertyGenerator
     public void WriteProperty(JavaWriter fw, CompositionProperty property)
     {
         fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"private {property.GetJavaType()} {property.NameCamel};");
+        fw.WriteLine(1, $"private {_config.GetJavaType(property)} {property.NameCamel};");
     }
 
     public void WriteProperties(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
@@ -164,11 +164,8 @@ public class JpaModelPropertyGenerator
         if (property.PrimaryKey && classe.IsPersistent)
         {
             fw.WriteLine(1, "@Id");
-            if (
-                property.Domain.Java!.Type == "Long"
-                || property.Domain.Java.Type == "long"
-                || property.Domain.Java.Type == "int"
-                || property.Domain.Java.Type == "Integer")
+            var javaDomain = _config.GetImplementation(property.Domain)!;
+            if (javaDomain.Type == "Long" || javaDomain.Type == "long" || javaDomain.Type == "int" || javaDomain.Type == "Integer")
             {
                 if (_config.Identity.Mode == IdentityMode.IDENTITY)
                 {
@@ -185,7 +182,7 @@ public class JpaModelPropertyGenerator
             }
         }
 
-        if (classe.IsPersistent && !property.Domain.Java!.Annotations
+        if (classe.IsPersistent && !_config.GetImplementation(property.Domain)!.Annotations
         .Where(i =>
                 classe.IsPersistent && (Target.Persisted & i.Target) > 0
             || !classe.IsPersistent && (Target.Dto & i.Target) > 0)
@@ -194,7 +191,7 @@ public class JpaModelPropertyGenerator
             var column = @$"@Column(name = ""{property.SqlName}"", nullable = {(!property.Required).ToString().ToFirstLower()}";
             if (property.Domain.Length != null)
             {
-                if (property.Domain.Java!.Type.ToUpper() == "STRING")
+                if (_config.GetImplementation(property.Domain)!.Type.ToUpper() == "STRING")
                 {
                     column += $", length = {property.Domain.Length}";
                 }
@@ -228,9 +225,10 @@ public class JpaModelPropertyGenerator
             fw.WriteLine(1, "@Enumerated(EnumType.STRING)");
         }
 
-        if (property.Domain.Java is not null && property.Domain.Java.Annotations is not null)
+        var javaType = _config.GetImplementation(property.Domain);
+        if (javaType is not null && javaType.Annotations is not null)
         {
-            foreach (var annotation in property.Domain.Java.Annotations.Where(a =>
+            foreach (var annotation in javaType.Annotations.Where(a =>
                 classe.IsPersistent && (Target.Persisted & a.Target) > 0
             || !classe.IsPersistent && (Target.Dto & a.Target) > 0))
             {
@@ -261,7 +259,7 @@ public class JpaModelPropertyGenerator
             else
             {
                 var quote = string.Empty;
-                if (property.GetJavaType() == "String")
+                if (_config.GetJavaType(property) == "String")
                 {
                     quote = @"""";
                 }
@@ -270,6 +268,6 @@ public class JpaModelPropertyGenerator
             }
         }
 
-        fw.WriteLine(1, $"private {property.GetJavaType()} {property.GetJavaName()}{defaultValue};");
+        fw.WriteLine(1, $"private {_config.GetJavaType(property)} {property.GetJavaName()}{defaultValue};");
     }
 }

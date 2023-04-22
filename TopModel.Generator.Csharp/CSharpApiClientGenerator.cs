@@ -20,11 +20,6 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
     public override string Name => "CSharpApiClientGen";
 
-    protected override object? GetDomainType(Domain domain)
-    {
-        return domain.CSharp;
-    }
-
     protected override bool FilterTag(string tag)
     {
         return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Client;
@@ -92,12 +87,12 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
         {
             if (property is IFieldProperty fp)
             {
-                foreach (var @using in fp.Domain.CSharp!.Imports.Select(u => u.ParseTemplate(fp)))
+                foreach (var @using in Config.GetImplementation(fp.Domain)!.Imports.Select(u => u.ParseTemplate(fp)))
                 {
                     usings.Add(@using);
                 }
 
-                foreach (var @using in fp.Domain.CSharp!.Annotations
+                foreach (var @using in Config.GetImplementation(fp.Domain)!.Annotations
                     .Where(a => (a.Target & Target.Dto) > 0 || (a.Target & Target.Persisted) > 0 && (property.Class?.IsPersistent ?? false))
                     .SelectMany(a => a.Usings)
                     .Select(u => u.ParseTemplate(fp)))
@@ -122,8 +117,8 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
                     if (cp.DomainKind != null)
                     {
-                        usings.AddRange(cp.DomainKind.CSharp!.Imports.Select(u => u.ParseTemplate(cp)));
-                        usings.AddRange(cp.DomainKind.CSharp!.Annotations
+                        usings.AddRange(Config.GetImplementation(cp.DomainKind)!.Imports.Select(u => u.ParseTemplate(cp)));
+                        usings.AddRange(Config.GetImplementation(cp.DomainKind)!.Annotations
                         .Where(a => (a.Target & Target.Dto) > 0 || (a.Target & Target.Persisted) > 0 && (property.Class?.IsPersistent ?? false))
                         .SelectMany(a => a.Usings));
                     }

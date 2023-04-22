@@ -31,6 +31,10 @@ public abstract class GeneratorBase<T> : IModelWatcher
 
     protected IEnumerable<Class> Classes => Files.SelectMany(f => f.Value.Classes).Distinct();
 
+    protected virtual bool PersistentOnly => false;
+
+    protected virtual bool NoLanguage => false;
+
     public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
     {
     }
@@ -42,11 +46,17 @@ public abstract class GeneratorBase<T> : IModelWatcher
 
         var handledFiles = files.Where(file => Config.Tags.Intersect(file.Tags).Any());
 
-        var missingDomains = handledFiles.SelectMany(f => f.Properties).OfType<IFieldProperty>().Where(fp => GetDomainType(fp.Domain) == null).Select(fp => fp.Domain).Distinct();
-
-        if (missingDomains.Any())
+        if (!NoLanguage)
         {
-            throw new ModelException($"Pour utiliser le générateur '{Name}', les domaines suivants doivent définir le type de son langage cible : {string.Join(", ", missingDomains.Select(d => d.Name).OrderBy(x => x))}.");
+            var missingDomains = handledFiles.SelectMany(f => f.Properties).OfType<IFieldProperty>().Where(fp => !PersistentOnly || (fp.Class?.IsPersistent ?? false)).Select(fp => fp.Domain)
+                .Concat(PersistentOnly ? Array.Empty<Domain>() : handledFiles.SelectMany(f => f.Properties).OfType<CompositionProperty>().Select(fp => fp.DomainKind!))
+                .Where(domain => domain != null && Config.GetImplementation(domain) == null)
+                .Distinct();
+
+            if (missingDomains.Any())
+            {
+                throw new ModelException($"Pour utiliser le générateur '{Name}', les domaines suivants doivent définir une implémentation pour '{Config.Language}' : {string.Join(", ", missingDomains.Select(d => d.Name).OrderBy(x => x))}.");
+            }
         }
 
         foreach (var file in handledFiles)
@@ -55,11 +65,6 @@ public abstract class GeneratorBase<T> : IModelWatcher
         }
 
         HandleFiles(handledFiles);
-    }
-
-    protected virtual object? GetDomainType(Domain domain)
-    {
-        return new object();
     }
 
     protected abstract void HandleFiles(IEnumerable<ModelFile> files);

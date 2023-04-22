@@ -8,6 +8,13 @@ namespace TopModel.Generator.Sql.Ssdt.Scripter;
 /// </summary>
 public class SqlTableTypeScripter : ISqlScripter<Class>
 {
+    private readonly SqlConfig _config;
+
+    public SqlTableTypeScripter(SqlConfig config)
+    {
+        _config = config;
+    }
+
     /// <summary>
     /// Calcule le nom du script pour l'item.
     /// </summary>
@@ -59,9 +66,9 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     /// </summary>
     /// <param name="sb">Flux.</param>
     /// <param name="property">Propriété.</param>
-    private static void WriteColumn(StringBuilder sb, IFieldProperty property)
+    private void WriteColumn(StringBuilder sb, IFieldProperty property)
     {
-        var persistentType = property.Domain.Sql!.Type;
+        var persistentType = _config.GetImplementation(property.Domain)!.Type;
         sb.Append("[").Append(property.SqlName).Append("] ").Append(persistentType).Append(" null");
     }
 
@@ -69,7 +76,7 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     /// Ecrit le pied du script.
     /// </summary>
     /// <param name="writer">Flux.</param>
-    private static void WriteCreateTableClosing(TextWriter writer)
+    private void WriteCreateTableClosing(TextWriter writer)
     {
         writer.WriteLine(")");
         writer.WriteLine("go");
@@ -81,7 +88,7 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="table">Table.</param>
-    private static void WriteCreateTableOpening(TextWriter writer, Class table)
+    private void WriteCreateTableOpening(TextWriter writer, Class table)
     {
         writer.WriteLine("Create type [" + table.GetTableTypeName() + "] as Table (");
     }
@@ -91,7 +98,7 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="tableName">Nom de la table.</param>
-    private static void WriteHeader(TextWriter writer, string tableName)
+    private void WriteHeader(TextWriter writer, string tableName)
     {
         writer.WriteLine("-- ===========================================================================================");
         writer.WriteLine("--   Description		:	Création du type de table " + tableName + ".");
@@ -104,7 +111,7 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     /// </summary>
     /// <param name="sb">Flux.</param>
     /// <param name="classe">Classe.</param>
-    private static void WriteInsertKeyLine(StringBuilder sb, Class classe)
+    private void WriteInsertKeyLine(StringBuilder sb, Class classe)
     {
         sb.Append("[").Append((classe.Trigram != null ? $"{classe.Trigram}_" : string.Empty) + "INSERT_KEY] int null");
     }
@@ -114,7 +121,7 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="table">Table.</param>
-    private static void WriteInsideInstructions(TextWriter writer, Class table)
+    private void WriteInsideInstructions(TextWriter writer, Class table)
     {
         // Construction d'une liste de toutes les instructions.
         var definitions = new List<string>();
@@ -123,7 +130,7 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
         // Colonnes
         foreach (var property in table.Properties.OfType<IFieldProperty>())
         {
-            if ((!property.PrimaryKey || property.Domain.ShouldQuoteValue) && property.Name != ScriptUtils.InsertKeyName)
+            if ((!property.PrimaryKey || _config.GetImplementation(property.Domain)!.ShouldQuoteValue()) && property.Name != ScriptUtils.InsertKeyName)
             {
                 sb.Clear();
                 WriteColumn(sb, property);

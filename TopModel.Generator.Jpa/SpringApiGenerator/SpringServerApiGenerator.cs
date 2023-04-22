@@ -21,11 +21,6 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
     public override string Name => "SpringApiServerGen";
 
-    protected override object? GetDomainType(Domain domain)
-    {
-        return domain.Java;
-    }
-
     protected override bool FilterTag(string tag)
     {
         return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Server;
@@ -97,10 +92,10 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
         if (endpoint.Returns != null)
         {
-            returnType = endpoint.Returns.GetJavaType();
+            returnType = Config.GetJavaType(endpoint.Returns);
         }
 
-        var hasForm = endpoint.Params.Any(p => p is IFieldProperty { Domain.Java.Type: "MultipartFile" });
+        var hasForm = endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetImplementation(fp.Domain)?.Type == "MultipartFile");
         {
             var produces = string.Empty;
             if (endpoint.Returns != null && endpoint.Returns is IFieldProperty fp && fp.Domain.MediaType != null)
@@ -132,7 +127,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
             var ann = string.Empty;
             ann += @$"@PathVariable(""{param.GetParamName()}"") ";
 
-            methodParams.Add($"{ann}{param.GetJavaType()} {param.GetParamName()}");
+            methodParams.Add($"{ann}{Config.GetJavaType(param)} {param.GetParamName()}");
         }
 
         foreach (var param in endpoint.GetQueryParams())
@@ -140,7 +135,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
             var ann = string.Empty;
             ann += @$"@RequestParam(value = ""{param.GetParamName()}"", required = {(param is IFieldProperty fp ? fp.Required : true).ToString().ToFirstLower()}) ";
 
-            methodParams.Add($"{ann}{param.GetJavaType()} {param.GetParamName()}");
+            methodParams.Add($"{ann}{Config.GetJavaType(param)} {param.GetParamName()}");
         }
 
         var bodyParam = endpoint.GetBodyParam();
@@ -149,7 +144,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
             var ann = string.Empty;
             ann += @$"@RequestBody @Valid ";
 
-            methodParams.Add($"{ann}{bodyParam.GetJavaType()} {bodyParam.GetParamName()}");
+            methodParams.Add($"{ann}{Config.GetJavaType(bodyParam)} {bodyParam.GetParamName()}");
         }
 
         fw.WriteLine(1, $"{returnType} {endpoint.NameCamel}({string.Join(", ", methodParams)});");

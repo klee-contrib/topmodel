@@ -83,10 +83,6 @@
           "tags"
         ],
         "properties": {
-          "language": {
-            "type": "string",
-            "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'properties'."
-          },
           "tags": {
             "type": "array",
             "description": "Précise les tags de fichier que le générateur doit lire",

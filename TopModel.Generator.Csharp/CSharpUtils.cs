@@ -1,4 +1,5 @@
 ﻿using TopModel.Core;
+using TopModel.Core.Model.Implementation;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Csharp;
@@ -255,14 +256,14 @@ public static class CSharpUtils
                 "object" => cp.Composition.NamePascal,
                 "list" => $"{(useIEnumerable ? "IEnumerable" : "ICollection")}<{cp.Composition.NamePascal}>",
                 "async-list" => $"IAsyncEnumerable<{cp.Composition.NamePascal}>",
-                string _ when cp.DomainKind!.CSharp!.Type.Contains("{composition.name}") => cp.DomainKind.CSharp.Type.ParseTemplate(cp),
-                string _ => $"{cp.DomainKind.CSharp.Type}<{{composition.name}}>".ParseTemplate(cp)
+                string _ when config.GetImplementation(cp.DomainKind)!.Type.Contains("{composition.name}") => config.GetImplementation(cp.DomainKind)!.Type.ParseTemplate(cp),
+                string _ => $"{config.GetImplementation(cp.DomainKind)!.Type}<{{composition.name}}>".ParseTemplate(cp)
             },
             AssociationProperty { Association: Class assoc } ap when config.CanClassUseEnums(assoc, ap.Property) => $"{assoc.NamePascal}.{ap.Property.Name.ToPascalCase()}s{(ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : "?")}",
             AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when config.CanClassUseEnums(assoc) => $"{assoc.NamePascal}.{ap.Property.Name.ToPascalCase()}s{(asList || ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : "?")}",
             RegularProperty { Class: Class classe } rp when config.CanClassUseEnums(classe, rp) => $"{rp.Name.ToPascalCase()}s?",
             AliasProperty { Property: RegularProperty { Class: Class alClass } rp, AsList: var asList } when config.CanClassUseEnums(alClass, rp) => $"{alClass.NamePascal}.{rp.Name.ToPascalCase()}s{(asList ? "[]" : "?")}",
-            IFieldProperty fp => fp.Domain.CSharp?.Type.ParseTemplate(fp) ?? string.Empty,
+            IFieldProperty fp => config.GetImplementation(fp.Domain)?.Type.ParseTemplate(fp) ?? string.Empty,
             _ => string.Empty
         };
 
@@ -311,6 +312,11 @@ public static class CSharpUtils
     public static string ToNamespace(this string path)
     {
         return path.Split(':').Last().Replace('/', '.').Replace('\\', '.').Replace("..", ".").Trim('.');
+    }
+
+    public static bool ShouldQuoteValue(this DomainImplementation domain)
+    {
+        return domain.Type == "string";
     }
 
     /// <summary>

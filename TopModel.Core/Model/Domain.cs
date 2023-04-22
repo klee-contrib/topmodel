@@ -30,26 +30,11 @@ public class Domain
 
     public DomainReference? ListDomainReference { get; set; }
 
-    public DomainImplementation? CSharp { get; set; }
-
-    public DomainImplementation? TS { get; set; }
-
-    public DomainImplementation? Java { get; set; }
-
-    public DomainImplementation? Sql { get; set; }
+    public Dictionary<string, DomainImplementation> Implementations { get; set; } = new();
 
     public string? MediaType { get; set; }
 
     public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCaseStrict();
-
-    public bool ShouldQuoteValue =>
-        (Sql?.Type ?? string.Empty).Contains("varchar")
-        || Sql?.Type == "text"
-        || Sql?.Type == "uniqueidentifier"
-        || Sql?.Type == "uuid"
-        || (Sql?.Type ?? string.Empty).Contains("date")
-        || (Sql?.Type ?? string.Empty).Contains("time")
-        || CSharp?.Type == "string";
 
 #nullable disable
     public ModelFile ModelFile { get; set; }

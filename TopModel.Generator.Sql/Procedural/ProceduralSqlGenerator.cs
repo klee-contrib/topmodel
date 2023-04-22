@@ -28,6 +28,8 @@ public class ProceduralSqlGenerator : GeneratorBase<SqlConfig>
         Config.Procedural!.UniqueKeysFile!,
     }.Where(t => !string.IsNullOrEmpty(t));
 
+    protected override bool PersistentOnly => true;
+
     private AbstractSchemaGenerator SchemaGenerator
     {
         get
@@ -38,11 +40,6 @@ public class ProceduralSqlGenerator : GeneratorBase<SqlConfig>
 
             return _schemaGenerator;
         }
-    }
-
-    protected override object? GetDomainType(Domain domain)
-    {
-        return domain.Sql;
     }
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)

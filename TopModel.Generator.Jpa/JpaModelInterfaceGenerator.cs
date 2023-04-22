@@ -19,11 +19,6 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
 
     public override string Name => "JpaInterfaceGen";
 
-    protected override object? GetDomainType(Domain domain)
-    {
-        return domain.Java;
-    }
-
     protected override bool FilterClass(Class classe)
     {
         return classe.Abstract;
@@ -83,7 +78,7 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
         var signature = string.Join(", ", properties.Select(property =>
             {
                 var propertyName = property.GetJavaName();
-                return $@"{property.GetJavaType()} {property.GetJavaName()}";
+                return $@"{Config.GetJavaType(property)} {property.GetJavaName()}";
             }));
 
         fw.WriteLine(1, $"void hydrate({signature});");
@@ -93,12 +88,12 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
     {
         foreach (var property in classe.Properties.Where(p => !Config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
         {
-            var getterPrefix = property.GetJavaType() == "boolean" ? "is" : "get";
+            var getterPrefix = Config.GetJavaType(property) == "boolean" ? "is" : "get";
             fw.WriteLine();
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
             fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{property.GetJavaName()} {property.GetJavaName()}}}");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, @$"{property.GetJavaType()} {getterPrefix}{property.GetJavaName(true)}();");
+            fw.WriteLine(1, @$"{Config.GetJavaType(property)} {getterPrefix}{property.GetJavaName(true)}();");
         }
     }
 

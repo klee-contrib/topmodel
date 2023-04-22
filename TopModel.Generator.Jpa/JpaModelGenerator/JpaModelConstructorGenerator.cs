@@ -40,7 +40,7 @@ public class JpaModelConstructorGenerator
             return;
         }
 
-        var propertiesSignature = string.Join(", ", properties.Select(p => $"{p.GetJavaType()} {p.GetJavaName()}"));
+        var propertiesSignature = string.Join(", ", properties.Select(p => $"{_config.GetJavaType(p)} {p.GetJavaName()}"));
 
         foreach (var property in properties)
         {
@@ -83,7 +83,7 @@ public class JpaModelConstructorGenerator
             return;
         }
 
-        var propertiesSignature = string.Join(", ", properties.Select(p => $"{(p is AssociationProperty ap && ap.IsEnum() && ap.Association.IsStatic() ? (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) ? $"List<{ap.Association.NamePascal}.Values>" : $"{p.GetJavaType()}.Values" : p.GetJavaType())} {(p is AssociationProperty asp && asp.IsEnum() && asp.Association.IsStatic() ? p.NameCamel : p.GetJavaName())}"));
+        var propertiesSignature = string.Join(", ", properties.Select(p => $"{(p is AssociationProperty ap && ap.IsEnum() && ap.Association.IsStatic() ? (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) ? $"List<{ap.Association.NamePascal}.Values>" : $"{_config.GetJavaType(p)}.Values" : _config.GetJavaType(p))} {(p is AssociationProperty asp && asp.IsEnum() && asp.Association.IsStatic() ? p.NameCamel : p.GetJavaName())}"));
 
         foreach (var property in properties)
         {
@@ -145,7 +145,7 @@ public class JpaModelConstructorGenerator
         {
             if (!(property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list"))
             {
-                var getterPrefix = property.GetJavaType() == "boolean" ? "is" : "get";
+                var getterPrefix = _config.GetJavaType(property) == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"this.{property.GetJavaName()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName(true)}();");
             }
         }
@@ -163,7 +163,7 @@ public class JpaModelConstructorGenerator
         {
             if (property is AssociationProperty ap || property is CompositionProperty cp && cp.Kind == "list")
             {
-                var getterPrefix = property.GetJavaType() == "boolean" ? "is" : "get";
+                var getterPrefix = _config.GetJavaType(property) == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"this.{property.GetJavaName()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName(true)}().stream().collect(Collectors.toList());");
                 fw.AddImport("java.util.stream.Collectors");
             }

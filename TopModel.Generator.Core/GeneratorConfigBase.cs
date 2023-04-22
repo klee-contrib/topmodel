@@ -59,6 +59,16 @@ public abstract class GeneratorConfigBase
     public virtual string[] PropertiesWithTagVariableSupport => Array.Empty<string>();
 
     /// <summary>
+    /// Récupère l'implémentation du domaine pour la config.
+    /// </summary>
+    /// <param name="domain">Décorateur.</param>
+    /// <returns>Implémentation.</returns>
+    public DomainImplementation? GetImplementation(Domain? domain)
+    {
+        return domain?.Implementations.GetValueOrDefault(Language);
+    }
+
+    /// <summary>
     /// Récupère l'implémentation du décorateur pour la config.
     /// </summary>
     /// <param name="decorator">Décorateur.</param>

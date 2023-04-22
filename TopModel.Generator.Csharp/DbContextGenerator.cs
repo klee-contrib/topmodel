@@ -99,7 +99,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
             if (Config.CanClassUseEnums(classe, targetProp))
             {
                 hasPropConfig = true;
-                w.WriteLine(3, $"modelBuilder.Entity<{fp.Class}>().Property(p => p.{fp.NamePascal}).HasConversion<{fp.Domain.CSharp!.Type}>(){(fp.Domain.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};");
+                w.WriteLine(3, $"modelBuilder.Entity<{fp.Class}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain)!.Type}>(){(fp.Domain.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};");
             }
 
             if (fp.Domain.Length != null && fp.Domain.Scale != null)
@@ -182,9 +182,9 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
 
                         var value = Config.CanClassUseEnums(targetClass, targetProp)
                             ? WriteEnumValue(targetClass, targetProp, refProp.Value)
-                            : refProp.Key.Domain.CSharp!.Type.Contains("Date")
-                            ? $"{refProp.Key.Domain.CSharp.Type.ParseTemplate(refProp.Key).TrimEnd('?')}.Parse(\"{refProp.Value}\"){(refProp.Key.Domain.CSharp.Type.Contains("Time") ? ".ToUniversalTime()" : string.Empty)}"
-                            : refProp.Key.Domain.ShouldQuoteValue
+                            : Config.GetImplementation(refProp.Key.Domain)!.Type.Contains("Date")
+                            ? $"{Config.GetImplementation(refProp.Key.Domain)!.Type.ParseTemplate(refProp.Key).TrimEnd('?')}.Parse(\"{refProp.Value}\"){(Config.GetImplementation(refProp.Key.Domain)!.Type.Contains("Time") ? ".ToUniversalTime()" : string.Empty)}"
+                            : Config.GetImplementation(refProp.Key.Domain)!.ShouldQuoteValue()
                             ? $"\"{refProp.Value}\""
                             : refProp.Value;
                         w.Write($" {refProp.Key.NamePascal} = {value}");

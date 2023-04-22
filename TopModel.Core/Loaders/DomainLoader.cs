@@ -47,20 +47,11 @@ public class DomainLoader : ILoader<Domain>
                 case "listDomain":
                     domain.ListDomainReference = new DomainReference(value!);
                     break;
-                case "csharp":
-                    domain.CSharp = _fileChecker.Deserialize<DomainImplementation>(parser);
-                    break;
-                case "ts":
-                    domain.TS = _fileChecker.Deserialize<DomainImplementation>(parser);
-                    break;
-                case "java":
-                    domain.Java = _fileChecker.Deserialize<DomainImplementation>(parser);
-                    break;
-                case "sql":
-                    domain.Sql = _fileChecker.Deserialize<DomainImplementation>(parser);
-                    break;
                 case "mediaType":
                     domain.MediaType = value!.Value;
+                    break;
+                default:
+                    domain.Implementations[prop] = _fileChecker.Deserialize<DomainImplementation>(parser);
                     break;
             }
         });

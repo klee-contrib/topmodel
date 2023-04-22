@@ -21,11 +21,6 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
 
     public override string Name => "JSNGApiClientGen";
 
-    protected override object? GetDomainType(Domain domain)
-    {
-        return domain.TS;
-    }
-
     protected override string GetFileName(ModelFile file, string tag)
     {
         return Config.GetEndpointsFileName(file, tag);
@@ -96,7 +91,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
         fw.WriteLine(1, " */");
         fw.Write(1, $"{endpoint.NameCamel}(");
 
-        var hasForm = endpoint.Params.Any(p => p is IFieldProperty fp && fp.Domain.TS!.Type.Contains("File"));
+        var hasForm = endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetImplementation(fp.Domain)!.Type.Contains("File"));
         var hasProperty = false;
         foreach (var param in endpoint.Params)
         {
@@ -107,7 +102,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
 
             hasProperty = true;
             var defaultValue = Config.GetDefaultValue(param);
-            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {param.GetPropertyTypeName(Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}");
+            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetPropertyTypeName(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}");
         }
 
         string returnType;
@@ -129,7 +124,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
         }
         else
         {
-            returnType = endpoint.Returns.GetPropertyTypeName(Classes);
+            returnType = Config.GetPropertyTypeName(endpoint.Returns, Classes);
         }
 
         fw.Write(returnType);

@@ -7,14 +7,14 @@ namespace TopModel.Generator.Jpa;
 
 public static class JpaUtils
 {
-    public static string GetJavaType(this IProperty prop, bool asList = false)
+    public static string GetJavaType(this JpaConfig config, IProperty prop, bool asList = false)
     {
         return prop switch
         {
             AssociationProperty a => a.GetJavaType(),
-            CompositionProperty c => c.GetJavaType(),
-            AliasProperty l => l.GetJavaType(),
-            RegularProperty r => r.GetJavaType(asList),
+            CompositionProperty c => config.GetJavaType(c),
+            AliasProperty l => config.GetJavaType(l),
+            RegularProperty r => config.GetJavaType(r, asList),
             _ => string.Empty,
         };
     }
@@ -53,7 +53,7 @@ public static class JpaUtils
         }
     }
 
-    public static string GetJavaType(this AliasProperty ap)
+    public static string GetJavaType(this JpaConfig config, AliasProperty ap)
     {
         if (ap.Class != null && ap.Class.IsPersistent)
         {
@@ -61,26 +61,26 @@ public static class JpaUtils
             {
                 if (asp.IsEnum())
                 {
-                    return asp.Property.GetJavaType(ap.AsList || asp.Type == AssociationType.ManyToMany || asp.Type == AssociationType.OneToMany);
+                    return config.GetJavaType(asp.Property, ap.AsList || asp.Type == AssociationType.ManyToMany || asp.Type == AssociationType.OneToMany);
                 }
                 else
                 {
-                    return ap.Property.Domain.Java!.Type.ParseTemplate(ap);
+                    return config.GetImplementation(ap.Property.Domain)!.Type.ParseTemplate(ap);
                 }
             }
             else
             {
-                return ap.Property.GetJavaType(ap.AsList);
+                return config.GetJavaType(ap.Property, ap.AsList);
             }
         }
 
         if (ap.IsEnum())
         {
-            return ap.Property.GetJavaType(ap.AsList);
+            return config.GetJavaType(ap.Property, ap.AsList);
         }
         else if (ap.Property is AssociationProperty apr)
         {
-            return apr.Property.GetJavaType(ap.AsList || apr.Type == AssociationType.ManyToMany || apr.Type == AssociationType.OneToMany);
+            return config.GetJavaType(apr.Property, ap.AsList || apr.Type == AssociationType.ManyToMany || apr.Type == AssociationType.OneToMany);
         }
         else if (ap.Property is CompositionProperty cpo)
         {
@@ -94,7 +94,7 @@ public static class JpaUtils
             }
             else if (cpo.DomainKind != null)
             {
-                var javaType = cpo.DomainKind.Java!.Type;
+                var javaType = config.GetImplementation(cpo.DomainKind)!.Type;
                 if (!javaType.Contains("{composition.name}"))
                 {
                     javaType += "<{composition.name}>";
@@ -104,23 +104,23 @@ public static class JpaUtils
             }
         }
 
-        return ap.Domain.Java!.Type;
+        return config.GetImplementation(ap.Domain)!.Type;
     }
 
-    public static string GetJavaType(this RegularProperty rp, bool asList)
+    public static string GetJavaType(this JpaConfig config, RegularProperty rp, bool asList)
     {
-        return rp.IsEnum() && rp.Class.IsStatic() ? ((asList ? "List<" : string.Empty) + $"{rp.Class.NamePascal}.Values") + (asList ? ">" : string.Empty) : (asList ? rp.Domain.ListDomain! : rp.Domain).Java!.Type.ParseTemplate(rp);
+        return rp.IsEnum() && rp.Class.IsStatic() ? ((asList ? "List<" : string.Empty) + $"{rp.Class.NamePascal}.Values") + (asList ? ">" : string.Empty) : config.GetImplementation(asList ? rp.Domain.ListDomain! : rp.Domain)!.Type.ParseTemplate(rp);
     }
 
-    public static string GetJavaType(this CompositionProperty cp)
+    public static string GetJavaType(this JpaConfig config, CompositionProperty cp)
     {
         return cp.Kind switch
         {
             "object" => cp.Composition.NamePascal,
             "list" => $"List<{cp.Composition.NamePascal}>",
             "async-list" => $"IAsyncEnumerable<{cp.Composition.NamePascal}>",
-            string _ when cp.DomainKind!.Java!.Type.Contains("{composition.name}") => cp.DomainKind.Java.Type.ParseTemplate(cp),
-            string _ => $"{cp.DomainKind.Java.Type}<{{composition.name}}>".ParseTemplate(cp)
+            string _ when config.GetImplementation(cp.DomainKind)!.Type.Contains("{composition.name}") => config.GetImplementation(cp.DomainKind)!.Type.ParseTemplate(cp),
+            string _ => $"{config.GetImplementation(cp.DomainKind)!.Type}<{{composition.name}}>".ParseTemplate(cp)
         };
     }
 
