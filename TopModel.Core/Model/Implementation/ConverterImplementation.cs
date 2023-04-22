@@ -1,6 +1,6 @@
-﻿namespace TopModel.Core;
+﻿namespace TopModel.Core.Model.Implementation;
 
-public class CSharpConverter
+public class ConverterImplementation
 {
 #nullable disable
 
@@ -10,7 +10,7 @@ public class CSharpConverter
     public string Text { get; set; }
 
     /// <summary>
-    /// Usings à ajouter pour utiliser ce décorateur.
+    /// Imports à ajouter pour utiliser ce décorateur.
     /// </summary>
-    public IList<string> Usings { get; set; } = new List<string>();
+    public IList<string> Imports { get; set; } = new List<string>();
 }

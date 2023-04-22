@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -91,7 +92,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
         {
             if (property is IFieldProperty fp)
             {
-                foreach (var @using in fp.Domain.CSharp!.Usings.Select(u => u.ParseTemplate(fp)))
+                foreach (var @using in fp.Domain.CSharp!.Imports.Select(u => u.ParseTemplate(fp)))
                 {
                     usings.Add(@using);
                 }
@@ -121,7 +122,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
                     if (cp.DomainKind != null)
                     {
-                        usings.AddRange(cp.DomainKind.CSharp!.Usings.Select(u => u.ParseTemplate(cp)));
+                        usings.AddRange(cp.DomainKind.CSharp!.Imports.Select(u => u.ParseTemplate(cp)));
                         usings.AddRange(cp.DomainKind.CSharp!.Annotations
                         .Where(a => (a.Target & Target.Dto) > 0 || (a.Target & Target.Persisted) > 0 && (property.Class?.IsPersistent ?? false))
                         .SelectMany(a => a.Usings));

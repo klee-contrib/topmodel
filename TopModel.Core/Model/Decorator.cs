@@ -1,5 +1,5 @@
 ﻿using TopModel.Core.FileModel;
-using TopModel.Core.Types;
+using TopModel.Core.Model.Implementation;
 using TopModel.Utils;
 using YamlDotNet.Serialization;
 
@@ -18,9 +18,9 @@ public class Decorator : IPropertyContainer
 #nullable enable
 
     [YamlMember(Alias = "csharp")]
-    public CSharpDecorator? CSharp { get; set; }
+    public DecoratorImplementation? CSharp { get; set; }
 
-    public JavaDecorator? Java { get; set; }
+    public DecoratorImplementation? Java { get; set; }
 
 #nullable disable
     public ModelFile ModelFile { get; set; }

@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Model.Implementation;
 
 namespace TopModel.Core;
 
@@ -32,12 +33,12 @@ public class Converter
     /// <summary>
     /// Description du convertisseur C# dans le cas où la conversion n'est pas implicite
     /// </summary>
-    public CSharpConverter? CSharp { get; set; }
+    public ConverterImplementation? CSharp { get; set; }
 
     /// <summary>
     /// Description du convertisseur java dans le cas où la conversion n'est pas implicite
     /// </summary>
-    public JavaConverter? Java { get; set; }
+    public ConverterImplementation? Java { get; set; }
 
 #nullable disable
     public ModelFile ModelFile { get; set; }

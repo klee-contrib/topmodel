@@ -1,4 +1,4 @@
-﻿using TopModel.Core.Types;
+﻿using TopModel.Core.Model.Implementation;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
@@ -36,10 +36,10 @@ public class DecoratorLoader : ILoader<Decorator>
                     decorator.PreservePropertyCasing = value!.Value == "true";
                     break;
                 case "csharp":
-                    decorator.CSharp = _fileChecker.Deserialize<CSharpDecorator>(parser);
+                    decorator.CSharp = _fileChecker.Deserialize<DecoratorImplementation>(parser);
                     break;
                 case "java":
-                    decorator.Java = _fileChecker.Deserialize<JavaDecorator>(parser);
+                    decorator.Java = _fileChecker.Deserialize<DecoratorImplementation>(parser);
                     break;
                 case "properties":
                     parser.ConsumeSequence(() =>

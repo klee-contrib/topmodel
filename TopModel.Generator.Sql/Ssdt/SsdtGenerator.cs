@@ -90,7 +90,7 @@ public class SsdtGenerator : GeneratorBase<SqlConfig>
 
     protected override object? GetDomainType(Domain domain)
     {
-        return domain.SqlType;
+        return domain.Sql;
     }
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)

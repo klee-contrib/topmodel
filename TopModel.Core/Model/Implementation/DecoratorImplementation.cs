@@ -1,6 +1,6 @@
-﻿namespace TopModel.Core.Types;
+﻿namespace TopModel.Core.Model.Implementation;
 
-public class JavaDecorator
+public class DecoratorImplementation
 {
     public string? Extends { get; set; }
 

@@ -181,7 +181,7 @@ public static class TemplateExtension
             .Replace($"{prefix}length", transform(d.Length?.ToString() ?? string.Empty))
             .Replace($"{prefix}scale", transform(d.Scale?.ToString() ?? string.Empty))
             .Replace($"{prefix}name", transform(d.Name ?? string.Empty))
-            .Replace($"{prefix}sqlType", transform(d.SqlType ?? string.Empty));
+            .Replace($"{prefix}sqlType", transform(d.Sql?.Type ?? string.Empty));
         return result;
     }
 

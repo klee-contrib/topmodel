@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Model.Implementation;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
@@ -25,10 +26,10 @@ public class ConverterLoader : ILoader<Converter>
             switch (prop)
             {
                 case "csharp":
-                    converter.CSharp = _fileChecker.Deserialize<CSharpConverter>(parser);
+                    converter.CSharp = _fileChecker.Deserialize<ConverterImplementation>(parser);
                     break;
                 case "java":
-                    converter.Java = _fileChecker.Deserialize<JavaConverter>(parser);
+                    converter.Java = _fileChecker.Deserialize<ConverterImplementation>(parser);
                     break;
                 case "from":
                     parser.ConsumeSequence(() =>

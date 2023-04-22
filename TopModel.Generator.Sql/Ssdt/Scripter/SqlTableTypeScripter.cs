@@ -61,7 +61,7 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     /// <param name="property">Propriété.</param>
     private static void WriteColumn(StringBuilder sb, IFieldProperty property)
     {
-        var persistentType = property.Domain.SqlType;
+        var persistentType = property.Domain.Sql!.Type;
         sb.Append("[").Append(property.SqlName).Append("] ").Append(persistentType).Append(" null");
     }
 

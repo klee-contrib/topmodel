@@ -124,7 +124,7 @@ public class JavascriptConfig : GeneratorConfigBase
                     ? fp.GetPropertyTypeName().Replace("[]", string.Empty)
                     : dep.Classe.NamePascal,
                 Path: GetImportPathForClass(dep, getClassTags(dep.Classe).Contains(tag) ? tag : getClassTags(dep.Classe).Intersect(Tags).FirstOrDefault() ?? tag, tag, availableClasses)!))
-            .Concat(endpoints.SelectMany(d => d.DomainDependencies).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Replace("[]", string.Empty).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
+            .Concat(endpoints.SelectMany(d => d.DomainDependencies).SelectMany(dep => dep.Domain.TS!.Imports.Select(import => (Import: dep.Domain.TS!.Type.ParseTemplate(dep.Source).Replace("[]", string.Empty).Split("<").First(), Path: import.ParseTemplate(dep.Source)))))
             .Where(i => i.Path != null)
             .GroupAndSort();
     }

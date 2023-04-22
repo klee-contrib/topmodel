@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
+using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -528,11 +529,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                     && Classes.Contains(prop.Class))
                 {
                     var sqlName = Config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
-                    if (fp.Domain.CSharp!.UseSqlTypeName)
-                    {
-                        w.WriteAttribute(2, "Column", $@"""{sqlName}""", $@"TypeName = ""{fp.Domain.SqlType}""");
-                    }
-                    else
+                    if (!fp.Domain.CSharp!.Annotations.Any(a => a.Text.TrimStart('[').StartsWith("Column")))
                     {
                         w.WriteAttribute(2, "Column", $@"""{sqlName}""");
                     }
@@ -665,7 +662,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
         }
 
-        foreach (var @using in item.Decorators.SelectMany(d => (d.Decorator.CSharp?.Usings ?? Array.Empty<string>()).Select(u => u.ParseTemplate(item, d.Parameters)).Distinct()))
+        foreach (var @using in item.Decorators.SelectMany(d => (d.Decorator.CSharp?.Imports ?? Array.Empty<string>()).Select(u => u.ParseTemplate(item, d.Parameters)).Distinct()))
         {
             usings.Add(@using);
         }
@@ -674,7 +671,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         {
             if (property is IFieldProperty fp)
             {
-                foreach (var @using in fp.Domain.CSharp!.Usings.Select(u => u.ParseTemplate(fp)))
+                foreach (var @using in fp.Domain.CSharp!.Imports.Select(u => u.ParseTemplate(fp)))
                 {
                     usings.Add(@using);
                 }
@@ -703,7 +700,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                     usings.Add(GetNamespace(cp.Composition, tag));
                     if (cp.DomainKind != null)
                     {
-                        usings.AddRange(cp.DomainKind.CSharp!.Usings.Select(u => u.ParseTemplate(cp)));
+                        usings.AddRange(cp.DomainKind.CSharp!.Imports.Select(u => u.ParseTemplate(cp)));
                         usings.AddRange(cp.DomainKind.CSharp!.Annotations
                             .Where(a => (a.Target & Target.Dto) > 0 || (a.Target & Target.Persisted) > 0 && (property.Class?.IsPersistent ?? false))
                             .SelectMany(a => a.Usings)

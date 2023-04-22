@@ -382,7 +382,6 @@
             "name",
             "label"
           ],
-          "additionalProperties": false,
           "properties": {
             "name": {
               "type": "string",
@@ -412,138 +411,63 @@
               "type": "string",
               "description": "Domaine à utiliser lorsque l'on veut créer une liste d'un champ qui utilise ce domaine (alias avec `asList: true`, associations oneToMany et manyToMany)."
             },
-            "csharp": {
-              "type": "object",
-              "description": "Type correspondant au domaine en C#.",
-              "required": [
-                "type"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "description": "Nom du type.\n\nSera considéré comme un type générique de la classe si utilisé dans une composition. Dans ce cas, il est aussi possible d'utiliser cette valeur comme un template de type en utilisant '{class}' pour référencer la classe composée."
-                },
-                "annotations": {
-                  "type": "array",
-                  "description": "Annotations à ajouter sur toutes les propriétés C# de ce domaine (par exemple pour aider l'ORM a mapper le type correctement).",
-                  "items": {
-                    "type": "object",
-                    "description": "Annotations à ajouter  (ex : `CreatedDate`)",
-                    "required": [
-                      "text"
-                    ],
-                    "properties": {
-                      "text": {
-                        "type": "string",
-                        "description": "Annotation à ajouter. Peut contenir des variables"
-                      },
-                      "target": {
-                        "$ref": "#/definitions/target"
-                      },
-                      "usings": {
-                        "type": "array",
-                        "description": "Liste des imports nécessaires au bon fonctionnement de cette annotation",
-                        "items": {
-                          "type": "string",
-                          "description": "Import nécessaire au bon fonctionnement de l'annotation. Peut contenir des variables"
-                        }
-                      }
-                    }
-                  }
-                },
-                "usings": {
-                  "type": "array",
-                  "description": "Usings à ajouter à toute classe C# qui possède une propriété de ce domaine. Par exemple pour ajouter un using pour des types de collections.",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "useSqlTypeName": {
-                  "type": "boolean",
-                  "description": "Ajoute la propriété 'TypeName' dans l'annotation 'Column' en C# pour préciser le type SQL."
-                }
-              }
-            },
-            "ts": {
-              "type": "object",
-              "description": "Type correspondant au domaine en TS.",
-              "required": [
-                "type"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "description": "Nom du type.\n\nSera considéré comme un type générique de la classe si utilisé dans une composition. Dans ce cas, il est aussi possible d'utiliser cette valeur comme un template de type en utilisant '{class}' pour référencer la classe composée. Si l'import est défini, ce sera la partie à gauche du '<' qui sera importée."
-                },
-                "import": {
-                  "type": "string",
-                  "description": "Import à ajouter à tout fichier TS qui utilise une propriété de ce domaine."
-                }
-              }
-            },
-            "java": {
-              "type": "object",
-              "description": "Type correspondant au domaine en Java.",
-              "required": [
-                "type"
-              ],
-              "additionalProperties": false,
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "description": "Type java du domaine. Peut contenir des variables"
-                },
-                "imports": {
-                  "type": "array",
-                  "description": "Imports nécessaires au bon fonctionnement du type. Peuvent contenir des variables",
-                  "items": {
-                    "type": "string",
-                    "description": "Import nécessaire au bon fonctionnement du type. Peut contenir des variables"
-                  }
-                },
-                "annotations": {
-                  "type": "array",
-                  "description": "Annotations à ajouter sur toutes les propriétés C# de ce domaine (par exemple pour aider l'ORM a mapper le type correctement).",
-                  "items": {
-                    "type": "object",
-                    "description": "Annotations à ajouter  (ex : `@CreatedDate`)",
-                    "required": [
-                      "text"
-                    ],
-                    "properties": {
-                      "text": {
-                        "type": "string",
-                        "description": "Annotation à ajouter. Peut contenir des variables"
-                      },
-                      "target": {
-                        "$ref": "#/definitions/target"
-                      },
-                      "imports": {
-                        "type": "array",
-                        "description": "Liste des imports nécessaires au bon fonctionnement de cette annotation",
-                        "items": {
-                          "type": "string",
-                          "description": "Import nécessaire au bon fonctionnement de l'annotation. Peut contenir des variables"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "sqlType": {
-              "type": "string",
-              "description": "Type correspondant au domaine en SQL."
-            },
             "mediaType": {
               "type": "string",
               "description": "Type de médias (utilisé si retourné par un endpoint)."
             }
+          },
+          "additionalProperties": {
+            "type": "object",
+            "description": "Implémentation du domaine dans un langage",
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "Type du domaine. Peut contenir des variables"
+              },
+              "imports": {
+                "type": "array",
+                "description": "Imports nécessaires au bon fonctionnement du type. Peuvent contenir des variables",
+                "items": {
+                  "type": "string",
+                  "description": "Import nécessaire au bon fonctionnement du type. Peut contenir des variables"
+                }
+              },
+              "annotations": {
+                "type": "array",
+                "description": "Annotations à ajouter sur toutes les propriétés de ce domaine (par exemple pour aider l'ORM a mapper le type correctement).",
+                "items": {
+                  "type": "object",
+                  "description": "Annotations à ajouter  (ex : `@CreatedDate`)",
+                  "required": [
+                    "text"
+                  ],
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "description": "Annotation à ajouter. Peut contenir des variables"
+                    },
+                    "target": {
+                      "$ref": "#/definitions/target"
+                    },
+                    "imports": {
+                      "type": "array",
+                      "description": "Liste des imports nécessaires au bon fonctionnement de cette annotation",
+                      "items": {
+                        "type": "string",
+                        "description": "Import nécessaire au bon fonctionnement de l'annotation. Peut contenir des variables"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         }
-      }
+      }      
     },
     {
       "type": "object",
@@ -573,44 +497,27 @@
                 "type": "string",
                 "description": "Domains cibles du convertisseur"
               }
-            },
-            "csharp": {
-              "type": "object",
-              "description": "Description du convertisseur C# dans le cas où la conversion n'est pas implicite",
-              "properties": {
-                "text": {
-                  "type": "string",
-                  "description": "Implémentation du convertisseur. Accepte les templates. Utiliser {value} pour la valeur du paramètre d'entrée, et {to.type} ou {from.type} pour les propriétés du domaine source ou cible"
-                },
-                "usings": {
-                  "type": "array",
-                  "description": "Usings à ajouter pour utiliser ce décorateur.",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            },
-            "java": {
-              "type": "object",
-              "description": "Description du convertisseur java dans le cas où la conversion n'est pas implicite",
-              "properties": {
-                "text": {
-                  "type": "string",
-                  "description": "Implémentation du convertisseur. Accepte les templates. Utiliser {value} pour la valeur du paramètre d'entrée, et {to.type} ou {from.type} pour les propriétés du domaine source ou cible"
-                },
-                "imports": {
-                  "type": "array",
-                  "description": "Imports à ajouter pour utiliser ce décorateur.",
-                  "items": {
-                    "type": "string"
-                  }
+            }
+          },
+          "additionalProperties": {
+            "type": "object",
+            "description": "Implémentation du convertisseur dans le cas où la conversion n'est pas implicite",
+            "properties": {
+              "text": {
+                "type": "string",
+                "description": "Implémentation du convertisseur. Accepte les templates. Utiliser {value} pour la valeur du paramètre d'entrée, et {to.type} ou {from.type} pour les propriétés du domaine source ou cible"
+              },
+              "imports": {
+                "type": "array",
+                "description": "Imports à ajouter pour utiliser ce convertisseur.",
+                "items": {
+                  "type": "string"
                 }
               }
             }
           }
         }
-      }
+      }      
     },
     {
       "type": "object",
@@ -627,7 +534,6 @@
             "name",
             "description"
           ],
-          "additionalProperties": false,
           "properties": {
             "name": {
               "type": "string",
@@ -641,75 +547,43 @@
               "type": "boolean",
               "description": "Garde les noms de propriétés tels quels lors de la génération, au lieu de les convertir dans le format du langage cible."
             },
-            "csharp": {
-              "type": "object",
-              "description": "Implémentation du décorateur en C#.",
-              "additionalProperties": false,
-              "properties": {
-                "extends": {
-                  "type": "string",
-                  "description": "Classe (hors TopModel) dont une classe C# implémentant ce décorateur doit dériver."
-                },
-                "implements": {
-                  "type": "array",
-                  "description": "Interfaces (hors TopModel) qu'une classe C# implémentant ce décorateur doit implémenter.",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "annotations": {
-                  "type": "array",
-                  "description": "Annotations à ajouter sur une classe C# implémentant ce décorateur.",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "usings": {
-                  "type": "array",
-                  "description": "Usings à ajouter pour utiliser ce décorateur.",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            },
-            "java": {
-              "type": "object",
-              "description": "Implémentation du décorateur en Java.",
-              "additionalProperties": false,
-              "properties": {
-                "extends": {
-                  "type": "string",
-                  "description": "Classe (hors TopModel) dont une classe Java implémentant ce décorateur doit dériver."
-                },
-                "implements": {
-                  "type": "array",
-                  "description": "Interfaces (hors TopModel) qu'une classe Java implémentant ce décorateur doit implémenter.",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "annotations": {
-                  "type": "array",
-                  "description": "Annotations à ajouter sur une classe Java implémentant ce décorateur.",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                "imports": {
-                  "type": "array",
-                  "description": "Imports à ajouter pour utiliser ce décorateur.",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            },
             "properties": {
               "type": "array",
               "description": "Liste des propriétés du décorateur.",
               "items": {
                 "$ref": "#/definitions/property"
+              }
+            }
+          },
+          "additionalProperties": {
+            "type": "object",
+            "description": "Implémentation du décorateur.",
+            "additionalProperties": false,
+            "properties": {
+              "extends": {
+                "type": "string",
+                "description": "Classe (hors TopModel) dont une classe implémentant ce décorateur doit dériver."
+              },
+              "implements": {
+                "type": "array",
+                "description": "Interfaces (hors TopModel) qu'une classe implémentant ce décorateur doit implémenter.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "annotations": {
+                "type": "array",
+                "description": "Annotations à ajouter sur une classe implémentant ce décorateur.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "imports": {
+                "type": "array",
+                "description": "Imports à ajouter pour utiliser ce décorateur.",
+                "items": {
+                  "type": "string"
+                }
               }
             }
           }
