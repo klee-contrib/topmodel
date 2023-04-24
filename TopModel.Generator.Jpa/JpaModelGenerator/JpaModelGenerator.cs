@@ -75,6 +75,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         if (!classe.IsPersistent)
         {
             implements.Add("Serializable");
+            fw.AddImport("java.io.Serializable");
         }
 
         fw.WriteClassDeclaration(classe.NamePascal, null, extends, implements);
@@ -352,7 +353,6 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         foreach (var property in classe.GetProperties(Config, AvailableClasses, tag))
         {
             imports.AddRange(property.GetTypeImports(Config, tag));
-            imports.AddRange(property.GetPersistenceImports(Config));
         }
 
         if (classe.Extends != null)
@@ -399,13 +399,14 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
     {
         fw.WriteDocStart(0, classe.Comment);
         fw.WriteDocEnd(0);
-
-        fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
         var javaOrJakarta = Config.PersistenceMode.ToString().ToLower();
+        fw.AddImport($"{javaOrJakarta}.annotation.Generated");
+        fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
 
         if (classe.IsPersistent)
         {
             var table = @$"@Table(name = ""{classe.SqlName}""";
+            fw.AddImport($"{javaOrJakarta}.persistence.Table");
             if (classe.UniqueKeys.Any())
             {
                 fw.AddImport($"{javaOrJakarta}.persistence.UniqueConstraint");
@@ -440,6 +441,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             }
 
             table += ")";
+            fw.AddImport($"{javaOrJakarta}.persistence.Entity");
             fw.WriteLine("@Entity");
             fw.WriteLine(table);
         }

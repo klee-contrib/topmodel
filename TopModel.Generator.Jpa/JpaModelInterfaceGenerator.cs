@@ -33,6 +33,7 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
     {
         var packageName = Config.GetPackageName(classe, tag);
         using var fw = new JavaWriter(fileName, _logger, packageName, null);
+        var javaOrJakarta = Config.PersistenceMode.ToString().ToLower();
 
         WriteImports(fw, classe, tag);
         fw.WriteLine();
@@ -41,7 +42,7 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
         var extends = (classe.Extends?.NamePascal ?? Config.GetImplementation(extendsDecorator.Decorator)?.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
 
         var implements = classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)?.Implements.Select(i => i.ParseTemplate(classe, d.Parameters)) ?? Array.Empty<string>()).Distinct().ToList();
-
+        fw.AddImport($"{javaOrJakarta}.annotation.Generated");
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
         fw.WriteLine($"public interface {classe.NamePascal} {{");
 
