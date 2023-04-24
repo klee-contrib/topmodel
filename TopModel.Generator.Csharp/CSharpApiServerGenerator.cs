@@ -23,11 +23,6 @@ public class CSharpApiServerGenerator : EndpointsGeneratorBase<CsharpConfig>
 
     public override string Name => "CSharpApiServerGen";
 
-    protected override object? GetDomainType(Domain domain)
-    {
-        return domain.CSharp;
-    }
-
     protected override bool FilterTag(string tag)
     {
         return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Server;
@@ -97,7 +92,7 @@ namespace {ns}
 
             foreach (var d in endpoint.Decorators)
             {
-                foreach (var a in d.Decorator.CSharp?.Annotations ?? Array.Empty<string>())
+                foreach (var a in Config.GetImplementation(d.Decorator)?.Annotations ?? Array.Empty<string>())
                 {
                     wd.AppendLine($"{indent}[{a.ParseTemplate(endpoint, d.Parameters)}]");
                 }
@@ -149,7 +144,7 @@ namespace {ns}
                 var routeParamName = split[i][1..^1];
                 var param = endpoint.Params.OfType<IFieldProperty>().Single(param => param.GetParamName() == routeParamName);
 
-                var paramType = param.Domain.CSharp!.Type switch
+                var paramType = Config.GetImplementation(param.Domain)!.Type switch
                 {
                     "int" => "int",
                     "int?" => "int",
@@ -171,7 +166,7 @@ namespace {ns}
     {
         var sb = new StringBuilder();
 
-        var hasForm = param.Endpoint.Params.Any(p => p is IFieldProperty fp && fp.Domain.CSharp!.Type.Contains("IFormFile"));
+        var hasForm = param.Endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetImplementation(fp.Domain)!.Type.Contains("IFormFile"));
 
         if (param.IsBodyParam())
         {

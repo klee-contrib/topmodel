@@ -118,7 +118,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         {
             var propertyTarget = mapping.Value;
             var propertySource = mapping.Key;
-            var getterPrefix = propertyTarget!.GetJavaType() == "boolean" ? "is" : "get";
+            var getterPrefix = Config.GetJavaType(propertyTarget!) == "boolean" ? "is" : "get";
             var (getter, checkSourceNull) = GetSourceGetter(propertySource, propertyTarget!, classe, fw, "source", tag);
             if (mapper.Class.Abstract)
             {
@@ -172,7 +172,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
     private (string Getter, bool CheckSourceNull) GetSourceGetter(IProperty propertySource, IProperty propertyTarget, Class classe, JavaWriter fw, string sourceName, string tag)
     {
-        var getterPrefix = propertyTarget!.GetJavaType() == "boolean" ? "is" : "get";
+        var getterPrefix = Config.GetJavaType(propertyTarget!) == "boolean" ? "is" : "get";
         var getter = string.Empty;
         var checkSourceNull = false;
         if ((!propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent)
@@ -238,7 +238,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                 var isMultiple = apTarget.Type == AssociationType.OneToMany || apTarget.Type == AssociationType.ManyToMany;
                 if (isMultiple)
                 {
-                    getter = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}(){(!propertySource.Class.IsPersistent ? $".stream().map({apTarget.Association.PrimaryKey.Single().GetJavaType()}::getEntity).collect(Collectors.toList())" : string.Empty)}";
+                    getter = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}(){(!propertySource.Class.IsPersistent ? $".stream().map({Config.GetJavaType(apTarget.Association.PrimaryKey.Single())}::getEntity).collect(Collectors.toList())" : string.Empty)}";
                     fw.AddImport("java.util.stream.Collectors");
                 }
                 else
@@ -285,12 +285,12 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
             {
                 var converter = ifpFrom.Domain.ConvertersFrom.FirstOrDefault(c => c.To.Any(t => t == ifpTo.Domain));
                 string conversion = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}()";
-                if (converter != null && converter.Java?.Text != null)
+                if (converter != null && Config.GetImplementation(converter)?.Text != null)
                 {
-                    var convert = converter.Java.Text;
+                    var convert = Config.GetImplementation(converter)!.Text;
                     getter = convert.Replace("{value}", conversion)
-                        .ParseTemplate(ifpFrom.Domain, "java", "from.")
-                        .ParseTemplate(ifpTo.Domain, "java", "to.");
+                        .ParseTemplate(ifpFrom.Domain, Config.Language, "from.")
+                        .ParseTemplate(ifpTo.Domain, Config.Language, "to.");
                 }
                 else
                 {
@@ -363,7 +363,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
             {
                 var propertyTarget = mapping.Key;
                 var propertySource = mapping.Value!;
-                var getterPrefix = propertyTarget!.GetJavaType() == "boolean" ? "is" : "get";
+                var getterPrefix = Config.GetJavaType(propertyTarget!) == "boolean" ? "is" : "get";
                 var (getter, checkSourceNull) = GetSourceGetter(propertySource, propertyTarget, classe, fw, param.Name.ToCamelCase(), tag);
                 if (classe.Abstract)
                 {

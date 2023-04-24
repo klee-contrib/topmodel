@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
+using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -18,11 +19,6 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     }
 
     public override string Name => "CSharpClassGen";
-
-    protected override object? GetDomainType(Domain domain)
-    {
-        return domain.CSharp;
-    }
 
     protected override string GetFileName(Class classe, string tag)
     {
@@ -58,121 +54,6 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             w.WriteLine(3, "OnCreated();");
             w.WriteLine(2, "}");
         }
-    }
-
-    /// <summary>
-    /// Génère les constructeurs.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">La classe générée.</param>
-    private static void GenerateConstructors(CSharpWriter w, Class item)
-    {
-        GenerateDefaultConstructor(w, item);
-        GenerateCopyConstructor(w, item);
-        GenerateBaseCopyConstructor(w, item);
-    }
-
-    /// <summary>
-    /// Génère le constructeur par recopie.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">Classe générée.</param>
-    private static void GenerateCopyConstructor(CSharpWriter w, Class item)
-    {
-        w.WriteLine();
-        w.WriteSummary(2, "Constructeur par recopie.");
-        w.WriteParam("bean", "Source.");
-        if (item.Extends != null)
-        {
-            w.WriteLine(2, "public " + item.NamePascal + "(" + item.NamePascal + " bean)");
-            w.WriteLine(3, ": base(bean)");
-            w.WriteLine(2, "{");
-        }
-        else
-        {
-            w.WriteLine(2, "public " + item.NamePascal + "(" + item.NamePascal + " bean)");
-            w.WriteLine(2, "{");
-        }
-
-        w.WriteLine(3, "if (bean == null)");
-        w.WriteLine(3, "{");
-        w.WriteLine(4, "throw new ArgumentNullException(nameof(bean));");
-        w.WriteLine(3, "}");
-        w.WriteLine();
-
-        var initd = new List<string>();
-
-        foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => t.Domain.CSharp!.Type.Contains("ICollection")))
-        {
-            initd.Add(property.NamePascal);
-            var strip = property.Domain.CSharp!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
-            w.WriteLine(3, property.NamePascal + " = new List<" + strip + ">(bean." + property.NamePascal + ");");
-        }
-
-        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
-        {
-            w.WriteLine(3, property.NamePascal + " = new " + property.Composition.NamePascal + "(bean." + property.NamePascal + ");");
-        }
-
-        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
-        {
-            w.WriteLine(3, property.NamePascal + " = new List<" + property.Composition.NamePascal + ">(bean." + property.NamePascal + ");");
-        }
-
-        foreach (var property in item.Properties.Where(p => p is not CompositionProperty && !initd.Contains(p.NamePascal)))
-        {
-            w.WriteLine(3, property.NamePascal + " = bean." + property.NamePascal + ";");
-        }
-
-        w.WriteLine();
-        w.WriteLine(3, "OnCreated(bean);");
-        w.WriteLine(2, "}");
-    }
-
-    /// <summary>
-    /// Génère le constructeur par défaut.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">Classe générée.</param>
-    private static void GenerateDefaultConstructor(CSharpWriter w, Class item)
-    {
-        w.WriteSummary(2, "Constructeur.");
-        w.WriteLine(2, $@"public {item.NamePascal}()");
-
-        if (item.Extends != null)
-        {
-            w.WriteLine(3, ": base()");
-        }
-
-        w.WriteLine(2, "{");
-
-        var line = false;
-        foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => t.Domain.CSharp!.Type.Contains("ICollection")))
-        {
-            line = true;
-            var strip = property.Domain.CSharp!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
-            w.WriteLine(3, LoadPropertyInit(property.NamePascal, "List<" + strip + ">"));
-        }
-
-        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
-        {
-            line = true;
-            w.WriteLine(3, LoadPropertyInit(property.NamePascal, property.Composition.NamePascal));
-        }
-
-        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
-        {
-            line = true;
-            w.WriteLine(3, LoadPropertyInit(property.NamePascal, "List<" + property.Composition.NamePascal + ">"));
-        }
-
-        if (line)
-        {
-            w.WriteLine();
-        }
-
-        w.WriteLine(3, "OnCreated();");
-        w.WriteLine(2, "}");
     }
 
     /// <summary>
@@ -286,6 +167,121 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     }
 
     /// <summary>
+    /// Génère les constructeurs.
+    /// </summary>
+    /// <param name="w">Writer.</param>
+    /// <param name="item">La classe générée.</param>
+    private void GenerateConstructors(CSharpWriter w, Class item)
+    {
+        GenerateDefaultConstructor(w, item);
+        GenerateCopyConstructor(w, item);
+        GenerateBaseCopyConstructor(w, item);
+    }
+
+    /// <summary>
+    /// Génère le constructeur par recopie.
+    /// </summary>
+    /// <param name="w">Writer.</param>
+    /// <param name="item">Classe générée.</param>
+    private void GenerateCopyConstructor(CSharpWriter w, Class item)
+    {
+        w.WriteLine();
+        w.WriteSummary(2, "Constructeur par recopie.");
+        w.WriteParam("bean", "Source.");
+        if (item.Extends != null)
+        {
+            w.WriteLine(2, "public " + item.NamePascal + "(" + item.NamePascal + " bean)");
+            w.WriteLine(3, ": base(bean)");
+            w.WriteLine(2, "{");
+        }
+        else
+        {
+            w.WriteLine(2, "public " + item.NamePascal + "(" + item.NamePascal + " bean)");
+            w.WriteLine(2, "{");
+        }
+
+        w.WriteLine(3, "if (bean == null)");
+        w.WriteLine(3, "{");
+        w.WriteLine(4, "throw new ArgumentNullException(nameof(bean));");
+        w.WriteLine(3, "}");
+        w.WriteLine();
+
+        var initd = new List<string>();
+
+        foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => Config.GetImplementation(t.Domain)!.Type.Contains("ICollection")))
+        {
+            initd.Add(property.NamePascal);
+            var strip = Config.GetImplementation(property.Domain)!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
+            w.WriteLine(3, property.NamePascal + " = new List<" + strip + ">(bean." + property.NamePascal + ");");
+        }
+
+        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
+        {
+            w.WriteLine(3, property.NamePascal + " = new " + property.Composition.NamePascal + "(bean." + property.NamePascal + ");");
+        }
+
+        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
+        {
+            w.WriteLine(3, property.NamePascal + " = new List<" + property.Composition.NamePascal + ">(bean." + property.NamePascal + ");");
+        }
+
+        foreach (var property in item.Properties.Where(p => p is not CompositionProperty && !initd.Contains(p.NamePascal)))
+        {
+            w.WriteLine(3, property.NamePascal + " = bean." + property.NamePascal + ";");
+        }
+
+        w.WriteLine();
+        w.WriteLine(3, "OnCreated(bean);");
+        w.WriteLine(2, "}");
+    }
+
+    /// <summary>
+    /// Génère le constructeur par défaut.
+    /// </summary>
+    /// <param name="w">Writer.</param>
+    /// <param name="item">Classe générée.</param>
+    private void GenerateDefaultConstructor(CSharpWriter w, Class item)
+    {
+        w.WriteSummary(2, "Constructeur.");
+        w.WriteLine(2, $@"public {item.NamePascal}()");
+
+        if (item.Extends != null)
+        {
+            w.WriteLine(3, ": base()");
+        }
+
+        w.WriteLine(2, "{");
+
+        var line = false;
+        foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => Config.GetImplementation(t.Domain)!.Type.Contains("ICollection")))
+        {
+            line = true;
+            var strip = Config.GetImplementation(property.Domain)!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
+            w.WriteLine(3, LoadPropertyInit(property.NamePascal, "List<" + strip + ">"));
+        }
+
+        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
+        {
+            line = true;
+            w.WriteLine(3, LoadPropertyInit(property.NamePascal, property.Composition.NamePascal));
+        }
+
+        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
+        {
+            line = true;
+            w.WriteLine(3, LoadPropertyInit(property.NamePascal, "List<" + property.Composition.NamePascal + ">"));
+        }
+
+        if (line)
+        {
+            w.WriteLine();
+        }
+
+        w.WriteLine(3, "OnCreated();");
+        w.WriteLine(2, "}");
+    }
+
+    /// <summary>
     /// Génération des constantes statiques.
     /// </summary>
     /// <param name="w">Writer.</param>
@@ -308,7 +304,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
             foreach (var uk in item.UniqueKeys.Where(uk =>
                 uk.Count == 1
-                && uk.Single().Domain.CSharp!.Type == "string"
+                && Config.GetImplementation(uk.Single().Domain)!.Type == "string"
                 && refValue.Value.ContainsKey(uk.Single())))
             {
                 var prop = uk.Single();
@@ -324,7 +320,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         foreach (var @const in consts.OrderBy(x => x.Name.ToPascalCase(), StringComparer.Ordinal))
         {
             w.WriteSummary(2, @const.Label);
-            w.WriteLine(2, $"public const {@const.Domain.CSharp!.Type.TrimEnd('?')} {@const.Name.ToPascalCase()} = {(@const.Domain.ShouldQuoteValue ? $@"""{@const.Code}""" : @const.Code)};");
+            w.WriteLine(2, $"public const {Config.GetImplementation(@const.Domain)!.Type.TrimEnd('?')} {@const.Name.ToPascalCase()} = {(Config.GetImplementation(@const.Domain)!.ShouldQuoteValue() ? $@"""{@const.Code}""" : @const.Code)};");
             w.WriteLine();
         }
     }
@@ -416,14 +412,14 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
         }
 
-        foreach (var annotation in item.Decorators.SelectMany(d => (d.Decorator.CSharp?.Annotations ?? Array.Empty<string>()).Select(a => a.ParseTemplate(item, d.Parameters)).Distinct()))
+        foreach (var annotation in item.Decorators.SelectMany(d => (Config.GetImplementation(d.Decorator)?.Annotations ?? Array.Empty<string>()).Select(a => a.ParseTemplate(item, d.Parameters)).Distinct()))
         {
             w.WriteAttribute(1, annotation);
         }
 
-        var extendsDecorator = item.Decorators.SingleOrDefault(d => d.Decorator.CSharp?.Extends != null);
-        var extends = item.Extends?.NamePascal ?? extendsDecorator.Decorator?.CSharp?.Extends!.ParseTemplate(item, extendsDecorator.Parameters);
-        var implements = item.Decorators.SelectMany(d => (d.Decorator.CSharp?.Implements ?? Array.Empty<string>()).Select(i => i.ParseTemplate(item, d.Parameters)).Distinct()).ToArray();
+        var extendsDecorator = item.Decorators.SingleOrDefault(d => Config.GetImplementation(d.Decorator)?.Extends != null);
+        var extends = item.Extends?.NamePascal ?? Config.GetImplementation(extendsDecorator.Decorator)?.Extends!.ParseTemplate(item, extendsDecorator.Parameters);
+        var implements = item.Decorators.SelectMany(d => (Config.GetImplementation(d.Decorator)?.Implements ?? Array.Empty<string>()).Select(i => i.ParseTemplate(item, d.Parameters)).Distinct()).ToArray();
 
         if (item.Abstract)
         {
@@ -528,11 +524,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                     && Classes.Contains(prop.Class))
                 {
                     var sqlName = Config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
-                    if (fp.Domain.CSharp!.UseSqlTypeName)
-                    {
-                        w.WriteAttribute(2, "Column", $@"""{sqlName}""", $@"TypeName = ""{fp.Domain.SqlType}""");
-                    }
-                    else
+                    if (!Config.GetImplementation(fp.Domain)!.Annotations.Any(a => a.Text.TrimStart('[').StartsWith("Column")))
                     {
                         w.WriteAttribute(2, "Column", $@"""{sqlName}""");
                     }
@@ -565,7 +557,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                     w.WriteAttribute(2, "StringLength", $"{fp.Domain.Length}");
                 }
 
-                foreach (var annotation in fp.Domain.CSharp!.Annotations
+                foreach (var annotation in Config.GetImplementation(fp.Domain)!.Annotations
                     .Where(a => (a.Target & Target.Dto) > 0 || (a.Target & Target.Persisted) > 0 && (property.Class?.IsPersistent ?? false))
                     .Select(a => a.Text.ParseTemplate(property)))
                 {
@@ -665,7 +657,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
         }
 
-        foreach (var @using in item.Decorators.SelectMany(d => (d.Decorator.CSharp?.Usings ?? Array.Empty<string>()).Select(u => u.ParseTemplate(item, d.Parameters)).Distinct()))
+        foreach (var @using in item.Decorators.SelectMany(d => (Config.GetImplementation(d.Decorator)?.Imports ?? Array.Empty<string>()).Select(u => u.ParseTemplate(item, d.Parameters)).Distinct()))
         {
             usings.Add(@using);
         }
@@ -674,12 +666,12 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         {
             if (property is IFieldProperty fp)
             {
-                foreach (var @using in fp.Domain.CSharp!.Usings.Select(u => u.ParseTemplate(fp)))
+                foreach (var @using in Config.GetImplementation(fp.Domain)!.Imports.Select(u => u.ParseTemplate(fp)))
                 {
                     usings.Add(@using);
                 }
 
-                foreach (var @using in fp.Domain.CSharp!.Annotations
+                foreach (var @using in Config.GetImplementation(fp.Domain)!.Annotations
                     .Where(a => (a.Target & Target.Dto) > 0 || (a.Target & Target.Persisted) > 0 && (property.Class?.IsPersistent ?? false))
                     .SelectMany(a => a.Usings)
                     .Select(u => u.ParseTemplate(fp)))
@@ -703,8 +695,8 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                     usings.Add(GetNamespace(cp.Composition, tag));
                     if (cp.DomainKind != null)
                     {
-                        usings.AddRange(cp.DomainKind.CSharp!.Usings.Select(u => u.ParseTemplate(cp)));
-                        usings.AddRange(cp.DomainKind.CSharp!.Annotations
+                        usings.AddRange(Config.GetImplementation(cp.DomainKind)!.Imports.Select(u => u.ParseTemplate(cp)));
+                        usings.AddRange(Config.GetImplementation(cp.DomainKind)!.Annotations
                             .Where(a => (a.Target & Target.Dto) > 0 || (a.Target & Target.Persisted) > 0 && (property.Class?.IsPersistent ?? false))
                             .SelectMany(a => a.Usings)
                             .Select(u => u.ParseTemplate(cp)));

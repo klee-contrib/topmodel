@@ -1,5 +1,15 @@
 # TopModel.Generator (`modgen`)
 
+## 1.29.0
+
+- [#243](https://github.com/klee-contrib/topmodel/pull/243) - Déspécialisation des domaines/décorateurs/convertisseurs
+
+  **breaking changes**: les implémentations de domaines (et décorateurs/convertisseurs) sont désormais toutes définies selon le même schéma, au lieu d'avoir un schéma spécifique par langage (`csharp`, `java`, `ts` et `sql`). Concrètement :
+  - `java` : aucun changement
+  - `csharp` : remplacer `usings` par `imports`.
+  - `ts` : remplacer `import` par `imports`, qui est une liste (ce n'est pas vraiment possible d'avoir plusieurs imports en JS tout de même)
+  - `sql` : remplacer `sqlType` par un objet `sql` avec `type` dedans.
+ 
 ## 1.28.7
 
 - [`96112115`](https://github.com/klee-contrib/topmodel/commit/96112115c4486c91c8deda3c73f6213283a4bf96) - [C#ClassGen] Fix using en trop pour un StringLength si la propriété est une enum C#

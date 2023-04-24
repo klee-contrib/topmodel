@@ -21,11 +21,6 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
     public override string Name => "SpringApiClientGen";
 
-    protected override object? GetDomainType(Domain domain)
-    {
-        return domain.Java;
-    }
-
     protected override bool FilterTag(string tag)
     {
         return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Client;
@@ -102,7 +97,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         {
             if (withType)
             {
-                methodParams.Add($"{param.GetJavaType()} {param.GetParamName()}");
+                methodParams.Add($"{Config.GetJavaType(param)} {param.GetParamName()}");
             }
             else
             {
@@ -114,7 +109,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         {
             if (withType)
             {
-                methodParams.Add($"{param.GetJavaType()} {param.GetParamName()}");
+                methodParams.Add($"{Config.GetJavaType(param)} {param.GetParamName()}");
             }
             else
             {
@@ -127,7 +122,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         {
             if (withType)
             {
-                methodParams.Add($"{bodyParam.GetJavaType()} {bodyParam.GetParamName()}");
+                methodParams.Add($"{Config.GetJavaType(bodyParam)} {bodyParam.GetParamName()}");
             }
             else
             {
@@ -223,12 +218,12 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         var returnClass = "(Class<?>) null";
         if (endpoint.Returns != null)
         {
-            returnType = $"ResponseEntity<{endpoint.Returns.GetJavaType().Split('<').First()}>";
-            returnClass = $"{endpoint.Returns.GetJavaType().Split('<').First()}.class";
-            if (endpoint.Returns.GetJavaType().Split('<').First() == "ResponseEntity" && endpoint.Returns.GetJavaType().Split('<').Count() > 1)
+            returnType = $"ResponseEntity<{Config.GetJavaType(endpoint.Returns).Split('<').First()}>";
+            returnClass = $"{Config.GetJavaType(endpoint.Returns).Split('<').First()}.class";
+            if (Config.GetJavaType(endpoint.Returns).Split('<').First() == "ResponseEntity" && Config.GetJavaType(endpoint.Returns).Split('<').Count() > 1)
             {
-                returnType = $"ResponseEntity<{endpoint.Returns.GetJavaType().Split('<')[1].Split('>').First()}>";
-                returnClass = $"{endpoint.Returns.GetJavaType().Split('<')[1].Split('>').First()}.class";
+                returnType = $"ResponseEntity<{Config.GetJavaType(endpoint.Returns).Split('<')[1].Split('>').First()}>";
+                returnClass = $"{Config.GetJavaType(endpoint.Returns).Split('<')[1].Split('>').First()}.class";
             }
         }
 

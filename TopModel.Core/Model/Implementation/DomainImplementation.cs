@@ -1,6 +1,6 @@
-﻿namespace TopModel.Core.Types;
+﻿namespace TopModel.Core.Model.Implementation;
 
-public class JavaType
+public class DomainImplementation
 {
 #nullable disable
     public string Type { get; set; }

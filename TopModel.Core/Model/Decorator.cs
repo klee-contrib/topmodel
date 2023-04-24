@@ -1,7 +1,6 @@
 ﻿using TopModel.Core.FileModel;
-using TopModel.Core.Types;
+using TopModel.Core.Model.Implementation;
 using TopModel.Utils;
-using YamlDotNet.Serialization;
 
 namespace TopModel.Core;
 
@@ -17,10 +16,7 @@ public class Decorator : IPropertyContainer
     public string Description { get; set; }
 #nullable enable
 
-    [YamlMember(Alias = "csharp")]
-    public CSharpDecorator? CSharp { get; set; }
-
-    public JavaDecorator? Java { get; set; }
+    public Dictionary<string, DecoratorImplementation> Implementations { get; set; } = new();
 
 #nullable disable
     public ModelFile ModelFile { get; set; }

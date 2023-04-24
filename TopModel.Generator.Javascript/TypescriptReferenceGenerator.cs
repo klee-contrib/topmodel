@@ -24,11 +24,6 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptCo
 
     public override string Name => "JSReferenceGen";
 
-    protected override object? GetDomainType(Domain domain)
-    {
-        return domain.TS;
-    }
-
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
         if (classe.IsJSReference())
@@ -54,12 +49,12 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptCo
             .Select(dep => (
                 Import: dep.Source switch
                 {
-                    IProperty fp => fp.GetPropertyTypeName(Classes),
+                    IProperty fp => Config.GetPropertyTypeName(fp, Classes),
                     Class c => c.NamePascal,
                     _ => null!
                 },
                 Path: Config.GetImportPathForClass(dep, GetClassTags(dep.Classe).Contains(tag) ? tag : GetClassTags(dep.Classe).Intersect(Config.Tags).FirstOrDefault() ?? tag, tag, Classes)!))
-            .Concat(references.SelectMany(r => r.DomainDependencies).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Replace("[]", string.Empty).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
+            .Concat(references.SelectMany(r => r.DomainDependencies).SelectMany(dep => Config.GetImplementation(dep.Domain)!.Imports.Select(import => (Import: Config.GetImplementation(dep.Domain)!.Type.ParseTemplate(dep.Source).Replace("[]", string.Empty).Split("<").First(), Path: import.ParseTemplate(dep.Source)))))
             .Where(i => i.Path != null && i.Path != $"./references")
             .GroupAndSort();
 
@@ -137,7 +132,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptCo
                     fw.Write(property.NameCamel);
                     fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
                     fw.Write(": ");
-                    fw.Write(property.GetPropertyTypeName(Classes));
+                    fw.Write(Config.GetPropertyTypeName(property, Classes));
                     fw.Write(";\r\n");
                 }
 
@@ -165,7 +160,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptCo
         {
             fw.WriteLine("    {");
             fw.Write("        ");
-            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.NameCamel}: {(property.Key.Domain.TS!.Type == "string" ? @$"""{(_modelConfig.I18n.TranslateReferences && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}")));
+            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.NameCamel}: {(Config.GetImplementation(property.Key.Domain)!.Type == "string" ? @$"""{(_modelConfig.I18n.TranslateReferences && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}")));
             fw.WriteLine();
             fw.WriteLine("    },");
         }

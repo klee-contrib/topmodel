@@ -24,6 +24,8 @@ public class TranslationOutGenerator : TranslationGeneratorBase<TranslationConfi
 
     public override string Name => "TranslationOutGen";
 
+    protected override bool NoLanguage => true;
+
     protected override string? GetResourceFilePath(IFieldProperty property, string tag, string lang)
     {
         if (lang == _modelConfig.I18n.DefaultLang)

@@ -31,15 +31,9 @@ public static class TemplateExtension
         var result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), d, prefix));
-            if (targetLanguage == "java")
-            {
-                result = result.Replace(t.Value, ResolveVariableJava(t.Value.Trim('{', '}'), d, prefix));
-            }
-            else
-            {
-                result = result.Replace(t.Value, ResolveVariableCSharp(t.Value.Trim('{', '}'), d, prefix));
-            }
+            result = result
+                .Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), d, prefix))
+                .Replace(t.Value, ResolveVariableImple(targetLanguage, t.Value.Trim('{', '}'), d, prefix));
         }
 
         return result;
@@ -180,24 +174,15 @@ public static class TemplateExtension
             .Replace($"{prefix}mediaType", transform(d.MediaType ?? string.Empty))
             .Replace($"{prefix}length", transform(d.Length?.ToString() ?? string.Empty))
             .Replace($"{prefix}scale", transform(d.Scale?.ToString() ?? string.Empty))
-            .Replace($"{prefix}name", transform(d.Name ?? string.Empty))
-            .Replace($"{prefix}sqlType", transform(d.SqlType ?? string.Empty));
+            .Replace($"{prefix}name", transform(d.Name ?? string.Empty));
         return result;
     }
 
-    private static string ResolveVariableJava(this string input, Domain d, string prefix = "")
+    private static string ResolveVariableImple(string targetLanguage, string input, Domain d, string prefix = "")
     {
         var transform = input.GetTransformation();
         var result = input.Split(':').First()
-            .Replace($"{prefix}type", transform(d.Java?.Type ?? string.Empty));
-        return result;
-    }
-
-    private static string ResolveVariableCSharp(this string input, Domain d, string prefix = "")
-    {
-        var transform = input.GetTransformation();
-        var result = input.Split(':').First()
-            .Replace($"{prefix}type", transform(d.CSharp?.Type ?? string.Empty));
+            .Replace($"{prefix}type", transform(d.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty));
         return result;
     }
 

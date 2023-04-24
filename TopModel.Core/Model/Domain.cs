@@ -1,5 +1,5 @@
 ﻿using TopModel.Core.FileModel;
-using TopModel.Core.Types;
+using TopModel.Core.Model.Implementation;
 using TopModel.Utils;
 
 namespace TopModel.Core;
@@ -30,26 +30,11 @@ public class Domain
 
     public DomainReference? ListDomainReference { get; set; }
 
-    public CSharpType? CSharp { get; set; }
-
-    public TSType? TS { get; set; }
-
-    public JavaType? Java { get; set; }
-
-    public string? SqlType { get; set; }
+    public Dictionary<string, DomainImplementation> Implementations { get; set; } = new();
 
     public string? MediaType { get; set; }
 
     public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCaseStrict();
-
-    public bool ShouldQuoteValue =>
-        (SqlType ?? string.Empty).Contains("varchar")
-        || SqlType == "text"
-        || SqlType == "uniqueidentifier"
-        || SqlType == "uuid"
-        || (SqlType ?? string.Empty).Contains("date")
-        || (SqlType ?? string.Empty).Contains("time")
-        || CSharp?.Type == "string";
 
 #nullable disable
     public ModelFile ModelFile { get; set; }

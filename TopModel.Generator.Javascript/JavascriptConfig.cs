@@ -98,7 +98,7 @@ public class JavascriptConfig : GeneratorConfigBase
             return "undefined";
         }
 
-        if (fp.Domain?.TS?.Type == "string")
+        if (GetImplementation(fp.Domain)?.Type == "string")
         {
             return $@"""{fp.DefaultValue}""";
         }
@@ -121,10 +121,10 @@ public class JavascriptConfig : GeneratorConfigBase
         return endpoints.SelectMany(e => e.ClassDependencies)
             .Select(dep => (
                 Import: dep is { Source: IFieldProperty fp }
-                    ? fp.GetPropertyTypeName().Replace("[]", string.Empty)
+                    ? this.GetPropertyTypeName(fp).Replace("[]", string.Empty)
                     : dep.Classe.NamePascal,
                 Path: GetImportPathForClass(dep, getClassTags(dep.Classe).Contains(tag) ? tag : getClassTags(dep.Classe).Intersect(Tags).FirstOrDefault() ?? tag, tag, availableClasses)!))
-            .Concat(endpoints.SelectMany(d => d.DomainDependencies).Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Replace("[]", string.Empty).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
+            .Concat(endpoints.SelectMany(d => d.DomainDependencies).SelectMany(dep => GetImplementation(dep.Domain)!.Imports.Select(import => (Import: GetImplementation(dep.Domain)!.Type.ParseTemplate(dep.Source).Replace("[]", string.Empty).Split("<").First(), Path: import.ParseTemplate(dep.Source)))))
             .Where(i => i.Path != null)
             .GroupAndSort();
     }
@@ -134,7 +134,7 @@ public class JavascriptConfig : GeneratorConfigBase
         string target;
         if (dep.Source is IFieldProperty fp)
         {
-            if (fp.GetPropertyTypeName(availableClasses) != fp.Domain.TS!.Type && dep.Classe.IsJSReference())
+            if (this.GetPropertyTypeName(fp, availableClasses) != GetImplementation(fp.Domain)!.Type && dep.Classe.IsJSReference())
             {
                 target = GetReferencesFileName(dep.Classe.Namespace, targetTag);
             }

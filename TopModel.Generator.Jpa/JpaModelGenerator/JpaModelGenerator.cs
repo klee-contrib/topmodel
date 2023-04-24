@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
+using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -45,11 +46,6 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         }
     }
 
-    protected override object? GetDomainType(Domain domain)
-    {
-        return domain.Java;
-    }
-
     protected override bool FilterClass(Class classe)
     {
         return !classe.Abstract;
@@ -72,10 +68,10 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
         WriteAnnotations(fw, classe);
 
-        var extendsDecorator = classe.Decorators.SingleOrDefault(d => d.Decorator.Java?.Extends != null);
-        var extends = (classe.Extends?.NamePascal ?? extendsDecorator.Decorator?.Java!.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
+        var extendsDecorator = classe.Decorators.SingleOrDefault(d => Config.GetImplementation(d.Decorator)?.Extends != null);
+        var extends = (classe.Extends?.NamePascal ?? Config.GetImplementation(extendsDecorator.Decorator)?.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
 
-        var implements = classe.Decorators.SelectMany(d => d.Decorator.Java!.Implements.Select(i => i.ParseTemplate(classe, d.Parameters))).Distinct().ToList();
+        var implements = classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)?.Implements.Select(i => i.ParseTemplate(classe, d.Parameters)) ?? Array.Empty<string>()).Distinct().ToList();
         if (!classe.IsPersistent)
         {
             implements.Add("Serializable");
@@ -141,7 +137,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteLine(1, " * Cette méthode permet définir la valeur de la FK directement");
                 fw.WriteLine(1, $" * @param {propertyName} value to set");
                 fw.WriteDocEnd(1);
-                fw.WriteLine(1, @$"public void set{(isMultiple ? ap.NameCamel.ToFirstUpper() + ap.Property.NameCamel.ToFirstUpper() : ap.NameCamel.ToFirstUpper())}({(isMultiple ? $"List<{ap.Property.GetJavaType()}>" : ap.Property.GetJavaType())} {propertyName}) {{");
+                fw.WriteLine(1, @$"public void set{(isMultiple ? ap.NameCamel.ToFirstUpper() + ap.Property.NameCamel.ToFirstUpper() : ap.NameCamel.ToFirstUpper())}({(isMultiple ? $"List<{Config.GetJavaType(ap.Property)}>" : Config.GetJavaType(ap.Property))} {propertyName}) {{");
                 fw.WriteLine(2, $"if ({propertyName} != null) {{");
                 if (!isMultiple)
                 {
@@ -178,7 +174,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{ap.GetJavaName()} {ap.GetJavaName()}}}");
                 fw.WriteDocEnd(1);
                 fw.WriteLine(1, "@Transient");
-                fw.WriteLine(1, @$"public {(isMultiple ? $"List<{ap.Property.GetJavaType()}>" : ap.Property.GetJavaType())} get{(isMultiple ? ap.NameCamel.ToFirstUpper() + ap.Property.NameCamel.ToFirstUpper() : ap.NameCamel.ToFirstUpper())}() {{");
+                fw.WriteLine(1, @$"public {(isMultiple ? $"List<{Config.GetJavaType(ap.Property)}>" : Config.GetJavaType(ap.Property))} get{(isMultiple ? ap.NameCamel.ToFirstUpper() + ap.Property.NameCamel.ToFirstUpper() : ap.NameCamel.ToFirstUpper())}() {{");
                 if (!isMultiple)
                 {
                     fw.WriteLine(2, @$"return this.{ap.GetAssociationName()} != null ? this.{ap.GetAssociationName()}.get{ap.Property.NameCamel.ToFirstUpper()}() : null;");
@@ -216,7 +212,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                         .Where(p => p != codeProperty)
                         .Select(prop =>
                         {
-                            var isString = ((IFieldProperty)prop).GetJavaType() == "String";
+                            var isString = Config.GetJavaType((IFieldProperty)prop) == "String";
                             var value = refValue.Value.ContainsKey((IFieldProperty)prop) ? refValue.Value[(IFieldProperty)prop] : "null";
                             if (prop is AssociationProperty ap && codeProperty.PrimaryKey && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Association.PrimaryKey.Single()) && r.Value[ap.Association.PrimaryKey.Single()] == value))
                             {
@@ -248,7 +244,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteLine();
                 fw.WriteDocStart(2, ((IFieldProperty)prop).Comment);
                 fw.WriteDocEnd(2);
-                var type = ((IFieldProperty)prop).GetJavaType();
+                var type = Config.GetJavaType((IFieldProperty)prop);
                 var name = prop.GetJavaName();
                 if (prop is AssociationProperty ap && ap.IsEnum())
                 {
@@ -266,7 +262,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteDocEnd(2);
                 var propertiesSignature = string.Join(", ", classe.GetProperties(Config, AvailableClasses, tag).Where(p => p != codeProperty).Select(prop =>
                 {
-                    var type = ((IFieldProperty)prop).GetJavaType();
+                    var type = Config.GetJavaType((IFieldProperty)prop);
                     var name = prop.GetJavaName();
                     if (prop is AssociationProperty ap && ap.IsEnum())
                     {
@@ -280,7 +276,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteLine(2, $"private Values({propertiesSignature}) {{");
                 foreach (var prop in classe.GetProperties(Config, AvailableClasses, tag).Where(p => p != codeProperty))
                 {
-                    var type = ((IFieldProperty)prop).GetJavaType();
+                    var type = Config.GetJavaType((IFieldProperty)prop);
                     var name = prop.GetJavaName();
                     if (prop is AssociationProperty ap && ap.IsEnum())
                     {
@@ -318,7 +314,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteLine();
                 fw.WriteDocStart(2, ((IFieldProperty)prop).Comment);
                 fw.WriteDocEnd(2);
-                var type = ((IFieldProperty)prop).GetJavaType();
+                var type = Config.GetJavaType((IFieldProperty)prop);
                 var name = prop.GetJavaName();
                 if (prop is AssociationProperty ap && ap.IsEnum())
                 {
@@ -326,7 +322,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                     name = prop.NameCamel;
                 }
 
-                var getterPrefix = prop.GetJavaType() == "boolean" ? "is" : "get";
+                var getterPrefix = Config.GetJavaType(prop) == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"public {type} {getterPrefix}{name.ToFirstUpper()}(){{");
                 fw.WriteLine(3, $"return this.{name};");
                 fw.WriteLine(2, $"}}");
@@ -352,7 +348,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
     private void WriteImports(JavaWriter fw, Class classe, string tag)
     {
         var imports = classe.GetImports(Files.SelectMany(f => f.Value.Classes).ToList(), Config, tag);
-        imports.AddRange(classe.Decorators.SelectMany(d => d.Decorator.Java!.Imports.Select(i => i.ParseTemplate(classe, d.Parameters))));
+        imports.AddRange(classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)!.Imports.Select(i => i.ParseTemplate(classe, d.Parameters))));
         foreach (var property in classe.GetProperties(Config, AvailableClasses, tag))
         {
             imports.AddRange(property.GetTypeImports(Config, tag));
@@ -467,7 +463,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             }
         }
 
-        foreach (var a in classe.Decorators.SelectMany(d => d.Decorator.Java!.Annotations.Select(a => a.ParseTemplate(classe, d.Parameters))).Distinct())
+        foreach (var a in classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)!.Annotations.Select(a => a.ParseTemplate(classe, d.Parameters))).Distinct())
         {
             fw.WriteLine($"{(a.StartsWith("@") ? string.Empty : "@")}{a}");
         }
@@ -482,8 +478,8 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{property.GetJavaName()} {property.GetJavaName()}}}");
             fw.WriteDocEnd(1);
 
-            var getterPrefix = property.GetJavaType() == "boolean" ? "is" : "get";
-            fw.WriteLine(1, @$"public {property.GetJavaType()} {getterPrefix}{property.GetJavaName(true)}() {{");
+            var getterPrefix = Config.GetJavaType(property) == "boolean" ? "is" : "get";
+            fw.WriteLine(1, @$"public {Config.GetJavaType(property)} {getterPrefix}{property.GetJavaName(true)}() {{");
             if (property is AssociationProperty ap && (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany))
             {
                 fw.WriteLine(2, $"if(this.{property.GetJavaName()} == null)");
@@ -545,7 +541,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             fw.WriteDocStart(1, $"Set the value of {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}");
             fw.WriteLine(1, $" * @param {propertyName} value to set");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, @$"public void set{propertyName.ToFirstUpper()}({property.GetJavaType()} {propertyName}) {{");
+            fw.WriteLine(1, @$"public void set{propertyName.ToFirstUpper()}({Config.GetJavaType(property)} {propertyName}) {{");
             fw.WriteLine(2, @$"this.{propertyName} = {propertyName};");
             fw.WriteLine(1, "}");
         }
@@ -577,7 +573,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 name = prop.Name.ToConstantCase();
             }
 
-            var javaType = prop.GetJavaType();
+            var javaType = Config.GetJavaType(prop);
             javaType = javaType.Split("<").First();
             return $"        {name}({javaType}.class)";
         });

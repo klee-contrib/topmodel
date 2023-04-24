@@ -22,11 +22,6 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
 
     public override string Name => "JSDefinitionGen";
 
-    protected override object? GetDomainType(Domain domain)
-    {
-        return domain.TS;
-    }
-
     protected override bool FilterClass(Class classe)
     {
         return !classe.IsJSReference();
@@ -59,10 +54,10 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                 Import: dep is { Source: CompositionProperty { DomainKind: not null } }
                     ? dep.Classe.NamePascal
                     : dep is { Source: IFieldProperty fp }
-                    ? fp.GetPropertyTypeName(Classes).Replace("[]", string.Empty)
+                    ? Config.GetPropertyTypeName(fp, Classes).Replace("[]", string.Empty)
                     : $"{dep.Classe.NamePascal}Entity, {dep.Classe.NamePascal}{(Config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}",
                 Path: Config.GetImportPathForClass(dep, GetClassTags(dep.Classe).Contains(tag) ? tag : GetClassTags(dep.Classe).Intersect(Config.Tags).FirstOrDefault() ?? tag, tag, Classes)!))
-            .Concat(classe.DomainDependencies.Select(p => (Import: p.Domain.TS!.Type.ParseTemplate(p.Source).Replace("[]", string.Empty).Split("<").First(), Path: p.Domain.TS.Import!.ParseTemplate(p.Source))))
+            .Concat(classe.DomainDependencies.SelectMany(dep => Config.GetImplementation(dep.Domain)!.Imports.Select(import => (Import: Config.GetImplementation(dep.Domain)!.Type.ParseTemplate(dep.Source).Replace("[]", string.Empty).Split("<").First(), Path: import.ParseTemplate(dep.Source)))))
             .Where(p => p.Path != null && p.Path != "@focus4/stores")
             .GroupAndSort();
 
@@ -135,17 +130,17 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                     }
                     else
                     {
-                        fw.Write($"FieldEntry2<typeof {cp.Kind}, {cp.GetPropertyTypeName(Classes)}>");
+                        fw.Write($"FieldEntry2<typeof {cp.Kind}, {Config.GetPropertyTypeName(cp, Classes)}>");
                     }
                 }
                 else if (property is IFieldProperty field)
                 {
-                    fw.Write($"FieldEntry2<typeof {field.Domain.Name}, {field.GetPropertyTypeName(Classes)}>");
+                    fw.Write($"FieldEntry2<typeof {field.Domain.Name}, {Config.GetPropertyTypeName(field, Classes)}>");
                 }
             }
             else
             {
-                fw.Write(property.GetPropertyTypeName(Classes));
+                fw.Write(Config.GetPropertyTypeName(property, Classes));
             }
 
             if (property != classe.Properties.Last())
@@ -272,7 +267,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
         }
     }
 
-    private static IEnumerable<string> GetFocusStoresImports(Class classe)
+    private IEnumerable<string> GetFocusStoresImports(Class classe)
     {
         if (classe.Properties.Any(p => p is IFieldProperty || p is CompositionProperty cp && cp.DomainKind != null))
         {
@@ -294,9 +289,9 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
             yield return "RecursiveListEntry";
         }
 
-        foreach (var p in classe.Properties.OfType<CompositionProperty>().Where(p => p.DomainKind?.TS?.Import == "@focus4/stores"))
+        foreach (var p in classe.Properties.OfType<CompositionProperty>().Where(p => Config.GetImplementation(p.DomainKind)?.Imports.Contains("@focus4/stores") ?? false))
         {
-            yield return p.DomainKind!.TS!.Type.ParseTemplate(p).Replace("[]", string.Empty).Split('<').First();
+            yield return Config.GetImplementation(p.DomainKind)!.Type.ParseTemplate(p).Replace("[]", string.Empty).Split('<').First();
         }
 
         yield return "EntityToType";

@@ -14,7 +14,8 @@ domain:
     type: int?
   java:
     type: Long
-  sqlType: int8
+  sql:
+    type: int8
 ---
 domain:
   name: DO_ID_LIST
@@ -27,7 +28,8 @@ domain:
     type: List<Long>
     imports:
       - java.util.List
-  sqlType: int8
+  sql:
+    type: int8
 ---
 domain:
   name: DO_DATE_CREATION
@@ -45,7 +47,8 @@ domain:
         target: Persisted
         imports:
           - org.springframework.data.annotation.CreatedDate
-  sqlType: date
+  sql:
+    type: date
 ---
 domain:
   name: DO_DATE_MODIFICATION
@@ -56,7 +59,7 @@ domain:
     type: DateOnly?
   java:
     type: LocalDateTime
-    imports: 
+    imports:
       - java.time.LocalDateTime
     annotations:
       - text: "@LastModifiedDate"
@@ -64,7 +67,8 @@ domain:
         imports:
           - org.springframework.data.annotation.LastModifiedDate
           - org.springframework.data.jpa.domain.support.AuditingEntityListener
-  sqlType: date
+  sql:
+    type: date
 ---
 domain:
   name: DO_EMAIL
@@ -80,7 +84,8 @@ domain:
         target: Dto
         imports:
           - jakarta.validation.constraints.Email
-  sqlType: varchar
+  sql:
+    type: varchar
   length: 50
 ---
 domain:
@@ -93,7 +98,8 @@ domain:
     type: string
   java:
     type: String
-  sqlType: varchar
+  sql:
+    type: varchar
   length: 3
 ---
 domain:
@@ -107,7 +113,8 @@ domain:
     type: List<String>
     imports:
       - java.util.List
-  sqlType: varchar
+  sql:
+    type: varchar
   length: 3
 ---
 domain:
@@ -119,7 +126,8 @@ domain:
     type: string
   java:
     type: String
-  sqlType: varchar
+  sql:
+    type: varchar
   length: 3
 ---
 domain:
@@ -127,12 +135,13 @@ domain:
   label: Page
   ts:
     type: Page
-    import: "@/types"
+    imports:
+      - "@/types"
   csharp:
     type: ICollection
   java:
     type: Page
-    imports: 
+    imports:
       - org.springframework.data.domain.Page
 ---
 domain:
@@ -144,7 +153,8 @@ domain:
     type: decimal?
   java:
     type: Long
-  sqlType: numeric
+  sql:
+    type: numeric
   scale: 9
   length: 20
 ---
@@ -157,6 +167,7 @@ domain:
     type: bool?
   java:
     type: Boolean
-  sqlType: boolean
+  sql:
+    type: boolean
   scale: 9
   length: 20

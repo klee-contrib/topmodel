@@ -1,4 +1,4 @@
-﻿namespace TopModel.Core.Types;
+﻿namespace TopModel.Core.Model.Implementation;
 
 public class TargetedText
 {

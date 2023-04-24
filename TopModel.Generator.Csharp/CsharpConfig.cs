@@ -217,7 +217,7 @@ public class CsharpConfig : GeneratorConfigBase
             }
         }
 
-        if (fp.Domain?.CSharp?.Type == "string")
+        if (GetImplementation(fp.Domain)?.Type == "string")
         {
             return $@"""{fp.DefaultValue}""";
         }

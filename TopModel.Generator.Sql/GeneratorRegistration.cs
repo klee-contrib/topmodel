@@ -11,6 +11,8 @@ public class GeneratorRegistration : IGeneratorRegistration<SqlConfig>
 {
     public void Register(IServiceCollection services, SqlConfig config, int number)
     {
+        config.Language ??= "sql";
+
         if (config.Ssdt != null)
         {
             CombinePath(config.OutputDirectory, config.Ssdt, c => c.InitListScriptFolder);

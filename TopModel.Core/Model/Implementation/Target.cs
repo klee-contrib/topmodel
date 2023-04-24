@@ -1,4 +1,4 @@
-﻿namespace TopModel.Core;
+﻿namespace TopModel.Core.Model.Implementation;
 
 public enum Target
 {

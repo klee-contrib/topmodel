@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 using TopModel.Core.FileModel;
-using TopModel.Core.Types;
+using TopModel.Core.Model.Implementation;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
@@ -47,20 +47,11 @@ public class DomainLoader : ILoader<Domain>
                 case "listDomain":
                     domain.ListDomainReference = new DomainReference(value!);
                     break;
-                case "csharp":
-                    domain.CSharp = _fileChecker.Deserialize<CSharpType>(parser);
-                    break;
-                case "ts":
-                    domain.TS = _fileChecker.Deserialize<TSType>(parser);
-                    break;
-                case "java":
-                    domain.Java = _fileChecker.Deserialize<JavaType>(parser);
-                    break;
-                case "sqlType":
-                    domain.SqlType = value!.Value;
-                    break;
                 case "mediaType":
                     domain.MediaType = value!.Value;
+                    break;
+                default:
+                    domain.Implementations[prop] = _fileChecker.Deserialize<DomainImplementation>(parser);
                     break;
             }
         });

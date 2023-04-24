@@ -15,6 +15,8 @@ public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
         TrimSlashes(config, c => c.ApiPath);
         TrimSlashes(config, c => c.ResourcesPath);
 
+        config.Language ??= "java";
+
         services.AddGenerator<JpaModelGenerator, JpaConfig>(config, number);
         services.AddGenerator<JpaModelInterfaceGenerator, JpaConfig>(config, number);
         services.AddGenerator<JpaMapperGenerator, JpaConfig>(config, number);

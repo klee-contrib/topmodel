@@ -143,6 +143,10 @@
           "tags"
         ],
         "properties": {
+          "language": {
+            "type": "string",
+            "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'sql'."
+          },
           "tags": {
             "type": "array",
             "description": "Précise les tags de fichier que le générateur doit lire",
@@ -273,6 +277,10 @@
           "tags"
         ],
         "properties": {
+          "language": {
+            "type": "string",
+            "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'csharp'."
+          },
           "tags": {
             "type": "array",
             "description": "Précise les tags de fichier que le générateur doit lire",
@@ -454,6 +462,10 @@
           "tags"
         ],
         "properties": {
+          "language": {
+            "type": "string",
+            "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'ts'."
+          },
           "tags": {
             "type": "array",
             "description": "Précise les tags de fichier que le générateur doit lire",
@@ -574,6 +586,10 @@
           "outputDirectory"
         ],
         "properties": {
+          "language": {
+            "type": "string",
+            "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'java'."
+          },
           "tags": {
             "type": "array",
             "description": "Précise les tags de fichier que le générateur doit lire",

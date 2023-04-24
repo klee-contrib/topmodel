@@ -21,11 +21,6 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
 
     public override string Name => "JSApiClientGen";
 
-    protected override object? GetDomainType(Domain domain)
-    {
-        return domain.TS;
-    }
-
     protected override string GetFileName(ModelFile file, string tag)
     {
         return Config.GetEndpointsFileName(file, tag);
@@ -74,12 +69,12 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
             fw.WriteLine(" */");
             fw.Write($"export function {endpoint.NameCamel}(");
 
-            var hasForm = endpoint.Params.Any(p => p is IFieldProperty fp && fp.Domain.TS!.Type.Contains("File"));
+            var hasForm = endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetImplementation(fp.Domain)!.Type.Contains("File"));
 
             foreach (var param in endpoint.Params)
             {
                 var defaultValue = Config.GetDefaultValue(param);
-                fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {param.GetPropertyTypeName(Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, ");
+                fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetPropertyTypeName(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, ");
             }
 
             fw.Write("options: RequestInit = {}): Promise<");
@@ -89,7 +84,7 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
             }
             else
             {
-                fw.Write(endpoint.Returns.GetPropertyTypeName(Classes));
+                fw.Write(Config.GetPropertyTypeName(endpoint.Returns, Classes));
             }
 
             fw.WriteLine("> {");
@@ -162,7 +157,7 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
             fw.WriteLine("}");
         }
 
-        if (endpoints.Any(endpoint => endpoint.Params.Any(p => p is IFieldProperty fp && fp.Domain.TS!.Type.Contains("File"))))
+        if (endpoints.Any(endpoint => endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetImplementation(fp.Domain)!.Type.Contains("File"))))
         {
             fw.WriteLine(@"
 function fillFormData(data: any, formData: FormData, prefix = """") {

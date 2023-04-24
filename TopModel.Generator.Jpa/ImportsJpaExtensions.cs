@@ -34,7 +34,7 @@ public static class ImportsJpaExtensions
             imports.Add(config.PersistenceMode.ToString().ToLower() + ".persistence.Column");
         }
 
-        var javaType = rp.Domain.Java;
+        var javaType = config.GetImplementation(rp.Domain);
 
         if (rp.Class != null && rp.PrimaryKey && rp.Class.IsPersistent)
         {
@@ -97,7 +97,7 @@ public static class ImportsJpaExtensions
             imports.Add($"{rp.Class.GetImport(config, tag)}");
         }
 
-        imports.AddRange(rp.Domain.Java!.Imports.Select(i => i.ParseTemplate(rp)));
+        imports.AddRange(config.GetImplementation(rp.Domain)!.Imports.Select(i => i.ParseTemplate(rp)));
 
         return imports;
     }
@@ -150,7 +150,7 @@ public static class ImportsJpaExtensions
     {
         var imports = new List<string>();
 
-        var javaType = rp.Domain.Java;
+        var javaType = config.GetImplementation(rp.Domain);
         if (javaType?.Imports != null)
         {
             imports.AddRange(javaType.Imports.Select(i => i.ParseTemplate(rp)));
@@ -204,7 +204,7 @@ public static class ImportsJpaExtensions
             imports.Add($"{rp.Class.GetImport(config, tag)}");
         }
 
-        imports.AddRange(rp.Domain.Java!.Imports.Select(i => i.ParseTemplate(rp)));
+        imports.AddRange(config.GetImplementation(rp.Domain)!.Imports.Select(i => i.ParseTemplate(rp)));
 
         return imports;
     }
@@ -249,7 +249,7 @@ public static class ImportsJpaExtensions
         }
         else if (cp.DomainKind != null)
         {
-            imports.AddRange(cp.DomainKind.Java!.Imports.Select(i => i.ParseTemplate(cp)));
+            imports.AddRange(config.GetImplementation(cp.DomainKind)!.Imports.Select(i => i.ParseTemplate(cp)));
         }
 
         return imports;
@@ -265,7 +265,7 @@ public static class ImportsJpaExtensions
         }
         else if (cp.DomainKind != null)
         {
-            imports.AddRange(cp.DomainKind.Java!.Imports.Select(i => i.ParseTemplate(cp)));
+            imports.AddRange(config.GetImplementation(cp.DomainKind)!.Imports.Select(i => i.ParseTemplate(cp)));
         }
 
         return imports;

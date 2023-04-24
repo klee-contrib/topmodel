@@ -12,6 +12,7 @@ public class SsdtGenerator : GeneratorBase<SqlConfig>
     private readonly ILogger<SsdtGenerator> _logger;
 
     private ISqlScripter<Class>? _tableScripter;
+    private ISqlScripter<Class>? _tableTypeScripter;
     private ISqlScripter<Class>? _initReferenceListScript;
     private ISqlScripter<IEnumerable<Class>>? _initReferenceListMainScripter;
 
@@ -59,6 +60,8 @@ public class SsdtGenerator : GeneratorBase<SqlConfig>
         .Concat(Classes.Where(c => c.IsPersistent && !c.Abstract && c.Values.Any()).Any() && Config.Ssdt!.InitListScriptFolder != null && Config.Ssdt!.InitListMainScriptName != null ? new[] { Path.Combine(Config.Ssdt!.InitListScriptFolder, Config.Ssdt!.InitListMainScriptName) } : Array.Empty<string>())
         .Where(f => f != null)!;
 
+    protected override bool PersistentOnly => true;
+
     private ISqlScripter<Class> TableScripter
     {
         get
@@ -68,7 +71,14 @@ public class SsdtGenerator : GeneratorBase<SqlConfig>
         }
     }
 
-    private ISqlScripter<Class> TableTypeScripter { get; } = new SqlTableTypeScripter();
+    private ISqlScripter<Class> TableTypeScripter
+    {
+        get
+        {
+            _tableTypeScripter ??= new SqlTableTypeScripter(Config);
+            return _tableTypeScripter;
+        }
+    }
 
     private ISqlScripter<Class> InitReferenceListScript
     {
@@ -86,11 +96,6 @@ public class SsdtGenerator : GeneratorBase<SqlConfig>
             _initReferenceListMainScripter ??= new InitReferenceListMainScripter(Config);
             return _initReferenceListMainScripter;
         }
-    }
-
-    protected override object? GetDomainType(Domain domain)
-    {
-        return domain.SqlType;
     }
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)

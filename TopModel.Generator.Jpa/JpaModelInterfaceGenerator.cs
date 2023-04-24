@@ -19,11 +19,6 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
 
     public override string Name => "JpaInterfaceGen";
 
-    protected override object? GetDomainType(Domain domain)
-    {
-        return domain.Java;
-    }
-
     protected override bool FilterClass(Class classe)
     {
         return classe.Abstract;
@@ -42,10 +37,10 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
         WriteImports(fw, classe, tag);
         fw.WriteLine();
 
-        var extendsDecorator = classe.Decorators.SingleOrDefault(d => d.Decorator.Java?.Extends != null);
-        var extends = (classe.Extends?.NamePascal ?? extendsDecorator.Decorator?.Java!.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
+        var extendsDecorator = classe.Decorators.SingleOrDefault(d => Config.GetImplementation(d.Decorator)?.Extends != null);
+        var extends = (classe.Extends?.NamePascal ?? Config.GetImplementation(extendsDecorator.Decorator)?.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
 
-        var implements = classe.Decorators.SelectMany(d => d.Decorator.Java!.Implements.Select(i => i.ParseTemplate(classe, d.Parameters))).Distinct().ToList();
+        var implements = classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)?.Implements.Select(i => i.ParseTemplate(classe, d.Parameters)) ?? Array.Empty<string>()).Distinct().ToList();
 
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
         fw.WriteLine($"public interface {classe.NamePascal} {{");
@@ -83,7 +78,7 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
         var signature = string.Join(", ", properties.Select(property =>
             {
                 var propertyName = property.GetJavaName();
-                return $@"{property.GetJavaType()} {property.GetJavaName()}";
+                return $@"{Config.GetJavaType(property)} {property.GetJavaName()}";
             }));
 
         fw.WriteLine(1, $"void hydrate({signature});");
@@ -93,12 +88,12 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
     {
         foreach (var property in classe.Properties.Where(p => !Config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
         {
-            var getterPrefix = property.GetJavaType() == "boolean" ? "is" : "get";
+            var getterPrefix = Config.GetJavaType(property) == "boolean" ? "is" : "get";
             fw.WriteLine();
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
             fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{property.GetJavaName()} {property.GetJavaName()}}}");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, @$"{property.GetJavaType()} {getterPrefix}{property.GetJavaName(true)}();");
+            fw.WriteLine(1, @$"{Config.GetJavaType(property)} {getterPrefix}{property.GetJavaName(true)}();");
         }
     }
 

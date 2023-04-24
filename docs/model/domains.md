@@ -16,15 +16,19 @@ domain:
   csharp:
     type: int?
     annotations: # Liste d'annotations à devoir ajouter à toute propriété de ce domaine, si applicable.
-    usings: # Liste de usings à devoir ajouter à la définition d'une classe qui utilise ce domaine, si applicable.
+    imports: # Liste de usings à devoir ajouter à la définition d'une classe qui utilise ce domaine, si applicable.
   ts:
     type: number
-    import: # Chemin de l'import à ajouter pour utiliser le type, si applicable.
+    imports:
+      -  # Chemin de l'import à ajouter pour utiliser le type, si applicable.
   java:
     type: Integer
-    import: # Chemin de l'import à ajouter pour utiliser le type, si applicable.
-  sqlType: int
+    imports: # Chemin des imports à ajouter pour utiliser le type, si applicable.
+  sql:
+    type: int
 ```
+
+Les définitions de langages ont toutes le même format, indépendamment du langage choisi. Chaque configuration de générateur choisira une implémentation de domaine qui correspondra à son langage (à priori `csharp`, `java`, `ts`, `sql`...).
 
 Naturellement, il n'est pas nécessaire de spécifier les langages pour lesquels le domaine n'est pas utilisé (et c'est évidemment obligatoire sinon).
 
