@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 1.28.7
+version: 1.29.0
 generatedFiles:
   - ../generators/focus/src/locale/securite.ts
   - ../generators/focus/src/locale/utilisateur.ts
