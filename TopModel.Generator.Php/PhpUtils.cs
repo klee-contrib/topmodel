@@ -26,7 +26,7 @@ public static class PhpUtils
             propertyName = ap.GetAssociationName();
         }
 
-        return (firstUpper ? propertyName.ToFirstUpper() : propertyName);
+        return firstUpper ? propertyName.ToFirstUpper() : propertyName;
     }
 
     public static string GetPhpType(this AssociationProperty ap)

@@ -10,6 +10,8 @@ use App\Repository\Securite\DroitRepository;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
 #[Doctrine\ORM\Mapping\Entity(repositoryClass: DroitRepository::class)]
@@ -23,7 +25,8 @@ class Droit
   #[Doctrine\ORM\Mapping\Column(name: 'DRO_LIBELLE')]
   private string $libelle;
 
-  #[ORM\ManyToOne(inversedBy: 'droits')]
+  #[ManyToOne(targetEntity: TypeProfil::class)]
+  #[JoinColumn(name: 'TPR_CODE', referencedColumnName: 'TPR_CODE')]
   private TypeProfil typeProfil;
 
 

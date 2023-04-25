@@ -11,6 +11,8 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
 #[Doctrine\ORM\Mapping\Entity(repositoryClass: SecteurRepository::class)]
@@ -22,7 +24,8 @@ class Secteur
   #[Doctrine\ORM\Mapping\Column(name: 'SEC_ID')]
   private int $id;
 
-  #[ORM\ManyToOne(inversedBy: 'secteurs')]
+  #[ManyToOne(targetEntity: Profil::class)]
+  #[JoinColumn(name: 'PRO_ID', referencedColumnName: 'PRO_ID')]
   private Profil profil;
 
 

@@ -5,16 +5,6 @@ namespace TopModel.Generator.Php;
 
 public static class ImportsPhpExtensions
 {
-    public static List<string> GetTypeImports(this IProperty p, PhpConfig config, string tag)
-    {
-        return p switch
-        {
-            CompositionProperty cp => cp.GetTypeImports(config, tag),
-            AssociationProperty ap => ap.GetTypeImports(config, tag),
-            IFieldProperty fp => fp.GetTypeImports(config, tag),
-            _ => new List<string>(),
-        };
-    }
 
     public static List<string> GetTypeImports(this IFieldProperty rp, PhpConfig config, string tag)
     {

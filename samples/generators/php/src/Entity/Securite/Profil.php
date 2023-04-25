@@ -6,13 +6,16 @@
 
 namespace App\Entity\Securite;
 
-use App\Entity\Utilisateur\Utilisateur;
 use App\Repository\Securite\ProfilRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\InverseJoinColumn;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
@@ -25,13 +28,16 @@ class Profil
   #[Doctrine\ORM\Mapping\Column(name: 'PRO_ID')]
   private int $id;
 
-  #[ORM\ManyToOne(inversedBy: 'profils')]
+  #[ManyToOne(targetEntity: TypeProfil::class)]
+  #[JoinColumn(name: 'TPR_CODE', referencedColumnName: 'TPR_CODE')]
   private TypeProfil typeProfil;
 
   /**
    * @var Collection<Droit>
    */
-  WriteManyToMany to implement
+  #[JoinColumn(name: 'PRO_ID', referencedColumnName: 'PRO_ID')]
+  #[InverseJoinColumn(name: 'DRO_CODE', referencedColumnName: 'DRO_CODE')]
+  #[ManyToMany(targetEntity: Droit::class)]
   private Collection droits;
 
   /**
@@ -39,12 +45,6 @@ class Profil
    */
   #[Doctrine\ORM\Mapping\OneToMany(mappedBy: 'profil', targetEntity: Secteur::class)]
   private Collection secteurs;
-
-  /**
-   * @var Collection<Utilisateur>
-   */
-  #[Doctrine\ORM\Mapping\OneToMany(mappedBy: 'profil', targetEntity: Utilisateur::class)]
-  private Collection utilisateurs;
 
   public function __construct()
   {

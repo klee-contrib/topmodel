@@ -13,6 +13,8 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Doctrine\ORM\Mapping\Table;
@@ -29,7 +31,8 @@ class Utilisateur
   #[Doctrine\ORM\Mapping\Column(name: 'UTI_AGE')]
   private int $age = 6l;
 
-  #[ORM\ManyToOne(inversedBy: 'utilisateurs')]
+  #[ManyToOne(targetEntity: Profil::class)]
+  #[JoinColumn(name: 'PRO_ID', referencedColumnName: 'PRO_ID')]
   private Profil profil;
 
   #[Doctrine\ORM\Mapping\Column(name: 'UTI_EMAIL')]
@@ -41,10 +44,12 @@ class Utilisateur
   #[Doctrine\ORM\Mapping\Column(name: 'UTI_ACTIF')]
   private bool $actif;
 
-  #[ORM\ManyToOne(inversedBy: 'utilisateurs')]
+  #[ManyToOne(targetEntity: TypeUtilisateur::class)]
+  #[JoinColumn(name: 'TUT_CODE', referencedColumnName: 'TUT_CODE')]
   private TypeUtilisateur typeUtilisateur = ADM;
 
-  WriteOneToOne to implement
+  #[OneToOne(targetEntity: Utilisateur::class)]
+  #[JoinColumn(name: 'UTI_ID_PARENT', referencedColumnName: 'UTI_ID')]
   private Utilisateur utilisateurParent;
 
   /**
@@ -59,7 +64,8 @@ class Utilisateur
   #[Doctrine\ORM\Mapping\Column(name: 'UTI_DATE_MODIFICATION')]
   private Date $dateModification;
 
-  #[ORM\ManyToOne(inversedBy: 'utilisateursEnfant')]
+  #[ManyToOne(targetEntity: Utilisateur::class)]
+  #[JoinColumn(name: 'UTI_ID_ENFANT', referencedColumnName: 'UTI_ID')]
   private Utilisateur utilisateurEnfant;
 
   public function __construct()
