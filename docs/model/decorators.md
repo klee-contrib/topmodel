@@ -169,6 +169,7 @@ Actuellement, il est possible d'utiliser ces variables dans une classe :
 - `primaryKey.name`
 - `trigram`
 - `name`
+- `sqlName`
 - `comment`
 - `label`
 - `pluralName`
@@ -182,16 +183,12 @@ Et ces variables dans un endpoint :
 - `method`
 - `module`
 
-Dans ces propriétés :
+Dans les propriétés d'implémentation :
 
-- `java.annotations`
-- `java.implements`
-- `java.extends`
-- `java.imports`
-- `csharp.extends`
-- `csharp.implements`
-- `csharp.annotations`
-- `csharp.usings`
+- `annotations`
+- `implements`
+- `extends`
+- `imports`
 
 Les templates des domaines des propriétés sont également valorisés.
 

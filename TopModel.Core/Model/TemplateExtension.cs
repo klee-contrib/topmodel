@@ -147,7 +147,9 @@ public static class TemplateExtension
         var transform = input.GetTransformation();
         var result = input.Split(':').First()
             .Replace("class.name", transform(rp.Class?.Name.ToString() ?? string.Empty))
+            .Replace("class.sqlName", transform(rp.Class?.SqlName ?? string.Empty))
             .Replace("name", transform(rp.Name ?? string.Empty))
+            .Replace("sqlName", transform(rp.SqlName ?? string.Empty))
             .Replace("trigram", transform(rp.Trigram ?? rp.Class?.Trigram ?? string.Empty))
             .Replace("label", transform(rp.Label ?? string.Empty))
             .Replace("comment", transform(rp.Comment))
@@ -163,8 +165,7 @@ public static class TemplateExtension
         if (!input.Contains($"{prefix}mediaType")
             || input.Contains($"{prefix}length")
             || input.Contains($"{prefix}scale")
-            || input.Contains($"{prefix}name")
-            || input.Contains($"{prefix}sqlType"))
+            || input.Contains($"{prefix}name"))
         {
             return "{" + input + "}";
         }
@@ -204,6 +205,7 @@ public static class TemplateExtension
             .Replace("primaryKey.name", transform(c.PrimaryKey.FirstOrDefault()?.Name ?? string.Empty))
             .Replace("trigram", transform(c.Trigram))
             .Replace("name", transform(c.Name))
+            .Replace("sqlName", transform(c.SqlName))
             .Replace("comment", transform(c.Comment))
             .Replace("label", transform(c.Label ?? string.Empty))
             .Replace("pluralName", transform(c.PluralName ?? string.Empty))

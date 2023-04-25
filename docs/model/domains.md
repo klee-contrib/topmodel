@@ -79,6 +79,7 @@ Le code généré sera ainsi différent selon la propriété sur laquelle vous a
 Actuellement il est possible d'utiliser ces variables
 
 - `class.name`
+- `class.sqlName`
 - `name`
 - `trigram`
 - `label`
@@ -95,16 +96,11 @@ Dans le cadre d'une composition, il est possible d'utiliser ces variables :
 - `label`
 - `comment`
 
-Le tout dans ces propriétés :
+Le tout dans les propriétés d'implémentation :
 
-- `java.type`
-- `java.annotations`
-- `java.imports`
-- `csharp.type`
-- `csharp.annotations`
-- `csharp.usings`
-- `ts.type`
-- `ts.import`
+- `type`
+- `annotations`
+- `imports`
 
 Les templates des domaines des propriétés sont également valorisés.
 
