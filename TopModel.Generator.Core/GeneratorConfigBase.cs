@@ -193,6 +193,23 @@ public abstract class GeneratorConfigBase
         return converter?.Implementations.GetValueOrDefault(Language);
     }
 
+    public string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain)
+    {
+        if (fromDomain != null && toDomain != null && fromDomain != toDomain)
+        {
+            var converter = fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
+            var text = GetImplementation(converter)?.Text;
+            if (text != null)
+            {
+                value = GetImplementation(converter)!.Text
+                    .Replace("{value}", value)
+                    .ParseTemplate(fromDomain, toDomain, Language);
+            }
+        }
+
+        return value;
+    }
+
     /// <summary>
     /// Résout toutes les variables pour une valeur donnée.
     /// </summary>

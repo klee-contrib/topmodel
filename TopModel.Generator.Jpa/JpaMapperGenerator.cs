@@ -280,26 +280,10 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         }
         else
         {
-            if (propertySource is IFieldProperty ifpTo && propertyTarget is IFieldProperty ifpFrom && ifpFrom.Domain != ifpTo.Domain)
-            {
-                var converter = ifpFrom.Domain.ConvertersFrom.FirstOrDefault(c => c.To.Any(t => t == ifpTo.Domain));
-                string conversion = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}()";
-                if (converter != null && Config.GetImplementation(converter)?.Text != null)
-                {
-                    var convert = Config.GetImplementation(converter)!.Text;
-                    getter = convert.Replace("{value}", conversion)
-                        .ParseTemplate(ifpFrom.Domain, Config.Language, "from.")
-                        .ParseTemplate(ifpTo.Domain, Config.Language, "to.");
-                }
-                else
-                {
-                    getter = $"{sourceName}.{propertySource.GetJavaName(true)}()";
-                }
-            }
-            else
-            {
-                getter = $"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}()";
-            }
+            getter = Config.GetConvertedValue(
+                $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}()",
+                (propertySource as IFieldProperty)?.Domain,
+                (propertyTarget as IFieldProperty)?.Domain);
         }
 
         return (Getter: getter, CheckSourceNull: checkSourceNull);

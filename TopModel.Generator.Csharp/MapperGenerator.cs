@@ -136,18 +136,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                             }
                             else
                             {
-                                var fromDomain = ((IFieldProperty)mapping.Key).Domain;
-                                var toDomain = mapping.Value.Domain;
-                                if (fromDomain != toDomain)
-                                {
-                                    var converter = fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
-                                    if (Config.GetImplementation(converter)?.Text != null)
-                                    {
-                                        value = Config.GetImplementation(converter)!.Text.Replace("{value}", value)
-                                            .ParseTemplate(fromDomain, Config.Language, "from.")
-                                            .ParseTemplate(toDomain, Config.Language, "to.");
-                                    }
-                                }
+                                value = Config.GetConvertedValue(value, mapping.Value?.Domain, (mapping.Key as IFieldProperty)?.Domain);
                             }
 
                             w.Write(value);
@@ -196,18 +185,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                         }
                         else
                         {
-                            var fromDomain = ((IFieldProperty)mapping.Key).Domain;
-                            var toDomain = mapping.Value.Domain;
-                            if (fromDomain != toDomain)
-                            {
-                                var converter = fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
-                                if (Config.GetImplementation(converter)?.Text != null)
-                                {
-                                    value = Config.GetImplementation(converter)!.Text.Replace("{value}", value)
-                                        .ParseTemplate(fromDomain, Config.Language, "from.")
-                                        .ParseTemplate(toDomain, Config.Language, "to.");
-                                }
-                            }
+                            value = Config.GetConvertedValue(value, mapping.Value?.Domain, (mapping.Key as IFieldProperty)?.Domain);
                         }
 
                         w.Write(value);
@@ -293,20 +271,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
             var mappings = (mapper.ParentMapper?.Mappings ?? new Dictionary<IProperty, IFieldProperty?>()).Concat(mapper.Mappings).ToList();
             foreach (var mapping in mappings)
             {
-                var value = $"source.{GetSourceMapping(mapping.Key)}";
-
-                var fromDomain = mapping.Value?.Domain;
-                var toDomain = (mapping.Key as IFieldProperty)?.Domain;
-                if (fromDomain != null && toDomain != null && fromDomain != toDomain)
-                {
-                    var converter = fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
-                    if (Config.GetImplementation(converter)?.Text != null)
-                    {
-                        value = Config.GetImplementation(converter)!.Text.Replace("{value}", value)
-                            .ParseTemplate(fromDomain, Config.Language, "from.")
-                            .ParseTemplate(toDomain, Config.Language, "to.");
-                    }
-                }
+                var value = Config.GetConvertedValue($"source.{GetSourceMapping(mapping.Key)}", (mapping.Key as IFieldProperty)?.Domain, mapping.Value?.Domain);
 
                 if (mapper.Class.Abstract)
                 {

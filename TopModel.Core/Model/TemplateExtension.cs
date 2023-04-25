@@ -21,7 +21,7 @@ public static class TemplateExtension
         return result;
     }
 
-    public static string ParseTemplate(this string template, Domain d, string targetLanguage, string prefix = "")
+    public static string ParseTemplate(this string template, Domain domainFrom, Domain domainTo, string targetLanguage)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -31,9 +31,7 @@ public static class TemplateExtension
         var result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result
-                .Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), d, prefix))
-                .Replace(t.Value, ResolveVariableImple(targetLanguage, t.Value.Trim('{', '}'), d, prefix));
+            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), domainFrom, domainTo, targetLanguage));
         }
 
         return result;
@@ -145,71 +143,73 @@ public static class TemplateExtension
     private static string ResolveVariable(this string input, IFieldProperty rp)
     {
         var transform = input.GetTransformation();
-        var result = input.Split(':').First()
-            .Replace("class.name", transform(rp.Class?.Name.ToString() ?? string.Empty))
-            .Replace("class.sqlName", transform(rp.Class?.SqlName ?? string.Empty))
-            .Replace("name", transform(rp.Name ?? string.Empty))
-            .Replace("sqlName", transform(rp.SqlName ?? string.Empty))
-            .Replace("trigram", transform(rp.Trigram ?? rp.Class?.Trigram ?? string.Empty))
-            .Replace("label", transform(rp.Label ?? string.Empty))
-            .Replace("comment", transform(rp.Comment))
-            .Replace("required", transform(rp.Required.ToString().ToLower()))
-            .Replace("resourceKey", transform(rp.ResourceKey.ToString()))
-            .Replace("commentResourceKey", transform(rp.CommentResourceKey.ToString()))
-            .Replace("defaultValue", transform(rp.DefaultValue?.ToString() ?? string.Empty));
-        return result;
-    }
-
-    private static string ResolveVariable(this string input, Domain d, string prefix = "")
-    {
-        if (!input.Contains($"{prefix}mediaType")
-            || input.Contains($"{prefix}length")
-            || input.Contains($"{prefix}scale")
-            || input.Contains($"{prefix}name"))
+        return input.Split(':').First() switch
         {
-            return "{" + input + "}";
-        }
-
-        var transform = input.GetTransformation();
-        var result = input.Split(':').First()
-            .Replace($"{prefix}mediaType", transform(d.MediaType ?? string.Empty))
-            .Replace($"{prefix}length", transform(d.Length?.ToString() ?? string.Empty))
-            .Replace($"{prefix}scale", transform(d.Scale?.ToString() ?? string.Empty))
-            .Replace($"{prefix}name", transform(d.Name ?? string.Empty));
-        return result;
+            "class.name" => transform(rp.Class?.Name.ToString() ?? string.Empty),
+            "class.sqlName" => transform(rp.Class?.SqlName ?? string.Empty),
+            "name" => transform(rp.Name ?? string.Empty),
+            "sqlName" => transform(rp.SqlName ?? string.Empty),
+            "trigram" => transform(rp.Trigram ?? rp.Class?.Trigram ?? string.Empty),
+            "label" => transform(rp.Label ?? string.Empty),
+            "comment" => transform(rp.Comment),
+            "required" => transform(rp.Required.ToString().ToLower()),
+            "resourceKey" => transform(rp.ResourceKey.ToString()),
+            "commentResourceKey" => transform(rp.CommentResourceKey.ToString()),
+            "defaultValue" => transform(rp.DefaultValue?.ToString() ?? string.Empty),
+            var i => i
+        };
     }
 
-    private static string ResolveVariableImple(string targetLanguage, string input, Domain d, string prefix = "")
+    private static string ResolveVariable(this string input, Domain domainFrom, Domain domainTo, string targetLanguage)
     {
         var transform = input.GetTransformation();
-        var result = input.Split(':').First()
-            .Replace($"{prefix}type", transform(d.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty));
-        return result;
+        var variable = input.Split(':').First();
+
+        return input.Split(':').First() switch
+        {
+            "from.mediaType" => transform(domainFrom.MediaType ?? string.Empty),
+            "from.length" => transform(domainFrom.Length?.ToString() ?? string.Empty),
+            "from.scale" => transform(domainFrom.Scale?.ToString() ?? string.Empty),
+            "from.name" => transform(domainFrom.Name ?? string.Empty),
+            "from.type" => transform(domainFrom.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty),
+            "to.mediaType" => transform(domainTo.MediaType ?? string.Empty),
+            "to.length" => transform(domainTo.Length?.ToString() ?? string.Empty),
+            "to.scale" => transform(domainTo.Scale?.ToString() ?? string.Empty),
+            "to.name" => transform(domainTo.Name ?? string.Empty),
+            "to.type" => transform(domainTo.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty),
+            var i => i
+        };
     }
 
     private static string ResolveVariable(this string input, CompositionProperty cp)
     {
         var transform = input.GetTransformation();
-        return input.Split(':').First()
-            .Replace("class.name", transform(cp.Class?.Name.ToString() ?? string.Empty))
-            .Replace("composition.name", transform(cp.Composition?.Name.ToString() ?? string.Empty))
-            .Replace("name", transform(cp.Name ?? string.Empty))
-            .Replace("label", transform(cp.Label ?? string.Empty))
-            .Replace("comment", transform(cp.Comment));
+        return input.Split(':').First() switch
+        {
+            "class.name" => transform(cp.Class?.Name.ToString() ?? string.Empty),
+            "composition.name" => transform(cp.Composition?.Name.ToString() ?? string.Empty),
+            "name" => transform(cp.Name ?? string.Empty),
+            "label" => transform(cp.Label ?? string.Empty),
+            "comment" => transform(cp.Comment),
+            var i => i
+        };
     }
 
     private static string ResolveVariable(this string input, Class c, string[] parameters)
     {
         var transform = input.GetTransformation();
-        var result = input.Split(':').First()
-            .Replace("primaryKey.name", transform(c.PrimaryKey.FirstOrDefault()?.Name ?? string.Empty))
-            .Replace("trigram", transform(c.Trigram))
-            .Replace("name", transform(c.Name))
-            .Replace("sqlName", transform(c.SqlName))
-            .Replace("comment", transform(c.Comment))
-            .Replace("label", transform(c.Label ?? string.Empty))
-            .Replace("pluralName", transform(c.PluralName ?? string.Empty))
-            .Replace("module", transform(c.Namespace.Module ?? string.Empty));
+        var result = input.Split(':').First() switch
+        {
+            "primaryKey.name" => transform(c.PrimaryKey.FirstOrDefault()?.Name ?? string.Empty),
+            "trigram" => transform(c.Trigram),
+            "name" => transform(c.Name),
+            "sqlName" => transform(c.SqlName),
+            "comment" => transform(c.Comment),
+            "label" => transform(c.Label ?? string.Empty),
+            "pluralName" => transform(c.PluralName ?? string.Empty),
+            "module" => transform(c.Namespace.Module ?? string.Empty),
+            var i => i
+        };
 
         for (var i = 0; i < parameters.Length; i++)
         {
@@ -222,12 +222,15 @@ public static class TemplateExtension
     private static string ResolveVariable(this string input, Endpoint e, string[] parameters)
     {
         var transform = input.GetTransformation();
-        var result = input.Split(':').First()
-            .Replace("name", transform(e.Name))
-            .Replace("method", transform(e.Method))
-            .Replace("route", transform(e.Route))
-            .Replace("description", transform(e.Description))
-            .Replace("module", transform(e.Namespace.Module ?? string.Empty));
+        var result = input.Split(':').First() switch
+        {
+            "name" => transform(e.Name),
+            "method" => transform(e.Method),
+            "route" => transform(e.Route),
+            "description" => transform(e.Description),
+            "module" => transform(e.Namespace.Module ?? string.Empty),
+            var i => i
+        };
 
         for (var i = 0; i < parameters.Length; i++)
         {
