@@ -216,7 +216,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                         {
                             var isString = Config.GetJavaType((IFieldProperty)prop) == "String";
                             var value = refValue.Value.ContainsKey((IFieldProperty)prop) ? refValue.Value[(IFieldProperty)prop] : "null";
-                            if (prop is AssociationProperty ap && codeProperty.PrimaryKey && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Association.PrimaryKey.Single()) && r.Value[ap.Association.PrimaryKey.Single()] == value))
+                            if (prop is AssociationProperty ap && codeProperty.PrimaryKey && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Property) && r.Value[ap.Property] == value))
                             {
                                 value = ap.Association.NamePascal + ".Values." + value;
                                 isString = false;

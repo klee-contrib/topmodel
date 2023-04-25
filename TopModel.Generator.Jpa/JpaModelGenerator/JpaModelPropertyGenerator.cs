@@ -90,7 +90,7 @@ public class JpaModelPropertyGenerator
                 quote = @"""";
             }
 
-            if (property is AssociationProperty ap && ap.IsEnum() && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Association.PrimaryKey.Single()) && r.Value[ap.Association.PrimaryKey.Single()] == property.DefaultValue))
+            if (property is AssociationProperty ap && ap.IsEnum() && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Property) && r.Value[ap.Property] == property.DefaultValue))
             {
                 defaultValue += ap.Association.NamePascal + ".Values." + property.DefaultValue + ".getEntity()";
             }
@@ -106,7 +106,7 @@ public class JpaModelPropertyGenerator
     private void WriteManyToOne(JavaWriter fw, Class classe, AssociationProperty property)
     {
         var fk = ((IFieldProperty)property).SqlName;
-        var apk = property.Association.PrimaryKey.Single().SqlName;
+        var apk = property.Property.SqlName;
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, optional = {(property.Required ? "false" : "true")}, targetEntity = {property.Association.NamePascal}.class)");
         fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
@@ -116,7 +116,7 @@ public class JpaModelPropertyGenerator
     private void WriteOneToOne(JavaWriter fw, Class classe, AssociationProperty property)
     {
         var fk = ((IFieldProperty)property).SqlName;
-        var apk = property.Association.PrimaryKey.Single().SqlName;
+        var apk = property.Property.SqlName;
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
         fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = {(!property.Required).ToString().ToLower()})");

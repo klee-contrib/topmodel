@@ -152,7 +152,7 @@ public class SsdtGenerator : GeneratorBase<SqlConfig>
                     Role = ap.Role,
                     DefaultValue = ap.DefaultValue,
                     Label = ap.Label,
-                    Trigram = ap.Trigram ?? ap.Association.PrimaryKey.Single().Trigram ?? ap.Association.Trigram
+                    Trigram = ap.Trigram ?? ap.Property.Trigram ?? ap.Association.Trigram
                 });
 
                 classes.Add(traClass);

@@ -27,7 +27,7 @@ public static class GeneratorUtils
         });
     }
 
-    public static List<AssociationProperty> GetReverseProperties(this Class classe, IEnumerable<Class> availableClasses, bool reverseAll = false)
+    public static List<AssociationProperty> GetReverseProperties(this Class classe, IEnumerable<Class> availableClasses)
     {
         if (classe.Reference)
         {
@@ -40,18 +40,18 @@ public static class GeneratorUtils
             .Where(p => p is not ReverseAssociationProperty)
             .Where(p => p.Type != AssociationType.OneToOne)
             .Where(p => p.Association == classe
-                && (reverseAll || p.Type != AssociationType.OneToOne && p.Class.Namespace.RootModule == classe.Namespace.RootModule))
+                && (p.Type == AssociationType.OneToMany || p.Class.Namespace.RootModule == classe.Namespace.RootModule))
             .ToList();
     }
 
-    public static IList<IProperty> GetProperties(this Class classe, IEnumerable<Class> availableClasses, string tag, bool reverseAll = false)
+    public static IList<IProperty> GetProperties(this Class classe, IEnumerable<Class> availableClasses, string tag)
     {
         if (classe.Reference)
         {
             return classe.Properties;
         }
 
-        return classe.Properties.Concat(classe.GetReverseProperties(availableClasses, reverseAll).Select(p => new ReverseAssociationProperty()
+        return classe.Properties.Concat(classe.GetReverseProperties(availableClasses).Select(p => new ReverseAssociationProperty()
         {
             Association = p.Class,
             Type = p.Type == AssociationType.OneToMany ? AssociationType.ManyToOne

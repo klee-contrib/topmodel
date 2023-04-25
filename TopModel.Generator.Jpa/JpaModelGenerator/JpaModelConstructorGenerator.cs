@@ -112,7 +112,7 @@ public class JpaModelConstructorGenerator
             else
             {
                 var isMultiple = aspr2.Type == AssociationType.OneToMany || aspr2.Type == AssociationType.ManyToMany;
-                fw.WriteLine(2, $"this.set{aspr2.NameCamel.ToFirstUpper()}{(isMultiple ? aspr2.Association.PrimaryKey.Single().NameCamel.ToFirstUpper() : string.Empty)}({property.NameCamel});");
+                fw.WriteLine(2, $"this.set{aspr2.NamePascal}{(isMultiple ? aspr2.Property.NamePascal : string.Empty)}({property.NameCamel});");
             }
         }
 

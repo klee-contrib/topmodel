@@ -738,9 +738,9 @@ public class ModelStore
         // Résolution des propriétés d'association (pour clé étrangère).
         foreach (var ap in fileClasses.SelectMany(c => c.Properties.OfType<AssociationProperty>()).Where(ap => ap.Association != null))
         {
-            if ((ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany) && ap.Association.PrimaryKey.Single()?.Domain?.ListDomain is null)
+            if ((ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany) && ap.Property?.Domain?.ListDomain is null)
             {
-                yield return new ModelError(ap, $@"Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Association.PrimaryKey.Single().Domain} ne contient pas de définition de ListDomain", ap.Reference) { ModelErrorType = ModelErrorType.TMD1028 };
+                yield return new ModelError(ap, $@"Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Property?.Domain} ne contient pas de définition de ListDomain", ap.Reference) { ModelErrorType = ModelErrorType.TMD1028 };
                 continue;
             }
 

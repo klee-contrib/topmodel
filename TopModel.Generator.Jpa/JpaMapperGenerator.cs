@@ -238,7 +238,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                 var isMultiple = apTarget.Type == AssociationType.OneToMany || apTarget.Type == AssociationType.ManyToMany;
                 if (isMultiple)
                 {
-                    getter = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}(){(!propertySource.Class.IsPersistent ? $".stream().map({Config.GetJavaType(apTarget.Association.PrimaryKey.Single())}::getEntity).collect(Collectors.toList())" : string.Empty)}";
+                    getter = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}(){(!propertySource.Class.IsPersistent ? $".stream().map({Config.GetJavaType(apTarget.Property)}::getEntity).collect(Collectors.toList())" : string.Empty)}";
                     fw.AddImport("java.util.stream.Collectors");
                 }
                 else
