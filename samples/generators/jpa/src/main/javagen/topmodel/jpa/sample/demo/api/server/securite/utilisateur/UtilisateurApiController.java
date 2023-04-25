@@ -71,10 +71,11 @@ public interface UtilisateurApiController {
 	 * @param nom Nom de l'utilisateur
 	 * @param actif Si l'utilisateur est actif
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
+	 * @param utilisateursEnfant Utilisateur enfants
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur
 	 * @return Utilisateurs matchant les critères
 	 */
 	@PostMapping(path = "/search")
-	Page<UtilisateurSearch> search(@RequestParam(value = "utiId", required = true) Long utiId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) Long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "nom", required = false) String nom, @RequestParam(value = "actif", required = false) Boolean actif, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode, @RequestParam(value = "dateCreation", required = false) LocalDate dateCreation, @RequestParam(value = "dateModification", required = false) LocalDateTime dateModification);
+	Page<UtilisateurSearch> search(@RequestParam(value = "utiId", required = true) Long utiId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) Long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "nom", required = false) String nom, @RequestParam(value = "actif", required = false) Boolean actif, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode, @RequestParam(value = "utilisateursEnfant", required = false) List<Long> utilisateursEnfant, @RequestParam(value = "dateCreation", required = false) LocalDate dateCreation, @RequestParam(value = "dateModification", required = false) LocalDateTime dateModification);
 }

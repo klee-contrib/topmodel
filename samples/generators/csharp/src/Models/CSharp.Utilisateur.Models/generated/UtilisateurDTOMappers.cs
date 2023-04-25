@@ -25,6 +25,7 @@ public static class UtilisateurDTOMappers
         dest.Nom = source.Nom;
         dest.Actif = source.Actif;
         dest.TypeUtilisateurCode = source.TypeUtilisateurCode;
+        dest.UtilisateursEnfant = source.UtilisateursEnfant;
         dest.DateCreation = source.DateCreation;
         dest.DateModification = source.DateModification;
         return dest;

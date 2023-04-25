@@ -6,6 +6,9 @@ package topmodel.jpa.sample.demo.entities.utilisateur;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -22,6 +25,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -92,6 +96,12 @@ public class Utilisateur {
 	private Utilisateur utilisateurParent;
 
 	/**
+	 * Utilisateur enfants.
+	 */
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "utilisateurEnfant")
+	private List<Utilisateur> utilisateursEnfant;
+
+	/**
 	 * Date de création de l'utilisateur.
 	 */
 	@Column(name = "UTI_DATE_CREATION", nullable = true)
@@ -104,6 +114,13 @@ public class Utilisateur {
 	@Column(name = "UTI_DATE_MODIFICATION", nullable = true)
 	@LastModifiedDate
 	private LocalDateTime dateModification;
+
+	/**
+	 * Association réciproque de Utilisateur.UtilisateursEnfant.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Utilisateur.class)
+	@JoinColumn(name = "UTI_ID_ENFANT", referencedColumnName = "UTI_ID")
+	private Utilisateur utilisateurEnfant;
 
 	/**
 	 * No arg constructor.
@@ -130,6 +147,9 @@ public class Utilisateur {
 		this.utilisateurParent = utilisateur.getUtilisateurParent();
 		this.dateCreation = utilisateur.getDateCreation();
 		this.dateModification = utilisateur.getDateModification();
+		this.utilisateurEnfant = utilisateur.getUtilisateurEnfant();
+
+		this.utilisateursEnfant = utilisateur.getUtilisateursEnfant().stream().collect(Collectors.toList());
 	}
 
 	/**
@@ -142,10 +162,12 @@ public class Utilisateur {
 	 * @param actif Si l'utilisateur est actif
 	 * @param typeUtilisateur Type d'utilisateur en Many to one
 	 * @param utilisateurParent Utilisateur parent
+	 * @param utilisateursEnfant Utilisateur enfants
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur
+	 * @param utilisateurEnfant Association réciproque de Utilisateur.UtilisateursEnfant
 	 */
-	public Utilisateur(Long id, Long age, Profil profil, String email, String nom, Boolean actif, TypeUtilisateur typeUtilisateur, Utilisateur utilisateurParent, LocalDate dateCreation, LocalDateTime dateModification) {
+	public Utilisateur(Long id, Long age, Profil profil, String email, String nom, Boolean actif, TypeUtilisateur typeUtilisateur, Utilisateur utilisateurParent, List<Utilisateur> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification, Utilisateur utilisateurEnfant) {
 		this.id = id;
 		this.age = age;
 		this.profil = profil;
@@ -154,8 +176,10 @@ public class Utilisateur {
 		this.actif = actif;
 		this.typeUtilisateur = typeUtilisateur;
 		this.utilisateurParent = utilisateurParent;
+		this.utilisateursEnfant = utilisateursEnfant;
 		this.dateCreation = dateCreation;
 		this.dateModification = dateModification;
+		this.utilisateurEnfant = utilisateurEnfant;
 	}
 
 	/**
@@ -231,6 +255,17 @@ public class Utilisateur {
 	}
 
 	/**
+	 * Getter for utilisateursEnfant.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#utilisateursEnfant utilisateursEnfant}.
+	 */
+	public List<Utilisateur> getUtilisateursEnfant() {
+		if(this.utilisateursEnfant == null)
+			this.utilisateursEnfant = new ArrayList<>();
+		return this.utilisateursEnfant;
+	}
+
+	/**
 	 * Getter for dateCreation.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#dateCreation dateCreation}.
@@ -246,6 +281,15 @@ public class Utilisateur {
 	 */
 	public LocalDateTime getDateModification() {
 		return this.dateModification;
+	}
+
+	/**
+	 * Getter for utilisateurEnfant.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#utilisateurEnfant utilisateurEnfant}.
+	 */
+	public Utilisateur getUtilisateurEnfant() {
+		return this.utilisateurEnfant;
 	}
 
 	/**
@@ -313,6 +357,14 @@ public class Utilisateur {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#utilisateursEnfant utilisateursEnfant}.
+	 * @param utilisateursEnfant value to set
+	 */
+	public void setUtilisateursEnfant(List<Utilisateur> utilisateursEnfant) {
+		this.utilisateursEnfant = utilisateursEnfant;
+	}
+
+	/**
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#dateCreation dateCreation}.
 	 * @param dateCreation value to set
 	 */
@@ -329,6 +381,14 @@ public class Utilisateur {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#utilisateurEnfant utilisateurEnfant}.
+	 * @param utilisateurEnfant value to set
+	 */
+	public void setUtilisateurEnfant(Utilisateur utilisateurEnfant) {
+		this.utilisateurEnfant = utilisateurEnfant;
+	}
+
+	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur Utilisateur}.
 	 */
 	public enum Fields  {
@@ -340,8 +400,10 @@ public class Utilisateur {
         ACTIF(Boolean.class), //
         TYPE_UTILISATEUR(TypeUtilisateur.class), //
         UTILISATEUR_PARENT(Utilisateur.class), //
+        UTILISATEURS_ENFANT(List.class), //
         DATE_CREATION(LocalDate.class), //
-        DATE_MODIFICATION(LocalDateTime.class);
+        DATE_MODIFICATION(LocalDateTime.class), //
+        UTILISATEUR_ENFANT(Utilisateur.class);
 
 		private Class<?> type;
 

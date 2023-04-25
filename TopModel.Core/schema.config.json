@@ -724,6 +724,80 @@
           }
         }
       }
+    },
+    "php": {
+      "type": "array",
+      "description": "Liste de configs pour la génération Jpa",
+      "items": {
+        "type": "object",
+        "description": "Config pour la génération de Jpa.",
+        "additionalProperties": false,
+        "required": [
+          "tags",
+          "outputDirectory"
+        ],
+        "properties": {
+          "language": {
+            "type": "string",
+            "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'java'."
+          },
+          "tags": {
+            "type": "array",
+            "description": "Précise les tags de fichier que le générateur doit lire",
+            "items": {
+              "type": "string",
+              "description": "Catégorie de fichier que le générateur doit lire."
+            }
+          },
+          "variables": {
+            "type": "object",
+            "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".+": {
+                "type": "string"
+              }
+            }
+          },
+          "tagVariables": {
+            "type": "object",
+            "description": "Définitions de variables par tag à utiliser dans les différents paramètres du générateur.",
+            "patternProperties": {
+              ".*": {
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "disable": {
+            "type": "array",
+            "description": "Désactive les générateurs demandés",
+            "items": {
+              "type": "string",
+              "enum": [ "JpaModelGen", "JpaInterfaceGen", "JpaMapperGenerator", "JpaDaoGen", "JpaResourceGen", "SpringApiServerGen", "SpringApiClientGen" ]
+            }
+          },
+          "outputDirectory": {
+            "type": "string",
+            "description": "Racine du répertoire de génération."
+          },
+          "entitiesPath": {
+            "type": "string",
+            "description": "Localisation des classes persistées du modèle, relative au répertoire de génération. Par défaut, 'phpgen:{app}/entities/{module}'."
+          },
+          "repositoriesPath": {
+            "type": "string",
+            "description": "Localisation des repositories, relative au répertoire de génération."
+          },
+          "dtosPath": {
+            "type": "string",
+            "description": "Localisation des classes non persistées du modèle, relative au répertoire de génération. Par défaut, 'phpgen:{app}/dtos/{module}'."
+          }
+        }
+      }
     }
   }
 }

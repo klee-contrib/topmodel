@@ -43,6 +43,7 @@ public partial class UtilisateurDto
         Nom = bean.Nom;
         Actif = bean.Actif;
         TypeUtilisateurCode = bean.TypeUtilisateurCode;
+        UtilisateursEnfant = bean.UtilisateursEnfant;
         DateCreation = bean.DateCreation;
         DateModification = bean.DateModification;
 
@@ -101,6 +102,13 @@ public partial class UtilisateurDto
     [ReferencedType(typeof(TypeUtilisateur))]
     [Domain(Domains.Code)]
     public TypeUtilisateur.Codes? TypeUtilisateurCode { get; set; } = TypeUtilisateur.Codes.ADM;
+
+    /// <summary>
+    /// Utilisateur enfants.
+    /// </summary>
+    [Column("uti_id_enfant")]
+    [Domain(Domains.IdList)]
+    public int[] UtilisateursEnfant { get; set; }
 
     /// <summary>
     /// Date de création de l'utilisateur.

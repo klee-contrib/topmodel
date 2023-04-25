@@ -54,6 +54,7 @@ public partial class CSharpDbContext : DbContext
         utilisateur.Property(p => p.Actif).HasComment("Si l'utilisateur est actif");
         utilisateur.Property(p => p.TypeUtilisateurCode).HasComment("Type d'utilisateur en Many to one");
         utilisateur.Property(p => p.UtilisateurIdParent).HasComment("Utilisateur parent");
+        utilisateur.Property(p => p.UtilisateursEnfant).HasComment("Utilisateur enfants");
         utilisateur.Property(p => p.DateCreation).HasComment("Date de création de l'utilisateur");
         utilisateur.Property(p => p.DateModification).HasComment("Date de modification de l'utilisateur");
     }

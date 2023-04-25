@@ -33,6 +33,7 @@ public static class UtilisateurMappers
             Nom = utilisateur.Nom,
             Actif = utilisateur.Actif,
             TypeUtilisateurCode = utilisateur.TypeUtilisateurCode,
+            UtilisateursEnfant = utilisateur.UtilisateursEnfant,
             DateCreation = utilisateur.DateCreation,
             DateModification = utilisateur.DateModification
         };
@@ -55,6 +56,7 @@ public static class UtilisateurMappers
         dest.Nom = source.Nom;
         dest.Actif = source.Actif;
         dest.TypeUtilisateurCode = source.TypeUtilisateurCode;
+        dest.UtilisateursEnfant = source.UtilisateursEnfant;
         dest.DateCreation = source.DateCreation;
         dest.DateModification = source.DateModification;
         return dest;

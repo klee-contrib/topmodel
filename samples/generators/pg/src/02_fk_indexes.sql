@@ -119,3 +119,17 @@ alter table UTILISATEUR
 	add constraint FK_UTILISATEUR_UTI_ID_PARENT foreign key (UTI_ID_PARENT)
 		references UTILISATEUR (UTI_ID);
 
+/**
+  * Création de l'index de clef étrangère pour UTILISATEUR.UTI_ID_ENFANT
+ **/
+create index IDX_UTI_UTI_ID_ENFANT_FK on UTILISATEUR (
+	UTI_ID_ENFANT ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour UTILISATEUR.UTI_ID_ENFANT
+ **/
+alter table UTILISATEUR
+	add constraint FK_UTILISATEUR_UTI_ID_ENFANT foreign key (UTI_ID_ENFANT)
+		references UTILISATEUR (UTI_ID);
+

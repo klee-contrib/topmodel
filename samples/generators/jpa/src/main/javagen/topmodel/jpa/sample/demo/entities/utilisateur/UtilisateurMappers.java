@@ -4,6 +4,9 @@
 
 package topmodel.jpa.sample.demo.entities.utilisateur;
 
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
 
 public class UtilisateurMappers {
@@ -36,6 +39,10 @@ public class UtilisateurMappers {
 			target.setActif(utilisateur.getActif());
 			if (utilisateur.getTypeUtilisateur() != null) {
 				target.setTypeUtilisateurCode(utilisateur.getTypeUtilisateur().getCode());
+			}
+
+			if (utilisateur.getUtilisateursEnfant() != null) {
+				target.setUtilisateursEnfant(utilisateur.getUtilisateursEnfant().stream().filter(Objects::nonNull).map(Utilisateur::getId).collect(Collectors.toList()));
 			}
 
 			target.setDateCreation(utilisateur.getDateCreation());

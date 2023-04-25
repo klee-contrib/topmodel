@@ -16,6 +16,8 @@ domain:
     type: Long
   sql:
     type: int8
+  php:
+    type: int
 ---
 domain:
   name: DO_ID_LIST
@@ -30,6 +32,8 @@ domain:
       - java.util.List
   sql:
     type: int8
+  php:
+    type: int
 ---
 domain:
   name: DO_DATE_CREATION
@@ -49,6 +53,8 @@ domain:
           - org.springframework.data.annotation.CreatedDate
   sql:
     type: date
+  php:
+    type: Date
 ---
 domain:
   name: DO_DATE_MODIFICATION
@@ -69,6 +75,8 @@ domain:
           - org.springframework.data.jpa.domain.support.AuditingEntityListener
   sql:
     type: date
+  php:
+    type: Date
 ---
 domain:
   name: DO_EMAIL
@@ -87,6 +95,8 @@ domain:
   sql:
     type: varchar
   length: 50
+  php:
+    type: string
 ---
 domain:
   name: DO_CODE
@@ -101,6 +111,8 @@ domain:
   sql:
     type: varchar
   length: 3
+  php:
+    type: string
 ---
 domain:
   name: DO_CODE_LIST
@@ -116,6 +128,8 @@ domain:
   sql:
     type: varchar
   length: 3
+  php:
+    type: string
 ---
 domain:
   name: DO_LIBELLE
@@ -129,6 +143,8 @@ domain:
   sql:
     type: varchar
   length: 3
+  php:
+    type: string
 ---
 domain:
   name: DO_PAGE
@@ -143,6 +159,8 @@ domain:
     type: Page
     imports:
       - org.springframework.data.domain.Page
+  php:
+    type: démerdetoi
 ---
 domain:
   name: DO_NUMBER
@@ -157,6 +175,8 @@ domain:
     type: numeric
   scale: 9
   length: 20
+  php:
+    type: int
 ---
 domain:
   name: DO_BOOLEAN
@@ -171,3 +191,5 @@ domain:
     type: boolean
   scale: 9
   length: 20
+  php:
+    type: bool
