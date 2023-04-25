@@ -522,7 +522,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 }
 
                 foreach (var annotation in Config.GetImplementation(fp.Domain)!.Annotations
-                    .Where(a => (a.Target & Target.Dto) > 0 || (a.Target & Target.Persisted) > 0 && (property.Class?.IsPersistent ?? false))
+                    .Where(a => (a.Target & Target.Dto) > 0 || (a.Target & Target.Persisted) > 0 && (property.Class?.IsPersistent ?? false) && !Config.NoPersistence(tag))
                     .Select(a => a.Text.ParseTemplate(property)))
                 {
                     w.WriteAttribute(2, annotation);
