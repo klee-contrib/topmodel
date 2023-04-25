@@ -248,13 +248,13 @@ public class CsharpConfig : GeneratorConfigBase
         return ResolveVariables(NoPersistenceParam ?? string.Empty, tag) == true.ToString();
     }
 
-    public override string GetListType(string name, bool useIterable = true)
-    {
-        return $"{(useIterable ? "IEnumerable" : "ICollection")}<{name}>";
-    }
-
-    public override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
+    protected override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
     {
         return $"{(isPrimaryKeyDef ? string.Empty : $"{className.ToPascalCase()}.")}{propName.ToPascalCase()}s{(asList ? "[]" : "?")}";
+    }
+
+    protected override string GetListType(string name, bool useIterable = true)
+    {
+        return $"{(useIterable ? "IEnumerable" : "ICollection")}<{name}>";
     }
 }

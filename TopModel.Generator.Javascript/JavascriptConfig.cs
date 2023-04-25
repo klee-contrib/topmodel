@@ -180,14 +180,14 @@ public class JavascriptConfig : GeneratorConfigBase
         .Replace("\\", "/");
     }
 
-    public override string GetListType(string name, bool useIterable = true)
-    {
-        return $"{name}[]";
-    }
-
-    public override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
+    protected override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
     {
         return $"{className.ToPascalCase()}{propName.ToPascalCase()}{(asList ? "[]" : string.Empty)}";
+    }
+
+    protected override string GetListType(string name, bool useIterable = true)
+    {
+        return $"{name}[]";
     }
 
     protected override bool IsEnumNameValid(string name)

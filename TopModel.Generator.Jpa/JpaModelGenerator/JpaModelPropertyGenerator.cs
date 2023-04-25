@@ -82,12 +82,15 @@ public class JpaModelPropertyGenerator
             }
         }
 
-        var defaultValue = _config.GetDefaultValue(property, _classes);
-        var suffix = defaultValue != "null" ? $" = {defaultValue}" : string.Empty;
+        var suffix = string.Empty;
 
-        if (!string.IsNullOrEmpty(suffix) && _config.CanClassUseEnums(property.Association))
+        if (_config.CanClassUseEnums(property.Association))
         {
-            suffix += ".getEntity()";
+            var defaultValue = _config.GetDefaultValue(property, _classes);
+            if (defaultValue != "null")
+            {
+                suffix = $" = {defaultValue}.getEntity()";
+            }
         }
 
         fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.GetAssociationName()}{suffix};");

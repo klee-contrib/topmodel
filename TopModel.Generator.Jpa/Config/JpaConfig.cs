@@ -86,21 +86,26 @@ public class JpaConfig : GeneratorConfigBase
         nameof(ApiPath)
     };
 
-    public override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
+    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IFieldProperty? prop = null)
+    {
+        return base.CanClassUseEnums(classe, availableClasses, prop)
+            && !classe.Properties.OfType<AssociationProperty>().Any(a => a.Association != classe && !CanClassUseEnums(a.Association, availableClasses));
+    }
+
+    protected override string GetConstEnumName(string className, string refName)
+    {
+        return $"{className.ToPascalCase()}.Values.{refName}";
+    }
+
+    protected override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
     {
         var type = $"{className.ToPascalCase()}.Values";
         return asList ? GetListType(type) : type;
     }
 
-    public override string GetListType(string name, bool useIterable = true)
+    protected override string GetListType(string name, bool useIterable = true)
     {
         return $"List<{name}>";
-    }
-
-    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IFieldProperty? prop = null)
-    {
-        return base.CanClassUseEnums(classe, availableClasses, prop)
-            && !classe.Properties.OfType<AssociationProperty>().Any(a => a.Association != classe && !CanClassUseEnums(a.Association, availableClasses));
     }
 
     protected override bool IsEnumNameValid(string name)

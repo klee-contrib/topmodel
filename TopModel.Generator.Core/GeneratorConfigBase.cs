@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using TopModel.Core;
 using TopModel.Core.Model.Implementation;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Core;
 
@@ -61,10 +62,6 @@ public abstract class GeneratorConfigBase
     protected virtual bool UseNamedEnums => true;
 
     protected virtual string NullValue => "null";
-
-    public abstract string GetListType(string name, bool useIterable = true);
-
-    public abstract string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false);
 
     /// <summary>
     /// Récupère l'implémentation du domaine pour la config.
@@ -163,7 +160,7 @@ public abstract class GeneratorConfigBase
                 var refName = classe.Values.SingleOrDefault(rv => rv.Value[targetProp] == fp.DefaultValue)?.Name;
                 if (refName != null)
                 {
-                    return $"{classe}.{refName}";
+                    return GetConstEnumName(classe.Name, refName);
                 }
             }
         }
@@ -335,6 +332,15 @@ public abstract class GeneratorConfigBase
             Console.WriteLine();
         }
     }
+
+    protected virtual string GetConstEnumName(string className, string refName)
+    {
+        return $"{className.ToPascalCase()}.{refName}";
+    }
+
+    protected abstract string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false);
+
+    protected abstract string GetListType(string name, bool useIterable = true);
 
     protected virtual bool IsEnumNameValid(string name)
     {
