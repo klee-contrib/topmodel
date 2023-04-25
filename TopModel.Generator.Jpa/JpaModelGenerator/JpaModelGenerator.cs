@@ -41,7 +41,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
     {
         get
         {
-            _jpaModelPropertyGenerator ??= new JpaModelPropertyGenerator(Config);
+            _jpaModelPropertyGenerator ??= new JpaModelPropertyGenerator(Config, Classes);
             return _jpaModelPropertyGenerator;
         }
     }
@@ -128,7 +128,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
     private void WriteEnumShortcuts(JavaWriter fw, Class classe, string tag)
     {
-        foreach (var ap in classe.GetProperties(AvailableClasses, tag).OfType<AssociationProperty>().Where(ap => ap.Association.IsStatic()))
+        foreach (var ap in classe.GetProperties(AvailableClasses, tag).OfType<AssociationProperty>().Where(ap => Config.CanClassUseEnums(ap.Association)))
         {
             var isMultiple = ap.Type.IsToMany();
             {
@@ -138,7 +138,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteLine(1, " * Cette méthode permet définir la valeur de la FK directement");
                 fw.WriteLine(1, $" * @param {propertyName} value to set");
                 fw.WriteDocEnd(1);
-                fw.WriteLine(1, @$"public void set{(isMultiple ? ap.NameCamel.ToFirstUpper() + ap.Property.NameCamel.ToFirstUpper() : ap.NameCamel.ToFirstUpper())}({(isMultiple ? $"List<{Config.GetJavaType(ap.Property)}>" : Config.GetJavaType(ap.Property))} {propertyName}) {{");
+                fw.WriteLine(1, @$"public void set{(isMultiple ? ap.NameCamel.ToFirstUpper() + ap.Property.NameCamel.ToFirstUpper() : ap.NameCamel.ToFirstUpper())}({(isMultiple ? $"List<{Config.GetType(ap.Property)}>" : Config.GetType(ap.Property))} {propertyName}) {{");
                 fw.WriteLine(2, $"if ({propertyName} != null) {{");
                 if (!isMultiple)
                 {
@@ -149,7 +149,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                     var constructorArgs = "p";
                     foreach (var p in ap.Association.GetProperties(AvailableClasses, tag).Where(pr => !pr.PrimaryKey))
                     {
-                        constructorArgs += $", p.get{((p is AssociationProperty asp && asp.IsEnum()) ? p.NameCamel : p.GetJavaName()).ToFirstUpper()}()";
+                        constructorArgs += $", p.get{((p is AssociationProperty asp && Config.CanClassUseEnums(asp.Property.Class)) ? p.NameCamel : p.GetJavaName()).ToFirstUpper()}()";
                     }
 
                     fw.WriteLine(3, @$"if (this.{ap.GetAssociationName()} != null) {{");
@@ -176,7 +176,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteDocEnd(1);
                 fw.WriteLine(1, "@Transient");
                 fw.AddImport(Config.PersistenceMode.ToString().ToLower() + ".persistence.Transient");
-                fw.WriteLine(1, @$"public {(isMultiple ? $"List<{Config.GetJavaType(ap.Property)}>" : Config.GetJavaType(ap.Property))} get{(isMultiple ? ap.NameCamel.ToFirstUpper() + ap.Property.NameCamel.ToFirstUpper() : ap.NameCamel.ToFirstUpper())}() {{");
+                fw.WriteLine(1, @$"public {(isMultiple ? $"List<{Config.GetType(ap.Property)}>" : Config.GetType(ap.Property))} get{(isMultiple ? ap.NameCamel.ToFirstUpper() + ap.Property.NameCamel.ToFirstUpper() : ap.NameCamel.ToFirstUpper())}() {{");
                 if (!isMultiple)
                 {
                     fw.WriteLine(2, @$"return this.{ap.GetAssociationName()} != null ? this.{ap.GetAssociationName()}.get{ap.Property.NameCamel.ToFirstUpper()}() : null;");
@@ -197,7 +197,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         fw.WriteLine();
         var codeProperty = classe.EnumKey!;
 
-        if (codeProperty.IsEnum() && classe.IsStatic())
+        if (Config.CanClassUseEnums(classe))
         {
             fw.WriteLine(1, $"public enum Values {{");
             var i = 0;
@@ -214,7 +214,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                         .Where(p => p != codeProperty)
                         .Select(prop =>
                         {
-                            var isString = Config.GetJavaType((IFieldProperty)prop) == "String";
+                            var isString = Config.GetType((IFieldProperty)prop) == "String";
                             var value = refValue.Value.ContainsKey((IFieldProperty)prop) ? refValue.Value[(IFieldProperty)prop] : "null";
                             if (prop is AssociationProperty ap && codeProperty.PrimaryKey && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Property) && r.Value[ap.Property] == value))
                             {
@@ -246,9 +246,9 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteLine();
                 fw.WriteDocStart(2, ((IFieldProperty)prop).Comment);
                 fw.WriteDocEnd(2);
-                var type = Config.GetJavaType((IFieldProperty)prop);
+                var type = Config.GetType((IFieldProperty)prop);
                 var name = prop.GetJavaName();
-                if (prop is AssociationProperty ap && ap.IsEnum())
+                if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Property.Class))
                 {
                     type = $"{ap.Association.NamePascal}.Values";
                     name = prop.NameCamel;
@@ -264,9 +264,9 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteDocEnd(2);
                 var propertiesSignature = string.Join(", ", classe.GetProperties(AvailableClasses, tag).Where(p => p != codeProperty).Select(prop =>
                 {
-                    var type = Config.GetJavaType((IFieldProperty)prop);
+                    var type = Config.GetType((IFieldProperty)prop);
                     var name = prop.GetJavaName();
-                    if (prop is AssociationProperty ap && ap.IsEnum())
+                    if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Property.Class))
                     {
                         type = $"{ap.Association.NamePascal}.Values";
                         name = prop.NameCamel;
@@ -278,9 +278,9 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteLine(2, $"private Values({propertiesSignature}) {{");
                 foreach (var prop in classe.GetProperties(AvailableClasses, tag).Where(p => p != codeProperty))
                 {
-                    var type = Config.GetJavaType((IFieldProperty)prop);
+                    var type = Config.GetType((IFieldProperty)prop);
                     var name = prop.GetJavaName();
-                    if (prop is AssociationProperty ap && ap.IsEnum())
+                    if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Property.Class))
                     {
                         type = $"{ap.Association.NamePascal}.Values";
                         name = prop.NameCamel;
@@ -299,7 +299,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             fw.WriteLine(2, $"public {classe.NamePascal} getEntity() {{");
             var properties = string.Join(", ", classe.GetProperties(AvailableClasses, tag).Where(p => p != codeProperty).Select(prop =>
             {
-                if (prop is AssociationProperty ap && ap.IsEnum())
+                if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Property.Class))
                 {
                     return prop.NameCamel + ".getEntity()";
                 }
@@ -316,15 +316,15 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteLine();
                 fw.WriteDocStart(2, ((IFieldProperty)prop).Comment);
                 fw.WriteDocEnd(2);
-                var type = Config.GetJavaType((IFieldProperty)prop);
+                var type = Config.GetType((IFieldProperty)prop);
                 var name = prop.GetJavaName();
-                if (prop is AssociationProperty ap && ap.IsEnum())
+                if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Property.Class))
                 {
                     type = $"{ap.Association.NamePascal}.Values";
                     name = prop.NameCamel;
                 }
 
-                var getterPrefix = Config.GetJavaType(prop) == "boolean" ? "is" : "get";
+                var getterPrefix = Config.GetType(prop) == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"public {type} {getterPrefix}{name.ToFirstUpper()}(){{");
                 fw.WriteLine(3, $"return this.{name};");
                 fw.WriteLine(2, $"}}");
@@ -449,7 +449,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                     "org.hibernate.annotations.Cache",
                     "org.hibernate.annotations.CacheConcurrencyStrategy"
                 });
-            if (classe.IsStatic())
+            if (Config.CanClassUseEnums(classe))
             {
                 fw.AddImport("org.hibernate.annotations.Immutable");
                 fw.WriteLine("@Immutable");
@@ -476,9 +476,9 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{property.GetJavaName()} {property.GetJavaName()}}}");
             fw.WriteDocEnd(1);
 
-            var getterPrefix = Config.GetJavaType(property) == "boolean" ? "is" : "get";
-            fw.WriteLine(1, @$"public {Config.GetJavaType(property)} {getterPrefix}{property.GetJavaName(true)}() {{");
-            if (property is AssociationProperty ap && (ap.Type.IsToMany()))
+            var getterPrefix = Config.GetType(property) == "boolean" ? "is" : "get";
+            fw.WriteLine(1, @$"public {Config.GetType(property, useClassForAssociation: classe.IsPersistent)} {getterPrefix}{property.GetJavaName(true)}() {{");
+            if (property is AssociationProperty ap && ap.Type.IsToMany())
             {
                 fw.WriteLine(2, $"if(this.{property.GetJavaName()} == null)");
                 fw.AddImport("java.util.ArrayList");
@@ -539,7 +539,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             fw.WriteDocStart(1, $"Set the value of {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}");
             fw.WriteLine(1, $" * @param {propertyName} value to set");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, @$"public void set{propertyName.ToFirstUpper()}({Config.GetJavaType(property)} {propertyName}) {{");
+            fw.WriteLine(1, @$"public void set{propertyName.ToFirstUpper()}({Config.GetType(property, useClassForAssociation: classe.IsPersistent)} {propertyName}) {{");
             fw.WriteLine(2, @$"this.{propertyName} = {propertyName};");
             fw.WriteLine(1, "}");
         }
@@ -571,7 +571,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 name = prop.Name.ToConstantCase();
             }
 
-            var javaType = Config.GetJavaType(prop);
+            var javaType = Config.GetType(prop, useClassForAssociation: classe.IsPersistent);
             javaType = javaType.Split("<").First();
             return $"        {name}({javaType}.class)";
         });

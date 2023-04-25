@@ -95,8 +95,8 @@ public class InitReferenceListScripter : ISqlScripter<Class>
                 nameValueDict[property.SqlName] = propValue switch
                 {
                     null or "null" => "NULL",
-                    string bs when _config.GetImplementation(property.Domain)!.Type == "bit" => $"N'{bs}'",
-                    string s when _config.GetImplementation(property.Domain)!.Type.Contains("varchar") => $"{(_config.TargetDBMS == TargetDBMS.Sqlserver ? "N" : string.Empty)}'{ScriptUtils.PrepareDataToSqlDisplay(s)}'",
+                    string bs when _config.GetType(property) == "bit" => $"N'{bs}'",
+                    string s when _config.GetType(property).Contains("varchar") => $"{(_config.TargetDBMS == TargetDBMS.Sqlserver ? "N" : string.Empty)}'{ScriptUtils.PrepareDataToSqlDisplay(s)}'",
                     object v => v.ToString()
                 };
             }

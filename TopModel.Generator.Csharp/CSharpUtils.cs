@@ -1,6 +1,4 @@
 ﻿using TopModel.Core;
-using TopModel.Core.Model.Implementation;
-using TopModel.Utils;
 
 namespace TopModel.Generator.Csharp;
 
@@ -247,30 +245,6 @@ public static class CSharpUtils
             module: ns.Module).ToNamespace();
     }
 
-    public static string GetPropertyTypeName(this CsharpConfig config, IProperty prop, bool nonNullable = false, bool useIEnumerable = true)
-    {
-        var type = prop switch
-        {
-            CompositionProperty cp => cp.Kind switch
-            {
-                "object" => cp.Composition.NamePascal,
-                "list" => $"{(useIEnumerable ? "IEnumerable" : "ICollection")}<{cp.Composition.NamePascal}>",
-                "async-list" => $"IAsyncEnumerable<{cp.Composition.NamePascal}>",
-                string _ when config.GetImplementation(cp.DomainKind)!.Type.Contains("{composition.name}") => config.GetImplementation(cp.DomainKind)!.Type.ParseTemplate(cp),
-                string _ => $"{config.GetImplementation(cp.DomainKind)!.Type}<{{composition.name}}>".ParseTemplate(cp)
-            },
-            AssociationProperty { Association: Class assoc } ap when config.CanClassUseEnums(assoc, ap.Property) => $"{assoc.NamePascal}.{ap.Property.Name.ToPascalCase()}s{(ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : "?")}",
-            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when config.CanClassUseEnums(assoc) => $"{assoc.NamePascal}.{ap.Property.Name.ToPascalCase()}s{(asList || ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany ? "[]" : "?")}",
-            RegularProperty { Class: Class classe } rp when config.CanClassUseEnums(classe, rp) => $"{rp.Name.ToPascalCase()}s?",
-            AliasProperty { Property: RegularProperty { Class: Class alClass } rp, AsList: var asList } when config.CanClassUseEnums(alClass, rp) => $"{alClass.NamePascal}.{rp.Name.ToPascalCase()}s{(asList ? "[]" : "?")}",
-            IFieldProperty fp => config.GetImplementation(fp.Domain)?.Type.ParseTemplate(fp) ?? string.Empty,
-            _ => string.Empty
-        };
-
-        type = nonNullable && type.EndsWith("?") ? type[0..^1] : type;
-        return type;
-    }
-
     public static string GetReturnTypeName(this CsharpConfig config, IProperty? prop)
     {
         if (prop == null)
@@ -278,7 +252,7 @@ public static class CSharpUtils
             return config.NoAsyncControllers ? "void" : "async Task";
         }
 
-        var typeName = GetPropertyTypeName(config, prop, true);
+        var typeName = config.GetType(prop, nonNullable: true);
         return typeName.StartsWith("IAsyncEnumerable") || config.NoAsyncControllers
             ? typeName
             : $"async Task<{typeName}>";
@@ -314,9 +288,9 @@ public static class CSharpUtils
         return path.Split(':').Last().Replace('/', '.').Replace('\\', '.').Replace("..", ".").Trim('.');
     }
 
-    public static bool ShouldQuoteValue(this DomainImplementation domain)
+    public static bool ShouldQuoteValue(this CsharpConfig config, IFieldProperty prop)
     {
-        return domain.Type == "string";
+        return config.GetType(prop) == "string";
     }
 
     /// <summary>

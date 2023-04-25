@@ -96,7 +96,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
             var classe = ap != null ? ap.Association : prop.Class;
             var targetProp = ap != null ? ap.Property : prop;
 
-            if (Config.CanClassUseEnums(classe, targetProp))
+            if (Config.CanClassUseEnums(classe, Classes, targetProp))
             {
                 hasPropConfig = true;
                 w.WriteLine(3, $"modelBuilder.Entity<{fp.Class}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain)!.Type}>(){(fp.Domain.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};");
@@ -180,11 +180,11 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
                         var targetClass = ap != null ? ap.Association : prop.Class;
                         var targetProp = ap != null ? ap.Property : prop;
 
-                        var value = Config.CanClassUseEnums(targetClass, targetProp)
+                        var value = Config.CanClassUseEnums(targetClass, Classes, targetProp)
                             ? WriteEnumValue(targetClass, targetProp, refProp.Value)
-                            : Config.GetImplementation(refProp.Key.Domain)!.Type.Contains("Date")
-                            ? $"{Config.GetImplementation(refProp.Key.Domain)!.Type.ParseTemplate(refProp.Key).TrimEnd('?')}.Parse(\"{refProp.Value}\"){(Config.GetImplementation(refProp.Key.Domain)!.Type.Contains("Time") ? ".ToUniversalTime()" : string.Empty)}"
-                            : Config.GetImplementation(refProp.Key.Domain)!.ShouldQuoteValue()
+                            : Config.GetType(refProp.Key).Contains("Date")
+                            ? $"{Config.GetType(refProp.Key).TrimEnd('?')}.Parse(\"{refProp.Value}\"){(Config.GetType(refProp.Key).Contains("Time") ? ".ToUniversalTime()" : string.Empty)}"
+                            : Config.ShouldQuoteValue(refProp.Key)
                             ? $"\"{refProp.Value}\""
                             : refProp.Value;
                         w.Write($" {refProp.Key.NamePascal} = {value}");

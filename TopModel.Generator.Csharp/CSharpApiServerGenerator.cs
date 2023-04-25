@@ -144,7 +144,7 @@ namespace {ns}
                 var routeParamName = split[i][1..^1];
                 var param = endpoint.Params.OfType<IFieldProperty>().Single(param => param.GetParamName() == routeParamName);
 
-                var paramType = Config.GetImplementation(param.Domain)!.Type switch
+                var paramType = Config.GetType(param) switch
                 {
                     "int" => "int",
                     "int?" => "int",
@@ -166,7 +166,7 @@ namespace {ns}
     {
         var sb = new StringBuilder();
 
-        var hasForm = param.Endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetImplementation(fp.Domain)!.Type.Contains("IFormFile"));
+        var hasForm = param.Endpoint.Params.Any(p => Config.GetType(p).Contains("IFormFile"));
 
         if (param.IsBodyParam())
         {
@@ -180,7 +180,7 @@ namespace {ns}
             }
         }
 
-        sb.Append($@"{Config.GetPropertyTypeName(param, param.IsRouteParam() || param.IsQueryParam() && !hasForm && Config.GetDefaultValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
+        sb.Append($@"{Config.GetType(param, nonNullable: param.IsRouteParam() || param.IsQueryParam() && !hasForm && Config.GetDefaultValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
 
         if (param.IsQueryParam() && !hasForm)
         {

@@ -224,7 +224,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
         {
             return $@"return new List<{classe.NamePascal}>
 {{
-    {string.Join(",\r\n    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.NamePascal} = {(Config.GetImplementation(prop.Key.Domain)!.ShouldQuoteValue() ? $"\"{prop.Value}\"" : prop.Value)}"))} }}"))}
+    {string.Join(",\r\n    ", classe.Values.Select(rv => $"new() {{ {string.Join(", ", rv.Value.Select(prop => $"{prop.Key.NamePascal} = {(Config.ShouldQuoteValue(prop.Key) ? $"\"{prop.Value}\"" : prop.Value)}"))} }}"))}
 }};";
         }
 

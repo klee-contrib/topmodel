@@ -75,7 +75,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
             if (endpoints.Any(e => e.GetQueryParams().Any(qp =>
             {
-                var typeName = Config.GetPropertyTypeName(qp);
+                var typeName = Config.GetType(qp);
                 return !typeName.StartsWith("string") && !typeName.StartsWith("Guid");
             })))
             {
@@ -103,13 +103,13 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
             switch (property)
             {
-                case AssociationProperty ap when Config.CanClassUseEnums(ap.Association):
+                case AssociationProperty ap when Config.CanClassUseEnums(ap.Association, Classes):
                     usings.Add(GetNamespace(ap.Association, tag));
                     break;
-                case AliasProperty { Property: AssociationProperty ap2 } when Config.CanClassUseEnums(ap2.Association):
+                case AliasProperty { Property: AssociationProperty ap2 } when Config.CanClassUseEnums(ap2.Association, Classes):
                     usings.Add(GetNamespace(ap2.Association, tag));
                     break;
-                case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp } when Config.CanClassUseEnums(rp.Class):
+                case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true } rp } when Config.CanClassUseEnums(rp.Class, Classes):
                     usings.Add(GetNamespace(rp.Class, tag));
                     break;
                 case CompositionProperty cp:
@@ -186,7 +186,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
             fw.Write("    public async Task");
 
-            var returnType = endpoint.Returns != null ? Config.GetPropertyTypeName(endpoint.Returns) : null;
+            var returnType = endpoint.Returns != null ? Config.GetType(endpoint.Returns) : null;
             if (returnType?.StartsWith("IAsyncEnumerable") ?? false)
             {
                 returnType = returnType.Replace("IAsyncEnumerable", "IEnumerable");
@@ -201,7 +201,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
             foreach (var param in endpoint.Params)
             {
-                fw.Write($"{Config.GetPropertyTypeName(param, param.IsRouteParam() || param.IsQueryParam() && Config.GetDefaultValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
+                fw.Write($"{Config.GetType(param, nonNullable: param.IsRouteParam() || param.IsQueryParam() && Config.GetDefaultValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
 
                 if (param.IsQueryParam())
                 {
@@ -226,9 +226,9 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
                 fw.WriteLine(3, "var query = await new FormUrlEncodedContent(new Dictionary<string, string>");
                 fw.WriteLine(3, "{");
 
-                foreach (var qp in endpoint.GetQueryParams().Where(qp => !Config.GetPropertyTypeName(qp).Contains("[]")))
+                foreach (var qp in endpoint.GetQueryParams().Where(qp => !Config.GetType(qp).Contains("[]")))
                 {
-                    var toString = Config.GetPropertyTypeName(qp) switch
+                    var toString = Config.GetType(qp) switch
                     {
                         "string" => string.Empty,
                         "Guid" or "Guid?" => "?.ToString()",
@@ -238,7 +238,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
                     fw.WriteLine(4, $@"[""{qp.GetParamName()}""] = {qp.GetParamName().Verbatim()}{toString},");
                 }
 
-                var listQPs = endpoint.GetQueryParams().Where(qp => Config.GetPropertyTypeName(qp).Contains("[]")).ToList();
+                var listQPs = endpoint.GetQueryParams().Where(qp => Config.GetType(qp).Contains("[]")).ToList();
 
                 if (listQPs.Count == 0)
                 {
@@ -254,7 +254,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
                     fw.Write("        }");
                     foreach (var qp in listQPs)
                     {
-                        var toString = Config.GetPropertyTypeName(qp) switch
+                        var toString = Config.GetType(qp) switch
                         {
                             "string[]" => string.Empty,
                             "Guid[]" => ".ToString()",

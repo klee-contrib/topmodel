@@ -1,25 +1,12 @@
-﻿using System.Text.RegularExpressions;
-using TopModel.Core;
+﻿using TopModel.Core;
 using TopModel.Core.FileModel;
-using TopModel.Utils;
 using TopModel.Generator.Core;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
 
 public static class JpaUtils
 {
-    public static string GetJavaType(this JpaConfig config, IProperty prop, bool asList = false)
-    {
-        return prop switch
-        {
-            AssociationProperty a => a.GetJavaType(),
-            CompositionProperty c => config.GetJavaType(c),
-            AliasProperty l => config.GetJavaType(l),
-            RegularProperty r => config.GetJavaType(r, asList),
-            _ => string.Empty,
-        };
-    }
-
     public static string GetJavaName(this IProperty prop, bool firstUpper = false)
     {
         string propertyName = prop.NameCamel;
@@ -29,17 +16,6 @@ public static class JpaUtils
         }
 
         return firstUpper ? propertyName.ToFirstUpper() : propertyName;
-    }
-
-    public static string GetJavaType(this AssociationProperty ap)
-    {
-        var isList = ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany;
-        if (isList)
-        {
-            return $"List<{ap.Association.NamePascal}>";
-        }
-
-        return ap.Association.NamePascal;
     }
 
     public static string GetAssociationName(this AssociationProperty ap)
@@ -52,104 +28,6 @@ public static class JpaUtils
         {
             return $"{ap.Association.NameCamel}{ap.Role?.ToPascalCase() ?? string.Empty}";
         }
-    }
-
-    public static string GetJavaType(this JpaConfig config, AliasProperty ap)
-    {
-        if (ap.Class != null && ap.Class.IsPersistent)
-        {
-            if (ap.Property is AssociationProperty asp)
-            {
-                if (asp.IsEnum())
-                {
-                    return config.GetJavaType(asp.Property, ap.AsList || asp.Type == AssociationType.ManyToMany || asp.Type == AssociationType.OneToMany);
-                }
-                else
-                {
-                    return config.GetImplementation(ap.Property.Domain)!.Type.ParseTemplate(ap);
-                }
-            }
-            else
-            {
-                return config.GetJavaType(ap.Property, ap.AsList);
-            }
-        }
-
-        if (ap.IsEnum())
-        {
-            return config.GetJavaType(ap.Property, ap.AsList);
-        }
-        else if (ap.Property is AssociationProperty apr)
-        {
-            return config.GetJavaType(apr.Property, ap.AsList || apr.Type == AssociationType.ManyToMany || apr.Type == AssociationType.OneToMany);
-        }
-        else if (ap.Property is CompositionProperty cpo)
-        {
-            if (cpo.Kind == "list")
-            {
-                return $"List<{cpo.Composition.NamePascal}>";
-            }
-            else if (cpo.Kind == "object")
-            {
-                return cpo.Composition.NamePascal;
-            }
-            else if (cpo.DomainKind != null)
-            {
-                var javaType = config.GetImplementation(cpo.DomainKind)!.Type;
-                if (!javaType.Contains("{composition.name}"))
-                {
-                    javaType += "<{composition.name}>";
-                }
-
-                return javaType.ParseTemplate(cpo);
-            }
-        }
-
-        return config.GetImplementation(ap.Domain)!.Type;
-    }
-
-    public static string GetJavaType(this JpaConfig config, RegularProperty rp, bool asList)
-    {
-        return rp.IsEnum() && rp.Class.IsStatic() ? ((asList ? "List<" : string.Empty) + $"{rp.Class.NamePascal}.Values") + (asList ? ">" : string.Empty) : config.GetImplementation(asList ? rp.Domain.ListDomain! : rp.Domain)!.Type.ParseTemplate(rp);
-    }
-
-    public static string GetJavaType(this JpaConfig config, CompositionProperty cp)
-    {
-        return cp.Kind switch
-        {
-            "object" => cp.Composition.NamePascal,
-            "list" => $"List<{cp.Composition.NamePascal}>",
-            "async-list" => $"IAsyncEnumerable<{cp.Composition.NamePascal}>",
-            string _ when config.GetImplementation(cp.DomainKind)!.Type.Contains("{composition.name}") => config.GetImplementation(cp.DomainKind)!.Type.ParseTemplate(cp),
-            string _ => $"{config.GetImplementation(cp.DomainKind)!.Type}<{{composition.name}}>".ParseTemplate(cp)
-        };
-    }
-
-    public static bool IsEnum(this IFieldProperty rp)
-    {
-        return rp.Class?.EnumKey == rp
-            && rp.Class.Values.All(r => !Regex.IsMatch(r.Value[rp].ToString() ?? string.Empty, "(?<=[^$\\w'\"\\])(?!(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|double|do|else|enum|extends|false|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|null|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|true|try|void|volatile|while|_\\b))([A-Za-z_$][$\\w]*)"));
-    }
-
-    public static bool IsStatic(this Class c)
-    {
-        return c.Enum
-            && !c.Properties.OfType<AssociationProperty>().Any(a => a.Association != c && !a.Association.IsStatic());
-    }
-
-    public static bool IsEnum(this AliasProperty ap)
-    {
-        return ap.Property is RegularProperty rp && rp.IsEnum();
-    }
-
-    public static bool IsAssociatedEnum(this AliasProperty ap)
-    {
-        return ap.Property is AssociationProperty apr && apr.IsEnum();
-    }
-
-    public static bool IsEnum(this AssociationProperty apr)
-    {
-        return apr.Property != null && apr.Property.IsEnum();
     }
 
     public static string GetClassFileName(this JpaConfig config, Class classe, string tag)

@@ -25,4 +25,14 @@ public class TranslationConfig : GeneratorConfigBase
     {
         nameof(RootPath)
     };
+
+    public override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override string GetListType(string name, bool useIterable = true)
+    {
+        throw new NotImplementedException();
+    }
 }

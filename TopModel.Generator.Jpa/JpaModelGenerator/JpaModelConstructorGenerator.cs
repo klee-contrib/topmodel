@@ -1,6 +1,6 @@
 ﻿using TopModel.Core;
-using TopModel.Utils;
 using TopModel.Generator.Core;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
 
@@ -41,7 +41,7 @@ public class JpaModelConstructorGenerator
             return;
         }
 
-        var propertiesSignature = string.Join(", ", properties.Select(p => $"{_config.GetJavaType(p)} {p.GetJavaName()}"));
+        var propertiesSignature = string.Join(", ", properties.Select(p => $"{_config.GetType(p, useClassForAssociation: classe.IsPersistent)} {p.GetJavaName()}"));
 
         foreach (var property in properties)
         {
@@ -71,7 +71,7 @@ public class JpaModelConstructorGenerator
     public void WriteAllArgConstructorEnumShortcut(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
     {
         var properties = GetAllArgsProperties(classe, availableClasses, tag);
-        if (!properties.OfType<AssociationProperty>().Any(p => p.IsEnum() && p.Association.IsStatic() && (p.Type == AssociationType.OneToOne || p.Type == AssociationType.ManyToOne)))
+        if (!properties.OfType<AssociationProperty>().Any(p => _config.CanClassUseEnums(p.Association) && (p.Type == AssociationType.OneToOne || p.Type == AssociationType.ManyToOne)))
         {
             return;
         }
@@ -84,7 +84,7 @@ public class JpaModelConstructorGenerator
             return;
         }
 
-        var propertiesSignature = string.Join(", ", properties.Select(p => $"{(p is AssociationProperty ap && ap.IsEnum() && ap.Association.IsStatic() ? (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) ? $"List<{ap.Association.NamePascal}.Values>" : $"{_config.GetJavaType(p)}.Values" : _config.GetJavaType(p))} {(p is AssociationProperty asp && asp.IsEnum() && asp.Association.IsStatic() ? p.NameCamel : p.GetJavaName())}"));
+        var propertiesSignature = string.Join(", ", properties.Select(p => $"{_config.GetType(p, useClassForAssociation: p is not AssociationProperty ap || !_config.CanClassUseEnums(ap.Association))} {(p is AssociationProperty asp && _config.CanClassUseEnums(asp.Association) ? p.NameCamel : p.GetJavaName())}"));
 
         foreach (var property in properties)
         {
@@ -105,7 +105,7 @@ public class JpaModelConstructorGenerator
 
         foreach (var property in classe.GetProperties(availableClasses, tag))
         {
-            if (!(property is AssociationProperty aspr2 && aspr2.IsEnum() && aspr2.Association.IsStatic()))
+            if (!(property is AssociationProperty aspr2 && _config.CanClassUseEnums(aspr2.Association)))
             {
                 fw.WriteLine(2, $"this.{property.GetJavaName()} = {property.GetJavaName()};");
             }
@@ -142,18 +142,18 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(2, "}");
         fw.WriteLine();
 
-        foreach (var property in classe.GetProperties(availableClasses, tag).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.IsStatic())))
+        foreach (var property in classe.GetProperties(availableClasses, tag).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && _config.CanClassUseEnums(apo.Association))))
         {
             if (!(property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list"))
             {
-                var getterPrefix = _config.GetJavaType(property) == "boolean" ? "is" : "get";
+                var getterPrefix = _config.GetType(property) == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"this.{property.GetJavaName()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName(true)}();");
             }
         }
 
         var propertyListToCopy = classe.GetProperties(availableClasses, tag)
-        .Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.IsStatic()))
-        .Where(property => property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list");
+            .Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && _config.CanClassUseEnums(apo.Association)))
+            .Where(property => property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list");
 
         if (propertyListToCopy.Any())
         {
@@ -164,7 +164,7 @@ public class JpaModelConstructorGenerator
         {
             if (property is AssociationProperty ap || property is CompositionProperty cp && cp.Kind == "list")
             {
-                var getterPrefix = _config.GetJavaType(property) == "boolean" ? "is" : "get";
+                var getterPrefix = _config.GetType(property) == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"this.{property.GetJavaName()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName(true)}().stream().collect(Collectors.toList());");
                 fw.AddImport("java.util.stream.Collectors");
             }
@@ -173,10 +173,10 @@ public class JpaModelConstructorGenerator
         if (_config.EnumShortcutMode)
         {
             fw.WriteLine();
-            foreach (var ap in classe.GetProperties(availableClasses, tag).OfType<AssociationProperty>().Where(ap => ap.Association.IsStatic()))
+            foreach (var ap in classe.GetProperties(availableClasses, tag).OfType<AssociationProperty>().Where(ap => _config.CanClassUseEnums(ap.Association)))
             {
                 var propertyName = ap.NameCamel;
-                var getterPrefix = ap.GetJavaType() == "boolean" ? "is" : "get";
+                var getterPrefix = _config.GetType(ap) == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"this.set{ap.NameCamel.ToFirstUpper()}({classe.NameCamel}.{getterPrefix}{ap.NameCamel.ToFirstUpper()}());");
             }
         }

@@ -58,6 +58,14 @@ public abstract class GeneratorConfigBase
     /// </summary>
     public virtual string[] PropertiesWithTagVariableSupport => Array.Empty<string>();
 
+    protected virtual bool UseNamedEnums => true;
+
+    protected virtual string NullValue => "null";
+
+    public abstract string GetListType(string name, bool useIterable = true);
+
+    public abstract string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false);
+
     /// <summary>
     /// Récupère l'implémentation du domaine pour la config.
     /// </summary>
@@ -66,6 +74,106 @@ public abstract class GeneratorConfigBase
     public DomainImplementation? GetImplementation(Domain? domain)
     {
         return domain?.Implementations.GetValueOrDefault(Language);
+    }
+
+    /// <summary>
+    /// Récupère le type d'une propriété.
+    /// </summary>
+    /// <param name="property">Domaine.</param>
+    /// <param name="availableClasses">Classes disponibles.</param>
+    /// <param name="useClassForAssociation">Utilise le type de la classe pour une association.</param>
+    /// <param name="useIterable">Pour si c'est une composition liste, utiliser le type itérable au lieu de collection.</param>
+    /// <returns>Le type.</returns>
+    public string GetType(IProperty property, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false, bool useIterable = true)
+    {
+        return property switch
+        {
+            AssociationProperty { Association: Class assoc } ap when useClassForAssociation => ap.Type.IsToMany() ? GetListType(assoc.NamePascal) : ap.Association.NamePascal,
+            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when useClassForAssociation => asList || ap.Type.IsToMany() ? GetListType(assoc.NamePascal) : ap.Association.NamePascal,
+            AssociationProperty { Association: Class assoc } ap when CanClassUseEnums(assoc, availableClasses, ap.Property) => GetEnumType(assoc.Name, ap.Property.Name, ap.Type.IsToMany()),
+            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when CanClassUseEnums(assoc, availableClasses) => GetEnumType(assoc.Name, ap.Property.Name, asList || ap.Type.IsToMany()),
+            RegularProperty { Class: Class classe } rp when CanClassUseEnums(classe, availableClasses, rp) => GetEnumType(rp.Class.Name, rp.Name, false, true),
+            AliasProperty { Property: RegularProperty { Class: Class alClass } rp, AsList: var asList } when CanClassUseEnums(alClass, availableClasses, rp) => GetEnumType(alClass.Name, rp.Name, asList),
+            IFieldProperty fp => GetImplementation(fp.Domain)!.Type.ParseTemplate(fp),
+            CompositionProperty { Kind: "object" } cp => cp.Composition.NamePascal,
+            CompositionProperty { Kind: "list" } cp => GetListType(cp.Composition.NamePascal, useIterable),
+            CompositionProperty { DomainKind: Domain domain } cp => GetImplementation(domain)!.Type switch
+            {
+                string s when s.Contains("{composition.name}") => s.ParseTemplate(cp),
+                string s => $"{s}<{{composition.name}}>".ParseTemplate(cp)
+            },
+            _ => string.Empty
+        };
+    }
+
+    /// <summary>
+    /// Détermine si une classe peut utiliser une enum pour sa clé primaire.
+    /// </summary>
+    /// <param name="classe">Classe.</param>
+    /// <param name="availableClasses">Classes disponibles.</param>
+    /// <param name="prop">Propriété à vérifier (si c'est pas la clé primaire).</param>
+    /// <returns>Oui/non.</returns>
+    public virtual bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IFieldProperty? prop = null)
+    {
+        if (availableClasses != null && !availableClasses.Contains(classe))
+        {
+            return false;
+        }
+
+        prop ??= classe.EnumKey;
+
+        bool CheckProperty(IFieldProperty fp)
+        {
+            return (fp == classe.EnumKey || classe.UniqueKeys.Where(uk => uk.Count == 1).Select(uk => uk.Single()).Contains(prop))
+                && classe.Values.All(r => r.Value.ContainsKey(fp) && IsEnumNameValid(r.Value[fp].ToString()));
+        }
+
+        return classe.Enum && CheckProperty(prop!);
+    }
+
+    /// <summary>
+    /// Récupère la valeur par défaut d'une propriété.
+    /// </summary>
+    /// <param name="property">La propriété.</param>
+    /// <param name="availableClasses">Classes disponibles dans le générateur.</param>
+    /// <returns>La valeur par défaut.</returns>
+    public string GetDefaultValue(IProperty property, IEnumerable<Class> availableClasses)
+    {
+        var fp = property as IFieldProperty;
+
+        if (fp?.DefaultValue == null || fp.DefaultValue == "null" || fp.DefaultValue == "undefined")
+        {
+            return NullValue;
+        }
+
+        var prop = fp is AliasProperty alp ? alp.Property : fp;
+        var ap = prop as AssociationProperty;
+
+        var classe = ap != null ? ap.Association : prop.Class;
+        var targetProp = ap != null ? ap.Property : prop;
+
+        if (UseNamedEnums && classe.Enum && availableClasses.Contains(classe))
+        {
+            if (CanClassUseEnums(classe, availableClasses, targetProp))
+            {
+                return $"{GetEnumType(classe.NamePascal, targetProp.NamePascal).TrimEnd('?')}.{fp.DefaultValue}";
+            }
+            else
+            {
+                var refName = classe.Values.SingleOrDefault(rv => rv.Value[targetProp] == fp.DefaultValue)?.Name;
+                if (refName != null)
+                {
+                    return $"{classe}.{refName}";
+                }
+            }
+        }
+
+        if (GetImplementation(fp.Domain)!.Type.ToLower() == "string")
+        {
+            return $@"""{fp.DefaultValue}""";
+        }
+
+        return fp.DefaultValue;
     }
 
     /// <summary>
@@ -226,6 +334,11 @@ public abstract class GeneratorConfigBase
         {
             Console.WriteLine();
         }
+    }
+
+    protected virtual bool IsEnumNameValid(string name)
+    {
+        return !Regex.IsMatch(name ?? string.Empty, "^\\d");
     }
 
     /// <summary>

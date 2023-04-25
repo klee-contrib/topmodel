@@ -1,7 +1,7 @@
-﻿using System.Text.RegularExpressions;
-using TopModel.Core;
+﻿using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Generator.Core;
+using TopModel.Utils;
 using YamlDotNet.Serialization;
 
 namespace TopModel.Generator.Csharp;
@@ -161,68 +161,16 @@ public class CsharpConfig : GeneratorConfigBase
         nameof(ApiFilePath)
     };
 
-    /// <summary>
-    /// Détermine si une classe peut utiliser une enum pour sa clé primaire.
-    /// </summary>
-    /// <param name="classe">Classe.</param>
-    /// <param name="prop">Propriété à vérifier (si c'est pas la clé primaire).</param>
-    /// <returns>Oui/non.</returns>
-    public bool CanClassUseEnums(Class classe, IFieldProperty? prop = null)
+    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses, IFieldProperty? prop = null)
     {
-        prop ??= classe.EnumKey;
-
-        bool CheckProperty(IFieldProperty fp)
-        {
-            return (fp == classe.EnumKey || classe.UniqueKeys.Where(uk => uk.Count == 1).Select(uk => uk.Single()).Contains(prop))
-                && classe.Values.All(r => r.Value.ContainsKey(fp) && !Regex.IsMatch(r.Value[fp].ToString() ?? string.Empty, "^\\d"));
-        }
-
-        return EnumsForStaticReferences && classe.Enum && CheckProperty(prop!);
+        return EnumsForStaticReferences && base.CanClassUseEnums(classe, availableClasses, prop);
     }
 
-    /// <summary>
-    /// Récupère la valeur par défaut d'une propriété en C#.
-    /// </summary>
-    /// <param name="property">La propriété.</param>
-    /// <param name="availableClasses">Classes disponibles dans le générateur.</param>
-    /// <returns>La valeur par défaut.</returns>
-    public string GetDefaultValue(IProperty property, IEnumerable<Class> availableClasses)
+    public string GetType(IProperty prop, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false, bool useIEnumerable = true, bool nonNullable = false)
     {
-        var fp = property as IFieldProperty;
-
-        if (fp?.DefaultValue == null || fp.DefaultValue == "null" || fp.DefaultValue == "undefined")
-        {
-            return "null";
-        }
-
-        var prop = fp is AliasProperty alp ? alp.Property : fp;
-        var ap = prop as AssociationProperty;
-
-        var classe = ap != null ? ap.Association : prop.Class;
-        var targetProp = ap != null ? ap.Property : prop;
-
-        if (classe.Enum && availableClasses.Contains(classe))
-        {
-            if (CanClassUseEnums(classe, targetProp))
-            {
-                return $"{classe}.{targetProp}s.{fp.DefaultValue}";
-            }
-            else
-            {
-                var refName = classe.Values.SingleOrDefault(rv => rv.Value[targetProp] == fp.DefaultValue)?.Name;
-                if (refName != null)
-                {
-                    return $"{classe}.{refName}";
-                }
-            }
-        }
-
-        if (GetImplementation(fp.Domain)?.Type == "string")
-        {
-            return $@"""{fp.DefaultValue}""";
-        }
-
-        return fp.DefaultValue;
+        var type = base.GetType(prop, availableClasses, useClassForAssociation, useIEnumerable);
+        type = nonNullable && type.EndsWith("?") ? type[0..^1] : type;
+        return type;
     }
 
     /// <summary>
@@ -298,5 +246,15 @@ public class CsharpConfig : GeneratorConfigBase
     public bool NoPersistence(string tag)
     {
         return ResolveVariables(NoPersistenceParam ?? string.Empty, tag) == true.ToString();
+    }
+
+    public override string GetListType(string name, bool useIterable = true)
+    {
+        return $"{(useIterable ? "IEnumerable" : "ICollection")}<{name}>";
+    }
+
+    public override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
+    {
+        return $"{(isPrimaryKeyDef ? string.Empty : $"{className.ToPascalCase()}.")}{propName.ToPascalCase()}s{(asList ? "[]" : "?")}";
     }
 }

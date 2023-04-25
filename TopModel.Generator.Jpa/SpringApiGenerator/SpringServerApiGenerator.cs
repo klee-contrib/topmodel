@@ -94,10 +94,10 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
         if (endpoint.Returns != null)
         {
-            returnType = Config.GetJavaType(endpoint.Returns);
+            returnType = Config.GetType(endpoint.Returns);
         }
 
-        var hasForm = endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetImplementation(fp.Domain)?.Type == "MultipartFile");
+        var hasForm = endpoint.Params.Any(p => Config.GetType(p) == "MultipartFile");
         {
             var produces = string.Empty;
             if (endpoint.Returns != null && endpoint.Returns is IFieldProperty fp && fp.Domain.MediaType != null)
@@ -129,7 +129,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
             var ann = string.Empty;
             ann += @$"@PathVariable(""{param.GetParamName()}"") ";
 
-            methodParams.Add($"{ann}{Config.GetJavaType(param)} {param.GetParamName()}");
+            methodParams.Add($"{ann}{Config.GetType(param)} {param.GetParamName()}");
         }
 
         foreach (var param in endpoint.GetQueryParams())
@@ -137,7 +137,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
             var ann = string.Empty;
             ann += @$"@RequestParam(value = ""{param.GetParamName()}"", required = {(param is IFieldProperty fp ? fp.Required : true).ToString().ToFirstLower()}) ";
 
-            methodParams.Add($"{ann}{Config.GetJavaType(param)} {param.GetParamName()}");
+            methodParams.Add($"{ann}{Config.GetType(param)} {param.GetParamName()}");
         }
 
         var bodyParam = endpoint.GetBodyParam();
@@ -146,7 +146,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
             var ann = string.Empty;
             ann += @$"@RequestBody @Valid ";
 
-            methodParams.Add($"{ann}{Config.GetJavaType(bodyParam)} {bodyParam.GetParamName()}");
+            methodParams.Add($"{ann}{Config.GetType(bodyParam)} {bodyParam.GetParamName()}");
         }
 
         fw.WriteLine(1, $"{returnType} {endpoint.NameCamel}({string.Join(", ", methodParams)});");

@@ -69,12 +69,12 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
             fw.WriteLine(" */");
             fw.Write($"export function {endpoint.NameCamel}(");
 
-            var hasForm = endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetImplementation(fp.Domain)!.Type.Contains("File"));
+            var hasForm = endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetType(fp).Contains("File"));
 
             foreach (var param in endpoint.Params)
             {
-                var defaultValue = Config.GetDefaultValue(param);
-                fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetPropertyTypeName(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, ");
+                var defaultValue = Config.GetDefaultValue(param, Classes);
+                fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, ");
             }
 
             fw.Write("options: RequestInit = {}): Promise<");
@@ -84,7 +84,7 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
             }
             else
             {
-                fw.Write(Config.GetPropertyTypeName(endpoint.Returns, Classes));
+                fw.Write(Config.GetType(endpoint.Returns, Classes));
             }
 
             fw.WriteLine("> {");
@@ -157,7 +157,7 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
             fw.WriteLine("}");
         }
 
-        if (endpoints.Any(endpoint => endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetImplementation(fp.Domain)!.Type.Contains("File"))))
+        if (endpoints.Any(endpoint => endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetType(fp).Contains("File"))))
         {
             fw.WriteLine(@"
 function fillFormData(data: any, formData: FormData, prefix = """") {

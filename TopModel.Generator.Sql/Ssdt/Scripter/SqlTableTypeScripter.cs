@@ -68,7 +68,7 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     /// <param name="property">Propriété.</param>
     private void WriteColumn(StringBuilder sb, IFieldProperty property)
     {
-        var persistentType = _config.GetImplementation(property.Domain)!.Type;
+        var persistentType = _config.GetType(property);
         sb.Append("[").Append(property.SqlName).Append("] ").Append(persistentType).Append(" null");
     }
 
@@ -130,7 +130,7 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
         // Colonnes
         foreach (var property in table.Properties.OfType<IFieldProperty>())
         {
-            if ((!property.PrimaryKey || _config.GetImplementation(property.Domain)!.ShouldQuoteValue()) && property.Name != ScriptUtils.InsertKeyName)
+            if ((!property.PrimaryKey || _config.ShouldQuoteValue(property)) && property.Name != ScriptUtils.InsertKeyName)
             {
                 sb.Clear();
                 WriteColumn(sb, property);

@@ -99,7 +99,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         {
             if (withType)
             {
-                methodParams.Add($"{Config.GetJavaType(param)} {param.GetParamName()}");
+                methodParams.Add($"{Config.GetType(param)} {param.GetParamName()}");
             }
             else
             {
@@ -111,7 +111,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         {
             if (withType)
             {
-                methodParams.Add($"{Config.GetJavaType(param)} {param.GetParamName()}");
+                methodParams.Add($"{Config.GetType(param)} {param.GetParamName()}");
             }
             else
             {
@@ -124,7 +124,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         {
             if (withType)
             {
-                methodParams.Add($"{Config.GetJavaType(bodyParam)} {bodyParam.GetParamName()}");
+                methodParams.Add($"{Config.GetType(bodyParam)} {bodyParam.GetParamName()}");
             }
             else
             {
@@ -220,12 +220,12 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         var returnClass = "(Class<?>) null";
         if (endpoint.Returns != null)
         {
-            returnType = $"ResponseEntity<{Config.GetJavaType(endpoint.Returns).Split('<').First()}>";
-            returnClass = $"{Config.GetJavaType(endpoint.Returns).Split('<').First()}.class";
-            if (Config.GetJavaType(endpoint.Returns).Split('<').First() == "ResponseEntity" && Config.GetJavaType(endpoint.Returns).Split('<').Count() > 1)
+            returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns).Split('<').First()}>";
+            returnClass = $"{Config.GetType(endpoint.Returns).Split('<').First()}.class";
+            if (Config.GetType(endpoint.Returns).Split('<').First() == "ResponseEntity" && Config.GetType(endpoint.Returns).Split('<').Count() > 1)
             {
-                returnType = $"ResponseEntity<{Config.GetJavaType(endpoint.Returns).Split('<')[1].Split('>').First()}>";
-                returnClass = $"{Config.GetJavaType(endpoint.Returns).Split('<')[1].Split('>').First()}.class";
+                returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns).Split('<')[1].Split('>').First()}>";
+                returnClass = $"{Config.GetType(endpoint.Returns).Split('<')[1].Split('>').First()}.class";
             }
         }
 

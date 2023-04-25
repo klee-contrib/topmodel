@@ -5,9 +5,6 @@ using TopModel.Generator.Core;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Csharp;
-
-using static CSharpUtils;
-
 public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 {
     private readonly ILogger<CSharpClassGenerator> _logger;
@@ -73,27 +70,6 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     }
 
     /// <summary>
-    /// Retourne le code associé à l'instanciation d'une propriété.
-    /// </summary>
-    /// <param name="fieldName">Nom de la variable membre privée.</param>
-    /// <param name="dataType">Type de données.</param>
-    /// <returns>Code généré.</returns>
-    private static string LoadPropertyInit(string fieldName, string dataType)
-    {
-        var res = $"{fieldName} = ";
-        if (IsCSharpBaseType(dataType))
-        {
-            res += GetCSharpDefaultValueBaseType(dataType) + ";";
-        }
-        else
-        {
-            res += $"new {dataType}();";
-        }
-
-        return res;
-    }
-
-    /// <summary>
     /// Génère le type énuméré présentant les colonnes persistentes.
     /// </summary>
     /// <param name="w">Writer.</param>
@@ -148,11 +124,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             foreach (var refValue in flagValues)
             {
                 var flag = int.Parse(refValue.Value[item.FlagProperty]);
-                var label = item.DefaultProperty != null
-                    ? refValue.Value[item.DefaultProperty]
-                    : refValue.Name;
-
-                w.WriteSummary(3, label);
+                w.WriteSummary(3, refValue.GetLabel(item));
                 w.WriteLine(3, $"{refValue.Name} = 0b{Convert.ToString(flag, 2)},");
                 if (flagValues.IndexOf(refValue) != flagValues.Count - 1)
                 {
@@ -208,7 +180,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
         var initd = new List<string>();
 
-        foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => Config.GetImplementation(t.Domain)!.Type.Contains("ICollection")))
+        foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => Config.GetType(t).Contains("ICollection")))
         {
             initd.Add(property.NamePascal);
             var strip = Config.GetImplementation(property.Domain)!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
@@ -257,19 +229,19 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         {
             line = true;
             var strip = Config.GetImplementation(property.Domain)!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
-            w.WriteLine(3, LoadPropertyInit(property.NamePascal, "List<" + strip + ">"));
+            w.WriteLine(3, $"{property.NamePascal} = new List<{strip}>();");
         }
 
         foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
         {
             line = true;
-            w.WriteLine(3, LoadPropertyInit(property.NamePascal, property.Composition.NamePascal));
+            w.WriteLine(3, $"{property.NamePascal} = new {property.Composition.NamePascal}();");
         }
 
         foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
         {
             line = true;
-            w.WriteLine(3, LoadPropertyInit(property.NamePascal, "List<" + property.Composition.NamePascal + ">"));
+            w.WriteLine(3, $"{property.NamePascal} = new List<{property.Composition.NamePascal}>();");
         }
 
         if (line)
@@ -288,31 +260,29 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     /// <param name="item">La classe générée.</param>
     private void GenerateConstProperties(CSharpWriter w, Class item)
     {
-        var consts = new List<(Domain Domain, string Name, string Code, string Label)>();
+        var consts = new List<(IFieldProperty Prop, string Name, string Code, string Label)>();
 
         foreach (var refValue in item.Values)
         {
-            var label = item.DefaultProperty != null
-                ? refValue.Value[item.DefaultProperty]
-                : refValue.Name;
+            var label = refValue.GetLabel(item);
 
-            if (!Config.CanClassUseEnums(item) && item.EnumKey != null)
+            if (!Config.CanClassUseEnums(item, Classes) && item.EnumKey != null)
             {
                 var code = refValue.Value[item.EnumKey];
-                consts.Add((item.EnumKey.Domain, refValue.Name, code, label));
+                consts.Add((item.EnumKey, refValue.Name, code, label));
             }
 
             foreach (var uk in item.UniqueKeys.Where(uk =>
                 uk.Count == 1
-                && Config.GetImplementation(uk.Single().Domain)!.Type == "string"
+                && Config.GetType(uk.Single()) == "string"
                 && refValue.Value.ContainsKey(uk.Single())))
             {
                 var prop = uk.Single();
 
-                if (!Config.CanClassUseEnums(item, prop))
+                if (!Config.CanClassUseEnums(item, Classes, prop))
                 {
                     var code = refValue.Value[prop];
-                    consts.Add((prop.Domain, $"{refValue.Name}{prop}", code, label));
+                    consts.Add((prop, $"{refValue.Name}{prop}", code, label));
                 }
             }
         }
@@ -320,7 +290,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         foreach (var @const in consts.OrderBy(x => x.Name.ToPascalCase(), StringComparer.Ordinal))
         {
             w.WriteSummary(2, @const.Label);
-            w.WriteLine(2, $"public const {Config.GetImplementation(@const.Domain)!.Type.TrimEnd('?')} {@const.Name.ToPascalCase()} = {(Config.GetImplementation(@const.Domain)!.ShouldQuoteValue() ? $@"""{@const.Code}""" : @const.Code)};");
+            w.WriteLine(2, $"public const {Config.GetType(@const.Prop).TrimEnd('?')} {@const.Name.ToPascalCase()} = {(Config.ShouldQuoteValue(@const.Prop) ? $@"""{@const.Code}""" : @const.Code)};");
             w.WriteLine();
         }
     }
@@ -342,14 +312,8 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
             foreach (var refValue in refs)
             {
-                var code = refValue.Value[prop];
-
-                var label = item.DefaultProperty != null
-                    ? refValue.Value[item.DefaultProperty]
-                    : refValue.Name;
-
-                w.WriteSummary(3, label);
-                w.Write(3, code);
+                w.WriteSummary(3, refValue.GetLabel(item));
+                w.Write(3, refValue.Value[prop]);
 
                 if (refs.IndexOf(refValue) != refs.Count - 1)
                 {
@@ -364,7 +328,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
         WriteEnum(item.EnumKey!);
 
-        foreach (var uk in item.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(item, uk.Single())))
+        foreach (var uk in item.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(item, Classes, uk.Single())))
         {
             w.WriteLine();
             WriteEnum(uk.Single());
@@ -452,7 +416,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 w.WriteLine(2, "#endregion");
             }
 
-            if (Config.CanClassUseEnums(item))
+            if (Config.CanClassUseEnums(item, Classes))
             {
                 w.WriteLine();
                 GenerateEnumValues(w, item);
@@ -509,7 +473,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     {
         w.WriteSummary(2, property.Comment);
 
-        var type = Config.GetPropertyTypeName(property, useIEnumerable: false);
+        var type = Config.GetType(property, useIEnumerable: false);
 
         if (!property.Class.Abstract)
         {
@@ -599,7 +563,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
 
             w.WriteReturns(2, "Instance de la classe.");
-            w.WriteLine(2, $"static abstract I{item.NamePascal} Create({string.Join(", ", writeProperties.Select(p => $"{Config.GetPropertyTypeName(p, useIEnumerable: false)} {p.NameCamel} = null"))});");
+            w.WriteLine(2, $"static abstract I{item.NamePascal} Create({string.Join(", ", writeProperties.Select(p => $"{Config.GetType(p, useIEnumerable: false)} {p.NameCamel} = null"))});");
         }
     }
 
@@ -630,7 +594,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 usings.Add("System.ComponentModel");
             }
 
-            if (item.Properties.OfType<IFieldProperty>().Any(p => p.Required || p.PrimaryKey || Config.GetPropertyTypeName(p, useIEnumerable: false) == "string" && p.Domain.Length != null))
+            if (item.Properties.OfType<IFieldProperty>().Any(p => p.Required || p.PrimaryKey || Config.GetType(p, useIEnumerable: false) == "string" && p.Domain.Length != null))
             {
                 usings.Add("System.ComponentModel.DataAnnotations");
             }

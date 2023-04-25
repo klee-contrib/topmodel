@@ -1,5 +1,4 @@
 ﻿using TopModel.Core;
-using TopModel.Core.Model.Implementation;
 
 namespace TopModel.Generator.Sql;
 
@@ -37,13 +36,14 @@ public static class ScriptUtils
             : raw.Replace("'", "''");
     }
 
-    public static bool ShouldQuoteValue(this DomainImplementation domain)
+    public static bool ShouldQuoteValue(this SqlConfig config, IFieldProperty prop)
     {
-        return (domain?.Type ?? string.Empty).Contains("varchar")
-            || domain?.Type == "text"
-            || domain?.Type == "uniqueidentifier"
-            || domain?.Type == "uuid"
-            || (domain?.Type ?? string.Empty).Contains("date")
-            || (domain?.Type ?? string.Empty).Contains("time");
+        var type = config.GetType(prop);
+        return (type ?? string.Empty).Contains("varchar")
+            || type == "text"
+            || type == "uniqueidentifier"
+            || type == "uuid"
+            || (type ?? string.Empty).Contains("date")
+            || (type ?? string.Empty).Contains("time");
     }
 }

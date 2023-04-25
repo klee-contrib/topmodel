@@ -1,5 +1,8 @@
-﻿using TopModel.Core.Model.Implementation;
+﻿using System.Text.RegularExpressions;
+using TopModel.Core;
+using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
 
@@ -82,4 +85,26 @@ public class JpaConfig : GeneratorConfigBase
         nameof(DtosPath),
         nameof(ApiPath)
     };
+
+    public override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
+    {
+        var type = $"{className.ToPascalCase()}.Values";
+        return asList ? GetListType(type) : type;
+    }
+
+    public override string GetListType(string name, bool useIterable = true)
+    {
+        return $"List<{name}>";
+    }
+
+    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IFieldProperty? prop = null)
+    {
+        return base.CanClassUseEnums(classe, availableClasses, prop)
+            && !classe.Properties.OfType<AssociationProperty>().Any(a => a.Association != classe && !CanClassUseEnums(a.Association, availableClasses));
+    }
+
+    protected override bool IsEnumNameValid(string name)
+    {
+        return !Regex.IsMatch(name ?? string.Empty, "(?<=[^$\\w'\"\\])(?!(abstract|assert|boolean|break|byte|case|catch|char|class|const|continue|default|double|do|else|enum|extends|false|final|finally|float|for|goto|if|implements|import|instanceof|int|interface|long|native|new|null|package|private|protected|public|return|short|static|strictfp|super|switch|synchronized|this|throw|throws|transient|true|try|void|volatile|while|_\\b))([A-Za-z_$][$\\w]*)");
+    }
 }

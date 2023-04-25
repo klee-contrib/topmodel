@@ -54,7 +54,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                 Import: dep is { Source: CompositionProperty { DomainKind: not null } }
                     ? dep.Classe.NamePascal
                     : dep is { Source: IFieldProperty fp }
-                    ? Config.GetPropertyTypeName(fp, Classes).Replace("[]", string.Empty)
+                    ? Config.GetType(fp, Classes).Replace("[]", string.Empty)
                     : $"{dep.Classe.NamePascal}Entity, {dep.Classe.NamePascal}{(Config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}",
                 Path: Config.GetImportPathForClass(dep, GetClassTags(dep.Classe).Contains(tag) ? tag : GetClassTags(dep.Classe).Intersect(Config.Tags).FirstOrDefault() ?? tag, tag, Classes)!))
             .Concat(classe.DomainDependencies.SelectMany(dep => Config.GetImplementation(dep.Domain)!.Imports.Select(import => (Import: Config.GetImplementation(dep.Domain)!.Type.ParseTemplate(dep.Source).Replace("[]", string.Empty).Split("<").First(), Path: import.ParseTemplate(dep.Source)))))
@@ -130,17 +130,17 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                     }
                     else
                     {
-                        fw.Write($"FieldEntry2<typeof {cp.Kind}, {Config.GetPropertyTypeName(cp, Classes)}>");
+                        fw.Write($"FieldEntry2<typeof {cp.Kind}, {Config.GetType(cp, Classes)}>");
                     }
                 }
                 else if (property is IFieldProperty field)
                 {
-                    fw.Write($"FieldEntry2<typeof {field.Domain.Name}, {Config.GetPropertyTypeName(field, Classes)}>");
+                    fw.Write($"FieldEntry2<typeof {field.Domain.Name}, {Config.GetType(field, Classes)}>");
                 }
             }
             else
             {
-                fw.Write(Config.GetPropertyTypeName(property, Classes));
+                fw.Write(Config.GetType(property, Classes));
             }
 
             if (property != classe.Properties.Last())
@@ -211,7 +211,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                 fw.WriteLine($"        domain: {field.Domain.Name},");
                 fw.WriteLine($"        isRequired: {(field.Required && !field.PrimaryKey).ToString().ToFirstLower()},");
 
-                var defaultValue = Config.GetDefaultValue(field);
+                var defaultValue = Config.GetDefaultValue(field, Classes);
                 if (defaultValue != "undefined")
                 {
                     fw.WriteLine($"        defaultValue: {defaultValue},");

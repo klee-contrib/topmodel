@@ -49,7 +49,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptCo
             .Select(dep => (
                 Import: dep.Source switch
                 {
-                    IProperty fp => Config.GetPropertyTypeName(fp, Classes),
+                    IProperty fp => Config.GetType(fp, Classes),
                     Class c => c.NamePascal,
                     _ => null!
                 },
@@ -132,7 +132,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptCo
                     fw.Write(property.NameCamel);
                     fw.Write(property.Required || property.PrimaryKey ? string.Empty : "?");
                     fw.Write(": ");
-                    fw.Write(Config.GetPropertyTypeName(property, Classes));
+                    fw.Write(Config.GetType(property, Classes));
                     fw.Write(";\r\n");
                 }
 

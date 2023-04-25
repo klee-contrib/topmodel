@@ -5,7 +5,6 @@ namespace TopModel.Generator.Jpa;
 
 public static class ImportsJpaExtensions
 {
-
     public static List<string> GetTypeImports(this IProperty p, JpaConfig config, string tag)
     {
         return p switch
@@ -44,22 +43,22 @@ public static class ImportsJpaExtensions
         var imports = new List<string>();
         if (ap.Class != null && ap.Class.IsPersistent && ap.Property is AssociationProperty asp)
         {
-            if (asp.IsEnum())
+            if (config.CanClassUseEnums(asp.Association))
             {
                 imports.AddRange(asp.Property.GetTypeImports(config, tag));
             }
         }
 
-        if (ap.IsEnum())
+        if (config.CanClassUseEnums(ap.Property.Class))
         {
             imports.Add(ap.Property.Class.GetImport(config, tag));
         }
-        else if (ap.Property is AssociationProperty apr && ap.IsAssociatedEnum())
+        else if (ap.Property is AssociationProperty apr && config.CanClassUseEnums(apr.Property.Class))
         {
             imports.Add(apr.Association.GetImport(config, tag));
         }
 
-        if (ap.Property is AssociationProperty apo && (apo.Type == AssociationType.ManyToMany || apo.Type == AssociationType.OneToMany))
+        if (ap.Property is AssociationProperty apo && apo.Type.IsToMany())
         {
             imports.Add("java.util.List");
         }
@@ -70,7 +69,7 @@ public static class ImportsJpaExtensions
     public static List<string> GetTypeImports(this RegularProperty rp, JpaConfig config, string tag)
     {
         var imports = new List<string>();
-        if (rp.IsEnum())
+        if (rp.Class != null && config.CanClassUseEnums(rp.Class))
         {
             imports.Add($"{rp.Class.GetImport(config, tag)}");
         }
@@ -82,7 +81,6 @@ public static class ImportsJpaExtensions
 
     public static List<string> GetTypeImports(this AssociationProperty ap, JpaConfig config, string tag)
     {
-        var persistenceRoot = $"{config.PersistenceMode.ToString().ToLower()}.persistence.";
         var imports = new List<string>();
 
         switch (ap.Type)

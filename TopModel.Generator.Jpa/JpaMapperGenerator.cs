@@ -118,7 +118,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         {
             var propertyTarget = mapping.Value;
             var propertySource = mapping.Key;
-            var getterPrefix = Config.GetJavaType(propertyTarget!) == "boolean" ? "is" : "get";
+            var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
             var (getter, checkSourceNull) = GetSourceGetter(propertySource, propertyTarget!, classe, fw, "source", tag);
             if (mapper.Class.Abstract)
             {
@@ -172,7 +172,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
     private (string Getter, bool CheckSourceNull) GetSourceGetter(IProperty propertySource, IProperty propertyTarget, Class classe, JavaWriter fw, string sourceName, string tag)
     {
-        var getterPrefix = Config.GetJavaType(propertyTarget!) == "boolean" ? "is" : "get";
+        var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
         var getter = string.Empty;
         var checkSourceNull = false;
         if ((!propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent)
@@ -233,12 +233,11 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         }
         else if (!propertySource.Class.IsPersistent && propertyTarget.Class.IsPersistent && propertyTarget is AssociationProperty apTarget)
         {
-            if (apTarget.Property.IsEnum())
+            if (Config.CanClassUseEnums(apTarget.Property.Class))
             {
-                var isMultiple = apTarget.Type == AssociationType.OneToMany || apTarget.Type == AssociationType.ManyToMany;
-                if (isMultiple)
+                if (apTarget.Type.IsToMany())
                 {
-                    getter = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}(){(!propertySource.Class.IsPersistent ? $".stream().map({Config.GetJavaType(apTarget.Property)}::getEntity).collect(Collectors.toList())" : string.Empty)}";
+                    getter = $@"{sourceName}.{getterPrefix}{propertySource.GetJavaName(true)}(){(!propertySource.Class.IsPersistent ? $".stream().map({Config.GetType(apTarget.Property)}::getEntity).collect(Collectors.toList())" : string.Empty)}";
                     fw.AddImport("java.util.stream.Collectors");
                 }
                 else
@@ -363,7 +362,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
             {
                 var propertyTarget = mapping.Key;
                 var propertySource = mapping.Value!;
-                var getterPrefix = Config.GetJavaType(propertyTarget!) == "boolean" ? "is" : "get";
+                var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
                 var (getter, checkSourceNull) = GetSourceGetter(propertySource, propertyTarget, classe, fw, param.Name.ToCamelCase(), tag);
                 if (classe.Abstract)
                 {

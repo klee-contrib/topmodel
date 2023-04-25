@@ -1,4 +1,4 @@
-using TopModel.Core;
+﻿using TopModel.Core;
 
 namespace TopModel.Generator;
 

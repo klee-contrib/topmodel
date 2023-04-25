@@ -74,6 +74,10 @@ public class JavascriptConfig : GeneratorConfigBase
         nameof(DomainPath)
     };
 
+    protected override bool UseNamedEnums => false;
+
+    protected override string NullValue => "undefined";
+
     public string GetClassFileName(Class classe, string tag)
     {
         return Path.Combine(
@@ -82,28 +86,6 @@ public class JavascriptConfig : GeneratorConfigBase
             classe.Namespace.ModulePathKebab,
             $"{classe.Name.ToKebabCase()}.ts")
         .Replace("\\", "/");
-    }
-
-    /// <summary>
-    /// Récupère la valeur par défaut d'une propriété en JS.
-    /// </summary>
-    /// <param name="property">La propriété.</param>
-    /// <returns>La valeur par défaut.</returns>
-    public string GetDefaultValue(IProperty property)
-    {
-        var fp = property as IFieldProperty;
-
-        if (fp?.DefaultValue == null || fp.DefaultValue == "null" || fp.DefaultValue == "undefined")
-        {
-            return "undefined";
-        }
-
-        if (GetImplementation(fp.Domain)?.Type == "string")
-        {
-            return $@"""{fp.DefaultValue}""";
-        }
-
-        return fp.DefaultValue;
     }
 
     public string GetEndpointsFileName(ModelFile file, string tag)
@@ -121,7 +103,7 @@ public class JavascriptConfig : GeneratorConfigBase
         return endpoints.SelectMany(e => e.ClassDependencies)
             .Select(dep => (
                 Import: dep is { Source: IFieldProperty fp }
-                    ? this.GetPropertyTypeName(fp).Replace("[]", string.Empty)
+                    ? GetType(fp).Replace("[]", string.Empty)
                     : dep.Classe.NamePascal,
                 Path: GetImportPathForClass(dep, getClassTags(dep.Classe).Contains(tag) ? tag : getClassTags(dep.Classe).Intersect(Tags).FirstOrDefault() ?? tag, tag, availableClasses)!))
             .Concat(endpoints.SelectMany(d => d.DomainDependencies).SelectMany(dep => GetImplementation(dep.Domain)!.Imports.Select(import => (Import: GetImplementation(dep.Domain)!.Type.ParseTemplate(dep.Source).Replace("[]", string.Empty).Split("<").First(), Path: import.ParseTemplate(dep.Source)))))
@@ -132,9 +114,9 @@ public class JavascriptConfig : GeneratorConfigBase
     public string? GetImportPathForClass(ClassDependency dep, string targetTag, string sourceTag, IEnumerable<Class> availableClasses)
     {
         string target;
-        if (dep.Source is IFieldProperty fp)
+        if (dep.Source is IFieldProperty)
         {
-            if (this.GetPropertyTypeName(fp, availableClasses) != GetImplementation(fp.Domain)!.Type && dep.Classe.IsJSReference())
+            if (dep.Classe.EnumKey != null)
             {
                 target = GetReferencesFileName(dep.Classe.Namespace, targetTag);
             }
@@ -196,6 +178,21 @@ public class JavascriptConfig : GeneratorConfigBase
             lang,
             $"{ns.RootModule.ToKebabCase()}.comments{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}")
         .Replace("\\", "/");
+    }
+
+    public override string GetListType(string name, bool useIterable = true)
+    {
+        return $"{name}[]";
+    }
+
+    public override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
+    {
+        return $"{className.ToPascalCase()}{propName.ToPascalCase()}{(asList ? "[]" : string.Empty)}";
+    }
+
+    protected override bool IsEnumNameValid(string name)
+    {
+        return true;
     }
 
     protected override string ResolveTagVariables(string value, string tag)
