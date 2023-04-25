@@ -116,7 +116,7 @@ public class JavascriptConfig : GeneratorConfigBase
         string target;
         if (dep.Source is IFieldProperty)
         {
-            if (dep.Classe.EnumKey != null)
+            if (dep.Classe.EnumKey != null && availableClasses.Contains(dep.Classe))
             {
                 target = GetReferencesFileName(dep.Classe.Namespace, targetTag);
             }
