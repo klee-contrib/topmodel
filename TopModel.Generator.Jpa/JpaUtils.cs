@@ -2,6 +2,7 @@
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Utils;
+using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Jpa;
 
@@ -43,7 +44,7 @@ public static class JpaUtils
 
     public static string GetAssociationName(this AssociationProperty ap)
     {
-        if (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany)
+        if (ap.Type.IsToMany())
         {
             return $"{ap.NameCamel}";
         }
@@ -149,43 +150,6 @@ public static class JpaUtils
     public static bool IsEnum(this AssociationProperty apr)
     {
         return apr.Property != null && apr.Property.IsEnum();
-    }
-
-    public static List<AssociationProperty> GetReverseProperties(this Class classe, List<Class> availableClasses)
-    {
-        if (classe.Reference)
-        {
-            return new List<AssociationProperty>();
-        }
-
-        return availableClasses
-            .SelectMany(c => c.Properties)
-            .OfType<AssociationProperty>()
-            .Where(p => p is not JpaAssociationProperty)
-            .Where(p => p.Type != AssociationType.OneToOne)
-            .Where(p => p.Association == classe
-                && (p.Type == AssociationType.OneToMany || p.Class.Namespace.RootModule == classe.Namespace.RootModule))
-            .ToList();
-    }
-
-    public static IList<IProperty> GetProperties(this Class classe, JpaConfig config, List<Class> availableClasses, string tag)
-    {
-        if (classe.Reference)
-        {
-            return classe.Properties;
-        }
-
-        return classe.Properties.Concat(classe.GetReverseProperties(availableClasses).Select(p => new JpaAssociationProperty()
-        {
-            Association = p.Class,
-            Type = p.Type == AssociationType.OneToMany ? AssociationType.ManyToOne
-                : p.Type == AssociationType.ManyToOne ? AssociationType.OneToMany
-                : AssociationType.ManyToMany,
-            Comment = $"Association réciproque de {{@link {config.GetPackageName(p.Class, tag)}.{p.Class}#{p.GetJavaName()} {p.Class.NamePascal}.{p.GetJavaName()}}}",
-            Class = classe,
-            ReverseProperty = p,
-            Role = p.Role
-        })).ToList();
     }
 
     public static string GetClassFileName(this JpaConfig config, Class classe, string tag)

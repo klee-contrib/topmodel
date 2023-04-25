@@ -1,8 +1,8 @@
-﻿using TopModel.Core;
+using TopModel.Core;
 
-namespace TopModel.Generator.Jpa;
+namespace TopModel.Generator;
 
-public class JpaAssociationProperty : AssociationProperty
+public class ReverseAssociationProperty : AssociationProperty
 {
 #nullable disable
     public bool IsReverse { get; set; } = true;

@@ -32,7 +32,7 @@ public class Secteur {
 	private Long id;
 
 	/**
-	 * Association réciproque de {@link topmodel.jpa.sample.demo.entities.securite.Profil#secteurs Profil.secteurs}.
+	 * Association réciproque de Profil.Secteurs.
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = Profil.class)
 	@JoinColumn(name = "PRO_ID", referencedColumnName = "PRO_ID")
@@ -60,7 +60,7 @@ public class Secteur {
 	/**
 	 * All arg constructor.
 	 * @param id Id technique
-	 * @param profil Association réciproque de {@link topmodel.jpa.sample.demo.entities.securite.Profil#secteurs Profil.secteurs}
+	 * @param profil Association réciproque de Profil.Secteurs
 	 */
 	public Secteur(Long id, Profil profil) {
 		this.id = id;

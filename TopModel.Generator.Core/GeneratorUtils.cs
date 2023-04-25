@@ -26,4 +26,47 @@ public static class GeneratorUtils
             return generator;
         });
     }
+
+    public static List<AssociationProperty> GetReverseProperties(this Class classe, IEnumerable<Class> availableClasses, bool reverseAll = false)
+    {
+        if (classe.Reference)
+        {
+            return new List<AssociationProperty>();
+        }
+
+        return availableClasses
+            .SelectMany(c => c.Properties)
+            .OfType<AssociationProperty>()
+            .Where(p => p is not ReverseAssociationProperty)
+            .Where(p => p.Type != AssociationType.OneToOne)
+            .Where(p => p.Association == classe
+                && (reverseAll || p.Type != AssociationType.OneToOne && p.Class.Namespace.RootModule == classe.Namespace.RootModule))
+            .ToList();
+    }
+
+    public static IList<IProperty> GetProperties(this Class classe, IEnumerable<Class> availableClasses, string tag, bool reverseAll = false)
+    {
+        if (classe.Reference)
+        {
+            return classe.Properties;
+        }
+
+        return classe.Properties.Concat(classe.GetReverseProperties(availableClasses, reverseAll).Select(p => new ReverseAssociationProperty()
+        {
+            Association = p.Class,
+            Type = p.Type == AssociationType.OneToMany ? AssociationType.ManyToOne
+                : p.Type == AssociationType.ManyToOne ? AssociationType.OneToMany
+                : p.Type == AssociationType.OneToOne ? AssociationType.OneToOne
+                : AssociationType.ManyToMany,
+            Comment = $"Association réciproque de {p.Class.NamePascal}.{p.Name}",
+            Class = classe,
+            ReverseProperty = p,
+            Role = p.Role
+        })).ToList();
+    }
+
+    public static bool IsToMany(this AssociationType associationType)
+    {
+        return associationType == AssociationType.ManyToMany || associationType == AssociationType.OneToMany;
+    }
 }

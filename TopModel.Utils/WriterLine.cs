@@ -1,6 +1,6 @@
-﻿namespace TopModel.Generator;
+namespace TopModel.Utils;
 
-public class JavaLine
+public class WriterLine
 {
 #nullable disable
     public string Line { get; set; }

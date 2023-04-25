@@ -128,9 +128,9 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
     private void WriteEnumShortcuts(JavaWriter fw, Class classe, string tag)
     {
-        foreach (var ap in classe.GetProperties(Config, AvailableClasses, tag).OfType<AssociationProperty>().Where(ap => ap.Association.IsStatic()))
+        foreach (var ap in classe.GetProperties(AvailableClasses, tag).OfType<AssociationProperty>().Where(ap => ap.Association.IsStatic()))
         {
-            var isMultiple = ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany;
+            var isMultiple = ap.Type.IsToMany();
             {
                 var propertyName = ap.NameCamel;
                 fw.WriteLine();
@@ -147,7 +147,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 else
                 {
                     var constructorArgs = "p";
-                    foreach (var p in ap.Association.GetProperties(Config, AvailableClasses, tag).Where(pr => !pr.PrimaryKey))
+                    foreach (var p in ap.Association.GetProperties(AvailableClasses, tag).Where(pr => !pr.PrimaryKey))
                     {
                         constructorArgs += $", p.get{((p is AssociationProperty asp && asp.IsEnum()) ? p.NameCamel : p.GetJavaName()).ToFirstUpper()}()";
                     }
@@ -175,6 +175,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{ap.GetJavaName()} {ap.GetJavaName()}}}");
                 fw.WriteDocEnd(1);
                 fw.WriteLine(1, "@Transient");
+                fw.AddImport(Config.PersistenceMode.ToString().ToLower() + ".persistence.Transient");
                 fw.WriteLine(1, @$"public {(isMultiple ? $"List<{Config.GetJavaType(ap.Property)}>" : Config.GetJavaType(ap.Property))} get{(isMultiple ? ap.NameCamel.ToFirstUpper() + ap.Property.NameCamel.ToFirstUpper() : ap.NameCamel.ToFirstUpper())}() {{");
                 if (!isMultiple)
                 {
@@ -206,10 +207,10 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 ++i;
                 var code = refValue.Value[codeProperty];
 
-                if (classe.GetProperties(Config, AvailableClasses, tag).Count > 1)
+                if (classe.GetProperties(AvailableClasses, tag).Count > 1)
                 {
                     var lineToWrite = @$"{code.ToUpper()}(";
-                    lineToWrite += string.Join(", ", classe.GetProperties(Config, AvailableClasses, tag)
+                    lineToWrite += string.Join(", ", classe.GetProperties(AvailableClasses, tag)
                         .Where(p => p != codeProperty)
                         .Select(prop =>
                         {
@@ -240,7 +241,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 }
             }
 
-            foreach (var prop in classe.GetProperties(Config, AvailableClasses, tag).Where(p => p != codeProperty))
+            foreach (var prop in classe.GetProperties(AvailableClasses, tag).Where(p => p != codeProperty))
             {
                 fw.WriteLine();
                 fw.WriteDocStart(2, ((IFieldProperty)prop).Comment);
@@ -256,12 +257,12 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteLine(2, $"private final {type} {name};");
             }
 
-            if (classe.GetProperties(Config, AvailableClasses, tag).Count > 1)
+            if (classe.GetProperties(AvailableClasses, tag).Count > 1)
             {
                 fw.WriteLine();
                 fw.WriteDocStart(2, "All arg constructor");
                 fw.WriteDocEnd(2);
-                var propertiesSignature = string.Join(", ", classe.GetProperties(Config, AvailableClasses, tag).Where(p => p != codeProperty).Select(prop =>
+                var propertiesSignature = string.Join(", ", classe.GetProperties(AvailableClasses, tag).Where(p => p != codeProperty).Select(prop =>
                 {
                     var type = Config.GetJavaType((IFieldProperty)prop);
                     var name = prop.GetJavaName();
@@ -275,7 +276,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 }));
 
                 fw.WriteLine(2, $"private Values({propertiesSignature}) {{");
-                foreach (var prop in classe.GetProperties(Config, AvailableClasses, tag).Where(p => p != codeProperty))
+                foreach (var prop in classe.GetProperties(AvailableClasses, tag).Where(p => p != codeProperty))
                 {
                     var type = Config.GetJavaType((IFieldProperty)prop);
                     var name = prop.GetJavaName();
@@ -296,7 +297,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             fw.WriteReturns(2, @$"instance de {{@link {classe.GetImport(Config, tag)}}} correspondant au code courant");
             fw.WriteDocEnd(2);
             fw.WriteLine(2, $"public {classe.NamePascal} getEntity() {{");
-            var properties = string.Join(", ", classe.GetProperties(Config, AvailableClasses, tag).Where(p => p != codeProperty).Select(prop =>
+            var properties = string.Join(", ", classe.GetProperties(AvailableClasses, tag).Where(p => p != codeProperty).Select(prop =>
             {
                 if (prop is AssociationProperty ap && ap.IsEnum())
                 {
@@ -308,9 +309,9 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 }
             }));
 
-            fw.WriteLine(3, $"return new {classe.NamePascal}(this{(classe.GetProperties(Config, AvailableClasses, tag).Count > 1 ? ", " + properties : string.Empty)});");
+            fw.WriteLine(3, $"return new {classe.NamePascal}(this{(classe.GetProperties(AvailableClasses, tag).Count > 1 ? ", " + properties : string.Empty)});");
             fw.WriteLine(2, $"}}");
-            foreach (var prop in classe.GetProperties(Config, AvailableClasses, tag).Where(p => p != codeProperty))
+            foreach (var prop in classe.GetProperties(AvailableClasses, tag).Where(p => p != codeProperty))
             {
                 fw.WriteLine();
                 fw.WriteDocStart(2, ((IFieldProperty)prop).Comment);
@@ -350,22 +351,17 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
     {
         var imports = classe.GetImports(Files.SelectMany(f => f.Value.Classes).ToList(), Config, tag);
         imports.AddRange(classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)!.Imports.Select(i => i.ParseTemplate(classe, d.Parameters))));
-        foreach (var property in classe.GetProperties(Config, AvailableClasses, tag))
+        foreach (var property in classe.GetProperties(AvailableClasses, tag))
         {
             imports.AddRange(property.GetTypeImports(Config, tag));
         }
 
         if (classe.Extends != null)
         {
-            foreach (var property in classe.Extends.GetProperties(Config, AvailableClasses, tag))
+            foreach (var property in classe.Extends.GetProperties(AvailableClasses, tag))
             {
                 imports.AddRange(property.GetTypeImports(Config, tag));
             }
-        }
-
-        if (Config.EnumShortcutMode && classe.GetProperties(Config, AvailableClasses, tag).Where(p => p is AssociationProperty apo && apo.IsEnum()).Any())
-        {
-            imports.Add(Config.PersistenceMode.ToString().ToLower() + ".persistence.Transient");
         }
 
         fw.AddImports(imports.Where(i => string.Join('.', i.Split('.').SkipLast(1).ToList()) != Config.GetPackageName(classe, tag)).Distinct().ToArray());
@@ -373,7 +369,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
     private void CheckClass(Class classe, string tag)
     {
-        foreach (var property in classe.GetProperties(Config, AvailableClasses, tag).OfType<CompositionProperty>())
+        foreach (var property in classe.GetProperties(AvailableClasses, tag).OfType<CompositionProperty>())
         {
             if (!classe.IsPersistent && property.Composition.IsPersistent)
             {
@@ -381,7 +377,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             }
         }
 
-        foreach (var property in classe.GetProperties(Config, AvailableClasses, tag).OfType<AssociationProperty>())
+        foreach (var property in classe.GetProperties(AvailableClasses, tag).OfType<AssociationProperty>())
         {
             if (!classe.IsPersistent)
             {
@@ -473,7 +469,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
     private void WriteGetters(JavaWriter fw, Class classe, string tag)
     {
-        foreach (var property in classe.GetProperties(Config, AvailableClasses, tag))
+        foreach (var property in classe.GetProperties(AvailableClasses, tag))
         {
             fw.WriteLine();
             fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
@@ -482,7 +478,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
             var getterPrefix = Config.GetJavaType(property) == "boolean" ? "is" : "get";
             fw.WriteLine(1, @$"public {Config.GetJavaType(property)} {getterPrefix}{property.GetJavaName(true)}() {{");
-            if (property is AssociationProperty ap && (ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany))
+            if (property is AssociationProperty ap && (ap.Type.IsToMany()))
             {
                 fw.WriteLine(2, $"if(this.{property.GetJavaName()} == null)");
                 fw.AddImport("java.util.ArrayList");
@@ -536,7 +532,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
     private void WriteSetters(JavaWriter fw, Class classe, string tag)
     {
-        foreach (var property in classe.GetProperties(Config, AvailableClasses, tag))
+        foreach (var property in classe.GetProperties(AvailableClasses, tag))
         {
             var propertyName = property.GetJavaName();
             fw.WriteLine();
@@ -563,7 +559,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         enumDeclaration += " {";
         fw.WriteLine(1, enumDeclaration);
 
-        var props = classe.GetProperties(Config, AvailableClasses, tag).Select(prop =>
+        var props = classe.GetProperties(AvailableClasses, tag).Select(prop =>
         {
             string name;
             if (prop is AssociationProperty ap)

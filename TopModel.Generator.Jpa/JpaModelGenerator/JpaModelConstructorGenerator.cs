@@ -1,5 +1,6 @@
 ﻿using TopModel.Core;
 using TopModel.Utils;
+using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Jpa;
 
@@ -59,7 +60,7 @@ public class JpaModelConstructorGenerator
             fw.WriteLine(2, $"super();");
         }
 
-        foreach (var property in classe.GetProperties(_config, availableClasses, tag))
+        foreach (var property in classe.GetProperties(availableClasses, tag))
         {
             fw.WriteLine(2, $"this.{property.GetJavaName()} = {property.GetJavaName()};");
         }
@@ -102,7 +103,7 @@ public class JpaModelConstructorGenerator
             fw.WriteLine(2, $"super();");
         }
 
-        foreach (var property in classe.GetProperties(_config, availableClasses, tag))
+        foreach (var property in classe.GetProperties(availableClasses, tag))
         {
             if (!(property is AssociationProperty aspr2 && aspr2.IsEnum() && aspr2.Association.IsStatic()))
             {
@@ -123,7 +124,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine();
         fw.WriteDocStart(1, "Copy constructor");
         fw.WriteLine(1, $" * @param {classe.NameCamel} to copy");
-        var properties = classe.GetProperties(_config, availableClasses, tag);
+        var properties = classe.GetProperties(availableClasses, tag);
         fw.WriteDocEnd(1);
         fw.WriteLine(1, $"public {classe.NamePascal}({classe.NamePascal} {classe.NameCamel}) {{");
         if (classe.Extends != null)
@@ -141,7 +142,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(2, "}");
         fw.WriteLine();
 
-        foreach (var property in classe.GetProperties(_config, availableClasses, tag).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.IsStatic())))
+        foreach (var property in classe.GetProperties(availableClasses, tag).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.IsStatic())))
         {
             if (!(property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list"))
             {
@@ -150,7 +151,7 @@ public class JpaModelConstructorGenerator
             }
         }
 
-        var propertyListToCopy = classe.GetProperties(_config, availableClasses, tag)
+        var propertyListToCopy = classe.GetProperties(availableClasses, tag)
         .Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.IsStatic()))
         .Where(property => property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list");
 
@@ -172,7 +173,7 @@ public class JpaModelConstructorGenerator
         if (_config.EnumShortcutMode)
         {
             fw.WriteLine();
-            foreach (var ap in classe.GetProperties(_config, availableClasses, tag).OfType<AssociationProperty>().Where(ap => ap.Association.IsStatic()))
+            foreach (var ap in classe.GetProperties(availableClasses, tag).OfType<AssociationProperty>().Where(ap => ap.Association.IsStatic()))
             {
                 var propertyName = ap.NameCamel;
                 var getterPrefix = ap.GetJavaType() == "boolean" ? "is" : "get";
@@ -228,11 +229,11 @@ public class JpaModelConstructorGenerator
     {
         if (classe.Extends is null)
         {
-            return classe.GetProperties(_config, availableClasses, tag);
+            return classe.GetProperties(availableClasses, tag);
         }
         else
         {
-            return GetAllArgsProperties(classe.Extends, availableClasses, tag).Concat(classe.GetProperties(_config, availableClasses, tag)).ToList();
+            return GetAllArgsProperties(classe.Extends, availableClasses, tag).Concat(classe.GetProperties(availableClasses, tag)).ToList();
         }
     }
 }

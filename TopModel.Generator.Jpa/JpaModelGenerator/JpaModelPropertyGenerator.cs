@@ -43,7 +43,7 @@ public class JpaModelPropertyGenerator
 
     public void WriteProperties(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
     {
-        foreach (var property in classe.GetProperties(_config, availableClasses, tag))
+        foreach (var property in classe.GetProperties(availableClasses, tag))
         {
             WriteProperty(fw, classe, property, tag);
         }
@@ -136,9 +136,9 @@ public class JpaModelPropertyGenerator
         }
 
         var cascade = property.Association.IsStatic() ? string.Empty : $", cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }}";
-        if (property is JpaAssociationProperty jap)
+        if (property is ReverseAssociationProperty rap)
         {
-            fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, mappedBy = ""{jap.ReverseProperty.GetJavaName()}""{cascade})");
+            fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, mappedBy = ""{rap.ReverseProperty.GetJavaName()}""{cascade})");
         }
         else
         {
@@ -154,9 +154,9 @@ public class JpaModelPropertyGenerator
         var pk = classe.PrimaryKey.Single().SqlName;
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
-        if (property is JpaAssociationProperty jap)
+        if (property is ReverseAssociationProperty rap)
         {
-            fw.WriteLine(1, @$"@{property.Type}(cascade = {{CascadeType.PERSIST, CascadeType.MERGE}}, fetch = FetchType.LAZY, mappedBy = ""{jap.ReverseProperty.GetJavaName()}"")");
+            fw.WriteLine(1, @$"@{property.Type}(cascade = {{CascadeType.PERSIST, CascadeType.MERGE}}, fetch = FetchType.LAZY, mappedBy = ""{rap.ReverseProperty.GetJavaName()}"")");
         }
         else
         {

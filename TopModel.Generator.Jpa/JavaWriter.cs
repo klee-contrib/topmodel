@@ -19,7 +19,7 @@ public class JavaWriter : IDisposable
 
     private string _packageName;
 
-    private List<JavaLine> _toWrite;
+    private List<WriterLine> _toWrite;
 
     public JavaWriter(string name, ILogger logger, string packageName, int? codePage = 1252)
     {
@@ -28,7 +28,7 @@ public class JavaWriter : IDisposable
         _name = name;
         _imports = new List<string>();
         _packageName = packageName;
-        _toWrite = new List<JavaLine>();
+        _toWrite = new List<WriterLine>();
     }
 
     /// <inheritdoc cref="IDisposable.Dispose" />
@@ -118,7 +118,7 @@ public class JavaWriter : IDisposable
     /// <param name="value">Valeur à écrire dans le flux.</param>
     public void WriteLine(int indentationLevel, string value)
     {
-        _toWrite.Add(new JavaLine() { Line = value, Indent = indentationLevel });
+        _toWrite.Add(new WriterLine() { Line = value, Indent = indentationLevel });
     }
 
     public void AddImport(string value)
