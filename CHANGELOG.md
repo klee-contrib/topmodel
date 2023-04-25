@@ -1,15 +1,28 @@
 # TopModel.Generator (`modgen`)
 
+## 1.29.1
+
+- [`0b7dde5d`](https://github.com/klee-contrib/topmodel/commit/0b7dde5d2f069913129388f8d6a05fcc31fc2ec8) - Ajout templating sqlName dans les domaines et décorateurs (classes et propriétés)
+- [`9229cb47`](https://github.com/klee-contrib/topmodel/commit/9229cb47db7544045066ab07bc424b3f65b61605) - Fix résolution de template pour ne résoudre qu'une seule variable à la fois
+- [`9e42cbfd`](https://github.com/klee-contrib/topmodel/commit/9e42cbfd10a5e3bfbbc20fe546d871c04fe053a5) - [C#] Fix annotations persisted à ne pas générer si noPersistence = true
+- [`8650ae48`](https://github.com/klee-contrib/topmodel/commit/8650ae489b912f9e51d956dbdb7a8be7d58d5296) - [JPA] Fix génération defaultValue si association ou pas d'enum
+- [`a9c2d4bb`](https://github.com/klee-contrib/topmodel/commit/a9c2d4bb337638734f4d16d715b3731ecb104e31) - Refacto writers & associations réciproques
+
+  **impacts génération (JPA)**: Les commentaires sur les associations réciproques n'ont plus de lien de documentation vers la classe cible.
+
+Cette release contient également du refactoring interne ([`d44a8f69`](https://github.com/klee-contrib/topmodel/commit/d44a8f69f79193cdb7a928ae722ff5680fafa2cf), [`5862cd86`](https://github.com/klee-contrib/topmodel/commit/5862cd86c4e200fdb17c7a641a3edf4b6bf65174), [`15ffd8ba`](https://github.com/klee-contrib/topmodel/commit/15ffd8ba929c932d22b71297f29de85bea86cd36), [`06b1a121`](https://github.com/klee-contrib/topmodel/commit/06b1a121d3295db8c7921fa1761538c2fe69ef8a) et [`7428398d`](https://github.com/klee-contrib/topmodel/commit/7428398d6070f1828b69fa427edd4da1eaa4ed87)) qui ne devrait avoir aucun impact dans le code généré hormis le point noté ci-dessus pour le générateur JPA.
+
 ## 1.29.0
 
 - [#243](https://github.com/klee-contrib/topmodel/pull/243) - Déspécialisation des domaines/décorateurs/convertisseurs
 
   **breaking changes**: les implémentations de domaines (et décorateurs/convertisseurs) sont désormais toutes définies selon le même schéma, au lieu d'avoir un schéma spécifique par langage (`csharp`, `java`, `ts` et `sql`). Concrètement :
+
   - `java` : aucun changement
   - `csharp` : remplacer `usings` par `imports`.
   - `ts` : remplacer `import` par `imports`, qui est une liste (ce n'est pas vraiment possible d'avoir plusieurs imports en JS tout de même)
   - `sql` : remplacer `sqlType` par un objet `sql` avec `type` dedans.
- 
+
 ## 1.28.7
 
 - [`96112115`](https://github.com/klee-contrib/topmodel/commit/96112115c4486c91c8deda3c73f6213283a4bf96) - [C#ClassGen] Fix using en trop pour un StringLength si la propriété est une enum C#
