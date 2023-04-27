@@ -35,7 +35,7 @@ public class PhpModelPropertyGenerator
 
     public void WriteProperty(PhpWriter fw, CompositionProperty property)
     {
-        fw.WriteLine(1, $"private {_config.GetPhpType(property)} ${property.NameCamel};");
+        fw.WriteLine(1, $"private {_config.GetType(property)} ${property.NameCamel};");
     }
 
     public void WriteProperties(PhpWriter fw, Class classe, IEnumerable<Class> availableClasses, string tag)
@@ -152,11 +152,17 @@ public class PhpModelPropertyGenerator
             }
 
             fw.AddImport(@$"Doctrine\ORM\Mapping\Column");
-            fw.WriteLine(1, $@"#[Doctrine\ORM\Mapping\Column(name: '{property.SqlName}')]");
+            var column = $@"name: '{property.SqlName}'";
+            if (property.Domain.Length != null)
+            {
+                column += $", length: {property.Domain.Length}]";
+            }
+
+            fw.WriteLine(1, $@"#[Doctrine\ORM\Mapping\Column({column})]");
         }
         else
         {
-            if (property.Required)
+            if (property.Required && !property.PrimaryKey)
             {
                 fw.WriteLine(1, $@"#[Symfony\Component\Validator\Constraints\NotNull]");
                 fw.AddImport(@$"Symfony\Component\Validator\Constraints\NotNull");
@@ -164,8 +170,8 @@ public class PhpModelPropertyGenerator
 
             if (property.Domain.Length != null)
             {
-                fw.WriteLine(1, $@"#[Symfony\Component\Validator\Constraints\Length]");
-                fw.AddImport(@$"Symfony\Component\Validator\Constraints\Length(max: {property.Domain.Length})]");
+                fw.WriteLine(1, $@"#[Symfony\Component\Validator\Constraints\Length(max: {property.Domain.Length})]");
+                fw.AddImport(@$"Symfony\Component\Validator\Constraints\Length]");
             }
         }
 
@@ -186,7 +192,7 @@ public class PhpModelPropertyGenerator
         {
             defaultValue += " = ";
             var quote = string.Empty;
-            if (_config.GetPhpType(property) == "String")
+            if (_config.GetType(property, useClassForAssociation: classe.IsPersistent) == "String")
             {
                 quote = @"""";
             }
@@ -194,6 +200,6 @@ public class PhpModelPropertyGenerator
             defaultValue += quote + property.DefaultValue + quote;
         }
 
-        fw.WriteLine(1, $"private {_config.GetPhpType(property)} ${property.GetPhpName()}{defaultValue};");
+        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} ${property.GetPhpName()}{defaultValue};");
     }
 }

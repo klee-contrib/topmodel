@@ -17,12 +17,11 @@ use Doctrine\ORM\Mapping\Table;
 class TypeProfil
 {
   #[Doctrine\ORM\Mapping\Id]
-  #[Doctrine\ORM\Mapping\Column(name: 'TPR_CODE')]
+  #[Doctrine\ORM\Mapping\Column(name: 'TPR_CODE', length: 3])]
   private string $code;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'TPR_LIBELLE')]
+  #[Doctrine\ORM\Mapping\Column(name: 'TPR_LIBELLE', length: 3])]
   private string $libelle;
-
 
   public function getCode() : string
   {

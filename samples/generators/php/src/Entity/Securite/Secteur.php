@@ -28,7 +28,6 @@ class Secteur
   #[JoinColumn(name: 'PRO_ID', referencedColumnName: 'PRO_ID')]
   private Profil profil;
 
-
   public function getId() : int
   {
     return $this->id;

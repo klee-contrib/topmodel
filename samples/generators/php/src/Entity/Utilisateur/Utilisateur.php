@@ -28,17 +28,17 @@ class Utilisateur
   #[Doctrine\ORM\Mapping\Column(name: 'UTI_ID')]
   private int $id;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'UTI_AGE')]
+  #[Doctrine\ORM\Mapping\Column(name: 'UTI_AGE', length: 20])]
   private int $age = 6l;
 
   #[ManyToOne(targetEntity: Profil::class)]
   #[JoinColumn(name: 'PRO_ID', referencedColumnName: 'PRO_ID')]
   private Profil profil;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'UTI_EMAIL')]
+  #[Doctrine\ORM\Mapping\Column(name: 'UTI_EMAIL', length: 50])]
   private string $email;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'UTI_NOM')]
+  #[Doctrine\ORM\Mapping\Column(name: 'UTI_NOM', length: 3])]
   private string $nom = Jabx;
 
   #[Doctrine\ORM\Mapping\Column(name: 'UTI_ACTIF')]

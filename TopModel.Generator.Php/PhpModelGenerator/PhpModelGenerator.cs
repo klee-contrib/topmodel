@@ -2,6 +2,7 @@
 using TopModel.Core;
 using TopModel.Generator.Core;
 using TopModel.Utils;
+using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Php;
 
@@ -57,10 +58,8 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
 
         fw.WriteClassDeclaration(classe.NamePascal, null, extends, implements);
 
-
         PhpModelPropertyGenerator.WriteProperties(fw, classe, Classes, tag);
 
-        fw.WriteLine();
         WriteConstructor(fw, classe, Classes, tag);
         WriteGetters(fw, classe, tag);
         WriteSetters(fw, classe, tag);
@@ -70,9 +69,12 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
 
     private void WriteConstructor(PhpWriter fw, Class classe, IEnumerable<Class> classes, string tag)
     {
-        var collectionProperties = classe.GetProperties(Classes, tag).Where(p => p is IFieldProperty fp && Config.GetImplementation(fp.Domain)?.Type == "Collection" || p is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany));
+        var collectionProperties = classe.GetProperties(Classes, tag).Where(
+            p => p is IFieldProperty fp && Config.GetType(p, Classes, p.Class.IsPersistent) == "Collection"
+            || p is CompositionProperty cp && cp.Kind == "list");
         if (collectionProperties.Any())
         {
+            fw.WriteLine();
             fw.WriteLine(1, "public function __construct()");
             fw.WriteLine(1, "{");
             fw.AddImport(@"Doctrine\Common\Collections\ArrayCollection");
@@ -124,9 +126,9 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
                 fw.WriteDocEnd(1);
             }
 
-            var getterPrefix = Config.GetPhpType(property) == "boolean" ? "is" : "get";
+            var getterPrefix = Config.GetType(property, Classes, classe.IsPersistent) == "boolean" ? "is" : "get";
             var required = property is IFieldProperty rp && rp.Required || false;
-            fw.WriteLine(1, @$"public function {getterPrefix}{property.GetPhpName(true)}() : {Config.GetPhpType(property)}{(required ? string.Empty : "|null")}");
+            fw.WriteLine(1, @$"public function {getterPrefix}{property.GetPhpName(true)}() : {Config.GetType(property, Classes, classe.IsPersistent)}{(required ? string.Empty : "|null")}");
             fw.WriteLine(1, "{");
             fw.WriteLine(2, @$"return $this->{property.GetPhpName()};");
             fw.WriteLine(1, "}");
@@ -146,7 +148,7 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
                 fw.WriteDocEnd(1);
             }
 
-            fw.WriteLine(1, @$"public function set{propertyName.ToFirstUpper()}({Config.GetPhpType(property)}|null ${propertyName}) : self");
+            fw.WriteLine(1, @$"public function set{propertyName.ToFirstUpper()}({Config.GetType(property, Classes, classe.IsPersistent)}|null ${propertyName}) : self");
             fw.WriteLine(1, "{");
             fw.WriteLine(2, @$"$this->{propertyName} = ${propertyName};");
             fw.WriteLine();

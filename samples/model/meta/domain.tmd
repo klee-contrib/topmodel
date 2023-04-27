@@ -189,7 +189,5 @@ domain:
     type: Boolean
   sql:
     type: boolean
-  scale: 9
-  length: 20
   php:
     type: bool

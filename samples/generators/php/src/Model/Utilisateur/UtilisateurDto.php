@@ -6,21 +6,26 @@
 
 namespace App\Model\Utilisateur;
 
+use Symfony\Component\Validator\Constraints\Length];
 
 class UtilisateurDto
 {
   private int $id;
 
+  #[Symfony\Component\Validator\Constraints\Length(max: 20)]
   private int $age = 6l;
 
   private int $profilId;
 
+  #[Symfony\Component\Validator\Constraints\Length(max: 50)]
   private string $email;
 
+  #[Symfony\Component\Validator\Constraints\Length(max: 3)]
   private string $nom = Jabx;
 
   private bool $actif;
 
+  #[Symfony\Component\Validator\Constraints\Length(max: 3)]
   private string $typeUtilisateurCode = ADM;
 
   private int $utilisateursEnfant;
@@ -30,7 +35,6 @@ class UtilisateurDto
   private Date $dateModification;
 
   private UtilisateurDto $utilisateurParent;
-
 
   public function getId() : int
   {

@@ -1,4 +1,4 @@
-﻿using TopModel.Core.Model.Implementation;
+﻿using TopModel.Core;
 using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Php;
@@ -38,4 +38,19 @@ public class PhpConfig : GeneratorConfigBase
         nameof(RepositoriesPath),
         nameof(DtosPath),
     };
+
+    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IFieldProperty? prop = null)
+    {
+        return false;
+    }
+
+    public override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override string GetListType(string name, bool useIterable = true)
+    {
+        return "Collection";
+    }
 }
