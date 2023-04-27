@@ -5,7 +5,6 @@ namespace TopModel.Generator.Php;
 
 public static class ImportsPhpExtensions
 {
-
     public static List<string> GetTypeImports(this IFieldProperty rp, PhpConfig config, string tag)
     {
         var imports = new List<string>();

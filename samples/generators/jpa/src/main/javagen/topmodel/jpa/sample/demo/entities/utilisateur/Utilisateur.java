@@ -78,7 +78,7 @@ public class Utilisateur {
 	/**
 	 * Si l'utilisateur est actif.
 	 */
-	@Column(name = "UTI_ACTIF", nullable = true, precision = 20, scale = 9)
+	@Column(name = "UTI_ACTIF", nullable = true)
 	private Boolean actif;
 
 	/**

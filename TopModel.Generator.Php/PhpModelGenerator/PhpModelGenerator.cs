@@ -2,7 +2,6 @@
 using TopModel.Core;
 using TopModel.Generator.Core;
 using TopModel.Utils;
-using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Php;
 

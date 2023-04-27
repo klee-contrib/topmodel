@@ -1,12 +1,11 @@
 ﻿using TopModel.Core;
-using TopModel.Utils;
 using TopModel.Generator.Core;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Php;
 
 public static class PhpUtils
 {
-
     public static string GetPhpName(this IProperty prop, bool firstUpper = false)
     {
         string propertyName = prop.NameCamel;
@@ -74,7 +73,6 @@ public static class PhpUtils
     {
         return @"App\" + path.Split(':').Last().Replace('/', '\\').Replace('.', '\\');
     }
-
 
     public static string ToFilePath(this string path)
     {

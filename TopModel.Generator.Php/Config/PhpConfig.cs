@@ -44,12 +44,12 @@ public class PhpConfig : GeneratorConfigBase
         return false;
     }
 
-    public override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
+    protected override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
     {
         throw new NotImplementedException();
     }
 
-    public override string GetListType(string name, bool useIterable = true)
+    protected override string GetListType(string name, bool useIterable = true)
     {
         return "Collection";
     }
