@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\SequenceGenerator;
 use Doctrine\ORM\Mapping\Table;
 
 #[Doctrine\ORM\Mapping\Entity(repositoryClass: SecteurRepository::class)]
@@ -20,7 +21,8 @@ use Doctrine\ORM\Mapping\Table;
 class Secteur
 {
   #[Doctrine\ORM\Mapping\Id]
-  #[ORM\GeneratedValue]
+  #[Doctrine\ORM\Mapping\GeneratedValue(strategy: "SEQUENCE")]
+  #[Doctrine\ORM\Mapping\SequenceGenerator(sequenceName = "SEQ_SECTEUR")]
   #[Doctrine\ORM\Mapping\Column(name: 'SEC_ID')]
   private int $id;
 

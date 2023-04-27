@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\SequenceGenerator;
 use Doctrine\ORM\Mapping\Table;
 
 #[Doctrine\ORM\Mapping\Entity(repositoryClass: ProfilRepository::class)]
@@ -24,7 +25,8 @@ use Doctrine\ORM\Mapping\Table;
 class Profil
 {
   #[Doctrine\ORM\Mapping\Id]
-  #[ORM\GeneratedValue]
+  #[Doctrine\ORM\Mapping\GeneratedValue(strategy: "SEQUENCE")]
+  #[Doctrine\ORM\Mapping\SequenceGenerator(sequenceName = "SEQ_PROFIL")]
   #[Doctrine\ORM\Mapping\Column(name: 'PRO_ID')]
   private int $id;
 

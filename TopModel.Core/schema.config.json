@@ -7,6 +7,32 @@
   "required": [
     "app"
   ],
+  "definitions": {
+    "identity": {
+      "type": "object",
+      "description": "Options de génération de la séquence",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "description": "Mode de génération des séquences.",
+          "enum": [
+            "none",
+            "sequence",
+            "identity"
+          ],
+          "default": "identity"
+        },
+        "increment": {
+          "type": "number",
+          "description": "Incrément de la séquence générée."
+        },
+        "start": {
+          "type": "number",
+          "description": "Début de la séquence générée."
+        }
+      }
+    }
+  },
   "properties": {
     "app": {
       "type": "string",
@@ -105,7 +131,9 @@
             "description": "Désactive les générateurs demandés",
             "items": {
               "type": "string",
-              "enum": [ "JTranslationOutGen" ]
+              "enum": [
+                "JTranslationOutGen"
+              ]
             }
           },
           "outputDirectory": {
@@ -169,7 +197,10 @@
             "description": "Désactive les générateurs demandés",
             "items": {
               "type": "string",
-              "enum": [ "SsdtGen", "ProceduralSqlGen" ]
+              "enum": [
+                "SsdtGen",
+                "ProceduralSqlGen"
+              ]
             }
           },
           "outputDirectory": {
@@ -210,28 +241,7 @@
                 "description": "Emplacement du script d'insertion des données des listes de référence."
               },
               "identity": {
-                "type": "object",
-                "description": "Options de génération de la séquence",
-                "properties": {
-                  "mode": {
-                    "type": "string",
-                    "description": "Mode de génération des séquences.",
-                    "enum": [
-                      "none",
-                      "sequence",
-                      "identity"
-                    ],
-                    "default": "identity"
-                  },
-                  "increment": {
-                    "type": "number",
-                    "description": "Incrément de la séquence générée."
-                  },
-                  "start": {
-                    "type": "number",
-                    "description": "Début de la séquence générée."
-                  }
-                }
+                "$ref": "#/definitions/identity"
               }
             }
           },
@@ -295,8 +305,12 @@
             "patternProperties": {
               ".+": {
                 "oneOf": [
-                  { "type": "string" },
-                  { "type": "boolean" }
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "boolean"
+                  }
                 ]
               }
             }
@@ -310,8 +324,12 @@
                 "patternProperties": {
                   ".*": {
                     "oneOf": [
-                      { "type": "string" },
-                      { "type": "boolean" }
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "boolean"
+                      }
                     ]
                   }
                 }
@@ -323,7 +341,14 @@
             "description": "Désactive les générateurs demandés",
             "items": {
               "type": "string",
-              "enum": [ "CSharpClassGen", "CSharpMapperGen", "CSharpDbContextGen", "CSharpRefAccessGen", "CSharpApiServerGen", "CSharpApiClientGen" ]
+              "enum": [
+                "CSharpClassGen",
+                "CSharpMapperGen",
+                "CSharpDbContextGen",
+                "CSharpRefAccessGen",
+                "CSharpApiServerGen",
+                "CSharpApiClientGen"
+              ]
             }
           },
           "outputDirectory": {
@@ -502,7 +527,13 @@
             "description": "Désactive les générateurs demandés",
             "items": {
               "type": "string",
-              "enum": [ "JSDefinitionGen", "JSReferenceGen", "JSNGApiClientGen", "JSApiClientGen", "JSResourceGen" ]
+              "enum": [
+                "JSDefinitionGen",
+                "JSReferenceGen",
+                "JSNGApiClientGen",
+                "JSApiClientGen",
+                "JSResourceGen"
+              ]
             }
           },
           "outputDirectory": {
@@ -626,7 +657,15 @@
             "description": "Désactive les générateurs demandés",
             "items": {
               "type": "string",
-              "enum": [ "JpaModelGen", "JpaInterfaceGen", "JpaMapperGenerator", "JpaDaoGen", "JpaResourceGen", "SpringApiServerGen", "SpringApiClientGen" ]
+              "enum": [
+                "JpaModelGen",
+                "JpaInterfaceGen",
+                "JpaMapperGenerator",
+                "JpaDaoGen",
+                "JpaResourceGen",
+                "SpringApiServerGen",
+                "SpringApiClientGen"
+              ]
             }
           },
           "outputDirectory": {
@@ -699,28 +738,7 @@
             ]
           },
           "identity": {
-            "type": "object",
-            "description": "Options de génération de la séquence",
-            "properties": {
-              "mode": {
-                "type": "string",
-                "description": "Mode de génération des séquences.",
-                "enum": [
-                  "none",
-                  "sequence",
-                  "identity"
-                ],
-                "default": "identity"
-              },
-              "increment": {
-                "type": "number",
-                "description": "Incrément de la séquence générée."
-              },
-              "start": {
-                "type": "number",
-                "description": "Début de la séquence générée."
-              }
-            }
+            "$ref": "#/definitions/identity"
           }
         }
       }
@@ -777,7 +795,10 @@
             "description": "Désactive les générateurs demandés",
             "items": {
               "type": "string",
-              "enum": [ "JpaModelGen", "JpaInterfaceGen", "JpaMapperGenerator", "JpaDaoGen", "JpaResourceGen", "SpringApiServerGen", "SpringApiClientGen" ]
+              "enum": [
+                "PhpModelGen",
+                "PhpRepositoryGen"
+              ]
             }
           },
           "outputDirectory": {
@@ -795,6 +816,9 @@
           "dtosPath": {
             "type": "string",
             "description": "Localisation des classes non persistées du modèle, relative au répertoire de génération. Par défaut, 'phpgen:{app}/dtos/{module}'."
+          },
+          "identity": {
+            "$ref": "#/definitions/identity"
           }
         }
       }

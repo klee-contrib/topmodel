@@ -17,14 +17,18 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
+use Doctrine\ORM\Mapping\SequenceGenerator;
 use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 
 #[Doctrine\ORM\Mapping\Entity(repositoryClass: UtilisateurRepository::class)]
 #[Doctrine\ORM\Mapping\Table(name: 'UTILISATEUR')]
+#[UniqueConstraint(name: "UTI_EMAIL_UTI_ID_PARENT_UNIQ", columns: ["UTI_EMAIL, UTI_ID_PARENT"])]
 class Utilisateur
 {
   #[Doctrine\ORM\Mapping\Id]
-  #[ORM\GeneratedValue]
+  #[Doctrine\ORM\Mapping\GeneratedValue(strategy: "SEQUENCE")]
+  #[Doctrine\ORM\Mapping\SequenceGenerator(sequenceName = "SEQ_UTILISATEUR")]
   #[Doctrine\ORM\Mapping\Column(name: 'UTI_ID')]
   private int $id;
 

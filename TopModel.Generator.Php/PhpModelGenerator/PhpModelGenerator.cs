@@ -100,6 +100,17 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
             module: classe.Namespace.Module).ToPackageName();
             fw.AddImport(@$"{repositoryNamespace}\{classe.Name}Repository");
             fw.WriteLine(@$"#[Doctrine\ORM\Mapping\Table(name: '{classe.SqlName}')]");
+
+            if (classe.UniqueKeys.Any())
+            {
+                foreach (var uk in classe.UniqueKeys)
+                {
+                    var ukName = string.Join("_", uk.Select(u => u.SqlName)) + "_UNIQ";
+                    var fields = string.Join(", ", uk.Select(u => u.SqlName));
+                    fw.AddImport($@"Doctrine\ORM\Mapping\UniqueConstraint");
+                    fw.WriteLine(@$"#[UniqueConstraint(name: ""{ukName}"", columns: [""{fields}""])]");
+                }
+            }
         }
 
         foreach (var a in classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)?.Annotations.Select(a => a.ParseTemplate(classe, d.Parameters)) ?? Array.Empty<string>()).Distinct())
