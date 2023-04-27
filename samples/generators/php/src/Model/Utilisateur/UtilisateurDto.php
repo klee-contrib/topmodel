@@ -1,12 +1,11 @@
+<?php
 ////
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-<?php
-
 namespace App\Model\Utilisateur;
 
-use Symfony\Component\Validator\Constraints\Length];
+use Symfony\Component\Validator\Constraints\Length;
 
 class UtilisateurDto
 {

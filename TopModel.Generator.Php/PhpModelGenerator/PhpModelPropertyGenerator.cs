@@ -57,7 +57,7 @@ public class PhpModelPropertyGenerator
 
     private void WriteProperty(PhpWriter fw, Class classe, AssociationProperty property, string tag)
     {
-        if (property.Type == AssociationType.ManyToMany || property.Type == AssociationType.OneToMany)
+        if (property.Type.IsToMany())
         {
             fw.WriteDocStart(1, @$"@var Collection<{property.Association}>");
             fw.WriteDocEnd(1);
@@ -80,7 +80,7 @@ public class PhpModelPropertyGenerator
                 break;
         }
 
-        fw.WriteLine(1, $"private {_config.GetType(property, _classes, classe.IsPersistent)} {property.NameByClassCamel};");
+        fw.WriteLine(1, $"private {_config.GetType(property, _classes, classe.IsPersistent)} ${property.NameByClassCamel};");
     }
 
     private void WriteManyToOne(PhpWriter fw, Class classe, AssociationProperty property)
@@ -144,7 +144,7 @@ public class PhpModelPropertyGenerator
                         var initialValue = _config.Identity.Start != null ? $", initialValue: {_config.Identity.Start}" : string.Empty;
                         var increment = _config.Identity.Increment != null ? $", allocationSize: {_config.Identity.Increment}" : string.Empty;
                         fw.AddImport(@$"Doctrine\ORM\Mapping\SequenceGenerator");
-                        fw.WriteLine(1, @$"#[Doctrine\ORM\Mapping\SequenceGenerator(sequenceName = ""{seqName}""{initialValue}{increment})]");
+                        fw.WriteLine(1, @$"#[Doctrine\ORM\Mapping\SequenceGenerator(sequenceName: ""{seqName}""{initialValue}{increment})]");
                     }
                 }
             }
@@ -153,7 +153,7 @@ public class PhpModelPropertyGenerator
             var column = $@"name: '{property.SqlName}'";
             if (property.Domain.Length != null)
             {
-                column += $", length: {property.Domain.Length}]";
+                column += $", length: {property.Domain.Length}";
             }
 
             fw.WriteLine(1, $@"#[Doctrine\ORM\Mapping\Column({column})]");
@@ -169,7 +169,7 @@ public class PhpModelPropertyGenerator
             if (property.Domain.Length != null)
             {
                 fw.WriteLine(1, $@"#[Symfony\Component\Validator\Constraints\Length(max: {property.Domain.Length})]");
-                fw.AddImport(@$"Symfony\Component\Validator\Constraints\Length]");
+                fw.AddImport(@$"Symfony\Component\Validator\Constraints\Length");
             }
         }
 

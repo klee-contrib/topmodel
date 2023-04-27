@@ -1,8 +1,7 @@
+<?php
 ////
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
-
-<?php
 
 namespace App\Entity\Securite;
 
@@ -22,13 +21,13 @@ class Secteur
 {
   #[Doctrine\ORM\Mapping\Id]
   #[Doctrine\ORM\Mapping\GeneratedValue(strategy: "SEQUENCE")]
-  #[Doctrine\ORM\Mapping\SequenceGenerator(sequenceName = "SEQ_SECTEUR")]
+  #[Doctrine\ORM\Mapping\SequenceGenerator(sequenceName: "SEQ_SECTEUR")]
   #[Doctrine\ORM\Mapping\Column(name: 'SEC_ID')]
   private int $id;
 
   #[ManyToOne(targetEntity: Profil::class)]
   #[JoinColumn(name: 'PRO_ID', referencedColumnName: 'PRO_ID')]
-  private Profil profil;
+  private Profil $profil;
 
   public function getId() : int
   {

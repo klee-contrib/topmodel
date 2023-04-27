@@ -1,8 +1,7 @@
+<?php
 ////
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
-
-<?php
 
 namespace App\Entity\Utilisateur;
 
@@ -28,21 +27,21 @@ class Utilisateur
 {
   #[Doctrine\ORM\Mapping\Id]
   #[Doctrine\ORM\Mapping\GeneratedValue(strategy: "SEQUENCE")]
-  #[Doctrine\ORM\Mapping\SequenceGenerator(sequenceName = "SEQ_UTILISATEUR")]
+  #[Doctrine\ORM\Mapping\SequenceGenerator(sequenceName: "SEQ_UTILISATEUR")]
   #[Doctrine\ORM\Mapping\Column(name: 'UTI_ID')]
   private int $id;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'UTI_AGE', length: 20])]
+  #[Doctrine\ORM\Mapping\Column(name: 'UTI_AGE', length: 20)]
   private int $age = 6l;
 
   #[ManyToOne(targetEntity: Profil::class)]
   #[JoinColumn(name: 'PRO_ID', referencedColumnName: 'PRO_ID')]
-  private Profil profil;
+  private Profil $profil;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'UTI_EMAIL', length: 50])]
+  #[Doctrine\ORM\Mapping\Column(name: 'UTI_EMAIL', length: 50)]
   private string $email;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'UTI_NOM', length: 3])]
+  #[Doctrine\ORM\Mapping\Column(name: 'UTI_NOM', length: 3)]
   private string $nom = "Jabx";
 
   #[Doctrine\ORM\Mapping\Column(name: 'UTI_ACTIF')]
@@ -50,17 +49,17 @@ class Utilisateur
 
   #[ManyToOne(targetEntity: TypeUtilisateur::class)]
   #[JoinColumn(name: 'TUT_CODE', referencedColumnName: 'TUT_CODE')]
-  private TypeUtilisateur typeUtilisateur;
+  private TypeUtilisateur $typeUtilisateur;
 
   #[OneToOne(targetEntity: Utilisateur::class)]
   #[JoinColumn(name: 'UTI_ID_PARENT', referencedColumnName: 'UTI_ID')]
-  private Utilisateur utilisateurParent;
+  private Utilisateur $utilisateurParent;
 
   /**
    * @var Collection<Utilisateur>
    */
   #[Doctrine\ORM\Mapping\OneToMany(mappedBy: 'utilisateurEnfant', targetEntity: Utilisateur::class)]
-  private Collection utilisateursEnfant;
+  private Collection $utilisateursEnfant;
 
   #[Doctrine\ORM\Mapping\Column(name: 'UTI_DATE_CREATION')]
   private Date $dateCreation;
@@ -70,7 +69,7 @@ class Utilisateur
 
   #[ManyToOne(targetEntity: Utilisateur::class)]
   #[JoinColumn(name: 'UTI_ID_ENFANT', referencedColumnName: 'UTI_ID')]
-  private Utilisateur utilisateurEnfant;
+  private Utilisateur $utilisateurEnfant;
 
   public function __construct()
   {

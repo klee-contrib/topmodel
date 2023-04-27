@@ -1,8 +1,7 @@
+<?php
 ////
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
-
-<?php
 
 namespace App\Model\Securite;
 

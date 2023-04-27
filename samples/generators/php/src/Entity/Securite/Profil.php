@@ -1,8 +1,7 @@
+<?php
 ////
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
-
-<?php
 
 namespace App\Entity\Securite;
 
@@ -26,13 +25,13 @@ class Profil
 {
   #[Doctrine\ORM\Mapping\Id]
   #[Doctrine\ORM\Mapping\GeneratedValue(strategy: "SEQUENCE")]
-  #[Doctrine\ORM\Mapping\SequenceGenerator(sequenceName = "SEQ_PROFIL")]
+  #[Doctrine\ORM\Mapping\SequenceGenerator(sequenceName: "SEQ_PROFIL")]
   #[Doctrine\ORM\Mapping\Column(name: 'PRO_ID')]
   private int $id;
 
   #[ManyToOne(targetEntity: TypeProfil::class)]
   #[JoinColumn(name: 'TPR_CODE', referencedColumnName: 'TPR_CODE')]
-  private TypeProfil typeProfil;
+  private TypeProfil $typeProfil;
 
   /**
    * @var Collection<Droit>
@@ -40,13 +39,13 @@ class Profil
   #[JoinColumn(name: 'PRO_ID', referencedColumnName: 'PRO_ID')]
   #[InverseJoinColumn(name: 'DRO_CODE', referencedColumnName: 'DRO_CODE')]
   #[ManyToMany(targetEntity: Droit::class)]
-  private Collection droits;
+  private Collection $droits;
 
   /**
    * @var Collection<Secteur>
    */
   #[Doctrine\ORM\Mapping\OneToMany(mappedBy: 'profil', targetEntity: Secteur::class)]
-  private Collection secteurs;
+  private Collection $secteurs;
 
   public function __construct()
   {

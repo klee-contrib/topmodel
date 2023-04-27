@@ -36,9 +36,14 @@ public class PhpWriter : IDisposable
     {
         var writer = new FileWriter(_name, _logger, _encoding)
         {
-            IndentValue = "  "
+            IndentValue = "  ",
+            EnableHeader = false
         };
+
         writer.WriteLine($"<?php");
+        writer.WriteLine(writer.StartCommentToken);
+        writer.WriteLine($"{writer.StartCommentToken} {writer.HeaderMessage}");
+        writer.WriteLine(writer.StartCommentToken);
         writer.WriteLine();
         writer.WriteLine($"namespace {_packageName};");
         writer.WriteLine();

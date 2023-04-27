@@ -1,8 +1,7 @@
+<?php
 ////
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
-
-<?php
 
 namespace App\Entity\Utilisateur;
 
@@ -17,10 +16,10 @@ use Doctrine\ORM\Mapping\Table;
 class TypeUtilisateur
 {
   #[Doctrine\ORM\Mapping\Id]
-  #[Doctrine\ORM\Mapping\Column(name: 'TUT_CODE', length: 3])]
+  #[Doctrine\ORM\Mapping\Column(name: 'TUT_CODE', length: 3)]
   private string $code;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'TUT_LIBELLE', length: 3])]
+  #[Doctrine\ORM\Mapping\Column(name: 'TUT_LIBELLE', length: 3)]
   private string $libelle;
 
   public function getCode() : string

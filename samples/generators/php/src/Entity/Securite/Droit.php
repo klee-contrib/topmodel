@@ -1,8 +1,7 @@
+<?php
 ////
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
-
-<?php
 
 namespace App\Entity\Securite;
 
@@ -19,15 +18,15 @@ use Doctrine\ORM\Mapping\Table;
 class Droit
 {
   #[Doctrine\ORM\Mapping\Id]
-  #[Doctrine\ORM\Mapping\Column(name: 'DRO_CODE', length: 3])]
+  #[Doctrine\ORM\Mapping\Column(name: 'DRO_CODE', length: 3)]
   private string $code;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'DRO_LIBELLE', length: 3])]
+  #[Doctrine\ORM\Mapping\Column(name: 'DRO_LIBELLE', length: 3)]
   private string $libelle;
 
   #[ManyToOne(targetEntity: TypeProfil::class)]
   #[JoinColumn(name: 'TPR_CODE', referencedColumnName: 'TPR_CODE')]
-  private TypeProfil typeProfil;
+  private TypeProfil $typeProfil;
 
   public function getCode() : string
   {
