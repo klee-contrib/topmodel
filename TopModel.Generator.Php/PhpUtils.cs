@@ -6,29 +6,6 @@ namespace TopModel.Generator.Php;
 
 public static class PhpUtils
 {
-    public static string GetPhpName(this IProperty prop, bool firstUpper = false)
-    {
-        string propertyName = prop.NameCamel;
-        if (prop is AssociationProperty ap)
-        {
-            propertyName = ap.GetAssociationName();
-        }
-
-        return firstUpper ? propertyName.ToFirstUpper() : propertyName;
-    }
-
-    public static string GetAssociationName(this AssociationProperty ap)
-    {
-        if (ap.Type.IsToMany())
-        {
-            return $"{ap.NameCamel}";
-        }
-        else
-        {
-            return $"{ap.Association.NameCamel}{ap.Role?.ToPascalCase() ?? string.Empty}";
-        }
-    }
-
     public static string GetPackageName(this PhpConfig config, Class classe, string tag, bool? isPersistent = null)
     {
         return config.GetPackageName(

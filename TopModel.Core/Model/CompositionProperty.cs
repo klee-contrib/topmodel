@@ -14,6 +14,10 @@ public class CompositionProperty : IProperty
 
     public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase();
 
+    public string NameByClassPascal => NamePascal;
+
+    public string NameByClassCamel => NameCamel;
+
     public string Kind { get; set; }
 
 #nullable enable

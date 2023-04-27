@@ -8,6 +8,10 @@ public interface IProperty
 
     string NameCamel { get; }
 
+    string NameByClassPascal { get; }
+
+    string NameByClassCamel { get; }
+
     string? Label { get; }
 
     bool PrimaryKey { get; }

@@ -163,7 +163,7 @@ public class ModelStore
                 IList<ModelFile> sortedFiles = new List<ModelFile>(1);
                 try
                 {
-                    sortedFiles = SortUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name == d.Name)));
+                    sortedFiles = CoreUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name == d.Name)));
                 }
 
                 // Dépendance circulaire.

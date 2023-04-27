@@ -71,15 +71,15 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
         fw.WriteDocStart(1, $"hydrate values of instance");
         foreach (var property in properties)
         {
-            var propertyName = property.GetJavaName();
+            var propertyName = property.NameByClassCamel;
             fw.WriteLine(1, $" * @param {propertyName} value to set");
         }
 
         fw.WriteDocEnd(1);
         var signature = string.Join(", ", properties.Select(property =>
             {
-                var propertyName = property.GetJavaName();
-                return $@"{Config.GetType(property)} {property.GetJavaName()}";
+                var propertyName = property.NameByClassCamel;
+                return $@"{Config.GetType(property)} {property.NameByClassCamel}";
             }));
 
         fw.WriteLine(1, $"void hydrate({signature});");
@@ -91,10 +91,10 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
         {
             var getterPrefix = Config.GetType(property) == "boolean" ? "is" : "get";
             fw.WriteLine();
-            fw.WriteDocStart(1, $"Getter for {property.GetJavaName()}");
-            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{property.GetJavaName()} {property.GetJavaName()}}}");
+            fw.WriteDocStart(1, $"Getter for {property.NameByClassCamel}");
+            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{property.NameByClassCamel} {property.NameByClassCamel}}}");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, @$"{Config.GetType(property)} {getterPrefix}{property.GetJavaName(true)}();");
+            fw.WriteLine(1, @$"{Config.GetType(property)} {getterPrefix}{property.NameByClassPascal}();");
         }
     }
 

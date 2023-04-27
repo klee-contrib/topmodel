@@ -21,12 +21,12 @@ class UtilisateurDto
   private string $email;
 
   #[Symfony\Component\Validator\Constraints\Length(max: 3)]
-  private string $nom = Jabx;
+  private string $nom = "Jabx";
 
   private bool $actif;
 
   #[Symfony\Component\Validator\Constraints\Length(max: 3)]
-  private string $typeUtilisateurCode = ADM;
+  private string $typeUtilisateurCode = TypeUtilisateur.ADM;
 
   private int $utilisateursEnfant;
 

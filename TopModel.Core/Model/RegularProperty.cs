@@ -11,6 +11,11 @@ public class RegularProperty : IFieldProperty
     public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToPascalCase();
 
     public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : Name.ToCamelCase();
+
+    public string NameByClassPascal => NamePascal;
+
+    public string NameByClassCamel => NameCamel;
+
 #nullable enable
 
     public string? Label { get; set; }

@@ -11,10 +11,12 @@ namespace TopModel.Generator.Php;
 public class PhpModelPropertyGenerator
 {
     private readonly PhpConfig _config;
+    private readonly IEnumerable<Class> _classes;
 
-    public PhpModelPropertyGenerator(PhpConfig config)
+    public PhpModelPropertyGenerator(PhpConfig config, IEnumerable<Class> classes)
     {
         _config = config;
+        _classes = classes;
     }
 
     public void WriteProperty(PhpWriter fw, Class classe, IProperty property, string tag)
@@ -78,20 +80,7 @@ public class PhpModelPropertyGenerator
                 break;
         }
 
-        var defaultValue = string.Empty;
-        if (!(property.DefaultValue == null || property.DefaultValue == "null" || property.DefaultValue == "undefined"))
-        {
-            defaultValue += " = ";
-            var quote = string.Empty;
-            if (_config.GetType(property, useClassForAssociation: classe.IsPersistent) == "String")
-            {
-                quote = @"""";
-            }
-
-            defaultValue += quote + property.DefaultValue + quote;
-        }
-
-        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.GetAssociationName()}{defaultValue};");
+        fw.WriteLine(1, $"private {_config.GetType(property, _classes, classe.IsPersistent)} {property.NameByClassCamel};");
     }
 
     private void WriteManyToOne(PhpWriter fw, Class classe, AssociationProperty property)
@@ -132,7 +121,7 @@ public class PhpModelPropertyGenerator
     private void WriteOneToMany(PhpWriter fw, Class classe, AssociationProperty property)
     {
         fw.AddImport(@$"Doctrine\ORM\Mapping\OneToMany");
-        fw.WriteLine(1, @$"#[Doctrine\ORM\Mapping\OneToMany(mappedBy: '{(property is ReverseAssociationProperty rap ? rap.ReverseProperty.GetPhpName() : @$"{property.Class.NameCamel}{property.Role ?? string.Empty}")}', targetEntity: {property.Association.Name}::class)]");
+        fw.WriteLine(1, @$"#[Doctrine\ORM\Mapping\OneToMany(mappedBy: '{(property is ReverseAssociationProperty rap ? rap.ReverseProperty.NameByClassCamel : @$"{property.Class.NameCamel}{property.Role ?? string.Empty}")}', targetEntity: {property.Association.Name}::class)]");
     }
 
     private void WriteProperty(PhpWriter fw, Class classe, IFieldProperty property, string tag)
@@ -196,19 +185,8 @@ public class PhpModelPropertyGenerator
             }
         }
 
-        var defaultValue = string.Empty;
-        if (!(property.DefaultValue == null || property.DefaultValue == "null" || property.DefaultValue == "undefined"))
-        {
-            defaultValue += " = ";
-            var quote = string.Empty;
-            if (_config.GetType(property, useClassForAssociation: classe.IsPersistent) == "String")
-            {
-                quote = @"""";
-            }
-
-            defaultValue += quote + property.DefaultValue + quote;
-        }
-
-        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} ${property.GetPhpName()}{defaultValue};");
+        var defaultValue = _config.GetDefaultValue(property, _classes);
+        var suffix = defaultValue != "null" ? $" = {defaultValue}" : string.Empty;
+        fw.WriteLine(1, $"private {_config.GetType(property, _classes, classe.IsPersistent)} ${property.NameByClassCamel}{suffix};");
     }
 }

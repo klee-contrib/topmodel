@@ -28,7 +28,7 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
     {
         get
         {
-            _phpModelPropertyGenerator ??= new PhpModelPropertyGenerator(Config);
+            _phpModelPropertyGenerator ??= new PhpModelPropertyGenerator(Config, Classes);
             return _phpModelPropertyGenerator;
         }
     }
@@ -137,9 +137,9 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
 
             var getterPrefix = Config.GetType(property, Classes, classe.IsPersistent) == "boolean" ? "is" : "get";
             var required = property is IFieldProperty rp && rp.Required || false;
-            fw.WriteLine(1, @$"public function {getterPrefix}{property.GetPhpName(true)}() : {Config.GetType(property, Classes, classe.IsPersistent)}{(required ? string.Empty : "|null")}");
+            fw.WriteLine(1, @$"public function {getterPrefix}{property.NameByClassPascal}() : {Config.GetType(property, Classes, classe.IsPersistent)}{(required ? string.Empty : "|null")}");
             fw.WriteLine(1, "{");
-            fw.WriteLine(2, @$"return $this->{property.GetPhpName()};");
+            fw.WriteLine(2, @$"return $this->{property.NameByClassCamel};");
             fw.WriteLine(1, "}");
         }
     }
@@ -148,7 +148,7 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
     {
         foreach (var property in classe.GetProperties(Classes, tag))
         {
-            var propertyName = property.GetPhpName();
+            var propertyName = property.NameByClassCamel;
             fw.WriteLine();
             if (property is AssociationProperty ap && ap.Type.IsToMany())
             {

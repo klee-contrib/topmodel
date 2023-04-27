@@ -43,14 +43,14 @@ class Utilisateur
   private string $email;
 
   #[Doctrine\ORM\Mapping\Column(name: 'UTI_NOM', length: 3])]
-  private string $nom = Jabx;
+  private string $nom = "Jabx";
 
   #[Doctrine\ORM\Mapping\Column(name: 'UTI_ACTIF')]
   private bool $actif;
 
   #[ManyToOne(targetEntity: TypeUtilisateur::class)]
   #[JoinColumn(name: 'TUT_CODE', referencedColumnName: 'TUT_CODE')]
-  private TypeUtilisateur typeUtilisateur = ADM;
+  private TypeUtilisateur typeUtilisateur;
 
   #[OneToOne(targetEntity: Utilisateur::class)]
   #[JoinColumn(name: 'UTI_ID_PARENT', referencedColumnName: 'UTI_ID')]

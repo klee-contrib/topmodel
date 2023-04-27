@@ -77,7 +77,7 @@ public class JpaModelPropertyGenerator
         {
             if (property.Association.OrderProperty != null)
             {
-                fw.WriteLine(1, @$"@OrderBy(""{property.Association.OrderProperty.GetJavaName()} ASC"")");
+                fw.WriteLine(1, @$"@OrderBy(""{property.Association.OrderProperty.NameByClassCamel} ASC"")");
                 fw.AddImport($"{javaOrJakarta}.persistence.OrderBy");
             }
         }
@@ -93,7 +93,7 @@ public class JpaModelPropertyGenerator
             }
         }
 
-        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.GetAssociationName()}{suffix};");
+        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.NameByClassCamel}{suffix};");
     }
 
     private void WriteManyToOne(JavaWriter fw, Class classe, AssociationProperty property)
@@ -131,7 +131,7 @@ public class JpaModelPropertyGenerator
         var cascade = _config.CanClassUseEnums(property.Association) ? string.Empty : $", cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }}";
         if (property is ReverseAssociationProperty rap)
         {
-            fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, mappedBy = ""{rap.ReverseProperty.GetJavaName()}""{cascade})");
+            fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, mappedBy = ""{rap.ReverseProperty.NameByClassCamel}""{cascade})");
         }
         else
         {
@@ -149,7 +149,7 @@ public class JpaModelPropertyGenerator
         fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
         if (property is ReverseAssociationProperty rap)
         {
-            fw.WriteLine(1, @$"@{property.Type}(cascade = {{CascadeType.PERSIST, CascadeType.MERGE}}, fetch = FetchType.LAZY, mappedBy = ""{rap.ReverseProperty.GetJavaName()}"")");
+            fw.WriteLine(1, @$"@{property.Type}(cascade = {{CascadeType.PERSIST, CascadeType.MERGE}}, fetch = FetchType.LAZY, mappedBy = ""{rap.ReverseProperty.NameByClassCamel}"")");
         }
         else
         {
@@ -258,6 +258,6 @@ public class JpaModelPropertyGenerator
 
         var defaultValue = _config.GetDefaultValue(property, _classes);
         var suffix = defaultValue != "null" ? $" = {defaultValue}" : string.Empty;
-        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.GetJavaName()}{suffix};");
+        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.NameByClassCamel}{suffix};");
     }
 }
