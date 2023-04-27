@@ -92,13 +92,13 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
             fw.AddImport($@"Doctrine\ORM\Mapping\Entity");
             fw.AddImport($@"Doctrine\ORM\Mapping\Table");
 
-            fw.WriteLine(@$"#[Doctrine\ORM\Mapping\Entity(repositoryClass: {classe.Name}Repository::class)]");
+            fw.WriteLine(@$"#[Entity(repositoryClass: {classe.Name}Repository::class)]");
             var repositoryNamespace = Config.ResolveVariables(
             Config.RepositoriesPath,
             tag,
             module: classe.Namespace.Module).ToPackageName();
             fw.AddImport(@$"{repositoryNamespace}\{classe.Name}Repository");
-            fw.WriteLine(@$"#[Doctrine\ORM\Mapping\Table(name: '{classe.SqlName}')]");
+            fw.WriteLine(@$"#[Table(name: '{classe.SqlName}')]");
 
             if (classe.UniqueKeys.Any())
             {

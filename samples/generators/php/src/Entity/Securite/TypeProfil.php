@@ -11,15 +11,15 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-#[Doctrine\ORM\Mapping\Entity(repositoryClass: TypeProfilRepository::class)]
-#[Doctrine\ORM\Mapping\Table(name: 'TYPE_PROFIL')]
+#[Entity(repositoryClass: TypeProfilRepository::class)]
+#[Table(name: 'TYPE_PROFIL')]
 class TypeProfil
 {
-  #[Doctrine\ORM\Mapping\Id]
-  #[Doctrine\ORM\Mapping\Column(name: 'TPR_CODE', length: 3)]
+  #[Id]
+  #[Column(name: 'TPR_CODE', length: 3)]
   private string $code;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'TPR_LIBELLE', length: 3)]
+  #[Column(name: 'TPR_LIBELLE', length: 3)]
   private string $libelle;
 
   public function getCode() : string

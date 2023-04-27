@@ -19,14 +19,14 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\SequenceGenerator;
 use Doctrine\ORM\Mapping\Table;
 
-#[Doctrine\ORM\Mapping\Entity(repositoryClass: ProfilRepository::class)]
-#[Doctrine\ORM\Mapping\Table(name: 'PROFIL')]
+#[Entity(repositoryClass: ProfilRepository::class)]
+#[Table(name: 'PROFIL')]
 class Profil
 {
-  #[Doctrine\ORM\Mapping\Id]
-  #[Doctrine\ORM\Mapping\GeneratedValue(strategy: "SEQUENCE")]
-  #[Doctrine\ORM\Mapping\SequenceGenerator(sequenceName: "SEQ_PROFIL")]
-  #[Doctrine\ORM\Mapping\Column(name: 'PRO_ID')]
+  #[Id]
+  #[GeneratedValue(strategy: "SEQUENCE")]
+  #[SequenceGenerator(sequenceName: "SEQ_PROFIL")]
+  #[Column(name: 'PRO_ID')]
   private int $id;
 
   #[ManyToOne(targetEntity: TypeProfil::class)]
@@ -44,7 +44,7 @@ class Profil
   /**
    * @var Collection<Secteur>
    */
-  #[Doctrine\ORM\Mapping\OneToMany(mappedBy: 'profil', targetEntity: Secteur::class)]
+  #[OneToMany(mappedBy: 'profil', targetEntity: Secteur::class)]
   private Collection $secteurs;
 
   public function __construct()

@@ -15,14 +15,14 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\SequenceGenerator;
 use Doctrine\ORM\Mapping\Table;
 
-#[Doctrine\ORM\Mapping\Entity(repositoryClass: SecteurRepository::class)]
-#[Doctrine\ORM\Mapping\Table(name: 'SECTEUR')]
+#[Entity(repositoryClass: SecteurRepository::class)]
+#[Table(name: 'SECTEUR')]
 class Secteur
 {
-  #[Doctrine\ORM\Mapping\Id]
-  #[Doctrine\ORM\Mapping\GeneratedValue(strategy: "SEQUENCE")]
-  #[Doctrine\ORM\Mapping\SequenceGenerator(sequenceName: "SEQ_SECTEUR")]
-  #[Doctrine\ORM\Mapping\Column(name: 'SEC_ID')]
+  #[Id]
+  #[GeneratedValue(strategy: "SEQUENCE")]
+  #[SequenceGenerator(sequenceName: "SEQ_SECTEUR")]
+  #[Column(name: 'SEC_ID')]
   private int $id;
 
   #[ManyToOne(targetEntity: Profil::class)]

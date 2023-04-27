@@ -317,7 +317,7 @@ public class PhpWriter : IDisposable
     /// <param name="imports">Nom des classes à importer.</param>
     private void WriteImports(FileWriter fw)
     {
-        _imports = _imports.Distinct().Where(i => string.Join('\\', i.Split('\\').SkipLast(1).ToList()) != this._packageName).Distinct().ToArray().ToList();
+        _imports = _imports.Distinct().Where(i => string.Join('\\', i.Split('\\').SkipLast(1).ToList()) != this._packageName).ToList();
 
         foreach (var import in this._imports.OrderBy(x => x))
         {

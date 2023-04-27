@@ -12,10 +12,10 @@ class ProfilDto
 {
   private int $id;
 
-  #[Symfony\Component\Validator\Constraints\Length(max: 3)]
+  #[Length(max: 3)]
   private string $typeProfilCode;
 
-  #[Symfony\Component\Validator\Constraints\Length(max: 3)]
+  #[Length(max: 3)]
   private string $droits;
 
   private Collection $utilisateurs;

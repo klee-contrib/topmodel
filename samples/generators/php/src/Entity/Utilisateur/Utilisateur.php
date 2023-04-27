@@ -20,31 +20,31 @@ use Doctrine\ORM\Mapping\SequenceGenerator;
 use Doctrine\ORM\Mapping\Table;
 use Doctrine\ORM\Mapping\UniqueConstraint;
 
-#[Doctrine\ORM\Mapping\Entity(repositoryClass: UtilisateurRepository::class)]
-#[Doctrine\ORM\Mapping\Table(name: 'UTILISATEUR')]
+#[Entity(repositoryClass: UtilisateurRepository::class)]
+#[Table(name: 'UTILISATEUR')]
 #[UniqueConstraint(name: "UTI_EMAIL_UTI_ID_PARENT_UNIQ", columns: ["UTI_EMAIL, UTI_ID_PARENT"])]
 class Utilisateur
 {
-  #[Doctrine\ORM\Mapping\Id]
-  #[Doctrine\ORM\Mapping\GeneratedValue(strategy: "SEQUENCE")]
-  #[Doctrine\ORM\Mapping\SequenceGenerator(sequenceName: "SEQ_UTILISATEUR")]
-  #[Doctrine\ORM\Mapping\Column(name: 'UTI_ID')]
+  #[Id]
+  #[GeneratedValue(strategy: "SEQUENCE")]
+  #[SequenceGenerator(sequenceName: "SEQ_UTILISATEUR")]
+  #[Column(name: 'UTI_ID')]
   private int $id;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'UTI_AGE', length: 20)]
+  #[Column(name: 'UTI_AGE', length: 20)]
   private int $age = 6l;
 
   #[ManyToOne(targetEntity: Profil::class)]
   #[JoinColumn(name: 'PRO_ID', referencedColumnName: 'PRO_ID')]
   private Profil $profil;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'UTI_EMAIL', length: 50)]
+  #[Column(name: 'UTI_EMAIL', length: 50)]
   private string $email;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'UTI_NOM', length: 3)]
+  #[Column(name: 'UTI_NOM', length: 3)]
   private string $nom = "Jabx";
 
-  #[Doctrine\ORM\Mapping\Column(name: 'UTI_ACTIF')]
+  #[Column(name: 'UTI_ACTIF')]
   private bool $actif;
 
   #[ManyToOne(targetEntity: TypeUtilisateur::class)]
@@ -58,13 +58,13 @@ class Utilisateur
   /**
    * @var Collection<Utilisateur>
    */
-  #[Doctrine\ORM\Mapping\OneToMany(mappedBy: 'utilisateurEnfant', targetEntity: Utilisateur::class)]
+  #[OneToMany(mappedBy: 'utilisateurEnfant', targetEntity: Utilisateur::class)]
   private Collection $utilisateursEnfant;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'UTI_DATE_CREATION')]
+  #[Column(name: 'UTI_DATE_CREATION')]
   private Date $dateCreation;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'UTI_DATE_MODIFICATION')]
+  #[Column(name: 'UTI_DATE_MODIFICATION')]
   private Date $dateModification;
 
   #[ManyToOne(targetEntity: Utilisateur::class)]

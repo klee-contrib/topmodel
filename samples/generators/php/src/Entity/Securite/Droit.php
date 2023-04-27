@@ -13,15 +13,15 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
-#[Doctrine\ORM\Mapping\Entity(repositoryClass: DroitRepository::class)]
-#[Doctrine\ORM\Mapping\Table(name: 'DROIT')]
+#[Entity(repositoryClass: DroitRepository::class)]
+#[Table(name: 'DROIT')]
 class Droit
 {
-  #[Doctrine\ORM\Mapping\Id]
-  #[Doctrine\ORM\Mapping\Column(name: 'DRO_CODE', length: 3)]
+  #[Id]
+  #[Column(name: 'DRO_CODE', length: 3)]
   private string $code;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'DRO_LIBELLE', length: 3)]
+  #[Column(name: 'DRO_LIBELLE', length: 3)]
   private string $libelle;
 
   #[ManyToOne(targetEntity: TypeProfil::class)]

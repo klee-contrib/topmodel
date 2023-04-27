@@ -11,15 +11,15 @@ use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
-#[Doctrine\ORM\Mapping\Entity(repositoryClass: TypeUtilisateurRepository::class)]
-#[Doctrine\ORM\Mapping\Table(name: 'TYPE_UTILISATEUR')]
+#[Entity(repositoryClass: TypeUtilisateurRepository::class)]
+#[Table(name: 'TYPE_UTILISATEUR')]
 class TypeUtilisateur
 {
-  #[Doctrine\ORM\Mapping\Id]
-  #[Doctrine\ORM\Mapping\Column(name: 'TUT_CODE', length: 3)]
+  #[Id]
+  #[Column(name: 'TUT_CODE', length: 3)]
   private string $code;
 
-  #[Doctrine\ORM\Mapping\Column(name: 'TUT_LIBELLE', length: 3)]
+  #[Column(name: 'TUT_LIBELLE', length: 3)]
   private string $libelle;
 
   public function getCode() : string
