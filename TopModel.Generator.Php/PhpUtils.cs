@@ -17,17 +17,6 @@ public static class PhpUtils
         return firstUpper ? propertyName.ToFirstUpper() : propertyName;
     }
 
-    public static string GetPhpType(this AssociationProperty ap)
-    {
-        var isList = ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany;
-        if (isList)
-        {
-            return $"Collection";
-        }
-
-        return ap.Association.NamePascal;
-    }
-
     public static string GetAssociationName(this AssociationProperty ap)
     {
         if (ap.Type.IsToMany())
@@ -51,22 +40,6 @@ public static class PhpUtils
     public static string GetPackageName(this PhpConfig config, Namespace ns, string modelPath, string tag)
     {
         return config.ResolveVariables(modelPath, tag, module: ns.Module).ToPackageName();
-    }
-
-    public static (Namespace Namespace, string ModelPath) GetMapperLocation(this PhpConfig config, (Class Classe, FromMapper Mapper) mapper)
-    {
-        if (mapper.Classe.IsPersistent)
-        {
-            return (mapper.Classe.Namespace, config.EntitiesPath);
-        }
-
-        var persistentParam = mapper.Mapper.Params.FirstOrDefault(p => p.Class.IsPersistent);
-        if (persistentParam != null)
-        {
-            return (persistentParam.Class.Namespace, config.EntitiesPath);
-        }
-
-        return (mapper.Classe.Namespace, config.DtosPath);
     }
 
     public static string ToPackageName(this string path)

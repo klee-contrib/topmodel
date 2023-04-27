@@ -69,8 +69,7 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
     private void WriteConstructor(PhpWriter fw, Class classe, IEnumerable<Class> classes, string tag)
     {
         var collectionProperties = classe.GetProperties(Classes, tag).Where(
-            p => p is IFieldProperty fp && Config.GetType(p, Classes, p.Class.IsPersistent) == "Collection"
-            || p is CompositionProperty cp && cp.Kind == "list");
+            p => Config.GetType(p, Classes, p.Class.IsPersistent) == "Collection");
         if (collectionProperties.Any())
         {
             fw.WriteLine();
@@ -129,7 +128,7 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
         foreach (var property in classe.GetProperties(Classes, tag))
         {
             fw.WriteLine();
-            if (property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany))
+            if (property is AssociationProperty ap && ap.Type.IsToMany())
             {
                 fw.WriteDocStart(1);
                 fw.WriteReturns(1, $"Collection<{ap.Association}>{(ap.Required ? string.Empty : "|null")}");
@@ -151,7 +150,7 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
         {
             var propertyName = property.GetPhpName();
             fw.WriteLine();
-            if (property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany))
+            if (property is AssociationProperty ap && ap.Type.IsToMany())
             {
                 fw.WriteDocStart(1);
                 fw.WriteLine(1, $" * @param Collection<{ap.Association}>{(ap.Required ? string.Empty : "|null")} ${propertyName}");

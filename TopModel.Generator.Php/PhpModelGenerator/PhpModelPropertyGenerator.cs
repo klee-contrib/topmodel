@@ -83,7 +83,7 @@ public class PhpModelPropertyGenerator
         {
             defaultValue += " = ";
             var quote = string.Empty;
-            if (property.GetPhpType() == "String")
+            if (_config.GetType(property, useClassForAssociation: classe.IsPersistent) == "String")
             {
                 quote = @"""";
             }
@@ -91,7 +91,7 @@ public class PhpModelPropertyGenerator
             defaultValue += quote + property.DefaultValue + quote;
         }
 
-        fw.WriteLine(1, $"private {property.GetPhpType()} {property.GetAssociationName()}{defaultValue};");
+        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.GetAssociationName()}{defaultValue};");
     }
 
     private void WriteManyToOne(PhpWriter fw, Class classe, AssociationProperty property)

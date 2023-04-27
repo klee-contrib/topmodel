@@ -144,7 +144,7 @@ public class JpaModelConstructorGenerator
 
         foreach (var property in classe.GetProperties(availableClasses, tag).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && _config.CanClassUseEnums(apo.Association))))
         {
-            if (!(property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list"))
+            if (!(property is AssociationProperty ap && ap.Type.IsToMany() || property is CompositionProperty cp && cp.Kind == "list"))
             {
                 var getterPrefix = _config.GetType(property) == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"this.{property.GetJavaName()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName(true)}();");
@@ -153,7 +153,7 @@ public class JpaModelConstructorGenerator
 
         var propertyListToCopy = classe.GetProperties(availableClasses, tag)
             .Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && _config.CanClassUseEnums(apo.Association)))
-            .Where(property => property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list");
+            .Where(property => property is AssociationProperty ap && ap.Type.IsToMany() || property is CompositionProperty cp && cp.Kind == "list");
 
         if (propertyListToCopy.Any())
         {
