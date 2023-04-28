@@ -156,6 +156,16 @@ public class PhpModelPropertyGenerator
                 column += $", length: {property.Domain.Length}";
             }
 
+            if (property.Domain.Scale != null)
+            {
+                column += $", scale: {property.Domain.Scale}";
+            }
+
+            if (!property.Required)
+            {
+                column += $", nullable: true";
+            }
+
             fw.WriteLine(1, $@"#[Column({column})]");
         }
         else
@@ -187,6 +197,6 @@ public class PhpModelPropertyGenerator
 
         var defaultValue = _config.GetDefaultValue(property, _classes);
         var suffix = defaultValue != "null" ? $" = {defaultValue}" : string.Empty;
-        fw.WriteLine(1, $"private {_config.GetType(property, _classes, classe.IsPersistent)} ${property.NameByClassCamel}{suffix};");
+        fw.WriteLine(1, $"private {_config.GetType(property, _classes, classe.IsPersistent)}{(property.Required ? string.Empty : "|null")} ${property.NameByClassCamel}{suffix};");
     }
 }

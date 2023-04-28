@@ -18,6 +18,11 @@ public static class CoreUtils
         return sorted;
     }
 
+    public static bool IsToMany(this AssociationType associationType)
+    {
+        return associationType == AssociationType.ManyToMany || associationType == AssociationType.OneToMany;
+    }
+
     private static void Visit<T>(T item, Func<T, IEnumerable<T>> getDependencies, List<T> sorted, Dictionary<T, bool> visited)
         where T : notnull
     {
@@ -45,10 +50,5 @@ public static class CoreUtils
             visited[item] = false;
             sorted.Add(item);
         }
-    }
-
-    public static bool IsToMany(this AssociationType associationType)
-    {
-        return associationType == AssociationType.ManyToMany || associationType == AssociationType.OneToMany;
     }
 }

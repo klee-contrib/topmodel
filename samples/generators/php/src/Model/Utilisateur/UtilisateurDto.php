@@ -12,26 +12,26 @@ class UtilisateurDto
   private int $id;
 
   #[Length(max: 20)]
-  private int $age = 6l;
+  private int|null $age = 6l;
 
-  private int $profilId;
+  private int|null $profilId;
 
   #[Length(max: 50)]
-  private string $email;
+  private string|null $email;
 
   #[Length(max: 3)]
-  private string $nom = "Jabx";
+  private string|null $nom = "Jabx";
 
-  private bool $actif;
+  private bool|null $actif;
 
   #[Length(max: 3)]
-  private string $typeUtilisateurCode = TypeUtilisateur.ADM;
+  private string|null $typeUtilisateurCode = TypeUtilisateur.ADM;
 
-  private int $utilisateursEnfant;
+  private int|null $utilisateursEnfant;
 
-  private Date $dateCreation;
+  private Date|null $dateCreation;
 
-  private Date $dateModification;
+  private Date|null $dateModification;
 
   private UtilisateurDto $utilisateurParent;
 

@@ -13,10 +13,10 @@ class ProfilDto
   private int $id;
 
   #[Length(max: 3)]
-  private string $typeProfilCode;
+  private string|null $typeProfilCode;
 
   #[Length(max: 3)]
-  private string $droits;
+  private string|null $droits;
 
   private Collection $utilisateurs;
 

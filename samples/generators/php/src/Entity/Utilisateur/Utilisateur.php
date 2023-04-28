@@ -31,21 +31,21 @@ class Utilisateur
   #[Column(name: 'UTI_ID')]
   private int $id;
 
-  #[Column(name: 'UTI_AGE', length: 20)]
-  private int $age = 6l;
+  #[Column(name: 'UTI_AGE', length: 20, scale: 9, nullable: true)]
+  private int|null $age = 6l;
 
   #[ManyToOne(targetEntity: Profil::class)]
   #[JoinColumn(name: 'PRO_ID', referencedColumnName: 'PRO_ID')]
   private Profil $profil;
 
-  #[Column(name: 'UTI_EMAIL', length: 50)]
-  private string $email;
+  #[Column(name: 'UTI_EMAIL', length: 50, nullable: true)]
+  private string|null $email;
 
-  #[Column(name: 'UTI_NOM', length: 3)]
-  private string $nom = "Jabx";
+  #[Column(name: 'UTI_NOM', length: 3, nullable: true)]
+  private string|null $nom = "Jabx";
 
-  #[Column(name: 'UTI_ACTIF')]
-  private bool $actif;
+  #[Column(name: 'UTI_ACTIF', nullable: true)]
+  private bool|null $actif;
 
   #[ManyToOne(targetEntity: TypeUtilisateur::class)]
   #[JoinColumn(name: 'TUT_CODE', referencedColumnName: 'TUT_CODE')]
@@ -61,11 +61,11 @@ class Utilisateur
   #[OneToMany(mappedBy: 'utilisateurEnfant', targetEntity: Utilisateur::class)]
   private Collection $utilisateursEnfant;
 
-  #[Column(name: 'UTI_DATE_CREATION')]
-  private Date $dateCreation;
+  #[Column(name: 'UTI_DATE_CREATION', nullable: true)]
+  private Date|null $dateCreation;
 
-  #[Column(name: 'UTI_DATE_MODIFICATION')]
-  private Date $dateModification;
+  #[Column(name: 'UTI_DATE_MODIFICATION', nullable: true)]
+  private Date|null $dateModification;
 
   #[ManyToOne(targetEntity: Utilisateur::class)]
   #[JoinColumn(name: 'UTI_ID_ENFANT', referencedColumnName: 'UTI_ID')]
