@@ -129,7 +129,7 @@ public class AssociationProperty : IFieldProperty
 
     public string NameByClassCamel => Type.IsToMany() ? $"{NameCamel}" : $"{Association.NameCamel}{Role?.ToPascalCase() ?? string.Empty}";
 
-    public Domain Domain => Type == AssociationType.ManyToMany || Type == AssociationType.OneToMany ? Property?.Domain.ListDomain! : Property?.Domain!;
+    public Domain Domain => Type.IsToMany() ? Property?.Domain.ListDomain! : Property?.Domain!;
 
     public bool PrimaryKey { get; set; }
 

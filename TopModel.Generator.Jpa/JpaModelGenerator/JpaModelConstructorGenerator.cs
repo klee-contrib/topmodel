@@ -164,7 +164,7 @@ public class JpaModelConstructorGenerator
         {
             if (property is AssociationProperty ap || property is CompositionProperty cp && cp.Kind == "list")
             {
-                var getterPrefix = _config.GetType(property) == "boolean" ? "is" : "get";
+                var getterPrefix = _config.GetType(property, useClassForAssociation: true) == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"this.{property.NameByClassCamel} = {classe.NameCamel}.{getterPrefix}{property.NameByClassPascal}().stream().collect(Collectors.toList());");
                 fw.AddImport("java.util.stream.Collectors");
             }

@@ -86,8 +86,8 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             fw.WriteLine(1, "private static final long serialVersionUID = 1L;");
         }
 
-        JpaModelPropertyGenerator.WriteProperties(fw, classe, AvailableClasses, tag);
-
+        JpaModelPropertyGenerator.WriteProperties(fw, classe, tag);
+        JpaModelPropertyGenerator.WriteCompositePrimaryKeyClass(fw, classe, tag);
         JpaModelConstructorGenerator.WriteNoArgConstructor(fw, classe);
         JpaModelConstructorGenerator.WriteCopyConstructor(fw, classe, AvailableClasses, tag);
         JpaModelConstructorGenerator.WriteAllArgConstructor(fw, classe, AvailableClasses, tag);
@@ -440,6 +440,11 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             fw.AddImport($"{javaOrJakarta}.persistence.Entity");
             fw.WriteLine("@Entity");
             fw.WriteLine(table);
+            if (classe.PrimaryKey.Count() > 1)
+            {
+                fw.WriteLine($"@IdClass({classe.NamePascal}.{classe.NamePascal}Id.class)");
+                fw.AddImport($"{javaOrJakarta}.persistence.IdClass");
+            }
         }
 
         if (classe.Reference)
@@ -476,7 +481,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{property.NameByClassCamel} {property.NameByClassCamel}}}");
             fw.WriteDocEnd(1);
 
-            var getterPrefix = Config.GetType(property) == "boolean" ? "is" : "get";
+            var getterPrefix = Config.GetType(property, Classes, true) == "boolean" ? "is" : "get";
             fw.WriteLine(1, @$"public {Config.GetType(property, useClassForAssociation: classe.IsPersistent)} {getterPrefix}{property.NameByClassPascal}() {{");
             if (property is AssociationProperty ap && ap.Type.IsToMany())
             {
