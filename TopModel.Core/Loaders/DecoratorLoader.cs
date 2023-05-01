@@ -15,6 +15,7 @@ public class DecoratorLoader : ILoader<Decorator>
         _propertyLoader = propertyLoader;
     }
 
+    /// <inheritdoc cref="ILoader{T}.Load" />
     public Decorator Load(Parser parser)
     {
         var decorator = new Decorator();

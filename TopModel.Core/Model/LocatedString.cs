@@ -5,6 +5,7 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core;
 
+#pragma warning disable KTA1200
 public class LocatedString : IComparable
 {
     public LocatedString(Scalar value)
@@ -32,6 +33,7 @@ public class LocatedString : IComparable
         return ls1?.Value != ls2?.Value;
     }
 
+    /// <inheritdoc cref="IComparable.CompareTo" />
     public int CompareTo(object obj)
     {
         if (obj is LocatedString ls)
@@ -52,9 +54,9 @@ public class LocatedString : IComparable
         return Value.EndsWith(s);
     }
 
-    public string Replace(string pattern, string replacement)
+    public bool EndsWith(string end, StringComparison c)
     {
-        return Value.Replace(pattern, replacement);
+        return Value.EndsWith(end, c);
     }
 
     public override bool Equals(object obj)
@@ -72,9 +74,9 @@ public class LocatedString : IComparable
         return base.GetHashCode();
     }
 
-    public string ToKebabCase()
+    public string Replace(string pattern, string replacement)
     {
-        return Value.ToKebabCase();
+        return Value.Replace(pattern, replacement);
     }
 
     public string ToCamelCase()
@@ -82,14 +84,14 @@ public class LocatedString : IComparable
         return Value.ToCamelCase();
     }
 
+    public string ToKebabCase()
+    {
+        return Value.ToKebabCase();
+    }
+
     public string ToLower()
     {
         return Value.ToLower();
-    }
-
-    public bool EndsWith(string end, StringComparison c)
-    {
-        return Value.EndsWith(end, c);
     }
 
     public override string ToString()

@@ -7,6 +7,7 @@ namespace TopModel.Generator.Php;
 
 public class GeneratorRegistration : IGeneratorRegistration<PhpConfig>
 {
+    /// <inheritdoc cref="IGeneratorRegistration{T}.Register" />
     public void Register(IServiceCollection services, PhpConfig config, int number)
     {
         TrimSlashes(config, c => c.EntitiesPath);

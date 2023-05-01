@@ -3,19 +3,20 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
-using TopModel.LanguageServer;
 
-class HoverHandler : HoverHandlerBase
+namespace TopModel.LanguageServer;
+
+public class HoverHandler : HoverHandlerBase
 {
-    private readonly ModelStore _modelStore;
-    private readonly ILanguageServerFacade _facade;
     private readonly ModelConfig _config;
+    private readonly ILanguageServerFacade _facade;
+    private readonly ModelStore _modelStore;
 
     public HoverHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
     {
-        _modelStore = modelStore;
-        _facade = facade;
         _config = config;
+        _facade = facade;
+        _modelStore = modelStore;
     }
 
     public override Task<Hover?> Handle(HoverParams request, CancellationToken cancellationToken)

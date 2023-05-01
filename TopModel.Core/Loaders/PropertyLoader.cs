@@ -13,6 +13,7 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
         _modelConfig = modelConfig;
     }
 
+    /// <inheritdoc cref="ILoader{T}.Load" />
     public IEnumerable<IProperty> Load(Parser parser)
     {
         parser.Consume<MappingStart>();

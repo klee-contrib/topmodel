@@ -1,4 +1,4 @@
-namespace TopModel.Utils;
+﻿namespace TopModel.Utils;
 
 public class WriterLine
 {

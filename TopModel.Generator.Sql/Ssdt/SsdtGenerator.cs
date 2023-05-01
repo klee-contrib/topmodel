@@ -11,10 +11,10 @@ public class SsdtGenerator : GeneratorBase<SqlConfig>
 {
     private readonly ILogger<SsdtGenerator> _logger;
 
+    private ISqlScripter<IEnumerable<Class>>? _initReferenceListMainScripter;
+    private ISqlScripter<Class>? _initReferenceListScript;
     private ISqlScripter<Class>? _tableScripter;
     private ISqlScripter<Class>? _tableTypeScripter;
-    private ISqlScripter<Class>? _initReferenceListScript;
-    private ISqlScripter<IEnumerable<Class>>? _initReferenceListMainScripter;
 
     public SsdtGenerator(ILogger<SsdtGenerator> logger)
         : base(logger)

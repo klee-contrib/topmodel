@@ -9,11 +9,11 @@ public class AliasProperty : IFieldProperty
     private string? _defaultValue;
     private Domain? _domain;
     private string? _label;
-    private bool? _readonly;
-    private bool? _required;
 
 #nullable disable
     private IFieldProperty _property;
+    private bool? _readonly;
+    private bool? _required;
 
     public IFieldProperty Property
     {

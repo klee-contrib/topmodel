@@ -68,108 +68,6 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         fw.WriteLine("}");
     }
 
-    private void WriteToMapper(Class classe, ClassMappings mapper, JavaWriter fw, string tag)
-    {
-        fw.WriteLine();
-        fw.WriteDocStart(1, $"Mappe '{classe}' vers '{mapper.Class.NamePascal}'");
-        if (mapper.Comment != null)
-        {
-            fw.WriteLine(1, $" * {mapper.Comment}");
-        }
-
-        fw.WriteParam("source", $"Instance de '{classe}'");
-        fw.WriteParam("target", $"Instance pré-existante de '{mapper.Class.NamePascal}'. Une nouvelle instance sera créée si non spécifié.");
-
-        fw.WriteReturns(1, $"Une nouvelle instance de '{mapper.Class.NamePascal}' ou bien l'instance passée en paramètre dont les champs ont été surchargés");
-        fw.WriteDocEnd(1);
-
-        fw.WriteLine(1, $"public static {mapper.Class.NamePascal} {mapper.Name.Value.ToCamelCase()}({classe} source, {mapper.Class.NamePascal} target) {{");
-        fw.WriteLine(2, "if (source == null) {");
-        fw.WriteLine(3, $"throw new IllegalArgumentException(\"source cannot be null\");");
-        fw.WriteLine(2, "}");
-        fw.WriteLine();
-        fw.WriteLine(2, "if (target == null) {");
-        if (mapper.Class.Abstract)
-        {
-            fw.WriteLine(3, $"throw new IllegalArgumentException(\"target cannot be null\");");
-        }
-        else
-        {
-            fw.WriteLine(3, $"target = new {mapper.Class.NamePascal}();");
-        }
-
-        fw.WriteLine(2, "}");
-        fw.WriteLine();
-        if (mapper.ParentMapper != null)
-        {
-            var (parentMapperNs, parentMapperModelPath) = Config.GetMapperLocation((classe.Extends!, mapper.ParentMapper));
-            fw.AddImport(Config.GetMapperImport(parentMapperNs, parentMapperModelPath, tag)!);
-            fw.WriteLine(2, $"{Config.GetMapperName(parentMapperNs, parentMapperModelPath)}.{mapper.ParentMapper.Name.Value.ToCamelCase()}(({classe.Extends!.NamePascal}) source, ({mapper.ParentMapper.Class.NamePascal}) target);");
-        }
-
-        var hydrate = string.Empty;
-        if (mapper.Class.Abstract)
-        {
-            hydrate = "target.hydrate(";
-        }
-
-        var isFirst = true;
-        foreach (var mapping in mapper.Mappings.OrderBy(m => m.Key.Class.Properties.IndexOf(m.Key)))
-        {
-            var propertyTarget = mapping.Value;
-            var propertySource = mapping.Key;
-            var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
-            var (getter, checkSourceNull) = GetSourceGetter(propertySource, propertyTarget!, classe, fw, "source", tag);
-            if (mapper.Class.Abstract)
-            {
-                if (!isFirst)
-                {
-                    hydrate += ", ";
-                }
-                else
-                {
-                    isFirst = false;
-                }
-
-                if (checkSourceNull)
-                {
-                    hydrate += $"source.{getterPrefix}{propertySource.NameByClassPascal}() != null ? {getter} : null";
-                }
-                else
-                {
-                    hydrate += getter;
-                }
-            }
-            else
-            {
-                if (getter != string.Empty)
-                {
-                    if (checkSourceNull)
-                    {
-                        fw.WriteLine(2, $"if (source.{getterPrefix}{propertySource.NameByClassPascal}() != null) {{");
-                    }
-
-                    fw.WriteLine(2 + (checkSourceNull ? 1 : 0), $"target.set{propertyTarget!.NameByClassPascal}({getter});");
-
-                    if (checkSourceNull)
-                    {
-                        fw.WriteLine(2, $"}}");
-                        fw.WriteLine();
-                    }
-                }
-            }
-        }
-
-        if (mapper.Class.Abstract)
-        {
-            hydrate += ");";
-            fw.WriteLine(2, hydrate);
-        }
-
-        fw.WriteLine(2, "return target;");
-        fw.WriteLine(1, "}");
-    }
-
     private (string Getter, bool CheckSourceNull) GetSourceGetter(IProperty propertySource, IProperty propertyTarget, Class classe, JavaWriter fw, string sourceName, string tag)
     {
         var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
@@ -403,6 +301,108 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         }
 
         if (classe.Abstract)
+        {
+            hydrate += ");";
+            fw.WriteLine(2, hydrate);
+        }
+
+        fw.WriteLine(2, "return target;");
+        fw.WriteLine(1, "}");
+    }
+
+    private void WriteToMapper(Class classe, ClassMappings mapper, JavaWriter fw, string tag)
+    {
+        fw.WriteLine();
+        fw.WriteDocStart(1, $"Mappe '{classe}' vers '{mapper.Class.NamePascal}'");
+        if (mapper.Comment != null)
+        {
+            fw.WriteLine(1, $" * {mapper.Comment}");
+        }
+
+        fw.WriteParam("source", $"Instance de '{classe}'");
+        fw.WriteParam("target", $"Instance pré-existante de '{mapper.Class.NamePascal}'. Une nouvelle instance sera créée si non spécifié.");
+
+        fw.WriteReturns(1, $"Une nouvelle instance de '{mapper.Class.NamePascal}' ou bien l'instance passée en paramètre dont les champs ont été surchargés");
+        fw.WriteDocEnd(1);
+
+        fw.WriteLine(1, $"public static {mapper.Class.NamePascal} {mapper.Name.Value.ToCamelCase()}({classe} source, {mapper.Class.NamePascal} target) {{");
+        fw.WriteLine(2, "if (source == null) {");
+        fw.WriteLine(3, $"throw new IllegalArgumentException(\"source cannot be null\");");
+        fw.WriteLine(2, "}");
+        fw.WriteLine();
+        fw.WriteLine(2, "if (target == null) {");
+        if (mapper.Class.Abstract)
+        {
+            fw.WriteLine(3, $"throw new IllegalArgumentException(\"target cannot be null\");");
+        }
+        else
+        {
+            fw.WriteLine(3, $"target = new {mapper.Class.NamePascal}();");
+        }
+
+        fw.WriteLine(2, "}");
+        fw.WriteLine();
+        if (mapper.ParentMapper != null)
+        {
+            var (parentMapperNs, parentMapperModelPath) = Config.GetMapperLocation((classe.Extends!, mapper.ParentMapper));
+            fw.AddImport(Config.GetMapperImport(parentMapperNs, parentMapperModelPath, tag)!);
+            fw.WriteLine(2, $"{Config.GetMapperName(parentMapperNs, parentMapperModelPath)}.{mapper.ParentMapper.Name.Value.ToCamelCase()}(({classe.Extends!.NamePascal}) source, ({mapper.ParentMapper.Class.NamePascal}) target);");
+        }
+
+        var hydrate = string.Empty;
+        if (mapper.Class.Abstract)
+        {
+            hydrate = "target.hydrate(";
+        }
+
+        var isFirst = true;
+        foreach (var mapping in mapper.Mappings.OrderBy(m => m.Key.Class.Properties.IndexOf(m.Key)))
+        {
+            var propertyTarget = mapping.Value;
+            var propertySource = mapping.Key;
+            var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
+            var (getter, checkSourceNull) = GetSourceGetter(propertySource, propertyTarget!, classe, fw, "source", tag);
+            if (mapper.Class.Abstract)
+            {
+                if (!isFirst)
+                {
+                    hydrate += ", ";
+                }
+                else
+                {
+                    isFirst = false;
+                }
+
+                if (checkSourceNull)
+                {
+                    hydrate += $"source.{getterPrefix}{propertySource.NameByClassPascal}() != null ? {getter} : null";
+                }
+                else
+                {
+                    hydrate += getter;
+                }
+            }
+            else
+            {
+                if (getter != string.Empty)
+                {
+                    if (checkSourceNull)
+                    {
+                        fw.WriteLine(2, $"if (source.{getterPrefix}{propertySource.NameByClassPascal}() != null) {{");
+                    }
+
+                    fw.WriteLine(2 + (checkSourceNull ? 1 : 0), $"target.set{propertyTarget!.NameByClassPascal}({getter});");
+
+                    if (checkSourceNull)
+                    {
+                        fw.WriteLine(2, $"}}");
+                        fw.WriteLine();
+                    }
+                }
+            }
+        }
+
+        if (mapper.Class.Abstract)
         {
             hydrate += ");";
             fw.WriteLine(2, hydrate);

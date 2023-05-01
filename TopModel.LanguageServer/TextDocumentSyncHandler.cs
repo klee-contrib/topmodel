@@ -8,17 +8,17 @@ using TopModel.Core;
 
 namespace TopModel.LanguageServer;
 
-class TextDocumentSyncHandler : TextDocumentSyncHandlerBase
+public class TextDocumentSyncHandler : TextDocumentSyncHandlerBase
 {
+    private readonly ModelConfig _config;
     private readonly ModelFileCache _fileCache;
     private readonly ModelStore _modelStore;
-    private readonly ModelConfig _config;
 
     public TextDocumentSyncHandler(ModelStore modelStore, ModelFileCache fileCache, ModelConfig config)
     {
+        _config = config;
         _fileCache = fileCache;
         _modelStore = modelStore;
-        _config = config;
     }
 
     public override TextDocumentAttributes GetTextDocumentAttributes(DocumentUri uri)

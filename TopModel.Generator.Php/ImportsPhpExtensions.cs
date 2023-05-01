@@ -4,6 +4,11 @@ namespace TopModel.Generator.Php;
 
 public static class ImportsPhpExtensions
 {
+    public static string GetImport(this Class classe, PhpConfig config, string tag)
+    {
+        return @$"{config.GetPackageName(classe, tag)}\{classe.NamePascal}";
+    }
+
     public static List<string> GetTypeImports(this IFieldProperty rp, PhpConfig config, string tag)
     {
         var imports = new List<string>();
@@ -89,47 +94,6 @@ public static class ImportsPhpExtensions
             imports.AddRange(config.GetImplementation(cp.DomainKind)!.Imports.Select(i => i.ParseTemplate(cp)));
         }
 
-        return imports;
-    }
-
-    public static List<string> GetKindImports(this CompositionProperty cp, PhpConfig config)
-    {
-        var imports = new List<string>();
-
-        if (cp.Kind == "list")
-        {
-            imports.Add(@"Doctrine\Common\Collections\Collection");
-        }
-        else if (cp.DomainKind != null)
-        {
-            imports.AddRange(config.GetImplementation(cp.DomainKind)!.Imports.Select(i => i.ParseTemplate(cp)));
-        }
-
-        return imports;
-    }
-
-    public static string GetImport(this Class classe, PhpConfig config, string tag)
-    {
-        return @$"{config.GetPackageName(classe, tag)}\{classe.NamePascal}";
-    }
-
-    public static List<string> GetImports(this Class classe, List<Class> classes, PhpConfig config, string tag)
-    {
-        var imports = new List<string>();
-
-        if (classe.Extends != null)
-        {
-            imports.Add(classe.GetImport(config, tag));
-        }
-
-        imports
-        .AddRange(
-            classe.FromMappers.SelectMany(fm => fm.Params).Select(fmp => fmp.Class.GetImport(config, tag)));
-        imports
-        .AddRange(
-            classe.ToMappers.Select(fmp => fmp.Class.GetImport(config, tag)));
-
-        // Suppression des imports inutiles
         return imports;
     }
 }

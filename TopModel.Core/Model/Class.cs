@@ -100,10 +100,10 @@ public class Class : IPropertyContainer
 #nullable disable
     internal Reference Location { get; set; }
 
+    public bool Inherit(Class classe) => this == classe || this.Extends != null && this.Extends.Inherit(classe);
+
     public override string ToString()
     {
         return Name;
     }
-
-    public bool Inherit(Class classe) => this == classe || this.Extends != null && this.Extends.Inherit(classe);
 }

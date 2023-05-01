@@ -56,6 +56,19 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
         fw.WriteLine("}");
     }
 
+    private void WriteGetters(JavaWriter fw, Class classe, string tag)
+    {
+        foreach (var property in classe.Properties.Where(p => !Config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
+        {
+            var getterPrefix = Config.GetType(property) == "boolean" ? "is" : "get";
+            fw.WriteLine();
+            fw.WriteDocStart(1, $"Getter for {property.NameByClassCamel}");
+            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{property.NameByClassCamel} {property.NameByClassCamel}}}");
+            fw.WriteDocEnd(1);
+            fw.WriteLine(1, @$"{Config.GetType(property)} {getterPrefix}{property.NameByClassPascal}();");
+        }
+    }
+
     private void WriteHydrate(JavaWriter fw, Class classe)
     {
         var properties = classe.Properties
@@ -83,19 +96,6 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
             }));
 
         fw.WriteLine(1, $"void hydrate({signature});");
-    }
-
-    private void WriteGetters(JavaWriter fw, Class classe, string tag)
-    {
-        foreach (var property in classe.Properties.Where(p => !Config.EnumShortcutMode || !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
-        {
-            var getterPrefix = Config.GetType(property) == "boolean" ? "is" : "get";
-            fw.WriteLine();
-            fw.WriteDocStart(1, $"Getter for {property.NameByClassCamel}");
-            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{property.NameByClassCamel} {property.NameByClassCamel}}}");
-            fw.WriteDocEnd(1);
-            fw.WriteLine(1, @$"{Config.GetType(property)} {getterPrefix}{property.NameByClassPascal}();");
-        }
     }
 
     private void WriteImports(JavaWriter fw, Class classe, string tag)

@@ -9,6 +9,7 @@ namespace TopModel.Generator.Sql;
 
 public class GeneratorRegistration : IGeneratorRegistration<SqlConfig>
 {
+    /// <inheritdoc cref="IGeneratorRegistration{T}.Register" />
     public void Register(IServiceCollection services, SqlConfig config, int number)
     {
         config.Language ??= "sql";

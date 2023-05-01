@@ -14,6 +14,7 @@ public class ConverterLoader : ILoader<Converter>
         _fileChecker = fileChecker;
     }
 
+    /// <inheritdoc cref="ILoader{T}.Load" />
     public Converter Load(Parser parser)
     {
         var converter = new Converter();

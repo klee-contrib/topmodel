@@ -6,13 +6,14 @@ public class LoggerProvider : ILoggerProvider
 {
     public int Changes { get; private set; }
 
-    public void Dispose()
-    {
-    }
-
+    /// <inheritdoc cref="ILoggerProvider.CreateLogger" />
     public ILogger CreateLogger(string categoryName)
     {
         return new ConsoleLogger(categoryName.Split(".").Last(), () => Changes++);
+    }
+
+    public void Dispose()
+    {
     }
 
     public class ConsoleLogger : ILogger
@@ -22,8 +23,8 @@ public class LoggerProvider : ILoggerProvider
         private readonly string _categoryName;
         private readonly Action _registerChange;
         private string? _generatorName;
-        private int? _storeNumber;
         private ConsoleColor? _storeColor;
+        private int? _storeNumber;
 
         public ConsoleLogger(string categoryName, Action registerChange)
         {
@@ -31,6 +32,30 @@ public class LoggerProvider : ILoggerProvider
             _registerChange = registerChange;
         }
 
+        /// <inheritdoc cref="ILogger.BeginScope{TState}" />
+        public IDisposable? BeginScope<TState>(TState state)
+            where TState : notnull
+        {
+            if (state is LoggingScope scope)
+            {
+                _storeNumber = scope.Number;
+                _storeColor = scope.Color;
+            }
+            else if (state is string generatorName)
+            {
+                _generatorName = generatorName;
+            }
+
+            return null;
+        }
+
+        /// <inheritdoc cref="ILogger.IsEnabled" />
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            return true;
+        }
+
+        /// <inheritdoc cref="ILogger.Log{TState}" />
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
             if (!IsEnabled(logLevel))
@@ -109,26 +134,6 @@ public class LoggerProvider : ILoggerProvider
             }
 
             return message;
-        }
-
-        public bool IsEnabled(LogLevel logLevel)
-        {
-            return true;
-        }
-
-        public IDisposable BeginScope<TState>(TState state)
-        {
-            if (state is LoggingScope scope)
-            {
-                _storeNumber = scope.Number;
-                _storeColor = scope.Color;
-            }
-            else if (state is string generatorName)
-            {
-                _generatorName = generatorName;
-            }
-
-            return null!;
         }
     }
 }

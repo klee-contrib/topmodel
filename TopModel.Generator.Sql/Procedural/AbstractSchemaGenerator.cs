@@ -202,11 +202,11 @@ public abstract class AbstractSchemaGenerator
     /// <param name="writerCrebas">Flux d'écriture création bases.</param>
     protected abstract void WriteIdentityColumn(SqlFileWriter writerCrebas);
 
-    protected virtual void WriteInsertStart(SqlFileWriter writerInsert)
+    protected virtual void WriteInsertEnd(SqlFileWriter writerInsert)
     {
     }
 
-    protected virtual void WriteInsertEnd(SqlFileWriter writerInsert)
+    protected virtual void WriteInsertStart(SqlFileWriter writerInsert)
     {
     }
 
@@ -311,6 +311,11 @@ public abstract class AbstractSchemaGenerator
     {
         var propertyValueDict = CreatePropertyValueDictionary(modelClass, initItem);
         return GetInsertLine(modelClass.SqlName, propertyValueDict);
+    }
+
+    private string Quote(string name)
+    {
+        return !UseQuotes ? name : $@"""{name}""";
     }
 
     /// <summary>
@@ -502,10 +507,5 @@ public abstract class AbstractSchemaGenerator
             writerUk?.WriteLine($"alter table {classe.SqlName} add constraint {Quote($"UK_{classe.SqlName}_{string.Join("_", uk.Select(p => p.SqlName))}")} unique ({string.Join(", ", uk.Select(p => Quote(p.SqlName)))}){BatchSeparator}");
             writerUk?.WriteLine();
         }
-    }
-
-    private string Quote(string name)
-    {
-        return !UseQuotes ? name : $@"""{name}""";
     }
 }

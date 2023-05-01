@@ -5,22 +5,23 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
-using TopModel.LanguageServer;
 using Range = OmniSharp.Extensions.LanguageServer.Protocol.Models.Range;
 
-class CodeActionHandler : CodeActionHandlerBase
+namespace TopModel.LanguageServer;
+
+public class CodeActionHandler : CodeActionHandlerBase
 {
-    private readonly ILanguageServerFacade _facade;
-    private readonly ModelStore _modelStore;
-    private readonly ModelFileCache _fileCache;
     private readonly ModelConfig _config;
+    private readonly ILanguageServerFacade _facade;
+    private readonly ModelFileCache _fileCache;
+    private readonly ModelStore _modelStore;
 
     public CodeActionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelFileCache modelFileCache, ModelConfig config)
     {
-        _modelStore = modelStore;
+        _config = config;
         _facade = facade;
         _fileCache = modelFileCache;
-        _config = config;
+        _modelStore = modelStore;
     }
 
     public override Task<CodeAction> Handle(CodeAction request, CancellationToken cancellationToken)
@@ -38,6 +39,7 @@ class CodeActionHandler : CodeActionHandlerBase
             {
                 codeActions.Add(GetCodeActionOrganizeImports(request, modelFile));
             }
+
             foreach (var diagnostic in request.Context.Diagnostics.Where(d => !string.IsNullOrEmpty(d.Code)))
             {
                 var modelErrorType = Enum.Parse<ModelErrorType>(diagnostic.Code!);
@@ -95,6 +97,7 @@ class CodeActionHandler : CodeActionHandlerBase
             }
         };
     }
+
     protected override CodeActionRegistrationOptions CreateRegistrationOptions(CodeActionCapability capability, ClientCapabilities clientCapabilities)
     {
         return new()
@@ -105,6 +108,48 @@ class CodeActionHandler : CodeActionHandlerBase
             {
                 CodeActionKind.SourceOrganizeImports,
                 CodeActionKind.QuickFix
+            }
+        };
+    }
+
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionAddClass(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    {
+        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var line = text.ElementAt(diagnostic.Range.Start.Line);
+        var className = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
+        return new List<CommandOrCodeAction>
+        {
+            new CodeAction
+            {
+                Title = $"TopModel : Créer la classe {className} dans ce fichier",
+                Kind = CodeActionKind.QuickFix,
+                IsPreferred = true,
+                Diagnostics = new List<Diagnostic>
+                {
+                    diagnostic
+                },
+                Edit = new WorkspaceEdit
+                {
+                    Changes =
+                        new Dictionary<DocumentUri, IEnumerable<TextEdit>>
+                        {
+                            [new Uri(_facade.GetFilePath(modelFile))] = new List<TextEdit>()
+                            {
+                                new TextEdit()
+                                {
+                                    NewText = @$"
+---
+class: 
+  name: {className}
+  comment: 
+  properties:
+    - 
+",
+                                    Range = new Range(text.Length, 0, text.Length, 0)
+                                }
+                            }
+                        }
+                }
             }
         };
     }
@@ -182,47 +227,6 @@ domain:
 
         return _modelStore.Decorators.Where(c => c.Name == decoratorName)
             .Select(decoratorToImport => GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex));
-    }
-
-    protected IEnumerable<CommandOrCodeAction> GetCodeActionAddClass(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
-    {
-        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
-        var line = text.ElementAt(diagnostic.Range.Start.Line);
-        var className = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
-        return new List<CommandOrCodeAction>{
-            new CodeAction
-            {
-                Title = $"TopModel : Créer la classe {className} dans ce fichier",
-                Kind = CodeActionKind.QuickFix,
-                IsPreferred = true,
-                Diagnostics = new List<Diagnostic>
-                {
-                    diagnostic
-                },
-                Edit = new WorkspaceEdit
-                {
-                    Changes =
-                        new Dictionary<DocumentUri, IEnumerable<TextEdit>>
-                        {
-                            [new Uri(_facade.GetFilePath(modelFile))] = new List<TextEdit>()
-                            {
-                                new TextEdit()
-                                {
-                                    NewText = @$"
----
-class: 
-  name: {className}
-  comment: 
-  properties:
-    - 
-",
-                                    Range = new Range(text.Length, 0, text.Length, 0)
-                                }
-                            }
-                        }
-                }
-            }
-        };
     }
 
     private CommandOrCodeAction GetFileImportAction(Diagnostic diagnostic, ModelFile targetFile, ModelFile sourceFile, int useIndex)

@@ -7,6 +7,7 @@ namespace TopModel.Generator.Jpa;
 
 public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
 {
+    /// <inheritdoc cref="IGeneratorRegistration{T}.Register" />
     public void Register(IServiceCollection services, JpaConfig config, int number)
     {
         TrimSlashes(config, c => c.EntitiesPath);

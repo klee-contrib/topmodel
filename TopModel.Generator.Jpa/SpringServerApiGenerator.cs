@@ -64,15 +64,36 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         fw.WriteLine("}");
     }
 
+    private void CheckEndpoint(Endpoint endpoint)
+    {
+        foreach (var q in endpoint.GetQueryParams().Concat(endpoint.GetRouteParams()))
+        {
+            if (q is AssociationProperty ap)
+            {
+                throw new ModelException(endpoint, $"Le endpoint {endpoint.Route} ne peut pas contenir d'association");
+            }
+        }
+
+        if (endpoint.Returns != null && endpoint.Returns is AssociationProperty)
+        {
+            throw new ModelException(endpoint, $"Le retour du endpoint {endpoint.Route} ne peut pas être une association");
+        }
+    }
+
     private string GetClassName(string fileName)
     {
         return $"{fileName.ToPascalCase()}Controller";
     }
 
-    private void WriteEndpoint(JavaWriter fw, Endpoint endpoint)
+    private IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
     {
-        fw.WriteLine();
-        WriteEndPointMethod(fw, endpoint);
+        var properties = endpoints.SelectMany(endpoint => endpoint.Params)
+            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
+            .Select(endpoint => endpoint.Returns));
+        return properties.SelectMany(property => property!.GetTypeImports(Config, tag))
+                .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
+                .Select(e => e.Returns).OfType<CompositionProperty>()
+                .SelectMany(c => c.GetKindImports(Config)));
     }
 
     private void WriteEndPointMethod(JavaWriter fw, Endpoint endpoint)
@@ -168,6 +189,12 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         }
     }
 
+    private void WriteEndpoint(JavaWriter fw, Endpoint endpoint)
+    {
+        fw.WriteLine();
+        WriteEndPointMethod(fw, endpoint);
+    }
+
     private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
     {
         var imports = endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToPascalCaseStrict()}Mapping").ToList();
@@ -197,32 +224,5 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         imports.AddRange(endpoints.SelectMany(e => e.Decorators.SelectMany(d => (Config.GetImplementation(d.Decorator)?.Imports ?? Array.Empty<string>()).Select(i => i.ParseTemplate(e, d.Parameters)))).Distinct());
 
         fw.AddImports(imports);
-    }
-
-    private IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
-    {
-        var properties = endpoints.SelectMany(endpoint => endpoint.Params)
-            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
-            .Select(endpoint => endpoint.Returns));
-        return properties.SelectMany(property => property!.GetTypeImports(Config, tag))
-                .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
-                .Select(e => e.Returns).OfType<CompositionProperty>()
-                .SelectMany(c => c.GetKindImports(Config)));
-    }
-
-    private void CheckEndpoint(Endpoint endpoint)
-    {
-        foreach (var q in endpoint.GetQueryParams().Concat(endpoint.GetRouteParams()))
-        {
-            if (q is AssociationProperty ap)
-            {
-                throw new ModelException(endpoint, $"Le endpoint {endpoint.Route} ne peut pas contenir d'association");
-            }
-        }
-
-        if (endpoint.Returns != null && endpoint.Returns is AssociationProperty)
-        {
-            throw new ModelException(endpoint, $"Le retour du endpoint {endpoint.Route} ne peut pas être une association");
-        }
     }
 }

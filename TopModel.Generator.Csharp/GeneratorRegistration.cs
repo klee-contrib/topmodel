@@ -7,6 +7,7 @@ namespace TopModel.Generator.Csharp;
 
 public class GeneratorRegistration : IGeneratorRegistration<CsharpConfig>
 {
+    /// <inheritdoc cref="IGeneratorRegistration{T}.Register" />
     public void Register(IServiceCollection services, CsharpConfig config, int number)
     {
         TrimSlashes(config, c => c.ApiFilePath);

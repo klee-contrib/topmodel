@@ -1,4 +1,4 @@
-using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
@@ -8,20 +8,19 @@ namespace TopModel.LanguageServer;
 
 public class DocumentSymbolHandler : DocumentSymbolHandlerBase
 {
-    private readonly ModelStore _modelStore;
-    private readonly ILanguageServerFacade _facade;
     private readonly ModelConfig _config;
+    private readonly ILanguageServerFacade _facade;
+    private readonly ModelStore _modelStore;
 
     public DocumentSymbolHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
     {
-        _modelStore = modelStore;
-        _facade = facade;
         _config = config;
+        _facade = facade;
+        _modelStore = modelStore;
     }
 
     public override Task<SymbolInformationOrDocumentSymbolContainer> Handle(DocumentSymbolParams request, CancellationToken cancellationToken)
     {
-
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri);
         if (file == null)
         {

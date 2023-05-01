@@ -1,4 +1,4 @@
-using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using OmniSharp.Extensions.LanguageServer.Protocol.Workspace;
@@ -8,13 +8,13 @@ namespace TopModel.LanguageServer;
 
 public class WorkspaceSymbolHandler : WorkspaceSymbolsHandlerBase
 {
-    private readonly ModelStore _modelStore;
     private readonly ILanguageServerFacade _facade;
+    private readonly ModelStore _modelStore;
 
     public WorkspaceSymbolHandler(ModelStore modelStore, ILanguageServerFacade facade)
     {
-        _modelStore = modelStore;
         _facade = facade;
+        _modelStore = modelStore;
     }
 
     public override Task<Container<SymbolInformation>?> Handle(WorkspaceSymbolParams request, CancellationToken cancellationToken)

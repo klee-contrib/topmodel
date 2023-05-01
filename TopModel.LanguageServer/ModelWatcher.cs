@@ -24,6 +24,7 @@ public class ModelWatcher : IModelWatcher
 
     public bool Disabled => false;
 
+    /// <inheritdoc cref="IModelWatcher.OnErrors" />
     public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
     {
         foreach (var fileErrors in errors)
@@ -51,6 +52,7 @@ public class ModelWatcher : IModelWatcher
         }
     }
 
+    /// <inheritdoc cref="IModelWatcher.OnFilesChanged" />
     public void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null)
     {
         _facade.SendNotification("filesChanged");

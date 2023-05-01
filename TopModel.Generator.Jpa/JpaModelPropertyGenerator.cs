@@ -10,13 +10,61 @@ namespace TopModel.Generator.Jpa;
 /// </summary>
 public class JpaModelPropertyGenerator
 {
-    private readonly JpaConfig _config;
     private readonly IEnumerable<Class> _classes;
+    private readonly JpaConfig _config;
 
     public JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> classes)
     {
-        _config = config;
         _classes = classes;
+        _config = config;
+    }
+
+    public void WriteCompositePrimaryKeyClass(JavaWriter fw, Class classe)
+    {
+        if (classe.PrimaryKey.Count() <= 1)
+        {
+            return;
+        }
+
+        fw.WriteLine();
+        fw.AddImport("java.io.Serializable");
+        fw.WriteLine(1, @$"public class {classe.NamePascal}Id implements Serializable {{");
+        foreach (var pk in classe.PrimaryKey)
+        {
+            fw.WriteLine(2, $"private {_config.GetType(pk, _classes, true)} {pk.NameByClassCamel};");
+            fw.WriteLine();
+        }
+
+        fw.WriteLine(2, "public boolean equals(Object o) {");
+        fw.WriteLine(3, $@"if(!(o instanceof {classe.NamePascal}Id)) {{");
+        fw.WriteLine(4, "return false;");
+        fw.WriteLine(3, "}");
+        fw.WriteLine();
+        fw.WriteLine(3, $"{classe.NamePascal}Id oId = ({classe.NamePascal}Id) o;");
+        fw.WriteLine(3, $@"return !({string.Join("\n || ", classe.PrimaryKey.Select(pk => $@"!this.{pk.NameByClassCamel}.equals(oId.{pk.NameByClassCamel})"))});");
+        fw.WriteLine(2, "}");
+
+        fw.WriteLine();
+        fw.WriteLine(2, "@Override");
+        fw.WriteLine(2, "public int hashCode() {");
+        fw.WriteLine(3, $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => pk.NameByClassCamel))});");
+        fw.AddImport("java.util.Objects");
+        fw.WriteLine(2, "}");
+        fw.WriteLine(1, "}");
+    }
+
+    public void WriteProperties(JavaWriter fw, Class classe, string tag)
+    {
+        foreach (var property in classe.GetProperties(_classes))
+        {
+            WriteProperty(fw, classe, property, tag);
+        }
+    }
+
+    public void WriteProperty(JavaWriter fw, CompositionProperty property)
+    {
+        fw.WriteDocEnd(1);
+        fw.WriteLine(1, $"private {_config.GetType(property)} {property.NameCamel};");
     }
 
     public void WriteProperty(JavaWriter fw, Class classe, IProperty property, string tag)
@@ -37,18 +85,71 @@ public class JpaModelPropertyGenerator
         }
     }
 
-    public void WriteProperty(JavaWriter fw, CompositionProperty property)
+    private void WriteManyToMany(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"private {_config.GetType(property)} {property.NameCamel};");
+        var role = property.Role is not null ? "_" + property.Role.ToConstantCase() : string.Empty;
+        var fk = ((IFieldProperty)property).SqlName;
+        var pk = classe.PrimaryKey.Single().SqlName + role;
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+        if (!_config.CanClassUseEnums(property.Association))
+        {
+            fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
+        }
+
+        var cascade = _config.CanClassUseEnums(property.Association) ? string.Empty : $", cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }}";
+        if (property is ReverseAssociationProperty rap)
+        {
+            fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, mappedBy = ""{rap.ReverseProperty.NameByClassCamel}""{cascade})");
+        }
+        else
+        {
+            fw.AddImport($"{javaOrJakarta}.persistence.JoinTable");
+            fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY{cascade})");
+            fw.WriteLine(1, @$"@JoinTable(name = ""{property.Class.SqlName}_{property.Association.SqlName}{(property.Role != null ? "_" + property.Role.ToConstantCase() : string.Empty)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
+            fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
+        }
     }
 
-    public void WriteProperties(JavaWriter fw, Class classe, string tag)
+    private void WriteManyToOne(JavaWriter fw, AssociationProperty property)
     {
-        foreach (var property in classe.GetProperties(_classes, tag))
+        var fk = ((IFieldProperty)property).SqlName;
+        var apk = property.Property.SqlName;
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+        fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, optional = {(property.Required ? "false" : "true")}, targetEntity = {property.Association.NamePascal}.class)");
+        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
+        fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
+    }
+
+    private void WriteOneToMany(JavaWriter fw, Class classe, AssociationProperty property)
+    {
+        var pk = classe.PrimaryKey.Single().SqlName;
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+        fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
+        if (property is ReverseAssociationProperty rap)
         {
-            WriteProperty(fw, classe, property, tag);
+            fw.WriteLine(1, @$"@{property.Type}(cascade = {{CascadeType.PERSIST, CascadeType.MERGE}}, fetch = FetchType.LAZY, mappedBy = ""{rap.ReverseProperty.NameByClassCamel}"")");
         }
+        else
+        {
+            var hasReverse = property.Class.Namespace.RootModule == property.Association.Namespace.RootModule;
+            fw.WriteLine(1, @$"@{property.Type}(cascade = CascadeType.ALL, fetch = FetchType.LAZY{(hasReverse ? @$", mappedBy = ""{property.Class.NameCamel}{property.Role ?? string.Empty}""" : string.Empty)})");
+            if (!hasReverse)
+            {
+                fw.WriteLine(1, @$"@JoinColumn(name = ""{pk}"", referencedColumnName = ""{pk}"")");
+                fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
+            }
+        }
+    }
+
+    private void WriteOneToOne(JavaWriter fw, AssociationProperty property)
+    {
+        var fk = ((IFieldProperty)property).SqlName;
+        var apk = property.Property.SqlName;
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+        fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
+        fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = {(!property.Required).ToString().ToLower()})");
+        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"", unique = true)");
+        fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
     }
 
     private void WriteProperty(JavaWriter fw, Class classe, AssociationProperty property)
@@ -60,7 +161,7 @@ public class JpaModelPropertyGenerator
         switch (property.Type)
         {
             case AssociationType.ManyToOne:
-                WriteManyToOne(fw, classe, property);
+                WriteManyToOne(fw, property);
                 break;
             case AssociationType.OneToMany:
                 WriteOneToMany(fw, classe, property);
@@ -69,7 +170,7 @@ public class JpaModelPropertyGenerator
                 WriteManyToMany(fw, classe, property);
                 break;
             case AssociationType.OneToOne:
-                WriteOneToOne(fw, classe, property);
+                WriteOneToOne(fw, property);
                 break;
         }
 
@@ -100,73 +201,6 @@ public class JpaModelPropertyGenerator
         }
 
         fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.NameByClassCamel}{suffix};");
-    }
-
-    private void WriteManyToOne(JavaWriter fw, Class classe, AssociationProperty property)
-    {
-        var fk = ((IFieldProperty)property).SqlName;
-        var apk = property.Property.SqlName;
-        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
-        fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, optional = {(property.Required ? "false" : "true")}, targetEntity = {property.Association.NamePascal}.class)");
-        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
-        fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
-    }
-
-    private void WriteOneToOne(JavaWriter fw, Class classe, AssociationProperty property)
-    {
-        var fk = ((IFieldProperty)property).SqlName;
-        var apk = property.Property.SqlName;
-        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
-        fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
-        fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = {(!property.Required).ToString().ToLower()})");
-        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"", unique = true)");
-        fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
-    }
-
-    private void WriteManyToMany(JavaWriter fw, Class classe, AssociationProperty property)
-    {
-        var role = property.Role is not null ? "_" + property.Role.ToConstantCase() : string.Empty;
-        var fk = ((IFieldProperty)property).SqlName;
-        var pk = classe.PrimaryKey.Single().SqlName + role;
-        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
-        if (!_config.CanClassUseEnums(property.Association))
-        {
-            fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
-        }
-
-        var cascade = _config.CanClassUseEnums(property.Association) ? string.Empty : $", cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }}";
-        if (property is ReverseAssociationProperty rap)
-        {
-            fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, mappedBy = ""{rap.ReverseProperty.NameByClassCamel}""{cascade})");
-        }
-        else
-        {
-            fw.AddImport($"{javaOrJakarta}.persistence.JoinTable");
-            fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY{cascade})");
-            fw.WriteLine(1, @$"@JoinTable(name = ""{property.Class.SqlName}_{property.Association.SqlName}{(property.Role != null ? "_" + property.Role.ToConstantCase() : string.Empty)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
-            fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
-        }
-    }
-
-    private void WriteOneToMany(JavaWriter fw, Class classe, AssociationProperty property)
-    {
-        var pk = classe.PrimaryKey.Single().SqlName;
-        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
-        fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
-        if (property is ReverseAssociationProperty rap)
-        {
-            fw.WriteLine(1, @$"@{property.Type}(cascade = {{CascadeType.PERSIST, CascadeType.MERGE}}, fetch = FetchType.LAZY, mappedBy = ""{rap.ReverseProperty.NameByClassCamel}"")");
-        }
-        else
-        {
-            var hasReverse = property.Class.Namespace.RootModule == property.Association.Namespace.RootModule;
-            fw.WriteLine(1, @$"@{property.Type}(cascade = CascadeType.ALL, fetch = FetchType.LAZY{(hasReverse ? @$", mappedBy = ""{property.Class.NameCamel}{property.Role ?? string.Empty}""" : string.Empty)})");
-            if (!hasReverse)
-            {
-                fw.WriteLine(1, @$"@JoinColumn(name = ""{pk}"", referencedColumnName = ""{pk}"")");
-                fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
-            }
-        }
     }
 
     private void WriteProperty(JavaWriter fw, Class classe, IFieldProperty property, string tag)
@@ -265,39 +299,5 @@ public class JpaModelPropertyGenerator
         var defaultValue = _config.GetDefaultValue(property, _classes);
         var suffix = defaultValue != "null" ? $" = {defaultValue}" : string.Empty;
         fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.NameByClassCamel}{suffix};");
-    }
-
-    public void WriteCompositePrimaryKeyClass(JavaWriter fw, Class classe, string tag)
-    {
-        if (classe.PrimaryKey.Count() <= 1)
-        {
-            return;
-        }
-
-        fw.WriteLine();
-        fw.AddImport("java.io.Serializable");
-        fw.WriteLine(1, @$"public class {classe.NamePascal}Id implements Serializable {{");
-        foreach (var pk in classe.PrimaryKey)
-        {
-            fw.WriteLine(2, $"private {_config.GetType(pk, _classes, true)} {pk.NameByClassCamel};");
-            fw.WriteLine();
-        }
-
-        fw.WriteLine(2, "public boolean equals(Object o) {");
-        fw.WriteLine(3, $@"if(!(o instanceof {classe.NamePascal}Id)) {{");
-        fw.WriteLine(4, "return false;");
-        fw.WriteLine(3, "}");
-        fw.WriteLine();
-        fw.WriteLine(3, $"{classe.NamePascal}Id oId = ({classe.NamePascal}Id) o;");
-        fw.WriteLine(3, $@"return !({string.Join("\n || ", classe.PrimaryKey.Select(pk => $@"!this.{pk.NameByClassCamel}.equals(oId.{pk.NameByClassCamel})"))});");
-        fw.WriteLine(2, "}");
-
-        fw.WriteLine();
-        fw.WriteLine(2, "@Override");
-        fw.WriteLine(2, "public int hashCode() {");
-        fw.WriteLine(3, $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => pk.NameByClassCamel))});");
-        fw.AddImport("java.util.Objects");
-        fw.WriteLine(2, "}");
-        fw.WriteLine(1, "}");
     }
 }

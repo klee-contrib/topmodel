@@ -4,6 +4,74 @@ namespace TopModel.Core;
 
 public static class ModelExtensions
 {
+    public static IEnumerable<(ClassReference Reference, ModelFile File)> GetClassReferences(this ModelStore modelStore, Class classe)
+    {
+        return modelStore.Classes.SelectMany(c => c.Properties)
+            .Concat(modelStore.Endpoints.SelectMany(e => e.Properties))
+            .Concat(modelStore.Decorators.SelectMany(d => d.Properties))
+            .Where(p =>
+                p is AliasProperty alp && alp.OriginalProperty?.Class == classe
+                || p is AssociationProperty ap && ap.Association == classe
+                || p is CompositionProperty cp && cp.Composition == classe)
+            .Select(p =>
+            {
+                return (Reference: p switch
+                {
+                    AssociationProperty ap => ap.Reference,
+                    CompositionProperty cp => cp.Reference,
+                    AliasProperty alp => alp.Reference!,
+                    _ => null! // Impossible
+                }, File: p.GetFile());
+            })
+            .Concat(modelStore.Classes.Where(c => c.Extends == classe)
+                .Select(c => (Reference: c.ExtendsReference!, File: c.GetFile())))
+            .Concat(modelStore.Classes.SelectMany(c => c.FromMappers.SelectMany(c => c.Params).Concat(c.ToMappers).Where(m => m.Class == classe).Select(m => (Reference: m.ClassReference, File: c.GetFile()))))
+            .Concat(modelStore.Files.SelectMany(f =>
+                f.Aliases.SelectMany(a => a.Classes
+                    .Where(c => f.ResolvedAliases.OfType<Class>().Any(ra => ra.Name == c.ReferenceName && ra == classe))
+                    .Select(c => (Reference: c, File: f)))))
+            .Where(r => r.Reference is not null)
+            .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
+    }
+
+    public static IEnumerable<(DecoratorReference Reference, ModelFile File)> GetDecoratorReferences(this ModelStore modelStore, Decorator decorator)
+    {
+        return modelStore.Classes.Where(c => c.Decorators.Select(d => d.Decorator).Contains(decorator))
+            .Select(c => (
+                Reference: c.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
+                File: c.GetFile()))
+            .Concat(modelStore.Endpoints.Where(e => e.Decorators.Select(d => d.Decorator).Contains(decorator))
+            .Select(e => (
+                Reference: e.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
+                File: e.GetFile())))
+            .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
+    }
+
+    public static IEnumerable<(DomainReference Reference, ModelFile File)> GetDomainReferences(this ModelStore modelStore, Domain domain)
+    {
+        return modelStore.Classes.SelectMany(c => c.Properties)
+            .Concat(modelStore.Decorators.SelectMany(c => c.Properties))
+            .Concat(modelStore.Endpoints.SelectMany(e => e.Properties))
+            .Where(p =>
+                p is RegularProperty rp && rp.Domain == domain
+                || p is AliasProperty alp && alp.DomainReference != null && alp.Domain == domain
+                || p is CompositionProperty cp && cp.DomainKind == domain)
+            .Select(p =>
+            {
+                return (Reference: p switch
+                {
+                    RegularProperty rp => rp.DomainReference,
+                    AliasProperty alp => alp.DomainReference!,
+                    CompositionProperty cp => cp.DomainKindReference!,
+                    _ => null! // Impossible
+                }, File: p.GetFile());
+            })
+            .Concat(modelStore.Converters.SelectMany(c => c.DomainsFromReferences.Union(c.DomainsToReferences).Select(d => (Reference: d, File: c.ModelFile))).Where(r => r.Reference.ReferenceName == domain.Name))
+            .Concat(modelStore.Domains.Values.Select(d => (Reference: d.ListDomainReference!, File: d.GetFile())))
+            .Where(l => l.Reference is not null)
+            .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
+    }
+
     public static ModelFile GetFile(this object? objet)
     {
         return objet switch
@@ -45,74 +113,6 @@ public static class ModelExtensions
             Converter c => c.Location,
             _ => null
         };
-    }
-
-    public static IEnumerable<(ClassReference Reference, ModelFile File)> GetClassReferences(this ModelStore modelStore, Class classe)
-    {
-        return modelStore.Classes.SelectMany(c => c.Properties)
-            .Concat(modelStore.Endpoints.SelectMany(e => e.Properties))
-            .Concat(modelStore.Decorators.SelectMany(d => d.Properties))
-            .Where(p =>
-                p is AliasProperty alp && alp.OriginalProperty?.Class == classe
-                || p is AssociationProperty ap && ap.Association == classe
-                || p is CompositionProperty cp && cp.Composition == classe)
-            .Select(p =>
-            {
-                return (Reference: p switch
-                {
-                    AssociationProperty ap => ap.Reference,
-                    CompositionProperty cp => cp.Reference,
-                    AliasProperty alp => alp.Reference!,
-                    _ => null! // Impossible
-                }, File: p.GetFile());
-            })
-            .Concat(modelStore.Classes.Where(c => c.Extends == classe)
-                .Select(c => (Reference: c.ExtendsReference!, File: c.GetFile())))
-            .Concat(modelStore.Classes.SelectMany(c => c.FromMappers.SelectMany(c => c.Params).Concat(c.ToMappers).Where(m => m.Class == classe).Select(m => (Reference: m.ClassReference, File: c.GetFile()))))
-            .Concat(modelStore.Files.SelectMany(f =>
-                f.Aliases.SelectMany(a => a.Classes
-                    .Where(c => f.ResolvedAliases.OfType<Class>().Any(ra => ra.Name == c.ReferenceName && ra == classe))
-                    .Select(c => (Reference: c, File: f)))))
-            .Where(r => r.Reference is not null)
-            .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
-    }
-
-    public static IEnumerable<(DomainReference Reference, ModelFile File)> GetDomainReferences(this ModelStore modelStore, Domain domain)
-    {
-        return modelStore.Classes.SelectMany(c => c.Properties)
-            .Concat(modelStore.Decorators.SelectMany(c => c.Properties))
-            .Concat(modelStore.Endpoints.SelectMany(e => e.Properties))
-            .Where(p =>
-                p is RegularProperty rp && rp.Domain == domain
-                || p is AliasProperty alp && alp.DomainReference != null && alp.Domain == domain
-                || p is CompositionProperty cp && cp.DomainKind == domain)
-            .Select(p =>
-            {
-                return (Reference: p switch
-                {
-                    RegularProperty rp => rp.DomainReference,
-                    AliasProperty alp => alp.DomainReference!,
-                    CompositionProperty cp => cp.DomainKindReference!,
-                    _ => null! // Impossible
-                }, File: p.GetFile());
-            })
-            .Concat(modelStore.Converters.SelectMany(c => c.DomainsFromReferences.Union(c.DomainsToReferences).Select(d => (Reference: d, File: c.ModelFile))).Where(r => r.Reference.ReferenceName == domain.Name))
-            .Concat(modelStore.Domains.Values.Select(d => (Reference: d.ListDomainReference!, File: d.GetFile())))
-            .Where(l => l.Reference is not null)
-            .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
-    }
-
-    public static IEnumerable<(DecoratorReference Reference, ModelFile File)> GetDecoratorReferences(this ModelStore modelStore, Decorator decorator)
-    {
-        return modelStore.Classes.Where(c => c.Decorators.Select(d => d.Decorator).Contains(decorator))
-            .Select(c => (
-                Reference: c.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
-                File: c.GetFile()))
-            .Concat(modelStore.Endpoints.Where(e => e.Decorators.Select(d => d.Decorator).Contains(decorator))
-            .Select(e => (
-                Reference: e.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
-                File: e.GetFile())))
-            .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 
     public static IEnumerable<(Reference Reference, ModelFile File)> GetPropertyReferences(this ModelStore modelStore, IProperty property, bool includeTransitive = false)

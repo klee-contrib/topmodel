@@ -1,10 +1,51 @@
 ﻿using TopModel.Core;
-using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Jpa;
 
 public static class ImportsJpaExtensions
 {
+    public static string GetImport(this Class classe, JpaConfig config, string tag)
+    {
+        return $"{config.GetPackageName(classe, tag)}.{classe.NamePascal}";
+    }
+
+    public static List<string> GetImports(this Class classe, JpaConfig config, string tag)
+    {
+        var javaOrJakarta = config.PersistenceMode.ToString().ToLower();
+        var imports = new List<string>();
+
+        if (classe.Extends != null)
+        {
+            imports.Add(classe.GetImport(config, tag));
+        }
+
+        imports
+        .AddRange(
+            classe.FromMappers.SelectMany(fm => fm.Params).Select(fmp => fmp.Class.GetImport(config, tag)));
+        imports
+        .AddRange(
+            classe.ToMappers.Select(fmp => fmp.Class.GetImport(config, tag)));
+
+        // Suppression des imports inutiles
+        return imports;
+    }
+
+    public static List<string> GetKindImports(this CompositionProperty cp, JpaConfig config)
+    {
+        var imports = new List<string>();
+
+        if (cp.Kind == "list")
+        {
+            imports.Add("java.util.List");
+        }
+        else if (cp.DomainKind != null)
+        {
+            imports.AddRange(config.GetImplementation(cp.DomainKind)!.Imports.Select(i => i.ParseTemplate(cp)));
+        }
+
+        return imports;
+    }
+
     public static List<string> GetTypeImports(this IProperty p, JpaConfig config, string tag)
     {
         return p switch
@@ -121,48 +162,6 @@ public static class ImportsJpaExtensions
             imports.AddRange(config.GetImplementation(cp.DomainKind)!.Imports.Select(i => i.ParseTemplate(cp)));
         }
 
-        return imports;
-    }
-
-    public static List<string> GetKindImports(this CompositionProperty cp, JpaConfig config)
-    {
-        var imports = new List<string>();
-
-        if (cp.Kind == "list")
-        {
-            imports.Add("java.util.List");
-        }
-        else if (cp.DomainKind != null)
-        {
-            imports.AddRange(config.GetImplementation(cp.DomainKind)!.Imports.Select(i => i.ParseTemplate(cp)));
-        }
-
-        return imports;
-    }
-
-    public static string GetImport(this Class classe, JpaConfig config, string tag)
-    {
-        return $"{config.GetPackageName(classe, tag)}.{classe.NamePascal}";
-    }
-
-    public static List<string> GetImports(this Class classe, List<Class> classes, JpaConfig config, string tag)
-    {
-        var javaOrJakarta = config.PersistenceMode.ToString().ToLower();
-        var imports = new List<string>();
-
-        if (classe.Extends != null)
-        {
-            imports.Add(classe.GetImport(config, tag));
-        }
-
-        imports
-        .AddRange(
-            classe.FromMappers.SelectMany(fm => fm.Params).Select(fmp => fmp.Class.GetImport(config, tag)));
-        imports
-        .AddRange(
-            classe.ToMappers.Select(fmp => fmp.Class.GetImport(config, tag)));
-
-        // Suppression des imports inutiles
         return imports;
     }
 }

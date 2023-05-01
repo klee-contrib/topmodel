@@ -60,6 +60,12 @@ public class TranslationOutGenerator : TranslationGeneratorBase<TranslationConfi
         }
     }
 
+    private bool ExistsInStore(string lang, string key)
+    {
+        return _translationStore.Translations.TryGetValue(lang, out var langDict)
+            && langDict.ContainsKey(key);
+    }
+
     private void WriteClasse(FileWriter fw, IGrouping<IPropertyContainer, IFieldProperty> container, string lang)
     {
         foreach (var property in container)
@@ -85,11 +91,5 @@ public class TranslationOutGenerator : TranslationGeneratorBase<TranslationConfi
                 }
             }
         }
-    }
-
-    private bool ExistsInStore(string lang, string key)
-    {
-        return _translationStore.Translations.TryGetValue(lang, out var langDict)
-            && langDict.ContainsKey(key);
     }
 }

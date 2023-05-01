@@ -16,14 +16,6 @@ public interface ISqlScripter<T>
     /// <returns>Nom du fichier de script.</returns>
     string GetScriptName(T item);
 
-    /// <summary>
-    /// Ecrit dans un flux le script pour l'item.
-    /// </summary>
-    /// <param name="writer">Flux d'écriture.</param>
-    /// <param name="item">Table à scripter.</param>
-    /// <param name="availableClasses">Classes disponibles.</param>
-    void WriteItemScript(TextWriter writer, T item, IEnumerable<Class> availableClasses);
-
     void Write(T item, string folderPath, ILogger logger, IEnumerable<Class> availableClasses)
     {
         // Génére le nom du fichier.
@@ -38,4 +30,12 @@ public interface ISqlScripter<T>
         /*  Génére le script de l'item */
         WriteItemScript(tw, item, availableClasses);
     }
+
+    /// <summary>
+    /// Ecrit dans un flux le script pour l'item.
+    /// </summary>
+    /// <param name="writer">Flux d'écriture.</param>
+    /// <param name="item">Table à scripter.</param>
+    /// <param name="availableClasses">Classes disponibles.</param>
+    void WriteItemScript(TextWriter writer, T item, IEnumerable<Class> availableClasses);
 }

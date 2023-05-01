@@ -7,22 +7,23 @@ namespace TopModel.LanguageServer;
 
 public static class OmnisharpExtensions
 {
-    public static OmniSharp.Extensions.LanguageServer.Protocol.Models.Range? ToRange(this Reference? loc)
-    {
-        return loc == null
-            ? null
-            : new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                loc.Start.Line - 1,
-                loc.Start.Column - 1,
-                loc.End.Line - 1,
-                loc.End.Column - 1);
-    }
-
     public static string GetFilePath(this ILanguageServerFacade facade, ModelFile file)
     {
         return facade.Workspace.ClientSettings.RootPath + file.Path[1..].Replace('/', Path.DirectorySeparatorChar);
     }
 
+    public static string? GetName(this object objet)
+    {
+        return objet switch
+        {
+            Class classe => classe.Name,
+            Domain domain => domain.Name,
+            Decorator decorator => decorator.Name,
+            AliasProperty property => property.OriginalProperty?.Name ?? property.Name,
+            IProperty property => property.Name,
+            _ => null
+        };
+    }
 
     public static References? GetReferencesForPositionInFile(this ModelStore modelStore, Position position, ModelFile file, bool includeTransitive = false)
     {
@@ -61,19 +62,6 @@ public static class OmnisharpExtensions
             .Distinct());
     }
 
-    public static string? GetName(this object objet)
-    {
-        return objet switch
-        {
-            Class classe => classe.Name,
-            Domain domain => domain.Name,
-            Decorator decorator => decorator.Name,
-            AliasProperty property => property.OriginalProperty?.Name ?? property.Name,
-            IProperty property => property.Name,
-            _ => null
-        };
-    }
-
     public static bool ShouldMatch(this string word, string otherword)
     {
         if (string.IsNullOrWhiteSpace(otherword))
@@ -92,5 +80,16 @@ public static class OmnisharpExtensions
         }
 
         return true;
+    }
+
+    public static OmniSharp.Extensions.LanguageServer.Protocol.Models.Range? ToRange(this Reference? loc)
+    {
+        return loc == null
+            ? null
+            : new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                loc.Start.Line - 1,
+                loc.Start.Column - 1,
+                loc.End.Line - 1,
+                loc.End.Column - 1);
     }
 }

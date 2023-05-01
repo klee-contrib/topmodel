@@ -5,6 +5,7 @@ using TopModel.Generator.Core;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Csharp;
+
 public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 {
     private readonly ILogger<CSharpClassGenerator> _logger;
@@ -54,22 +55,6 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     }
 
     /// <summary>
-    /// Génère les méthodes d'extensibilité.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">Classe générée.</param>
-    private static void GenerateExtensibilityMethods(CSharpWriter w, Class item)
-    {
-        w.WriteLine();
-        w.WriteSummary(2, "Methode d'extensibilité possible pour les constructeurs.");
-        w.WriteLine(2, "partial void OnCreated();");
-        w.WriteLine();
-        w.WriteSummary(2, "Methode d'extensibilité possible pour les constructeurs par recopie.");
-        w.WriteParam("bean", "Source.");
-        w.WriteLine(2, $"partial void OnCreated({item.NamePascal} bean);");
-    }
-
-    /// <summary>
     /// Génère le type énuméré présentant les colonnes persistentes.
     /// </summary>
     /// <param name="w">Writer.</param>
@@ -105,6 +90,22 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     }
 
     /// <summary>
+    /// Génère les méthodes d'extensibilité.
+    /// </summary>
+    /// <param name="w">Writer.</param>
+    /// <param name="item">Classe générée.</param>
+    private static void GenerateExtensibilityMethods(CSharpWriter w, Class item)
+    {
+        w.WriteLine();
+        w.WriteSummary(2, "Methode d'extensibilité possible pour les constructeurs.");
+        w.WriteLine(2, "partial void OnCreated();");
+        w.WriteLine();
+        w.WriteSummary(2, "Methode d'extensibilité possible pour les constructeurs par recopie.");
+        w.WriteParam("bean", "Source.");
+        w.WriteLine(2, $"partial void OnCreated({item.NamePascal} bean);");
+    }
+
+    /// <summary>
     /// Génère les flags d'une liste de référence statique.
     /// </summary>
     /// <param name="w">Writer.</param>
@@ -135,203 +136,6 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             w.WriteLine(2, "}");
             w.WriteLine();
             w.WriteLine(2, "#endregion");
-        }
-    }
-
-    /// <summary>
-    /// Génère les constructeurs.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">La classe générée.</param>
-    private void GenerateConstructors(CSharpWriter w, Class item)
-    {
-        GenerateDefaultConstructor(w, item);
-        GenerateCopyConstructor(w, item);
-        GenerateBaseCopyConstructor(w, item);
-    }
-
-    /// <summary>
-    /// Génère le constructeur par recopie.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">Classe générée.</param>
-    private void GenerateCopyConstructor(CSharpWriter w, Class item)
-    {
-        w.WriteLine();
-        w.WriteSummary(2, "Constructeur par recopie.");
-        w.WriteParam("bean", "Source.");
-        if (item.Extends != null)
-        {
-            w.WriteLine(2, "public " + item.NamePascal + "(" + item.NamePascal + " bean)");
-            w.WriteLine(3, ": base(bean)");
-            w.WriteLine(2, "{");
-        }
-        else
-        {
-            w.WriteLine(2, "public " + item.NamePascal + "(" + item.NamePascal + " bean)");
-            w.WriteLine(2, "{");
-        }
-
-        w.WriteLine(3, "if (bean == null)");
-        w.WriteLine(3, "{");
-        w.WriteLine(4, "throw new ArgumentNullException(nameof(bean));");
-        w.WriteLine(3, "}");
-        w.WriteLine();
-
-        var initd = new List<string>();
-
-        foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => Config.GetType(t).Contains("ICollection")))
-        {
-            initd.Add(property.NamePascal);
-            var strip = Config.GetImplementation(property.Domain)!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
-            w.WriteLine(3, property.NamePascal + " = new List<" + strip + ">(bean." + property.NamePascal + ");");
-        }
-
-        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
-        {
-            w.WriteLine(3, property.NamePascal + " = new " + property.Composition.NamePascal + "(bean." + property.NamePascal + ");");
-        }
-
-        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
-        {
-            w.WriteLine(3, property.NamePascal + " = new List<" + property.Composition.NamePascal + ">(bean." + property.NamePascal + ");");
-        }
-
-        foreach (var property in item.Properties.Where(p => p is not CompositionProperty && !initd.Contains(p.NamePascal)))
-        {
-            w.WriteLine(3, property.NamePascal + " = bean." + property.NamePascal + ";");
-        }
-
-        w.WriteLine();
-        w.WriteLine(3, "OnCreated(bean);");
-        w.WriteLine(2, "}");
-    }
-
-    /// <summary>
-    /// Génère le constructeur par défaut.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">Classe générée.</param>
-    private void GenerateDefaultConstructor(CSharpWriter w, Class item)
-    {
-        w.WriteSummary(2, "Constructeur.");
-        w.WriteLine(2, $@"public {item.NamePascal}()");
-
-        if (item.Extends != null)
-        {
-            w.WriteLine(3, ": base()");
-        }
-
-        w.WriteLine(2, "{");
-
-        var line = false;
-        foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => Config.GetImplementation(t.Domain)!.Type.Contains("ICollection")))
-        {
-            line = true;
-            var strip = Config.GetImplementation(property.Domain)!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
-            w.WriteLine(3, $"{property.NamePascal} = new List<{strip}>();");
-        }
-
-        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
-        {
-            line = true;
-            w.WriteLine(3, $"{property.NamePascal} = new {property.Composition.NamePascal}();");
-        }
-
-        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
-        {
-            line = true;
-            w.WriteLine(3, $"{property.NamePascal} = new List<{property.Composition.NamePascal}>();");
-        }
-
-        if (line)
-        {
-            w.WriteLine();
-        }
-
-        w.WriteLine(3, "OnCreated();");
-        w.WriteLine(2, "}");
-    }
-
-    /// <summary>
-    /// Génération des constantes statiques.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">La classe générée.</param>
-    private void GenerateConstProperties(CSharpWriter w, Class item)
-    {
-        var consts = new List<(IFieldProperty Prop, string Name, string Code, string Label)>();
-
-        foreach (var refValue in item.Values)
-        {
-            var label = refValue.GetLabel(item);
-
-            if (!Config.CanClassUseEnums(item, Classes) && item.EnumKey != null)
-            {
-                var code = refValue.Value[item.EnumKey];
-                consts.Add((item.EnumKey, refValue.Name, code, label));
-            }
-
-            foreach (var uk in item.UniqueKeys.Where(uk =>
-                uk.Count == 1
-                && Config.GetType(uk.Single()) == "string"
-                && refValue.Value.ContainsKey(uk.Single())))
-            {
-                var prop = uk.Single();
-
-                if (!Config.CanClassUseEnums(item, Classes, prop))
-                {
-                    var code = refValue.Value[prop];
-                    consts.Add((prop, $"{refValue.Name}{prop}", code, label));
-                }
-            }
-        }
-
-        foreach (var @const in consts.OrderBy(x => x.Name.ToPascalCase(), StringComparer.Ordinal))
-        {
-            w.WriteSummary(2, @const.Label);
-            w.WriteLine(2, $"public const {Config.GetType(@const.Prop).TrimEnd('?')} {@const.Name.ToPascalCase()} = {(Config.ShouldQuoteValue(@const.Prop) ? $@"""{@const.Code}""" : @const.Code)};");
-            w.WriteLine();
-        }
-    }
-
-    /// <summary>
-    /// Génère l'enum pour les valeurs statiques de références.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">La classe générée.</param>
-    private void GenerateEnumValues(CSharpWriter w, Class item)
-    {
-        var refs = item.Values.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
-
-        void WriteEnum(IFieldProperty prop)
-        {
-            w.WriteSummary(2, $"Valeurs possibles de la liste de référence {item}.");
-            w.WriteLine(2, $"public enum {prop.Name.ToPascalCase()}s");
-            w.WriteLine(2, "{");
-
-            foreach (var refValue in refs)
-            {
-                w.WriteSummary(3, refValue.GetLabel(item));
-                w.Write(3, refValue.Value[prop]);
-
-                if (refs.IndexOf(refValue) != refs.Count - 1)
-                {
-                    w.WriteLine(",");
-                }
-
-                w.WriteLine();
-            }
-
-            w.WriteLine(2, "}");
-        }
-
-        WriteEnum(item.EnumKey!);
-
-        foreach (var uk in item.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(item, Classes, uk.Single())))
-        {
-            w.WriteLine();
-            WriteEnum(uk.Single());
         }
     }
 
@@ -442,6 +246,221 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     }
 
     /// <summary>
+    /// Génération des constantes statiques.
+    /// </summary>
+    /// <param name="w">Writer.</param>
+    /// <param name="item">La classe générée.</param>
+    private void GenerateConstProperties(CSharpWriter w, Class item)
+    {
+        var consts = new List<(IFieldProperty Prop, string Name, string Code, string Label)>();
+
+        foreach (var refValue in item.Values)
+        {
+            var label = refValue.GetLabel(item);
+
+            if (!Config.CanClassUseEnums(item, Classes) && item.EnumKey != null)
+            {
+                var code = refValue.Value[item.EnumKey];
+                consts.Add((item.EnumKey, refValue.Name, code, label));
+            }
+
+            foreach (var uk in item.UniqueKeys.Where(uk =>
+                uk.Count == 1
+                && Config.GetType(uk.Single()) == "string"
+                && refValue.Value.ContainsKey(uk.Single())))
+            {
+                var prop = uk.Single();
+
+                if (!Config.CanClassUseEnums(item, Classes, prop))
+                {
+                    var code = refValue.Value[prop];
+                    consts.Add((prop, $"{refValue.Name}{prop}", code, label));
+                }
+            }
+        }
+
+        foreach (var @const in consts.OrderBy(x => x.Name.ToPascalCase(), StringComparer.Ordinal))
+        {
+            w.WriteSummary(2, @const.Label);
+            w.WriteLine(2, $"public const {Config.GetType(@const.Prop).TrimEnd('?')} {@const.Name.ToPascalCase()} = {(Config.ShouldQuoteValue(@const.Prop) ? $@"""{@const.Code}""" : @const.Code)};");
+            w.WriteLine();
+        }
+    }
+
+    /// <summary>
+    /// Génère les constructeurs.
+    /// </summary>
+    /// <param name="w">Writer.</param>
+    /// <param name="item">La classe générée.</param>
+    private void GenerateConstructors(CSharpWriter w, Class item)
+    {
+        GenerateDefaultConstructor(w, item);
+        GenerateCopyConstructor(w, item);
+        GenerateBaseCopyConstructor(w, item);
+    }
+
+    /// <summary>
+    /// Génère le constructeur par recopie.
+    /// </summary>
+    /// <param name="w">Writer.</param>
+    /// <param name="item">Classe générée.</param>
+    private void GenerateCopyConstructor(CSharpWriter w, Class item)
+    {
+        w.WriteLine();
+        w.WriteSummary(2, "Constructeur par recopie.");
+        w.WriteParam("bean", "Source.");
+        if (item.Extends != null)
+        {
+            w.WriteLine(2, "public " + item.NamePascal + "(" + item.NamePascal + " bean)");
+            w.WriteLine(3, ": base(bean)");
+            w.WriteLine(2, "{");
+        }
+        else
+        {
+            w.WriteLine(2, "public " + item.NamePascal + "(" + item.NamePascal + " bean)");
+            w.WriteLine(2, "{");
+        }
+
+        w.WriteLine(3, "if (bean == null)");
+        w.WriteLine(3, "{");
+        w.WriteLine(4, "throw new ArgumentNullException(nameof(bean));");
+        w.WriteLine(3, "}");
+        w.WriteLine();
+
+        var initd = new List<string>();
+
+        foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => Config.GetType(t).Contains("ICollection")))
+        {
+            initd.Add(property.NamePascal);
+            var strip = Config.GetImplementation(property.Domain)!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
+            w.WriteLine(3, property.NamePascal + " = new List<" + strip + ">(bean." + property.NamePascal + ");");
+        }
+
+        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
+        {
+            w.WriteLine(3, property.NamePascal + " = new " + property.Composition.NamePascal + "(bean." + property.NamePascal + ");");
+        }
+
+        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
+        {
+            w.WriteLine(3, property.NamePascal + " = new List<" + property.Composition.NamePascal + ">(bean." + property.NamePascal + ");");
+        }
+
+        foreach (var property in item.Properties.Where(p => p is not CompositionProperty && !initd.Contains(p.NamePascal)))
+        {
+            w.WriteLine(3, property.NamePascal + " = bean." + property.NamePascal + ";");
+        }
+
+        w.WriteLine();
+        w.WriteLine(3, "OnCreated(bean);");
+        w.WriteLine(2, "}");
+    }
+
+    private void GenerateCreateMethod(CSharpWriter w, Class item)
+    {
+        var writeProperties = item.Properties.Where(p => !p.Readonly);
+
+        if (writeProperties.Any())
+        {
+            w.WriteLine();
+            w.WriteSummary(2, "Factory pour instancier la classe.");
+            foreach (var prop in writeProperties)
+            {
+                w.WriteParam(prop.NameCamel, prop.Comment);
+            }
+
+            w.WriteReturns(2, "Instance de la classe.");
+            w.WriteLine(2, $"static abstract I{item.NamePascal} Create({string.Join(", ", writeProperties.Select(p => $"{Config.GetType(p, useIEnumerable: false)} {p.NameCamel} = null"))});");
+        }
+    }
+
+    /// <summary>
+    /// Génère le constructeur par défaut.
+    /// </summary>
+    /// <param name="w">Writer.</param>
+    /// <param name="item">Classe générée.</param>
+    private void GenerateDefaultConstructor(CSharpWriter w, Class item)
+    {
+        w.WriteSummary(2, "Constructeur.");
+        w.WriteLine(2, $@"public {item.NamePascal}()");
+
+        if (item.Extends != null)
+        {
+            w.WriteLine(3, ": base()");
+        }
+
+        w.WriteLine(2, "{");
+
+        var line = false;
+        foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => Config.GetImplementation(t.Domain)!.Type.Contains("ICollection")))
+        {
+            line = true;
+            var strip = Config.GetImplementation(property.Domain)!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
+            w.WriteLine(3, $"{property.NamePascal} = new List<{strip}>();");
+        }
+
+        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
+        {
+            line = true;
+            w.WriteLine(3, $"{property.NamePascal} = new {property.Composition.NamePascal}();");
+        }
+
+        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
+        {
+            line = true;
+            w.WriteLine(3, $"{property.NamePascal} = new List<{property.Composition.NamePascal}>();");
+        }
+
+        if (line)
+        {
+            w.WriteLine();
+        }
+
+        w.WriteLine(3, "OnCreated();");
+        w.WriteLine(2, "}");
+    }
+
+    /// <summary>
+    /// Génère l'enum pour les valeurs statiques de références.
+    /// </summary>
+    /// <param name="w">Writer.</param>
+    /// <param name="item">La classe générée.</param>
+    private void GenerateEnumValues(CSharpWriter w, Class item)
+    {
+        var refs = item.Values.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
+
+        void WriteEnum(IFieldProperty prop)
+        {
+            w.WriteSummary(2, $"Valeurs possibles de la liste de référence {item}.");
+            w.WriteLine(2, $"public enum {prop.Name.ToPascalCase()}s");
+            w.WriteLine(2, "{");
+
+            foreach (var refValue in refs)
+            {
+                w.WriteSummary(3, refValue.GetLabel(item));
+                w.Write(3, refValue.Value[prop]);
+
+                if (refs.IndexOf(refValue) != refs.Count - 1)
+                {
+                    w.WriteLine(",");
+                }
+
+                w.WriteLine();
+            }
+
+            w.WriteLine(2, "}");
+        }
+
+        WriteEnum(item.EnumKey!);
+
+        foreach (var uk in item.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(item, Classes, uk.Single())))
+        {
+            w.WriteLine();
+            WriteEnum(uk.Single());
+        }
+    }
+
+    /// <summary>
     /// Génère les propriétés.
     /// </summary>
     /// <param name="w">Writer.</param>
@@ -546,24 +565,6 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         else
         {
             w.WriteLine(2, $"{type} {property.NamePascal} {{ get; }}");
-        }
-    }
-
-    private void GenerateCreateMethod(CSharpWriter w, Class item)
-    {
-        var writeProperties = item.Properties.Where(p => !p.Readonly);
-
-        if (writeProperties.Any())
-        {
-            w.WriteLine();
-            w.WriteSummary(2, "Factory pour instancier la classe.");
-            foreach (var prop in writeProperties)
-            {
-                w.WriteParam(prop.NameCamel, prop.Comment);
-            }
-
-            w.WriteReturns(2, "Instance de la classe.");
-            w.WriteLine(2, $"static abstract I{item.NamePascal} Create({string.Join(", ", writeProperties.Select(p => $"{Config.GetType(p, useIEnumerable: false)} {p.NameCamel} = null"))});");
         }
     }
 

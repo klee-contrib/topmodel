@@ -6,6 +6,7 @@ namespace TopModel.Core.Loaders;
 
 public class InferTypeFromValueResolver : INodeTypeResolver
 {
+    /// <inheritdoc cref="INodeTypeResolver.Resolve" />
     public bool Resolve(NodeEvent? nodeEvent, ref Type currentType)
     {
         if (nodeEvent is Scalar scalar)

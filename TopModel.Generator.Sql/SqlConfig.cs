@@ -27,6 +27,17 @@ public class SqlConfig : GeneratorConfigBase
         return false;
     }
 
+    public bool ShouldQuoteValue(IFieldProperty prop)
+    {
+        var type = GetType(prop);
+        return (type ?? string.Empty).Contains("varchar")
+            || type == "text"
+            || type == "uniqueidentifier"
+            || type == "uuid"
+            || (type ?? string.Empty).Contains("date")
+            || (type ?? string.Empty).Contains("time");
+    }
+
     protected override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
     {
         throw new NotImplementedException();

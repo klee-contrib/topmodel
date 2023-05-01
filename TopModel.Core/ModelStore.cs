@@ -13,15 +13,15 @@ public class ModelStore
     private readonly IMemoryCache _fsCache;
     private readonly ILogger<ModelStore> _logger;
     private readonly ModelFileLoader _modelFileLoader;
-    private readonly IEnumerable<IModelWatcher> _modelWatchers;
 
     private readonly Dictionary<string, ModelFile> _modelFiles = new();
-
-    private readonly object _puLock = new();
+    private readonly IEnumerable<IModelWatcher> _modelWatchers;
     private readonly HashSet<string> _pendingUpdates = new();
 
-    private readonly TranslationStore _translationStore;
+    private readonly object _puLock = new();
     private readonly TopModelLock _topModelLock = new();
+
+    private readonly TranslationStore _translationStore;
 
     private LoggingScope? _storeConfig;
 
@@ -31,8 +31,8 @@ public class ModelStore
         _fsCache = fsCache;
         _logger = logger;
         _modelFileLoader = modelFileLoader;
-        _modelWatchers = modelWatchers.Where(mw => !mw.Disabled);
         _translationStore = translationStore;
+        _modelWatchers = modelWatchers.Where(mw => !mw.Disabled);
 
         var lockFile = new FileInfo(Path.Combine(_config.ModelRoot, _config.LockFileName));
         if (lockFile.Exists)
@@ -76,11 +76,21 @@ public class ModelStore
         return GetDependencies(file).SelectMany(m => m.Decorators).Concat(file.Decorators);
     }
 
+    public Dictionary<string, Class> GetReferencedClasses(ModelFile modelFile)
+    {
+        var dependencies = GetDependencies(modelFile).ToList();
+        return dependencies
+            .SelectMany(m => m.Classes)
+            .Concat(modelFile.Classes.Where(c => !modelFile.ResolvedAliases.Contains(c)))
+            .Distinct()
+            .ToDictionary(c => c.Name.Value, c => c);
+    }
+
     public IDisposable? LoadFromConfig(bool watch = false, LoggingScope? storeConfig = null)
     {
         _storeConfig = storeConfig;
 
-        using var scope = _logger.BeginScope(_storeConfig);
+        using var scope = _logger.BeginScope(_storeConfig!);
 
         _topModelLock.Init(_logger);
 
@@ -118,16 +128,6 @@ public class ModelStore
         TryApplyUpdates();
 
         return fsWatcher;
-    }
-
-    public Dictionary<string, Class> GetReferencedClasses(ModelFile modelFile)
-    {
-        var dependencies = GetDependencies(modelFile).ToList();
-        return dependencies
-            .SelectMany(m => m.Classes)
-            .Concat(modelFile.Classes.Where(c => !modelFile.ResolvedAliases.Contains(c)))
-            .Distinct()
-            .ToDictionary(c => c.Name.Value, c => c);
     }
 
     public void OnModelFileChange(string filePath, string? content = null)
@@ -261,19 +261,67 @@ public class ModelStore
             .Concat(Files.Where(f => f != modelFile && f.Domains.Any() && (!modelFile.Domains.Any() || modelFile.Domains.Any(d => d.ListDomainReference != null))));
     }
 
-    private void OnFSChangedEvent(object sender, FileSystemEventArgs e)
+    private IEnumerable<ModelError> GetGlobalErrors()
     {
-        _fsCache.Set(e.FullPath, e, new MemoryCacheEntryOptions()
-            .AddExpirationToken(new CancellationChangeToken(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token))
-            .RegisterPostEvictionCallback((k, v, r, a) =>
+        foreach (var g in Files.SelectMany(f => f.Domains).GroupBy(f => (string)f.Name).Where(g => g.Count() > 1))
+        {
+            foreach (var domain in g.Skip(1))
             {
-                if (r != EvictionReason.TokenExpired)
-                {
-                    return;
-                }
+                yield return new ModelError(domain, $"Le domaine '{domain}' est déjà défini") { ModelErrorType = ModelErrorType.TMD0007 };
+            }
+        }
 
-                OnModelFileChange((string)k);
-            }));
+        foreach (var converter in Converters)
+        {
+            var dup = Converters.FirstOrDefault(c => Converters.IndexOf(c) < Converters.IndexOf(converter) && c.Conversions.Intersect(converter.Conversions).Any());
+            if (dup != null)
+            {
+                foreach (var (from, to) in dup.Conversions.Intersect(converter.Conversions))
+                {
+                    yield return new ModelError(converter, $"La définition de la conversion entre {from.Name} et {to.Name} est déjà définie dans un autre converter") { ModelErrorType = ModelErrorType.TMD1022 };
+                }
+            }
+        }
+
+        foreach (var classe in Classes.Where(c => c.Trigram != null && Classes.Any(u => u.Trigram == c.Trigram && u != c)))
+        {
+            yield return new ModelError(classe.ModelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans la (les) classe(s) suivantes : {string.Join(", ", Classes.Where(u => u.Trigram == classe.Trigram && u != classe).Select(c => c.Name))}", classe.Trigram.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD9002 };
+        }
+
+        foreach (var domain in Domains.Values.Where(domain => !this.GetDomainReferences(domain).Any()))
+        {
+            yield return new ModelError(domain, $"Le domaine '{domain.Name}' n'est pas utilisé.") { IsError = false, ModelErrorType = ModelErrorType.TMD9004 };
+        }
+
+        foreach (var decorator in Decorators.Where(decorator => !this.GetDecoratorReferences(decorator).Any()))
+        {
+            yield return new ModelError(decorator, $"Le décorateur '{decorator.Name}' n'est pas utilisé.") { IsError = false, ModelErrorType = ModelErrorType.TMD9005 };
+        }
+
+        foreach (var files in Files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Namespace.Module }))
+        {
+            var endpoints = files.SelectMany(f => f.Endpoints.Where(c => !f.ResolvedAliases.Contains(c)));
+
+            foreach (var endpoint in endpoints.Where((e, i) => files.SelectMany(f => f.Endpoints).Where((p, j) => p.Name == e.Name && j < i).Any()))
+            {
+                yield return new ModelError(endpoint, $"Le nom '{endpoint.Name}' est déjà utilisé.", endpoint.Name.GetLocation()) { IsError = true, ModelErrorType = ModelErrorType.TMD0003 };
+            }
+
+            if (files.Select(file => file.Options.Endpoints.Prefix).Distinct().Count() > 1)
+            {
+                foreach (var file in files)
+                {
+                    if (file.Options.Endpoints.Prefix != null)
+                    {
+                        yield return new ModelError(file, $"Le préfixe d'endpoint '{file.Options.Endpoints.Prefix}' doit être identique à celui de tous les fichiers de même nom et de même module.", file.Options.Endpoints.Prefix?.GetLocation()) { ModelErrorType = ModelErrorType.TMD1021 };
+                    }
+                    else
+                    {
+                        yield return new ModelError(file, $"Le fichier ne définit pas de préfixe d'endpoint alors que d'autres fichiers de même nom et de même module le font.") { ModelErrorType = ModelErrorType.TMD1021 };
+                    }
+                }
+            }
+        }
     }
 
     private void LoadFile(string filePath, string? content = null)
@@ -302,6 +350,67 @@ public class ModelStore
         {
             _logger.LogError(e, e.Message);
         }
+    }
+
+    private void LoadTranslations()
+    {
+        var defaultLangMap = new Dictionary<string, string>();
+        foreach (var classe in Files.SelectMany(f => f.Classes))
+        {
+            foreach (var p in classe.Properties.OfType<IFieldProperty>().Where(p => p.Label != null))
+            {
+                defaultLangMap[p.ResourceKey] = p.Label!;
+            }
+
+            if (classe.DefaultProperty != null)
+            {
+                foreach (var r in classe.Values)
+                {
+                    defaultLangMap[r.ResourceKey] = r.Value[classe.DefaultProperty];
+                }
+            }
+        }
+
+        _translationStore.Translations[_config.I18n.DefaultLang] = defaultLangMap;
+
+        foreach (var lang in _config.I18n.Langs)
+        {
+            var langMap = new Dictionary<string, string>();
+            var directoryPath = _config.I18n.RootPath.Replace("{lang}", lang);
+            var exists = Directory.Exists(directoryPath);
+            if (exists)
+            {
+                var files = Directory.GetFiles(directoryPath, "*.properties", SearchOption.AllDirectories);
+                foreach (var file in files)
+                {
+                    var lines = File.ReadAllLines(file);
+                    foreach (var line in lines)
+                    {
+                        if (line != null && line != string.Empty)
+                        {
+                            langMap[line.Split("=")[0]] = line.Split("=")[1];
+                        }
+                    }
+                }
+            }
+
+            _translationStore.Translations[lang] = langMap;
+        }
+    }
+
+    private void OnFSChangedEvent(object sender, FileSystemEventArgs e)
+    {
+        _fsCache.Set(e.FullPath, e, new MemoryCacheEntryOptions()
+            .AddExpirationToken(new CancellationChangeToken(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token))
+            .RegisterPostEvictionCallback((k, v, r, a) =>
+            {
+                if (r != EvictionReason.TokenExpired)
+                {
+                    return;
+                }
+
+                OnModelFileChange((string)k);
+            }));
     }
 
     private IEnumerable<ModelError> ResolveReferences(ModelFile modelFile)
@@ -1326,115 +1435,6 @@ public class ModelStore
                     }
                 }
             }
-        }
-    }
-
-    private IEnumerable<ModelError> GetGlobalErrors()
-    {
-        foreach (var g in Files.SelectMany(f => f.Domains).GroupBy(f => (string)f.Name).Where(g => g.Count() > 1))
-        {
-            foreach (var domain in g.Skip(1))
-            {
-                yield return new ModelError(domain, $"Le domaine '{domain}' est déjà défini") { ModelErrorType = ModelErrorType.TMD0007 };
-            }
-        }
-
-        foreach (var converter in Converters)
-        {
-            var dup = Converters.FirstOrDefault(c => Converters.IndexOf(c) < Converters.IndexOf(converter) && c.Conversions.Intersect(converter.Conversions).Any());
-            if (dup != null)
-            {
-                foreach (var (from, to) in dup.Conversions.Intersect(converter.Conversions))
-                {
-                    yield return new ModelError(converter, $"La définition de la conversion entre {from.Name} et {to.Name} est déjà définie dans un autre converter") { ModelErrorType = ModelErrorType.TMD1022 };
-                }
-            }
-        }
-
-        foreach (var classe in Classes.Where(c => c.Trigram != null && Classes.Any(u => u.Trigram == c.Trigram && u != c)))
-        {
-            yield return new ModelError(classe.ModelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans la (les) classe(s) suivantes : {string.Join(", ", Classes.Where(u => u.Trigram == classe.Trigram && u != classe).Select(c => c.Name))}", classe.Trigram.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD9002 };
-        }
-
-        foreach (var domain in Domains.Values.Where(domain => !this.GetDomainReferences(domain).Any()))
-        {
-            yield return new ModelError(domain, $"Le domaine '{domain.Name}' n'est pas utilisé.") { IsError = false, ModelErrorType = ModelErrorType.TMD9004 };
-        }
-
-        foreach (var decorator in Decorators.Where(decorator => !this.GetDecoratorReferences(decorator).Any()))
-        {
-            yield return new ModelError(decorator, $"Le décorateur '{decorator.Name}' n'est pas utilisé.") { IsError = false, ModelErrorType = ModelErrorType.TMD9005 };
-        }
-
-        foreach (var files in Files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Namespace.Module }))
-        {
-            var endpoints = files.SelectMany(f => f.Endpoints.Where(c => !f.ResolvedAliases.Contains(c)));
-
-            foreach (var endpoint in endpoints.Where((e, i) => files.SelectMany(f => f.Endpoints).Where((p, j) => p.Name == e.Name && j < i).Any()))
-            {
-                yield return new ModelError(endpoint, $"Le nom '{endpoint.Name}' est déjà utilisé.", endpoint.Name.GetLocation()) { IsError = true, ModelErrorType = ModelErrorType.TMD0003 };
-            }
-
-            if (files.Select(file => file.Options.Endpoints.Prefix).Distinct().Count() > 1)
-            {
-                foreach (var file in files)
-                {
-                    if (file.Options.Endpoints.Prefix != null)
-                    {
-                        yield return new ModelError(file, $"Le préfixe d'endpoint '{file.Options.Endpoints.Prefix}' doit être identique à celui de tous les fichiers de même nom et de même module.", file.Options.Endpoints.Prefix?.GetLocation()) { ModelErrorType = ModelErrorType.TMD1021 };
-                    }
-                    else
-                    {
-                        yield return new ModelError(file, $"Le fichier ne définit pas de préfixe d'endpoint alors que d'autres fichiers de même nom et de même module le font.") { ModelErrorType = ModelErrorType.TMD1021 };
-                    }
-                }
-            }
-        }
-    }
-
-    private void LoadTranslations()
-    {
-        var defaultLangMap = new Dictionary<string, string>();
-        foreach (var classe in Files.SelectMany(f => f.Classes))
-        {
-            foreach (var p in classe.Properties.OfType<IFieldProperty>().Where(p => p.Label != null))
-            {
-                defaultLangMap[p.ResourceKey] = p.Label!;
-            }
-
-            if (classe.DefaultProperty != null)
-            {
-                foreach (var r in classe.Values)
-                {
-                    defaultLangMap[r.ResourceKey] = r.Value[classe.DefaultProperty];
-                }
-            }
-        }
-
-        _translationStore.Translations[_config.I18n.DefaultLang] = defaultLangMap;
-
-        foreach (var lang in _config.I18n.Langs)
-        {
-            var langMap = new Dictionary<string, string>();
-            var directoryPath = _config.I18n.RootPath.Replace("{lang}", lang);
-            var exists = Directory.Exists(directoryPath);
-            if (exists)
-            {
-                var files = Directory.GetFiles(directoryPath, "*.properties", SearchOption.AllDirectories);
-                foreach (var file in files)
-                {
-                    var lines = File.ReadAllLines(file);
-                    foreach (var line in lines)
-                    {
-                        if (line != null && line != string.Empty)
-                        {
-                            langMap[line.Split("=")[0]] = line.Split("=")[1];
-                        }
-                    }
-                }
-            }
-
-            _translationStore.Translations[lang] = langMap;
         }
     }
 }

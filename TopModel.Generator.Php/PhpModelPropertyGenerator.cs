@@ -10,13 +10,33 @@ namespace TopModel.Generator.Php;
 /// </summary>
 public class PhpModelPropertyGenerator
 {
-    private readonly PhpConfig _config;
     private readonly IEnumerable<Class> _classes;
+    private readonly PhpConfig _config;
 
     public PhpModelPropertyGenerator(PhpConfig config, IEnumerable<Class> classes)
     {
-        _config = config;
         _classes = classes;
+        _config = config;
+    }
+
+    public void WriteProperties(PhpWriter fw, Class classe, IEnumerable<Class> availableClasses, string tag)
+    {
+        var isFirst = true;
+        foreach (var property in classe.GetProperties(availableClasses))
+        {
+            if (!isFirst)
+            {
+                fw.WriteLine();
+            }
+
+            isFirst = false;
+            WriteProperty(fw, classe, property, tag);
+        }
+    }
+
+    public void WriteProperty(PhpWriter fw, CompositionProperty property)
+    {
+        fw.WriteLine(1, $"private {_config.GetType(property)} ${property.NameCamel};");
     }
 
     public void WriteProperty(PhpWriter fw, Class classe, IProperty property, string tag)
@@ -35,24 +55,45 @@ public class PhpModelPropertyGenerator
         }
     }
 
-    public void WriteProperty(PhpWriter fw, CompositionProperty property)
+    private void WriteManyToMany(PhpWriter fw, Class classe, AssociationProperty property)
     {
-        fw.WriteLine(1, $"private {_config.GetType(property)} ${property.NameCamel};");
+        fw.AddImport(@$"Doctrine\ORM\Mapping\ManyToMany");
+        fw.AddImport(@$"Doctrine\ORM\Mapping\InverseJoinColumn");
+        fw.AddImport(@$"Doctrine\ORM\Mapping\JoinColumn");
+
+        var role = property.Role is not null ? "_" + property.Role.ToConstantCase() : string.Empty;
+        var fk = property.Property.SqlName;
+        var pk = classe.PrimaryKey.Single().SqlName + role;
+
+        fw.WriteLine(1, @$"#[JoinColumn(name: '{pk}', referencedColumnName: '{pk}')]");
+        fw.WriteLine(1, @$"#[InverseJoinColumn(name: '{fk}', referencedColumnName: '{fk}')]");
+        fw.WriteLine(1, @$"#[ManyToMany(targetEntity: {property.Association.NamePascal}::class)]");
     }
 
-    public void WriteProperties(PhpWriter fw, Class classe, IEnumerable<Class> availableClasses, string tag)
+    private void WriteManyToOne(PhpWriter fw, Class classe, AssociationProperty property)
     {
-        var isFirst = true;
-        foreach (var property in classe.GetProperties(availableClasses, tag))
-        {
-            if (!isFirst)
-            {
-                fw.WriteLine();
-            }
+        var fk = ((IFieldProperty)property).SqlName;
+        var apk = property.Property.SqlName;
+        fw.AddImport(@$"Doctrine\ORM\Mapping\ManyToOne");
+        fw.AddImport(@$"Doctrine\ORM\Mapping\JoinColumn");
+        fw.WriteLine(1, @$"#[ManyToOne(targetEntity: {property.Association}::class)]");
+        fw.WriteLine(1, @$"#[JoinColumn(name: '{fk}', referencedColumnName: '{apk}')]");
+    }
 
-            isFirst = false;
-            WriteProperty(fw, classe, property, tag);
-        }
+    private void WriteOneToMany(PhpWriter fw, Class classe, AssociationProperty property)
+    {
+        fw.AddImport(@$"Doctrine\ORM\Mapping\OneToMany");
+        fw.WriteLine(1, @$"#[OneToMany(mappedBy: '{(property is ReverseAssociationProperty rap ? rap.ReverseProperty.NameByClassCamel : @$"{property.Class.NameCamel}{property.Role ?? string.Empty}")}', targetEntity: {property.Association.Name}::class)]");
+    }
+
+    private void WriteOneToOne(PhpWriter fw, Class classe, AssociationProperty property)
+    {
+        var fk = ((IFieldProperty)property).SqlName;
+        var apk = property.Property.SqlName;
+        fw.AddImport(@$"Doctrine\ORM\Mapping\OneToOne");
+        fw.AddImport(@$"Doctrine\ORM\Mapping\JoinColumn");
+        fw.WriteLine(1, @$"#[OneToOne(targetEntity: {property.Association.NamePascal}::class)]");
+        fw.WriteLine(1, @$"#[JoinColumn(name: '{fk}', referencedColumnName: '{apk}')]");
     }
 
     private void WriteProperty(PhpWriter fw, Class classe, AssociationProperty property, string tag)
@@ -81,47 +122,6 @@ public class PhpModelPropertyGenerator
         }
 
         fw.WriteLine(1, $"private {_config.GetType(property, _classes, classe.IsPersistent)} ${property.NameByClassCamel};");
-    }
-
-    private void WriteManyToOne(PhpWriter fw, Class classe, AssociationProperty property)
-    {
-        var fk = ((IFieldProperty)property).SqlName;
-        var apk = property.Property.SqlName;
-        fw.AddImport(@$"Doctrine\ORM\Mapping\ManyToOne");
-        fw.AddImport(@$"Doctrine\ORM\Mapping\JoinColumn");
-        fw.WriteLine(1, @$"#[ManyToOne(targetEntity: {property.Association}::class)]");
-        fw.WriteLine(1, @$"#[JoinColumn(name: '{fk}', referencedColumnName: '{apk}')]");
-    }
-
-    private void WriteOneToOne(PhpWriter fw, Class classe, AssociationProperty property)
-    {
-        var fk = ((IFieldProperty)property).SqlName;
-        var apk = property.Property.SqlName;
-        fw.AddImport(@$"Doctrine\ORM\Mapping\OneToOne");
-        fw.AddImport(@$"Doctrine\ORM\Mapping\JoinColumn");
-        fw.WriteLine(1, @$"#[OneToOne(targetEntity: {property.Association.NamePascal}::class)]");
-        fw.WriteLine(1, @$"#[JoinColumn(name: '{fk}', referencedColumnName: '{apk}')]");
-    }
-
-    private void WriteManyToMany(PhpWriter fw, Class classe, AssociationProperty property)
-    {
-        fw.AddImport(@$"Doctrine\ORM\Mapping\ManyToMany");
-        fw.AddImport(@$"Doctrine\ORM\Mapping\InverseJoinColumn");
-        fw.AddImport(@$"Doctrine\ORM\Mapping\JoinColumn");
-
-        var role = property.Role is not null ? "_" + property.Role.ToConstantCase() : string.Empty;
-        var fk = property.Property.SqlName;
-        var pk = classe.PrimaryKey.Single().SqlName + role;
-
-        fw.WriteLine(1, @$"#[JoinColumn(name: '{pk}', referencedColumnName: '{pk}')]");
-        fw.WriteLine(1, @$"#[InverseJoinColumn(name: '{fk}', referencedColumnName: '{fk}')]");
-        fw.WriteLine(1, @$"#[ManyToMany(targetEntity: {property.Association.NamePascal}::class)]");
-    }
-
-    private void WriteOneToMany(PhpWriter fw, Class classe, AssociationProperty property)
-    {
-        fw.AddImport(@$"Doctrine\ORM\Mapping\OneToMany");
-        fw.WriteLine(1, @$"#[OneToMany(mappedBy: '{(property is ReverseAssociationProperty rap ? rap.ReverseProperty.NameByClassCamel : @$"{property.Class.NameCamel}{property.Role ?? string.Empty}")}', targetEntity: {property.Association.Name}::class)]");
     }
 
     private void WriteProperty(PhpWriter fw, Class classe, IFieldProperty property, string tag)

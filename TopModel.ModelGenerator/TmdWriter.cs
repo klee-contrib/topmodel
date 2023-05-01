@@ -1,5 +1,4 @@
-using System.Text;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using TopModel.Utils;
 
 namespace TopModel.ModelGenerator;
@@ -9,25 +8,29 @@ namespace TopModel.ModelGenerator;
 /// </summary>
 public class TmdWriter : IDisposable
 {
-    private readonly FileWriter _writer;
-
     private readonly TmdFile _file;
-
     private readonly string _modelRoot;
+    private readonly FileWriter _writer;
 
     public TmdWriter(string path, TmdFile file, ILogger logger, string modelRoot)
     {
-        this._file = file;
+        _file = file;
         _writer = new FileWriter(path + '/' + file.Module + '/' + file.Name + ".tmd", logger) { StartCommentToken = "####" };
-        this._modelRoot = Path.GetRelativePath(modelRoot, path);
-        if (this._modelRoot == ".")
+        _modelRoot = Path.GetRelativePath(modelRoot, path);
+        if (_modelRoot == ".")
         {
-            this._modelRoot = string.Empty;
+            _modelRoot = string.Empty;
         }
         else
         {
-            this._modelRoot += '/';
+            _modelRoot += '/';
         }
+    }
+
+    /// <inheritdoc cref="IDisposable.Dispose" />
+    public void Dispose()
+    {
+        _writer.Dispose();
     }
 
     public void Write()
@@ -48,6 +51,7 @@ public class TmdWriter : IDisposable
                 _writer.WriteLine($"  - {u.Module}/{u.Name}");
             }
         }
+
         foreach (var classe in _file.Classes.OrderBy(c => c.Name))
         {
             _writer.WriteLine($"---");
@@ -58,6 +62,7 @@ public class TmdWriter : IDisposable
             {
                 _writer.WriteLine($"  trigram: {classe.Trigram.ToUpper()}");
             }
+
             _writer.WriteLine($"  properties:");
             foreach (var property in classe.Properties)
             {
@@ -109,10 +114,5 @@ public class TmdWriter : IDisposable
                 }
             }
         }
-    }
-
-    public void Dispose()
-    {
-        _writer.Dispose();
     }
 }

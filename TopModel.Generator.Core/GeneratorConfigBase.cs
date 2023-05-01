@@ -64,46 +64,6 @@ public abstract class GeneratorConfigBase
     protected virtual string NullValue => "null";
 
     /// <summary>
-    /// Récupère l'implémentation du domaine pour la config.
-    /// </summary>
-    /// <param name="domain">Décorateur.</param>
-    /// <returns>Implémentation.</returns>
-    public DomainImplementation? GetImplementation(Domain? domain)
-    {
-        return domain?.Implementations.GetValueOrDefault(Language);
-    }
-
-    /// <summary>
-    /// Récupère le type d'une propriété.
-    /// </summary>
-    /// <param name="property">Domaine.</param>
-    /// <param name="availableClasses">Classes disponibles.</param>
-    /// <param name="useClassForAssociation">Utilise le type de la classe pour une association.</param>
-    /// <param name="useIterable">Pour si c'est une composition liste, utiliser le type itérable au lieu de collection.</param>
-    /// <returns>Le type.</returns>
-    public string GetType(IProperty property, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false, bool useIterable = true)
-    {
-        return property switch
-        {
-            AssociationProperty { Association: Class assoc } ap when useClassForAssociation => ap.Type.IsToMany() ? GetListType(assoc.NamePascal) : ap.Association.NamePascal,
-            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when useClassForAssociation => asList || ap.Type.IsToMany() ? GetListType(assoc.NamePascal) : ap.Association.NamePascal,
-            AssociationProperty { Association: Class assoc } ap when CanClassUseEnums(assoc, availableClasses, ap.Property) => GetEnumType(assoc.Name, ap.Property.Name, ap.Type.IsToMany()),
-            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when CanClassUseEnums(assoc, availableClasses) => GetEnumType(assoc.Name, ap.Property.Name, asList || ap.Type.IsToMany()),
-            RegularProperty { Class: Class classe } rp when CanClassUseEnums(classe, availableClasses, rp) => GetEnumType(rp.Class.Name, rp.Name, false, true),
-            AliasProperty { Property: RegularProperty { Class: Class alClass } rp, AsList: var asList } when CanClassUseEnums(alClass, availableClasses, rp) => GetEnumType(alClass.Name, rp.Name, asList),
-            IFieldProperty fp => GetImplementation(fp.Domain)!.Type.ParseTemplate(fp),
-            CompositionProperty { Kind: "object" } cp => cp.Composition.NamePascal,
-            CompositionProperty { Kind: "list" } cp => GetListType(cp.Composition.NamePascal, useIterable),
-            CompositionProperty { DomainKind: Domain domain } cp => GetImplementation(domain)!.Type switch
-            {
-                string s when s.Contains("{composition.name}") => s.ParseTemplate(cp),
-                string s => $"{s}<{{composition.name}}>".ParseTemplate(cp)
-            },
-            _ => string.Empty
-        };
-    }
-
-    /// <summary>
     /// Détermine si une classe peut utiliser une enum pour sa clé primaire.
     /// </summary>
     /// <param name="classe">Classe.</param>
@@ -126,6 +86,23 @@ public abstract class GeneratorConfigBase
         }
 
         return classe.Enum && CheckProperty(prop!);
+    }
+
+    public string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain)
+    {
+        if (fromDomain != null && toDomain != null && fromDomain != toDomain)
+        {
+            var converter = fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
+            var text = GetImplementation(converter)?.Text;
+            if (text != null)
+            {
+                value = GetImplementation(converter)!.Text
+                    .Replace("{value}", value)
+                    .ParseTemplate(fromDomain, toDomain, Language);
+            }
+        }
+
+        return value;
     }
 
     /// <summary>
@@ -174,6 +151,16 @@ public abstract class GeneratorConfigBase
     }
 
     /// <summary>
+    /// Récupère l'implémentation du domaine pour la config.
+    /// </summary>
+    /// <param name="domain">Décorateur.</param>
+    /// <returns>Implémentation.</returns>
+    public DomainImplementation? GetImplementation(Domain? domain)
+    {
+        return domain?.Implementations.GetValueOrDefault(Language);
+    }
+
+    /// <summary>
     /// Récupère l'implémentation du décorateur pour la config.
     /// </summary>
     /// <param name="decorator">Décorateur.</param>
@@ -193,51 +180,34 @@ public abstract class GeneratorConfigBase
         return converter?.Implementations.GetValueOrDefault(Language);
     }
 
-    public string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain)
-    {
-        if (fromDomain != null && toDomain != null && fromDomain != toDomain)
-        {
-            var converter = fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
-            var text = GetImplementation(converter)?.Text;
-            if (text != null)
-            {
-                value = GetImplementation(converter)!.Text
-                    .Replace("{value}", value)
-                    .ParseTemplate(fromDomain, toDomain, Language);
-            }
-        }
-
-        return value;
-    }
-
     /// <summary>
-    /// Résout toutes les variables pour une valeur donnée.
+    /// Récupère le type d'une propriété.
     /// </summary>
-    /// <param name="value">Valeur.</param>
-    /// <param name="tag">Tag.</param>
-    /// <param name="module">Module.</param>
-    /// <param name="lang">Lang.</param>
-    /// <returns>La valeur avec les variables résolues.</returns>
-    public virtual string ResolveVariables(string value, string? tag = null, string? module = null, string? lang = null)
+    /// <param name="property">Domaine.</param>
+    /// <param name="availableClasses">Classes disponibles.</param>
+    /// <param name="useClassForAssociation">Utilise le type de la classe pour une association.</param>
+    /// <param name="useIterable">Pour si c'est une composition liste, utiliser le type itérable au lieu de collection.</param>
+    /// <returns>Le type.</returns>
+    public string GetType(IProperty property, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false, bool useIterable = true)
     {
-        var result = value;
-
-        if (tag != null)
+        return property switch
         {
-            result = ResolveTagVariables(result, tag);
-        }
-
-        if (module != null)
-        {
-            result = ReplaceVariable(result, "module", module);
-        }
-
-        if (lang != null)
-        {
-            result = ReplaceVariable(result, "lang", lang);
-        }
-
-        return result;
+            AssociationProperty { Association: Class assoc } ap when useClassForAssociation => ap.Type.IsToMany() ? GetListType(assoc.NamePascal) : ap.Association.NamePascal,
+            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when useClassForAssociation => asList || ap.Type.IsToMany() ? GetListType(assoc.NamePascal) : ap.Association.NamePascal,
+            AssociationProperty { Association: Class assoc } ap when CanClassUseEnums(assoc, availableClasses, ap.Property) => GetEnumType(assoc.Name, ap.Property.Name, ap.Type.IsToMany()),
+            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when CanClassUseEnums(assoc, availableClasses) => GetEnumType(assoc.Name, ap.Property.Name, asList || ap.Type.IsToMany()),
+            RegularProperty { Class: Class classe } rp when CanClassUseEnums(classe, availableClasses, rp) => GetEnumType(rp.Class.Name, rp.Name, false, true),
+            AliasProperty { Property: RegularProperty { Class: Class alClass } rp, AsList: var asList } when CanClassUseEnums(alClass, availableClasses, rp) => GetEnumType(alClass.Name, rp.Name, asList),
+            IFieldProperty fp => GetImplementation(fp.Domain)!.Type.ParseTemplate(fp),
+            CompositionProperty { Kind: "object" } cp => cp.Composition.NamePascal,
+            CompositionProperty { Kind: "list" } cp => GetListType(cp.Composition.NamePascal, useIterable),
+            CompositionProperty { DomainKind: Domain domain } cp => GetImplementation(domain)!.Type switch
+            {
+                string s when s.Contains("{composition.name}") => s.ParseTemplate(cp),
+                string s => $"{s}<{{composition.name}}>".ParseTemplate(cp)
+            },
+            _ => string.Empty
+        };
     }
 
     /// <summary>
@@ -348,6 +318,36 @@ public abstract class GeneratorConfigBase
         {
             Console.WriteLine();
         }
+    }
+
+    /// <summary>
+    /// Résout toutes les variables pour une valeur donnée.
+    /// </summary>
+    /// <param name="value">Valeur.</param>
+    /// <param name="tag">Tag.</param>
+    /// <param name="module">Module.</param>
+    /// <param name="lang">Lang.</param>
+    /// <returns>La valeur avec les variables résolues.</returns>
+    public virtual string ResolveVariables(string value, string? tag = null, string? module = null, string? lang = null)
+    {
+        var result = value;
+
+        if (tag != null)
+        {
+            result = ResolveTagVariables(result, tag);
+        }
+
+        if (module != null)
+        {
+            result = ReplaceVariable(result, "module", module);
+        }
+
+        if (lang != null)
+        {
+            result = ReplaceVariable(result, "lang", lang);
+        }
+
+        return result;
     }
 
     protected virtual string GetConstEnumName(string className, string refName)

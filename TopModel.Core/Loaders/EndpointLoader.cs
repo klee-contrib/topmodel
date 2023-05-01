@@ -13,6 +13,7 @@ public class EndpointLoader : ILoader<Endpoint>
         _propertyLoader = propertyLoader;
     }
 
+    /// <inheritdoc cref="ILoader{T}.Load" />
     public Endpoint Load(Parser parser)
     {
         var endpoint = new Endpoint();

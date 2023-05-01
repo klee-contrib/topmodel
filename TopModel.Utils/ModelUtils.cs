@@ -20,27 +20,6 @@ public static class ModelUtils
         }
     }
 
-    public static void TrimSlashes<T>(T classe, Expression<Func<T, string?>> getter)
-    {
-        var property = (PropertyInfo)((MemberExpression)getter.Body).Member;
-
-        if (property.GetValue(classe) != null)
-        {
-            property.SetValue(classe, ((string)property.GetValue(classe)!).Trim('/'));
-        }
-    }
-
-    /// <summary>
-    /// Convertit un text en dash-case.
-    /// </summary>
-    /// <param name="text">Le texte en entrée.</param>
-    /// <param name="upperStart">Texte commençant par une majuscule.</param>
-    /// <returns>Le texte en sortie.</returns>
-    public static string ToKebabCase(this string text)
-    {
-        return text.ToSnakeCase().Replace("_", "-");
-    }
-
     /// <summary>
     /// Convertit un text en PascalCase.
     /// </summary>
@@ -49,6 +28,81 @@ public static class ModelUtils
     public static string ToCamelCase(this string text)
     {
         return text.ToPascalCase().ToFirstLower();
+    }
+
+    /// <summary>
+    /// Convertit un text en SNAKE_CASE majuscule.
+    /// </summary>
+    /// <param name="text">Le texte en entrée.</param>
+    /// <returns>Le texte en sortie.</returns>
+    public static string ToConstantCase(this string text)
+    {
+        var sb = new StringBuilder();
+        var c = text.ToCharArray();
+        var lastIsUp = true;
+        var lastIsUnderscore = false;
+
+        for (var i = 0; i < c.Length; ++i)
+        {
+            var upperChar = char.ToUpper(c[i]);
+            var isLastChar = i == c.Length - 1;
+            var nextIsLow = !isLastChar && char.ToUpper(c[i + 1]) != c[i + 1];
+
+            if (upperChar == c[i] && upperChar != '_')
+            {
+                if (sb.Length != 0 && !lastIsUnderscore && (!lastIsUp || nextIsLow))
+                {
+                    sb.Append('_');
+                }
+            }
+
+            lastIsUp = upperChar == c[i];
+            lastIsUnderscore = c[i] == '_';
+
+            sb.Append(upperChar);
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Met la première lettre d'un string en minuscule.
+    /// </summary>
+    /// <param name="text">Le texte en entrée.</param>
+    /// <returns>Le texte en sortie.</returns>
+    public static string ToFirstLower(this string text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return text;
+        }
+
+        return char.ToLower(text[0]) + text[1..];
+    }
+
+    /// <summary>
+    /// Met la première lettre d'un string en majuscule.
+    /// </summary>
+    /// <param name="text">Le texte en entrée.</param>
+    /// <returns>Le texte en sortie.</returns>
+    public static string ToFirstUpper(this string text)
+    {
+        if (string.IsNullOrEmpty(text))
+        {
+            return text;
+        }
+
+        return char.ToUpper(text[0]) + text[1..];
+    }
+
+    /// <summary>
+    /// Convertit un text en dash-case.
+    /// </summary>
+    /// <param name="text">Le texte en entrée.</param>
+    /// <returns>Le texte en sortie.</returns>
+    public static string ToKebabCase(this string text)
+    {
+        return text.ToSnakeCase().Replace("_", "-");
     }
 
     /// <summary>
@@ -113,40 +167,15 @@ public static class ModelUtils
         return string.Concat(pascalCase);
     }
 
-    /// <summary>
-    /// Convertit un text en SNAKE_CASE majuscule.
-    /// </summary>
-    /// <param name="text">Le texte en entrée.</param>
-    /// <param name="upperStart">Texte commençant par une majuscule.</param>
-    /// <returns>Le texte en sortie.</returns>
-    public static string ToConstantCase(this string text)
+    public static string ToRelative(this string path, string? relativeTo = null)
     {
-        var sb = new StringBuilder();
-        var c = text.ToCharArray();
-        var lastIsUp = true;
-        var lastIsUnderscore = false;
-
-        for (var i = 0; i < c.Length; ++i)
+        var relative = Path.GetRelativePath(relativeTo ?? Directory.GetCurrentDirectory(), path);
+        if (!relative.StartsWith("."))
         {
-            var upperChar = char.ToUpper(c[i]);
-            var isLastChar = i == c.Length - 1;
-            var nextIsLow = !isLastChar && char.ToUpper(c[i + 1]) != c[i + 1];
-
-            if (upperChar == c[i] && upperChar != '_')
-            {
-                if (sb.Length != 0 && !lastIsUnderscore && (!lastIsUp || nextIsLow))
-                {
-                    sb.Append('_');
-                }
-            }
-
-            lastIsUp = upperChar == c[i];
-            lastIsUnderscore = c[i] == '_';
-
-            sb.Append(upperChar);
+            relative = $".\\{relative}";
         }
 
-        return sb.ToString();
+        return relative.Replace("\\", "/");
     }
 
     /// <summary>
@@ -159,44 +188,13 @@ public static class ModelUtils
         return ToConstantCase(text).ToLower();
     }
 
-    /// <summary>
-    /// Met la première lettre d'un string en minuscule.
-    /// </summary>
-    /// <param name="text">Le texte en entrée.</param>
-    /// <returns>Le texte en sortie.</returns>
-    public static string ToFirstLower(this string text)
+    public static void TrimSlashes<T>(T classe, Expression<Func<T, string?>> getter)
     {
-        if (string.IsNullOrEmpty(text))
+        var property = (PropertyInfo)((MemberExpression)getter.Body).Member;
+
+        if (property.GetValue(classe) != null)
         {
-            return text;
+            property.SetValue(classe, ((string)property.GetValue(classe)!).Trim('/'));
         }
-
-        return char.ToLower(text[0]) + text[1..];
-    }
-
-    /// <summary>
-    /// Met la première lettre d'un string en majuscule.
-    /// </summary>
-    /// <param name="text">Le texte en entrée.</param>
-    /// <returns>Le texte en sortie.</returns>
-    public static string ToFirstUpper(this string text)
-    {
-        if (string.IsNullOrEmpty(text))
-        {
-            return text;
-        }
-
-        return char.ToUpper(text[0]) + text[1..];
-    }
-
-    public static string ToRelative(this string path, string? relativeTo = null)
-    {
-        var relative = Path.GetRelativePath(relativeTo ?? Directory.GetCurrentDirectory(), path);
-        if (!relative.StartsWith("."))
-        {
-            relative = $".\\{relative}";
-        }
-
-        return relative.Replace("\\", "/");
     }
 }

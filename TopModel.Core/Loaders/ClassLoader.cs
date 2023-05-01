@@ -16,6 +16,7 @@ public class ClassLoader : ILoader<Class>
         _propertyLoader = propertyLoader;
     }
 
+    /// <inheritdoc cref="ILoader{T}.Load" />
     public Class Load(Parser parser)
     {
         var classe = new Class();

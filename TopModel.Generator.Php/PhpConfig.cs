@@ -44,6 +44,27 @@ public class PhpConfig : GeneratorConfigBase
         return false;
     }
 
+    public string GetClassFileName(Class classe, string tag)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(classe.IsPersistent ? EntitiesPath : DtosPath, tag, module: classe.Namespace.Module).ToFilePath(),
+            $"{classe.NamePascal}.php");
+    }
+
+    public string GetPackageName(Class classe, string tag, bool? isPersistent = null)
+    {
+        return GetPackageName(
+            classe.Namespace,
+            isPersistent.HasValue ? isPersistent.Value ? EntitiesPath : DtosPath : classe.IsPersistent ? EntitiesPath : DtosPath,
+            tag);
+    }
+
+    public string GetPackageName(Namespace ns, string modelPath, string tag)
+    {
+        return ResolveVariables(modelPath, tag, module: ns.Module).ToPackageName();
+    }
+
     protected override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
     {
         throw new NotImplementedException();

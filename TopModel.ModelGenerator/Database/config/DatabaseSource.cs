@@ -1,4 +1,4 @@
-namespace TopModel.ModelGenerator.Database;
+﻿namespace TopModel.ModelGenerator.Database;
 
 public class DatabaseSource
 {

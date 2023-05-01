@@ -4,51 +4,27 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
-using TopModel.LanguageServer;
 
-class CompletionHandler : CompletionHandlerBase
+namespace TopModel.LanguageServer;
+
+public class CompletionHandler : CompletionHandlerBase
 {
-    private readonly ModelStore _modelStore;
+    private readonly ModelConfig _config;
     private readonly ILanguageServerFacade _facade;
     private readonly ModelFileCache _fileCache;
-    private readonly ModelConfig _config;
+    private readonly ModelStore _modelStore;
 
     public CompletionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelFileCache fileCache, ModelConfig config)
     {
-        _modelStore = modelStore;
+        _config = config;
         _facade = facade;
         _fileCache = fileCache;
-        _config = config;
+        _modelStore = modelStore;
     }
 
     public override Task<CompletionItem> Handle(CompletionItem request, CancellationToken cancellationToken)
     {
         return Task.FromResult(request);
-    }
-    private string GetRootObject(CompletionParams request)
-    {
-
-        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
-        var currentLine = text.ElementAtOrDefault(request.Position.Line);
-        var currentPositionLine = request.Position.Line + 1;
-        var requestLine = request.Position.Line;
-        var rootLine = currentLine ?? string.Empty;
-        while (
-            !(rootLine.StartsWith("class")
-            || rootLine.StartsWith("domain")
-            || rootLine.StartsWith("decorator")
-            || rootLine.StartsWith("converter")
-            || rootLine.StartsWith("endpoint")))
-        {
-            requestLine--;
-            if (requestLine < 0 || rootLine.StartsWith("---"))
-            {
-                break;
-            }
-
-            rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
-        }
-        return rootLine.Split(":")[0];
     }
 
     public override Task<CompletionList> Handle(CompletionParams request, CancellationToken cancellationToken)
@@ -82,6 +58,7 @@ class CompletionHandler : CompletionHandlerBase
                 {
                     searchText = currentLine.Split(":")[1].Trim();
                 }
+
                 return Task.FromResult(new CompletionList(
                     _modelStore.Domains
                         .Select(domain => domain.Key)
@@ -144,7 +121,7 @@ class CompletionHandler : CompletionHandlerBase
                                     Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
                                 })
                                 : null
-                        }))); ;
+                        })));
             }
 
             // Use
@@ -351,7 +328,6 @@ class CompletionHandler : CompletionHandlerBase
                                     string.Empty,
                                     currentLine[..reqChar].Reverse().TakeWhile(c => c != ',' && c != '[' && c != ' ' && c != '{').Reverse()
                                         .Concat(currentLine[reqChar..].TakeWhile(c => c != ',' && c != ']' && c != ' ' && c != '}' && c != ':')));
-
                             }
 
                             if (isMappings && currentLine.Contains(':') && currentLine.IndexOf(':') < reqChar)
@@ -444,5 +420,30 @@ class CompletionHandler : CompletionHandlerBase
         {
             DocumentSelector = _config.GetDocumentSelector()
         };
+    }
+
+    private string GetRootObject(CompletionParams request)
+    {
+        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var currentLine = text.ElementAtOrDefault(request.Position.Line);
+        var requestLine = request.Position.Line;
+        var rootLine = currentLine ?? string.Empty;
+        while (
+            !(rootLine.StartsWith("class")
+            || rootLine.StartsWith("domain")
+            || rootLine.StartsWith("decorator")
+            || rootLine.StartsWith("converter")
+            || rootLine.StartsWith("endpoint")))
+        {
+            requestLine--;
+            if (requestLine < 0 || rootLine.StartsWith("---"))
+            {
+                break;
+            }
+
+            rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
+        }
+
+        return rootLine.Split(":")[0];
     }
 }

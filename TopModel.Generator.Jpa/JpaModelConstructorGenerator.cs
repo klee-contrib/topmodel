@@ -16,20 +16,6 @@ public class JpaModelConstructorGenerator
         _config = config;
     }
 
-    public void WriteNoArgConstructor(JavaWriter fw, Class classe)
-    {
-        fw.WriteLine();
-        fw.WriteDocStart(1, "No arg constructor");
-        fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"public {classe.NamePascal}() {{");
-        if (classe.Extends != null || classe.Decorators.Any(d => _config.GetImplementation(d.Decorator)?.Extends is not null))
-        {
-            fw.WriteLine(2, $"super();");
-        }
-
-        fw.WriteLine(1, $"}}");
-    }
-
     public void WriteAllArgConstructor(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
     {
         fw.WriteLine();
@@ -60,7 +46,7 @@ public class JpaModelConstructorGenerator
             fw.WriteLine(2, $"super();");
         }
 
-        foreach (var property in classe.GetProperties(availableClasses, tag))
+        foreach (var property in classe.GetProperties(availableClasses))
         {
             fw.WriteLine(2, $"this.{property.NameByClassCamel} = {property.NameByClassCamel};");
         }
@@ -103,7 +89,7 @@ public class JpaModelConstructorGenerator
             fw.WriteLine(2, $"super();");
         }
 
-        foreach (var property in classe.GetProperties(availableClasses, tag))
+        foreach (var property in classe.GetProperties(availableClasses))
         {
             if (!(property is AssociationProperty aspr2 && _config.CanClassUseEnums(aspr2.Association)))
             {
@@ -124,7 +110,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine();
         fw.WriteDocStart(1, "Copy constructor");
         fw.WriteLine(1, $" * @param {classe.NameCamel} to copy");
-        var properties = classe.GetProperties(availableClasses, tag);
+        var properties = classe.GetProperties(availableClasses);
         fw.WriteDocEnd(1);
         fw.WriteLine(1, $"public {classe.NamePascal}({classe.NamePascal} {classe.NameCamel}) {{");
         if (classe.Extends != null)
@@ -142,7 +128,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(2, "}");
         fw.WriteLine();
 
-        foreach (var property in classe.GetProperties(availableClasses, tag).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && _config.CanClassUseEnums(apo.Association))))
+        foreach (var property in classe.GetProperties(availableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && _config.CanClassUseEnums(apo.Association))))
         {
             if (!(property is AssociationProperty ap && ap.Type.IsToMany() || property is CompositionProperty cp && cp.Kind == "list"))
             {
@@ -151,7 +137,7 @@ public class JpaModelConstructorGenerator
             }
         }
 
-        var propertyListToCopy = classe.GetProperties(availableClasses, tag)
+        var propertyListToCopy = classe.GetProperties(availableClasses)
             .Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && _config.CanClassUseEnums(apo.Association)))
             .Where(property => property is AssociationProperty ap && ap.Type.IsToMany() || property is CompositionProperty cp && cp.Kind == "list");
 
@@ -173,7 +159,7 @@ public class JpaModelConstructorGenerator
         if (_config.EnumShortcutMode)
         {
             fw.WriteLine();
-            foreach (var ap in classe.GetProperties(availableClasses, tag).OfType<AssociationProperty>().Where(ap => _config.CanClassUseEnums(ap.Association)))
+            foreach (var ap in classe.GetProperties(availableClasses).OfType<AssociationProperty>().Where(ap => _config.CanClassUseEnums(ap.Association)))
             {
                 var propertyName = ap.NameCamel;
                 var getterPrefix = _config.GetType(ap) == "boolean" ? "is" : "get";
@@ -225,15 +211,29 @@ public class JpaModelConstructorGenerator
         }
     }
 
+    public void WriteNoArgConstructor(JavaWriter fw, Class classe)
+    {
+        fw.WriteLine();
+        fw.WriteDocStart(1, "No arg constructor");
+        fw.WriteDocEnd(1);
+        fw.WriteLine(1, $"public {classe.NamePascal}() {{");
+        if (classe.Extends != null || classe.Decorators.Any(d => _config.GetImplementation(d.Decorator)?.Extends is not null))
+        {
+            fw.WriteLine(2, $"super();");
+        }
+
+        fw.WriteLine(1, $"}}");
+    }
+
     private IList<IProperty> GetAllArgsProperties(Class classe, List<Class> availableClasses, string tag)
     {
         if (classe.Extends is null)
         {
-            return classe.GetProperties(availableClasses, tag);
+            return classe.GetProperties(availableClasses);
         }
         else
         {
-            return GetAllArgsProperties(classe.Extends, availableClasses, tag).Concat(classe.GetProperties(availableClasses, tag)).ToList();
+            return GetAllArgsProperties(classe.Extends, availableClasses, tag).Concat(classe.GetProperties(availableClasses)).ToList();
         }
     }
 }

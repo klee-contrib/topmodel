@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -8,20 +8,21 @@ namespace TopModel.ModelGenerator.Database;
 
 public class DatabaseTmdGenerator : ModelGenerator, IDisposable
 {
+    private readonly Dictionary<string, TmdClass> _classes = new();
     private readonly DatabaseConfig _config;
     private readonly NpgsqlConnection _connection;
-    private readonly Dictionary<string, TmdClass> _classes = new();
-    private ILogger<DatabaseTmdGenerator> _logger;
+    private readonly ILogger<DatabaseTmdGenerator> _logger;
 
     private int _fileIndice = 10;
     private int _moduleIndice = 0;
 
-#pragma warning disable CS8618 
+#pragma warning disable CS8618
     public DatabaseTmdGenerator(ILogger<DatabaseTmdGenerator> logger, DatabaseConfig config)
         : base(logger)
     {
         _config = config;
         _logger = logger;
+
         // Connexion à la base de données {_config.Source.DbName}
         _connection = new NpgsqlConnection(config.ConnectionString);
     }
@@ -42,6 +43,7 @@ public class DatabaseTmdGenerator : ModelGenerator, IDisposable
         }
     }
 
+    /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
     {
         _connection.Dispose();
@@ -67,11 +69,14 @@ public class DatabaseTmdGenerator : ModelGenerator, IDisposable
                 {
                     var key = Console.ReadKey(true);
                     if (key.Key == ConsoleKey.Enter)
+                    {
                         break;
+                    }
+
                     password += key.KeyChar;
                 }
 
-                Passwords.Add(_config.Source.DbName, password ?? "");
+                Passwords.Add(_config.Source.DbName, password ?? string.Empty);
                 _config.Source.Password = password;
             }
         }
@@ -95,154 +100,13 @@ public class DatabaseTmdGenerator : ModelGenerator, IDisposable
         // Regroupement des fichiers qui ont les mêmes imports
         GroupFiles();
 
-        // Renumérotation et réétiquettage des fichiers 
+        // Renumérotation et réétiquettage des fichiers
         RenameFiles();
 
         // Ecriture des fichiers
         foreach (var file in WriteFiles())
         {
             yield return file;
-        }
-    }
-
-    private async Task ReadValues()
-    {
-        // Extraction des valeurs pour les tables paramétrées
-        foreach (var classe in _config.ExtractValues.Select(classe => _classes.FirstOrDefault(c => classe == c.Value.Name)).Where(c => c.Value != null))
-        {
-            var values = await _connection.QueryAsync(@$"select * from {classe.Key}");
-            classe.Value.Values.AddRange(values.Select(r =>
-            {
-                var d = new Dictionary<string, string?>();
-                foreach (var kv in r)
-                {
-                    d.Add(classe.Value.Properties.First(p => p.SqlName == kv.Key).Name, kv.Value?.ToString());
-                }
-                return d;
-            }));
-        }
-    }
-
-    private async Task<IEnumerable<DbColumn>> GetColumns()
-    {
-        // Récupération des colonnes
-        var columns = await _connection
-            .QueryAsync<DbColumn>(@$"
-                select  table_name                                                              as TableName, 
-                        column_name                                                             as ColumnName, 
-                        data_type                                                               as DataType,
-                        is_nullable = 'YES'                                                     as Nullable,
-                        coalesce(numeric_precision, datetime_precision, interval_precision)     as Precision,
-                        coalesce(character_maximum_length, numeric_scale, interval_precision)   as Scale
-                from information_schema.columns 
-                where table_schema  = '{_config.Source.Schema}'
-                order by ordinal_position 
-            ");
-        return columns.Where(c => !_config.Exclude.Contains(c.TableName));
-    }
-
-    private async Task InitProperties(IEnumerable<IGrouping<string, DbColumn>> classGroups)
-    {
-        var primaryKeys = await GetPrimaryKeys();
-        var foreignKeys = await GetForeignKeys();
-        var foreignKeysGroups = foreignKeys.GroupBy(c => c.TableName);
-        var primaryKeysGroups = primaryKeys.GroupBy(c => c.TableName);
-        foreach (var group in classGroups)
-        {
-            FeedProperties(group, primaryKeysGroups.FirstOrDefault(f => f.Key == group.Key), foreignKeysGroups.FirstOrDefault(f => f.Key == group.Key));
-        }
-
-        // Résolution des contraintes de clés étrangères
-        foreach (var group in classGroups)
-        {
-            ResolveForeignProperties(group, foreignKeysGroups.FirstOrDefault(f => f.Key == group.Key));
-        }
-    }
-
-    private Task<IEnumerable<ConstraintKey>> GetForeignKeys()
-    {
-        // Récupération des contraintes de clés étrangères
-        return GetConstraintKey("FOREIGN KEY");
-    }
-
-    private Task<IEnumerable<ConstraintKey>> GetPrimaryKeys()
-    {
-        // Récupération des contraintes de clés primaires
-        return GetConstraintKey("PRIMARY KEY");
-    }
-
-    private async Task<IEnumerable<ConstraintKey>> GetUniqueKeys()
-    {
-        // Récupération des contraintes d'unicité
-        var keys = await _connection
-            .QueryAsync<ConstraintKey>(@$"
-                SELECT
-                    tc.constraint_name  AS Name,
-                    tc.table_name       AS TableName,
-                    kcu.column_name     AS ColumnName
-                FROM 
-                    information_schema.table_constraints        AS tc 
-                    JOIN information_schema.key_column_usage    AS kcu
-                        ON  tc.constraint_name      = kcu.constraint_name
-                        AND tc.table_schema         = kcu.table_schema
-                WHERE       tc.constraint_type      = 'UNIQUE'
-                    AND     tc.table_schema         = '{_config.Source.Schema}'
-            ");
-
-        return keys.Where(c => !_config.Exclude.Contains(c.TableName));
-    }
-
-    private async Task<IEnumerable<ConstraintKey>> GetConstraintKey(string name)
-    {
-        var constraint = await _connection
-            .QueryAsync<ConstraintKey>(@$"
-                SELECT
-                    tc.table_name   AS TableName, 
-                    kcu.column_name AS ColumnName, 
-                    ccu.table_name  AS ForeignTableName,
-                    ccu.column_name AS ForeignColumnName 
-                FROM 
-                            information_schema.table_constraints   AS tc 
-                    JOIN    information_schema.key_column_usage    AS kcu
-                        ON  tc.constraint_name   = kcu.constraint_name
-                        AND tc.table_schema      = kcu.table_schema
-                    JOIN information_schema.constraint_column_usage AS ccu
-                        ON  ccu.constraint_name  = tc.constraint_name
-                        AND ccu.table_schema     = tc.table_schema
-                WHERE       tc.constraint_type   = '{name}'
-                    AND     tc.table_schema      = '{_config.Source.Schema}'
-                    AND     ccu.table_schema     = '{_config.Source.Schema}'
-            ");
-
-        return constraint.Where(c => !_config.Exclude.Contains(c.TableName));
-    }
-
-    private void ResolveForeignProperties(IGrouping<string, DbColumn> group, IGrouping<string, ConstraintKey>? foreignKeys)
-    {
-        var classe = _classes[group.Key];
-        if (foreignKeys != null)
-        {
-            foreach (var fk in classe.Properties.OfType<TmdAssociationProperty>())
-            {
-                var foreignColumnName = foreignKeys.First(p => p.ColumnName == fk.SqlName).ForeignColumnName;
-                fk.ForeignProperty = fk.ForeignClass!.Properties.First(p => p.SqlName == foreignColumnName);
-            }
-        }
-    }
-
-    private async Task InitUniqConstraints(IEnumerable<IGrouping<string, DbColumn>> classGroups)
-    {
-        var uniqueKeys = await GetUniqueKeys();
-        // Résolution des contraintes d'unicité
-        var uniqueKeysGroups = uniqueKeys.GroupBy(c => c.TableName);
-        foreach (var group in classGroups)
-        {
-            var classe = _classes[group.Key];
-            var uniqConstraints = uniqueKeysGroups.Where(f => f.Key == group.Key);
-            if (uniqConstraints != null)
-            {
-                AddUniqConstraints(classe, uniqConstraints);
-            }
         }
     }
 
@@ -270,96 +134,24 @@ public class DatabaseTmdGenerator : ModelGenerator, IDisposable
         }
     }
 
-    private void CreateFiles()
+    private void AffectModule(TmdClass mainClass, string? module = null)
     {
-        // Création des fichiers de classes sans dépendances cirulaires
-        CreateSimpleFiles();
-        // Création des fichiers des {_classes.Where(c => c.Value.File == null).Count()} classes contenant des dépendances cirulaires
-        CreateCircularFiles();
-    }
+        var rootFile = mainClass.File!;
+        module ??= $"{ModuleIndice}_{mainClass.Name}";
 
-    private void CreateSimpleFiles()
-    {
-        while (_classes.Where(c => c.Value.File == null && c.Value.Dependencies.All(d => d.File != null)).Any())
+        var stack = new Queue<TmdFile>();
+        stack.Enqueue(rootFile);
+        while (stack.TryDequeue(out var f))
         {
-            foreach (var classe in _classes.Where(c => c.Value.File == null && c.Value.Dependencies.All(d => d.File != null)).OrderBy(c => c.Value.Dependencies.Count))
+            f.Module = module;
+
+            // Ajout des classes dont je dépends
+            foreach (var d in f.Classes.SelectMany(c => c.Dependencies.Select(d => d.File!)).Distinct().Where(d => d.Module is null))
             {
-                var file = new TmdFile()
-                {
-                    Name = $"{_fileIndice++}_Model",
-                    Tags = _config.Tags
-                };
-                classe.Value.File = file;
-                file.Classes.Add(classe.Value);
+                stack.Enqueue(d);
             }
         }
     }
-
-    private void CreateCircularFiles()
-    {
-        while (_classes.Any(c => c.Value.File == null))
-        {
-            var file = new TmdFile()
-            {
-                Name = $"{_fileIndice++}_Model",
-                Tags = _config.Tags
-            };
-            var rootClass = _classes.Where(c => c.Value.File == null).First();
-            var stack = new Queue<TmdClass>();
-            stack.Enqueue(rootClass.Value);
-            while (stack.TryDequeue(out var s))
-            {
-                s.File = file;
-                file.Classes.Add(s);
-                foreach (var d in s.Dependencies.Where(d => d.File is null))
-                {
-                    stack.Enqueue(d);
-                }
-            }
-        }
-    }
-
-
-    private void CreateModules()
-    {
-        // Regroupement des classes dans les modules définis dans la configuration
-        CreateUserModules();
-        // Recherche automatique des modules restants (classes ayant plus de deux dépendances)
-        CreateAutomaticModules();
-        // Regroupement des classes qui ont une ou deux dépendances
-        CreateJoinModule();
-        // Regroupement des classes qui n'ont aucune dépendance
-        CreateOtherModule();
-    }
-
-
-    private TmdClass FeedProperties(IGrouping<string, DbColumn> group, IEnumerable<ConstraintKey>? primaryKeyConstraints, IEnumerable<ConstraintKey>? foreignConstraints)
-    {
-        var classe = _classes[group.Key];
-        if (group.Any())
-        {
-            var regularProperties = group.Where(p => !foreignConstraints?.Any(f => f.ColumnName == p.ColumnName) ?? true);
-            var trigram = regularProperties.FirstOrDefault()?.ColumnName.Split('_').First();
-            if (trigram == null || !regularProperties.All(p => p.ColumnName.StartsWith(trigram)))
-            {
-                trigram = string.Empty;
-            }
-
-            classe.Trigram = trigram;
-            classe.Properties = group.Select(c => ColumnToProperty(classe, c, trigram, primaryKeyConstraints?.FirstOrDefault(f => f.ColumnName == c.ColumnName), foreignConstraints?.FirstOrDefault(f => f.ColumnName == c.ColumnName))).ToList();
-        }
-
-        return classe;
-    }
-
-    private void InitClasses(IEnumerable<IGrouping<string, DbColumn>> classGroups)
-    {
-        foreach (var group in classGroups)
-        {
-            _classes.Add(group.Key, new TmdClass() { Name = group.Key.ToPascalCase() });
-        }
-    }
-
 
     private TmdProperty ColumnToProperty(TmdClass classe, DbColumn column, string trigram, ConstraintKey? primaryKeyConstraint, ConstraintKey? foreignConstraint)
     {
@@ -398,6 +190,109 @@ public class DatabaseTmdGenerator : ModelGenerator, IDisposable
         return tmdProperty;
     }
 
+    private void CreateAutomaticModules()
+    {
+        while (Files.Any(f => f.Module is null && f.Classes.SelectMany(c => c.Dependencies).Count() > 2))
+        {
+            var rootFile = Files.Where(f => f.Module is null && f.Classes.SelectMany(c => c.Dependencies).Count() > 2)
+                .OrderByDescending(f => f.Classes.Select(c => c.Dependencies.Count + _classes.Select(cl => cl.Value.Dependencies.Contains(c)).Count()).Sum())
+                .First();
+            var mainClass = rootFile.Classes.OrderByDescending(cl => cl.Dependencies.Count + _classes.Select(c => c.Value.Dependencies.Contains(cl)).Count()).First();
+
+            AffectModule(mainClass);
+        }
+    }
+
+    private void CreateCircularFiles()
+    {
+        while (_classes.Any(c => c.Value.File == null))
+        {
+            var file = new TmdFile()
+            {
+                Name = $"{_fileIndice++}_Model",
+                Tags = _config.Tags
+            };
+            var rootClass = _classes.Where(c => c.Value.File == null).First();
+            var stack = new Queue<TmdClass>();
+            stack.Enqueue(rootClass.Value);
+            while (stack.TryDequeue(out var s))
+            {
+                s.File = file;
+                file.Classes.Add(s);
+                foreach (var d in s.Dependencies.Where(d => d.File is null))
+                {
+                    stack.Enqueue(d);
+                }
+            }
+        }
+    }
+
+    private void CreateFiles()
+    {
+        // Création des fichiers de classes sans dépendances cirulaires
+        CreateSimpleFiles();
+
+        // Création des fichiers des {_classes.Where(c => c.Value.File == null).Count()} classes contenant des dépendances cirulaires
+        CreateCircularFiles();
+    }
+
+    private void CreateJoinModule()
+    {
+        var joinModule = $"{ModuleIndice}_Join";
+        foreach (var file in Files.Where(f => f.Module is null && f.Classes.SelectMany(c => c.Dependencies).Any()))
+        {
+            var dep = file.Classes.SelectMany(c => c.Dependencies).Select(c => c.File!.Module).Distinct();
+            if (dep.Count() == 1 && dep.First() != null)
+            {
+                file.Module = dep.First();
+            }
+            else
+            {
+                file.Module = joinModule;
+            }
+        }
+    }
+
+    private void CreateModules()
+    {
+        // Regroupement des classes dans les modules définis dans la configuration
+        CreateUserModules();
+
+        // Recherche automatique des modules restants (classes ayant plus de deux dépendances)
+        CreateAutomaticModules();
+
+        // Regroupement des classes qui ont une ou deux dépendances
+        CreateJoinModule();
+
+        // Regroupement des classes qui n'ont aucune dépendance
+        CreateOtherModule();
+    }
+
+    private void CreateOtherModule()
+    {
+        var trashModule = $"{ModuleIndice}_Autres";
+        foreach (var file in Files.Where(f => f.Module is null))
+        {
+            file.Module = trashModule;
+        }
+    }
+
+    private void CreateSimpleFiles()
+    {
+        while (_classes.Where(c => c.Value.File == null && c.Value.Dependencies.All(d => d.File != null)).Any())
+        {
+            foreach (var classe in _classes.Where(c => c.Value.File == null && c.Value.Dependencies.All(d => d.File != null)).OrderBy(c => c.Value.Dependencies.Count))
+            {
+                var file = new TmdFile()
+                {
+                    Name = $"{_fileIndice++}_Model",
+                    Tags = _config.Tags
+                };
+                classe.Value.File = file;
+                file.Classes.Add(classe.Value);
+            }
+        }
+    }
 
     private void CreateUserModules()
     {
@@ -426,78 +321,111 @@ public class DatabaseTmdGenerator : ModelGenerator, IDisposable
         }
     }
 
-    private void CreateAutomaticModules()
+    private TmdClass FeedProperties(IGrouping<string, DbColumn> group, IEnumerable<ConstraintKey>? primaryKeyConstraints, IEnumerable<ConstraintKey>? foreignConstraints)
     {
-        while (Files.Any(f => f.Module is null && f.Classes.SelectMany(c => c.Dependencies).Count() > 2))
+        var classe = _classes[group.Key];
+        if (group.Any())
         {
-            var rootFile = Files.Where(f => f.Module is null && f.Classes.SelectMany(c => c.Dependencies).Count() > 2)
-                .OrderByDescending(f => f.Classes.Select(c => c.Dependencies.Count() + _classes.Select(cl => cl.Value.Dependencies.Contains(c)).Count()).Sum())
-                .First();
-            var mainClass = rootFile.Classes.OrderByDescending(cl => cl.Dependencies.Count() + _classes.Select(c => c.Value.Dependencies.Contains(cl)).Count()).First();
+            var regularProperties = group.Where(p => !foreignConstraints?.Any(f => f.ColumnName == p.ColumnName) ?? true);
+            var trigram = regularProperties.FirstOrDefault()?.ColumnName.Split('_').First();
+            if (trigram == null || !regularProperties.All(p => p.ColumnName.StartsWith(trigram)))
+            {
+                trigram = string.Empty;
+            }
 
-            AffectModule(mainClass);
+            classe.Trigram = trigram;
+            classe.Properties = group.Select(c => ColumnToProperty(classe, c, trigram, primaryKeyConstraints?.FirstOrDefault(f => f.ColumnName == c.ColumnName), foreignConstraints?.FirstOrDefault(f => f.ColumnName == c.ColumnName))).ToList();
         }
+
+        return classe;
     }
 
-    private void CreateJoinModule()
+    private async Task<IEnumerable<DbColumn>> GetColumns()
     {
-        var joinModule = $"{ModuleIndice}_Join";
-        foreach (var file in Files.Where(f => f.Module is null && f.Classes.SelectMany(c => c.Dependencies).Count() >= 1))
-        {
-            var dep = file.Classes.SelectMany(c => c.Dependencies).Select(c => c.File!.Module).Distinct();
-            if (dep.Count() == 1 && dep.First() != null)
-            {
-                file.Module = dep.First();
-            }
-            else
-            {
-                file.Module = joinModule;
-            }
-        }
+        // Récupération des colonnes
+        var columns = await _connection
+            .QueryAsync<DbColumn>(@$"
+                select  table_name                                                              as TableName, 
+                        column_name                                                             as ColumnName, 
+                        data_type                                                               as DataType,
+                        is_nullable = 'YES'                                                     as Nullable,
+                        coalesce(numeric_precision, datetime_precision, interval_precision)     as Precision,
+                        coalesce(character_maximum_length, numeric_scale, interval_precision)   as Scale
+                from information_schema.columns 
+                where table_schema  = '{_config.Source.Schema}'
+                order by ordinal_position 
+            ");
+        return columns.Where(c => !_config.Exclude.Contains(c.TableName));
     }
 
-    private void CreateOtherModule()
+    private async Task<IEnumerable<ConstraintKey>> GetConstraintKey(string name)
     {
-        var trashModule = $"{ModuleIndice}_Autres";
-        foreach (var file in Files.Where(f => f.Module is null))
-        {
-            file.Module = trashModule;
-        }
+        var constraint = await _connection
+            .QueryAsync<ConstraintKey>(@$"
+                SELECT
+                    tc.table_name   AS TableName, 
+                    kcu.column_name AS ColumnName, 
+                    ccu.table_name  AS ForeignTableName,
+                    ccu.column_name AS ForeignColumnName 
+                FROM 
+                            information_schema.table_constraints   AS tc 
+                    JOIN    information_schema.key_column_usage    AS kcu
+                        ON  tc.constraint_name   = kcu.constraint_name
+                        AND tc.table_schema      = kcu.table_schema
+                    JOIN information_schema.constraint_column_usage AS ccu
+                        ON  ccu.constraint_name  = tc.constraint_name
+                        AND ccu.table_schema     = tc.table_schema
+                WHERE       tc.constraint_type   = '{name}'
+                    AND     tc.table_schema      = '{_config.Source.Schema}'
+                    AND     ccu.table_schema     = '{_config.Source.Schema}'
+            ");
+
+        return constraint.Where(c => !_config.Exclude.Contains(c.TableName));
     }
 
-    private void AffectModule(TmdClass mainClass, string? module = null)
+    private Task<IEnumerable<ConstraintKey>> GetForeignKeys()
     {
-        var rootFile = mainClass.File!;
-        if (module == null)
-        {
-            module = $"{ModuleIndice}_{mainClass.Name}";
-        }
+        // Récupération des contraintes de clés étrangères
+        return GetConstraintKey("FOREIGN KEY");
+    }
 
-        var stack = new Queue<TmdFile>();
-        stack.Enqueue(rootFile);
-        while (stack.TryDequeue(out var f))
-        {
-            f.Module = module;
+    private Task<IEnumerable<ConstraintKey>> GetPrimaryKeys()
+    {
+        // Récupération des contraintes de clés primaires
+        return GetConstraintKey("PRIMARY KEY");
+    }
 
-            // Ajout des classes dont je dépends
-            foreach (var d in f.Classes.SelectMany(c => c.Dependencies.Select(d => d.File!)).Distinct().Where(d => d.Module is null))
-            {
-                stack.Enqueue(d);
-            }
-        }
+    private async Task<IEnumerable<ConstraintKey>> GetUniqueKeys()
+    {
+        // Récupération des contraintes d'unicité
+        var keys = await _connection
+            .QueryAsync<ConstraintKey>(@$"
+                SELECT
+                    tc.constraint_name  AS Name,
+                    tc.table_name       AS TableName,
+                    kcu.column_name     AS ColumnName
+                FROM 
+                    information_schema.table_constraints        AS tc 
+                    JOIN information_schema.key_column_usage    AS kcu
+                        ON  tc.constraint_name      = kcu.constraint_name
+                        AND tc.table_schema         = kcu.table_schema
+                WHERE       tc.constraint_type      = 'UNIQUE'
+                    AND     tc.table_schema         = '{_config.Source.Schema}'
+            ");
+
+        return keys.Where(c => !_config.Exclude.Contains(c.TableName));
     }
 
     private void GroupFiles()
     {
-
-        // Regroupement des fichiers qui ont les mêmes imports 
+        // Regroupement des fichiers qui ont les mêmes imports
         var hasChanged = true;
         while (hasChanged)
         {
             hasChanged = false;
             foreach (var file in Files)
             {
-                foreach (var f in Files.Where(f => f.Classes.Count() > 0 && Files.ToList().IndexOf(f) > Files.ToList().IndexOf(file)))
+                foreach (var f in Files.Where(f => f.Classes.Count > 0 && Files.ToList().IndexOf(f) > Files.ToList().IndexOf(file)))
                 {
                     if (string.Join(string.Empty, f.Uses.Select(u => u.Name)) == string.Join(string.Empty, file.Uses.Select(u => u.Name)) && f.Module == file.Module)
                     {
@@ -513,10 +441,76 @@ public class DatabaseTmdGenerator : ModelGenerator, IDisposable
                     }
                 }
 
-                if (hasChanged) break;
+                if (hasChanged)
+                {
+                    break;
+                }
             }
         }
     }
+
+    private void InitClasses(IEnumerable<IGrouping<string, DbColumn>> classGroups)
+    {
+        foreach (var group in classGroups)
+        {
+            _classes.Add(group.Key, new TmdClass() { Name = group.Key.ToPascalCase() });
+        }
+    }
+
+    private async Task InitProperties(IEnumerable<IGrouping<string, DbColumn>> classGroups)
+    {
+        var primaryKeys = await GetPrimaryKeys();
+        var foreignKeys = await GetForeignKeys();
+        var foreignKeysGroups = foreignKeys.GroupBy(c => c.TableName);
+        var primaryKeysGroups = primaryKeys.GroupBy(c => c.TableName);
+        foreach (var group in classGroups)
+        {
+            FeedProperties(group, primaryKeysGroups.FirstOrDefault(f => f.Key == group.Key), foreignKeysGroups.FirstOrDefault(f => f.Key == group.Key));
+        }
+
+        // Résolution des contraintes de clés étrangères
+        foreach (var group in classGroups)
+        {
+            ResolveForeignProperties(group, foreignKeysGroups.FirstOrDefault(f => f.Key == group.Key));
+        }
+    }
+
+    private async Task InitUniqConstraints(IEnumerable<IGrouping<string, DbColumn>> classGroups)
+    {
+        var uniqueKeys = await GetUniqueKeys();
+
+        // Résolution des contraintes d'unicité
+        var uniqueKeysGroups = uniqueKeys.GroupBy(c => c.TableName);
+        foreach (var group in classGroups)
+        {
+            var classe = _classes[group.Key];
+            var uniqConstraints = uniqueKeysGroups.Where(f => f.Key == group.Key);
+            if (uniqConstraints != null)
+            {
+                AddUniqConstraints(classe, uniqConstraints);
+            }
+        }
+    }
+
+    private async Task ReadValues()
+    {
+        // Extraction des valeurs pour les tables paramétrées
+        foreach (var classe in _config.ExtractValues.Select(classe => _classes.FirstOrDefault(c => classe == c.Value.Name)).Where(c => c.Value != null))
+        {
+            var values = await _connection.QueryAsync(@$"select * from {classe.Key}");
+            classe.Value.Values.AddRange(values.Select(r =>
+            {
+                var d = new Dictionary<string, string?>();
+                foreach (var kv in r)
+                {
+                    d.Add(classe.Value.Properties.First(p => p.SqlName == kv.Key).Name, kv.Value?.ToString());
+                }
+
+                return d;
+            }));
+        }
+    }
+
     private void RenameFiles()
     {
         // Renommage des fichiers
@@ -525,8 +519,21 @@ public class DatabaseTmdGenerator : ModelGenerator, IDisposable
             var indice = 1;
             foreach (var file in group.OrderBy(f => f.Name))
             {
-                var mainClass = file.Classes.OrderByDescending(cl => cl.Dependencies.Count() + _classes.SelectMany(c => c.Value.Dependencies).Where(c => c == cl).Count()).First();
+                var mainClass = file.Classes.OrderByDescending(cl => cl.Dependencies.Count + _classes.SelectMany(c => c.Value.Dependencies).Where(c => c == cl).Count()).First();
                 file.Name = (indice < 10 ? "0" : string.Empty) + (indice++) + "_" + mainClass.Name;
+            }
+        }
+    }
+
+    private void ResolveForeignProperties(IGrouping<string, DbColumn> group, IGrouping<string, ConstraintKey>? foreignKeys)
+    {
+        var classe = _classes[group.Key];
+        if (foreignKeys != null)
+        {
+            foreach (var fk in classe.Properties.OfType<TmdAssociationProperty>())
+            {
+                var foreignColumnName = foreignKeys.First(p => p.ColumnName == fk.SqlName).ForeignColumnName;
+                fk.ForeignProperty = fk.ForeignClass!.Properties.First(p => p.SqlName == foreignColumnName);
             }
         }
     }

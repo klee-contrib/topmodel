@@ -7,6 +7,7 @@ namespace TopModel.Generator.Javascript;
 
 public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
 {
+    /// <inheritdoc cref="IGeneratorRegistration{T}.Register" />
     public void Register(IServiceCollection services, JavascriptConfig config, int number)
     {
         TrimSlashes(config, c => c.ApiClientFilePath);

@@ -133,6 +133,34 @@ namespace {ns}
         fw.Write(syntaxTree.GetRoot().ReplaceNode(existingController, controller).ToString());
     }
 
+    private string GetParam(IProperty param)
+    {
+        var sb = new StringBuilder();
+
+        var hasForm = param.Endpoint.Params.Any(p => Config.GetType(p).Contains("IFormFile"));
+
+        if (param.IsBodyParam())
+        {
+            if (hasForm)
+            {
+                sb.Append("[FromForm] ");
+            }
+            else
+            {
+                sb.Append("[FromBody] ");
+            }
+        }
+
+        sb.Append($@"{Config.GetType(param, nonNullable: param.IsRouteParam() || param.IsQueryParam() && !hasForm && Config.GetDefaultValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
+
+        if (param.IsQueryParam() && !hasForm)
+        {
+            sb.Append($" = {Config.GetDefaultValue(param, Classes)}");
+        }
+
+        return sb.ToString();
+    }
+
     private string GetRoute(Endpoint endpoint)
     {
         var split = endpoint.FullRoute.Split("/");
@@ -160,33 +188,5 @@ namespace {ns}
         }
 
         return string.Join("/", split);
-    }
-
-    private string GetParam(IProperty param)
-    {
-        var sb = new StringBuilder();
-
-        var hasForm = param.Endpoint.Params.Any(p => Config.GetType(p).Contains("IFormFile"));
-
-        if (param.IsBodyParam())
-        {
-            if (hasForm)
-            {
-                sb.Append("[FromForm] ");
-            }
-            else
-            {
-                sb.Append("[FromBody] ");
-            }
-        }
-
-        sb.Append($@"{Config.GetType(param, nonNullable: param.IsRouteParam() || param.IsQueryParam() && !hasForm && Config.GetDefaultValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
-
-        if (param.IsQueryParam() && !hasForm)
-        {
-            sb.Append($" = {Config.GetDefaultValue(param, Classes)}");
-        }
-
-        return sb.ToString();
     }
 }

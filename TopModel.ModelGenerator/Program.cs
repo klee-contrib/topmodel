@@ -214,8 +214,7 @@ async Task StartGeneration(string filePath, string directoryName, int i)
     tmdLock.Update(config.ModelRoot, config.LockFileName, mainLogger, generatedFiles);
 
     mainLogger.LogInformation("Mise à jour terminée avec succès.");
-};
-
+}
 
 foreach (var config in configs)
 {
@@ -238,7 +237,6 @@ foreach (var config in configs)
                     }
 
                     await StartGeneration(args.FullPath, config.DirectoryName, configs.IndexOf(config));
-
                 }));
         };
         fsWatcher.IncludeSubdirectories = true;

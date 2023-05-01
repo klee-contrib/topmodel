@@ -1,4 +1,4 @@
-using OmniSharp.Extensions.LanguageServer.Protocol.Models;
+﻿using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using TopModel.Core;
 
 namespace TopModel.LanguageServer;

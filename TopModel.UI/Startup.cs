@@ -9,12 +9,6 @@ public class Startup
 
     public IConfiguration Configuration { get; }
 
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddRazorPages();
-        services.AddServerSideBlazor();
-    }
-
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (env.IsDevelopment())
@@ -37,5 +31,11 @@ public class Startup
             endpoints.MapBlazorHub();
             endpoints.MapFallbackToPage("/_Host");
         });
+    }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRazorPages();
+        services.AddServerSideBlazor();
     }
 }

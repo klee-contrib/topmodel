@@ -21,14 +21,14 @@ public abstract class EndpointsGeneratorBase<T> : GeneratorBase<T>
         .Where(f => f.Tags.Any(FilterTag)
             && f.Endpoints.Any(endpoint => endpoint.ModelFile == f || !Files.ContainsKey(endpoint.ModelFile.Name)));
 
-    protected abstract string GetFileName(ModelFile file, string tag);
-
-    protected abstract void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints);
-
     protected virtual bool FilterTag(string tag)
     {
         return true;
     }
+
+    protected abstract string GetFileName(ModelFile file, string tag);
+
+    protected abstract void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints);
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {

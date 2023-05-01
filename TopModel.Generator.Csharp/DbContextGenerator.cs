@@ -55,6 +55,67 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
         }
     }
 
+    private IEnumerable<(IFieldProperty Property, AssociationProperty AssociationProperty)> GetAssociationProperties(IEnumerable<Class> classes)
+    {
+        return classes
+            .Distinct()
+            .OrderBy(c => c.NamePascal)
+            .SelectMany(c => c.Properties)
+            .Where(p => p is AssociationProperty { Association.IsPersistent: true } || p is AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } })
+            .Select(p => p switch
+            {
+                AssociationProperty ap => ((IFieldProperty)p, ap),
+                AliasProperty { Property: AssociationProperty ap } => ((IFieldProperty)p, ap),
+                _ => (null!, null!)
+            })
+            .Where(p => p.ap.Type == AssociationType.ManyToOne || p.ap.Type == AssociationType.OneToOne);
+    }
+
+    private void HandleCommentsFile(string fileName, string tag, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
+    {
+        using var cw = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
+
+        var cUsings = new List<string>
+        {
+            "Microsoft.EntityFrameworkCore"
+        };
+
+        foreach (var ns in classes.Select(c => Config.GetNamespace(c, tag)).Distinct())
+        {
+            cUsings.Add(ns);
+        }
+
+        cw.WriteUsings(usings.ToArray());
+
+        cw.WriteLine();
+        cw.WriteNamespace(contextNs);
+
+        cw.WriteSummary(1, "Partial pour ajouter les commentaires EF.");
+        cw.WriteLine(1, $"public partial class {dbContextName} : DbContext");
+        cw.WriteLine(1, "{");
+        cw.WriteLine(2, "partial void AddComments(ModelBuilder modelBuilder)");
+        cw.WriteLine(2, "{");
+
+        foreach (var classe in classes)
+        {
+            cw.WriteLine(3, $"var {classe.NameCamel} = modelBuilder.Entity<{classe.NamePascal}>();");
+            cw.WriteLine(3, $"{classe.NameCamel}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));");
+
+            foreach (var property in classe.Properties.OfType<IFieldProperty>())
+            {
+                cw.WriteLine(3, $"{classe.NameCamel}.Property(p => p.{property.NamePascal}).HasComment(\"{property.Comment.Replace("\"", "\\\"")}\");");
+            }
+
+            if (classes.IndexOf(classe) < classes.Count - 1)
+            {
+                cw.WriteLine();
+            }
+        }
+
+        cw.WriteLine(2, "}");
+        cw.WriteLine(1, "}");
+    }
+
     private void HandleMainFile(string fileName, string tag, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
     {
         using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
@@ -229,66 +290,5 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
 
         w.WriteLine(1, "}");
         w.WriteNamespaceEnd();
-    }
-
-    private void HandleCommentsFile(string fileName, string tag, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
-    {
-        using var cw = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
-
-        var cUsings = new List<string>
-        {
-            "Microsoft.EntityFrameworkCore"
-        };
-
-        foreach (var ns in classes.Select(c => Config.GetNamespace(c, tag)).Distinct())
-        {
-            cUsings.Add(ns);
-        }
-
-        cw.WriteUsings(usings.ToArray());
-
-        cw.WriteLine();
-        cw.WriteNamespace(contextNs);
-
-        cw.WriteSummary(1, "Partial pour ajouter les commentaires EF.");
-        cw.WriteLine(1, $"public partial class {dbContextName} : DbContext");
-        cw.WriteLine(1, "{");
-        cw.WriteLine(2, "partial void AddComments(ModelBuilder modelBuilder)");
-        cw.WriteLine(2, "{");
-
-        foreach (var classe in classes)
-        {
-            cw.WriteLine(3, $"var {classe.NameCamel} = modelBuilder.Entity<{classe.NamePascal}>();");
-            cw.WriteLine(3, $"{classe.NameCamel}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));");
-
-            foreach (var property in classe.Properties.OfType<IFieldProperty>())
-            {
-                cw.WriteLine(3, $"{classe.NameCamel}.Property(p => p.{property.NamePascal}).HasComment(\"{property.Comment.Replace("\"", "\\\"")}\");");
-            }
-
-            if (classes.IndexOf(classe) < classes.Count - 1)
-            {
-                cw.WriteLine();
-            }
-        }
-
-        cw.WriteLine(2, "}");
-        cw.WriteLine(1, "}");
-    }
-
-    private IEnumerable<(IFieldProperty Property, AssociationProperty AssociationProperty)> GetAssociationProperties(IEnumerable<Class> classes)
-    {
-        return classes
-            .Distinct()
-            .OrderBy(c => c.NamePascal)
-            .SelectMany(c => c.Properties)
-            .Where(p => p is AssociationProperty { Association.IsPersistent: true } || p is AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } })
-            .Select(p => p switch
-            {
-                AssociationProperty ap => ((IFieldProperty)p, ap),
-                AliasProperty { Property: AssociationProperty ap } => ((IFieldProperty)p, ap),
-                _ => (null!, null!)
-            })
-            .Where(p => p.ap.Type == AssociationType.ManyToOne || p.ap.Type == AssociationType.OneToOne);
     }
 }

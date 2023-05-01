@@ -166,11 +166,31 @@ public class CsharpConfig : GeneratorConfigBase
         return EnumsForStaticReferences && base.CanClassUseEnums(classe, availableClasses, prop);
     }
 
-    public string GetType(IProperty prop, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false, bool useIEnumerable = true, bool nonNullable = false)
+    public string GetApiPath(ModelFile file, string tag, bool withControllers = false)
     {
-        var type = base.GetType(prop, availableClasses, useClassForAssociation, useIEnumerable);
-        type = nonNullable && type.EndsWith("?") ? type[0..^1] : type;
-        return type;
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(ApiRootPath, tag: tag).ToFilePath(),
+            withControllers ? "Controllers" : string.Empty,
+            ResolveVariables(ApiFilePath, tag: tag, module: file.Namespace.ModulePath));
+    }
+
+    public string GetClassFileName(Class classe, string tag)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            GetModelPath(classe, tag),
+            "generated",
+            (classe.Abstract ? "I" : string.Empty) + classe.NamePascal + ".cs");
+    }
+
+    public string GetDbContextFilePath(string tag)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(DbContextPath!, tag: tag).ToFilePath(),
+            "generated",
+            $"{GetDbContextName(tag)}.cs");
     }
 
     /// <summary>
@@ -181,6 +201,72 @@ public class CsharpConfig : GeneratorConfigBase
     public string GetDbContextName(string tag)
     {
         return ResolveVariables(DbContextName, tag: tag).Replace(".", string.Empty);
+    }
+
+    public string GetDbContextNamespace(string tag)
+    {
+        return ResolveVariables(DbContextPath!, tag: tag)
+            .ToNamespace();
+    }
+
+    public string GetMapperFilePath((Class Classe, FromMapper Mapper) mapper, string tag)
+    {
+        var (ns, modelPath) = GetMapperLocation(mapper, tag);
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(modelPath, tag: tag, module: ns.ModulePath).ToFilePath(),
+            "generated",
+            $"{GetMapperName(ns, modelPath)}.cs");
+    }
+
+    public string GetMapperFilePath((Class Classe, ClassMappings Mapper) mapper, string tag)
+    {
+        var (ns, modelPath) = GetMapperLocation(mapper, tag);
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(modelPath, tag: tag, module: ns.ModulePath).ToFilePath(),
+            "generated",
+            $"{GetMapperName(ns, modelPath)}.cs");
+    }
+
+    public (Namespace Namespace, string ModelPath) GetMapperLocation((Class Classe, FromMapper Mapper) mapper, string tag)
+    {
+        var pmp = NoPersistence(tag) ? NonPersistentModelPath : PersistentModelPath;
+
+        if (mapper.Classe.IsPersistent)
+        {
+            return (mapper.Classe.Namespace, pmp);
+        }
+
+        var persistentParam = mapper.Mapper.Params.FirstOrDefault(p => p.Class.IsPersistent);
+        if (persistentParam != null)
+        {
+            return (persistentParam.Class.Namespace, pmp);
+        }
+
+        return (mapper.Classe.Namespace, NonPersistentModelPath);
+    }
+
+    public (Namespace Namespace, string ModelPath) GetMapperLocation((Class Classe, ClassMappings Mapper) mapper, string tag)
+    {
+        var pmp = NoPersistence(tag) ? NonPersistentModelPath : PersistentModelPath;
+
+        if (mapper.Classe.IsPersistent)
+        {
+            return (mapper.Classe.Namespace, pmp);
+        }
+
+        if (mapper.Mapper.Class.IsPersistent)
+        {
+            return (mapper.Mapper.Class.Namespace, pmp);
+        }
+
+        return (mapper.Classe.Namespace, NonPersistentModelPath);
+    }
+
+    public string GetMapperName(Namespace ns, string modelPath)
+    {
+        return $"{ns.ModuleFlat}{(modelPath == PersistentModelPath ? string.Empty : "DTO")}Mappers";
     }
 
     /// <summary>
@@ -201,13 +287,15 @@ public class CsharpConfig : GeneratorConfigBase
             module: classe.Namespace.ModulePath).ToFilePath();
     }
 
-    public string GetApiPath(ModelFile file, string tag, bool withControllers = false)
+    /// <summary>
+    /// Récupère le namespace d'un endpoint.
+    /// </summary>
+    /// <param name="endpoint">L'endpoint.</param>
+    /// <param name="tag">Tag.</param>
+    /// <returns>Namespace.</returns>
+    public string GetNamespace(Endpoint endpoint, string tag)
     {
-        return Path.Combine(
-            OutputDirectory,
-            ResolveVariables(ApiRootPath, tag: tag).ToFilePath(),
-            withControllers ? "Controllers" : string.Empty,
-            ResolveVariables(ApiFilePath, tag: tag, module: file.Namespace.ModulePath));
+        return GetNamespace(endpoint.Namespace, Path.Combine(ApiRootPath, ApiFilePath), tag);
     }
 
     /// <summary>
@@ -225,17 +313,6 @@ public class CsharpConfig : GeneratorConfigBase
             tag);
     }
 
-    /// <summary>
-    /// Récupère le namespace d'un endpoint.
-    /// </summary>
-    /// <param name="endpoint">L'endpoint.</param>
-    /// <param name="tag">Tag.</param>
-    /// <returns>Namespace.</returns>
-    public string GetNamespace(Endpoint endpoint, string tag)
-    {
-        return GetNamespace(endpoint.Namespace, Path.Combine(ApiRootPath, ApiFilePath), tag);
-    }
-
     public string GetNamespace(Namespace ns, string modelPath, string tag)
     {
         return ResolveVariables(modelPath, tag: tag, module: ns.Module)
@@ -243,9 +320,82 @@ public class CsharpConfig : GeneratorConfigBase
             .Replace(".Dto", string.Empty);
     }
 
+    public string GetReferenceAccessorName(Namespace ns, string tag)
+    {
+        return ResolveVariables(
+            ReferenceAccessorsName,
+            tag: tag,
+            module: ns.ModuleFlat);
+    }
+
+    public string GetReferenceImplementationFilePath(Namespace ns, string tag)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(
+                ReferenceAccessorsImplementationPath,
+                tag: tag,
+                module: ns.ModulePath).ToFilePath(),
+            "generated",
+            $"{GetReferenceAccessorName(ns, tag)}.cs");
+    }
+
+    public string GetReferenceImplementationNamespace(Namespace ns, string tag)
+    {
+        return ResolveVariables(
+            ReferenceAccessorsImplementationPath,
+            tag: tag,
+            module: ns.Module).ToNamespace();
+    }
+
+    public string GetReferenceInterfaceFilePath(Namespace ns, string tag)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(
+                ReferenceAccessorsInterfacePath,
+                tag: tag,
+                module: ns.ModulePath).ToFilePath(),
+            "generated",
+            $"I{GetReferenceAccessorName(ns, tag)}.cs");
+    }
+
+    public string GetReferenceInterfaceNamespace(Namespace ns, string tag)
+    {
+        return ResolveVariables(
+            ReferenceAccessorsInterfacePath,
+            tag: tag,
+            module: ns.Module).ToNamespace();
+    }
+
+    public string GetReturnTypeName(IProperty? prop)
+    {
+        if (prop == null)
+        {
+            return NoAsyncControllers ? "void" : "async Task";
+        }
+
+        var typeName = GetType(prop, nonNullable: true);
+        return typeName.StartsWith("IAsyncEnumerable") || NoAsyncControllers
+            ? typeName
+            : $"async Task<{typeName}>";
+    }
+
+    public string GetType(IProperty prop, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false, bool useIEnumerable = true, bool nonNullable = false)
+    {
+        var type = base.GetType(prop, availableClasses, useClassForAssociation, useIEnumerable);
+        type = nonNullable && type.EndsWith("?") ? type[0..^1] : type;
+        return type;
+    }
+
     public bool NoPersistence(string tag)
     {
         return ResolveVariables(NoPersistenceParam ?? string.Empty, tag) == true.ToString();
+    }
+
+    public bool ShouldQuoteValue(IFieldProperty prop)
+    {
+        return GetType(prop) == "string";
     }
 
     protected override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)

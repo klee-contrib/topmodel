@@ -1,8 +1,8 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace TopModel.ModelGenerator;
 
-static class TmdGenUtils
+public static class TmdGenUtils
 {
     public static string GetDomainString(IList<DomainMapping> domains, string nameOrType, string? scale = null, string? precision = null)
     {
@@ -51,7 +51,7 @@ static class TmdGenUtils
                 score += 1;
             }
 
-            return (score, Domain: d.Domain);
+            return (score, d.Domain);
         }).Where(t => t.score >= 10).OrderByDescending(t => t.score).FirstOrDefault().Domain ?? nameOrType;
     }
 }

@@ -11,15 +11,15 @@ namespace TopModel.Generator.Javascript;
 public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptConfig>
 {
     private readonly ILogger<JavascriptResourceGenerator> _logger;
-    private readonly TranslationStore _translationStore;
     private readonly ModelConfig _modelConfig;
+    private readonly TranslationStore _translationStore;
 
     public JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> logger, TranslationStore translationStore, ModelConfig modelConfig)
         : base(logger, translationStore)
     {
         _logger = logger;
-        _translationStore = translationStore;
         _modelConfig = modelConfig;
+        _translationStore = translationStore;
     }
 
     public override string Name => "JSResourceGen";
@@ -93,37 +93,9 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
         }
     }
 
-    private void WriteSubModule(FileWriter fw, string lang, IEnumerable<IFieldProperty> properties, bool isComment, int level)
+    private string Quote(string name)
     {
-        var classes = properties.GroupBy(prop => prop.Parent);
-        var modules = classes
-            .GroupBy(c => c.Key.Namespace.Module.Split('.').Skip(level).ElementAtOrDefault(0));
-        var u = 1;
-        foreach (var submodule in modules.OrderBy(m => m.Key, StringComparer.Ordinal))
-        {
-            var isLast = u++ == modules.Count();
-            if (submodule.Key == null)
-            {
-                var i = 1;
-                foreach (var container in submodule.OrderBy(c => c.Key.NameCamel))
-                {
-                    WriteClasseNode(fw, container, isComment, classes.Count() == i++ && isLast, lang, level);
-                }
-            }
-            else
-            {
-                fw.WriteLine(level, $@"""{submodule.Key.Split('.').First().ToCamelCase()}"": {{");
-                WriteSubModule(fw, lang, submodule.Select(m => m.Key).SelectMany(c => c.Properties).OfType<IFieldProperty>(), isComment, level + 1);
-                if (isLast)
-                {
-                    fw.WriteLine(level, "}");
-                }
-                else
-                {
-                    fw.WriteLine(level, "},");
-                }
-            }
-        }
+        return Config.ResourceMode == ResourceMode.JS ? name : $@"""{name}""";
     }
 
     private void WriteClasseNode(FileWriter fw, IGrouping<IPropertyContainer, IFieldProperty> container, bool isComment, bool isLast, string lang, int indentLevel)
@@ -166,8 +138,36 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
         fw.WriteLine(!isLast ? "," : string.Empty);
     }
 
-    private string Quote(string name)
+    private void WriteSubModule(FileWriter fw, string lang, IEnumerable<IFieldProperty> properties, bool isComment, int level)
     {
-        return Config.ResourceMode == ResourceMode.JS ? name : $@"""{name}""";
+        var classes = properties.GroupBy(prop => prop.Parent);
+        var modules = classes
+            .GroupBy(c => c.Key.Namespace.Module.Split('.').Skip(level).ElementAtOrDefault(0));
+        var u = 1;
+        foreach (var submodule in modules.OrderBy(m => m.Key, StringComparer.Ordinal))
+        {
+            var isLast = u++ == modules.Count();
+            if (submodule.Key == null)
+            {
+                var i = 1;
+                foreach (var container in submodule.OrderBy(c => c.Key.NameCamel))
+                {
+                    WriteClasseNode(fw, container, isComment, classes.Count() == i++ && isLast, lang, level);
+                }
+            }
+            else
+            {
+                fw.WriteLine(level, $@"""{submodule.Key.Split('.').First().ToCamelCase()}"": {{");
+                WriteSubModule(fw, lang, submodule.Select(m => m.Key).SelectMany(c => c.Properties).OfType<IFieldProperty>(), isComment, level + 1);
+                if (isLast)
+                {
+                    fw.WriteLine(level, "}");
+                }
+                else
+                {
+                    fw.WriteLine(level, "},");
+                }
+            }
+        }
     }
 }

@@ -28,18 +28,16 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
         })
         .Distinct();
 
-    protected abstract string? GetResourceFilePath(IFieldProperty property, string tag, string lang);
-
     protected virtual string? GetCommentResourceFilePath(IFieldProperty property, string tag, string lang)
     {
         return null;
     }
 
+    protected abstract string? GetResourceFilePath(IFieldProperty property, string tag, string lang);
+
     protected virtual void HandleCommentResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties)
     {
     }
-
-    protected abstract void HandleResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties);
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
@@ -63,6 +61,8 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
             HandleCommentResourceFile(resources.Key.FilePath, resources.Key.Lang, resources.Select(r => r.p.CommentResourceProperty).Distinct());
         }
     }
+
+    protected abstract void HandleResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties);
 
     private IEnumerable<(string Lang, string FilePath)> GetCommentResourceFileNames(IFieldProperty property, string tag)
     {

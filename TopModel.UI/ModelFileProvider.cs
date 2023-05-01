@@ -19,9 +19,9 @@ public class ModelFileProvider : IModelWatcher
         _svgCache = svgCache;
     }
 
-    public event EventHandler? FilesChanged;
-
     public event EventHandler<string>? FileChanged;
+
+    public event EventHandler? FilesChanged;
 
     public IDictionary<string, ModelFile> Files { get; set; } = new Dictionary<string, ModelFile>();
 
@@ -32,18 +32,6 @@ public class ModelFileProvider : IModelWatcher
     public IEnumerable<string>? GeneratedFiles => null;
 
     public bool Disabled => false;
-
-    public void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null)
-    {
-        foreach (var file in files)
-        {
-            Files[file.Name] = file;
-            _svgCache.Remove(file.Name);
-            FileChanged?.Invoke(this, file.Name);
-        }
-
-        FilesChanged?.Invoke(this, new EventArgs());
-    }
 
     public (string Svg, double Width, double Height) GetSvgForFile(string name)
     {
@@ -91,7 +79,21 @@ public class ModelFileProvider : IModelWatcher
         });
     }
 
+    /// <inheritdoc cref="IModelWatcher.OnErrors" />
     public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
     {
+    }
+
+    /// <inheritdoc cref="IModelWatcher.OnFilesChanged" />
+    public void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null)
+    {
+        foreach (var file in files)
+        {
+            Files[file.Name] = file;
+            _svgCache.Remove(file.Name);
+            FileChanged?.Invoke(this, file.Name);
+        }
+
+        FilesChanged?.Invoke(this, new EventArgs());
     }
 }

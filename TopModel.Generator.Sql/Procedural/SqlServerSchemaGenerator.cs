@@ -26,15 +26,15 @@ public class SqlServerSchemaGenerator : AbstractSchemaGenerator
         writerCrebas.Write(" identity(1, 1)");
     }
 
-    protected override void WriteInsertStart(SqlFileWriter writerInsert)
-    {
-        writerInsert.WriteLine("set nocount on;");
-        writerInsert.WriteLine();
-    }
-
     protected override void WriteInsertEnd(SqlFileWriter writerInsert)
     {
         writerInsert.WriteLine("set nocount off;");
+        writerInsert.WriteLine();
+    }
+
+    protected override void WriteInsertStart(SqlFileWriter writerInsert)
+    {
+        writerInsert.WriteLine("set nocount on;");
         writerInsert.WriteLine();
     }
 

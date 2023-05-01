@@ -9,26 +9,32 @@ namespace TopModel.Generator.Php;
 /// </summary>
 public class PhpWriter : IDisposable
 {
-    private readonly ILogger _logger;
-
-    private readonly string _name;
-
     private readonly Encoding _encoding;
+    private readonly ILogger _logger;
+    private readonly string _name;
+    private readonly string _packageName;
+    private readonly List<WriterLine> _toWrite;
 
     private List<string> _imports;
-
-    private string _packageName;
-
-    private List<WriterLine> _toWrite;
 
     public PhpWriter(string name, ILogger logger, string packageName, int? codePage = 1252)
     {
         _logger = logger;
-        _encoding = codePage != null ? CodePagesEncodingProvider.Instance.GetEncoding(codePage.Value)! : new UTF8Encoding(false);
         _name = name;
-        _imports = new List<string>();
         _packageName = packageName;
+        _encoding = codePage != null ? CodePagesEncodingProvider.Instance.GetEncoding(codePage.Value)! : new UTF8Encoding(false);
+        _imports = new List<string>();
         _toWrite = new List<WriterLine>();
+    }
+
+    public void AddImport(string value)
+    {
+        _imports.Add(value);
+    }
+
+    public void AddImports(IEnumerable<string> values)
+    {
+        _imports.AddRange(values);
     }
 
     /// <inheritdoc cref="IDisposable.Dispose" />
@@ -111,6 +117,33 @@ public class PhpWriter : IDisposable
         WriteLine("{");
     }
 
+    public void WriteDocEnd(int indentationLevel)
+    {
+        WriteLine(indentationLevel, " */");
+    }
+
+    /// <summary>
+    /// Ecrit la valeur du résumé du commentaire..
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    public void WriteDocStart(int indentationLevel)
+    {
+        WriteLine(indentationLevel, LoadDocStart());
+    }
+
+    /// <summary>
+    /// Ecrit la valeur du résumé du commentaire..
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="value">Valeur à écrire.</param>
+    public void WriteDocStart(int indentationLevel, string value)
+    {
+        if (!string.IsNullOrEmpty(value))
+        {
+            WriteLine(indentationLevel, LoadDocStart(value));
+        }
+    }
+
     /// <summary>
     /// Ecrit la chaine de caractère dans le flux.
     /// </summary>
@@ -128,16 +161,6 @@ public class PhpWriter : IDisposable
     public void WriteLine(int indentationLevel, string value)
     {
         _toWrite.Add(new WriterLine() { Line = value, Indent = indentationLevel });
-    }
-
-    public void AddImport(string value)
-    {
-        _imports.Add(value);
-    }
-
-    public void AddImports(IEnumerable<string> values)
-    {
-        _imports.AddRange(values);
     }
 
     /// <summary>
@@ -180,31 +203,35 @@ public class PhpWriter : IDisposable
     }
 
     /// <summary>
-    /// Ecrit la valeur du résumé du commentaire..
+    /// Retourne le commentaire du summary formatté.
     /// </summary>
-    /// <param name="indentationLevel">Niveau d'indentation.</param>
-    /// <param name="value">Valeur à écrire.</param>
-    public void WriteDocStart(int indentationLevel, string value)
+    /// <param name="summary">Contenu du commentaire.</param>
+    /// <returns>Code généré.</returns>
+    private static string LoadDocStart()
     {
-        if (!string.IsNullOrEmpty(value))
-        {
-            WriteLine(indentationLevel, LoadDocStart(value));
-        }
+        var sb = new StringBuilder();
+        sb.Append("/**");
+        return sb.ToString();
     }
 
     /// <summary>
-    /// Ecrit la valeur du résumé du commentaire..
+    /// Retourne le commentaire du summary formatté.
     /// </summary>
-    /// <param name="indentationLevel">Niveau d'indentation.</param>
-    /// <param name="value">Valeur à écrire.</param>
-    public void WriteDocStart(int indentationLevel)
+    /// <param name="summary">Contenu du commentaire.</param>
+    /// <returns>Code généré.</returns>
+    private static string LoadDocStart(string summary)
     {
-        WriteLine(indentationLevel, LoadDocStart());
-    }
+        if (string.IsNullOrEmpty(summary))
+        {
+            throw new ArgumentNullException(nameof(summary));
+        }
 
-    public void WriteDocEnd(int indentationLevel)
-    {
-        WriteLine(indentationLevel, " */");
+        summary = summary.Trim();
+
+        var sb = new StringBuilder();
+        sb.Append("/**\n");
+        sb.Append(" * " + summary.Replace("\n", "\n * "));
+        return sb.ToString();
     }
 
     /// <summary>
@@ -280,41 +307,9 @@ public class PhpWriter : IDisposable
     }
 
     /// <summary>
-    /// Retourne le commentaire du summary formatté.
-    /// </summary>
-    /// <param name="summary">Contenu du commentaire.</param>
-    /// <returns>Code généré.</returns>
-    private static string LoadDocStart(string summary)
-    {
-        if (string.IsNullOrEmpty(summary))
-        {
-            throw new ArgumentNullException(nameof(summary));
-        }
-
-        summary = summary.Trim();
-
-        var sb = new StringBuilder();
-        sb.Append("/**\n");
-        sb.Append(" * " + summary.Replace("\n", "\n * "));
-        return sb.ToString();
-    }
-
-    /// <summary>
-    /// Retourne le commentaire du summary formatté.
-    /// </summary>
-    /// <param name="summary">Contenu du commentaire.</param>
-    /// <returns>Code généré.</returns>
-    private static string LoadDocStart()
-    {
-        var sb = new StringBuilder();
-        sb.Append("/**");
-        return sb.ToString();
-    }
-
-    /// <summary>
     /// Ajoute les imports
     /// </summary>
-    /// <param name="imports">Nom des classes à importer.</param>
+    /// <param name="fw">FileWriter.</param>
     private void WriteImports(FileWriter fw)
     {
         _imports = _imports.Distinct().Where(i => string.Join('\\', i.Split('\\').SkipLast(1).ToList()) != this._packageName).ToList();

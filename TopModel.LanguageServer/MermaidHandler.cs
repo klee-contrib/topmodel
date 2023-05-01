@@ -1,4 +1,4 @@
-using MediatR;
+﻿using MediatR;
 using OmniSharp.Extensions.JsonRpc;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
@@ -8,20 +8,13 @@ namespace TopModel.LanguageServer;
 
 public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpcHandler
 {
-    private readonly ModelStore _modelStore;
     private readonly ILanguageServerFacade _facade;
+    private readonly ModelStore _modelStore;
 
     public MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
     {
-        _modelStore = modelStore;
         _facade = facade;
-    }
-
-    public Task<Mermaid> Handle(MermaidRequest request, CancellationToken cancellationToken)
-    {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.Uri);
-        var result = GenerateDiagramFile(file!);
-        return Task.FromResult(new Mermaid(result, file!.Name));
+        _modelStore = modelStore;
     }
 
     public static string GenerateDiagramFile(ModelFile file)
@@ -43,13 +36,16 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
                 {
                     diagram += refValue.Value[classe.EnumKey] + '\n';
                 }
+
                 diagram += "}\n";
                 continue;
             }
+
             foreach (var property in classe.Properties.OfType<RegularProperty>())
             {
                 diagram += $" {property.Domain.Name} {property.Name}\n";
             }
+
             diagram += "}\n";
 
             foreach (var property in classe.Properties.OfType<AssociationProperty>())
@@ -58,6 +54,7 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
                 {
                     notClasses.Add(property.Association);
                 }
+
                 string cardLeft;
                 string cardRight;
                 switch (property.Type)
@@ -81,19 +78,20 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
                         break;
                 }
 
-                diagram += @$"{property.Class.Name} ""{cardLeft}"" --> ""{cardRight}"" {property.Association.Name}{(property.Role != null ? " : " + property.Role : "")}" + '\n';
+                diagram += @$"{property.Class.Name} ""{cardLeft}"" --> ""{cardRight}"" {property.Association.Name}{(property.Role != null ? " : " + property.Role : string.Empty)}" + '\n';
             }
+
             foreach (var property in classe.Properties.OfType<CompositionProperty>())
             {
                 diagram += $"{property.Class.Name} --* {property.Composition.Name}\n";
             }
         }
+
         foreach (var classe in notClasses)
         {
             diagram += @$"%% {classe.Comment}" + '\n';
             diagram += @$"class {classe.Name}:::fileReference" + '\n';
         }
-
 
         foreach (var classe in classes.Where(c => c.Extends is not null))
         {
@@ -104,5 +102,11 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
         return diagram;
     }
 
+    /// <inheritdoc cref="IRequestHandler{TRequest, TResponse}.Handle" />
+    public Task<Mermaid> Handle(MermaidRequest request, CancellationToken cancellationToken)
+    {
+        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.Uri);
+        var result = GenerateDiagramFile(file!);
+        return Task.FromResult(new Mermaid(result, file!.Name));
+    }
 }
-

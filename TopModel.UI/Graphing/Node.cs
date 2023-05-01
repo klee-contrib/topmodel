@@ -18,12 +18,6 @@ public class Node
         }
     }
 
-    public Node AddProp(string prop, string value)
-    {
-        _sb.Append($" {prop} = \"{value}\"");
-        return this;
-    }
-
     public Node AddLabel()
     {
         if (_class != null)
@@ -31,6 +25,12 @@ public class Node
             _sb.Append(new Label(_class));
         }
 
+        return this;
+    }
+
+    public Node AddProp(string prop, string value)
+    {
+        _sb.Append($" {prop} = \"{value}\"");
         return this;
     }
 

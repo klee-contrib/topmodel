@@ -15,9 +15,9 @@ public class FileWriter : TextWriter
     /// </summary>
     private const int LinesInHeader = 4;
 
-    private readonly StringBuilder _sb;
     private readonly string _fileName;
     private readonly ILogger _logger;
+    private readonly StringBuilder _sb;
 
     /// <summary>
     /// Crée une nouvelle instance.
@@ -39,8 +39,8 @@ public class FileWriter : TextWriter
     public FileWriter(string fileName, ILogger logger, Encoding encoding)
         : base(CultureInfo.InvariantCulture)
     {
-        _fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
         _logger = logger;
+        _fileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
         _sb = new StringBuilder();
         Encoding = encoding;
     }
@@ -81,8 +81,18 @@ public class FileWriter : TextWriter
     }
 
     /// <summary>
+    /// Ecrit un string dans le stream.
+    /// </summary>
+    /// <param name="value">Chaîne de caractère.</param>
+    public override void Write(string? value)
+    {
+        _sb.Append(value);
+    }
+
+    /// <summary>
     /// Ecrit un caractère dans le stream.
     /// </summary>
+    /// <param name="indentationLevel">Indentation.</param>
     /// <param name="value">Caractère.</param>
     public void Write(int indentationLevel, string value)
     {
@@ -94,15 +104,6 @@ public class FileWriter : TextWriter
 
         value = value.Replace("\n", "\n" + indentValue);
         Write(indentValue + value);
-    }
-
-    /// <summary>
-    /// Ecrit un string dans le stream.
-    /// </summary>
-    /// <param name="value">Chaîne de caractère.</param>
-    public override void Write(string? value)
-    {
-        _sb.Append(value);
     }
 
     /// <summary>

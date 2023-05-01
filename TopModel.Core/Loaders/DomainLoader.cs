@@ -15,6 +15,7 @@ public class DomainLoader : ILoader<Domain>
         _fileChecker = fileChecker;
     }
 
+    /// <inheritdoc cref="ILoader{T}.Load" />
     public Domain Load(Parser parser)
     {
         var domain = new Domain();

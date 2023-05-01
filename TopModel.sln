@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopModel.Generator.Core", "TopModel.Generator.Core\TopModel.Generator.Core.csproj", "{0D5E54CD-A858-4F18-A443-ED540530294F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.Generator.Core", "TopModel.Generator.Core\TopModel.Generator.Core.csproj", "{0D5E54CD-A858-4F18-A443-ED540530294F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.Generator.Csharp", "TopModel.Generator.Csharp\TopModel.Generator.Csharp.csproj", "{81D736D0-93BF-4EF2-9934-C2A994214A64}"
 EndProject
@@ -30,7 +30,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.Generator.Jpa", "T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.Generator.Sql", "TopModel.Generator.Sql\TopModel.Generator.Sql.csproj", "{1B29BF83-3C15-48A5-BCC6-1606487CF5EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopModel.Generator.Translation", "TopModel.Generator.Translation\TopModel.Generator.Translation.csproj", "{FDD87D04-8CB0-4964-9440-022D9CEDD1B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.Generator.Translation", "TopModel.Generator.Translation\TopModel.Generator.Translation.csproj", "{FDD87D04-8CB0-4964-9440-022D9CEDD1B0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopModel.Generator.Php", "TopModel.Generator.Php\TopModel.Generator.Php.csproj", "{C9B96FFB-8CEC-434E-AA4D-AB9C1FCDD2DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -86,6 +88,10 @@ Global
 		{FDD87D04-8CB0-4964-9440-022D9CEDD1B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDD87D04-8CB0-4964-9440-022D9CEDD1B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDD87D04-8CB0-4964-9440-022D9CEDD1B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9B96FFB-8CEC-434E-AA4D-AB9C1FCDD2DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9B96FFB-8CEC-434E-AA4D-AB9C1FCDD2DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9B96FFB-8CEC-434E-AA4D-AB9C1FCDD2DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9B96FFB-8CEC-434E-AA4D-AB9C1FCDD2DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

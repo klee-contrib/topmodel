@@ -1,4 +1,4 @@
-namespace TopModel.ModelGenerator;
+﻿namespace TopModel.ModelGenerator;
 
 public class TmdFile
 {

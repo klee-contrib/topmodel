@@ -35,14 +35,16 @@ public abstract class GeneratorBase<T> : IModelWatcher
 
     protected virtual bool NoLanguage => false;
 
+    /// <inheritdoc cref="IModelWatcher.OnErrors" />
     public void OnErrors(IDictionary<ModelFile, IEnumerable<ModelError>> errors)
     {
     }
 
+    /// <inheritdoc cref="IModelWatcher.OnFilesChanged" />
     public void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null)
     {
         using var scope = _logger.BeginScope(((IModelWatcher)this).FullName);
-        using var scope2 = _logger.BeginScope(storeConfig);
+        using var scope2 = _logger.BeginScope(storeConfig!);
 
         var handledFiles = files.Where(file => Config.Tags.Intersect(file.Tags).Any());
 
@@ -67,10 +69,10 @@ public abstract class GeneratorBase<T> : IModelWatcher
         HandleFiles(handledFiles);
     }
 
-    protected abstract void HandleFiles(IEnumerable<ModelFile> files);
-
     protected IEnumerable<string> GetClassTags(Class classe)
     {
         return Files.Values.Where(f => f.Classes.Contains(classe)).SelectMany(f => f.Tags).Distinct();
     }
+
+    protected abstract void HandleFiles(IEnumerable<ModelFile> files);
 }

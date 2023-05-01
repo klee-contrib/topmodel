@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
@@ -68,6 +68,7 @@ public class OpenApiTmdGenerator : ModelGenerator
         {
             fw.WriteLine($"  - {tag}");
         }
+
         fw.WriteLine();
 
         var references = new HashSet<string>(referenceMap.SelectMany(r => r.Value).Select(r => r.Id).Distinct());
@@ -161,6 +162,7 @@ public class OpenApiTmdGenerator : ModelGenerator
             {
                 sw.WriteLine($"  - {tag}");
             }
+
             if (referenceMap[module.Key].Any())
             {
                 sw.WriteLine("uses:");
@@ -172,6 +174,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
                 sw.WriteLine($"  - {use}");
             }
+
             sw.WriteLine();
 
             foreach (var operation in module.OrderBy(o => GetEndpointName(o)))
@@ -266,6 +269,7 @@ public class OpenApiTmdGenerator : ModelGenerator
         {
             return GetDomainSchema(config, schema);
         }
+
         return resolvedDomain;
     }
 
@@ -319,53 +323,6 @@ public class OpenApiTmdGenerator : ModelGenerator
         }
 
         sw.WriteLine($"    {(noList ? string.Empty : "  ")}comment: {FormatDescription(property.Value.Description ?? property.Key)}");
-    }
-
-    private string GetOperationId(KeyValuePair<OperationType, OpenApiOperation> operation)
-    {
-        if (operation.Value.OperationId != null)
-        {
-            return operation.Value.OperationId;
-        }
-
-        var path = GetOperationPath(operation.Value).Replace("api/", string.Empty).Trim('/');
-
-        if (!path.Contains('/'))
-        {
-            return path.ToPascalCase();
-        }
-
-        var id = operation.Key.ToString().ToPascalCase();
-
-        if (operation.Key == OperationType.Get || operation.Key == OperationType.Head)
-        {
-            var responseSchema = GetResponseSchema(operation.Value);
-            if (responseSchema.Key != null)
-            {
-                id += responseSchema.Key;
-            }
-        }
-        else
-        {
-            var bodySchema = GetRequestBodySchema(operation.Value);
-            if (bodySchema != null)
-            {
-                var body = GetComposition(bodySchema, _model);
-                id += body.Name;
-
-                if (body.Kind != null && body.Kind != "object")
-                {
-                    id += body.Kind.ToPascalCase();
-                }
-            }
-        }
-
-        return id;
-    }
-
-    private string GetOperationPath(OpenApiOperation operation)
-    {
-        return _model.Paths.Single(p => p.Value.Operations.Any(o => o.Value == operation)).Key[1..];
     }
 
     private string GetEndpointName(KeyValuePair<OperationType, OpenApiOperation> operation)
@@ -430,6 +387,53 @@ public class OpenApiTmdGenerator : ModelGenerator
                 }
             }
         }
+    }
+
+    private string GetOperationId(KeyValuePair<OperationType, OpenApiOperation> operation)
+    {
+        if (operation.Value.OperationId != null)
+        {
+            return operation.Value.OperationId;
+        }
+
+        var path = GetOperationPath(operation.Value).Replace("api/", string.Empty).Trim('/');
+
+        if (!path.Contains('/'))
+        {
+            return path.ToPascalCase();
+        }
+
+        var id = operation.Key.ToString().ToPascalCase();
+
+        if (operation.Key == OperationType.Get || operation.Key == OperationType.Head)
+        {
+            var responseSchema = GetResponseSchema(operation.Value);
+            if (responseSchema.Key != null)
+            {
+                id += responseSchema.Key;
+            }
+        }
+        else
+        {
+            var bodySchema = GetRequestBodySchema(operation.Value);
+            if (bodySchema != null)
+            {
+                var body = GetComposition(bodySchema, _model);
+                id += body.Name;
+
+                if (body.Kind != null && body.Kind != "object")
+                {
+                    id += body.Kind.ToPascalCase();
+                }
+            }
+        }
+
+        return id;
+    }
+
+    private string GetOperationPath(OpenApiOperation operation)
+    {
+        return _model.Paths.Single(p => p.Value.Operations.Any(o => o.Value == operation)).Key[1..];
     }
 
     private KeyValuePair<string, OpenApiSchema> GetResponseSchema(OpenApiOperation operation)

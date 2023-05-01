@@ -79,17 +79,25 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         fw.WriteLine("}");
     }
 
+    private void CheckEndpoint(Endpoint endpoint)
+    {
+        foreach (var q in endpoint.GetQueryParams().Concat(endpoint.GetRouteParams()))
+        {
+            if (q is AssociationProperty ap)
+            {
+                throw new ModelException(endpoint, $"Le endpoint {endpoint.Route} ne peut pas contenir d'association");
+            }
+        }
+
+        if (endpoint.Returns != null && endpoint.Returns is AssociationProperty)
+        {
+            throw new ModelException(endpoint, $"Le retour du endpoint {endpoint.Route} ne peut pas être une association");
+        }
+    }
+
     private string GetClassName(string fileName)
     {
         return $"Abstract{fileName.ToPascalCase()}Client";
-    }
-
-    private void WriteEndpoint(JavaWriter fw, Endpoint endpoint)
-    {
-        fw.WriteLine();
-        WriteUriBuilderMethod(fw, endpoint);
-        fw.WriteLine();
-        WriteEndpointCallMethod(fw, endpoint);
     }
 
     private List<string> GetMethodParams(Endpoint endpoint, bool withType = true, bool withBody = true)
@@ -133,6 +141,80 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         }
 
         return methodParams;
+    }
+
+    private IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
+    {
+        var properties = endpoints.SelectMany(endpoint => endpoint.Params).Concat(endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
+        return properties.SelectMany(property => property!.GetTypeImports(Config, tag));
+    }
+
+    private void WriteEndpoint(JavaWriter fw, Endpoint endpoint)
+    {
+        fw.WriteLine();
+        WriteUriBuilderMethod(fw, endpoint);
+        fw.WriteLine();
+        WriteEndpointCallMethod(fw, endpoint);
+    }
+
+    private void WriteEndpointCallMethod(JavaWriter fw, Endpoint endpoint)
+    {
+        fw.WriteDocStart(1, endpoint.Description);
+
+        foreach (var param in endpoint.Params)
+        {
+            fw.WriteLine(1, $" * @param {param.GetParamName()} {param.Comment}");
+        }
+
+        if (endpoint.Returns != null)
+        {
+            fw.WriteLine(1, $" * @return {endpoint.Returns.Comment}");
+        }
+
+        fw.WriteLine(1, " */");
+        var returnType = "ResponseEntity";
+        var returnClass = "(Class<?>) null";
+        if (endpoint.Returns != null)
+        {
+            returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns).Split('<').First()}>";
+            returnClass = $"{Config.GetType(endpoint.Returns).Split('<').First()}.class";
+            if (Config.GetType(endpoint.Returns).Split('<').First() == "ResponseEntity" && Config.GetType(endpoint.Returns).Split('<').Count() > 1)
+            {
+                returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns).Split('<')[1].Split('>').First()}>";
+                returnClass = $"{Config.GetType(endpoint.Returns).Split('<')[1].Split('>').First()}.class";
+            }
+        }
+
+        var methodParams = GetMethodParams(endpoint, true, false);
+        fw.WriteLine(1, $"public {returnType} {endpoint.NameCamel}({string.Join(", ", GetMethodParams(endpoint))}){{");
+        fw.WriteLine(2, $"HttpHeaders headers = this.getHeaders();");
+        fw.WriteLine(2, $"UriComponentsBuilder uri = this.{endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, false, false))});");
+        var body = $"new HttpEntity<>({(endpoint.GetBodyParam()?.GetParamName() != null ? $"{endpoint.GetBodyParam()?.GetParamName()}, " : string.Empty)}headers)";
+        if (endpoint.Returns != null)
+        {
+            fw.WriteLine(2, $"return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.{endpoint.Method}, {body}, {returnClass});");
+        }
+        else
+        {
+            fw.WriteLine(2, $"return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.{endpoint.Method}, {body}, {returnClass});");
+        }
+
+        fw.WriteLine(1, "}");
+    }
+
+    private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
+    {
+        var imports = new List<string>();
+        imports.AddRange(GetTypeImports(endpoints, tag).Distinct());
+        imports.Add(Config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
+        imports.Add("org.springframework.web.util.UriComponentsBuilder");
+        imports.Add("org.springframework.web.client.RestTemplate");
+        imports.Add("java.net.URI");
+        imports.Add("org.springframework.http.HttpMethod");
+        imports.Add("org.springframework.http.HttpEntity");
+        imports.Add("org.springframework.http.HttpHeaders");
+        imports.Add("org.springframework.http.ResponseEntity");
+        fw.AddImports(imports);
     }
 
     private void WriteUriBuilderMethod(JavaWriter fw, Endpoint endpoint)
@@ -199,87 +281,5 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
         fw.WriteLine(2, $"return uriBuilder;");
         fw.WriteLine(1, "}");
-    }
-
-    private void WriteEndpointCallMethod(JavaWriter fw, Endpoint endpoint)
-    {
-        fw.WriteDocStart(1, endpoint.Description);
-
-        foreach (var param in endpoint.Params)
-        {
-            fw.WriteLine(1, $" * @param {param.GetParamName()} {param.Comment}");
-        }
-
-        if (endpoint.Returns != null)
-        {
-            fw.WriteLine(1, $" * @return {endpoint.Returns.Comment}");
-        }
-
-        fw.WriteLine(1, " */");
-        var returnType = "ResponseEntity";
-        var returnClass = "(Class<?>) null";
-        if (endpoint.Returns != null)
-        {
-            returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns).Split('<').First()}>";
-            returnClass = $"{Config.GetType(endpoint.Returns).Split('<').First()}.class";
-            if (Config.GetType(endpoint.Returns).Split('<').First() == "ResponseEntity" && Config.GetType(endpoint.Returns).Split('<').Count() > 1)
-            {
-                returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns).Split('<')[1].Split('>').First()}>";
-                returnClass = $"{Config.GetType(endpoint.Returns).Split('<')[1].Split('>').First()}.class";
-            }
-        }
-
-        var methodParams = GetMethodParams(endpoint, true, false);
-        fw.WriteLine(1, $"public {returnType} {endpoint.NameCamel}({string.Join(", ", GetMethodParams(endpoint))}){{");
-        fw.WriteLine(2, $"HttpHeaders headers = this.getHeaders();");
-        fw.WriteLine(2, $"UriComponentsBuilder uri = this.{endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, false, false))});");
-        var body = $"new HttpEntity<>({(endpoint.GetBodyParam()?.GetParamName() != null ? $"{endpoint.GetBodyParam()?.GetParamName()}, " : string.Empty)}headers)";
-        if (endpoint.Returns != null)
-        {
-            fw.WriteLine(2, $"return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.{endpoint.Method}, {body}, {returnClass});");
-        }
-        else
-        {
-            fw.WriteLine(2, $"return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.{endpoint.Method}, {body}, {returnClass});");
-        }
-
-        fw.WriteLine(1, "}");
-    }
-
-    private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
-    {
-        var imports = new List<string>();
-        imports.AddRange(GetTypeImports(endpoints, tag).Distinct());
-        imports.Add(Config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
-        imports.Add("org.springframework.web.util.UriComponentsBuilder");
-        imports.Add("org.springframework.web.client.RestTemplate");
-        imports.Add("java.net.URI");
-        imports.Add("org.springframework.http.HttpMethod");
-        imports.Add("org.springframework.http.HttpEntity");
-        imports.Add("org.springframework.http.HttpHeaders");
-        imports.Add("org.springframework.http.ResponseEntity");
-        fw.AddImports(imports);
-    }
-
-    private IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
-    {
-        var properties = endpoints.SelectMany(endpoint => endpoint.Params).Concat(endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
-        return properties.SelectMany(property => property!.GetTypeImports(Config, tag));
-    }
-
-    private void CheckEndpoint(Endpoint endpoint)
-    {
-        foreach (var q in endpoint.GetQueryParams().Concat(endpoint.GetRouteParams()))
-        {
-            if (q is AssociationProperty ap)
-            {
-                throw new ModelException(endpoint, $"Le endpoint {endpoint.Route} ne peut pas contenir d'association");
-            }
-        }
-
-        if (endpoint.Returns != null && endpoint.Returns is AssociationProperty)
-        {
-            throw new ModelException(endpoint, $"Le retour du endpoint {endpoint.Route} ne peut pas être une association");
-        }
     }
 }

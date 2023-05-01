@@ -40,14 +40,12 @@ public class CompositionProperty : IProperty
 
     public ClassReference Reference { get; set; }
 
-#nullable enable
-    public DomainReference? DomainKindReference { get; set; }
-
-#nullable disable
-
     internal Reference Location { get; set; }
-#nullable enable
 
+#nullable enable
+    internal DomainReference? DomainKindReference { get; set; }
+
+    /// <inheritdoc cref="IProperty.CloneWithClassOrEndpoint" />
     public IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null)
     {
         return new CompositionProperty

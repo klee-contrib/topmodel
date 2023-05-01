@@ -1,22 +1,23 @@
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
-using TopModel.LanguageServer;
 
-class CodeLensHandler : CodeLensHandlerBase
+namespace TopModel.LanguageServer;
+
+public class CodeLensHandler : CodeLensHandlerBase
 {
-    private readonly ModelStore _modelStore;
-    private readonly ILanguageServerFacade _facade;
     private readonly ModelConfig _config;
+    private readonly ILanguageServerFacade _facade;
+    private readonly ModelStore _modelStore;
 
     public CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
     {
-        _modelStore = modelStore;
-        _facade = facade;
         _config = config;
+        _facade = facade;
+        _modelStore = modelStore;
     }
 
     public override Task<CodeLens> Handle(CodeLens request, CancellationToken cancellationToken)
@@ -41,7 +42,6 @@ class CodeLensHandler : CodeLensHandlerBase
                         {
                             clazz.GetLocation()!.Start.Line - 1
                         }
-
                     }
                 })
                 .Concat(file.Domains.Select(domain => new CodeLens
@@ -55,7 +55,6 @@ class CodeLensHandler : CodeLensHandlerBase
                         {
                             domain.GetLocation()!.Start.Line - 1
                         }
-
                     }
                 }))
                 .Concat(file.Decorators.Select(decorator => new CodeLens
@@ -72,6 +71,7 @@ class CodeLensHandler : CodeLensHandlerBase
                     }
                 }))));
         }
+
         return Task.FromResult<CodeLensContainer>(new());
     }
 

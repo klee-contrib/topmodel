@@ -12,16 +12,6 @@ public static class EndpointExtensions
             : bodyParams.SingleOrDefault();
     }
 
-    public static IEnumerable<IProperty> GetQueryParams(this Endpoint endpoint)
-    {
-        return endpoint.Params.Where(param => param != endpoint.GetBodyParam()).Except(endpoint.GetRouteParams());
-    }
-
-    public static IEnumerable<IProperty> GetRouteParams(this Endpoint endpoint)
-    {
-        return endpoint.Params.Where(param => endpoint.Route.Contains($"{{{param.GetParamName()}}}"));
-    }
-
     public static string GetParamName(this IProperty property)
     {
         if (property is AliasProperty { Property: null })
@@ -32,6 +22,16 @@ public static class EndpointExtensions
         return property is not AliasProperty alp || !alp.Property.PrimaryKey
             ? property.NameCamel
             : $"{alp.Property.Class.Trigram?.ToLower() ?? alp.Property.Class.NameCamel}{property.NameCamel.ToFirstUpper()}";
+    }
+
+    public static IEnumerable<IProperty> GetQueryParams(this Endpoint endpoint)
+    {
+        return endpoint.Params.Where(param => param != endpoint.GetBodyParam()).Except(endpoint.GetRouteParams());
+    }
+
+    public static IEnumerable<IProperty> GetRouteParams(this Endpoint endpoint)
+    {
+        return endpoint.Params.Where(param => endpoint.Route.Contains($"{{{param.GetParamName()}}}"));
     }
 
     public static bool IsBodyParam(this IProperty property)

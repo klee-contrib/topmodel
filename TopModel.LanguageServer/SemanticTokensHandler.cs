@@ -9,15 +9,15 @@ namespace TopModel.LanguageServer;
 
 public class SemanticTokensHandler : SemanticTokensHandlerBase
 {
-    private readonly ModelStore _modelStore;
-    private readonly ILanguageServerFacade _facade;
     private readonly ModelConfig _config;
+    private readonly ILanguageServerFacade _facade;
+    private readonly ModelStore _modelStore;
 
     public SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
     {
-        _modelStore = modelStore;
-        _facade = facade;
         _config = config;
+        _facade = facade;
+        _modelStore = modelStore;
     }
 
     protected override SemanticTokensRegistrationOptions CreateRegistrationOptions(SemanticTokensCapability capability, ClientCapabilities clientCapabilities)
@@ -58,16 +58,15 @@ public class SemanticTokensHandler : SemanticTokensHandlerBase
 
             foreach (var reference in file.References.Keys.OrderBy(r => r.Start.Line).ThenBy(r => r.Start.Column))
             {
-                builder.Push(
-                    reference.ToRange()!,
-                    reference switch
-                    {
-                        ClassReference or DecoratorReference => SemanticTokenType.Class,
-                        DomainReference => SemanticTokenType.EnumMember,
-                        Reference r when r.ReferenceName == "this" || r.ReferenceName == "false" => SemanticTokenType.Keyword,
-                        _ => SemanticTokenType.Function
-                    },
-                    SemanticTokenModifier.Definition);
+                var type = reference switch
+                {
+                    ClassReference or DecoratorReference => SemanticTokenType.Class,
+                    DomainReference => SemanticTokenType.EnumMember,
+                    Reference r when r.ReferenceName == "this" || r.ReferenceName == "false" => SemanticTokenType.Keyword,
+                    _ => SemanticTokenType.Function
+                };
+
+                builder.Push(reference.ToRange()!, type, SemanticTokenModifier.Definition);
             }
         }
 

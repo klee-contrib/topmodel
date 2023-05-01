@@ -88,13 +88,13 @@ public class JavascriptConfig : GeneratorConfigBase
         .Replace("\\", "/");
     }
 
-    public string GetEndpointsFileName(ModelFile file, string tag)
+    public string GetCommentResourcesFilePath(Namespace ns, string tag, string lang)
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(ApiClientRootPath!, tag),
-            ResolveVariables(ApiClientFilePath, module: file.Namespace.ModulePathKebab),
-            $"{file.Options.Endpoints.FileName.ToKebabCase()}.ts")
+            ResolveVariables(ResourceRootPath!, tag),
+            lang,
+            $"{ns.RootModule.ToKebabCase()}.comments{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}")
         .Replace("\\", "/");
     }
 
@@ -109,6 +109,16 @@ public class JavascriptConfig : GeneratorConfigBase
             .Concat(endpoints.SelectMany(d => d.DomainDependencies).SelectMany(dep => GetImplementation(dep.Domain)!.Imports.Select(import => (Import: GetImplementation(dep.Domain)!.Type.ParseTemplate(dep.Source).Replace("[]", string.Empty).Split("<").First(), Path: import.ParseTemplate(dep.Source)))))
             .Where(i => i.Path != null)
             .GroupAndSort();
+    }
+
+    public string GetEndpointsFileName(ModelFile file, string tag)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(ApiClientRootPath!, tag),
+            ResolveVariables(ApiClientFilePath, module: file.Namespace.ModulePathKebab),
+            $"{file.Options.Endpoints.FileName.ToKebabCase()}.ts")
+        .Replace("\\", "/");
     }
 
     public string? GetImportPathForClass(ClassDependency dep, string targetTag, string sourceTag, IEnumerable<Class> availableClasses)
@@ -167,16 +177,6 @@ public class JavascriptConfig : GeneratorConfigBase
             ResolveVariables(ResourceRootPath!, tag),
             lang,
             $"{ns.RootModule.ToKebabCase()}{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}")
-        .Replace("\\", "/");
-    }
-
-    public string GetCommentResourcesFilePath(Namespace ns, string tag, string lang)
-    {
-        return Path.Combine(
-            OutputDirectory,
-            ResolveVariables(ResourceRootPath!, tag),
-            lang,
-            $"{ns.RootModule.ToKebabCase()}.comments{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}")
         .Replace("\\", "/");
     }
 

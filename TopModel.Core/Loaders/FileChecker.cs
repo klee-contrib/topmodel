@@ -12,11 +12,10 @@ namespace TopModel.Core.Loaders;
 
 public class FileChecker
 {
-    private readonly IDeserializer _deserializer;
-    private readonly ISerializer _serializer;
-
     private readonly JsonSchema? _configSchema;
+    private readonly IDeserializer _deserializer;
     private readonly JsonSchema _modelSchema;
+    private readonly ISerializer _serializer;
 
     public FileChecker(string? configSchemaPath = null)
     {

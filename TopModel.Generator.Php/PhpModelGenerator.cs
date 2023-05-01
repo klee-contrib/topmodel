@@ -11,15 +11,13 @@ namespace TopModel.Generator.Php;
 public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
 {
     private readonly ILogger<PhpModelGenerator> _logger;
-    private readonly ModelConfig _modelConfig;
 
     private PhpModelPropertyGenerator? _phpModelPropertyGenerator;
 
-    public PhpModelGenerator(ILogger<PhpModelGenerator> logger, ModelConfig modelConfig)
+    public PhpModelGenerator(ILogger<PhpModelGenerator> logger)
         : base(logger)
     {
         _logger = logger;
-        _modelConfig = modelConfig;
     }
 
     public override string Name => "PhpModelGen";
@@ -59,30 +57,11 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
 
         PhpModelPropertyGenerator.WriteProperties(fw, classe, Classes, tag);
 
-        WriteConstructor(fw, classe, Classes, tag);
-        WriteGetters(fw, classe, tag);
-        WriteSetters(fw, classe, tag);
+        WriteConstructor(fw, classe);
+        WriteGetters(fw, classe);
+        WriteSetters(fw, classe);
 
         fw.WriteLine("}");
-    }
-
-    private void WriteConstructor(PhpWriter fw, Class classe, IEnumerable<Class> classes, string tag)
-    {
-        var collectionProperties = classe.GetProperties(Classes, tag).Where(
-            p => Config.GetType(p, Classes, p.Class.IsPersistent) == "Collection");
-        if (collectionProperties.Any())
-        {
-            fw.WriteLine();
-            fw.WriteLine(1, "public function __construct()");
-            fw.WriteLine(1, "{");
-            fw.AddImport(@"Doctrine\Common\Collections\ArrayCollection");
-            foreach (var property in collectionProperties)
-            {
-                fw.WriteLine(2, $"$this->{property.Name.ToCamelCase()} = new ArrayCollection();");
-            }
-
-            fw.WriteLine(1, "}");
-        }
     }
 
     private void WriteAttributes(PhpWriter fw, Class classe, string tag)
@@ -123,9 +102,28 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
         }
     }
 
-    private void WriteGetters(PhpWriter fw, Class classe, string tag)
+    private void WriteConstructor(PhpWriter fw, Class classe)
     {
-        foreach (var property in classe.GetProperties(Classes, tag))
+        var collectionProperties = classe.GetProperties(Classes).Where(
+            p => Config.GetType(p, Classes, p.Class.IsPersistent) == "Collection");
+        if (collectionProperties.Any())
+        {
+            fw.WriteLine();
+            fw.WriteLine(1, "public function __construct()");
+            fw.WriteLine(1, "{");
+            fw.AddImport(@"Doctrine\Common\Collections\ArrayCollection");
+            foreach (var property in collectionProperties)
+            {
+                fw.WriteLine(2, $"$this->{property.Name.ToCamelCase()} = new ArrayCollection();");
+            }
+
+            fw.WriteLine(1, "}");
+        }
+    }
+
+    private void WriteGetters(PhpWriter fw, Class classe)
+    {
+        foreach (var property in classe.GetProperties(Classes))
         {
             fw.WriteLine();
             if (property is AssociationProperty ap && ap.Type.IsToMany())
@@ -144,9 +142,9 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
         }
     }
 
-    private void WriteSetters(PhpWriter fw, Class classe, string tag)
+    private void WriteSetters(PhpWriter fw, Class classe)
     {
-        foreach (var property in classe.GetProperties(Classes, tag))
+        foreach (var property in classe.GetProperties(Classes))
         {
             var propertyName = property.NameByClassCamel;
             fw.WriteLine();

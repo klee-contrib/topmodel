@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using TopModel.Core;
+using TopModel.Core.FileModel;
 using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -90,6 +91,98 @@ public class JpaConfig : GeneratorConfigBase
     {
         return base.CanClassUseEnums(classe, availableClasses, prop)
             && !classe.Properties.OfType<AssociationProperty>().Any(a => a.Association != classe && !CanClassUseEnums(a.Association, availableClasses));
+    }
+
+    public string GetApiPath(ModelFile file, string tag)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(ApiPath!, tag, module: file.Namespace.Module).ToFilePath());
+    }
+
+    public string GetClassFileName(Class classe, string tag)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(classe.IsPersistent ? EntitiesPath : DtosPath, tag, module: classe.Namespace.Module).ToFilePath(),
+            $"{classe.NamePascal}.java");
+    }
+
+    public string GetMapperFilePath((Class Classe, FromMapper Mapper) mapper, string tag)
+    {
+        var (ns, modelPath) = GetMapperLocation(mapper);
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(modelPath, tag: tag, module: ns.Module).ToFilePath(),
+            $"{GetMapperName(ns, modelPath)}.java");
+    }
+
+    public string GetMapperFilePath((Class Classe, ClassMappings Mapper) mapper, string tag)
+    {
+        var (ns, modelPath) = GetMapperLocation(mapper);
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(modelPath, tag: tag, module: ns.Module).ToFilePath(),
+            $"{GetMapperName(ns, modelPath)}.java");
+    }
+
+    public string GetMapperImport(Namespace ns, string modelPath, string tag)
+    {
+        return $@"{GetPackageName(ns, modelPath, tag)}.{GetMapperName(ns, modelPath)}";
+    }
+
+    public (Namespace Namespace, string ModelPath) GetMapperLocation((Class Classe, FromMapper Mapper) mapper)
+    {
+        if (mapper.Classe.IsPersistent)
+        {
+            return (mapper.Classe.Namespace, EntitiesPath);
+        }
+
+        var persistentParam = mapper.Mapper.Params.FirstOrDefault(p => p.Class.IsPersistent);
+        if (persistentParam != null)
+        {
+            return (persistentParam.Class.Namespace, EntitiesPath);
+        }
+
+        return (mapper.Classe.Namespace, DtosPath);
+    }
+
+    public (Namespace Namespace, string ModelPath) GetMapperLocation((Class Classe, ClassMappings Mapper) mapper)
+    {
+        if (mapper.Classe.IsPersistent)
+        {
+            return (mapper.Classe.Namespace, EntitiesPath);
+        }
+
+        if (mapper.Mapper.Class.IsPersistent)
+        {
+            return (mapper.Mapper.Class.Namespace, EntitiesPath);
+        }
+
+        return (mapper.Classe.Namespace, DtosPath);
+    }
+
+    public string GetMapperName(Namespace ns, string modelPath)
+    {
+        return $"{ns.ModuleFlat}{(modelPath == EntitiesPath ? string.Empty : "DTO")}Mappers";
+    }
+
+    public string GetPackageName(Endpoint endpoint, string tag)
+    {
+        return GetPackageName(endpoint.Namespace, ApiPath, tag);
+    }
+
+    public string GetPackageName(Class classe, string tag, bool? isPersistent = null)
+    {
+        return GetPackageName(
+            classe.Namespace,
+            isPersistent.HasValue ? isPersistent.Value ? EntitiesPath : DtosPath : classe.IsPersistent ? EntitiesPath : DtosPath,
+            tag);
+    }
+
+    public string GetPackageName(Namespace ns, string modelPath, string tag)
+    {
+        return ResolveVariables(modelPath, tag, module: ns.Module).ToPackageName();
     }
 
     protected override string GetConstEnumName(string className, string refName)

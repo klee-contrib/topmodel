@@ -35,15 +35,4 @@ public static class ScriptUtils
             ? string.Empty
             : raw.Replace("'", "''");
     }
-
-    public static bool ShouldQuoteValue(this SqlConfig config, IFieldProperty prop)
-    {
-        var type = config.GetType(prop);
-        return (type ?? string.Empty).Contains("varchar")
-            || type == "text"
-            || type == "uniqueidentifier"
-            || type == "uuid"
-            || (type ?? string.Empty).Contains("date")
-            || (type ?? string.Empty).Contains("time");
-    }
 }

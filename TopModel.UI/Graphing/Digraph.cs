@@ -35,15 +35,6 @@ public class Digraph
         return _sb.ToString();
     }
 
-    private Digraph AddNode(object classe, Action<Node> node)
-    {
-        var n = new Node(classe);
-        node(n);
-        _sb.Append(n);
-        _sb.Append("\r\n");
-        return this;
-    }
-
     private Digraph AddEdge(Class from, IProperty prop, IEnumerable<Class> classes)
     {
         var to = prop is AssociationProperty ap ? ap.Association : prop is CompositionProperty cp ? cp.Composition : null;
@@ -100,6 +91,15 @@ public class Digraph
                 .AddProp("arrowsize", "2"));
         }
 
+        return this;
+    }
+
+    private Digraph AddNode(object classe, Action<Node> node)
+    {
+        var n = new Node(classe);
+        node(n);
+        _sb.Append(n);
+        _sb.Append("\r\n");
         return this;
     }
 }

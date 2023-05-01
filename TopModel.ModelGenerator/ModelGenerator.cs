@@ -7,7 +7,7 @@ public abstract class ModelGenerator
 {
     private readonly ILogger<ModelGenerator> _logger;
 
-#pragma warning disable CS8618 
+#pragma warning disable CS8618
     protected ModelGenerator(ILogger<ModelGenerator> logger)
     {
         _logger = logger;
@@ -22,11 +22,10 @@ public abstract class ModelGenerator
 
     public string ModelRoot { get; init; }
 
-    string FullName => $"{Name.PadRight(18, '.')}@{Number}";
+    public string FullName => $"{Name.PadRight(18, '.')}@{Number}";
 
     public async Task<List<string>> Generate(LoggingScope scope)
     {
-
         using var scope1 = _logger.BeginScope(FullName);
         using var scope2 = _logger.BeginScope(scope);
         try

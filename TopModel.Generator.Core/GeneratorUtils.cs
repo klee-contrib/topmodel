@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TopModel.Core;
-using TopModel.Utils;
 
 namespace TopModel.Generator.Core;
 
@@ -28,24 +27,7 @@ public static class GeneratorUtils
         });
     }
 
-    public static List<AssociationProperty> GetReverseProperties(this Class classe, IEnumerable<Class> availableClasses)
-    {
-        if (classe.Reference)
-        {
-            return new List<AssociationProperty>();
-        }
-
-        return availableClasses
-            .SelectMany(c => c.Properties)
-            .OfType<AssociationProperty>()
-            .Where(p => p is not ReverseAssociationProperty)
-            .Where(p => p.Type != AssociationType.OneToOne)
-            .Where(p => p.Association == classe
-                && (p.Type == AssociationType.OneToMany || p.Class.Namespace.RootModule == classe.Namespace.RootModule))
-            .ToList();
-    }
-
-    public static IList<IProperty> GetProperties(this Class classe, IEnumerable<Class> availableClasses, string tag)
+    public static IList<IProperty> GetProperties(this Class classe, IEnumerable<Class> availableClasses)
     {
         if (classe.Reference)
         {
@@ -64,5 +46,22 @@ public static class GeneratorUtils
             ReverseProperty = p,
             Role = p.Role
         })).ToList();
+    }
+
+    public static List<AssociationProperty> GetReverseProperties(this Class classe, IEnumerable<Class> availableClasses)
+    {
+        if (classe.Reference)
+        {
+            return new List<AssociationProperty>();
+        }
+
+        return availableClasses
+            .SelectMany(c => c.Properties)
+            .OfType<AssociationProperty>()
+            .Where(p => p is not ReverseAssociationProperty)
+            .Where(p => p.Type != AssociationType.OneToOne)
+            .Where(p => p.Association == classe
+                && (p.Type == AssociationType.OneToMany || p.Class.Namespace.RootModule == classe.Namespace.RootModule))
+            .ToList();
     }
 }

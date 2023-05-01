@@ -5,6 +5,46 @@ namespace TopModel.Core;
 
 public static class TemplateExtension
 {
+    public static Func<string, string> GetTransformation(this string input)
+    {
+        var transform = (string a) => a;
+        var value = input;
+        if (input.Contains(':'))
+        {
+            var splitted = input.Split(':');
+            value = splitted[0];
+            var transformationName = input.Split(':')[1];
+            switch (transformationName)
+            {
+                case "camel":
+                    transform = (string a) => a.ToCamelCase();
+                    break;
+                case "constant":
+                    transform = (string a) => a.ToConstantCase();
+                    break;
+                case "kebab":
+                    transform = (string a) => a.ToKebabCase();
+                    break;
+                case "lower":
+                    transform = (string a) => a.ToLower();
+                    break;
+                case "pascal":
+                    transform = (string a) => a.ToPascalCase();
+                    break;
+                case "snake":
+                    transform = (string a) => a.ToSnakeCase();
+                    break;
+                case "upper":
+                    transform = (string a) => a.ToUpper();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return transform;
+    }
+
     public static string ParseTemplate(this string template, IFieldProperty fp)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
@@ -16,22 +56,6 @@ public static class TemplateExtension
         foreach (var t in template.ExtractVariables())
         {
             result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), fp));
-        }
-
-        return result;
-    }
-
-    public static string ParseTemplate(this string template, Domain domainFrom, Domain domainTo, string targetLanguage)
-    {
-        if (string.IsNullOrEmpty(template) || !template.Contains('{'))
-        {
-            return template;
-        }
-
-        var result = template;
-        foreach (var t in template.ExtractVariables())
-        {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), domainFrom, domainTo, targetLanguage));
         }
 
         return result;
@@ -100,44 +124,26 @@ public static class TemplateExtension
         return result;
     }
 
-    public static Func<string, string> GetTransformation(this string input)
+    public static string ParseTemplate(this string template, Domain domainFrom, Domain domainTo, string targetLanguage)
     {
-        var transform = (string a) => a;
-        var value = input;
-        if (input.Contains(':'))
+        if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
-            var splitted = input.Split(':');
-            value = splitted[0];
-            var transformationName = input.Split(':')[1];
-            switch (transformationName)
-            {
-                case "camel":
-                    transform = (string a) => a.ToCamelCase();
-                    break;
-                case "constant":
-                    transform = (string a) => a.ToConstantCase();
-                    break;
-                case "kebab":
-                    transform = (string a) => a.ToKebabCase();
-                    break;
-                case "lower":
-                    transform = (string a) => a.ToLower();
-                    break;
-                case "pascal":
-                    transform = (string a) => a.ToPascalCase();
-                    break;
-                case "snake":
-                    transform = (string a) => a.ToSnakeCase();
-                    break;
-                case "upper":
-                    transform = (string a) => a.ToUpper();
-                    break;
-                default:
-                    break;
-            }
+            return template;
         }
 
-        return transform;
+        var result = template;
+        foreach (var t in template.ExtractVariables())
+        {
+            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), domainFrom, domainTo, targetLanguage));
+        }
+
+        return result;
+    }
+
+    private static IEnumerable<Match> ExtractVariables(this string input)
+    {
+        var regex = new Regex(@"(\{[$a-zA-Z0-9:.]+\})");
+        return regex.Matches(input).Cast<Match>();
     }
 
     private static string ResolveVariable(this string input, IFieldProperty rp)
@@ -156,27 +162,6 @@ public static class TemplateExtension
             "resourceKey" => transform(rp.ResourceKey.ToString()),
             "commentResourceKey" => transform(rp.CommentResourceKey.ToString()),
             "defaultValue" => transform(rp.DefaultValue?.ToString() ?? string.Empty),
-            var i => i
-        };
-    }
-
-    private static string ResolveVariable(this string input, Domain domainFrom, Domain domainTo, string targetLanguage)
-    {
-        var transform = input.GetTransformation();
-        var variable = input.Split(':').First();
-
-        return input.Split(':').First() switch
-        {
-            "from.mediaType" => transform(domainFrom.MediaType ?? string.Empty),
-            "from.length" => transform(domainFrom.Length?.ToString() ?? string.Empty),
-            "from.scale" => transform(domainFrom.Scale?.ToString() ?? string.Empty),
-            "from.name" => transform(domainFrom.Name ?? string.Empty),
-            "from.type" => transform(domainFrom.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty),
-            "to.mediaType" => transform(domainTo.MediaType ?? string.Empty),
-            "to.length" => transform(domainTo.Length?.ToString() ?? string.Empty),
-            "to.scale" => transform(domainTo.Scale?.ToString() ?? string.Empty),
-            "to.name" => transform(domainTo.Name ?? string.Empty),
-            "to.type" => transform(domainTo.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty),
             var i => i
         };
     }
@@ -240,9 +225,24 @@ public static class TemplateExtension
         return result;
     }
 
-    private static IEnumerable<Match> ExtractVariables(this string input)
+    private static string ResolveVariable(this string input, Domain domainFrom, Domain domainTo, string targetLanguage)
     {
-        var regex = new Regex(@"(\{[$a-zA-Z0-9:.]+\})");
-        return regex.Matches(input).Cast<Match>();
+        var transform = input.GetTransformation();
+        var variable = input.Split(':').First();
+
+        return input.Split(':').First() switch
+        {
+            "from.mediaType" => transform(domainFrom.MediaType ?? string.Empty),
+            "from.length" => transform(domainFrom.Length?.ToString() ?? string.Empty),
+            "from.scale" => transform(domainFrom.Scale?.ToString() ?? string.Empty),
+            "from.name" => transform(domainFrom.Name ?? string.Empty),
+            "from.type" => transform(domainFrom.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty),
+            "to.mediaType" => transform(domainTo.MediaType ?? string.Empty),
+            "to.length" => transform(domainTo.Length?.ToString() ?? string.Empty),
+            "to.scale" => transform(domainTo.Scale?.ToString() ?? string.Empty),
+            "to.name" => transform(domainTo.Name ?? string.Empty),
+            "to.type" => transform(domainTo.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty),
+            var i => i
+        };
     }
 }
