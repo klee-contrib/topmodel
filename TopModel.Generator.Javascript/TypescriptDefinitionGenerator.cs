@@ -38,7 +38,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
 
         if (Config.TargetFramework == TargetFramework.FOCUS)
         {
-            fw.WriteLine($"import {{{string.Join(", ", GetFocusStoresImports(classe).OrderBy(x => x))}}} from \"@focus4/stores\";");
+            fw.WriteLine($"import {{{string.Join(", ", GetFocusStoresImports(classe, tag).OrderBy(x => x))}}} from \"@focus4/stores\";");
         }
 
         if (classe.DomainDependencies.Any())
@@ -57,7 +57,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                     ? Config.GetType(fp, Classes).Replace("[]", string.Empty)
                     : $"{dep.Classe.NamePascal}Entity, {dep.Classe.NamePascal}{(Config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}",
                 Path: Config.GetImportPathForClass(dep, GetClassTags(dep.Classe).Contains(tag) ? tag : GetClassTags(dep.Classe).Intersect(Config.Tags).FirstOrDefault() ?? tag, tag, Classes)!))
-            .Concat(classe.DomainDependencies.SelectMany(dep => Config.GetImplementation(dep.Domain)!.Imports.Select(import => (Import: Config.GetImplementation(dep.Domain)!.Type.ParseTemplate(dep.Source).Replace("[]", string.Empty).Split("<").First(), Path: import.ParseTemplate(dep.Source)))))
+            .Concat(classe.DomainDependencies.Select(dep => Config.GetDomainDependencyImport(dep, tag)))
             .Where(p => p.Path != null && p.Path != "@focus4/stores")
             .GroupAndSort();
 
@@ -267,7 +267,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
         }
     }
 
-    private IEnumerable<string> GetFocusStoresImports(Class classe)
+    private IEnumerable<string> GetFocusStoresImports(Class classe, string tag)
     {
         if (classe.Properties.Any(p => p is IFieldProperty || p is CompositionProperty cp && cp.DomainKind != null))
         {
@@ -289,9 +289,9 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
             yield return "RecursiveListEntry";
         }
 
-        foreach (var p in classe.Properties.OfType<CompositionProperty>().Where(p => Config.GetImplementation(p.DomainKind)?.Imports.Contains("@focus4/stores") ?? false))
+        foreach (var p in classe.DomainDependencies.Select(dep => Config.GetDomainDependencyImport(dep, tag)).Where(p => p.Path == "@focus4/stores"))
         {
-            yield return Config.GetImplementation(p.DomainKind)!.Type.ParseTemplate(p).Replace("[]", string.Empty).Split('<').First();
+            yield return p.Import;
         }
 
         yield return "EntityToType";

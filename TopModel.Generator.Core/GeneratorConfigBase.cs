@@ -150,6 +150,67 @@ public abstract class GeneratorConfigBase
         return fp.DefaultValue;
     }
 
+    public IEnumerable<string> GetDomainAnnotations(IProperty property, string tag)
+    {
+        if (property is IFieldProperty fp)
+        {
+            foreach (var annotation in GetImplementation(fp.Domain)!.Annotations
+                .Where(a => FilterAnnotations(a, fp, tag))
+                .Select(a => a.Text.ParseTemplate(fp)))
+            {
+                yield return annotation;
+            }
+        }
+        else if (property is CompositionProperty { DomainKind: not null } cp)
+        {
+            foreach (var annotation in GetImplementation(cp.DomainKind)!.Annotations
+                .Where(a => FilterAnnotations(a, cp, tag))
+                .Select(a => a.Text.ParseTemplate(cp)))
+            {
+                yield return annotation;
+            }
+        }
+    }
+
+    public IEnumerable<string> GetDomainImports(IProperty property, string tag, bool noAnnotations = false)
+    {
+        if (property is IFieldProperty fp)
+        {
+            foreach (var import in GetImplementation(fp.Domain)!.Imports.Select(u => u.ParseTemplate(fp)))
+            {
+                yield return import;
+            }
+            if (!noAnnotations)
+            {
+                foreach (var import in GetImplementation(fp.Domain)!.Annotations
+                .Where(a => FilterAnnotations(a, fp, tag))
+                .SelectMany(a => a.Imports)
+                    .Select(u => u.ParseTemplate(fp)))
+                {
+                    yield return import;
+                }
+            }
+        }
+        else if (property is CompositionProperty { DomainKind: not null } cp)
+        {
+            foreach (var import in GetImplementation(cp.DomainKind)!.Imports.Select(u => u.ParseTemplate(cp)))
+            {
+                yield return import;
+            }
+
+            if (!noAnnotations)
+            {
+                foreach (var import in GetImplementation(cp.DomainKind)!.Annotations
+                    .Where(a => FilterAnnotations(a, cp, tag))
+                     .SelectMany(a => a.Imports)
+                     .Select(u => u.ParseTemplate(cp)))
+                {
+                    yield return import;
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// Récupère l'implémentation du domaine pour la config.
     /// </summary>
@@ -320,6 +381,11 @@ public abstract class GeneratorConfigBase
         }
     }
 
+    public virtual bool IsPersistent(Class classe, string tag)
+    {
+        return classe.IsPersistent;
+    }
+
     /// <summary>
     /// Résout toutes les variables pour une valeur donnée.
     /// </summary>
@@ -386,5 +452,13 @@ public abstract class GeneratorConfigBase
     private static string ReplaceVariable(string value, string varName, string varValue)
     {
         return Regex.Replace(value, $"\\{{{varName}(:\\w+)?\\}}", m => m.Value.Trim('{', '}').GetTransformation()(varValue));
+    }
+
+    private bool FilterAnnotations(TargetedText annotation, IProperty property, string tag)
+    {
+        return property.Class != null && !property.Class.Abstract && (
+            (annotation.Target & Target.Dto) > 0 && !IsPersistent(property.Class, tag)
+            || (annotation.Target & Target.Persisted) > 0 && IsPersistent(property.Class, tag))
+        || (annotation.Target & Target.Api) > 0 && property.Endpoint != null;
     }
 }

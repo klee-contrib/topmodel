@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -166,7 +165,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 w.WriteAttribute(1, "DefaultProperty", $@"nameof({item.DefaultProperty.NamePascal})");
             }
 
-            if (item.IsPersistent && !Config.NoPersistence(tag))
+            if (Config.IsPersistent(item, tag))
             {
                 var sqlName = Config.UseLowerCaseSqlNames ? item.SqlName.ToLower() : item.SqlName;
                 if (Config.DbSchema != null)
@@ -211,7 +210,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             GenerateConstProperties(w, item);
             GenerateConstructors(w, item);
 
-            if (Config.DbContextPath == null && item.IsPersistent && !Config.NoPersistence(tag))
+            if (Config.DbContextPath == null && Config.IsPersistent(item, tag))
             {
                 w.WriteLine();
                 w.WriteLine(2, "#region Meta données");
@@ -332,7 +331,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => Config.GetType(t).Contains("ICollection")))
         {
             initd.Add(property.NamePascal);
-            var strip = Config.GetImplementation(property.Domain)!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
+            var strip = Config.GetType(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
             w.WriteLine(3, property.NamePascal + " = new List<" + strip + ">(bean." + property.NamePascal + ");");
         }
 
@@ -395,7 +394,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => Config.GetImplementation(t.Domain)!.Type.Contains("ICollection")))
         {
             line = true;
-            var strip = Config.GetImplementation(property.Domain)!.Type.ParseTemplate(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
+            var strip = Config.GetType(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
             w.WriteLine(3, $"{property.NamePascal} = new List<{strip}>();");
         }
 
@@ -507,7 +506,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                     && Classes.Contains(prop.Class))
                 {
                     var sqlName = Config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
-                    if (!Config.GetImplementation(fp.Domain)!.Annotations.Any(a => a.Text.TrimStart('[').StartsWith("Column")))
+                    if (!Config.GetDomainAnnotations(fp, tag).Any(a => a.TrimStart('[').StartsWith("Column")))
                     {
                         w.WriteAttribute(2, "Column", $@"""{sqlName}""");
                     }
@@ -540,9 +539,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                     w.WriteAttribute(2, "StringLength", $"{fp.Domain.Length}");
                 }
 
-                foreach (var annotation in Config.GetImplementation(fp.Domain)!.Annotations
-                    .Where(a => (a.Target & Target.Dto) > 0 || (a.Target & Target.Persisted) > 0 && (property.Class?.IsPersistent ?? false) && !Config.NoPersistence(tag))
-                    .Select(a => a.Text.ParseTemplate(property)))
+                foreach (var annotation in Config.GetDomainAnnotations(property, tag))
                 {
                     w.WriteAttribute(2, annotation);
                 }
@@ -629,21 +626,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
         foreach (var property in item.Properties)
         {
-            if (property is IFieldProperty fp)
-            {
-                foreach (var @using in Config.GetImplementation(fp.Domain)!.Imports.Select(u => u.ParseTemplate(fp)))
-                {
-                    usings.Add(@using);
-                }
-
-                foreach (var @using in Config.GetImplementation(fp.Domain)!.Annotations
-                    .Where(a => (a.Target & Target.Dto) > 0 || (a.Target & Target.Persisted) > 0 && (property.Class?.IsPersistent ?? false))
-                    .SelectMany(a => a.Usings)
-                    .Select(u => u.ParseTemplate(fp)))
-                {
-                    usings.Add(@using);
-                }
-            }
+            usings.AddRange(Config.GetDomainImports(property, tag));
 
             switch (property)
             {
@@ -658,15 +641,6 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                     break;
                 case CompositionProperty cp:
                     usings.Add(GetNamespace(cp.Composition, tag));
-                    if (cp.DomainKind != null)
-                    {
-                        usings.AddRange(Config.GetImplementation(cp.DomainKind)!.Imports.Select(u => u.ParseTemplate(cp)));
-                        usings.AddRange(Config.GetImplementation(cp.DomainKind)!.Annotations
-                            .Where(a => (a.Target & Target.Dto) > 0 || (a.Target & Target.Persisted) > 0 && (property.Class?.IsPersistent ?? false))
-                            .SelectMany(a => a.Usings)
-                            .Select(u => u.ParseTemplate(cp)));
-                    }
-
                     break;
             }
         }

@@ -445,6 +445,7 @@
                   "required": [
                     "text"
                   ],
+                  "additionalProperties": false,
                   "properties": {
                     "text": {
                       "type": "string",
@@ -502,6 +503,7 @@
           "additionalProperties": {
             "type": "object",
             "description": "Implémentation du convertisseur dans le cas où la conversion n'est pas implicite",
+            "additionalProperties": false,
             "properties": {
               "text": {
                 "type": "string",

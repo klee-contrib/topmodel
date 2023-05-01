@@ -3,7 +3,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public static class TemplateExtension
+public static class TemplateExtensions
 {
     public static Func<string, string> GetTransformation(this string input)
     {
@@ -17,25 +17,25 @@ public static class TemplateExtension
             switch (transformationName)
             {
                 case "camel":
-                    transform = (string a) => a.ToCamelCase();
+                    transform = a => a.ToCamelCase();
                     break;
                 case "constant":
-                    transform = (string a) => a.ToConstantCase();
+                    transform = a => a.ToConstantCase();
                     break;
                 case "kebab":
-                    transform = (string a) => a.ToKebabCase();
+                    transform = a => a.ToKebabCase();
                     break;
                 case "lower":
-                    transform = (string a) => a.ToLower();
+                    transform = a => a.ToLower();
                     break;
                 case "pascal":
-                    transform = (string a) => a.ToPascalCase();
+                    transform = a => a.ToPascalCase();
                     break;
                 case "snake":
-                    transform = (string a) => a.ToSnakeCase();
+                    transform = a => a.ToSnakeCase();
                     break;
                 case "upper":
-                    transform = (string a) => a.ToUpper();
+                    transform = a => a.ToUpper();
                     break;
                 default:
                     break;
@@ -45,51 +45,40 @@ public static class TemplateExtension
         return transform;
     }
 
-    public static string ParseTemplate(this string template, IFieldProperty fp)
-    {
-        if (string.IsNullOrEmpty(template) || !template.Contains('{'))
-        {
-            return template;
-        }
-
-        var result = template;
-        foreach (var t in template.ExtractVariables())
-        {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), fp));
-        }
-
-        return result;
-    }
-
     public static string ParseTemplate(this string template, IProperty p)
     {
         if (p is IFieldProperty fp)
         {
-            return template.ParseTemplate(fp);
-        }
+            if (string.IsNullOrEmpty(template) || !template.Contains('{'))
+            {
+                return template;
+            }
 
-        if (p is CompositionProperty cp)
+            var result = template;
+            foreach (var t in template.ExtractVariables())
+            {
+                result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), fp));
+            }
+
+            return result;
+        }
+        else if (p is CompositionProperty cp)
         {
-            return template.ParseTemplate(cp);
+            if (string.IsNullOrEmpty(template) || !template.Contains('{'))
+            {
+                return template;
+            }
+
+            var result = template;
+            foreach (var t in template.ExtractVariables())
+            {
+                result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), cp));
+            }
+
+            return result;
         }
 
         return template;
-    }
-
-    public static string ParseTemplate(this string template, CompositionProperty fp)
-    {
-        if (string.IsNullOrEmpty(template) || !template.Contains('{'))
-        {
-            return template;
-        }
-
-        var result = template;
-        foreach (var t in template.ExtractVariables())
-        {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), fp));
-        }
-
-        return result;
     }
 
     public static string ParseTemplate(this string template, Class c, string[] parameters)

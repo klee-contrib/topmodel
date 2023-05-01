@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
-using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -83,23 +82,9 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
             }
         }
 
-        foreach (var property in endpoints.SelectMany(e => e.Params.Concat(new[] { e.Returns }).Where(p => p != null)))
+        foreach (var property in endpoints.SelectMany(e => e.Params.Concat(new[] { e.Returns! }).Where(p => p != null)))
         {
-            if (property is IFieldProperty fp)
-            {
-                foreach (var @using in Config.GetImplementation(fp.Domain)!.Imports.Select(u => u.ParseTemplate(fp)))
-                {
-                    usings.Add(@using);
-                }
-
-                foreach (var @using in Config.GetImplementation(fp.Domain)!.Annotations
-                    .Where(a => (a.Target & Target.Dto) > 0 || (a.Target & Target.Persisted) > 0 && (property.Class?.IsPersistent ?? false))
-                    .SelectMany(a => a.Usings)
-                    .Select(u => u.ParseTemplate(fp)))
-                {
-                    usings.Add(@using);
-                }
-            }
+            usings.AddRange(Config.GetDomainImports(property, tag));
 
             switch (property)
             {
@@ -115,15 +100,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
                 case CompositionProperty cp:
                     usings.Add(GetNamespace(cp.Composition, tag));
 
-                    if (cp.DomainKind != null)
-                    {
-                        usings.AddRange(Config.GetImplementation(cp.DomainKind)!.Imports.Select(u => u.ParseTemplate(cp)));
-                        usings.AddRange(Config.GetImplementation(cp.DomainKind)!.Annotations
-                        .Where(a => (a.Target & Target.Dto) > 0 || (a.Target & Target.Persisted) > 0 && (property.Class?.IsPersistent ?? false))
-                        .SelectMany(a => a.Usings));
-                    }
-
-                    if (!Config.UseLatestCSharp && (cp.Kind == "list" || cp.Kind == "async-list"))
+                    if (!Config.UseLatestCSharp && cp.Kind == "list")
                     {
                         usings.Add("System.Collections.Generic");
                     }

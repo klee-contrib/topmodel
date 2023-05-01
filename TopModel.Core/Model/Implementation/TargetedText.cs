@@ -8,6 +8,4 @@ public class TargetedText
     public Target Target { get; set; } = Target.Persisted_Dto;
 
     public List<string> Imports { get; set; } = new List<string>();
-
-    public List<string> Usings { get; set; } = new List<string>();
 }

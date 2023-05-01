@@ -284,16 +284,9 @@ public class JpaModelPropertyGenerator
             fw.WriteLine(1, "@Enumerated(EnumType.STRING)");
         }
 
-        var javaDomain = _config.GetImplementation(property.Domain);
-        if (javaDomain is not null && javaDomain.Annotations is not null)
+        foreach (var annotation in _config.GetDomainAnnotations(property, tag))
         {
-            foreach (var annotation in javaDomain.Annotations.Where(a =>
-                classe.IsPersistent && (Target.Persisted & a.Target) > 0
-            || !classe.IsPersistent && (Target.Dto & a.Target) > 0))
-            {
-                fw.AddImports(annotation.Imports.Select(i => i.ParseTemplate(property)));
-                fw.WriteLine(1, $"{(annotation.Text.StartsWith("@") ? string.Empty : '@')}{annotation.Text.ParseTemplate(property)}");
-            }
+            fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : '@')}{annotation}");
         }
 
         var defaultValue = _config.GetDefaultValue(property, _classes);

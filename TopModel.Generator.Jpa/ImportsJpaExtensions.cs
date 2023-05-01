@@ -20,17 +20,15 @@ public static class ImportsJpaExtensions
         }
 
         imports
-        .AddRange(
-            classe.FromMappers.SelectMany(fm => fm.Params).Select(fmp => fmp.Class.GetImport(config, tag)));
+            .AddRange(classe.FromMappers.SelectMany(fm => fm.Params).Select(fmp => fmp.Class.GetImport(config, tag)));
         imports
-        .AddRange(
-            classe.ToMappers.Select(fmp => fmp.Class.GetImport(config, tag)));
+            .AddRange(classe.ToMappers.Select(fmp => fmp.Class.GetImport(config, tag)));
 
         // Suppression des imports inutiles
         return imports;
     }
 
-    public static List<string> GetKindImports(this CompositionProperty cp, JpaConfig config)
+    public static List<string> GetKindImports(this CompositionProperty cp, JpaConfig config, string tag)
     {
         var imports = new List<string>();
 
@@ -38,48 +36,24 @@ public static class ImportsJpaExtensions
         {
             imports.Add("java.util.List");
         }
-        else if (cp.DomainKind != null)
-        {
-            imports.AddRange(config.GetImplementation(cp.DomainKind)!.Imports.Select(i => i.ParseTemplate(cp)));
-        }
+
+        imports.AddRange(config.GetDomainImports(cp, tag));
 
         return imports;
     }
 
-    public static List<string> GetTypeImports(this IProperty p, JpaConfig config, string tag)
+    public static List<string> GetTypeImports(this IProperty p, JpaConfig config, string tag, bool noAnnotations = false)
     {
         return p switch
         {
             CompositionProperty cp => cp.GetTypeImports(config, tag),
             AssociationProperty ap => ap.GetTypeImports(config, tag),
-            IFieldProperty fp => fp.GetTypeImports(config, tag),
+            IFieldProperty fp => fp.GetTypeImports(config, tag, noAnnotations),
             _ => new List<string>(),
         };
     }
 
-    public static List<string> GetTypeImports(this IFieldProperty rp, JpaConfig config, string tag)
-    {
-        var imports = new List<string>();
-
-        var javaType = config.GetImplementation(rp.Domain);
-        if (javaType?.Imports != null)
-        {
-            imports.AddRange(javaType.Imports.Select(i => i.ParseTemplate(rp)));
-        }
-
-        if (rp is AliasProperty apo)
-        {
-            imports.AddRange(apo.GetTypeImports(config, tag));
-        }
-        else if (rp is RegularProperty rpr)
-        {
-            imports.AddRange(rpr.GetTypeImports(config, tag));
-        }
-
-        return imports;
-    }
-
-    public static List<string> GetTypeImports(this AliasProperty ap, JpaConfig config, string tag)
+    private static List<string> GetTypeImports(this AliasProperty ap, JpaConfig config, string tag)
     {
         var imports = new List<string>();
         if (ap.Class != null && ap.Class.IsPersistent && ap.Property is AssociationProperty asp)
@@ -107,20 +81,7 @@ public static class ImportsJpaExtensions
         return imports;
     }
 
-    public static List<string> GetTypeImports(this RegularProperty rp, JpaConfig config, string tag)
-    {
-        var imports = new List<string>();
-        if (rp.Class != null && config.CanClassUseEnums(rp.Class))
-        {
-            imports.Add($"{rp.Class.GetImport(config, tag)}");
-        }
-
-        imports.AddRange(config.GetImplementation(rp.Domain)!.Imports.Select(i => i.ParseTemplate(rp)));
-
-        return imports;
-    }
-
-    public static List<string> GetTypeImports(this AssociationProperty ap, JpaConfig config, string tag)
+    private static List<string> GetTypeImports(this AssociationProperty ap, JpaConfig config, string tag)
     {
         var imports = new List<string>();
 
@@ -145,7 +106,7 @@ public static class ImportsJpaExtensions
         return imports;
     }
 
-    public static List<string> GetTypeImports(this CompositionProperty cp, JpaConfig config, string tag)
+    private static List<string> GetTypeImports(this CompositionProperty cp, JpaConfig config, string tag)
     {
         var imports = new List<string>();
         if (cp.Composition.Namespace.Module != cp.Class?.Namespace.Module)
@@ -157,10 +118,39 @@ public static class ImportsJpaExtensions
         {
             imports.Add("java.util.List");
         }
-        else if (cp.DomainKind != null)
+
+        imports.AddRange(config.GetDomainImports(cp, tag));
+
+        return imports;
+    }
+
+    private static List<string> GetTypeImports(this IFieldProperty rp, JpaConfig config, string tag, bool noAnnotations = false)
+    {
+        var imports = new List<string>();
+
+        imports.AddRange(config.GetDomainImports(rp, tag, noAnnotations));
+
+        if (rp is AliasProperty apo)
         {
-            imports.AddRange(config.GetImplementation(cp.DomainKind)!.Imports.Select(i => i.ParseTemplate(cp)));
+            imports.AddRange(apo.GetTypeImports(config, tag));
         }
+        else if (rp is RegularProperty rpr)
+        {
+            imports.AddRange(rpr.GetTypeImports(config, tag, noAnnotations));
+        }
+
+        return imports;
+    }
+
+    private static List<string> GetTypeImports(this RegularProperty rp, JpaConfig config, string tag, bool noAnnotations = false)
+    {
+        var imports = new List<string>();
+        if (rp.Class != null && config.CanClassUseEnums(rp.Class))
+        {
+            imports.Add($"{rp.Class.GetImport(config, tag)}");
+        }
+
+        imports.AddRange(config.GetDomainImports(rp, tag, noAnnotations));
 
         return imports;
     }

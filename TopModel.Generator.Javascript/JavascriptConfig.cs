@@ -98,6 +98,13 @@ public class JavascriptConfig : GeneratorConfigBase
         .Replace("\\", "/");
     }
 
+    public (string Import, string Path) GetDomainDependencyImport(DomainDependency dep, string tag)
+    {
+        var imports = GetDomainImports(dep.Source, tag);
+        var type = GetType(dep.Source).Split("<").First().Replace("[]", string.Empty);
+        return (Import: type, Path: imports.FirstOrDefault()!);
+    }
+
     public List<(string Import, string Path)> GetEndpointImports(IEnumerable<Endpoint> endpoints, string tag, IEnumerable<Class> availableClasses, Func<Class, IEnumerable<string>> getClassTags)
     {
         return endpoints.SelectMany(e => e.ClassDependencies)
@@ -106,7 +113,7 @@ public class JavascriptConfig : GeneratorConfigBase
                     ? GetType(fp).Replace("[]", string.Empty)
                     : dep.Classe.NamePascal,
                 Path: GetImportPathForClass(dep, getClassTags(dep.Classe).Contains(tag) ? tag : getClassTags(dep.Classe).Intersect(Tags).FirstOrDefault() ?? tag, tag, availableClasses)!))
-            .Concat(endpoints.SelectMany(d => d.DomainDependencies).SelectMany(dep => GetImplementation(dep.Domain)!.Imports.Select(import => (Import: GetImplementation(dep.Domain)!.Type.ParseTemplate(dep.Source).Replace("[]", string.Empty).Split("<").First(), Path: import.ParseTemplate(dep.Source)))))
+            .Concat(endpoints.SelectMany(d => d.DomainDependencies).Select(dep => GetDomainDependencyImport(dep, tag)))
             .Where(i => i.Path != null)
             .GroupAndSort();
     }

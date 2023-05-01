@@ -1,5 +1,4 @@
 ﻿using TopModel.Core;
-using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -183,16 +182,9 @@ public class PhpModelPropertyGenerator
             }
         }
 
-        var phpType = _config.GetImplementation(property.Domain);
-        if (phpType is not null && phpType.Annotations is not null)
+        foreach (var annotation in _config.GetDomainAnnotations(property, tag))
         {
-            foreach (var annotation in phpType.Annotations.Where(a =>
-                classe.IsPersistent && (Target.Persisted & a.Target) > 0
-            || !classe.IsPersistent && (Target.Dto & a.Target) > 0))
-            {
-                fw.AddImports(annotation.Imports.Select(i => i.ParseTemplate(property)));
-                fw.WriteLine(1, $"{annotation.Text.ParseTemplate(property)}");
-            }
+            fw.WriteLine(1, annotation);
         }
 
         var defaultValue = _config.GetDefaultValue(property, _classes);

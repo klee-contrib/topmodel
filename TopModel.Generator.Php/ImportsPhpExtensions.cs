@@ -13,15 +13,11 @@ public static class ImportsPhpExtensions
     {
         var imports = new List<string>();
 
-        var javaType = config.GetImplementation(rp.Domain);
-        if (javaType?.Imports != null)
-        {
-            imports.AddRange(javaType.Imports.Select(i => i.ParseTemplate(rp)));
-        }
+        imports.AddRange(config.GetDomainImports(rp, tag));
 
         if (rp is AliasProperty apo)
         {
-            imports.AddRange(apo.GetTypeImports(config, tag));
+            imports.AddRange(apo.GetTypeImports());
         }
         else if (rp is RegularProperty rpr)
         {
@@ -31,67 +27,13 @@ public static class ImportsPhpExtensions
         return imports;
     }
 
-    public static List<string> GetTypeImports(this AliasProperty ap, PhpConfig config, string tag)
+    private static List<string> GetTypeImports(this AliasProperty ap)
     {
         var imports = new List<string>();
 
         if (ap.Property is AssociationProperty apo && apo.Type.IsToMany())
         {
             imports.Add(@"Doctrine\Common\Collections\Collection");
-        }
-
-        return imports;
-    }
-
-    public static List<string> GetTypeImports(this RegularProperty rp, PhpConfig config, string tag)
-    {
-        var imports = new List<string>();
-
-        imports.AddRange(config.GetImplementation(rp.Domain)!.Imports.Select(i => i.ParseTemplate(rp)));
-
-        return imports;
-    }
-
-    public static List<string> GetTypeImports(this AssociationProperty ap, PhpConfig config, string tag)
-    {
-        var imports = new List<string>();
-
-        switch (ap.Type)
-        {
-            case AssociationType.OneToMany:
-            case AssociationType.ManyToMany:
-                imports.Add(@"Doctrine\Common\Collections\Collection");
-                break;
-        }
-
-        if (ap.Association.Namespace.Module != ap.Class.Namespace.Module)
-        {
-            imports.Add(ap.Association.GetImport(config, tag));
-        }
-
-        if (ap.Association.Reference)
-        {
-            imports.AddRange(ap.Property.GetTypeImports(config, tag));
-        }
-
-        return imports;
-    }
-
-    public static List<string> GetTypeImports(this CompositionProperty cp, PhpConfig config, string tag)
-    {
-        var imports = new List<string>();
-        if (cp.Composition.Namespace.Module != cp.Class?.Namespace.Module)
-        {
-            imports.Add(cp.Composition.GetImport(config, tag));
-        }
-
-        if (cp.Kind == "list")
-        {
-            imports.Add(@"Doctrine\Common\Collections\Collection");
-        }
-        else if (cp.DomainKind != null)
-        {
-            imports.AddRange(config.GetImplementation(cp.DomainKind)!.Imports.Select(i => i.ParseTemplate(cp)));
         }
 
         return imports;

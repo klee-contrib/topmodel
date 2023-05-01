@@ -182,7 +182,7 @@ namespace {ns}
                 };
                 if (paramType != null)
                 {
-                    split[i] = $"{{{routeParamName}:{paramType.ParseTemplate(param)}}}";
+                    split[i] = $"{{{routeParamName}:{paramType}}}";
                 }
             }
         }

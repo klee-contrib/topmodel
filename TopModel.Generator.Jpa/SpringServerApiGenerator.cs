@@ -93,7 +93,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         return properties.SelectMany(property => property!.GetTypeImports(Config, tag))
                 .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
                 .Select(e => e.Returns).OfType<CompositionProperty>()
-                .SelectMany(c => c.GetKindImports(Config)));
+                .SelectMany(c => c.GetKindImports(Config, tag)));
     }
 
     private void WriteEndPointMethod(JavaWriter fw, Endpoint endpoint)

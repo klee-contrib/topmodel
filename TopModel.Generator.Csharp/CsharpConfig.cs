@@ -388,6 +388,11 @@ public class CsharpConfig : GeneratorConfigBase
         return type;
     }
 
+    public override bool IsPersistent(Class classe, string tag)
+    {
+        return base.IsPersistent(classe, tag) && !NoPersistence(tag);
+    }
+
     public bool NoPersistence(string tag)
     {
         return ResolveVariables(NoPersistenceParam ?? string.Empty, tag) == true.ToString();
