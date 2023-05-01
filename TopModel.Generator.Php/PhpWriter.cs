@@ -84,7 +84,7 @@ public class PhpWriter : IDisposable
     /// <param name="modifier">Modifier.</param>
     /// <param name="inheritedClass">Classe parente.</param>
     /// <param name="implementingInterfaces">Interfaces implémentées.</param>
-    public void WriteClassDeclaration(string name, string? modifier, string? inheritedClass = null, IList<string>? implementingInterfaces = null)
+    public void WriteClassDeclaration(string name, string? modifier, string? inheritedClass = null, IEnumerable<string>? implementingInterfaces = null)
     {
         if (string.IsNullOrEmpty(name))
         {

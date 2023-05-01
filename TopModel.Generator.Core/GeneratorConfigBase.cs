@@ -88,6 +88,19 @@ public abstract class GeneratorConfigBase
         return classe.Enum && CheckProperty(prop!);
     }
 
+    public string? GetClassExtends(Class item)
+    {
+        var extendsDecorator = item.Decorators.SingleOrDefault(d => GetImplementation(d.Decorator)?.Extends != null);
+        return item.Extends?.NamePascal ?? GetImplementation(extendsDecorator.Decorator)?.Extends!.ParseTemplate(item, extendsDecorator.Parameters);
+    }
+
+    public IEnumerable<string> GetClassImplements(Class classe)
+    {
+        return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Implements ?? Array.Empty<string>())
+            .Select(i => i.ParseTemplate(classe, d.Parameters)))
+            .Distinct();
+    }
+
     public string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain)
     {
         if (fromDomain != null && toDomain != null && fromDomain != toDomain)
@@ -103,6 +116,34 @@ public abstract class GeneratorConfigBase
         }
 
         return value;
+    }
+
+    public IEnumerable<string> GetDecoratorAnnotations(Class classe)
+    {
+        return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Annotations ?? Array.Empty<string>())
+            .Select(a => a.ParseTemplate(classe, d.Parameters)))
+            .Distinct();
+    }
+
+    public IEnumerable<string> GetDecoratorAnnotations(Endpoint endpoint)
+    {
+        return endpoint.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Annotations ?? Array.Empty<string>())
+            .Select(a => a.ParseTemplate(endpoint, d.Parameters)))
+            .Distinct();
+    }
+
+    public IEnumerable<string> GetDecoratorImports(Class classe)
+    {
+        return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Imports ?? Array.Empty<string>())
+            .Select(i => i.ParseTemplate(classe, d.Parameters)))
+            .Distinct();
+    }
+
+    public IEnumerable<string> GetDecoratorImports(Endpoint endpoint)
+    {
+        return endpoint.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Imports ?? Array.Empty<string>())
+            .Select(i => i.ParseTemplate(endpoint, d.Parameters)))
+            .Distinct();
     }
 
     /// <summary>

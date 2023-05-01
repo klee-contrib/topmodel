@@ -48,10 +48,8 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
 
         WriteAttributes(fw, classe, tag);
 
-        var extendsDecorator = classe.Decorators.SingleOrDefault(d => Config.GetImplementation(d.Decorator)?.Extends != null);
-        var extends = (classe.Extends?.NamePascal ?? Config.GetImplementation(extendsDecorator.Decorator)?.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
-
-        var implements = classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)?.Implements.Select(i => i.ParseTemplate(classe, d.Parameters)) ?? Array.Empty<string>()).Distinct().ToList();
+        var extends = Config.GetClassExtends(classe);
+        var implements = Config.GetClassImplements(classe);
 
         fw.WriteClassDeclaration(classe.NamePascal, null, extends, implements);
 
@@ -91,12 +89,12 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
             }
         }
 
-        foreach (var a in classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)?.Annotations.Select(a => a.ParseTemplate(classe, d.Parameters)) ?? Array.Empty<string>()).Distinct())
+        foreach (var a in Config.GetDecoratorAnnotations(classe))
         {
             fw.WriteLine(a);
         }
 
-        foreach (var i in classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)?.Imports.Select(i => i.ParseTemplate(classe, d.Parameters)) ?? Array.Empty<string>()).Distinct())
+        foreach (var i in Config.GetDecoratorImports(classe))
         {
             fw.AddImport(i);
         }

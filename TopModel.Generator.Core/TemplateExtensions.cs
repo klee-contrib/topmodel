@@ -1,9 +1,10 @@
 ﻿using System.Text.RegularExpressions;
+using TopModel.Core;
 using TopModel.Utils;
 
-namespace TopModel.Core;
+namespace TopModel.Generator.Core;
 
-public static class TemplateExtensions
+internal static class TemplateExtensions
 {
     public static Func<string, string> GetTransformation(this string input)
     {

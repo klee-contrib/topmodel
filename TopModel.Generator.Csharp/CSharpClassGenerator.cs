@@ -179,14 +179,13 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
         }
 
-        foreach (var annotation in item.Decorators.SelectMany(d => (Config.GetImplementation(d.Decorator)?.Annotations ?? Array.Empty<string>()).Select(a => a.ParseTemplate(item, d.Parameters)).Distinct()))
+        foreach (var annotation in Config.GetDecoratorAnnotations(item))
         {
             w.WriteAttribute(1, annotation);
         }
 
-        var extendsDecorator = item.Decorators.SingleOrDefault(d => Config.GetImplementation(d.Decorator)?.Extends != null);
-        var extends = item.Extends?.NamePascal ?? Config.GetImplementation(extendsDecorator.Decorator)?.Extends!.ParseTemplate(item, extendsDecorator.Parameters);
-        var implements = item.Decorators.SelectMany(d => (Config.GetImplementation(d.Decorator)?.Implements ?? Array.Empty<string>()).Select(i => i.ParseTemplate(item, d.Parameters)).Distinct()).ToArray();
+        var extends = Config.GetClassExtends(item);
+        var implements = Config.GetClassImplements(item);
 
         if (item.Abstract)
         {
@@ -205,7 +204,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             w.WriteClassDeclaration(
                 item.NamePascal,
                 extends,
-                implements);
+                implements.ToArray());
 
             GenerateConstProperties(w, item);
             GenerateConstructors(w, item);
@@ -619,7 +618,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
         }
 
-        foreach (var @using in item.Decorators.SelectMany(d => (Config.GetImplementation(d.Decorator)?.Imports ?? Array.Empty<string>()).Select(u => u.ParseTemplate(item, d.Parameters)).Distinct()))
+        foreach (var @using in Config.GetDecoratorImports(item))
         {
             usings.Add(@using);
         }

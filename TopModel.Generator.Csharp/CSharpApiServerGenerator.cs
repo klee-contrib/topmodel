@@ -90,12 +90,9 @@ namespace {ns}
                 wd.AppendLine($@"{indent}[Produces(""{mediaType}"")]");
             }
 
-            foreach (var d in endpoint.Decorators)
+            foreach (var annotation in Config.GetDecoratorAnnotations(endpoint))
             {
-                foreach (var a in Config.GetImplementation(d.Decorator)?.Annotations ?? Array.Empty<string>())
-                {
-                    wd.AppendLine($"{indent}[{a.ParseTemplate(endpoint, d.Parameters)}]");
-                }
+                wd.AppendLine($"{indent}[{annotation}]");
             }
 
             wd.AppendLine($@"{indent}[Http{endpoint.Method.ToPascalCaseStrict()}(""{GetRoute(endpoint)}"")]");

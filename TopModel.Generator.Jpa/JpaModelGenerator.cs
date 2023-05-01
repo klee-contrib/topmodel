@@ -68,10 +68,9 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
         WriteAnnotations(fw, classe);
 
-        var extendsDecorator = classe.Decorators.SingleOrDefault(d => Config.GetImplementation(d.Decorator)?.Extends != null);
-        var extends = (classe.Extends?.NamePascal ?? Config.GetImplementation(extendsDecorator.Decorator)?.Extends!.ParseTemplate(classe, extendsDecorator.Parameters)) ?? null;
+        var extends = Config.GetClassExtends(classe);
+        var implements = Config.GetClassImplements(classe).ToList();
 
-        var implements = classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)?.Implements.Select(i => i.ParseTemplate(classe, d.Parameters)) ?? Array.Empty<string>()).Distinct().ToList();
         if (!classe.IsPersistent)
         {
             implements.Add("Serializable");
@@ -225,7 +224,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             }
         }
 
-        foreach (var a in classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)!.Annotations.Select(a => a.ParseTemplate(classe, d.Parameters))).Distinct())
+        foreach (var a in Config.GetDecoratorAnnotations(classe))
         {
             fw.WriteLine($"{(a.StartsWith("@") ? string.Empty : "@")}{a}");
         }
@@ -373,7 +372,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
     private void WriteImports(JavaWriter fw, Class classe, string tag)
     {
         var imports = classe.GetImports(Config, tag);
-        imports.AddRange(classe.Decorators.SelectMany(d => Config.GetImplementation(d.Decorator)!.Imports.Select(i => i.ParseTemplate(classe, d.Parameters))));
+        imports.AddRange(Config.GetDecoratorImports(classe));
         foreach (var property in classe.GetProperties(AvailableClasses))
         {
             imports.AddRange(property.GetTypeImports(Config, tag));

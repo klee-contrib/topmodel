@@ -134,12 +134,9 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
                 consumes = @$", consumes = {{ {string.Join(", ", endpoint.Params.Where(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null).Select(p => $@"""{((IFieldProperty)p).Domain.MediaType}"""))} }}";
             }
 
-            foreach (var d in endpoint.Decorators)
+            foreach (var annotation in Config.GetDecoratorAnnotations(endpoint))
             {
-                foreach (var a in Config.GetImplementation(d.Decorator)?.Annotations ?? Array.Empty<string>())
-                {
-                    fw.WriteLine(1, $"{(a.StartsWith("@") ? string.Empty : "@")}{a.ParseTemplate(endpoint, d.Parameters)}");
-                }
+                fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : "@")}{annotation}");
             }
 
             fw.WriteLine(1, @$"@{endpoint.Method.ToPascalCaseStrict()}Mapping(path = ""{endpoint.Route}""{consumes}{produces})");
@@ -202,6 +199,6 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
     {
         fw.AddImports(endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToPascalCaseStrict()}Mapping"));
         fw.AddImports(GetTypeImports(endpoints, tag));
-        fw.AddImports(endpoints.SelectMany(e => e.Decorators.SelectMany(d => (Config.GetImplementation(d.Decorator)?.Imports ?? Array.Empty<string>()).Select(i => i.ParseTemplate(e, d.Parameters)))).Distinct());
+        fw.AddImports(endpoints.SelectMany(Config.GetDecoratorImports));
     }
 }
