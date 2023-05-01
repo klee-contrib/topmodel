@@ -1,6 +1,5 @@
 ﻿using TopModel.Core;
 using TopModel.Generator.Core;
-using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa;
 
@@ -98,7 +97,7 @@ public class JpaModelConstructorGenerator
             else
             {
                 var isMultiple = aspr2.Type == AssociationType.OneToMany || aspr2.Type == AssociationType.ManyToMany;
-                fw.WriteLine(2, $"this.set{aspr2.NamePascal}{(isMultiple ? aspr2.Property.NamePascal : string.Empty)}({property.NameCamel});");
+                fw.WriteLine(2, $"this.{aspr2.NamePascal.WithPrefix("set")}{(isMultiple ? aspr2.Property.NamePascal : string.Empty)}({property.NameCamel});");
             }
         }
 
@@ -133,7 +132,7 @@ public class JpaModelConstructorGenerator
             if (!(property is AssociationProperty ap && ap.Type.IsToMany() || property is CompositionProperty cp && cp.Kind == "list"))
             {
                 var getterPrefix = _config.GetType(property) == "boolean" ? "is" : "get";
-                fw.WriteLine(2, $"this.{property.NameByClassCamel} = {classe.NameCamel}.{getterPrefix}{property.NameByClassPascal}();");
+                fw.WriteLine(2, $"this.{property.NameByClassCamel} = {classe.NameCamel}.{property.NameByClassPascal.WithPrefix(getterPrefix)}();");
             }
         }
 
@@ -151,7 +150,7 @@ public class JpaModelConstructorGenerator
             if (property is AssociationProperty ap || property is CompositionProperty cp && cp.Kind == "list")
             {
                 var getterPrefix = _config.GetType(property, useClassForAssociation: true) == "boolean" ? "is" : "get";
-                fw.WriteLine(2, $"this.{property.NameByClassCamel} = {classe.NameCamel}.{getterPrefix}{property.NameByClassPascal}().stream().collect(Collectors.toList());");
+                fw.WriteLine(2, $"this.{property.NameByClassCamel} = {classe.NameCamel}.{property.NameByClassPascal.WithPrefix(getterPrefix)}().stream().collect(Collectors.toList());");
                 fw.AddImport("java.util.stream.Collectors");
             }
         }
@@ -163,7 +162,7 @@ public class JpaModelConstructorGenerator
             {
                 var propertyName = ap.NameCamel;
                 var getterPrefix = _config.GetType(ap) == "boolean" ? "is" : "get";
-                fw.WriteLine(2, $"this.set{ap.NameCamel.ToFirstUpper()}({classe.NameCamel}.{getterPrefix}{ap.NameCamel.ToFirstUpper()}());");
+                fw.WriteLine(2, $"this.{ap.NameCamel.WithPrefix("set")}({classe.NameCamel}.{ap.NameCamel.WithPrefix(getterPrefix)}());");
             }
         }
 

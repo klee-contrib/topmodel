@@ -65,7 +65,7 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
             fw.WriteDocStart(1, $"Getter for {property.NameByClassCamel}");
             fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{property.NameByClassCamel} {property.NameByClassCamel}}}");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, @$"{Config.GetType(property)} {getterPrefix}{property.NameByClassPascal}();");
+            fw.WriteLine(1, @$"{Config.GetType(property)} {property.NameByClassPascal.WithPrefix(getterPrefix)}();");
         }
     }
 

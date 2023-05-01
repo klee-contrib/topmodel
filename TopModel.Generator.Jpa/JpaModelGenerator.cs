@@ -243,7 +243,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteLine(1, " * Cette méthode permet définir la valeur de la FK directement");
                 fw.WriteLine(1, $" * @param {propertyName} value to set");
                 fw.WriteDocEnd(1);
-                fw.WriteLine(1, @$"public void set{(isMultiple ? ap.NameCamel.ToFirstUpper() + ap.Property.NameCamel.ToFirstUpper() : ap.NameCamel.ToFirstUpper())}({(isMultiple ? $"List<{Config.GetType(ap.Property)}>" : Config.GetType(ap.Property))} {propertyName}) {{");
+                fw.WriteLine(1, @$"public void {(isMultiple ? ap.NameCamel + ap.Property.NameCamel : ap.NameCamel).WithPrefix("set")}({(isMultiple ? $"List<{Config.GetType(ap.Property)}>" : Config.GetType(ap.Property))} {propertyName}) {{");
                 fw.WriteLine(2, $"if ({propertyName} != null) {{");
                 if (!isMultiple)
                 {
@@ -357,7 +357,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             fw.WriteDocEnd(1);
 
             var getterPrefix = Config.GetType(property, Classes, true) == "boolean" ? "is" : "get";
-            fw.WriteLine(1, @$"public {Config.GetType(property, useClassForAssociation: classe.IsPersistent)} {getterPrefix}{property.NameByClassPascal}() {{");
+            fw.WriteLine(1, @$"public {Config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.NameByClassPascal.WithPrefix(getterPrefix)}() {{");
             if (property is AssociationProperty ap && ap.Type.IsToMany())
             {
                 fw.WriteLine(2, $"if(this.{property.NameByClassCamel} == null)");
@@ -523,7 +523,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 }
 
                 var getterPrefix = Config.GetType(prop) == "boolean" ? "is" : "get";
-                fw.WriteLine(2, $"public {type} {getterPrefix}{name.ToFirstUpper()}(){{");
+                fw.WriteLine(2, $"public {type} {name.WithPrefix(getterPrefix)}(){{");
                 fw.WriteLine(3, $"return this.{name};");
                 fw.WriteLine(2, $"}}");
             }
@@ -554,7 +554,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             fw.WriteDocStart(1, $"Set the value of {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}");
             fw.WriteLine(1, $" * @param {propertyName} value to set");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, @$"public void set{propertyName.ToFirstUpper()}({Config.GetType(property, useClassForAssociation: classe.IsPersistent)} {propertyName}) {{");
+            fw.WriteLine(1, @$"public void {propertyName.WithPrefix("set")}({Config.GetType(property, useClassForAssociation: classe.IsPersistent)} {propertyName}) {{");
             fw.WriteLine(2, @$"this.{propertyName} = {propertyName};");
             fw.WriteLine(1, "}");
         }

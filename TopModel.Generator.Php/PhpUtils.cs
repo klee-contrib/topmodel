@@ -1,4 +1,6 @@
-﻿namespace TopModel.Generator.Php;
+﻿using TopModel.Utils;
+
+namespace TopModel.Generator.Php;
 
 public static class PhpUtils
 {
@@ -10,5 +12,10 @@ public static class PhpUtils
     public static string ToPackageName(this string path)
     {
         return @"App\" + path.Split(':').Last().Replace('/', '\\').Replace('.', '\\');
+    }
+
+    public static string WithPrefix(this string name, string prefix)
+    {
+        return $"{prefix}{name.ToFirstUpper()}";
     }
 }
