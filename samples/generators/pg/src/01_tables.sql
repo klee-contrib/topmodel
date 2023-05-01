@@ -88,6 +88,7 @@ create table UTILISATEUR (
 	UTI_ID_PARENT int8,
 	UTI_DATE_CREATION date,
 	UTI_DATE_MODIFICATION date,
+	UTI_ID_ENFANT int8,
 	constraint PK_UTILISATEUR primary key (UTI_ID)
 );
 

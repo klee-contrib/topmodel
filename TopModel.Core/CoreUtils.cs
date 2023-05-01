@@ -2,7 +2,7 @@
 
 namespace TopModel.Core;
 
-public static class SortUtils
+public static class CoreUtils
 {
     public static IList<T> Sort<T>(IEnumerable<T> source, Func<T, IEnumerable<T>> getDependencies)
             where T : notnull
@@ -16,6 +16,11 @@ public static class SortUtils
         }
 
         return sorted;
+    }
+
+    public static bool IsToMany(this AssociationType associationType)
+    {
+        return associationType == AssociationType.ManyToMany || associationType == AssociationType.OneToMany;
     }
 
     private static void Visit<T>(T item, Func<T, IEnumerable<T>> getDependencies, List<T> sorted, Dictionary<T, bool> visited)

@@ -74,7 +74,7 @@ public abstract class AbstractSchemaGenerator
         WriteInsertStart(writerInsert);
 
         // Construit la liste des Reference Class ordonnée.
-        var orderList = SortUtils.Sort(classes.OrderBy(c => c.SqlName), c => c.Properties
+        var orderList = CoreUtils.Sort(classes.OrderBy(c => c.SqlName), c => c.Properties
             .OfType<AssociationProperty>()
             .Select(a => a.Association)
             .Where(a => a.Values.Any()));

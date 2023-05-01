@@ -48,5 +48,9 @@ class:
       comment: Utilisateur parent
       role: Parent
       type: oneToOne
+    - association: Utilisateur
+      comment: Utilisateur enfants
+      role: Enfant
+      type: oneToMany
   unique:
     - [email, UtilisateurIdParent]

@@ -29,11 +29,12 @@
   - [C#](/generator/csharp.md)
   - [Jpa](/generator/jpa.md)
   - [Javascript / Typescript](/generator/js.md)
+  - [Php](/generator/php.md)
   - [Traductions manquantes](/generator/translation.md)
 
 - **[Migrer un modèle externe](/tmdgen.md)**
 
-  - [open-api](/tmdgen/tmdgen.md)
+  - [open-api](/tmdgen/openapi.md)
   - [database](/tmdgen/database.md)
 
 - **[Visualisation](/ui.md)**

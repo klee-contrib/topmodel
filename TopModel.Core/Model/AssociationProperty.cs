@@ -125,6 +125,10 @@ public class AssociationProperty : IFieldProperty
 
     public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : NameCamel.ToFirstUpper();
 
+    public string NameByClassPascal => Type.IsToMany() ? $"{NamePascal}" : $"{Association.NamePascal}{Role?.ToPascalCase() ?? string.Empty}";
+
+    public string NameByClassCamel => Type.IsToMany() ? $"{NameCamel}" : $"{Association.NameCamel}{Role?.ToPascalCase() ?? string.Empty}";
+
     public Domain Domain => Type == AssociationType.ManyToMany || Type == AssociationType.OneToMany ? Property?.Domain.ListDomain! : Property?.Domain!;
 
     public bool PrimaryKey { get; set; }

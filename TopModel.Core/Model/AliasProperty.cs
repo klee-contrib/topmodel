@@ -47,6 +47,10 @@ public class AliasProperty : IFieldProperty
 
     public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : (Prefix?.ToFirstLower() ?? string.Empty) + (string.IsNullOrWhiteSpace(Prefix) ? _property?.NameCamel : _property?.NameCamel.ToFirstUpper()) + (Suffix ?? string.Empty);
 
+    public string NameByClassPascal => NamePascal;
+
+    public string NameByClassCamel => NameCamel;
+
     public string? Label
     {
         get => _label ?? _property?.Label;

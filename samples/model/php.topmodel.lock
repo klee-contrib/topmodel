@@ -1,0 +1,21 @@
+﻿#
+# ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+#
+
+version: 1.29.1
+generatedFiles:
+  - ../generators/php/src/Entity/Securite/Droit.php
+  - ../generators/php/src/Entity/Securite/Profil.php
+  - ../generators/php/src/Entity/Securite/Secteur.php
+  - ../generators/php/src/Entity/Securite/TypeProfil.php
+  - ../generators/php/src/Entity/Utilisateur/TypeUtilisateur.php
+  - ../generators/php/src/Entity/Utilisateur/Utilisateur.php
+  - ../generators/php/src/Model/Securite/ProfilDto.php
+  - ../generators/php/src/Model/Securite/SecteurDto.php
+  - ../generators/php/src/Model/Utilisateur/UtilisateurDto.php
+  - ../generators/php/src/Repository/Securite/DroitRepository.php
+  - ../generators/php/src/Repository/Securite/ProfilRepository.php
+  - ../generators/php/src/Repository/Securite/SecteurRepository.php
+  - ../generators/php/src/Repository/Securite/TypeProfilRepository.php
+  - ../generators/php/src/Repository/Utilisateur/TypeUtilisateurRepository.php
+  - ../generators/php/src/Repository/Utilisateur/UtilisateurRepository.php

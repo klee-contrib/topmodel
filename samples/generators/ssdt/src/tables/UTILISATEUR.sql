@@ -17,10 +17,12 @@ create table [dbo].[UTILISATEUR] (
 	[UTI_ID_PARENT] int8,
 	[UTI_DATE_CREATION] date,
 	[UTI_DATE_MODIFICATION] date,
+	[UTI_ID_ENFANT] int8,
 	constraint [PK_UTILISATEUR] primary key clustered ([UTI_ID] ASC),
 	constraint [FK_UTILISATEUR_PROFIL_PRO_ID] foreign key ([PRO_ID]) references [dbo].[PROFIL] ([PRO_ID]),
 	constraint [FK_UTILISATEUR_TYPE_UTILISATEUR_TUT_CODE] foreign key ([TUT_CODE]) references [dbo].[TYPE_UTILISATEUR] ([TUT_CODE]),
 	constraint [FK_UTILISATEUR_UTILISATEUR_UTI_ID_PARENT] foreign key ([UTI_ID_PARENT]) references [dbo].[UTILISATEUR] ([UTI_ID]),
+	constraint [FK_UTILISATEUR_UTILISATEUR_UTI_ID_ENFANT] foreign key ([UTI_ID_ENFANT]) references [dbo].[UTILISATEUR] ([UTI_ID]),
 	constraint [UK_UTILISATEUR_UTI_EMAIL_UTI_ID_PARENT] unique nonclustered ([UTI_EMAIL] ASC, [UTI_ID_PARENT] ASC),
 	constraint [UK_UTILISATEUR_UTI_ID_PARENT] unique nonclustered ([UTI_ID_PARENT] ASC))
 go
@@ -38,6 +40,11 @@ go
 /* Index on foreign key column for UTILISATEUR.UTI_ID_PARENT */
 create nonclustered index [IDX_UTILISATEUR_UTI_ID_PARENT_FK]
 	on [dbo].[UTILISATEUR] ([UTI_ID_PARENT] ASC)
+go
+
+/* Index on foreign key column for UTILISATEUR.UTI_ID_ENFANT */
+create nonclustered index [IDX_UTILISATEUR_UTI_ID_ENFANT_FK]
+	on [dbo].[UTILISATEUR] ([UTI_ID_ENFANT] ASC)
 go
 
 /* Description property. */

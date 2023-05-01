@@ -77,12 +77,13 @@ export class UtilisateurApiService {
      * @param nom Nom de l'utilisateur
      * @param actif Si l'utilisateur est actif
      * @param typeUtilisateurCode Type d'utilisateur en Many to one
+     * @param utilisateursEnfant Utilisateur enfants
      * @param dateCreation Date de création de l'utilisateur
      * @param dateModification Date de modification de l'utilisateur
      * @param options Options pour 'fetch'.
      * @returns Utilisateurs matchant les critères
      */
-    search(utiId?: number, age: number = 6l, profilId?: number, email?: string, nom: string = "Jabx", actif?: bool, typeUtilisateurCode: TypeUtilisateurCode = "ADM", dateCreation?: string, dateModification?: string, queryParams: any = {}): Observable<Page<UtilisateurSearch>> {
+    search(utiId?: number, age: number = 6l, profilId?: number, email?: string, nom: string = "Jabx", actif?: bool, typeUtilisateurCode: TypeUtilisateurCode = "ADM", utilisateursEnfant?: number[], dateCreation?: string, dateModification?: string, queryParams: any = {}): Observable<Page<UtilisateurSearch>> {
         const httpParams = new HttpParams({fromObject : queryParams});
         const httpOptions = { params: httpParams }
         if(utiId !== null) {
@@ -105,6 +106,9 @@ export class UtilisateurApiService {
         }
         if(typeUtilisateurCode !== null) {
             httpOptions.params.set('typeUtilisateurCode', typeUtilisateurCode)
+        }
+        if(utilisateursEnfant !== null) {
+            httpOptions.params.set('utilisateursEnfant', utilisateursEnfant)
         }
         if(dateCreation !== null) {
             httpOptions.params.set('dateCreation', dateCreation)

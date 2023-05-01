@@ -46,6 +46,11 @@ public interface IUtilisateurSearch
     TypeUtilisateur.Codes? TypeUtilisateurCode { get; }
 
     /// <summary>
+    /// Utilisateur enfants.
+    /// </summary>
+    int[] UtilisateursEnfant { get; }
+
+    /// <summary>
     /// Date de création de l'utilisateur.
     /// </summary>
     DateOnly? DateCreation { get; }

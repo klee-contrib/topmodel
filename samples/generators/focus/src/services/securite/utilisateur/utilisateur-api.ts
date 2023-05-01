@@ -57,11 +57,12 @@ export function save(utilisateur: UtilisateurDto, options: RequestInit = {}): Pr
  * @param nom Nom de l'utilisateur
  * @param actif Si l'utilisateur est actif
  * @param typeUtilisateurCode Type d'utilisateur en Many to one
+ * @param utilisateursEnfant Utilisateur enfants
  * @param dateCreation Date de création de l'utilisateur
  * @param dateModification Date de modification de l'utilisateur
  * @param options Options pour 'fetch'.
  * @returns Utilisateurs matchant les critères
  */
-export function search(utiId?: number, age: number = 6l, profilId?: number, email?: string, nom: string = "Jabx", actif?: bool, typeUtilisateurCode: TypeUtilisateurCode = "ADM", dateCreation?: string, dateModification?: string, options: RequestInit = {}): Promise<Page<UtilisateurSearch>> {
-    return coreFetch("POST", `./utilisateur/search`, {query: {utiId, age, profilId, email, nom, actif, typeUtilisateurCode, dateCreation, dateModification}}, options);
+export function search(utiId?: number, age: number = 6l, profilId?: number, email?: string, nom: string = "Jabx", actif?: bool, typeUtilisateurCode: TypeUtilisateurCode = "ADM", utilisateursEnfant?: number[], dateCreation?: string, dateModification?: string, options: RequestInit = {}): Promise<Page<UtilisateurSearch>> {
+    return coreFetch("POST", `./utilisateur/search`, {query: {utiId, age, profilId, email, nom, actif, typeUtilisateurCode, utilisateursEnfant, dateCreation, dateModification}}, options);
 }

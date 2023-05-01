@@ -63,11 +63,12 @@ public class UtilisateurApiController : Controller
     /// <param name="nom">Nom de l'utilisateur</param>
     /// <param name="actif">Si l'utilisateur est actif</param>
     /// <param name="typeUtilisateurCode">Type d'utilisateur en Many to one</param>
+    /// <param name="utilisateursEnfant">Utilisateur enfants</param>
     /// <param name="dateCreation">Date de création de l'utilisateur</param>
     /// <param name="dateModification">Date de modification de l'utilisateur</param>
     /// <returns>Utilisateurs matchant les critères</returns>
     [HttpPost("utilisateur/search")]
-    public async Task<ICollection<UtilisateurSearch>> Search(int? utiId = null, decimal age = 6l, int? profilId = null, string email = null, string nom = "Jabx", bool? actif = null, TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM, DateOnly? dateCreation = null, DateOnly? dateModification = null)
+    public async Task<ICollection<UtilisateurSearch>> Search(int? utiId = null, decimal age = 6l, int? profilId = null, string email = null, string nom = "Jabx", bool? actif = null, TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM, int[] utilisateursEnfant = null, DateOnly? dateCreation = null, DateOnly? dateModification = null)
     {
 
     }

@@ -23,6 +23,7 @@ export const utilisateur = {
         id: "Id technique",
         nom: "Nom",
         profilId: "ProfilId",
-        typeUtilisateurCode: "TypeUtilisateurCode"
+        typeUtilisateurCode: "TypeUtilisateurCode",
+        utilisateursEnfant: "UtilisateursEnfant"
     }
 };

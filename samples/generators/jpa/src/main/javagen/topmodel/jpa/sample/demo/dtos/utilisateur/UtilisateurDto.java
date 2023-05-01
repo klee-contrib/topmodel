@@ -7,6 +7,7 @@ package topmodel.jpa.sample.demo.dtos.utilisateur;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.Email;
@@ -67,6 +68,12 @@ public class UtilisateurDto implements Serializable {
 	private TypeUtilisateur.Values typeUtilisateurCode = TypeUtilisateur.Values.ADM;
 
 	/**
+	 * Utilisateur enfants.
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getUtilisateursEnfant() Utilisateur#getUtilisateursEnfant()} 
+	 */
+	private List<Long> utilisateursEnfant;
+
+	/**
 	 * Date de création de l'utilisateur.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getDateCreation() Utilisateur#getDateCreation()} 
 	 */
@@ -105,6 +112,7 @@ public class UtilisateurDto implements Serializable {
 		this.nom = utilisateurDto.getNom();
 		this.actif = utilisateurDto.getActif();
 		this.typeUtilisateurCode = utilisateurDto.getTypeUtilisateurCode();
+		this.utilisateursEnfant = utilisateurDto.getUtilisateursEnfant();
 		this.dateCreation = utilisateurDto.getDateCreation();
 		this.dateModification = utilisateurDto.getDateModification();
 		this.utilisateurParent = utilisateurDto.getUtilisateurParent();
@@ -119,11 +127,12 @@ public class UtilisateurDto implements Serializable {
 	 * @param nom Nom de l'utilisateur
 	 * @param actif Si l'utilisateur est actif
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
+	 * @param utilisateursEnfant Utilisateur enfants
 	 * @param dateCreation Date de création de l'utilisateur
 	 * @param dateModification Date de modification de l'utilisateur
 	 * @param utilisateurParent UtilisateurParent
 	 */
-	public UtilisateurDto(Long id, Long age, Long profilId, String email, String nom, Boolean actif, TypeUtilisateur.Values typeUtilisateurCode, LocalDate dateCreation, LocalDateTime dateModification, UtilisateurDto utilisateurParent) {
+	public UtilisateurDto(Long id, Long age, Long profilId, String email, String nom, Boolean actif, TypeUtilisateur.Values typeUtilisateurCode, List<Long> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification, UtilisateurDto utilisateurParent) {
 		this.id = id;
 		this.age = age;
 		this.profilId = profilId;
@@ -131,6 +140,7 @@ public class UtilisateurDto implements Serializable {
 		this.nom = nom;
 		this.actif = actif;
 		this.typeUtilisateurCode = typeUtilisateurCode;
+		this.utilisateursEnfant = utilisateursEnfant;
 		this.dateCreation = dateCreation;
 		this.dateModification = dateModification;
 		this.utilisateurParent = utilisateurParent;
@@ -207,6 +217,15 @@ public class UtilisateurDto implements Serializable {
 	 */
 	public TypeUtilisateur.Values getTypeUtilisateurCode() {
 		return this.typeUtilisateurCode;
+	}
+
+	/**
+	 * Getter for utilisateursEnfant.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#utilisateursEnfant utilisateursEnfant}.
+	 */
+	public List<Long> getUtilisateursEnfant() {
+		return this.utilisateursEnfant;
 	}
 
 	/**
@@ -293,6 +312,14 @@ public class UtilisateurDto implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#utilisateursEnfant utilisateursEnfant}.
+	 * @param utilisateursEnfant value to set
+	 */
+	public void setUtilisateursEnfant(List<Long> utilisateursEnfant) {
+		this.utilisateursEnfant = utilisateursEnfant;
+	}
+
+	/**
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#dateCreation dateCreation}.
 	 * @param dateCreation value to set
 	 */
@@ -348,6 +375,7 @@ public class UtilisateurDto implements Serializable {
         NOM(String.class), //
         ACTIF(Boolean.class), //
         TYPE_UTILISATEUR_CODE(TypeUtilisateur.Values.class), //
+        UTILISATEURS_ENFANT(List.class), //
         DATE_CREATION(LocalDate.class), //
         DATE_MODIFICATION(LocalDateTime.class), //
         UTILISATEUR_PARENT(UtilisateurDto.class);

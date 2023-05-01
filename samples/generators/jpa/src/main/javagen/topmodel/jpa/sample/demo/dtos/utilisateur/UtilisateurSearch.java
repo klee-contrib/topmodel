@@ -6,6 +6,7 @@ package topmodel.jpa.sample.demo.dtos.utilisateur;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.annotation.Generated;
 
@@ -62,6 +63,13 @@ public interface UtilisateurSearch {
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurSearch#typeUtilisateurCode typeUtilisateurCode}.
 	 */
 	TypeUtilisateur.Values getTypeUtilisateurCode();
+
+	/**
+	 * Getter for utilisateursEnfant.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurSearch#utilisateursEnfant utilisateursEnfant}.
+	 */
+	List<Long> getUtilisateursEnfant();
 
 	/**
 	 * Getter for dateCreation.

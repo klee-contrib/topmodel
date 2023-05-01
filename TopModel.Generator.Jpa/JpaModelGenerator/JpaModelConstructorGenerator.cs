@@ -41,18 +41,18 @@ public class JpaModelConstructorGenerator
             return;
         }
 
-        var propertiesSignature = string.Join(", ", properties.Select(p => $"{_config.GetType(p, useClassForAssociation: classe.IsPersistent)} {p.GetJavaName()}"));
+        var propertiesSignature = string.Join(", ", properties.Select(p => $"{_config.GetType(p, useClassForAssociation: classe.IsPersistent)} {p.NameByClassCamel}"));
 
         foreach (var property in properties)
         {
-            fw.WriteLine(1, $" * @param {property.GetJavaName()} {property.Comment}");
+            fw.WriteLine(1, $" * @param {property.NameByClassCamel} {property.Comment}");
         }
 
         fw.WriteDocEnd(1);
         fw.WriteLine(1, $"public {classe.NamePascal}({propertiesSignature}) {{");
         if (classe.Extends != null)
         {
-            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.GetJavaName()}"));
+            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.NameByClassCamel}"));
             fw.WriteLine(2, $"super({parentAllArgConstructorArguments});");
         }
         else if (classe.Decorators.Any(d => _config.GetImplementation(d.Decorator)?.Extends is not null))
@@ -62,7 +62,7 @@ public class JpaModelConstructorGenerator
 
         foreach (var property in classe.GetProperties(availableClasses, tag))
         {
-            fw.WriteLine(2, $"this.{property.GetJavaName()} = {property.GetJavaName()};");
+            fw.WriteLine(2, $"this.{property.NameByClassCamel} = {property.NameByClassCamel};");
         }
 
         fw.WriteLine(1, $"}}");
@@ -84,18 +84,18 @@ public class JpaModelConstructorGenerator
             return;
         }
 
-        var propertiesSignature = string.Join(", ", properties.Select(p => $"{_config.GetType(p, useClassForAssociation: p is not AssociationProperty ap || !_config.CanClassUseEnums(ap.Association))} {(p is AssociationProperty asp && _config.CanClassUseEnums(asp.Association) ? p.NameCamel : p.GetJavaName())}"));
+        var propertiesSignature = string.Join(", ", properties.Select(p => $"{_config.GetType(p, useClassForAssociation: p is not AssociationProperty ap || !_config.CanClassUseEnums(ap.Association))} {(p is AssociationProperty asp && _config.CanClassUseEnums(asp.Association) ? p.NameCamel : p.NameByClassCamel)}"));
 
         foreach (var property in properties)
         {
-            fw.WriteLine(1, $" * @param {property.GetJavaName()} {property.Comment}");
+            fw.WriteLine(1, $" * @param {property.NameByClassCamel} {property.Comment}");
         }
 
         fw.WriteDocEnd(1);
         fw.WriteLine(1, $"public {classe.NamePascal}({propertiesSignature}) {{");
         if (classe.Extends != null)
         {
-            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.GetJavaName()}"));
+            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.NameByClassCamel}"));
             fw.WriteLine(2, $"super({parentAllArgConstructorArguments});");
         }
         else if (classe.Decorators.Any(d => _config.GetImplementation(d.Decorator)?.Extends is not null))
@@ -107,7 +107,7 @@ public class JpaModelConstructorGenerator
         {
             if (!(property is AssociationProperty aspr2 && _config.CanClassUseEnums(aspr2.Association)))
             {
-                fw.WriteLine(2, $"this.{property.GetJavaName()} = {property.GetJavaName()};");
+                fw.WriteLine(2, $"this.{property.NameByClassCamel} = {property.NameByClassCamel};");
             }
             else
             {
@@ -129,7 +129,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"public {classe.NamePascal}({classe.NamePascal} {classe.NameCamel}) {{");
         if (classe.Extends != null)
         {
-            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.GetJavaName()}"));
+            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.NameByClassCamel}"));
             fw.WriteLine(2, $"super({classe.NameCamel});");
         }
         else if (classe.Decorators.Any(d => _config.GetImplementation(d.Decorator)?.Extends is not null))
@@ -144,16 +144,16 @@ public class JpaModelConstructorGenerator
 
         foreach (var property in classe.GetProperties(availableClasses, tag).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && _config.CanClassUseEnums(apo.Association))))
         {
-            if (!(property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list"))
+            if (!(property is AssociationProperty ap && ap.Type.IsToMany() || property is CompositionProperty cp && cp.Kind == "list"))
             {
                 var getterPrefix = _config.GetType(property) == "boolean" ? "is" : "get";
-                fw.WriteLine(2, $"this.{property.GetJavaName()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName(true)}();");
+                fw.WriteLine(2, $"this.{property.NameByClassCamel} = {classe.NameCamel}.{getterPrefix}{property.NameByClassPascal}();");
             }
         }
 
         var propertyListToCopy = classe.GetProperties(availableClasses, tag)
             .Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && _config.CanClassUseEnums(apo.Association)))
-            .Where(property => property is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany) || property is CompositionProperty cp && cp.Kind == "list");
+            .Where(property => property is AssociationProperty ap && ap.Type.IsToMany() || property is CompositionProperty cp && cp.Kind == "list");
 
         if (propertyListToCopy.Any())
         {
@@ -165,7 +165,7 @@ public class JpaModelConstructorGenerator
             if (property is AssociationProperty ap || property is CompositionProperty cp && cp.Kind == "list")
             {
                 var getterPrefix = _config.GetType(property) == "boolean" ? "is" : "get";
-                fw.WriteLine(2, $"this.{property.GetJavaName()} = {classe.NameCamel}.{getterPrefix}{property.GetJavaName(true)}().stream().collect(Collectors.toList());");
+                fw.WriteLine(2, $"this.{property.NameByClassCamel} = {classe.NameCamel}.{getterPrefix}{property.NameByClassPascal}().stream().collect(Collectors.toList());");
                 fw.AddImport("java.util.stream.Collectors");
             }
         }

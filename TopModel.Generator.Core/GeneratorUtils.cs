@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TopModel.Core;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Core;
 
@@ -63,10 +64,5 @@ public static class GeneratorUtils
             ReverseProperty = p,
             Role = p.Role
         })).ToList();
-    }
-
-    public static bool IsToMany(this AssociationType associationType)
-    {
-        return associationType == AssociationType.ManyToMany || associationType == AssociationType.OneToMany;
     }
 }

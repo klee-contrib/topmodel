@@ -43,6 +43,7 @@ public partial class Utilisateur
         Actif = bean.Actif;
         TypeUtilisateurCode = bean.TypeUtilisateurCode;
         UtilisateurIdParent = bean.UtilisateurIdParent;
+        UtilisateursEnfant = bean.UtilisateursEnfant;
         DateCreation = bean.DateCreation;
         DateModification = bean.DateModification;
 
@@ -108,6 +109,14 @@ public partial class Utilisateur
     [Column("uti_id_parent")]
     [Domain(Domains.Id)]
     public int? UtilisateurIdParent { get; set; }
+
+    /// <summary>
+    /// Utilisateur enfants.
+    /// </summary>
+    [Column("uti_id_enfant")]
+    [Domain(Domains.IdList)]
+    [NotMapped]
+    public int[] UtilisateursEnfant { get; set; }
 
     /// <summary>
     /// Date de création de l'utilisateur.

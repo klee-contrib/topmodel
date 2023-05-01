@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_BOOLEAN, DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_LIBELLE, DO_NUMBER} from "@domains";
+import {DO_BOOLEAN, DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_ID_LIST, DO_LIBELLE, DO_NUMBER} from "@domains";
 
 import {TypeUtilisateurCode} from "./references";
 
@@ -14,6 +14,7 @@ export interface UtilisateurDto {
     nom?: string,
     actif?: bool,
     typeUtilisateurCode?: TypeUtilisateurCode,
+    utilisateursEnfant?: number[],
     dateCreation?: string,
     dateModification?: string,
     utilisateurParent?: UtilisateurDto
@@ -71,6 +72,13 @@ export const UtilisateurDtoEntity = {
         isRequired: false,
         defaultValue: "ADM",
         label: "utilisateur.utilisateur.typeUtilisateurCode"
+    },
+    utilisateursEnfant: {
+        type: "field",
+        name: "utilisateursEnfant",
+        domain: DO_ID_LIST,
+        isRequired: false,
+        label: "utilisateur.utilisateur.utilisateursEnfant"
     },
     dateCreation: {
         type: "field",
