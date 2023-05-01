@@ -47,6 +47,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         if (endpoints.First().ModelFile.Options.Endpoints.Prefix != null)
         {
             fw.WriteLine($@"@RequestMapping(""{endpoints.First().ModelFile.Options.Endpoints.Prefix}"")");
+            fw.AddImport("org.springframework.web.bind.annotation.RequestMapping");
         }
 
         var javaOrJakarta = Config.PersistenceMode.ToString().ToLower();
@@ -149,7 +150,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         {
             var ann = string.Empty;
             ann += @$"@PathVariable(""{param.GetParamName()}"") ";
-
+            fw.AddImport("org.springframework.web.bind.annotation.PathVariable");
             methodParams.Add($"{ann}{Config.GetType(param)} {param.GetParamName()}");
         }
 
@@ -157,7 +158,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         {
             var ann = string.Empty;
             ann += @$"@RequestParam(value = ""{param.GetParamName()}"", required = {(param is IFieldProperty fp ? fp.Required : true).ToString().ToFirstLower()}) ";
-
+            fw.AddImport("org.springframework.web.bind.annotation.RequestParam");
             methodParams.Add($"{ann}{Config.GetType(param)} {param.GetParamName()}");
         }
 
@@ -166,6 +167,8 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         {
             var ann = string.Empty;
             ann += @$"@RequestBody @Valid ";
+            fw.AddImport("org.springframework.web.bind.annotation.RequestBody");
+            fw.AddImport(Config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
 
             methodParams.Add($"{ann}{Config.GetType(bodyParam)} {bodyParam.GetParamName()}");
         }
@@ -197,32 +200,8 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
     private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
     {
-        var imports = endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToPascalCaseStrict()}Mapping").ToList();
-        imports.AddRange(GetTypeImports(endpoints, tag));
-        imports.Add(Config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
-        if (endpoints.Any(e => e.GetRouteParams().Any()))
-        {
-            imports.Add("org.springframework.web.bind.annotation.PathVariable");
-        }
-
-        if (endpoints.Any(e => e.GetQueryParams().Any()))
-        {
-            imports.Add("org.springframework.web.bind.annotation.RequestParam");
-        }
-
-        if (endpoints.Any(e => e.GetBodyParam() != null))
-        {
-            imports.Add("org.springframework.web.bind.annotation.RequestBody");
-            imports.Add(Config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
-        }
-
-        if (endpoints.First().ModelFile.Options?.Endpoints.Prefix != null)
-        {
-            imports.Add("org.springframework.web.bind.annotation.RequestMapping");
-        }
-
-        imports.AddRange(endpoints.SelectMany(e => e.Decorators.SelectMany(d => (Config.GetImplementation(d.Decorator)?.Imports ?? Array.Empty<string>()).Select(i => i.ParseTemplate(e, d.Parameters)))).Distinct());
-
-        fw.AddImports(imports);
+        fw.AddImports(endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToPascalCaseStrict()}Mapping"));
+        fw.AddImports(GetTypeImports(endpoints, tag));
+        fw.AddImports(endpoints.SelectMany(e => e.Decorators.SelectMany(d => (Config.GetImplementation(d.Decorator)?.Imports ?? Array.Empty<string>()).Select(i => i.ParseTemplate(e, d.Parameters)))).Distinct());
     }
 }

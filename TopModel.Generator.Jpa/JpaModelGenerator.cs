@@ -387,7 +387,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             }
         }
 
-        fw.AddImports(imports.Where(i => string.Join('.', i.Split('.').SkipLast(1).ToList()) != Config.GetPackageName(classe, tag)).Distinct().ToArray());
+        fw.AddImports(imports);
     }
 
     private void WriteReferenceValues(JavaWriter fw, Class classe, string tag)

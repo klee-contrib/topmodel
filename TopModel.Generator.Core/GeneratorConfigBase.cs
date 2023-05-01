@@ -203,8 +203,8 @@ public abstract class GeneratorConfigBase
             {
                 foreach (var import in GetImplementation(cp.DomainKind)!.Annotations
                     .Where(a => FilterAnnotations(a, cp, tag))
-                     .SelectMany(a => a.Imports)
-                     .Select(u => u.ParseTemplate(cp)))
+                    .SelectMany(a => a.Imports)
+                    .Select(u => u.ParseTemplate(cp)))
                 {
                     yield return import;
                 }
