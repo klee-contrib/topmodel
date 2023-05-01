@@ -180,6 +180,7 @@ public abstract class GeneratorConfigBase
             {
                 yield return import;
             }
+
             if (!noAnnotations)
             {
                 foreach (var import in GetImplementation(fp.Domain)!.Annotations

@@ -54,7 +54,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptCo
                     _ => null!
                 },
                 Path: Config.GetImportPathForClass(dep, GetClassTags(dep.Classe).Contains(tag) ? tag : GetClassTags(dep.Classe).Intersect(Config.Tags).FirstOrDefault() ?? tag, tag, Classes)!))
-            .Concat(references.SelectMany(r => r.DomainDependencies).Select(dep => Config.GetDomainDependencyImport(dep, tag)))
+            .Concat(references.SelectMany(r => r.Properties).Select(dep => Config.GetDomainImportPath(dep, tag)))
             .Where(i => i.Path != null && i.Path != $"./references")
             .GroupAndSort();
 

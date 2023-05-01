@@ -93,8 +93,6 @@ public class Class : IPropertyContainer
     public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies(this)
         .Concat(Extends != null ? new[] { new ClassDependency(Extends, this) } : Array.Empty<ClassDependency>());
 
-    public IEnumerable<DomainDependency> DomainDependencies => Properties.GetDomainDependencies();
-
     internal LocatedString? EnumOverride { get; set; }
 
 #nullable disable

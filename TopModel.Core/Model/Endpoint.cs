@@ -45,8 +45,6 @@ public class Endpoint : IPropertyContainer
 
     public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies();
 
-    public IEnumerable<DomainDependency> DomainDependencies => Properties.GetDomainDependencies();
-
     public List<DecoratorReference> DecoratorReferences { get; } = new();
 
 #nullable disable

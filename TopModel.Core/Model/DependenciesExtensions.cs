@@ -10,11 +10,4 @@ internal static class DependenciesExtensions
             .Concat(properties.OfType<CompositionProperty>().Where(p => p.Composition != currentClass).Select(p => new ClassDependency(p.Composition, p)))
             .Where(d => d != null)!;
     }
-
-    internal static IEnumerable<DomainDependency> GetDomainDependencies(this IEnumerable<IProperty> properties)
-    {
-        return properties.OfType<IFieldProperty>().Select(p => new DomainDependency(p.Domain, p))
-            .Concat(properties.OfType<CompositionProperty>().Select(p => p.DomainKind != null ? new DomainDependency(p.DomainKind, p) : null))
-            .Where(d => d != null)!;
-    }
 }
