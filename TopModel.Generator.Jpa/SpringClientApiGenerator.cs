@@ -79,7 +79,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         fw.WriteLine("}");
     }
 
-    private void CheckEndpoint(Endpoint endpoint)
+    private static void CheckEndpoint(Endpoint endpoint)
     {
         foreach (var q in endpoint.GetQueryParams().Concat(endpoint.GetRouteParams()))
         {
@@ -95,7 +95,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         }
     }
 
-    private string GetClassName(string fileName)
+    private static string GetClassName(string fileName)
     {
         return $"Abstract{fileName.ToPascalCase()}Client";
     }
@@ -178,14 +178,13 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         {
             returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns).Split('<').First()}>";
             returnClass = $"{Config.GetType(endpoint.Returns).Split('<').First()}.class";
-            if (Config.GetType(endpoint.Returns).Split('<').First() == "ResponseEntity" && Config.GetType(endpoint.Returns).Split('<').Count() > 1)
+            if (Config.GetType(endpoint.Returns).Split('<').First() == "ResponseEntity" && Config.GetType(endpoint.Returns).Split('<').Length > 1)
             {
                 returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns).Split('<')[1].Split('>').First()}>";
                 returnClass = $"{Config.GetType(endpoint.Returns).Split('<')[1].Split('>').First()}.class";
             }
         }
 
-        var methodParams = GetMethodParams(endpoint, true, false);
         fw.WriteLine(1, $"public {returnType} {endpoint.NameCamel}({string.Join(", ", GetMethodParams(endpoint))}){{");
         fw.WriteLine(2, $"HttpHeaders headers = this.getHeaders();");
         fw.WriteLine(2, $"UriComponentsBuilder uri = this.{endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, false, false))});");

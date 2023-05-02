@@ -55,14 +55,14 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
         fw.WriteLine($@"public class {Config.GetMapperName(mapperNs, modelPath)} {{");
 
-        foreach (var fromMapper in fromMappers)
+        foreach (var (classe1, mapper) in fromMappers)
         {
-            WriteFromMapper(fromMapper.Classe, fromMapper.Mapper, fw, tag);
+            WriteFromMapper(classe1, mapper, fw, tag);
         }
 
-        foreach (var toMapper in toMappers)
+        foreach (var (classe, mapper1) in toMappers)
         {
-            WriteToMapper(toMapper.Classe, toMapper.Mapper, fw, tag);
+            WriteToMapper(classe, mapper1, fw, tag);
         }
 
         fw.WriteLine("}");

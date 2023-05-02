@@ -38,7 +38,7 @@ public class JavaWriter : IDisposable
     }
 
     /// <inheritdoc cref="IDisposable.Dispose" />
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         var writer = new FileWriter(_name, _logger, _encoding)
         {

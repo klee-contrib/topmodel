@@ -65,7 +65,12 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         fw.WriteLine("}");
     }
 
-    private void CheckEndpoint(Endpoint endpoint)
+    private static string GetClassName(string fileName)
+    {
+        return $"{fileName.ToPascalCase()}Controller";
+    }
+
+    private static void CheckEndpoint(Endpoint endpoint)
     {
         foreach (var q in endpoint.GetQueryParams().Concat(endpoint.GetRouteParams()))
         {
@@ -79,11 +84,6 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         {
             throw new ModelException(endpoint, $"Le retour du endpoint {endpoint.Route} ne peut pas être une association");
         }
-    }
-
-    private string GetClassName(string fileName)
-    {
-        return $"{fileName.ToPascalCase()}Controller";
     }
 
     private IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
@@ -154,7 +154,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         foreach (var param in endpoint.GetQueryParams())
         {
             var ann = string.Empty;
-            ann += @$"@RequestParam(value = ""{param.GetParamName()}"", required = {(param is IFieldProperty fp ? fp.Required : true).ToString().ToFirstLower()}) ";
+            ann += @$"@RequestParam(value = ""{param.GetParamName()}"", required = {(param is not IFieldProperty fp || fp.Required).ToString().ToFirstLower()}) ";
             fw.AddImport("org.springframework.web.bind.annotation.RequestParam");
             methodParams.Add($"{ann}{Config.GetType(param)} {param.GetParamName()}");
         }
