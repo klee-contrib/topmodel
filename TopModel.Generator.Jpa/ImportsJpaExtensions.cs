@@ -85,18 +85,12 @@ public static class ImportsJpaExtensions
     {
         var imports = new List<string>();
 
-        switch (ap.Type)
+        if (ap.Type.IsToMany())
         {
-            case AssociationType.OneToMany:
-            case AssociationType.ManyToMany:
-                imports.Add("java.util.List");
-                break;
+            imports.Add("java.util.List");
         }
 
-        if (ap.Association.Namespace.Module != ap.Class.Namespace.Module)
-        {
-            imports.Add(ap.Association.GetImport(config, tag));
-        }
+        imports.Add(ap.Association.GetImport(config, tag));
 
         if (ap.Association.Reference)
         {

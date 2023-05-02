@@ -19,7 +19,7 @@ public class JpaModelConstructorGenerator
     {
         fw.WriteLine();
         fw.WriteDocStart(1, "All arg constructor");
-        var properties = GetAllArgsProperties(classe, availableClasses, tag);
+        var properties = classe.GetAllArgsProperties(availableClasses, tag);
 
         if (properties.Count == 0)
         {
@@ -37,7 +37,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"public {classe.NamePascal}({propertiesSignature}) {{");
         if (classe.Extends != null)
         {
-            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.NameByClassCamel}"));
+            var parentAllArgConstructorArguments = string.Join(", ", classe.Extends.GetAllArgsProperties(availableClasses, tag).Select(p => $"{p.NameByClassCamel}"));
             fw.WriteLine(2, $"super({parentAllArgConstructorArguments});");
         }
         else if (classe.Decorators.Any(d => _config.GetImplementation(d.Decorator)?.Extends is not null))
@@ -55,7 +55,7 @@ public class JpaModelConstructorGenerator
 
     public void WriteAllArgConstructorEnumShortcut(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
     {
-        var properties = GetAllArgsProperties(classe, availableClasses, tag);
+        var properties = classe.GetAllArgsProperties(availableClasses, tag);
         if (!properties.OfType<AssociationProperty>().Any(p => _config.CanClassUseEnums(p.Association) && (p.Type == AssociationType.OneToOne || p.Type == AssociationType.ManyToOne)))
         {
             return;
@@ -80,7 +80,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"public {classe.NamePascal}({propertiesSignature}) {{");
         if (classe.Extends != null)
         {
-            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.NameByClassCamel}"));
+            var parentAllArgConstructorArguments = string.Join(", ", classe.Extends.GetAllArgsProperties(availableClasses, tag).Select(p => $"{p.NameByClassCamel}"));
             fw.WriteLine(2, $"super({parentAllArgConstructorArguments});");
         }
         else if (classe.Decorators.Any(d => _config.GetImplementation(d.Decorator)?.Extends is not null))
@@ -114,7 +114,7 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"public {classe.NamePascal}({classe.NamePascal} {classe.NameCamel}) {{");
         if (classe.Extends != null)
         {
-            var parentAllArgConstructorArguments = string.Join(", ", GetAllArgsProperties(classe.Extends, availableClasses, tag).Select(p => $"{p.NameByClassCamel}"));
+            var parentAllArgConstructorArguments = string.Join(", ", classe.Extends.GetAllArgsProperties(availableClasses, tag).Select(p => $"{p.NameByClassCamel}"));
             fw.WriteLine(2, $"super({classe.NameCamel});");
         }
         else if (classe.Decorators.Any(d => _config.GetImplementation(d.Decorator)?.Extends is not null))
@@ -222,17 +222,5 @@ public class JpaModelConstructorGenerator
         }
 
         fw.WriteLine(1, $"}}");
-    }
-
-    private IList<IProperty> GetAllArgsProperties(Class classe, List<Class> availableClasses, string tag)
-    {
-        if (classe.Extends is null)
-        {
-            return classe.GetProperties(availableClasses);
-        }
-        else
-        {
-            return GetAllArgsProperties(classe.Extends, availableClasses, tag).Concat(classe.GetProperties(availableClasses)).ToList();
-        }
     }
 }
