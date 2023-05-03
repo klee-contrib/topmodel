@@ -44,7 +44,7 @@ public class DatabaseTmdGenerator : ModelGenerator, IDisposable
     }
 
     /// <inheritdoc cref="IDisposable.Dispose" />
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         _connection.Dispose();
     }

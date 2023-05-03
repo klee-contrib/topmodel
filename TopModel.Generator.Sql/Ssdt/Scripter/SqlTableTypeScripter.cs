@@ -73,22 +73,11 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     }
 
     /// <summary>
-    /// Ecrit le SQL pour une colonne.
-    /// </summary>
-    /// <param name="sb">Flux.</param>
-    /// <param name="property">Propriété.</param>
-    private void WriteColumn(StringBuilder sb, IFieldProperty property)
-    {
-        var persistentType = _config.GetType(property);
-        sb.Append("[").Append(property.SqlName).Append("] ").Append(persistentType).Append(" null");
-    }
-
-    /// <summary>
     /// Ecrit l'ouverture du create table.
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="table">Table.</param>
-    private void WriteCreateTableOpening(TextWriter writer, Class table)
+    private static void WriteCreateTableOpening(TextWriter writer, Class table)
     {
         writer.WriteLine("Create type [" + table.GetTableTypeName() + "] as Table (");
     }
@@ -98,7 +87,7 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     /// </summary>
     /// <param name="writer">Flux.</param>
     /// <param name="tableName">Nom de la table.</param>
-    private void WriteHeader(TextWriter writer, string tableName)
+    private static void WriteHeader(TextWriter writer, string tableName)
     {
         writer.WriteLine("-- ===========================================================================================");
         writer.WriteLine("--   Description		:	Création du type de table " + tableName + ".");
@@ -111,9 +100,20 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     /// </summary>
     /// <param name="sb">Flux.</param>
     /// <param name="classe">Classe.</param>
-    private void WriteInsertKeyLine(StringBuilder sb, Class classe)
+    private static void WriteInsertKeyLine(StringBuilder sb, Class classe)
     {
-        sb.Append("[").Append((classe.Trigram != null ? $"{classe.Trigram}_" : string.Empty) + "INSERT_KEY] int null");
+        sb.Append('[').Append((classe.Trigram != null ? $"{classe.Trigram}_" : string.Empty) + "INSERT_KEY] int null");
+    }
+
+    /// <summary>
+    /// Ecrit le SQL pour une colonne.
+    /// </summary>
+    /// <param name="sb">Flux.</param>
+    /// <param name="property">Propriété.</param>
+    private void WriteColumn(StringBuilder sb, IFieldProperty property)
+    {
+        var persistentType = _config.GetType(property);
+        sb.Append('[').Append(property.SqlName).Append("] ").Append(persistentType).Append(" null");
     }
 
     /// <summary>

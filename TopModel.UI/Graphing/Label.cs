@@ -6,7 +6,7 @@ namespace TopModel.UI.Graphing;
 
 public class Label
 {
-    private readonly StringBuilder _sb = new StringBuilder();
+    private readonly StringBuilder _sb = new();
 
     public Label(Class classe)
     {
