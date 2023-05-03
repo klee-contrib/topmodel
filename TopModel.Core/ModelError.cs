@@ -78,13 +78,13 @@ public class ModelError
             case RegularProperty rp:
                 sb.Append($"/{rp.Name}");
                 break;
-            case AssociationProperty rp:
+            case AssociationProperty:
                 sb.Append("/{association}");
                 break;
-            case AliasProperty rp:
+            case AliasProperty:
                 sb.Append("/{alias}");
                 break;
-            case CompositionProperty rp:
+            case CompositionProperty:
                 sb.Append("/{composition}");
                 break;
         }

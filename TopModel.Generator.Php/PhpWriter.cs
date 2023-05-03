@@ -38,7 +38,7 @@ public class PhpWriter : IDisposable
     }
 
     /// <inheritdoc cref="IDisposable.Dispose" />
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         var writer = new FileWriter(_name, _logger, _encoding)
         {
@@ -108,7 +108,7 @@ public class PhpWriter : IDisposable
             sb.Append($" extends {inheritedClass}");
         }
 
-        if (implementingInterfaces is not null && implementingInterfaces.Count() > 0)
+        if (implementingInterfaces is not null && implementingInterfaces.Any())
         {
             sb.Append($" implements {string.Join(", ", implementingInterfaces)}");
         }

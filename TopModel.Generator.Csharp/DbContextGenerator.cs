@@ -55,7 +55,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
         }
     }
 
-    private IEnumerable<(IFieldProperty Property, AssociationProperty AssociationProperty)> GetAssociationProperties(IEnumerable<Class> classes)
+    private static IEnumerable<(IFieldProperty Property, AssociationProperty AssociationProperty)> GetAssociationProperties(IEnumerable<Class> classes)
     {
         return classes
             .Distinct()

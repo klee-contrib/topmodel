@@ -24,7 +24,7 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     {
         if (item == null)
         {
-            throw new ArgumentNullException("item");
+            throw new ArgumentNullException(nameof(item));
         }
 
         return item.GetTableTypeName() + ".sql";
@@ -40,12 +40,12 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     {
         if (writer == null)
         {
-            throw new ArgumentNullException("writer");
+            throw new ArgumentNullException(nameof(writer));
         }
 
         if (item == null)
         {
-            throw new ArgumentNullException("item");
+            throw new ArgumentNullException(nameof(item));
         }
 
         // Entête du fichier.
@@ -62,6 +62,17 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     }
 
     /// <summary>
+    /// Ecrit le pied du script.
+    /// </summary>
+    /// <param name="writer">Flux.</param>
+    private static void WriteCreateTableClosing(TextWriter writer)
+    {
+        writer.WriteLine(")");
+        writer.WriteLine("go");
+        writer.WriteLine();
+    }
+
+    /// <summary>
     /// Ecrit le SQL pour une colonne.
     /// </summary>
     /// <param name="sb">Flux.</param>
@@ -70,17 +81,6 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     {
         var persistentType = _config.GetType(property);
         sb.Append("[").Append(property.SqlName).Append("] ").Append(persistentType).Append(" null");
-    }
-
-    /// <summary>
-    /// Ecrit le pied du script.
-    /// </summary>
-    /// <param name="writer">Flux.</param>
-    private void WriteCreateTableClosing(TextWriter writer)
-    {
-        writer.WriteLine(")");
-        writer.WriteLine("go");
-        writer.WriteLine();
     }
 
     /// <summary>

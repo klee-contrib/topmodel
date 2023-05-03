@@ -65,11 +65,6 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         fw.WriteLine("}");
     }
 
-    private static string GetClassName(string fileName)
-    {
-        return $"{fileName.ToPascalCase()}Controller";
-    }
-
     private static void CheckEndpoint(Endpoint endpoint)
     {
         foreach (var q in endpoint.GetQueryParams().Concat(endpoint.GetRouteParams()))
@@ -84,6 +79,11 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         {
             throw new ModelException(endpoint, $"Le retour du endpoint {endpoint.Route} ne peut pas être une association");
         }
+    }
+
+    private static string GetClassName(string fileName)
+    {
+        return $"{fileName.ToPascalCase()}Controller";
     }
 
     private IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
