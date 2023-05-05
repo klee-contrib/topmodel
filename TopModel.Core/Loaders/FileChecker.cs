@@ -105,6 +105,12 @@ public class FileChecker
                 case "i18n":
                     config.I18n = _deserializer.Deserialize<I18nConfig>(parser);
                     break;
+                case "generators":
+                    parser.ConsumeSequence(() =>
+                    {
+                        config.CustomGenerators.Add(parser.Consume<Scalar>().Value);
+                    });
+                    break;
                 default:
                     config.Generators.Add(prop, _deserializer.Deserialize<IEnumerable<IDictionary<string, object>>>(parser));
                     break;
@@ -124,29 +130,7 @@ public class FileChecker
         return _deserializer.Deserialize(_serializer.Serialize(genConfigMap), configType)!;
     }
 
-    private void CheckCore(JsonSchema schema, string fileName, string? content = null)
-    {
-        content ??= File.ReadAllText(fileName);
-
-        var parser = new Parser(new StringReader(content));
-        parser.Consume<StreamStart>();
-
-        var firstObject = true;
-        while (parser.Current is DocumentStart)
-        {
-            var yaml = _deserializer.Deserialize(parser)
-                ?? throw new ModelException($"Impossible de lire le fichier {fileName.ToRelative()}.");
-            var json = _serializer.Serialize(yaml);
-
-            var finalSchema = firstObject && schema.OneOf.Any() ? schema.OneOf.First() : schema;
-
-            Validate(fileName, finalSchema, json);
-
-            firstObject = false;
-        }
-    }
-
-    private void Validate(string fileName, JsonSchema schema, string? json)
+    private static void Validate(string fileName, JsonSchema schema, string? json)
     {
         var errors = schema.Validate(json);
 
@@ -179,6 +163,28 @@ public class FileChecker
 
             HandleErrors(errors);
             throw new ModelException(erreur.ToString());
+        }
+    }
+
+    private void CheckCore(JsonSchema schema, string fileName, string? content = null)
+    {
+        content ??= File.ReadAllText(fileName);
+
+        var parser = new Parser(new StringReader(content));
+        parser.Consume<StreamStart>();
+
+        var firstObject = true;
+        while (parser.Current is DocumentStart)
+        {
+            var yaml = _deserializer.Deserialize(parser)
+                ?? throw new ModelException($"Impossible de lire le fichier {fileName.ToRelative()}.");
+            var json = _serializer.Serialize(yaml);
+
+            var finalSchema = firstObject && schema.OneOf.Any() ? schema.OneOf.First() : schema;
+
+            Validate(fileName, finalSchema, json);
+
+            firstObject = false;
         }
     }
 }

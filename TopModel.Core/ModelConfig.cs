@@ -1,4 +1,5 @@
 ﻿#nullable disable
+
 namespace TopModel.Core;
 
 public class ModelConfig
@@ -18,6 +19,8 @@ public class ModelConfig
     public I18nConfig I18n { get; set; } = new();
 
     public Dictionary<string, IEnumerable<IDictionary<string, object>>> Generators { get; } = new();
+
+    public List<string> CustomGenerators { get; set; } = new();
 
     public string GetFileName(string filePath)
     {

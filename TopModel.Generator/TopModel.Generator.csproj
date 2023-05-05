@@ -43,7 +43,6 @@
     <ProjectReference Include="..\TopModel.Generator.Csharp\TopModel.Generator.Csharp.csproj" />
     <ProjectReference Include="..\TopModel.Generator.Javascript\TopModel.Generator.Javascript.csproj" />
     <ProjectReference Include="..\TopModel.Generator.Jpa\TopModel.Generator.Jpa.csproj" />
-    <ProjectReference Include="..\TopModel.Generator.Php\TopModel.Generator.Php.csproj" />
     <ProjectReference Include="..\TopModel.Generator.Sql\TopModel.Generator.Sql.csproj" />
     <ProjectReference Include="..\TopModel.Generator.Translation\TopModel.Generator.Translation.csproj" />
   </ItemGroup>

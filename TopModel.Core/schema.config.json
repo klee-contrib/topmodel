@@ -70,6 +70,13 @@
           "default": "true"
         }
       }
+    },
+    "generators": {
+      "type": "array",
+      "description": "Chemins vers des projets C# contenant des générateurs personnalisés",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "additionalProperties": {

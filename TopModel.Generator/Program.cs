@@ -11,17 +11,6 @@ using TopModel.Utils;
 
 var fileChecker = new FileChecker("schema.config.json");
 
-static Type? GetIGenRegInterface(Type t)
-{
-    return t.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IGeneratorRegistration<>));
-}
-
-var generators = new FileInfo(Assembly.GetEntryAssembly()!.Location).Directory!.GetFiles("TopModel.Generator.*.dll")
-    .Select(f => Assembly.LoadFrom(f.FullName))
-    .SelectMany(a => a.GetExportedTypes())
-    .Where(t => GetIGenRegInterface(t) != null)
-    .ToList();
-
 var configs = new List<(ModelConfig Config, string FullPath, string DirectoryName)>();
 var watchMode = false;
 var checkMode = false;
@@ -163,108 +152,132 @@ for (var i = 0; i < configs.Count; i++)
     Console.WriteLine(Path.GetRelativePath(Directory.GetCurrentDirectory(), fullName));
 }
 
-if (schemaMode)
+static Type? GetIGenRegInterface(Type t)
 {
-    Console.WriteLine();
-
-    for (var i = 0; i < configs.Count; i++)
-    {
-        Console.ForegroundColor = colors[i % colors.Length];
-        Console.Write($"#{i + 1}");
-        Console.ForegroundColor = ConsoleColor.Gray;
-        Console.WriteLine(" - Génération du schéma de configuration...");
-
-        var schema = JsonNode.Parse(File.ReadAllText(FileChecker.GetFilePath(Assembly.GetExecutingAssembly(), "schema.config.json")))!.AsObject();
-
-        schema.Remove("additionalProperties");
-
-        foreach (var generator in generators)
-        {
-            var configType = GetIGenRegInterface(generator)!.GetGenericArguments()[0];
-            var configName = configType.Name.Replace("Config", string.Empty).ToCamelCase();
-
-            var config = JsonNode.Parse(@"{""type"": ""array""}")!.AsObject();
-            config.Add("items", JsonNode.Parse(File.ReadAllText(FileChecker.GetFilePath(configType.Assembly, $"{configName}.config.json"))));
-            schema["properties"]!.AsObject().Add(configName, config);
-        }
-
-        File.WriteAllText(configs[i].FullPath + ".schema.json", schema.Root.ToJsonString(new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = true }));
-    }
-
-    Console.WriteLine();
-    Console.WriteLine("Fichier(s) de configuration généré(s) avec succès.");
-    Console.WriteLine();
-
-    return returnCode;
+    return t.GetInterfaces().FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IGeneratorRegistration<>));
 }
 
+static (Type Type, string Name) GetIGenRegInterfaceAndName(Type generator)
+{
+    var configType = GetIGenRegInterface(generator)!.GetGenericArguments()[0];
+    var configName = configType.Name.Replace("Config", string.Empty).ToCamelCase();
+    return (configType, configName);
+}
+
+var baseGenerators = new FileInfo(Assembly.GetEntryAssembly()!.Location).Directory!.GetFiles("TopModel.Generator.*.dll");
 var disposables = new List<IDisposable>();
 var loggerProvider = new LoggerProvider();
 var hasErrors = Enumerable.Range(0, configs.Count).Select(_ => false).ToArray();
 
 for (var i = 0; i < configs.Count; i++)
 {
-    var (config, _, dn) = configs[i];
+    var (config, fullName, dn) = configs[i];
 
     Console.WriteLine();
 
-    var services = new ServiceCollection()
-        .AddLogging(builder => builder.AddProvider(loggerProvider))
-        .AddModelStore(fileChecker, config, dn);
+    var generators = baseGenerators
+        .Concat(config.CustomGenerators.SelectMany(cg => new DirectoryInfo(Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin")).GetFiles("TopModel.Generator.*.dll", SearchOption.AllDirectories)))
+        .DistinctBy(a => a.FullName)
+        .Select(f => Assembly.LoadFrom(f.FullName))
+        .SelectMany(a => a.GetExportedTypes())
+        .Where(t => GetIGenRegInterface(t) != null)
+        .ToList();
 
-    foreach (var generator in generators)
+    var undefinedConfigs = config.Generators.Keys.Except(generators.Select(g => GetIGenRegInterfaceAndName(g).Name))!;
+
+    if (undefinedConfigs.Any())
     {
-        var configType = GetIGenRegInterface(generator)!.GetGenericArguments()[0];
-        var configName = configType.Name.Replace("Config", string.Empty).ToCamelCase();
+        returnCode = 1;
+        Console.ForegroundColor = colors[i % colors.Length];
+        Console.Write($"#{i + 1}");
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine($" Aucune configuration de générateur n'a été trouvée pour : {string.Join(", ", undefinedConfigs)}.");
+        Console.ForegroundColor = ConsoleColor.Gray;
+        continue;
+    }
 
-        if (config.Generators.TryGetValue(configName, out var genConfigMaps))
+    if (schemaMode)
+    {
+        Console.ForegroundColor = colors[i % colors.Length];
+        Console.Write($"#{i + 1}");
+        Console.ForegroundColor = ConsoleColor.Gray;
+        Console.WriteLine(" Génération du schéma de configuration...");
+
+        var schema = JsonNode.Parse(File.ReadAllText(FileChecker.GetFilePath(Assembly.GetExecutingAssembly(), "schema.config.json")))!.AsObject();
+
+        schema.Remove("additionalProperties");
+        schema.Add("additionalProperties", false);
+
+        foreach (var generator in generators)
         {
-            for (var j = 0; j < genConfigMaps.Count(); j++)
+            var (configType, configName) = GetIGenRegInterfaceAndName(generator);
+
+            var configSchema = JsonNode.Parse(@"{""type"": ""array""}")!.AsObject();
+            configSchema.Add("items", JsonNode.Parse(File.ReadAllText(FileChecker.GetFilePath(configType.Assembly, $"{configName}.config.json"))));
+            schema["properties"]!.AsObject().Add(configName, configSchema);
+        }
+
+        File.WriteAllText(configs[i].FullPath + ".schema.json", schema.Root.ToJsonString(new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = true }));
+    }
+    else
+    {
+        var services = new ServiceCollection()
+            .AddLogging(builder => builder.AddProvider(loggerProvider))
+            .AddModelStore(fileChecker, config, dn);
+
+        foreach (var generator in generators)
+        {
+            var (configType, configName) = GetIGenRegInterfaceAndName(generator);
+
+            if (config.Generators.TryGetValue(configName, out var genConfigMaps))
             {
-                var genConfigMap = genConfigMaps.ElementAt(j);
-                var number = j + 1;
-
-                try
+                for (var j = 0; j < genConfigMaps.Count(); j++)
                 {
-                    var genConfig = (GeneratorConfigBase)fileChecker.GetGenConfig(configName, configType, genConfigMap);
+                    var genConfigMap = genConfigMaps.ElementAt(j);
+                    var number = j + 1;
 
-                    genConfig.InitVariables(config.App, number);
+                    try
+                    {
+                        var genConfig = (GeneratorConfigBase)fileChecker.GetGenConfig(configName, configType, genConfigMap);
 
-                    ModelUtils.CombinePath(dn, genConfig, c => c.OutputDirectory);
+                        genConfig.InitVariables(config.App, number);
 
-                    var instance = Activator.CreateInstance(generator);
-                    instance!.GetType().GetMethod("Register")!
-                        .Invoke(
-                            instance,
-                            new object[] { services, genConfig, number });
-                }
-                catch (ModelException me)
-                {
-                    returnCode = 1;
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(me.Message);
-                    Console.WriteLine();
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                        ModelUtils.CombinePath(dn, genConfig, c => c.OutputDirectory);
+
+                        var instance = Activator.CreateInstance(generator);
+                        instance!.GetType().GetMethod("Register")!
+                            .Invoke(
+                                instance,
+                                new object[] { services, genConfig, number });
+                    }
+                    catch (ModelException me)
+                    {
+                        returnCode = 1;
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine(me.Message);
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                    }
                 }
             }
         }
-    }
 
-    var provider = services.BuildServiceProvider();
-    disposables.Add(provider);
+        var provider = services.BuildServiceProvider();
+        disposables.Add(provider);
 
-    var modelStore = provider.GetRequiredService<ModelStore>();
+        var modelStore = provider.GetRequiredService<ModelStore>();
 
-    var k = i;
-    modelStore.OnResolve += hasError =>
-    {
-        hasErrors[k] = hasError;
-    };
+        var k = i;
+        modelStore.OnResolve += hasError =>
+        {
+            hasErrors[k] = hasError;
+        };
 
-    var watcher = modelStore.LoadFromConfig(watchMode, new(i + 1, colors[i % colors.Length]));
-    if (watcher != null)
-    {
-        disposables.Add(watcher);
+        var watcher = modelStore.LoadFromConfig(watchMode, new(i + 1, colors[i % colors.Length]));
+        if (watcher != null)
+        {
+            disposables.Add(watcher);
+        }
     }
 }
 
