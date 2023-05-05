@@ -1,0 +1,126 @@
+{
+  "type": "object",
+  "description": "Config pour la génération de Javascript.",
+  "additionalProperties": false,
+  "required": [
+    "outputDirectory",
+    "tags"
+  ],
+  "properties": {
+    "language": {
+      "type": "string",
+      "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'ts'."
+    },
+    "tags": {
+      "type": "array",
+      "description": "Précise les tags de fichier que le générateur doit lire",
+      "items": {
+        "type": "string",
+        "description": "Catégorie de fichier que le générateur doit lire."
+      }
+    },
+    "variables": {
+      "type": "object",
+      "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+      "patternProperties": {
+        ".+": {
+          "type": "string"
+        }
+      }
+    },
+    "tagVariables": {
+      "type": "object",
+      "description": "Définitions de variables par tag à utiliser dans les différents paramètres du générateur.",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "disable": {
+      "type": "array",
+      "description": "Désactive les générateurs demandés",
+      "items": {
+        "type": "string",
+        "enum": [
+          "JSDefinitionGen",
+          "JSReferenceGen",
+          "JSNGApiClientGen",
+          "JSApiClientGen",
+          "JSResourceGen"
+        ]
+      }
+    },
+    "outputDirectory": {
+      "type": "string",
+      "description": "Racine du répertoire de génération."
+    },
+    "modelRootPath": {
+      "type": "string",
+      "description": "Localisation du modèle, relative au répertoire de génération. Si non renseigné, aucun modèle ne sera généré."
+    },
+    "resourceRootPath": {
+      "type": "string",
+      "description": "Localisation des ressources i18n, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré"
+    },
+    "apiClientRootPath": {
+      "type": "string",
+      "description": "Localisation des clients d'API, relative au répertoire de génération. Si non renseigné, aucun fichier ne sera généré."
+    },
+    "apiClientFilePath": {
+      "type": "string",
+      "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.",
+      "default": "{module}"
+    },
+    "fetchPath": {
+      "type": "string",
+      "description": "Chemin (ou alias commençant par '@') vers un 'fetch' personnalisé, relatif au répertoire de génération."
+    },
+    "domainPath": {
+      "type": "string",
+      "description": "Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif au répertoire de génération.",
+      "default": "../domains"
+    },
+    "targetFramework": {
+      "type": "string",
+      "description": "Framework cible pour la génération.",
+      "default": "focus",
+      "enum": [
+        "focus",
+        "angular",
+        "vanilla"
+      ]
+    },
+    "resourceMode": {
+      "type": "string",
+      "description": "Mode de génération (JS, JSON ou JSON Schema).",
+      "enum": [
+        "js",
+        "json"
+      ]
+    },
+    "translateReferences": {
+      "type": "boolean",
+      "description": "Si les listes de référence doivent être traduites",
+      "default": "true"
+    },
+    "generateComments": {
+      "type": "boolean",
+      "description": "Ajoute les commentaires dans les entités JS générées."
+    },
+    "referenceMode": {
+      "type": "string",
+      "description": "Mode de génération des listes de références (définitions ou valeurs).",
+      "enum": [
+        "definition",
+        "values"
+      ],
+      "default": "definition"
+    }
+  }
+}

@@ -116,8 +116,14 @@ public class FileChecker
         return config;
     }
 
-    public object GetGenConfig(Type configType, IDictionary<string, object> genConfigMap)
+    public object GetGenConfig(string configName, Type configType, IDictionary<string, object> genConfigMap)
     {
+        var schema = JsonSchema.FromFileAsync(
+            Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, $"{configName}.config.json"))
+            .Result;
+
+        Validate(configName, schema, _serializer.Serialize(genConfigMap));
+
         return _deserializer.Deserialize(_serializer.Serialize(genConfigMap), configType)!;
     }
 
@@ -137,40 +143,45 @@ public class FileChecker
 
             var finalSchema = firstObject && schema.OneOf.Any() ? schema.OneOf.First() : schema;
 
-            var errors = finalSchema.Validate(json);
+            Validate(fileName, finalSchema, json);
 
-            if (errors.Any())
+            firstObject = false;
+        }
+    }
+
+    private void Validate(string fileName, JsonSchema schema, string? json)
+    {
+        var errors = schema.Validate(json);
+
+        if (errors.Any())
+        {
+            var erreur = new StringBuilder();
+            erreur.Append($"Erreur dans le fichier {fileName.ToRelative()} :");
+
+            void HandleErrors(IEnumerable<ValidationError> validationErrors, string indent = "")
             {
-                var erreur = new StringBuilder();
-                erreur.Append($"Erreur dans le fichier {fileName.ToRelative()} :");
-
-                void HandleErrors(IEnumerable<ValidationError> validationErrors, string indent = "")
+                foreach (var e in validationErrors)
                 {
-                    foreach (var e in validationErrors)
+                    erreur.Append($"{Environment.NewLine}{indent}[{e.LinePosition}]: {e.Kind} - {e.Path}");
+                    if (e is ChildSchemaValidationError csve)
                     {
-                        erreur.Append($"{Environment.NewLine}{indent}[{e.LinePosition}]: {e.Kind} - {e.Path}");
-                        if (e is ChildSchemaValidationError csve)
+                        foreach (var schema in csve.Errors)
                         {
-                            foreach (var schema in csve.Errors)
+                            var newIndent = indent + "  ";
+                            if (csve.Errors.Count > 1)
                             {
-                                var newIndent = indent + "  ";
-                                if (csve.Errors.Count > 1)
-                                {
-                                    erreur.Append($"{Environment.NewLine}{newIndent}{schema.Key.Description}");
-                                    newIndent += "  ";
-                                }
-
-                                HandleErrors(schema.Value, newIndent);
+                                erreur.Append($"{Environment.NewLine}{newIndent}{schema.Key.Description}");
+                                newIndent += "  ";
                             }
+
+                            HandleErrors(schema.Value, newIndent);
                         }
                     }
                 }
-
-                HandleErrors(errors);
-                throw new ModelException(erreur.ToString());
             }
 
-            firstObject = false;
+            HandleErrors(errors);
+            throw new ModelException(erreur.ToString());
         }
     }
 }

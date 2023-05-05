@@ -1,0 +1,196 @@
+{
+  "type": "object",
+  "description": "Config pour la génération de C#.",
+  "additionalProperties": false,
+  "required": [
+    "outputDirectory",
+    "tags"
+  ],
+  "properties": {
+    "language": {
+      "type": "string",
+      "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'csharp'."
+    },
+    "tags": {
+      "type": "array",
+      "description": "Précise les tags de fichier que le générateur doit lire",
+      "items": {
+        "type": "string",
+        "description": "Catégorie de fichier que le générateur doit lire."
+      }
+    },
+    "variables": {
+      "type": "object",
+      "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+      "patternProperties": {
+        ".+": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    },
+    "tagVariables": {
+      "type": "object",
+      "description": "Définitions de variables par tag à utiliser dans les différents paramètres du générateur.",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "disable": {
+      "type": "array",
+      "description": "Désactive les générateurs demandés",
+      "items": {
+        "type": "string",
+        "enum": [
+          "CSharpClassGen",
+          "CSharpMapperGen",
+          "CSharpDbContextGen",
+          "CSharpRefAccessGen",
+          "CSharpApiServerGen",
+          "CSharpApiClientGen"
+        ]
+      }
+    },
+    "outputDirectory": {
+      "type": "string",
+      "description": "Racine du répertoire de génération."
+    },
+    "persistentModelPath": {
+      "type": "string",
+      "description": "Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models."
+    },
+    "persistentReferencesModelPath": {
+      "type": "string",
+      "description": "Localisation des classes de références persistées, relative au répertoire de génération. Par défaut égal à 'persistentModelPath'."
+    },
+    "nonPersistentModelPath": {
+      "type": "string",
+      "description": "Localisation du modèle non persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models/Dto."
+    },
+    "apiRootPath": {
+      "type": "string",
+      "description": "Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut : {app}.Web."
+    },
+    "apiFilePath": {
+      "type": "string",
+      "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relative à la racine de l'API. Par défaut : {module}."
+    },
+    "apiGeneration": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Mode de génération de l'API ('Client' ou 'Server')",
+          "enum": [
+            "Client",
+            "Server"
+          ]
+        },
+        {
+          "type": "string",
+          "description": "Mode de génération de l'API ('Client' ou 'Server')",
+          "pattern": "^\\{[^\\}]+\\}$"
+        }
+      ]
+    },
+    "useEFMigrations": {
+      "type": "boolean",
+      "description": "Utilise les migrations EF pour créer/mettre à jour la base de données."
+    },
+    "dbContextPath": {
+      "type": "string",
+      "description": "Localisation du DbContext, relative au répertoire de génération."
+    },
+    "dbContextName": {
+      "type": "string",
+      "description": "Nom du DbContext. Par défaut : {app}DbContext."
+    },
+    "referenceAccessorsInterfacePath": {
+      "type": "string",
+      "description": "Chemin vers lequel générer les interfaces d'accesseurs de référence. Par défaut : {DbContextPath}/Reference."
+    },
+    "referenceAccessorsImplementationPath": {
+      "type": "string",
+      "description": "Chemin vers lequel générer les implémentation d'accesseurs de référence. Par défaut : {DbContextPath}/Reference."
+    },
+    "referenceAccessorsName": {
+      "type": "string",
+      "description": "Nom des accesseurs de référence (préfixé par 'I' pour l'interface). Par défaut : {module}ReferenceAccessors."
+    },
+    "noAsyncControllers": {
+      "type": "boolean",
+      "description": "Génère des contrôleurs d'API synchrones."
+    },
+    "useLowerCaseSqlNames": {
+      "type": "boolean",
+      "description": "Utilise des noms de tables et de colonnes en lowercase."
+    },
+    "dbSchema": {
+      "type": "string",
+      "description": "Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo')."
+    },
+    "useLatestCSharp": {
+      "type": "boolean",
+      "description": "Utilise les features C# 10 dans la génération."
+    },
+    "kinetix": {
+      "type": "boolean",
+      "description": "Si on génère avec Kinetix."
+    },
+    "domainNamespace": {
+      "type": "string",
+      "description": "Namespace de l'enum de domaine pour Kinetix. Par défaut : '{app}.Common'."
+    },
+    "noColumnOnAlias": {
+      "type": "boolean",
+      "description": "Retire les attributs de colonnes sur les alias."
+    },
+    "noPersistence": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Considère tous les classes comme étant non-persistantes (= pas d'attribut SQL)."
+        },
+        {
+          "type": "string",
+          "description": "Considère tous les classes comme étant non-persistantes (= pas d'attribut SQL).",
+          "pattern": "^\\{[^\\}]+\\}$"
+        }
+      ]
+    },
+    "mapperTagsOverrides": {
+      "type": "array",
+      "description": "Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).",
+      "items": {
+        "type": "string"
+      }
+    },
+    "enumsForStaticReferences": {
+      "type": "boolean",
+      "description": "Utilise des enums au lieu de strings pour les PKs de listes de référence statiques."
+    },
+    "useEFComments": {
+      "type": "boolean",
+      "description": "Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `UseEFMigrations`)."
+    }
+  }
+}

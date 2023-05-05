@@ -173,24 +173,37 @@ for (var i = 0; i < configs.Count; i++)
     foreach (var generator in generators)
     {
         var configType = GetIGenRegInterface(generator)!.GetGenericArguments()[0];
-        if (config.Generators.TryGetValue(configType.Name.Replace("Config", string.Empty).ToCamelCase(), out var genConfigMaps))
+        var configName = configType.Name.Replace("Config", string.Empty).ToCamelCase();
+
+        if (config.Generators.TryGetValue(configName, out var genConfigMaps))
         {
             for (var j = 0; j < genConfigMaps.Count(); j++)
             {
                 var genConfigMap = genConfigMaps.ElementAt(j);
                 var number = j + 1;
 
-                var genConfig = (GeneratorConfigBase)fileChecker.GetGenConfig(configType, genConfigMap);
+                try
+                {
+                    var genConfig = (GeneratorConfigBase)fileChecker.GetGenConfig(configName, configType, genConfigMap);
 
-                genConfig.InitVariables(config.App, number);
+                    genConfig.InitVariables(config.App, number);
 
-                ModelUtils.CombinePath(dn, genConfig, c => c.OutputDirectory);
+                    ModelUtils.CombinePath(dn, genConfig, c => c.OutputDirectory);
 
-                var instance = Activator.CreateInstance(generator);
-                instance!.GetType().GetMethod("Register")!
-                    .Invoke(
-                        instance,
-                        new object[] { services, genConfig, number });
+                    var instance = Activator.CreateInstance(generator);
+                    instance!.GetType().GetMethod("Register")!
+                        .Invoke(
+                            instance,
+                            new object[] { services, genConfig, number });
+                }
+                catch (ModelException me)
+                {
+                    returnCode = 1;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(me.Message);
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                }
             }
         }
     }
