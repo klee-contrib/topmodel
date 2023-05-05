@@ -1,0 +1,15 @@
+{
+  "omnisharp.enableRoslynAnalyzers": true,
+  "yaml.schemas": {
+    "samples/generators/angular/topmodel.config.schema.json": "samples/generators/angular/topmodel.config",
+    "samples/generators/csharp/topmodel.config.schema.json": "samples/generators/csharp/topmodel.config",
+    "samples/generators/database/topmodel.config.schema.json": "samples/generators/database/topmodel.config",
+    "samples/generators/focus/topmodel.config.schema.json": "samples/generators/focus/topmodel.config",
+    "samples/generators/jpa/topmodel.config.schema.json": "samples/generators/jpa/topmodel.config",
+    "samples/generators/open-api/topmodel.config.schema.json": "samples/generators/open-api/topmodel.config",
+    "samples/generators/pg/topmodel.config.schema.json": "samples/generators/pg/topmodel.config",
+    "samples/generators/php/topmodel.config.schema.json": "samples/generators/php/topmodel.config",
+    "samples/generators/ssdt/topmodel.config.schema.json": "samples/generators/ssdt/topmodel.config",
+    "samples/generators/translation/topmodel.config.schema.json": "samples/generators/translation/topmodel.config"
+  }
+}

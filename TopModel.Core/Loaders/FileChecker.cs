@@ -21,14 +21,10 @@ public class FileChecker
     {
         if (configSchemaPath != null)
         {
-            _configSchema = JsonSchema.FromFileAsync(
-                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, configSchemaPath))
-                .Result;
+            _configSchema = JsonSchema.FromFileAsync(GetFilePath(Assembly.GetExecutingAssembly(), configSchemaPath)).Result;
         }
 
-        _modelSchema = JsonSchema.FromFileAsync(
-            Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "schema.json"))
-            .Result;
+        _modelSchema = JsonSchema.FromFileAsync(GetFilePath(Assembly.GetExecutingAssembly(), "schema.json")).Result;
 
         _deserializer = new DeserializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
@@ -38,6 +34,11 @@ public class FileChecker
         _serializer = new SerializerBuilder()
             .JsonCompatible()
             .Build();
+    }
+
+    public static string GetFilePath(Assembly assembly, string fileName)
+    {
+        return Path.Combine(Path.GetDirectoryName(assembly.Location)!, fileName);
     }
 
     public void CheckConfigFile(string fileName)
@@ -118,12 +119,8 @@ public class FileChecker
 
     public object GetGenConfig(string configName, Type configType, IDictionary<string, object> genConfigMap)
     {
-        var schema = JsonSchema.FromFileAsync(
-            Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, $"{configName}.config.json"))
-            .Result;
-
+        var schema = JsonSchema.FromFileAsync(GetFilePath(configType.Assembly, $"{configName}.config.json")).Result;
         Validate(configName, schema, _serializer.Serialize(genConfigMap));
-
         return _deserializer.Deserialize(_serializer.Serialize(genConfigMap), configType)!;
     }
 

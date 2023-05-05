@@ -1,5 +1,7 @@
 ﻿using System.CommandLine;
 using System.Reflection;
+using System.Text.Encodings.Web;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using TopModel.Core;
@@ -23,6 +25,7 @@ var generators = new FileInfo(Assembly.GetEntryAssembly()!.Location).Directory!.
 var configs = new List<(ModelConfig Config, string FullPath, string DirectoryName)>();
 var watchMode = false;
 var checkMode = false;
+var schemaMode = false;
 var regularCommand = false;
 var returnCode = 0;
 
@@ -31,15 +34,18 @@ var command = new RootCommand("Lance le générateur topmodel.") { Name = "modge
 var fileOption = new Option<IEnumerable<FileInfo>>(new[] { "-f", "--file" }, "Chemin vers un fichier de config.");
 var watchOption = new Option<bool>(new[] { "-w", "--watch" }, "Lance le générateur en mode 'watch'");
 var checkOption = new Option<bool>(new[] { "-c", "--check" }, "Vérifie que le code généré est conforme au modèle.");
+var schemaOption = new Option<bool>(new[] { "-s", "--schema" }, "Génère le fichier de schéma JSON du fichier de config.");
 command.AddOption(fileOption);
 command.AddOption(watchOption);
 command.AddOption(checkOption);
+command.AddOption(schemaOption);
 command.SetHandler(
-    (files, watch, check) =>
+    (files, watch, check, schema) =>
     {
         regularCommand = true;
         watchMode = watch;
         checkMode = check;
+        schemaMode = schema;
 
         void HandleFile(FileInfo file)
         {
@@ -103,7 +109,8 @@ command.SetHandler(
     },
     fileOption,
     watchOption,
-    checkOption);
+    checkOption,
+    schemaOption);
 
 await command.InvokeAsync(args);
 
@@ -154,6 +161,41 @@ for (var i = 0; i < configs.Count; i++)
     Console.ForegroundColor = colors[i % colors.Length];
     Console.Write($"#{i + 1} - ");
     Console.WriteLine(Path.GetRelativePath(Directory.GetCurrentDirectory(), fullName));
+}
+
+if (schemaMode)
+{
+    Console.WriteLine();
+
+    for (var i = 0; i < configs.Count; i++)
+    {
+        Console.ForegroundColor = colors[i % colors.Length];
+        Console.Write($"#{i + 1}");
+        Console.ForegroundColor = ConsoleColor.Gray;
+        Console.WriteLine(" - Génération du schéma de configuration...");
+
+        var schema = JsonNode.Parse(File.ReadAllText(FileChecker.GetFilePath(Assembly.GetExecutingAssembly(), "schema.config.json")))!.AsObject();
+
+        schema.Remove("additionalProperties");
+
+        foreach (var generator in generators)
+        {
+            var configType = GetIGenRegInterface(generator)!.GetGenericArguments()[0];
+            var configName = configType.Name.Replace("Config", string.Empty).ToCamelCase();
+
+            var config = JsonNode.Parse(@"{""type"": ""array""}")!.AsObject();
+            config.Add("items", JsonNode.Parse(File.ReadAllText(FileChecker.GetFilePath(configType.Assembly, $"{configName}.config.json"))));
+            schema["properties"]!.AsObject().Add(configName, config);
+        }
+
+        File.WriteAllText(configs[i].FullPath + ".schema.json", schema.Root.ToJsonString(new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = true }));
+    }
+
+    Console.WriteLine();
+    Console.WriteLine("Fichier(s) de configuration généré(s) avec succès.");
+    Console.WriteLine();
+
+    return returnCode;
 }
 
 var disposables = new List<IDisposable>();
