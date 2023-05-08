@@ -168,13 +168,26 @@ async Task StartGeneration(string filePath, string directoryName, int i)
     foreach (var conf in config.Database)
     {
         ModelUtils.TrimSlashes(conf, c => c.OutputDirectory);
-        services.AddSingleton<ModelGenerator>(p => new DatabaseTmdGenerator(p.GetRequiredService<ILogger<DatabaseTmdGenerator>>(), conf)
+        if (conf.Source.DbType == DbType.ORACLE)
         {
-            DirectoryName = directoryName,
-            ModelRoot = config.ModelRoot,
-            Number = config.Database.IndexOf(conf) + 1,
-            Passwords = passwords
-        });
+            services.AddSingleton<ModelGenerator>(p => new DatabaseOraTmdGenerator(p.GetRequiredService<ILogger<DatabaseOraTmdGenerator>>(), conf)
+            {
+                DirectoryName = directoryName,
+                ModelRoot = config.ModelRoot,
+                Number = config.Database.IndexOf(conf) + 1,
+                Passwords = passwords
+            });
+        }
+        else if (conf.Source.DbType == DbType.POSTGRESQL)
+        {
+            services.AddSingleton<ModelGenerator>(p => new DatabasePgTmdGenerator(p.GetRequiredService<ILogger<DatabasePgTmdGenerator>>(), conf)
+            {
+                DirectoryName = directoryName,
+                ModelRoot = config.ModelRoot,
+                Number = config.Database.IndexOf(conf) + 1,
+                Passwords = passwords
+            });
+        }
     }
 
     using var provider = services.BuildServiceProvider();

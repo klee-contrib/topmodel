@@ -2,6 +2,7 @@
 
 public class DatabaseConfig
 {
+
     public string OutputDirectory { get; set; } = "./";
 
     public IList<DomainMapping> Domains { get; set; } = new List<DomainMapping>();
@@ -16,5 +17,9 @@ public class DatabaseConfig
 
     public List<ModuleConfig> Modules { get; set; } = new();
 
-    public string ConnectionString => @$"Host={Source.Host};Port={Source.Port};Database={Source.DbName};Username={Source.User}{(Source.Password != null ? $";Password={Source.Password}" : string.Empty)}";
+    public string ConnectionString => Source.DbType == DbType.POSTGRESQL ? PgConnectionString : OracleConnectionString;
+
+    private string OracleConnectionString => $@"Data Source=(DESCRIPTION =(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST = {Source.Host})(PORT = {Source.Port})))(CONNECT_DATA =(SERVICE_NAME = {Source.DbName})));;User ID={Source.User};{(Source.Password != null ? $";Password={Source.Password}" : string.Empty)};Unicode=True";
+
+    private string PgConnectionString => @$"Host={Source.Host};Port={Source.Port};Database={Source.DbName};Username={Source.User}{(Source.Password != null ? $";Password={Source.Password}" : string.Empty)}";
 }
