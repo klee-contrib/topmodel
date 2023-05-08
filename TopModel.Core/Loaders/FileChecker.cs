@@ -21,14 +21,10 @@ public class FileChecker
     {
         if (configSchemaPath != null)
         {
-            _configSchema = JsonSchema.FromFileAsync(
-                Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, configSchemaPath))
-                .Result;
+            _configSchema = JsonSchema.FromFileAsync(GetFilePath(Assembly.GetExecutingAssembly(), configSchemaPath)).Result;
         }
 
-        _modelSchema = JsonSchema.FromFileAsync(
-            Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "schema.json"))
-            .Result;
+        _modelSchema = JsonSchema.FromFileAsync(GetFilePath(Assembly.GetExecutingAssembly(), "schema.json")).Result;
 
         _deserializer = new DeserializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
@@ -38,6 +34,11 @@ public class FileChecker
         _serializer = new SerializerBuilder()
             .JsonCompatible()
             .Build();
+    }
+
+    public static string GetFilePath(Assembly assembly, string fileName)
+    {
+        return Path.Combine(Path.GetDirectoryName(assembly.Location)!, fileName);
     }
 
     public void CheckConfigFile(string fileName)
@@ -104,6 +105,12 @@ public class FileChecker
                 case "i18n":
                     config.I18n = _deserializer.Deserialize<I18nConfig>(parser);
                     break;
+                case "generators":
+                    parser.ConsumeSequence(() =>
+                    {
+                        config.CustomGenerators.Add(parser.Consume<Scalar>().Value);
+                    });
+                    break;
                 default:
                     config.Generators.Add(prop, _deserializer.Deserialize<IEnumerable<IDictionary<string, object>>>(parser));
                     break;
@@ -116,9 +123,47 @@ public class FileChecker
         return config;
     }
 
-    public object GetGenConfig(Type configType, IDictionary<string, object> genConfigMap)
+    public object GetGenConfig(string configName, Type configType, IDictionary<string, object> genConfigMap)
     {
+        var schema = JsonSchema.FromFileAsync(GetFilePath(configType.Assembly, $"{configName}.config.json")).Result;
+        Validate(configName, schema, _serializer.Serialize(genConfigMap));
         return _deserializer.Deserialize(_serializer.Serialize(genConfigMap), configType)!;
+    }
+
+    private static void Validate(string fileName, JsonSchema schema, string? json)
+    {
+        var errors = schema.Validate(json);
+
+        if (errors.Any())
+        {
+            var erreur = new StringBuilder();
+            erreur.Append($"Erreur dans le fichier {fileName.ToRelative()} :");
+
+            void HandleErrors(IEnumerable<ValidationError> validationErrors, string indent = "")
+            {
+                foreach (var e in validationErrors)
+                {
+                    erreur.Append($"{Environment.NewLine}{indent}[{e.LinePosition}]: {e.Kind} - {e.Path}");
+                    if (e is ChildSchemaValidationError csve)
+                    {
+                        foreach (var schema in csve.Errors)
+                        {
+                            var newIndent = indent + "  ";
+                            if (csve.Errors.Count > 1)
+                            {
+                                erreur.Append($"{Environment.NewLine}{newIndent}{schema.Key.Description}");
+                                newIndent += "  ";
+                            }
+
+                            HandleErrors(schema.Value, newIndent);
+                        }
+                    }
+                }
+            }
+
+            HandleErrors(errors);
+            throw new ModelException(erreur.ToString());
+        }
     }
 
     private void CheckCore(JsonSchema schema, string fileName, string? content = null)
@@ -137,38 +182,7 @@ public class FileChecker
 
             var finalSchema = firstObject && schema.OneOf.Any() ? schema.OneOf.First() : schema;
 
-            var errors = finalSchema.Validate(json);
-
-            if (errors.Any())
-            {
-                var erreur = new StringBuilder();
-                erreur.Append($"Erreur dans le fichier {fileName.ToRelative()} :");
-
-                void HandleErrors(IEnumerable<ValidationError> validationErrors, string indent = "")
-                {
-                    foreach (var e in validationErrors)
-                    {
-                        erreur.Append($"{Environment.NewLine}{indent}[{e.LinePosition}]: {e.Kind} - {e.Path}");
-                        if (e is ChildSchemaValidationError csve)
-                        {
-                            foreach (var schema in csve.Errors)
-                            {
-                                var newIndent = indent + "  ";
-                                if (csve.Errors.Count > 1)
-                                {
-                                    erreur.Append($"{Environment.NewLine}{newIndent}{schema.Key.Description}");
-                                    newIndent += "  ";
-                                }
-
-                                HandleErrors(schema.Value, newIndent);
-                            }
-                        }
-                    }
-                }
-
-                HandleErrors(errors);
-                throw new ModelException(erreur.ToString());
-            }
+            Validate(fileName, finalSchema, json);
 
             firstObject = false;
         }

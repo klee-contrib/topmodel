@@ -1,0 +1,155 @@
+{
+  "type": "object",
+  "description": "Config pour la génération de Jpa.",
+  "additionalProperties": false,
+  "required": [
+    "tags",
+    "outputDirectory"
+  ],
+  "properties": {
+    "language": {
+      "type": "string",
+      "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'java'."
+    },
+    "tags": {
+      "type": "array",
+      "description": "Précise les tags de fichier que le générateur doit lire",
+      "items": {
+        "type": "string",
+        "description": "Catégorie de fichier que le générateur doit lire."
+      }
+    },
+    "variables": {
+      "type": "object",
+      "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+      "patternProperties": {
+        ".+": {
+          "type": "string"
+        }
+      }
+    },
+    "tagVariables": {
+      "type": "object",
+      "description": "Définitions de variables par tag à utiliser dans les différents paramètres du générateur.",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "disable": {
+      "type": "array",
+      "description": "Désactive les générateurs demandés",
+      "items": {
+        "type": "string",
+        "enum": [
+          "JpaModelGen",
+          "JpaInterfaceGen",
+          "JpaMapperGenerator",
+          "JpaDaoGen",
+          "JpaResourceGen",
+          "SpringApiServerGen",
+          "SpringApiClientGen"
+        ]
+      }
+    },
+    "outputDirectory": {
+      "type": "string",
+      "description": "Racine du répertoire de génération."
+    },
+    "entitiesPath": {
+      "type": "string",
+      "description": "Localisation des classes persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen:{app}/entities/{module}'."
+    },
+    "daosPath": {
+      "type": "string",
+      "description": "Localisation des DAOs, relative au répertoire de génération."
+    },
+    "dtosPath": {
+      "type": "string",
+      "description": "Localisation des classes non persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen:{app}/dtos/{module}'."
+    },
+    "apiPath": {
+      "type": "string",
+      "description": "Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut, 'javagen:{app}/api/{module}'."
+    },
+    "apiGeneration": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Mode de génération de l'API ('Client' ou 'Server')",
+          "enum": [
+            "Client",
+            "Server"
+          ]
+        },
+        {
+          "type": "string",
+          "description": "Mode de génération de l'API ('Client' ou 'Server')",
+          "pattern": "^\\{[^\\}]+\\}$"
+        }
+      ]
+    },
+    "resourcesPath": {
+      "type": "string",
+      "description": "Localisation des ressources, relative au répertoire de génération."
+    },
+    "enumShortcutMode": {
+      "type": "boolean",
+      "description": "Option pour générer des getters et setters vers l'enum des références plutôt que sur la table",
+      "default": "false"
+    },
+    "fieldsEnum": {
+      "type": "string",
+      "description": "Option pour générer une enum des champs des classes persistées",
+      "default": "None",
+      "enum": [
+        "None",
+        "Persisted",
+        "Dto",
+        "Persisted_Dto"
+      ]
+    },
+    "fieldsEnumInterface": {
+      "type": "string",
+      "description": "Précise l'interface des fields enum générés."
+    },
+    "persistenceMode": {
+      "type": "string",
+      "description": "Mode de génération de la persistence ('Javax' ou 'Jakarta')",
+      "enum": [
+        "Javax",
+        "Jakarta"
+      ]
+    },
+    "identity": {
+      "type": "object",
+      "description": "Options de génération de la séquence",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "description": "Mode de génération des séquences.",
+          "enum": [
+            "none",
+            "sequence",
+            "identity"
+          ],
+          "default": "identity"
+        },
+        "increment": {
+          "type": "number",
+          "description": "Incrément de la séquence générée."
+        },
+        "start": {
+          "type": "number",
+          "description": "Début de la séquence générée."
+        }
+      }
+    }
+  }
+}

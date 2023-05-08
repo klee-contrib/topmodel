@@ -1,0 +1,57 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "outputDirectory",
+    "tags"
+  ],
+  "properties": {
+    "tags": {
+      "type": "array",
+      "description": "Précise les tags de fichier que le générateur doit lire",
+      "items": {
+        "type": "string",
+        "description": "Catégorie de fichier que le générateur doit lire."
+      }
+    },
+    "variables": {
+      "type": "object",
+      "description": "Définitions de variables à utiliser dans les différents paramètres du générateur.",
+      "patternProperties": {
+        ".+": {
+          "type": "string"
+        }
+      }
+    },
+    "disable": {
+      "type": "array",
+      "description": "Désactive les générateurs demandés",
+      "items": {
+        "type": "string",
+        "enum": [
+          "JTranslationOutGen"
+        ]
+      }
+    },
+    "outputDirectory": {
+      "type": "string",
+      "description": "Racine du répertoire de génération."
+    },
+    "rootPath": {
+      "type": "string",
+      "description": "Template du chemin des dossiers de traductions sortants (manquants). Doit contenir le template {lang}",
+      "default": "{lang}"
+    },
+    "defaultLang": {
+      "type": "string",
+      "description": "Langue par défaut (celle dans laquelle sont écris les labels dans les fichiers .tmd"
+    },
+    "langs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "Code du angage"
+      }
+    }
+  }
+}
