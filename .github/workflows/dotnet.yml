@@ -18,6 +18,10 @@ jobs:
         with:
           dotnet-version: 6.0.x
 
+      - name: build phpgen
+        run: dotnet build
+        working-directory: TopModel.Generator.Php
+
       - name: modgen
         run: dotnet run --project TopModel.Generator/TopModel.Generator.csproj -- -c
 
