@@ -2,7 +2,6 @@
 using System.Text.RegularExpressions;
 using Dapper;
 using Microsoft.Extensions.Logging;
-using Npgsql;
 using TopModel.Utils;
 
 namespace TopModel.ModelGenerator.Database;
@@ -402,10 +401,9 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
             {
                 try
                 {
-                    using var connection = new NpgsqlConnection(_config.ConnectionString);
-                    connection.Open();
+                    _connection.Open();
                 }
-                catch (NpgsqlException)
+                catch (Exception e)
                 {
                     _logger.LogInformation($"Mot de passe pour l'utilisateur {_config.Source.User}:  ");
                     while (true)

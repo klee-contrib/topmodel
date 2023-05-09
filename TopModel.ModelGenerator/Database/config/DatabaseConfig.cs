@@ -19,7 +19,7 @@ public class DatabaseConfig
 
     public string ConnectionString => Source.DbType == DbType.POSTGRESQL ? PgConnectionString : OracleConnectionString;
 
-    private string OracleConnectionString => $@"Data Source=(DESCRIPTION =(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST = {Source.Host})(PORT = {Source.Port})))(CONNECT_DATA =(SERVICE_NAME = {Source.DbName})));;User ID={Source.User};{(Source.Password != null ? $";Password={Source.Password}" : string.Empty)};Unicode=True";
+    private string OracleConnectionString => $@"DATA SOURCE={Source.Host}:{Source.Port}/{Source.DbName};USER ID={Source.User};password={Source.Password}";
 
     private string PgConnectionString => @$"Host={Source.Host};Port={Source.Port};Database={Source.DbName};Username={Source.User}{(Source.Password != null ? $";Password={Source.Password}" : string.Empty)}";
 }

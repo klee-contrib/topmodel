@@ -21,12 +21,12 @@ public class DatabaseOraTmdGenerator : DatabaseTmdGenerator
     {
         return @$"
             select                 
-                table_name                        AS TableName,
-                column_name                       AS ColumnName,
-                data_type                         AS DataType,
-                nullable                          AS Nullable,    
-                data_precision                    AS ""Precision"",
-                coalesce(char_length, data_scale) AS Scale
+                table_name                                  AS TableName,
+                column_name                                 AS ColumnName,
+                data_type                                   AS DataType,
+                case when nullable = 'Y' then 1 else 0 end  AS Nullable,   
+                data_precision                              AS ""Precision"",
+                coalesce(char_length, data_scale)           AS Scale
             from all_tab_columns
             where owner = '{_config.Source.Schema}'
             order by table_name, column_id
