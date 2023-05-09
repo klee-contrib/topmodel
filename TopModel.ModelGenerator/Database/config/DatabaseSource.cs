@@ -2,6 +2,8 @@
 
 public class DatabaseSource
 {
+    public DbType DbType { get; set; } = DbType.POSTGRESQL;
+
     public string Host { get; set; } = "localhost";
 
     public string Port { get; set; } = "5432";

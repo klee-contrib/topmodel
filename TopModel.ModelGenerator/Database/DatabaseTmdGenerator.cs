@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Data.Common;
+using System.Text.RegularExpressions;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -6,22 +7,27 @@ using TopModel.Utils;
 
 namespace TopModel.ModelGenerator.Database;
 
-public abstract class DatabaseTmdGenerator : ModelGenerator
+public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
 {
     private readonly Dictionary<string, TmdClass> _classes = new();
     private readonly DatabaseConfig _config;
+
+    private readonly DbConnection _connection;
     private readonly ILogger<DatabaseTmdGenerator> _logger;
 
     private int _fileIndice = 10;
     private int _moduleIndice = 0;
 
 #pragma warning disable CS8618
-    public DatabaseTmdGenerator(ILogger<DatabaseTmdGenerator> logger, DatabaseConfig config)
+    public DatabaseTmdGenerator(ILogger<DatabaseTmdGenerator> logger, DatabaseConfig config, DbConnection connection)
         : base(logger)
     {
         _config = config;
+        _connection = connection;
         _logger = logger;
     }
+
+    public Dictionary<string, string> Passwords { get; init; }
 #pragma warning restore CS8618
 
     public override string Name => "DatabaseGen";
@@ -37,12 +43,13 @@ public abstract class DatabaseTmdGenerator : ModelGenerator
         }
     }
 
-
-    protected abstract void InitConnection();
+    public void Dispose()
+    {
+        _connection.Dispose();
+    }
 
     protected override async IAsyncEnumerable<string> GenerateCore()
     {
-
         InitConnection();
         var columns = await GetColumns();
         var classGroups = columns.GroupBy(c => c.TableName);
@@ -72,6 +79,14 @@ public abstract class DatabaseTmdGenerator : ModelGenerator
             yield return file;
         }
     }
+
+    protected abstract string GetColumnsQuery();
+
+    protected abstract string GetForeignKeysQuery();
+
+    protected abstract string GetPrimaryKeysQuery();
+
+    protected abstract string GetUniqueKeysQuery();
 
     private static void AddUniqConstraints(TmdClass classe, IEnumerable<IGrouping<string, ConstraintKey>> groupings)
     {
@@ -303,15 +318,37 @@ public abstract class DatabaseTmdGenerator : ModelGenerator
         return classe;
     }
 
-    protected abstract Task<IEnumerable<DbColumn>> GetColumns();
+    private async Task<IEnumerable<DbColumn>> GetColumns()
+    {
+        // Récupération des colonnes
+        var columns = await _connection
+            .QueryAsync<DbColumn>(GetColumnsQuery());
+        return columns.Where(c => !_config.Exclude.Contains(c.TableName));
+    }
 
-    protected abstract Task<IEnumerable<ConstraintKey>> GetConstraintKey(string name);
+    private async Task<IEnumerable<ConstraintKey>> GetConstraintKeys(string query)
+    {
+        // Récupération des contraintes
+        var keys = await _connection
+            .QueryAsync<ConstraintKey>(query);
 
-    protected abstract Task<IEnumerable<ConstraintKey>> GetForeignKeys();
+        return keys.Where(c => !_config.Exclude.Contains(c.TableName));
+    }
 
-    protected abstract Task<IEnumerable<ConstraintKey>> GetPrimaryKeys();
+    private Task<IEnumerable<ConstraintKey>> GetForeignKeys()
+    {
+        return GetConstraintKeys(GetForeignKeysQuery());
+    }
 
-    protected abstract Task<IEnumerable<ConstraintKey>> GetUniqueKeys();
+    private Task<IEnumerable<ConstraintKey>> GetPrimaryKeys()
+    {
+        return GetConstraintKeys(GetPrimaryKeysQuery());
+    }
+
+    private Task<IEnumerable<ConstraintKey>> GetUniqueKeys()
+    {
+        return GetConstraintKeys(GetUniqueKeysQuery());
+    }
 
     private void GroupFiles()
     {
@@ -354,6 +391,41 @@ public abstract class DatabaseTmdGenerator : ModelGenerator
         }
     }
 
+    private void InitConnection()
+    {
+        {
+            if (Passwords.TryGetValue(_config.Source.DbName, out var password))
+            {
+                _config.Source.Password = password;
+            }
+            else
+            {
+                try
+                {
+                    using var connection = new NpgsqlConnection(_config.ConnectionString);
+                    connection.Open();
+                }
+                catch (NpgsqlException)
+                {
+                    _logger.LogInformation($"Mot de passe pour l'utilisateur {_config.Source.User}:  ");
+                    while (true)
+                    {
+                        var key = Console.ReadKey(true);
+                        if (key.Key == ConsoleKey.Enter)
+                        {
+                            break;
+                        }
+
+                        password += key.KeyChar;
+                    }
+
+                    Passwords.Add(_config.Source.DbName, password ?? string.Empty);
+                    _config.Source.Password = password;
+                }
+            }
+        }
+    }
+
     private async Task InitProperties(IEnumerable<IGrouping<string, DbColumn>> classGroups)
     {
         var primaryKeys = await GetPrimaryKeys();
@@ -389,7 +461,24 @@ public abstract class DatabaseTmdGenerator : ModelGenerator
         }
     }
 
-    protected abstract Task ReadValues();
+    private async Task ReadValues()
+    {
+        // Extraction des valeurs pour les tables paramétrées
+        foreach (var classe in _config.ExtractValues.Select(classe => _classes.FirstOrDefault(c => classe == c.Value.Name)).Where(c => c.Value != null))
+        {
+            var values = await _connection.QueryAsync(@$"select * from {classe.Key}");
+            classe.Value.Values.AddRange(values.Select(r =>
+            {
+                var d = new Dictionary<string, string?>();
+                foreach (var kv in r)
+                {
+                    d.Add(classe.Value.Properties.First(p => p.SqlName == kv.Key).Name, kv.Value?.ToString());
+                }
+
+                return d;
+            }));
+        }
+    }
 
     private void RenameFiles()
     {
