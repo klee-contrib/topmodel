@@ -2,7 +2,6 @@
 
 public class DatabaseConfig
 {
-
     public string OutputDirectory { get; set; } = "./";
 
     public IList<DomainMapping> Domains { get; set; } = new List<DomainMapping>();

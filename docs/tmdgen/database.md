@@ -18,11 +18,12 @@ La configuration du générateur `database` permet de définir :
 
 - `outputDirectory` : répertoire de génération des fichiers, relatif au `modelRoot`
 - `source` :
+  - `dbType`: type de base de base de données source (`postgresql` ou `oracle`)
   - `host`: hôte de la base de données
   - `port`: port d'écoute de la base de données
   - `dbName`: nom de la base de données
   - `user`: nom de l'utilisateur de connexion à la base de données
-  - `schema`: schéma dont on souhaite extraire la structure
+  - `schema`: schéma dont on souhaite extraire la structure, `db owner` pour les bases Oracle
   - `password`: (factultatif) mot de passe de connexion à la base de données
 - `domains` : Correspondance entre les types dans la spécification `openApi` et les domaines du modèle cible. Quelques spécificités
   - Définition d'un `name` ou d'un `type`, pour matcher soit sur le nom de la propriété soit sur son type
@@ -103,7 +104,7 @@ database:
 
 ## Connexion à la base de données
 
-Actuellement, seules les bases de données `postgresql` sont supportées par le générateur `database`. Pour s'y connecter, remplir les informations de la propriété `source` de la configuration. Vous pouvez remarquer que le `password` n'est pas obligatoire. En effet, vous pouvez utiliser la variable d'environnement `PGPASSWORD`.
+Actuellement, seules les bases de données `postgresql` et `oracle` sont supportées par le générateur `database`. Pour s'y connecter, remplir les informations de la propriété `source` de la configuration. Vous pouvez remarquer que le `password` n'est pas obligatoire. En effet, vous pouvez utiliser la variable d'environnement `PGPASSWORD` pour `postgresql` par exemple.
 
 Si la connexion à la base de données échoue, le mot de passe vous sera demandé dans la console.
 

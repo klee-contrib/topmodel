@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Data.Common;
+using Microsoft.Extensions.Logging;
 using Oracle.ManagedDataAccess.Client;
 
 namespace TopModel.ModelGenerator.Database;
@@ -9,12 +10,12 @@ public class DatabaseOraTmdGenerator : DatabaseTmdGenerator
 
 #pragma warning disable CS8618
     public DatabaseOraTmdGenerator(ILogger<DatabaseOraTmdGenerator> logger, DatabaseConfig config)
-        : base(logger, config, new OracleConnection(config.ConnectionString))
+        : base(logger, config)
     {
         _config = config;
     }
-#pragma warning restore CS8618
 
+#pragma warning restore CS8618
     public override string Name => "DatabaseOraGen";
 
     protected override string GetColumnsQuery()
@@ -31,6 +32,11 @@ public class DatabaseOraTmdGenerator : DatabaseTmdGenerator
             where owner = '{_config.Source.Schema}'
             order by table_name, column_id
             ";
+    }
+
+    protected override DbConnection GetConnection()
+    {
+        return new OracleConnection(_config.ConnectionString);
     }
 
     protected override string GetForeignKeysQuery()

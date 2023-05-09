@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Data.Common;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 
 namespace TopModel.ModelGenerator.Database;
@@ -9,7 +10,7 @@ public class DatabasePgTmdGenerator : DatabaseTmdGenerator, IDisposable
 
 #pragma warning disable CS8618
     public DatabasePgTmdGenerator(ILogger<DatabasePgTmdGenerator> logger, DatabaseConfig config)
-        : base(logger, config, new NpgsqlConnection(config.ConnectionString))
+        : base(logger, config)
     {
         _config = config;
     }
@@ -31,6 +32,11 @@ public class DatabasePgTmdGenerator : DatabaseTmdGenerator, IDisposable
                 where table_schema  = '{_config.Source.Schema}'
                 order by ordinal_position 
             ";
+    }
+
+    protected override DbConnection GetConnection()
+    {
+        return new NpgsqlConnection(_config.ConnectionString);
     }
 
     protected override string GetForeignKeysQuery()

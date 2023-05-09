@@ -10,19 +10,18 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
 {
     private readonly Dictionary<string, TmdClass> _classes = new();
     private readonly DatabaseConfig _config;
-
-    private readonly DbConnection _connection;
     private readonly ILogger<DatabaseTmdGenerator> _logger;
+
+    private DbConnection _connection;
 
     private int _fileIndice = 10;
     private int _moduleIndice = 0;
 
 #pragma warning disable CS8618
-    public DatabaseTmdGenerator(ILogger<DatabaseTmdGenerator> logger, DatabaseConfig config, DbConnection connection)
+    public DatabaseTmdGenerator(ILogger<DatabaseTmdGenerator> logger, DatabaseConfig config)
         : base(logger)
     {
         _config = config;
-        _connection = connection;
         _logger = logger;
     }
 
@@ -42,6 +41,7 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
         }
     }
 
+    /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
     {
         _connection.Dispose();
@@ -50,6 +50,8 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
     protected override async IAsyncEnumerable<string> GenerateCore()
     {
         InitConnection();
+        _logger.LogInformation($"Connection à la base de données {_config.Source.DbName} réussie !");
+        _logger.LogInformation($"Génération en cours, veuillez patienter...");
         var columns = await GetColumns();
         var classGroups = columns.GroupBy(c => c.TableName);
 
@@ -80,6 +82,8 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
     }
 
     protected abstract string GetColumnsQuery();
+
+    protected abstract DbConnection GetConnection();
 
     protected abstract string GetForeignKeysQuery();
 
@@ -157,7 +161,7 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
             }
         }
 
-        tmdProperty.Name = columnName.ToPascalCase();
+        tmdProperty.Name = columnName.ToLower().ToPascalCase();
         tmdProperty.Required = !column.Nullable || primaryKeyConstraint != null;
         tmdProperty.PrimaryKey = primaryKeyConstraint != null;
         tmdProperty.Domain = domain;
@@ -305,7 +309,7 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
         {
             var regularProperties = group.Where(p => !foreignConstraints?.Any(f => f.ColumnName == p.ColumnName) ?? true);
             var trigram = regularProperties.FirstOrDefault()?.ColumnName.Split('_').First();
-            if (trigram == null || !regularProperties.All(p => p.ColumnName.StartsWith(trigram)))
+            if (trigram == null || !regularProperties.All(p => p.ColumnName.StartsWith(trigram)) || regularProperties.Count() <= 1)
             {
                 trigram = string.Empty;
             }
@@ -386,41 +390,40 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
     {
         foreach (var group in classGroups)
         {
-            _classes.Add(group.Key, new TmdClass() { Name = group.Key.ToPascalCase() });
+            _classes.Add(group.Key, new TmdClass() { Name = group.Key.ToLower().ToPascalCase() });
         }
     }
 
     private void InitConnection()
     {
+        if (Passwords.TryGetValue(_config.Source.DbName, out var password))
         {
-            if (Passwords.TryGetValue(_config.Source.DbName, out var password))
-            {
-                _config.Source.Password = password;
-            }
-            else
-            {
-                try
-                {
-                    _connection.Open();
-                }
-                catch (Exception e)
-                {
-                    _logger.LogInformation($"Mot de passe pour l'utilisateur {_config.Source.User}:  ");
-                    while (true)
-                    {
-                        var key = Console.ReadKey(true);
-                        if (key.Key == ConsoleKey.Enter)
-                        {
-                            break;
-                        }
+            _config.Source.Password = password;
+        }
 
-                        password += key.KeyChar;
-                    }
-
-                    Passwords.Add(_config.Source.DbName, password ?? string.Empty);
-                    _config.Source.Password = password;
+        try
+        {
+            _connection = GetConnection();
+            _logger.LogInformation($"Connexion à la base de données {_config.Source.DbName}...");
+            _connection.Open();
+        }
+        catch (Exception)
+        {
+            _logger.LogInformation($"Mot de passe{(password != null ? " erroné" : string.Empty)} pour l'utilisateur {_config.Source.User}:  ");
+            Passwords.Remove(_config.Source.DbName);
+            while (true)
+            {
+                var key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    break;
                 }
+
+                password += key.KeyChar;
             }
+
+            _config.Source.Password = password;
+            InitConnection();
         }
     }
 
@@ -509,10 +512,11 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
     {
         foreach (var file in Files)
         {
-            var fileName = Path.Combine(ModelRoot, _config.OutputDirectory);
+            var rootPath = Path.Combine(ModelRoot, _config.OutputDirectory);
+            var fileName = Path.Combine(rootPath, file.Module!, file.Name + ".tmd");
             yield return fileName;
 
-            using var tmdFileWriter = new TmdWriter(fileName, file!, _logger, ModelRoot);
+            using var tmdFileWriter = new TmdWriter(rootPath, file!, _logger, ModelRoot);
             tmdFileWriter.Write();
         }
     }

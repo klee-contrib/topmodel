@@ -1,4 +1,4 @@
-public enum DbType
+﻿public enum DbType
 {
     /// <summary>
     ///  Base de données Posgresql
