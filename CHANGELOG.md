@@ -1,5 +1,17 @@
 # TopModel.Generator (`modgen`)
 
+## 1.30.0
+
+- [#249](https://github.com/klee-contrib/topmodel/pull/249) - Génération du schéma de la config via modgen --schema et générateurs personnalisés
+
+  Le schéma JSON complet du fichier de config (pour valider ce que vous écrivez dans le fichier `topmodel.config`) n'est plus fourni par l'extension VSCode mais doit être généré via la commande `modgen --schema`. L'extension peut le faire automatiquement si vous voulez. (la documentation [a été mise à jour](https://klee-contrib.github.io/topmodel/#/generator))
+
+- [#247](https://github.com/klee-contrib/topmodel/pull/247) - [JPA] Gestion des clés primaires composites, même lorsqu'il s'agit d'associations (manyToMany explicite)
+
+- Comme pour la release précédente, il y a eu un gros travail de refactoring réalisé dans le code afin de préparer l'arrivée de nouveaux générateurs (il y a beaucoup de commits...). Un générateur PHP a été développé grâce à ces refactorings mais il n'est pas inclus dans cette release car il n'a pas encore été suffisamment testé.
+
+  **breaking change (C#)**: la release 1.29 a oublié de remplacer `usings` par `imports` dans les annotations d'implémentations C#. Désolé...
+
 ## 1.29.1
 
 - [`0b7dde5d`](https://github.com/klee-contrib/topmodel/commit/0b7dde5d2f069913129388f8d6a05fcc31fc2ec8) - Ajout templating sqlName dans les domaines et décorateurs (classes et propriétés)
