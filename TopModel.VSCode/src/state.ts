@@ -208,7 +208,7 @@ export class State {
             for (let appKey in this.applications) {
                 const application = this.applications[appKey];
                 const relativePath = workspace.asRelativePath(application.configPath);
-                settings["yaml.schemas"][relativePath] = `${relativePath}.schema.json`;
+                settings["yaml.schemas"][`${relativePath}.schema.json`] = relativePath;
             }
 
             workspace.fs.writeFile(uri, textEncoder.encode(JSON.stringify(settings, null, 2)));
