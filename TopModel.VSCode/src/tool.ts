@@ -169,9 +169,11 @@ export class TmdTool {
             this.showReleaseNote(`${this.name} a été mis à jour ${oldVersion} --> ${this.latestVersion}`);
         }
 
-        const extensionConfiguration = workspace.getConfiguration("topmodel");
-        if (extensionConfiguration.regenerateSchemaAfterUpdate) {
-            await commands.executeCommand(COMMANDS.schema);
+        if (this.name === "TopModel.Generator") {
+            const extensionConfiguration = workspace.getConfiguration("topmodel");
+            if (extensionConfiguration.regenerateSchemaAfterUpdate) {
+                await commands.executeCommand(COMMANDS.schema);
+            }
         }
     }
 
