@@ -1,10 +1,21 @@
 import { autorun, makeAutoObservable } from "mobx";
-import { commands, ExtensionContext, Position, StatusBarAlignment, StatusBarItem, Terminal, window } from "vscode";
+import {
+    commands,
+    ExtensionContext,
+    Position,
+    StatusBarAlignment,
+    StatusBarItem,
+    Uri,
+    window,
+    workspace,
+} from "vscode";
 import { Application } from "./application";
 import { TopModelPreviewPanel } from "./preview";
 import { TmdTool } from "./tool";
 import { Status } from "./types";
 import { COMMANDS, COMMANDS_OPTIONS } from "./const";
+import { execute } from "./utils";
+
 const open = require("open");
 
 export class State {
@@ -138,6 +149,8 @@ export class State {
     private registerCommands() {
         this.registerPreviewCommand();
         this.registerGoToLocation();
+        this.registerSchema();
+        this.registerUdpateSettings();
         this.registerChooseCommand();
         this.registerReleaseNote();
     }
@@ -166,6 +179,39 @@ export class State {
                 []
             );
             await commands.executeCommand("editor.action.goToReferences");
+        });
+    }
+
+    private registerSchema() {
+        commands.registerCommand(COMMANDS.schema, async () => {
+            await execute(`modgen -s`);
+        });
+    }
+
+    private registerUdpateSettings() {
+        commands.registerCommand(COMMANDS.updateSettings, async () => {
+            const textDecoder = new TextDecoder();
+            const textEncoder = new TextEncoder();
+            const settingFiles = await workspace.findFiles(".vscode/settings.json");
+            let settings: any;
+            let uri: Uri;
+            if (settingFiles.length === 1) {
+                uri = settingFiles[0];
+                const file = await workspace.fs.readFile(uri);
+                const settingsFile = textDecoder.decode(file);
+                settings = JSON.parse(settingsFile);
+            } else {
+                settings = {};
+                uri = Uri.joinPath(workspace.workspaceFolders![0].uri, ".vscode", "settings.json");
+            }
+            settings["yaml.schemas"] = {};
+            for (let appKey in this.applications) {
+                const application = this.applications[appKey];
+                const relativePath = workspace.asRelativePath(application.configPath);
+                settings["yaml.schemas"][relativePath] = `${relativePath}.schema.json`;
+            }
+
+            workspace.fs.writeFile(uri, textEncoder.encode(JSON.stringify(settings, null, 2)));
         });
     }
 

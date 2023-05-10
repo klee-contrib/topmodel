@@ -21,7 +21,7 @@ export class Application {
 
     public status: "LOADING" | "STARTED" | "ERROR" = "LOADING";
     constructor(
-        private readonly configPath: string,
+        public readonly configPath: string,
         public readonly config: TopModelConfig,
         public readonly extensionContext: ExtensionContext
     ) {
@@ -84,7 +84,7 @@ export class Application {
         const modgen = commands.registerCommand(modgenCommand, () => this.startModgen(watch));
         COMMANDS_OPTIONS[modgenCommand] = {
             title: `${this.config.app} - modgen - Lancer la génération ${watch ? "en continu" : ""}`,
-            description: `Lancer la génération ${watch ? "continue " : ""} de ${this.config.app}`,
+            description: `Lancer la génération${watch ? " continue" : ""} de ${this.config.app}`,
             command: modgenCommand
         };
         this.extensionContext.subscriptions.push(modgen);

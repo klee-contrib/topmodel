@@ -69,6 +69,16 @@
         "category": "TopModel"
       },
       {
+        "command": "topmodel.schema",
+        "title": "Générer le(s) schéma(s)",
+        "category": "TopModel"
+      },
+      {
+        "command": "topmodel.schema.updateSettings",
+        "title": "Mettre à jour le fichier de settings",
+        "category": "TopModel"
+      },
+      {
         "command": "topmodel.preview",
         "title": "Ouvrir la prévisualisation UML du modèle",
         "category": "TopModel.Generator",
@@ -156,6 +166,11 @@
           "type": "boolean",
           "default": false,
           "description": "Met à jour automatiquement topmodel"
+        },
+        "topmodel.regenerateSchemaAfterUpdate": {
+          "type": "boolean",
+          "default": true,
+          "description": "Met à jour automatiquement le schéma json de configuration après une mise à jour de modgen"
         }
       }
     }

@@ -16,7 +16,7 @@ On retrouve dans ce repository :
 - **TopModel.Generator**, un générateur de code C#, SQL (classique ou SSDT) et de modèles [focus](https://www.github.com/KleeGroup/focus4), à partir des modèles TopModel.
 - **TopModel.LanguageServer**, le language serveur utilisé dans l'extension VSCode.
 - **TopModel.VSCode**, l'extension VSCode qui fournit des fonctionnalités d'auto-complétion, validation, auto-import etc.
-- **TopModel.ModelGenerator** générateur de fichiers `tmd` à partir d'une source (OpenApi...)
+- **TopModel.ModelGenerator** générateur de fichiers `tmd` à partir d'une source (OpenApi, Postgresql, Oracle...)
 
 > Désactiver AdBlock pour voir la documentation (mais promis ya pas de pub)
 

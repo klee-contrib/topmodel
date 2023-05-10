@@ -7,6 +7,8 @@ export const COMMANDS = {
     findRef: "topmodel.findRef",
     releaseNote: "topmodel.releaseNote",
     chooseCommand: "topmodel.chooseCommand",
+    schema: "topmodel.schema",
+    updateSettings: "topmodel.schema.updateSettings",
 };
 
 // Stockage de l'ensemble des commandes disponibles.
@@ -16,6 +18,6 @@ export const COMMANDS_OPTIONS: {
         title: string;
         description: string;
         detail?: string;
-        command: typeof COMMANDS[keyof typeof COMMANDS];
+        command: (typeof COMMANDS)[keyof typeof COMMANDS];
     };
 } = {};
