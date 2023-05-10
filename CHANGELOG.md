@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.30.1
+
+- [`ce033dd5b`](https://github.com/klee-contrib/topmodel/commit/ce033dd5b056bddfcdb81a59a00c373c32fe33b0) - [modgen] Bloque la génération s'il y a une erreur dans la config d'un générateur
+
 ## 1.30.0
 
 - [#249](https://github.com/klee-contrib/topmodel/pull/249) - Génération du schéma de la config via modgen --schema et générateurs personnalisés
