@@ -102,7 +102,7 @@ export class State {
     get appStatus(): Status {
         let status: Status = this.applications.length === 0 ? "LOADING" : "READY";
         this.applications.forEach((a) => {
-            if (a.status === "LOADING") {
+            if (status !== "ERROR" && a.status === "LOADING") {
                 status = "LOADING";
             } else if (a.status === "ERROR") {
                 status = "ERROR";
@@ -171,54 +171,62 @@ export class State {
     }
 
     private registerGoToLocation() {
-        commands.registerCommand(COMMANDS.findRef, async (line: number) => {
-            await commands.executeCommand(
-                "editor.action.goToLocations",
-                window.activeTextEditor!.document.uri,
-                new Position(line, 0),
-                []
-            );
-            await commands.executeCommand("editor.action.goToReferences");
-        });
+        this.context.subscriptions.push(
+            commands.registerCommand(COMMANDS.findRef, async (line: number) => {
+                await commands.executeCommand(
+                    "editor.action.goToLocations",
+                    window.activeTextEditor!.document.uri,
+                    new Position(line, 0),
+                    []
+                );
+                await commands.executeCommand("editor.action.goToReferences");
+            })
+        );
     }
 
     private registerSchema() {
-        commands.registerCommand(COMMANDS.schema, async () => {
-            await execute(`modgen -s`);
-        });
+        this.context.subscriptions.push(
+            commands.registerCommand(COMMANDS.schema, async () => {
+                await execute(`modgen -s`);
+            })
+        );
     }
 
     private registerUdpateSettings() {
-        commands.registerCommand(COMMANDS.updateSettings, async () => {
-            const textDecoder = new TextDecoder();
-            const textEncoder = new TextEncoder();
-            const settingFiles = await workspace.findFiles(".vscode/settings.json");
-            let settings: any;
-            let uri: Uri;
-            if (settingFiles.length === 1) {
-                uri = settingFiles[0];
-                const file = await workspace.fs.readFile(uri);
-                const settingsFile = textDecoder.decode(file);
-                settings = JSON.parse(settingsFile);
-            } else {
-                settings = {};
-                uri = Uri.joinPath(workspace.workspaceFolders![0].uri, ".vscode", "settings.json");
-            }
-            settings["yaml.schemas"] = {};
-            for (let appKey in this.applications) {
-                const application = this.applications[appKey];
-                const relativePath = workspace.asRelativePath(application.configPath);
-                settings["yaml.schemas"][`${relativePath}.schema.json`] = relativePath;
-            }
+        this.context.subscriptions.push(
+            commands.registerCommand(COMMANDS.updateSettings, async () => {
+                const textDecoder = new TextDecoder();
+                const textEncoder = new TextEncoder();
+                const settingFiles = await workspace.findFiles(".vscode/settings.json");
+                let settings: any;
+                let uri: Uri;
+                if (settingFiles.length === 1) {
+                    uri = settingFiles[0];
+                    const file = await workspace.fs.readFile(uri);
+                    const settingsFile = textDecoder.decode(file);
+                    settings = JSON.parse(settingsFile);
+                } else {
+                    settings = {};
+                    uri = Uri.joinPath(workspace.workspaceFolders![0].uri, ".vscode", "settings.json");
+                }
+                settings["yaml.schemas"] = {};
+                for (let appKey in this.applications) {
+                    const application = this.applications[appKey];
+                    const relativePath = workspace.asRelativePath(application.configPath);
+                    settings["yaml.schemas"][`${relativePath}.schema.json`] = relativePath;
+                }
 
-            workspace.fs.writeFile(uri, textEncoder.encode(JSON.stringify(settings, null, 2)));
-        });
+                workspace.fs.writeFile(uri, textEncoder.encode(JSON.stringify(settings, null, 2)));
+            })
+        );
     }
 
     private registerReleaseNote() {
-        commands.registerCommand(COMMANDS.releaseNote, async () => {
-            open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
-        });
+        this.context.subscriptions.push(
+            commands.registerCommand(COMMANDS.releaseNote, async () => {
+                open("https://github.com/klee-contrib/topmodel/blob/develop/CHANGELOG.md");
+            })
+        );
     }
 
     private registerChooseCommand() {

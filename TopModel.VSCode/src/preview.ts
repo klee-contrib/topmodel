@@ -18,13 +18,13 @@ import { Mermaid } from "./types";
 
 export class TopModelPreviewPanel {
     private readonly diagramMap: Record<string, Mermaid> = {};
-    public readonly panel: WebviewPanel;
     private readonly context: ExtensionContext;
-
     private readonly mermaidSrcUri: Uri;
     private readonly previewSrcUri: Uri;
-    public currentFsPath: string = "";
     private matrix: { scale: number; x: number; y: number };
+
+    public readonly panel: WebviewPanel;
+    public currentFsPath: string = "";
 
     constructor(context: ExtensionContext, private readonly applications: Application[]) {
         makeAutoObservable(this);
@@ -104,7 +104,7 @@ export class TopModelPreviewPanel {
             )!;
             const symbol = symbolInformations.filter((s) => s.name === className)[0];
             const uri = Uri.parse(symbol.location.uri as any);
-            
+
             await commands.executeCommand(
                 "editor.action.goToLocations",
                 uri,
@@ -113,6 +113,7 @@ export class TopModelPreviewPanel {
             );
         }
     }
+
     async refresh() {
         if (this.currentApplication?.client) {
             const data = await this.currentApplication.client.sendRequest("mermaid", { uri: this.currentFsPath });
@@ -171,10 +172,12 @@ export class TopModelPreviewPanel {
     </body>
     </html>`;
     }
+
     get diagramTitle() {
         const currentAppTitle = this.applications.length > 1 ? "[" + this.currentApplication.config.app + "] : " : "";
         return `${currentAppTitle}${this.diagramMap[this.currentFsPath].module}`;
     }
+
     get mermaidContent() {
         if (
             this.diagramMap[this.currentFsPath]?.diagram &&
