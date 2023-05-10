@@ -81,6 +81,7 @@
         "type": "object",
         "description": "Configuration de la génération de fichiers Topmodel à partir d'une base de données",
         "additionalProperties": false,
+        "required": ["source"],
         "properties": {
           "tags": {
             "type": "array",
@@ -144,6 +145,7 @@
             "type": "object",
             "description": "Informations de connexion à la base de données",
             "additionalProperties": false,
+            "required": ["dbType"],
             "properties": {
               "host": {
                 "type": "string",
@@ -174,6 +176,14 @@
                 "type": "string",
                 "description": "Mot de passe de connexion à la base de données",
                 "default": "postgres"
+              },
+              "dbType": {
+                "type": "string",
+                "description": "Type de la base de données : postgresql ou oracle",
+                "enum": [
+                  "oracle",
+                  "postgresql"
+                ]
               }
             }
           }
