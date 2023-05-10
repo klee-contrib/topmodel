@@ -225,6 +225,8 @@ for (var i = 0; i < configs.Count; i++)
             .AddLogging(builder => builder.AddProvider(loggerProvider))
             .AddModelStore(fileChecker, config, dn);
 
+        var hasError = false;
+
         foreach (var generator in generators)
         {
             var (configType, configName) = GetIGenRegInterfaceAndName(generator);
@@ -252,6 +254,7 @@ for (var i = 0; i < configs.Count; i++)
                     }
                     catch (ModelException me)
                     {
+                        hasError = true;
                         returnCode = 1;
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine(me.Message);
@@ -262,21 +265,24 @@ for (var i = 0; i < configs.Count; i++)
             }
         }
 
-        var provider = services.BuildServiceProvider();
-        disposables.Add(provider);
-
-        var modelStore = provider.GetRequiredService<ModelStore>();
-
-        var k = i;
-        modelStore.OnResolve += hasError =>
+        if (!hasError)
         {
-            hasErrors[k] = hasError;
-        };
+            var provider = services.BuildServiceProvider();
+            disposables.Add(provider);
 
-        var watcher = modelStore.LoadFromConfig(watchMode, new(i + 1, colors[i % colors.Length]));
-        if (watcher != null)
-        {
-            disposables.Add(watcher);
+            var modelStore = provider.GetRequiredService<ModelStore>();
+
+            var k = i;
+            modelStore.OnResolve += hasError =>
+            {
+                hasErrors[k] = hasError;
+            };
+
+            var watcher = modelStore.LoadFromConfig(watchMode, new(i + 1, colors[i % colors.Length]));
+            if (watcher != null)
+            {
+                disposables.Add(watcher);
+            }
         }
     }
 }
