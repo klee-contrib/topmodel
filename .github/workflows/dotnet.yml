@@ -1,29 +1,25 @@
-name: modgen --check
+name: Publish TopModel.*
 
 on:
   push:
-    branches: ["develop"]
-  pull_request:
-    branches: ["develop"]
+    paths:
+      - "**/*.csproj"
 
 jobs:
-  build:
+  build_and_deploy:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x
 
-      - name: build phpgen
-        run: dotnet build
-        working-directory: TopModel.Generator.Php
+      - name: Pack
+        run: dotnet pack
 
-      - name: modgen
-        run: dotnet run --project TopModel.Generator/TopModel.Generator.csproj -- -c
-
-      - name: tmdgen
-        run: dotnet run --project TopModel.ModelGenerator/TopModel.ModelGenerator.csproj -- -f samples/generators/open-api/tmdgen.config -c
+      - name: Publish
+        run: dotnet nuget push .nupkg/*.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate

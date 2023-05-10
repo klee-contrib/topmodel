@@ -11,7 +11,7 @@
 
   <PropertyGroup>
     <PackAsTool>true</PackAsTool>
-    <PackageOutputPath>./nupkg</PackageOutputPath>
+    <PackageOutputPath>../.nupkg</PackageOutputPath>
     <ToolCommandName>modgen</ToolCommandName>
     <Version>1.30.0</Version>
     <Authors>JabX;gideruette</Authors>

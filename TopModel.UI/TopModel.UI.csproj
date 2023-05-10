@@ -9,6 +9,10 @@
     <NoWarn>KTA1200</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Kinetix.Tools.Analyzers" Version="1.0.2">
       <PrivateAssets>all</PrivateAssets>

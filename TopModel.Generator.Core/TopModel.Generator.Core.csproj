@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageOutputPath>./nupkg</PackageOutputPath>
+    <PackageOutputPath>../.nupkg</PackageOutputPath>
     <Version>1.30.0</Version>
     <Authors>JabX;gideruette</Authors>
     <Description>Librarie de base pour écrire un générateur TopModel.</Description>
@@ -22,6 +22,10 @@
 
   <ItemGroup>
     <PackageReference Include="Kinetix.Tools.Analyzers" Version="1.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

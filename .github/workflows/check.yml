@@ -1,0 +1,29 @@
+name: modgen --check
+
+on:
+  push:
+    branches: ["develop"]
+  pull_request:
+    branches: ["develop"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+
+      - name: build phpgen
+        run: dotnet build
+        working-directory: TopModel.Generator.Php
+
+      - name: modgen
+        run: dotnet run --project TopModel.Generator/TopModel.Generator.csproj -- -c
+
+      - name: tmdgen
+        run: dotnet run --project TopModel.ModelGenerator/TopModel.ModelGenerator.csproj -- -f samples/generators/open-api/tmdgen.config -c
