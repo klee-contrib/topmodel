@@ -470,6 +470,8 @@ public abstract class AbstractSchemaGenerator
 
         WriteUniqueKeys(classe, writerUk);
         WritePrimaryKeyConstraint(writerCrebas, classe);
+        WriteComments(writerCrebas, classe, tableName, properties);
+
         writerCrebas.WriteLine();
 
         if (isContainsInsertKey)
@@ -493,6 +495,8 @@ public abstract class AbstractSchemaGenerator
 
         return fkPropertiesList;
     }
+
+    protected abstract void WriteComments(SqlFileWriter writerCrebas, Class classe, string tableName, List<IFieldProperty> properties);
 
     /// <summary>
     /// Ajoute les contraintes d'unicité.

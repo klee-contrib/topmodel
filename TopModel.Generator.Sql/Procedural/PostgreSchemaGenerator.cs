@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using TopModel.Core;
 
 namespace TopModel.Generator.Sql.Procedural;
 
@@ -17,6 +18,16 @@ public class PostgreSchemaGenerator : AbstractSchemaGenerator
     protected override bool SupportsClusteredKey => false;
 
     protected override bool UseQuotes => false;
+
+    protected override void WriteComments(SqlFileWriter writerCrebas, Class classe, string tableName, List<IFieldProperty> properties)
+    {
+        writerCrebas.WriteLine();
+        writerCrebas.WriteLine($"COMMENT ON TABLE {tableName} IS '{classe.Comment.Replace("'", "''")}'{BatchSeparator}");
+        foreach (var p in properties)
+        {
+            writerCrebas.WriteLine($"COMMENT ON COLUMN {tableName}.{p.SqlName} IS '{p.Comment.Replace("'", "''")}'{BatchSeparator}");
+        }
+    }
 
     /// <summary>
     /// Gère l'auto-incrémentation des clés primaires en ajoutant identity à la colonne.
