@@ -50,7 +50,7 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
     protected override async IAsyncEnumerable<string> GenerateCore()
     {
         InitConnection();
-        _logger.LogInformation($"Connection à la base de données {_config.Source.DbName} réussie !");
+        _logger.LogInformation($"Connexion à la base de données {_config.Source.DbName} réussie !");
         _logger.LogInformation($"Génération en cours, veuillez patienter...");
         var columns = await GetColumns();
         var classGroups = columns.GroupBy(c => c.TableName);
@@ -213,7 +213,7 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
         // Création des fichiers de classes sans dépendances cirulaires
         CreateSimpleFiles();
 
-        // Création des fichiers des {_classes.Where(c => c.Value.File == null).Count()} classes contenant des dépendances cirulaires
+        // Création des fichiers des classes contenant des dépendances cirulaires
         CreateCircularFiles();
     }
 

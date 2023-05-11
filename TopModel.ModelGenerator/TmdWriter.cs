@@ -52,7 +52,7 @@ public class TmdWriter : IDisposable
             }
         }
 
-        foreach (var classe in _file.Classes.OrderBy(c => c.Name))
+        foreach (var classe in _file.Classes.Distinct().OrderBy(c => c.Name))
         {
             _writer.WriteLine($"---");
             _writer.WriteLine($"class:");
