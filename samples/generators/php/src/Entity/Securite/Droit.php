@@ -28,36 +28,36 @@ class Droit
   #[JoinColumn(name: 'TPR_CODE', referencedColumnName: 'TPR_CODE')]
   private TypeProfil $typeProfil;
 
-  public function getCode() : string
+  public function getCode(): string
   {
     return $this->code;
   }
 
-  public function getLibelle() : string
+  public function getLibelle(): string
   {
     return $this->libelle;
   }
 
-  public function getTypeProfil() : TypeProfil|null
+  public function getTypeProfil(): TypeProfil|null
   {
     return $this->typeProfil;
   }
 
-  public function setCode(string|null $code) : self
+  public function setCode(string|null $code): self
   {
     $this->code = $code;
 
     return $this;
   }
 
-  public function setLibelle(string|null $libelle) : self
+  public function setLibelle(string|null $libelle): self
   {
     $this->libelle = $libelle;
 
     return $this;
   }
 
-  public function setTypeProfil(TypeProfil|null $typeProfil) : self
+  public function setTypeProfil(TypeProfil|null $typeProfil): self
   {
     $this->typeProfil = $typeProfil;
 

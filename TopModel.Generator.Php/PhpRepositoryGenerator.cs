@@ -51,6 +51,7 @@ public class PhpRepositoryGenerator : ClassGeneratorBase<PhpConfig>
         fw.AddImport(@"Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository");
         fw.WriteLine($"class {classe.NamePascal}Repository extends ServiceEntityRepository");
         fw.WriteLine("{");
+        fw.AddImport(@"Symfony\Bridge\Doctrine\ManagerRegistry");
         fw.WriteLine(1, "public function __construct(ManagerRegistry $registry)");
         fw.WriteLine(1, "{");
         fw.AddImport(classe.GetImport(Config, tag));

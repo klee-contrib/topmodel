@@ -22,24 +22,24 @@ class TypeProfil
   #[Column(name: 'TPR_LIBELLE', length: 3)]
   private string $libelle;
 
-  public function getCode() : string
+  public function getCode(): string
   {
     return $this->code;
   }
 
-  public function getLibelle() : string
+  public function getLibelle(): string
   {
     return $this->libelle;
   }
 
-  public function setCode(string|null $code) : self
+  public function setCode(string|null $code): self
   {
     $this->code = $code;
 
     return $this;
   }
 
-  public function setLibelle(string|null $libelle) : self
+  public function setLibelle(string|null $libelle): self
   {
     $this->libelle = $libelle;
 

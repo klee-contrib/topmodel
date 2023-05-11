@@ -77,15 +77,12 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
             fw.AddImport(@$"{repositoryNamespace}\{classe.Name}Repository");
             fw.WriteLine(@$"#[Table(name: '{classe.SqlName}')]");
 
-            if (classe.UniqueKeys.Any())
+            foreach (var uk in classe.UniqueKeys)
             {
-                foreach (var uk in classe.UniqueKeys)
-                {
-                    var ukName = string.Join("_", uk.Select(u => u.SqlName)) + "_UNIQ";
-                    var fields = string.Join(", ", uk.Select(u => u.SqlName));
-                    fw.AddImport($@"Doctrine\ORM\Mapping\UniqueConstraint");
-                    fw.WriteLine(@$"#[UniqueConstraint(name: ""{ukName}"", columns: [""{fields}""])]");
-                }
+                var ukName = string.Join("_", uk.Select(u => u.SqlName)) + "_UNIQ";
+                var fields = string.Join(", ", uk.Select(u => u.SqlName));
+                fw.AddImport($@"Doctrine\ORM\Mapping\UniqueConstraint");
+                fw.WriteLine(@$"#[UniqueConstraint(name: ""{ukName}"", columns: [""{fields}""])]");
             }
         }
 
@@ -127,13 +124,14 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
             if (property is AssociationProperty ap && ap.Type.IsToMany())
             {
                 fw.WriteDocStart(1);
+                fw.AddImport(@"Doctrine\Common\Collections\Collection");
                 fw.WriteReturns(1, $"Collection<{ap.Association}>{(ap.Required ? string.Empty : "|null")}");
                 fw.WriteDocEnd(1);
             }
 
             var getterPrefix = Config.GetType(property, Classes, classe.IsPersistent) == "boolean" ? "is" : "get";
             var required = property is IFieldProperty rp && rp.Required || false;
-            fw.WriteLine(1, @$"public function {property.NameByClassPascal.WithPrefix(getterPrefix)}() : {Config.GetType(property, Classes, classe.IsPersistent)}{(required ? string.Empty : "|null")}");
+            fw.WriteLine(1, @$"public function {property.NameByClassPascal.WithPrefix(getterPrefix)}(): {Config.GetType(property, Classes, classe.IsPersistent)}{(required ? string.Empty : "|null")}");
             fw.WriteLine(1, "{");
             fw.WriteLine(2, @$"return $this->{property.NameByClassCamel};");
             fw.WriteLine(1, "}");
@@ -149,11 +147,12 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
             if (property is AssociationProperty ap && ap.Type.IsToMany())
             {
                 fw.WriteDocStart(1);
+                fw.AddImport(@"Doctrine\Common\Collections\Collection");
                 fw.WriteLine(1, $" * @param Collection<{ap.Association}>{(ap.Required ? string.Empty : "|null")} ${propertyName}");
                 fw.WriteDocEnd(1);
             }
 
-            fw.WriteLine(1, @$"public function {propertyName.WithPrefix("set")}({Config.GetType(property, Classes, classe.IsPersistent)}|null ${propertyName}) : self");
+            fw.WriteLine(1, @$"public function {propertyName.WithPrefix("set")}({Config.GetType(property, Classes, classe.IsPersistent)}|null ${propertyName}): self");
             fw.WriteLine(1, "{");
             fw.WriteLine(2, @$"$this->{propertyName} = ${propertyName};");
             fw.WriteLine();

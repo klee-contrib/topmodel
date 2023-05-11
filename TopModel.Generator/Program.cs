@@ -177,7 +177,7 @@ for (var i = 0; i < configs.Count; i++)
 
     var generators = baseGenerators
         .Concat(config.CustomGenerators.SelectMany(cg => new DirectoryInfo(Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin")).GetFiles("TopModel.Generator.*.dll", SearchOption.AllDirectories)))
-        .DistinctBy(a => a.FullName)
+        .DistinctBy(a => a.Name)
         .Select(f => Assembly.LoadFrom(f.FullName))
         .SelectMany(a => a.GetExportedTypes())
         .Where(t => GetIGenRegInterface(t) != null)

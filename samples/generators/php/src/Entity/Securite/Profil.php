@@ -7,6 +7,7 @@ namespace App\Entity\Securite;
 
 use App\Repository\Securite\ProfilRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -53,12 +54,12 @@ class Profil
     $this->secteurs = new ArrayCollection();
   }
 
-  public function getId() : int
+  public function getId(): int
   {
     return $this->id;
   }
 
-  public function getTypeProfil() : TypeProfil|null
+  public function getTypeProfil(): TypeProfil|null
   {
     return $this->typeProfil;
   }
@@ -66,7 +67,7 @@ class Profil
   /**
    * @return Collection<Droit>|null
    */
-  public function getDroits() : Collection|null
+  public function getDroits(): Collection|null
   {
     return $this->droits;
   }
@@ -74,19 +75,19 @@ class Profil
   /**
    * @return Collection<Secteur>|null
    */
-  public function getSecteurs() : Collection|null
+  public function getSecteurs(): Collection|null
   {
     return $this->secteurs;
   }
 
-  public function setId(int|null $id) : self
+  public function setId(int|null $id): self
   {
     $this->id = $id;
 
     return $this;
   }
 
-  public function setTypeProfil(TypeProfil|null $typeProfil) : self
+  public function setTypeProfil(TypeProfil|null $typeProfil): self
   {
     $this->typeProfil = $typeProfil;
 
@@ -96,7 +97,7 @@ class Profil
   /**
    * @param Collection<Droit>|null $droits
    */
-  public function setDroits(Collection|null $droits) : self
+  public function setDroits(Collection|null $droits): self
   {
     $this->droits = $droits;
 
@@ -106,7 +107,7 @@ class Profil
   /**
    * @param Collection<Secteur>|null $secteurs
    */
-  public function setSecteurs(Collection|null $secteurs) : self
+  public function setSecteurs(Collection|null $secteurs): self
   {
     $this->secteurs = $secteurs;
 

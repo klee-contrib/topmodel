@@ -10,12 +10,12 @@ class SecteurDto
 {
   private int $id;
 
-  public function getId() : int
+  public function getId(): int
   {
     return $this->id;
   }
 
-  public function setId(int|null $id) : self
+  public function setId(int|null $id): self
   {
     $this->id = $id;
 

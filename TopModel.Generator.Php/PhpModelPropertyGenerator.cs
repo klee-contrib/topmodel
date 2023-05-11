@@ -99,6 +99,7 @@ public class PhpModelPropertyGenerator
     {
         if (property.Type.IsToMany())
         {
+            fw.AddImport(@"Doctrine\Common\Collections\Collection");
             fw.WriteDocStart(1, @$"@var Collection<{property.Association}>");
             fw.WriteDocEnd(1);
         }
@@ -188,6 +189,11 @@ public class PhpModelPropertyGenerator
 
         var defaultValue = _config.GetDefaultValue(property, _classes);
         var suffix = defaultValue != "null" ? $" = {defaultValue}" : string.Empty;
+        if (property is AliasProperty ap && ap.Property is AssociationProperty asp && asp.Type.IsToMany())
+        {
+            fw.AddImport(@"Doctrine\Common\Collections\Collection");
+        }
+
         fw.WriteLine(1, $"private {_config.GetType(property, _classes, classe.IsPersistent)}{(property.Required ? string.Empty : "|null")} ${property.NameByClassCamel}{suffix};");
     }
 }
