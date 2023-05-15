@@ -173,7 +173,7 @@ public enum ModelErrorType
     TMD1027,
 
     /// <summary>
-    /// Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Class.PrimaryKey.Single().Domain} ne contient pas de définition de ListDomain
+    /// Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Class.PrimaryKey.Single().Domain} ne contient pas de définition de AsDomain
     /// </summary>
     TMD1028,
 

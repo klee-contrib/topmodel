@@ -258,8 +258,8 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                         case "comment":
                             alp.Comment = value.Value;
                             break;
-                        case "asList":
-                            alp.AsList = value.Value == "true";
+                        case "as":
+                            alp.As = value.Value;
                             break;
                         case "trigram":
                             alp.Trigram = new LocatedString(value);

@@ -1,7 +1,5 @@
 ﻿#nullable disable
 
-using TopModel.Core.Model;
-
 namespace TopModel.Core.FileModel;
 
 public class ModelFile
@@ -30,7 +28,7 @@ public class ModelFile
 
     public List<object> ResolvedAliases { get; } = new();
 
-    public IDictionary<Reference, object> References => Domains.Select(d => (d.ListDomainReference as Reference, d.ListDomain as object))
+    public IDictionary<Reference, object> References => Domains.SelectMany(d => d.AsDomains.Keys.Select(adn => d.AsDomainReferences.TryGetValue(adn, out var adr) && d.AsDomains.TryGetValue(adn, out var ad) ? (adr as Reference, ad as object) : (null, null)))
         .Concat(Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object)))
         .Concat(Classes.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
         .Concat(Endpoints.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))

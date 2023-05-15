@@ -87,4 +87,4 @@ endpoint:
     - alias:
         class: Utilisateur
         property: Id
-      asList: true
+      as: list

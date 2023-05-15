@@ -269,9 +269,9 @@
               "type": "string",
               "description": "Surcharge le commentaire de la propriété aliasée."
             },
-            "asList": {
-              "type": "boolean",
-              "description": "Utilise le `listDomain` du domaine de la propriété (original ou surchargé) comme domaine de la propriété d'alias."
+            "as": {
+              "type": "string",
+              "description": "Utilise le domaine correspondant dans `asDomains` du domaine de la propriété (original ou surchargé) comme domaine de la propriété d'alias."
             },
             "defaultValue": {
               "description": "Surcharge la valeur par défaut de la propriété."
@@ -407,9 +407,12 @@
               "type": "boolean",
               "description": "Passe un champ de ce domaine comme body param dans un endpoint."
             },
-            "listDomain": {
-              "type": "string",
-              "description": "Domaine à utiliser lorsque l'on veut créer une liste d'un champ qui utilise ce domaine (alias avec `asList: true`, associations oneToMany et manyToMany)."
+            "asDomains": {
+              "type": "object",
+              "description": "Domaines à utiliser lorsque l'on veut transformer le domaine d'un champ dans un alias (avec `as`). Pour utiliser des associations oneToMany et manyToMany, il est nécessaire de définir un domaine pour `list`.",
+              "additionalProperties": {
+                "type": "string"
+              }
             },
             "mediaType": {
               "type": "string",
@@ -468,7 +471,7 @@
             }
           }
         }
-      }      
+      }
     },
     {
       "type": "object",
@@ -519,7 +522,7 @@
             }
           }
         }
-      }      
+      }
     },
     {
       "type": "object",

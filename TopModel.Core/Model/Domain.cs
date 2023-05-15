@@ -26,9 +26,9 @@ public class Domain
 
     public bool BodyParam { get; set; }
 
-    public Domain? ListDomain { get; set; }
+    public Dictionary<string, Domain> AsDomains { get; set; } = new();
 
-    public DomainReference? ListDomainReference { get; set; }
+    public Dictionary<string, DomainReference> AsDomainReferences { get; set; } = new();
 
     public Dictionary<string, DomainImplementation> Implementations { get; set; } = new();
 

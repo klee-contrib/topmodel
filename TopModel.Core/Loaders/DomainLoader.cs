@@ -45,8 +45,11 @@ public class DomainLoader : ILoader<Domain>
                 case "bodyParam":
                     domain.BodyParam = value!.Value == "true";
                     break;
-                case "listDomain":
-                    domain.ListDomainReference = new DomainReference(value!);
+                case "asDomains":
+                    parser.ConsumeMapping(() =>
+                    {
+                        domain.AsDomainReferences[parser.Consume<Scalar>().Value] = new DomainReference(parser.Consume<Scalar>());
+                    });
                     break;
                 case "mediaType":
                     domain.MediaType = value!.Value;

@@ -258,7 +258,7 @@ public class ModelStore
             .Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
             .Where(dep => dep != null)
             .Concat(Files.Where(f => f != modelFile && f.Converters.Any() && modelFile.Classes.Any(c => c.FromMappers.Any() || c.ToMappers.Any())))
-            .Concat(Files.Where(f => f != modelFile && f.Domains.Any() && (!modelFile.Domains.Any() || modelFile.Domains.Any(d => d.ListDomainReference != null))));
+            .Concat(Files.Where(f => f != modelFile && f.Domains.Any() && (!modelFile.Domains.Any() || modelFile.Domains.Any(d => d.AsDomainReferences.Any()))));
     }
 
     private IEnumerable<ModelError> GetGlobalErrors()
@@ -462,18 +462,18 @@ public class ModelStore
             .Distinct()
             .ToDictionary(d => (string)d.Name, c => c);
 
-        // Résolution des "listDomain" sur les domaines
+        // Résolution des "asDomains" sur les domaines
         foreach (var domain in modelFile.Domains)
         {
-            if (domain.ListDomainReference != null)
+            foreach (var (asName, domainReference) in domain.AsDomainReferences)
             {
-                if (!Domains.TryGetValue(domain.ListDomainReference.ReferenceName, out var listDomain))
+                if (!Domains.TryGetValue(domainReference.ReferenceName, out var asDomain))
                 {
-                    yield return new ModelError(domain, "Le domaine '{0}' est introuvable.", domain.ListDomainReference) { ModelErrorType = ModelErrorType.TMD1005 };
+                    yield return new ModelError(domain, "Le domaine '{0}' est introuvable.", domainReference) { ModelErrorType = ModelErrorType.TMD1005 };
                     continue;
                 }
 
-                domain.ListDomain = listDomain;
+                domain.AsDomains[asName] = asDomain;
             }
         }
 
@@ -748,9 +748,9 @@ public class ModelStore
                 {
                     var prop = alp.Clone(property, alp.Reference.IncludeReferences.FirstOrDefault(ir => ir.ReferenceName == property.Name));
 
-                    if (prop.AsList && prop.Domain == null)
+                    if (prop.As != null && prop.Domain == null)
                     {
-                        yield return new ModelError(modelFile, $"Le domaine '{prop.OriginalProperty?.Domain}' doit définir un domaine de liste pour définir un alias liste sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'", prop.PropertyReference ?? prop.Reference) { IsError = true, ModelErrorType = ModelErrorType.TMD1023 };
+                        yield return new ModelError(modelFile, $"Le domaine '{prop.OriginalProperty?.Domain}' doit définir un domaine 'as' pour '{prop.As}' pour définir un alias '{prop.As}' sur la propriété '{prop.OriginalProperty}' de la classe '{prop.OriginalProperty?.Class}'", prop.PropertyReference ?? prop.Reference) { IsError = true, ModelErrorType = ModelErrorType.TMD1023 };
                     }
 
                     if (alp.Class != null)
@@ -847,9 +847,9 @@ public class ModelStore
         // Résolution des propriétés d'association (pour clé étrangère).
         foreach (var ap in fileClasses.SelectMany(c => c.Properties.OfType<AssociationProperty>()).Where(ap => ap.Association != null))
         {
-            if ((ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany) && ap.Property?.Domain?.ListDomain is null)
+            if ((ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany) && !(ap.Property?.Domain?.AsDomains.ContainsKey("list") ?? false))
             {
-                yield return new ModelError(ap, $@"Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Property?.Domain} ne contient pas de définition de ListDomain", ap.Reference) { ModelErrorType = ModelErrorType.TMD1028 };
+                yield return new ModelError(ap, $@"Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Property?.Domain} ne contient pas de définition de domaine 'as' pour 'list'.", ap.Reference) { ModelErrorType = ModelErrorType.TMD1028 };
                 continue;
             }
 
@@ -1190,7 +1190,7 @@ public class ModelStore
 
                                 var compositionPKs = cp.Composition.Properties.OfType<IFieldProperty>().Where(p => p.PrimaryKey);
                                 var compositionPK = compositionPKs.Count() == 1 ? compositionPKs.Single() : null;
-                                var compositionDomain = cp.Kind == "list" ? compositionPK?.Domain.ListDomain : compositionPK?.Domain;
+                                var compositionDomain = cp.Kind == "list" && (compositionPK?.Domain?.AsDomains.TryGetValue("list", out var d) ?? false) ? d : compositionPK?.Domain;
 
                                 if (compositionDomain != mappedAp.Domain
                                     && !Converters.Any(c => c.From.Any(cf => cf == compositionPK?.Domain) && c.To.Any(ct => ct == mappedAp.Domain)))

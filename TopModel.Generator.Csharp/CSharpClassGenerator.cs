@@ -499,7 +499,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 var prop = fp is AliasProperty alp && (!fp.Class.IsPersistent || alp.Property is AssociationProperty) ? alp.Property : fp;
                 if (
                     (!Config.NoColumnOnAlias || fp is not AliasProperty || fp.Class.IsPersistent)
-                    && fp is not AliasProperty { AsList: true }
+                    && fp is not AliasProperty { As: not null }
                     && (prop.Class.IsPersistent || fp.Class.IsPersistent)
                     && !Config.NoPersistence(tag) && !sameColumnSet.Contains(prop.SqlName)
                     && Classes.Contains(prop.Class))

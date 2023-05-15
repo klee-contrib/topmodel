@@ -296,11 +296,11 @@ public abstract class GeneratorConfigBase
         return property switch
         {
             AssociationProperty { Association: Class assoc } ap when useClassForAssociation => ap.Type.IsToMany() ? GetListType(assoc.NamePascal) : ap.Association.NamePascal,
-            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when useClassForAssociation => asList || ap.Type.IsToMany() ? GetListType(assoc.NamePascal) : ap.Association.NamePascal,
+            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, As: var asD } when useClassForAssociation => asD == "list" || ap.Type.IsToMany() ? GetListType(assoc.NamePascal) : ap.Association.NamePascal,
             AssociationProperty { Association: Class assoc } ap when CanClassUseEnums(assoc, availableClasses, ap.Property) => GetEnumType(assoc.Name, ap.Property.Name, ap.Type.IsToMany()),
-            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, AsList: var asList } when CanClassUseEnums(assoc, availableClasses) => GetEnumType(assoc.Name, ap.Property.Name, asList || ap.Type.IsToMany()),
+            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, As: var asD } when CanClassUseEnums(assoc, availableClasses) => GetEnumType(assoc.Name, ap.Property.Name, asD == "list" || ap.Type.IsToMany()),
             RegularProperty { Class: Class classe } rp when CanClassUseEnums(classe, availableClasses, rp) => GetEnumType(rp.Class.Name, rp.Name, false, true),
-            AliasProperty { Property: RegularProperty { Class: Class alClass } rp, AsList: var asList } when CanClassUseEnums(alClass, availableClasses, rp) => GetEnumType(alClass.Name, rp.Name, asList),
+            AliasProperty { Property: RegularProperty { Class: Class alClass } rp, As: var asD } when CanClassUseEnums(alClass, availableClasses, rp) => GetEnumType(alClass.Name, rp.Name, asD == "list"),
             IFieldProperty fp => GetImplementation(fp.Domain)!.Type.ParseTemplate(fp),
             CompositionProperty { Kind: "object" } cp => cp.Composition.NamePascal,
             CompositionProperty { Kind: "list" } cp => GetListType(cp.Composition.NamePascal, useIterable),
