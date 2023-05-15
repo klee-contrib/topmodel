@@ -615,15 +615,15 @@ public class ModelStore
 
                     cp.Composition = composition;
 
-                    if (cp.DomainKindReference != null)
+                    if (cp.DomainReference != null)
                     {
-                        if (!Domains.TryGetValue(cp.DomainKindReference.ReferenceName, out var domainKind))
+                        if (!Domains.TryGetValue(cp.DomainReference.ReferenceName, out var cpDomain))
                         {
-                            yield return new ModelError(cp, "Le domaine '{0}' est introuvable.", cp.DomainKindReference) { ModelErrorType = ModelErrorType.TMD1005 };
+                            yield return new ModelError(cp, "Le domaine '{0}' est introuvable.", cp.DomainReference) { ModelErrorType = ModelErrorType.TMD1005 };
                             break;
                         }
 
-                        cp.DomainKind = domainKind;
+                        cp.Domain = cpDomain;
                     }
 
                     break;
@@ -1179,23 +1179,18 @@ public class ModelStore
                             {
                                 yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car ce n'est pas une association.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1017 };
                             }
+                            else if (mappedAp.Type.IsToMany() || cp.Domain != null)
+                            {
+                                yield return new ModelError(classe, $"L'association '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car l'association et la composition doivent toutes les deux être simples.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1018 };
+                            }
                             else
                             {
-                                if (!(
-                                    cp.Kind == "object" && (mappedAp.Type == AssociationType.ManyToOne || mappedAp.Type == AssociationType.OneToOne)
-                                    || cp.Kind == "list" && (mappedAp.Type == AssociationType.ManyToMany || mappedAp.Type == AssociationType.OneToMany)))
-                                {
-                                    yield return new ModelError(classe, $"L'association '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car les types de composition et d'association ne correspondent pas.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1018 };
-                                }
+                                var cpPks = cp.Composition.Properties.OfType<IFieldProperty>().Where(p => p.PrimaryKey);
+                                var cpPk = cpPks.Count() == 1 ? cpPks.Single() : null;
 
-                                var compositionPKs = cp.Composition.Properties.OfType<IFieldProperty>().Where(p => p.PrimaryKey);
-                                var compositionPK = compositionPKs.Count() == 1 ? compositionPKs.Single() : null;
-                                var compositionDomain = cp.Kind == "list" && (compositionPK?.Domain?.AsDomains.TryGetValue("list", out var d) ?? false) ? d : compositionPK?.Domain;
-
-                                if (compositionDomain != mappedAp.Domain
-                                    && !Converters.Any(c => c.From.Any(cf => cf == compositionPK?.Domain) && c.To.Any(ct => ct == mappedAp.Domain)))
+                                if (cpPk?.Domain != mappedAp.Domain && !Converters.Any(c => c.From.Any(cf => cf == cpPk?.Domain) && c.To.Any(ct => ct == mappedAp.Domain)))
                                 {
-                                    yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la clé primaire de la classe '{cp.Composition.Name}' composée ('{mappedProperty.Domain.Name}' au lieu de '{compositionPK?.Domain.Name ?? string.Empty}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1019 };
+                                    yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la composition '{cp.Composition.Name}' ('{mappedProperty.Domain.Name}' au lieu de '{cpPk?.Domain?.Name ?? string.Empty}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1019 };
                                 }
                             }
                         }

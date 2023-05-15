@@ -187,12 +187,17 @@ public class JavascriptConfig : GeneratorConfigBase
         .Replace("\\", "/");
     }
 
+    public bool IsListComposition(IProperty property)
+    {
+        return property is CompositionProperty cp && cp.Domain != null && GetImplementation(cp.Domain)!.Type.EndsWith("[]");
+    }
+
     protected override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
     {
         return $"{className.ToPascalCase()}{propName.ToPascalCase()}{(asList ? "[]" : string.Empty)}";
     }
 
-    protected override string GetListType(string name, bool useIterable = true)
+    protected override string GetListType(string name)
     {
         return $"{name}[]";
     }

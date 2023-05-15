@@ -381,9 +381,9 @@ public class CsharpConfig : GeneratorConfigBase
             : $"async Task<{typeName}>";
     }
 
-    public string GetType(IProperty prop, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false, bool useIEnumerable = true, bool nonNullable = false)
+    public string GetType(IProperty prop, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false, bool nonNullable = false)
     {
-        var type = base.GetType(prop, availableClasses, useClassForAssociation, useIEnumerable);
+        var type = base.GetType(prop, availableClasses, useClassForAssociation);
         type = nonNullable && type.EndsWith("?") ? type[0..^1] : type;
         return type;
     }
@@ -408,8 +408,8 @@ public class CsharpConfig : GeneratorConfigBase
         return $"{(isPrimaryKeyDef ? string.Empty : $"{className.ToPascalCase()}.")}{propName.ToPascalCase()}s{(asList ? "[]" : "?")}";
     }
 
-    protected override string GetListType(string name, bool useIterable = true)
+    protected override string GetListType(string name)
     {
-        return $"{(useIterable ? "IEnumerable" : "ICollection")}<{name}>";
+        return $"ICollection<{name}>";
     }
 }

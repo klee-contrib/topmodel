@@ -37,7 +37,7 @@ public class UtilisateurApiController : Controller
     /// <param name="typeUtilisateurCode">Type d'utilisateur en Many to one</param>
     /// <returns>Liste des utilisateurs</returns>
     [HttpGet("utilisateur/list")]
-    public async Task<IEnumerable<UtilisateurSearch>> FindAllByType(TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM)
+    public async Task<ICollection<UtilisateurSearch>> FindAllByType(TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM)
     {
 
     }

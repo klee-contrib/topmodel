@@ -35,7 +35,6 @@ public partial class UtilisateurDto
             throw new ArgumentNullException(nameof(bean));
         }
 
-        UtilisateurParent = new UtilisateurDto(bean.UtilisateurParent);
         Id = bean.Id;
         Age = bean.Age;
         ProfilId = bean.ProfilId;
@@ -46,6 +45,7 @@ public partial class UtilisateurDto
         UtilisateursEnfant = bean.UtilisateursEnfant;
         DateCreation = bean.DateCreation;
         DateModification = bean.DateModification;
+        UtilisateurParent = new UtilisateurDto(bean.UtilisateurParent);
 
         OnCreated(bean);
     }

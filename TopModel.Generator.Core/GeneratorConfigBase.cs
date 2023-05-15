@@ -202,9 +202,9 @@ public abstract class GeneratorConfigBase
                 yield return annotation;
             }
         }
-        else if (property is CompositionProperty { DomainKind: not null } cp)
+        else if (property is CompositionProperty { Domain: not null } cp)
         {
-            foreach (var annotation in GetImplementation(cp.DomainKind)!.Annotations
+            foreach (var annotation in GetImplementation(cp.Domain)!.Annotations
                 .Where(a => FilterAnnotations(a, cp, tag))
                 .Select(a => a.Text.ParseTemplate(cp)))
             {
@@ -233,16 +233,16 @@ public abstract class GeneratorConfigBase
                 }
             }
         }
-        else if (property is CompositionProperty { DomainKind: not null } cp)
+        else if (property is CompositionProperty { Domain: not null } cp)
         {
-            foreach (var import in GetImplementation(cp.DomainKind)!.Imports.Select(u => u.ParseTemplate(cp)))
+            foreach (var import in GetImplementation(cp.Domain)!.Imports.Select(u => u.ParseTemplate(cp)))
             {
                 yield return import;
             }
 
             if (!noAnnotations)
             {
-                foreach (var import in GetImplementation(cp.DomainKind)!.Annotations
+                foreach (var import in GetImplementation(cp.Domain)!.Annotations
                     .Where(a => FilterAnnotations(a, cp, tag))
                     .SelectMany(a => a.Imports)
                     .Select(u => u.ParseTemplate(cp)))
@@ -289,9 +289,8 @@ public abstract class GeneratorConfigBase
     /// <param name="property">Domaine.</param>
     /// <param name="availableClasses">Classes disponibles.</param>
     /// <param name="useClassForAssociation">Utilise le type de la classe pour une association.</param>
-    /// <param name="useIterable">Pour si c'est une composition liste, utiliser le type itérable au lieu de collection.</param>
     /// <returns>Le type.</returns>
-    public string GetType(IProperty property, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false, bool useIterable = true)
+    public string GetType(IProperty property, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false)
     {
         return property switch
         {
@@ -301,14 +300,8 @@ public abstract class GeneratorConfigBase
             AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, As: var asD } when CanClassUseEnums(assoc, availableClasses) => GetEnumType(assoc.Name, ap.Property.Name, asD == "list" || ap.Type.IsToMany()),
             RegularProperty { Class: Class classe } rp when CanClassUseEnums(classe, availableClasses, rp) => GetEnumType(rp.Class.Name, rp.Name, false, true),
             AliasProperty { Property: RegularProperty { Class: Class alClass } rp, As: var asD } when CanClassUseEnums(alClass, availableClasses, rp) => GetEnumType(alClass.Name, rp.Name, asD == "list"),
-            IFieldProperty fp => GetImplementation(fp.Domain)!.Type.ParseTemplate(fp),
-            CompositionProperty { Kind: "object" } cp => cp.Composition.NamePascal,
-            CompositionProperty { Kind: "list" } cp => GetListType(cp.Composition.NamePascal, useIterable),
-            CompositionProperty { DomainKind: Domain domain } cp => GetImplementation(domain)!.Type switch
-            {
-                string s when s.Contains("{composition.name}") => s.ParseTemplate(cp),
-                string s => $"{s}<{{composition.name}}>".ParseTemplate(cp)
-            },
+            IFieldProperty or CompositionProperty { Domain: not null } => GetImplementation(property.Domain)!.Type.ParseTemplate(property),
+            CompositionProperty cp => cp.Composition.NamePascal,
             _ => string.Empty
         };
     }
@@ -465,7 +458,7 @@ public abstract class GeneratorConfigBase
 
     protected abstract string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false);
 
-    protected abstract string GetListType(string name, bool useIterable = true);
+    protected abstract string GetListType(string name);
 
     protected virtual bool IsEnumNameValid(string name)
     {

@@ -149,16 +149,28 @@ domain:
     type: string
 ---
 domain:
+  name: DO_LIST
+  label: Liste pour composition
+  csharp:
+    type: ICollection<{composition.name}>
+  java:
+    type: List<{composition.name}>
+  ts:
+    type: "{composition.name}[]"
+  php:
+    type: Collection
+---
+domain:
   name: DO_PAGE
   label: Page
   ts:
-    type: Page
+    type: Page<{composition.name}>
     imports:
       - "@/types"
   csharp:
-    type: ICollection
+    type: ICollection<{composition.name}>
   java:
-    type: Page
+    type: Page<{composition.name}>
     imports:
       - org.springframework.data.domain.Page
   php:

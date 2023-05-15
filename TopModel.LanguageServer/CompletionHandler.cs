@@ -44,7 +44,7 @@ public class CompletionHandler : CompletionHandlerBase
         {
             var reqChar = Math.Min(request.Position.Character, currentLine.Length);
 
-            if (currentLine.Contains("domain: ") || currentLine.Contains("kind: ")
+            if (currentLine.Contains("domain: ")
                 || GetParentObject(request) == "asDomains" && currentLine[..reqChar].Contains(':')
                 || currentLine.TrimStart().StartsWith("-")
                     && GetRootObject(request) == "converter"

@@ -196,7 +196,7 @@ public class JpaConfig : GeneratorConfigBase
         return asList ? GetListType(type) : type;
     }
 
-    protected override string GetListType(string name, bool useIterable = true)
+    protected override string GetListType(string name)
     {
         return $"List<{name}>";
     }

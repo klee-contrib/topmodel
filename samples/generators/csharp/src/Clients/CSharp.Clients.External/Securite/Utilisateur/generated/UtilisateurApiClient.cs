@@ -62,7 +62,7 @@ public partial class UtilisateurApiClient
     /// </summary>
     /// <param name="typeUtilisateurCode">Type d'utilisateur en Many to one.</param>
     /// <returns>Liste des utilisateurs.</returns>
-    public async Task<IEnumerable<UtilisateurSearch>> FindAllByType(TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM)
+    public async Task<ICollection<UtilisateurSearch>> FindAllByType(TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM)
     {
         await EnsureAuthentication();
         var query = await new FormUrlEncodedContent(new Dictionary<string, string>
@@ -71,7 +71,7 @@ public partial class UtilisateurApiClient
         }.Where(kv => kv.Value != null)).ReadAsStringAsync();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"utilisateur/list?{query}"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
-        return await Deserialize<IEnumerable<UtilisateurSearch>>(res);
+        return await Deserialize<ICollection<UtilisateurSearch>>(res);
     }
 
     /// <summary>

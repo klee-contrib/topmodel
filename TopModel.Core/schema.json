@@ -284,7 +284,6 @@
           "required": [
             "composition",
             "name",
-            "kind",
             "comment"
           ],
           "additionalProperties": false,
@@ -297,9 +296,9 @@
               "type": "string",
               "description": "Nom de la propriété."
             },
-            "kind": {
+            "domain": {
               "type": "string",
-              "description": "'object' pour un sous objet, 'list' pour une sous-liste, ou un nom de domaine pour un autre conteneur générique."
+              "description": "Domaine a utiliser pour le type de composition (si ce n'est pas une composition simple)."
             },
             "comment": {
               "type": "string",

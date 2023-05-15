@@ -155,13 +155,8 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                         case "name":
                             cp.Name = value.Value;
                             break;
-                        case "kind":
-                            cp.Kind = value.Value;
-                            if (cp.Kind != "object" && cp.Kind != "list" && cp.Kind != "async-list")
-                            {
-                                cp.DomainKindReference = new DomainReference(value);
-                            }
-
+                        case "domain":
+                            cp.DomainReference = new DomainReference(value);
                             break;
                         case "comment":
                             cp.Comment = value.Value;

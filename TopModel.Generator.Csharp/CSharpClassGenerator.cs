@@ -325,28 +325,17 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         w.WriteLine(3, "}");
         w.WriteLine();
 
-        var initd = new List<string>();
-
-        foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => Config.GetType(t).Contains("ICollection")))
+        foreach (var property in item.Properties)
         {
-            initd.Add(property.NamePascal);
-            var strip = Config.GetType(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
-            w.WriteLine(3, property.NamePascal + " = new List<" + strip + ">(bean." + property.NamePascal + ");");
-        }
-
-        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
-        {
-            w.WriteLine(3, property.NamePascal + " = new " + property.Composition.NamePascal + "(bean." + property.NamePascal + ");");
-        }
-
-        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
-        {
-            w.WriteLine(3, property.NamePascal + " = new List<" + property.Composition.NamePascal + ">(bean." + property.NamePascal + ");");
-        }
-
-        foreach (var property in item.Properties.Where(p => p is not CompositionProperty && !initd.Contains(p.NamePascal)))
-        {
-            w.WriteLine(3, property.NamePascal + " = bean." + property.NamePascal + ";");
+            var type = Config.GetType(property).Replace("ICollection", "List");
+            if (property is CompositionProperty cp && cp.Domain == null || type.StartsWith("List<"))
+            {
+                w.WriteLine(3, $"{property.NamePascal} = new {type}(bean.{property.NamePascal});");
+            }
+            else
+            {
+                w.WriteLine(3, $"{property.NamePascal} = bean.{property.NamePascal};");
+            }
         }
 
         w.WriteLine();
@@ -368,7 +357,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
 
             w.WriteReturns(2, "Instance de la classe.");
-            w.WriteLine(2, $"static abstract I{item.NamePascal} Create({string.Join(", ", writeProperties.Select(p => $"{Config.GetType(p, useIEnumerable: false)} {p.NameCamel} = null"))});");
+            w.WriteLine(2, $"static abstract I{item.NamePascal} Create({string.Join(", ", writeProperties.Select(p => $"{Config.GetType(p)} {p.NameCamel} = null"))});");
         }
     }
 
@@ -390,23 +379,14 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         w.WriteLine(2, "{");
 
         var line = false;
-        foreach (var property in item.Properties.OfType<IFieldProperty>().Where(t => Config.GetImplementation(t.Domain)!.Type.Contains("ICollection")))
+        foreach (var property in item.Properties.OfType<CompositionProperty>())
         {
-            line = true;
-            var strip = Config.GetType(property).Replace("ICollection<", string.Empty).Replace(">", string.Empty);
-            w.WriteLine(3, $"{property.NamePascal} = new List<{strip}>();");
-        }
-
-        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "object"))
-        {
-            line = true;
-            w.WriteLine(3, $"{property.NamePascal} = new {property.Composition.NamePascal}();");
-        }
-
-        foreach (var property in item.Properties.OfType<CompositionProperty>().Where(p => p.Kind == "list"))
-        {
-            line = true;
-            w.WriteLine(3, $"{property.NamePascal} = new List<{property.Composition.NamePascal}>();");
+            var type = Config.GetType(property).Replace("ICollection", "List");
+            if (property.Domain == null || type.StartsWith("List<"))
+            {
+                line = true;
+                w.WriteLine(3, $"{property.NamePascal} = new {type}();");
+            }
         }
 
         if (line)
@@ -490,7 +470,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     {
         w.WriteSummary(2, property.Comment);
 
-        var type = Config.GetType(property, useIEnumerable: false);
+        var type = Config.GetType(property);
 
         if (!property.Class.Abstract)
         {
@@ -577,11 +557,6 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         if (!Config.UseLatestCSharp)
         {
             usings.Add("System");
-
-            if (item.Properties.Any(p => p is CompositionProperty { Kind: "list" }))
-            {
-                usings.Add("System.Collections.Generic");
-            }
         }
 
         if (!item.Abstract)
@@ -591,7 +566,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 usings.Add("System.ComponentModel");
             }
 
-            if (item.Properties.OfType<IFieldProperty>().Any(p => p.Required || p.PrimaryKey || Config.GetType(p, useIEnumerable: false) == "string" && p.Domain.Length != null))
+            if (item.Properties.OfType<IFieldProperty>().Any(p => p.Required || p.PrimaryKey || Config.GetType(p) == "string" && p.Domain.Length != null))
             {
                 usings.Add("System.ComponentModel.DataAnnotations");
             }

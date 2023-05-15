@@ -41,7 +41,7 @@ public class ModelFile
         .Concat(Properties.OfType<CompositionProperty>().SelectMany(p => new (Reference, object)[]
         {
             (p.Reference, p.Composition),
-            (p.DomainKindReference, p.DomainKind)
+            (p.DomainReference, p.Domain)
         }))
         .Concat(Properties.OfType<AliasProperty>().SelectMany(p => new (Reference, object)[]
         {

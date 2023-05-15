@@ -123,7 +123,7 @@ public enum ModelErrorType
     TMD1017,
 
     /// <summary>
-    /// L'association '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car les types de composition et d'association ne correspondent pas.
+    /// L'association '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car l'association et la composition doivent toutes les deux être simples.
     /// </summary>
     TMD1018,
 

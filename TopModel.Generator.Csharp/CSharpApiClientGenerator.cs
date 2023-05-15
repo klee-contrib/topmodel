@@ -99,12 +99,6 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
                     break;
                 case CompositionProperty cp:
                     usings.Add(GetNamespace(cp.Composition, tag));
-
-                    if (!Config.UseLatestCSharp && cp.Kind == "list")
-                    {
-                        usings.Add("System.Collections.Generic");
-                    }
-
                     break;
             }
         }

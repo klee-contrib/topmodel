@@ -74,7 +74,6 @@ public static class SecuriteMappers
     public static Profil ToProfil(this ProfilDto source, Profil dest = null)
     {
         dest ??= new Profil();
-        dest.Secteurs = source.Secteurs?.Id;
         dest.Id = source.Id;
         dest.TypeProfilCode = source.TypeProfilCode;
         dest.Droits = source.Droits;

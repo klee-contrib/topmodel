@@ -18,11 +18,7 @@ public class CompositionProperty : IProperty
 
     public string NameByClassCamel => NameCamel;
 
-    public string Kind { get; set; }
-
-#nullable enable
-    public Domain? DomainKind { get; set; }
-#nullable disable
+    public Domain Domain { get; set; }
 
     public string Comment { get; set; }
 
@@ -43,7 +39,7 @@ public class CompositionProperty : IProperty
     internal Reference Location { get; set; }
 
 #nullable enable
-    internal DomainReference? DomainKindReference { get; set; }
+    internal DomainReference? DomainReference { get; set; }
 
     /// <inheritdoc cref="IProperty.CloneWithClassOrEndpoint" />
     public IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null)
@@ -54,9 +50,8 @@ public class CompositionProperty : IProperty
             Comment = Comment,
             Composition = Composition,
             Decorator = Decorator,
-            DomainKind = DomainKind,
+            Domain = Domain,
             Endpoint = endpoint,
-            Kind = Kind,
             Location = Location,
             Name = Name
         };

@@ -30,16 +30,7 @@ public static class ImportsJpaExtensions
 
     public static List<string> GetKindImports(this CompositionProperty cp, JpaConfig config, string tag)
     {
-        var imports = new List<string>();
-
-        if (cp.Kind == "list")
-        {
-            imports.Add("java.util.List");
-        }
-
-        imports.AddRange(config.GetDomainImports(cp, tag));
-
-        return imports;
+        return config.GetDomainImports(cp, tag).ToList();
     }
 
     public static List<string> GetTypeImports(this IProperty p, JpaConfig config, string tag, bool noAnnotations = false)
@@ -106,11 +97,6 @@ public static class ImportsJpaExtensions
         if (cp.Composition.Namespace.Module != cp.Class?.Namespace.Module)
         {
             imports.Add(cp.Composition.GetImport(config, tag));
-        }
-
-        if (cp.Kind == "list")
-        {
-            imports.Add("java.util.List");
         }
 
         imports.AddRange(config.GetDomainImports(cp, tag));

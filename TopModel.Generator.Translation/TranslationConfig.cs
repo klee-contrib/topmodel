@@ -31,7 +31,7 @@ public class TranslationConfig : GeneratorConfigBase
         throw new NotImplementedException();
     }
 
-    protected override string GetListType(string name, bool useIterable = true)
+    protected override string GetListType(string name)
     {
         throw new NotImplementedException();
     }
