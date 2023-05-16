@@ -11,7 +11,7 @@ Les générateurs disponibles sont :
 - **Le générateur [C# (`csharp`)](/generator/csharp.md)**
 - **Le générateur [JPA (`jpa`)](/generator/jpa.md)**
 - **Le générateur [Javascript (`javascript`)](/generator/js.md)**
-- **Le générateur SQL [SQL (`sql`)](/generator/sql.md)**
+- **Le générateur [SQL (`sql`)](/generator/sql.md)**
 - **Le générateur de [traductions manquantes (`translation`)](/generator/tranlsation.md)**
 
 ## Validation du fichier de configuration
