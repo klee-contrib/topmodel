@@ -31,6 +31,7 @@
   - [Javascript / Typescript](/generator/js.md)
   - [Php](/generator/php.md)
   - [Traductions manquantes](/generator/translation.md)
+- [SQL](generator/sql.md)
 
 - **[Migrer un modèle externe](/tmdgen.md)**
 
