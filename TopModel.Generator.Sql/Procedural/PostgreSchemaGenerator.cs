@@ -19,13 +19,16 @@ public class PostgreSchemaGenerator : AbstractSchemaGenerator
 
     protected override bool UseQuotes => false;
 
-    protected override void WriteComments(SqlFileWriter writerCrebas, Class classe, string tableName, List<IFieldProperty> properties)
+    protected override void WriteComments(SqlFileWriter writerComment, Class classe, string tableName, List<IFieldProperty> properties)
     {
-        writerCrebas.WriteLine();
-        writerCrebas.WriteLine($"COMMENT ON TABLE {tableName} IS '{classe.Comment.Replace("'", "''")}'{BatchSeparator}");
+        writerComment.WriteLine();
+        writerComment.WriteLine("/**");
+        writerComment.WriteLine("  * Commentaires pour la table " + tableName);
+        writerComment.WriteLine(" **/");
+        writerComment.WriteLine($"COMMENT ON TABLE {tableName} IS '{classe.Comment.Replace("'", "''")}'{BatchSeparator}");
         foreach (var p in properties)
         {
-            writerCrebas.WriteLine($"COMMENT ON COLUMN {tableName}.{p.SqlName} IS '{p.Comment.Replace("'", "''")}'{BatchSeparator}");
+            writerComment.WriteLine($"COMMENT ON COLUMN {tableName}.{p.SqlName} IS '{p.Comment.Replace("'", "''")}'{BatchSeparator}");
         }
     }
 
