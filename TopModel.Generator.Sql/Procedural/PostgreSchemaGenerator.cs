@@ -8,10 +8,10 @@ namespace TopModel.Generator.Sql.Procedural;
 /// </summary>
 public class PostgreSchemaGenerator : AbstractSchemaGenerator
 {
-
     public PostgreSchemaGenerator(SqlConfig config, ILogger<ProceduralSqlGenerator> logger)
         : base(config, logger)
-    { }
+    {
+    }
 
     protected override string BatchSeparator => ";";
 

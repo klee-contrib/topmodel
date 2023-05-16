@@ -8,3 +8,4 @@ generatedFiles:
   - ../generators/pg/src/02_fk_indexes.sql
   - ../generators/pg/src/03_unique_keys.sql
   - ../generators/pg/src/04_references.sql
+  - ../generators/pg/src/05_comments.sql
