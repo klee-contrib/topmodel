@@ -102,6 +102,7 @@ public abstract class AbstractSchemaGenerator
 
         SqlFileWriter? writerType = null;
         SqlFileWriter? writerUk = null;
+        SqlFileWriter? writerComment = null;
 
         if (Config.TypeFile != null)
         {
@@ -111,6 +112,11 @@ public abstract class AbstractSchemaGenerator
         if (Config.UniqueKeysFile != null)
         {
             writerUk = new SqlFileWriter(Config.UniqueKeysFile, _logger);
+        }
+
+        if (Config.CommentFile != null)
+        {
+            writerComment = new SqlFileWriter(Config.CommentFile, _logger);
         }
 
         var appName = classes.First().Namespace.App;
@@ -133,14 +139,21 @@ public abstract class AbstractSchemaGenerator
         writerType?.WriteLine("--   Description		:	Script de création des types. ");
         writerType?.WriteLine("-- =========================================================================================== ");
 
+        writerComment?.WriteLine("-- =========================================================================================== ");
+        writerComment?.WriteLine($"--   Application Name	:	{appName} ");
+        writerComment?.WriteLine("--   Script Name		:	" + Config.CommentFile?.Split('/').Last());
+        writerComment?.WriteLine("--   Description		:	Script de création des commentaires. ");
+        writerComment?.WriteLine("-- =========================================================================================== ");
+
         var foreignKeys = classes
             .OrderBy(c => c.SqlName)
             .Where(c => c.IsPersistent && !c.Abstract && classes.Contains(c))
-            .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType, classes.ToList()))
+            .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType, writerComment, classes.ToList()))
             .ToList();
 
         writerType?.Dispose();
         writerUk?.Dispose();
+        writerComment?.Dispose();
 
         using var writer = new SqlFileWriter(Config.IndexFKFile, _logger);
 
@@ -195,6 +208,8 @@ public abstract class AbstractSchemaGenerator
 
         return nameValueDict;
     }
+
+    protected abstract void WriteComments(SqlFileWriter writerCrebas, Class classe, string tableName, List<IFieldProperty> properties);
 
     /// <summary>
     /// Gère l'auto-incrémentation des clés primaires.
@@ -364,8 +379,9 @@ public abstract class AbstractSchemaGenerator
     /// <param name="writerCrebas">Flux d'écriture crebas.</param>
     /// <param name="writerUk">Flux d'écriture Unique Key.</param>
     /// <param name="writerType">Flux d'écritures des types.</param>
+    /// <param name="writerComment">Flux d'écritures des commentaires.</param>
     /// <returns>Liste des propriétés étrangères persistentes.</returns>
-    private IEnumerable<AssociationProperty> WriteTableDeclaration(Class classe, SqlFileWriter writerCrebas, SqlFileWriter? writerUk, SqlFileWriter? writerType, IList<Class> availableClasses)
+    private IEnumerable<AssociationProperty> WriteTableDeclaration(Class classe, SqlFileWriter writerCrebas, SqlFileWriter? writerUk, SqlFileWriter? writerType, SqlFileWriter? writerComment, IList<Class> availableClasses)
     {
         var fkPropertiesList = new List<AssociationProperty>();
 
@@ -470,6 +486,11 @@ public abstract class AbstractSchemaGenerator
 
         WriteUniqueKeys(classe, writerUk);
         WritePrimaryKeyConstraint(writerCrebas, classe);
+        if (writerComment is not null)
+        {
+            WriteComments(writerComment, classe, tableName, properties);
+        }
+
         writerCrebas.WriteLine();
 
         if (isContainsInsertKey)

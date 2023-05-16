@@ -17,6 +17,11 @@ public class SqlServerSchemaGenerator : AbstractSchemaGenerator
 
     protected override bool SupportsClusteredKey => true;
 
+    protected override void WriteComments(SqlFileWriter writerCrebas, Class classe, string tableName, List<IFieldProperty> properties)
+    {
+        // Nothing to do
+    }
+
     /// <summary>
     /// Gère l'auto-incrémentation des clés primaires en ajoutant identity à la colonne.
     /// </summary>

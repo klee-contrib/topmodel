@@ -11,16 +11,7 @@ Les générateurs disponibles sont :
 - **Le générateur [C# (`csharp`)](/generator/csharp.md)**
 - **Le générateur [JPA (`jpa`)](/generator/jpa.md)**
 - **Le générateur [Javascript (`javascript`)](/generator/js.md)**
-- **Le générateur SQL (`sql`)**, qui a 2 modes :
-  - Le mode `ssdt` :
-    - Un fichier par classe
-    - Un fichier par type de table SQL, pour les tables qui en ont besoin (si propriété "InsertKey" présente)
-    - Un fichier par liste de référence à initialiser
-    - Le fichier d'initialisation des listes de référence, qui appelle, dans l'ordre, tous les fichiers d'initialisation
-  - Le mode `procedural`:
-    - Un fichier "crebas" qui contient toutes les créations de tables
-    - Un fichier "index + fk" qui contient toutes les FKs et indexes
-    - Un fichier qui contient toutes les initialisations de listes de références
+- **Le générateur SQL [SQL (`sql`)](/generator/sql.md)**
 - **Le générateur de [traductions manquantes (`translation`)](/generator/tranlsation.md)**
 
 ## Validation du fichier de configuration

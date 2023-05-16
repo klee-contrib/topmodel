@@ -26,6 +26,7 @@ public class ProceduralSqlGenerator : GeneratorBase<SqlConfig>
         Config.Procedural!.IndexFKFile!,
         Config.Procedural!.InitListFile!,
         Config.Procedural!.UniqueKeysFile!,
+        Config.Procedural!.CommentFile!,
     }.Where(t => !string.IsNullOrEmpty(t));
 
     protected override bool PersistentOnly => true;
