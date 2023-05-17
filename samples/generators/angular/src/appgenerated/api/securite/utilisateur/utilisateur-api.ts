@@ -23,11 +23,12 @@ export class UtilisateurApiService {
      * @param options Options pour 'fetch'.
      */
     deleteAll(utiId?: number[], queryParams: any = {}): Observable<void> {
+        if(utiId) {
+            queryParams['utiId'] = utiId
+        }
+
         const httpParams = new HttpParams({fromObject : queryParams});
         const httpOptions = { params: httpParams }
-        if(utiId !== null) {
-            httpOptions.params.set('utiId', utiId)
-        }
 
         return this.http.delete<void>(`/utilisateur/deleteAll`, httpOptions);
     }
@@ -49,11 +50,12 @@ export class UtilisateurApiService {
      * @returns Liste des utilisateurs
      */
     findAllByType(typeUtilisateurCode: TypeUtilisateurCode = "ADM", queryParams: any = {}): Observable<UtilisateurSearch[]> {
+        if(typeUtilisateurCode) {
+            queryParams['typeUtilisateurCode'] = typeUtilisateurCode
+        }
+
         const httpParams = new HttpParams({fromObject : queryParams});
         const httpOptions = { params: httpParams }
-        if(typeUtilisateurCode !== null) {
-            httpOptions.params.set('typeUtilisateurCode', typeUtilisateurCode)
-        }
 
         return this.http.get<UtilisateurSearch[]>(`/utilisateur/list`, httpOptions);
     }
@@ -84,38 +86,48 @@ export class UtilisateurApiService {
      * @returns Utilisateurs matchant les critères
      */
     search(utiId?: number, age: number = 6l, profilId?: number, email?: string, nom: string = "Jabx", actif?: boolean, typeUtilisateurCode: TypeUtilisateurCode = "ADM", utilisateursEnfant?: number[], dateCreation?: string, dateModification?: string, queryParams: any = {}): Observable<Page<UtilisateurSearch>> {
+        if(utiId) {
+            queryParams['utiId'] = utiId
+        }
+
+        if(age) {
+            queryParams['age'] = age
+        }
+
+        if(profilId) {
+            queryParams['profilId'] = profilId
+        }
+
+        if(email) {
+            queryParams['email'] = email
+        }
+
+        if(nom) {
+            queryParams['nom'] = nom
+        }
+
+        if(actif) {
+            queryParams['actif'] = actif
+        }
+
+        if(typeUtilisateurCode) {
+            queryParams['typeUtilisateurCode'] = typeUtilisateurCode
+        }
+
+        if(utilisateursEnfant) {
+            queryParams['utilisateursEnfant'] = utilisateursEnfant
+        }
+
+        if(dateCreation) {
+            queryParams['dateCreation'] = dateCreation
+        }
+
+        if(dateModification) {
+            queryParams['dateModification'] = dateModification
+        }
+
         const httpParams = new HttpParams({fromObject : queryParams});
         const httpOptions = { params: httpParams }
-        if(utiId !== null) {
-            httpOptions.params.set('utiId', utiId)
-        }
-        if(age !== null) {
-            httpOptions.params.set('age', age)
-        }
-        if(profilId !== null) {
-            httpOptions.params.set('profilId', profilId)
-        }
-        if(email !== null) {
-            httpOptions.params.set('email', email)
-        }
-        if(nom !== null) {
-            httpOptions.params.set('nom', nom)
-        }
-        if(actif !== null) {
-            httpOptions.params.set('actif', actif)
-        }
-        if(typeUtilisateurCode !== null) {
-            httpOptions.params.set('typeUtilisateurCode', typeUtilisateurCode)
-        }
-        if(utilisateursEnfant !== null) {
-            httpOptions.params.set('utilisateursEnfant', utilisateursEnfant)
-        }
-        if(dateCreation !== null) {
-            httpOptions.params.set('dateCreation', dateCreation)
-        }
-        if(dateModification !== null) {
-            httpOptions.params.set('dateModification', dateModification)
-        }
 
         return this.http.post<Page<UtilisateurSearch>>(`/utilisateur/search`, httpOptions);
     }

@@ -132,14 +132,16 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
 
         if (endpoint.GetQueryParams().Any())
         {
-            fw.WriteLine(2, "const httpParams = new HttpParams({fromObject : queryParams});");
-            fw.WriteLine(2, "const httpOptions = { params: httpParams }");
             foreach (var qParam in endpoint.GetQueryParams())
             {
-                fw.WriteLine(2, @$"if({qParam.GetParamName()} !== null) {{");
-                fw.WriteLine(3, $"httpOptions.params.set('{qParam.GetParamName()}', {qParam.GetParamName()})");
+                fw.WriteLine(2, @$"if({qParam.GetParamName()}) {{");
+                fw.WriteLine(3, $"queryParams['{qParam.GetParamName()}'] = {qParam.GetParamName()}");
                 fw.WriteLine(2, @$"}}");
+                fw.WriteLine();
             }
+
+            fw.WriteLine(2, "const httpParams = new HttpParams({fromObject : queryParams});");
+            fw.WriteLine(2, "const httpOptions = { params: httpParams }");
 
             fw.WriteLine();
         }
