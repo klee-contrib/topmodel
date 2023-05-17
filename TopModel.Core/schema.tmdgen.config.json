@@ -205,6 +205,14 @@
               "$ref": "#/definitions/domain"
             }
           },
+          "source": {
+            "type": "string",
+            "description": "Url ou chemin relatif du fichier json ou yaml de spécification openapi"
+          },
+          "module": {
+            "type": "string",
+            "description": "Module des fichiers de modèle générés. Par défaut : 'module'."
+          },
           "modelTags": {
             "type": "array",
             "items": {
@@ -235,10 +243,6 @@
             "type": "boolean",
             "description": "Garde les noms des propriétés générées tels quels pour la génération via `modgen`, au lieu de les convertir dans le format du langage cible. Par défaut : `true`."
           }
-        },
-        "source": {
-          "type": "string",
-          "description": "Url ou chemin relatif du fichier json ou yaml de spécification openapi"
         }
       }
     }
