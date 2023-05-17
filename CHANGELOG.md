@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.30.2
+
+- [`35921291d`](https://github.com/klee-contrib/topmodel/commit/35921291d68985b499e9fec06f914d9052f2145b) - [Angular] Correction api client dans le cas des queryParams
+- [`#235`](https://github.com/klee-contrib/topmodel/pull/249) - [SQL] Possibilité de générer un fichier de commentaires
+
 ## 1.30.1
 
 - [`ce033dd5b`](https://github.com/klee-contrib/topmodel/commit/ce033dd5b056bddfcdb81a59a00c373c32fe33b0) - [modgen] Bloque la génération s'il y a une erreur dans la config d'un générateur
