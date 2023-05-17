@@ -15,7 +15,7 @@ export interface UtilisateurSearchEntityType {
     profilId: FieldEntry2<typeof DO_ID, number>,
     email: FieldEntry2<typeof DO_EMAIL, string>,
     nom: FieldEntry2<typeof DO_LIBELLE, string>,
-    actif: FieldEntry2<typeof DO_BOOLEAN, bool>,
+    actif: FieldEntry2<typeof DO_BOOLEAN, boolean>,
     typeUtilisateurCode: FieldEntry2<typeof DO_CODE, TypeUtilisateurCode>,
     utilisateursEnfant: FieldEntry2<typeof DO_ID_LIST, number[]>,
     dateCreation: FieldEntry2<typeof DO_DATE_CREATION, string>,

@@ -5,6 +5,7 @@
 
 namespace App\Model\Utilisateur;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints\Length;
 
@@ -28,13 +29,18 @@ class UtilisateurDto
   #[Length(max: 3)]
   private string|null $typeUtilisateurCode = TypeUtilisateur.ADM;
 
-  private int|null $utilisateursEnfant;
+  private Collection|null $utilisateursEnfant;
 
   private Date|null $dateCreation;
 
   private Date|null $dateModification;
 
   private UtilisateurDto $utilisateurParent;
+
+  public function __construct()
+  {
+    $this->utilisateursEnfant = new ArrayCollection();
+  }
 
   public function getId(): int
   {
@@ -71,7 +77,7 @@ class UtilisateurDto
     return $this->typeUtilisateurCode;
   }
 
-  public function getUtilisateursEnfant(): int|null
+  public function getUtilisateursEnfant(): Collection|null
   {
     return $this->utilisateursEnfant;
   }
@@ -140,7 +146,7 @@ class UtilisateurDto
     return $this;
   }
 
-  public function setUtilisateursEnfant(int|null $utilisateursEnfant): self
+  public function setUtilisateursEnfant(Collection|null $utilisateursEnfant): self
   {
     $this->utilisateursEnfant = $utilisateursEnfant;
 

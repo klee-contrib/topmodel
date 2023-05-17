@@ -33,7 +33,7 @@ domain:
   sql:
     type: int8
   php:
-    type: int
+    type: Collection
 ---
 domain:
   name: DO_DATE_CREATION
@@ -129,7 +129,7 @@ domain:
     type: varchar
   length: 3
   php:
-    type: string
+    type: Collection
 ---
 domain:
   name: DO_LIBELLE
@@ -182,7 +182,7 @@ domain:
   name: DO_BOOLEAN
   label: boolean
   ts:
-    type: bool
+    type: boolean
   csharp:
     type: bool?
   java:

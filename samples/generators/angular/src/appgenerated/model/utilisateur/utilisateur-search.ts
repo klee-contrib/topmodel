@@ -12,7 +12,7 @@ export interface UtilisateurSearch {
     profilId?: number,
     email?: string,
     nom?: string,
-    actif?: bool,
+    actif?: boolean,
     typeUtilisateurCode?: TypeUtilisateurCode,
     utilisateursEnfant?: number[],
     dateCreation?: string,

@@ -83,7 +83,7 @@ export class UtilisateurApiService {
      * @param options Options pour 'fetch'.
      * @returns Utilisateurs matchant les critères
      */
-    search(utiId?: number, age: number = 6l, profilId?: number, email?: string, nom: string = "Jabx", actif?: bool, typeUtilisateurCode: TypeUtilisateurCode = "ADM", utilisateursEnfant?: number[], dateCreation?: string, dateModification?: string, queryParams: any = {}): Observable<Page<UtilisateurSearch>> {
+    search(utiId?: number, age: number = 6l, profilId?: number, email?: string, nom: string = "Jabx", actif?: boolean, typeUtilisateurCode: TypeUtilisateurCode = "ADM", utilisateursEnfant?: number[], dateCreation?: string, dateModification?: string, queryParams: any = {}): Observable<Page<UtilisateurSearch>> {
         const httpParams = new HttpParams({fromObject : queryParams});
         const httpOptions = { params: httpParams }
         if(utiId !== null) {

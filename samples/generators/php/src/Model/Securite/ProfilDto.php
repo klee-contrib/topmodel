@@ -17,7 +17,7 @@ class ProfilDto
   private string|null $typeProfilCode;
 
   #[Length(max: 3)]
-  private string|null $droits;
+  private Collection|null $droits;
 
   private Collection $utilisateurs;
 
@@ -25,6 +25,7 @@ class ProfilDto
 
   public function __construct()
   {
+    $this->droits = new ArrayCollection();
     $this->utilisateurs = new ArrayCollection();
     $this->secteurs = new ArrayCollection();
   }
@@ -39,7 +40,7 @@ class ProfilDto
     return $this->typeProfilCode;
   }
 
-  public function getDroits(): string|null
+  public function getDroits(): Collection|null
   {
     return $this->droits;
   }
@@ -68,7 +69,7 @@ class ProfilDto
     return $this;
   }
 
-  public function setDroits(string|null $droits): self
+  public function setDroits(Collection|null $droits): self
   {
     $this->droits = $droits;
 
