@@ -244,6 +244,7 @@ for (var i = 0; i < configs.Count; i++)
 
                         genConfig.InitVariables(config.App, number);
 
+                        ModelUtils.TrimSlashes(genConfig, c => c.OutputDirectory);
                         ModelUtils.CombinePath(dn, genConfig, c => c.OutputDirectory);
 
                         var instance = Activator.CreateInstance(generator);

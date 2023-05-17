@@ -25,6 +25,7 @@ public static class ServiceExtensions
         if (config != null && rootDir != null)
         {
             config.ModelRoot ??= string.Empty;
+            ModelUtils.TrimSlashes(config, c => c.ModelRoot);
             ModelUtils.CombinePath(rootDir, config, c => c.ModelRoot);
             ModelUtils.CombinePath(rootDir, config.I18n, c => c.RootPath);
             services.AddSingleton(config);
