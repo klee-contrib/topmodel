@@ -54,10 +54,10 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                 Import: dep is { Source: CompositionProperty { Domain: not null } cp } && !Config.IsListComposition(cp)
                     ? dep.Classe.NamePascal
                     : dep is { Source: IFieldProperty fp }
-                    ? Config.GetType(fp, Classes).Replace("[]", string.Empty)
+                    ? Config.GetEnumType(fp)
                     : $"{dep.Classe.NamePascal}Entity, {dep.Classe.NamePascal}{(Config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}",
                 Path: Config.GetImportPathForClass(dep, GetClassTags(dep.Classe).Contains(tag) ? tag : GetClassTags(dep.Classe).Intersect(Config.Tags).FirstOrDefault() ?? tag, tag, Classes)!))
-            .Concat(classe.Properties.Select(dep => Config.GetDomainImportPath(dep, tag)))
+            .Concat(classe.Properties.SelectMany(dep => Config.GetDomainImportPaths(dep, tag)))
             .Where(p => p.Path != null && p.Path != "@focus4/stores")
             .GroupAndSort();
 
@@ -277,7 +277,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
             yield return "RecursiveListEntry";
         }
 
-        foreach (var p in classe.Properties.Select(dep => Config.GetDomainImportPath(dep, tag)).Where(p => p.Path == "@focus4/stores"))
+        foreach (var p in classe.Properties.SelectMany(dep => Config.GetDomainImportPaths(dep, tag)).Where(p => p.Path == "@focus4/stores"))
         {
             yield return p.Import;
         }

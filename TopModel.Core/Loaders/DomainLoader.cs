@@ -55,7 +55,39 @@ public class DomainLoader : ILoader<Domain>
                     domain.MediaType = value!.Value;
                     break;
                 default:
-                    domain.Implementations[prop] = _fileChecker.Deserialize<DomainImplementation>(parser);
+                    var implementation = new DomainImplementation();
+
+                    parser.ConsumeMapping(() =>
+                    {
+                        var prop = parser.Consume<Scalar>().Value;
+
+                        switch (prop)
+                        {
+                            case "type":
+                                implementation.Type = new DomainType();
+
+                                if (parser.TryConsume<Scalar>(out var scalar))
+                                {
+                                    implementation.Type.Default = scalar.Value;
+                                    implementation.Type.Composition = scalar.Value;
+                                }
+                                else
+                                {
+                                    implementation.Type = _fileChecker.Deserialize<DomainType>(parser);
+                                }
+
+                                implementation.Type.AsTransformed ??= implementation.Type.Default;
+                                break;
+                            case "imports":
+                                implementation.Imports = _fileChecker.Deserialize<List<string>>(parser);
+                                break;
+                            case "annotations":
+                                implementation.Annotations = _fileChecker.Deserialize<List<TargetedText>>(parser);
+                                break;
+                        }
+                    });
+
+                    domain.Implementations[prop] = implementation;
                     break;
             }
         });

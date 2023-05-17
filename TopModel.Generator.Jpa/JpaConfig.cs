@@ -190,15 +190,9 @@ public class JpaConfig : GeneratorConfigBase
         return $"{className.ToPascalCase()}.Values.{refName}";
     }
 
-    protected override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
+    protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
     {
-        var type = $"{className.ToPascalCase()}.Values";
-        return asList ? GetListType(type) : type;
-    }
-
-    protected override string GetListType(string name)
-    {
-        return $"List<{name}>";
+        return $"{className.ToPascalCase()}.Values";
     }
 
     protected override bool IsEnumNameValid(string name)

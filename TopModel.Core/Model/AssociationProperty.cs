@@ -37,6 +37,8 @@ public class AssociationProperty : IFieldProperty
 
     public AssociationType Type { get; set; }
 
+    public string As { get; set; } = "list";
+
     public bool Required { get; set; }
 
     public bool Readonly { get; set; }
@@ -129,7 +131,7 @@ public class AssociationProperty : IFieldProperty
 
     public string NameByClassCamel => Type.IsToMany() ? $"{NameCamel}" : $"{Association.NameCamel}{Role?.ToPascalCase() ?? string.Empty}";
 
-    public Domain Domain => Type.IsToMany() && (Property?.Domain?.AsDomains.TryGetValue("list", out var ld) ?? false) ? ld : Property?.Domain!;
+    public Domain Domain => Type.IsToMany() && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
 
     public bool PrimaryKey { get; set; }
 

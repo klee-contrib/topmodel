@@ -26,12 +26,7 @@ public class TranslationConfig : GeneratorConfigBase
         nameof(RootPath)
     };
 
-    protected override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override string GetListType(string name)
+    protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
     {
         throw new NotImplementedException();
     }

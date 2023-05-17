@@ -226,12 +226,12 @@ internal static class TemplateExtensions
             "from.length" => transform(domainFrom.Length?.ToString() ?? string.Empty),
             "from.scale" => transform(domainFrom.Scale?.ToString() ?? string.Empty),
             "from.name" => transform(domainFrom.Name ?? string.Empty),
-            "from.type" => transform(domainFrom.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty),
+            "from.type" => transform(domainFrom.Implementations.GetValueOrDefault(targetLanguage)?.Type.Default ?? string.Empty),
             "to.mediaType" => transform(domainTo.MediaType ?? string.Empty),
             "to.length" => transform(domainTo.Length?.ToString() ?? string.Empty),
             "to.scale" => transform(domainTo.Scale?.ToString() ?? string.Empty),
             "to.name" => transform(domainTo.Name ?? string.Empty),
-            "to.type" => transform(domainTo.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty),
+            "to.type" => transform(domainTo.Implementations.GetValueOrDefault(targetLanguage)?.Type.Default ?? string.Empty),
             var i => i
         };
     }

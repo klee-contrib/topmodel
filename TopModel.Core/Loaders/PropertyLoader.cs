@@ -99,6 +99,9 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                                 _ => AssociationType.OneToMany
                             };
                             break;
+                        case "as":
+                            ap.As = value.Value;
+                            break;
                         case "label":
                             ap.Label = value.Value;
                             break;

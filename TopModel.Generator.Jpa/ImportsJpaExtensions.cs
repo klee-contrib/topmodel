@@ -64,10 +64,7 @@ public static class ImportsJpaExtensions
             imports.Add(apr.Association.GetImport(config, tag));
         }
 
-        if (ap.Property is AssociationProperty apo && apo.Type.IsToMany())
-        {
-            imports.Add("java.util.List");
-        }
+        imports.AddRange(config.GetDomainImports(ap, tag));
 
         return imports;
     }
@@ -76,11 +73,7 @@ public static class ImportsJpaExtensions
     {
         var imports = new List<string>();
 
-        if (ap.Type.IsToMany())
-        {
-            imports.Add("java.util.List");
-        }
-
+        imports.AddRange(config.GetDomainImports(ap, tag));
         imports.Add(ap.Association.GetImport(config, tag));
 
         if (ap.Association.Reference)

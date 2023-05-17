@@ -14,6 +14,12 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
     private readonly ILogger<JpaModelGenerator> _logger;
     private readonly ModelConfig _modelConfig;
 
+    private readonly Dictionary<string, string> _newableTypes = new()
+    {
+        ["List"] = "ArrayList",
+        ["Set"] = "HashSet"
+    };
+
     private JpaModelConstructorGenerator? _jpaModelConstructorGenerator;
     private JpaModelPropertyGenerator? _jpaModelPropertyGenerator;
 
@@ -256,14 +262,19 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                         constructorArgs += $", p.get{((p is AssociationProperty asp && Config.CanClassUseEnums(asp.Property.Class)) ? p.NameCamel : p.NameByClassCamel).ToFirstUpper()}()";
                     }
 
-                    fw.WriteLine(3, @$"if (this.{ap.NameByClassCamel} != null) {{");
-                    fw.WriteLine(4, @$"this.{ap.NameByClassCamel}.clear();");
-                    fw.WriteLine(3, "} else {");
-                    fw.AddImport("java.util.ArrayList");
-                    fw.WriteLine(4, @$"this.{ap.NameByClassCamel} = new ArrayList<>();");
-                    fw.WriteLine(3, "}");
-                    fw.WriteLine(3, @$"this.{ap.NameByClassCamel}.addAll({propertyName}.stream().map(p -> new {ap.Association.NamePascal}({constructorArgs})).collect(Collectors.toList()));");
-                    fw.AddImport("java.util.stream.Collectors");
+                    var type = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent).Split('<').First();
+
+                    if (_newableTypes.TryGetValue(type, out var newableType))
+                    {
+                        fw.WriteLine(3, @$"if (this.{ap.NameByClassCamel} != null) {{");
+                        fw.WriteLine(4, @$"this.{ap.NameByClassCamel}.clear();");
+                        fw.WriteLine(3, "} else {");
+                        fw.AddImport($"java.util.{newableType}");
+                        fw.WriteLine(4, @$"this.{ap.NameByClassCamel} = new {newableType}<>();");
+                        fw.WriteLine(3, "}");
+                        fw.WriteLine(3, @$"this.{ap.NameByClassCamel}.addAll({propertyName}.stream().map(p -> new {ap.Association.NamePascal}({constructorArgs})).collect(Collectors.to{type}()));");
+                        fw.AddImport("java.util.stream.Collectors");
+                    }
                 }
 
                 fw.WriteLine(2, "} else {");
@@ -359,9 +370,13 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             fw.WriteLine(1, @$"public {Config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.NameByClassPascal.WithPrefix(getterPrefix)}() {{");
             if (property is AssociationProperty ap && ap.Type.IsToMany())
             {
-                fw.WriteLine(2, $"if(this.{property.NameByClassCamel} == null)");
-                fw.AddImport("java.util.ArrayList");
-                fw.WriteLine(3, $"this.{property.NameByClassCamel} = new ArrayList<>();");
+                var type = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent).Split('<').First();
+                if (_newableTypes.TryGetValue(type, out var newableType))
+                {
+                    fw.WriteLine(2, $"if(this.{property.NameByClassCamel} == null)");
+                    fw.AddImport($"java.util.{newableType}");
+                    fw.WriteLine(3, $"this.{property.NameByClassCamel} = new {newableType}<>();");
+                }
             }
 
             fw.WriteLine(2, @$"return this.{property.NameByClassCamel};");

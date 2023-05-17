@@ -183,7 +183,7 @@ public abstract class GeneratorConfigBase
             }
         }
 
-        if (GetImplementation(fp.Domain)!.Type.ToLower() == "string")
+        if (GetImplementation(fp.Domain)!.Type.Default.ToLower() == "string")
         {
             return $@"""{fp.DefaultValue}""";
         }
@@ -215,42 +215,57 @@ public abstract class GeneratorConfigBase
 
     public IEnumerable<string> GetDomainImports(IProperty property, string tag, bool noAnnotations = false)
     {
-        if (property is IFieldProperty fp)
+        if (property.Domain != null)
         {
-            foreach (var import in GetImplementation(fp.Domain)!.Imports.Select(u => u.ParseTemplate(fp)))
+            foreach (var import in GetImplementation(property.Domain)!.Imports.Select(u => u.ParseTemplate(property)))
             {
                 yield return import;
             }
 
             if (!noAnnotations)
             {
-                foreach (var import in GetImplementation(fp.Domain)!.Annotations
-                .Where(a => FilterAnnotations(a, fp, tag))
-                .SelectMany(a => a.Imports)
-                    .Select(u => u.ParseTemplate(fp)))
-                {
-                    yield return import;
-                }
-            }
-        }
-        else if (property is CompositionProperty { Domain: not null } cp)
-        {
-            foreach (var import in GetImplementation(cp.Domain)!.Imports.Select(u => u.ParseTemplate(cp)))
-            {
-                yield return import;
-            }
-
-            if (!noAnnotations)
-            {
-                foreach (var import in GetImplementation(cp.Domain)!.Annotations
-                    .Where(a => FilterAnnotations(a, cp, tag))
+                foreach (var import in GetImplementation(property.Domain)!.Annotations
+                    .Where(a => FilterAnnotations(a, property, tag))
                     .SelectMany(a => a.Imports)
-                    .Select(u => u.ParseTemplate(cp)))
+                    .Select(u => u.ParseTemplate(property)))
+                {
+                    yield return import;
+                }
+            }
+
+            var op = property switch
+            {
+                AssociationProperty ap => ap.Property,
+                AliasProperty { OriginalProperty: AssociationProperty ap } => ap.Property,
+                AliasProperty alp => alp.OriginalProperty,
+                _ => property
+            };
+
+            if (op != null && op != property)
+            {
+                foreach (var import in GetDomainImports(op, tag, true))
                 {
                     yield return import;
                 }
             }
         }
+    }
+
+    public string GetEnumType(IFieldProperty fp, bool isPrimaryKeyDef = false)
+    {
+        var op = fp switch
+        {
+            AssociationProperty a => a.Property,
+            AliasProperty { Property: AssociationProperty a } => a.Property,
+            AliasProperty alp => alp.Property,
+            _ => fp
+        };
+
+        return op is AssociationProperty ap
+            ? GetEnumType(ap.Association.Name, ap.Property.Name, isPrimaryKeyDef)
+            : op is RegularProperty rp
+            ? GetEnumType(rp.Class?.Name ?? string.Empty, rp.Name, isPrimaryKeyDef)
+            : string.Empty;
     }
 
     /// <summary>
@@ -292,15 +307,59 @@ public abstract class GeneratorConfigBase
     /// <returns>Le type.</returns>
     public string GetType(IProperty property, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false)
     {
+        string GetEnum(string className, string propName, bool isPrimaryKeyDef = false)
+        {
+            var op = property switch
+            {
+                AssociationProperty ap => ap.Property,
+                AliasProperty { Property: AssociationProperty ap } => ap.Property,
+                AliasProperty alp => alp.Property,
+                _ => property
+            };
+
+            return GetImplementation(op.Domain)!.Type.Enum.Replace("{enum}", GetEnumType(className, propName, isPrimaryKeyDef)).ParseTemplate(op);
+        }
+
+        string GetTransformed(string type)
+        {
+            return GetImplementation(property.Domain)!.Type.AsTransformed.Replace("{type}", type).ParseTemplate(property);
+        }
+
+        string HandleAUC(AssociationProperty ap)
+        {
+            return ap.Property.Domain != ap.Domain
+                ? GetTransformed(ap.Association.NamePascal)
+                : ap.Association.NamePascal;
+        }
+
+        string HandleEnum(IFieldProperty op)
+        {
+            var type = op is AssociationProperty ap
+                ? GetEnum(ap.Association.Name, ap.Property.Name)
+                : op is RegularProperty rp
+                ? GetEnum(rp.Class.Name, rp.Name, rp == property)
+                : throw new InvalidOperationException();
+
+            if (property.Domain != (op is AssociationProperty ap2 ? ap2.Property.Domain : op.Domain))
+            {
+                return GetTransformed(type);
+            }
+            else
+            {
+                return type;
+            }
+        }
+
         return property switch
         {
-            AssociationProperty { Association: Class assoc } ap when useClassForAssociation => ap.Type.IsToMany() ? GetListType(assoc.NamePascal) : ap.Association.NamePascal,
-            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, As: var asD } when useClassForAssociation => asD == "list" || ap.Type.IsToMany() ? GetListType(assoc.NamePascal) : ap.Association.NamePascal,
-            AssociationProperty { Association: Class assoc } ap when CanClassUseEnums(assoc, availableClasses, ap.Property) => GetEnumType(assoc.Name, ap.Property.Name, ap.Type.IsToMany()),
-            AliasProperty { Property: AssociationProperty { Association: Class assoc } ap, As: var asD } when CanClassUseEnums(assoc, availableClasses) => GetEnumType(assoc.Name, ap.Property.Name, asD == "list" || ap.Type.IsToMany()),
-            RegularProperty { Class: Class classe } rp when CanClassUseEnums(classe, availableClasses, rp) => GetEnumType(rp.Class.Name, rp.Name, false, true),
-            AliasProperty { Property: RegularProperty { Class: Class alClass } rp, As: var asD } when CanClassUseEnums(alClass, availableClasses, rp) => GetEnumType(alClass.Name, rp.Name, asD == "list"),
-            IFieldProperty or CompositionProperty { Domain: not null } => GetImplementation(property.Domain)!.Type.ParseTemplate(property),
+            AssociationProperty ap when useClassForAssociation => HandleAUC(ap),
+            AliasProperty { Property: AssociationProperty ap } when useClassForAssociation => HandleAUC(ap),
+            AssociationProperty ap when CanClassUseEnums(ap.Association, availableClasses, ap.Property) => HandleEnum(ap),
+            AliasProperty { Property: AssociationProperty ap } when CanClassUseEnums(ap.Association, availableClasses) => HandleEnum(ap),
+            RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, availableClasses, rp) => HandleEnum(rp),
+            AliasProperty { Property: RegularProperty { Class: not null } rp } alp when CanClassUseEnums(rp.Class, availableClasses, rp) => HandleEnum(rp),
+            IFieldProperty => GetImplementation(property.Domain)!.Type.Default.ParseTemplate(property),
+            CompositionProperty { Domain: not null } => GetImplementation(property.Domain)!.Type.Composition.ParseTemplate(property),
             CompositionProperty cp => cp.Composition.NamePascal,
             _ => string.Empty
         };
@@ -456,9 +515,7 @@ public abstract class GeneratorConfigBase
         return $"{className.ToPascalCase()}.{refName}";
     }
 
-    protected abstract string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false);
-
-    protected abstract string GetListType(string name);
+    protected abstract string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false);
 
     protected virtual bool IsEnumNameValid(string name)
     {

@@ -9,6 +9,14 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 {
     private readonly ILogger<CSharpClassGenerator> _logger;
 
+    private readonly Dictionary<string, string> _newableTypes = new()
+    {
+        ["IEnumerable"] = "List",
+        ["ICollection"] = "List",
+        ["List"] = "List",
+        ["HashSet"] = "HashSet"
+    };
+
     public CSharpClassGenerator(ILogger<CSharpClassGenerator> logger)
         : base(logger)
     {
@@ -327,8 +335,8 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
         foreach (var property in item.Properties)
         {
-            var type = Config.GetType(property).Replace("ICollection", "List");
-            if (property is CompositionProperty cp && cp.Domain == null || type.StartsWith("List<"))
+            var type = GetNewableType(property);
+            if (type != null)
             {
                 w.WriteLine(3, $"{property.NamePascal} = new {type}(bean.{property.NamePascal});");
             }
@@ -381,8 +389,8 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         var line = false;
         foreach (var property in item.Properties.OfType<CompositionProperty>())
         {
-            var type = Config.GetType(property).Replace("ICollection", "List");
-            if (property.Domain == null || type.StartsWith("List<"))
+            var type = GetNewableType(property);
+            if (type != null)
             {
                 line = true;
                 w.WriteLine(3, $"{property.NamePascal} = new {type}();");
@@ -633,5 +641,26 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     private string GetNamespace(Class classe, string tag)
     {
         return Config.GetNamespace(classe, GetClassTags(classe).Contains(tag) ? tag : GetClassTags(classe).Intersect(Config.Tags).FirstOrDefault() ?? tag);
+    }
+
+    private string? GetNewableType(IProperty property)
+    {
+        if (property is CompositionProperty cp)
+        {
+            var type = Config.GetType(property);
+            var genericType = type.Split('<').First();
+
+            if (cp.Domain == null)
+            {
+                return type;
+            }
+
+            if (_newableTypes.TryGetValue(genericType, out var newableType))
+            {
+                return type.Replace(genericType, newableType);
+            }
+        }
+
+        return null;
     }
 }

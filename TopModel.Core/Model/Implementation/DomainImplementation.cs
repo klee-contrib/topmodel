@@ -3,7 +3,7 @@
 public class DomainImplementation
 {
 #nullable disable
-    public string Type { get; set; }
+    public DomainType Type { get; set; }
 
     public List<string> Imports { get; set; } = new List<string>();
 

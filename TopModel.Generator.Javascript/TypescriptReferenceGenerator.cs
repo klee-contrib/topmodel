@@ -54,7 +54,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptCo
                     _ => null!
                 },
                 Path: Config.GetImportPathForClass(dep, GetClassTags(dep.Classe).Contains(tag) ? tag : GetClassTags(dep.Classe).Intersect(Config.Tags).FirstOrDefault() ?? tag, tag, Classes)!))
-            .Concat(references.SelectMany(r => r.Properties).Select(dep => Config.GetDomainImportPath(dep, tag)))
+            .Concat(references.SelectMany(r => r.Properties).SelectMany(dep => Config.GetDomainImportPaths(dep, tag)))
             .Where(i => i.Path != null && i.Path != $"./references")
             .GroupAndSort();
 
@@ -160,7 +160,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptCo
         {
             fw.WriteLine("    {");
             fw.Write("        ");
-            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.NameCamel}: {(Config.GetImplementation(property.Key.Domain)!.Type == "string" ? @$"""{(_modelConfig.I18n.TranslateReferences && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}")));
+            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.NameCamel}: {(Config.GetImplementation(property.Key.Domain)!.Type.Default == "string" ? @$"""{(_modelConfig.I18n.TranslateReferences && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}")));
             fw.WriteLine();
             fw.WriteLine("    },");
         }

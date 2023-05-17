@@ -65,7 +65,6 @@ public class CompletionHandler : CompletionHandlerBase
                 return Task.FromResult(new CompletionList(
                     _modelStore.Domains
                         .Select(domain => domain.Key)
-                        .Concat(currentLine.Contains("kind: ") ? new[] { "object", "list" } : Array.Empty<string>())
                         .OrderBy(domain => domain)
                         .Where(domain => domain.ToLower().ShouldMatch(searchText))
                         .Select(domain => new CompletionItem

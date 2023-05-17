@@ -96,6 +96,10 @@
                 "manyToMany"
               ]
             },
+            "as": {
+              "type": "string",
+              "description": "Domaine `as` à utiliser pour la transformation de domaine pour une association `toMany`. Par défaut : 'list'."
+            },
             "required": {
               "type": "boolean",
               "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."
@@ -408,7 +412,7 @@
             },
             "asDomains": {
               "type": "object",
-              "description": "Domaines à utiliser lorsque l'on veut transformer le domaine d'un champ dans un alias (avec `as`). Pour utiliser des associations oneToMany et manyToMany, il est nécessaire de définir un domaine pour `list`.",
+              "description": "Domaines à utiliser lorsque l'on veut transformer le domaine d'un champ dans un alias ou une association `xxxToMany` (avec `as`).",
               "additionalProperties": {
                 "type": "string"
               }
@@ -427,8 +431,36 @@
             "additionalProperties": false,
             "properties": {
               "type": {
-                "type": "string",
-                "description": "Type du domaine. Peut contenir des variables"
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "description": "Type du domaine. Peut contenir des variables"
+                  },
+                  {
+                    "type": "object",
+                    "description": "Description complète du type du domaine. Peut contenir des variables.",
+                    "additionalProperties": false,
+                    "required": [ "default" ],
+                    "properties": {
+                      "composition": {
+                        "type": "string",
+                        "description": "Type du domaine lorsqu'il est utilisé pour une composition. Par défaut : '{composition.name}'."
+                      },
+                      "asTransformed": {
+                        "type": "string",
+                        "description": "Type du domaine lorsqu'il est utilisé comme transformation pour un alias ou une association (via `as`, et association `toMany`). Peut utiliser la variable `type` qui référence le type résolu pour la propriété originale. Par défaut : valeur de `default`."
+                      },
+                      "enum": {
+                        "type": "string",
+                        "description": "Type du domaine lorsqu'il est utilisé pour une PK ou UK d'une classe enum. Peut utiliser la variable 'enum' pour référencer l'enum dans le langage cible. Par défaut : '{enum}'."
+                      },
+                      "default": {
+                        "type": "string",
+                        "description": "Type du domaine dans les cas non couverts par les 3 autres propriétés."
+                      }
+                    }
+                  }
+                ]
               },
               "imports": {
                 "type": "array",

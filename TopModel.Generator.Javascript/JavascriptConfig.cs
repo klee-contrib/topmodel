@@ -98,11 +98,10 @@ public class JavascriptConfig : GeneratorConfigBase
         .Replace("\\", "/");
     }
 
-    public (string Import, string Path) GetDomainImportPath(IProperty dep, string tag)
+    public IEnumerable<(string Import, string Path)> GetDomainImportPaths(IProperty prop, string tag)
     {
-        var imports = GetDomainImports(dep, tag);
-        var type = GetType(dep).Split("<").First().Replace("[]", string.Empty);
-        return (Import: type, Path: imports.FirstOrDefault()!);
+        return GetDomainImports(prop, tag).
+            Select(import => (Import: import.Split("/").Last(), Path: import[..import.LastIndexOf("/")]));
     }
 
     public List<(string Import, string Path)> GetEndpointImports(IEnumerable<Endpoint> endpoints, string tag, IEnumerable<Class> availableClasses, Func<Class, IEnumerable<string>> getClassTags)
@@ -110,10 +109,10 @@ public class JavascriptConfig : GeneratorConfigBase
         return endpoints.SelectMany(e => e.ClassDependencies)
             .Select(dep => (
                 Import: dep is { Source: IFieldProperty fp }
-                    ? GetType(fp).Replace("[]", string.Empty)
+                    ? GetEnumType(fp)
                     : dep.Classe.NamePascal,
                 Path: GetImportPathForClass(dep, getClassTags(dep.Classe).Contains(tag) ? tag : getClassTags(dep.Classe).Intersect(Tags).FirstOrDefault() ?? tag, tag, availableClasses)!))
-            .Concat(endpoints.SelectMany(d => d.Properties).Select(dep => GetDomainImportPath(dep, tag)))
+            .Concat(endpoints.SelectMany(d => d.Properties).SelectMany(dep => GetDomainImportPaths(dep, tag)))
             .Where(i => i.Path != null)
             .GroupAndSort();
     }
@@ -189,17 +188,12 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public bool IsListComposition(IProperty property)
     {
-        return property is CompositionProperty cp && cp.Domain != null && GetImplementation(cp.Domain)!.Type.EndsWith("[]");
+        return property is CompositionProperty cp && cp.Domain != null && GetImplementation(cp.Domain)!.Type.Composition.EndsWith("[]");
     }
 
-    protected override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
+    protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
     {
-        return $"{className.ToPascalCase()}{propName.ToPascalCase()}{(asList ? "[]" : string.Empty)}";
-    }
-
-    protected override string GetListType(string name)
-    {
-        return $"{name}[]";
+        return $"{className.ToPascalCase()}{propName.ToPascalCase()}";
     }
 
     protected override bool IsEnumNameValid(string name)
