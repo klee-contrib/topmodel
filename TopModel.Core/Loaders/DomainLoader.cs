@@ -64,19 +64,10 @@ public class DomainLoader : ILoader<Domain>
                         switch (prop)
                         {
                             case "type":
-                                implementation.Type = new DomainType();
-
-                                if (parser.TryConsume<Scalar>(out var scalar))
-                                {
-                                    implementation.Type.Default = scalar.Value;
-                                    implementation.Type.Composition = scalar.Value;
-                                }
-                                else
-                                {
-                                    implementation.Type = _fileChecker.Deserialize<DomainType>(parser);
-                                }
-
-                                implementation.Type.AsTransformed ??= implementation.Type.Default;
+                                implementation.Type = parser.Consume<Scalar>().Value;
+                                break;
+                            case "genericType":
+                                implementation.GenericType = parser.Consume<Scalar>().Value;
                                 break;
                             case "imports":
                                 implementation.Imports = _fileChecker.Deserialize<List<string>>(parser);

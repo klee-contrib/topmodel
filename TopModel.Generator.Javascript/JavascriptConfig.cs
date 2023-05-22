@@ -188,7 +188,7 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public bool IsListComposition(IProperty property)
     {
-        return property is CompositionProperty cp && cp.Domain != null && GetImplementation(cp.Domain)!.Type.Composition.EndsWith("[]");
+        return property is CompositionProperty cp && cp.Domain != null && (GetImplementation(cp.Domain)?.GenericType?.EndsWith("[]") ?? false);
     }
 
     protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)

@@ -249,7 +249,7 @@ public class JpaModelPropertyGenerator
             var column = @$"@Column(name = ""{property.SqlName}"", nullable = {(!property.Required).ToString().ToFirstLower()}";
             if (property.Domain.Length != null)
             {
-                if (_config.GetImplementation(property.Domain)!.Type.Default.ToUpper() == "STRING")
+                if (_config.GetImplementation(property.Domain)?.Type?.ToUpper() == "STRING")
                 {
                     column += $", length = {property.Domain.Length}";
                 }

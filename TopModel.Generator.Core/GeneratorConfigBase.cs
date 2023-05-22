@@ -183,7 +183,7 @@ public abstract class GeneratorConfigBase
             }
         }
 
-        if (GetImplementation(fp.Domain)!.Type.Default.ToLower() == "string")
+        if (GetImplementation(fp.Domain)?.Type?.ToLower() == "string")
         {
             return $@"""{fp.DefaultValue}""";
         }
@@ -317,12 +317,13 @@ public abstract class GeneratorConfigBase
                 _ => property
             };
 
-            return GetImplementation(op.Domain)!.Type.Enum.Replace("{enum}", GetEnumType(className, propName, isPrimaryKeyDef)).ParseTemplate(op);
+            return (GetImplementation(op.Domain)?.GenericType ?? "{type}").Replace("{type}", GetEnumType(className, propName, isPrimaryKeyDef)).ParseTemplate(op);
         }
 
         string GetTransformed(string type)
         {
-            return GetImplementation(property.Domain)!.Type.AsTransformed.Replace("{type}", type).ParseTemplate(property);
+            var domain = GetImplementation(property.Domain);
+            return (domain?.GenericType?.Replace("{type}", type) ?? domain?.Type ?? string.Empty).ParseTemplate(property);
         }
 
         string HandleAUC(AssociationProperty ap)
@@ -358,8 +359,8 @@ public abstract class GeneratorConfigBase
             AliasProperty { Property: AssociationProperty ap } when CanClassUseEnums(ap.Association, availableClasses) => HandleEnum(ap),
             RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, availableClasses, rp) => HandleEnum(rp),
             AliasProperty { Property: RegularProperty { Class: not null } rp } alp when CanClassUseEnums(rp.Class, availableClasses, rp) => HandleEnum(rp),
-            IFieldProperty => GetImplementation(property.Domain)!.Type.Default.ParseTemplate(property),
-            CompositionProperty { Domain: not null } => GetImplementation(property.Domain)!.Type.Composition.ParseTemplate(property),
+            IFieldProperty => (GetImplementation(property.Domain)?.Type ?? string.Empty).ParseTemplate(property),
+            CompositionProperty { Domain: not null } => (GetImplementation(property.Domain)?.GenericType ?? "{type}").Replace("{type}", "{composition.name}").ParseTemplate(property),
             CompositionProperty cp => cp.Composition.NamePascal,
             _ => string.Empty
         };

@@ -160,7 +160,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
             if (Config.CanClassUseEnums(classe, Classes, targetProp))
             {
                 hasPropConfig = true;
-                w.WriteLine(3, $"modelBuilder.Entity<{fp.Class}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain)!.Type.Default}>(){(fp.Domain.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};");
+                w.WriteLine(3, $"modelBuilder.Entity<{fp.Class}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain)?.Type ?? string.Empty}>(){(fp.Domain.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};");
             }
 
             if (fp.Domain.Length != null && fp.Domain.Scale != null)

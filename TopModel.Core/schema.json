@@ -425,42 +425,15 @@
           "additionalProperties": {
             "type": "object",
             "description": "Implémentation du domaine dans un langage",
-            "required": [
-              "type"
-            ],
             "additionalProperties": false,
             "properties": {
               "type": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Type du domaine. Peut contenir des variables"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Description complète du type du domaine. Peut contenir des variables.",
-                    "additionalProperties": false,
-                    "required": [ "default" ],
-                    "properties": {
-                      "composition": {
-                        "type": "string",
-                        "description": "Type du domaine lorsqu'il est utilisé pour une composition. Par défaut : '{composition.name}'."
-                      },
-                      "asTransformed": {
-                        "type": "string",
-                        "description": "Type du domaine lorsqu'il est utilisé comme transformation pour un alias ou une association (via `as`, et association `toMany`). Peut utiliser la variable `type` qui référence le type résolu pour la propriété originale. Par défaut : valeur de `default`."
-                      },
-                      "enum": {
-                        "type": "string",
-                        "description": "Type du domaine lorsqu'il est utilisé pour une PK ou UK d'une classe enum. Peut utiliser la variable 'enum' pour référencer l'enum dans le langage cible. Par défaut : '{enum}'."
-                      },
-                      "default": {
-                        "type": "string",
-                        "description": "Type du domaine dans les cas non couverts par les 3 autres propriétés."
-                      }
-                    }
-                  }
-                ]
+                "type": "string",
+                "description": "Type du domaine. Peut contenir des variables"
+              },
+              "genericType": {
+                "type": "string",
+                "description": "Type générique pour le domaine. Doit contenir la variable '{type}' (en plus des autres variables si nécessaire) pour référencer le type original de la propriété. Pour une composition, il s'agit de la valeur de `composition.name`, pour une PK ou UK d'une classe enum, il s'agit de la représentation de l'enum dans le langage cible, et pour une transformation pour un alias ou une association (via `as`, et association `toMany`), il s'agit du type résolu de la propriété originale. Si non renseigné, sa valeur par défaut pour une composition ou une enum est `{type}` (la valeur de `type` sera utilisée pour une transformation)."
               },
               "imports": {
                 "type": "array",

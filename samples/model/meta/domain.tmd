@@ -24,17 +24,14 @@ domain:
   name: DO_ID_LIST
   label: List d'IDs techniques
   ts:
-    type:
-      asTransformed: "{type}[]"
-      default: number[]
+    type: number[]
+    genericType: "{type}[]"
   csharp:
-    type:
-      asTransformed: "{type}[]"
-      default: int[]
+    type: int[]
+    genericType: "{type}[]"
   java:
-    type:
-      asTransformed: List<{type}>
-      default: List<Long>
+    type: List<Long>
+    genericType: List<{type}>
     imports:
       - java.util.List
   sql:
@@ -126,17 +123,14 @@ domain:
   name: DO_CODE_LIST
   label: Code
   ts:
-    type:
-      asTransformed: "{type}[]"
-      default: string[]
+    type: string[]
+    genericType: "{type}[]"
   csharp:
-    type:
-      asTransformed: "{type}[]"
-      default: string[]
+    type: string[]
+    genericType: "{type}[]"
   java:
-    type:
-      asTransformed: List<{type}>
-      default: List<String>
+    type: List<String>
+    genericType: List<{type}>
     imports:
       - java.util.List
   sql:
@@ -164,27 +158,27 @@ domain:
   name: DO_LIST
   label: Liste pour composition
   csharp:
-    type: ICollection<{composition.name}>
+    genericType: ICollection<{type}>
   java:
-    type: List<{composition.name}>
+    genericType: List<{type}>
     imports:
       - java.util.List
   ts:
-    type: "{composition.name}[]"
+    genericType: "{type}[]"
   php:
-    type: Collection
+    genericType: Collection
 ---
 domain:
   name: DO_PAGE
   label: Page
   ts:
-    type: Page<{composition.name}>
+    genericType: Page<{type}>
     imports:
       - "@/types/Page"
   csharp:
-    type: ICollection<{composition.name}>
+    genericType: ICollection<{type}>
   java:
-    type: Page<{composition.name}>
+    genericType: Page<{type}>
     imports:
       - org.springframework.data.domain.Page
   php:

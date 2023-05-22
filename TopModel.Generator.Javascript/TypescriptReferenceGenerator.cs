@@ -160,7 +160,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptCo
         {
             fw.WriteLine("    {");
             fw.Write("        ");
-            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.NameCamel}: {(Config.GetImplementation(property.Key.Domain)!.Type.Default == "string" ? @$"""{(_modelConfig.I18n.TranslateReferences && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}")));
+            fw.Write(string.Join(",\n        ", refValue.Value.Where(p => p.Value != "null").Select(property => $"{property.Key.NameCamel}: {(Config.GetImplementation(property.Key.Domain)?.Type == "string" ? @$"""{(_modelConfig.I18n.TranslateReferences && property.Key == property.Key.Class.DefaultProperty ? refValue.ResourceKey : property.Value)}""" : @$"{property.Value}")}")));
             fw.WriteLine();
             fw.WriteLine("    },");
         }
