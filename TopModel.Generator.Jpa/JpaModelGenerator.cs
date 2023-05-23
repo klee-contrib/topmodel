@@ -96,10 +96,6 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         JpaModelConstructorGenerator.WriteNoArgConstructor(fw, classe);
         JpaModelConstructorGenerator.WriteCopyConstructor(fw, classe, AvailableClasses, tag);
         JpaModelConstructorGenerator.WriteAllArgConstructor(fw, classe, AvailableClasses, tag);
-        if (Config.EnumShortcutMode)
-        {
-            JpaModelConstructorGenerator.WriteAllArgConstructorEnumShortcut(fw, classe, AvailableClasses, tag);
-        }
 
         JpaModelConstructorGenerator.WriteFromMappers(fw, classe, AvailableClasses, tag);
 

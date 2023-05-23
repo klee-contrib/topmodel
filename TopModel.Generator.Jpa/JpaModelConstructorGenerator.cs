@@ -53,57 +53,6 @@ public class JpaModelConstructorGenerator
         fw.WriteLine(1, $"}}");
     }
 
-    public void WriteAllArgConstructorEnumShortcut(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
-    {
-        var properties = classe.GetAllArgsProperties(availableClasses, tag);
-        if (!properties.OfType<AssociationProperty>().Any(p => _config.CanClassUseEnums(p.Association) && (p.Type == AssociationType.OneToOne || p.Type == AssociationType.ManyToOne)))
-        {
-            return;
-        }
-
-        fw.WriteLine();
-        fw.WriteDocStart(1, "All arg constructor when Enum shortcut mode is set");
-
-        if (properties.Count == 0)
-        {
-            return;
-        }
-
-        var propertiesSignature = string.Join(", ", properties.Select(p => $"{_config.GetType(p, useClassForAssociation: p is not AssociationProperty ap || !_config.CanClassUseEnums(ap.Association))} {(p is AssociationProperty asp && _config.CanClassUseEnums(asp.Association) ? p.NameCamel : p.NameByClassCamel)}"));
-
-        foreach (var property in properties)
-        {
-            fw.WriteLine(1, $" * @param {property.NameByClassCamel} {property.Comment}");
-        }
-
-        fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"public {classe.NamePascal}({propertiesSignature}) {{");
-        if (classe.Extends != null)
-        {
-            var parentAllArgConstructorArguments = string.Join(", ", classe.Extends.GetAllArgsProperties(availableClasses, tag).Select(p => $"{p.NameByClassCamel}"));
-            fw.WriteLine(2, $"super({parentAllArgConstructorArguments});");
-        }
-        else if (classe.Decorators.Any(d => _config.GetImplementation(d.Decorator)?.Extends is not null))
-        {
-            fw.WriteLine(2, $"super();");
-        }
-
-        foreach (var property in classe.GetProperties(availableClasses))
-        {
-            if (!(property is AssociationProperty aspr2 && _config.CanClassUseEnums(aspr2.Association)))
-            {
-                fw.WriteLine(2, $"this.{property.NameByClassCamel} = {property.NameByClassCamel};");
-            }
-            else
-            {
-                var isMultiple = aspr2.Type == AssociationType.OneToMany || aspr2.Type == AssociationType.ManyToMany;
-                fw.WriteLine(2, $"this.{aspr2.NamePascal.WithPrefix("set")}{(isMultiple ? aspr2.Property.NamePascal : string.Empty)}({property.NameCamel});");
-            }
-        }
-
-        fw.WriteLine(1, $"}}");
-    }
-
     public void WriteCopyConstructor(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
     {
         fw.WriteLine();
