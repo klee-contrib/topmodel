@@ -14,11 +14,11 @@ domain:
   length: # Longueur du champ, si applicable.
   scale: # Nombre de décimales du champ, si applicable.
   asDomains:
-    list: DO_ID_LIST # Domaine a utiliser s'il faut transformer le domaine du champ lors d'une référence.
+    list: DO_ID_LIST # Domaine a utiliser s'il faut transformer le domaine du champ en 'list'.
   csharp:
     type: int?
     annotations: # Liste d'annotations à devoir ajouter à toute propriété de ce domaine, si applicable.
-    imports: # Liste de usings à devoir ajouter à la définition d'une classe qui utilise ce domaine, si applicable.
+    imports: # Liste d'imports à devoir ajouter à la définition d'une classe qui utilise ce domaine, si applicable.
   ts:
     type: number
     imports:
@@ -55,6 +55,34 @@ domain:
     imports:
       - org.springframework.http.ResponseEntity
       - org.springframework.core.io.Resource
+```
+
+## Types d'implémentation génériques
+
+Une implémentation de langage peut définir, en plus du `type`, un **`genericType`**. Ce champ peut (et devrait) référencer la variable spéciale `{T}`, qui correspond au type original de la propriété. Le type générique est utilisé pour les 3 cas suivants :
+
+- Lorsque le domaine est utilisé pour une **composition**, et la variable **`{T}` est égal au nom de la classe**. Si `genericType` n'est pas renseigné pour l'implémentation du domaine, il vaudra `"{T}"`. Un domaine utilisé pour une composition peut toujours être utilisé pour un autre type de propriété, il ne faudra pas oublier de renseigner la valeur de `type` (non générique).
+- Lorsque la propriété utilisant la propriété est considérée comme une **enum** par la configuration du générateur. Elle vaut également `"{T}"` par défaut, **`{T}` correspondant à la représentation de l'enum dans le langage cible**.
+- Lorsque le domaine est utilisé dans une **transformation de domaine** (via `as`, donc les cas décrits dans le premier point de cette PR). Si `genericType` n'est pas renseigné dans ce cas, elle vaudra par défaut la valeur de `type`, ce qui veut dire qu'il faut nécessairement spécifier la transformation pour qu'elle soit réalisée. Auparavant, cela n'existait que pour `asList: true` (et les associations `toMany`), et chaque générateur implémentait en dur la transformation à réaliser sur le type original (impossible à débrancher, et souvent en ajoutant `"[]"` à la fin ou en mettant `List<>` autour). **`{T}` référencera ici le type original** (qui peut être une enum ou une association par exemple).
+
+Par exemple, le domaine `DO_ID_LIST` référencé dans l'exemple précédent comme `asDomain` de `DO_ID` devrait être défini ainsi :
+
+```yaml
+---
+domain:
+  name: DO_ID_LIST
+  label: Code
+  ts:
+    type: number[]
+    genericType: "{type}[]"
+  csharp:
+    type: int[]
+    genericType: "{type}[]"
+  java:
+    type: List<int>
+    genericType: List<{type}>
+    imports:
+      - java.util.List
 ```
 
 ## Templating
@@ -104,9 +132,9 @@ Le tout dans les propriétés d'implémentation :
 - `annotations`
 - `imports`
 
-Les templates des domaines des propriétés sont également valorisés.
+Les templates des domaines des propriétés sont également valorisés. Ces variables s'ajoutent à la variable `{T}` utilisée dans les types génériques.
 
-## Transformation
+### Transformations
 
 Il est possible que la variable que vous utilisez dans votre template ne corresponde pas tout à fait à votre besoin. TopModel gère l'ajout de `transformateurs` sur les templates. Vous pouvez ajouter un `transformateur` après le nom de la variable que vous référencez, précédé de `:`. Le code généré tiendra compte de cette transformation.
 
@@ -136,7 +164,7 @@ Actuellement, voici les transformations gérées par `TopModel` :
 | `lower`      | lowercase     |
 | `upper`      | UPPERCASE     |
 
-## Spécialisation
+## Spécialisation des annotations
 
 Les annotations peuvent être spécialisées selon la cible de la génération. Il y a actuellement trois cibles possibles, qui sont composables. La propriété `target` de l'annotation peut donc prendre les valeurs suivantes :
 
@@ -160,7 +188,7 @@ domain:
     type: Integer
     annotations:
       - text: '@Label("{label:lower}")'
-        imports: # Using pour les annotations C#
+        imports:
           - topmodel.sample.custom.annotation.Label
         target: Dto
 ```

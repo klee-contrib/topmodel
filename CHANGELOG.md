@@ -11,7 +11,7 @@
   - Dans une composition, retirer `kind: object`, remplacer `kind: list` par `domain: DO_LIST` (par exemple, vous pouvez utiliser n'importe quel domaine), et remplacer `kind` par `domain` pour les compositions qui utilisaient déjà des domaines
   - Implémenter `genericType` dans les implémentation de domaines pour :
     - Les domaines de compositions (ils n'utilisent plus `type`), et inclure `{T}` dans leur définition (à la place de `composition.name` s'il y était)
-    - Les domaines utilisés par `as: list`, à priori avec un `{T}[]` ou `List<{T}>` pour correspondre au type du domaine
+    - Les domaines utilisés par `asDomains: list` (`as: list` et associations `toMany`), à priori avec un `{T}[]` ou `List<{T}>` pour correspondre au type du domaine
   - Dans les imports d'implémentation de domaine JS, ajouter le type importé à la fin de l'import derrière un `/`.
   - Les mappings entre associations `toMany` et compositions `list` n'existent plus
 

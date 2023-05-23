@@ -32,7 +32,7 @@ Une association peut également définir sa multiplicité : `manyToOne` (par dé
 
 Une `manyToOne` correspond à une clé étrangère simple vers la classe référencée, tandis que `oneToOne` y ajoute une contrainte d'unicité. Dans ces deux cas, le nom de la propriété sera déterminé automatiquement comme étant `{ClasseCible.Name}{ClasseCible.PrimaryKey}{Rôle}`.
 
-Les `oneToMany` et `manyToMany` sont des associations qui seront implémentées comme des collections de la classe cible. Dans ces deux cas, le nom de la propriété sera déterminé automatiquement comme étant `{ClasseCible.PluralName}{Rôle}`. Le domaine de la clé primaire doit définir un `asDomain` `list` pour pouvoir définir une telle association.
+Les `oneToMany` et `manyToMany` sont des associations qui seront implémentées comme des collections de la classe cible. Dans ces deux cas, le nom de la propriété sera déterminé automatiquement comme étant `{ClasseCible.PluralName}{Rôle}`. Le domaine de la clé primaire doit définir un `asDomain` `list` pour pouvoir définir une telle association (le `asDomain` correspondant peut être surchargé en renseignant la propriété `as` sur l'association, qui ne sera utilisée que pour ces types d'associations-là). Il faudra que les implémentations du [domaine](/model/domains.md) utilisé définissent un `genericType` pour préciser le type de collection à utiliser.
 
 La classe référencée par l'association doit être connue du fichier de modèle courant, soit parce qu'elle est définie dedans, soit parce que son fichier est référencé dans la section `uses`.
 
@@ -65,50 +65,35 @@ Exemple :
 
 ```yaml
 composition: ClasseCible
-name: ClasseCibleList
-kind: list
-comment: C'est une liste
+name: ClasseCible
+comment: Une instance de classe cible.
 ```
 
-Une composition doit avoir un type, qui indique de quelle façon la classe sera référencée. Les deux types par défaut sont `"object"` et `"list"`, pour indiquer si on veut juste une instance de la classe ou bien une liste. Il est possible d'utiliser un **type personnalisé** en renseignant un nom de [domaine](/model/domains.md) dans la propriété **`kind`**. Le type du domaine sera utilisé comme "conteneur" de la classe.
+Une composition peut également spécifier un [domaine](/model/domains.md) via la propriété **`domain`**, afin de renseigner une composition avec un **type personnalisé** (au lieu d'une composition simple qui est une simple instance de la classe). L'implémentation du domaine devra définir `genericType`, afin de spécifier le type "conteneur" de la composition.
 
-Par exemple, avec
+Par exemple, pour une liste :
 
 ```yaml
 ---
 domain:
-  name: DO_SET
-  label: Set
+  name: DO_LIST
+  label: List
   csharp:
-    type: HashSet
+    genericType: List<{T}>
 ---
 class:
   name: MyClass
 
   properties:
     - composition: ClasseCible
-      name: ClasseCibleSet
-      kind: DO_SET
-      comment: C'est un set
+      name: ClasseCibleList
+      kind: DO_LIST
+      comment: C'est une liste
 ```
 
-La classe C# générée aura une propriété `ClasseCibleSet` de type `HashSet<ClasseCible>`.
+La classe C# générée aura une propriété `ClasseCibleList` de type `List<ClasseCible>`.
 
 La classe référencée par la composition doit être connue du fichier de modèle courant, soit parce qu'elle est définie dedans, soit parce que son fichier est référencé dans la section `uses`.
-
-Il est également possible de définir un pattern pour la classe générique. Pour cela, dans la définition du domaine, il est possible d'écrire
-
-```yaml
-domain:
-  name: DO_DICTIONNAIRE
-  label: Dictionnaire
-  csharp:
-    type: Dictionary<string, {composition.name}>
-  ts:
-    type: Map<String, {composition.name}>
-```
-
-Ainsi, les propriétés de composition générées avec le `kind: DO_DICTIONNAIRE` auront la forme du pattern défini, `{composition.name}` étant remplacé par la classe cible.
 
 ## Alias
 
