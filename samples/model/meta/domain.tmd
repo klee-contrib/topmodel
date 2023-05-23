@@ -25,13 +25,13 @@ domain:
   label: List d'IDs techniques
   ts:
     type: number[]
-    genericType: "{type}[]"
+    genericType: "{T}[]"
   csharp:
     type: int[]
-    genericType: "{type}[]"
+    genericType: "{T}[]"
   java:
     type: List<Long>
-    genericType: List<{type}>
+    genericType: List<{T}>
     imports:
       - java.util.List
   sql:
@@ -124,13 +124,13 @@ domain:
   label: Code
   ts:
     type: string[]
-    genericType: "{type}[]"
+    genericType: "{T}[]"
   csharp:
     type: string[]
-    genericType: "{type}[]"
+    genericType: "{T}[]"
   java:
     type: List<String>
-    genericType: List<{type}>
+    genericType: List<{T}>
     imports:
       - java.util.List
   sql:
@@ -158,13 +158,13 @@ domain:
   name: DO_LIST
   label: Liste pour composition
   csharp:
-    genericType: ICollection<{type}>
+    genericType: ICollection<{T}>
   java:
-    genericType: List<{type}>
+    genericType: List<{T}>
     imports:
       - java.util.List
   ts:
-    genericType: "{type}[]"
+    genericType: "{T}[]"
   php:
     genericType: Collection
 ---
@@ -172,13 +172,13 @@ domain:
   name: DO_PAGE
   label: Page
   ts:
-    genericType: Page<{type}>
+    genericType: Page<{T}>
     imports:
       - "@/types/Page"
   csharp:
-    genericType: ICollection<{type}>
+    genericType: ICollection<{T}>
   java:
-    genericType: Page<{type}>
+    genericType: Page<{T}>
     imports:
       - org.springframework.data.domain.Page
   php:

@@ -433,7 +433,7 @@
               },
               "genericType": {
                 "type": "string",
-                "description": "Type générique pour le domaine. Doit contenir la variable '{type}' (en plus des autres variables si nécessaire) pour référencer le type original de la propriété. Pour une composition, il s'agit de la valeur de `composition.name`, pour une PK ou UK d'une classe enum, il s'agit de la représentation de l'enum dans le langage cible, et pour une transformation pour un alias ou une association (via `as`, et association `toMany`), il s'agit du type résolu de la propriété originale. Si non renseigné, sa valeur par défaut pour une composition ou une enum est `{type}` (la valeur de `type` sera utilisée pour une transformation)."
+                "description": "Type générique pour le domaine. Doit contenir la variable '{T}' (en plus des autres variables si nécessaire) pour référencer le type original de la propriété. Pour une composition, il s'agit de la valeur de `composition.name`, pour une PK ou UK d'une classe enum, il s'agit de la représentation de l'enum dans le langage cible, et pour une transformation pour un alias ou une association (via `as`, et association `toMany`), il s'agit du type résolu de la propriété originale. Si non renseigné, sa valeur par défaut pour une composition ou une enum est `{T}` (la valeur de `type` sera utilisée pour une transformation)."
               },
               "imports": {
                 "type": "array",
