@@ -77,7 +77,7 @@ public class AliasProperty : IFieldProperty
         get
         {
             var domain = _domain ?? _property?.Domain;
-            return AsList ? domain?.ListDomain : domain;
+            return As != null ? (domain.AsDomains.TryGetValue(As, out var asDomain) ? asDomain : null) : domain;
         }
 
         set => _domain = value;
@@ -98,7 +98,7 @@ public class AliasProperty : IFieldProperty
         set => _defaultValue = value;
     }
 
-    public bool AsList { get; set; }
+    public string? As { get; set; }
 
     public IFieldProperty? OriginalProperty => _property;
 
@@ -130,7 +130,7 @@ public class AliasProperty : IFieldProperty
             Endpoint = endpoint,
             Label = _label,
             Location = Location,
-            AsList = AsList,
+            As = As,
             OriginalAliasProperty = OriginalAliasProperty,
             Prefix = Prefix,
             Property = _property,
@@ -178,7 +178,7 @@ public class AliasProperty : IFieldProperty
             Comment = _comment!,
             DefaultValue = _defaultValue,
             Label = _label,
-            AsList = AsList,
+            As = As,
             OriginalAliasProperty = this,
             UseLegacyRoleName = UseLegacyRoleName
         };

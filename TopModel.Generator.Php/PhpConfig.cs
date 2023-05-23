@@ -65,13 +65,8 @@ public class PhpConfig : GeneratorConfigBase
         return ResolveVariables(modelPath, tag, module: ns.Module).ToPackageName();
     }
 
-    protected override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
+    protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
     {
         throw new NotImplementedException();
-    }
-
-    protected override string GetListType(string name, bool useIterable = true)
-    {
-        return "Collection";
     }
 }

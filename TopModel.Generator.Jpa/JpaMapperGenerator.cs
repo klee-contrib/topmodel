@@ -97,15 +97,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cp.Composition, cpMapper));
 
                     getter = $"{sourceName}.{apSource.NameByClassPascal.WithPrefix(getterPrefix)}()";
-                    if (apSource.Type == AssociationType.OneToMany || apSource.Type == AssociationType.ManyToMany)
-                    {
-                        getter = $"{getter}.stream().map(item -> {Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.create{cp.Composition}(item, null)).collect(Collectors.toList())";
-                        fw.AddImport("java.util.stream.Collectors");
-                    }
-                    else
-                    {
-                        getter = $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.create{cp.Composition}({getter}, target.get{propertyTarget.NameByClassPascal}())";
-                    }
+                    getter = $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.create{cp.Composition}({getter}, target.get{propertyTarget.NameByClassPascal}())";
 
                     fw.AddImport(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
                 }
@@ -155,17 +147,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                     var cpMapper = cp.Composition.ToMappers.Find(t => t.Class == apTarget.Association)!;
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cpMapper.Class, cpMapper));
 
-                    var isMultiple = apTarget.Type == AssociationType.OneToMany || apTarget.Type == AssociationType.ManyToMany;
-                    if (isMultiple)
-                    {
-                        getter = $@"{sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}(){(!propertySource.Class.IsPersistent ? $".stream().map(src -> {Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.ToCamelCase()}(src, null)).collect(Collectors.toList())" : string.Empty)}";
-                        fw.AddImport("java.util.stream.Collectors");
-                    }
-                    else
-                    {
-                        getter = $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{cp.NameByClassPascal.WithPrefix(getterPrefix)}(), target.get{apTarget.NameByClassPascal}())";
-                        checkSourceNull = true;
-                    }
+                    getter = $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{cp.NameByClassPascal.WithPrefix(getterPrefix)}(), target.get{apTarget.NameByClassPascal}())";
 
                     fw.AddImport(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
                     checkSourceNull = true;

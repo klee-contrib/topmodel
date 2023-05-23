@@ -18,20 +18,18 @@ class:
           - Secteurs
     - composition: UtilisateurDto
       name: utilisateurs # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
-      kind: list
+      domain: DO_LIST
       comment: Liste paginée des utilisateurs de ce profil
     - composition: SecteurDto
       name: secteurs # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
-      kind: list
+      domain: DO_LIST
       comment: Liste des secteurs du profil
   mappers:
-    to:
-      - class: Profil
-        mappings:
-          secteurs: Secteurs
     from:
       - params:
-        - class: Profil
+          - class: Profil
+    to:
+      - class: Profil
 ---
 class:
   name: SecteurDto
@@ -45,4 +43,4 @@ class:
       - class: Secteur
     from:
       - params:
-        - class: Secteur
+          - class: Secteur

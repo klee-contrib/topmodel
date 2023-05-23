@@ -28,7 +28,6 @@ endpoint:
   returns:
     composition: UtilisateurDto
     name: detail # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
-    kind: object
     comment: Le détail de l'utilisateur
 ---
 endpoint:
@@ -43,7 +42,7 @@ endpoint:
   returns:
     composition: UtilisateurSearch
     name: utilisateurList # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
-    kind: list
+    domain: DO_LIST
     comment: Liste des utilisateurs
 ---
 endpoint:
@@ -57,11 +56,9 @@ endpoint:
     - composition: UtilisateurDto
       comment: Utilisateur à sauvegarder
       name: utilisateur
-      kind: object
   returns:
     composition: UtilisateurDto
     name: utilisateurList # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
-    kind: object
     comment: Utilisateur sauvegardé
 ---
 endpoint:
@@ -75,7 +72,7 @@ endpoint:
   returns:
     composition: UtilisateurSearch
     name: utilisateurList
-    kind: DO_PAGE
+    domain: DO_PAGE
     comment: Utilisateurs matchant les critères
 ---
 endpoint:
@@ -87,4 +84,4 @@ endpoint:
     - alias:
         class: Utilisateur
         property: Id
-      asList: true
+      as: list

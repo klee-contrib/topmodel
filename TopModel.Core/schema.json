@@ -96,6 +96,10 @@
                 "manyToMany"
               ]
             },
+            "as": {
+              "type": "string",
+              "description": "Domaine `as` à utiliser pour la transformation de domaine pour une association `toMany`. Par défaut : 'list'."
+            },
             "required": {
               "type": "boolean",
               "description": "Précise si la propriété est obligatoire. Elle sera non nulle en SQL et obligatoire dans la validation côté Focus. Une primary key est forcément required."
@@ -269,9 +273,9 @@
               "type": "string",
               "description": "Surcharge le commentaire de la propriété aliasée."
             },
-            "asList": {
-              "type": "boolean",
-              "description": "Utilise le `listDomain` du domaine de la propriété (original ou surchargé) comme domaine de la propriété d'alias."
+            "as": {
+              "type": "string",
+              "description": "Utilise le domaine correspondant dans `asDomains` du domaine de la propriété (original ou surchargé) comme domaine de la propriété d'alias."
             },
             "defaultValue": {
               "description": "Surcharge la valeur par défaut de la propriété."
@@ -284,7 +288,6 @@
           "required": [
             "composition",
             "name",
-            "kind",
             "comment"
           ],
           "additionalProperties": false,
@@ -297,9 +300,9 @@
               "type": "string",
               "description": "Nom de la propriété."
             },
-            "kind": {
+            "domain": {
               "type": "string",
-              "description": "'object' pour un sous objet, 'list' pour une sous-liste, ou un nom de domaine pour un autre conteneur générique."
+              "description": "Domaine a utiliser pour le type de composition (si ce n'est pas une composition simple)."
             },
             "comment": {
               "type": "string",
@@ -407,9 +410,12 @@
               "type": "boolean",
               "description": "Passe un champ de ce domaine comme body param dans un endpoint."
             },
-            "listDomain": {
-              "type": "string",
-              "description": "Domaine à utiliser lorsque l'on veut créer une liste d'un champ qui utilise ce domaine (alias avec `asList: true`, associations oneToMany et manyToMany)."
+            "asDomains": {
+              "type": "object",
+              "description": "Domaines à utiliser lorsque l'on veut transformer le domaine d'un champ dans un alias ou une association `xxxToMany` (avec `as`).",
+              "additionalProperties": {
+                "type": "string"
+              }
             },
             "mediaType": {
               "type": "string",
@@ -419,14 +425,15 @@
           "additionalProperties": {
             "type": "object",
             "description": "Implémentation du domaine dans un langage",
-            "required": [
-              "type"
-            ],
             "additionalProperties": false,
             "properties": {
               "type": {
                 "type": "string",
                 "description": "Type du domaine. Peut contenir des variables"
+              },
+              "genericType": {
+                "type": "string",
+                "description": "Type générique pour le domaine. Doit contenir la variable '{T}' (en plus des autres variables si nécessaire) pour référencer le type original de la propriété. Pour une composition, il s'agit de la valeur de `composition.name`, pour une PK ou UK d'une classe enum, il s'agit de la représentation de l'enum dans le langage cible, et pour une transformation pour un alias ou une association (via `as`, et association `toMany`), il s'agit du type résolu de la propriété originale. Si non renseigné, sa valeur par défaut pour une composition ou une enum est `{T}` (la valeur de `type` sera utilisée pour une transformation)."
               },
               "imports": {
                 "type": "array",
@@ -468,7 +475,7 @@
             }
           }
         }
-      }      
+      }
     },
     {
       "type": "object",
@@ -519,7 +526,7 @@
             }
           }
         }
-      }      
+      }
     },
     {
       "type": "object",

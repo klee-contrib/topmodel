@@ -313,7 +313,10 @@ public class OpenApiTmdGenerator : ModelGenerator
             var domainKind = TmdGenUtils.GetDomainString(config.Domains, kind);
             sw.WriteLine($"    {(noList ? string.Empty : "- ")}composition: {name}");
             sw.WriteLine($"    {(noList ? string.Empty : "  ")}name: {property.Key}");
-            sw.WriteLine($"    {(noList ? string.Empty : "  ")}kind: {domainKind ?? kind}");
+            if ((domainKind ?? kind) != "object")
+            {
+                sw.WriteLine($"    {(noList ? string.Empty : "  ")}domain: {domainKind ?? kind}");
+            }
         }
         else
         {

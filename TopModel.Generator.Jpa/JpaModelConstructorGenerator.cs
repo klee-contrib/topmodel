@@ -129,7 +129,7 @@ public class JpaModelConstructorGenerator
 
         foreach (var property in classe.GetProperties(availableClasses).Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && _config.CanClassUseEnums(apo.Association))))
         {
-            if (!(property is AssociationProperty ap && ap.Type.IsToMany() || property is CompositionProperty cp && cp.Kind == "list"))
+            if (!(property is AssociationProperty ap && ap.Type.IsToMany() || property is CompositionProperty { Domain: not null }))
             {
                 var getterPrefix = _config.GetType(property) == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"this.{property.NameByClassCamel} = {classe.NameCamel}.{property.NameByClassPascal.WithPrefix(getterPrefix)}();");
@@ -138,7 +138,7 @@ public class JpaModelConstructorGenerator
 
         var propertyListToCopy = classe.GetProperties(availableClasses)
             .Where(p => !_config.EnumShortcutMode || !(p is AssociationProperty apo && _config.CanClassUseEnums(apo.Association)))
-            .Where(property => property is AssociationProperty ap && ap.Type.IsToMany() || property is CompositionProperty cp && cp.Kind == "list");
+            .Where(property => property is AssociationProperty ap && ap.Type.IsToMany() || property is CompositionProperty { Domain: not null });
 
         if (propertyListToCopy.Any())
         {
@@ -147,7 +147,7 @@ public class JpaModelConstructorGenerator
 
         foreach (var property in propertyListToCopy)
         {
-            if (property is AssociationProperty ap || property is CompositionProperty cp && cp.Kind == "list")
+            if (property is AssociationProperty ap || property is CompositionProperty { Domain: not null })
             {
                 var getterPrefix = _config.GetType(property, useClassForAssociation: true) == "boolean" ? "is" : "get";
                 fw.WriteLine(2, $"this.{property.NameByClassCamel} = {classe.NameCamel}.{property.NameByClassPascal.WithPrefix(getterPrefix)}().stream().collect(Collectors.toList());");

@@ -13,6 +13,8 @@ domain:
   label: Identifiant
   length: # Longueur du champ, si applicable.
   scale: # Nombre de décimales du champ, si applicable.
+  asDomains:
+    list: DO_ID_LIST # Domaine a utiliser s'il faut transformer le domaine du champ lors d'une référence.
   csharp:
     type: int?
     annotations: # Liste d'annotations à devoir ajouter à toute propriété de ce domaine, si applicable.
@@ -36,7 +38,7 @@ Il n'y a pas besoin de préciser les dépendances aux fichiers contenant des dom
 
 Il est possible de définir le `mediaType` du domaine. Cette information pourra être prise en compte par certains générateurs (notamment les générateurs d'API).
 
-Un domaine peut également définir un `listDomain`, qui est le domaine à utiliser lorsque l'on veut construire une liste d'un champ de son domaine. Il est utilisé par les alias `asList: true` et les associations `oneToMany` et `manyToMany`.
+Un domaine peut également définir des `asDomains`, qui sont des domaines à utiliser lorsque l'on a besoin de transformer le domaine d'une propriété que l'on référence. Il peut être utilisé dans un alias via `as`, et les associations `oneToMany` et `manyToMany` ont besoin d'avoir un `asDomain` `list` défini sur le domaine de la clé primaire pour être utilisées (puisqu'il y a une transformation de son type a réaliser).
 
 Exemple :
 

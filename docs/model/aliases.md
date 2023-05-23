@@ -47,7 +47,7 @@ La classe référencée par l'alias doit être connue du fichier de modèle cour
 
 Il n'est pas possible de définir un alias sur une propriété de type composition, mais en revanche il est possible de définir un alias d'alias.
 
-Enfin, via la propriété `asList`, il est possible de recopier une propriété en tant que liste, en utilisant le `listDomain` défini sur le domaine de la propriété aliasée au lieu de son domaine.
+Enfin, via la propriété `as`, il est possible de remplacer le domaine de la propriété par le `asDomain` correspondant à la valeur de la propriété `as` définie sur le domaine de la propriété aliasée, au lieu de son domaine.
 
 Exemple :
 
@@ -56,7 +56,7 @@ Exemple :
 alias:
   class: MyClass
   include: Code
-asList: true
+as: list
 prefix: true
 suffix: List
 ```

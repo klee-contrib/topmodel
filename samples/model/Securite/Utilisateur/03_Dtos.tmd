@@ -18,7 +18,6 @@ class:
     - composition: UtilisateurDto
       name: UtilisateurParent
       comment: UtilisateurParent
-      kind: object
   mappers:
     from:
       - params:

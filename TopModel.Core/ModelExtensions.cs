@@ -55,19 +55,19 @@ public static class ModelExtensions
             .Where(p =>
                 p is RegularProperty rp && rp.Domain == domain
                 || p is AliasProperty alp && alp.DomainReference != null && alp.Domain == domain
-                || p is CompositionProperty cp && cp.DomainKind == domain)
+                || p is CompositionProperty cp && cp.Domain == domain)
             .Select(p =>
             {
                 return (Reference: p switch
                 {
                     RegularProperty rp => rp.DomainReference,
                     AliasProperty alp => alp.DomainReference!,
-                    CompositionProperty cp => cp.DomainKindReference!,
+                    CompositionProperty cp => cp.DomainReference!,
                     _ => null! // Impossible
                 }, File: p.GetFile());
             })
             .Concat(modelStore.Converters.SelectMany(c => c.DomainsFromReferences.Union(c.DomainsToReferences).Select(d => (Reference: d, File: c.ModelFile))).Where(r => r.Reference.ReferenceName == domain.Name))
-            .Concat(modelStore.Domains.Values.Select(d => (Reference: d.ListDomainReference!, File: d.GetFile())))
+            .Concat(modelStore.Domains.Values.SelectMany(d => d.AsDomainReferences.Values.Select(adr => (Reference: adr, File: d.GetFile()))))
             .Where(l => l.Reference is not null)
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }

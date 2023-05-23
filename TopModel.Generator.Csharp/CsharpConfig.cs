@@ -381,10 +381,19 @@ public class CsharpConfig : GeneratorConfigBase
             : $"async Task<{typeName}>";
     }
 
-    public string GetType(IProperty prop, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false, bool useIEnumerable = true, bool nonNullable = false)
+    public string GetType(IProperty prop, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false, bool nonNullable = false)
     {
-        var type = base.GetType(prop, availableClasses, useClassForAssociation, useIEnumerable);
-        type = nonNullable && type.EndsWith("?") ? type[0..^1] : type;
+        var type = base.GetType(prop, availableClasses, useClassForAssociation);
+
+        if (!nonNullable && prop is IFieldProperty f && GetEnumType(f, f is RegularProperty) == type)
+        {
+            type += "?";
+        }
+        else if (nonNullable && type.EndsWith("?"))
+        {
+            type = type[0..^1];
+        }
+
         return type;
     }
 
@@ -403,13 +412,8 @@ public class CsharpConfig : GeneratorConfigBase
         return GetType(prop) == "string";
     }
 
-    protected override string GetEnumType(string className, string propName, bool asList = false, bool isPrimaryKeyDef = false)
+    protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
     {
-        return $"{(isPrimaryKeyDef ? string.Empty : $"{className.ToPascalCase()}.")}{propName.ToPascalCase()}s{(asList ? "[]" : "?")}";
-    }
-
-    protected override string GetListType(string name, bool useIterable = true)
-    {
-        return $"{(useIterable ? "IEnumerable" : "ICollection")}<{name}>";
+        return $"{(isPrimaryKeyDef ? string.Empty : $"{className.ToPascalCase()}.")}{propName.ToPascalCase()}s";
     }
 }

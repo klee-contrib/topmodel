@@ -105,10 +105,6 @@ public class SecuriteMappers {
 		}
 
 		target.setDroits(source.getDroits().stream().map(Droit.Values::getEntity).collect(Collectors.toList()));
-		if (source.getSecteurs() != null) {
-			target.setSecteurs(source.getSecteurs().stream().map(src -> SecuriteMappers.toSecteur(src, null)).collect(Collectors.toList()));
-		}
-
 		return target;
 	}
 

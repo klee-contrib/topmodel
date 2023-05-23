@@ -51,7 +51,7 @@ public abstract class GeneratorBase<T> : IModelWatcher
         if (!NoLanguage)
         {
             var missingDomains = handledFiles.SelectMany(f => f.Properties).OfType<IFieldProperty>().Where(fp => !PersistentOnly || (fp.Class?.IsPersistent ?? false)).Select(fp => fp.Domain)
-                .Concat(PersistentOnly ? Array.Empty<Domain>() : handledFiles.SelectMany(f => f.Properties).OfType<CompositionProperty>().Select(fp => fp.DomainKind!))
+                .Concat(PersistentOnly ? Array.Empty<Domain>() : handledFiles.SelectMany(f => f.Properties).OfType<CompositionProperty>().Select(fp => fp.Domain!))
                 .Where(domain => domain != null && Config.GetImplementation(domain) == null)
                 .Distinct();
 

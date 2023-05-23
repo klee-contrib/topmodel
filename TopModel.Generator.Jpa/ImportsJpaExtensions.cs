@@ -11,7 +11,6 @@ public static class ImportsJpaExtensions
 
     public static List<string> GetImports(this Class classe, JpaConfig config, string tag)
     {
-        var javaOrJakarta = config.PersistenceMode.ToString().ToLower();
         var imports = new List<string>();
 
         if (classe.Extends != null)
@@ -23,23 +22,12 @@ public static class ImportsJpaExtensions
             .AddRange(classe.FromMappers.SelectMany(fm => fm.Params).Select(fmp => fmp.Class.GetImport(config, tag)));
         imports
             .AddRange(classe.ToMappers.Select(fmp => fmp.Class.GetImport(config, tag)));
-
-        // Suppression des imports inutiles
         return imports;
     }
 
     public static List<string> GetKindImports(this CompositionProperty cp, JpaConfig config, string tag)
     {
-        var imports = new List<string>();
-
-        if (cp.Kind == "list")
-        {
-            imports.Add("java.util.List");
-        }
-
-        imports.AddRange(config.GetDomainImports(cp, tag));
-
-        return imports;
+        return config.GetDomainImports(cp, tag).ToList();
     }
 
     public static List<string> GetTypeImports(this IProperty p, JpaConfig config, string tag, bool noAnnotations = false)
@@ -53,7 +41,30 @@ public static class ImportsJpaExtensions
         };
     }
 
-    private static List<string> GetTypeImports(this AliasProperty ap, JpaConfig config, string tag)
+    private static List<string> GetTypeImports(this AssociationProperty ap, JpaConfig config, string tag)
+    {
+        var imports = new List<string>();
+
+        imports.AddRange(config.GetDomainImports(ap, tag));
+        imports.Add(ap.Association.GetImport(config, tag));
+
+        if (ap.Association.Reference)
+        {
+            imports.AddRange(ap.Property.GetTypeImports(config, tag));
+        }
+
+        return imports;
+    }
+
+    private static List<string> GetTypeImports(this CompositionProperty cp, JpaConfig config, string tag)
+    {
+        var imports = new List<string>() { cp.Composition.GetImport(config, tag) };
+        imports.AddRange(config.GetDomainImports(cp, tag));
+
+        return imports;
+    }
+
+    private static List<string> GetTypeImports(this AliasProperty ap, JpaConfig config, string tag, bool noAnnotations = false)
     {
         var imports = new List<string>();
         if (ap.Class != null && ap.Class.IsPersistent && ap.Property is AssociationProperty asp)
@@ -73,47 +84,7 @@ public static class ImportsJpaExtensions
             imports.Add(apr.Association.GetImport(config, tag));
         }
 
-        if (ap.Property is AssociationProperty apo && apo.Type.IsToMany())
-        {
-            imports.Add("java.util.List");
-        }
-
-        return imports;
-    }
-
-    private static List<string> GetTypeImports(this AssociationProperty ap, JpaConfig config, string tag)
-    {
-        var imports = new List<string>();
-
-        if (ap.Type.IsToMany())
-        {
-            imports.Add("java.util.List");
-        }
-
-        imports.Add(ap.Association.GetImport(config, tag));
-
-        if (ap.Association.Reference)
-        {
-            imports.AddRange(ap.Property.GetTypeImports(config, tag));
-        }
-
-        return imports;
-    }
-
-    private static List<string> GetTypeImports(this CompositionProperty cp, JpaConfig config, string tag)
-    {
-        var imports = new List<string>();
-        if (cp.Composition.Namespace.Module != cp.Class?.Namespace.Module)
-        {
-            imports.Add(cp.Composition.GetImport(config, tag));
-        }
-
-        if (cp.Kind == "list")
-        {
-            imports.Add("java.util.List");
-        }
-
-        imports.AddRange(config.GetDomainImports(cp, tag));
+        imports.AddRange(config.GetDomainImports(ap, tag, noAnnotations));
 
         return imports;
     }
@@ -126,7 +97,7 @@ public static class ImportsJpaExtensions
 
         if (rp is AliasProperty apo)
         {
-            imports.AddRange(apo.GetTypeImports(config, tag));
+            imports.AddRange(apo.GetTypeImports(config, tag, noAnnotations));
         }
         else if (rp is RegularProperty rpr)
         {

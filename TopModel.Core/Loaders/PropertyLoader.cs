@@ -99,6 +99,9 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                                 _ => AssociationType.OneToMany
                             };
                             break;
+                        case "as":
+                            ap.As = value.Value;
+                            break;
                         case "label":
                             ap.Label = value.Value;
                             break;
@@ -155,13 +158,8 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                         case "name":
                             cp.Name = value.Value;
                             break;
-                        case "kind":
-                            cp.Kind = value.Value;
-                            if (cp.Kind != "object" && cp.Kind != "list" && cp.Kind != "async-list")
-                            {
-                                cp.DomainKindReference = new DomainReference(value);
-                            }
-
+                        case "domain":
+                            cp.DomainReference = new DomainReference(value);
                             break;
                         case "comment":
                             cp.Comment = value.Value;
@@ -258,8 +256,8 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                         case "comment":
                             alp.Comment = value.Value;
                             break;
-                        case "asList":
-                            alp.AsList = value.Value == "true";
+                        case "as":
+                            alp.As = value.Value;
                             break;
                         case "trigram":
                             alp.Trigram = new LocatedString(value);

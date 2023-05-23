@@ -19,7 +19,6 @@ endpoint:
   params:
     - composition: User
       name: body
-      kind: object
       comment: "body"
 ---
 endpoint:
@@ -31,12 +30,11 @@ endpoint:
   params:
     - composition: User
       name: body
-      kind: list
+      domain: DO_LIST
       comment: "body"
   returns:
     composition: User
     name: Result
-    kind: object
     comment: "Result"
 ---
 endpoint:
@@ -63,7 +61,6 @@ endpoint:
   returns:
     composition: User
     name: Result
-    kind: object
     comment: "Result"
 ---
 endpoint:
@@ -101,7 +98,6 @@ endpoint:
   params:
     - composition: User
       name: body
-      kind: object
       comment: "body"
     - name: username
       domain: DO_LIBELLE

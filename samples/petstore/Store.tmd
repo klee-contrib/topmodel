@@ -43,7 +43,6 @@ endpoint:
   returns:
     composition: Order
     name: Result
-    kind: object
     comment: "Result"
 ---
 endpoint:
@@ -54,10 +53,8 @@ endpoint:
   params:
     - composition: Order
       name: Body
-      kind: object
       comment: "Body"
   returns:
     composition: Order
     name: Result
-    kind: object
     comment: "Result"

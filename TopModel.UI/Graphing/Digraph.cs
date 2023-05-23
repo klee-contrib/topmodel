@@ -65,7 +65,7 @@ public class Digraph
                     n
                        .AddProp("arrowtail", "odiamond")
                        .AddProp("dir", "both")
-                       .AddProp("headlabel", $"  {(cp.Kind == "object" ? "1..1" : "0..n")}  ");
+                       .AddProp("headlabel", $"  {(cp.Domain is null ? "1..1" : "0..n")}  ");
                 }
             });
         }

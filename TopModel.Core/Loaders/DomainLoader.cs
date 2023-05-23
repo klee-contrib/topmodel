@@ -45,14 +45,40 @@ public class DomainLoader : ILoader<Domain>
                 case "bodyParam":
                     domain.BodyParam = value!.Value == "true";
                     break;
-                case "listDomain":
-                    domain.ListDomainReference = new DomainReference(value!);
+                case "asDomains":
+                    parser.ConsumeMapping(() =>
+                    {
+                        domain.AsDomainReferences[parser.Consume<Scalar>().Value] = new DomainReference(parser.Consume<Scalar>());
+                    });
                     break;
                 case "mediaType":
                     domain.MediaType = value!.Value;
                     break;
                 default:
-                    domain.Implementations[prop] = _fileChecker.Deserialize<DomainImplementation>(parser);
+                    var implementation = new DomainImplementation();
+
+                    parser.ConsumeMapping(() =>
+                    {
+                        var prop = parser.Consume<Scalar>().Value;
+
+                        switch (prop)
+                        {
+                            case "type":
+                                implementation.Type = parser.Consume<Scalar>().Value;
+                                break;
+                            case "genericType":
+                                implementation.GenericType = parser.Consume<Scalar>().Value;
+                                break;
+                            case "imports":
+                                implementation.Imports = _fileChecker.Deserialize<List<string>>(parser);
+                                break;
+                            case "annotations":
+                                implementation.Annotations = _fileChecker.Deserialize<List<TargetedText>>(parser);
+                                break;
+                        }
+                    });
+
+                    domain.Implementations[prop] = implementation;
                     break;
             }
         });

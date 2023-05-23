@@ -37,11 +37,11 @@ public partial class ProfilDto
             throw new ArgumentNullException(nameof(bean));
         }
 
-        Utilisateurs = new List<UtilisateurDto>(bean.Utilisateurs);
-        Secteurs = new List<SecteurDto>(bean.Secteurs);
         Id = bean.Id;
         TypeProfilCode = bean.TypeProfilCode;
         Droits = bean.Droits;
+        Utilisateurs = new List<UtilisateurDto>(bean.Utilisateurs);
+        Secteurs = new List<SecteurDto>(bean.Secteurs);
 
         OnCreated(bean);
     }

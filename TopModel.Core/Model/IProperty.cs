@@ -16,6 +16,8 @@ public interface IProperty
 
     bool PrimaryKey { get; }
 
+    Domain Domain { get; }
+
     string Comment { get; }
 
     bool Readonly { get; set; }

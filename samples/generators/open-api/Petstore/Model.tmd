@@ -97,7 +97,6 @@ class:
 
     - composition: Category
       name: category
-      kind: object
       comment: "category"
 
     - name: photoUrls
@@ -107,7 +106,7 @@ class:
 
     - composition: Tag
       name: tags
-      kind: list
+      domain: DO_LIST
       comment: "tags"
 
     - alias:

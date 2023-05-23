@@ -18,12 +18,10 @@ endpoint:
   params:
     - composition: Pet
       name: Body
-      kind: object
       comment: "Body"
   returns:
     composition: Pet
     name: Result
-    kind: object
     comment: "Result"
 ---
 endpoint:
@@ -51,7 +49,7 @@ endpoint:
   returns:
     composition: Pet
     name: Result
-    kind: list
+    domain: DO_LIST
     comment: "Result"
 ---
 endpoint:
@@ -66,7 +64,7 @@ endpoint:
   returns:
     composition: Pet
     name: Result
-    kind: list
+    domain: DO_LIST
     comment: "Result"
 ---
 endpoint:
@@ -81,7 +79,6 @@ endpoint:
   returns:
     composition: Pet
     name: Result
-    kind: object
     comment: "Result"
 ---
 endpoint:
@@ -92,12 +89,10 @@ endpoint:
   params:
     - composition: Pet
       name: Body
-      kind: object
       comment: "Body"
   returns:
     composition: Pet
     name: Result
-    kind: object
     comment: "Result"
 ---
 endpoint:
@@ -135,5 +130,4 @@ endpoint:
   returns:
     composition: ApiResponse
     name: Result
-    kind: object
     comment: "Result"

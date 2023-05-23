@@ -123,7 +123,7 @@ public enum ModelErrorType
     TMD1017,
 
     /// <summary>
-    /// L'association '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car les types de composition et d'association ne correspondent pas.
+    /// L'association '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car l'association et la composition doivent toutes les deux être simples.
     /// </summary>
     TMD1018,
 
@@ -173,7 +173,7 @@ public enum ModelErrorType
     TMD1027,
 
     /// <summary>
-    /// Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Class.PrimaryKey.Single().Domain} ne contient pas de définition de ListDomain
+    /// Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Class.PrimaryKey.Single().Domain} ne contient pas de définition de AsDomain
     /// </summary>
     TMD1028,
 

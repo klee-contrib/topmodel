@@ -42,7 +42,10 @@ public class CompletionHandler : CompletionHandlerBase
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            if (currentLine.Contains("domain: ") || currentLine.Contains("listDomain: ") || currentLine.Contains("kind: ")
+            var reqChar = Math.Min(request.Position.Character, currentLine.Length);
+
+            if (currentLine.Contains("domain: ")
+                || GetParentObject(request) == "asDomains" && currentLine[..reqChar].Contains(':')
                 || currentLine.TrimStart().StartsWith("-")
                     && GetRootObject(request) == "converter"
                     && (text.ElementAtOrDefault(request.Position.Line - 1)?.Trim() == "to:"
@@ -62,7 +65,6 @@ public class CompletionHandler : CompletionHandlerBase
                 return Task.FromResult(new CompletionList(
                     _modelStore.Domains
                         .Select(domain => domain.Key)
-                        .Concat(currentLine.Contains("kind: ") ? new[] { "object", "list" } : Array.Empty<string>())
                         .OrderBy(domain => domain)
                         .Where(domain => domain.ToLower().ShouldMatch(searchText))
                         .Select(domain => new CompletionItem
@@ -307,7 +309,7 @@ public class CompletionHandler : CompletionHandlerBase
                                 ukValuesLine = text.ElementAtOrDefault(requestLine);
                             }
 
-                            var reqChar = Math.Min(request.Position.Character, currentLine.Length);
+                            reqChar = Math.Min(request.Position.Character, currentLine.Length);
                             var isUk = ukValuesLine != null && ukValuesLine.Contains("unique:");
                             var isValues = ukValuesLine != null && ukValuesLine.Contains("values:");
                             var isMappings = ukValuesLine != null && ukValuesLine.Contains("mappings:");
@@ -420,6 +422,30 @@ public class CompletionHandler : CompletionHandlerBase
         {
             DocumentSelector = _config.GetDocumentSelector()
         };
+    }
+
+    private string GetParentObject(CompletionParams request)
+    {
+        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var currentLine = text.ElementAtOrDefault(request.Position.Line);
+        var requestLine = request.Position.Line;
+        var rootLine = currentLine ?? string.Empty;
+        var currentIndent = rootLine.TakeWhile(c => c == ' ').Count();
+        var rootIndent = currentIndent;
+
+        while (rootIndent >= currentIndent)
+        {
+            requestLine--;
+            if (requestLine < 0 || rootLine.StartsWith("---"))
+            {
+                break;
+            }
+
+            rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
+            rootIndent = rootLine.TakeWhile(c => c == ' ').Count();
+        }
+
+        return rootLine.Split(":")[0].Trim();
     }
 
     private string GetRootObject(CompletionParams request)
