@@ -17,6 +17,10 @@
 
   La PR est une excellente lecture pour accompagner ces changements...
 
+  **impacts génération (C#)**
+
+  - Les propriétés dans les constructeurs de copie des classes sont maintenant toutes dans l'ordre de déclaration des propriétés dans le modèle, au lieu de mettre les compositions en premier.
+
 ## 1.30.2
 
 - [`35921291d`](https://github.com/klee-contrib/topmodel/commit/35921291d68985b499e9fec06f914d9052f2145b) - [Angular] Correction api client dans le cas des queryParams
