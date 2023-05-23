@@ -1,5 +1,22 @@
 # TopModel.Generator (`modgen`)
 
+## 1.31.0
+
+- [#255](https://github.com/klee-contrib/topmodel/pull/255) - Domaines de composition et transformations de domaines explicites
+
+  **breaking changes**
+
+  - Dans un domaine, remplacer `listDomain` par `asDomains: list:`
+  - Dans un alias, remplacer `asList: true` par `as: list`
+  - Dans une composition, retirer `kind: object`, remplacer `kind: list` par `domain: DO_LIST` (par exemple, vous pouvez utiliser n'importe quel domaine), et remplacer `kind` par `domain` pour les compositions qui utilisaient déjà des domaines
+  - Implémenter `genericType` dans les implémentation de domaines pour :
+    - Les domaines de compositions (ils n'utilisent plus `type`), et inclure `{T}` dans leur définition (à la place de `composition.name` s'il y était)
+    - Les domaines utilisés par `as: list`, à priori avec un `{T}[]` ou `List<{T}>` pour correspondre au type du domaine
+  - Dans les imports d'implémentation de domaine JS, ajouter le type importé à la fin de l'import derrière un `/`.
+  - Les mappings entre associations `toMany` et compositions `list` n'existent plus
+
+  La PR est une excellente lecture pour accompagner ces changements...
+
 ## 1.30.2
 
 - [`35921291d`](https://github.com/klee-contrib/topmodel/commit/35921291d68985b499e9fec06f914d9052f2145b) - [Angular] Correction api client dans le cas des queryParams
