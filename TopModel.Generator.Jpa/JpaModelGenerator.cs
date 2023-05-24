@@ -383,7 +383,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         imports.AddRange(Config.GetDecoratorImports(classe));
         foreach (var property in classe.GetProperties(AvailableClasses))
         {
-            imports.AddRange(property.GetTypeImports(Config, tag, property.Class != classe));
+            imports.AddRange(property.GetTypeImports(Config, tag));
         }
 
         fw.AddImports(imports);
