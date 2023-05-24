@@ -7,9 +7,12 @@ package topmodel.jpa.sample.demo.entities.securite;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import jakarta.annotation.Generated;
+
 import topmodel.jpa.sample.demo.dtos.securite.ProfilDto;
 import topmodel.jpa.sample.demo.dtos.securite.SecteurDto;
 
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class SecuriteMappers {
 
 	/**

@@ -4,6 +4,9 @@
 
 package topmodel.jpa.sample.demo.dtos.utilisateur;
 
+import jakarta.annotation.Generated;
+
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class UtilisateurDTOMappers {
 
 	/**

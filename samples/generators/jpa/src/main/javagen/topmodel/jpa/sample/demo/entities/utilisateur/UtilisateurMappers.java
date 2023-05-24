@@ -7,8 +7,11 @@ package topmodel.jpa.sample.demo.entities.utilisateur;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import jakarta.annotation.Generated;
+
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
 
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class UtilisateurMappers {
 
 	/**
