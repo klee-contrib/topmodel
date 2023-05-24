@@ -9,12 +9,10 @@ namespace TopModel.Generator.Csharp;
 /// </summary>
 public class CSharpWriter : IDisposable
 {
-    private readonly bool _useLatestCSharp;
     private readonly FileWriter _writer;
 
-    public CSharpWriter(string name, ILogger logger, bool useLatestCSharp = false)
+    public CSharpWriter(string name, ILogger logger)
     {
-        _useLatestCSharp = useLatestCSharp;
         _writer = new FileWriter(name, logger);
     }
 
@@ -43,6 +41,16 @@ public class CSharpWriter : IDisposable
         var indentValue = GetIdentValue(indentationLevel);
         value = value.Replace("\r\n", "\r\n" + indentValue);
         _writer.Write(indentValue + value);
+    }
+
+    /// <summary>
+    /// Ecrit un attribut de décoration.
+    /// </summary>
+    /// <param name="attributeName">Nom de l'attribut.</param>
+    /// <param name="attributeParams">Paramètres.</param>
+    public void WriteAttribute(string attributeName, params string[] attributeParams)
+    {
+        WriteAttribute(0, attributeName, attributeParams);
     }
 
     /// <summary>
@@ -116,7 +124,7 @@ public class CSharpWriter : IDisposable
         }
 
         sb.Append("\r\n{");
-        WriteLine(1, sb.ToString());
+        WriteLine(sb.ToString());
     }
 
     /// <summary>
@@ -146,28 +154,8 @@ public class CSharpWriter : IDisposable
     /// <param name="value">Valeur du namespace.</param>
     public void WriteNamespace(string value)
     {
-        Write($"namespace {value}");
-        if (_useLatestCSharp)
-        {
-            WriteLine(";");
-            WriteLine();
-        }
-        else
-        {
-            WriteLine();
-            WriteLine("{");
-        }
-    }
-
-    /// <summary>
-    /// Retourne le code associé à la fin d'un namespace.
-    /// </summary>
-    public void WriteNamespaceEnd()
-    {
-        if (!_useLatestCSharp)
-        {
-            WriteLine("}");
-        }
+        WriteLine($"namespace {value};");
+        WriteLine();
     }
 
     /// <summary>
@@ -179,7 +167,7 @@ public class CSharpWriter : IDisposable
     {
         if (!string.IsNullOrEmpty(paramName) && !string.IsNullOrEmpty(value))
         {
-            WriteLine(2, LoadParam(paramName, value, "param"));
+            WriteLine(1, LoadParam(paramName, value, "param"));
         }
     }
 
@@ -194,6 +182,15 @@ public class CSharpWriter : IDisposable
         {
             WriteLine(indentationLevel, LoadReturns(value));
         }
+    }
+
+    /// <summary>
+    /// Ecrit la valeur du résumé du commentaire..
+    /// </summary>
+    /// <param name="value">Valeur à écrire.</param>
+    public void WriteSummary(string value)
+    {
+        WriteSummary(0, value);
     }
 
     /// <summary>
@@ -328,11 +325,6 @@ public class CSharpWriter : IDisposable
     /// <returns>Identation.</returns>
     private string GetIdentValue(int indentationLevel)
     {
-        if (_useLatestCSharp && indentationLevel > 0)
-        {
-            indentationLevel--;
-        }
-
         var indentValue = string.Empty;
         for (var i = 0; i < indentationLevel; ++i)
         {

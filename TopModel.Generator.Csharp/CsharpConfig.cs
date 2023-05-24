@@ -92,11 +92,6 @@ public class CsharpConfig : GeneratorConfigBase
     public string? DbSchema { get; set; }
 
     /// <summary>
-    /// Utilise les features C# 10 dans la génération.
-    /// </summary>
-    public bool UseLatestCSharp { get; set; } = true;
-
-    /// <summary>
     /// Si on génère avec Kinetix.
     /// </summary>
     public bool Kinetix { get; set; } = true;

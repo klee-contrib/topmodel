@@ -204,12 +204,6 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   _Variables par tag_: **oui** (à faire correspondre avec les valeurs de différents `modelPath`)
 
-- `useLatestCSharp`
-
-  Utilise les features C# 10 dans la génération. (namespaces de fichiers, usings implicites...)
-
-  _Valeur par défaut_: `true`
-
 - `kinetix`
 
   Active les fonctionnalités Kinetix dans la génération.

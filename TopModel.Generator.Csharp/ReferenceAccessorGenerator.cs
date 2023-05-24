@@ -58,14 +58,9 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
         var interfaceName = $"I{implementationName}";
         var interfaceNamespace = Config.GetReferenceInterfaceNamespace(ns, tag);
 
-        using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
+        using var w = new CSharpWriter(fileName, _logger);
 
         var usings = new HashSet<string>();
-
-        if (!Config.UseLatestCSharp)
-        {
-            usings.Add("System.Collections.Generic");
-        }
 
         if (!implementationNamespace.StartsWith(interfaceNamespace))
         {
@@ -94,11 +89,6 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
         }
         else
         {
-            if (!Config.UseLatestCSharp)
-            {
-                usings.Add("System.Linq");
-            }
-
             var contextNs = Config.GetDbContextNamespace(tag);
             if (!implementationNamespace.Contains(contextNs))
             {
@@ -111,8 +101,8 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
         w.WriteLine();
         w.WriteNamespace(implementationNamespace);
 
-        w.WriteSummary(1, "This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + ns.Module + ".");
-        w.WriteLine(1, "[RegisterImpl]");
+        w.WriteSummary("This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + ns.Module + ".");
+        w.WriteLine("[RegisterImpl]");
 
         w.WriteClassDeclaration(implementationName, null, interfaceName);
 
@@ -120,36 +110,36 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
         {
             var dbContextName = Config.GetDbContextName(tag);
 
-            w.WriteLine(2, $"private readonly {dbContextName} _dbContext;");
+            w.WriteLine(1, $"private readonly {dbContextName} _dbContext;");
             w.WriteLine();
-            w.WriteSummary(2, "Constructeur");
+            w.WriteSummary(1, "Constructeur");
             w.WriteParam("dbContext", "DbContext");
-            w.WriteLine(2, $"public {implementationName}({dbContextName} dbContext)");
-            w.WriteLine(2, "{");
-            w.WriteLine(3, "_dbContext = dbContext;");
-            w.WriteLine(2, "}");
+            w.WriteLine(1, $"public {implementationName}({dbContextName} dbContext)");
+            w.WriteLine(1, "{");
+            w.WriteLine(2, "_dbContext = dbContext;");
+            w.WriteLine(1, "}");
             w.WriteLine();
         }
         else
         {
-            w.WriteLine(2, $"private readonly BrokerManager _brokerManager;");
+            w.WriteLine(1, $"private readonly BrokerManager _brokerManager;");
             w.WriteLine();
-            w.WriteSummary(2, "Constructeur");
+            w.WriteSummary(1, "Constructeur");
             w.WriteParam("brokerManager", "BrokerManager");
-            w.WriteLine(2, $"public {implementationName}(BrokerManager brokerManager)");
-            w.WriteLine(2, "{");
-            w.WriteLine(3, "_brokerManager = brokerManager;");
-            w.WriteLine(2, "}");
+            w.WriteLine(1, $"public {implementationName}(BrokerManager brokerManager)");
+            w.WriteLine(1, "{");
+            w.WriteLine(2, "_brokerManager = brokerManager;");
+            w.WriteLine(1, "}");
             w.WriteLine();
         }
 
         foreach (var classe in classList.Where(c => !Config.NoPersistence(tag) && (c.IsPersistent || c.Values.Any())))
         {
             var serviceName = "Load" + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal);
-            w.WriteLine(2, "/// <inheritdoc cref=\"" + interfaceName + "." + serviceName + "\" />");
-            w.WriteLine(2, "public ICollection<" + classe.NamePascal + "> " + serviceName + "()\r\n{");
-            w.WriteLine(3, LoadReferenceAccessorBody(classe));
-            w.WriteLine(2, "}");
+            w.WriteLine(1, "/// <inheritdoc cref=\"" + interfaceName + "." + serviceName + "\" />");
+            w.WriteLine(1, "public ICollection<" + classe.NamePascal + "> " + serviceName + "()\r\n{");
+            w.WriteLine(2, LoadReferenceAccessorBody(classe));
+            w.WriteLine(1, "}");
 
             if (classList.IndexOf(classe) != classList.Count - 1)
             {
@@ -157,8 +147,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
             }
         }
 
-        w.WriteLine(1, "}");
-        w.WriteNamespaceEnd();
+        w.WriteLine("}");
     }
 
     /// <summary>
@@ -172,14 +161,9 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
         var interfaceNamespace = Config.GetReferenceInterfaceNamespace(ns, tag);
         var interfaceName = $"I{Config.GetReferenceAccessorName(ns, tag)}";
 
-        using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
+        using var w = new CSharpWriter(fileName, _logger);
 
         var usings = new HashSet<string>();
-
-        if (!Config.UseLatestCSharp)
-        {
-            usings.Add("System.Collections.Generic");
-        }
 
         foreach (var classe in classList)
         {
@@ -196,18 +180,18 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
 
         w.WriteLine();
         w.WriteNamespace(interfaceNamespace);
-        w.WriteSummary(1, "This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + ns.Module + ".");
-        w.WriteLine(1, "[RegisterContract]");
-        w.WriteLine(1, "public partial interface " + interfaceName + "\r\n{");
+        w.WriteSummary("This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + ns.Module + ".");
+        w.WriteLine("[RegisterContract]");
+        w.WriteLine("public partial interface " + interfaceName + "\r\n{");
 
         var count = 0;
         foreach (var classe in classList)
         {
             count++;
-            w.WriteSummary(2, "Reference accessor for type " + classe.NamePascal);
-            w.WriteReturns(2, "List of " + classe.NamePascal);
-            w.WriteLine(2, "[ReferenceAccessor]");
-            w.WriteLine(2, "ICollection<" + classe.NamePascal + "> Load" + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal) + "();");
+            w.WriteSummary(1, "Reference accessor for type " + classe.NamePascal);
+            w.WriteReturns(1, "List of " + classe.NamePascal);
+            w.WriteLine(1, "[ReferenceAccessor]");
+            w.WriteLine(1, "ICollection<" + classe.NamePascal + "> Load" + (Config.DbContextPath == null ? $"{classe.NamePascal}List" : classe.PluralNamePascal) + "();");
 
             if (count != classList.Count())
             {
@@ -215,8 +199,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
             }
         }
 
-        w.WriteLine(1, "}");
-        w.WriteNamespaceEnd();
+        w.WriteLine("}");
     }
 
     /// <summary>

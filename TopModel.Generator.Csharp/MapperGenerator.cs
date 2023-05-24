@@ -28,7 +28,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
     protected override void HandleFile(string fileName, string tag, IList<(Class Classe, FromMapper Mapper)> fromMappers, IList<(Class Classe, ClassMappings Mapper)> toMappers)
     {
-        using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
+        using var w = new CSharpWriter(fileName, _logger);
 
         var sampleFromMapper = fromMappers.FirstOrDefault();
         var sampleToMapper = toMappers.FirstOrDefault();
@@ -53,15 +53,15 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
         }
 
         w.WriteNamespace(ns);
-        w.WriteSummary(1, $"Mappers pour le module '{mapperNs.Module}'.");
-        w.WriteLine(1, $"public static class {Config.GetMapperName(mapperNs, modelPath)}");
-        w.WriteLine(1, "{");
+        w.WriteSummary($"Mappers pour le module '{mapperNs.Module}'.");
+        w.WriteLine($"public static class {Config.GetMapperName(mapperNs, modelPath)}");
+        w.WriteLine("{");
 
         foreach (var fromMapper in fromMappers)
         {
             var (classe, mapper) = fromMapper;
 
-            w.WriteSummary(2, $"Crée une nouvelle instance de '{classe.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
+            w.WriteSummary(1, $"Crée une nouvelle instance de '{classe.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
             foreach (var param in mapper.Params)
             {
                 if (param.Comment != null)
@@ -74,43 +74,43 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                 }
             }
 
-            w.WriteReturns(2, $"Une nouvelle instance de '{classe.NamePascal}'");
+            w.WriteReturns(1, $"Une nouvelle instance de '{classe.NamePascal}'");
 
             if (classe.Abstract)
             {
-                w.Write(2, $"public static T Create{classe.NamePascal}<T>");
+                w.Write(1, $"public static T Create{classe.NamePascal}<T>");
             }
             else
             {
-                w.Write(2, $"public static {classe.NamePascal} Create{classe.NamePascal}");
+                w.Write(1, $"public static {classe.NamePascal} Create{classe.NamePascal}");
             }
 
             w.WriteLine($"({string.Join(", ", mapper.Params.Select(p => $"{(p.Class.Abstract ? "I" : string.Empty)}{p.Class.NamePascal} {p.Name}{(!p.Required ? " = null" : string.Empty)}"))})");
 
             if (classe.Abstract)
             {
-                w.WriteLine(3, $"where T : I{classe.NamePascal}");
+                w.WriteLine(2, $"where T : I{classe.NamePascal}");
             }
 
-            w.WriteLine(2, "{");
+            w.WriteLine(1, "{");
 
             foreach (var param in mapper.Params.Where(p => p.Required))
             {
-                w.WriteLine(3, $"if ({param.Name} is null)");
-                w.WriteLine(3, "{");
-                w.WriteLine(4, $"throw new ArgumentNullException(nameof({param.Name}));");
-                w.WriteLine(3, "}");
+                w.WriteLine(2, $"if ({param.Name} is null)");
+                w.WriteLine(2, "{");
+                w.WriteLine(3, $"throw new ArgumentNullException(nameof({param.Name}));");
+                w.WriteLine(2, "}");
                 w.WriteLine();
             }
 
             if (classe.Abstract)
             {
-                w.WriteLine(3, $"return (T)T.Create(");
+                w.WriteLine(2, $"return (T)T.Create(");
             }
             else
             {
-                w.WriteLine(3, $"return new {classe.NamePascal}");
-                w.WriteLine(3, "{");
+                w.WriteLine(2, $"return new {classe.NamePascal}");
+                w.WriteLine(2, "{");
             }
 
             if (mapper.ParentMapper != null)
@@ -120,7 +120,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                     var mappings = param.Mappings.ToList();
                     foreach (var mapping in mappings)
                     {
-                        w.Write(4, $"{mapping.Key.NamePascal} = ");
+                        w.Write(3, $"{mapping.Key.NamePascal} = ");
 
                         if (mapping.Value == null)
                         {
@@ -164,11 +164,11 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                 {
                     if (classe.Abstract)
                     {
-                        w.Write(4, $"{mapping.Key.NameCamel}: ");
+                        w.Write(3, $"{mapping.Key.NameCamel}: ");
                     }
                     else
                     {
-                        w.Write(4, $"{mapping.Key.NamePascal} = ");
+                        w.Write(3, $"{mapping.Key.NamePascal} = ");
                     }
 
                     if (mapping.Value == null)
@@ -211,10 +211,10 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
             if (!classe.Abstract)
             {
-                w.WriteLine(3, "};");
+                w.WriteLine(2, "};");
             }
 
-            w.WriteLine(2, "}");
+            w.WriteLine(1, "}");
 
             if (toMappers.Any() || fromMappers.IndexOf(fromMapper) < fromMappers.Count - 1)
             {
@@ -226,34 +226,34 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
         {
             var (classe, mapper) = toMapper;
 
-            w.WriteSummary(2, $"Mappe '{classe.NamePascal}' vers '{mapper.Class.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
+            w.WriteSummary(1, $"Mappe '{classe.NamePascal}' vers '{mapper.Class.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
             w.WriteParam("source", $"Instance de '{classe.NamePascal}'");
             if (!mapper.Class.Abstract)
             {
                 w.WriteParam("dest", $"Instance pré-existante de '{mapper.Class.NamePascal}'. Une nouvelle instance sera créée si non spécifié.");
             }
 
-            w.WriteReturns(2, $"Une instance de '{mapper.Class.NamePascal}'");
+            w.WriteReturns(1, $"Une instance de '{mapper.Class.NamePascal}'");
 
             if (mapper.Class.Abstract)
             {
-                w.WriteLine(2, $"public static T {mapper.Name}<T>(this {classe.NamePascal} source)");
-                w.WriteLine(3, $"where T : I{mapper.Class.NamePascal}");
+                w.WriteLine(1, $"public static T {mapper.Name}<T>(this {classe.NamePascal} source)");
+                w.WriteLine(2, $"where T : I{mapper.Class.NamePascal}");
             }
             else
             {
-                w.WriteLine(2, $"public static {mapper.Class.NamePascal} {mapper.Name}(this {(classe.Abstract ? "I" : string.Empty)}{classe.NamePascal} source, {mapper.Class.NamePascal} dest = null)");
+                w.WriteLine(1, $"public static {mapper.Class.NamePascal} {mapper.Name}(this {(classe.Abstract ? "I" : string.Empty)}{classe.NamePascal} source, {mapper.Class.NamePascal} dest = null)");
             }
 
-            w.WriteLine(2, "{");
+            w.WriteLine(1, "{");
 
             if (mapper.Class.Abstract)
             {
-                w.WriteLine(3, $"return (T)T.Create(");
+                w.WriteLine(2, $"return (T)T.Create(");
             }
             else
             {
-                w.WriteLine(3, $"dest ??= new {mapper.Class.NamePascal}();");
+                w.WriteLine(2, $"dest ??= new {mapper.Class.NamePascal}();");
             }
 
             static string GetSourceMapping(IProperty property)
@@ -275,7 +275,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
                 if (mapper.Class.Abstract)
                 {
-                    w.Write(4, $"{mapping.Value?.NameCamel}: {value}");
+                    w.Write(3, $"{mapping.Value?.NameCamel}: {value}");
 
                     if (mappings.IndexOf(mapping) < mappings.Count - 1)
                     {
@@ -288,16 +288,16 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                 }
                 else
                 {
-                    w.WriteLine(3, $"dest.{mapping.Value?.NamePascal} = {value};");
+                    w.WriteLine(2, $"dest.{mapping.Value?.NamePascal} = {value};");
                 }
             }
 
             if (!mapper.Class.Abstract)
             {
-                w.WriteLine(3, "return dest;");
+                w.WriteLine(2, "return dest;");
             }
 
-            w.WriteLine(2, "}");
+            w.WriteLine(1, "}");
 
             if (toMappers.IndexOf(toMapper) < toMappers.Count - 1)
             {
@@ -305,8 +305,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
             }
         }
 
-        w.WriteLine(1, "}");
-        w.WriteNamespaceEnd();
+        w.WriteLine("}");
     }
 
     protected override bool IsPersistent(Class classe)

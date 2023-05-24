@@ -31,19 +31,13 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        using var fw = new CSharpWriter(filePath, _logger, Config.UseLatestCSharp);
+        using var fw = new CSharpWriter(filePath, _logger);
 
         var hasBody = endpoints.Any(e => e.GetBodyParam() != null);
         var hasReturn = endpoints.Any(e => e.Returns != null);
         var hasJson = hasReturn || hasBody;
 
         var usings = new List<string>();
-
-        if (!Config.UseLatestCSharp)
-        {
-            usings.Add("System.Net.Http");
-            usings.Add("System.Threading.Tasks");
-        }
 
         if (hasBody)
         {
@@ -58,20 +52,11 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
         if (hasJson)
         {
             usings.Add("System.Text.Json");
-
-            if (Config.UseLatestCSharp)
-            {
-                usings.Add("System.Text.Json.Serialization");
-            }
+            usings.Add("System.Text.Json.Serialization");
         }
 
         if (endpoints.Any(e => e.GetQueryParams().Any()))
         {
-            if (!Config.UseLatestCSharp)
-            {
-                usings.AddRange(new[] { "System.Collections.Generic", "System.Linq" });
-            }
-
             if (endpoints.Any(e => e.GetQueryParams().Any(qp =>
             {
                 var typeName = Config.GetType(qp);
@@ -114,46 +99,34 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
         fw.WriteNamespace(ns);
 
-        fw.WriteSummary(1, $"Client {fileName}");
+        fw.WriteSummary($"Client {fileName}");
         fw.WriteClassDeclaration(className, null);
 
-        fw.WriteLine(2, "private readonly HttpClient _client;");
+        fw.WriteLine(1, "private readonly HttpClient _client;");
         if (hasJson)
         {
-            if (Config.UseLatestCSharp)
-            {
-                fw.WriteLine(2, "private readonly JsonSerializerOptions _jsOptions = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };");
-            }
-            else
-            {
-                fw.WriteLine(2, "private readonly JsonSerializerOptions _jsOptions = new() { IgnoreNullValues = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };");
-            }
+            fw.WriteLine(1, "private readonly JsonSerializerOptions _jsOptions = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };");
         }
 
         fw.WriteLine();
-        fw.WriteSummary(2, "Constructeur");
+        fw.WriteSummary(1, "Constructeur");
         fw.WriteParam("client", "HttpClient injecté.");
-        fw.WriteLine(2, $"public {className}(HttpClient client)");
-        fw.WriteLine(2, "{");
-        fw.WriteLine(3, "_client = client;");
-        fw.WriteLine(2, "}");
+        fw.WriteLine(1, $"public {className}(HttpClient client)");
+        fw.WriteLine(1, "{");
+        fw.WriteLine(2, "_client = client;");
+        fw.WriteLine(1, "}");
 
         foreach (var endpoint in endpoints.OrderBy(endpoint => endpoint.NamePascal))
         {
             fw.WriteLine();
-            fw.WriteSummary(2, endpoint.Description);
+            fw.WriteSummary(1, endpoint.Description);
 
             foreach (var param in endpoint.Params)
             {
                 fw.WriteParam(param.GetParamName(), param.Comment);
             }
 
-            fw.WriteReturns(2, endpoint.Returns?.Comment ?? "Task.");
-
-            if (!Config.UseLatestCSharp)
-            {
-                fw.Write("    ");
-            }
+            fw.WriteReturns(1, endpoint.Returns?.Comment ?? "Task.");
 
             fw.Write("    public async Task");
 
@@ -186,16 +159,16 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
             }
 
             fw.WriteLine(")");
-            fw.WriteLine(2, "{");
+            fw.WriteLine(1, "{");
 
             var bodyParam = endpoint.GetBodyParam();
 
-            fw.WriteLine(3, $"await EnsureAuthentication();");
+            fw.WriteLine(2, $"await EnsureAuthentication();");
 
             if (endpoint.GetQueryParams().Any())
             {
-                fw.WriteLine(3, "var query = await new FormUrlEncodedContent(new Dictionary<string, string>");
-                fw.WriteLine(3, "{");
+                fw.WriteLine(2, "var query = await new FormUrlEncodedContent(new Dictionary<string, string>");
+                fw.WriteLine(2, "{");
 
                 foreach (var qp in endpoint.GetQueryParams().Where(qp => !Config.GetType(qp).Contains("[]")))
                 {
@@ -206,22 +179,17 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
                         _ => $"?.ToString(CultureInfo.InvariantCulture)"
                     };
 
-                    fw.WriteLine(4, $@"[""{qp.GetParamName()}""] = {qp.GetParamName().Verbatim()}{toString},");
+                    fw.WriteLine(3, $@"[""{qp.GetParamName()}""] = {qp.GetParamName().Verbatim()}{toString},");
                 }
 
                 var listQPs = endpoint.GetQueryParams().Where(qp => Config.GetType(qp).Contains("[]")).ToList();
 
                 if (listQPs.Count == 0)
                 {
-                    fw.WriteLine(3, "}.Where(kv => kv.Value != null)).ReadAsStringAsync();");
+                    fw.WriteLine(2, "}.Where(kv => kv.Value != null)).ReadAsStringAsync();");
                 }
                 else
                 {
-                    if (!Config.UseLatestCSharp)
-                    {
-                        fw.Write("    ");
-                    }
-
                     fw.Write("        }");
                     foreach (var qp in listQPs)
                     {
@@ -236,64 +204,63 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
                         fw.WriteLine(first ? 0 : 3, $@"{(first ? string.Empty : " ")}.Concat({qp.GetParamName()}?.Select(i => new KeyValuePair<string, string>(""{qp.GetParamName()}"", i{toString})) ?? new Dictionary<string, string>())");
                     }
 
-                    fw.WriteLine(3, " .Where(kv => kv.Value != null)).ReadAsStringAsync();");
+                    fw.WriteLine(2, " .Where(kv => kv.Value != null)).ReadAsStringAsync();");
                 }
             }
 
-            fw.WriteLine(3, $"using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.{endpoint.Method.ToPascalCase(true)}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = GetBody({bodyParam.NameCamel}) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)});");
-            fw.WriteLine(3, $"await EnsureSuccess(res);");
+            fw.WriteLine(2, $"using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.{endpoint.Method.ToPascalCase(true)}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = GetBody({bodyParam.NameCamel}) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)});");
+            fw.WriteLine(2, $"await EnsureSuccess(res);");
 
             if (returnType != null)
             {
-                fw.WriteLine(3, $"return await Deserialize<{returnType}>(res);");
+                fw.WriteLine(2, $"return await Deserialize<{returnType}>(res);");
             }
 
-            fw.WriteLine(2, "}");
+            fw.WriteLine(1, "}");
         }
 
         if (hasReturn)
         {
             fw.WriteLine();
-            fw.WriteSummary(2, "Déserialize le contenu d'une réponse HTTP.");
-            fw.WriteTypeParam(2, "T", "Type de destination.");
+            fw.WriteSummary(1, "Déserialize le contenu d'une réponse HTTP.");
+            fw.WriteTypeParam(1, "T", "Type de destination.");
             fw.WriteParam("response", "Réponse HTTP");
-            fw.WriteReturns(2, "Contenu.");
-            fw.WriteLine(2, "private async Task<T> Deserialize<T>(HttpResponseMessage response)");
+            fw.WriteReturns(1, "Contenu.");
+            fw.WriteLine(1, "private async Task<T> Deserialize<T>(HttpResponseMessage response)");
+            fw.WriteLine(1, "{");
+            fw.WriteLine(2, "if (response.StatusCode == HttpStatusCode.NoContent)");
             fw.WriteLine(2, "{");
-            fw.WriteLine(3, "if (response.StatusCode == HttpStatusCode.NoContent)");
-            fw.WriteLine(3, "{");
-            fw.WriteLine(4, "return default;");
-            fw.WriteLine(3, "}");
-            fw.WriteLine();
-            fw.WriteLine(3, "using var res = await response.Content.ReadAsStreamAsync();");
-            fw.WriteLine(3, "return await JsonSerializer.DeserializeAsync<T>(res, _jsOptions);");
+            fw.WriteLine(3, "return default;");
             fw.WriteLine(2, "}");
+            fw.WriteLine();
+            fw.WriteLine(2, "using var res = await response.Content.ReadAsStreamAsync();");
+            fw.WriteLine(2, "return await JsonSerializer.DeserializeAsync<T>(res, _jsOptions);");
+            fw.WriteLine(1, "}");
         }
 
         fw.WriteLine();
-        fw.WriteSummary(2, "Assure que l'authentification est configurée.");
-        fw.WriteLine(2, "private partial Task EnsureAuthentication();");
+        fw.WriteSummary(1, "Assure que l'authentification est configurée.");
+        fw.WriteLine(1, "private partial Task EnsureAuthentication();");
 
         fw.WriteLine();
-        fw.WriteSummary(2, "Gère les erreurs éventuelles retournées par l'API appelée.");
+        fw.WriteSummary(1, "Gère les erreurs éventuelles retournées par l'API appelée.");
         fw.WriteParam("response", "Réponse HTTP");
-        fw.WriteLine(2, "private partial Task EnsureSuccess(HttpResponseMessage response);");
+        fw.WriteLine(1, "private partial Task EnsureSuccess(HttpResponseMessage response);");
 
         if (hasBody)
         {
             fw.WriteLine();
-            fw.WriteSummary(2, "Récupère le body d'une requête pour l'objet donné.");
-            fw.WriteTypeParam(2, "T", "Type source.");
+            fw.WriteSummary(1, "Récupère le body d'une requête pour l'objet donné.");
+            fw.WriteTypeParam(1, "T", "Type source.");
             fw.WriteParam("input", "Entrée");
-            fw.WriteReturns(2, "Contenu.");
-            fw.WriteLine(2, "private StringContent GetBody<T>(T input)");
-            fw.WriteLine(2, "{");
-            fw.WriteLine(3, "return new StringContent(JsonSerializer.Serialize(input, _jsOptions), Encoding.UTF8, \"application/json\");");
-            fw.WriteLine(2, "}");
+            fw.WriteReturns(1, "Contenu.");
+            fw.WriteLine(1, "private StringContent GetBody<T>(T input)");
+            fw.WriteLine(1, "{");
+            fw.WriteLine(2, "return new StringContent(JsonSerializer.Serialize(input, _jsOptions), Encoding.UTF8, \"application/json\");");
+            fw.WriteLine(1, "}");
         }
 
-        fw.WriteLine(1, "}");
-        fw.WriteNamespaceEnd();
+        fw.WriteLine("}");
     }
 
     private string GetNamespace(Class classe, string tag)
