@@ -94,9 +94,6 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         JpaModelPropertyGenerator.WriteProperties(fw, classe, tag);
         JpaModelPropertyGenerator.WriteCompositePrimaryKeyClass(fw, classe);
         JpaModelConstructorGenerator.WriteNoArgConstructor(fw, classe);
-        JpaModelConstructorGenerator.WriteCopyConstructor(fw, classe, AvailableClasses, tag);
-        JpaModelConstructorGenerator.WriteAllArgConstructor(fw, classe, AvailableClasses, tag);
-
         JpaModelConstructorGenerator.WriteFromMappers(fw, classe, AvailableClasses, tag);
 
         WriteGetters(fw, classe, tag);
@@ -384,7 +381,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
     {
         var imports = classe.GetImports(Config, tag);
         imports.AddRange(Config.GetDecoratorImports(classe));
-        foreach (var property in classe.GetAllArgsProperties(AvailableClasses, tag))
+        foreach (var property in classe.GetProperties(AvailableClasses))
         {
             imports.AddRange(property.GetTypeImports(Config, tag, property.Class != classe));
         }
@@ -509,7 +506,15 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 }
             }));
 
-            fw.WriteLine(3, $"return new {classe.NamePascal}(this{(classe.GetProperties(AvailableClasses).Count > 1 ? ", " + properties : string.Empty)});");
+            fw.WriteLine(3, $"{classe.NamePascal} entity = new {classe.NamePascal}();");
+            fw.WriteLine(3, $"entity.{codeProperty.NameCamel} = this;");
+
+            foreach (var prop in classe.GetProperties(AvailableClasses).Where(p => p != codeProperty))
+            {
+                fw.WriteLine(3, $"entity.{prop.NameCamel} = this.{prop.NameCamel};");
+            }
+
+            fw.WriteLine(3, $"return entity;");
             fw.WriteLine(2, $"}}");
             foreach (var prop in classe.GetProperties(AvailableClasses).Where(p => p != codeProperty))
             {

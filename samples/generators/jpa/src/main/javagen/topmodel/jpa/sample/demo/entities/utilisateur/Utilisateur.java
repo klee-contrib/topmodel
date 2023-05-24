@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -126,60 +125,6 @@ public class Utilisateur {
 	 * No arg constructor.
 	 */
 	public Utilisateur() {
-	}
-
-	/**
-	 * Copy constructor.
-	 * @param utilisateur to copy
-	 */
-	public Utilisateur(Utilisateur utilisateur) {
-		if(utilisateur == null) {
-			return;
-		}
-
-		this.id = utilisateur.getId();
-		this.age = utilisateur.getAge();
-		this.profil = utilisateur.getProfil();
-		this.email = utilisateur.getEmail();
-		this.nom = utilisateur.getNom();
-		this.actif = utilisateur.getActif();
-		this.typeUtilisateur = utilisateur.getTypeUtilisateur();
-		this.utilisateurParent = utilisateur.getUtilisateurParent();
-		this.dateCreation = utilisateur.getDateCreation();
-		this.dateModification = utilisateur.getDateModification();
-		this.utilisateurEnfant = utilisateur.getUtilisateurEnfant();
-
-		this.utilisateursEnfant = utilisateur.getUtilisateursEnfant().stream().collect(Collectors.toList());
-	}
-
-	/**
-	 * All arg constructor.
-	 * @param id Id technique
-	 * @param age Age en années de l'utilisateur
-	 * @param profil Profil de l'utilisateur
-	 * @param email Email de l'utilisateur
-	 * @param nom Nom de l'utilisateur
-	 * @param actif Si l'utilisateur est actif
-	 * @param typeUtilisateur Type d'utilisateur en Many to one
-	 * @param utilisateurParent Utilisateur parent
-	 * @param utilisateursEnfant Utilisateur enfants
-	 * @param dateCreation Date de création de l'utilisateur
-	 * @param dateModification Date de modification de l'utilisateur
-	 * @param utilisateurEnfant Association réciproque de Utilisateur.UtilisateursEnfant
-	 */
-	public Utilisateur(Long id, Long age, Profil profil, String email, String nom, Boolean actif, TypeUtilisateur typeUtilisateur, Utilisateur utilisateurParent, List<Utilisateur> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification, Utilisateur utilisateurEnfant) {
-		this.id = id;
-		this.age = age;
-		this.profil = profil;
-		this.email = email;
-		this.nom = nom;
-		this.actif = actif;
-		this.typeUtilisateur = typeUtilisateur;
-		this.utilisateurParent = utilisateurParent;
-		this.utilisateursEnfant = utilisateursEnfant;
-		this.dateCreation = dateCreation;
-		this.dateModification = dateModification;
-		this.utilisateurEnfant = utilisateurEnfant;
 	}
 
 	/**

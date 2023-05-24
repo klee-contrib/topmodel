@@ -47,29 +47,6 @@ public class TypeProfil {
 	}
 
 	/**
-	 * Copy constructor.
-	 * @param typeProfil to copy
-	 */
-	public TypeProfil(TypeProfil typeProfil) {
-		if(typeProfil == null) {
-			return;
-		}
-
-		this.code = typeProfil.getCode();
-		this.libelle = typeProfil.getLibelle();
-	}
-
-	/**
-	 * All arg constructor.
-	 * @param code Code du type d'utilisateur
-	 * @param libelle Libellé du type d'utilisateur
-	 */
-	public TypeProfil(TypeProfil.Values code, String libelle) {
-		this.code = code;
-		this.libelle = libelle;
-	}
-
-	/**
 	 * Getter for code.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.TypeProfil#code code}.
@@ -143,7 +120,10 @@ public class TypeProfil {
 		 * @return instance de {@link topmodel.jpa.sample.demo.entities.securite.TypeProfil} correspondant au code courant.
 		 */
 		public TypeProfil getEntity() {
-			return new TypeProfil(this, libelle);
+			TypeProfil entity = new TypeProfil();
+			entity.code = this;
+			entity.libelle = this.libelle;
+			return entity;
 		}
 
 		/**

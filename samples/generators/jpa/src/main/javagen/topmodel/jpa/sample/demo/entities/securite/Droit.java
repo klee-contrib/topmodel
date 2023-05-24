@@ -57,32 +57,6 @@ public class Droit {
 	}
 
 	/**
-	 * Copy constructor.
-	 * @param droit to copy
-	 */
-	public Droit(Droit droit) {
-		if(droit == null) {
-			return;
-		}
-
-		this.code = droit.getCode();
-		this.libelle = droit.getLibelle();
-		this.typeProfil = droit.getTypeProfil();
-	}
-
-	/**
-	 * All arg constructor.
-	 * @param code Code du droit
-	 * @param libelle Libellé du droit
-	 * @param typeProfil Type de profil pouvant faire l'action
-	 */
-	public Droit(Droit.Values code, String libelle, TypeProfil typeProfil) {
-		this.code = code;
-		this.libelle = libelle;
-		this.typeProfil = typeProfil;
-	}
-
-	/**
 	 * Getter for code.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Droit#code code}.
@@ -181,7 +155,11 @@ public class Droit {
 		 * @return instance de {@link topmodel.jpa.sample.demo.entities.securite.Droit} correspondant au code courant.
 		 */
 		public Droit getEntity() {
-			return new Droit(this, libelle, typeProfilCode.getEntity());
+			Droit entity = new Droit();
+			entity.code = this;
+			entity.libelle = this.libelle;
+			entity.typeProfilCode = this.typeProfilCode;
+			return entity;
 		}
 
 		/**

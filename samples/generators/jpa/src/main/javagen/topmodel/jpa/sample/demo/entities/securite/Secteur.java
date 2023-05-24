@@ -45,29 +45,6 @@ public class Secteur {
 	}
 
 	/**
-	 * Copy constructor.
-	 * @param secteur to copy
-	 */
-	public Secteur(Secteur secteur) {
-		if(secteur == null) {
-			return;
-		}
-
-		this.id = secteur.getId();
-		this.profil = secteur.getProfil();
-	}
-
-	/**
-	 * All arg constructor.
-	 * @param id Id technique
-	 * @param profil Association réciproque de Profil.Secteurs
-	 */
-	public Secteur(Long id, Profil profil) {
-		this.id = id;
-		this.profil = profil;
-	}
-
-	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Secteur#id id}.

@@ -6,7 +6,6 @@ package topmodel.jpa.sample.demo.entities.securite;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import jakarta.annotation.Generated;
 import jakarta.persistence.CascadeType;
@@ -65,36 +64,6 @@ public class Profil {
 	 * No arg constructor.
 	 */
 	public Profil() {
-	}
-
-	/**
-	 * Copy constructor.
-	 * @param profil to copy
-	 */
-	public Profil(Profil profil) {
-		if(profil == null) {
-			return;
-		}
-
-		this.id = profil.getId();
-		this.typeProfil = profil.getTypeProfil();
-
-		this.droits = profil.getDroits().stream().collect(Collectors.toList());
-		this.secteurs = profil.getSecteurs().stream().collect(Collectors.toList());
-	}
-
-	/**
-	 * All arg constructor.
-	 * @param id Id technique
-	 * @param typeProfil Type de profil
-	 * @param droits Liste des droits de l'utilisateur
-	 * @param secteurs Liste des secteurs de l'utilisateur
-	 */
-	public Profil(Long id, TypeProfil typeProfil, List<Droit> droits, List<Secteur> secteurs) {
-		this.id = id;
-		this.typeProfil = typeProfil;
-		this.droits = droits;
-		this.secteurs = secteurs;
 	}
 
 	/**
