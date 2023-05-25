@@ -100,7 +100,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
         fw.WriteNamespace(ns);
 
         fw.WriteSummary($"Client {fileName}");
-        fw.WriteClassDeclaration(className, null);
+        fw.WriteClassDeclaration(className, null, false);
 
         fw.WriteLine(1, "private readonly HttpClient _client;");
         if (hasJson)

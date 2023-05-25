@@ -75,8 +75,9 @@ public class CSharpWriter : IDisposable
     /// </summary>
     /// <param name="name">Nom de la classe.</param>
     /// <param name="inheritedClass">Classe parente.</param>
+    /// <param name="isRecord">Génère un record au lieu d'une classe.</param>
     /// <param name="ifList">Liste des interfaces implémentées.</param>
-    public void WriteClassDeclaration(string name, string? inheritedClass, params string[] ifList)
+    public void WriteClassDeclaration(string name, string? inheritedClass, bool isRecord, params string[] ifList)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -90,7 +91,16 @@ public class CSharpWriter : IDisposable
 
         var sb = new StringBuilder();
 
-        sb.Append("public partial class ");
+        sb.Append("public partial ");
+        if (isRecord)
+        {
+            sb.Append("record ");
+        }
+        else
+        {
+            sb.Append("class ");
+        }
+
         sb.Append(name);
         if (!string.IsNullOrEmpty(inheritedClass) || ifList != null && ifList.Length > 0)
         {

@@ -187,6 +187,15 @@
     "useEFComments": {
       "type": "boolean",
       "description": "Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `UseEFMigrations`)."
+    },
+    "useRecords": {
+      "type": [ "string", "boolean" ],
+      "description": "Utilise des records (mutables) au lieu de classes pour la génération de classes.",
+      "enum": [
+        true,
+        false,
+        "dtos-only"
+      ]      
     }
   }
 }

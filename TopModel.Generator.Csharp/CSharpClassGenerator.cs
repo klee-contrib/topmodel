@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
+using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -176,7 +177,8 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         }
         else
         {
-            w.WriteClassDeclaration(item.NamePascal, extends, implements.ToArray());
+            var isRecord = (Config.UseRecords & Target.Dto) > 0 && !Config.IsPersistent(item, tag) || (Config.UseRecords & Target.Persisted) > 0 && Config.IsPersistent(item, tag);
+            w.WriteClassDeclaration(item.NamePascal, extends, isRecord, implements.ToArray());
 
             GenerateConstProperties(w, item);
 

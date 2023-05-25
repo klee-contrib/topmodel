@@ -1,5 +1,6 @@
 ﻿using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 using YamlDotNet.Serialization;
@@ -126,6 +127,19 @@ public class CsharpConfig : GeneratorConfigBase
     /// Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `UseEFMigrations`).
     /// </summary>
     public bool UseEFComments { get; set; }
+
+    [YamlMember(Alias = "useRecords")]
+    public object? UseRecordsParam { get; set; }
+
+    /// <summary>
+    /// Utilise des records (mutables) au lieu de classes pour la génération de classes.
+    /// </summary>
+    public Target UseRecords => UseRecordsParam switch
+    {
+        true => Target.Persisted_Dto,
+        "dtos-only" => Target.Dto,
+        _ => Target.None
+    };
 
     public override string[] PropertiesWithModuleVariableSupport => new[]
     {

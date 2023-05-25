@@ -239,6 +239,10 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   Utilise des enums C# à la place du type original pour les listes de références statiques (= clé primaire non-autogénérée).
 
+- `useRecords`
+
+  Utilise des records (mutables) au lieu de classes pour la génération de classes. Valeurs possibles : `true`, `false` et `dtos-only`.
+
 - `useEFComments`
 
   Génère les commentaires en SQL pour les migrations EF Core (à partir des commentaires du modèle).

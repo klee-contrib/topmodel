@@ -104,7 +104,7 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
         w.WriteSummary("This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + ns.Module + ".");
         w.WriteLine("[RegisterImpl]");
 
-        w.WriteClassDeclaration(implementationName, null, interfaceName);
+        w.WriteClassDeclaration(implementationName, null, false, interfaceName);
 
         if (Config.DbContextPath != null)
         {
