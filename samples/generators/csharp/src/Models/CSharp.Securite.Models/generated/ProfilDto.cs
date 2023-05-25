@@ -16,37 +16,6 @@ namespace Models.CSharp.Securite.Models;
 public partial class ProfilDto
 {
     /// <summary>
-    /// Constructeur.
-    /// </summary>
-    public ProfilDto()
-    {
-        Utilisateurs = new List<UtilisateurDto>();
-        Secteurs = new List<SecteurDto>();
-
-        OnCreated();
-    }
-
-    /// <summary>
-    /// Constructeur par recopie.
-    /// </summary>
-    /// <param name="bean">Source.</param>
-    public ProfilDto(ProfilDto bean)
-    {
-        if (bean == null)
-        {
-            throw new ArgumentNullException(nameof(bean));
-        }
-
-        Id = bean.Id;
-        TypeProfilCode = bean.TypeProfilCode;
-        Droits = bean.Droits;
-        Utilisateurs = new List<UtilisateurDto>(bean.Utilisateurs);
-        Secteurs = new List<SecteurDto>(bean.Secteurs);
-
-        OnCreated(bean);
-    }
-
-    /// <summary>
     /// Id technique.
     /// </summary>
     [Column("pro_id")]
@@ -74,22 +43,11 @@ public partial class ProfilDto
     /// Liste paginée des utilisateurs de ce profil.
     /// </summary>
     [NotMapped]
-    public ICollection<UtilisateurDto> Utilisateurs { get; set; }
+    public ICollection<UtilisateurDto> Utilisateurs { get; set; } = new List<UtilisateurDto>();
 
     /// <summary>
     /// Liste des secteurs du profil.
     /// </summary>
     [NotMapped]
-    public ICollection<SecteurDto> Secteurs { get; set; }
-
-    /// <summary>
-    /// Methode d'extensibilité possible pour les constructeurs.
-    /// </summary>
-    partial void OnCreated();
-
-    /// <summary>
-    /// Methode d'extensibilité possible pour les constructeurs par recopie.
-    /// </summary>
-    /// <param name="bean">Source.</param>
-    partial void OnCreated(ProfilDto bean);
+    public ICollection<SecteurDto> Secteurs { get; set; } = new List<SecteurDto>();
 }

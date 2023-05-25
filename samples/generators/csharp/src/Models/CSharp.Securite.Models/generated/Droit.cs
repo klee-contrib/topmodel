@@ -19,32 +19,6 @@ namespace Models.CSharp.Securite.Models;
 public partial class Droit
 {
     /// <summary>
-    /// Constructeur.
-    /// </summary>
-    public Droit()
-    {
-        OnCreated();
-    }
-
-    /// <summary>
-    /// Constructeur par recopie.
-    /// </summary>
-    /// <param name="bean">Source.</param>
-    public Droit(Droit bean)
-    {
-        if (bean == null)
-        {
-            throw new ArgumentNullException(nameof(bean));
-        }
-
-        Code = bean.Code;
-        Libelle = bean.Libelle;
-        TypeProfilCode = bean.TypeProfilCode;
-
-        OnCreated(bean);
-    }
-
-    /// <summary>
     /// Valeurs possibles de la liste de référence Droit.
     /// </summary>
     public enum Codes
@@ -89,15 +63,4 @@ public partial class Droit
     [ReferencedType(typeof(TypeProfil))]
     [Domain(Domains.Code)]
     public TypeProfil.Codes? TypeProfilCode { get; set; }
-
-    /// <summary>
-    /// Methode d'extensibilité possible pour les constructeurs.
-    /// </summary>
-    partial void OnCreated();
-
-    /// <summary>
-    /// Methode d'extensibilité possible pour les constructeurs par recopie.
-    /// </summary>
-    /// <param name="bean">Source.</param>
-    partial void OnCreated(Droit bean);
 }

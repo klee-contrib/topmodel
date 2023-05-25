@@ -19,31 +19,6 @@ namespace Models.CSharp.Utilisateur.Models;
 public partial class TypeUtilisateur
 {
     /// <summary>
-    /// Constructeur.
-    /// </summary>
-    public TypeUtilisateur()
-    {
-        OnCreated();
-    }
-
-    /// <summary>
-    /// Constructeur par recopie.
-    /// </summary>
-    /// <param name="bean">Source.</param>
-    public TypeUtilisateur(TypeUtilisateur bean)
-    {
-        if (bean == null)
-        {
-            throw new ArgumentNullException(nameof(bean));
-        }
-
-        Code = bean.Code;
-        Libelle = bean.Libelle;
-
-        OnCreated(bean);
-    }
-
-    /// <summary>
     /// Valeurs possibles de la liste de référence TypeUtilisateur.
     /// </summary>
     public enum Codes
@@ -80,15 +55,4 @@ public partial class TypeUtilisateur
     [Domain(Domains.Libelle)]
     [StringLength(3)]
     public string Libelle { get; set; }
-
-    /// <summary>
-    /// Methode d'extensibilité possible pour les constructeurs.
-    /// </summary>
-    partial void OnCreated();
-
-    /// <summary>
-    /// Methode d'extensibilité possible pour les constructeurs par recopie.
-    /// </summary>
-    /// <param name="bean">Source.</param>
-    partial void OnCreated(TypeUtilisateur bean);
 }

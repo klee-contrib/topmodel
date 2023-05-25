@@ -15,42 +15,6 @@ namespace Models.CSharp.Utilisateur.Models;
 public partial class UtilisateurDto
 {
     /// <summary>
-    /// Constructeur.
-    /// </summary>
-    public UtilisateurDto()
-    {
-        UtilisateurParent = new UtilisateurDto();
-
-        OnCreated();
-    }
-
-    /// <summary>
-    /// Constructeur par recopie.
-    /// </summary>
-    /// <param name="bean">Source.</param>
-    public UtilisateurDto(UtilisateurDto bean)
-    {
-        if (bean == null)
-        {
-            throw new ArgumentNullException(nameof(bean));
-        }
-
-        Id = bean.Id;
-        Age = bean.Age;
-        ProfilId = bean.ProfilId;
-        Email = bean.Email;
-        Nom = bean.Nom;
-        Actif = bean.Actif;
-        TypeUtilisateurCode = bean.TypeUtilisateurCode;
-        UtilisateursEnfant = bean.UtilisateursEnfant;
-        DateCreation = bean.DateCreation;
-        DateModification = bean.DateModification;
-        UtilisateurParent = new UtilisateurDto(bean.UtilisateurParent);
-
-        OnCreated(bean);
-    }
-
-    /// <summary>
     /// Id technique.
     /// </summary>
     [Column("uti_id")]
@@ -128,16 +92,5 @@ public partial class UtilisateurDto
     /// UtilisateurParent.
     /// </summary>
     [NotMapped]
-    public UtilisateurDto UtilisateurParent { get; set; }
-
-    /// <summary>
-    /// Methode d'extensibilité possible pour les constructeurs.
-    /// </summary>
-    partial void OnCreated();
-
-    /// <summary>
-    /// Methode d'extensibilité possible pour les constructeurs par recopie.
-    /// </summary>
-    /// <param name="bean">Source.</param>
-    partial void OnCreated(UtilisateurDto bean);
+    public UtilisateurDto UtilisateurParent { get; set; } = new UtilisateurDto();
 }
