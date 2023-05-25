@@ -125,6 +125,10 @@
               "$ref": "#/definitions/domain"
             }
           },
+          "outputDirectory": {
+            "type": "string",
+            "description": "Dossier dans lequel doivent être placés les fichiers et modules générés. Ce chemin est relatif au modelRoot"
+          },
           "exclude": {
             "type": "array",
             "description": "Liste des tables à exclure de la génération",
