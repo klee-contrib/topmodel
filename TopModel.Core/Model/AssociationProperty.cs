@@ -15,7 +15,7 @@ public class AssociationProperty : IFieldProperty
 
     public IFieldProperty Property
     {
-        get => _property ?? Association?.PrimaryKey.Single();
+        get => _property ?? Association?.PrimaryKey.FirstOrDefault();
         set => _property = value;
     }
 
