@@ -135,6 +135,7 @@ public class AliasProperty : IFieldProperty
             Prefix = Prefix,
             Property = _property,
             Suffix = Suffix,
+            Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName
         };
 
@@ -176,6 +177,7 @@ public class AliasProperty : IFieldProperty
             Prefix = Prefix,
             Suffix = Suffix,
             Comment = _comment!,
+            Trigram = Trigram,
             DefaultValue = _defaultValue,
             Label = _label,
             As = As,
