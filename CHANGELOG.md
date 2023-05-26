@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.31.1
+
+- [`c5f30de9`](https://github.com/klee-contrib/topmodel/commit/c5f30de956d443fbb02cfb6230f55a14316a1ff3) - Fix trigram sur alias qui ne fonctionnait pas
+- [`4be45232`](https://github.com/klee-contrib/topmodel/commit/4be4523259c5cf4944b9c64bef974bce957e6024) - Fix plantage moche si plusieurs PK
+
 ## 1.31.0
 
 - [#255](https://github.com/klee-contrib/topmodel/pull/255) - Domaines de composition et transformations de domaines explicites
