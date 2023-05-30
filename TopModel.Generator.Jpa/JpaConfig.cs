@@ -164,7 +164,7 @@ public class JpaConfig : GeneratorConfigBase
 
     public string GetMapperName(Namespace ns, string modelPath)
     {
-        return $"{ns.ModuleFlat}{(modelPath == EntitiesPath ? string.Empty : "DTO")}Mappers";
+        return $"{ns.ModuleFlat}{(modelPath == EntitiesPath ? string.Empty : "DTO")}Mappers".ToPascalCase();
     }
 
     public string GetPackageName(Endpoint endpoint, string tag)
