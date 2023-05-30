@@ -12,11 +12,9 @@
       "    - composition: $2",
       "      name: $2",
       "      comment: Objet $1 à créer",
-      "      kind: object",
       "  returns:",
       "    composition: $2",
       "    name: detail",
-      "    kind: object",
       "    comment: Le détail du $1 créé"
     ],
     "description": "Nouveau endpoint de création des données"
@@ -37,7 +35,6 @@
       "  returns:",
       "    composition: $2",
       "    name: detail",
-      "    kind: object",
       "    comment: Le détail d'un $1"
     ],
     "description": "Nouveau endpoint de chargement des données"
@@ -55,11 +52,9 @@
       "    - composition: $2",
       "      name: $2",
       "      comment: Objet $1 à modifier",
-      "      kind: object",
       "  returns:",
       "    composition: $2",
       "    name: detail",
-      "    kind: object",
       "    comment: Le détail du $1 modifié"
     ],
     "description": "Nouveau endpoint de création des données"

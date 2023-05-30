@@ -87,7 +87,7 @@ class:
   properties:
     - composition: ClasseCible
       name: ClasseCibleList
-      kind: DO_LIST
+      domain: DO_LIST
       comment: C'est une liste
 ```
 

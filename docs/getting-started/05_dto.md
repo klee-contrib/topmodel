@@ -171,7 +171,6 @@ class:
     - composition: ProfilDto # Nom de la classe
       name: Profil # Nom de la propriété
       comment: Profil de l'utilisateur # Commentaire obligatoire
-      kind: object # Type de composition
 ```
 
 ### Type de composition (kind)
@@ -198,15 +197,15 @@ domain:
   name: DO_PAGE
   label: Date
   ts:
-    type: Page
+    genericType: Page<{T}>
     import: "@/services/api-types"
   java:
-    type: Page
+    genericType: Page<{T}>
     imports:
       - "org.springframework.data.domain.Page"
 ```
 
-Avec le kind `DO_PAGE`
+Avec le domain `DO_PAGE`
 
 ```yaml
 # Dto.yml
@@ -220,7 +219,7 @@ class:
     - composition: ProfilDto # Nom de la classe
       name: Profil # Nom de la propriété
       comment: Profil de l'utilisateur # Commentaire obligatoire
-      kind: DO_PAGE # Type de composition
+      domain: DO_PAGE # Type de composition
 ```
 
 Le type de composition donnera le type générique `Page<ProfilDto>`.

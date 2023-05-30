@@ -22,7 +22,6 @@ endpoint:
   returns:
     composition: EvenementAuditDetail
     name: detail # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
-    kind: object
     comment: Le détail et la liste des impacts.
 ```
 

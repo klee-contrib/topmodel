@@ -74,7 +74,6 @@ endpoint: # Description du EndPoint
   returns: # Retour du endpoint. Se décrit comme une composition
     composition: UtilisateurDetailDto
     name: detail
-    kind: object
     comment: Le détail d'un Utilisateur
 ```
 
@@ -94,12 +93,10 @@ endpoint: # Description du EndPoint
   params: # Paramètres, se décrivent comme des propriétés
     - composition : UtilisateurCreateDto
       name: detail
-      kind: object
       comment: Le détail de l'utilisateur à créer
   returns: # Retour du endpoint. Se décrit comme une composition
     composition: UtilisateurDetailDto
     name: detail
-    kind: object
     comment: Le détail de l'utilisateur créé
 ```
 
@@ -117,12 +114,10 @@ endpoint: # Description du EndPoint
   params: # Paramètres, se décrivent comme des propriétés
     - composition : UtilisateurUpdateDto
       name: detail
-      kind: object
       comment: Le détail de l'utilisateur à modifier
   returns: # Retour du endpoint. Se décrit comme une composition
     composition: UtilisateurDetailDto
     name: detail
-    kind: object
     comment: Le détail de l'utilisateur modifié
 ```
 
