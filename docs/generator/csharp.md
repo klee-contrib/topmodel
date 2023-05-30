@@ -84,7 +84,7 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   _Templating_: `{module}`
 
-  _Valeur par défaut_: Valeur de `persistantModelPath`
+  _Valeur par défaut_: Valeur de `persistentModelPath`
 
   _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
 
