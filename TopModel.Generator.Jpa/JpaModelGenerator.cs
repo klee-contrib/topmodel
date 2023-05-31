@@ -248,7 +248,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteLine(1, " * Cette méthode permet définir la valeur de la FK directement");
                 fw.WriteLine(1, $" * @param {propertyName} value to set");
                 fw.WriteDocEnd(1);
-                fw.WriteLine(1, @$"public void {(isMultiple ? ap.NameCamel + ap.Property.NameCamel : ap.NameCamel).WithPrefix("set")}({(isMultiple ? $"List<{Config.GetType(ap.Property)}>" : Config.GetType(ap.Property))} {propertyName}) {{");
+                fw.WriteLine(1, @$"public void {(isMultiple ? ap.NameCamel + ap.Property.NamePascal : ap.NameCamel).WithPrefix("set")}({(isMultiple ? $"List<{Config.GetType(ap.Property)}>" : Config.GetType(ap.Property))} {propertyName}) {{");
                 fw.WriteLine(2, $"if ({propertyName} != null) {{");
                 if (!isMultiple)
                 {
