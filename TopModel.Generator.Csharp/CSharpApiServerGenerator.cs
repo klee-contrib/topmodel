@@ -28,7 +28,7 @@ public class CSharpApiServerGenerator : EndpointsGeneratorBase<CsharpConfig>
         return Config.ResolveVariables(Config.ApiGeneration!, tag) == ApiGeneration.Server;
     }
 
-    protected override string GetFileName(ModelFile file, string tag)
+    protected override string GetFilePath(ModelFile file, string tag)
     {
         return Path.Combine(Config.GetApiPath(file, tag, withControllers: true), $"{file.Options.Endpoints.FileName.ToPascalCase()}Controller.cs");
     }
