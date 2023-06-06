@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.31.2
+
+- [`c7139454`](https://github.com/klee-contrib/topmodel/commit/c7139454f62964f4da527a063d8cf9ef22c61e3a) - [JPA] Correction case enumShortcut multiple
+- [`ed67fdd5`](https://github.com/klee-contrib/topmodel/commit/ed67fdd52f6a2a252e6df764a9e0656a3752a905) - Fix regroupement des endpoints par fileName si le tag ou le module est différent
+
 ## 1.31.1
 
 - [`c5f30de9`](https://github.com/klee-contrib/topmodel/commit/c5f30de956d443fbb02cfb6230f55a14316a1ff3) - Fix trigram sur alias qui ne fonctionnait pas
