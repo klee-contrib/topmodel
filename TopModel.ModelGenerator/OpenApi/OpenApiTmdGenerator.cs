@@ -112,10 +112,6 @@ public class OpenApiTmdGenerator : ModelGenerator
                     fw.WriteLine();
                 }
             }
-        }
-
-        foreach (var schema in _model.Components.Schemas.Where(sh => sh.Value.Properties.Where(p => (p.Value.Enum?.Any() ?? false)).Any()))
-        {
             foreach (var property in schema.Value.Properties.Where(p => (p.Value.Enum?.Any() ?? false)))
             {
                 fw.WriteLine("---");

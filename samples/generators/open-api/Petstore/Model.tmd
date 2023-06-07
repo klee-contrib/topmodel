@@ -80,6 +80,22 @@ class:
       comment: "complete"
 ---
 class:
+  name: OrderStatus
+  preservePropertyCasing: true
+  comment: enum pour les valeurs de Status
+
+  properties:
+    - name: status
+      domain: DO_LIBELLE
+      required: true
+      comment: "Order Status"
+
+  values:
+    value0: { status: placed }
+    value1: { status: approved }
+    value2: { status: delivered }
+---
+class:
   name: Pet
   preservePropertyCasing: true
   comment: no description provided
@@ -111,6 +127,22 @@ class:
 
     - alias:
         class: PetStatus
+---
+class:
+  name: PetStatus
+  preservePropertyCasing: true
+  comment: enum pour les valeurs de Status
+
+  properties:
+    - name: status
+      domain: DO_LIBELLE
+      required: true
+      comment: "pet status in the store"
+
+  values:
+    value0: { status: available }
+    value1: { status: pending }
+    value2: { status: sold }
 ---
 class:
   name: Tag
@@ -173,35 +205,3 @@ class:
       domain: DO_ENTIER
       required: true
       comment: "User Status"
----
-class:
-  name: OrderStatus
-  preservePropertyCasing: true
-  comment: enum pour les valeurs de Status
-
-  properties:
-    - name: status
-      domain: DO_LIBELLE
-      required: true
-      comment: "Order Status"
-
-  values:
-    value0: { status: placed }
-    value1: { status: approved }
-    value2: { status: delivered }
----
-class:
-  name: PetStatus
-  preservePropertyCasing: true
-  comment: enum pour les valeurs de Status
-
-  properties:
-    - name: status
-      domain: DO_LIBELLE
-      required: true
-      comment: "pet status in the store"
-
-  values:
-    value0: { status: available }
-    value1: { status: pending }
-    value2: { status: sold }
