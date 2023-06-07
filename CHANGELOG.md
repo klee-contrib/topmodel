@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.31.3
+
+- [`52f5abc2`](https://github.com/klee-contrib/topmodel/commit/52f5abc2d592656d4ff763af2db817d600bbb8ee) - [C#] Fix usings dans les accesseurs de référence pour les classes non persistées
+
 ## 1.31.2
 
 - [`c7139454`](https://github.com/klee-contrib/topmodel/commit/c7139454f62964f4da527a063d8cf9ef22c61e3a) - [JPA] Correction case enumShortcut multiple
