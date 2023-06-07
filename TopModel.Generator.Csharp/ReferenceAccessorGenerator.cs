@@ -51,7 +51,6 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
     private void GenerateReferenceAccessorsImplementation(string fileName, string tag, List<Class> classList)
     {
         var ns = classList.First().Namespace;
-        var firstPersistedClass = classList.FirstOrDefault(c => c.IsPersistent && !Config.NoPersistence(tag));
 
         var implementationName = Config.GetReferenceAccessorName(ns, tag);
         var implementationNamespace = Config.GetReferenceImplementationNamespace(ns, tag);
@@ -61,21 +60,25 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
 
         using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
 
-        var usings = new List<string>();
+        var usings = new HashSet<string>();
 
         if (!Config.UseLatestCSharp)
         {
             usings.Add("System.Collections.Generic");
         }
 
-        if (!implementationNamespace.Contains(interfaceNamespace))
+        if (!implementationNamespace.StartsWith(interfaceNamespace))
         {
             usings.Add(interfaceNamespace);
         }
 
-        if (firstPersistedClass != null)
+        foreach (var classe in classList)
         {
-            usings.Add(Config.GetNamespace(firstPersistedClass, tag));
+            var classNs = Config.GetNamespace(classe, tag);
+            if (!implementationNamespace.StartsWith(classNs))
+            {
+                usings.Add(classNs);
+            }
         }
 
         usings.Add("Kinetix.Services.Annotations");
@@ -165,23 +168,26 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
     private void GenerateReferenceAccessorsInterface(string fileName, string tag, IEnumerable<Class> classList)
     {
         var ns = classList.First().Namespace;
-        var firstPersistedClass = classList.FirstOrDefault(c => c.IsPersistent);
 
         var interfaceNamespace = Config.GetReferenceInterfaceNamespace(ns, tag);
         var interfaceName = $"I{Config.GetReferenceAccessorName(ns, tag)}";
 
         using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
 
-        var usings = new List<string>();
+        var usings = new HashSet<string>();
 
         if (!Config.UseLatestCSharp)
         {
             usings.Add("System.Collections.Generic");
         }
 
-        if (firstPersistedClass != null)
+        foreach (var classe in classList)
         {
-            usings.Add(Config.GetNamespace(firstPersistedClass, tag));
+            var classNs = Config.GetNamespace(classe, tag);
+            if (!interfaceNamespace.StartsWith(classNs))
+            {
+                usings.Add(classNs);
+            }
         }
 
         usings.Add("Kinetix.Services.Annotations");
