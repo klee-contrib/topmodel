@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.31.4
+
+- [`2b456179`](https://github.com/klee-contrib/topmodel/commit/2b456179a1876fdc5cdc1483557010ff657c6009) - [C#] Unification génération des codes pour DbContext + ReferenceAccessor avec "Get(Default)Value"
+
+  **impacts génération (C#)** : Les initialisations de valeurs enum (sans enum C#) dans `HasData` du DbContext (et des accesseurs de références Kinetix si la liste n'est pas persistée) utilisent désormais les constantes si elles existent, au lieu de mettre la valeur en dur.
+
 ## 1.31.3
 
 - [`52f5abc2`](https://github.com/klee-contrib/topmodel/commit/52f5abc2d592656d4ff763af2db817d600bbb8ee) - [C#] Fix usings dans les accesseurs de référence pour les classes non persistées
