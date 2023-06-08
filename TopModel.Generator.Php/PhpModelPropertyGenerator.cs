@@ -187,7 +187,7 @@ public class PhpModelPropertyGenerator
             fw.WriteLine(1, annotation);
         }
 
-        var defaultValue = _config.GetDefaultValue(property, _classes);
+        var defaultValue = _config.GetValue(property, _classes);
         var suffix = defaultValue != "null" ? $" = {defaultValue}" : string.Empty;
         if (property is AliasProperty ap && ap.Property is AssociationProperty asp && asp.Type.IsToMany())
         {

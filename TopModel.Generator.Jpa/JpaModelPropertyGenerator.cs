@@ -187,7 +187,7 @@ public class JpaModelPropertyGenerator
 
         if (_config.CanClassUseEnums(property.Association))
         {
-            var defaultValue = _config.GetDefaultValue(property, _classes);
+            var defaultValue = _config.GetValue(property, _classes);
             if (defaultValue != "null")
             {
                 suffix = $" = {defaultValue}.getEntity()";
@@ -289,7 +289,7 @@ public class JpaModelPropertyGenerator
             fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : '@')}{annotation}");
         }
 
-        var defaultValue = _config.GetDefaultValue(property, _classes);
+        var defaultValue = _config.GetValue(property, _classes);
         var suffix = defaultValue != "null" ? $" = {defaultValue}" : string.Empty;
         fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.NameByClassCamel}{suffix};");
     }

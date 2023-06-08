@@ -11,5 +11,6 @@
     "samples/generators/php/topmodel.config.schema.json": "samples/generators/php/topmodel.config",
     "samples/generators/ssdt/topmodel.config.schema.json": "samples/generators/ssdt/topmodel.config",
     "samples/generators/translation/topmodel.config.schema.json": "samples/generators/translation/topmodel.config"
-  }
+  },
+  "dotnet.defaultSolution": "TopModel.sln"
 }

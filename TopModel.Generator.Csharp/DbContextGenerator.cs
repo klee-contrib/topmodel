@@ -228,11 +228,6 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
 
                     w.Write($"            new {classe.NamePascal} {{");
 
-                    string WriteEnumValue(Class targetClass, IFieldProperty targetProp, string value)
-                    {
-                        return $"{(targetClass.NamePascal == targetClass.PluralNamePascal ? $"{Config.GetNamespace(targetClass, tag)}.{targetClass.NamePascal}" : targetClass.NamePascal)}.{targetProp}s.{value}";
-                    }
-
                     foreach (var refProp in refValue.Value.ToList())
                     {
                         var prop = refProp.Key is AliasProperty alp ? alp.Property : refProp.Key;
@@ -241,13 +236,20 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
                         var targetClass = ap != null ? ap.Association : prop.Class;
                         var targetProp = ap != null ? ap.Property : prop;
 
-                        var value = Config.CanClassUseEnums(targetClass, Classes, targetProp)
-                            ? WriteEnumValue(targetClass, targetProp, refProp.Value)
-                            : Config.GetType(refProp.Key).Contains("Date")
-                            ? $"{Config.GetType(refProp.Key).TrimEnd('?')}.Parse(\"{refProp.Value}\"){(Config.GetType(refProp.Key).Contains("Time") ? ".ToUniversalTime()" : string.Empty)}"
-                            : Config.ShouldQuoteValue(refProp.Key)
-                            ? $"\"{refProp.Value}\""
-                            : refProp.Value;
+                        var value = Config.GetValue(refProp.Key, Classes, refProp.Value);
+                        if (value.StartsWith(targetClass.PluralNamePascal))
+                        {
+                            var targetNs = Config.GetNamespace(targetClass, tag);
+                            var contextNsSplit = contextNs.Split('.');
+                            var targetNsSplit = targetNs.Split('.');
+                            targetNs = string.Join(".", targetNsSplit.SkipWhile((spl, i) => spl == contextNsSplit.ElementAtOrDefault(i)));
+                            value = $"{targetNs}.{value}";
+                        }
+                        else if (Config.GetType(refProp.Key).Contains("Date"))
+                        {
+                            value = $"{Config.GetType(refProp.Key).TrimEnd('?')}.Parse(\"{value}\"){(Config.GetType(refProp.Key).Contains("Time") ? ".ToUniversalTime()" : string.Empty)}";
+                        }
+
                         w.Write($" {refProp.Key.NamePascal} = {value}");
                         if (refValue.Value.ToList().IndexOf(refProp) < refValue.Value.Count - 1)
                         {

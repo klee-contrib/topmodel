@@ -73,7 +73,7 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
 
             foreach (var param in endpoint.Params)
             {
-                var defaultValue = Config.GetDefaultValue(param, Classes);
+                var defaultValue = Config.GetValue(param, Classes);
                 fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, ");
             }
 

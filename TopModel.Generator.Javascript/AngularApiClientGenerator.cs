@@ -101,7 +101,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             }
 
             hasProperty = true;
-            var defaultValue = Config.GetDefaultValue(param, Classes);
+            var defaultValue = Config.GetValue(param, Classes);
             fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}");
         }
 

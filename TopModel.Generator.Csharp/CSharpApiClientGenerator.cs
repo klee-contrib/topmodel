@@ -172,11 +172,11 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
             foreach (var param in endpoint.Params)
             {
-                fw.Write($"{Config.GetType(param, nonNullable: param.IsRouteParam() || param.IsQueryParam() && Config.GetDefaultValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
+                fw.Write($"{Config.GetType(param, nonNullable: param.IsRouteParam() || param.IsQueryParam() && Config.GetValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
 
                 if (param.IsQueryParam())
                 {
-                    fw.Write($" = {Config.GetDefaultValue(param, Classes)}");
+                    fw.Write($" = {Config.GetValue(param, Classes)}");
                 }
 
                 if (endpoint.Params.Last() != param)

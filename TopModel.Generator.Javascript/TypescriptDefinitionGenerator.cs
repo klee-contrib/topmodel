@@ -199,7 +199,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                 fw.WriteLine($"        domain: {field.Domain.Name},");
                 fw.WriteLine($"        isRequired: {(field.Required && !field.PrimaryKey).ToString().ToFirstLower()},");
 
-                var defaultValue = Config.GetDefaultValue(field, Classes);
+                var defaultValue = Config.GetValue(field, Classes);
                 if (defaultValue != "undefined")
                 {
                     fw.WriteLine($"        defaultValue: {defaultValue},");

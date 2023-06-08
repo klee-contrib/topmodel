@@ -542,7 +542,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 w.WriteAttribute(2, "Key");
             }
 
-            var defaultValue = Config.GetDefaultValue(property, Classes);
+            var defaultValue = Config.GetValue(property, Classes);
 
             w.WriteLine(2, $"public {type} {property.NamePascal} {{ get; set; }}{(defaultValue != "null" ? $" = {defaultValue};" : string.Empty)}");
         }

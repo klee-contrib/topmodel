@@ -148,11 +148,11 @@ namespace {ns}
             }
         }
 
-        sb.Append($@"{Config.GetType(param, nonNullable: param.IsRouteParam() || param.IsQueryParam() && !hasForm && Config.GetDefaultValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
+        sb.Append($@"{Config.GetType(param, nonNullable: param.IsRouteParam() || param.IsQueryParam() && !hasForm && Config.GetValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
 
         if (param.IsQueryParam() && !hasForm)
         {
-            sb.Append($" = {Config.GetDefaultValue(param, Classes)}");
+            sb.Append($" = {Config.GetValue(param, Classes)}");
         }
 
         return sb.ToString();

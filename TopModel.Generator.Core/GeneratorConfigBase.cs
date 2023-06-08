@@ -146,51 +146,6 @@ public abstract class GeneratorConfigBase
             .Distinct();
     }
 
-    /// <summary>
-    /// Récupère la valeur par défaut d'une propriété.
-    /// </summary>
-    /// <param name="property">La propriété.</param>
-    /// <param name="availableClasses">Classes disponibles dans le générateur.</param>
-    /// <returns>La valeur par défaut.</returns>
-    public string GetDefaultValue(IProperty property, IEnumerable<Class> availableClasses)
-    {
-        var fp = property as IFieldProperty;
-
-        if (fp?.DefaultValue == null || fp.DefaultValue == "null" || fp.DefaultValue == "undefined")
-        {
-            return NullValue;
-        }
-
-        var prop = fp is AliasProperty alp ? alp.Property : fp;
-        var ap = prop as AssociationProperty;
-
-        var classe = ap != null ? ap.Association : prop.Class;
-        var targetProp = ap != null ? ap.Property : prop;
-
-        if (UseNamedEnums && classe.Enum && availableClasses.Contains(classe))
-        {
-            if (CanClassUseEnums(classe, availableClasses, targetProp))
-            {
-                return $"{GetEnumType(classe.NamePascal, targetProp.NamePascal).TrimEnd('?')}.{fp.DefaultValue}";
-            }
-            else
-            {
-                var refName = classe.Values.SingleOrDefault(rv => rv.Value[targetProp] == fp.DefaultValue)?.Name;
-                if (refName != null)
-                {
-                    return GetConstEnumName(classe.Name, refName);
-                }
-            }
-        }
-
-        if (GetImplementation(fp.Domain)?.Type?.ToLower() == "string")
-        {
-            return $@"""{fp.DefaultValue}""";
-        }
-
-        return fp.DefaultValue;
-    }
-
     public IEnumerable<string> GetDomainAnnotations(IProperty property, string tag)
     {
         if (property is IFieldProperty fp)
@@ -364,6 +319,54 @@ public abstract class GeneratorConfigBase
             CompositionProperty cp => cp.Composition.NamePascal,
             _ => string.Empty
         };
+    }
+
+    /// <summary>
+    /// Récupère la valeur d'une propriété.
+    /// </summary>
+    /// <param name="property">La propriété.</param>
+    /// <param name="availableClasses">Classes disponibles dans le générateur.</param>
+    /// <param name="value">Valeur à utiliser, si non renseigné utilise la valeur par défaut de la propriété.</param>
+    /// <returns>La valeur.</returns>
+    public string GetValue(IProperty property, IEnumerable<Class> availableClasses, string? value = null)
+    {
+        var fp = property as IFieldProperty;
+
+        value ??= fp?.DefaultValue;
+
+        if (fp == null || value == null || value == "null" || value == "undefined")
+        {
+            return NullValue;
+        }
+
+        var prop = fp is AliasProperty alp ? alp.Property : fp;
+        var ap = prop as AssociationProperty;
+
+        var classe = ap != null ? ap.Association : prop.Class;
+        var targetProp = ap != null ? ap.Property : prop;
+
+        if (UseNamedEnums && classe.Enum && availableClasses.Contains(classe))
+        {
+            if (CanClassUseEnums(classe, availableClasses, targetProp))
+            {
+                return $"{GetEnumType(classe.NamePascal, targetProp.NamePascal).TrimEnd('?')}.{value}";
+            }
+            else if (classe.EnumKey == property)
+            {
+                var refName = classe.Values.SingleOrDefault(rv => rv.Value[targetProp] == value)?.Name;
+                if (refName != null)
+                {
+                    return GetConstEnumName(classe.Name, refName);
+                }
+            }
+        }
+
+        if (GetImplementation(fp.Domain)?.Type?.ToLower() == "string")
+        {
+            return $@"""{value}""";
+        }
+
+        return value;
     }
 
     /// <summary>
