@@ -601,7 +601,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                     fw.WriteLine(1, $" * @param {ap.Association.NameCamel} value to remove");
                     fw.WriteDocEnd(1);
                     fw.WriteLine(1, @$"public void remove{ap.Association.NamePascal}{ap.Role}({ap.Association.NamePascal} {ap.Association.NameCamel}) {{");
-                    fw.WriteLine(2, @$"this.{propertyName}.add({ap.Association.NameCamel});");
+                    fw.WriteLine(2, @$"this.{propertyName}.remove({ap.Association.NameCamel});");
                     if (reverse.Type.IsToMany())
                     {
                         fw.WriteLine(2, @$"{ap.Association.NameCamel}.get{reverse.NameByClassPascal}().remove(this);");
