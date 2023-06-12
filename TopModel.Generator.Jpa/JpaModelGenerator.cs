@@ -105,6 +105,8 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
         WriteGetters(fw, classe, tag);
         WriteSetters(fw, classe, tag);
+        WriteAdders(fw, classe, tag);
+        WriteRemovers(fw, classe, tag);
         if (Config.EnumShortcutMode)
         {
             WriteEnumShortcuts(fw, classe, tag);
@@ -151,6 +153,38 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             if (!property.Association.IsPersistent)
             {
                 throw new ModelException(classe, $"La classe {property.Association} est non persistée, elle ne peut donc pas être associée à {classe.Name}");
+            }
+        }
+    }
+
+    private void WriteAdders(JavaWriter fw, Class classe, string tag)
+    {
+        if (classe.IsPersistent && Config.AssociationAdders)
+        {
+            foreach (var ap in classe.GetProperties(AvailableClasses).OfType<AssociationProperty>().Where(t => t.Type.IsToMany()))
+            {
+                var reverse = ap is ReverseAssociationProperty rap ? rap.ReverseProperty : ap.Association.GetProperties(AvailableClasses).OfType<ReverseAssociationProperty>().FirstOrDefault(r => r.ReverseProperty == ap);
+                if (reverse != null)
+                {
+                    var propertyName = ap.NameByClassCamel;
+                    fw.WriteLine();
+                    fw.WriteDocStart(1, $"Add a value to {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}");
+                    fw.WriteLine(1, $" * @param {ap.Association.NameCamel} value to add");
+                    fw.WriteDocEnd(1);
+                    fw.WriteLine(1, @$"public void add{ap.Association.NamePascal}{ap.Role}({ap.Association.NamePascal} {ap.Association.NameCamel}) {{");
+                    fw.WriteLine(2, @$"this.{propertyName}.add({ap.Association.NameCamel});");
+                    if (reverse.Type.IsToMany())
+                    {
+                        fw.WriteLine(2, @$"{ap.Association.NameCamel}.get{reverse.NameByClassPascal}().add(this);");
+                    }
+                    else
+                    {
+                        fw.WriteLine(2, @$"{ap.Association.NameCamel}.set{reverse.NameByClassPascal}(this);");
+                    }
+
+                    fw.WriteLine(1, "}");
+                }
+
             }
         }
     }
@@ -298,7 +332,8 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 }
                 else
                 {
-                    fw.WriteLine(2, @$"return this.{ap.NameByClassCamel} != null ? this.{ap.NameByClassCamel}.stream().map({ap.Association.NamePascal}::get{ap.Property.NameCamel.ToFirstUpper()}).collect(Collectors.toList()) : null;");
+                    var listOrSet = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent).Split('<').First();
+                    fw.WriteLine(2, @$"return this.{ap.NameByClassCamel} != null ? this.{ap.NameByClassCamel}.stream().map({ap.Association.NamePascal}::get{ap.Property.NameCamel.ToFirstUpper()}).collect(Collectors.to{listOrSet}()) : null;");
                     fw.AddImport("java.util.stream.Collectors");
                 }
 
@@ -549,6 +584,37 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         }
 
         fw.WriteLine(1, "}");
+    }
+
+    private void WriteRemovers(JavaWriter fw, Class classe, string tag)
+    {
+        if (classe.IsPersistent && Config.AssociationRemovers)
+        {
+            foreach (var ap in classe.GetProperties(AvailableClasses).OfType<AssociationProperty>().Where(t => t.Type.IsToMany()))
+            {
+                var reverse = ap is ReverseAssociationProperty rap ? rap.ReverseProperty : ap.Association.GetProperties(AvailableClasses).OfType<ReverseAssociationProperty>().FirstOrDefault(r => r.ReverseProperty == ap);
+                if (reverse != null)
+                {
+                    var propertyName = ap.NameByClassCamel;
+                    fw.WriteLine();
+                    fw.WriteDocStart(1, $"Remove a value from {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}");
+                    fw.WriteLine(1, $" * @param {ap.Association.NameCamel} value to remove");
+                    fw.WriteDocEnd(1);
+                    fw.WriteLine(1, @$"public void remove{ap.Association.NamePascal}{ap.Role}({ap.Association.NamePascal} {ap.Association.NameCamel}) {{");
+                    fw.WriteLine(2, @$"this.{propertyName}.add({ap.Association.NameCamel});");
+                    if (reverse.Type.IsToMany())
+                    {
+                        fw.WriteLine(2, @$"{ap.Association.NameCamel}.get{reverse.NameByClassPascal}().remove(this);");
+                    }
+                    else
+                    {
+                        fw.WriteLine(2, @$"{ap.Association.NameCamel}.set{reverse.NameByClassPascal}(null);");
+                    }
+
+                    fw.WriteLine(1, "}");
+                }
+            }
+        }
     }
 
     private void WriteSetters(JavaWriter fw, Class classe, string tag)

@@ -45,6 +45,16 @@ public class JpaConfig : GeneratorConfigBase
     public bool EnumShortcutMode { get; set; }
 
     /// <summary>
+    /// Option pour générer des adders pour les associations oneToMany et ManyToMany
+    /// </summary>
+    public bool AssociationAdders { get; set; } = false;
+
+    /// <summary>
+    /// Option pour générer des removers pour les associations oneToMany et ManyToMany
+    /// </summary>
+    public bool AssociationRemovers { get; set; } = false;
+
+    /// <summary>
     /// Option pour générer une enum des champs des classes persistées
     /// </summary>
     public Target FieldsEnum { get; set; } = Target.None;

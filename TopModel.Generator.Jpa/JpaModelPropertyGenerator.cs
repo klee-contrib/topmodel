@@ -176,7 +176,7 @@ public class JpaModelPropertyGenerator
 
         if (property.Type == AssociationType.ManyToMany || property.Type == AssociationType.OneToMany)
         {
-            if (property.Association.OrderProperty != null)
+            if (property.Association.OrderProperty != null && _config.GetType(property, _classes, classe.IsPersistent).Contains("List"))
             {
                 fw.WriteLine(1, @$"@OrderBy(""{property.Association.OrderProperty.NameByClassCamel} ASC"")");
                 fw.AddImport($"{javaOrJakarta}.persistence.OrderBy");
