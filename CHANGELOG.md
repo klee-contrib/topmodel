@@ -1,6 +1,11 @@
 # TopModel.Generator (`modgen`)
 
-## 1.31.4
+## 1.31.5
+
+- [`b81dac28`](https://github.com/klee-contrib/topmodel/commit/b81dac28cf55406d3af314141b612c1833ae3618) - [#266](https://github.com/klee-contrib/topmodel/issues/266) : [JPA] Ajout des adders & removers
+- [`77ec0fe2`](https://github.com/klee-contrib/topmodel/commit/77ec0fe240c7c4eefb2726ec9a2316c5d3606cdf) - Fix casse des classes si tout en majuscule + dans les mappers C#
+
+## 1.31.5
 
 - [`2b456179`](https://github.com/klee-contrib/topmodel/commit/2b456179a1876fdc5cdc1483557010ff657c6009) - [C#] Unification génération des codes pour DbContext + ReferenceAccessor avec "Get(Default)Value"
 
