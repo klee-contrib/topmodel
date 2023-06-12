@@ -34,7 +34,7 @@ public class Domain
 
     public string? MediaType { get; set; }
 
-    public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCaseStrict();
+    public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCase(true);
 
 #nullable disable
     public ModelFile ModelFile { get; set; }

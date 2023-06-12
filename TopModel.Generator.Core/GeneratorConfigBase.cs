@@ -351,7 +351,7 @@ public abstract class GeneratorConfigBase
             {
                 return $"{GetEnumType(classe.NamePascal, targetProp.NamePascal).TrimEnd('?')}.{value}";
             }
-            else if (classe.EnumKey == property)
+            else if (classe.EnumKey == targetProp)
             {
                 var refName = classe.Values.SingleOrDefault(rv => rv.Value[targetProp] == value)?.Name;
                 if (refName != null)

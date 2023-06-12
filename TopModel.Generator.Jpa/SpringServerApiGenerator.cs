@@ -139,7 +139,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
                 fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : "@")}{annotation}");
             }
 
-            fw.WriteLine(1, @$"@{endpoint.Method.ToPascalCaseStrict()}Mapping(path = ""{endpoint.Route}""{consumes}{produces})");
+            fw.WriteLine(1, @$"@{endpoint.Method.ToPascalCase(true)}Mapping(path = ""{endpoint.Route}""{consumes}{produces})");
         }
 
         var methodParams = new List<string>();
@@ -197,7 +197,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
     private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
     {
-        fw.AddImports(endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToPascalCaseStrict()}Mapping"));
+        fw.AddImports(endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToPascalCase(true)}Mapping"));
         fw.AddImports(GetTypeImports(endpoints, tag));
         fw.AddImports(endpoints.SelectMany(Config.GetDecoratorImports));
     }

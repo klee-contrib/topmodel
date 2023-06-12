@@ -12,9 +12,9 @@ public class Class : IPropertyContainer
 #nullable disable
     public LocatedString Name { get; set; }
 
-    public string NamePascal => Name.Value.ToPascalCase();
+    public string NamePascal => Name.Value.ToPascalCase(strictIfUppercase: true);
 
-    public string NameCamel => Name.Value.ToCamelCase();
+    public string NameCamel => Name.Value.ToCamelCase(strictIfUppercase: true);
 
     public string SqlName { get; set; }
 

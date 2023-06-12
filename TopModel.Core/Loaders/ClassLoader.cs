@@ -221,7 +221,7 @@ public class ClassLoader : ILoader<Class>
                                                 break;
                                         }
 
-                                        mapper.Name ??= new LocatedString(classScalar) { Value = $"To{mapper.ClassReference.ReferenceName}" };
+                                        mapper.Name ??= new LocatedString(classScalar) { Value = $"To{mapper.ClassReference.ReferenceName.ToPascalCase()}" };
                                     });
                                 });
                                 break;

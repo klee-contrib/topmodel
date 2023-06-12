@@ -95,7 +95,7 @@ namespace {ns}
                 wd.AppendLine($"{indent}[{annotation}]");
             }
 
-            wd.AppendLine($@"{indent}[Http{endpoint.Method.ToPascalCaseStrict()}(""{GetRoute(endpoint)}"")]");
+            wd.AppendLine($@"{indent}[Http{endpoint.Method.ToPascalCase(true)}(""{GetRoute(endpoint)}"")]");
             wd.AppendLine($"{indent}public {Config.GetReturnTypeName(endpoint.Returns)} {endpoint.NamePascal}({string.Join(", ", endpoint.Params.Select(GetParam))})");
             wd.AppendLine($"{indent}{{");
             wd.AppendLine();

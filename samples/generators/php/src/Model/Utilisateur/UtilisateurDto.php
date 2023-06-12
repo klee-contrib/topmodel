@@ -27,7 +27,7 @@ class UtilisateurDto
   private bool|null $actif;
 
   #[Length(max: 3)]
-  private string|null $typeUtilisateurCode = "ADM";
+  private string|null $typeUtilisateurCode = TypeUtilisateur.ADM;
 
   private Collection|null $utilisateursEnfant;
 
