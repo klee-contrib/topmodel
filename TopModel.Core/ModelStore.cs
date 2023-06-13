@@ -83,7 +83,8 @@ public class ModelStore
             .SelectMany(m => m.Classes)
             .Concat(modelFile.Classes.Where(c => !modelFile.ResolvedAliases.Contains(c)))
             .Distinct()
-            .ToDictionary(c => c.Name.Value, c => c);
+            .GroupBy(c => c.Name.Value)
+            .ToDictionary(c => c.Key, c => c.First());
     }
 
     public IDisposable? LoadFromConfig(bool watch = false, LoggingScope? storeConfig = null)
