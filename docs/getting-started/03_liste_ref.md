@@ -2,18 +2,19 @@
 
 Dans notre modèle de données, nous souhaitons définir des **listes de références**. Ce sont des classes dont les instances changent peu ou pas du tout, et qui peuvent donc être mises en cache.
 
-Définissons donc dans notre module `Users` la classe `TypeUtilisateur`. Pour indiquer qu'il s'agit d'une liste de référence, il suffit de préciser l'attribut `reference`.
 
-Ainsi, dans un nouveau fichier `References` :
+Ainsi, dans un nouveau fichier `"References.tmd"` on défini la classe `TypeUtilisateur` dans le module `Ref`. Pour indiquer qu'il s'agit d'une liste de référence, il suffit de préciser l'attribut `reference`. :
 
 ```yaml
-# References
+# References.tmd
+---
+module : Refs
+tags : []
 ---
 class:
   name: TypeUtilisateur
   comment: Type d'utilisateur
   reference: true # Indique que cette classe est une classe de référentiel
-  trigram: TUT
   properties:
     - name: Code
       comment: Code du type d'utilisateur
@@ -37,15 +38,18 @@ Par ailleurs, nous connaissons tous les `TypeUtilisateur` pouvant exister dans l
     CLI: { Code: CLI, Libelle: Client }
 ```
 
-La classe complète se déclare donc de la manière suivante :
+On peut rajouter ces éléments à notre fichier `"References.tmd"`. La classe complète se déclare donc de la manière suivante :
 
 ```yaml
+# References.tmd
+---
+module : Refs
+tags : []
 ---
 class:
   name: TypeUtilisateur
   comment: Type d'utilisateur
   reference: true
-  trigram: TUT
   properties:
     - name: Code
       comment: Code du type d'utilisateur
@@ -64,3 +68,10 @@ class:
     GES: { Code: GES, Libelle: Gestionnaire }
     CLI: { Code: CLI, Libelle: Client }
 ```
+## Répertoire Projet
+A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers suivants:
+- Projet
+  - topmodel.config
+  - Utilisateur.tmd
+  - Domains.tmd
+  - References.tmd
