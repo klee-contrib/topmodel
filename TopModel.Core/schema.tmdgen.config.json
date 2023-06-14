@@ -186,7 +186,8 @@
                 "description": "Type de la base de données : postgresql ou oracle",
                 "enum": [
                   "oracle",
-                  "postgresql"
+                  "postgresql",
+                  "mySql"
                 ]
               }
             }

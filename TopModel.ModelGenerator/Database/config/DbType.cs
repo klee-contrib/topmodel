@@ -8,5 +8,10 @@
     /// <summary>
     ///  Base de données Oracle
     /// </summary>
-    ORACLE
+    ORACLE,
+
+    /// <summary>
+    ///  Base de données MySql
+    /// </summary>
+    MYSQL,
 }
