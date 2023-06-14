@@ -146,7 +146,14 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             fw.WriteLine();
         }
 
-        fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}<{returnType}>(`/{endpoint.FullRoute.Replace("{", "${")}`");
+        if (returnType == "string")
+        {
+            fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}(`/{endpoint.FullRoute.Replace("{", "${")}`, {{responseType: 'text'}}");
+        }
+        else
+        {
+            fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}<{returnType}>(`/{endpoint.FullRoute.Replace("{", "${")}`");
+        }
 
         if (endpoint.GetBodyParam() != null)
         {
