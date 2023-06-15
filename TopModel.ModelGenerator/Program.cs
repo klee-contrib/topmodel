@@ -188,6 +188,16 @@ async Task StartGeneration(string filePath, string directoryName, int i)
                 Passwords = passwords
             });
         }
+        else if (conf.Source.DbType == DbType.MYSQL)
+        {
+            services.AddSingleton<ModelGenerator>(p => new DatabaseMySqlTmdGenerator(p.GetRequiredService<ILogger<DatabaseMySqlTmdGenerator>>(), conf)
+            {
+                DirectoryName = directoryName,
+                ModelRoot = config.ModelRoot,
+                Number = config.Database.IndexOf(conf) + 1,
+                Passwords = passwords
+            });
+        }
     }
 
     using var provider = services.BuildServiceProvider();
