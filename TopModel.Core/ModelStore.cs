@@ -598,9 +598,15 @@ public class ModelStore
                         break;
                     }
 
-                    if (ap.PropertyReference == null && association.Properties.Count(p => p.PrimaryKey) != 1)
+                    if (ap.PropertyReference == null && !association.Properties.Any(p => p.PrimaryKey))
                     {
-                        yield return new ModelError(ap, "La classe '{0}' doit avoir une (et une seule) clé primaire pour être référencée dans une association.", ap.Reference) { ModelErrorType = ModelErrorType.TMD1001 };
+                        yield return new ModelError(ap, "La classe '{0}' doit avoir au moins une clé primaire pour être référencée dans une association.", ap.Reference) { ModelErrorType = ModelErrorType.TMD1001 };
+                        break;
+                    }
+
+                    if (ap.PropertyReference == null && association.Properties.Count(p => p.PrimaryKey) > 1 && ap.PropertyReference == null)
+                    {
+                        yield return new ModelError(ap, "La classe '{0}' a plusieurs clés primaires, vous devez obligatoirement référencer une propriété cible.", ap.Reference) { ModelErrorType = ModelErrorType.TMD1001 };
                         break;
                     }
 

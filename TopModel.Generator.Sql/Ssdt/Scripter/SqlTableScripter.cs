@@ -197,7 +197,7 @@ public class SqlTableScripter : ISqlScripter<Class>
             var propertyConcat = "[" + propertyName + "]";
             sb.Append("constraint [").Append(constraintName).Append("] foreign key (").Append(propertyConcat).Append(") ");
             sb.Append("references [dbo].[").Append(referenceClass.SqlName).Append("] (");
-            sb.Append('[').Append(referenceClass.PrimaryKey.Single().SqlName).Append(']');
+            sb.Append('[').Append(property.Property.SqlName).Append(']');
             sb.Append(')');
         }
         else
