@@ -514,6 +514,16 @@
             "description": "Option pour générer des getters et setters vers l'enum des références plutôt que sur la table",
             "default": "false"
           },
+          "associationAdders": {
+            "type": "boolean",
+            "description": "Option pour générer des méthodes d'ajouts pour les associations oneToMany et manyToMany. Ces méthodes permettent de synchroniser les objets ajoutés",
+            "default": "false"
+          },
+          "associationRemovers": {
+            "type": "boolean",
+            "description": "Option pour générer des méthodes de suppression pour les associations oneToMany et manyToMany. Ces méthodes permettent de synchroniser les objets supprimés",
+            "default": "false"
+          },
           "fieldsEnum": {
             "type": "string",
             "description": "Option pour générer une enum des champs des classes persistées",
@@ -639,6 +649,10 @@
               "typeFile": {
                 "type": "string",
                 "description": "Emplacement du fichier de création des types."
+              },
+              "commentFile": {
+                "type": "string",
+                "description": "Emplacement du fichier de création des commentaires."
               },
               "initListFile": {
                 "type": "string",

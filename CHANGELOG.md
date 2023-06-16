@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.31.6
+
+- [#273](https://github.com/klee-contrib/topmodel/pull/273) - [Core] Gestion des associations vers PK composite (avec `property` explicite).
+- [`eea1c147d`](https://github.com/klee-contrib/topmodel/commit/eea1c147da6849e0694e8f967cd9c3b74cf5fe1f) - [Angular] Erreur lorsque le type de retour est "string"
+
 ## 1.31.5
 
 - [`b81dac28`](https://github.com/klee-contrib/topmodel/commit/b81dac28cf55406d3af314141b612c1833ae3618) - [#266](https://github.com/klee-contrib/topmodel/issues/266) : [JPA] Ajout des adders & removers
