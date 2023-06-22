@@ -43,6 +43,11 @@ public enum ModelErrorType
     TMD0007,
 
     /// <summary>
+    /// Le flux de données '{dataFlow}' est défini plusieurs fois dans le fichier ou une de ses dépendences.
+    /// </summary>
+    TMD0008,
+
+    /// <summary>
     /// La classe '{0}' doit avoir une (et une seule) clé primaire pour être référencée dans une association.
     /// </summary>
     TMD1001,
@@ -176,6 +181,11 @@ public enum ModelErrorType
     /// Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Class.PrimaryKey.Single().Domain} ne contient pas de définition de AsDomain
     /// </summary>
     TMD1028,
+
+    /// <summary>
+    /// Le flux de données est introuvable dans le fichier ou l'une de ses références.
+    /// </summary>
+    TMD2000,
 
     /// <summary>
     /// L'import {} n'est pas utilisé.

@@ -10,16 +10,18 @@ public class ModelFileLoader
     private readonly ClassLoader _classLoader;
     private readonly ModelConfig _config;
     private readonly ConverterLoader _converterLoader;
+    private readonly DataFlowLoader _dataFlowLoader;
     private readonly DecoratorLoader _decoratorLoader;
     private readonly DomainLoader _domainLoader;
     private readonly EndpointLoader _endpointLoader;
     private readonly FileChecker _fileChecker;
 
-    public ModelFileLoader(ModelConfig config, ClassLoader classLoader, FileChecker fileChecker, DecoratorLoader decoratorLoader, ConverterLoader converterLoader, EndpointLoader endpointLoader, DomainLoader domainLoader)
+    public ModelFileLoader(ModelConfig config, ClassLoader classLoader, DataFlowLoader dataFlowLoader, FileChecker fileChecker, DecoratorLoader decoratorLoader, ConverterLoader converterLoader, EndpointLoader endpointLoader, DomainLoader domainLoader)
     {
         _classLoader = classLoader;
         _config = config;
         _converterLoader = converterLoader;
+        _dataFlowLoader = dataFlowLoader;
         _decoratorLoader = decoratorLoader;
         _domainLoader = domainLoader;
         _endpointLoader = endpointLoader;
@@ -167,6 +169,13 @@ public class ModelFileLoader
                 alias.ModelFile = file;
                 alias.Location = new Reference(scalar);
                 file.Aliases.Add(alias);
+            }
+            else if (scalar.Value == "dataFlow")
+            {
+                var dataFlow = _dataFlowLoader.Load(parser);
+                dataFlow.ModelFile = file;
+                dataFlow.Location = new Reference(scalar);
+                file.DataFlows.Add(dataFlow);
             }
             else
             {

@@ -26,6 +26,8 @@ public class ModelFile
 
     public List<Endpoint> Endpoints { get; } = new();
 
+    public List<DataFlow> DataFlows { get; } = new();
+
     public List<object> ResolvedAliases { get; } = new();
 
     public IDictionary<Reference, object> References => Domains.SelectMany(d => d.AsDomains.Keys.Select(adn => d.AsDomainReferences.TryGetValue(adn, out var adr) && d.AsDomains.TryGetValue(adn, out var ad) ? (adr as Reference, ad as object) : (null, null)))
@@ -61,6 +63,11 @@ public class ModelFile
         .Concat(Aliases.SelectMany(a => a.Classes).Select(c => (c as Reference, ResolvedAliases.OfType<Class>().FirstOrDefault(ra => ra.Name == c.ReferenceName) as object)))
         .Concat(Converters.SelectMany(c => c.DomainsFromReferences.Select(d => (d as Reference, c.From.FirstOrDefault(dom => dom.Name == d.ReferenceName) as object))))
         .Concat(Converters.SelectMany(c => c.DomainsToReferences.Select(d => (d as Reference, c.To.FirstOrDefault(dom => dom.Name == d.ReferenceName) as object))))
+        .Concat(DataFlows.Select(d => (d.ClassReference as Reference, d.Class as object)))
+        .Concat(DataFlows.Select(d => (d.ActivePropertyReference as Reference, d.ActiveProperty as object)))
+        .Concat(DataFlows.SelectMany(d => d.DependsOnReference.Select(r => (r as Reference, d.DependsOn.FirstOrDefault(dd => dd?.Name == r.ReferenceName) as object))))
+        .Concat(DataFlows.SelectMany(d => d.Sources).Select(s => (s.ClassReference as Reference, s.Class as object)))
+        .Concat(DataFlows.SelectMany(d => d.Sources).SelectMany(s => s.JoinPropertyReferences.Select(j => (j, s.JoinProperties.FirstOrDefault(jc => jc?.Name == j.ReferenceName) as object))))
         .Where(t => t.Item1 is not null && t.Item2 is not null && t.Item2 is not (null, null))
         .DistinctBy(t => t.Item1)
         .ToDictionary(t => t.Item1, t => t.Item2);

@@ -44,6 +44,7 @@ public class HoverHandler : HoverHandlerBase
                         AliasProperty p => p.Comment,
                         Domain d => d.Label,
                         Decorator d => d.Description,
+                        DataFlow d => $"Flux de données '{d.Name}'",
                         (Decorator d, _) => d.Description,
                         _ => string.Empty
                     }))
