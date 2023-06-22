@@ -2,15 +2,14 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {EntityToType, FieldEntry2, ListEntry, StoreNode} from "@focus4/stores";
+import {EntityToType, FieldEntry2, ListEntry} from "@focus4/stores";
 import {DO_CODE, DO_CODE_LIST, DO_ID} from "../../domains";
 
 import {UtilisateurDtoEntity, UtilisateurDtoEntityType} from "../utilisateur/utilisateur-dto";
 import {DroitCode, TypeProfilCode} from "./references";
 import {SecteurDtoEntity, SecteurDtoEntityType} from "./secteur-dto";
 
-export type ProfilDto = EntityToType<ProfilDtoEntityType>;
-export type ProfilDtoNode = StoreNode<ProfilDtoEntityType>;
+export type ProfilDto = EntityToType<ProfilDtoEntityType>
 export interface ProfilDtoEntityType {
     id: FieldEntry2<typeof DO_ID, number>,
     typeProfilCode: FieldEntry2<typeof DO_CODE, TypeProfilCode>,

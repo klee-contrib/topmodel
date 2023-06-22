@@ -2,13 +2,12 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {EntityToType, FieldEntry2, StoreNode} from "@focus4/stores";
+import {EntityToType, FieldEntry2} from "@focus4/stores";
 import {DO_BOOLEAN, DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_ID_LIST, DO_LIBELLE, DO_NUMBER} from "../../domains";
 
 import {TypeUtilisateurCode} from "./references";
 
-export type UtilisateurSearch = EntityToType<UtilisateurSearchEntityType>;
-export type UtilisateurSearchNode = StoreNode<UtilisateurSearchEntityType>;
+export type UtilisateurSearch = EntityToType<UtilisateurSearchEntityType>
 export interface UtilisateurSearchEntityType {
     id: FieldEntry2<typeof DO_ID, number>,
     age: FieldEntry2<typeof DO_NUMBER, number>,

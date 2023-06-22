@@ -75,15 +75,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
 
         if (Config.EntityMode == EntityMode.TYPED)
         {
-            fw.Write("export type ");
-            fw.Write(classe.NamePascal);
-            fw.Write(" = EntityToType<");
-            fw.Write(classe.NamePascal);
-            fw.Write("EntityType>;\r\nexport type ");
-            fw.Write(classe.NamePascal);
-            fw.Write("Node = StoreNode<");
-            fw.Write(classe.NamePascal);
-            fw.Write("EntityType>;\r\n");
+            fw.WriteLine($"export type {classe.NamePascal} = EntityToType<{classe.NamePascal}EntityType>");
 
             fw.Write($"export interface {classe.NamePascal}EntityType ");
 
@@ -283,6 +275,5 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
         }
 
         yield return "EntityToType";
-        yield return "StoreNode";
     }
 }
