@@ -18,6 +18,8 @@ entityMode: untyped
 apiMode: angular
 ```
 
+Les `StoreNode` ne sont plus générés. En effet, ils sont spécifiques à l'implémentation Focus et ne sont pas utiles dans le cas général. Il est possible de remplacer par `StoreNode<XXXEntityType>` comme ce qui est déjà fait pour `FormNode`.
+
 ## 1.31.8
 
 - [`3a8fb5effa`](https://github.com/klee-contrib/topmodel/commit/3a8fb5effaf09d7cd41782f1bca5287cb6a4aef6) - [JPA] Fix import mapper
