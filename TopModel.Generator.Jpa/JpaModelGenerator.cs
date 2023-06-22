@@ -184,7 +184,6 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
                     fw.WriteLine(1, "}");
                 }
-
             }
         }
     }
