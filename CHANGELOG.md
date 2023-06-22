@@ -1,5 +1,23 @@
 # TopModel.Generator (`modgen`)
 
+## 1.32.0
+
+- [#276](https://github.com/klee-contrib/topmodel/pull/276) - [JS] Séparer le API mode de l'Entity Mode
+
+Breaking change !
+La configuration du mode `angular` pour la génération de l'API client JS évolue. Il faut maintenant distinguer le mode de génération de l'API, et le mode de génération des types des entités. Un configuration équivalente au `targetFramework: angular` est donc :
+
+```yaml
+targetFramework: angular
+```
+
+devient :
+
+```yaml
+entityMode: untyped
+apiMode: angular
+```
+
 ## 1.31.8
 
 - [`3a8fb5effa`](https://github.com/klee-contrib/topmodel/commit/3a8fb5effaf09d7cd41782f1bca5287cb6a4aef6) - [JPA] Fix import mapper

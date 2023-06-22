@@ -1,14 +1,14 @@
 ﻿namespace TopModel.Generator.Javascript;
 
-public enum TargetFramework
+public enum EntityMode
 {
     /// <summary>
-    /// Angular.
+    /// Ne pas typer les entités.
     /// </summary>
-    ANGULAR,
+    UNTYPED,
 
     /// <summary>
-    /// Vanilla.
+    /// Typer les entités.
     /// </summary>
-    VANILLA
+    TYPED
 }
