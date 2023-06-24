@@ -89,6 +89,11 @@ public class LocatedString : IComparable
         return Value.ToKebabCase();
     }
 
+    public string ToPascalCase()
+    {
+        return Value.ToPascalCase();
+    }
+
     public string ToLower()
     {
         return Value.ToLower();

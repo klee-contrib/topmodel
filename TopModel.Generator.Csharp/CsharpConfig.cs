@@ -59,6 +59,11 @@ public class CsharpConfig : GeneratorConfigBase
     /// </summary>
     public string DbContextName { get; set; } = "{app}DbContext";
 
+    /// <summary>
+    /// Location des flux de données générés.
+    /// </summary>
+    public string? DataFlowsPath { get; set; }
+
 #nullable disable
 
     /// <summary>
@@ -150,7 +155,8 @@ public class CsharpConfig : GeneratorConfigBase
         nameof(DbSchema),
         nameof(ReferenceAccessorsName),
         nameof(ReferenceAccessorsInterfacePath),
-        nameof(ReferenceAccessorsImplementationPath)
+        nameof(ReferenceAccessorsImplementationPath),
+        nameof(DataFlowsPath)
     };
 
     public override string[] PropertiesWithTagVariableSupport => new[]
@@ -167,7 +173,8 @@ public class CsharpConfig : GeneratorConfigBase
         nameof(ReferenceAccessorsImplementationPath),
         nameof(ApiGeneration),
         nameof(ApiRootPath),
-        nameof(ApiFilePath)
+        nameof(ApiFilePath),
+        nameof(DataFlowsPath)
     };
 
     public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses, IFieldProperty? prop = null)
@@ -191,6 +198,15 @@ public class CsharpConfig : GeneratorConfigBase
             GetModelPath(classe, tag),
             "generated",
             (classe.Abstract ? "I" : string.Empty) + classe.NamePascal + ".cs");
+    }
+
+    public string GetDataFlowFilePath(DataFlow df, string tag)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(DataFlowsPath!, tag: tag, module: df.ModelFile.Namespace.ModulePath).ToFilePath(),
+            "generated",
+            $"{df.Name.ToPascalCase()}Flow.cs");
     }
 
     public string GetDbContextFilePath(string tag)
@@ -305,6 +321,17 @@ public class CsharpConfig : GeneratorConfigBase
     public string GetNamespace(Endpoint endpoint, string tag)
     {
         return GetNamespace(endpoint.Namespace, Path.Combine(ApiRootPath, ApiFilePath), tag);
+    }
+
+    /// <summary>
+    /// Récupère le namespace d'un flux de données.
+    /// </summary>
+    /// <param name="dataFlow">Le flux de données.</param>
+    /// <param name="tag">Tag.</param>
+    /// <returns>Namespace.</returns>
+    public string GetNamespace(DataFlow dataFlow, string tag)
+    {
+        return GetNamespace(dataFlow.ModelFile.Namespace, DataFlowsPath!, tag);
     }
 
     /// <summary>

@@ -49,7 +49,7 @@ public class DataFlowLoader : ILoader<DataFlow>
                 case "sources":
                     parser.ConsumeSequence(() =>
                     {
-                        var source = new DataFlowSource();
+                        var source = new DataFlowSource { DataFlow = dataFlow };
                         parser.ConsumeMapping(() =>
                         {
                             var prop = parser.Consume<Scalar>();
