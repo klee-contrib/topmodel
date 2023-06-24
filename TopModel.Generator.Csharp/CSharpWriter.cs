@@ -16,6 +16,18 @@ public class CSharpWriter : IDisposable
         _writer = new FileWriter(name, logger);
     }
 
+    public bool EnableHeader
+    {
+        get => _writer.EnableHeader;
+        set => _writer.EnableHeader = value;
+    }
+
+    public string HeaderMessage
+    {
+        get => _writer.HeaderMessage;
+        set => _writer.HeaderMessage = value;
+    }
+
     /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
     {

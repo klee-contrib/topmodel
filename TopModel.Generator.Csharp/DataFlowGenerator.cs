@@ -28,13 +28,14 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
     {
         foreach (var file in files)
         {
-            foreach (var classe in file.DataFlows)
+            foreach (var dataFlow in file.DataFlows)
             {
                 foreach (var (tag, fileName) in Config.Tags.Intersect(file.Tags)
-                    .Select(tag => (tag, fileName: Config.GetDataFlowFilePath(classe, tag)))
+                    .Select(tag => (tag, fileName: Config.GetDataFlowFilePath(dataFlow, tag)))
                     .DistinctBy(t => t.fileName))
                 {
-                    HandleDataFlow(fileName, classe, tag);
+                    HandleDataFlow(fileName, dataFlow, tag);
+                    HandleDataFlowPartial(fileName.Replace($"{Path.DirectorySeparatorChar}generated", string.Empty).Replace(".cs", ".partial.cs"), dataFlow, tag);
                 }
             }
         }
@@ -257,26 +258,81 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
         w.WriteNamespaceEnd();
     }
 
+    private void HandleDataFlowPartial(string fileName, DataFlow dataFlow, string tag)
+    {
+        if (!dataFlow.Sources.Any(s => s.Mode == DataFlowSourceMode.Partial) && !dataFlow.PostQuery && !dataFlow.PreQuery)
+        {
+            return;
+        }
+
+        if (File.Exists(fileName))
+        {
+            return;
+        }
+
+        using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp) { EnableHeader = false };
+
+        w.WriteUsings(new[] { "Kinetix.Etl" }.Concat(dataFlow.Sources.Select(source => Config.GetNamespace(source.Class, GetBestClassTag(source.Class, tag)))).ToArray());
+        w.WriteLine();
+        w.WriteNamespace(Config.GetNamespace(dataFlow, tag));
+        w.WriteClassDeclaration($"{dataFlow.Name.ToPascalCase()}Flow", null);
+
+        if (dataFlow.PostQuery)
+        {
+            w.WriteLine(2, $"protected override partial async Task<int> ExecutePostQuery(IConnection connection)");
+            w.WriteLine(2, "{");
+            w.WriteLine(2, "}");
+        }
+
+        if (dataFlow.PreQuery)
+        {
+            if (dataFlow.PostQuery)
+            {
+                w.WriteLine();
+            }
+
+            w.WriteLine(2, $"protected override partial async Task<int> ExecutePreQuery(IConnection connection)");
+            w.WriteLine(2, "{");
+            w.WriteLine(2, "}");
+        }
+
+        var partialSources = dataFlow.Sources.Where(d => d.Mode == DataFlowSourceMode.Partial).OrderBy(s => s.Source);
+        foreach (var source in partialSources)
+        {
+            if (dataFlow.PostQuery || dataFlow.PreQuery || partialSources.ToList().IndexOf(source) > 0)
+            {
+                w.WriteLine();
+            }
+
+            w.WriteLine(2, $"private static partial async Task<IEnumerable<{source.Class.NamePascal}>> Get{source.Source.ToPascalCase()}Source{dataFlow.Sources.OrderBy(s => s.Source).Where(s => s.Source == source.Source).ToList().IndexOf(source) + 1}(IConnection connection)");
+            w.WriteLine(2, "{");
+            w.WriteLine(2, "}");
+        }
+
+        w.WriteLine(1, "}");
+        w.WriteNamespaceEnd();
+    }
+
     private void HandleRegistrationFile(string fileName, IEnumerable<DataFlow> flows, string tag)
     {
         var firstFlow = flows.First();
-        using var fw = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
+        using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
 
-        fw.WriteUsings("Kinetix.Etl", "Microsoft.Extensions.DependencyInjection");
-        fw.WriteLine();
-        fw.WriteNamespace(Config.GetNamespace(firstFlow, tag));
-        fw.WriteLine(1, "public static class ServiceExtensions");
-        fw.WriteLine(1, "{");
-        fw.WriteLine(2, $"public static IServiceCollection Add{firstFlow.ModelFile.Namespace.ModuleFlat}DataFlows(this IServiceCollection services)");
-        fw.WriteLine(2, "{");
-        fw.WriteLine(3, "return services");
+        w.WriteUsings("Kinetix.Etl", "Microsoft.Extensions.DependencyInjection");
+        w.WriteLine();
+        w.WriteNamespace(Config.GetNamespace(firstFlow, tag));
+        w.WriteLine(1, "public static class ServiceExtensions");
+        w.WriteLine(1, "{");
+        w.WriteLine(2, $"public static IServiceCollection Add{firstFlow.ModelFile.Namespace.ModuleFlat}DataFlows(this IServiceCollection services)");
+        w.WriteLine(2, "{");
+        w.WriteLine(3, "return services");
         foreach (var flow in flows.OrderBy(f => f.Name))
         {
-            fw.WriteLine(4, $".AddSingleton<IDataFlow, {flow.Name.ToPascalCase()}Flow>(){(flows.OrderBy(f => f.Name).ToList().IndexOf(flow) == flows.Count() - 1 ? ";" : string.Empty)}");
+            w.WriteLine(4, $".AddSingleton<IDataFlow, {flow.Name.ToPascalCase()}Flow>(){(flows.OrderBy(f => f.Name).ToList().IndexOf(flow) == flows.Count() - 1 ? ";" : string.Empty)}");
         }
 
-        fw.WriteLine(2, "}");
-        fw.WriteLine(1, "}");
-        fw.WriteNamespaceEnd();
+        w.WriteLine(2, "}");
+        w.WriteLine(1, "}");
+        w.WriteNamespaceEnd();
     }
 }
