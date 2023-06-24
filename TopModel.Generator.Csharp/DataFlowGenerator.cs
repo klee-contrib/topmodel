@@ -18,12 +18,37 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
     }
 
     public override IEnumerable<string> GeneratedFiles => Files.Values.SelectMany(f => f.DataFlows)
-        .SelectMany(df => Config.Tags.Intersect(df.ModelFile.Tags).Select(tag => Config.GetDataFlowFilePath(df, tag)))
+        .SelectMany(df => Config.Tags.Intersect(df.ModelFile.Tags)
+            .SelectMany(tag => new[] { Config.GetDataFlowFilePath(df, tag), Config.GetDataFlowRegistrationFilePath(df, tag) }))
         .Distinct();
 
     public override string Name => "CSharpDataFlowGen";
 
-    protected void HandleDataFlow(string fileName, DataFlow dataFlow, string tag)
+    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    {
+        foreach (var file in files)
+        {
+            foreach (var classe in file.DataFlows)
+            {
+                foreach (var (tag, fileName) in Config.Tags.Intersect(file.Tags)
+                    .Select(tag => (tag, fileName: Config.GetDataFlowFilePath(classe, tag)))
+                    .DistinctBy(t => t.fileName))
+                {
+                    HandleDataFlow(fileName, classe, tag);
+                }
+            }
+        }
+
+        foreach (var g in Files.Values.SelectMany(f => f.DataFlows)
+            .SelectMany(df => Config.Tags.Intersect(df.ModelFile.Tags)
+                .Select(tag => (tag, df, fileName: Config.GetDataFlowRegistrationFilePath(df, tag))))
+            .GroupBy(g => g.fileName))
+        {
+            HandleRegistrationFile(g.Key, g.Select(i => i.df), g.First().tag);
+        }
+    }
+
+    private void HandleDataFlow(string fileName, DataFlow dataFlow, string tag)
     {
         int GetSourceNumber(DataFlowSource source)
         {
@@ -232,19 +257,26 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
         w.WriteNamespaceEnd();
     }
 
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    private void HandleRegistrationFile(string fileName, IEnumerable<DataFlow> flows, string tag)
     {
-        foreach (var file in files)
+        var firstFlow = flows.First();
+        using var fw = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
+
+        fw.WriteUsings("Kinetix.Etl", "Microsoft.Extensions.DependencyInjection");
+        fw.WriteLine();
+        fw.WriteNamespace(Config.GetNamespace(firstFlow, tag));
+        fw.WriteLine(1, "public static class ServiceExtensions");
+        fw.WriteLine(1, "{");
+        fw.WriteLine(2, $"public static IServiceCollection Add{firstFlow.ModelFile.Namespace.ModuleFlat}DataFlows(this IServiceCollection services)");
+        fw.WriteLine(2, "{");
+        fw.WriteLine(3, "return services");
+        foreach (var flow in flows.OrderBy(f => f.Name))
         {
-            foreach (var classe in file.DataFlows)
-            {
-                foreach (var (tag, fileName) in Config.Tags.Intersect(file.Tags)
-                     .Select(tag => (tag, fileName: Config.GetDataFlowFilePath(classe, tag)))
-                     .DistinctBy(t => t.fileName))
-                {
-                    HandleDataFlow(fileName, classe, tag);
-                }
-            }
+            fw.WriteLine(4, $".AddSingleton<IDataFlow, {flow.Name.ToPascalCase()}Flow>(){(flows.OrderBy(f => f.Name).ToList().IndexOf(flow) == flows.Count() - 1 ? ";" : string.Empty)}");
         }
+
+        fw.WriteLine(2, "}");
+        fw.WriteLine(1, "}");
+        fw.WriteNamespaceEnd();
     }
 }

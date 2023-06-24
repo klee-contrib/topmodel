@@ -209,6 +209,15 @@ public class CsharpConfig : GeneratorConfigBase
             $"{df.Name.ToPascalCase()}Flow.cs");
     }
 
+    public string GetDataFlowRegistrationFilePath(DataFlow df, string tag)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(DataFlowsPath!, tag: tag, module: df.ModelFile.Namespace.ModulePath).ToFilePath(),
+            "generated",
+            $"ServiceExtensions.cs");
+    }
+
     public string GetDbContextFilePath(string tag)
     {
         return Path.Combine(
