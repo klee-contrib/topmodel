@@ -143,10 +143,13 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
         w.WriteLine(2, $"protected override async Task<IEnumerable<{dataFlow.Class.NamePascal}>> GetData()");
         w.WriteLine(2, "{");
 
+        var firstSource = dataFlow.Sources.FirstOrDefault();
         foreach (var source in dataFlow.Sources.OrderBy(s => s.Source))
         {
             w.WriteLine(3, $"{GetConnectionName(source)} = ConnectionPool.GetConnection(\"{source.Source.ToCamelCase()}\");");
         }
+
+        var hasCreateMapper = firstSource != null && firstSource.Class != dataFlow.Class;
 
         if (dataFlow.Sources.Count == 1)
         {
@@ -154,19 +157,13 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
             w.WriteLine();
             w.Write(3, $"return ");
 
-            if (source.Class != dataFlow.Class)
+            if (hasCreateMapper)
             {
                 w.Write("(");
             }
 
             w.Write($"await Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}({GetConnectionName(source)})");
-            w.WriteLine(source.Class != dataFlow.Class ? ")" : ";");
-
-            if (source.Class != dataFlow.Class && source.TargetFromMapper != null)
-            {
-                var (ns, modelPath) = Config.GetMapperLocation((dataFlow.Class, source.TargetFromMapper), GetBestClassTag(dataFlow.Class, tag));
-                w.WriteLine(4, $".Select({Config.GetMapperName(ns, modelPath)}.Create{dataFlow.Class.NamePascal});");
-            }
+            w.WriteLine(hasCreateMapper ? ")" : ";");
         }
         else if (dataFlow.Sources.Count > 1)
         {
@@ -187,7 +184,7 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
                     }
                 }
 
-                w.WriteLine(3, ".SelectMany(s => s);");
+                w.WriteLine(3, $".SelectMany(s => s){(hasCreateMapper ? string.Empty : ";")}");
             }
             else if (dataFlow.Sources.All(source => source.JoinProperties.Any()))
             {
@@ -196,14 +193,32 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
                     return $"{source.Source.ToCamelCase()}{GetSourceNumber(source)}";
                 }
 
-                string GetJoin(DataFlowSource source)
+                string GetJoin(DataFlowSource source, DataFlowSource? targetSource = null)
                 {
-                    if (source.JoinProperties.Count == 1)
+                    var joinProperties = source.JoinProperties.AsEnumerable();
+
+                    if (targetSource != null && joinProperties.Count() > targetSource?.JoinProperties.Count)
                     {
-                        return $"{GetVarName(source)}.{source.JoinProperties.Single().NamePascal}";
+                        foreach (var otherSource in dataFlow.Sources.Skip(1))
+                        {
+                            if (otherSource == targetSource)
+                            {
+                                joinProperties = joinProperties.Take(otherSource.JoinProperties.Count);
+                                break;
+                            }
+                            else
+                            {
+                                joinProperties = joinProperties.Skip(otherSource.JoinProperties.Count);
+                            }
+                        }
                     }
 
-                    return $"({string.Join(", ", source.JoinProperties.Select(jp => $"{GetVarName(source)}.{jp.NamePascal}"))})";
+                    if (joinProperties.Count() == 1)
+                    {
+                        return $"{GetVarName(source)}.{joinProperties.Single().NamePascal}";
+                    }
+
+                    return $"({string.Join(", ", joinProperties.Select(jp => $"{GetVarName(source)}.{jp.NamePascal}"))})";
                 }
 
                 foreach (var source in dataFlow.Sources.Skip(1))
@@ -221,10 +236,30 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
 
                 foreach (var source in dataFlow.Sources.Skip(1))
                 {
-                    w.WriteLine(4, $".Select({GetVarName(mainSource)} => {source.Source.ToCamelCase()}Source{GetSourceNumber(source)}.TryGetValue({GetJoin(mainSource)}, out var {GetVarName(source)})");
-                    w.WriteLine(5, $"? {GetVarName(source)}.{source.FirstSourceToMapper?.Name.ToPascalCase()}({GetVarName(mainSource)})");
-                    w.WriteLine(5, $": {GetVarName(mainSource)}){(dataFlow.Sources.Skip(1).ToList().IndexOf(source) == dataFlow.Sources.Count - 2 ? ";" : string.Empty)}");
+                    var isLast = dataFlow.Sources.Skip(1).ToList().IndexOf(source) == dataFlow.Sources.Count - 2 && !hasCreateMapper;
+
+                    w.WriteLine(4, $".Select({GetVarName(mainSource)} => {GetJoin(mainSource, source)} != default && {source.Source.ToCamelCase()}Source{GetSourceNumber(source)}.TryGetValue({GetJoin(mainSource, source)}, out var {GetVarName(source)})");
+                    w.WriteLine(5, $"? {GetVarName(source)}.{source.FirstSourceToMapper?.Name.ToPascalCase() ?? "MissingToMapper"}({GetVarName(mainSource)})");
+                    w.WriteLine(5, $": {(source.InnerJoin ? "null" : GetVarName(mainSource))}){(isLast && !source.InnerJoin ? ";" : string.Empty)}");
+
+                    if (source.InnerJoin)
+                    {
+                        w.WriteLine(5, $".Where({GetVarName(mainSource)} => {GetVarName(mainSource)} != default){(isLast ? ";" : string.Empty)}");
+                    }
                 }
+            }
+        }
+
+        if (hasCreateMapper)
+        {
+            if (firstSource?.TargetFromMapper != null)
+            {
+                var (ns, modelPath) = Config.GetMapperLocation((dataFlow.Class, firstSource.TargetFromMapper), GetBestClassTag(dataFlow.Class, tag));
+                w.WriteLine(4, $".Select({Config.GetMapperName(ns, modelPath)}.Create{dataFlow.Class.NamePascal});");
+            }
+            else
+            {
+                w.WriteLine(4, $".Select(MissingCreateMapper.Create{dataFlow.Class.NamePascal});");
             }
         }
 
