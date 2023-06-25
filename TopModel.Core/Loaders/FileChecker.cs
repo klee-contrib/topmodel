@@ -104,7 +104,7 @@ public class FileChecker
                     break;
                 case "useLegacyAssociationCompositionMappers":
                     config.UseLegacyAssociationCompositionMappers = value!.Value == "true";
-                    break;  
+                    break;
                 case "i18n":
                     config.I18n = _deserializer.Deserialize<I18nConfig>(parser);
                     break;

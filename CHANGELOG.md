@@ -2,7 +2,9 @@
 
 ## 1.31.7
 
-- [278](https://github.com/klee-contrib/topmodel/pull/278) [JPA] Ajout d'un mode `useLegacyAssociationCompositionMappers` pour rétro compatibilité avec les projets qui utilisaient beaucoup les mappers entre compositions et associations multiples. Cette propriété s'ajoute à la configuration générale, afin qu'elle ne créé pas d'erreur
+- [#278](https://github.com/klee-contrib/topmodel/pull/278) [JPA] Ajout d'un mode `useLegacyAssociationCompositionMappers` pour rétro compatibilité avec les projets qui utilisaient beaucoup les mappers entre compositions et associations multiples. Cette propriété s'ajoute à la configuration générale, afin qu'elle ne créé pas d'erreur
+- [`b21d89fa6`](https://github.com/klee-contrib/topmodel/commit/b21d89fa645574fcb15790eb0b76e17a9d7e3933) - [C#] Fix import en trop pour associations si kinetix = false et enum = false
+- [`e3fd9f995`](https://github.com/klee-contrib/topmodel/commit/e3fd9f99513ce248ded775cabc4da70b70fecaef) - [C#] Fix casse paramètres mappers
 
 ## 1.31.6
 
