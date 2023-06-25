@@ -85,7 +85,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                 w.Write(2, $"public static {classe.NamePascal} Create{classe.NamePascal}");
             }
 
-            w.WriteLine($"({string.Join(", ", mapper.Params.Select(p => $"{(p.Class.Abstract ? "I" : string.Empty)}{p.Class} {p.Name}{(!p.Required ? " = null" : string.Empty)}"))})");
+            w.WriteLine($"({string.Join(", ", mapper.Params.Select(p => $"{(p.Class.Abstract ? "I" : string.Empty)}{p.Class.NamePascal} {p.Name}{(!p.Required ? " = null" : string.Empty)}"))})");
 
             if (classe.Abstract)
             {

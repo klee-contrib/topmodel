@@ -183,7 +183,7 @@ public class ClassLoader : ILoader<Class>
                                                         }
                                                     });
 
-                                                    param.Name ??= new LocatedString(classScalar) { Value = param.ClassReference.ReferenceName.ToCamelCase() };
+                                                    param.Name ??= new LocatedString(classScalar) { Value = param.ClassReference.ReferenceName.ToCamelCase(strictIfUppercase: true) };
                                                 });
                                                 break;
                                         }
