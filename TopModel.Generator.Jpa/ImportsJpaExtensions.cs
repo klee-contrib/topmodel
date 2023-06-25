@@ -67,7 +67,7 @@ public static class ImportsJpaExtensions
     private static List<string> GetTypeImports(this AliasProperty ap, JpaConfig config, string tag, bool noAnnotations = false)
     {
         var imports = new List<string>();
-        if (ap.Class != null && ap.Class.IsPersistent && ap.Property is AssociationProperty asp)
+        if (ap.Class != null && ap.Property is AssociationProperty asp)
         {
             if (config.CanClassUseEnums(asp.Association))
             {

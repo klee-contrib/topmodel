@@ -854,7 +854,7 @@ public class ModelStore
         // Résolution des propriétés d'association (pour clé étrangère).
         foreach (var ap in fileClasses.SelectMany(c => c.Properties.OfType<AssociationProperty>()).Where(ap => ap.Association != null))
         {
-            if ((ap.Type == AssociationType.ManyToMany || ap.Type == AssociationType.OneToMany) && !(ap.Property?.Domain?.AsDomains.ContainsKey(ap.As) ?? false))
+            if (ap.Type.IsToMany() && !(ap.Property?.Domain?.AsDomains.ContainsKey(ap.As) ?? false))
             {
                 yield return new ModelError(ap, $@"Cette association ne peut pas avoir le type {ap.Type} car le domain {ap.Property?.Domain} ne contient pas de définition de domaine 'as' pour '{ap.As}'.", ap.Reference) { ModelErrorType = ModelErrorType.TMD1028 };
                 continue;
@@ -1186,7 +1186,7 @@ public class ModelStore
                             {
                                 yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car ce n'est pas une association.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1017 };
                             }
-                            else if (mappedAp.Type.IsToMany() || cp.Domain != null)
+                            else if (!_config.UseLegacyAssociationCompositionMappers && (mappedAp.Type.IsToMany() || cp.Domain != null))
                             {
                                 yield return new ModelError(classe, $"L'association '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car l'association et la composition doivent toutes les deux être simples.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1018 };
                             }
@@ -1195,7 +1195,7 @@ public class ModelStore
                                 var cpPks = cp.Composition.Properties.OfType<IFieldProperty>().Where(p => p.PrimaryKey);
                                 var cpPk = cpPks.Count() == 1 ? cpPks.Single() : null;
 
-                                if (cpPk?.Domain != mappedAp.Domain && !Converters.Any(c => c.From.Any(cf => cf == cpPk?.Domain) && c.To.Any(ct => ct == mappedAp.Domain)))
+                                if (!_config.UseLegacyAssociationCompositionMappers && cpPk?.Domain != mappedAp.Domain && !Converters.Any(c => c.From.Any(cf => cf == cpPk?.Domain) && c.To.Any(ct => ct == mappedAp.Domain)))
                                 {
                                     yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la composition '{cp.Composition.Name}' ('{mappedProperty.Domain.Name}' au lieu de '{cpPk?.Domain?.Name ?? string.Empty}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1019 };
                                 }
