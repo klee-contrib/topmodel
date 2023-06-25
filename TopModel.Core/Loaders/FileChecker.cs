@@ -102,6 +102,9 @@ public class FileChecker
                 case "useLegacyRoleNames":
                     config.UseLegacyRoleNames = value!.Value == "true";
                     break;
+                case "useLegacyAssociationCompositionMappers":
+                    config.UseLegacyAssociationCompositionMappers = value!.Value == "true";
+                    break;  
                 case "i18n":
                     config.I18n = _deserializer.Deserialize<I18nConfig>(parser);
                     break;

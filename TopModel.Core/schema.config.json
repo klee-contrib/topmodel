@@ -40,7 +40,13 @@
     },
     "useLegacyRoleNames": {
       "type": "boolean",
-      "description": "Transforme les noms de rôles d'associations en upper case (au lieu de constant case) pour déterminer le nom SQL des propriétés"
+      "description": "Transforme les noms de rôles d'associations en upper case (au lieu de constant case) pour déterminer le nom SQL des propriétés",
+      "default": "false"
+    },
+    "useLegacyAssociationCompositionMappers": {
+      "type": "boolean",
+      "description": "Permet de mapper les compositions OneToMany et ManyToMany à des compositions avec un kind non null. Sans garantie de résultat...",
+      "default": false
     },
     "i18n": {
       "type": "object",

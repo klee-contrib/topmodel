@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.31.7
+
+- [278](https://github.com/klee-contrib/topmodel/pull/278) [JPA] Ajout d'un mode `useLegacyAssociationCompositionMappers` pour rétro compatibilité avec les projets qui utilisaient beaucoup les mappers entre compositions et associations multiples. Cette propriété s'ajoute à la configuration générale, afin qu'elle ne créé pas d'erreur
+
 ## 1.31.6
 
 - [#273](https://github.com/klee-contrib/topmodel/pull/273) - [Core] Gestion des associations vers PK composite (avec `property` explicite).
