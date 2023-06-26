@@ -6,7 +6,6 @@ package topmodel.jpa.sample.demo.dtos.securite;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import jakarta.annotation.Generated;
 
@@ -56,39 +55,6 @@ public class ProfilDto implements Serializable {
 	 * No arg constructor.
 	 */
 	public ProfilDto() {
-	}
-
-	/**
-	 * Copy constructor.
-	 * @param profilDto to copy
-	 */
-	public ProfilDto(ProfilDto profilDto) {
-		if(profilDto == null) {
-			return;
-		}
-
-		this.id = profilDto.getId();
-		this.typeProfilCode = profilDto.getTypeProfilCode();
-		this.droits = profilDto.getDroits();
-
-		this.utilisateurs = profilDto.getUtilisateurs().stream().collect(Collectors.toList());
-		this.secteurs = profilDto.getSecteurs().stream().collect(Collectors.toList());
-	}
-
-	/**
-	 * All arg constructor.
-	 * @param id Id technique
-	 * @param typeProfilCode Type de profil
-	 * @param droits Liste des droits de l'utilisateur
-	 * @param utilisateurs Liste paginée des utilisateurs de ce profil
-	 * @param secteurs Liste des secteurs du profil
-	 */
-	public ProfilDto(Long id, TypeProfil.Values typeProfilCode, List<Droit.Values> droits, List<UtilisateurDto> utilisateurs, List<SecteurDto> secteurs) {
-		this.id = id;
-		this.typeProfilCode = typeProfilCode;
-		this.droits = droits;
-		this.utilisateurs = utilisateurs;
-		this.secteurs = secteurs;
 	}
 
 	/**

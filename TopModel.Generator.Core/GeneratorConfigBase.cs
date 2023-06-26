@@ -168,7 +168,7 @@ public abstract class GeneratorConfigBase
         }
     }
 
-    public IEnumerable<string> GetDomainImports(IProperty property, string tag, bool noAnnotations = false)
+    public IEnumerable<string> GetDomainImports(IProperty property, string tag)
     {
         if (property.Domain != null)
         {
@@ -177,15 +177,12 @@ public abstract class GeneratorConfigBase
                 yield return import;
             }
 
-            if (!noAnnotations)
+            foreach (var import in GetImplementation(property.Domain)!.Annotations
+                .Where(a => FilterAnnotations(a, property, tag))
+                .SelectMany(a => a.Imports)
+                .Select(u => u.ParseTemplate(property)))
             {
-                foreach (var import in GetImplementation(property.Domain)!.Annotations
-                    .Where(a => FilterAnnotations(a, property, tag))
-                    .SelectMany(a => a.Imports)
-                    .Select(u => u.ParseTemplate(property)))
-                {
-                    yield return import;
-                }
+                yield return import;
             }
 
             var op = property switch
@@ -195,14 +192,6 @@ public abstract class GeneratorConfigBase
                 AliasProperty alp => alp.OriginalProperty,
                 _ => property
             };
-
-            if (op != null && op != property)
-            {
-                foreach (var import in GetDomainImports(op, tag, true))
-                {
-                    yield return import;
-                }
-            }
         }
     }
 

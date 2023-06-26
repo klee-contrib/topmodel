@@ -97,56 +97,6 @@ public class UtilisateurDto implements Serializable {
 	}
 
 	/**
-	 * Copy constructor.
-	 * @param utilisateurDto to copy
-	 */
-	public UtilisateurDto(UtilisateurDto utilisateurDto) {
-		if(utilisateurDto == null) {
-			return;
-		}
-
-		this.id = utilisateurDto.getId();
-		this.age = utilisateurDto.getAge();
-		this.profilId = utilisateurDto.getProfilId();
-		this.email = utilisateurDto.getEmail();
-		this.nom = utilisateurDto.getNom();
-		this.actif = utilisateurDto.getActif();
-		this.typeUtilisateurCode = utilisateurDto.getTypeUtilisateurCode();
-		this.utilisateursEnfant = utilisateurDto.getUtilisateursEnfant();
-		this.dateCreation = utilisateurDto.getDateCreation();
-		this.dateModification = utilisateurDto.getDateModification();
-		this.utilisateurParent = utilisateurDto.getUtilisateurParent();
-	}
-
-	/**
-	 * All arg constructor.
-	 * @param id Id technique
-	 * @param age Age en années de l'utilisateur
-	 * @param profilId Profil de l'utilisateur
-	 * @param email Email de l'utilisateur
-	 * @param nom Nom de l'utilisateur
-	 * @param actif Si l'utilisateur est actif
-	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
-	 * @param utilisateursEnfant Utilisateur enfants
-	 * @param dateCreation Date de création de l'utilisateur
-	 * @param dateModification Date de modification de l'utilisateur
-	 * @param utilisateurParent UtilisateurParent
-	 */
-	public UtilisateurDto(Long id, Long age, Long profilId, String email, String nom, Boolean actif, TypeUtilisateur.Values typeUtilisateurCode, List<Long> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification, UtilisateurDto utilisateurParent) {
-		this.id = id;
-		this.age = age;
-		this.profilId = profilId;
-		this.email = email;
-		this.nom = nom;
-		this.actif = actif;
-		this.typeUtilisateurCode = typeUtilisateurCode;
-		this.utilisateursEnfant = utilisateursEnfant;
-		this.dateCreation = dateCreation;
-		this.dateModification = dateModification;
-		this.utilisateurParent = utilisateurParent;
-	}
-
-	/**
 	 * Crée une nouvelle instance de 'UtilisateurDto'.
 	 * @param utilisateur Instance de 'Utilisateur'.
 	 *

@@ -32,26 +32,6 @@ public class SecteurDto implements Serializable {
 	}
 
 	/**
-	 * Copy constructor.
-	 * @param secteurDto to copy
-	 */
-	public SecteurDto(SecteurDto secteurDto) {
-		if(secteurDto == null) {
-			return;
-		}
-
-		this.id = secteurDto.getId();
-	}
-
-	/**
-	 * All arg constructor.
-	 * @param id Id technique
-	 */
-	public SecteurDto(Long id) {
-		this.id = id;
-	}
-
-	/**
 	 * Crée une nouvelle instance de 'SecteurDto'.
 	 * @param secteur Instance de 'Secteur'.
 	 *

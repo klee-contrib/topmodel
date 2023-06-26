@@ -47,29 +47,6 @@ public class TypeUtilisateur {
 	}
 
 	/**
-	 * Copy constructor.
-	 * @param typeUtilisateur to copy
-	 */
-	public TypeUtilisateur(TypeUtilisateur typeUtilisateur) {
-		if(typeUtilisateur == null) {
-			return;
-		}
-
-		this.code = typeUtilisateur.getCode();
-		this.libelle = typeUtilisateur.getLibelle();
-	}
-
-	/**
-	 * All arg constructor.
-	 * @param code Code du type d'utilisateur
-	 * @param libelle Libellé du type d'utilisateur
-	 */
-	public TypeUtilisateur(TypeUtilisateur.Values code, String libelle) {
-		this.code = code;
-		this.libelle = libelle;
-	}
-
-	/**
 	 * Getter for code.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur#code code}.
@@ -144,7 +121,10 @@ public class TypeUtilisateur {
 		 * @return instance de {@link topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur} correspondant au code courant.
 		 */
 		public TypeUtilisateur getEntity() {
-			return new TypeUtilisateur(this, libelle);
+			TypeUtilisateur entity = new TypeUtilisateur();
+			entity.code = this;
+			entity.libelle = this.libelle;
+			return entity;
 		}
 
 		/**
