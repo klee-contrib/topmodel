@@ -480,6 +480,18 @@ Pour que, pour chaque module, soit généré les fichiers de resources dans les 
 
   _Templating_: `<>` (remplace par `<NomDeLaClasse>`)
 
+- `associationAdders`
+
+  Option pour générer des méthodes d'ajouts pour les associations oneToMany et manyToMany. Ces méthodes permettent de synchroniser les objets ajoutés.
+
+  _Valeur par défaut_: `false`
+
+- `associationRemovers`
+
+  Option pour générer des méthodes de suppression pour les associations oneToMany et manyToMany. Ces méthodes permettent de synchroniser les objets supprimés.
+
+  _Valeur par défaut_: `false`
+
 - `persistenceMode`
 
   Mode de génération de la persistence (`"javax"` ou `"jakarta"`).
