@@ -10,6 +10,7 @@ Le générateur C# peut générer les fichiers suivants :
 - Un fichier de contrôleur pour chaque fichier d'endpoints dans le modèle, si les APIs sont générées en mode serveur.
 - Un fichier de client d'API pour chaque fichier d'endpoints dans le modèle, si les APIs sont générées en mode client.
 - 2 fichiers par module (interface + implémentation) contenant des accesseurs de listes de référence pour Kinetix (si demandé).
+- Un fichier par flux de données et un fichier d'enregistrement de flux par module (si demandés).
 
 Le code généré n'a aucune dépendance externe à part EF Core et Kinetix, et uniquement s'ils sont explicitement demandés dans la configuration.
 
@@ -61,6 +62,10 @@ Les clients d'API sont générés comme des classes partielles avec 2 méthodes 
 ### Génération des accesseurs de références
 
 Les implémentations d'accesseurs de listes de références pour Kinetix utilisent EF Core si un DbContext est configuré et l'ORM Kinetix (`Kinetix.DataAccess.Sql`) dans le cas contraire. Ils sont générés pour les classes marquées comme `reference`.
+
+### Génération des flux de données
+
+_(en preview, documentation à venir)_
 
 ## Configuration
 
@@ -173,6 +178,16 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
   _Valeur par défaut_: `"{DbContextPath}/Reference"`
 
   _Variables par tag_: **oui** (plusieurs accesseurs pourraient être générés si un fichier à plusieurs tags)
+
+- `dataFlowsPath`
+
+  Localisation des flux de données générés. Cette variable doit être renseignées pour que les flux soient générés.
+
+  Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
+
+  _Templating_: `{module}`
+
+  _Variables par tag_: **oui** (plusieurs flux de données pourraient être générés si un fichier à plusieurs tags)
 
 - `referenceAccessorsName`
 
