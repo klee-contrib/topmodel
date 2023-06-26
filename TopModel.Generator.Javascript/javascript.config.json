@@ -86,15 +86,28 @@
       "description": "Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif au répertoire de génération.",
       "default": "../domains"
     },
-    "targetFramework": {
+    "apiMode": {
       "type": "string",
       "description": "Framework cible pour la génération.",
       "default": "focus",
       "enum": [
-        "focus",
         "angular",
         "vanilla"
       ]
+    },
+    "entityMode": {
+      "type": "string",
+      "description": "Framework cible pour la génération.",
+      "default": "typed",
+      "enum": [
+        "untyped",
+        "typed"
+      ]
+    },
+    "entityTypesPath": {
+      "type": "string",
+      "description": "Chemin d'import des type d'entités",
+      "default": "@focus4/stores"
     },
     "resourceMode": {
       "type": "string",

@@ -36,9 +36,9 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
     {
         using var fw = new FileWriter(fileName, _logger, false);
 
-        if (Config.TargetFramework == TargetFramework.FOCUS)
+        if (Config.EntityMode == EntityMode.TYPED)
         {
-            fw.WriteLine($"import {{{string.Join(", ", GetFocusStoresImports(classe, tag).OrderBy(x => x))}}} from \"@focus4/stores\";");
+            fw.WriteLine($"import {{{string.Join(", ", GetFocusStoresImports(classe, tag).OrderBy(x => x))}}} from \"{Config.EntityTypesPath}\";");
         }
 
         if (classe.Properties.Any(c => c is IFieldProperty or CompositionProperty { Domain: not null } && !Config.IsListComposition(c)))
@@ -55,10 +55,10 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                     ? dep.Classe.NamePascal
                     : dep is { Source: IFieldProperty fp }
                     ? Config.GetEnumType(fp)
-                    : $"{dep.Classe.NamePascal}Entity, {dep.Classe.NamePascal}{(Config.TargetFramework == TargetFramework.FOCUS ? "EntityType" : string.Empty)}",
+                    : $"{dep.Classe.NamePascal}Entity, {dep.Classe.NamePascal}{(Config.EntityMode == EntityMode.TYPED ? "EntityType" : string.Empty)}",
                 Path: Config.GetImportPathForClass(dep, GetClassTags(dep.Classe).Contains(tag) ? tag : GetClassTags(dep.Classe).Intersect(Config.Tags).FirstOrDefault() ?? tag, tag, Classes)!))
             .Concat(classe.Properties.SelectMany(dep => Config.GetDomainImportPaths(dep, tag)))
-            .Where(p => p.Path != null && p.Path != "@focus4/stores")
+            .Where(p => p.Path != null && p.Path != Config.EntityTypesPath)
             .GroupAndSort();
 
         fw.WriteLine();
@@ -73,17 +73,9 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
             fw.WriteLine();
         }
 
-        if (Config.TargetFramework == TargetFramework.FOCUS)
+        if (Config.EntityMode == EntityMode.TYPED)
         {
-            fw.Write("export type ");
-            fw.Write(classe.NamePascal);
-            fw.Write(" = EntityToType<");
-            fw.Write(classe.NamePascal);
-            fw.Write("EntityType>;\r\nexport type ");
-            fw.Write(classe.NamePascal);
-            fw.Write("Node = StoreNode<");
-            fw.Write(classe.NamePascal);
-            fw.Write("EntityType>;\r\n");
+            fw.WriteLine($"export type {classe.NamePascal} = EntityToType<{classe.NamePascal}EntityType>");
 
             fw.Write($"export interface {classe.NamePascal}EntityType ");
 
@@ -107,9 +99,9 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
 
         foreach (var property in classe.Properties)
         {
-            fw.Write($"    {property.NameCamel}{(Config.TargetFramework == TargetFramework.FOCUS ? string.Empty : "?")}: ");
+            fw.Write($"    {property.NameCamel}{(Config.EntityMode == EntityMode.TYPED ? string.Empty : "?")}: ");
 
-            if (Config.TargetFramework == TargetFramework.FOCUS)
+            if (Config.EntityMode == EntityMode.TYPED)
             {
                 switch (property)
                 {
@@ -149,7 +141,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
 
         fw.Write($"export const {classe.NamePascal}Entity");
 
-        if (Config.TargetFramework == TargetFramework.FOCUS)
+        if (Config.EntityMode == EntityMode.TYPED)
         {
             fw.Write($": {classe.NamePascal}EntityType");
         }
@@ -246,7 +238,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
             fw.Write("\r\n");
         }
 
-        fw.Write($"}}{(Config.TargetFramework == TargetFramework.FOCUS ? string.Empty : " as const")}\r\n");
+        fw.Write($"}}{(Config.EntityMode == EntityMode.TYPED ? string.Empty : " as const")}\r\n");
 
         if (classe.Reference)
         {
@@ -277,12 +269,11 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
             yield return "RecursiveListEntry";
         }
 
-        foreach (var p in classe.Properties.SelectMany(dep => Config.GetDomainImportPaths(dep, tag)).Where(p => p.Path == "@focus4/stores"))
+        foreach (var p in classe.Properties.SelectMany(dep => Config.GetDomainImportPaths(dep, tag)).Where(p => p.Path == Config.EntityTypesPath))
         {
             yield return p.Import;
         }
 
         yield return "EntityToType";
-        yield return "StoreNode";
     }
 }

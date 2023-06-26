@@ -2,11 +2,10 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {EntityToType, FieldEntry2, StoreNode} from "@focus4/stores";
+import {EntityToType, FieldEntry2} from "@focus4/stores";
 import {DO_ID} from "../../domains";
 
-export type SecteurDto = EntityToType<SecteurDtoEntityType>;
-export type SecteurDtoNode = StoreNode<SecteurDtoEntityType>;
+export type SecteurDto = EntityToType<SecteurDtoEntityType>
 export interface SecteurDtoEntityType {
     id: FieldEntry2<typeof DO_ID, number>
 }

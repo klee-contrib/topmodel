@@ -43,7 +43,17 @@ public class JavascriptConfig : GeneratorConfigBase
     /// <summary>
     /// Framework cible pour la génération.
     /// </summary>
-    public TargetFramework TargetFramework { get; set; } = TargetFramework.FOCUS;
+    public TargetFramework ApiMode { get; set; } = TargetFramework.VANILLA;
+
+    /// <summary>
+    /// Typage des entités générées
+    /// </summary>
+    public EntityMode EntityMode { get; set; } = EntityMode.TYPED;
+
+    /// <summary>
+    /// Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif au répertoire de génération.
+    /// </summary>
+    public string EntityTypesPath { get; set; } = "@focus4/stores";
 
     /// <summary>
     /// Mode de génération (JS, JSON ou JSON Schema).

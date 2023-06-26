@@ -2,6 +2,90 @@
 
 ## Configuration
 
+### Modes de génération de l'API client
+
+Il est possible de générer l'API cliente selon deux modes (`apiMode`) : `vanilla` ou `angular`.
+
+#### Angular
+
+Le mode `angular` permet de générer un service injectable au sens `Angular`, contenant les méthodes d'appels à l'API.
+
+#### Vanilla
+
+Le mode `vanilla` permet de générer un fichier ts, contenant les méthodes d'appels à l'API exportées sous forme de fonctions. Ce mode nécessite la définission d'une méthode `fetch`. Par défaut, cette méthode est importée de `focus4/core`, mais il est possible de la surcharger avec le paramètre `fetchPath`.
+
+exemple :
+
+```yaml
+  fetchPath: "@api-services"
+```
+
+### Modes de génération des entités
+
+Il est possible de générer les entités selon deux modes (`entityMode`) : `typed` ou `untyped`. Dans les deux cas, la génération utilise le chemin défini dans la propriété `domainPath`, pour importer les objets de définition de domaine. Par défaut `domainPath` vaut `../domains`
+
+#### Typed
+
+Le mode `typed` permet de générer la description des entités métier contenant des types. Ces types sont importés par défaut de `@focus4/stores`, mais ce chemin peut être surchargé avec la propriété `entityTypesPath`.
+
+#### Untyped
+
+Le mode `untyped` permet de générer la description des entités métier en tant que **`const`** non typés.
+
+Exemple :
+
+```ts
+////
+//// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
+////
+
+import {DO_CODE, DO_CODE_LIST, DO_ID} from "@domains";
+
+import {UtilisateurDtoEntity, UtilisateurDto} from "../utilisateur/utilisateur-dto";
+import {DroitCode, TypeProfilCode} from "./references";
+import {SecteurDtoEntity, SecteurDto} from "./secteur-dto";
+
+export interface ProfilDto {
+    id?: number,
+    typeProfilCode?: TypeProfilCode,
+    droits?: DroitCode[],
+    utilisateurs?: UtilisateurDto[],
+    secteurs?: SecteurDto[]
+}
+
+export const ProfilDtoEntity = {
+    id: {
+        type: "field",
+        name: "id",
+        domain: DO_ID,
+        isRequired: false,
+        label: "securite.profil.id"
+    },
+    typeProfilCode: {
+        type: "field",
+        name: "typeProfilCode",
+        domain: DO_CODE,
+        isRequired: false,
+        label: "securite.profil.typeProfilCode"
+    },
+    droits: {
+        type: "field",
+        name: "droits",
+        domain: DO_CODE_LIST,
+        isRequired: false,
+        label: "securite.profil.droits"
+    },
+    utilisateurs: {
+        type: "list",
+        entity: UtilisateurDtoEntity
+    },
+    secteurs: {
+        type: "list",
+        entity: SecteurDtoEntity
+    }
+} as const
+```
+
 ### Modes de génération des fichiers de ressource
 
 #### JS

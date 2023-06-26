@@ -26,7 +26,7 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
 
             if (config.ApiClientRootPath != null)
             {
-                if (config.TargetFramework == TargetFramework.ANGULAR)
+                if (config.ApiMode == TargetFramework.ANGULAR)
                 {
                     services.AddGenerator<AngularApiClientGenerator, JavascriptConfig>(config, number);
                 }
