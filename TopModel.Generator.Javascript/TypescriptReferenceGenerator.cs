@@ -89,7 +89,9 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptCo
                 fw.Write("export type ");
                 fw.Write(reference.NamePascal);
                 fw.Write($"{reference.EnumKey.Name.ToPascalCase()} = ");
-                fw.Write(string.Join(" | ", reference.Values.Select(r => $@"""{r.Value[reference.EnumKey]}""").OrderBy(x => x, StringComparer.Ordinal)));
+                var type = Config.GetImplementation(reference.EnumKey.Domain)?.Type;
+                var quote = (type == "boolean" || type == "number") ? string.Empty : @"""";
+                fw.Write(string.Join(" | ", reference.Values.Select(r => $@"{quote}{r.Value[reference.EnumKey]}{quote}").OrderBy(x => x, StringComparer.Ordinal)));
                 fw.WriteLine(";");
 
                 foreach (var uk in reference.UniqueKeys.Where(uk => uk.Count == 1 && uk.Single().Required).Select(uk => uk.Single()))
