@@ -168,6 +168,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                     {
                         getter = $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{cp.NameByClassPascal.WithPrefix(getterPrefix)}(), target.get{apTarget.NameByClassPascal}())";
                         checkSourceNull = true;
+                        fw.AddImport(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
                     }
                 }
                 else
