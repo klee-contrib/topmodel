@@ -216,22 +216,6 @@ domain:
             .Select(classToImport => GetFileImportAction(diagnostic, modelFile, classToImport.ModelFile, useIndex));
     }
 
-    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingDecoratorImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
-    {
-        var fs = request.TextDocument.Uri.GetFileSystemPath();
-        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
-        var line = text.ElementAt(diagnostic.Range.Start.Line);
-        var decoratorName = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
-        var useIndex = modelFile!.Uses.Any()
-            ? modelFile.Uses.Last().ToRange()!.Start.Line + 1
-            : text.First().StartsWith("-")
-                ? 1
-                : 0;
-
-        return _modelStore.Decorators.Where(c => c.Name == decoratorName)
-            .Select(decoratorToImport => GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex));
-    }
-
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingDataFlowImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
     {
         var fs = request.TextDocument.Uri.GetFileSystemPath();
@@ -245,6 +229,22 @@ domain:
                 : 0;
 
         return _modelStore.DataFlows.Where(c => c.Name == dataFlowName)
+            .Select(decoratorToImport => GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex));
+    }
+
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingDecoratorImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    {
+        var fs = request.TextDocument.Uri.GetFileSystemPath();
+        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var line = text.ElementAt(diagnostic.Range.Start.Line);
+        var decoratorName = line[diagnostic.Range.Start.Character..Math.Min(diagnostic.Range.End.Character, line.Length)];
+        var useIndex = modelFile!.Uses.Any()
+            ? modelFile.Uses.Last().ToRange()!.Start.Line + 1
+            : text.First().StartsWith("-")
+                ? 1
+                : 0;
+
+        return _modelStore.Decorators.Where(c => c.Name == decoratorName)
             .Select(decoratorToImport => GetFileImportAction(diagnostic, modelFile, decoratorToImport.ModelFile, useIndex));
     }
 

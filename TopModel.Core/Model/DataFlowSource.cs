@@ -2,8 +2,6 @@
 
 namespace TopModel.Core;
 
-
-
 public class DataFlowSource
 {
 #nullable disable

@@ -61,7 +61,7 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
             return $"_{source.Source.ToCamelCase()}Connection{GetSourceNumber(source)}";
         }
 
-        using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
+        using var w = new CSharpWriter(fileName, _logger);
 
         var usings = new List<string>()
         {
@@ -81,72 +81,72 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
 
         var name = $"{dataFlow.Name.ToPascalCase()}Flow";
 
-        w.WriteClassDeclaration(name, $"DataFlow<{dataFlow.Class.NamePascal}>");
+        w.WriteClassDeclaration(name, $"DataFlow<{dataFlow.Class.NamePascal}>", false);
 
         foreach (var source in dataFlow.Sources.OrderBy(s => s.Source))
         {
-            w.WriteLine(2, $"private IConnection {GetConnectionName(source)};");
+            w.WriteLine(1, $"private IConnection {GetConnectionName(source)};");
         }
 
         w.WriteLine();
 
-        w.WriteLine(2, $"public {name}(ILogger<{name}> logger, ConnectionPool connectionPool, EtlMonitor monitor)");
-        w.WriteLine(3, ": base(logger, connectionPool, monitor)");
-        w.WriteLine(2, "{");
-        w.WriteLine(2, "}");
+        w.WriteLine(1, $"public {name}(ILogger<{name}> logger, ConnectionPool connectionPool, EtlMonitor monitor)");
+        w.WriteLine(2, ": base(logger, connectionPool, monitor)");
+        w.WriteLine(1, "{");
+        w.WriteLine(1, "}");
 
         w.WriteLine();
-        w.WriteLine(2, $"public override string Name => \"{dataFlow.Name.ToPascalCase()}\";");
+        w.WriteLine(1, $"public override string Name => \"{dataFlow.Name.ToPascalCase()}\";");
         w.WriteLine();
-        w.WriteLine(2, $"protected override TargetMode TargetMode => TargetMode.{dataFlow.Type};");
+        w.WriteLine(1, $"protected override TargetMode TargetMode => TargetMode.{dataFlow.Type};");
 
         if (dataFlow.ActiveProperty != null)
         {
             w.WriteLine();
-            w.WriteLine(2, $"protected override string ActiveProperty => nameof({dataFlow.Class.NamePascal}.{dataFlow.ActiveProperty.NamePascal});");
+            w.WriteLine(1, $"protected override string ActiveProperty => nameof({dataFlow.Class.NamePascal}.{dataFlow.ActiveProperty.NamePascal});");
         }
 
         w.WriteLine();
-        w.WriteLine(2, $"protected override string TargetName => \"{dataFlow.Target.ToCamelCase()}\";");
+        w.WriteLine(1, $"protected override string TargetName => \"{dataFlow.Target.ToCamelCase()}\";");
 
         if (dataFlow.DependsOn.Any())
         {
             w.WriteLine();
-            w.WriteLine(2, $"public override string[] DependsOn => new[] {{ {string.Join(", ", dataFlow.DependsOn.Select(d => $"\"{d.Name.ToPascalCase()}\""))} }};");
+            w.WriteLine(1, $"public override string[] DependsOn => new[] {{ {string.Join(", ", dataFlow.DependsOn.Select(d => $"\"{d.Name.ToPascalCase()}\""))} }};");
         }
 
         if (dataFlow.PostQuery)
         {
             w.WriteLine();
-            w.WriteLine(2, $"protected override bool PostQuery => true;");
+            w.WriteLine(1, $"protected override bool PostQuery => true;");
         }
 
         if (dataFlow.PreQuery)
         {
             w.WriteLine();
-            w.WriteLine(2, $"protected override bool PreQuery => true;");
+            w.WriteLine(1, $"protected override bool PreQuery => true;");
         }
 
         w.WriteLine();
-        w.WriteLine(2, "public override void Dispose()");
-        w.WriteLine(2, "{");
-        w.WriteLine(3, "base.Dispose();");
+        w.WriteLine(1, "public override void Dispose()");
+        w.WriteLine(1, "{");
+        w.WriteLine(2, "base.Dispose();");
 
         foreach (var source in dataFlow.Sources.OrderBy(s => s.Source))
         {
-            w.WriteLine(3, $"{GetConnectionName(source)}?.Dispose();");
+            w.WriteLine(2, $"{GetConnectionName(source)}?.Dispose();");
         }
 
-        w.WriteLine(2, "}");
+        w.WriteLine(1, "}");
 
         w.WriteLine();
-        w.WriteLine(2, $"protected override async Task<IEnumerable<{dataFlow.Class.NamePascal}>> GetData()");
-        w.WriteLine(2, "{");
+        w.WriteLine(1, $"protected override async Task<IEnumerable<{dataFlow.Class.NamePascal}>> GetData()");
+        w.WriteLine(1, "{");
 
         var firstSource = dataFlow.Sources.FirstOrDefault();
         foreach (var source in dataFlow.Sources.OrderBy(s => s.Source))
         {
-            w.WriteLine(3, $"{GetConnectionName(source)} = ConnectionPool.GetConnection(\"{source.Source.ToCamelCase()}\");");
+            w.WriteLine(2, $"{GetConnectionName(source)} = ConnectionPool.GetConnection(\"{source.Source.ToCamelCase()}\");");
         }
 
         var hasCreateMapper = firstSource != null && firstSource.Class != dataFlow.Class;
@@ -155,7 +155,7 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
         {
             var source = dataFlow.Sources.First();
             w.WriteLine();
-            w.Write(3, $"return ");
+            w.Write(2, $"return ");
 
             if (hasCreateMapper)
             {
@@ -170,10 +170,10 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
             if (dataFlow.Sources.All(source => !source.JoinProperties.Any()))
             {
                 w.WriteLine();
-                w.WriteLine(3, "return (await Task.WhenAll(");
+                w.WriteLine(2, "return (await Task.WhenAll(");
                 foreach (var source in dataFlow.Sources.OrderBy(s => s.Source))
                 {
-                    w.Write(4, $"Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}({GetConnectionName(source)})");
+                    w.Write(3, $"Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}({GetConnectionName(source)})");
                     if (dataFlow.Sources.OrderBy(s => s.Source).ToList().IndexOf(source) < dataFlow.Sources.Count - 1)
                     {
                         w.WriteLine(",");
@@ -184,7 +184,7 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
                     }
                 }
 
-                w.WriteLine(3, $".SelectMany(s => s){(hasCreateMapper ? string.Empty : ";")}");
+                w.WriteLine(2, $".SelectMany(s => s){(hasCreateMapper ? string.Empty : ";")}");
             }
             else if (dataFlow.Sources.All(source => source.JoinProperties.Any()))
             {
@@ -225,26 +225,26 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
                 {
                     var varName = GetVarName(source);
                     w.WriteLine();
-                    w.WriteLine(3, $"var {source.Source.ToCamelCase()}Source{GetSourceNumber(source)} = (await Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}({GetConnectionName(source)}))");
-                    w.WriteLine(4, $".ToDictionary({varName} => {GetJoin(source)}, {varName} => {varName});");
+                    w.WriteLine(2, $"var {source.Source.ToCamelCase()}Source{GetSourceNumber(source)} = (await Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}({GetConnectionName(source)}))");
+                    w.WriteLine(3, $".ToDictionary({varName} => {GetJoin(source)}, {varName} => {varName});");
                 }
 
                 w.WriteLine();
 
                 var mainSource = dataFlow.Sources.First();
-                w.WriteLine(3, $"return (await Get{mainSource.Source.ToPascalCase()}Source{GetSourceNumber(mainSource)}({GetConnectionName(mainSource)}))");
+                w.WriteLine(2, $"return (await Get{mainSource.Source.ToPascalCase()}Source{GetSourceNumber(mainSource)}({GetConnectionName(mainSource)}))");
 
                 foreach (var source in dataFlow.Sources.Skip(1))
                 {
                     var isLast = dataFlow.Sources.Skip(1).ToList().IndexOf(source) == dataFlow.Sources.Count - 2 && !hasCreateMapper;
 
-                    w.WriteLine(4, $".Select({GetVarName(mainSource)} => {GetJoin(mainSource, source)} != default && {source.Source.ToCamelCase()}Source{GetSourceNumber(source)}.TryGetValue({GetJoin(mainSource, source)}, out var {GetVarName(source)})");
-                    w.WriteLine(5, $"? {GetVarName(source)}.{source.FirstSourceToMapper?.Name.ToPascalCase() ?? "MissingToMapper"}({GetVarName(mainSource)})");
-                    w.WriteLine(5, $": {(source.InnerJoin ? "null" : GetVarName(mainSource))}){(isLast && !source.InnerJoin ? ";" : string.Empty)}");
+                    w.WriteLine(3, $".Select({GetVarName(mainSource)} => {GetJoin(mainSource, source)} != default && {source.Source.ToCamelCase()}Source{GetSourceNumber(source)}.TryGetValue({GetJoin(mainSource, source)}, out var {GetVarName(source)})");
+                    w.WriteLine(4, $"? {GetVarName(source)}.{source.FirstSourceToMapper?.Name.ToPascalCase() ?? "MissingToMapper"}({GetVarName(mainSource)})");
+                    w.WriteLine(4, $": {(source.InnerJoin ? "null" : GetVarName(mainSource))}){(isLast && !source.InnerJoin ? ";" : string.Empty)}");
 
                     if (source.InnerJoin)
                     {
-                        w.WriteLine(5, $".Where({GetVarName(mainSource)} => {GetVarName(mainSource)} != default){(isLast ? ";" : string.Empty)}");
+                        w.WriteLine(3, $".Where({GetVarName(mainSource)} => {GetVarName(mainSource)} != default){(isLast ? ";" : string.Empty)}");
                     }
                 }
             }
@@ -255,42 +255,41 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
             if (firstSource?.TargetFromMapper != null)
             {
                 var (ns, modelPath) = Config.GetMapperLocation((dataFlow.Class, firstSource.TargetFromMapper), GetBestClassTag(dataFlow.Class, tag));
-                w.WriteLine(4, $".Select({Config.GetMapperName(ns, modelPath)}.Create{dataFlow.Class.NamePascal});");
+                w.WriteLine(3, $".Select({Config.GetMapperName(ns, modelPath)}.Create{dataFlow.Class.NamePascal});");
             }
             else
             {
-                w.WriteLine(4, $".Select(MissingCreateMapper.Create{dataFlow.Class.NamePascal});");
+                w.WriteLine(3, $".Select(MissingCreateMapper.Create{dataFlow.Class.NamePascal});");
             }
         }
 
-        w.WriteLine(2, "}");
+        w.WriteLine(1, "}");
 
         if (dataFlow.PostQuery)
         {
             w.WriteLine();
-            w.WriteLine(2, $"protected override partial Task<int> ExecutePostQuery(IConnection connection);");
+            w.WriteLine(1, $"protected override partial Task<int> ExecutePostQuery(IConnection connection);");
         }
 
         if (dataFlow.PreQuery)
         {
             w.WriteLine();
-            w.WriteLine(2, $"protected override partial Task<int> ExecutePreQuery(IConnection connection);");
+            w.WriteLine(1, $"protected override partial Task<int> ExecutePreQuery(IConnection connection);");
         }
 
         foreach (var source in dataFlow.Sources.OrderBy(s => s.Source))
         {
             w.WriteLine();
-            w.WriteLine(2, $"private static {(source.Mode == DataFlowSourceMode.Partial ? "partial" : "async")} Task<IEnumerable<{source.Class.NamePascal}>> Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}(IConnection connection){(source.Mode == DataFlowSourceMode.Partial ? ";" : string.Empty)}");
+            w.WriteLine(1, $"private static {(source.Mode == DataFlowSourceMode.Partial ? "partial" : "async")} Task<IEnumerable<{source.Class.NamePascal}>> Get{source.Source.ToPascalCase()}Source{GetSourceNumber(source)}(IConnection connection){(source.Mode == DataFlowSourceMode.Partial ? ";" : string.Empty)}");
             if (source.Mode == DataFlowSourceMode.QueryAll)
             {
-                w.WriteLine(2, "{");
-                w.WriteLine(3, $"return await connection.QueryAllAsync<{source.Class.NamePascal}>();");
-                w.WriteLine(2, "}");
+                w.WriteLine(1, "{");
+                w.WriteLine(2, $"return await connection.QueryAllAsync<{source.Class.NamePascal}>();");
+                w.WriteLine(1, "}");
             }
         }
 
-        w.WriteLine(1, "}");
-        w.WriteNamespaceEnd();
+        w.WriteLine("}");
     }
 
     private void HandleDataFlowPartial(string fileName, DataFlow dataFlow, string tag)
@@ -305,18 +304,18 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
             return;
         }
 
-        using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp) { EnableHeader = false };
+        using var w = new CSharpWriter(fileName, _logger) { EnableHeader = false };
 
         w.WriteUsings(new[] { "Kinetix.Etl" }.Concat(dataFlow.Sources.Select(source => Config.GetNamespace(source.Class, GetBestClassTag(source.Class, tag)))).ToArray());
         w.WriteLine();
         w.WriteNamespace(Config.GetNamespace(dataFlow, tag));
-        w.WriteClassDeclaration($"{dataFlow.Name.ToPascalCase()}Flow", null);
+        w.WriteClassDeclaration($"{dataFlow.Name.ToPascalCase()}Flow", null, false);
 
         if (dataFlow.PostQuery)
         {
-            w.WriteLine(2, $"protected override partial async Task<int> ExecutePostQuery(IConnection connection)");
-            w.WriteLine(2, "{");
-            w.WriteLine(2, "}");
+            w.WriteLine(1, $"protected override partial async Task<int> ExecutePostQuery(IConnection connection)");
+            w.WriteLine(1, "{");
+            w.WriteLine(1, "}");
         }
 
         if (dataFlow.PreQuery)
@@ -326,9 +325,9 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
                 w.WriteLine();
             }
 
-            w.WriteLine(2, $"protected override partial async Task<int> ExecutePreQuery(IConnection connection)");
-            w.WriteLine(2, "{");
-            w.WriteLine(2, "}");
+            w.WriteLine(1, $"protected override partial async Task<int> ExecutePreQuery(IConnection connection)");
+            w.WriteLine(1, "{");
+            w.WriteLine(1, "}");
         }
 
         var partialSources = dataFlow.Sources.Where(d => d.Mode == DataFlowSourceMode.Partial).OrderBy(s => s.Source);
@@ -339,35 +338,33 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
                 w.WriteLine();
             }
 
-            w.WriteLine(2, $"private static partial async Task<IEnumerable<{source.Class.NamePascal}>> Get{source.Source.ToPascalCase()}Source{dataFlow.Sources.OrderBy(s => s.Source).Where(s => s.Source == source.Source).ToList().IndexOf(source) + 1}(IConnection connection)");
-            w.WriteLine(2, "{");
-            w.WriteLine(2, "}");
+            w.WriteLine(1, $"private static partial async Task<IEnumerable<{source.Class.NamePascal}>> Get{source.Source.ToPascalCase()}Source{dataFlow.Sources.OrderBy(s => s.Source).Where(s => s.Source == source.Source).ToList().IndexOf(source) + 1}(IConnection connection)");
+            w.WriteLine(1, "{");
+            w.WriteLine(1, "}");
         }
 
-        w.WriteLine(1, "}");
-        w.WriteNamespaceEnd();
+        w.WriteLine("}");
     }
 
     private void HandleRegistrationFile(string fileName, IEnumerable<DataFlow> flows, string tag)
     {
         var firstFlow = flows.First();
-        using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
+        using var w = new CSharpWriter(fileName, _logger);
 
         w.WriteUsings("Kinetix.Etl", "Microsoft.Extensions.DependencyInjection");
         w.WriteLine();
         w.WriteNamespace(Config.GetNamespace(firstFlow, tag));
-        w.WriteLine(1, "public static class ServiceExtensions");
+        w.WriteLine("public static class ServiceExtensions");
+        w.WriteLine("{");
+        w.WriteLine(1, $"public static IServiceCollection Add{firstFlow.ModelFile.Namespace.ModuleFlat}DataFlows(this IServiceCollection services)");
         w.WriteLine(1, "{");
-        w.WriteLine(2, $"public static IServiceCollection Add{firstFlow.ModelFile.Namespace.ModuleFlat}DataFlows(this IServiceCollection services)");
-        w.WriteLine(2, "{");
-        w.WriteLine(3, "return services");
+        w.WriteLine(2, "return services");
         foreach (var flow in flows.OrderBy(f => f.Name))
         {
-            w.WriteLine(4, $".AddSingleton<IDataFlow, {flow.Name.ToPascalCase()}Flow>(){(flows.OrderBy(f => f.Name).ToList().IndexOf(flow) == flows.Count() - 1 ? ";" : string.Empty)}");
+            w.WriteLine(3, $".AddSingleton<IDataFlow, {flow.Name.ToPascalCase()}Flow>(){(flows.OrderBy(f => f.Name).ToList().IndexOf(flow) == flows.Count() - 1 ? ";" : string.Empty)}");
         }
 
-        w.WriteLine(2, "}");
         w.WriteLine(1, "}");
-        w.WriteNamespaceEnd();
+        w.WriteLine("}");
     }
 }
