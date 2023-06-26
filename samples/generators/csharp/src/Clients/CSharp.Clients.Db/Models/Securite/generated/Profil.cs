@@ -17,33 +17,6 @@ namespace CSharp.Clients.Db.Models.Securite;
 public partial class Profil
 {
     /// <summary>
-    /// Constructeur.
-    /// </summary>
-    public Profil()
-    {
-        OnCreated();
-    }
-
-    /// <summary>
-    /// Constructeur par recopie.
-    /// </summary>
-    /// <param name="bean">Source.</param>
-    public Profil(Profil bean)
-    {
-        if (bean == null)
-        {
-            throw new ArgumentNullException(nameof(bean));
-        }
-
-        Id = bean.Id;
-        TypeProfilCode = bean.TypeProfilCode;
-        Droits = bean.Droits;
-        Secteurs = bean.Secteurs;
-
-        OnCreated(bean);
-    }
-
-    /// <summary>
     /// Id technique.
     /// </summary>
     [Column("pro_id")]
@@ -75,15 +48,4 @@ public partial class Profil
     [Domain(Domains.IdList)]
     [NotMapped]
     public int[] Secteurs { get; set; }
-
-    /// <summary>
-    /// Methode d'extensibilité possible pour les constructeurs.
-    /// </summary>
-    partial void OnCreated();
-
-    /// <summary>
-    /// Methode d'extensibilité possible pour les constructeurs par recopie.
-    /// </summary>
-    /// <param name="bean">Source.</param>
-    partial void OnCreated(Profil bean);
 }

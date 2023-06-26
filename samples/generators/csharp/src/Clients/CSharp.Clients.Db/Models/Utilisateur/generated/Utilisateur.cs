@@ -17,40 +17,6 @@ namespace CSharp.Clients.Db.Models.Utilisateur;
 public partial class Utilisateur
 {
     /// <summary>
-    /// Constructeur.
-    /// </summary>
-    public Utilisateur()
-    {
-        OnCreated();
-    }
-
-    /// <summary>
-    /// Constructeur par recopie.
-    /// </summary>
-    /// <param name="bean">Source.</param>
-    public Utilisateur(Utilisateur bean)
-    {
-        if (bean == null)
-        {
-            throw new ArgumentNullException(nameof(bean));
-        }
-
-        Id = bean.Id;
-        Age = bean.Age;
-        ProfilId = bean.ProfilId;
-        Email = bean.Email;
-        Nom = bean.Nom;
-        Actif = bean.Actif;
-        TypeUtilisateurCode = bean.TypeUtilisateurCode;
-        UtilisateurIdParent = bean.UtilisateurIdParent;
-        UtilisateursEnfant = bean.UtilisateursEnfant;
-        DateCreation = bean.DateCreation;
-        DateModification = bean.DateModification;
-
-        OnCreated(bean);
-    }
-
-    /// <summary>
     /// Id technique.
     /// </summary>
     [Column("uti_id")]
@@ -131,15 +97,4 @@ public partial class Utilisateur
     [Column("uti_date_modification")]
     [Domain(Domains.DateModification)]
     public DateOnly? DateModification { get; set; }
-
-    /// <summary>
-    /// Methode d'extensibilité possible pour les constructeurs.
-    /// </summary>
-    partial void OnCreated();
-
-    /// <summary>
-    /// Methode d'extensibilité possible pour les constructeurs par recopie.
-    /// </summary>
-    /// <param name="bean">Source.</param>
-    partial void OnCreated(Utilisateur bean);
 }

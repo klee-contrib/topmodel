@@ -9,12 +9,10 @@ namespace TopModel.Generator.Csharp;
 /// </summary>
 public class CSharpWriter : IDisposable
 {
-    private readonly bool _useLatestCSharp;
     private readonly FileWriter _writer;
 
-    public CSharpWriter(string name, ILogger logger, bool useLatestCSharp = false)
+    public CSharpWriter(string name, ILogger logger)
     {
-        _useLatestCSharp = useLatestCSharp;
         _writer = new FileWriter(name, logger);
     }
 
@@ -48,6 +46,16 @@ public class CSharpWriter : IDisposable
     /// <summary>
     /// Ecrit un attribut de décoration.
     /// </summary>
+    /// <param name="attributeName">Nom de l'attribut.</param>
+    /// <param name="attributeParams">Paramètres.</param>
+    public void WriteAttribute(string attributeName, params string[] attributeParams)
+    {
+        WriteAttribute(0, attributeName, attributeParams);
+    }
+
+    /// <summary>
+    /// Ecrit un attribut de décoration.
+    /// </summary>
     /// <param name="indentLevel">Indentation.</param>
     /// <param name="attributeName">Nom de l'attribut.</param>
     /// <param name="attributeParams">Paramètres.</param>
@@ -67,8 +75,9 @@ public class CSharpWriter : IDisposable
     /// </summary>
     /// <param name="name">Nom de la classe.</param>
     /// <param name="inheritedClass">Classe parente.</param>
+    /// <param name="isRecord">Génère un record au lieu d'une classe.</param>
     /// <param name="ifList">Liste des interfaces implémentées.</param>
-    public void WriteClassDeclaration(string name, string? inheritedClass, params string[] ifList)
+    public void WriteClassDeclaration(string name, string? inheritedClass, bool isRecord, params string[] ifList)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -82,7 +91,16 @@ public class CSharpWriter : IDisposable
 
         var sb = new StringBuilder();
 
-        sb.Append("public partial class ");
+        sb.Append("public partial ");
+        if (isRecord)
+        {
+            sb.Append("record ");
+        }
+        else
+        {
+            sb.Append("class ");
+        }
+
         sb.Append(name);
         if (!string.IsNullOrEmpty(inheritedClass) || ifList != null && ifList.Length > 0)
         {
@@ -116,7 +134,7 @@ public class CSharpWriter : IDisposable
         }
 
         sb.Append("\r\n{");
-        WriteLine(1, sb.ToString());
+        WriteLine(sb.ToString());
     }
 
     /// <summary>
@@ -146,28 +164,8 @@ public class CSharpWriter : IDisposable
     /// <param name="value">Valeur du namespace.</param>
     public void WriteNamespace(string value)
     {
-        Write($"namespace {value}");
-        if (_useLatestCSharp)
-        {
-            WriteLine(";");
-            WriteLine();
-        }
-        else
-        {
-            WriteLine();
-            WriteLine("{");
-        }
-    }
-
-    /// <summary>
-    /// Retourne le code associé à la fin d'un namespace.
-    /// </summary>
-    public void WriteNamespaceEnd()
-    {
-        if (!_useLatestCSharp)
-        {
-            WriteLine("}");
-        }
+        WriteLine($"namespace {value};");
+        WriteLine();
     }
 
     /// <summary>
@@ -179,7 +177,7 @@ public class CSharpWriter : IDisposable
     {
         if (!string.IsNullOrEmpty(paramName) && !string.IsNullOrEmpty(value))
         {
-            WriteLine(2, LoadParam(paramName, value, "param"));
+            WriteLine(1, LoadParam(paramName, value, "param"));
         }
     }
 
@@ -194,6 +192,15 @@ public class CSharpWriter : IDisposable
         {
             WriteLine(indentationLevel, LoadReturns(value));
         }
+    }
+
+    /// <summary>
+    /// Ecrit la valeur du résumé du commentaire..
+    /// </summary>
+    /// <param name="value">Valeur à écrire.</param>
+    public void WriteSummary(string value)
+    {
+        WriteSummary(0, value);
     }
 
     /// <summary>
@@ -328,11 +335,6 @@ public class CSharpWriter : IDisposable
     /// <returns>Identation.</returns>
     private string GetIdentValue(int indentationLevel)
     {
-        if (_useLatestCSharp && indentationLevel > 0)
-        {
-            indentationLevel--;
-        }
-
         var indentValue = string.Empty;
         for (var i = 0; i < indentationLevel; ++i)
         {

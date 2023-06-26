@@ -204,12 +204,6 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 
   _Variables par tag_: **oui** (à faire correspondre avec les valeurs de différents `modelPath`)
 
-- `useLatestCSharp`
-
-  Utilise les features C# 10 dans la génération. (namespaces de fichiers, usings implicites...)
-
-  _Valeur par défaut_: `true`
-
 - `kinetix`
 
   Active les fonctionnalités Kinetix dans la génération.
@@ -244,6 +238,10 @@ Les implémentations d'accesseurs de listes de références pour Kinetix utilise
 - `enumsForStaticReferences`
 
   Utilise des enums C# à la place du type original pour les listes de références statiques (= clé primaire non-autogénérée).
+
+- `useRecords`
+
+  Utilise des records (mutables) au lieu de classes pour la génération de classes. Valeurs possibles : `true`, `false` et `dtos-only`.
 
 - `useEFComments`
 

@@ -40,24 +40,13 @@ public class CSharpApiServerGenerator : EndpointsGeneratorBase<CsharpConfig>
 
         var text = File.Exists(filePath)
             ? File.ReadAllText(filePath)
-            : Config.UseLatestCSharp
-            ? $@"using Microsoft.AspNetCore.Mvc;
+            : $@"using Microsoft.AspNetCore.Mvc;
 
 namespace {ns};
 
 public class {className} : Controller
 {{
 
-}}"
-            : $@"using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-
-namespace {ns}
-{{
-    public class {className} : Controller
-    {{
-
-    }}
 }}";
 
         var syntaxTree = CSharpSyntaxTree.ParseText(text);
@@ -65,7 +54,7 @@ namespace {ns}
 
         var controller = existingController;
 
-        var indent = Config.UseLatestCSharp ? "    " : "        ";
+        var indent = "    ";
 
         foreach (var endpoint in endpoints)
         {

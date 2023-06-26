@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
+using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -32,33 +33,12 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        using var w = new CSharpWriter(fileName, _logger, Config.UseLatestCSharp);
+        using var w = new CSharpWriter(fileName, _logger);
 
         GenerateUsings(w, classe, tag);
         w.WriteNamespace(Config.GetNamespace(classe, tag));
-        w.WriteSummary(1, classe.Comment);
+        w.WriteSummary(classe.Comment);
         GenerateClassDeclaration(w, classe, tag);
-        w.WriteNamespaceEnd();
-    }
-
-    /// <summary>
-    /// Génère le constructeur par recopie d'un type base.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">Classe générée.</param>
-    private static void GenerateBaseCopyConstructor(CSharpWriter w, Class item)
-    {
-        if (item.Extends != null)
-        {
-            w.WriteLine();
-            w.WriteSummary(2, "Constructeur par base class.");
-            w.WriteParam("bean", "Source.");
-            w.WriteLine(2, "public " + item.NamePascal + "(" + item.Extends.NamePascal + " bean)");
-            w.WriteLine(3, ": base(bean)");
-            w.WriteLine(2, "{");
-            w.WriteLine(3, "OnCreated();");
-            w.WriteLine(2, "}");
-        }
     }
 
     /// <summary>
@@ -68,48 +48,36 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     /// <param name="item">La classe générée.</param>
     private static void GenerateEnumCols(CSharpWriter w, Class item)
     {
+        w.WriteLine(1, "#region Meta données");
         w.WriteLine();
-        w.WriteSummary(2, "Type énuméré présentant les noms des colonnes en base.");
+        w.WriteSummary(1, "Type énuméré présentant les noms des colonnes en base.");
 
         if (item.Extends == null)
         {
-            w.WriteLine(2, "public enum Cols");
+            w.WriteLine(1, "public enum Cols");
         }
         else
         {
-            w.WriteLine(2, "public new enum Cols");
+            w.WriteLine(1, "public new enum Cols");
         }
 
-        w.WriteLine(2, "{");
+        w.WriteLine(1, "{");
 
         var cols = item.Properties.OfType<IFieldProperty>().ToList();
         foreach (var property in cols)
         {
-            w.WriteSummary(3, "Nom de la colonne en base associée à la propriété " + property.NamePascal + ".");
-            w.WriteLine(3, $"{property.SqlName},");
+            w.WriteSummary(2, "Nom de la colonne en base associée à la propriété " + property.NamePascal + ".");
+            w.WriteLine(2, $"{property.SqlName},");
             if (cols.IndexOf(property) != cols.Count - 1)
             {
                 w.WriteLine();
             }
         }
 
-        w.WriteLine(2, "}");
-    }
-
-    /// <summary>
-    /// Génère les méthodes d'extensibilité.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">Classe générée.</param>
-    private static void GenerateExtensibilityMethods(CSharpWriter w, Class item)
-    {
+        w.WriteLine(1, "}");
         w.WriteLine();
-        w.WriteSummary(2, "Methode d'extensibilité possible pour les constructeurs.");
-        w.WriteLine(2, "partial void OnCreated();");
+        w.WriteLine(1, "#endregion");
         w.WriteLine();
-        w.WriteSummary(2, "Methode d'extensibilité possible pour les constructeurs par recopie.");
-        w.WriteParam("bean", "Source.");
-        w.WriteLine(2, $"partial void OnCreated({item.NamePascal} bean);");
     }
 
     /// <summary>
@@ -121,28 +89,28 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     {
         if (item.FlagProperty != null && item.Values.Any())
         {
+            w.WriteLine(1, "#region Flags");
             w.WriteLine();
-            w.WriteLine(2, "#region Flags");
-            w.WriteLine();
-            w.WriteSummary(2, "Flags");
-            w.WriteLine(2, "public enum Flags");
-            w.WriteLine(2, "{");
+            w.WriteSummary(1, "Flags");
+            w.WriteLine(1, "public enum Flags");
+            w.WriteLine(1, "{");
 
             var flagValues = item.Values.Where(refValue => refValue.Value.ContainsKey(item.FlagProperty) && int.TryParse(refValue.Value[item.FlagProperty], out var _)).ToList();
             foreach (var refValue in flagValues)
             {
                 var flag = int.Parse(refValue.Value[item.FlagProperty]);
-                w.WriteSummary(3, refValue.GetLabel(item));
-                w.WriteLine(3, $"{refValue.Name} = 0b{Convert.ToString(flag, 2)},");
+                w.WriteSummary(2, refValue.GetLabel(item));
+                w.WriteLine(2, $"{refValue.Name} = 0b{Convert.ToString(flag, 2)},");
                 if (flagValues.IndexOf(refValue) != flagValues.Count - 1)
                 {
                     w.WriteLine();
                 }
             }
 
-            w.WriteLine(2, "}");
+            w.WriteLine(1, "}");
             w.WriteLine();
-            w.WriteLine(2, "#endregion");
+            w.WriteLine(1, "#endregion");
+            w.WriteLine();
         }
     }
 
@@ -160,17 +128,17 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             {
                 if (!item.ReferenceKey!.Domain.AutoGeneratedValue)
                 {
-                    w.WriteAttribute(1, "Reference", "true");
+                    w.WriteAttribute("Reference", "true");
                 }
                 else
                 {
-                    w.WriteAttribute(1, "Reference");
+                    w.WriteAttribute("Reference");
                 }
             }
 
             if (item.Reference && item.DefaultProperty != null)
             {
-                w.WriteAttribute(1, "DefaultProperty", $@"nameof({item.DefaultProperty.NamePascal})");
+                w.WriteAttribute("DefaultProperty", $@"nameof({item.DefaultProperty.NamePascal})");
             }
 
             if (Config.IsPersistent(item, tag))
@@ -178,18 +146,18 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 var sqlName = Config.UseLowerCaseSqlNames ? item.SqlName.ToLower() : item.SqlName;
                 if (Config.DbSchema != null)
                 {
-                    w.WriteAttribute(1, "Table", $@"""{sqlName}""", $@"Schema = ""{Config.ResolveVariables(Config.DbSchema, tag, module: item.Namespace.Module.ToSnakeCase())}""");
+                    w.WriteAttribute("Table", $@"""{sqlName}""", $@"Schema = ""{Config.ResolveVariables(Config.DbSchema, tag, module: item.Namespace.Module.ToSnakeCase())}""");
                 }
                 else
                 {
-                    w.WriteAttribute(1, "Table", $@"""{sqlName}""");
+                    w.WriteAttribute("Table", $@"""{sqlName}""");
                 }
             }
         }
 
         foreach (var annotation in Config.GetDecoratorAnnotations(item))
         {
-            w.WriteAttribute(1, annotation);
+            w.WriteAttribute(annotation);
         }
 
         var extends = Config.GetClassExtends(item);
@@ -197,7 +165,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
         if (item.Abstract)
         {
-            w.Write(1, $"public interface I{item.NamePascal}");
+            w.Write($"public interface I{item.NamePascal}");
 
             if (implements.Any())
             {
@@ -205,36 +173,26 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
 
             w.WriteLine();
-            w.WriteLine(1, "{");
+            w.WriteLine("{");
         }
         else
         {
-            w.WriteClassDeclaration(
-                item.NamePascal,
-                extends,
-                implements.ToArray());
+            var isRecord = (Config.UseRecords & Target.Dto) > 0 && !Config.IsPersistent(item, tag) || (Config.UseRecords & Target.Persisted) > 0 && Config.IsPersistent(item, tag);
+            w.WriteClassDeclaration(item.NamePascal, extends, isRecord, implements.ToArray());
 
             GenerateConstProperties(w, item);
-            GenerateConstructors(w, item);
 
             if (Config.DbContextPath == null && Config.IsPersistent(item, tag))
             {
-                w.WriteLine();
-                w.WriteLine(2, "#region Meta données");
                 GenerateEnumCols(w, item);
-                w.WriteLine();
-                w.WriteLine(2, "#endregion");
             }
 
             if (Config.CanClassUseEnums(item, Classes))
             {
-                w.WriteLine();
                 GenerateEnumValues(w, item);
             }
 
             GenerateFlags(w, item);
-
-            w.WriteLine();
         }
 
         GenerateProperties(w, item, tag);
@@ -243,12 +201,8 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         {
             GenerateCreateMethod(w, item);
         }
-        else
-        {
-            GenerateExtensibilityMethods(w, item);
-        }
 
-        w.WriteLine(1, "}");
+        w.WriteLine("}");
     }
 
     /// <summary>
@@ -285,70 +239,23 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
         }
 
-        foreach (var @const in consts.OrderBy(x => x.Name.ToPascalCase(), StringComparer.Ordinal))
+        var orderedConsts = consts.OrderBy(x => x.Name.ToPascalCase(), StringComparer.Ordinal).ToList();
+
+        foreach (var @const in orderedConsts)
         {
-            w.WriteSummary(2, @const.Label);
-            w.WriteLine(2, $"public const {Config.GetType(@const.Prop).TrimEnd('?')} {@const.Name.ToPascalCase()} = {(Config.ShouldQuoteValue(@const.Prop) ? $@"""{@const.Code}""" : @const.Code)};");
+            if (orderedConsts.IndexOf(@const) > 0)
+            {
+                w.WriteLine();
+            }
+
+            w.WriteSummary(1, @const.Label);
+            w.WriteLine(1, $"public const {Config.GetType(@const.Prop).TrimEnd('?')} {@const.Name.ToPascalCase()} = {(Config.ShouldQuoteValue(@const.Prop) ? $@"""{@const.Code}""" : @const.Code)};");
+        }
+
+        if (consts.Any())
+        {
             w.WriteLine();
         }
-    }
-
-    /// <summary>
-    /// Génère les constructeurs.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">La classe générée.</param>
-    private void GenerateConstructors(CSharpWriter w, Class item)
-    {
-        GenerateDefaultConstructor(w, item);
-        GenerateCopyConstructor(w, item);
-        GenerateBaseCopyConstructor(w, item);
-    }
-
-    /// <summary>
-    /// Génère le constructeur par recopie.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">Classe générée.</param>
-    private void GenerateCopyConstructor(CSharpWriter w, Class item)
-    {
-        w.WriteLine();
-        w.WriteSummary(2, "Constructeur par recopie.");
-        w.WriteParam("bean", "Source.");
-        if (item.Extends != null)
-        {
-            w.WriteLine(2, "public " + item.NamePascal + "(" + item.NamePascal + " bean)");
-            w.WriteLine(3, ": base(bean)");
-            w.WriteLine(2, "{");
-        }
-        else
-        {
-            w.WriteLine(2, "public " + item.NamePascal + "(" + item.NamePascal + " bean)");
-            w.WriteLine(2, "{");
-        }
-
-        w.WriteLine(3, "if (bean == null)");
-        w.WriteLine(3, "{");
-        w.WriteLine(4, "throw new ArgumentNullException(nameof(bean));");
-        w.WriteLine(3, "}");
-        w.WriteLine();
-
-        foreach (var property in item.Properties)
-        {
-            var type = GetNewableType(property);
-            if (type != null)
-            {
-                w.WriteLine(3, $"{property.NamePascal} = new {type}(bean.{property.NamePascal});");
-            }
-            else
-            {
-                w.WriteLine(3, $"{property.NamePascal} = bean.{property.NamePascal};");
-            }
-        }
-
-        w.WriteLine();
-        w.WriteLine(3, "OnCreated(bean);");
-        w.WriteLine(2, "}");
     }
 
     private void GenerateCreateMethod(CSharpWriter w, Class item)
@@ -358,52 +265,15 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         if (writeProperties.Any())
         {
             w.WriteLine();
-            w.WriteSummary(2, "Factory pour instancier la classe.");
+            w.WriteSummary(1, "Factory pour instancier la classe.");
             foreach (var prop in writeProperties)
             {
                 w.WriteParam(prop.NameCamel, prop.Comment);
             }
 
-            w.WriteReturns(2, "Instance de la classe.");
-            w.WriteLine(2, $"static abstract I{item.NamePascal} Create({string.Join(", ", writeProperties.Select(p => $"{Config.GetType(p)} {p.NameCamel} = null"))});");
+            w.WriteReturns(1, "Instance de la classe.");
+            w.WriteLine(1, $"static abstract I{item.NamePascal} Create({string.Join(", ", writeProperties.Select(p => $"{Config.GetType(p)} {p.NameCamel} = null"))});");
         }
-    }
-
-    /// <summary>
-    /// Génère le constructeur par défaut.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">Classe générée.</param>
-    private void GenerateDefaultConstructor(CSharpWriter w, Class item)
-    {
-        w.WriteSummary(2, "Constructeur.");
-        w.WriteLine(2, $@"public {item.NamePascal}()");
-
-        if (item.Extends != null)
-        {
-            w.WriteLine(3, ": base()");
-        }
-
-        w.WriteLine(2, "{");
-
-        var line = false;
-        foreach (var property in item.Properties.OfType<CompositionProperty>())
-        {
-            var type = GetNewableType(property);
-            if (type != null)
-            {
-                line = true;
-                w.WriteLine(3, $"{property.NamePascal} = new {type}();");
-            }
-        }
-
-        if (line)
-        {
-            w.WriteLine();
-        }
-
-        w.WriteLine(3, "OnCreated();");
-        w.WriteLine(2, "}");
     }
 
     /// <summary>
@@ -417,14 +287,14 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
         void WriteEnum(IFieldProperty prop)
         {
-            w.WriteSummary(2, $"Valeurs possibles de la liste de référence {item}.");
-            w.WriteLine(2, $"public enum {prop.Name.ToPascalCase()}s");
-            w.WriteLine(2, "{");
+            w.WriteSummary(1, $"Valeurs possibles de la liste de référence {item}.");
+            w.WriteLine(1, $"public enum {prop.Name.ToPascalCase()}s");
+            w.WriteLine(1, "{");
 
             foreach (var refValue in refs)
             {
-                w.WriteSummary(3, refValue.GetLabel(item));
-                w.Write(3, refValue.Value[prop]);
+                w.WriteSummary(2, refValue.GetLabel(item));
+                w.Write(2, refValue.Value[prop]);
 
                 if (refs.IndexOf(refValue) != refs.Count - 1)
                 {
@@ -434,7 +304,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 w.WriteLine();
             }
 
-            w.WriteLine(2, "}");
+            w.WriteLine(1, "}");
         }
 
         WriteEnum(item.EnumKey!);
@@ -444,6 +314,8 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             w.WriteLine();
             WriteEnum(uk.Single());
         }
+
+        w.WriteLine();
     }
 
     /// <summary>
@@ -476,7 +348,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     /// <param name="tag">Tag.</param>
     private void GenerateProperty(CSharpWriter w, IProperty property, HashSet<string> sameColumnSet, string tag)
     {
-        w.WriteSummary(2, property.Comment);
+        w.WriteSummary(1, property.Comment);
 
         var type = Config.GetType(property);
 
@@ -495,60 +367,69 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                     var sqlName = Config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
                     if (!Config.GetDomainAnnotations(fp, tag).Any(a => a.TrimStart('[').StartsWith("Column")))
                     {
-                        w.WriteAttribute(2, "Column", $@"""{sqlName}""");
+                        w.WriteAttribute(1, "Column", $@"""{sqlName}""");
                     }
                 }
 
                 if (fp.Required && !fp.PrimaryKey || fp is AliasProperty { PrimaryKey: true } || fp.PrimaryKey && fp.Class.PrimaryKey.Count() > 1)
                 {
-                    w.WriteAttribute(2, "Required");
+                    w.WriteAttribute(1, "Required");
                 }
 
                 if (Config.Kinetix)
                 {
                     if (prop is AssociationProperty ap && Classes.Contains(ap.Association) && ap.Association.IsPersistent && ap.Association.Reference)
                     {
-                        w.WriteAttribute(2, "ReferencedType", $"typeof({ap.Association.NamePascal})");
+                        w.WriteAttribute(1, "ReferencedType", $"typeof({ap.Association.NamePascal})");
                     }
                     else if (fp is AliasProperty alp2 && !alp2.PrimaryKey && alp2.Property.PrimaryKey && Classes.Contains(alp2.Property.Class) && alp2.Property.Class.Reference)
                     {
-                        w.WriteAttribute(2, "ReferencedType", $"typeof({alp2.Property.Class.NamePascal})");
+                        w.WriteAttribute(1, "ReferencedType", $"typeof({alp2.Property.Class.NamePascal})");
                     }
                 }
 
                 if (Config.Kinetix)
                 {
-                    w.WriteAttribute(2, "Domain", $@"Domains.{fp.Domain.CSharpName}");
+                    w.WriteAttribute(1, "Domain", $@"Domains.{fp.Domain.CSharpName}");
                 }
 
                 if (type == "string" && fp.Domain.Length != null)
                 {
-                    w.WriteAttribute(2, "StringLength", $"{fp.Domain.Length}");
+                    w.WriteAttribute(1, "StringLength", $"{fp.Domain.Length}");
                 }
 
                 foreach (var annotation in Config.GetDomainAnnotations(property, tag))
                 {
-                    w.WriteAttribute(2, annotation);
+                    w.WriteAttribute(1, annotation);
                 }
             }
 
             if (property is CompositionProperty or AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany })
             {
-                w.WriteAttribute(2, "NotMapped");
+                w.WriteAttribute(1, "NotMapped");
             }
 
             if (property.Class.IsPersistent && property.PrimaryKey && property.Class.PrimaryKey.Count() == 1)
             {
-                w.WriteAttribute(2, "Key");
+                w.WriteAttribute(1, "Key");
             }
 
             var defaultValue = Config.GetValue(property, Classes);
 
-            w.WriteLine(2, $"public {type} {property.NamePascal} {{ get; set; }}{(defaultValue != "null" ? $" = {defaultValue};" : string.Empty)}");
+            if (defaultValue == "null" && property is CompositionProperty cp)
+            {
+                var newableType = GetNewableType(property);
+                if (newableType != null)
+                {
+                    defaultValue = $"new {newableType}()";
+                }
+            }
+
+            w.WriteLine(1, $"public {type} {property.NamePascal} {{ get; set; }}{(defaultValue != "null" ? $" = {defaultValue};" : string.Empty)}");
         }
         else
         {
-            w.WriteLine(2, $"{type} {property.NamePascal} {{ get; }}");
+            w.WriteLine(1, $"{type} {property.NamePascal} {{ get; }}");
         }
     }
 
@@ -561,11 +442,6 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     private void GenerateUsings(CSharpWriter w, Class item, string tag)
     {
         var usings = new List<string>();
-
-        if (!Config.UseLatestCSharp)
-        {
-            usings.Add("System");
-        }
 
         if (!item.Abstract)
         {
