@@ -182,7 +182,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
             GenerateConstProperties(w, item);
 
-            if (Config.DbContextPath == null && Config.IsPersistent(item, tag))
+            if (Config.DbContextPath == null && Config.Kinetix && Config.IsPersistent(item, tag))
             {
                 GenerateEnumCols(w, item);
             }
