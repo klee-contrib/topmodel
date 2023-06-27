@@ -4,59 +4,76 @@
 
 - [#276](https://github.com/klee-contrib/topmodel/pull/276) - [JS] Séparer le API mode de l'Entity Mode
 
-### Breaking changes
+  **Breaking changes (JS) :**
 
-#### Target Framework
-
-La configuration du mode `angular` pour la génération de l'API client JS évolue. Il faut maintenant distinguer le mode de génération de l'API, et le mode de génération des types des entités. Un configuration équivalente au `targetFramework: angular` est donc :
-
-```yaml
-targetFramework: angular
-```
-
-devient :
-
-```yaml
-entityMode: untyped
-apiMode: angular
-```
-
-Les `StoreNode` ne sont plus générés. En effet, ils sont spécifiques à l'implémentation Focus et ne sont pas utiles dans le cas général. Il est possible de remplacer par `StoreNode<XXXEntityType>` comme ce qui est déjà fait pour `FormNode`.
-
-#### Suppression des constructeurs
-
-##### JPA
-
-Suppression des constructeurs **tous arguments** et **recopie**. Pour retrouver un comportement similaire aux précédentes versions :
-
-- Créer un mapper `from` ayant pour unique paramètre la classe courante. Cela permettra de générer un constructeur par recopie
+  La configuration du mode `angular` pour la génération de l'API client JS évolue. Il faut maintenant distinguer le mode de génération de l'API, et le mode de génération des types des entités. Un configuration équivalente au `targetFramework: angular` est donc :
 
   ```yaml
-  class:
-    name: Demande
-  [...]
-  mappers:
-    from:
-      - params:
-          - class: Demande
-
+  targetFramework: angular
   ```
 
-- Pour les utilisateurs de `Lombock`, ajouter un décorateur contenant l'annotation `@AllArgsConstructor` sur les classes sur lesquelles un constructeur tous arguments est nécessaire
+  devient :
 
   ```yaml
-  decorator:
-  name: AllArgsConstructor
-  description: Ajoute l'annotation @AllArgsConstructor de lombok
-  java:
-    annotations:
-      - AllArgsConstructor
-    imports:
-      - lombok.AllArgsConstructor
-
+  entityMode: untyped # ou "typed" pour retrouver les types d'entités type "focus" (valeur par défaut)
+  apiMode: angular # ou "vanilla" pour avoir des clients en JS purs (valeur par défaut)
   ```
 
-  Pour les autres, utiliser le constructeur vide et les setters...
+  De plus, **les `StoreNode` ne sont plus générés**. En effet, ils sont spécifiques à l'implémentation Focus et ne sont pas utiles dans le cas général. Il est possible de remplacer par `StoreNode<XXXEntityType>` comme ce qui est déjà fait pour `FormNode`.
+
+- [#262](https://github.com/klee-contrib/topmodel/pull/262) - [JPA] Suppression des constructeur par recopie et des constructeurs tous arguments
+
+  **Breaking changes (JPA) :**
+
+  Les constructeurs **tous arguments** et **recopie** ont été supprimés. Pour retrouver un comportement similaire aux précédentes versions :
+
+  - Créer un mapper `from` ayant pour unique paramètre la classe courante. Cela permettra de générer un constructeur par recopie
+
+    ```yaml
+    class:
+      name: Demande
+    [...]
+    mappers:
+      from:
+        - params:
+            - class: Demande
+
+    ```
+
+  - Pour les utilisateurs de `Lombock`, ajouter un décorateur contenant l'annotation `@AllArgsConstructor` sur les classes sur lesquelles un constructeur tous arguments est nécessaire
+
+    ```yaml
+    decorator:
+    name: AllArgsConstructor
+    description: Ajoute l'annotation @AllArgsConstructor de lombok
+    java:
+      annotations:
+        - AllArgsConstructor
+      imports:
+        - lombok.AllArgsConstructor
+    ```
+
+  - Pour les autres, utiliser le constructeur vide et les setters...
+
+- [#263](https://github.com/klee-contrib/topmodel/pull/263) + [C#] Suppression de la génération des constructeurs + `useRecords`
+
+  **Breaking change (C#) :**
+
+  **Le générateur C# ne génère plus aucun constructeur** (ainsi que les méthodes partielles `OnCreated`). Si vous utilisiez `OnCreated` pour une initialisation personnalisée dans un constructeur, vous pouvez toujours définir un constructeur dans la classe partielle à la place.
+
+  Si vous utilisez le constructeur de copie, vous pouvez :
+
+  - Recopier les anciens constructeurs dans une classe partielle (en retirant `OnCreated`) -> solution sans changer l'utilisation des classes
+  - Définir un mapper `from` depuis la classe elle-même sur la classe, et l'utiliser à la place (puis assigner les propriétés à changer).
+  - Passer la génération des classes en mode `record` (via le nouveau paramètre `useRecords`) et bénéficier du constructeur de copie auto-généré par le compilateur C# (qui s'utilise avec `with`, par exemple : `var instance2 = instance1 with { Property1 = "test" }`))
+
+- [#279](https://github.com/klee-contrib/topmodel/pull/279) - Flux de données et MVP générateur C#
+
+  (Nouvelle fonctionnalité en cours de finalisation, la communication officielle se fera plus tard...)
+
+- [`ec998a52f8`](https://github.com/klee-contrib/topmodel/commit/ec998a52f8e9df4e250dc485987271dd14110ee0) - [C#Class] Retrait enum cols si kinetix = false
+
+- [`55fca66ac2`](https://github.com/klee-contrib/topmodel/commit/55fca66ac22415ad87866ce845b8bc0bc6bab50a) - [JS] Gestion du cas où la liste de référence contient un number ou un boolean
 
 ## 1.31.8
 
