@@ -40,7 +40,13 @@
     },
     "useLegacyRoleNames": {
       "type": "boolean",
-      "description": "Transforme les noms de rôles d'associations en upper case (au lieu de constant case) pour déterminer le nom SQL des propriétés"
+      "description": "Transforme les noms de rôles d'associations en upper case (au lieu de constant case) pour déterminer le nom SQL des propriétés",
+      "default": "false"
+    },
+    "useLegacyAssociationCompositionMappers": {
+      "type": "boolean",
+      "description": "Permet de mapper les compositions OneToMany et ManyToMany à des compositions avec un kind non null. Sans garantie de résultat...",
+      "default": false
     },
     "i18n": {
       "type": "object",
@@ -194,6 +200,10 @@
               }
             ]
           },
+          "dataFlowsPath": {
+            "type": "string",
+            "description": "Localisation des flux de données générés."
+          },
           "useEFMigrations": {
             "type": "boolean",
             "description": "Utilise les migrations EF pour créer/mettre à jour la base de données."
@@ -229,10 +239,6 @@
           "dbSchema": {
             "type": "string",
             "description": "Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo')."
-          },
-          "useLatestCSharp": {
-            "type": "boolean",
-            "description": "Utilise les features C# 10 dans la génération."
           },
           "kinetix": {
             "type": "boolean",
@@ -273,6 +279,18 @@
           "useEFComments": {
             "type": "boolean",
             "description": "Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `UseEFMigrations`)."
+          },
+          "useRecords": {
+            "type": [
+              "string",
+              "boolean"
+            ],
+            "description": "Utilise des records (mutables) au lieu de classes pour la génération de classes.",
+            "enum": [
+              true,
+              false,
+              "dtos-only"
+            ]
           }
         }
       }
@@ -367,15 +385,28 @@
             "description": "Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif au répertoire de génération.",
             "default": "../domains"
           },
-          "targetFramework": {
+          "apiMode": {
             "type": "string",
             "description": "Framework cible pour la génération.",
             "default": "focus",
             "enum": [
-              "focus",
               "angular",
               "vanilla"
             ]
+          },
+          "entityMode": {
+            "type": "string",
+            "description": "Framework cible pour la génération.",
+            "default": "typed",
+            "enum": [
+              "untyped",
+              "typed"
+            ]
+          },
+          "entityTypesPath": {
+            "type": "string",
+            "description": "Chemin d'import des type d'entités",
+            "default": "@focus4/stores"
           },
           "resourceMode": {
             "type": "string",

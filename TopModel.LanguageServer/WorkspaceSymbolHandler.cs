@@ -71,6 +71,19 @@ public class WorkspaceSymbolHandler : WorkspaceSymbolsHandlerBase
                     Uri = _facade.GetFilePath(d.GetFile())
                 }
             };
+        })).Concat(_modelStore.DataFlows.Select(d =>
+        {
+            return new SymbolInformation
+            {
+                Deprecated = false,
+                Kind = SymbolKind.Operator,
+                Name = d.Name,
+                Location = new Location
+                {
+                    Range = d.GetLocation().ToRange()!,
+                    Uri = _facade.GetFilePath(d.GetFile())
+                }
+            };
         })).Where(s => s.Name.ShouldMatch(request.Query)).ToList());
     }
 

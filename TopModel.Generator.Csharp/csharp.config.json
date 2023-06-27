@@ -112,6 +112,10 @@
         }
       ]
     },
+    "dataFlowsPath": {
+      "type": "string",
+      "description": "Localisation des flux de données générés."
+    },
     "useEFMigrations": {
       "type": "boolean",
       "description": "Utilise les migrations EF pour créer/mettre à jour la base de données."

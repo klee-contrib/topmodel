@@ -53,7 +53,7 @@ public class FileWriter : TextWriter
     /// <summary>
     /// Active la lecture et l'écriture d'un entête avec un hash du fichier.
     /// </summary>
-    public bool EnableHeader { get; init; } = true;
+    public bool EnableHeader { get; set; } = true;
 
     /// <summary>
     /// Message à mettre dans le header.

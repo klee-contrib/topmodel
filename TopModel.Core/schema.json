@@ -955,6 +955,111 @@
           }
         }
       }
+    },
+    {
+      "type": "object",
+      "description": "Description d'un flux de données",
+      "required": [
+        "dataFlow"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "dataFlow": {
+          "type": "object",
+          "description": "Description d'un flux de données",
+          "additionalProperties": false,
+          "required": [
+            "name",
+            "target",
+            "class",
+            "type"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Nom du flux de données."
+            },
+            "target": {
+              "type": "string",
+              "description": "Nom de la connection cible du flux de données."
+            },
+            "class": {
+              "type": "string",
+              "description": "Type de classe cible du flux de données"
+            },
+            "type": {
+              "type": "string",
+              "description": "Type de flux de données.",
+              "enum": [
+                "insert",
+                "replace",
+                "merge",
+                "mergeDisable"
+              ]
+            },
+            "dependsOn": {
+              "type": "array",
+              "description": "Flux de données à exécuter avant celui-ci.",
+              "items": {
+                "type": "string",
+                "description": "Flux de données à exécuter avant celui-ci."
+              }
+            },
+            "postQuery": {
+              "type": "boolean",
+              "description": "Si le flux de données doit définir une requête à jouer après son exécution."
+            },
+            "preQuery": {
+              "type": "boolean",
+              "description": "Si le flux de données doit définir une requête à jouer avant son exécution."
+            },
+            "activeProperty": {
+              "type": "string",
+              "description": "Pour un flux de type 'mergeDisable', nom de la propriété à utiliser pour déterminer le caractère actif de la ligne."
+            },
+            "sources": {
+              "type": "array",
+              "description": "Sources de données pour le flux.",
+              "items": {
+                "type": "object",
+                "description": "Description d'une source de données.",
+                "required": [
+                  "source",
+                  "class",
+                  "mode"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "description": "Nom de la connection source."
+                  },
+                  "class": {
+                    "type": "string",
+                    "description": "Type de classe source.\n\nS'il est différent du type de classe cible et n'est pas la classe cible d'une jointure, alors il doit exister un mapper 'from' de cette classe sur la classe cible.\n\nS'il est utilisé dans une jointure et que ce n'est pas la première classe concernée (qui sera la cible), alors il doit exister un mapper 'to' sur cette classe vers la classe cible de la jointure (première source du flux de données qui définit des 'joinProperties')."
+                  },
+                  "mode": {
+                    "type": "string",
+                    "description": "Mode de génération de la source.",
+                    "enum": [
+                      "partial",
+                      "queryAll"
+                    ]
+                  },
+                  "joinProperties": {
+                    "type": "array",
+                    "description": "A utiliser si une jointure doit être réalisée entre plusieurs sources. Doit lister les propriétés de la classe sur lesquelles il faut joindre, dans le même ordre sur chaque source.\n\nUne seule jointure peut être définie par source. Les sources sans 'joinProperties' seront concatanées entre-elles et avec le résultat de la jointure."
+                  },
+                  "innerJoin": {
+                    "type": "boolean",
+                    "description": "Indique dans une jointure s'il faut filtrer ou non les lignes sans correspondance."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ]
 }

@@ -43,7 +43,7 @@ public class DefinitionHandler : DefinitionHandlerBase
                     TargetRange = objet switch
                     {
                         Class or Endpoint or Domain => selectionRange with { End = new() { Line = selectionRange.Start.Line + 2, Character = 200 } },
-                        Decorator or (Decorator, _) => selectionRange with { End = new() { Line = selectionRange.Start.Line + 1, Character = 200 } },
+                        Decorator or (Decorator, _) or DataFlow => selectionRange with { End = new() { Line = selectionRange.Start.Line + 1, Character = 200 } },
                         _ => selectionRange with { End = new() { Line = selectionRange.Start.Line, Character = 200 } }
                     },
                     TargetSelectionRange = selectionRange,

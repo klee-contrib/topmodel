@@ -61,6 +61,7 @@ public class SemanticTokensHandler : SemanticTokensHandlerBase
                 var type = reference switch
                 {
                     ClassReference or DecoratorReference => SemanticTokenType.Class,
+                    DataFlowReference => SemanticTokenType.Operator,
                     DomainReference => SemanticTokenType.EnumMember,
                     Reference r when r.ReferenceName == "this" || r.ReferenceName == "false" => SemanticTokenType.Keyword,
                     _ => SemanticTokenType.Function

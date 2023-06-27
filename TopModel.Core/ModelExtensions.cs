@@ -25,6 +25,8 @@ public static class ModelExtensions
             })
             .Concat(modelStore.Classes.Where(c => c.Extends == classe)
                 .Select(c => (Reference: c.ExtendsReference!, File: c.GetFile())))
+            .Concat(modelStore.DataFlows.Where(d => d.Class == classe).Select(d => (Reference: d.ClassReference, File: d.GetFile())))
+            .Concat(modelStore.DataFlows.SelectMany(d => d.Sources.Where(s => s.Class == classe).Select(s => (Reference: s.ClassReference, File: d.GetFile()))))
             .Concat(modelStore.Classes.SelectMany(c => c.FromMappers.SelectMany(c => c.Params).Concat(c.ToMappers).Where(m => m.Class == classe).Select(m => (Reference: m.ClassReference, File: c.GetFile()))))
             .Concat(modelStore.Files.SelectMany(f =>
                 f.Aliases.SelectMany(a => a.Classes
@@ -32,6 +34,12 @@ public static class ModelExtensions
                     .Select(c => (Reference: c, File: f)))))
             .Where(r => r.Reference is not null)
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
+    }
+
+    public static IEnumerable<(DataFlowReference Reference, ModelFile File)> GetDataFlowReferences(this ModelStore modelStore, DataFlow dataFlow)
+    {
+        return modelStore.DataFlows.SelectMany(d => d.DependsOn.Where(dd => dd == dataFlow)
+            .Select(dd => (d.DependsOnReference.First(dr => dr.ReferenceName == dd.Name), d.GetFile())));
     }
 
     public static IEnumerable<(DecoratorReference Reference, ModelFile File)> GetDecoratorReferences(this ModelStore modelStore, Decorator decorator)
@@ -86,6 +94,7 @@ public static class ModelExtensions
             Domain domain => domain.ModelFile,
             Converter converter => converter.ModelFile,
             Decorator decorator => decorator.ModelFile,
+            DataFlow dataFlow => dataFlow.ModelFile,
             (Decorator decorator, _) => decorator.ModelFile,
             Keyword keyword => keyword.ModelFile,
             _ => throw new ArgumentException("Type d'objet non supporté.")
@@ -108,6 +117,7 @@ public static class ModelExtensions
             LocatedString l => l.Location,
             Decorator d => d.Location,
             (Decorator d, _) => d.Location,
+            DataFlow d => d.Location,
             FromMapper m => m.Reference.Location,
             ClassMappings c => c.Name.Location,
             Converter c => c.Location,
@@ -210,6 +220,26 @@ public static class ModelExtensions
                         if (reference != null)
                         {
                             yield return (reference, classe.GetFile());
+                        }
+                    }
+                }
+            }
+
+            foreach (var dataFlow in modelStore.DataFlows)
+            {
+                if (dataFlow.ActiveProperty == fp)
+                {
+                    yield return (dataFlow.ActivePropertyReference!, dataFlow.GetFile());
+                }
+
+                foreach (var source in dataFlow.Sources)
+                {
+                    if (source.JoinProperties.Contains(fp))
+                    {
+                        var reference = source.JoinPropertyReferences.FirstOrDefault(f => f.ReferenceName == fp.Name);
+                        if (reference != null)
+                        {
+                            yield return (reference, dataFlow.GetFile());
                         }
                     }
                 }

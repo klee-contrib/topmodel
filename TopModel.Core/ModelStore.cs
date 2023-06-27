@@ -55,6 +55,8 @@ public class ModelStore
 
     public IEnumerable<Endpoint> Endpoints => _modelFiles.SelectMany(mf => mf.Value.Endpoints).Distinct();
 
+    public IEnumerable<DataFlow> DataFlows => _modelFiles.SelectMany(mf => mf.Value.DataFlows).Distinct();
+
     public IDictionary<string, Domain> Domains => _modelFiles.SelectMany(mf => mf.Value.Domains)
         .DistinctBy(d => (string)d.Name)
         .ToDictionary(d => (string)d.Name, d => d);
@@ -69,6 +71,11 @@ public class ModelStore
     {
         return GetDependencies(file).SelectMany(m => m.Classes)
             .Concat(file.Classes.Where(c => !file.ResolvedAliases.Contains(c)));
+    }
+
+    public IEnumerable<DataFlow> GetAvailableDataFlows(ModelFile file)
+    {
+        return GetDependencies(file).SelectMany(m => m.DataFlows).Concat(file.DataFlows);
     }
 
     public IEnumerable<Decorator> GetAvailableDecorators(ModelFile file)
@@ -462,6 +469,25 @@ public class ModelStore
             .Concat(modelFile.Decorators)
             .Distinct()
             .ToDictionary(d => (string)d.Name, c => c);
+
+        var referencedDataFlowsRaw = dependencies
+             .SelectMany(m => m.DataFlows)
+             .Concat(modelFile.DataFlows)
+             .Distinct();
+
+        var duplicateDataFlows = referencedDataFlowsRaw
+            .GroupBy(c => c.Name.Value)
+            .Where(g => g.Count() > 1)
+            .Select(g => g.OrderByDescending(c => (c.ModelFile == modelFile ? 1_000_000 : 0) + c.Name.Location.Start.Line).First());
+
+        foreach (var dataFlow in duplicateDataFlows.Where(c => c.ModelFile == modelFile))
+        {
+            yield return new ModelError(dataFlow, $"Le flux de données '{dataFlow}' est défini plusieurs fois dans le fichier ou une de ses dépendences.", dataFlow.Name.Location) { ModelErrorType = ModelErrorType.TMD0008 };
+        }
+
+        var referencedDataFlows = referencedDataFlowsRaw
+            .Where(c => !duplicateDataFlows.Select(c => c.Name.Value).Contains(c.Name.Value))
+            .ToDictionary(c => c.Name.Value, c => c);
 
         // Résolution des "asDomains" sur les domaines
         foreach (var domain in modelFile.Domains)
@@ -1388,6 +1414,63 @@ public class ModelStore
                 if (!mapper.Mappings.Any() && mapper.ParentMapper == null)
                 {
                     yield return new ModelError(classe, "Aucun mapping n'a été trouvé sur ce mapper.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1025 };
+                }
+            }
+        }
+
+        // Résolution des flux de données.
+        foreach (var dataFlow in modelFile.DataFlows)
+        {
+            if (!referencedClasses.TryGetValue(dataFlow.ClassReference.ReferenceName, out var classe))
+            {
+                yield return new ModelError(dataFlow, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", dataFlow.ClassReference) { ModelErrorType = ModelErrorType.TMD1002 };
+                continue;
+            }
+
+            dataFlow.Class = classe;
+
+            if (dataFlow.ActivePropertyReference != null)
+            {
+                dataFlow.ActiveProperty = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == dataFlow.ActivePropertyReference.ReferenceName);
+                if (dataFlow.ActiveProperty == null)
+                {
+                    yield return new ModelError(dataFlow, $"La propriété '{dataFlow.ActivePropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", dataFlow.ActivePropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
+                }
+            }
+
+            dataFlow.DependsOn.Clear();
+
+            foreach (var dependsOnReference in dataFlow.DependsOnReference)
+            {
+                if (!referencedDataFlows.TryGetValue(dependsOnReference.ReferenceName, out var referencedDataFlow))
+                {
+                    yield return new ModelError(dataFlow, "Le flux de données '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", dependsOnReference) { ModelErrorType = ModelErrorType.TMD2000 };
+                    continue;
+                }
+
+                dataFlow.DependsOn.Add(referencedDataFlow);
+            }
+
+            foreach (var source in dataFlow.Sources)
+            {
+                if (!referencedClasses.TryGetValue(source.ClassReference.ReferenceName, out var sourceClass))
+                {
+                    yield return new ModelError(dataFlow, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", source.ClassReference) { ModelErrorType = ModelErrorType.TMD1002 };
+                    continue;
+                }
+
+                source.Class = sourceClass;
+                source.JoinProperties.Clear();
+
+                foreach (var joinPropertyReference in source.JoinPropertyReferences)
+                {
+                    var joinProperty = sourceClass.Properties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == joinPropertyReference.ReferenceName);
+                    if (joinProperty == null)
+                    {
+                        yield return new ModelError(dataFlow, $"La propriété '{joinPropertyReference.ReferenceName}' n'existe pas sur la classe '{sourceClass}'.", joinPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
+                    }
+
+                    source.JoinProperties.Add(joinProperty);
                 }
             }
         }

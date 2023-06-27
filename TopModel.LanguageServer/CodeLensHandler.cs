@@ -69,7 +69,20 @@ public class CodeLensHandler : CodeLensHandlerBase
                             decorator.GetLocation()!.Start.Line - 1
                         }
                     }
-                }))));
+                })
+                .Concat(file.DataFlows.Select(dataFlow => new CodeLens
+                {
+                    Range = dataFlow.GetLocation().ToRange()!,
+                    Command = new Command()
+                    {
+                        Title = $"{_modelStore.GetDataFlowReferences(dataFlow).Count()} references",
+                        Name = "topmodel.findRef",
+                        Arguments = new JArray
+                        {
+                            dataFlow.GetLocation()!.Start.Line - 1
+                        }
+                    }
+                })))));
         }
 
         return Task.FromResult<CodeLensContainer>(new());

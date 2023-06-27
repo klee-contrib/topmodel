@@ -85,7 +85,7 @@ public class CompletionHandler : CompletionHandlerBase
                         })));
             }
 
-            if (currentLine.Contains("association: ") || currentLine.Contains("composition: ") || currentLine.Contains("    class:") || currentLine.Contains("    - class:") || currentLine.Contains("extends: "))
+            if (currentLine.Contains("association: ") || currentLine.Contains("composition: ") || currentLine.Contains("  class:") || currentLine.Contains("    - class:") || currentLine.Contains("extends: "))
             {
                 var searchText = currentLine.Split(":")[1].Trim();
                 var availableClasses = new HashSet<Class>(_modelStore.GetAvailableClasses(file));
@@ -199,14 +199,60 @@ public class CompletionHandler : CompletionHandlerBase
                                 : null
                         })));
             }
+
+            // DataFlow
+            else if (currentLine.TrimStart().StartsWith("-") && (
+                text.ElementAtOrDefault(request.Position.Line - 1)?.TrimStart() == "dependsOn:"
+                || file.DataFlows.SelectMany(c => c.DependsOnReference).Any(dr => dr.Start.Line == request.Position.Line)))
+            {
+                var searchText = currentLine.TrimStart()[1..].Trim();
+                var availableDataFlows = new HashSet<DataFlow>(_modelStore.GetAvailableDataFlows(file));
+
+                var useIndex = file.Uses.Any()
+                    ? file.Uses.Last().ToRange()!.Start.Line + 1
+                    : text.First().StartsWith("-")
+                        ? 1
+                        : 0;
+
+                return Task.FromResult(new CompletionList(
+                    _modelStore.DataFlows
+                        .OrderBy(dataFlow => dataFlow.Name)
+                        .Where(dataFlow => dataFlow.Name.ToLower().ShouldMatch(searchText))
+                        .Select(dataFlow => new CompletionItem
+                        {
+                            Kind = CompletionItemKind.Class,
+                            Label = availableDataFlows.Contains(dataFlow) ? dataFlow.Name : $"{dataFlow.Name} - ({dataFlow.ModelFile.Name})",
+                            InsertText = dataFlow.Name,
+                            SortText = availableDataFlows.Contains(dataFlow) ? "0000" + dataFlow.Name : dataFlow.Name,
+                            TextEdit = !string.IsNullOrWhiteSpace(searchText)
+                                ? new TextEditOrInsertReplaceEdit(new TextEdit
+                                {
+                                    NewText = dataFlow.Name,
+                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText),
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText) + searchText.Length)
+                                })
+                                : null,
+                            AdditionalTextEdits = !availableDataFlows.Contains(dataFlow) ?
+                                new TextEditContainer(new TextEdit
+                                {
+                                    NewText = file.Uses.Any() ? $"  - {dataFlow.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {dataFlow.ModelFile.Name}{Environment.NewLine}",
+                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
+                                })
+                                : null
+                        })));
+            }
             else
             {
-                // Alias ou propriété d'association
+                // Alias, propriété d'association ou propriété de flux de données
                 string? className = null;
-                var classLine = currentLine;
                 var requestLine = request.Position.Line;
+                var classLine = currentLine;
+                var currentObject = new List<string> { currentLine };
 
-                while (requestLine > 0 && classLine != null && (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('[')))
+                while (requestLine > 0 && classLine != null && (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.Contains("activeProperty:") || classLine.Contains("joinProperties:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('[')))
                 {
                     requestLine--;
                     classLine = text.ElementAtOrDefault(requestLine);
@@ -221,7 +267,7 @@ public class CompletionHandler : CompletionHandlerBase
                 {
                     classLine = text.ElementAtOrDefault(request.Position.Line);
 
-                    while (requestLine < text.Length - 1 && classLine != null && (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('[')))
+                    while (requestLine < text.Length - 1 && classLine != null && (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.Contains("activeProperty:") || classLine.Contains("joinProperties:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('[')))
                     {
                         requestLine++;
                         classLine = text.ElementAtOrDefault(requestLine);

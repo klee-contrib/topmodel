@@ -49,5 +49,10 @@ public class GeneratorRegistration : IGeneratorRegistration<CsharpConfig>
                 services.AddGenerator<CSharpApiClientGenerator, CsharpConfig>(config, number);
             }
         }
+
+        if (config.DataFlowsPath != null)
+        {
+            services.AddGenerator<DataFlowGenerator, CsharpConfig>(config, number);
+        }
     }
 }

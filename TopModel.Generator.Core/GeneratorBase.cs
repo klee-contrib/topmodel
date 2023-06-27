@@ -69,6 +69,11 @@ public abstract class GeneratorBase<T> : IModelWatcher
         HandleFiles(handledFiles);
     }
 
+    protected string GetBestClassTag(Class classe, string tag)
+    {
+        return GetClassTags(classe).Contains(tag) ? tag : GetClassTags(classe).Intersect(Config.Tags).FirstOrDefault() ?? tag;
+    }
+
     protected IEnumerable<string> GetClassTags(Class classe)
     {
         return Files.Values.Where(f => f.Classes.Contains(classe)).SelectMany(f => f.Tags).Distinct();
