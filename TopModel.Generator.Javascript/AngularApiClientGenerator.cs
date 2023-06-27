@@ -106,7 +106,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
         }
 
         string returnType;
-        if (endpoint.GetQueryParams().Any())
+        if (endpoint.GetQueryParams().Any() && !hasForm)
         {
             if (hasProperty)
             {
@@ -129,6 +129,17 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
 
         fw.Write(returnType);
         fw.WriteLine("> {");
+
+        if (hasForm)
+        {
+            fw.WriteLine(2, "let formData: FormData = new FormData();");
+            fw.WriteLine(2, "if (file) {");
+            fw.WriteLine(3, "formData.append('file', file);");
+            fw.WriteLine(2, "}");
+            fw.WriteLine(2, $@"return this.http.{endpoint.Method.ToLower()}<{returnType}>(`/{endpoint.FullRoute}`, formData);");
+            fw.WriteLine(1, "}");
+            return;
+        }
 
         if (endpoint.GetQueryParams().Any())
         {
