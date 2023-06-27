@@ -4,7 +4,10 @@
 
 - [#276](https://github.com/klee-contrib/topmodel/pull/276) - [JS] Séparer le API mode de l'Entity Mode
 
-Breaking change !
+### Breaking changes
+
+#### Target Framework
+
 La configuration du mode `angular` pour la génération de l'API client JS évolue. Il faut maintenant distinguer le mode de génération de l'API, et le mode de génération des types des entités. Un configuration équivalente au `targetFramework: angular` est donc :
 
 ```yaml
@@ -19,6 +22,41 @@ apiMode: angular
 ```
 
 Les `StoreNode` ne sont plus générés. En effet, ils sont spécifiques à l'implémentation Focus et ne sont pas utiles dans le cas général. Il est possible de remplacer par `StoreNode<XXXEntityType>` comme ce qui est déjà fait pour `FormNode`.
+
+#### Suppression des constructeurs
+
+##### JPA
+
+Suppression des constructeurs **tous arguments** et **recopie**. Pour retrouver un comportement similaire aux précédentes versions :
+
+- Créer un mapper `from` ayant pour unique paramètre la classe courante. Cela permettra de générer un constructeur par recopie
+
+  ```yaml
+  class:
+    name: Demande
+  [...]
+  mappers:
+    from:
+      - params:
+          - class: Demande
+
+  ```
+
+- Pour les utilisateurs de `Lombock`, ajouter un décorateur contenant l'annotation `@AllArgsConstructor` sur les classes sur lesquelles un constructeur tous arguments est nécessaire
+
+  ```yaml
+  decorator:
+  name: AllArgsConstructor
+  description: Ajoute l'annotation @AllArgsConstructor de lombok
+  java:
+    annotations:
+      - AllArgsConstructor
+    imports:
+      - lombok.AllArgsConstructor
+
+  ```
+
+  Pour les autres, utiliser le constructeur vide et les setters...
 
 ## 1.31.8
 
