@@ -75,6 +75,8 @@
 
 - [`55fca66ac2`](https://github.com/klee-contrib/topmodel/commit/55fca66ac22415ad87866ce845b8bc0bc6bab50a) - [JS] Gestion du cas où la liste de référence contient un number ou un boolean
 
+- [#280](https://github.com/klee-contrib/topmodel/pull/280) - [Angular] Génération des appels aux endpoint multipart pour upload un fichier avec un formData
+
 ## 1.31.8
 
 - [`3a8fb5effa`](https://github.com/klee-contrib/topmodel/commit/3a8fb5effaf09d7cd41782f1bca5287cb6a4aef6) - [JPA] Fix import mapper
