@@ -505,7 +505,7 @@ public abstract class GeneratorConfigBase
 
     protected virtual string GetConstEnumName(string className, string refName)
     {
-        return $"{className.ToPascalCase()}.{refName}";
+        return $"{className.ToPascalCase(strictIfUppercase: true)}.{refName.ToPascalCase(strictIfUppercase: true)}";
     }
 
     protected abstract string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false);
