@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.32.1
+
+- [`1193b817`](https://github.com/klee-contrib/topmodel/commit/1193b8176daa47a1448fc95ada1b90fbeec3f5e5) - Fix PascalCase pour const enums
+
 ## 1.32.0
 
 - [#276](https://github.com/klee-contrib/topmodel/pull/276) - [JS] Séparer le API mode de l'Entity Mode
