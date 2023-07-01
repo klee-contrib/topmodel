@@ -239,7 +239,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
         }
 
-        var orderedConsts = consts.OrderBy(x => x.Name.ToPascalCase(), StringComparer.Ordinal).ToList();
+        var orderedConsts = consts.OrderBy(x => x.Name.ToPascalCase(strictIfUppercase: true), StringComparer.Ordinal).ToList();
 
         foreach (var @const in orderedConsts)
         {
