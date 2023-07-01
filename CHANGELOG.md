@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.32.2
+
+- [`31ee8378`](https://github.com/klee-contrib/topmodel/commit/31ee83784fe46704bf2809c912491a2e7146b7fe) - [C#] Fix ordre génération consts enums
+
 ## 1.32.1
 
 - [`1193b817`](https://github.com/klee-contrib/topmodel/commit/1193b8176daa47a1448fc95ada1b90fbeec3f5e5) - Fix PascalCase pour const enums
