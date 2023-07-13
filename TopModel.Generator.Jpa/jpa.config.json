@@ -99,6 +99,18 @@
       "type": "string",
       "description": "Localisation des ressources, relative au répertoire de génération."
     },
+    "dataFlowsPath": {
+      "type": "string",
+      "description": "Localisation des flux de données générés."
+    },
+    "dataFlowsBulkSize": {
+      "type": "number",
+      "description": "Taille des chunks à extraire et insérer"
+    },
+    "dbSchema": {
+      "type": "string",
+      "description": "Nom du schéma sur lequel les entités sont sauvegardées"
+    },
     "enumShortcutMode": {
       "type": "boolean",
       "description": "Option pour générer des getters et setters vers l'enum des références plutôt que sur la table",

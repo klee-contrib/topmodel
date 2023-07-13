@@ -45,6 +45,11 @@ public class JpaConfig : GeneratorConfigBase
     public bool EnumShortcutMode { get; set; }
 
     /// <summary>
+    /// Nom du schéma sur lequel les entités sont sauvegardées
+    /// </summary>
+    public string? DbSchema { get; set; }
+
+    /// <summary>
     /// Option pour générer des adders pour les associations oneToMany et ManyToMany
     /// </summary>
     public bool AssociationAdders { get; set; } = false;
@@ -73,6 +78,16 @@ public class JpaConfig : GeneratorConfigBase
     /// Mode de génération des séquences.
     /// </summary>
     public IdentityConfig Identity { get; set; } = new() { Mode = IdentityMode.IDENTITY };
+
+    /// <summary>
+    /// Location des flux de données générés.
+    /// </summary>
+    public string? DataFlowsPath { get; set; }
+
+    /// <summary>
+    /// Taille des chunks à extraire et insérer
+    /// </summary>
+    public long DataFlowsBulkSize { get; set; } = 100000;
 
     public override string[] PropertiesWithLangVariableSupport => new[]
     {
@@ -116,6 +131,23 @@ public class JpaConfig : GeneratorConfigBase
             OutputDirectory,
             ResolveVariables(classe.IsPersistent ? EntitiesPath : DtosPath, tag, module: classe.Namespace.Module).ToFilePath(),
             $"{classe.NamePascal}.java");
+    }
+
+    public string GetDataFlowFilePath(DataFlow df, string tag)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(DataFlowsPath!, tag: tag, module: df.ModelFile.Namespace.ModulePath).ToFilePath(),
+            $"{df.Name.ToPascalCase()}Flow.java");
+    }
+
+    public string GetDataFlowConfigFilePath(string module)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(DataFlowsPath!, module: module).ToFilePath()
+            .ToFilePath(),
+            $"{module.ToPascalCase()}JobConfiguration.java");
     }
 
     public string GetMapperFilePath((Class Classe, FromMapper Mapper) mapper, string tag)

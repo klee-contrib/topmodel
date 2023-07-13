@@ -27,6 +27,11 @@ public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
             services.AddGenerator<JpaDaoGenerator, JpaConfig>(config, number);
         }
 
+        if (config.DataFlowsPath != null)
+        {
+            services.AddGenerator<SpringDataFlowGenerator, JpaConfig>(config, number);
+        }
+
         if (config.ResourcesPath != null)
         {
             services.AddGenerator<JpaResourceGenerator, JpaConfig>(config, number);
