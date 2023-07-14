@@ -99,6 +99,10 @@
       "type": "string",
       "description": "Localisation des ressources, relative au répertoire de génération."
     },
+    "useJdbc": {
+      "type": "boolean",
+      "description": "Générer les entités en mode JDBC"
+    },
     "dataFlowsPath": {
       "type": "string",
       "description": "Localisation des flux de données générés."

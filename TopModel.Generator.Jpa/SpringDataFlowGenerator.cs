@@ -63,16 +63,38 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
             fw.WriteLine(1, @$"			@Qualifier(""{dataFlow.Name.ToPascalCase()}TruncateStep"") Step {dataFlow.Name.ToCamelCase()}TruncateStep,");
         }
 
+        if (dataFlow.PreQuery)
+        {
+            fw.WriteLine(1, @$"			@Qualifier(""{dataFlow.Name.ToPascalCase()}PreQueryStep"") Step {dataFlow.Name.ToCamelCase()}PreStep,");
+        }
+
+        if (dataFlow.PostQuery)
+        {
+            fw.WriteLine(1, @$"			@Qualifier(""{dataFlow.Name.ToPascalCase()}PostQueryStep"") Step {dataFlow.Name.ToCamelCase()}PostStep,");
+        }
+
         fw.WriteLine(1, @$"			@Qualifier(""{dataFlow.Name.ToPascalCase()}Step"") Step {dataFlow.Name.ToCamelCase()}Step) {{");
         fw.WriteLine(2, @$"return new FlowBuilder<Flow>(""{dataFlow.Name.ToPascalCase()}Flow"") //");
+        var isFirst = true;
+        if (dataFlow.PreQuery)
+        {
+            fw.WriteLine(3, @$".start({dataFlow.Name.ToCamelCase()}PreStep) //");
+            isFirst = false;
+        }
+
         if (dataFlow.Type == DataFlowType.Replace)
         {
-            fw.WriteLine(3, @$".start({dataFlow.Name.ToCamelCase()}TruncateStep) //");
+            fw.WriteLine(3, @$".{(isFirst ? "start" : "next")}({dataFlow.Name.ToCamelCase()}TruncateStep) //");
             fw.WriteLine(3, @$".next({dataFlow.Name.ToCamelCase()}Step) //");
         }
         else
         {
-            fw.WriteLine(3, @$".start({dataFlow.Name.ToCamelCase()}Step) //");
+            fw.WriteLine(3, @$".{(isFirst ? "start" : "next")}({dataFlow.Name.ToCamelCase()}Step) //");
+        }
+
+        if (dataFlow.PostQuery)
+        {
+            fw.WriteLine(3, @$".next({dataFlow.Name.ToCamelCase()}PostStep) //");
         }
 
         fw.WriteLine(3, ".build();");
@@ -106,21 +128,24 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         WriteClassFlow(fw, dataFlow, tag);
     }
 
-    private void WriteBeanReader(JavaWriter fw, DataFlow dataFlow)
+    private void WriteBeanReader(JavaWriter fw, DataFlow dataFlow, string tag)
     {
         fw.WriteLine();
-        var query = $"select * from {(Config.DbSchema == null ? string.Empty : $"{Config.DbSchema}.")}{dataFlow.Sources.First().Class.SqlName}";
+        var tagToUse = tag;
+        if (!dataFlow.Class.ModelFile.Tags.Contains(tag))
+        {
+            tagToUse = Config.Tags.Intersect(dataFlow.Sources.First().Class.ModelFile.Tags).First();
+        }
+
+        var query = $"select * from {(Config.ResolveVariables(Config.DbSchema!, tag: tagToUse) == null ? string.Empty : $"{Config.ResolveVariables(Config.DbSchema!, tag: tagToUse)}.")}{dataFlow.Sources.First().Class.SqlName}";
         if (dataFlow.Sources.First().Mode == DataFlowSourceMode.Partial)
         {
             query = string.Empty;
         }
 
-        var javaOrJakarta = Config.PersistenceMode.ToString().ToLower();
-        fw.AddImport($"{javaOrJakarta}.persistence.EntityManagerFactory");
         fw.AddImport("org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder");
         fw.WriteLine(1, @$"@Bean(""{dataFlow.Name.ToPascalCase()}Reader"")");
         fw.WriteLine(1, @$"public static ItemReader<{dataFlow.Sources.First().Class.NamePascal}> {dataFlow.Name.ToCamelCase()}Reader( //");
-        fw.WriteLine(1, @$"		EntityManagerFactory entityManagerFactory, //");
         fw.WriteLine(1, @$"		@Qualifier(""{dataFlow.Sources.First().Source}"") DataSource datasource) {{");
         fw.WriteLine(2, $"return new JdbcCursorItemReaderBuilder<{dataFlow.Sources.First().Class.NamePascal}>() //");
         fw.WriteLine(2, @$"		.name(""{dataFlow.Name.ToPascalCase()}Reader"") //");
@@ -163,7 +188,7 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.WriteLine(1, "}");
     }
 
-    private void WriteBeanWriter(JavaWriter fw, DataFlow dataFlow)
+    private void WriteBeanWriter(JavaWriter fw, DataFlow dataFlow, string tag)
     {
         fw.AddImport("io.github.kleecontrib.spring.batch.bulk.upsert.BulkItemWriter");
         fw.AddImport("javax.sql.DataSource");
@@ -174,10 +199,10 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.WriteLine(2, @$"return new BulkItemWriter<>(targetDataSource, new {dataFlow.Class.NamePascal}Mapping());");
         fw.WriteLine(1, "}");
 
-        WriteBulkMappingWriter(fw, dataFlow);
+        WriteBulkMappingWriter(fw, dataFlow, tag);
     }
 
-    private void WriteBulkMappingWriter(JavaWriter fw, DataFlow dataFlow)
+    private void WriteBulkMappingWriter(JavaWriter fw, DataFlow dataFlow, string tag)
     {
         fw.WriteLine();
         if (dataFlow.Type != DataFlowType.Merge)
@@ -192,17 +217,36 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         }
 
         fw.WriteLine(2, @$"public {dataFlow.Class.NamePascal}Mapping() {{");
+
+        var tagToUse = tag;
+
+        if (!dataFlow.Class.ModelFile.Tags.Contains(tag))
+        {
+            tagToUse = Config.Tags.Intersect(dataFlow.Class.ModelFile.Tags).First();
+        }
+
         if (dataFlow.Type != DataFlowType.Merge)
         {
-            fw.WriteLine(3, @$"super(""{Config.DbSchema}"", ""{dataFlow.Class.SqlName}"");");
+            fw.WriteLine(3, @$"super(""{Config.ResolveVariables(Config.DbSchema!, tag: tagToUse)}"", ""{dataFlow.Class.SqlName}"");");
         }
         else
         {
-            fw.WriteLine(3, @$"super(""{Config.DbSchema}"", ""{dataFlow.Class.SqlName}"", ""{string.Join(',', dataFlow.Class.PrimaryKey.Select(pk => pk.SqlName))}"");");
+            fw.WriteLine(3, @$"super(""{Config.ResolveVariables(Config.DbSchema!, tag: tagToUse)}"", ""{dataFlow.Class.SqlName}"", ""{string.Join(',', dataFlow.Class.PrimaryKey.Select(pk => pk.SqlName))}"");");
         }
 
         fw.AddImport("de.bytefish.pgbulkinsert.pgsql.constants.DataType");
-        foreach (var property in dataFlow.Class.Properties.OfType<IFieldProperty>())
+        var mapper = dataFlow.Class.FromMappers.Where(m =>
+            {
+                var result = true;
+                for (int i = 0; i < m.Params.Count; i++)
+                {
+                    result = result && m.Params[i].Class == dataFlow.Sources[i].Class;
+                }
+
+                return result;
+            }).FirstOrDefault();
+        foreach (var property in dataFlow.Class.Properties.OfType<IFieldProperty>()
+            .Where(p => mapper == null || mapper.Params.SelectMany(pa => pa.Mappings).Select(mapping => mapping.Key).Contains(p)))
         {
             var sqlType = property.Domain.Implementations["sql"].Type ?? string.Empty;
             string dataType = sqlType.ToUpper() switch
@@ -233,8 +277,8 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
             WriteBeanTruncateStep(fw, dataFlow);
         }
 
-        WriteBeanReader(fw, dataFlow);
-        WriteBeanWriter(fw, dataFlow);
+        WriteBeanReader(fw, dataFlow, tag);
+        WriteBeanWriter(fw, dataFlow, tag);
         fw.WriteLine("}");
     }
 

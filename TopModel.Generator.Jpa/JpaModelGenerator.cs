@@ -98,11 +98,14 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
         WriteGetters(fw, classe, tag);
         WriteSetters(fw, classe, tag);
-        WriteAdders(fw, classe, tag);
-        WriteRemovers(fw, classe, tag);
-        if (Config.EnumShortcutMode)
+        if (!Config.UseJdbc)
         {
-            WriteEnumShortcuts(fw, classe, tag);
+            WriteAdders(fw, classe, tag);
+            WriteRemovers(fw, classe, tag);
+            if (Config.EnumShortcutMode)
+            {
+                WriteEnumShortcuts(fw, classe, tag);
+            }
         }
 
         WriteToMappers(fw, classe, tag);
@@ -191,68 +194,88 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
         if (classe.IsPersistent)
         {
-            var table = @$"@Table(name = ""{classe.SqlName}""";
-            fw.AddImport($"{javaOrJakarta}.persistence.Table");
-            if (classe.UniqueKeys.Any())
+            if (Config.UseJdbc)
             {
-                fw.AddImport($"{javaOrJakarta}.persistence.UniqueConstraint");
-                table += ", uniqueConstraints = {";
-                var isFirstConstraint = true;
-                foreach (var unique in classe.UniqueKeys)
+                var table = @$"@Table(name = ""{classe.SqlName}""";
+                if (Config.DbSchema != null)
                 {
-                    if (!isFirstConstraint)
-                    {
-                        table += ",";
-                    }
+                    table += @$", schema = ""{Config.DbSchema}""";
+                }
 
-                    table += "\n    ";
-                    isFirstConstraint = false;
-                    table += "@UniqueConstraint(columnNames = {";
-                    var isFirstColumn = true;
-                    foreach (var u in unique)
+                table += ")";
+                fw.AddImport($"org.springframework.data.relational.core.mapping.Table");
+                fw.WriteLine(table);
+            }
+            else
+            {
+                var table = @$"@Table(name = ""{classe.SqlName}""";
+                if (Config.DbSchema != null)
+                {
+                    table += @$", schema = ""{Config.DbSchema}""";
+                }
+
+                fw.AddImport($"{javaOrJakarta}.persistence.Table");
+                if (classe.UniqueKeys.Any())
+                {
+                    fw.AddImport($"{javaOrJakarta}.persistence.UniqueConstraint");
+                    table += ", uniqueConstraints = {";
+                    var isFirstConstraint = true;
+                    foreach (var unique in classe.UniqueKeys)
                     {
-                        if (!isFirstColumn)
+                        if (!isFirstConstraint)
                         {
                             table += ",";
                         }
 
-                        isFirstColumn = false;
-                        table += $"\"{u.SqlName}\"";
+                        table += "\n    ";
+                        isFirstConstraint = false;
+                        table += "@UniqueConstraint(columnNames = {";
+                        var isFirstColumn = true;
+                        foreach (var u in unique)
+                        {
+                            if (!isFirstColumn)
+                            {
+                                table += ",";
+                            }
+
+                            isFirstColumn = false;
+                            table += $"\"{u.SqlName}\"";
+                        }
+
+                        table += "})";
                     }
 
-                    table += "})";
+                    table += "}";
                 }
 
-                table += "}";
-            }
+                table += ")";
+                fw.AddImport($"{javaOrJakarta}.persistence.Entity");
+                fw.WriteLine("@Entity");
+                fw.WriteLine(table);
+                if (classe.PrimaryKey.Count() > 1)
+                {
+                    fw.WriteLine($"@IdClass({classe.NamePascal}.{classe.NamePascal}Id.class)");
+                    fw.AddImport($"{javaOrJakarta}.persistence.IdClass");
+                }
 
-            table += ")";
-            fw.AddImport($"{javaOrJakarta}.persistence.Entity");
-            fw.WriteLine("@Entity");
-            fw.WriteLine(table);
-            if (classe.PrimaryKey.Count() > 1)
-            {
-                fw.WriteLine($"@IdClass({classe.NamePascal}.{classe.NamePascal}Id.class)");
-                fw.AddImport($"{javaOrJakarta}.persistence.IdClass");
-            }
-        }
-
-        if (classe.Reference)
-        {
-            fw.AddImports(new List<string>()
+                if (classe.Reference)
+                {
+                    fw.AddImports(new List<string>()
                 {
                     "org.hibernate.annotations.Cache",
                     "org.hibernate.annotations.CacheConcurrencyStrategy"
                 });
-            if (Config.CanClassUseEnums(classe))
-            {
-                fw.AddImport("org.hibernate.annotations.Immutable");
-                fw.WriteLine("@Immutable");
-                fw.WriteLine("@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)");
-            }
-            else
-            {
-                fw.WriteLine("@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)");
+                    if (Config.CanClassUseEnums(classe))
+                    {
+                        fw.AddImport("org.hibernate.annotations.Immutable");
+                        fw.WriteLine("@Immutable");
+                        fw.WriteLine("@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)");
+                    }
+                    else
+                    {
+                        fw.WriteLine("@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)");
+                    }
+                }
             }
         }
 
@@ -288,7 +311,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                         constructorArgs += $", p.get{((p is AssociationProperty asp && Config.CanClassUseEnums(asp.Property.Class)) ? p.NameCamel : p.NameByClassCamel).ToFirstUpper()}()";
                     }
 
-                    var type = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent).Split('<').First();
+                    var type = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc).Split('<').First();
 
                     if (_newableTypes.TryGetValue(type, out var newableType))
                     {
@@ -324,7 +347,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 }
                 else
                 {
-                    var listOrSet = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent).Split('<').First();
+                    var listOrSet = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc).Split('<').First();
                     fw.WriteLine(2, @$"return this.{ap.NameByClassCamel} != null ? this.{ap.NameByClassCamel}.stream().map({ap.Association.NamePascal}::get{ap.Property.NameCamel.ToFirstUpper()}).collect(Collectors.to{listOrSet}()) : null;");
                     fw.AddImport("java.util.stream.Collectors");
                 }
@@ -351,7 +374,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         var props = classe.GetProperties(AvailableClasses).Select(prop =>
         {
             string name;
-            if (prop is AssociationProperty ap)
+            if (prop is AssociationProperty ap && !Config.UseJdbc)
             {
                 name = ap.NameByClassCamel.ToConstantCase();
             }
@@ -360,7 +383,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 name = prop.Name.ToConstantCase();
             }
 
-            var javaType = Config.GetType(prop, useClassForAssociation: classe.IsPersistent);
+            var javaType = Config.GetType(prop, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc);
             javaType = javaType.Split("<").First();
             return $"        {name}({javaType}.class)";
         });
@@ -386,27 +409,30 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
     private void WriteGetters(JavaWriter fw, Class classe, string tag)
     {
-        foreach (var property in classe.GetProperties(AvailableClasses))
+
+        var properties = Config.UseJdbc ? classe.Properties : classe.GetProperties(AvailableClasses);
+        foreach (var property in properties)
         {
+            var propertyName = Config.UseJdbc ? property.NameCamel : property.NameByClassCamel;
             fw.WriteLine();
-            fw.WriteDocStart(1, $"Getter for {property.NameByClassCamel}");
-            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{property.NameByClassCamel} {property.NameByClassCamel}}}");
+            fw.WriteDocStart(1, $"Getter for {propertyName}");
+            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}");
             fw.WriteDocEnd(1);
 
             var getterPrefix = Config.GetType(property, Classes, true) == "boolean" ? "is" : "get";
-            fw.WriteLine(1, @$"public {Config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.NameByClassPascal.WithPrefix(getterPrefix)}() {{");
+            fw.WriteLine(1, @$"public {Config.GetType(property, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc)} {propertyName.ToPascalCase().WithPrefix(getterPrefix)}() {{");
             if (property is AssociationProperty ap && ap.Type.IsToMany())
             {
-                var type = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent).Split('<').First();
+                var type = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc).Split('<').First();
                 if (_newableTypes.TryGetValue(type, out var newableType))
                 {
-                    fw.WriteLine(2, $"if(this.{property.NameByClassCamel} == null)");
+                    fw.WriteLine(2, $"if(this.{propertyName} == null)");
                     fw.AddImport($"java.util.{newableType}");
-                    fw.WriteLine(3, $"this.{property.NameByClassCamel} = new {newableType}<>();");
+                    fw.WriteLine(3, $"this.{propertyName} = new {newableType}<>();");
                 }
             }
 
-            fw.WriteLine(2, @$"return this.{property.NameByClassCamel};");
+            fw.WriteLine(2, @$"return this.{propertyName};");
             fw.WriteLine(1, "}");
         }
     }
@@ -619,14 +645,15 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
     private void WriteSetters(JavaWriter fw, Class classe, string tag)
     {
-        foreach (var property in classe.GetProperties(AvailableClasses))
+        var properties = Config.UseJdbc ? classe.Properties : classe.GetProperties(AvailableClasses);
+        foreach (var property in properties)
         {
-            var propertyName = property.NameByClassCamel;
+            var propertyName = Config.UseJdbc ? property.NameCamel : property.NameByClassCamel;
             fw.WriteLine();
             fw.WriteDocStart(1, $"Set the value of {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}");
             fw.WriteLine(1, $" * @param {propertyName} value to set");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, @$"public void {propertyName.WithPrefix("set")}({Config.GetType(property, useClassForAssociation: classe.IsPersistent)} {propertyName}) {{");
+            fw.WriteLine(1, @$"public void {propertyName.WithPrefix("set")}({Config.GetType(property, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc)} {propertyName}) {{");
             fw.WriteLine(2, @$"this.{propertyName} = {propertyName};");
             fw.WriteLine(1, "}");
         }

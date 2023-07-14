@@ -85,6 +85,11 @@ public class JpaConfig : GeneratorConfigBase
     public string? DataFlowsPath { get; set; }
 
     /// <summary>
+    /// Génération en mode JDBC.
+    /// </summary>
+    public bool UseJdbc { get; set; } = false;
+
+    /// <summary>
     /// Taille des chunks à extraire et insérer
     /// </summary>
     public long DataFlowsBulkSize { get; set; } = 100000;
@@ -114,7 +119,7 @@ public class JpaConfig : GeneratorConfigBase
 
     public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IFieldProperty? prop = null)
     {
-        return base.CanClassUseEnums(classe, availableClasses, prop)
+        return !this.UseJdbc && base.CanClassUseEnums(classe, availableClasses, prop)
             && !classe.Properties.OfType<AssociationProperty>().Any(a => a.Association != classe && !CanClassUseEnums(a.Association, availableClasses));
     }
 

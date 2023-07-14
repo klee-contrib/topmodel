@@ -55,7 +55,8 @@ public class JpaModelPropertyGenerator
 
     public void WriteProperties(JavaWriter fw, Class classe, string tag)
     {
-        foreach (var property in classe.GetProperties(_classes))
+        var properties = _config.UseJdbc ? classe.Properties : classe.GetProperties(_classes);
+        foreach (var property in properties)
         {
             WriteProperty(fw, classe, property, tag);
         }
@@ -154,53 +155,66 @@ public class JpaModelPropertyGenerator
 
     private void WriteProperty(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         fw.WriteDocEnd(1);
-        fw.AddImport($"{javaOrJakarta}.persistence.FetchType");
-        fw.AddImport($"{javaOrJakarta}.persistence.{property.Type}");
-        switch (property.Type)
+        if (!_config.UseJdbc)
         {
-            case AssociationType.ManyToOne:
-                WriteManyToOne(fw, property);
-                break;
-            case AssociationType.OneToMany:
-                WriteOneToMany(fw, classe, property);
-                break;
-            case AssociationType.ManyToMany:
-                WriteManyToMany(fw, classe, property);
-                break;
-            case AssociationType.OneToOne:
-                WriteOneToOne(fw, property);
-                break;
-        }
-
-        if (property.Type == AssociationType.ManyToMany || property.Type == AssociationType.OneToMany)
-        {
-            if (property.Association.OrderProperty != null && _config.GetType(property, _classes, classe.IsPersistent).Contains("List"))
+            var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+            fw.AddImport($"{javaOrJakarta}.persistence.FetchType");
+            fw.AddImport($"{javaOrJakarta}.persistence.{property.Type}");
+            switch (property.Type)
             {
-                fw.WriteLine(1, @$"@OrderBy(""{property.Association.OrderProperty.NameByClassCamel} ASC"")");
-                fw.AddImport($"{javaOrJakarta}.persistence.OrderBy");
+                case AssociationType.ManyToOne:
+                    WriteManyToOne(fw, property);
+                    break;
+                case AssociationType.OneToMany:
+                    WriteOneToMany(fw, classe, property);
+                    break;
+                case AssociationType.ManyToMany:
+                    WriteManyToMany(fw, classe, property);
+                    break;
+                case AssociationType.OneToOne:
+                    WriteOneToOne(fw, property);
+                    break;
             }
-        }
 
-        var suffix = string.Empty;
-
-        if (_config.CanClassUseEnums(property.Association))
-        {
-            var defaultValue = _config.GetValue(property, _classes);
-            if (defaultValue != "null")
+            if (property.Type == AssociationType.ManyToMany || property.Type == AssociationType.OneToMany)
             {
-                suffix = $" = {defaultValue}.getEntity()";
+                if (property.Association.OrderProperty != null && _config.GetType(property, _classes, classe.IsPersistent).Contains("List"))
+                {
+                    fw.WriteLine(1, @$"@OrderBy(""{property.Association.OrderProperty.NameByClassCamel} ASC"")");
+                    fw.AddImport($"{javaOrJakarta}.persistence.OrderBy");
+                }
             }
-        }
 
-        if (property.PrimaryKey)
+            var suffix = string.Empty;
+
+            if (_config.CanClassUseEnums(property.Association))
+            {
+                var defaultValue = _config.GetValue(property, _classes);
+                if (defaultValue != "null")
+                {
+                    suffix = $" = {defaultValue}.getEntity()";
+                }
+            }
+
+            if (property.PrimaryKey)
+            {
+                fw.AddImport($"{javaOrJakarta}.persistence.Id");
+                fw.WriteLine(1, "@Id");
+            }
+
+            fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.NameByClassCamel}{suffix};");
+        }
+        else
         {
-            fw.AddImport($"{javaOrJakarta}.persistence.Id");
-            fw.WriteLine(1, "@Id");
-        }
+            if (property.PrimaryKey)
+            {
+                fw.AddImport("org.springframework.data.annotation.Id");
+                fw.WriteLine(1, "@Id");
+            }
 
-        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.NameByClassCamel}{suffix};");
+            fw.WriteLine(1, $"private {_config.GetType(property)} {property.NameCamel};");
+        }
     }
 
     private void WriteProperty(JavaWriter fw, Class classe, IFieldProperty property, string tag)
@@ -214,30 +228,39 @@ public class JpaModelPropertyGenerator
         fw.WriteDocEnd(1);
         if (property.PrimaryKey && classe.IsPersistent)
         {
-            fw.WriteLine(1, "@Id");
-            fw.AddImport($"{javaOrJakarta}.persistence.Id");
-            if (property.Domain.AutoGeneratedValue && classe.PrimaryKey.Count() == 1)
+            if (!_config.UseJdbc)
             {
-                fw.AddImports(new List<string>
+                fw.AddImport($"{javaOrJakarta}.persistence.Id");
+
+                if (property.Domain.AutoGeneratedValue && classe.PrimaryKey.Count() == 1)
+                {
+                    fw.AddImports(new List<string>
                 {
                     $"{javaOrJakarta}.persistence.GeneratedValue",
                     $"{javaOrJakarta}.persistence.GenerationType"
                 });
 
-                if (_config.Identity.Mode == IdentityMode.IDENTITY)
-                {
-                    fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.IDENTITY)");
-                }
-                else if (_config.Identity.Mode == IdentityMode.SEQUENCE)
-                {
-                    fw.AddImport($"{javaOrJakarta}.persistence.SequenceGenerator");
-                    var seqName = $"SEQ_{classe.SqlName}";
-                    var initialValue = _config.Identity.Start != null ? $", initialValue = {_config.Identity.Start}" : string.Empty;
-                    var increment = _config.Identity.Increment != null ? $", allocationSize = {_config.Identity.Increment}" : string.Empty;
-                    fw.WriteLine(1, @$"@SequenceGenerator(name = ""{seqName}"", sequenceName = ""{seqName}""{initialValue}{increment})");
-                    fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ""{seqName}"")");
+                    if (_config.Identity.Mode == IdentityMode.IDENTITY)
+                    {
+                        fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.IDENTITY)");
+                    }
+                    else if (_config.Identity.Mode == IdentityMode.SEQUENCE)
+                    {
+                        fw.AddImport($"{javaOrJakarta}.persistence.SequenceGenerator");
+                        var seqName = $"SEQ_{classe.SqlName}";
+                        var initialValue = _config.Identity.Start != null ? $", initialValue = {_config.Identity.Start}" : string.Empty;
+                        var increment = _config.Identity.Increment != null ? $", allocationSize = {_config.Identity.Increment}" : string.Empty;
+                        fw.WriteLine(1, @$"@SequenceGenerator(name = ""{seqName}"", sequenceName = ""{seqName}""{initialValue}{increment})");
+                        fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ""{seqName}"")");
+                    }
                 }
             }
+            else
+            {
+                fw.AddImport("org.springframework.data.annotation.Id");
+            }
+
+            fw.WriteLine(1, "@Id");
         }
 
         if (classe.IsPersistent && !_config.GetImplementation(property.Domain)!.Annotations
@@ -246,26 +269,36 @@ public class JpaModelPropertyGenerator
             || !classe.IsPersistent && (Target.Dto & i.Target) > 0)
             .Any(a => a.Text.Replace("@", string.Empty).StartsWith("Column")))
         {
-            var column = @$"@Column(name = ""{property.SqlName}"", nullable = {(!property.Required).ToString().ToFirstLower()}";
-            if (property.Domain.Length != null)
+            string column = string.Empty;
+            if (!_config.UseJdbc)
             {
-                if (_config.GetImplementation(property.Domain)?.Type?.ToUpper() == "STRING")
+                column = @$"@Column(name = ""{property.SqlName}"", nullable = {(!property.Required).ToString().ToFirstLower()}";
+                if (property.Domain.Length != null)
                 {
-                    column += $", length = {property.Domain.Length}";
+                    if (_config.GetImplementation(property.Domain)?.Type?.ToUpper() == "STRING")
+                    {
+                        column += $", length = {property.Domain.Length}";
+                    }
+                    else
+                    {
+                        column += $", precision = {property.Domain.Length}";
+                    }
                 }
-                else
+
+                if (property.Domain.Scale != null)
                 {
-                    column += $", precision = {property.Domain.Length}";
+                    column += $", scale = {property.Domain.Scale}";
                 }
+
+                column += ")";
+                fw.AddImport($"{javaOrJakarta}.persistence.Column");
+            }
+            else
+            {
+                fw.AddImport("org.springframework.data.relational.core.mapping.Column");
+                column = $@"@Column(""{property.SqlName}"")";
             }
 
-            if (property.Domain.Scale != null)
-            {
-                column += $", scale = {property.Domain.Scale}";
-            }
-
-            column += ")";
-            fw.AddImport($"{javaOrJakarta}.persistence.Column");
             fw.WriteLine(1, column);
         }
         else if (property.Required && !property.PrimaryKey && !classe.IsPersistent)
@@ -274,7 +307,7 @@ public class JpaModelPropertyGenerator
             fw.AddImport($"{javaOrJakarta}.validation.constraints.NotNull");
         }
 
-        if (property.PrimaryKey && classe.Reference && classe.Values.Any())
+        if (property.PrimaryKey && classe.Reference && classe.Values.Any() && !_config.UseJdbc)
         {
             fw.AddImports(new List<string>
             {
@@ -291,6 +324,6 @@ public class JpaModelPropertyGenerator
 
         var defaultValue = _config.GetValue(property, _classes);
         var suffix = defaultValue != "null" ? $" = {defaultValue}" : string.Empty;
-        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.NameByClassCamel}{suffix};");
+        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent && !_config.UseJdbc)} {property.NameByClassCamel}{suffix};");
     }
 }

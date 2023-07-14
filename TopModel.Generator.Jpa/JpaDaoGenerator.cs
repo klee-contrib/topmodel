@@ -50,7 +50,7 @@ public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
         WriteImports(fw, classe, tag);
         fw.WriteLine();
         var pk = classe.PrimaryKey.Count() > 1 ? $"{classe.NamePascal}.{classe.NamePascal}Id" : Config.GetType(classe.PrimaryKey.Single());
-        fw.WriteLine($"public interface {classe.NamePascal}DAO extends {(classe.Reference ? "CrudRepository" : "JpaRepository")}<{classe.NamePascal}, {pk}> {{");
+        fw.WriteLine($"public interface {classe.NamePascal}DAO extends {(classe.Reference || Config.UseJdbc ? "CrudRepository" : "JpaRepository")}<{classe.NamePascal}, {pk}> {{");
         fw.WriteLine();
         fw.WriteLine("}");
     }
@@ -61,8 +61,11 @@ public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
         {
             classe.GetImport(Config, tag)
         };
-
-        if (classe.Reference)
+        if (Config.UseJdbc)
+        {
+            imports.Add("org.springframework.data.repository.CrudRepository");
+        }
+        else if (classe.Reference)
         {
             imports.Add("org.springframework.data.repository.CrudRepository");
         }

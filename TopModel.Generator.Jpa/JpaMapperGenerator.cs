@@ -81,6 +81,11 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
             fw.AddImports(Config.GetImplementation(converter)!.Imports);
         }
 
+        if (Config.UseJdbc)
+        {
+            return (Getter: $"{sourceName}.{getterPrefix}{propertySource.NamePascal}()", CheckSourceNull: false);
+        }
+
         var checkSourceNull = false;
         if ((!propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent)
             || !(propertySource is AssociationProperty || propertyTarget is AssociationProperty))
@@ -253,6 +258,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                 var propertySource = mapping.Value!;
                 var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
                 var (getter, checkSourceNull) = GetSourceGetter(propertySource, propertyTarget, classe, fw, param.Name.ToCamelCase(), tag);
+                var propertyTargetName = Config.UseJdbc ? propertyTarget.NamePascal : propertyTarget.NameByClassPascal;
                 if (classe.Abstract)
                 {
                     if (!isFirst)
@@ -266,7 +272,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
                     if (checkSourceNull)
                     {
-                        hydrate += $"{param.Name}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}() != null ? {getter} : null";
+                        hydrate += $"{param.Name}.{propertyTargetName.WithPrefix(getterPrefix)}() != null ? {getter} : null";
                     }
                     else
                     {
@@ -282,7 +288,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                             fw.WriteLine(3, $"if ({param.Name}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}() != null) {{");
                         }
 
-                        fw.WriteLine(3 + (checkSourceNull ? 1 : 0), $"target.{propertyTarget!.NameByClassPascal.WithPrefix("set")}({getter});");
+                        fw.WriteLine(3 + (checkSourceNull ? 1 : 0), $"target.{propertyTargetName!.WithPrefix("set")}({getter});");
 
                         if (checkSourceNull)
                         {
@@ -369,6 +375,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
             var propertySource = mapping.Key;
             var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
             var (getter, checkSourceNull) = GetSourceGetter(propertySource, propertyTarget!, classe, fw, "source", tag);
+            var propertyTargetName = Config.UseJdbc ? propertyTarget!.NamePascal : propertyTarget!.NameByClassPascal;
             if (mapper.Class.Abstract)
             {
                 if (!isFirst)
@@ -382,7 +389,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
                 if (checkSourceNull)
                 {
-                    hydrate += $"source.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}() != null ? {getter} : null";
+                    hydrate += $"source.{propertyTargetName.WithPrefix(getterPrefix)}() != null ? {getter} : null";
                 }
                 else
                 {
@@ -398,7 +405,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                         fw.WriteLine(2, $"if (source.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}() != null) {{");
                     }
 
-                    fw.WriteLine(2 + (checkSourceNull ? 1 : 0), $"target.{propertyTarget!.NameByClassPascal.WithPrefix("set")}({getter});");
+                    fw.WriteLine(2 + (checkSourceNull ? 1 : 0), $"target.{propertyTargetName.WithPrefix("set")}({getter});");
 
                     if (checkSourceNull)
                     {
