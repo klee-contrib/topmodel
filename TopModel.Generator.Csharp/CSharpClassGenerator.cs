@@ -14,6 +14,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     {
         ["IEnumerable"] = "List",
         ["ICollection"] = "List",
+        ["IList"] = "List",
         ["List"] = "List",
         ["HashSet"] = "HashSet"
     };
