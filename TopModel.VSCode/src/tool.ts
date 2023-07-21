@@ -60,8 +60,9 @@ export class TmdTool {
     }
 
     public async init(context: ExtensionContext) {
-        await Promise.all([this.loadLatestVersion(), this.loadCurrentVersion(), this.checkInstall()]);
+        await Promise.all([this.checkInstall(), this.loadLatestVersion()]);
         if (this.installed) {
+            await this.loadCurrentVersion();
             this.registerCommands(context);
             this.status = "READY";
         } else {

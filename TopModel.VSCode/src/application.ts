@@ -53,9 +53,6 @@ export class Application {
     private async startLanguageServer() {
         const args = [this.extensionContext.asAbsolutePath("./language-server/TopModel.LanguageServer.dll")];
         let configRelativePath = workspace.asRelativePath(this.configPath);
-        if ((workspace.workspaceFolders?.length || 0) > 1) {
-            configRelativePath = configRelativePath.split("/").splice(1).join("/");
-        }
         args.push(this.configPath.substring(1));
         let serverOptions: ServerOptions = {
             run: { command: SERVER_EXE, args },
@@ -69,7 +66,11 @@ export class Application {
             `TopModel - ${this.config.app}`,
             `TopModel - ${this.config.app}`,
             serverOptions,
-            {}
+            {
+                workspaceFolder: workspace.workspaceFolders?.find((w) =>
+                    this.configPath.includes(w.uri.path.toLowerCase())
+                ),
+            }
         );
         await this.client.start();
     }
@@ -85,7 +86,7 @@ export class Application {
         COMMANDS_OPTIONS[modgenCommand] = {
             title: `${this.config.app} - modgen - Lancer la génération ${watch ? "en continu" : ""}`,
             description: `Lancer la génération${watch ? " continue" : ""} de ${this.config.app}`,
-            command: modgenCommand
+            command: modgenCommand,
         };
         this.extensionContext.subscriptions.push(modgen);
     }
