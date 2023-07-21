@@ -126,6 +126,33 @@ public class CompletionHandler : CompletionHandlerBase
                         })));
             }
 
+            // Tags
+            if (GetParentObject(request) == "tags")
+            {
+                var searchText = currentLine.TrimStart()[1..].Trim();
+                return Task.FromResult(new CompletionList(
+                    _modelStore.Files.SelectMany(f => f.Tags)
+                    .Distinct()
+                    .Where(t => !file.Tags.Contains(t))
+                    .Where(tag => tag.ShouldMatch(searchText))
+                    .Select(tag => new CompletionItem
+                    {
+                        Kind = CompletionItemKind.Keyword,
+                        Label = tag,
+                        TextEdit = !string.IsNullOrWhiteSpace(searchText)
+                                ? new TextEditOrInsertReplaceEdit(new TextEdit
+                                {
+                                    NewText = tag,
+                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText),
+                                        request.Position.Line,
+                                        currentLine.IndexOf(searchText) + searchText.Length)
+                                })
+                                : null
+                    })));
+            }
+
             // Use
             if (currentLine.TrimStart().StartsWith("-") && (
                 text.ElementAtOrDefault(request.Position.Line - 1) == "uses:"
