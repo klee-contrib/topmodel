@@ -61,14 +61,16 @@ export class Application {
         let configFolderA = configRelativePath.split("/");
         configFolderA.pop();
         const configFolder = configFolderA.join("/");
-        this.modelRoot = this.config.modelRoot || configFolder;
+        this.modelRoot = this.config.modelRoot ?? configFolder;
         this.client = new LanguageClient(
             `TopModel - ${this.config.app}`,
             `TopModel - ${this.config.app}`,
             serverOptions,
             {
                 workspaceFolder: workspace.workspaceFolders?.find((w) =>
-                    this.configPath.includes(w.uri.path.toLowerCase())
+                    {
+                        return this.configPath.toLowerCase().includes(w.uri.path.toLowerCase());
+                    }
                 ),
             }
         );
