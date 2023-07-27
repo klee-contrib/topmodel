@@ -362,24 +362,7 @@ public class ModelStore
 
     private void LoadTranslations()
     {
-        var defaultLangMap = new Dictionary<string, string>();
-        foreach (var classe in Files.SelectMany(f => f.Classes))
-        {
-            foreach (var p in classe.Properties.OfType<IFieldProperty>().Where(p => p.Label != null))
-            {
-                defaultLangMap[p.ResourceKey] = p.Label!;
-            }
-
-            if (classe.DefaultProperty != null)
-            {
-                foreach (var r in classe.Values)
-                {
-                    defaultLangMap[r.ResourceKey] = r.Value[classe.DefaultProperty];
-                }
-            }
-        }
-
-        _translationStore.Translations[_config.I18n.DefaultLang] = defaultLangMap;
+        _translationStore.Translations[_config.I18n.DefaultLang] = new Dictionary<string, string>();
 
         foreach (var lang in _config.I18n.Langs)
         {
@@ -1518,6 +1501,22 @@ public class ModelStore
                     {
                         yield return new ModelError(endpoint, $"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.") { ModelErrorType = ModelErrorType.TMD1027 };
                     }
+                }
+            }
+        }
+
+        foreach (var classe in fileClasses)
+        {
+            foreach (var p in classe.Properties.OfType<IFieldProperty>().Where(p => p.Label != null))
+            {
+                _translationStore.Translations[_config.I18n.DefaultLang][p.ResourceKey] = p.Label!;
+            }
+
+            if (classe.DefaultProperty != null)
+            {
+                foreach (var r in classe.Values)
+                {
+                    _translationStore.Translations[_config.I18n.DefaultLang][r.ResourceKey] = r.Value[classe.DefaultProperty];
                 }
             }
         }
