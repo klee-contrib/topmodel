@@ -32,8 +32,7 @@ public abstract class EndpointsGeneratorBase<T> : GeneratorBase<T>
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in files
-            .Where(file => EndpointsFiles.Contains(file))
+        foreach (var file in EndpointsFiles
             .SelectMany(file => Config.Tags.Intersect(file.Tags.Where(FilterTag))
                 .Select(tag => (tag, file, filePath: GetFilePath(file, tag))))
             .GroupBy(file => file.filePath))
