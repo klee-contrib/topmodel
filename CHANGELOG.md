@@ -1,5 +1,12 @@
 # TopModel.Generator (`modgen`)
 
+## 1.32.3
+
+- [`26ce249f`](https://github.com/klee-contrib/topmodel/commit/26ce249f1baef13ba554967c08a274d75745e655) - [C# - classgen] Ajout implémentation pour "IList"
+- [`af8f506c`](https://github.com/klee-contrib/topmodel/commit/af8f506ca1c908e61c73c69d9048db35fdc5e069) - Fix maj libellés en mode watch
+- [`105c6ee3`](https://github.com/klee-contrib/topmodel/commit/105c6ee3d27bedee2fc936a5fb2bccf4e48a3a1d) - Fix watch sur la génération d'endpoints en plusieurs fichiers
+- [`38c3ed80`](https://github.com/klee-contrib/topmodel/commit/38c3ed80c883bd0137cc806ca29bb55d1462118e) - Fix initialisation value sur une association required toujours required
+
 ## 1.32.2
 
 - [`31ee8378`](https://github.com/klee-contrib/topmodel/commit/31ee83784fe46704bf2809c912491a2e7146b7fe) - [C#] Fix ordre génération consts enums
