@@ -97,7 +97,7 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
         {
             var uniqConstraints = group.GroupBy(g => g.Name);
             classe.Unique
-                .AddRange(uniqConstraints.Select(u => u.Select(c =>
+                .AddRange(uniqConstraints.Select(u => u.Where(c => classe.Properties.Any(p => p.SqlName == c.ColumnName)).Select(c =>
                 {
                     var property = classe.Properties.First(p => p.SqlName == c.ColumnName);
                     string name = string.Empty;
