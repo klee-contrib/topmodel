@@ -111,7 +111,7 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
                     }
 
                     return name;
-                }).ToList()));
+                }).Distinct().ToList()));
         }
     }
 
@@ -326,7 +326,7 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
         // Récupération des colonnes
         var columns = await _connection
             .QueryAsync<DbColumn>(GetColumnsQuery());
-        return columns.Where(c => !_config.Exclude.Contains(c.TableName));
+        return columns.Where(c => !_config.Exclude.Select(e => e.ToLower()).Contains(c.TableName.ToLower()));
     }
 
     private async Task<IEnumerable<ConstraintKey>> GetConstraintKeys(string query)
