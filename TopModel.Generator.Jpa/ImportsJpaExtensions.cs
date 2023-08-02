@@ -9,7 +9,7 @@ public static class ImportsJpaExtensions
         return $"{config.GetPackageName(classe, tag)}.{classe.NamePascal}";
     }
 
-    public static List<string> GetImports(this Class classe, JpaConfig config, string tag)
+    public static List<string> GetImports(this Class classe, JpaConfig config, string tag, IEnumerable<Class> availableClasses)
     {
         var imports = new List<string>();
 
@@ -19,9 +19,9 @@ public static class ImportsJpaExtensions
         }
 
         imports
-            .AddRange(classe.FromMappers.SelectMany(fm => fm.Params).Select(fmp => fmp.Class.GetImport(config, tag)));
+            .AddRange(classe.FromMappers.Where(fm => fm.Params.All(fmp => availableClasses.Contains(fmp.Class))).SelectMany(fm => fm.Params).Select(fmp => fmp.Class.GetImport(config, tag)));
         imports
-            .AddRange(classe.ToMappers.Select(fmp => fmp.Class.GetImport(config, tag)));
+            .AddRange(classe.ToMappers.Where(tm => availableClasses.Contains(tm.Class)).Select(fmp => fmp.Class.GetImport(config, tag)));
         return imports;
     }
 

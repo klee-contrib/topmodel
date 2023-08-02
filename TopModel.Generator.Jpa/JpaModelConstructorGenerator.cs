@@ -25,7 +25,7 @@ public class JpaModelConstructorGenerator
         {
             var (clazz, mapper) = fromMapper;
             fw.WriteLine();
-            fw.WriteDocStart(1, $"Crée une nouvelle instance de '{classe}'");
+            fw.WriteDocStart(1, $"Crée une nouvelle instance de '{classe.NamePascal}'");
             if (mapper.Comment != null)
             {
                 fw.WriteLine(1, $" * {mapper.Comment}");
@@ -38,19 +38,19 @@ public class JpaModelConstructorGenerator
                     fw.WriteLine(1, $" * {param.Comment}");
                 }
 
-                fw.WriteParam(param.Name.ToCamelCase(), $"Instance de '{param.Class}'");
+                fw.WriteParam(param.Name.ToCamelCase(), $"Instance de '{param.Class.NamePascal}'");
             }
 
-            fw.WriteReturns(1, $"Une nouvelle instance de '{classe}'");
+            fw.WriteReturns(1, $"Une nouvelle instance de '{classe.NamePascal}'");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, $"public {classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToCamelCase()}"))}) {{");
+            fw.WriteLine(1, $"public {classe.NamePascal}({string.Join(", ", mapper.Params.Select(p => $"{p.Class.NamePascal} {p.Name.ToCamelCase()}"))}) {{");
             if (classe.Extends != null)
             {
                 fw.WriteLine(2, $"super();");
             }
 
             var (mapperNs, mapperModelPath) = _config.GetMapperLocation(fromMapper);
-            fw.WriteLine(2, $"{_config.GetMapperName(mapperNs, mapperModelPath)}.create{classe}({string.Join(", ", mapper.Params.Select(p => p.Name.ToCamelCase()))}, this);");
+            fw.WriteLine(2, $"{_config.GetMapperName(mapperNs, mapperModelPath)}.create{classe.NamePascal}({string.Join(", ", mapper.Params.Select(p => p.Name.ToCamelCase()))}, this);");
             fw.AddImport(_config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
             fw.WriteLine(1, "}");
         }

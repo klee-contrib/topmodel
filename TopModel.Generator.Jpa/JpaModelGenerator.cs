@@ -72,7 +72,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         WriteImports(fw, classe, tag);
         fw.WriteLine();
 
-        WriteAnnotations(fw, classe);
+        WriteAnnotations(fw, classe, tag);
 
         var extends = Config.GetClassExtends(classe);
         var implements = Config.GetClassImplements(classe).ToList();
@@ -184,7 +184,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         }
     }
 
-    private void WriteAnnotations(JavaWriter fw, Class classe)
+    private void WriteAnnotations(JavaWriter fw, Class classe, string tag)
     {
         fw.WriteDocStart(0, classe.Comment);
         fw.WriteDocEnd(0);
@@ -197,9 +197,9 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             if (Config.UseJdbc)
             {
                 var table = @$"@Table(name = ""{classe.SqlName}""";
-                if (Config.DbSchema != null)
+                if (Config.ResolveVariables(Config.DbSchema!, tag: tag) != null)
                 {
-                    table += @$", schema = ""{Config.DbSchema}""";
+                    table += @$", schema = ""{Config.ResolveVariables(Config.DbSchema!, tag: tag)}""";
                 }
 
                 table += ")";
@@ -209,9 +209,9 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             else
             {
                 var table = @$"@Table(name = ""{classe.SqlName}""";
-                if (Config.DbSchema != null)
+                if (Config.ResolveVariables(Config.DbSchema!, tag: tag) != null)
                 {
-                    table += @$", schema = ""{Config.DbSchema}""";
+                    table += @$", schema = ""{Config.ResolveVariables(Config.DbSchema!, tag: tag)}""";
                 }
 
                 fw.AddImport($"{javaOrJakarta}.persistence.Table");
@@ -439,7 +439,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
     private void WriteImports(JavaWriter fw, Class classe, string tag)
     {
-        var imports = classe.GetImports(Config, tag);
+        var imports = classe.GetImports(Config, tag, AvailableClasses);
         imports.AddRange(Config.GetDecoratorImports(classe));
         foreach (var property in classe.GetProperties(AvailableClasses))
         {

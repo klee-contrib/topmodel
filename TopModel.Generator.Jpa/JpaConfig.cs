@@ -106,7 +106,8 @@ public class JpaConfig : GeneratorConfigBase
         nameof(DtosPath),
         nameof(ApiPath),
         nameof(ApiGeneration),
-        nameof(ResourcesPath)
+        nameof(ResourcesPath),
+        nameof(DbSchema)
     };
 
     public override string[] PropertiesWithModuleVariableSupport => new[]

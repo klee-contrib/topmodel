@@ -216,9 +216,9 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
             }
         }
 
-        fw.WriteReturns(1, $"Une nouvelle instance de '{classe}' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée");
+        fw.WriteReturns(1, $"Une nouvelle instance de '{classe.NamePascal}' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée");
         fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"public static {classe.NamePascal} create{classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToCamelCase()}"))}, {classe} target) {{");
+        fw.WriteLine(1, $"public static {classe.NamePascal} create{classe.NamePascal}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToCamelCase()}"))}, {classe.NamePascal} target) {{");
         fw.WriteLine(2, "if (target == null) {");
         if (classe.Abstract)
         {
