@@ -265,6 +265,6 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
     private string GetNamespace(Class classe, string tag)
     {
-        return Config.GetNamespace(classe, GetClassTags(classe).Contains(tag) ? tag : GetClassTags(classe).Intersect(Config.Tags).FirstOrDefault() ?? tag);
+        return Config.GetNamespace(classe, classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag);
     }
 }

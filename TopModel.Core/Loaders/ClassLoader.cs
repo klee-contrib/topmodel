@@ -28,6 +28,9 @@ public class ClassLoader : ILoader<Class>
 
             switch (prop.Value)
             {
+                case "tags":
+                    parser.ConsumeSequence(() => classe.OwnTags.Add(parser.Consume<Scalar>().Value));
+                    break;
                 case "trigram":
                     classe.Trigram = new LocatedString(value);
                     break;

@@ -13,7 +13,7 @@ public abstract class ClassGeneratorBase<T> : GeneratorBase<T>
     }
 
     public override IEnumerable<string> GeneratedFiles => Files.Values.SelectMany(f => f.Classes.Where(FilterClass))
-        .SelectMany(c => Config.Tags.Intersect(GetClassTags(c)).Select(tag => GetFileName(c, tag)))
+        .SelectMany(c => Config.Tags.Intersect(c.Tags).Select(tag => GetFileName(c, tag)))
         .Distinct();
 
     protected virtual bool FilterClass(Class classe)
@@ -31,7 +31,7 @@ public abstract class ClassGeneratorBase<T> : GeneratorBase<T>
         {
             foreach (var classe in file.Classes.Where(FilterClass))
             {
-                foreach (var (tag, fileName) in Config.Tags.Intersect(file.Tags)
+                foreach (var (tag, fileName) in Config.Tags.Intersect(classe.Tags)
                      .Select(tag => (tag, fileName: GetFileName(classe, tag)))
                      .DistinctBy(t => t.fileName))
                 {

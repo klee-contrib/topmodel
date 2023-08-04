@@ -30,7 +30,7 @@ public class CodeLensHandler : CodeLensHandlerBase
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            return Task.FromResult(new CodeLensContainer(file.Classes.Where(c => !file.ResolvedAliases.Contains(c)).Select(clazz =>
+            return Task.FromResult(new CodeLensContainer(file.Classes.Select(clazz =>
                 new CodeLens
                 {
                     Range = clazz.GetLocation().ToRange()!,

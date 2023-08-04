@@ -64,10 +64,6 @@ public class ModelError
         {
             sb.Append($"/{Endpoint.Name}");
         }
-        else if (_objet is Alias)
-        {
-            sb.Append("/{alias}");
-        }
         else if (_objet is Domain d)
         {
             sb.Append($"/{d.Name}");

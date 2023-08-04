@@ -70,7 +70,7 @@ public class ModelStore
     public IEnumerable<Class> GetAvailableClasses(ModelFile file)
     {
         return GetDependencies(file).SelectMany(m => m.Classes)
-            .Concat(file.Classes.Where(c => !file.ResolvedAliases.Contains(c)));
+            .Concat(file.Classes);
     }
 
     public IEnumerable<DataFlow> GetAvailableDataFlows(ModelFile file)
@@ -88,7 +88,7 @@ public class ModelStore
         var dependencies = GetDependencies(modelFile).ToList();
         return dependencies
             .SelectMany(m => m.Classes)
-            .Concat(modelFile.Classes.Where(c => !modelFile.ResolvedAliases.Contains(c)))
+            .Concat(modelFile.Classes)
             .Distinct()
             .GroupBy(c => c.Name.Value)
             .ToDictionary(c => c.Key, c => c.First());
@@ -308,7 +308,7 @@ public class ModelStore
 
         foreach (var files in Files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Namespace.Module }))
         {
-            var endpoints = files.SelectMany(f => f.Endpoints.Where(c => !f.ResolvedAliases.Contains(c)));
+            var endpoints = files.SelectMany(f => f.Endpoints);
 
             foreach (var endpoint in endpoints.Where((e, i) => files.SelectMany(f => f.Endpoints).Where((p, j) => p.Name == e.Name && j < i).Any()))
             {
@@ -425,12 +425,9 @@ public class ModelStore
 
         var dependencies = GetDependencies(modelFile).ToList();
 
-        var fileClasses = modelFile.Classes.Where(c => !modelFile.ResolvedAliases.Contains(c));
-        var fileEndpoints = modelFile.Endpoints.Where(c => !modelFile.ResolvedAliases.Contains(c));
-
         var referencedClassesRaw = dependencies
             .SelectMany(m => m.Classes)
-            .Concat(fileClasses)
+            .Concat(modelFile.Classes)
             .Distinct();
 
         var duplicateClasses = referencedClassesRaw
@@ -488,7 +485,7 @@ public class ModelStore
         }
 
         // Résolution des "extends" sur les classes.
-        foreach (var classe in fileClasses.Where(c => c.ExtendsReference != null))
+        foreach (var classe in modelFile.Classes.Where(c => c.ExtendsReference != null))
         {
             if (classe.Abstract)
             {
@@ -512,7 +509,7 @@ public class ModelStore
         }
 
         // Résolution des décorateurs sur les classes.
-        foreach (var classe in fileClasses.Where(c => c.DecoratorReferences.Any()))
+        foreach (var classe in modelFile.Classes.Where(c => c.DecoratorReferences.Any()))
         {
             classe.Decorators.Clear();
 
@@ -551,7 +548,7 @@ public class ModelStore
         }
 
         // Résolution des décorateurs sur les endpoints.
-        foreach (var endpoint in fileEndpoints.Where(c => c.DecoratorReferences.Any()))
+        foreach (var endpoint in modelFile.Endpoints.Where(c => c.DecoratorReferences.Any()))
         {
             endpoint.Decorators.Clear();
 
@@ -657,7 +654,7 @@ public class ModelStore
         }
 
         // Reset des alias déjà résolus sur les classes.
-        foreach (var classe in fileClasses)
+        foreach (var classe in modelFile.Classes)
         {
             foreach (var alp in classe.Properties.OfType<AliasProperty>().ToList())
             {
@@ -674,7 +671,7 @@ public class ModelStore
         }
 
         // Reset des alias déjà résolus sur les endpoints.
-        foreach (var endpoint in fileEndpoints)
+        foreach (var endpoint in modelFile.Endpoints)
         {
             foreach (var alp in endpoint.Params.OfType<AliasProperty>().ToList())
             {
@@ -821,7 +818,7 @@ public class ModelStore
         }
 
         // Recopie des propriétés des décorateurs dans les classes.
-        foreach (var classe in fileClasses)
+        foreach (var classe in modelFile.Classes)
         {
             if (classe.Decorators.Any())
             {
@@ -838,7 +835,7 @@ public class ModelStore
         }
 
         // Recopie des propriétés des décorateurs dans les endpoints.
-        foreach (var endpoint in fileEndpoints)
+        foreach (var endpoint in modelFile.Endpoints)
         {
             if (endpoint.Decorators.Any())
             {
@@ -861,7 +858,7 @@ public class ModelStore
         }
 
         // Résolution des propriétés d'association (pour clé étrangère).
-        foreach (var ap in fileClasses.SelectMany(c => c.Properties.OfType<AssociationProperty>()).Where(ap => ap.Association != null))
+        foreach (var ap in modelFile.Classes.SelectMany(c => c.Properties.OfType<AssociationProperty>()).Where(ap => ap.Association != null))
         {
             if (ap.Type.IsToMany() && !(ap.Property?.Domain?.AsDomains.ContainsKey(ap.As) ?? false))
             {
@@ -881,65 +878,8 @@ public class ModelStore
             }
         }
 
-        // Résolution des alias de classes et endpoints dans le fichier.
-        foreach (var alias in modelFile.Aliases)
-        {
-            var referencedFile = dependencies.SingleOrDefault(dep => dep.Name == alias.File.ReferenceName);
-            if (referencedFile == null)
-            {
-                yield return new ModelError(alias, $"Le fichier '{alias.File.ReferenceName}' est introuvable dans les dépendances du fichier.", alias.File) { ModelErrorType = ModelErrorType.TMD1003 };
-                continue;
-            }
-
-            foreach (var aliasClass in alias.Classes)
-            {
-                var referencedClass = referencedFile.Classes.SingleOrDefault(classe => classe.Name == aliasClass.ReferenceName);
-                if (referencedClass == null)
-                {
-                    yield return new ModelError(alias, $"La classe '{aliasClass.ReferenceName}' est introuvable dans le fichier '{alias.File.ReferenceName}'.", aliasClass) { ModelErrorType = ModelErrorType.TMD1002 };
-                    continue;
-                }
-
-                var existingClasse = modelFile.Classes.SingleOrDefault(classe => classe.Name == referencedClass.Name);
-                if (existingClasse == null)
-                {
-                    modelFile.Classes.Add(referencedClass);
-                }
-                else
-                {
-                    modelFile.Classes.Insert(modelFile.Classes.IndexOf(existingClasse), referencedClass);
-                    modelFile.Classes.Remove(existingClasse);
-                }
-
-                modelFile.ResolvedAliases.Add(referencedClass);
-            }
-
-            foreach (var aliasEndpoint in alias.Endpoints)
-            {
-                var referencedEndpoint = referencedFile.Endpoints.SingleOrDefault(endpoint => endpoint.Name == aliasEndpoint.ReferenceName);
-                if (referencedEndpoint == null)
-                {
-                    yield return new ModelError(alias, $"L'endpoint '{aliasEndpoint.ReferenceName}' est introuvable dans le fichier '{alias.File.ReferenceName}'.", aliasEndpoint) { ModelErrorType = ModelErrorType.TMD1006 };
-                    continue;
-                }
-
-                var existingEndpoint = modelFile.Endpoints.SingleOrDefault(endpoint => endpoint.Name == referencedEndpoint.Name);
-                if (existingEndpoint == null)
-                {
-                    modelFile.Endpoints.Add(referencedEndpoint);
-                }
-                else
-                {
-                    modelFile.Endpoints.Insert(modelFile.Endpoints.IndexOf(existingEndpoint), referencedEndpoint);
-                    modelFile.Endpoints.Remove(existingEndpoint);
-                }
-
-                modelFile.ResolvedAliases.Add(referencedEndpoint);
-            }
-        }
-
         // Résolution des clés d'unicités.
-        foreach (var classe in fileClasses.Where(c => c.UniqueKeyReferences.Any()))
+        foreach (var classe in modelFile.Classes.Where(c => c.UniqueKeyReferences.Any()))
         {
             classe.UniqueKeys.Clear();
 
@@ -965,7 +905,7 @@ public class ModelStore
         }
 
         // Résolution des valeurs
-        foreach (var classe in fileClasses.Where(c => c.ValueReferences.Any()))
+        foreach (var classe in modelFile.Classes.Where(c => c.ValueReferences.Any()))
         {
             classe.Values.Clear();
 
@@ -1002,7 +942,7 @@ public class ModelStore
         }
 
         // Résolution des propriétés spéciales de classe.
-        foreach (var classe in fileClasses)
+        foreach (var classe in modelFile.Classes)
         {
             if (classe.DefaultPropertyReference != null)
             {
@@ -1048,12 +988,12 @@ public class ModelStore
         }
 
         // Check de `reference` et `enum`
-        foreach (var classe in fileClasses.Where(c => c.Reference && c.ReferenceKey == null))
+        foreach (var classe in modelFile.Classes.Where(c => c.Reference && c.ReferenceKey == null))
         {
             yield return new ModelError(classe, $"La classe '{classe}' doit avoir au moins une propriété non composée et au plus une clé primaire pour être définie comme `reference`.") { ModelErrorType = ModelErrorType.TMD0001 };
         }
 
-        foreach (var classe in fileClasses)
+        foreach (var classe in modelFile.Classes)
         {
             if (classe.EnumOverride != null)
             {
@@ -1118,7 +1058,7 @@ public class ModelStore
         }
 
         // Résolutions des mappers
-        foreach (var classe in fileClasses)
+        foreach (var classe in modelFile.Classes)
         {
             foreach (var mappings in classe.FromMappers.SelectMany(m => m.Params).Concat(classe.ToMappers))
             {
@@ -1329,7 +1269,7 @@ public class ModelStore
         }
 
         // Résolution des mappers hérités
-        foreach (var classe in fileClasses)
+        foreach (var classe in modelFile.Classes)
         {
             if (classe.Extends != null)
             {
@@ -1386,7 +1326,7 @@ public class ModelStore
         }
 
         // Vérification qu'aucun mapper n'est vide
-        foreach (var classe in fileClasses)
+        foreach (var classe in modelFile.Classes)
         {
             foreach (var mapper in classe.FromMappers)
             {
@@ -1463,7 +1403,7 @@ public class ModelStore
         }
 
         // Vérifications de cohérence sur les fichiers.
-        foreach (var classe in fileClasses)
+        foreach (var classe in modelFile.Classes)
         {
             foreach (var property in classe.Properties.Where((e, i) => classe.Properties.Where((p, j) => p.Name == e.Name && j < i).Any()))
             {
@@ -1480,7 +1420,7 @@ public class ModelStore
             yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false, ModelErrorType = ModelErrorType.TMD9001 };
         }
 
-        foreach (var endpoint in fileEndpoints)
+        foreach (var endpoint in modelFile.Endpoints)
         {
             foreach (var queryParam in endpoint.GetQueryParams())
             {
@@ -1509,7 +1449,7 @@ public class ModelStore
             }
         }
 
-        foreach (var classe in fileClasses)
+        foreach (var classe in modelFile.Classes)
         {
             foreach (var p in classe.Properties.OfType<IFieldProperty>().Where(p => p.Label != null))
             {

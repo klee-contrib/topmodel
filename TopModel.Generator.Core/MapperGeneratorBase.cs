@@ -78,30 +78,30 @@ public abstract class MapperGeneratorBase<T> : GeneratorBase<T>
     {
         if (IsPersistent(mapper.Classe))
         {
-            return GetClassTags(mapper.Classe);
+            return mapper.Classe.Tags;
         }
 
         var persistentParam = mapper.Mapper.Params.FirstOrDefault(p => IsPersistent(p.Class));
         if (persistentParam != null)
         {
-            return GetClassTags(persistentParam.Class);
+            return persistentParam.Class.Tags;
         }
 
-        return GetClassTags(mapper.Classe);
+        return mapper.Classe.Tags;
     }
 
     private IEnumerable<string> GetMapperTags((Class Classe, ClassMappings Mapper) mapper)
     {
         if (IsPersistent(mapper.Classe))
         {
-            return GetClassTags(mapper.Classe);
+            return mapper.Classe.Tags;
         }
 
         if (IsPersistent(mapper.Mapper.Class))
         {
-            return GetClassTags(mapper.Mapper.Class);
+            return mapper.Mapper.Class.Tags;
         }
 
-        return GetClassTags(mapper.Classe);
+        return mapper.Classe.Tags;
     }
 }

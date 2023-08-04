@@ -56,7 +56,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                     : dep is { Source: IFieldProperty fp }
                     ? Config.GetEnumType(fp)
                     : $"{dep.Classe.NamePascal}Entity, {dep.Classe.NamePascal}{(Config.EntityMode == EntityMode.TYPED ? "EntityType" : string.Empty)}",
-                Path: Config.GetImportPathForClass(dep, GetClassTags(dep.Classe).Contains(tag) ? tag : GetClassTags(dep.Classe).Intersect(Config.Tags).FirstOrDefault() ?? tag, tag, Classes)!))
+                Path: Config.GetImportPathForClass(dep, dep.Classe.Tags.Contains(tag) ? tag : dep.Classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag, tag, Classes)!))
             .Concat(classe.Properties.SelectMany(dep => Config.GetDomainImportPaths(dep, tag)))
             .Where(p => p.Path != null && p.Path != Config.EntityTypesPath)
             .GroupAndSort();

@@ -12,14 +12,12 @@ public abstract class EndpointsGeneratorBase<T> : GeneratorBase<T>
     {
     }
 
-    public override List<string> GeneratedFiles => EndpointsFiles
-        .SelectMany(file => Config.Tags.Intersect(file.Tags.Where(FilterTag)).Select(tag => GetFilePath(file, tag)))
+    public override List<string> GeneratedFiles => Files.Values
+        .SelectMany(file => Config.Tags.Intersect(file.AllTags.Where(FilterTag)).Select(tag => (file, path: GetFilePath(file, tag))))
+        .Where(i => i.file.Endpoints.Any())
+        .Select(i => i.path)
         .Distinct()
         .ToList();
-
-    private IEnumerable<ModelFile> EndpointsFiles => Files.Values
-        .Where(f => f.Tags.Any(FilterTag)
-            && f.Endpoints.Any(endpoint => endpoint.ModelFile == f || !Files.ContainsKey(endpoint.ModelFile.Name)));
 
     protected virtual bool FilterTag(string tag)
     {
@@ -32,19 +30,22 @@ public abstract class EndpointsGeneratorBase<T> : GeneratorBase<T>
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in EndpointsFiles
-            .SelectMany(file => Config.Tags.Intersect(file.Tags.Where(FilterTag))
+        foreach (var file in Files.Values
+            .SelectMany(file => Config.Tags.Intersect(file.AllTags.Where(FilterTag))
                 .Select(tag => (tag, file, filePath: GetFilePath(file, tag))))
             .GroupBy(file => file.filePath))
         {
             var endpoints = file
                 .SelectMany(f => f.file.Endpoints)
+                .Where(e => e.Tags.Intersect(file.Select(f => f.tag)).Any())
                 .Distinct()
-                .Where(endpoint => file.Select(f => f.file).Contains(endpoint.ModelFile) || !Files.ContainsKey(endpoint.ModelFile.Name))
                 .OrderBy(e => e.Name, StringComparer.Ordinal)
                 .ToList();
 
-            HandleFile(file.Key, file.First().file.Options.Endpoints.FileName, file.First().tag, endpoints);
+            if (endpoints.Any())
+            {
+                HandleFile(file.Key, file.First().file.Options.Endpoints.FileName, file.First().tag, endpoints);
+            }
         }
     }
 }

@@ -43,7 +43,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         var imports = fromMappers.SelectMany(m => m.Mapper.Params.Select(p => p.Class).Concat(new[] { m.Classe }))
             .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
             .Where(c => Classes.Contains(c))
-            .Select(c => c.GetImport(Config, GetClassTags(c).Contains(tag) ? tag : GetClassTags(c).Intersect(Config.Tags).First()))
+            .Select(c => c.GetImport(Config, c.Tags.Contains(tag) ? tag : c.Tags.Intersect(Config.Tags).First()))
             .Distinct()
             .ToArray();
 

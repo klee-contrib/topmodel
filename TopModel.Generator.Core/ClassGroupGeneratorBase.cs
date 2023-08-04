@@ -13,7 +13,7 @@ public abstract class ClassGroupGeneratorBase<T> : GeneratorBase<T>
     }
 
     public override List<string> GeneratedFiles => Classes
-        .SelectMany(c => Config.Tags.Intersect(GetClassTags(c)).SelectMany(tag => GetFileNames(c, tag)))
+        .SelectMany(c => Config.Tags.Intersect(c.Tags).SelectMany(tag => GetFileNames(c, tag)))
         .Select(f => f.FileName)
         .Distinct()
         .ToList();
@@ -25,7 +25,7 @@ public abstract class ClassGroupGeneratorBase<T> : GeneratorBase<T>
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         foreach (var file in Classes
-            .SelectMany(classe => Config.Tags.Intersect(GetClassTags(classe))
+            .SelectMany(classe => Config.Tags.Intersect(classe.Tags)
                 .SelectMany(tag => GetFileNames(classe, tag)
                     .Select(f => (key: (f.FileType, f.FileName), tag, classe))))
             .GroupBy(f => f.key))
