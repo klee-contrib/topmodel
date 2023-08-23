@@ -22,6 +22,8 @@ public class Class : IPropertyContainer
 
     public ModelFile ModelFile { get; set; }
 
+    public IEnumerable<string> Tags => ModelFile.Tags.Concat(OwnTags).Distinct();
+
 #nullable enable
     public Class? Extends { get; set; }
 
@@ -97,6 +99,8 @@ public class Class : IPropertyContainer
 
 #nullable disable
     internal Reference Location { get; set; }
+
+    internal List<string> OwnTags { get; set; } = new();
 
     public bool Inherit(Class classe) => this == classe || this.Extends != null && this.Extends.Inherit(classe);
 

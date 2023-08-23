@@ -28,10 +28,6 @@ public static class ModelExtensions
             .Concat(modelStore.DataFlows.Where(d => d.Class == classe).Select(d => (Reference: d.ClassReference, File: d.GetFile())))
             .Concat(modelStore.DataFlows.SelectMany(d => d.Sources.Where(s => s.Class == classe).Select(s => (Reference: s.ClassReference, File: d.GetFile()))))
             .Concat(modelStore.Classes.SelectMany(c => c.FromMappers.SelectMany(c => c.Params).Concat(c.ToMappers).Where(m => m.Class == classe).Select(m => (Reference: m.ClassReference, File: c.GetFile()))))
-            .Concat(modelStore.Files.SelectMany(f =>
-                f.Aliases.SelectMany(a => a.Classes
-                    .Where(c => f.ResolvedAliases.OfType<Class>().Any(ra => ra.Name == c.ReferenceName && ra == classe))
-                    .Select(c => (Reference: c, File: f)))))
             .Where(r => r.Reference is not null)
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
@@ -90,7 +86,6 @@ public static class ModelExtensions
             IProperty { Decorator: Decorator decorator } => decorator.ModelFile,
             IProperty { Class: Class classe } => classe.ModelFile,
             IProperty { Endpoint: Endpoint endpoint } => endpoint.ModelFile,
-            Alias alias => alias.ModelFile,
             Domain domain => domain.ModelFile,
             Converter converter => converter.ModelFile,
             Decorator decorator => decorator.ModelFile,
@@ -112,7 +107,6 @@ public static class ModelExtensions
             CompositionProperty p => p.Location,
             AliasProperty { PropertyReference: Reference pr } => pr,
             AliasProperty p => p.Location,
-            Alias a => a.Location,
             Domain d => d.Location,
             LocatedString l => l.Location,
             Decorator d => d.Location,

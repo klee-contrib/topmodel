@@ -29,7 +29,9 @@ public abstract class GeneratorBase<T> : IModelWatcher
 
     protected Dictionary<string, ModelFile> Files { get; } = new();
 
-    protected IEnumerable<Class> Classes => Files.SelectMany(f => f.Value.Classes).Distinct();
+    protected IEnumerable<Class> Classes => Files
+        .SelectMany(f => f.Value.Classes.Where(c => Config.Tags.Intersect(c.Tags).Any()))
+        .Distinct();
 
     protected virtual bool PersistentOnly => false;
 
@@ -46,7 +48,7 @@ public abstract class GeneratorBase<T> : IModelWatcher
         using var scope = _logger.BeginScope(((IModelWatcher)this).FullName);
         using var scope2 = _logger.BeginScope(storeConfig!);
 
-        var handledFiles = files.Where(file => Config.Tags.Intersect(file.Tags).Any());
+        var handledFiles = files.Where(file => Config.Tags.Intersect(file.AllTags).Any());
 
         if (!NoLanguage)
         {
@@ -71,12 +73,7 @@ public abstract class GeneratorBase<T> : IModelWatcher
 
     protected string GetBestClassTag(Class classe, string tag)
     {
-        return GetClassTags(classe).Contains(tag) ? tag : GetClassTags(classe).Intersect(Config.Tags).FirstOrDefault() ?? tag;
-    }
-
-    protected IEnumerable<string> GetClassTags(Class classe)
-    {
-        return Files.Values.Where(f => f.Classes.Contains(classe)).SelectMany(f => f.Tags).Distinct();
+        return classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag;
     }
 
     protected abstract void HandleFiles(IEnumerable<ModelFile> files);

@@ -58,3 +58,7 @@ Ainsi, toutes les routes décrites dans ce fichier auront le préfixe `utilisate
 **Si des fichiers de modèle de même module ont le même nom** (que ça soit le vrai nom de fichier dans des dossiers différents où bien une surcharge comme décrite précédemment), alors **les endpoints générés pour ces fichiers seront regroupés dans le même fichier cible**, pour tous les générateurs clients et serveurs.
 
 Une erreur sera levée si des fichiers de même nom ne définissent pas le même préfixe pour les routes. De même, deux endpoints de même fichier cible ne peuvent pas avoir le même nom.
+
+## Tags d'un endpoint
+
+Un endpoint peut également définir ses propres tags, qui s'ajouteront aux tags du fichier, via la propriété `tags`, pour plus de flexibilité dans l'organisation des endpoints en fichiers (par exemple, s'il n'y a qu'un seul endpoint dans un fichier qui a besoin pris en compte par un autre générateur, alors on peut ajouter un tag directement sur cet endpoint au lieu de le mettre dans un fichier différent).

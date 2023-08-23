@@ -29,7 +29,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         using var fw = new FileWriter(filePath, _logger, false);
-        var imports = Config.GetEndpointImports(endpoints, tag, Classes, GetClassTags);
+        var imports = Config.GetEndpointImports(endpoints, tag, Classes);
 
         imports.AddRange(new List<(string Import, string Path)>
         {

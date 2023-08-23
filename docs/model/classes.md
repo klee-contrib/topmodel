@@ -66,3 +66,7 @@ _Remarque : en particulier, une classe enum, une classe de référence, une clas
 ## Décorateurs et mappers
 
 Une classe peut implémenter des **[décorateurs](/model/decorators.md)** et définir des **[mappers](/model/mappers.md)**.
+
+## Tags d'une classe
+
+Une classe peut également définir ses propres tags, qui s'ajouteront aux tags du fichier, via la propriété `tags`, pour plus de flexibilité dans l'organisation des classes en fichiers (par exemple, s'il n'y a qu'une seule classe dans un fichier qui a besoin prise en compte par un autre générateur, alors on peut ajouter un tag directement sur cette classe au lieu de la mettre dans un fichier différent).

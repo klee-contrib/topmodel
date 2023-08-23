@@ -114,14 +114,14 @@ public class JavascriptConfig : GeneratorConfigBase
             Select(import => (Import: import.Split("/").Last(), Path: import[..import.LastIndexOf("/")]));
     }
 
-    public List<(string Import, string Path)> GetEndpointImports(IEnumerable<Endpoint> endpoints, string tag, IEnumerable<Class> availableClasses, Func<Class, IEnumerable<string>> getClassTags)
+    public List<(string Import, string Path)> GetEndpointImports(IEnumerable<Endpoint> endpoints, string tag, IEnumerable<Class> availableClasses)
     {
         return endpoints.SelectMany(e => e.ClassDependencies)
             .Select(dep => (
                 Import: dep is { Source: IFieldProperty fp }
                     ? GetEnumType(fp)
                     : dep.Classe.NamePascal,
-                Path: GetImportPathForClass(dep, getClassTags(dep.Classe).Contains(tag) ? tag : getClassTags(dep.Classe).Intersect(Tags).FirstOrDefault() ?? tag, tag, availableClasses)!))
+                Path: GetImportPathForClass(dep, dep.Classe.Tags.Contains(tag) ? tag : dep.Classe.Tags.Intersect(Tags).FirstOrDefault() ?? tag, tag, availableClasses)!))
             .Concat(endpoints.SelectMany(d => d.Properties).SelectMany(dep => GetDomainImportPaths(dep, tag)))
             .Where(i => i.Path != null)
             .GroupAndSort();

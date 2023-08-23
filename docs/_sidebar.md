@@ -17,7 +17,6 @@
   - [Propriétés](/model/properties.md)
   - [Classes](/model/classes.md)
   - [Endpoints](/model/endpoints.md)
-  - [Alias](/model/aliases.md)
   - [Mappers](/model/mappers.md)
   - [Décorateurs](/model/decorators.md)
   - [Multilinguisme](/model/i18n.md)

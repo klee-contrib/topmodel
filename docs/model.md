@@ -26,9 +26,10 @@ uses:
   - Referentiel/Data/File_01
 ```
 
-Il n'y a pas de contrainte d'ordre sur le reste des documents YAML suivants. Ils peuvent être de **4 types** différents :
+Il n'y a pas de contrainte d'ordre sur le reste des documents YAML suivants. Ils peuvent être de **5 types** différents :
 
 - [Un domaine](/model/domains.md)
 - [Une classe](/model/classes.md)
 - [Un endpoint](/model/endpoints.md)
-- [Un alias de classes et endpoints](/model/aliases.md?id=alias-de-classes-et-endpoints)
+- [Un décorateur](/model/decorators.md)
+- [Un converter](/model/mappers.md#converters)

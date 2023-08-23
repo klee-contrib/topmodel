@@ -8,6 +8,11 @@ public class ModelFile
 
     public List<string> Tags { get; set; } = new();
 
+    public IEnumerable<string> AllTags => Tags
+        .Concat(Classes.SelectMany(c => c.OwnTags))
+        .Concat(Endpoints.SelectMany(e => e.OwnTags))
+        .Distinct();
+
     public List<Reference> Uses { get; set; } = new();
 
     public string Name { get; set; }
@@ -27,8 +32,6 @@ public class ModelFile
     public List<Endpoint> Endpoints { get; } = new();
 
     public List<DataFlow> DataFlows { get; } = new();
-
-    public List<object> ResolvedAliases { get; } = new();
 
     public IDictionary<Reference, object> References => Domains.SelectMany(d => d.AsDomains.Keys.Select(adn => d.AsDomainReferences.TryGetValue(adn, out var adr) && d.AsDomains.TryGetValue(adn, out var ad) ? (adr as Reference, ad as object) : (null, null)))
         .Concat(Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object)))
@@ -60,7 +63,6 @@ public class ModelFile
         .Concat(Classes.SelectMany(c => c.ValueReferences.SelectMany(rv => rv.Value).Select(prop => (prop.Key, (object)c.Properties.FirstOrDefault(p => p.Name == prop.Key.ReferenceName)))))
         .Concat(Classes.SelectMany(c => c.FromMappers.SelectMany(m => m.Params).Concat(c.ToMappers)).Select(p => (p.ClassReference as Reference, (object)p.Class)))
         .Concat(Classes.SelectMany(c => c.FromMappers.SelectMany(m => m.Params).Concat(c.ToMappers).SelectMany(m => m.MappingReferences.SelectMany(mr => new[] { (mr.Key, (object)c.Properties.FirstOrDefault(k => k.Name == mr.Key.ReferenceName)), (mr.Value, mr.Value.ReferenceName == "this" || mr.Value.ReferenceName == "false" ? new Keyword { ModelFile = c.ModelFile } : m.Mappings.Values.FirstOrDefault(k => k.Name == mr.Value.ReferenceName)) }))))
-        .Concat(Aliases.SelectMany(a => a.Classes).Select(c => (c as Reference, ResolvedAliases.OfType<Class>().FirstOrDefault(ra => ra.Name == c.ReferenceName) as object)))
         .Concat(Converters.SelectMany(c => c.DomainsFromReferences.Select(d => (d as Reference, c.From.FirstOrDefault(dom => dom.Name == d.ReferenceName) as object))))
         .Concat(Converters.SelectMany(c => c.DomainsToReferences.Select(d => (d as Reference, c.To.FirstOrDefault(dom => dom.Name == d.ReferenceName) as object))))
         .Concat(DataFlows.Select(d => (d.ClassReference as Reference, d.Class as object)))
@@ -73,19 +75,16 @@ public class ModelFile
         .ToDictionary(t => t.Item1, t => t.Item2);
 
     public IList<Reference> UselessImports => Uses
-        .Where(use => !Aliases.Select(alias => alias.File.ReferenceName)
-            .Concat(References.Values.Select(r => r.GetFile().Name))
+        .Where(use => !References.Values.Select(r => r.GetFile().Name)
             .Contains(use.ReferenceName))
         .ToList();
 
-    public IList<IProperty> Properties => Classes.Where(c => !ResolvedAliases.Contains(c)).SelectMany(c => c.Properties)
-        .Concat(Endpoints.Where(e => !ResolvedAliases.Contains(e)).SelectMany(e => e.Params))
-        .Concat(Endpoints.Where(e => !ResolvedAliases.Contains(e)).Select(e => e.Returns))
+    public IList<IProperty> Properties => Classes.SelectMany(c => c.Properties)
+        .Concat(Endpoints.SelectMany(e => e.Params))
+        .Concat(Endpoints.Select(e => e.Returns))
         .Concat(Decorators.SelectMany(e => e.Properties))
         .Where(p => p != null)
         .ToList();
-
-    internal IList<Alias> Aliases { get; set; } = new List<Alias>();
 
     public override string ToString()
     {

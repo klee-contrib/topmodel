@@ -617,6 +617,13 @@
           ],
           "additionalProperties": false,
           "properties": {
+            "tags": {
+              "type": "array",
+              "description": "Tags supplémentaires à ajouter sur cette classe pour la génération.",
+              "items": {
+                "type": "string"
+              }
+            },
             "trigram": {
               "type": "string",
               "description": "Le trigramme qui préfixera toutes les propriétés de la classe en SQL"
@@ -852,6 +859,13 @@
           ],
           "additionalProperties": false,
           "properties": {
+            "tags": {
+              "type": "array",
+              "description": "Tags supplémentaires à ajouter sur cette classe pour la génération.",
+              "items": {
+                "type": "string"
+              }
+            },
             "name": {
               "type": "string",
               "description": "Nom du endpoint. Sera utilisé comme nom de la méthode/fonction associée"
@@ -912,44 +926,6 @@
                     }
                   }
                 ]
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "type": "object",
-      "description": "Définition d'un alias",
-      "required": [
-        "alias"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "alias": {
-          "type": "object",
-          "description": "Définition d'un alias.",
-          "required": [
-            "file"
-          ],
-          "additionalProperties": false,
-          "properties": {
-            "file": {
-              "type": "string",
-              "description": "Fichier dans lequel les classes ou endpoints à aliaser se trouvent."
-            },
-            "classes": {
-              "type": "array",
-              "description": "Classes à aliaser.",
-              "items": {
-                "type": "string"
-              }
-            },
-            "endpoints": {
-              "type": "array",
-              "description": "Endpoint à aliaser.",
-              "items": {
-                "type": "string"
               }
             }
           }

@@ -61,16 +61,10 @@ public class ModelFileLoader
                     file.Namespace = new Namespace { App = _config.App, Module = value!.Value };
                     break;
                 case "tags":
-                    parser.ConsumeSequence(() =>
-                    {
-                        file.Tags.Add(parser.Consume<Scalar>().Value);
-                    });
+                    parser.ConsumeSequence(() => file.Tags.Add(parser.Consume<Scalar>().Value));
                     break;
                 case "uses":
-                    parser.ConsumeSequence(() =>
-                    {
-                        file.Uses.Add(new Reference(parser.Consume<Scalar>()));
-                    });
+                    parser.ConsumeSequence(() => file.Uses.Add(new Reference(parser.Consume<Scalar>())));
                     break;
                 case "options":
                     parser.Consume<MappingStart>();
@@ -136,39 +130,6 @@ public class ModelFileLoader
                 var endpoint = _endpointLoader.Load(parser);
                 endpoint.Location = new Reference(scalar);
                 file.Endpoints.Add(endpoint);
-            }
-            else if (scalar.Value == "alias")
-            {
-                var alias = new Alias();
-
-                parser.ConsumeMapping(() =>
-                {
-                    var prop = parser.Consume<Scalar>().Value;
-                    parser.TryConsume<Scalar>(out var value);
-
-                    switch (prop)
-                    {
-                        case "file":
-                            alias.File = new Reference(value);
-                            break;
-                        case "classes":
-                            parser.ConsumeSequence(() =>
-                            {
-                                alias.Classes.Add(new ClassReference(parser.Consume<Scalar>()));
-                            });
-                            break;
-                        case "endpoints":
-                            parser.ConsumeSequence(() =>
-                            {
-                                alias.Endpoints.Add(new Reference(parser.Consume<Scalar>()));
-                            });
-                            break;
-                    }
-                });
-
-                alias.ModelFile = file;
-                alias.Location = new Reference(scalar);
-                file.Aliases.Add(alias);
             }
             else if (scalar.Value == "dataFlow")
             {

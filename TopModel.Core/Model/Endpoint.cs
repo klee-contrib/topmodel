@@ -10,6 +10,8 @@ public class Endpoint : IPropertyContainer
 #nullable disable
     public ModelFile ModelFile { get; set; }
 
+    public IEnumerable<string> Tags => ModelFile.Tags.Concat(OwnTags).Distinct();
+
     public LocatedString Name { get; set; }
 
     public string NamePascal => Name.Value.ToPascalCase();
@@ -49,6 +51,9 @@ public class Endpoint : IPropertyContainer
 
 #nullable disable
     internal Reference Location { get; set; }
+
+    internal List<string> OwnTags { get; set; } = new();
+
 #nullable enable
 
     public override string ToString()

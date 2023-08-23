@@ -25,6 +25,9 @@ public class EndpointLoader : ILoader<Endpoint>
 
             switch (prop)
             {
+                case "tags":
+                    parser.ConsumeSequence(() => endpoint.OwnTags.Add(parser.Consume<Scalar>().Value));
+                    break;
                 case "name":
                     endpoint.Name = new LocatedString(value);
                     break;

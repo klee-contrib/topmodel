@@ -41,7 +41,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
         var usings = fromMappers.SelectMany(m => m.Mapper.Params.Select(p => p.Class).Concat(new[] { m.Classe }))
             .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
-            .Select(c => Config.GetNamespace(c, GetClassTags(c).Contains(tag) ? tag : GetClassTags(c).Intersect(Config.Tags).First()))
+            .Select(c => Config.GetNamespace(c, GetBestClassTag(c, tag)))
             .Where(@using => !ns.Contains(@using))
             .Distinct()
             .ToArray();
@@ -310,6 +310,6 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
     protected override bool IsPersistent(Class classe)
     {
-        return GetClassTags(classe).Intersect(Config.MapperTagsOverrides).Any() || classe.IsPersistent;
+        return classe.Tags.Intersect(Config.MapperTagsOverrides).Any() || classe.IsPersistent;
     }
 }
