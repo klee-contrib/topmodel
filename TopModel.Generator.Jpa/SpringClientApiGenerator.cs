@@ -176,12 +176,22 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         var returnClass = "(Class<?>) null";
         if (endpoint.Returns != null)
         {
-            returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns).Split('<').First()}>";
-            returnClass = $"{Config.GetType(endpoint.Returns).Split('<').First()}.class";
-            if (Config.GetType(endpoint.Returns).Split('<').First() == "ResponseEntity" && Config.GetType(endpoint.Returns).Split('<').Length > 1)
+            if (Config.GetType(endpoint.Returns) == "ResponseEntity" && Config.GetType(endpoint.Returns).Split('<').Length > 1)
             {
                 returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns).Split('<')[1].Split('>').First()}>";
                 returnClass = $"{Config.GetType(endpoint.Returns).Split('<')[1].Split('>').First()}.class";
+            }
+            else if (Config.GetType(endpoint.Returns).Contains('<'))
+            {
+                returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns)}>";
+                returnClass = @$"new ParameterizedTypeReference<{Config.GetType(endpoint.Returns)}>() {{}}";
+                fw.AddImport("org.springframework.core.ParameterizedTypeReference");
+            }
+            else
+            {
+                returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns)}>";
+                returnClass = $"{Config.GetType(endpoint.Returns)}.class";
+
             }
         }
 

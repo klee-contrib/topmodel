@@ -75,6 +75,12 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
     {
         var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
         var getter = string.Empty;
+        var converter = Config.GetConverter((propertySource as IFieldProperty)?.Domain, (propertyTarget as IFieldProperty)?.Domain);
+        if (converter != null)
+        {
+            fw.AddImports(Config.GetImplementation(converter)!.Imports);
+        }
+
         var checkSourceNull = false;
         if ((!propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent)
             || !(propertySource is AssociationProperty || propertyTarget is AssociationProperty))
@@ -179,13 +185,13 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         }
         else
         {
-            getter = Config.GetConvertedValue(
-                $@"{sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}()",
-                (propertySource as IFieldProperty)?.Domain,
-                (propertyTarget as IFieldProperty)?.Domain);
+            getter = $"{sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}()";
         }
 
-        return (Getter: getter, CheckSourceNull: checkSourceNull);
+        return (Getter: Config.GetConvertedValue(
+                getter,
+                (propertySource as IFieldProperty)?.Domain,
+                (propertyTarget as IFieldProperty)?.Domain), CheckSourceNull: checkSourceNull);
     }
 
     private void WriteFromMapper(Class classe, FromMapper mapper, JavaWriter fw, string tag)

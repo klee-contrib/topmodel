@@ -103,9 +103,9 @@ public abstract class GeneratorConfigBase
 
     public string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain)
     {
-        if (fromDomain != null && toDomain != null && fromDomain != toDomain)
+        var converter = GetConverter(fromDomain, toDomain);
+        if (converter != null && fromDomain != null && toDomain != null)
         {
-            var converter = fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
             var text = GetImplementation(converter)?.Text;
             if (text != null)
             {
@@ -116,6 +116,16 @@ public abstract class GeneratorConfigBase
         }
 
         return value;
+    }
+
+    public Converter? GetConverter(Domain? fromDomain, Domain? toDomain)
+    {
+        if (fromDomain != null && toDomain != null && fromDomain != toDomain)
+        {
+            return fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
+        }
+
+        return null;
     }
 
     public IEnumerable<string> GetDecoratorAnnotations(Class classe)

@@ -1121,7 +1121,7 @@ public class ModelStore
                         if (currentProperty is IFieldProperty fp)
                         {
                             if (fp.Domain != mappedProperty.Domain
-                                && !Converters.Any(c => c.From.Any(cf => cf == (mappings.To ? mappedProperty.Domain : fp.Domain)) && c.To.Any(ct => ct == (mappings.To ? fp.Domain : mappedProperty.Domain))))
+                                && !Converters.Any(c => c.From.Any(cf => cf == (mappings.To ? fp.Domain : mappedProperty.Domain)) && c.To.Any(ct => ct == (mappings.To ? mappedProperty.Domain : fp.Domain))))
                             {
                                 yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine ('{mappedProperty.Domain.Name}' au lieu de '{fp.Domain.Name}') et qu'il n'existe pas de convertisseur entre les deux.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1014 };
                             }

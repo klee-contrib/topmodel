@@ -157,7 +157,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             fw.WriteLine();
         }
 
-        if (returnType == "string")
+        if (returnType == "string" && endpoint.Method == "GET")
         {
             fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}(`/{endpoint.FullRoute.Replace("{", "${")}`, {{responseType: 'text'}}");
         }
