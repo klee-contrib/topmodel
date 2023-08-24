@@ -307,7 +307,7 @@ public class JpaModelPropertyGenerator
             fw.AddImport($"{javaOrJakarta}.validation.constraints.NotNull");
         }
 
-        if (property.PrimaryKey && classe.Reference && classe.Values.Any() && !_config.UseJdbc)
+        if (_config.CanClassUseEnums(classe) && property.PrimaryKey && !_config.UseJdbc)
         {
             fw.AddImports(new List<string>
             {

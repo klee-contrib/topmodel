@@ -83,7 +83,11 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
         if (Config.UseJdbc)
         {
-            return (Getter: $"{sourceName}.{getterPrefix}{propertySource.NamePascal}()", CheckSourceNull: false);
+            getter = $"{sourceName}.{getterPrefix}{propertySource.NamePascal.ToFirstUpper()}()";
+            return (Getter: Config.GetConvertedValue(
+                getter,
+                (propertySource as IFieldProperty)?.Domain,
+                (propertyTarget as IFieldProperty)?.Domain), CheckSourceNull: false);
         }
 
         var checkSourceNull = false;
