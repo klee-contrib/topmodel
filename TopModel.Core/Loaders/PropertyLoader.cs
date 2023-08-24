@@ -259,6 +259,9 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                         case "as":
                             alp.As = value.Value;
                             break;
+                        case "name":
+                            alp.Name = value.Value;
+                            break;
                         case "trigram":
                             alp.Trigram = new LocatedString(value);
                             break;

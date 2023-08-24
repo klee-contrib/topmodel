@@ -9,6 +9,7 @@ public class AliasProperty : IFieldProperty
     private string? _defaultValue;
     private Domain? _domain;
     private string? _label;
+    private string? _name;
 
 #nullable disable
     private IFieldProperty _property;
@@ -41,11 +42,28 @@ public class AliasProperty : IFieldProperty
 
     public LocatedString? Trigram { get; set; }
 
-    public string Name => (Prefix ?? string.Empty) + _property?.Name + (Suffix ?? string.Empty);
+    public string Name
+    {
+        get =>
+            (Prefix ?? string.Empty)
+            + (_name ?? _property?.Name)
+            + (Suffix ?? string.Empty);
+        set => _name = value;
+    }
 
-    public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing ? Name : (Prefix?.ToFirstUpper() ?? string.Empty) + _property?.NamePascal + (Suffix ?? string.Empty);
+    public string NamePascal => ((IProperty)this).Parent.PreservePropertyCasing
+        ? Name
+        : (Prefix?.ToFirstUpper() ?? string.Empty)
+            + (_name?.ToPascalCase() ?? _property?.NamePascal)
+            + (Suffix ?? string.Empty);
 
-    public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing ? Name : (Prefix?.ToFirstLower() ?? string.Empty) + (string.IsNullOrWhiteSpace(Prefix) ? _property?.NameCamel : _property?.NameCamel.ToFirstUpper()) + (Suffix ?? string.Empty);
+    public string NameCamel => ((IProperty)this).Parent.PreservePropertyCasing
+        ? Name
+        : (Prefix?.ToFirstLower() ?? string.Empty)
+            + (string.IsNullOrWhiteSpace(Prefix)
+                ? (_name?.ToCamelCase() ?? _property?.NameCamel)
+                : (_name?.ToPascalCase() ?? _property?.NamePascal))
+            + (Suffix ?? string.Empty);
 
     public string NameByClassPascal => NamePascal;
 
@@ -135,6 +153,7 @@ public class AliasProperty : IFieldProperty
             Prefix = Prefix,
             Property = _property,
             Suffix = Suffix,
+            Name = _name!,
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName
         };
@@ -177,6 +196,7 @@ public class AliasProperty : IFieldProperty
             Prefix = Prefix,
             Suffix = Suffix,
             Comment = _comment!,
+            Name = _name!,
             Trigram = Trigram,
             DefaultValue = _defaultValue,
             Label = _label,

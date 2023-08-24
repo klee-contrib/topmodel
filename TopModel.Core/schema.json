@@ -237,6 +237,10 @@
                 }
               ]
             },
+            "name": {
+              "type": "string",
+              "description": "Surcharge locale du nom de la propriété aliasée."
+            },
             "trigram": {
               "type": "string",
               "description": "Surcharge locale du trigram"

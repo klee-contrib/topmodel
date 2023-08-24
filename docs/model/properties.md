@@ -145,7 +145,7 @@ Enfin, via la propriété `as`, il est possible de remplacer le domaine de la pr
 Exemple :
 
 ```yaml
-# Génère une propriété MyClassCodeList, de domaine DO_CODE_LIST et de type string[] (ou MyClassCode[] si le language/générateur supporte les enums), en supposant que Code est du domaine DO_CODE et MyClass est une classe enum.
+# Génère une propriété MyClassCodeList, de domaine DO_CODE_LIST (en supposant que Code est du domaine DO_CODE qui définit DO_CODE_LIST pour `as: list`). Le type des implémentations de cette propriété sera déterminé à partir du type générique de chaque implémentation, en utilisant le type de la propriété initiale comme paramètre.
 alias:
   class: MyClass
   include: Code
@@ -153,6 +153,19 @@ as: list
 prefix: true
 suffix: List
 ```
+
+De plus, il est possible de surcharger les propriétés suivantes de la propriété initiale :
+
+- `label`
+- `comment`
+- `domain` (Le remplacement de domaine via `as` se fera sur ce domaine-là au lieu du domaine initial)
+- `name` (Les préfixes et suffixes s'ajouteront à ce nom-là au lieu du nom initial)
+- `trigram`
+- `defaultValue`
+- `required`
+- `readonly`
+
+Ces surcharges s'appliqueront, comme toutes les autres propriétés de configuration de l'alias, sur toutes les propriétés incluses dans la définition. Par conséquent, si vous voulez changer le libellé ou le nom d'un champ dans un alias, il vous faudra très certainement séparer vos définitions d'alias.
 
 ## Autres informations de propriétés
 
