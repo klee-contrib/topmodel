@@ -191,7 +191,6 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
             {
                 returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns)}>";
                 returnClass = $"{Config.GetType(endpoint.Returns)}.class";
-
             }
         }
 

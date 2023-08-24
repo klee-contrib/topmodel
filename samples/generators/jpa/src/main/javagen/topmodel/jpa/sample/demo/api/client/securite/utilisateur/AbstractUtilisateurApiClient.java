@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -107,10 +108,10 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Liste des utilisateurs
 	 */
-	public ResponseEntity<List> findAllByType(TypeUtilisateur.Values typeUtilisateurCode){
+	public ResponseEntity<List<UtilisateurSearch>> findAllByType(TypeUtilisateur.Values typeUtilisateurCode){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.findAllByTypeUriComponentsBuilder(typeUtilisateurCode);
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), List.class);
+		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<UtilisateurSearch>>() {});
 	}
 
 	/**
@@ -204,9 +205,9 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param dateModification Date de modification de l'utilisateur
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<Page> search(Long utiId, Long age, Long profilId, String email, String nom, Boolean actif, TypeUtilisateur.Values typeUtilisateurCode, List<Long> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification){
+	public ResponseEntity<Page<UtilisateurSearch>> search(Long utiId, Long age, Long profilId, String email, String nom, Boolean actif, TypeUtilisateur.Values typeUtilisateurCode, List<Long> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utiId, age, profilId, email, nom, actif, typeUtilisateurCode, utilisateursEnfant, dateCreation, dateModification);
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), Page.class);
+		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), new ParameterizedTypeReference<Page<UtilisateurSearch>>() {});
 	}
 }
