@@ -101,7 +101,12 @@
     },
     "useJdbc": {
       "type": "boolean",
-      "description": "Générer les entités en mode JDBC"
+      "description": "Générer les entités en mode JDBC",
+      "default": "false"
+    },
+    "mappersInClass": {
+      "type": "boolean",
+      "description": "Indique s'il faut ajouter les mappers en tant méthode ou constructeur dans les classes qui les déclarent"
     },
     "dataFlowsPath": {
       "type": "string",

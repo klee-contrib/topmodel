@@ -90,6 +90,11 @@ public class JpaConfig : GeneratorConfigBase
     public bool UseJdbc { get; set; } = false;
 
     /// <summary>
+    /// Indique s'il faut ajouter les mappers en tant méthode ou constructeur dans les classes qui les déclarent.
+    /// </summary>
+    public bool MappersInClass { get; set; } = true;
+
+    /// <summary>
     /// Taille des chunks à extraire et insérer
     /// </summary>
     public long DataFlowsBulkSize { get; set; } = 100000;

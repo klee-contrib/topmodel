@@ -94,7 +94,10 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         JpaModelPropertyGenerator.WriteProperties(fw, classe, tag);
         JpaModelPropertyGenerator.WriteCompositePrimaryKeyClass(fw, classe);
         JpaModelConstructorGenerator.WriteNoArgConstructor(fw, classe);
-        JpaModelConstructorGenerator.WriteFromMappers(fw, classe, AvailableClasses, tag);
+        if (Config.MappersInClass)
+        {
+            JpaModelConstructorGenerator.WriteFromMappers(fw, classe, AvailableClasses, tag);
+        }
 
         WriteGetters(fw, classe, tag);
         WriteSetters(fw, classe, tag);
@@ -108,7 +111,10 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             }
         }
 
-        WriteToMappers(fw, classe, tag);
+        if (Config.MappersInClass)
+        {
+            WriteToMappers(fw, classe, tag);
+        }
 
         if ((Config.FieldsEnum & Target.Persisted) > 0 && classe.IsPersistent
             || (Config.FieldsEnum & Target.Dto) > 0 && !classe.IsPersistent)
