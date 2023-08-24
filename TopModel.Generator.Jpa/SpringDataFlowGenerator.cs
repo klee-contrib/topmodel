@@ -254,7 +254,7 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
                 "VARCHAR" => "VarChar",
                 _ => sqlType.ToPascalCase()
             };
-            fw.WriteLine(3, $@"map(""{property.SqlName}"", DataType.{dataType}, {dataFlow.Class.NamePascal}::{(Config.GetType(property) == "boolean" ? "is" : "get")}{property.NamePascal});");
+            fw.WriteLine(3, $@"map(""{property.SqlName}"", DataType.{dataType}, {dataFlow.Class.NamePascal}::{(Config.GetType(property) == "boolean" ? "is" : "get")}{property.NamePascal.ToFirstUpper()});");
         }
 
         fw.WriteLine(2, "}");
@@ -277,7 +277,11 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
             WriteBeanTruncateStep(fw, dataFlow);
         }
 
-        WriteBeanReader(fw, dataFlow, tag);
+        if (dataFlow.Sources[0].Mode == DataFlowSourceMode.QueryAll)
+        {
+            WriteBeanReader(fw, dataFlow, tag);
+        }
+
         WriteBeanWriter(fw, dataFlow, tag);
         fw.WriteLine("}");
     }
