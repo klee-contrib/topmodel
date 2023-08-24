@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 1.32.3
+version: 1.33.0
 generatedFiles:
   - ../generators/php/src/Entity/Securite/Droit.php
   - ../generators/php/src/Entity/Securite/Profil.php

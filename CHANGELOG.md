@@ -1,5 +1,13 @@
 # TopModel.Generator (`modgen`)
 
+## 1.33.0
+
+- [#286](https://github.com/klee-contrib/topmodel/pull/286) - Retrait alias de classes et d'endpoints et ajout de tags supplémentaires
+
+  **breaking change** : Il n'est plus possible de définir des alias de classes et d'endpoints. A la place, il suffit de renseigner la propriété `tags` directement sur les classes et les endpoints avec les tags que vous auriez mis sur les fichiers qui définissaient ces alias. **Cette fonctionnalité n'avait rien à voir avec les alias de propriétés que vous utilisez partout**.
+
+- [`3a2d2177`](https://github.com/klee-contrib/topmodel/commit/3a2d2177668b248e3481707a9911b45520ad3afb) - Surcharge du nom d'une propriété dans un alias
+
 ## 1.32.3
 
 - [`26ce249f`](https://github.com/klee-contrib/topmodel/commit/26ce249f1baef13ba554967c08a274d75745e655) - [C# - classgen] Ajout implémentation pour "IList"
