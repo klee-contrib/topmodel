@@ -151,15 +151,32 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         {
             if (Config.CanClassUseEnums(apTarget.Property.Class))
             {
-                if (apTarget.Type.IsToMany())
+                if (!propertySource.Class.IsPersistent)
                 {
-                    getter = $@"{sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}(){(!propertySource.Class.IsPersistent ? $".stream().map({Config.GetType(apTarget.Property)}::getEntity).collect(Collectors.toList())" : string.Empty)}";
-                    fw.AddImport("java.util.stream.Collectors");
+                    if (apTarget.Type.IsToMany())
+                    {
+                        getter = $@"{sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}().stream().map({apTarget.Association.NamePascal}.Values::getEntity).collect(Collectors.toList())";
+                        fw.AddImport($"{Config.GetEnumPackageName(apTarget.Association, tag)}.{Config.GetEnumName(apTarget.Association)}");
+                        fw.AddImport("java.util.stream.Collectors");
+                    }
+                    else
+                    {
+                        getter = $"{apTarget.Association.NamePascal}.Values.getEntity({sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}())";
+                        checkSourceNull = true;
+                    }
                 }
                 else
                 {
-                    getter = $"{sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}(){(!propertySource.Class.IsPersistent ? ".getEntity()" : string.Empty)}";
-                    checkSourceNull = true;
+                    if (apTarget.Type.IsToMany())
+                    {
+                        getter = $@"{sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}()";
+                        fw.AddImport("java.util.stream.Collectors");
+                    }
+                    else
+                    {
+                        getter = $"{sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}()";
+                        checkSourceNull = true;
+                    }
                 }
             }
             else if (propertyTarget.Class.IsPersistent && propertySource.Class.IsPersistent)

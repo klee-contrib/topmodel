@@ -295,6 +295,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
     {
         foreach (var ap in classe.GetProperties(AvailableClasses).OfType<AssociationProperty>().Where(ap => Config.CanClassUseEnums(ap.Association)))
         {
+            fw.AddImport($"{Config.GetEnumPackageName(ap.Association, tag)}.{Config.GetEnumName(ap.Association)}");
             var isMultiple = ap.Type.IsToMany();
             {
                 var propertyName = ap.NameCamel;
@@ -307,16 +308,10 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteLine(2, $"if ({propertyName} != null) {{");
                 if (!isMultiple)
                 {
-                    fw.WriteLine(3, @$"this.{ap.NameByClassCamel} = {propertyName}.getEntity();");
+                    fw.WriteLine(3, @$"this.{ap.NameByClassCamel} = {ap.Association.NamePascal}.Values.getEntity({propertyName});");
                 }
                 else
                 {
-                    var constructorArgs = "p";
-                    foreach (var p in ap.Association.GetProperties(AvailableClasses).Where(pr => !pr.PrimaryKey))
-                    {
-                        constructorArgs += $", p.get{((p is AssociationProperty asp && Config.CanClassUseEnums(asp.Property.Class)) ? p.NameCamel : p.NameByClassCamel).ToFirstUpper()}()";
-                    }
-
                     var type = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc).Split('<').First();
 
                     if (_newableTypes.TryGetValue(type, out var newableType))
@@ -327,7 +322,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                         fw.AddImport($"java.util.{newableType}");
                         fw.WriteLine(4, @$"this.{ap.NameByClassCamel} = new {newableType}<>();");
                         fw.WriteLine(3, "}");
-                        fw.WriteLine(3, @$"this.{ap.NameByClassCamel}.addAll({propertyName}.stream().map(p -> new {ap.Association.NamePascal}({constructorArgs})).collect(Collectors.to{type}()));");
+                        fw.WriteLine(3, @$"this.{ap.NameByClassCamel}.addAll({propertyName}.stream().map({ap.Association.NamePascal}.Values::getEntity).collect(Collectors.to{type}()));");
                         fw.AddImport("java.util.stream.Collectors");
                     }
                 }
@@ -415,7 +410,6 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
     private void WriteGetters(JavaWriter fw, Class classe, string tag)
     {
-
         var properties = Config.UseJdbc ? classe.Properties : classe.GetProperties(AvailableClasses);
         foreach (var property in properties)
         {
@@ -573,7 +567,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             }));
 
             fw.WriteLine(3, $"{classe.NamePascal} entity = new {classe.NamePascal}();");
-            fw.WriteLine(3, $"entity.{codeProperty.NameCamel} = this;");
+            fw.WriteLine(3, $"entity.{codeProperty.NameCamel} = {Config.GetEnumName(classe)}.valueOf(this.name());");
 
             foreach (var prop in classe.GetProperties(AvailableClasses).Where(p => p != codeProperty))
             {
@@ -582,6 +576,14 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
             fw.WriteLine(3, $"return entity;");
             fw.WriteLine(2, $"}}");
+            fw.WriteLine();
+            fw.WriteDocStart(2, "Méthode permettant de récupérer l'entité correspondant au code");
+            fw.WriteReturns(2, @$"instance de {{@link {classe.GetImport(Config, tag)}}} correspondant au code entré en paramètre");
+            fw.WriteDocEnd(2);
+            fw.WriteLine(2, $"public static {classe.NamePascal} getEntity({Config.GetEnumName(classe)} {Config.GetEnumName(classe).ToCamelCase()}) {{");
+            fw.WriteLine(3, $"return valueOf({Config.GetEnumName(classe).ToCamelCase()}.name()).getEntity();");
+            fw.WriteLine(2, $"}}");
+
             foreach (var prop in classe.GetProperties(AvailableClasses).Where(p => p != codeProperty))
             {
                 fw.WriteLine();

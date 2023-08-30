@@ -21,7 +21,7 @@ public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
         services.AddGenerator<JpaModelGenerator, JpaConfig>(config, number);
         services.AddGenerator<JpaModelInterfaceGenerator, JpaConfig>(config, number);
         services.AddGenerator<JpaMapperGenerator, JpaConfig>(config, number);
-
+        services.AddGenerator<JpaEnumGenerator, JpaConfig>(config, number);
         if (config.DaosPath != null)
         {
             services.AddGenerator<JpaDaoGenerator, JpaConfig>(config, number);

@@ -290,6 +290,7 @@ public class JpaModelPropertyGenerator
                     column += $", scale = {property.Domain.Scale}";
                 }
 
+                column += @$", columnDefinition = ""{property.Domain.Implementations["sql"].Type}""";
                 column += ")";
                 fw.AddImport($"{javaOrJakarta}.persistence.Column");
             }

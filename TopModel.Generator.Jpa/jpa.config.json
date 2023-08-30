@@ -52,6 +52,7 @@
           "JpaInterfaceGen",
           "JpaMapperGenerator",
           "JpaDaoGen",
+          "JpaEnumGenerator",
           "JpaResourceGen",
           "SpringApiServerGen",
           "SpringApiClientGen"
@@ -73,6 +74,11 @@
     "dtosPath": {
       "type": "string",
       "description": "Localisation des classes non persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen:{app}/dtos/{module}'."
+    },
+    "enumsPath": {
+      "type": "string",
+      "description": "Localisation des enums du modèle, relative au répertoire de génération.",
+      "default": "javagen:{app}/enums/{module}"
     },
     "apiPath": {
       "type": "string",

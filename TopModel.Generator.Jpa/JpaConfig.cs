@@ -15,6 +15,11 @@ public class JpaConfig : GeneratorConfigBase
     public string EntitiesPath { get; set; } = "javagen:{app}/entities/{module}";
 
     /// <summary>
+    /// Localisation des classes persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen/{app}/entities/{module}'.
+    /// </summary>
+    public string EnumsPath { get; set; } = "javagen:{app}/enums/{module}";
+
+    /// <summary>
     /// Localisation des DAOs, relative au répertoire de génération.
     /// </summary>
     public string? DaosPath { get; set; }
@@ -125,7 +130,7 @@ public class JpaConfig : GeneratorConfigBase
 
     public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IFieldProperty? prop = null)
     {
-        return !this.UseJdbc && base.CanClassUseEnums(classe, availableClasses, prop)
+        return !UseJdbc && base.CanClassUseEnums(classe, availableClasses, prop)
             && !classe.Properties.OfType<AssociationProperty>().Any(a => a.Association != classe && !CanClassUseEnums(a.Association, availableClasses));
     }
 
@@ -142,6 +147,19 @@ public class JpaConfig : GeneratorConfigBase
             OutputDirectory,
             ResolveVariables(classe.IsPersistent ? EntitiesPath : DtosPath, tag, module: classe.Namespace.Module).ToFilePath(),
             $"{classe.NamePascal}.java");
+    }
+
+    public string GetEnumName(Class classe)
+    {
+        return $"{classe.NamePascal}{classe.EnumKey!.NamePascal}";
+    }
+
+    public string GetEnumFileName(Class classe, string tag)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(EnumsPath, tag, module: classe.Namespace.Module).ToFilePath(),
+            $"{GetEnumName(classe)}.java");
     }
 
     public string GetDataFlowFilePath(DataFlow df, string tag)
@@ -233,6 +251,11 @@ public class JpaConfig : GeneratorConfigBase
             tag);
     }
 
+    public string GetEnumPackageName(Class classe, string tag, bool? isPersistent = null)
+    {
+        return GetPackageName(classe.Namespace, EnumsPath, tag);
+    }
+
     public string GetPackageName(Namespace ns, string modelPath, string tag)
     {
         return ResolveVariables(modelPath, tag, module: ns.Module).ToPackageName();
@@ -245,7 +268,7 @@ public class JpaConfig : GeneratorConfigBase
 
     protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
     {
-        return $"{className.ToPascalCase()}.Values";
+        return $"{className.ToPascalCase()}{propName.ToPascalCase()}";
     }
 
     protected override bool IsEnumNameValid(string name)
