@@ -103,7 +103,6 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
         fw.WriteLine(indentLevel, $"{Quote(container.Key.NameCamel)}: {{");
 
         var i = 1;
-
         foreach (var property in container.OrderBy(p => p.NameCamel, StringComparer.Ordinal))
         {
             var translation = isComment
@@ -117,10 +116,10 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
 
             fw.Write(indentLevel + 1, $"{Quote(property.NameCamel)}: ");
             fw.Write($@"""{translation}""");
-            fw.WriteLine(container.Count() == i++ && !(_modelConfig.I18n.TranslateReferences && container.Key is Class { DefaultProperty: not null } && ((container.Key as Class)?.Values.Any() ?? false)) ? string.Empty : ",");
+            fw.WriteLine(container.Count() == i++ && !(container.Key is Class { DefaultProperty: not null, Enum: true } && ((container.Key as Class)?.Values.Any() ?? false)) ? string.Empty : ",");
         }
 
-        if (container.Key is Class classe && _modelConfig.I18n.TranslateReferences && classe.EnumKey != null && classe.DefaultProperty != null)
+        if (container.Key is Class { DefaultProperty: not null, Enum: true } classe && (classe?.Values.Any() ?? false))
         {
             i = 1;
             fw.WriteLine(indentLevel + 1, @$"{Quote("values")}: {{");
