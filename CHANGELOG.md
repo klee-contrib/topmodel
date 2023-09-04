@@ -1,5 +1,15 @@
 # TopModel.Generator (`modgen`)
 
+## 1.33.1
+
+- [`10c1d1`](https://github.com/klee-contrib/topmodel/commit/10c1d166017f3ca9115d185123da8db5aa80d33a) [JS] Correction génération du fichier de resources dans le cas où une liste de référence a `enum: false`
+- [`82afb8`](https://github.com/klee-contrib/topmodel/commit/82afb813331a2a5168cc2c16514884534ca0c93d) [Angular] Génération angular dans le cas `string` et `post`
+- [`25e0d2`](https://github.com/klee-contrib/topmodel/commit/25e0d22984e908865d9257b149bac8e4b4ac382e)
+  - Message d'erreur converter inversé
+  - Génération angular dans le cas `string` et `get`
+  - Meilleure utilisation du converter JPA
+  - Amélioration de la génération api client spring
+
 ## 1.33.0
 
 - [#286](https://github.com/klee-contrib/topmodel/pull/286) - Retrait alias de classes et d'endpoints et ajout de tags supplémentaires
