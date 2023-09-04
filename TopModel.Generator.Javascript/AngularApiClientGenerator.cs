@@ -105,7 +105,6 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}");
         }
 
-        string returnType;
         if (endpoint.GetQueryParams().Any() && !hasForm)
         {
             if (hasProperty)
@@ -118,6 +117,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
 
         fw.Write("): Observable<");
 
+        string returnType;
         if (endpoint.Returns == null)
         {
             returnType = "void";
@@ -157,9 +157,9 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             fw.WriteLine();
         }
 
-        if (returnType == "string" && endpoint.Method == "GET")
+        if (returnType == "string")
         {
-            fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}(`/{endpoint.FullRoute.Replace("{", "${")}`, {{responseType: 'text'}}");
+            fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}(`/{endpoint.FullRoute.Replace("{", "${")}`");
         }
         else
         {
@@ -169,6 +169,11 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
         if (endpoint.GetBodyParam() != null)
         {
             fw.Write($", {endpoint.GetBodyParam()!.GetParamName()}");
+        }
+
+        if (returnType == "string")
+        {
+            fw.Write($", {{ responseType: 'text' }}");
         }
 
         if (endpoint.GetQueryParams().Any())
