@@ -23,7 +23,7 @@ import jakarta.validation.Valid;
 
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurSearch;
-import topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur;
+import topmodel.jpa.sample.demo.enums.utilisateur.TypeUtilisateurCode;
 
 @RequestMapping("utilisateur")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
@@ -51,7 +51,7 @@ public interface UtilisateurApiController {
 	 * @return Liste des utilisateurs
 	 */
 	@GetMapping(path = "/list")
-	List<UtilisateurSearch> findAllByType(@RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode);
+	List<UtilisateurSearch> findAllByType(@RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateurCode typeUtilisateurCode);
 
 	/**
 	 * Sauvegarde un utilisateur.
@@ -77,5 +77,5 @@ public interface UtilisateurApiController {
 	 * @return Utilisateurs matchant les critères
 	 */
 	@PostMapping(path = "/search")
-	Page<UtilisateurSearch> search(@RequestParam(value = "utiId", required = true) Long utiId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) Long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "nom", required = false) String nom, @RequestParam(value = "actif", required = false) Boolean actif, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateur.Values typeUtilisateurCode, @RequestParam(value = "utilisateursEnfant", required = false) List<Long> utilisateursEnfant, @RequestParam(value = "dateCreation", required = false) LocalDate dateCreation, @RequestParam(value = "dateModification", required = false) LocalDateTime dateModification);
+	Page<UtilisateurSearch> search(@RequestParam(value = "utiId", required = true) Long utiId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) Long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "nom", required = false) String nom, @RequestParam(value = "actif", required = false) Boolean actif, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateurCode typeUtilisateurCode, @RequestParam(value = "utilisateursEnfant", required = false) List<Long> utilisateursEnfant, @RequestParam(value = "dateCreation", required = false) LocalDate dateCreation, @RequestParam(value = "dateModification", required = false) LocalDateTime dateModification);
 }

@@ -44,15 +44,15 @@ public class Utilisateur {
 	/**
 	 * Id technique.
 	 */
-	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "UTI_ID", nullable = false)
+	@Id
+	@Column(name = "UTI_ID", nullable = false, columnDefinition = "int8")
 	private Long id;
 
 	/**
 	 * Age en années de l'utilisateur.
 	 */
-	@Column(name = "UTI_AGE", nullable = true, precision = 20, scale = 9)
+	@Column(name = "UTI_AGE", nullable = true, precision = 20, scale = 9, columnDefinition = "numeric")
 	private Long age = 6l;
 
 	/**
@@ -65,19 +65,19 @@ public class Utilisateur {
 	/**
 	 * Email de l'utilisateur.
 	 */
-	@Column(name = "UTI_EMAIL", nullable = true, length = 50)
+	@Column(name = "UTI_EMAIL", nullable = true, length = 50, columnDefinition = "varchar")
 	private String email;
 
 	/**
 	 * Nom de l'utilisateur.
 	 */
-	@Column(name = "UTI_NOM", nullable = true, length = 3)
+	@Column(name = "UTI_NOM", nullable = true, length = 3, columnDefinition = "varchar")
 	private String nom = "Jabx";
 
 	/**
 	 * Si l'utilisateur est actif.
 	 */
-	@Column(name = "UTI_ACTIF", nullable = true)
+	@Column(name = "UTI_ACTIF", nullable = true, columnDefinition = "boolean")
 	private Boolean actif;
 
 	/**
@@ -85,7 +85,7 @@ public class Utilisateur {
 	 */
 	@ManyToOne(fetch = FetchType.LAZY, optional = true, targetEntity = TypeUtilisateur.class)
 	@JoinColumn(name = "TUT_CODE", referencedColumnName = "TUT_CODE")
-	private TypeUtilisateur typeUtilisateur = TypeUtilisateur.Values.ADM.getEntity();
+	private TypeUtilisateur typeUtilisateur = new TypeUtilisateur(TypeUtilisateurCode.ADM);
 
 	/**
 	 * Utilisateur parent.
@@ -103,14 +103,14 @@ public class Utilisateur {
 	/**
 	 * Date de création de l'utilisateur.
 	 */
-	@Column(name = "UTI_DATE_CREATION", nullable = true)
+	@Column(name = "UTI_DATE_CREATION", nullable = true, columnDefinition = "date")
 	@CreatedDate
 	private LocalDate dateCreation;
 
 	/**
 	 * Date de modification de l'utilisateur.
 	 */
-	@Column(name = "UTI_DATE_MODIFICATION", nullable = true)
+	@Column(name = "UTI_DATE_MODIFICATION", nullable = true, columnDefinition = "date")
 	@LastModifiedDate
 	private LocalDateTime dateModification;
 

@@ -19,6 +19,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import topmodel.jpa.sample.demo.enums.securite.DroitCode;
+
 /**
  * Droits de l'application.
  */
@@ -33,14 +35,14 @@ public class Droit {
 	 * Code du droit.
 	 */
 	@Id
-	@Column(name = "DRO_CODE", nullable = false, length = 3)
+	@Column(name = "DRO_CODE", nullable = false, length = 3, columnDefinition = "varchar")
 	@Enumerated(EnumType.STRING)
-	private Droit.Values code;
+	private DroitCode code;
 
 	/**
 	 * Libellé du droit.
 	 */
-	@Column(name = "DRO_LIBELLE", nullable = false, length = 3)
+	@Column(name = "DRO_LIBELLE", nullable = false, length = 3, columnDefinition = "varchar")
 	private String libelle;
 
 	/**
@@ -56,12 +58,38 @@ public class Droit {
 	public Droit() {
 	}
 
+	public static final Droit CRE = new Droit(DroitCode.CRE);
+	public static final Droit MOD = new Droit(DroitCode.MOD);
+	public static final Droit SUP = new Droit(DroitCode.SUP);
+
+	/**
+	 * Enum constructor.
+	 * @param code Code dont on veut obtenir l'instance.
+	 */
+	public Droit(DroitCode code) {
+		this.code = code;
+		switch(code) {
+		case CRE :
+			this.libelle = "securite.droit.values.CRE";
+			this.typeProfil = TypeProfil.ADM;
+			break;
+		case MOD :
+			this.libelle = "securite.droit.values.MOD";
+			this.typeProfil = null;
+			break;
+		case SUP :
+			this.libelle = "securite.droit.values.SUP";
+			this.typeProfil = null;
+			break;
+		}
+	}
+
 	/**
 	 * Getter for code.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Droit#code code}.
 	 */
-	public Droit.Values getCode() {
+	public DroitCode getCode() {
 		return this.code;
 	}
 
@@ -87,7 +115,7 @@ public class Droit {
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Droit#code code}.
 	 * @param code value to set
 	 */
-	public void setCode(Droit.Values code) {
+	public void setCode(DroitCode code) {
 		this.code = code;
 	}
 
@@ -111,7 +139,7 @@ public class Droit {
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.Droit Droit}.
 	 */
 	public enum Fields  {
-        CODE(Droit.Values.class), //
+        CODE(DroitCode.class), //
         LIBELLE(String.class), //
         TYPE_PROFIL(TypeProfil.class);
 
@@ -123,57 +151,6 @@ public class Droit {
 
 		public Class<?> getType() {
 			return this.type;
-		}
-	}
-
-	public enum Values {
-		CRE("securite.droit.values.CRE", TypeProfil.Values.ADM), //
-		MOD("securite.droit.values.MOD", null), //
-		SUP("securite.droit.values.SUP", null); 
-
-		/**
-		 * Libellé du droit.
-		 */
-		private final String libelle;
-
-		/**
-		 * Type de profil pouvant faire l'action.
-		 */
-		private final TypeProfil.Values typeProfilCode;
-
-		/**
-		 * All arg constructor.
-		 */
-		private Values(String libelle, TypeProfil.Values typeProfilCode) {
-			this.libelle = libelle;
-			this.typeProfilCode = typeProfilCode;
-		}
-
-		/**
-		 * Méthode permettant de récupérer l'entité correspondant au code.
-		 *
-		 * @return instance de {@link topmodel.jpa.sample.demo.entities.securite.Droit} correspondant au code courant.
-		 */
-		public Droit getEntity() {
-			Droit entity = new Droit();
-			entity.code = this;
-			entity.libelle = this.libelle;
-			entity.typeProfilCode = this.typeProfilCode;
-			return entity;
-		}
-
-		/**
-		 * Libellé du droit.
-		 */
-		public String getLibelle(){
-			return this.libelle;
-		}
-
-		/**
-		 * Type de profil pouvant faire l'action.
-		 */
-		public TypeProfil.Values getTypeProfilCode(){
-			return this.typeProfilCode;
 		}
 	}
 }

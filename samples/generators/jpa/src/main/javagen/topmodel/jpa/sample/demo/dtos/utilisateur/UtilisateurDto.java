@@ -12,9 +12,9 @@ import java.util.List;
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.Email;
 
-import topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur;
 import topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur;
 import topmodel.jpa.sample.demo.entities.utilisateur.UtilisateurMappers;
+import topmodel.jpa.sample.demo.enums.utilisateur.TypeUtilisateurCode;
 
 /**
  * Objet non persisté de communication avec le serveur.
@@ -65,7 +65,7 @@ public class UtilisateurDto implements Serializable {
 	 * Type d'utilisateur en Many to one.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()} 
 	 */
-	private TypeUtilisateur.Values typeUtilisateurCode = TypeUtilisateur.Values.ADM;
+	private TypeUtilisateurCode typeUtilisateurCode = TypeUtilisateurCode.ADM;
 
 	/**
 	 * Utilisateur enfants.
@@ -165,7 +165,7 @@ public class UtilisateurDto implements Serializable {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#typeUtilisateurCode typeUtilisateurCode}.
 	 */
-	public TypeUtilisateur.Values getTypeUtilisateurCode() {
+	public TypeUtilisateurCode getTypeUtilisateurCode() {
 		return this.typeUtilisateurCode;
 	}
 
@@ -257,7 +257,7 @@ public class UtilisateurDto implements Serializable {
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#typeUtilisateurCode typeUtilisateurCode}.
 	 * @param typeUtilisateurCode value to set
 	 */
-	public void setTypeUtilisateurCode(TypeUtilisateur.Values typeUtilisateurCode) {
+	public void setTypeUtilisateurCode(TypeUtilisateurCode typeUtilisateurCode) {
 		this.typeUtilisateurCode = typeUtilisateurCode;
 	}
 
@@ -324,7 +324,7 @@ public class UtilisateurDto implements Serializable {
         EMAIL(String.class), //
         NOM(String.class), //
         ACTIF(Boolean.class), //
-        TYPE_UTILISATEUR_CODE(TypeUtilisateur.Values.class), //
+        TYPE_UTILISATEUR_CODE(TypeUtilisateurCode.class), //
         UTILISATEURS_ENFANT(List.class), //
         DATE_CREATION(LocalDate.class), //
         DATE_MODIFICATION(LocalDateTime.class), //

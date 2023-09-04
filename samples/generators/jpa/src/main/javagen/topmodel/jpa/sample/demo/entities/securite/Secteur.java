@@ -26,9 +26,9 @@ public class Secteur {
 	/**
 	 * Id technique.
 	 */
-	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "SEC_ID", nullable = false)
+	@Id
+	@Column(name = "SEC_ID", nullable = false, columnDefinition = "int8")
 	private Long id;
 
 	/**

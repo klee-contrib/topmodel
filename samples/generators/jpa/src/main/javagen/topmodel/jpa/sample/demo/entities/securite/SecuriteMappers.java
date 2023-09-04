@@ -11,6 +11,7 @@ import jakarta.annotation.Generated;
 
 import topmodel.jpa.sample.demo.dtos.securite.ProfilDto;
 import topmodel.jpa.sample.demo.dtos.securite.SecteurDto;
+import topmodel.jpa.sample.demo.enums.securite.DroitCode;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class SecuriteMappers {
@@ -104,10 +105,10 @@ public class SecuriteMappers {
 
 		target.setId(source.getId());
 		if (source.getTypeProfilCode() != null) {
-			target.setTypeProfil(source.getTypeProfilCode().getEntity());
+			target.setTypeProfil(new TypeProfil(source.getTypeProfilCode()));
 		}
 
-		target.setDroits(source.getDroits().stream().map(Droit.Values::getEntity).collect(Collectors.toList()));
+		target.setDroits(source.getDroits().stream().map(Droit::new).collect(Collectors.toList()));
 		return target;
 	}
 

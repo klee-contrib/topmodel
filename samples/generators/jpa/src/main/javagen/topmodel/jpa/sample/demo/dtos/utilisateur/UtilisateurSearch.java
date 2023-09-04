@@ -10,7 +10,7 @@ import java.util.List;
 
 import jakarta.annotation.Generated;
 
-import topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur;
+import topmodel.jpa.sample.demo.enums.utilisateur.TypeUtilisateurCode;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface UtilisateurSearch {
@@ -62,7 +62,7 @@ public interface UtilisateurSearch {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurSearch#typeUtilisateurCode typeUtilisateurCode}.
 	 */
-	TypeUtilisateur.Values getTypeUtilisateurCode();
+	TypeUtilisateurCode getTypeUtilisateurCode();
 
 	/**
 	 * Getter for utilisateursEnfant.

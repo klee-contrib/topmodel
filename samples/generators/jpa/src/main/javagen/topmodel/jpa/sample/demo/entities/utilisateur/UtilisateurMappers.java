@@ -78,7 +78,7 @@ public class UtilisateurMappers {
 		target.setNom(source.getNom());
 		target.setActif(source.getActif());
 		if (source.getTypeUtilisateurCode() != null) {
-			target.setTypeUtilisateur(source.getTypeUtilisateurCode().getEntity());
+			target.setTypeUtilisateur(new TypeUtilisateur(source.getTypeUtilisateurCode()));
 		}
 
 		target.setDateCreation(source.getDateCreation());
