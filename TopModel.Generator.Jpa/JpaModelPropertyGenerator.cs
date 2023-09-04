@@ -193,7 +193,7 @@ public class JpaModelPropertyGenerator
                 var defaultValue = _config.GetValue(property, _classes);
                 if (defaultValue != "null")
                 {
-                    suffix = $" = {defaultValue}.getEntity()";
+                    suffix = $" = new {property.Association.NamePascal}({defaultValue})";
                 }
             }
 

@@ -43,7 +43,7 @@ public class JpaEnumGenerator : ClassGeneratorBase<JpaConfig>
         var codeProperty = classe.EnumKey!;
         fw.WriteDocStart(0, $"Enumération des valeurs possibles de la propriété {codeProperty.NamePascal} de la classe {classe.NamePascal}");
         fw.WriteDocEnd(0);
-        fw.WriteLine($@"public enum {classe.NamePascal}{codeProperty.NamePascal} {{");
+        fw.WriteLine($@"public enum {Config.GetEnumName(classe)} {{");
         var i = 0;
         foreach (var value in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
         {

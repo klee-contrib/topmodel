@@ -99,6 +99,11 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             JpaModelConstructorGenerator.WriteFromMappers(fw, classe, AvailableClasses, tag);
         }
 
+        if (Config.CanClassUseEnums(classe, Classes))
+        {
+            JpaModelConstructorGenerator.WriteEnumConstructor(fw, classe, AvailableClasses, tag, _modelConfig);
+        }
+
         WriteGetters(fw, classe, tag);
         WriteSetters(fw, classe, tag);
         if (!Config.UseJdbc)
@@ -125,11 +130,6 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             }
 
             WriteFieldsEnum(fw, classe, tag);
-        }
-
-        if (classe.EnumKey != null)
-        {
-            WriteReferenceValues(fw, classe, tag);
         }
 
         fw.WriteLine("}");
@@ -215,9 +215,9 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             else
             {
                 var table = @$"@Table(name = ""{classe.SqlName}""";
-                if (Config.ResolveVariables(Config.DbSchema!, tag: tag) != null)
+                if (Config.DbSchema != null && Config.ResolveVariables(Config.DbSchema, tag: tag) != null)
                 {
-                    table += @$", schema = ""{Config.ResolveVariables(Config.DbSchema!, tag: tag)}""";
+                    table += @$", schema = ""{Config.ResolveVariables(Config.DbSchema, tag: tag)}""";
                 }
 
                 fw.AddImport($"{javaOrJakarta}.persistence.Table");
@@ -308,7 +308,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 fw.WriteLine(2, $"if ({propertyName} != null) {{");
                 if (!isMultiple)
                 {
-                    fw.WriteLine(3, @$"this.{ap.NameByClassCamel} = {ap.Association.NamePascal}.Values.getEntity({propertyName});");
+                    fw.WriteLine(3, @$"this.{ap.NameByClassCamel} = new {ap.Association.NamePascal}({propertyName});");
                 }
                 else
                 {
@@ -322,7 +322,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                         fw.AddImport($"java.util.{newableType}");
                         fw.WriteLine(4, @$"this.{ap.NameByClassCamel} = new {newableType}<>();");
                         fw.WriteLine(3, "}");
-                        fw.WriteLine(3, @$"this.{ap.NameByClassCamel}.addAll({propertyName}.stream().map({ap.Association.NamePascal}.Values::getEntity).collect(Collectors.to{type}()));");
+                        fw.WriteLine(3, @$"this.{ap.NameByClassCamel}.addAll({propertyName}.stream().map({ap.Association.NamePascal}::new).collect(Collectors.to{type}()));");
                         fw.AddImport("java.util.stream.Collectors");
                     }
                 }
@@ -447,177 +447,6 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         }
 
         fw.AddImports(imports);
-    }
-
-    private void WriteReferenceValues(JavaWriter fw, Class classe, string tag)
-    {
-        fw.WriteLine();
-        var codeProperty = classe.EnumKey!;
-
-        if (Config.CanClassUseEnums(classe))
-        {
-            fw.WriteLine(1, $"public enum Values {{");
-            var i = 0;
-
-            foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
-            {
-                ++i;
-                var code = refValue.Value[codeProperty];
-
-                if (classe.GetProperties(AvailableClasses).Count > 1)
-                {
-                    var lineToWrite = @$"{code.ToUpper()}(";
-                    lineToWrite += string.Join(", ", classe.GetProperties(AvailableClasses)
-                        .Where(p => p != codeProperty)
-                        .Select(prop =>
-                        {
-                            var isString = Config.GetType((IFieldProperty)prop) == "String";
-                            var value = refValue.Value.ContainsKey((IFieldProperty)prop) ? refValue.Value[(IFieldProperty)prop] : "null";
-                            if (prop is AssociationProperty ap && codeProperty.PrimaryKey && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Property) && r.Value[ap.Property] == value))
-                            {
-                                value = ap.Association.NamePascal + ".Values." + value;
-                                isString = false;
-                                fw.AddImport(ap.Association.GetImport(Config, tag));
-                            }
-
-                            if (_modelConfig.I18n.TranslateReferences && classe.DefaultProperty == prop)
-                            {
-                                value = refValue.ResourceKey;
-                            }
-
-                            var quote = isString ? "\"" : string.Empty;
-                            return quote + value + quote;
-                        }));
-                    lineToWrite += ")";
-                    lineToWrite += i == classe.Values.Count ? "; " : ", //";
-                    fw.WriteLine(2, lineToWrite);
-                }
-                else
-                {
-                    fw.WriteLine(2, @$"{code.ToUpper()}{(i == classe.Values.Count ? ";" : ", //")}");
-                }
-            }
-
-            foreach (var prop in classe.GetProperties(AvailableClasses).Where(p => p != codeProperty))
-            {
-                fw.WriteLine();
-                fw.WriteDocStart(2, ((IFieldProperty)prop).Comment);
-                fw.WriteDocEnd(2);
-                var type = Config.GetType((IFieldProperty)prop);
-                var name = prop.NameByClassCamel;
-                if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Property.Class))
-                {
-                    type = $"{ap.Association.NamePascal}.Values";
-                    name = prop.NameCamel;
-                }
-
-                fw.WriteLine(2, $"private final {type} {name};");
-            }
-
-            if (classe.GetProperties(AvailableClasses).Count > 1)
-            {
-                fw.WriteLine();
-                fw.WriteDocStart(2, "All arg constructor");
-                fw.WriteDocEnd(2);
-                var propertiesSignature = string.Join(", ", classe.GetProperties(AvailableClasses).Where(p => p != codeProperty).Select(prop =>
-                {
-                    var type = Config.GetType((IFieldProperty)prop);
-                    var name = prop.NameByClassCamel;
-                    if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Property.Class))
-                    {
-                        type = $"{ap.Association.NamePascal}.Values";
-                        name = prop.NameCamel;
-                    }
-
-                    return $"{type} {name}";
-                }));
-
-                fw.WriteLine(2, $"private Values({propertiesSignature}) {{");
-                foreach (var prop in classe.GetProperties(AvailableClasses).Where(p => p != codeProperty))
-                {
-                    var type = Config.GetType((IFieldProperty)prop);
-                    var name = prop.NameByClassCamel;
-                    if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Property.Class))
-                    {
-                        type = $"{ap.Association.NamePascal}.Values";
-                        name = prop.NameCamel;
-                    }
-
-                    fw.WriteLine(3, $"this.{name} = {name};");
-                }
-
-                fw.WriteLine(2, $"}}");
-            }
-
-            fw.WriteLine();
-            fw.WriteDocStart(2, "Méthode permettant de récupérer l'entité correspondant au code");
-            fw.WriteReturns(2, @$"instance de {{@link {classe.GetImport(Config, tag)}}} correspondant au code courant");
-            fw.WriteDocEnd(2);
-            fw.WriteLine(2, $"public {classe.NamePascal} getEntity() {{");
-            var properties = string.Join(", ", classe.GetProperties(AvailableClasses).Where(p => p != codeProperty).Select(prop =>
-            {
-                if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Property.Class))
-                {
-                    return prop.NameCamel + ".getEntity()";
-                }
-                else
-                {
-                    return prop.NameByClassCamel;
-                }
-            }));
-
-            fw.WriteLine(3, $"{classe.NamePascal} entity = new {classe.NamePascal}();");
-            fw.WriteLine(3, $"entity.{codeProperty.NameCamel} = {Config.GetEnumName(classe)}.valueOf(this.name());");
-
-            foreach (var prop in classe.GetProperties(AvailableClasses).Where(p => p != codeProperty))
-            {
-                fw.WriteLine(3, $"entity.{prop.NameCamel} = this.{prop.NameCamel};");
-            }
-
-            fw.WriteLine(3, $"return entity;");
-            fw.WriteLine(2, $"}}");
-            fw.WriteLine();
-            fw.WriteDocStart(2, "Méthode permettant de récupérer l'entité correspondant au code");
-            fw.WriteReturns(2, @$"instance de {{@link {classe.GetImport(Config, tag)}}} correspondant au code entré en paramètre");
-            fw.WriteDocEnd(2);
-            fw.WriteLine(2, $"public static {classe.NamePascal} getEntity({Config.GetEnumName(classe)} {Config.GetEnumName(classe).ToCamelCase()}) {{");
-            fw.WriteLine(3, $"return valueOf({Config.GetEnumName(classe).ToCamelCase()}.name()).getEntity();");
-            fw.WriteLine(2, $"}}");
-
-            foreach (var prop in classe.GetProperties(AvailableClasses).Where(p => p != codeProperty))
-            {
-                fw.WriteLine();
-                fw.WriteDocStart(2, ((IFieldProperty)prop).Comment);
-                fw.WriteDocEnd(2);
-                var type = Config.GetType((IFieldProperty)prop);
-                var name = prop.NameByClassCamel;
-                if (prop is AssociationProperty ap && Config.CanClassUseEnums(ap.Property.Class))
-                {
-                    type = $"{ap.Association.NamePascal}.Values";
-                    name = prop.NameCamel;
-                }
-
-                var getterPrefix = Config.GetType(prop) == "boolean" ? "is" : "get";
-                fw.WriteLine(2, $"public {type} {name.WithPrefix(getterPrefix)}(){{");
-                fw.WriteLine(3, $"return this.{name};");
-                fw.WriteLine(2, $"}}");
-            }
-        }
-        else
-        {
-            fw.WriteLine();
-            fw.WriteDocStart(1, @$"Classe static encapsulant les différentes valeurs que peut prendre {{@link {classe.GetImport(Config, tag)}#{codeProperty.NameByClassCamel} {codeProperty.NameByClassCamel}}}");
-            fw.WriteDocEnd(1);
-            fw.WriteLine(1, @$"public static class Values {{");
-            foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
-            {
-                var lineToWrite = @$"public static String {refValue.Name.ToConstantCase()} = ""{refValue.Value[(IFieldProperty)codeProperty]}""";
-                lineToWrite += ";";
-                fw.WriteLine(2, lineToWrite);
-            }
-        }
-
-        fw.WriteLine(1, "}");
     }
 
     private void WriteRemovers(JavaWriter fw, Class classe, string tag)

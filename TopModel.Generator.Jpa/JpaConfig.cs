@@ -151,7 +151,7 @@ public class JpaConfig : GeneratorConfigBase
 
     public string GetEnumName(Class classe)
     {
-        return $"{classe.NamePascal}{classe.EnumKey!.NamePascal}";
+        return $"{classe.NamePascal}{classe.EnumKey!.Name.ToPascalCase()}";
     }
 
     public string GetEnumFileName(Class classe, string tag)

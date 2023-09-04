@@ -155,13 +155,14 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                 {
                     if (apTarget.Type.IsToMany())
                     {
-                        getter = $@"{sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}().stream().map({apTarget.Association.NamePascal}.Values::getEntity).collect(Collectors.toList())";
+                        getter = $@"{sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}().stream().map({apTarget.Association.NamePascal}::new).collect(Collectors.toList())";
                         fw.AddImport($"{Config.GetEnumPackageName(apTarget.Association, tag)}.{Config.GetEnumName(apTarget.Association)}");
                         fw.AddImport("java.util.stream.Collectors");
                     }
                     else
                     {
-                        getter = $"{apTarget.Association.NamePascal}.Values.getEntity({sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}())";
+                        getter = $"new {apTarget.Association.NamePascal}({sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}())";
+                    fw.AddImport(apTarget.Association.GetImport(Config, tag));
                         checkSourceNull = true;
                     }
                 }
