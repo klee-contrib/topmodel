@@ -437,6 +437,18 @@ Pour que, pour chaque module, soit généré les fichiers de resources dans les 
 
   _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
 
+- `enumsPath`
+
+  Localisation des classes d'enums, relative au répertoire de génération.
+
+  Le chemin des fichiers cibles sera calculé en remplaçant les `.` et le `:` par des `/` dans cette valeur, tandis que le nom du package des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
+
+  _Templating_: `{module}`
+
+  _Valeur par défaut_: `"javagen:{app}/enums/{module}"`
+
+  _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
+
 - `apiPath`
 
   Localisation du l'API générée (client ou serveur), relative au répertoire de génération.
@@ -498,6 +510,12 @@ Pour que, pour chaque module, soit généré les fichiers de resources dans les 
 
   _Variables par tag_: **oui** (la valeur de la variable doit être `"javax"` ou `"jakarta"`)
 
+- `mappersInClass`
+
+  Indique s'il faut ajouter les mappers en tant méthode (`to...`) ou constructeur dans les classes qui les déclarent
+  
+  _Valeur par défaut_: `true`
+
 - `identity`
 
   Options de génération de la séquence
@@ -516,6 +534,75 @@ Pour que, pour chaque module, soit généré les fichiers de resources dans les 
 
     Début de la séquence générée.
 
+### Spring-batch dataFlows
+
+Implémentation du générateur de dataflows spring-batch.
+
+#### Fichiers générés
+
+##### Flow
+
+Le générateur créé un fichier par dataFlow, comprenant :
+
+- Reader
+- Writer
+- TruncateTasklet éventuellement
+- Step
+- Flow
+
+La génération s'appuie sur spring-batch, mais aussi la librairie `spring-batch-bulk`, qui permet des performances exceptionnelles grâce à l'utilisation du bulk insert postgres (avec la commande `COPY`).
+
+```xml
+  <dependency>
+    <groupId>io.github.klee-contrib</groupId>
+    <artifactId>spring-batch-bulk</artifactId>
+    <version>0.0.3</version>
+  </dependency>
+```
+
+###### Reader
+
+Le reader privilégié est le reader `JdbcCursorItemReaderBuilder`. Il permet d'obtenir les meilleures performances, et offre une meilleure flexibilité (choix de la source de données, requête).
+
+Avec le mode `partial`, le reader n'est pas généré. Il faut donc fournir un bean dont le nom est `[Nom du flow]Reader` pour que le job fonctionne.
+
+###### Replace
+
+Le truncate se fait avec la classe `TaskletQuery` de la librairie `spring-batch-bulk`. Nous aurions pu utiliser un `deleteAll` mais il est nettement moins performant que le `truncate`.
+
+###### Processor
+
+Si la classe source et la classe cible sont différentes, un processor est ajouté pour appeler le mapper de l'une vers l'autre
+
+###### Writer
+
+Les writers utilisent le `PgBulkWriter` de la librairie `spring-batch-bulk`. Il existe deux modes
+
+###### Insert
+
+Le writer copy directement les données dans la table cible. TopModel génère le mapping permettant de faire cette insertion.
+
+###### Upsert
+
+Le writer copy les données dans une table temporaire, puis recopie les données de table à table. En cas de conflit sur la clé primaire, un update est effectué. TopModel génère le mapping permettant de faire cette insertion.
+
+##### Job
+
+Le générateur créé un fichier de configuration de job par module. Ce job ordonnance les lancement des flow selon ce qui a été paramétré dans avec les mots clés `dependsOn`. Il import les configurations nécessaires à son bon fonctionnement.
+
+#### Limitations et mises en garde
+
+- Ne fonctionne que de base à base. Pour créer un reader spécifique, utiliser le mode `partial`
+- La base cible ne peut être qu'une base de données `Postgresql`
+- Il est obligatoire de définir un dbSchema
+- Multi-source non supporté
+- Un mapper doit exister de la classe source vers la classe cible (sauf s'il s'agit de la même classe)
+- Deux jobs ne peuvent pas dépendre l'un de l'autre s'ils ne sont pas dans le même module
+- Prenons les flow A, B, C et D, avec
+  - C dépend de A et B
+  - D dépend de A
+  alors D ne se lancera qu'après A et B (alors qu'en théorie il pourrait se lancer directement après A).
+
 ### Exemple
 
 Voici un exemple de configuration du générateur JPA
@@ -529,6 +616,7 @@ jpa:
     entitiesPath: topmodel/exemple/name/entities # Dossier cible des objets non persistés
     daosPath: topmodel/exemple/name/daos # Dossier cible des DAO
     dtosPath: topmodel/exemple/name/dtos # Dossier cible des objets non persistés
+    enumsPath: topmodel/exemple/name/enums # Dossier cible des enums
     apiPath: topmodel/exemple/name/api # Dossier cible des API
     apiGeneration: Server # Mode de génération de l'API (serveur ou client)
     fieldsEnum: Persisted # Classes  dans lesquelles le générateur doit ajouter une enum des champs : jamais (None), dans les classes persistées (Persisted), dans les classes non persistées (Dto), ou les deux (Persisted_Dto)
