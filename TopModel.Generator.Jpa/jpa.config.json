@@ -52,6 +52,7 @@
           "JpaInterfaceGen",
           "JpaMapperGenerator",
           "JpaDaoGen",
+          "JpaEnumGenerator",
           "JpaResourceGen",
           "SpringApiServerGen",
           "SpringApiClientGen"
@@ -73,6 +74,11 @@
     "dtosPath": {
       "type": "string",
       "description": "Localisation des classes non persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen:{app}/dtos/{module}'."
+    },
+    "enumsPath": {
+      "type": "string",
+      "description": "Localisation des enums du modèle, relative au répertoire de génération.",
+      "default": "javagen:{app}/enums/{module}"
     },
     "apiPath": {
       "type": "string",
@@ -98,6 +104,27 @@
     "resourcesPath": {
       "type": "string",
       "description": "Localisation des ressources, relative au répertoire de génération."
+    },
+    "useJdbc": {
+      "type": "boolean",
+      "description": "Générer les entités en mode JDBC",
+      "default": "false"
+    },
+    "mappersInClass": {
+      "type": "boolean",
+      "description": "Indique s'il faut ajouter les mappers en tant méthode ou constructeur dans les classes qui les déclarent"
+    },
+    "dataFlowsPath": {
+      "type": "string",
+      "description": "Localisation des flux de données générés."
+    },
+    "dataFlowsBulkSize": {
+      "type": "number",
+      "description": "Taille des chunks à extraire et insérer"
+    },
+    "dbSchema": {
+      "type": "string",
+      "description": "Nom du schéma sur lequel les entités sont sauvegardées"
     },
     "enumShortcutMode": {
       "type": "boolean",

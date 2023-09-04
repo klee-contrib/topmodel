@@ -22,7 +22,7 @@ import jakarta.annotation.Generated;
 
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurSearch;
-import topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur;
+import topmodel.jpa.sample.demo.enums.utilisateur.TypeUtilisateurCode;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public abstract class AbstractUtilisateurApiClient {
@@ -93,7 +93,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder findAllByTypeUriComponentsBuilder(TypeUtilisateur.Values typeUtilisateurCode) {
+	protected UriComponentsBuilder findAllByTypeUriComponentsBuilder(TypeUtilisateurCode typeUtilisateurCode) {
 		String uri = host + "/utilisateur/list";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		if (typeUtilisateurCode != null) {
@@ -108,7 +108,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
 	 * @return Liste des utilisateurs
 	 */
-	public ResponseEntity<List<UtilisateurSearch>> findAllByType(TypeUtilisateur.Values typeUtilisateurCode){
+	public ResponseEntity<List<UtilisateurSearch>> findAllByType(TypeUtilisateurCode typeUtilisateurCode){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.findAllByTypeUriComponentsBuilder(typeUtilisateurCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<UtilisateurSearch>>() {});
@@ -148,7 +148,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param dateModification Date de modification de l'utilisateur
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder searchUriComponentsBuilder(Long utiId, Long age, Long profilId, String email, String nom, Boolean actif, TypeUtilisateur.Values typeUtilisateurCode, List<Long> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification) {
+	protected UriComponentsBuilder searchUriComponentsBuilder(Long utiId, Long age, Long profilId, String email, String nom, Boolean actif, TypeUtilisateurCode typeUtilisateurCode, List<Long> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification) {
 		String uri = host + "/utilisateur/search";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("utiId", utiId);
@@ -205,7 +205,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param dateModification Date de modification de l'utilisateur
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<Page<UtilisateurSearch>> search(Long utiId, Long age, Long profilId, String email, String nom, Boolean actif, TypeUtilisateur.Values typeUtilisateurCode, List<Long> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification){
+	public ResponseEntity<Page<UtilisateurSearch>> search(Long utiId, Long age, Long profilId, String email, String nom, Boolean actif, TypeUtilisateurCode typeUtilisateurCode, List<Long> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utiId, age, profilId, email, nom, actif, typeUtilisateurCode, utilisateursEnfant, dateCreation, dateModification);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), new ParameterizedTypeReference<Page<UtilisateurSearch>>() {});

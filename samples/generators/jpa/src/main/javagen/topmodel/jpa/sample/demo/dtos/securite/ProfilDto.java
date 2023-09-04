@@ -10,10 +10,10 @@ import java.util.List;
 import jakarta.annotation.Generated;
 
 import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
-import topmodel.jpa.sample.demo.entities.securite.Droit;
 import topmodel.jpa.sample.demo.entities.securite.Profil;
 import topmodel.jpa.sample.demo.entities.securite.SecuriteMappers;
-import topmodel.jpa.sample.demo.entities.securite.TypeProfil;
+import topmodel.jpa.sample.demo.enums.securite.DroitCode;
+import topmodel.jpa.sample.demo.enums.securite.TypeProfilCode;
 
 /**
  * Objet métier non persisté représentant Profil.
@@ -33,13 +33,13 @@ public class ProfilDto implements Serializable {
 	 * Type de profil.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.Profil#getTypeProfilCode() Profil#getTypeProfilCode()} 
 	 */
-	private TypeProfil.Values typeProfilCode;
+	private TypeProfilCode typeProfilCode;
 
 	/**
 	 * Liste des droits de l'utilisateur.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.Profil#getDroits() Profil#getDroits()} 
 	 */
-	private List<Droit.Values> droits;
+	private List<DroitCode> droits;
 
 	/**
 	 * Liste paginée des utilisateurs de ce profil.
@@ -81,7 +81,7 @@ public class ProfilDto implements Serializable {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#typeProfilCode typeProfilCode}.
 	 */
-	public TypeProfil.Values getTypeProfilCode() {
+	public TypeProfilCode getTypeProfilCode() {
 		return this.typeProfilCode;
 	}
 
@@ -90,7 +90,7 @@ public class ProfilDto implements Serializable {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#droits droits}.
 	 */
-	public List<Droit.Values> getDroits() {
+	public List<DroitCode> getDroits() {
 		return this.droits;
 	}
 
@@ -124,7 +124,7 @@ public class ProfilDto implements Serializable {
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#typeProfilCode typeProfilCode}.
 	 * @param typeProfilCode value to set
 	 */
-	public void setTypeProfilCode(TypeProfil.Values typeProfilCode) {
+	public void setTypeProfilCode(TypeProfilCode typeProfilCode) {
 		this.typeProfilCode = typeProfilCode;
 	}
 
@@ -132,7 +132,7 @@ public class ProfilDto implements Serializable {
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#droits droits}.
 	 * @param droits value to set
 	 */
-	public void setDroits(List<Droit.Values> droits) {
+	public void setDroits(List<DroitCode> droits) {
 		this.droits = droits;
 	}
 
@@ -167,7 +167,7 @@ public class ProfilDto implements Serializable {
 	 */
 	public enum Fields  {
         ID(Long.class), //
-        TYPE_PROFIL_CODE(TypeProfil.Values.class), //
+        TYPE_PROFIL_CODE(TypeProfilCode.class), //
         DROITS(List.class), //
         UTILISATEURS(List.class), //
         SECTEURS(List.class);

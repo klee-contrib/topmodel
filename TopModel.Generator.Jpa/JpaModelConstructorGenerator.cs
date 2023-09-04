@@ -25,7 +25,7 @@ public class JpaModelConstructorGenerator
         {
             var (clazz, mapper) = fromMapper;
             fw.WriteLine();
-            fw.WriteDocStart(1, $"Crée une nouvelle instance de '{classe}'");
+            fw.WriteDocStart(1, $"Crée une nouvelle instance de '{classe.NamePascal}'");
             if (mapper.Comment != null)
             {
                 fw.WriteLine(1, $" * {mapper.Comment}");
@@ -38,19 +38,19 @@ public class JpaModelConstructorGenerator
                     fw.WriteLine(1, $" * {param.Comment}");
                 }
 
-                fw.WriteParam(param.Name.ToCamelCase(), $"Instance de '{param.Class}'");
+                fw.WriteParam(param.Name.ToCamelCase(), $"Instance de '{param.Class.NamePascal}'");
             }
 
-            fw.WriteReturns(1, $"Une nouvelle instance de '{classe}'");
+            fw.WriteReturns(1, $"Une nouvelle instance de '{classe.NamePascal}'");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, $"public {classe}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToCamelCase()}"))}) {{");
+            fw.WriteLine(1, $"public {classe.NamePascal}({string.Join(", ", mapper.Params.Select(p => $"{p.Class.NamePascal} {p.Name.ToCamelCase()}"))}) {{");
             if (classe.Extends != null)
             {
                 fw.WriteLine(2, $"super();");
             }
 
             var (mapperNs, mapperModelPath) = _config.GetMapperLocation(fromMapper);
-            fw.WriteLine(2, $"{_config.GetMapperName(mapperNs, mapperModelPath)}.create{classe}({string.Join(", ", mapper.Params.Select(p => p.Name.ToCamelCase()))}, this);");
+            fw.WriteLine(2, $"{_config.GetMapperName(mapperNs, mapperModelPath)}.create{classe.NamePascal}({string.Join(", ", mapper.Params.Select(p => p.Name.ToCamelCase()))}, this);");
             fw.AddImport(_config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
             fw.WriteLine(1, "}");
         }
@@ -66,6 +66,66 @@ public class JpaModelConstructorGenerator
         {
             fw.WriteLine(2, $"super();");
         }
+
+        fw.WriteLine(1, $"}}");
+    }
+
+    public void WriteEnumConstructor(JavaWriter fw, Class classe, List<Class> AvailableClasses, string tag, ModelConfig modelConfig)
+    {
+        var codeProperty = classe.EnumKey!;
+        fw.WriteLine();
+        foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
+        {
+            var code = refValue.Value[codeProperty];
+            fw.WriteLine(1, $@"public static final {classe.NamePascal} {code} = new {classe.NamePascal}({_config.GetEnumName(classe)}.{code});");
+        }
+
+        fw.WriteLine();
+        fw.WriteDocStart(1, "Enum constructor");
+        fw.WriteParam(classe.EnumKey!.NameCamel, "Code dont on veut obtenir l'instance");
+        fw.WriteDocEnd(1);
+        fw.WriteLine(1, $"public {classe.NamePascal}({_config.GetType(classe.EnumKey!)} {classe.EnumKey!.NameCamel}) {{");
+        if (classe.Extends != null || classe.Decorators.Any(d => _config.GetImplementation(d.Decorator)?.Extends is not null))
+        {
+            fw.WriteLine(2, $"super();");
+        }
+
+        fw.WriteLine(2, $@"this.{classe.EnumKey!.NameCamel} = {classe.EnumKey!.NameCamel};");
+        if (classe.GetProperties(AvailableClasses).Count > 1)
+        {
+            fw.WriteLine(2, $@"switch({classe.EnumKey!.NameCamel}) {{");
+            foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
+            {
+                var code = refValue.Value[codeProperty];
+                fw.WriteLine(2, $@"case {code} :");
+                foreach (var prop in classe.GetProperties(AvailableClasses)
+                    .Where(p => p != codeProperty))
+                {
+                    var isString = _config.GetType((IFieldProperty)prop) == "String";
+                    var value = refValue.Value.ContainsKey((IFieldProperty)prop) ? refValue.Value[(IFieldProperty)prop] : "null";
+                    if (prop is AssociationProperty ap && codeProperty.PrimaryKey && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Property) && r.Value[ap.Property] == value))
+                    {
+                        value = ap.Association.NamePascal + "." + value;
+                        isString = false;
+                        fw.AddImport(ap.Association.GetImport(_config, tag));
+                    }
+
+                    if (modelConfig.I18n.TranslateReferences && classe.DefaultProperty == prop)
+                    {
+                        value = refValue.ResourceKey;
+                    }
+
+                    var quote = isString ? "\"" : string.Empty;
+                    var val = quote + value + quote;
+                    fw.WriteLine(3, $@"this.{prop.NameByClassCamel} = {val};");
+                }
+
+                fw.WriteLine(3, $@"break;");
+            }
+
+            fw.WriteLine(2, $@"}}");
+        }
+
 
         fw.WriteLine(1, $"}}");
     }

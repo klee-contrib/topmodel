@@ -25,5 +25,8 @@ generatedFiles:
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/utilisateur/TypeUtilisateur.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/utilisateur/Utilisateur.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/utilisateur/UtilisateurMappers.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/enums/securite/DroitCode.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/enums/securite/TypeProfilCode.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/enums/utilisateur/TypeUtilisateurCode.java
   - ../generators/jpa/src/main/resources/i18n/model/securite.properties
   - ../generators/jpa/src/main/resources/i18n/model/utilisateur.properties

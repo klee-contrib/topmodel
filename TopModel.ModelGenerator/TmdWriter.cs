@@ -48,7 +48,7 @@ public class TmdWriter : IDisposable
             _writer.WriteLine($"uses: ");
             foreach (var u in _file.Uses.OrderBy(u => u.Name).Where(u => u.Name != _file.Name))
             {
-                _writer.WriteLine($"  - {_modelRoot}{u.Module}/{u.Name}");
+                _writer.WriteLine($"  - {_modelRoot.Replace('\\', '/')}{u.Module}/{u.Name}");
             }
         }
 

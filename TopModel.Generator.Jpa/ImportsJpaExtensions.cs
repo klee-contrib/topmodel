@@ -9,7 +9,7 @@ public static class ImportsJpaExtensions
         return $"{config.GetPackageName(classe, tag)}.{classe.NamePascal}";
     }
 
-    public static List<string> GetImports(this Class classe, JpaConfig config, string tag)
+    public static List<string> GetImports(this Class classe, JpaConfig config, string tag, IEnumerable<Class> availableClasses)
     {
         var imports = new List<string>();
 
@@ -18,10 +18,14 @@ public static class ImportsJpaExtensions
             imports.Add(classe.GetImport(config, tag));
         }
 
-        imports
-            .AddRange(classe.FromMappers.SelectMany(fm => fm.Params).Select(fmp => fmp.Class.GetImport(config, tag)));
-        imports
-            .AddRange(classe.ToMappers.Select(fmp => fmp.Class.GetImport(config, tag)));
+        if (config.MappersInClass)
+        {
+            imports
+                .AddRange(classe.FromMappers.Where(fm => fm.Params.All(fmp => availableClasses.Contains(fmp.Class))).SelectMany(fm => fm.Params).Select(fmp => fmp.Class.GetImport(config, tag)));
+            imports
+                .AddRange(classe.ToMappers.Where(tm => availableClasses.Contains(tm.Class)).Select(fmp => fmp.Class.GetImport(config, tag)));
+        }
+
         return imports;
     }
 
@@ -48,11 +52,6 @@ public static class ImportsJpaExtensions
         imports.AddRange(config.GetDomainImports(ap, tag));
         imports.Add(ap.Association.GetImport(config, tag));
 
-        if (ap.Association.Reference)
-        {
-            imports.AddRange(ap.Property.GetTypeImports(config, tag));
-        }
-
         return imports;
     }
 
@@ -67,21 +66,14 @@ public static class ImportsJpaExtensions
     private static List<string> GetTypeImports(this AliasProperty ap, JpaConfig config, string tag)
     {
         var imports = new List<string>();
-        if (ap.Class != null && ap.Property is AssociationProperty asp)
-        {
-            if (config.CanClassUseEnums(asp.Association))
-            {
-                imports.AddRange(asp.Property.GetTypeImports(config, tag));
-            }
-        }
 
         if (config.CanClassUseEnums(ap.Property.Class))
         {
-            imports.Add(ap.Property.Class.GetImport(config, tag));
+            imports.Add($"{config.GetEnumPackageName(ap.Property.Class, tag)}.{config.GetEnumName(ap.Property.Class)}");
         }
         else if (ap.Property is AssociationProperty apr && config.CanClassUseEnums(apr.Property.Class))
         {
-            imports.Add(apr.Association.GetImport(config, tag));
+            imports.Add($"{config.GetEnumPackageName(apr.Association, tag)}.{config.GetEnumName(apr.Association)}");
         }
 
         imports.AddRange(config.GetDomainImports(ap, tag));
@@ -102,6 +94,11 @@ public static class ImportsJpaExtensions
         else if (rp is RegularProperty rpr)
         {
             imports.AddRange(rpr.GetTypeImports(config, tag));
+        }
+
+        if (rp.Class != null && config.CanClassUseEnums(rp.Class) && rp == rp.Class.EnumKey)
+        {
+            imports.Add($"{config.GetEnumPackageName(rp.Class, tag)}.{config.GetEnumName(rp.Class)}");
         }
 
         return imports;

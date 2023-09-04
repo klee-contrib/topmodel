@@ -16,6 +16,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import topmodel.jpa.sample.demo.enums.utilisateur.TypeUtilisateurCode;
+
 /**
  * Type d'utilisateur.
  */
@@ -30,14 +32,14 @@ public class TypeUtilisateur {
 	 * Code du type d'utilisateur.
 	 */
 	@Id
-	@Column(name = "TUT_CODE", nullable = false, length = 3)
+	@Column(name = "TUT_CODE", nullable = false, length = 3, columnDefinition = "varchar")
 	@Enumerated(EnumType.STRING)
-	private TypeUtilisateur.Values code;
+	private TypeUtilisateurCode code;
 
 	/**
 	 * Libellé du type d'utilisateur.
 	 */
-	@Column(name = "TUT_LIBELLE", nullable = false, length = 3)
+	@Column(name = "TUT_LIBELLE", nullable = false, length = 3, columnDefinition = "varchar")
 	private String libelle;
 
 	/**
@@ -46,12 +48,35 @@ public class TypeUtilisateur {
 	public TypeUtilisateur() {
 	}
 
+	public static final TypeUtilisateur ADM = new TypeUtilisateur(TypeUtilisateurCode.ADM);
+	public static final TypeUtilisateur CLI = new TypeUtilisateur(TypeUtilisateurCode.CLI);
+	public static final TypeUtilisateur GES = new TypeUtilisateur(TypeUtilisateurCode.GES);
+
+	/**
+	 * Enum constructor.
+	 * @param code Code dont on veut obtenir l'instance.
+	 */
+	public TypeUtilisateur(TypeUtilisateurCode code) {
+		this.code = code;
+		switch(code) {
+		case ADM :
+			this.libelle = "utilisateur.typeUtilisateur.values.ADM";
+			break;
+		case CLI :
+			this.libelle = "utilisateur.typeUtilisateur.values.CLI";
+			break;
+		case GES :
+			this.libelle = "utilisateur.typeUtilisateur.values.GES";
+			break;
+		}
+	}
+
 	/**
 	 * Getter for code.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur#code code}.
 	 */
-	public TypeUtilisateur.Values getCode() {
+	public TypeUtilisateurCode getCode() {
 		return this.code;
 	}
 
@@ -68,7 +93,7 @@ public class TypeUtilisateur {
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur#code code}.
 	 * @param code value to set
 	 */
-	public void setCode(TypeUtilisateur.Values code) {
+	public void setCode(TypeUtilisateurCode code) {
 		this.code = code;
 	}
 
@@ -84,7 +109,7 @@ public class TypeUtilisateur {
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur TypeUtilisateur}.
 	 */
 	public enum Fields  {
-        CODE(TypeUtilisateur.Values.class), //
+        CODE(TypeUtilisateurCode.class), //
         LIBELLE(String.class);
 
 		private Class<?> type;
@@ -95,43 +120,6 @@ public class TypeUtilisateur {
 
 		public Class<?> getType() {
 			return this.type;
-		}
-	}
-
-	public enum Values {
-		ADM("utilisateur.typeUtilisateur.values.ADM"), //
-		CLI("utilisateur.typeUtilisateur.values.CLI"), //
-		GES("utilisateur.typeUtilisateur.values.GES"); 
-
-		/**
-		 * Libellé du type d'utilisateur.
-		 */
-		private final String libelle;
-
-		/**
-		 * All arg constructor.
-		 */
-		private Values(String libelle) {
-			this.libelle = libelle;
-		}
-
-		/**
-		 * Méthode permettant de récupérer l'entité correspondant au code.
-		 *
-		 * @return instance de {@link topmodel.jpa.sample.demo.entities.utilisateur.TypeUtilisateur} correspondant au code courant.
-		 */
-		public TypeUtilisateur getEntity() {
-			TypeUtilisateur entity = new TypeUtilisateur();
-			entity.code = this;
-			entity.libelle = this.libelle;
-			return entity;
-		}
-
-		/**
-		 * Libellé du type d'utilisateur.
-		 */
-		public String getLibelle(){
-			return this.libelle;
 		}
 	}
 }

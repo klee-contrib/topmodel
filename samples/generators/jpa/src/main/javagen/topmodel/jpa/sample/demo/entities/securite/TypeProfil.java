@@ -16,6 +16,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import topmodel.jpa.sample.demo.enums.securite.TypeProfilCode;
+
 /**
  * Type d'utilisateur.
  */
@@ -30,14 +32,14 @@ public class TypeProfil {
 	 * Code du type d'utilisateur.
 	 */
 	@Id
-	@Column(name = "TPR_CODE", nullable = false, length = 3)
+	@Column(name = "TPR_CODE", nullable = false, length = 3, columnDefinition = "varchar")
 	@Enumerated(EnumType.STRING)
-	private TypeProfil.Values code;
+	private TypeProfilCode code;
 
 	/**
 	 * Libellé du type d'utilisateur.
 	 */
-	@Column(name = "TPR_LIBELLE", nullable = false, length = 3)
+	@Column(name = "TPR_LIBELLE", nullable = false, length = 3, columnDefinition = "varchar")
 	private String libelle;
 
 	/**
@@ -46,12 +48,31 @@ public class TypeProfil {
 	public TypeProfil() {
 	}
 
+	public static final TypeProfil ADM = new TypeProfil(TypeProfilCode.ADM);
+	public static final TypeProfil GES = new TypeProfil(TypeProfilCode.GES);
+
+	/**
+	 * Enum constructor.
+	 * @param code Code dont on veut obtenir l'instance.
+	 */
+	public TypeProfil(TypeProfilCode code) {
+		this.code = code;
+		switch(code) {
+		case ADM :
+			this.libelle = "securite.typeProfil.values.ADM";
+			break;
+		case GES :
+			this.libelle = "securite.typeProfil.values.GES";
+			break;
+		}
+	}
+
 	/**
 	 * Getter for code.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.TypeProfil#code code}.
 	 */
-	public TypeProfil.Values getCode() {
+	public TypeProfilCode getCode() {
 		return this.code;
 	}
 
@@ -68,7 +89,7 @@ public class TypeProfil {
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.TypeProfil#code code}.
 	 * @param code value to set
 	 */
-	public void setCode(TypeProfil.Values code) {
+	public void setCode(TypeProfilCode code) {
 		this.code = code;
 	}
 
@@ -84,7 +105,7 @@ public class TypeProfil {
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.TypeProfil TypeProfil}.
 	 */
 	public enum Fields  {
-        CODE(TypeProfil.Values.class), //
+        CODE(TypeProfilCode.class), //
         LIBELLE(String.class);
 
 		private Class<?> type;
@@ -95,42 +116,6 @@ public class TypeProfil {
 
 		public Class<?> getType() {
 			return this.type;
-		}
-	}
-
-	public enum Values {
-		ADM("securite.typeProfil.values.ADM"), //
-		GES("securite.typeProfil.values.GES"); 
-
-		/**
-		 * Libellé du type d'utilisateur.
-		 */
-		private final String libelle;
-
-		/**
-		 * All arg constructor.
-		 */
-		private Values(String libelle) {
-			this.libelle = libelle;
-		}
-
-		/**
-		 * Méthode permettant de récupérer l'entité correspondant au code.
-		 *
-		 * @return instance de {@link topmodel.jpa.sample.demo.entities.securite.TypeProfil} correspondant au code courant.
-		 */
-		public TypeProfil getEntity() {
-			TypeProfil entity = new TypeProfil();
-			entity.code = this;
-			entity.libelle = this.libelle;
-			return entity;
-		}
-
-		/**
-		 * Libellé du type d'utilisateur.
-		 */
-		public String getLibelle(){
-			return this.libelle;
 		}
 	}
 }
