@@ -200,7 +200,7 @@ Il est également possible de passer des paramètres lors de l'instanciation d'u
 class:
   name: MyClass
   decorators:
-    - MyDecorator: [Param1, Param2]
+    - MyDecorator: ["Param1", "Param2"]
     - OtherDecorator
 ```
 
@@ -211,7 +211,7 @@ decorator:
   name: MyDecorator
   csharp:
     annotations:
-      - MyAnnotation("{$0}", "{$1}"))
+      - text: MyAnnotation("{$0}", "{$1}"))
 ```
 
 Génèrera l'annotation `[MyAnnotation("Param1", "Param2")]` sur `MyClass`. Si les paramètres ne sont pas renseignés, les variables `$0`, `$1` ne seront simplement pas remplacées. Et bien entendu, rien ne se passera si on passe des paramètres alors que le décorateur ne les utilise pas.

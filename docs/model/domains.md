@@ -134,6 +134,30 @@ Le tout dans les propriétés d'implémentation :
 
 Les templates des domaines des propriétés sont également valorisés. Ces variables s'ajoutent à la variable `{T}` utilisée dans les types génériques.
 
+### Paramètres
+
+Il est également possible de passer des paramètres lorsqu'on associe un domaineà une propriété, en passant un objet `{name, parameters}` au lieu du nom du domaine :
+
+```yaml
+properties:
+  - name: MyProperty
+    domain:
+      name: DO_CODE
+      parameters: ["Param1", "Param2"]
+```
+
+Les paramètres seront utilisés dans la résolution des variables `$0`, `$1`... Par exemple :
+
+```yaml
+domain:
+  name: DO_CODE
+  csharp:
+    annotations:
+      - text: MyAnnotation("{$0}", "{$1}"))
+```
+
+Génèrera l'annotation `[MyAnnotation("Param1", "Param2")]` sur la propriété `MyProperty`. Si les paramètres ne sont pas renseignés, les variables `$0`, `$1` ne seront simplement pas remplacées. Et bien entendu, rien ne se passera si on passe des paramètres alors que le domaine ne les utilise pas.
+
 ### Transformations
 
 Il est possible que la variable que vous utilisez dans votre template ne corresponde pas tout à fait à votre besoin. TopModel gère l'ajout de `transformateurs` sur les templates. Vous pouvez ajouter un `transformateur` après le nom de la variable que vous référencez, précédé de `:`. Le code généré tiendra compte de cette transformation.
