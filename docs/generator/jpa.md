@@ -395,6 +395,79 @@ jpa:
 
 Pour que, pour chaque module, soit généré les fichiers de resources dans les différentes langues configurées globalement.
 
+## Générateur de flow
+
+Le générateur de data flow s'appuie sur `spring-batch`. Il permet de générer du code permettant de récupérer des données d'une source, appliquer éventuellement une transformation, puis les insérer dans une base de données. Les outils mis en oeuvre ont été sélectionnés pour leur capacité à traiter un grand nombre de données, avec les meilleures performances possibles.
+
+> Il est recommandé de maîtriser le fonctionnement de `spring-batch` avant de tenter de générer des flows avec `TopModel`.
+
+### Fichiers générés
+
+#### Flow
+
+Le générateur créé un fichier par dataFlow, comprenant :
+
+- Reader
+- Writer
+- TruncateTasklet éventuellement
+- Step
+- Flow
+
+La génération s'appuie sur spring-batch, mais aussi la librairie `spring-batch-bulk`, qui permet des performances exceptionnelles grâce à l'utilisation du bulk insert postgres (avec la commande `COPY`).
+
+```xml
+  <dependency>
+    <groupId>io.github.klee-contrib</groupId>
+    <artifactId>spring-batch-bulk</artifactId>
+    <version>0.0.3</version>
+  </dependency>
+```
+
+#### Reader
+
+Le reader privilégié est le reader `JdbcCursorItemReaderBuilder`. Il permet d'obtenir les meilleures performances, et offre une meilleure flexibilité (choix de la source de données, requête).
+
+Avec le mode `partial`, le reader n'est pas généré. Il faut donc fournir un `bean` dont le nom est `[Nom du flow]Reader` pour que le job fonctionne.
+
+Il est par exemple possible de créer un `Reader` appelant une API.
+
+##### Replace
+
+Le truncate se fait avec la classe `TaskletQuery` de la librairie `spring-batch-bulk`. Nous aurions pu utiliser un `deleteAll` mais il est nettement moins performant que le `truncate`.
+
+#### Processor
+
+Si la classe source et la classe cible sont différentes, un processor est ajouté pour appeler le mapper de l'une vers l'autre
+
+#### Writer
+
+Les writers utilisent le `PgBulkWriter` de la librairie `spring-batch-bulk`. Il existe deux modes
+
+##### Insert
+
+Le writer copy directement les données dans la table cible. TopModel génère le mapping permettant de faire cette insertion.
+
+##### Upsert
+
+Le writer copy les données dans une table temporaire, puis recopie les données de table à table. En cas de conflit sur la clé primaire, un update est effectué. TopModel génère le mapping permettant de faire cette insertion.
+
+#### Job
+
+Le générateur créé un fichier de configuration de job par module. Ce job ordonnance les lancement des flow selon ce qui a été paramétré dans avec les mots clés `dependsOn`. Il import les configurations nécessaires à son bon fonctionnement.
+
+### Limitations et mises en garde
+
+- Ne fonctionne que de base à base. Pour créer un reader spécifique, utiliser le mode `partial`
+- La base cible ne peut être qu'une base de données `Postgresql`
+- Il est obligatoire de définir un dbSchema
+- Multi-source non supporté
+- Un mapper doit exister de la classe source vers la classe cible (sauf s'il s'agit de la même classe)
+- Deux jobs ne peuvent pas dépendre l'un de l'autre s'ils ne sont pas dans le même module
+- Prenons les flow A, B, C et D, avec
+  - C dépend de A et B
+  - D dépend de A
+  alors D ne se lancera qu'après A et B (alors qu'en théorie il pourrait se lancer directement après A).
+
 ## Configuration
 
 ### Fichier de configuration
@@ -533,75 +606,6 @@ Pour que, pour chaque module, soit généré les fichiers de resources dans les 
   - `start`
 
     Début de la séquence générée.
-
-### Spring-batch dataFlows
-
-Implémentation du générateur de dataflows spring-batch.
-
-#### Fichiers générés
-
-##### Flow
-
-Le générateur créé un fichier par dataFlow, comprenant :
-
-- Reader
-- Writer
-- TruncateTasklet éventuellement
-- Step
-- Flow
-
-La génération s'appuie sur spring-batch, mais aussi la librairie `spring-batch-bulk`, qui permet des performances exceptionnelles grâce à l'utilisation du bulk insert postgres (avec la commande `COPY`).
-
-```xml
-  <dependency>
-    <groupId>io.github.klee-contrib</groupId>
-    <artifactId>spring-batch-bulk</artifactId>
-    <version>0.0.3</version>
-  </dependency>
-```
-
-###### Reader
-
-Le reader privilégié est le reader `JdbcCursorItemReaderBuilder`. Il permet d'obtenir les meilleures performances, et offre une meilleure flexibilité (choix de la source de données, requête).
-
-Avec le mode `partial`, le reader n'est pas généré. Il faut donc fournir un bean dont le nom est `[Nom du flow]Reader` pour que le job fonctionne.
-
-###### Replace
-
-Le truncate se fait avec la classe `TaskletQuery` de la librairie `spring-batch-bulk`. Nous aurions pu utiliser un `deleteAll` mais il est nettement moins performant que le `truncate`.
-
-###### Processor
-
-Si la classe source et la classe cible sont différentes, un processor est ajouté pour appeler le mapper de l'une vers l'autre
-
-###### Writer
-
-Les writers utilisent le `PgBulkWriter` de la librairie `spring-batch-bulk`. Il existe deux modes
-
-###### Insert
-
-Le writer copy directement les données dans la table cible. TopModel génère le mapping permettant de faire cette insertion.
-
-###### Upsert
-
-Le writer copy les données dans une table temporaire, puis recopie les données de table à table. En cas de conflit sur la clé primaire, un update est effectué. TopModel génère le mapping permettant de faire cette insertion.
-
-##### Job
-
-Le générateur créé un fichier de configuration de job par module. Ce job ordonnance les lancement des flow selon ce qui a été paramétré dans avec les mots clés `dependsOn`. Il import les configurations nécessaires à son bon fonctionnement.
-
-#### Limitations et mises en garde
-
-- Ne fonctionne que de base à base. Pour créer un reader spécifique, utiliser le mode `partial`
-- La base cible ne peut être qu'une base de données `Postgresql`
-- Il est obligatoire de définir un dbSchema
-- Multi-source non supporté
-- Un mapper doit exister de la classe source vers la classe cible (sauf s'il s'agit de la même classe)
-- Deux jobs ne peuvent pas dépendre l'un de l'autre s'ils ne sont pas dans le même module
-- Prenons les flow A, B, C et D, avec
-  - C dépend de A et B
-  - D dépend de A
-  alors D ne se lancera qu'après A et B (alors qu'en théorie il pourrait se lancer directement après A).
 
 ### Exemple
 
