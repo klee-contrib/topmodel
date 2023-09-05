@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.34.1
+
+- [`481ef`](https://github.com/klee-contrib/topmodel/commit/481ef89b568504199c1573c3999eab17e6f3c3bf) [JS] Correction régression génération config
+
 ## 1.34.0
 
 - [#286](https://github.com/klee-contrib/topmodel/pull/283) Spring-batch dataFlows, mode JDBC et séparation des values/enums
