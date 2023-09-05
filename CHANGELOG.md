@@ -1,5 +1,26 @@
 # TopModel.Generator (`modgen`)
 
+## 1.34.0
+
+- [#286](https://github.com/klee-contrib/topmodel/pull/283) Spring-batch dataFlows, mode JDBC et séparation des values/enums
+  - Implémentation des data flows avec spring batch
+    - Génération des Reader, Processor, Writer
+    - Orchestration avec génération des steps
+  - Ajout d'un mode JDBC pour la génération des classes persistées Java
+  - Refactorisation des enums générées
+    - Séparation de l'enum des valeurs possibles de la clé primaire, et des valeurs possibles de l'objet
+    - Ajout de la configuration de l'emplacement de génération des enums de clé primaire
+    - Ajout du constructeur par PK (pour les enums)
+    - Suppression de l'enum `Values`
+      - La méthode `getEntity` n'existe plus
+    - Ajout des instances correspondant aux values en tant que membres statiques de la classe
+
+Breaking Changes :
+
+- Suppression de la classe imbriquée `[Nom de la classe].Values` pour les listes de ref
+  - En remplacement du `getEntity`, récupérer l'instance soit avec le constructeur `new [Nom de la classe]([élément du type de la clé primaire])`, soit directement avec l'instance statique de la classe `[Nom de la classe].[Clé de l'instance]`.
+  - En remplacement du type de la clé primaire, une enum `[Nom de la classe][Nom de la clé primaire]` est générée au chemin spécifié dans la config : `enumsPath`
+
 ## 1.33.1
 
 - [`10c1d1`](https://github.com/klee-contrib/topmodel/commit/10c1d166017f3ca9115d185123da8db5aa80d33a) [JS] Correction génération du fichier de resources dans le cas où une liste de référence a `enum: false`
