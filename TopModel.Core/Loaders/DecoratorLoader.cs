@@ -20,12 +20,11 @@ public class DecoratorLoader : ILoader<Decorator>
     {
         var decorator = new Decorator();
 
-        parser.ConsumeMapping(() =>
+        parser.ConsumeMapping(prop =>
         {
-            var prop = parser.Consume<Scalar>().Value;
             _ = parser.TryConsume<Scalar>(out var value);
 
-            switch (prop)
+            switch (prop.Value)
             {
                 case "name":
                     decorator.Name = new LocatedString(value);
@@ -46,7 +45,7 @@ public class DecoratorLoader : ILoader<Decorator>
                     });
                     break;
                 default:
-                    decorator.Implementations[prop] = _fileChecker.Deserialize<DecoratorImplementation>(parser);
+                    decorator.Implementations[prop.Value] = _fileChecker.Deserialize<DecoratorImplementation>(parser);
                     break;
             }
         });

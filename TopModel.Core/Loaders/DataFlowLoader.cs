@@ -12,9 +12,8 @@ public class DataFlowLoader : ILoader<DataFlow>
     {
         var dataFlow = new DataFlow();
 
-        parser.ConsumeMapping(() =>
+        parser.ConsumeMapping(prop =>
         {
-            var prop = parser.Consume<Scalar>();
             _ = parser.TryConsume<Scalar>(out var value);
 
             switch (prop.Value)
@@ -50,9 +49,8 @@ public class DataFlowLoader : ILoader<DataFlow>
                     parser.ConsumeSequence(() =>
                     {
                         var source = new DataFlowSource { DataFlow = dataFlow };
-                        parser.ConsumeMapping(() =>
+                        parser.ConsumeMapping(prop =>
                         {
-                            var prop = parser.Consume<Scalar>();
                             _ = parser.TryConsume<Scalar>(out var value);
 
                             switch (prop.Value)

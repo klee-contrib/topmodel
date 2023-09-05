@@ -25,34 +25,34 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                 while (parser.Current is not MappingEnd)
                 {
                     var prop = parser.Consume<Scalar>().Value;
-                    var value = parser.Consume<Scalar>();
+                    _ = parser.TryConsume<Scalar>(out var value);
 
                     switch (prop)
                     {
                         case "name":
-                            rp.Name = value.Value;
+                            rp.Name = value!.Value;
                             rp.Location = new Reference(value);
                             break;
                         case "label":
-                            rp.Label = value.Value;
+                            rp.Label = value!.Value;
                             break;
                         case "primaryKey":
-                            rp.PrimaryKey = value.Value == "true";
+                            rp.PrimaryKey = value!.Value == "true";
                             break;
                         case "required":
-                            rp.Required = value.Value == "true";
+                            rp.Required = value!.Value == "true";
                             break;
                         case "readonly":
-                            rp.Readonly = value.Value == "true";
+                            rp.Readonly = value!.Value == "true";
                             break;
                         case "domain":
-                            rp.DomainReference = new DomainReference(value);
+                            rp.DomainReference = parser.ConsumeDomain(value);
                             break;
                         case "defaultValue":
-                            rp.DefaultValue = value.Value;
+                            rp.DefaultValue = value!.Value;
                             break;
                         case "comment":
-                            rp.Comment = value.Value;
+                            rp.Comment = value!.Value;
                             break;
                         case "trigram":
                             rp.Trigram = new LocatedString(value);
@@ -148,24 +148,24 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                 while (parser.Current is not MappingEnd)
                 {
                     var prop = parser.Consume<Scalar>().Value;
-                    var value = parser.Consume<Scalar>();
+                    _ = parser.TryConsume<Scalar>(out var value);
 
                     switch (prop)
                     {
                         case "composition":
-                            cp.Reference = new ClassReference(value);
+                            cp.Reference = new ClassReference(value!);
                             break;
                         case "name":
-                            cp.Name = value.Value;
+                            cp.Name = value!.Value;
                             break;
                         case "domain":
-                            cp.DomainReference = new DomainReference(value);
+                            cp.DomainReference = parser.ConsumeDomain(value);
                             break;
                         case "comment":
-                            cp.Comment = value.Value;
+                            cp.Comment = value!.Value;
                             break;
                         case "readonly":
-                            cp.Readonly = value.Value == "true";
+                            cp.Readonly = value!.Value == "true";
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
@@ -231,42 +231,42 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                 while (parser.Current is not MappingEnd)
                 {
                     var prop = parser.Consume<Scalar>().Value;
-                    var value = parser.Consume<Scalar>();
+                    _ = parser.TryConsume<Scalar>(out var value);
 
                     switch (prop)
                     {
                         case "prefix":
-                            alp.Prefix = value.Value == "true" ? aliasReference.ReferenceName : value.Value == "false" ? null : value.Value;
+                            alp.Prefix = value!.Value == "true" ? aliasReference.ReferenceName : value.Value == "false" ? null : value.Value;
                             break;
                         case "suffix":
-                            alp.Suffix = value.Value == "true" ? aliasReference.ReferenceName : value.Value == "false" ? null : value.Value;
+                            alp.Suffix = value!.Value == "true" ? aliasReference.ReferenceName : value.Value == "false" ? null : value.Value;
                             break;
                         case "label":
-                            alp.Label = value.Value;
+                            alp.Label = value!.Value;
                             break;
                         case "domain":
-                            alp.DomainReference = new DomainReference(value);
+                            alp.DomainReference = parser.ConsumeDomain(value);
                             break;
                         case "required":
-                            alp.Required = value.Value == "true";
+                            alp.Required = value!.Value == "true";
                             break;
                         case "readonly":
-                            alp.Readonly = value.Value == "true";
+                            alp.Readonly = value!.Value == "true";
                             break;
                         case "comment":
-                            alp.Comment = value.Value;
+                            alp.Comment = value!.Value;
                             break;
                         case "as":
-                            alp.As = value.Value;
+                            alp.As = value!.Value;
                             break;
                         case "name":
-                            alp.Name = value.Value;
+                            alp.Name = value!.Value;
                             break;
                         case "trigram":
                             alp.Trigram = new LocatedString(value);
                             break;
                         case "defaultValue":
-                            alp.DefaultValue = value.Value;
+                            alp.DefaultValue = value!.Value;
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");

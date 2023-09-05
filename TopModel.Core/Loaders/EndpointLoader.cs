@@ -18,12 +18,11 @@ public class EndpointLoader : ILoader<Endpoint>
     {
         var endpoint = new Endpoint();
 
-        parser.ConsumeMapping(() =>
+        parser.ConsumeMapping(prop =>
         {
-            var prop = parser.Consume<Scalar>().Value;
             parser.TryConsume<Scalar>(out var value);
 
-            switch (prop)
+            switch (prop.Value)
             {
                 case "tags":
                     parser.ConsumeSequence(() => endpoint.OwnTags.Add(parser.Consume<Scalar>().Value));
@@ -63,9 +62,9 @@ public class EndpointLoader : ILoader<Endpoint>
                     {
                         if (parser.Current is MappingStart)
                         {
-                            parser.ConsumeMapping(() =>
+                            parser.ConsumeMapping(prop =>
                             {
-                                var decorator = new DecoratorReference(parser.Consume<Scalar>());
+                                var decorator = new DecoratorReference(prop);
 
                                 parser.ConsumeSequence(() =>
                                 {

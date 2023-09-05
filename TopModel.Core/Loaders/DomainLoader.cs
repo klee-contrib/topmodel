@@ -20,12 +20,11 @@ public class DomainLoader : ILoader<Domain>
     {
         var domain = new Domain();
 
-        parser.ConsumeMapping(() =>
+        parser.ConsumeMapping(prop =>
         {
-            var prop = parser.Consume<Scalar>().Value;
             parser.TryConsume<Scalar>(out var value);
 
-            switch (prop)
+            switch (prop.Value)
             {
                 case "name":
                     domain.Name = new LocatedString(value);
@@ -46,9 +45,9 @@ public class DomainLoader : ILoader<Domain>
                     domain.BodyParam = value!.Value == "true";
                     break;
                 case "asDomains":
-                    parser.ConsumeMapping(() =>
+                    parser.ConsumeMapping(prop =>
                     {
-                        domain.AsDomainReferences[parser.Consume<Scalar>().Value] = new DomainReference(parser.Consume<Scalar>());
+                        domain.AsDomainReferences[prop.Value] = new DomainReference(parser.Consume<Scalar>());
                     });
                     break;
                 case "mediaType":
@@ -57,11 +56,9 @@ public class DomainLoader : ILoader<Domain>
                 default:
                     var implementation = new DomainImplementation();
 
-                    parser.ConsumeMapping(() =>
+                    parser.ConsumeMapping(prop =>
                     {
-                        var prop = parser.Consume<Scalar>().Value;
-
-                        switch (prop)
+                        switch (prop.Value)
                         {
                             case "type":
                                 implementation.Type = parser.Consume<Scalar>().Value;
@@ -78,7 +75,7 @@ public class DomainLoader : ILoader<Domain>
                         }
                     });
 
-                    domain.Implementations[prop] = implementation;
+                    domain.Implementations[prop.Value] = implementation;
                     break;
             }
         });

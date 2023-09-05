@@ -16,6 +16,33 @@
         "Api_Dto_Persisted"
       ]
     },
+    "domain": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Domaine a utiliser pour le type de composition (si ce n'est pas une composition simple)."
+        },
+        {
+          "type": "object",
+          "description": "Domaine a utiliser pour le type de composition (si ce n'est pas une composition simple).",
+          "required": [ "name" ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Nom du domaine."
+            },
+            "parameters": {
+              "type": "array",
+              "description": "Paramètres du domaine.",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
     "property": {
       "oneOf": [
         {
@@ -49,8 +76,7 @@
               "description": "Une propriété 'readonly' ne pourra pas être renseignée par un mapper et aucun setter ne sera généré si la classe contenant la propriété est abstraite."
             },
             "domain": {
-              "type": "string",
-              "description": "Le domaine lié à la propriété. Doit référencer un domaine défini dans le fichier de domaines."
+              "$ref": "#/definitions/domain"
             },
             "trigram": {
               "type": "string",
@@ -258,8 +284,7 @@
               ]
             },
             "domain": {
-              "type": "string",
-              "description": "Surcharge le domaine de la propriété aliasée."
+              "$ref": "#/definitions/domain"
             },
             "label": {
               "type": "string",
@@ -305,8 +330,7 @@
               "description": "Nom de la propriété."
             },
             "domain": {
-              "type": "string",
-              "description": "Domaine a utiliser pour le type de composition (si ce n'est pas une composition simple)."
+              "$ref": "#/definitions/domain"
             },
             "comment": {
               "type": "string",

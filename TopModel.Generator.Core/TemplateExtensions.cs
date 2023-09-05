@@ -58,7 +58,7 @@ internal static class TemplateExtensions
             var result = template;
             foreach (var t in template.ExtractVariables())
             {
-                result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), fp));
+                result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), fp, fp.DomainParameters));
             }
 
             return result;
@@ -73,7 +73,7 @@ internal static class TemplateExtensions
             var result = template;
             foreach (var t in template.ExtractVariables())
             {
-                result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), cp));
+                result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), cp, cp.DomainParameters));
             }
 
             return result;
@@ -136,10 +136,10 @@ internal static class TemplateExtensions
         return regex.Matches(input).Cast<Match>();
     }
 
-    private static string ResolveVariable(this string input, IFieldProperty rp)
+    private static string ResolveVariable(this string input, IFieldProperty rp, string[] parameters)
     {
         var transform = input.GetTransformation();
-        return input.Split(':').First() switch
+        var result = input.Split(':').First() switch
         {
             "class.name" => transform(rp.Class?.Name.ToString() ?? string.Empty),
             "class.sqlName" => transform(rp.Class?.SqlName ?? string.Empty),
@@ -154,12 +154,19 @@ internal static class TemplateExtensions
             "defaultValue" => transform(rp.DefaultValue?.ToString() ?? string.Empty),
             var i => i
         };
+
+        for (var i = 0; i < parameters.Length; i++)
+        {
+            result = result.Replace($"${i}", parameters[i]);
+        }
+
+        return result;
     }
 
-    private static string ResolveVariable(this string input, CompositionProperty cp)
+    private static string ResolveVariable(this string input, CompositionProperty cp, string[] parameters)
     {
         var transform = input.GetTransformation();
-        return input.Split(':').First() switch
+        var result = input.Split(':').First() switch
         {
             "class.name" => transform(cp.Class?.Name.ToString() ?? string.Empty),
             "composition.name" => transform(cp.Composition?.Name.ToString() ?? string.Empty),
@@ -168,6 +175,13 @@ internal static class TemplateExtensions
             "comment" => transform(cp.Comment),
             var i => i
         };
+
+        for (var i = 0; i < parameters.Length; i++)
+        {
+            result = result.Replace($"${i}", parameters[i]);
+        }
+
+        return result;
     }
 
     private static string ResolveVariable(this string input, Class c, string[] parameters)

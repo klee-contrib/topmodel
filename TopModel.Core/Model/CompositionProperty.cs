@@ -20,6 +20,8 @@ public class CompositionProperty : IProperty
 
     public Domain Domain { get; set; }
 
+    public string[] DomainParameters { get; set; } = Array.Empty<string>();
+
     public string Comment { get; set; }
 
     public bool Readonly { get; set; }

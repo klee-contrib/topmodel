@@ -595,6 +595,7 @@ public class ModelStore
                     }
 
                     rp.Domain = domain;
+                    rp.DomainParameters = rp.DomainReference.ParameterReferences.Select(p => p.ReferenceName).ToArray();
                     break;
 
                 case AssociationProperty ap:
@@ -637,6 +638,7 @@ public class ModelStore
                         }
 
                         cp.Domain = cpDomain;
+                        cp.DomainParameters = cp.DomainReference.ParameterReferences.Select(p => p.ReferenceName).ToArray();
                     }
 
                     break;
@@ -649,6 +651,7 @@ public class ModelStore
                     }
 
                     alp.Domain = aliasDomain;
+                    alp.DomainParameters = alp.DomainReference.ParameterReferences.Select(p => p.ReferenceName).ToArray();
                     break;
             }
         }

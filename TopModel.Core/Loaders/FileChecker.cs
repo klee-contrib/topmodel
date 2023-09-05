@@ -75,11 +75,10 @@ public class FileChecker
         var config = new ModelConfig();
         parser.Consume<StreamStart>();
         parser.Consume<DocumentStart>();
-        parser.ConsumeMapping(() =>
+        parser.ConsumeMapping(prop =>
         {
-            var prop = parser.Consume<Scalar>().Value;
             parser.TryConsume<Scalar>(out var value);
-            switch (prop)
+            switch (prop.Value)
             {
                 case "app":
                     config.App = value!.Value;
@@ -115,7 +114,7 @@ public class FileChecker
                     });
                     break;
                 default:
-                    config.Generators.Add(prop, _deserializer.Deserialize<IEnumerable<IDictionary<string, object>>>(parser));
+                    config.Generators.Add(prop.Value, _deserializer.Deserialize<IEnumerable<IDictionary<string, object>>>(parser));
                     break;
             }
         });

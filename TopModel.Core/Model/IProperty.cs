@@ -18,6 +18,8 @@ public interface IProperty
 
     Domain Domain { get; }
 
+    string[] DomainParameters { get; }
+
     string Comment { get; }
 
     bool Readonly { get; set; }
