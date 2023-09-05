@@ -133,6 +133,8 @@ public class AssociationProperty : IFieldProperty
 
     public Domain Domain => Type.IsToMany() && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
 
+    public string[] DomainParameters => Property?.DomainParameters ?? Array.Empty<string>();
+
     public bool PrimaryKey { get; set; }
 
     public Reference? PropertyReference { get; set; }

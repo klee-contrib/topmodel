@@ -19,12 +19,11 @@ public class ConverterLoader : ILoader<Converter>
     {
         var converter = new Converter();
 
-        parser.ConsumeMapping(() =>
+        parser.ConsumeMapping(prop =>
         {
-            var prop = parser.Consume<Scalar>().Value;
             _ = parser.TryConsume<Scalar>(out var value);
 
-            switch (prop)
+            switch (prop.Value)
             {
                 case "from":
                     parser.ConsumeSequence(() =>
@@ -41,7 +40,7 @@ public class ConverterLoader : ILoader<Converter>
                     });
                     break;
                 default:
-                    converter.Implementations[prop] = _fileChecker.Deserialize<ConverterImplementation>(parser);
+                    converter.Implementations[prop.Value] = _fileChecker.Deserialize<ConverterImplementation>(parser);
                     break;
             }
         });

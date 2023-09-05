@@ -8,6 +8,7 @@ public class AliasProperty : IFieldProperty
     private string? _comment;
     private string? _defaultValue;
     private Domain? _domain;
+    private string[]? _domainParameters;
     private string? _label;
     private string? _name;
 
@@ -102,6 +103,12 @@ public class AliasProperty : IFieldProperty
     }
 #nullable enable
 
+    public string[] DomainParameters
+    {
+        get => _domainParameters ?? _property?.DomainParameters ?? Array.Empty<string>();
+        set => _domainParameters = value;
+    }
+
     public DomainReference? DomainReference { get; set; }
 
     public string Comment
@@ -155,7 +162,8 @@ public class AliasProperty : IFieldProperty
             Suffix = Suffix,
             Name = _name!,
             Trigram = Trigram,
-            UseLegacyRoleName = UseLegacyRoleName
+            UseLegacyRoleName = UseLegacyRoleName,
+            DomainParameters = _domainParameters!
         };
 
         if (_domain != null)
@@ -202,7 +210,8 @@ public class AliasProperty : IFieldProperty
             Label = _label,
             As = As,
             OriginalAliasProperty = this,
-            UseLegacyRoleName = UseLegacyRoleName
+            UseLegacyRoleName = UseLegacyRoleName,
+            DomainParameters = _domainParameters!
         };
 
         if (_domain != null)

@@ -21,9 +21,8 @@ public class ClassLoader : ILoader<Class>
     {
         var classe = new Class();
 
-        parser.ConsumeMapping(() =>
+        parser.ConsumeMapping(prop =>
         {
-            var prop = parser.Consume<Scalar>();
             _ = parser.TryConsume<Scalar>(out var value);
 
             switch (prop.Value)
@@ -78,9 +77,9 @@ public class ClassLoader : ILoader<Class>
                     {
                         if (parser.Current is MappingStart)
                         {
-                            parser.ConsumeMapping(() =>
+                            parser.ConsumeMapping(prop =>
                             {
-                                var decorator = new DecoratorReference(parser.Consume<Scalar>());
+                                var decorator = new DecoratorReference(prop);
 
                                 parser.ConsumeSequence(() =>
                                 {
@@ -118,24 +117,23 @@ public class ClassLoader : ILoader<Class>
                     });
                     break;
                 case "values":
-                    parser.ConsumeMapping(() =>
+                    parser.ConsumeMapping(prop =>
                     {
-                        var name = new Reference(parser.Consume<Scalar>());
+                        var name = new Reference(prop);
                         var values = new Dictionary<Reference, string>();
 
                         classe.ValueReferences.Add(name, values);
 
-                        parser.ConsumeMapping(() =>
+                        parser.ConsumeMapping(prop =>
                         {
-                            values.Add(new Reference(parser.Consume<Scalar>()), parser.Consume<Scalar>().Value);
+                            values.Add(new Reference(prop), parser.Consume<Scalar>().Value);
                         });
                     });
                     break;
                 case "mappers":
-                    parser.ConsumeMapping(() =>
+                    parser.ConsumeMapping(prop =>
                     {
-                        var subProp = parser.Consume<Scalar>().Value;
-                        switch (subProp)
+                        switch (prop.Value)
                         {
                             case "from":
                                 parser.ConsumeSequence(() =>
@@ -143,26 +141,24 @@ public class ClassLoader : ILoader<Class>
                                     var mapper = new FromMapper();
                                     classe.FromMappers.Add(mapper);
 
-                                    parser.ConsumeMapping(() =>
+                                    parser.ConsumeMapping(prop =>
                                     {
-                                        var subSubProp = parser.Consume<Scalar>();
-                                        switch (subSubProp.Value)
+                                        switch (prop.Value)
                                         {
                                             case "comment":
                                                 mapper.Comment = parser.Consume<Scalar>().Value;
                                                 break;
                                             case "params":
-                                                mapper.Reference = new LocatedString(subSubProp);
+                                                mapper.Reference = new LocatedString(prop);
                                                 parser.ConsumeSequence(() =>
                                                 {
                                                     var param = new ClassMappings();
                                                     mapper.Params.Add(param);
 
                                                     Scalar classScalar = null!;
-                                                    parser.ConsumeMapping(() =>
+                                                    parser.ConsumeMapping(prop =>
                                                     {
-                                                        var subSubSubProp = parser.Consume<Scalar>().Value;
-                                                        switch (subSubSubProp)
+                                                        switch (prop.Value)
                                                         {
                                                             case "class":
                                                                 classScalar = parser.Consume<Scalar>();
@@ -178,9 +174,9 @@ public class ClassLoader : ILoader<Class>
                                                                 param.Name = new LocatedString(parser.Consume<Scalar>());
                                                                 break;
                                                             case "mappings":
-                                                                parser.ConsumeMapping(() =>
+                                                                parser.ConsumeMapping(prop =>
                                                                 {
-                                                                    param.MappingReferences.Add(new Reference(parser.Consume<Scalar>()), new Reference(parser.Consume<Scalar>()));
+                                                                    param.MappingReferences.Add(new Reference(prop), new Reference(parser.Consume<Scalar>()));
                                                                 });
                                                                 break;
                                                         }
@@ -200,11 +196,10 @@ public class ClassLoader : ILoader<Class>
                                     var mapper = new ClassMappings { To = true };
                                     classe.ToMappers.Add(mapper);
 
-                                    parser.ConsumeMapping(() =>
+                                    parser.ConsumeMapping(prop =>
                                     {
-                                        var subSubProp = parser.Consume<Scalar>().Value;
                                         Scalar classScalar = null!;
-                                        switch (subSubProp)
+                                        switch (prop.Value)
                                         {
                                             case "class":
                                                 classScalar = parser.Consume<Scalar>();
@@ -217,9 +212,9 @@ public class ClassLoader : ILoader<Class>
                                                 mapper.Comment = parser.Consume<Scalar>().Value;
                                                 break;
                                             case "mappings":
-                                                parser.ConsumeMapping(() =>
+                                                parser.ConsumeMapping(prop =>
                                                 {
-                                                    mapper.MappingReferences.Add(new Reference(parser.Consume<Scalar>()), new Reference(parser.Consume<Scalar>()));
+                                                    mapper.MappingReferences.Add(new Reference(prop), new Reference(parser.Consume<Scalar>()));
                                                 });
                                                 break;
                                         }

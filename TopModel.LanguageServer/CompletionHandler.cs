@@ -46,6 +46,7 @@ public class CompletionHandler : CompletionHandlerBase
 
             if (currentLine.Contains("domain: ")
                 || GetParentObject(request) == "asDomains" && currentLine[..reqChar].Contains(':')
+                || GetParentObject(request) == "domain" && GetRootObject(request) != "domain" && currentLine.TrimStart().StartsWith("name:")
                 || currentLine.TrimStart().StartsWith("-")
                     && GetRootObject(request) == "converter"
                     && (text.ElementAtOrDefault(request.Position.Line - 1)?.Trim() == "to:"

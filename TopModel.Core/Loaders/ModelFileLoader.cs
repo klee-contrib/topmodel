@@ -50,12 +50,11 @@ public class ModelFileLoader
             Path = filePath.ToRelative(),
         };
 
-        parser.ConsumeMapping(() =>
+        parser.ConsumeMapping(prop =>
         {
-            var prop = parser.Consume<Scalar>().Value;
             parser.TryConsume<Scalar>(out var value);
 
-            switch (prop)
+            switch (prop.Value)
             {
                 case "module":
                     file.Namespace = new Namespace { App = _config.App, Module = value!.Value };
@@ -71,11 +70,10 @@ public class ModelFileLoader
                     var scalar = parser.Consume<Scalar>();
                     if (scalar.Value == "endpoints")
                     {
-                        parser.ConsumeMapping(() =>
+                        parser.ConsumeMapping(prop =>
                         {
-                            var prop = parser.Consume<Scalar>().Value;
                             parser.TryConsume<Scalar>(out var value);
-                            switch (prop)
+                            switch (prop.Value)
                             {
                                 case "fileName":
                                     file.Options.Endpoints.FileName = value!.Value;
