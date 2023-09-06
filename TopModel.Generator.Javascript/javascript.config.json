@@ -60,6 +60,10 @@
       "type": "string",
       "description": "Racine du répertoire de génération."
     },
+    "ignoreDefaultValues": {
+      "type": "boolean",
+      "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
+    },
     "modelRootPath": {
       "type": "string",
       "description": "Localisation du modèle, relative au répertoire de génération. Si non renseigné, aucun modèle ne sera généré."

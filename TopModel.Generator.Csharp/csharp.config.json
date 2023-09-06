@@ -75,6 +75,10 @@
       "type": "string",
       "description": "Racine du répertoire de génération."
     },
+    "ignoreDefaultValues": {
+      "type": "boolean",
+      "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
+    },
     "persistentModelPath": {
       "type": "string",
       "description": "Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models."
@@ -199,7 +203,7 @@
         true,
         false,
         "dtos-only"
-      ]      
+      ]
     }
   }
 }

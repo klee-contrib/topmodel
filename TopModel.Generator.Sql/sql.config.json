@@ -43,6 +43,10 @@
       "type": "string",
       "description": "Racine du répertoire de génération."
     },
+    "ignoreDefaultValues": {
+      "type": "boolean",
+      "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
+    },
     "targetDBMS": {
       "type": "string",
       "description": "SGBD cible ('postgre' ou 'sqlserver').",
