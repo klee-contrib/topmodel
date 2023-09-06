@@ -23,16 +23,4 @@ public static class ScriptUtils
 
         return classe.SqlName + "_TABLE_TYPE";
     }
-
-    /// <summary>
-    /// Prépare une chaîne de caractères à être écrite dans un script SQL.
-    /// </summary>
-    /// <param name="raw">La chaîne à préparer.</param>
-    /// <returns>La chaîne de caractère équivalente, mise au format SQL.</returns>
-    public static string PrepareDataToSqlDisplay(string? raw)
-    {
-        return string.IsNullOrEmpty(raw)
-            ? string.Empty
-            : raw.Replace("'", "''");
-    }
 }

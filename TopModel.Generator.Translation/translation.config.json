@@ -37,6 +37,10 @@
       "type": "string",
       "description": "Racine du répertoire de génération."
     },
+    "ignoreDefaultValues": {
+      "type": "boolean",
+      "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
+    },
     "rootPath": {
       "type": "string",
       "description": "Template du chemin des dossiers de traductions sortants (manquants). Doit contenir le template {lang}",

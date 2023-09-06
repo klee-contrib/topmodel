@@ -20,6 +20,11 @@ public abstract class GeneratorConfigBase
     public IList<string> Tags { get; set; }
 
     /// <summary>
+    /// Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration.
+    /// </summary>
+    public virtual bool IgnoreDefaultValues { get; set; }
+
+    /// <summary>
     /// Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.
     /// </summary>
     public string Language { get; set; }
@@ -312,7 +317,7 @@ public abstract class GeneratorConfigBase
             AssociationProperty ap when CanClassUseEnums(ap.Association, availableClasses, ap.Property) => HandleEnum(ap),
             AliasProperty { Property: AssociationProperty ap } when CanClassUseEnums(ap.Association, availableClasses) => HandleEnum(ap),
             RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, availableClasses, rp) => HandleEnum(rp),
-            AliasProperty { Property: RegularProperty { Class: not null } rp } alp when CanClassUseEnums(rp.Class, availableClasses, rp) => HandleEnum(rp),
+            AliasProperty { Property: RegularProperty { Class: not null } rp } when CanClassUseEnums(rp.Class, availableClasses, rp) => HandleEnum(rp),
             IFieldProperty => (GetImplementation(property.Domain)?.Type ?? string.Empty).ParseTemplate(property),
             CompositionProperty { Domain: not null } => (GetImplementation(property.Domain)?.GenericType ?? "{T}").Replace("{T}", "{composition.name}").ParseTemplate(property),
             CompositionProperty cp => cp.Composition.NamePascal,
@@ -331,7 +336,10 @@ public abstract class GeneratorConfigBase
     {
         var fp = property as IFieldProperty;
 
-        value ??= fp?.DefaultValue;
+        if (!IgnoreDefaultValues)
+        {
+            value ??= fp?.DefaultValue;
+        }
 
         if (fp == null || value == null || value == "null" || value == "undefined")
         {
@@ -360,9 +368,9 @@ public abstract class GeneratorConfigBase
             }
         }
 
-        if (GetImplementation(fp.Domain)?.Type?.ToLower() == "string")
+        if (ShouldQuoteValue(fp))
         {
-            return $@"""{value}""";
+            return QuoteValue(value);
         }
 
         return value;
@@ -513,6 +521,16 @@ public abstract class GeneratorConfigBase
         return result;
     }
 
+    /// <summary>
+    /// Détermine si une valeur de cette propriété doit être mise entre guillemets.
+    /// </summary>
+    /// <param name="property">Propriété.</param>
+    /// <returns>Oui/non.</returns>
+    public virtual bool ShouldQuoteValue(IFieldProperty property)
+    {
+        return GetImplementation(property.Domain)?.Type?.ToLower() == "string";
+    }
+
     protected virtual string GetConstEnumName(string className, string refName)
     {
         return $"{className.ToPascalCase(strictIfUppercase: true)}.{refName.ToPascalCase(strictIfUppercase: true)}";
@@ -523,6 +541,11 @@ public abstract class GeneratorConfigBase
     protected virtual bool IsEnumNameValid(string name)
     {
         return !Regex.IsMatch(name ?? string.Empty, "^\\d");
+    }
+
+    protected virtual string QuoteValue(string value)
+    {
+        return $@"""{value}""";
     }
 
     /// <summary>
@@ -546,8 +569,8 @@ public abstract class GeneratorConfigBase
 
     private static string ReplaceVariable(string value, string varName, string varValue)
     {
-        MatchEvaluator matchEvaluator = m => m.Value.Trim('{', '}').GetTransformation()(varValue);
-        return Regex.Replace(value, $"\\{{{varName}(:\\w+)?\\}}", matchEvaluator);
+        string MatchEvaluator(Match m) => m.Value.Trim('{', '}').GetTransformation()(varValue);
+        return Regex.Replace(value, $"\\{{{varName}(:\\w+)?\\}}", MatchEvaluator);
     }
 
     private bool FilterAnnotations(TargetedText annotation, IProperty property, string tag)

@@ -57,6 +57,10 @@
       "type": "string",
       "description": "Racine du répertoire de génération."
     },
+    "ignoreDefaultValues": {
+      "type": "boolean",
+      "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
+    },
     "entitiesPath": {
       "type": "string",
       "description": "Localisation des classes persistées du modèle, relative au répertoire de génération. Par défaut, 'phpgen:{app}/entities/{module}'."

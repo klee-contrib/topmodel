@@ -99,7 +99,7 @@ public class ProceduralSqlGenerator : GeneratorBase<SqlConfig>
 
         if (classes.Any())
         {
-            SchemaGenerator.GenerateListInitScript(classes);
+            SchemaGenerator.GenerateListInitScript(classes, Classes);
         }
     }
 }

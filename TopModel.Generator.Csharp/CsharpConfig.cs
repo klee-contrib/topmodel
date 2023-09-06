@@ -472,11 +472,6 @@ public class CsharpConfig : GeneratorConfigBase
         return ResolveVariables(NoPersistenceParam ?? string.Empty, tag) == true.ToString();
     }
 
-    public bool ShouldQuoteValue(IFieldProperty prop)
-    {
-        return GetType(prop) == "string";
-    }
-
     protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
     {
         return $"{(isPrimaryKeyDef ? string.Empty : $"{className.ToPascalCase()}.")}{propName.ToPascalCase()}s";
