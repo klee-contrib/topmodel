@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.35.1
+
+- [`0d4bc60a`](https://github.com/klee-contrib/topmodel/commit/0d4bc60a296a63d8c4090069609454e0c9838aef) - [C#] Gestion "native" (default)Value en Guid (et dates en dehors du DbContext)
+
 ## 1.35.0
 
 - [`6ce702`](https://github.com/klee-contrib/topmodel/commit/6ce7020f672fec50f23c8a29d45e9ac1d1a95868) [JS] Les primary key non auto-générées sont désormais obligatoires
