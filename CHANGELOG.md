@@ -1,5 +1,15 @@
 # TopModel.Generator (`modgen`)
 
+## 1.35.0
+
+- [`6ce702`](https://github.com/klee-contrib/topmodel/commit/6ce7020f672fec50f23c8a29d45e9ac1d1a95868) [JS] Les primary key non auto-générées sont désormais obligatoires
+- [`9ea8a4`](https://github.com/klee-contrib/topmodel/commit/9ea8a4251b6491608e84e731b214f03631d0212c) [JS] Fix listing références des domaines utilisés en `asDomains`
+- [#292](https://github.com/klee-contrib/topmodel/pull/292) [Core] Donne la possibilité de mettre des paramètres de domaines
+
+Breaking change :
+
+> [JS] Les primary key non auto-générées sont désormais obligatoires
+
 ## 1.34.1
 
 - [`481ef`](https://github.com/klee-contrib/topmodel/commit/481ef89b568504199c1573c3999eab17e6f3c3bf) [JS] Correction régression génération config
