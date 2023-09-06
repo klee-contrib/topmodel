@@ -23,7 +23,7 @@ public class SecteurDto implements Serializable {
 	 * Id technique.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.Secteur#getId() Secteur#getId()} 
 	 */
-	private Long id;
+	private Integer id;
 
 	/**
 	 * No arg constructor.
@@ -46,7 +46,7 @@ public class SecteurDto implements Serializable {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.SecteurDto#id id}.
 	 */
-	public Long getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
@@ -54,7 +54,7 @@ public class SecteurDto implements Serializable {
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.SecteurDto#id id}.
 	 * @param id value to set
 	 */
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -72,7 +72,7 @@ public class SecteurDto implements Serializable {
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.securite.SecteurDto SecteurDto}.
 	 */
 	public enum Fields  {
-        ID(Long.class);
+        ID(Integer.class);
 
 		private Class<?> type;
 

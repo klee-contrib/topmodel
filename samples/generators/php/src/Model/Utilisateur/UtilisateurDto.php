@@ -14,7 +14,7 @@ class UtilisateurDto
   private int $id;
 
   #[Length(max: 20)]
-  private int|null $age = 6l;
+  private int|null $age = 6;
 
   private int|null $profilId;
 

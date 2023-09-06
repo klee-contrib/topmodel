@@ -14,9 +14,9 @@ domain:
   csharp:
     type: int?
   java:
-    type: Long
+    type: Integer
   sql:
-    type: int8
+    type: int
   php:
     type: int
 ---
@@ -30,12 +30,12 @@ domain:
     type: int[]
     genericType: "{T}[]"
   java:
-    type: List<Long>
+    type: List<Integer>
     genericType: List<{T}>
     imports:
       - java.util.List
   sql:
-    type: int8
+    type: int
   php:
     type: Collection
 ---
@@ -192,7 +192,7 @@ domain:
   csharp:
     type: decimal?
   java:
-    type: Long
+    type: BigDecimal
   sql:
     type: numeric
   scale: 9

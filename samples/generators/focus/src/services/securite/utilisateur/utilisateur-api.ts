@@ -63,6 +63,6 @@ export function save(utilisateur: UtilisateurDto, options: RequestInit = {}): Pr
  * @param options Options pour 'fetch'.
  * @returns Utilisateurs matchant les critères
  */
-export function search(utiId?: number, age: number = 6l, profilId?: number, email?: string, nom: string = "Jabx", actif?: boolean, typeUtilisateurCode: TypeUtilisateurCode = "ADM", utilisateursEnfant?: number[], dateCreation?: string, dateModification?: string, options: RequestInit = {}): Promise<Page<UtilisateurSearch>> {
+export function search(utiId?: number, age: number = 6, profilId?: number, email?: string, nom: string = "Jabx", actif?: boolean, typeUtilisateurCode: TypeUtilisateurCode = "ADM", utilisateursEnfant?: number[], dateCreation?: string, dateModification?: string, options: RequestInit = {}): Promise<Page<UtilisateurSearch>> {
     return coreFetch("POST", `./utilisateur/search`, {query: {utiId, age, profilId, email, nom, actif, typeUtilisateurCode, utilisateursEnfant, dateCreation, dateModification}}, options);
 }

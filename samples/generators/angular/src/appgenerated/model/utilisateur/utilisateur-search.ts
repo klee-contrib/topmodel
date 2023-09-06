@@ -32,7 +32,7 @@ export const UtilisateurSearchEntity = {
         name: "age",
         domain: DO_NUMBER,
         isRequired: false,
-        defaultValue: 6l,
+        defaultValue: 6,
         label: "utilisateur.utilisateur.age"
     },
     profilId: {

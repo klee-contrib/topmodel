@@ -28,19 +28,19 @@ public class UtilisateurDto implements Serializable {
 	 * Id technique.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getId() Utilisateur#getId()} 
 	 */
-	private Long id;
+	private Integer id;
 
 	/**
 	 * Age en années de l'utilisateur.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getAge() Utilisateur#getAge()} 
 	 */
-	private Long age = 6l;
+	private BigDecimal age = 6;
 
 	/**
 	 * Profil de l'utilisateur.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getProfilId() Utilisateur#getProfilId()} 
 	 */
-	private Long profilId;
+	private Integer profilId;
 
 	/**
 	 * Email de l'utilisateur.
@@ -71,7 +71,7 @@ public class UtilisateurDto implements Serializable {
 	 * Utilisateur enfants.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getUtilisateursEnfant() Utilisateur#getUtilisateursEnfant()} 
 	 */
-	private List<Long> utilisateursEnfant;
+	private List<Integer> utilisateursEnfant;
 
 	/**
 	 * Date de création de l'utilisateur.
@@ -111,7 +111,7 @@ public class UtilisateurDto implements Serializable {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#id id}.
 	 */
-	public Long getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
@@ -120,7 +120,7 @@ public class UtilisateurDto implements Serializable {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#age age}.
 	 */
-	public Long getAge() {
+	public BigDecimal getAge() {
 		return this.age;
 	}
 
@@ -129,7 +129,7 @@ public class UtilisateurDto implements Serializable {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#profilId profilId}.
 	 */
-	public Long getProfilId() {
+	public Integer getProfilId() {
 		return this.profilId;
 	}
 
@@ -174,7 +174,7 @@ public class UtilisateurDto implements Serializable {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#utilisateursEnfant utilisateursEnfant}.
 	 */
-	public List<Long> getUtilisateursEnfant() {
+	public List<Integer> getUtilisateursEnfant() {
 		return this.utilisateursEnfant;
 	}
 
@@ -209,7 +209,7 @@ public class UtilisateurDto implements Serializable {
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#id id}.
 	 * @param id value to set
 	 */
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -217,7 +217,7 @@ public class UtilisateurDto implements Serializable {
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#age age}.
 	 * @param age value to set
 	 */
-	public void setAge(Long age) {
+	public void setAge(BigDecimal age) {
 		this.age = age;
 	}
 
@@ -225,7 +225,7 @@ public class UtilisateurDto implements Serializable {
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#profilId profilId}.
 	 * @param profilId value to set
 	 */
-	public void setProfilId(Long profilId) {
+	public void setProfilId(Integer profilId) {
 		this.profilId = profilId;
 	}
 
@@ -265,7 +265,7 @@ public class UtilisateurDto implements Serializable {
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto#utilisateursEnfant utilisateursEnfant}.
 	 * @param utilisateursEnfant value to set
 	 */
-	public void setUtilisateursEnfant(List<Long> utilisateursEnfant) {
+	public void setUtilisateursEnfant(List<Integer> utilisateursEnfant) {
 		this.utilisateursEnfant = utilisateursEnfant;
 	}
 
@@ -318,9 +318,9 @@ public class UtilisateurDto implements Serializable {
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto UtilisateurDto}.
 	 */
 	public enum Fields  {
-        ID(Long.class), //
-        AGE(Long.class), //
-        PROFIL_ID(Long.class), //
+        ID(Integer.class), //
+        AGE(BigDecimal.class), //
+        PROFIL_ID(Integer.class), //
         EMAIL(String.class), //
         NOM(String.class), //
         ACTIF(Boolean.class), //

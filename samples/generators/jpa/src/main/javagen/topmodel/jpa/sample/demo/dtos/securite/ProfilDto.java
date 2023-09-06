@@ -27,7 +27,7 @@ public class ProfilDto implements Serializable {
 	 * Id technique.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.Profil#getId() Profil#getId()} 
 	 */
-	private Long id;
+	private Integer id;
 
 	/**
 	 * Type de profil.
@@ -72,7 +72,7 @@ public class ProfilDto implements Serializable {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#id id}.
 	 */
-	public Long getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
@@ -116,7 +116,7 @@ public class ProfilDto implements Serializable {
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto#id id}.
 	 * @param id value to set
 	 */
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -166,7 +166,7 @@ public class ProfilDto implements Serializable {
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.securite.ProfilDto ProfilDto}.
 	 */
 	public enum Fields  {
-        ID(Long.class), //
+        ID(Integer.class), //
         TYPE_PROFIL_CODE(TypeProfilCode.class), //
         DROITS(List.class), //
         UTILISATEURS(List.class), //

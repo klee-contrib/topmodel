@@ -33,7 +33,7 @@ class Utilisateur
   private int $id;
 
   #[Column(name: 'UTI_AGE', length: 20, scale: 9, nullable: true)]
-  private int|null $age = 6l;
+  private int|null $age = 6;
 
   #[ManyToOne(targetEntity: Profil::class)]
   #[JoinColumn(name: 'PRO_ID', referencedColumnName: 'PRO_ID')]

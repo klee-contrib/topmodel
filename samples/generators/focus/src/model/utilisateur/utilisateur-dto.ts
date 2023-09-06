@@ -35,7 +35,7 @@ export const UtilisateurDtoEntity: UtilisateurDtoEntityType = {
         name: "age",
         domain: DO_NUMBER,
         isRequired: false,
-        defaultValue: 6l,
+        defaultValue: 6,
         label: "utilisateur.utilisateur.age"
     },
     profilId: {

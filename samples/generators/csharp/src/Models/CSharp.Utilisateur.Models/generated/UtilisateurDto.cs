@@ -27,7 +27,7 @@ public partial class UtilisateurDto
     /// </summary>
     [Column("uti_age")]
     [Domain(Domains.Number)]
-    public decimal? Age { get; set; } = 6l;
+    public decimal? Age { get; set; } = 6;
 
     /// <summary>
     /// Profil de l'utilisateur.

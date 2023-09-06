@@ -46,14 +46,14 @@ public class Utilisateur {
 	 */
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
-	@Column(name = "UTI_ID", nullable = false, columnDefinition = "int8")
-	private Long id;
+	@Column(name = "UTI_ID", nullable = false, columnDefinition = "int")
+	private Integer id;
 
 	/**
 	 * Age en années de l'utilisateur.
 	 */
 	@Column(name = "UTI_AGE", nullable = true, precision = 20, scale = 9, columnDefinition = "numeric")
-	private Long age = 6l;
+	private BigDecimal age = 6;
 
 	/**
 	 * Profil de l'utilisateur.
@@ -132,7 +132,7 @@ public class Utilisateur {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#id id}.
 	 */
-	public Long getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
@@ -141,7 +141,7 @@ public class Utilisateur {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#age age}.
 	 */
-	public Long getAge() {
+	public BigDecimal getAge() {
 		return this.age;
 	}
 
@@ -241,7 +241,7 @@ public class Utilisateur {
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#id id}.
 	 * @param id value to set
 	 */
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -249,7 +249,7 @@ public class Utilisateur {
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#age age}.
 	 * @param age value to set
 	 */
-	public void setAge(Long age) {
+	public void setAge(BigDecimal age) {
 		this.age = age;
 	}
 
@@ -337,8 +337,8 @@ public class Utilisateur {
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur Utilisateur}.
 	 */
 	public enum Fields  {
-        ID(Long.class), //
-        AGE(Long.class), //
+        ID(Integer.class), //
+        AGE(BigDecimal.class), //
         PROFIL(Profil.class), //
         EMAIL(String.class), //
         NOM(String.class), //

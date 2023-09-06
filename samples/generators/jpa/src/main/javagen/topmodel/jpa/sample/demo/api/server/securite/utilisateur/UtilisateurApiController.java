@@ -35,7 +35,7 @@ public interface UtilisateurApiController {
 	 * @param utiId Id technique
 	 */
 	@DeleteMapping(path = "/deleteAll")
-	void deleteAll(@RequestParam(value = "utiId", required = true) List<Long> utiId);
+	void deleteAll(@RequestParam(value = "utiId", required = true) List<Integer> utiId);
 
 	/**
 	 * Charge le détail d'un utilisateur.
@@ -43,7 +43,7 @@ public interface UtilisateurApiController {
 	 * @return Le détail de l'utilisateur
 	 */
 	@GetMapping(path = "/{utiId}")
-	UtilisateurDto find(@PathVariable("utiId") Long utiId);
+	UtilisateurDto find(@PathVariable("utiId") Integer utiId);
 
 	/**
 	 * Charge une liste d'utilisateurs par leur type.
@@ -77,5 +77,5 @@ public interface UtilisateurApiController {
 	 * @return Utilisateurs matchant les critères
 	 */
 	@PostMapping(path = "/search")
-	Page<UtilisateurSearch> search(@RequestParam(value = "utiId", required = true) Long utiId, @RequestParam(value = "age", required = false) Long age, @RequestParam(value = "profilId", required = false) Long profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "nom", required = false) String nom, @RequestParam(value = "actif", required = false) Boolean actif, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateurCode typeUtilisateurCode, @RequestParam(value = "utilisateursEnfant", required = false) List<Long> utilisateursEnfant, @RequestParam(value = "dateCreation", required = false) LocalDate dateCreation, @RequestParam(value = "dateModification", required = false) LocalDateTime dateModification);
+	Page<UtilisateurSearch> search(@RequestParam(value = "utiId", required = true) Integer utiId, @RequestParam(value = "age", required = false) BigDecimal age, @RequestParam(value = "profilId", required = false) Integer profilId, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "nom", required = false) String nom, @RequestParam(value = "actif", required = false) Boolean actif, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateurCode typeUtilisateurCode, @RequestParam(value = "utilisateursEnfant", required = false) List<Integer> utilisateursEnfant, @RequestParam(value = "dateCreation", required = false) LocalDate dateCreation, @RequestParam(value = "dateModification", required = false) LocalDateTime dateModification);
 }

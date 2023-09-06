@@ -36,8 +36,8 @@ public class Profil {
 	 */
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
-	@Column(name = "PRO_ID", nullable = false, columnDefinition = "int8")
-	private Long id;
+	@Column(name = "PRO_ID", nullable = false, columnDefinition = "int")
+	private Integer id;
 
 	/**
 	 * Type de profil.
@@ -71,7 +71,7 @@ public class Profil {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#id id}.
 	 */
-	public Long getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
@@ -110,7 +110,7 @@ public class Profil {
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Profil#id id}.
 	 * @param id value to set
 	 */
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -152,7 +152,7 @@ public class Profil {
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.Profil Profil}.
 	 */
 	public enum Fields  {
-        ID(Long.class), //
+        ID(Integer.class), //
         TYPE_PROFIL(TypeProfil.class), //
         DROITS(List.class), //
         SECTEURS(List.class);

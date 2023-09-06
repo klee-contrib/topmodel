@@ -7,8 +7,8 @@
 -- ===========================================================================================
 
 create table [dbo].[SECTEUR] (
-	[SEC_ID] int8 identity,
-	[PRO_ID] int8,
+	[SEC_ID] int identity,
+	[PRO_ID] int,
 	constraint [PK_SECTEUR] primary key clustered ([SEC_ID] ASC),
 	constraint [FK_SECTEUR_PROFIL_PRO_ID] foreign key ([PRO_ID]) references [dbo].[PROFIL] ([PRO_ID]))
 go

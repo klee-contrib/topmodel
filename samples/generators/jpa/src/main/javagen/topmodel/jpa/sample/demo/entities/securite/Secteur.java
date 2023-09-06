@@ -28,8 +28,8 @@ public class Secteur {
 	 */
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
-	@Column(name = "SEC_ID", nullable = false, columnDefinition = "int8")
-	private Long id;
+	@Column(name = "SEC_ID", nullable = false, columnDefinition = "int")
+	private Integer id;
 
 	/**
 	 * Association réciproque de Profil.Secteurs.
@@ -49,7 +49,7 @@ public class Secteur {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.Secteur#id id}.
 	 */
-	public Long getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
@@ -66,7 +66,7 @@ public class Secteur {
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.Secteur#id id}.
 	 * @param id value to set
 	 */
-	public void setId(Long id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -82,7 +82,7 @@ public class Secteur {
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.Secteur Secteur}.
 	 */
 	public enum Fields  {
-        ID(Long.class), //
+        ID(Integer.class), //
         PROFIL(Profil.class);
 
 		private Class<?> type;

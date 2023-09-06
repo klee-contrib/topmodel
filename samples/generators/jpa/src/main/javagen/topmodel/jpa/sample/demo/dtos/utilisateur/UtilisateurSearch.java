@@ -20,21 +20,21 @@ public interface UtilisateurSearch {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurSearch#id id}.
 	 */
-	Long getId();
+	Integer getId();
 
 	/**
 	 * Getter for age.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurSearch#age age}.
 	 */
-	Long getAge();
+	BigDecimal getAge();
 
 	/**
 	 * Getter for profilId.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurSearch#profilId profilId}.
 	 */
-	Long getProfilId();
+	Integer getProfilId();
 
 	/**
 	 * Getter for email.
@@ -69,7 +69,7 @@ public interface UtilisateurSearch {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurSearch#utilisateursEnfant utilisateursEnfant}.
 	 */
-	List<Long> getUtilisateursEnfant();
+	List<Integer> getUtilisateursEnfant();
 
 	/**
 	 * Getter for dateCreation.

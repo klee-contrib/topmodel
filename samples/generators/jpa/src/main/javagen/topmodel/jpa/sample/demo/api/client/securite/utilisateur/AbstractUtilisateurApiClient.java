@@ -50,7 +50,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * UriComponentsBuilder pour la méthode deleteAll.
 	 * @param utiId Id technique
 	 */
-	protected UriComponentsBuilder deleteAllUriComponentsBuilder(List<Long> utiId) {
+	protected UriComponentsBuilder deleteAllUriComponentsBuilder(List<Integer> utiId) {
 		String uri = host + "/utilisateur/deleteAll";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("utiId", utiId);
@@ -61,7 +61,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * Recherche des utilisateurs.
 	 * @param utiId Id technique
 	 */
-	public ResponseEntity deleteAll(List<Long> utiId){
+	public ResponseEntity deleteAll(List<Integer> utiId){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.deleteAllUriComponentsBuilder(utiId);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.DELETE, new HttpEntity<>(headers), (Class<?>) null);
@@ -72,7 +72,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utiId Id technique
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder findUriComponentsBuilder(Long utiId) {
+	protected UriComponentsBuilder findUriComponentsBuilder(Integer utiId) {
 		String uri = host + "/utilisateur/%s".formatted(utiId);;
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
@@ -82,7 +82,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param utiId Id technique
 	 * @return Le détail de l'utilisateur
 	 */
-	public ResponseEntity<UtilisateurDto> find(Long utiId){
+	public ResponseEntity<UtilisateurDto> find(Integer utiId){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.findUriComponentsBuilder(utiId);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), UtilisateurDto.class);
@@ -148,7 +148,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param dateModification Date de modification de l'utilisateur
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder searchUriComponentsBuilder(Long utiId, Long age, Long profilId, String email, String nom, Boolean actif, TypeUtilisateurCode typeUtilisateurCode, List<Long> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification) {
+	protected UriComponentsBuilder searchUriComponentsBuilder(Integer utiId, BigDecimal age, Integer profilId, String email, String nom, Boolean actif, TypeUtilisateurCode typeUtilisateurCode, List<Integer> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification) {
 		String uri = host + "/utilisateur/search";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("utiId", utiId);
@@ -205,7 +205,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param dateModification Date de modification de l'utilisateur
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<Page<UtilisateurSearch>> search(Long utiId, Long age, Long profilId, String email, String nom, Boolean actif, TypeUtilisateurCode typeUtilisateurCode, List<Long> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification){
+	public ResponseEntity<Page<UtilisateurSearch>> search(Integer utiId, BigDecimal age, Integer profilId, String email, String nom, Boolean actif, TypeUtilisateurCode typeUtilisateurCode, List<Integer> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utiId, age, profilId, email, nom, actif, typeUtilisateurCode, utilisateursEnfant, dateCreation, dateModification);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), new ParameterizedTypeReference<Page<UtilisateurSearch>>() {});
