@@ -327,7 +327,7 @@ public abstract class GeneratorConfigBase
     /// <param name="availableClasses">Classes disponibles dans le générateur.</param>
     /// <param name="value">Valeur à utiliser, si non renseigné utilise la valeur par défaut de la propriété.</param>
     /// <returns>La valeur.</returns>
-    public string GetValue(IProperty property, IEnumerable<Class> availableClasses, string? value = null)
+    public virtual string GetValue(IProperty property, IEnumerable<Class> availableClasses, string? value = null)
     {
         var fp = property as IFieldProperty;
 

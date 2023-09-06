@@ -87,50 +87,6 @@ public static class CSharpUtils
         "while"
     });
 
-    private static IDictionary<string, string>? regType;
-
-    /// <summary>
-    /// Donne la valeur par défaut d'un type de base C#.
-    /// Renvoie null si le type n'est pas un type par défaut.
-    /// </summary>
-    /// <param name="name">Nom du type à définir.</param>
-    /// <returns>Vrai si le type est un type C#.</returns>
-    public static string? GetCSharpDefaultValueBaseType(string name)
-    {
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
-
-        if (regType == null)
-        {
-            InitializeRegType();
-        }
-
-        regType!.TryGetValue(name, out var res);
-        return res;
-    }
-
-    /// <summary>
-    /// Détermine si le type est un type de base C#.
-    /// </summary>
-    /// <param name="name">Nom du type à définir.</param>
-    /// <returns>Vrai si le type est un type C#.</returns>
-    public static bool IsCSharpBaseType(string name)
-    {
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentNullException(nameof(name));
-        }
-
-        if (regType == null)
-        {
-            InitializeRegType();
-        }
-
-        return regType!.ContainsKey(name);
-    }
-
     public static string ToFilePath(this string path)
     {
         return path.TrimEnd('.').Replace(':', Path.DirectorySeparatorChar);
@@ -154,28 +110,5 @@ public static class CSharpUtils
         }
 
         return name;
-    }
-
-    /// <summary>
-    /// Initialisation des types.
-    /// </summary>
-    private static void InitializeRegType()
-    {
-        regType = new Dictionary<string, string>
-            {
-                { "int?", "0" },
-                { "uint?", "0" },
-                { "float?", "0.0f" },
-                { "double?", "0.0" },
-                { "bool?", "false" },
-                { "short?", "0" },
-                { "ushort?", "0" },
-                { "long?", "0" },
-                { "ulong?", "0" },
-                { "decimal?", "0" },
-                { "byte?", "0" },
-                { "sbyte?", "0" },
-                { "string", "\"\"" }
-            };
     }
 }

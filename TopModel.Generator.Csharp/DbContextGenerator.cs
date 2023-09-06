@@ -240,10 +240,6 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
                             targetNs = string.Join(".", targetNsSplit.SkipWhile((spl, i) => spl == contextNsSplit.ElementAtOrDefault(i)));
                             value = $"{targetNs}.{value}";
                         }
-                        else if (Config.GetType(refProp.Key).Contains("Date"))
-                        {
-                            value = $"{Config.GetType(refProp.Key).TrimEnd('?')}.Parse(\"{value}\"){(Config.GetType(refProp.Key).Contains("Time") ? ".ToUniversalTime()" : string.Empty)}";
-                        }
 
                         w.Write($" {refProp.Key.NamePascal} = {value}");
                         if (refValue.Value.ToList().IndexOf(refProp) < refValue.Value.Count - 1)

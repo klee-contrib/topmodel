@@ -442,6 +442,26 @@ public class CsharpConfig : GeneratorConfigBase
         return type;
     }
 
+    public override string GetValue(IProperty property, IEnumerable<Class> availableClasses, string? value = null)
+    {
+        var baseValue = base.GetValue(property, availableClasses, value);
+
+        if (baseValue != "null")
+        {
+            if (GetImplementation(property.Domain)?.Type?.TrimEnd('?') == "Guid")
+            {
+                return $@"new Guid(""{baseValue}"")";
+            }
+
+            if (GetType(property).Contains("Date"))
+            {
+                return $"{GetType(property).TrimEnd('?')}.Parse(\"{baseValue}\"){(GetType(property).Contains("Time") ? ".ToUniversalTime()" : string.Empty)}";
+            }
+        }
+
+        return baseValue;
+    }
+
     public override bool IsPersistent(Class classe, string tag)
     {
         return base.IsPersistent(classe, tag) && !NoPersistence(tag);
