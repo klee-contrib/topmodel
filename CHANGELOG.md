@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.35.2
+
+- [#295](https://github.com/klee-contrib/topmodel/pull/295) - `ignoreDefaultValues` + gestion standard des (default)Values en SQL
+
 ## 1.35.1
 
 - [`0d4bc60a`](https://github.com/klee-contrib/topmodel/commit/0d4bc60a296a63d8c4090069609454e0c9838aef) - [C#] Gestion "native" (default)Value en Guid (et dates en dehors du DbContext)
