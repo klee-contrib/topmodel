@@ -167,8 +167,11 @@ De plus, il est possible de surcharger les propriétés suivantes de la proprié
 
 Ces surcharges s'appliqueront, comme toutes les autres propriétés de configuration de l'alias, sur toutes les propriétés incluses dans la définition. Par conséquent, si vous voulez changer le libellé ou le nom d'un champ dans un alias, il vous faudra très certainement séparer vos définitions d'alias.
 
+## Valeurs par défaut
+
+La propriété `defaultValue` permet de définir une valeur par défaut sur toutes les propriétés hors composition. Elle sera être utilisée dans les définitions de classes et d'endpoints générés, à condition que la configuration du générateur en question ne spécifie pas `ignoreDefaultValues: true` (ce qui est le cas par défaut du générateur SQL).
+
 ## Autres informations de propriétés
 
-- `defaultValue` : toutes les propriétés hors composition peuvent définir une valeur par défaut, qui pourra être utilisée dans les définitions de classes et d'endpoints générées. Cette valeur par défaut ne sera en revanche pas définie en base de données.
 - `readonly` : Une propriété readonly ne pourra jamais être la cible d'un [mapper](/model/mappers.md), et ne sera pas ajoutée dans le setter unique d'une [classe abstraite](/model/classes.md#classe-abstraite)
 - `trigram` : toutes les propriétés non composées peuvent surcharger le trigramme de la classe (ou de la classe associée dans une association).

@@ -25,8 +25,9 @@ Chaque générateur possède sa propre configuration. Néanmoins, la structure g
 2. Ajouter ensuite une liste de configurations
 3. Chaque configuration **doit** préciser une liste de `tags`
 4. Chaque configuration **doit** préciser le `outputDirectory`
-5. Chaque configuration **peut** préciser des variables **globales**
-6. Chaque configuration **peut** préciser des variables **par `tag`**.
+5. Chaque configuration peut préciser des variables globales.
+6. Chaque configuration peut préciser des variables par `tag`.
+7. Chaque configuration peut préciser si elle doit ignorer les valeurs par défaut (`ignoreDefaultValues`).
 
 Exemple :
 

@@ -24,40 +24,31 @@ Le générateur SQL en mode `ssdt` peut générer les fichiers suivants :
 
 ## Configuration
 
+_Remarque : A l'inverse de tous les autres générateurs, le générateur SQL est configuré avec `ignoreDefaultValues: true` par défaut_
+
 ### Fichier de configuration
 
-- `targetDBMS`
-  Système de gestion de base de données cible (`"postgre"` ou `"sqlserver"`).
+- `targetDBMS` : Système de gestion de base de données cible (`"postgre"` ou `"sqlserver"`).
 - `procedural`
 
   Options de génération sql
 
-  - `crebasFile`
-    Nom du fichier de création des tables.
-  - `indexFKFile`
-    Nom du fichier de création des contraintes de clés étrangères et des indexes.
-  - `uniqueKeysFile`
-    Nom du fichier de création des contraintes d'unicité.
-  - `initListFile`
-    Nom du fichier d'insertion des listes de références.
-  - `commentFile`
-    Nom du fichier d'insertion des commentaires.
-  - `typeFile`
-    Nom du fichier de création des types.
+  - `crebasFile` : Nom du fichier de création des tables.
+  - `indexFKFile` : Nom du fichier de création des contraintes de clés étrangères et des indexes.
+  - `uniqueKeysFile` : Nom du fichier de création des contraintes d'unicité.
+  - `initListFile` : Nom du fichier d'insertion des listes de références.
+  - `commentFile` : Nom du fichier d'insertion des commentaires.
+  - `typeFile` : Nom du fichier de création des types.
 
 - `ssdt`
 
   Options de génération ssdt
-  - `tableScriptFolder`
-    Dossier du projet pour les scripts de déclaration de table.
-  - `tableTypeScriptFolder`
-    Dossier du projet pour les scripts de déclaration de type table
-  - `initListScriptFolder`
-    Dossier du projet pour les scripts d'initialisation des listes de références.
-  - `initListMainScriptName`
-    Fichier du projet référençant les scripts d'initialisation des listes de références
-  - `disableIdentity`
-    Désactive les colonnes d'identité.
+
+  - `tableScriptFolder` : Dossier du projet pour les scripts de déclaration de table.
+  - `tableTypeScriptFolder` : Dossier du projet pour les scripts de déclaration de type table
+  - `initListScriptFolder` : Dossier du projet pour les scripts d'initialisation des listes de références.
+  - `initListMainScriptName` : Fichier du projet référençant les scripts d'initialisation des listes de références
+  - `disableIdentity` : Désactive les colonnes d'identité.
 
 - `identity`
 

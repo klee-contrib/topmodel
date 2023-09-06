@@ -466,15 +466,11 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 - Prenons les flow A, B, C et D, avec
   - C dépend de A et B
   - D dépend de A
-  alors D ne se lancera qu'après A et B (alors qu'en théorie il pourrait se lancer directement après A).
+    alors D ne se lancera qu'après A et B (alors qu'en théorie il pourrait se lancer directement après A).
 
 ## Configuration
 
 ### Fichier de configuration
-
-- `outputDirectory`
-
-  Racine du répertoire de génération
 
 - `entitiesPath`
 
@@ -586,7 +582,7 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 - `mappersInClass`
 
   Indique s'il faut ajouter les mappers en tant méthode (`to...`) ou constructeur dans les classes qui les déclarent
-  
+
   _Valeur par défaut_: `true`
 
 - `identity`
