@@ -14,3 +14,4 @@ launchSettings.json
 
 # Docker PostgreSQL
 postgres-data
+.vscode/launch.json
