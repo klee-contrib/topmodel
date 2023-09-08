@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.35.3
+
+- [`0f28f21c`](https://github.com/klee-contrib/topmodel/commit/0f28f21ce0a8fa9ecfd24c3e1d68de16cb24a1c9) - [C# DbContext] Fix tag utilisé pour les usings de classes
+
 ## 1.35.2
 
 - [#295](https://github.com/klee-contrib/topmodel/pull/295) - `ignoreDefaultValues` + gestion standard des (default)Values en SQL
