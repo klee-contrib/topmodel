@@ -162,7 +162,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                     else
                     {
                         getter = $"new {apTarget.Association.NamePascal}({sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}())";
-                    fw.AddImport(apTarget.Association.GetImport(Config, tag));
+                        fw.AddImport(apTarget.Association.GetImport(Config, tag));
                         checkSourceNull = true;
                     }
                 }

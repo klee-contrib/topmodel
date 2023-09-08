@@ -149,17 +149,13 @@ public class JpaConfig : GeneratorConfigBase
             $"{classe.NamePascal}.java");
     }
 
-    public string GetEnumName(Class classe)
-    {
-        return $"{classe.NamePascal}{classe.EnumKey!.Name.ToPascalCase()}";
-    }
-
-    public string GetEnumFileName(Class classe, string tag)
+    public string GetDataFlowConfigFilePath(string module)
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(EnumsPath, tag, module: classe.Namespace.Module).ToFilePath(),
-            $"{GetEnumName(classe)}.java");
+            ResolveVariables(DataFlowsPath!, module: module).ToFilePath()
+            .ToFilePath(),
+            $"{module.ToPascalCase()}JobConfiguration.java");
     }
 
     public string GetDataFlowFilePath(DataFlow df, string tag)
@@ -170,13 +166,22 @@ public class JpaConfig : GeneratorConfigBase
             $"{df.Name.ToPascalCase()}Flow.java");
     }
 
-    public string GetDataFlowConfigFilePath(string module)
+    public string GetEnumFileName(Class classe, string tag)
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(DataFlowsPath!, module: module).ToFilePath()
-            .ToFilePath(),
-            $"{module.ToPascalCase()}JobConfiguration.java");
+            ResolveVariables(EnumsPath, tag, module: classe.Namespace.Module).ToFilePath(),
+            $"{GetEnumName(classe)}.java");
+    }
+
+    public string GetEnumName(Class classe)
+    {
+        return $"{classe.NamePascal}{classe.EnumKey!.Name.ToPascalCase()}";
+    }
+
+    public string GetEnumPackageName(Class classe, string tag, bool? isPersistent = null)
+    {
+        return GetPackageName(classe.Namespace, EnumsPath, tag);
     }
 
     public string GetMapperFilePath((Class Classe, FromMapper Mapper) mapper, string tag)
@@ -249,11 +254,6 @@ public class JpaConfig : GeneratorConfigBase
             classe.Namespace,
             isPersistent.HasValue ? isPersistent.Value ? EntitiesPath : DtosPath : classe.IsPersistent ? EntitiesPath : DtosPath,
             tag);
-    }
-
-    public string GetEnumPackageName(Class classe, string tag, bool? isPersistent = null)
-    {
-        return GetPackageName(classe.Namespace, EnumsPath, tag);
     }
 
     public string GetPackageName(Namespace ns, string modelPath, string tag)
