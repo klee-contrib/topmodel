@@ -74,6 +74,17 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
             {
                 usings.Add(classNs);
             }
+
+            if (!classe.IsPersistent)
+            {
+                foreach (var value in classe.Values.SelectMany(v => v.Value))
+                {
+                    foreach (var @using in Config.GetValueImports(value.Key, value.Value))
+                    {
+                        usings.Add(@using);
+                    }
+                }
+            }
         }
 
         usings.Add("Kinetix.Services.Annotations");

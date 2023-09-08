@@ -15,9 +15,11 @@ decorator:
   properties:
     - name: dateCreation
       comment: Date de création de l'utilisateur
+      defaultValue: now
       domain: DO_DATE_CREATION
     - name: dateModification
       comment: Date de modification de l'utilisateur
+      defaultValue: now
       domain: DO_DATE_MODIFICATION
 ---
 decorator:

@@ -63,10 +63,10 @@ class Utilisateur
   private Collection $utilisateursEnfant;
 
   #[Column(name: 'UTI_DATE_CREATION', nullable: true)]
-  private Date|null $dateCreation;
+  private Date|null $dateCreation = now;
 
   #[Column(name: 'UTI_DATE_MODIFICATION', nullable: true)]
-  private Date|null $dateModification;
+  private Date|null $dateModification = now;
 
   #[ManyToOne(targetEntity: Utilisateur::class)]
   #[JoinColumn(name: 'UTI_ID_ENFANT', referencedColumnName: 'UTI_ID')]

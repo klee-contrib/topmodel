@@ -4,6 +4,7 @@
 
 package topmodel.jpa.sample.demo.entities.utilisateur;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ public class Utilisateur {
 	 * Age en années de l'utilisateur.
 	 */
 	@Column(name = "UTI_AGE", nullable = true, precision = 20, scale = 9, columnDefinition = "numeric")
-	private BigDecimal age = 6;
+	private BigDecimal age = new BigDecimal(6);
 
 	/**
 	 * Profil de l'utilisateur.
@@ -105,14 +106,14 @@ public class Utilisateur {
 	 */
 	@Column(name = "UTI_DATE_CREATION", nullable = true, columnDefinition = "date")
 	@CreatedDate
-	private LocalDate dateCreation;
+	private LocalDate dateCreation = LocalDate.now();
 
 	/**
 	 * Date de modification de l'utilisateur.
 	 */
 	@Column(name = "UTI_DATE_MODIFICATION", nullable = true, columnDefinition = "date")
 	@LastModifiedDate
-	private LocalDateTime dateModification;
+	private LocalDateTime dateModification = LocalDateTime.now();
 
 	/**
 	 * Association réciproque de Utilisateur.UtilisateursEnfant.

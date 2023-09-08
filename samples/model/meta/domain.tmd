@@ -44,8 +44,17 @@ domain:
   label: Date de création
   ts:
     type: string
+    values:
+      overrides:
+        now: 
+          value: today().toISO()
+          imports:
+            - "./common/utils/today"
   csharp:
     type: DateOnly?
+    values:
+      overrides:
+        now: DateOnly.FromDateTime(DateTime.Now)
   java:
     type: LocalDate
     imports:
@@ -55,8 +64,14 @@ domain:
         target: Persisted
         imports:
           - org.springframework.data.annotation.CreatedDate
+    values:
+      overrides:
+        now: LocalDate.now()
   sql:
     type: date
+    values:
+      overrides:
+        now: now()
   php:
     type: Date
 ---
@@ -65,8 +80,17 @@ domain:
   label: Date de modification
   ts:
     type: string
+    values:
+      overrides:
+        now: 
+          value: today().toISO()
+          imports:
+            - "./common/utils/today"
   csharp:
     type: DateOnly?
+    values:
+      overrides:
+        now: DateOnly.FromDateTime(DateTime.Now)
   java:
     type: LocalDateTime
     imports:
@@ -77,8 +101,14 @@ domain:
         imports:
           - org.springframework.data.annotation.LastModifiedDate
           - org.springframework.data.jpa.domain.support.AuditingEntityListener
+    values:
+      overrides:
+        now: LocalDateTime.now()
   sql:
     type: date
+    values:
+      overrides:
+        now: now()
   php:
     type: Date
 ---
@@ -187,16 +217,20 @@ domain:
 domain:
   name: DO_NUMBER
   label: Nombre
+  length: 20
+  scale: 9
   ts:
     type: number
   csharp:
     type: decimal?
   java:
     type: BigDecimal
+    imports:
+      - java.math.BigDecimal
+    values:
+      template: new BigDecimal({value})
   sql:
     type: numeric
-  scale: 9
-  length: 20
   php:
     type: int
 ---

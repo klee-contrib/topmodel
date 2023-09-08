@@ -487,6 +487,11 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         {
             usings.AddRange(Config.GetDomainImports(property, tag));
 
+            if (property is IFieldProperty fp)
+            {
+                usings.AddRange(Config.GetValueImports(fp));
+            }
+
             switch (property)
             {
                 case AssociationProperty { Association.IsPersistent: true, Association.Reference: true } ap when Classes.Contains(ap.Association) && (Config.CanClassUseEnums(ap.Association, Classes, ap.Property) || Config.Kinetix):

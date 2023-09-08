@@ -5,6 +5,7 @@
 import {EntityToType, FieldEntry2, ObjectEntry} from "@focus4/stores";
 import {DO_BOOLEAN, DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_ID_LIST, DO_LIBELLE, DO_NUMBER} from "../../domains";
 
+import {today} from "../../common/utils";
 import {TypeUtilisateurCode} from "./references";
 
 export type UtilisateurDto = EntityToType<UtilisateurDtoEntityType>
@@ -87,6 +88,7 @@ export const UtilisateurDtoEntity: UtilisateurDtoEntityType = {
         name: "dateCreation",
         domain: DO_DATE_CREATION,
         isRequired: false,
+        defaultValue: today().toISO(),
         label: "utilisateur.entityListeners.dateCreation"
     },
     dateModification: {
@@ -94,6 +96,7 @@ export const UtilisateurDtoEntity: UtilisateurDtoEntityType = {
         name: "dateModification",
         domain: DO_DATE_MODIFICATION,
         isRequired: false,
+        defaultValue: today().toISO(),
         label: "utilisateur.entityListeners.dateModification"
     },
     utilisateurParent: {

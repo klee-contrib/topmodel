@@ -37,7 +37,7 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
 
         fw.WriteLine($@"import {{{fetch}}} from ""{fetchImport}"";");
 
-        var imports = Config.GetEndpointImports(endpoints, tag, Classes);
+        var imports = Config.GetEndpointImports(filePath, endpoints, tag, Classes);
         if (imports.Any())
         {
             fw.WriteLine();

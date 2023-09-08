@@ -72,6 +72,47 @@ public class DomainLoader : ILoader<Domain>
                             case "annotations":
                                 implementation.Annotations = _fileChecker.Deserialize<List<TargetedText>>(parser);
                                 break;
+                            case "values":
+                                ValueTemplate HandleValueTemplate()
+                                {
+                                    var valueTemplate = new ValueTemplate();
+
+                                    if (parser.Current is MappingStart)
+                                    {
+                                        parser.ConsumeMapping(prop =>
+                                        {
+                                            switch (prop.Value)
+                                            {
+                                                case "value":
+                                                    valueTemplate.Value = parser.Consume<Scalar>().Value;
+                                                    break;
+                                                case "imports":
+                                                    parser.ConsumeSequence(() => valueTemplate.Imports.Add(parser.Consume<Scalar>().Value));
+                                                    break;
+                                            }
+                                        });
+                                    }
+                                    else
+                                    {
+                                        valueTemplate.Value = parser.Consume<Scalar>().Value;
+                                    }
+
+                                    return valueTemplate;
+                                }
+
+                                parser.ConsumeMapping(prop =>
+                                {
+                                    switch (prop.Value)
+                                    {
+                                        case "template":
+                                            implementation.ValueTemplates.Add(ValueTemplate.Default, HandleValueTemplate());
+                                            break;
+                                        case "overrides":
+                                            parser.ConsumeMapping(prop => implementation.ValueTemplates.Add(prop.Value, HandleValueTemplate()));
+                                            break;
+                                    }
+                                });
+                                break;
                         }
                     });
 

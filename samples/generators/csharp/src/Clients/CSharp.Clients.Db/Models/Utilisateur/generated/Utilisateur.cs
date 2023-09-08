@@ -89,12 +89,12 @@ public partial class Utilisateur
     /// </summary>
     [Column("uti_date_creation")]
     [Domain(Domains.DateCreation)]
-    public DateOnly? DateCreation { get; set; }
+    public DateOnly? DateCreation { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
     /// <summary>
     /// Date de modification de l'utilisateur.
     /// </summary>
     [Column("uti_date_modification")]
     [Domain(Domains.DateModification)]
-    public DateOnly? DateModification { get; set; }
+    public DateOnly? DateModification { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 }

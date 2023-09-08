@@ -4,6 +4,7 @@
 
 package topmodel.jpa.sample.demo.api.client.securite.utilisateur;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -31,9 +31,9 @@ class UtilisateurDto
 
   private Collection|null $utilisateursEnfant;
 
-  private Date|null $dateCreation;
+  private Date|null $dateCreation = now;
 
-  private Date|null $dateModification;
+  private Date|null $dateModification = now;
 
   private UtilisateurDto $utilisateurParent;
 
