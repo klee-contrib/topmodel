@@ -37,7 +37,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
 
         foreach (var ns in classes
             .Concat(GetAssociationProperties(classes).Select(ap => ap.AssociationProperty.Association))
-            .Select(c => Config.GetNamespace(c, tag))
+            .Select(c => Config.GetNamespace(c, GetBestClassTag(c, tag)))
             .Distinct())
         {
             usings.Add(ns);
@@ -74,16 +74,6 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
     private void HandleCommentsFile(string fileName, string tag, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
     {
         using var cw = new CSharpWriter(fileName, _logger);
-
-        var cUsings = new List<string>
-        {
-            "Microsoft.EntityFrameworkCore"
-        };
-
-        foreach (var ns in classes.Select(c => Config.GetNamespace(c, tag)).Distinct())
-        {
-            cUsings.Add(ns);
-        }
 
         cw.WriteUsings(usings.ToArray());
 
