@@ -1,5 +1,14 @@
 # TopModel.Generator (`modgen`)
 
+## 1.36.0
+
+- [#297](https://github.com/klee-contrib/topmodel/pull/297) - Templates de valeurs par implémentation de domaine
+
+  **Breaking changes**
+
+  - **[C#]** Le générateur C# n'essaie plus de gérer Guid et DateOnly/DateTime tout seul, il faut spécifier les templates correspondants dans les domaines
+  - **[JS]** Tous les imports JS renseignés dans topmodel (hors modèle), donc `domainPath`/`fetchPath` et les différents `imports` des domaines sont désormais toujours relatifs au répertoire de génération `outputDirectory` (c'était bien le cas pour les deux premiers déjà), et on considère que c'est un chemin relatif s'il commence par un `.` (au lieu de dire que ce n'en est pas un s'il commence par un `@`)
+
 ## 1.35.3
 
 - [`0f28f21c`](https://github.com/klee-contrib/topmodel/commit/0f28f21ce0a8fa9ecfd24c3e1d68de16cb24a1c9) - [C# DbContext] Fix tag utilisé pour les usings de classes
@@ -41,7 +50,7 @@ Breaking change :
       - La méthode `getEntity` n'existe plus
     - Ajout des instances correspondant aux values en tant que membres statiques de la classe
 
-Breaking Changes :
+**Breaking Changes (JPA) :**
 
 - Suppression de la classe imbriquée `[Nom de la classe].Values` pour les listes de ref
   - En remplacement du `getEntity`, récupérer l'instance soit avec le constructeur `new [Nom de la classe]([élément du type de la clé primaire])`, soit directement avec l'instance statique de la classe `[Nom de la classe].[Clé de l'instance]`.

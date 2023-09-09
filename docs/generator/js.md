@@ -1,5 +1,7 @@
 # JS Generator
 
+_Remarque : tous les imports spécifiés pour le générateur JS dans les domaines et la configuration seront relatifs au répertoire de génération (`outputDirectory`) s'ils commencent par un `.` (exemple : `./common` ou `../domains`). Ils seront considérés comme des imports de modules sinon (exemple : `@/domains` ou `luxon`). Les imports dans les implémentations de domaines doivent aussi inclure l'objet importé dans leur chemin (exemple, pour avoir `import {DateTime} from "luxon"`, il faut écrire `luxon/DateTime`)._
+
 ## Configuration
 
 ### Modes de génération de l'API client
@@ -17,7 +19,7 @@ Le mode `vanilla` permet de générer un fichier ts, contenant les méthodes d'a
 exemple :
 
 ```yaml
-  fetchPath: "@api-services"
+fetchPath: "@api-services"
 ```
 
 ### Modes de génération des entités
@@ -39,51 +41,54 @@ Exemple :
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_CODE, DO_CODE_LIST, DO_ID} from "@domains";
+import { DO_CODE, DO_CODE_LIST, DO_ID } from "@domains";
 
-import {UtilisateurDtoEntity, UtilisateurDto} from "../utilisateur/utilisateur-dto";
-import {DroitCode, TypeProfilCode} from "./references";
-import {SecteurDtoEntity, SecteurDto} from "./secteur-dto";
+import {
+  UtilisateurDtoEntity,
+  UtilisateurDto,
+} from "../utilisateur/utilisateur-dto";
+import { DroitCode, TypeProfilCode } from "./references";
+import { SecteurDtoEntity, SecteurDto } from "./secteur-dto";
 
 export interface ProfilDto {
-    id?: number,
-    typeProfilCode?: TypeProfilCode,
-    droits?: DroitCode[],
-    utilisateurs?: UtilisateurDto[],
-    secteurs?: SecteurDto[]
+  id?: number;
+  typeProfilCode?: TypeProfilCode;
+  droits?: DroitCode[];
+  utilisateurs?: UtilisateurDto[];
+  secteurs?: SecteurDto[];
 }
 
 export const ProfilDtoEntity = {
-    id: {
-        type: "field",
-        name: "id",
-        domain: DO_ID,
-        isRequired: false,
-        label: "securite.profil.id"
-    },
-    typeProfilCode: {
-        type: "field",
-        name: "typeProfilCode",
-        domain: DO_CODE,
-        isRequired: false,
-        label: "securite.profil.typeProfilCode"
-    },
-    droits: {
-        type: "field",
-        name: "droits",
-        domain: DO_CODE_LIST,
-        isRequired: false,
-        label: "securite.profil.droits"
-    },
-    utilisateurs: {
-        type: "list",
-        entity: UtilisateurDtoEntity
-    },
-    secteurs: {
-        type: "list",
-        entity: SecteurDtoEntity
-    }
-} as const
+  id: {
+    type: "field",
+    name: "id",
+    domain: DO_ID,
+    isRequired: false,
+    label: "securite.profil.id",
+  },
+  typeProfilCode: {
+    type: "field",
+    name: "typeProfilCode",
+    domain: DO_CODE,
+    isRequired: false,
+    label: "securite.profil.typeProfilCode",
+  },
+  droits: {
+    type: "field",
+    name: "droits",
+    domain: DO_CODE_LIST,
+    isRequired: false,
+    label: "securite.profil.droits",
+  },
+  utilisateurs: {
+    type: "list",
+    entity: UtilisateurDtoEntity,
+  },
+  secteurs: {
+    type: "list",
+    entity: SecteurDtoEntity,
+  },
+} as const;
 ```
 
 ### Modes de génération des fichiers de ressource

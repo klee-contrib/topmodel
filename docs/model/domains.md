@@ -136,7 +136,7 @@ Les templates des domaines des propriétés sont également valorisés. Ces vari
 
 ### Paramètres
 
-Il est également possible de passer des paramètres lorsqu'on associe un domaineà une propriété, en passant un objet `{name, parameters}` au lieu du nom du domaine :
+Il est également possible de passer des paramètres lorsqu'on associe un domaine à une propriété, en passant un objet `{name, parameters}` au lieu du nom du domaine :
 
 ```yaml
 properties:
@@ -156,7 +156,7 @@ domain:
       - text: MyAnnotation("{$0}", "{$1}"))
 ```
 
-Génèrera l'annotation `[MyAnnotation("Param1", "Param2")]` sur la propriété `MyProperty`. Si les paramètres ne sont pas renseignés, les variables `$0`, `$1` ne seront simplement pas remplacées. Et bien entendu, rien ne se passera si on passe des paramètres alors que le domaine ne les utilise pas.
+Générera l'annotation `[MyAnnotation("Param1", "Param2")]` sur la propriété `MyProperty`. Si les paramètres ne sont pas renseignés, les variables `$0`, `$1` ne seront simplement pas remplacées. Et bien entendu, rien ne se passera si on passe des paramètres alors que le domaine ne les utilise pas.
 
 ### Transformations
 
@@ -215,4 +215,60 @@ domain:
         imports:
           - topmodel.sample.custom.annotation.Label
         target: Dto
+```
+
+## Templates de valeurs
+
+Puisqu'il est possible de renseigner dans la modélisation des valeurs pour certaines propriétés (via des [valeurs par défaut](./properties.md#Valeurs-par-défaut) ou des [valeurs de classe](./classes.md#Valeurs-d'une-classe)), il faudra parfois spécifier pour certaines implémentations comment cette valeur doit être générée pour le language cible. Cela peut se définir via l'objet `values` dans une implémentation de domaine, de la façon suivante :
+
+```yaml
+domain:
+  name: DO_DATE
+  label: Date
+  csharp:
+    type: DateTime?
+    values:
+      template: DateTime.Parse("{value}")
+  ts:
+    type: string
+```
+
+La variable `{value}` référence ici la valeur renseignée pour la propriété dans le modèle, par exemple pour la propriété suivante :
+
+```yaml
+name: DateCreation
+domain: DO_DATE
+defaultValue: "2023-01-01"
+comment: Date de création.
+```
+
+Toutes les autres variables de templating décrites précédemment sont également disponibles dans ces templates.
+
+De plus, il est également possible de définir des surcharges de ces templates pour des valeurs précises. Pour l'exemple précédent, on préférerait certainement que la valeur par défaut soit égale à la date du jour plutôt qu'à une date précise. Dans ce cas, on pourrait y affecter la valeur `now`, et définir une surcharge pour `now` de la façon suivante :
+
+```yaml
+csharp:
+  type: DateTime?
+  values:
+    template: DateTime.Parse("{value}")
+    overrides:
+      now: DateTime.UtcNow
+sql:
+  type: timestamptz
+  values: # Pas besoin de template par défaut en SQL puisque la conversion string > date est automatique.
+    overrides:
+      now: now()
+```
+
+Enfin, il est possible que certaines valeurs ait besoin d'imports supplémentaires pour être utilisées. Pour répondre à ce besoin, il est possible de renseigner un objet `{value, imports}` à la place du template, par exemple pour le même domaine date :
+
+```yaml
+js:
+  type: string
+  values:
+    overrides:
+      now:
+        value: today()
+        imports:
+          - ./common/utils/today # Cet import ne sera donc ajouté que dans les fichiers qui utilisent cette valeur.
 ```

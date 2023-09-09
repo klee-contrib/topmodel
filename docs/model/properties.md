@@ -169,7 +169,7 @@ Ces surcharges s'appliqueront, comme toutes les autres propriétés de configura
 
 ## Valeurs par défaut
 
-La propriété `defaultValue` permet de définir une valeur par défaut sur toutes les propriétés hors composition. Elle sera être utilisée dans les définitions de classes et d'endpoints générés, à condition que la configuration du générateur en question ne spécifie pas `ignoreDefaultValues: true` (ce qui est le cas par défaut du générateur SQL).
+La propriété `defaultValue` permet de définir une valeur par défaut sur toutes les propriétés hors composition. Elle sera être utilisée dans les définitions de classes et d'endpoints générés, à condition que la configuration du générateur en question ne spécifie pas `ignoreDefaultValues: true` (ce qui est le cas par défaut du générateur SQL). Les générateurs utiliseront les [templates de valeurs](./domains.md#templates-de-valeurs) associés à leur implémentation pour la génération.
 
 ## Autres informations de propriétés
 
