@@ -169,6 +169,10 @@ export class TopModelPreviewPanel {
                 ${this.mermaidContent}
             </div>
         </div>
+        <button onclick="displayCodeClick(true)">Afficher/masquer le code</button>
+        <code id="sourceCode" style="display: none"">
+            ${this.diagramMap[this.currentFsPath].diagram.replaceAll("\n", "<br/>")}
+        </code>
     </body>
     </html>`;
     }

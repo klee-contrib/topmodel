@@ -5,6 +5,11 @@ function zoomClick(inOut: boolean) {
     return false;
 }
 
+function displayCodeClick() {
+    const sourceCode = document.getElementById("sourceCode");
+    sourceCode!.style.display = sourceCode!.style.display === "none" ? "block" : "none";
+}
+
 (function () {
     let offsetX: number;
     let offsetY: number;
