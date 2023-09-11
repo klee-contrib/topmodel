@@ -5,6 +5,7 @@
 package topmodel.jpa.sample.demo.dtos.utilisateur;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,7 +35,7 @@ public class UtilisateurDto implements Serializable {
 	 * Age en années de l'utilisateur.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getAge() Utilisateur#getAge()} 
 	 */
-	private BigDecimal age = 6;
+	private BigDecimal age = new BigDecimal(6);
 
 	/**
 	 * Profil de l'utilisateur.
@@ -77,13 +78,13 @@ public class UtilisateurDto implements Serializable {
 	 * Date de création de l'utilisateur.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getDateCreation() Utilisateur#getDateCreation()} 
 	 */
-	private LocalDate dateCreation;
+	private LocalDate dateCreation = LocalDate.now();
 
 	/**
 	 * Date de modification de l'utilisateur.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.utilisateur.Utilisateur#getDateModification() Utilisateur#getDateModification()} 
 	 */
-	private LocalDateTime dateModification;
+	private LocalDateTime dateModification = LocalDateTime.now();
 
 	/**
 	 * UtilisateurParent.

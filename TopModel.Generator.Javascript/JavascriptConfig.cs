@@ -108,13 +108,13 @@ public class JavascriptConfig : GeneratorConfigBase
         .Replace("\\", "/");
     }
 
-    public IEnumerable<(string Import, string Path)> GetDomainImportPaths(IProperty prop, string tag)
+    public IEnumerable<(string Import, string Path)> GetDomainImportPaths(string fileName, IProperty prop, string tag)
     {
-        return GetDomainImports(prop, tag).
-            Select(import => (Import: import.Split("/").Last(), Path: import[..import.LastIndexOf("/")]));
+        return GetDomainImports(prop, tag)
+            .Select(import => (Import: import.Split("/").Last(), Path: GetRelativePath(import[..import.LastIndexOf("/")], fileName)));
     }
 
-    public List<(string Import, string Path)> GetEndpointImports(IEnumerable<Endpoint> endpoints, string tag, IEnumerable<Class> availableClasses)
+    public List<(string Import, string Path)> GetEndpointImports(string fileName, IEnumerable<Endpoint> endpoints, string tag, IEnumerable<Class> availableClasses)
     {
         return endpoints.SelectMany(e => e.ClassDependencies)
             .Select(dep => (
@@ -122,7 +122,8 @@ public class JavascriptConfig : GeneratorConfigBase
                     ? GetEnumType(fp)
                     : dep.Classe.NamePascal,
                 Path: GetImportPathForClass(dep, dep.Classe.Tags.Contains(tag) ? tag : dep.Classe.Tags.Intersect(Tags).FirstOrDefault() ?? tag, tag, availableClasses)!))
-            .Concat(endpoints.SelectMany(d => d.Properties).SelectMany(dep => GetDomainImportPaths(dep, tag)))
+            .Concat(endpoints.SelectMany(d => d.Properties).SelectMany(dep => GetDomainImportPaths(fileName, dep, tag)))
+            .Concat(endpoints.SelectMany(d => d.Params).OfType<IFieldProperty>().Where(p => p.IsQueryParam()).SelectMany(dep => GetValueImportPaths(fileName, dep)))
             .Where(i => i.Path != null)
             .GroupAndSort();
     }
@@ -186,6 +187,13 @@ public class JavascriptConfig : GeneratorConfigBase
         return Path.Combine(OutputDirectory, ResolveVariables(ModelRootPath!, tag), ns.ModulePathKebab, "references.ts").Replace("\\", "/");
     }
 
+    public string GetRelativePath(string path, string fileName)
+    {
+        return !path.StartsWith(".")
+            ? path
+            : Path.GetRelativePath(string.Join('/', fileName.Split('/').SkipLast(1)), Path.Combine(OutputDirectory, path)).Replace("\\", "/");
+    }
+
     public string GetResourcesFilePath(Namespace ns, string tag, string lang)
     {
         return Path.Combine(
@@ -194,6 +202,12 @@ public class JavascriptConfig : GeneratorConfigBase
             lang,
             $"{ns.RootModule.ToKebabCase()}{(ResourceMode == ResourceMode.JS ? ".ts" : ".json")}")
         .Replace("\\", "/");
+    }
+
+    public IEnumerable<(string Import, string Path)> GetValueImportPaths(string fileName, IFieldProperty prop, string? value = null)
+    {
+        return GetValueImports(prop, value)
+            .Select(import => (Import: import.Split("/").Last(), Path: GetRelativePath(import[..import.LastIndexOf("/")], fileName)));
     }
 
     public bool IsListComposition(IProperty property)

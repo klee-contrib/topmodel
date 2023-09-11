@@ -83,11 +83,11 @@
     },
     "fetchPath": {
       "type": "string",
-      "description": "Chemin (ou alias commençant par '@') vers un 'fetch' personnalisé, relatif au répertoire de génération."
+      "description": "Chemin ou import vers un 'fetch' personnalisé, relatif au répertoire de génération s'il commence par un '.'."
     },
     "domainPath": {
       "type": "string",
-      "description": "Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif au répertoire de génération.",
+      "description": "Chemin ou import vers le fichier 'domain', relatif au répertoire de génération s'il commence par un '.'.",
       "default": "../domains"
     },
     "apiMode": {

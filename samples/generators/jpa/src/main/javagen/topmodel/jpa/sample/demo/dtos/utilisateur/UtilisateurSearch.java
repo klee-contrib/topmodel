@@ -4,6 +4,7 @@
 
 package topmodel.jpa.sample.demo.dtos.utilisateur;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;

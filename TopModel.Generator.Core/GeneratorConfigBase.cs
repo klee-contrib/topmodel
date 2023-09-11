@@ -346,13 +346,19 @@ public abstract class GeneratorConfigBase
             return NullValue;
         }
 
+        var template = GetImplementation(fp.Domain)?.GetValueTemplate(value);
+        if (template != null)
+        {
+            return template.Value.Replace("{value}", value).ParseTemplate(fp);
+        }
+
         var prop = fp is AliasProperty alp ? alp.Property : fp;
         var ap = prop as AssociationProperty;
 
         var classe = ap != null ? ap.Association : prop.Class;
         var targetProp = ap != null ? ap.Property : prop;
 
-        if (UseNamedEnums && classe.Enum && availableClasses.Contains(classe))
+        if (UseNamedEnums && classe != null && classe.Enum && availableClasses.Contains(classe))
         {
             if (CanClassUseEnums(classe, availableClasses, targetProp))
             {
@@ -374,6 +380,24 @@ public abstract class GeneratorConfigBase
         }
 
         return value;
+    }
+
+    public IEnumerable<string> GetValueImports(IFieldProperty property, string? value = null)
+    {
+        if (!IgnoreDefaultValues)
+        {
+            value ??= property.DefaultValue;
+        }
+
+        var template = value != null ? GetImplementation(property.Domain)?.GetValueTemplate(value) : null;
+        if (template != null)
+        {
+            return template.Imports.Select(i => i.ParseTemplate(property));
+        }
+        else
+        {
+            return new List<string>();
+        }
     }
 
     /// <summary>

@@ -69,6 +69,7 @@ endpoint:
   params:
     - alias:
         class: UtilisateurDto
+      defaultValue: null
   returns:
     composition: UtilisateurSearch
     name: utilisateurList

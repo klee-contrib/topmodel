@@ -343,6 +343,33 @@
           }
         }
       ]
+    },
+    "valueTemplate": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Template de valeur à utiliser. Peut utiliser la variable '{value}' pour référencer la valeur renseignée dans le modèle."
+        },
+        {
+          "type": "object",
+          "description": "Template de valeur à utiliser, avec des imports supplémentaires si besoin.",
+          "required": [ "value" ],
+          "additionalProperties": false,
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "Template de valeur à utiliser. Peut utiliser la variable '{value}' pour référencer la valeur renseignée dans le modèle."
+            },
+            "imports": {
+              "type": "array",
+              "description": "Imports à ajouter pour utiliser ce template.",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
     }
   },
   "oneOf": [
@@ -496,6 +523,23 @@
                         "type": "string",
                         "description": "Import nécessaire au bon fonctionnement de l'annotation. Peut contenir des variables"
                       }
+                    }
+                  }
+                }
+              },
+              "values": {
+                "type": "object",
+                "description": "Templates à utiliser pour la génération lorsqu'une valeur (par défaut) est renseignée pour une propriété de ce domaine",
+                "additionalProperties": false,
+                "properties": {
+                  "template": {
+                    "$ref": "#/definitions/valueTemplate"
+                  },
+                  "overrides": {
+                    "type": "object",
+                    "description": "Surcharges pour des valeurs spécifiques.",
+                    "additionalProperties": {
+                      "$ref": "#/definitions/valueTemplate"
                     }
                   }
                 }

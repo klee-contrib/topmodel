@@ -39,7 +39,7 @@ values:
   Valeur2: { Code: "2", Libelle: Valeur 2 }
 ```
 
-Les différents générateurs utiliseront ces valeurs pour des scripts d'initialisation de base de données, par exemple.
+Les différents générateurs utiliseront ces valeurs pour des scripts d'initialisation de base de données, par exemple. Ils utiliseront aussi les [templates de valeurs](./domains.md#templates-de-valeurs) associés à leur implémentation pour la génération.
 
 ## Classe enum
 

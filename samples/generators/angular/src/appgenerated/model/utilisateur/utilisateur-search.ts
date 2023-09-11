@@ -4,6 +4,7 @@
 
 import {DO_BOOLEAN, DO_CODE, DO_DATE_CREATION, DO_DATE_MODIFICATION, DO_EMAIL, DO_ID, DO_ID_LIST, DO_LIBELLE, DO_NUMBER} from "@domains";
 
+import {today} from "../../common/utils";
 import {TypeUtilisateurCode} from "./references";
 
 export interface UtilisateurSearch {
@@ -84,6 +85,7 @@ export const UtilisateurSearchEntity = {
         name: "dateCreation",
         domain: DO_DATE_CREATION,
         isRequired: false,
+        defaultValue: today().toISO(),
         label: "utilisateur.entityListeners.dateCreation"
     },
     dateModification: {
@@ -91,6 +93,7 @@ export const UtilisateurSearchEntity = {
         name: "dateModification",
         domain: DO_DATE_MODIFICATION,
         isRequired: false,
+        defaultValue: today().toISO(),
         label: "utilisateur.entityListeners.dateModification"
     }
 } as const

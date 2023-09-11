@@ -101,7 +101,7 @@ public partial class UtilisateurApiClient
     /// <param name="dateCreation">Date de création de l'utilisateur.</param>
     /// <param name="dateModification">Date de modification de l'utilisateur.</param>
     /// <returns>Utilisateurs matchant les critères.</returns>
-    public async Task<ICollection<UtilisateurSearch>> Search(int? utiId = null, decimal age = 6, int? profilId = null, string email = null, string nom = "Jabx", bool? actif = null, TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM, int[] utilisateursEnfant = null, DateOnly? dateCreation = null, DateOnly? dateModification = null)
+    public async Task<ICollection<UtilisateurSearch>> Search(int? utiId = null, decimal? age = null, int? profilId = null, string email = null, string nom = null, bool? actif = null, TypeUtilisateur.Codes? typeUtilisateurCode = null, int[] utilisateursEnfant = null, DateOnly? dateCreation = null, DateOnly? dateModification = null)
     {
         await EnsureAuthentication();
         var query = await new FormUrlEncodedContent(new Dictionary<string, string>

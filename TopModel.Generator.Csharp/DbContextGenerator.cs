@@ -106,11 +106,16 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
         cw.WriteLine("}");
     }
 
-    private void HandleMainFile(string fileName, string tag, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
+    private void HandleMainFile(string fileName, string tag, string dbContextName, string contextNs, List<string> usings, List<Class> classes)
     {
         using var w = new CSharpWriter(fileName, _logger);
 
-        w.WriteUsings(usings.ToArray());
+        foreach (var value in classes.SelectMany(c => c.Values.SelectMany(v => v.Value)))
+        {
+            usings.AddRange(Config.GetValueImports(value.Key, value.Value));
+        }
+
+        w.WriteUsings(usings.Distinct().ToArray());
         w.WriteLine();
         w.WriteNamespace(contextNs);
 

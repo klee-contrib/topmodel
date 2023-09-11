@@ -38,14 +38,12 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
 
         if (Config.EntityMode == EntityMode.TYPED)
         {
-            fw.WriteLine($"import {{{string.Join(", ", GetFocusStoresImports(classe, tag).OrderBy(x => x))}}} from \"{Config.EntityTypesPath}\";");
+            fw.WriteLine($"import {{{string.Join(", ", GetFocusStoresImports(fileName, classe, tag).OrderBy(x => x))}}} from \"{Config.EntityTypesPath}\";");
         }
 
         if (classe.Properties.Any(c => c is IFieldProperty or CompositionProperty { Domain: not null } && !Config.IsListComposition(c)))
         {
-            var domainImport = Config.DomainPath.StartsWith("@")
-                ? Config.DomainPath
-                : Path.GetRelativePath(string.Join('/', fileName.Split('/').SkipLast(1)), Path.Combine(Config.OutputDirectory, Config.ResolveVariables(Config.DomainPath, tag))).Replace("\\", "/");
+            var domainImport = Config.GetRelativePath(Config.ResolveVariables(Config.DomainPath, tag), fileName);
             fw.WriteLine($"import {{{string.Join(", ", classe.Properties.Select(p => p is IFieldProperty fp ? fp.Domain : p is CompositionProperty cp && !Config.IsListComposition(cp) ? cp.Domain! : null!).Where(d => d != null).OrderBy(d => d.Name).Select(d => d.Name).Distinct())}}} from \"{domainImport}\";");
         }
 
@@ -57,7 +55,8 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                     ? Config.GetEnumType(fp)
                     : $"{dep.Classe.NamePascal}Entity, {dep.Classe.NamePascal}{(Config.EntityMode == EntityMode.TYPED ? "EntityType" : string.Empty)}",
                 Path: Config.GetImportPathForClass(dep, dep.Classe.Tags.Contains(tag) ? tag : dep.Classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag, tag, Classes)!))
-            .Concat(classe.Properties.SelectMany(dep => Config.GetDomainImportPaths(dep, tag)))
+            .Concat(classe.Properties.SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag)))
+            .Concat(classe.Properties.OfType<IFieldProperty>().SelectMany(dep => Config.GetValueImportPaths(fileName, dep)))
             .Where(p => p.Path != null && p.Path != Config.EntityTypesPath)
             .GroupAndSort();
 
@@ -247,7 +246,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
         }
     }
 
-    private IEnumerable<string> GetFocusStoresImports(Class classe, string tag)
+    private IEnumerable<string> GetFocusStoresImports(string fileName, Class classe, string tag)
     {
         if (classe.Properties.Any(p => p is IFieldProperty || p is CompositionProperty { Domain: not null } && !Config.IsListComposition(p)))
         {
@@ -269,7 +268,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
             yield return "RecursiveListEntry";
         }
 
-        foreach (var p in classe.Properties.SelectMany(dep => Config.GetDomainImportPaths(dep, tag)).Where(p => p.Path == Config.EntityTypesPath))
+        foreach (var p in classe.Properties.SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag)).Where(p => p.Path == Config.EntityTypesPath))
         {
             yield return p.Import;
         }

@@ -71,6 +71,11 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
         {
             usings.AddRange(Config.GetDomainImports(property, tag));
 
+            if (property is IFieldProperty fp && fp.IsQueryParam())
+            {
+                usings.AddRange(Config.GetValueImports(fp));
+            }
+
             switch (property)
             {
                 case AssociationProperty ap when Config.CanClassUseEnums(ap.Association, Classes):
