@@ -333,7 +333,7 @@ public class CSharpWriter : IDisposable
         }
 
         var sb = new StringBuilder();
-        sb.AppendLine("/// <summary>");
+        sb.Append("/// <summary>\r\n");
 
         foreach (var line in summary.Split(Environment.NewLine))
         {
@@ -343,7 +343,7 @@ public class CSharpWriter : IDisposable
                 sb.Append($" {line}");
             }
 
-            sb.Append(Environment.NewLine);
+            sb.Append("\r\n");
         }
 
         sb.Append("/// </summary>");
