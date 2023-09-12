@@ -326,17 +326,27 @@ public class CSharpWriter : IDisposable
             throw new ArgumentNullException(nameof(summary));
         }
 
-        summary = summary.Trim();
-
-        var sb = new StringBuilder();
-        sb.Append("/// <summary>\r\n");
-        sb.Append("/// " + summary.Replace("\r\n", "\r\n/// ").Replace("\n", "\r\n/// ").Replace("<", "&lt;").Replace(">", "&gt;"));
+        summary = summary.Trim().Replace("<", "&lt;").Replace(">", "&gt;").ReplaceLineEndings();
         if (!summary.EndsWith(".", StringComparison.OrdinalIgnoreCase))
         {
-            sb.Append('.');
+            summary += ".";
         }
 
-        sb.Append("\r\n/// </summary>");
+        var sb = new StringBuilder();
+        sb.AppendLine("/// <summary>");
+
+        foreach (var line in summary.Split(Environment.NewLine))
+        {
+            sb.Append("///");
+            if (!string.IsNullOrWhiteSpace(line))
+            {
+                sb.Append($" {line}");
+            }
+
+            sb.Append(Environment.NewLine);
+        }
+
+        sb.Append("/// </summary>");
         return sb.ToString();
     }
 

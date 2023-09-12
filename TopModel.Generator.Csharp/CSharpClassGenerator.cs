@@ -289,7 +289,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         void WriteEnum(IFieldProperty prop)
         {
             w.WriteSummary(1, $"Valeurs possibles de la liste de référence {item}.");
-            w.WriteLine(1, $"public enum {prop.Name.ToPascalCase()}s");
+            w.WriteLine(1, $"public enum {Config.GetEnumType(prop, true)}");
             w.WriteLine(1, "{");
 
             foreach (var refValue in refs)
