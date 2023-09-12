@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.36.1
+
+- [`994a9a99`](https://github.com/klee-contrib/topmodel/commit/994a9a9996a415f7195136026d375b422683fd79) - [C#] Fix divers sur les noms d'enums autorisés + et la génération des summarys
+
 ## 1.36.0
 
 - [#297](https://github.com/klee-contrib/topmodel/pull/297) - Templates de valeurs par implémentation de domaine
