@@ -136,10 +136,10 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
 
     private TmdProperty ColumnToProperty(TmdClass classe, DbColumn column, string trigram, ConstraintKey? primaryKeyConstraint, ConstraintKey? foreignConstraint)
     {
-        var domain = TmdGenUtils.GetDomainString(_config.Domains, column.ColumnName, column.Scale, column.Precision);
+        var domain = TmdGenUtils.GetDomainString(_config.Domains, name: column.ColumnName, scale: column.Scale, precision: column.Precision);
         if (domain == column.ColumnName)
         {
-            domain = TmdGenUtils.GetDomainString(_config.Domains, column.DataType, column.Scale, column.Precision);
+            domain = TmdGenUtils.GetDomainString(_config.Domains, type: column.DataType, scale: column.Scale, precision: column.Precision);
         }
 
         var columnName = column.ColumnName;
