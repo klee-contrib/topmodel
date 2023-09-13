@@ -14,51 +14,51 @@ endpoint:
   name: deleteOrder
   method: DELETE
   route: store/order/{orderId}
-  description: "Delete purchase order by ID"
+  description: Delete purchase order by ID
   preservePropertyCasing: true
   params:
     - name: orderId
       domain: DO_ID
-      comment: "ID of the order that needs to be deleted"
+      comment: ID of the order that needs to be deleted
 ---
 endpoint:
   name: getInventory
   method: GET
   route: store/inventory
-  description: "Returns pet inventories by status"
+  description: Returns pet inventories by status
   preservePropertyCasing: true
   returns:
     name: Result
     domain: DO_ENTIER_MAP
     required: true
-    comment: "Result"
+    comment: Result
 ---
 endpoint:
   name: getOrderById
   method: GET
   route: store/order/{orderId}
-  description: "Find purchase order by ID"
+  description: Find purchase order by ID
   preservePropertyCasing: true
   params:
     - name: orderId
       domain: DO_ID
-      comment: "ID of order that needs to be fetched"
+      comment: ID of order that needs to be fetched
   returns:
     composition: Order
     name: Result
-    comment: "Result"
+    comment: Result
 ---
 endpoint:
   name: placeOrder
   method: POST
   route: store/order
-  description: "Place an order for a pet"
+  description: Place an order for a pet
   preservePropertyCasing: true
   params:
     - composition: Order
       name: body
-      comment: "body"
+      comment: body
   returns:
     composition: Order
     name: Result
-    comment: "Result"
+    comment: Result

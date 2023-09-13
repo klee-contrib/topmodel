@@ -72,11 +72,15 @@ public class OpenApiTmdGenerator : ModelGenerator
         fw.WriteLine();
 
         var references = new HashSet<string>(referenceMap.SelectMany(r => r.Value).Select(r => r.Id).Distinct());
-        foreach (var schema in _model.Components.Schemas.Where(s => s.Value.Type == "object").Where(s => references.Contains(s.Key)).OrderBy(s => s.Key))
+
+        foreach (var schema in _model.GetSchemas(references).OrderBy(r => r.Key))
         {
             fw.WriteLine("---");
             fw.WriteLine("class:");
-            fw.WriteLine($"  name: {schema.Key}");
+
+            var className = schema.Value.Type == "array" ? schema.Key.Unplurialize() : schema.Key;
+
+            fw.WriteLine($"  name: {className}");
 
             if (_config.PreservePropertyCasing)
             {
@@ -85,7 +89,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
             if (schema.Value.Description != null)
             {
-                fw.WriteLine($"  comment: {FormatDescription(schema.Value.Description ?? schema.Key)}");
+                fw.WriteLine($"  comment: {(schema.Value.Description ?? className).Format()}");
             }
             else
             {
@@ -95,11 +99,13 @@ public class OpenApiTmdGenerator : ModelGenerator
             fw.WriteLine();
             fw.WriteLine($"  properties:");
 
-            foreach (var property in schema.Value.Properties)
+            var properties = schema.Value.GetProperties().ToList();
+
+            foreach (var property in properties)
             {
                 if (!property.Value.Enum.Any())
                 {
-                    WriteProperty(_config, fw, property, _model);
+                    WriteProperty(_config, fw, property);
                 }
                 else
                 {
@@ -107,13 +113,13 @@ public class OpenApiTmdGenerator : ModelGenerator
                     fw.WriteLine($@"        class: {schema.Key.ToPascalCase()}{property.Key.ToPascalCase()}");
                 }
 
-                if (schema.Value.Properties.Last().Key != property.Key)
+                if (properties.Last().Key != property.Key)
                 {
                     fw.WriteLine();
                 }
             }
 
-            foreach (var property in schema.Value.Properties.Where(p => (p.Value.Enum?.Any() ?? false)))
+            foreach (var property in properties.Where(p => (p.Value.Enum?.Any() ?? false)))
             {
                 fw.WriteLine("---");
                 fw.WriteLine("class:");
@@ -129,7 +135,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                 fw.WriteLine();
                 fw.WriteLine($"  properties:");
 
-                WriteProperty(_config, fw, property, _model);
+                WriteProperty(_config, fw, property);
                 fw.WriteLine();
                 fw.WriteLine($"  values:");
                 var u = 0;
@@ -185,7 +191,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                 sw.WriteLine($"  route: {path}");
                 if (operation.Value.Summary != null)
                 {
-                    sw.WriteLine($"  description: {FormatDescription(operation.Value.Summary)}");
+                    sw.WriteLine($"  description: {operation.Value.Summary.Format()}");
                 }
                 else
                 {
@@ -201,19 +207,19 @@ public class OpenApiTmdGenerator : ModelGenerator
                 {
                     sw.WriteLine("  params:");
 
-                    var bodySchema = GetRequestBodySchema(operation.Value);
+                    var bodySchema = operation.Value.GetRequestBodySchema();
                     if (bodySchema != null)
                     {
-                        WriteProperty(_config, sw, new("body", bodySchema), _model);
+                        WriteProperty(_config, sw, new("body", bodySchema));
                     }
 
                     foreach (var param in operation.Value.Parameters.Where(p => p.In == ParameterLocation.Query || p.In == ParameterLocation.Path).OrderBy(p => path.Contains($@"{{{p.Name}}}") ? 0 + p.Name : 1 + p.Name))
                     {
                         sw.WriteLine($"    - name: {param.Name}");
-                        sw.WriteLine($"      domain: {GetDomain(_config, param.Name, param.Schema)}");
+                        sw.WriteLine($"      domain: {_config.GetDomain(param.Name, param.Schema)}");
                         if (param.Description != null)
                         {
-                            sw.WriteLine($"      comment: {FormatDescription(param.Description)}");
+                            sw.WriteLine($"      comment: {param.Description.Format()}");
                         }
                         else
                         {
@@ -226,103 +232,25 @@ public class OpenApiTmdGenerator : ModelGenerator
                 if (responseSchema != null)
                 {
                     sw.WriteLine("  returns:");
-                    WriteProperty(_config, sw, new("Result", responseSchema), _model, noList: true);
+                    WriteProperty(_config, sw, new("Result", responseSchema), noList: true);
                 }
             }
         }
     }
 
-    private static string FormatDescription(string description)
+    private (string? Kind, string? Name) GetComposition(OpenApiSchema schema)
     {
-        if (description == null)
-        {
-            return string.Empty;
-        }
-
-        description = description.Replace(Environment.NewLine, " ");
-
-        return @$"""{description}""";
-    }
-
-    private static (string? Kind, string? Name) GetComposition(OpenApiSchema schema, OpenApiDocument model)
-    {
-        return (
-            schema.Items?.Reference != null
-                ? "list"
-                : schema.Reference != null && model.Components.Schemas.Any(s => s.Value.Type == "object" && s.Value.Reference == schema.Reference)
-                ? "object"
-                : schema.Type == "object" && schema.AdditionalProperties?.Reference != null
-                ? "map"
-                : schema.Type == "object" && schema.AdditionalProperties?.Items?.Reference != null
-                ? "list-map"
-                : null,
-            schema?.AdditionalProperties?.Items?.Reference.Id ?? schema?.AdditionalProperties?.Reference?.Id ?? schema?.Items?.Reference?.Id ?? schema?.Reference?.Id);
-    }
-
-    private static string GetDomain(OpenApiConfig config, string name, OpenApiSchema schema)
-    {
-        var resolvedDomain = TmdGenUtils.GetDomainString(config.Domains, name);
-        if (resolvedDomain == name)
-        {
-            return GetDomainSchema(config, schema);
-        }
-
-        return resolvedDomain;
-    }
-
-    private static string GetDomainCore(OpenApiSchema schema)
-    {
-        var length = schema.MaxLength != null ? $"{schema.MaxLength}" : string.Empty;
-
-        if (schema.Format != null)
-        {
-            return schema.Format + length;
-        }
-        else if (schema.Type == "array")
-        {
-            return $"{GetDomainCore(schema.Items)}-array";
-        }
-        else if (schema.Type == "object" && schema.AdditionalProperties != null)
-        {
-            return $"{GetDomainCore(schema.AdditionalProperties)}-map";
-        }
-
-        return schema.Type + length;
-    }
-
-    private static string GetDomainSchema(OpenApiConfig config, OpenApiSchema schema)
-    {
-        var domain = GetDomainCore(schema);
-        return TmdGenUtils.GetDomainString(config.Domains, domain);
-    }
-
-    private static OpenApiSchema? GetRequestBodySchema(OpenApiOperation operation)
-    {
-        return operation.RequestBody?.Content.First().Value.Schema;
-    }
-
-    private static void WriteProperty(OpenApiConfig config, FileWriter sw, KeyValuePair<string, OpenApiSchema> property, OpenApiDocument model, bool noList = false)
-    {
-        var (kind, name) = GetComposition(property.Value, model);
-
-        if (kind != null && name != null)
-        {
-            var domainKind = TmdGenUtils.GetDomainString(config.Domains, kind);
-            sw.WriteLine($"    {(noList ? string.Empty : "- ")}composition: {name}");
-            sw.WriteLine($"    {(noList ? string.Empty : "  ")}name: {property.Key}");
-            if ((domainKind ?? kind) != "object")
-            {
-                sw.WriteLine($"    {(noList ? string.Empty : "  ")}domain: {domainKind ?? kind}");
-            }
-        }
-        else
-        {
-            sw.WriteLine($"    {(noList ? string.Empty : "- ")}name: {property.Key}");
-            sw.WriteLine($"    {(noList ? string.Empty : "  ")}domain: {GetDomain(config, property.Key, property.Value)}");
-            sw.WriteLine($"    {(noList ? string.Empty : "  ")}required: {(!property.Value.Nullable).ToString().ToLower()}");
-        }
-
-        sw.WriteLine($"    {(noList ? string.Empty : "  ")}comment: {FormatDescription(property.Value.Description ?? property.Key)}");
+        return schema.Items?.Reference != null
+            ? ("list", schema.Items.Reference.Id)
+            : schema.Reference != null && _model.GetSchemas().Any(s => s.Value.Reference == schema.Reference)
+            ? _model.GetSchemas().First(s => s.Value.Reference == schema.Reference).Value.Type == "array"
+                ? ("list", schema.Reference.Id.Unplurialize())
+                : ("object", schema.Reference.Id)
+            : schema.Type == "object" && schema.AdditionalProperties?.Reference != null
+            ? ("map", schema.AdditionalProperties.Reference.Id)
+            : schema.Type == "object" && schema.AdditionalProperties?.Items?.Reference != null
+            ? ("list-map", schema.AdditionalProperties.Items.Reference.Id)
+            : (null, null);
     }
 
     private string GetEndpointName(KeyValuePair<OperationType, OpenApiOperation> operation)
@@ -415,10 +343,10 @@ public class OpenApiTmdGenerator : ModelGenerator
         }
         else
         {
-            var bodySchema = GetRequestBodySchema(operation.Value);
+            var bodySchema = operation.Value.GetRequestBodySchema();
             if (bodySchema != null)
             {
-                var body = GetComposition(bodySchema, _model);
+                var body = GetComposition(bodySchema);
                 id += body.Name;
 
                 if (body.Kind != null && body.Kind != "object")
@@ -464,12 +392,9 @@ public class OpenApiTmdGenerator : ModelGenerator
             }
         }
 
-        if (schema.Properties != null)
+        foreach (var reference in schema.GetProperties().Values.Where(p => !visited.Contains(p)).SelectMany(p => GetSchemaReferences(p, visited)))
         {
-            foreach (var reference in schema.Properties.Values.Where(p => !visited.Contains(p)).SelectMany(p => GetSchemaReferences(p, visited)))
-            {
-                yield return reference;
-            }
+            yield return reference;
         }
 
         if (schema.AdditionalProperties != null && !visited.Contains(schema.AdditionalProperties))
@@ -479,5 +404,29 @@ public class OpenApiTmdGenerator : ModelGenerator
                 yield return reference;
             }
         }
+    }
+
+    private void WriteProperty(OpenApiConfig config, FileWriter sw, KeyValuePair<string, OpenApiSchema> property, bool noList = false)
+    {
+        var (kind, name) = GetComposition(property.Value);
+
+        if (kind != null && name != null)
+        {
+            var domainKind = TmdGenUtils.GetDomainString(config.Domains, type: kind);
+            sw.WriteLine($"    {(noList ? string.Empty : "- ")}composition: {name}");
+            sw.WriteLine($"    {(noList ? string.Empty : "  ")}name: {property.Key}");
+            if (kind != "object")
+            {
+                sw.WriteLine($"    {(noList ? string.Empty : "  ")}domain: {domainKind ?? kind}");
+            }
+        }
+        else
+        {
+            sw.WriteLine($"    {(noList ? string.Empty : "- ")}name: {property.Key}");
+            sw.WriteLine($"    {(noList ? string.Empty : "  ")}domain: {config.GetDomain(property.Key, property.Value)}");
+            sw.WriteLine($"    {(noList ? string.Empty : "  ")}required: {(!property.Value.Nullable).ToString().ToLower()}");
+        }
+
+        sw.WriteLine($"    {(noList ? string.Empty : "  ")}comment: {(property.Value.Description ?? property.Key).Format()}");
     }
 }

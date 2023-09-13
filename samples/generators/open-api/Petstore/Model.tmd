@@ -17,17 +17,17 @@ class:
     - name: code
       domain: DO_ENTIER
       required: true
-      comment: "code"
+      comment: code
 
     - name: type
       domain: DO_LIBELLE
       required: true
-      comment: "type"
+      comment: type
 
     - name: message
       domain: DO_LIBELLE
       required: true
-      comment: "message"
+      comment: message
 ---
 class:
   name: Category
@@ -38,12 +38,12 @@ class:
     - name: id
       domain: DO_ID
       required: true
-      comment: "id"
+      comment: id
 
     - name: name
       domain: DO_LIBELLE
       required: true
-      comment: "name"
+      comment: name
 ---
 class:
   name: Order
@@ -54,22 +54,22 @@ class:
     - name: id
       domain: DO_ID
       required: true
-      comment: "id"
+      comment: id
 
     - name: petId
       domain: DO_ID
       required: true
-      comment: "petId"
+      comment: petId
 
     - name: quantity
       domain: DO_ENTIER
       required: true
-      comment: "quantity"
+      comment: quantity
 
     - name: shipDate
       domain: DO_DATE_TIME
       required: true
-      comment: "shipDate"
+      comment: shipDate
 
     - alias:
         class: OrderStatus
@@ -77,7 +77,7 @@ class:
     - name: complete
       domain: DO_BOOLEAN
       required: true
-      comment: "complete"
+      comment: complete
 ---
 class:
   name: OrderStatus
@@ -88,7 +88,7 @@ class:
     - name: status
       domain: DO_LIBELLE
       required: true
-      comment: "Order Status"
+      comment: Order Status
 
   values:
     value0: { status: placed }
@@ -104,26 +104,26 @@ class:
     - name: id
       domain: DO_ID
       required: true
-      comment: "id"
+      comment: id
 
     - name: name
       domain: DO_LIBELLE
       required: true
-      comment: "name"
+      comment: name
 
     - composition: Category
       name: category
-      comment: "category"
+      comment: category
 
     - name: photoUrls
       domain: DO_LIBELLE
       required: true
-      comment: "photoUrls"
+      comment: photoUrls
 
     - composition: Tag
       name: tags
       domain: DO_LIST
-      comment: "tags"
+      comment: tags
 
     - alias:
         class: PetStatus
@@ -137,7 +137,7 @@ class:
     - name: status
       domain: DO_LIBELLE
       required: true
-      comment: "pet status in the store"
+      comment: pet status in the store
 
   values:
     value0: { status: available }
@@ -153,12 +153,12 @@ class:
     - name: id
       domain: DO_ID
       required: true
-      comment: "id"
+      comment: id
 
     - name: name
       domain: DO_LIBELLE
       required: true
-      comment: "name"
+      comment: name
 ---
 class:
   name: User
@@ -169,39 +169,39 @@ class:
     - name: id
       domain: DO_ID
       required: true
-      comment: "id"
+      comment: id
 
     - name: username
       domain: DO_LIBELLE
       required: true
-      comment: "username"
+      comment: username
 
     - name: firstName
       domain: DO_LIBELLE
       required: true
-      comment: "firstName"
+      comment: firstName
 
     - name: lastName
       domain: DO_LIBELLE
       required: true
-      comment: "lastName"
+      comment: lastName
 
     - name: email
       domain: DO_LIBELLE
       required: true
-      comment: "email"
+      comment: email
 
     - name: password
       domain: DO_LIBELLE
       required: true
-      comment: "password"
+      comment: password
 
     - name: phone
       domain: DO_LIBELLE
       required: true
-      comment: "phone"
+      comment: phone
 
     - name: userStatus
       domain: DO_ENTIER
       required: true
-      comment: "User Status"
+      comment: User Status
