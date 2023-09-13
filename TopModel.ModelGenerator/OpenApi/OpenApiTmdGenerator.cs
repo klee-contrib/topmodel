@@ -306,7 +306,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                 yield return reference;
             }
 
-            var response = operation.Value.Responses.FirstOrDefault(r => r.Key == "200").Value;
+            var response = operation.Value.Responses.FirstOrDefault(r => r.Key == "200" || r.Key == "201").Value;
             if (response != null && response.Content.Any())
             {
                 foreach (var reference in GetSchemaReferences(response.Content.First().Value.Schema, visited))
@@ -366,7 +366,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
     private KeyValuePair<string, OpenApiSchema> GetResponseSchema(OpenApiOperation operation)
     {
-        var response = operation.Responses.FirstOrDefault(r => r.Key == "200").Value;
+        var response = operation.Responses.FirstOrDefault(r => r.Key == "200" || r.Key == "201").Value;
         if (response != null && response.Content.Any())
         {
             return new(_model.Components.Schemas.FirstOrDefault(s => s.Value == response.Content.First().Value.Schema).Key, response.Content.First().Value.Schema);
