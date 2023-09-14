@@ -175,6 +175,12 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.WriteLine(1, @$"public static Step {dataFlow.Name.ToCamelCase()}Step(");
         fw.WriteLine(1, @$"		JobRepository jobRepository, //");
         fw.WriteLine(1, @$"		PlatformTransactionManager transactionManager, //");
+        foreach (var listener in Config.DataFlowsListeners)
+        {
+            fw.AddImport("org.springframework.batch.core.StepListener");
+            fw.WriteLine(1, @$"		@Qualifier(""{listener}"") StepListener {listener.ToCamelCase()}, //");
+        }
+
         fw.WriteLine(1, @$"		@Qualifier(""{dataFlow.Name.ToPascalCase()}Reader"") ItemReader<{dataFlow.Sources.First().Class.NamePascal}> reader, //");
         fw.WriteLine(1, @$"		@Qualifier(""{dataFlow.Name.ToPascalCase()}Writer"") ItemWriter<{dataFlow.Class.NamePascal}> writer{(hookStep.Any() ? ',' : string.Empty)} //");
         var index = 0;
@@ -226,6 +232,11 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         {
             fw.AddImport("org.springframework.batch.item.support.CompositeItemProcessor");
             fw.WriteLine(3, $".processor(new CompositeItemProcessor<>({string.Join(", ", processors)})) //");
+        }
+
+        foreach (var listener in Config.DataFlowsListeners)
+        {
+            fw.WriteLine(3, $".listener({listener.ToCamelCase()}) //");
         }
 
         fw.WriteLine(3, ".writer(writer) //");

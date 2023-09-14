@@ -104,6 +104,11 @@ public class JpaConfig : GeneratorConfigBase
     /// </summary>
     public long DataFlowsBulkSize { get; set; } = 100000;
 
+    /// <summary>
+    /// Listeners à ajouter aux dataflows
+    /// </summary>
+    public List<string> DataFlowsListeners { get; set; } = new ();
+
     public override string[] PropertiesWithLangVariableSupport => new[]
     {
         nameof(ResourcesPath)
