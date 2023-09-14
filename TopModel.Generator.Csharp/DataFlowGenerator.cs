@@ -115,13 +115,13 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
             w.WriteLine(1, $"public override string[] DependsOn => new[] {{ {string.Join(", ", dataFlow.DependsOn.Select(d => $"\"{d.Name.ToPascalCase()}\""))} }};");
         }
 
-        if (dataFlow.Hooks.Contains(FlowHook.AfterFLow))
+        if (dataFlow.Hooks.Contains(FlowHook.AfterFlow))
         {
             w.WriteLine();
             w.WriteLine(1, $"protected override bool PostQuery => true;");
         }
 
-        if (dataFlow.Hooks.Contains(FlowHook.BeforeFLow))
+        if (dataFlow.Hooks.Contains(FlowHook.BeforeFlow))
         {
             w.WriteLine();
             w.WriteLine(1, $"protected override bool PreQuery => true;");
@@ -265,13 +265,13 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
 
         w.WriteLine(1, "}");
 
-        if (dataFlow.Hooks.Contains(FlowHook.AfterFLow))
+        if (dataFlow.Hooks.Contains(FlowHook.AfterFlow))
         {
             w.WriteLine();
             w.WriteLine(1, $"protected override partial Task<int> ExecutePostQuery(IConnection connection);");
         }
 
-        if (dataFlow.Hooks.Contains(FlowHook.BeforeFLow))
+        if (dataFlow.Hooks.Contains(FlowHook.BeforeFlow))
         {
             w.WriteLine();
             w.WriteLine(1, $"protected override partial Task<int> ExecutePreQuery(IConnection connection);");
@@ -294,7 +294,7 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
 
     private void HandleDataFlowPartial(string fileName, DataFlow dataFlow, string tag)
     {
-        if (!dataFlow.Sources.Any(s => s.Mode == DataFlowSourceMode.Partial) && !dataFlow.Hooks.Contains(FlowHook.AfterFLow) && !dataFlow.Hooks.Contains(FlowHook.BeforeFLow))
+        if (!dataFlow.Sources.Any(s => s.Mode == DataFlowSourceMode.Partial) && !dataFlow.Hooks.Contains(FlowHook.AfterFlow) && !dataFlow.Hooks.Contains(FlowHook.BeforeFlow))
         {
             return;
         }
@@ -311,16 +311,16 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
         w.WriteNamespace(Config.GetNamespace(dataFlow, tag));
         w.WriteClassDeclaration($"{dataFlow.Name.ToPascalCase()}Flow", null, false);
 
-        if (dataFlow.Hooks.Contains(FlowHook.AfterFLow))
+        if (dataFlow.Hooks.Contains(FlowHook.AfterFlow))
         {
             w.WriteLine(1, $"protected override partial async Task<int> ExecutePostQuery(IConnection connection)");
             w.WriteLine(1, "{");
             w.WriteLine(1, "}");
         }
 
-        if (dataFlow.Hooks.Contains(FlowHook.BeforeFLow))
+        if (dataFlow.Hooks.Contains(FlowHook.BeforeFlow))
         {
-            if (dataFlow.Hooks.Contains(FlowHook.AfterFLow))
+            if (dataFlow.Hooks.Contains(FlowHook.AfterFlow))
             {
                 w.WriteLine();
             }
@@ -333,7 +333,7 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
         var partialSources = dataFlow.Sources.Where(d => d.Mode == DataFlowSourceMode.Partial).OrderBy(s => s.Source);
         foreach (var source in partialSources)
         {
-            if (dataFlow.Hooks.Contains(FlowHook.AfterFLow) || dataFlow.Hooks.Contains(FlowHook.BeforeFLow) || partialSources.ToList().IndexOf(source) > 0)
+            if (dataFlow.Hooks.Any() || partialSources.ToList().IndexOf(source) > 0)
             {
                 w.WriteLine();
             }

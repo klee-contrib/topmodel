@@ -1,10 +1,10 @@
-namespace TopModel.Core;
+﻿namespace TopModel.Core;
 
 public enum FlowHook
 {
-    BeforeFLow,
+    BeforeFlow,
     AfterSource,
     Map,
     BeforeTarget,
-    AfterFLow,
+    AfterFlow,
 }

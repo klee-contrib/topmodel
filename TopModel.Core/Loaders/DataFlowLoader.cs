@@ -46,11 +46,11 @@ public class DataFlowLoader : ILoader<DataFlow>
                         FlowHook? hook = null;
                         switch (value)
                         {
-                            case "beforeFLow": hook = FlowHook.BeforeFLow; break;
+                            case "beforeFLow": hook = FlowHook.BeforeFlow; break;
                             case "afterSource": hook = FlowHook.AfterSource; break;
                             case "map": hook = FlowHook.Map; break;
                             case "beforeTarget": hook = FlowHook.BeforeTarget; break;
-                            case "afterFLow": hook = FlowHook.AfterFLow; break;
+                            case "afterFLow": hook = FlowHook.AfterFlow; break;
                         }
 
                         if (hook != null)

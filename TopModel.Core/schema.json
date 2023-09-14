@@ -1064,11 +1064,11 @@
                 "type": "string",
                 "description": "Nom du hook",
                 "enum": [
-                  "beforeFLow",
+                  "beforeFlow",
                   "afterSource",
                   "map",
                   "beforeTarget",
-                  "afterFLow"
+                  "afterFlow"
                 ]
               }
             },

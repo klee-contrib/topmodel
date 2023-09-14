@@ -76,7 +76,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
         var getter = string.Empty;
         var converter = Config.GetConverter((propertySource as IFieldProperty)?.Domain, (propertyTarget as IFieldProperty)?.Domain);
-        if (converter != null)
+        if (converter != null && Config.GetImplementation(converter) != null)
         {
             fw.AddImports(Config.GetImplementation(converter)!.Imports);
         }
