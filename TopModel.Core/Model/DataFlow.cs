@@ -24,9 +24,7 @@ public class DataFlow
 
     public List<DataFlowReference> DependsOnReference { get; set; } = new();
 
-    public bool PostQuery { get; set; }
-
-    public bool PreQuery { get; set; }
+    public List<FlowHook> Hooks { get; set; } = new();
 
     public IFieldProperty? ActiveProperty { get; set; }
 

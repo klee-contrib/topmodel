@@ -36,14 +36,28 @@ public class DataFlowLoader : ILoader<DataFlow>
                         dataFlow.DependsOnReference.Add(new DataFlowReference(parser.Consume<Scalar>()));
                     });
                     break;
-                case "postQuery":
-                    dataFlow.PostQuery = value!.Value == "true";
-                    break;
-                case "preQuery":
-                    dataFlow.PreQuery = value!.Value == "true";
-                    break;
                 case "activeProperty":
                     dataFlow.ActivePropertyReference = new Reference(value!);
+                    break;
+                case "hooks":
+                    parser.ConsumeSequence(() =>
+                    {
+                        string value = parser.Consume<Scalar>().Value;
+                        FlowHook? hook = null;
+                        switch (value)
+                        {
+                            case "beforeFLow": hook = FlowHook.BeforeFLow; break;
+                            case "afterSource": hook = FlowHook.AfterSource; break;
+                            case "map": hook = FlowHook.Map; break;
+                            case "beforeTarget": hook = FlowHook.BeforeTarget; break;
+                            case "afterFLow": hook = FlowHook.AfterFLow; break;
+                        }
+
+                        if (hook != null)
+                        {
+                            dataFlow.Hooks.Add((FlowHook)hook);
+                        }
+                    });
                     break;
                 case "sources":
                     parser.ConsumeSequence(() =>
