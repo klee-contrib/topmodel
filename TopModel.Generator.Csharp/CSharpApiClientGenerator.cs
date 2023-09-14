@@ -218,7 +218,17 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
             if (returnType != null)
             {
-                fw.WriteLine(2, $"return await Deserialize<{returnType}>(res);");
+                if (returnType == "byte[]")
+                {
+                    fw.WriteLine();
+                    fw.WriteLine(2, "using var ms = new MemoryStream();");
+                    fw.WriteLine(2, "(await res.Content.ReadAsStreamAsync()).CopyTo(ms);");
+                    fw.WriteLine(2, "return ms.ToArray();");
+                }
+                else
+                {
+                    fw.WriteLine(2, $"return await Deserialize<{returnType}>(res);");
+                }
             }
 
             fw.WriteLine(1, "}");

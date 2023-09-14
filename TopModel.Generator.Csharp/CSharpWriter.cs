@@ -280,10 +280,32 @@ public class CSharpWriter : IDisposable
         sb.Append($"/// <{tag} name=\"");
         sb.Append(paramName);
         sb.Append("\">");
-        sb.Append(value.Replace("<", "&lt;").Replace(">", "&gt;"));
+
+        value = value.Replace("<", "&lt;").Replace(">", "&gt;").ReplaceLineEndings();
         if (!value.EndsWith(".", StringComparison.OrdinalIgnoreCase))
         {
-            sb.Append('.');
+            value += ".";
+        }
+
+        if (value.Contains(Environment.NewLine))
+        {
+            sb.Append("\r\n");
+            foreach (var line in value.Split(Environment.NewLine))
+            {
+                sb.Append("///");
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    sb.Append($" {line}");
+                }
+
+                sb.Append("\r\n");
+            }
+
+            sb.Append("/// ");
+        }
+        else
+        {
+            sb.Append(value);
         }
 
         sb.Append($"</{tag}>");
