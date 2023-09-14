@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.36.2
+
+- [`51fb64d3`](https://github.com/klee-contrib/topmodel/commit/51fb64d37543f173bb38925d779ed97b588b4020) - [C#] params de doc sur plusieurs lignes + gestion api cliente qui renvoie byte[]
+
 ## 1.36.1
 
 - [`994a9a99`](https://github.com/klee-contrib/topmodel/commit/994a9a9996a415f7195136026d375b422683fd79) - [C#] Fix divers sur les noms d'enums autorisés + et la génération des summarys
