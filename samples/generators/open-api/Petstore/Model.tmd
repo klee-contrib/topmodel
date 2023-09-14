@@ -73,6 +73,7 @@ class:
 
     - alias:
         class: OrderStatus
+      name: Status
 
     - name: complete
       domain: DO_BOOLEAN
@@ -85,15 +86,15 @@ class:
   comment: enum pour les valeurs de Status
 
   properties:
-    - name: status
+    - name: value
       domain: DO_LIBELLE
       required: true
       comment: Order Status
 
   values:
-    value0: { status: placed }
-    value1: { status: approved }
-    value2: { status: delivered }
+    value0: { value: placed }
+    value1: { value: approved }
+    value2: { value: delivered }
 ---
 class:
   name: Pet
@@ -127,6 +128,7 @@ class:
 
     - alias:
         class: PetStatus
+      name: Status
 ---
 class:
   name: PetStatus
@@ -134,15 +136,15 @@ class:
   comment: enum pour les valeurs de Status
 
   properties:
-    - name: status
+    - name: value
       domain: DO_LIBELLE
       required: true
       comment: pet status in the store
 
   values:
-    value0: { status: available }
-    value1: { status: pending }
-    value2: { status: sold }
+    value0: { value: available }
+    value1: { value: pending }
+    value2: { value: sold }
 ---
 class:
   name: Tag

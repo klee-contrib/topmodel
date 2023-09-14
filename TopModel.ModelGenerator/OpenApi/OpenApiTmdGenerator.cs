@@ -111,6 +111,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                 {
                     fw.WriteLine("    - alias:");
                     fw.WriteLine($@"        class: {schema.Key.ToPascalCase()}{property.Key.ToPascalCase()}");
+                    fw.WriteLine($"      name: {property.Key.ToPascalCase()}");
                 }
 
                 if (properties.Last().Key != property.Key)
@@ -135,19 +136,19 @@ public class OpenApiTmdGenerator : ModelGenerator
                 fw.WriteLine();
                 fw.WriteLine($"  properties:");
 
-                WriteProperty(_config, fw, property);
+                WriteProperty(_config, fw, new("value", property.Value));
                 fw.WriteLine();
                 fw.WriteLine($"  values:");
                 var u = 0;
 
                 foreach (var val in property.Value.Enum.OfType<OpenApiString>())
                 {
-                    fw.WriteLine($@"    value{u++}: {{ {property.Key}: {val.Value} }}");
+                    fw.WriteLine($@"    value{u++}: {{ value: {val.Value} }}");
                 }
 
                 foreach (var val in property.Value.Enum.OfType<OpenApiInteger>())
                 {
-                    fw.WriteLine($@"    value{u++}: {{ {property.Key}: {val.Value} }}");
+                    fw.WriteLine($@"    value{u++}: {{ value: {val.Value} }}");
                 }
             }
         }
