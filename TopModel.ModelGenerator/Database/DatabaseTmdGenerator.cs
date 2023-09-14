@@ -390,7 +390,13 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
     {
         foreach (var group in classGroups)
         {
-            _classes.Add(group.Key, new TmdClass() { Name = group.Key.ToLower().ToPascalCase() });
+            var className = group.Key.ToLower().ToPascalCase();
+            if (classGroups.Select(c => c.Key).Where(k => k != group.Key && k.ToLower().ToPascalCase() == className).Any())
+            {
+                className = group.Key;
+            }
+
+            _classes.Add(group.Key, new TmdClass() { Name = className, SqlName = group.Key });
         }
     }
 

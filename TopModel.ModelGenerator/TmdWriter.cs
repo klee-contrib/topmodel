@@ -57,6 +57,7 @@ public class TmdWriter : IDisposable
             _writer.WriteLine($"---");
             _writer.WriteLine($"class:");
             _writer.WriteLine($"  name: {classe.Name}");
+            _writer.WriteLine($"  sqlName: {classe.SqlName}");
             _writer.WriteLine($"  comment: {classe.Name}");
             if (!string.IsNullOrEmpty(classe.Trigram))
             {

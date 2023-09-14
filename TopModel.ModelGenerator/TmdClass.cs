@@ -5,6 +5,8 @@ public class TmdClass
 #nullable disable
     public string Name { get; set; }
 
+    public string SqlName { get; set; }
+
     public List<TmdProperty> Properties { get; set; } = new();
 
     public List<TmdClass> Dependencies => Properties.OfType<TmdAssociationProperty>().Select(p => p.ForeignClass!).ToList();
