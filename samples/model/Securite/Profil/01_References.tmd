@@ -1,53 +1,59 @@
 ---
-module: Securite
+module: Securite.Profil
 tags:
   - back
   - front
+
 ---
 class:
-  name: TypeProfil
-  comment: Type d'utilisateur
+  name: TypeDroit
+  trigram: TDR
   reference: true
-  trigram: TPR
+  comment: Type de droit
+
   properties:
     - name: Code
-      comment: Code du type d'utilisateur
-      label: Type Profil code
-      primaryKey: true
-      required: true
+      label: Type de droit
       domain: DO_CODE
+      primaryKey: true
+      comment: Code du type de droit
+
     - name: Libelle
-      comment: Libellé du type d'utilisateur
-      primaryKey: false
-      required: true
       domain: DO_LIBELLE
+      required: true
+      comment: Libellé du type de droit
+
   values:
-    ADM: { Code: ADM, Libelle: Administrateur }
-    GES: { Code: GES, Libelle: Gestionnaire }
+    Read: { Code: READ, Libelle: Lecture }
+    Write: { Code: WRITE, Libelle: Ecriture }
+    Admin: { Code: ADMIN, Libelle: Administration }
 ---
 class:
   name: Droit
-  comment: Droits de l'application
-  reference: true
   trigram: DRO
+  reference: true
+  orderProperty: Code
+  comment: Droits de l'application
+
   properties:
     - name: Code
       label: Droit
-      comment: Code du droit
-      primaryKey: true
-      required: true
       domain: DO_CODE
+      primaryKey: true
+      comment: Code du droit
+
     - name: Libelle
       label: Droit
-      comment: Libellé du droit
-      primaryKey: false
-      required: true
       domain: DO_LIBELLE
-    - association: TypeProfil
+      required: true
+      comment: Libellé du droit
+
+    - association: TypeDroit
+      required: true
       comment: Type de profil pouvant faire l'action
-      type: manyToOne
-  orderProperty: Code
+
   values:
-    CRE: { Code: CRE, Libelle: Créer, TypeProfilCode: ADM }
-    MOD: { Code: MOD, Libelle: Modifier }
-    SUP: { Code: SUP, Libelle: Supprimer }
+    Create: { Code: CREATE, Libelle: Création, TypeDroitCode: WRITE }
+    Read: { Code: READ, Libelle: Lecture, TypeDroitCode: READ }
+    Update: { Code: UPDATE, Libelle: Mise à jour, TypeDroitCode: WRITE }
+    Delete: { Code: DELETE, Libelle: Suppression, TypeDroitCode: ADMIN }

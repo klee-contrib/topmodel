@@ -6,22 +6,21 @@ version: 1.36.2
 generatedFiles:
   - ../generators/csharp/src/Clients/CSharp.Clients.Db/generated/CSharpDbContext.comments.cs
   - ../generators/csharp/src/Clients/CSharp.Clients.Db/generated/CSharpDbContext.cs
-  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Models/Securite/generated/Profil.cs
-  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Models/Securite/generated/Secteur.cs
-  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Models/Securite/generated/SecuriteMappers.cs
-  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Models/Utilisateur/generated/Utilisateur.cs
-  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Models/Utilisateur/generated/UtilisateurMappers.cs
-  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/ISecuriteReferenceAccessors.cs
-  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/IUtilisateurReferenceAccessors.cs
-  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/SecuriteReferenceAccessors.cs
-  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/UtilisateurReferenceAccessors.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Models/Securite/Profil/generated/Profil.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Models/Securite/Profil/generated/SecuriteProfilMappers.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Models/Securite/Utilisateur/generated/SecuriteUtilisateurMappers.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Models/Securite/Utilisateur/generated/Utilisateur.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/ISecuriteProfilReferenceAccessors.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/ISecuriteUtilisateurReferenceAccessors.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/SecuriteProfilReferenceAccessors.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/SecuriteUtilisateurReferenceAccessors.cs
   - ../generators/csharp/src/Clients/CSharp.Clients.External/Securite/Utilisateur/generated/UtilisateurApiClient.cs
   - ../generators/csharp/src/CSharp.Api/Controllers/Securite/Utilisateur/UtilisateurApiController.cs
-  - ../generators/csharp/src/Models/CSharp.Securite.Models/generated/Droit.cs
-  - ../generators/csharp/src/Models/CSharp.Securite.Models/generated/ProfilDto.cs
-  - ../generators/csharp/src/Models/CSharp.Securite.Models/generated/SecteurDto.cs
-  - ../generators/csharp/src/Models/CSharp.Securite.Models/generated/TypeProfil.cs
-  - ../generators/csharp/src/Models/CSharp.Utilisateur.Models/generated/IUtilisateurSearch.cs
-  - ../generators/csharp/src/Models/CSharp.Utilisateur.Models/generated/TypeUtilisateur.cs
-  - ../generators/csharp/src/Models/CSharp.Utilisateur.Models/generated/UtilisateurDto.cs
-  - ../generators/csharp/src/Models/CSharp.Utilisateur.Models/generated/UtilisateurDTOMappers.cs
+  - ../generators/csharp/src/Models/CSharp.Securite/Profil.Models/generated/Droit.cs
+  - ../generators/csharp/src/Models/CSharp.Securite/Profil.Models/generated/ProfilRead.cs
+  - ../generators/csharp/src/Models/CSharp.Securite/Profil.Models/generated/ProfilWrite.cs
+  - ../generators/csharp/src/Models/CSharp.Securite/Profil.Models/generated/TypeDroit.cs
+  - ../generators/csharp/src/Models/CSharp.Securite/Utilisateur.Models/generated/IUtilisateurItem.cs
+  - ../generators/csharp/src/Models/CSharp.Securite/Utilisateur.Models/generated/TypeUtilisateur.cs
+  - ../generators/csharp/src/Models/CSharp.Securite/Utilisateur.Models/generated/UtilisateurRead.cs
+  - ../generators/csharp/src/Models/CSharp.Securite/Utilisateur.Models/generated/UtilisateurWrite.cs

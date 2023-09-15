@@ -3,30 +3,40 @@
 ////
 
 export const securite = {
-    droit: {
-        code: "Droit",
-        libelle: "Droit",
-        typeProfilCode: "TypeProfilCode",
-        values: {
-            CRE: "Créer",
-            MOD: "Modifier",
-            SUP: "Supprimer"
+    "profil": {
+        droit: {
+            code: "Droit",
+            libelle: "Droit",
+            typeDroitCode: "TypeDroitCode"
+        },
+        profil: {
+            dateCreation: "Date de création",
+            dateModification: "Date de modification",
+            droits: "Droits",
+            id: "Id technique du profil",
+            libelle: "Libelle"
+        },
+        typeDroit: {
+            code: "Type de droit",
+            libelle: "Libelle"
         }
     },
-    profil: {
-        droits: "Droits",
-        id: "Id technique du profil",
-        typeProfilCode: "Profil"
-    },
-    secteur: {
-        id: "Id technique du secteur"
-    },
-    typeProfil: {
-        code: "Type Profil code",
-        libelle: "Libelle",
-        values: {
-            ADM: "Administrateur",
-            GES: "Gestionnaire"
+    "utilisateur": {
+        typeUtilisateur: {
+            code: "Type d'utilisateur",
+            libelle: "Libelle"
+        },
+        utilisateur: {
+            actif: "Actif",
+            dateCreation: "Date de création",
+            dateModification: "Date de modification",
+            dateNaissance: "Date de naissance",
+            email: "Adresse email",
+            id: "Id technique",
+            nom: "Nom",
+            prenom: "Prénom",
+            profilId: "ProfilId",
+            typeUtilisateurCode: "TypeUtilisateurCode"
         }
     }
 };

@@ -1,43 +1,62 @@
 ---
-module: Utilisateur
+module: Securite.Utilisateur
 uses:
   - Securite/Utilisateur/02_Entities
 tags:
   - front
   - back
+
 ---
 class:
-  name: UtilisateurDto
-  label: Utilisateur
-  comment: Objet non persisté de communication avec le serveur
+  name: UtilisateurItem
+  abstract: true
+  comment: Détail d'un utilisateur en liste.
+
+  properties:
+    - alias:
+        class: Utilisateur
+        include:
+          - Id
+          - Nom
+          - Prenom
+          - Email
+          - TypeUtilisateurCode
+---
+class:
+  name: UtilisateurRead
+  comment: Détail d'un utilisateur en lecture.
+
   properties:
     - alias:
         class: Utilisateur
         exclude:
-          - UtilisateurIdParent
-    - composition: UtilisateurDto
-      name: UtilisateurParent
-      comment: UtilisateurParent
+          - DateCreation
+          - DateModification
+
+    - alias:
+        class: Utilisateur
+        include:
+          - DateCreation
+          - DateModification
+      defaultValue: null
+      domain: DO_DATE_HEURE
+
   mappers:
     from:
       - params:
           - class: Utilisateur
-            mappings:
-              UtilisateurParent: UtilisateurIdParent
-    to:
-      - class: Utilisateur
-        mappings:
-          UtilisateurParent: UtilisateurIdParent
-      - class: UtilisateurDto
 ---
 class:
-  name: UtilisateurSearch
-  label: Utilisateur
-  comment: Classe abstraite servant à faire des projections spring
-  abstract: true
+  name: UtilisateurWrite
+  comment: Détail d'un utilisateur en écriture.
   properties:
     - alias:
         class: Utilisateur
         exclude:
-          - UtilisateurIdParent
-      readonly: true
+          - Id
+          - DateCreation
+          - DateModification
+
+  mappers:
+    to:
+      - class: Utilisateur

@@ -125,7 +125,8 @@ public class JpaConfig : GeneratorConfigBase
         nameof(EntitiesPath),
         nameof(DaosPath),
         nameof(DtosPath),
-        nameof(ApiPath)
+        nameof(ApiPath),
+        nameof(EnumsPath)
     };
 
     public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IFieldProperty? prop = null)

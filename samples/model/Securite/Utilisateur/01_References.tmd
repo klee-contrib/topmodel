@@ -1,26 +1,29 @@
 ---
-module: Utilisateur
+module: Securite.Utilisateur
 tags:
   - back
   - front
+
 ---
 class:
   name: TypeUtilisateur
-  comment: Type d'utilisateur
-  reference: true
   trigram: TUT
+  reference: true
+  comment: Type d'utilisateur
+
   properties:
     - name: Code
-      comment: Code du type d'utilisateur
-      primaryKey: true
-      required: true
+      label: Type d'utilisateur
       domain: DO_CODE
+      primaryKey: true
+      comment: Code du type d'utilisateur
+
     - name: Libelle
-      comment: Libellé du type d'utilisateur
-      primaryKey: false
-      required: true
       domain: DO_LIBELLE
+      required: true
+      comment: Libellé du type d'utilisateur
+
   values:
-    ADM: { Code: ADM, Libelle: Administrateur }
-    GES: { Code: GES, Libelle: Gestionnaire }
-    CLI: { Code: CLI, Libelle: Client }
+    Admin: { Code: ADMIN, Libelle: Administrateur }
+    Gestionnaire: { Code: GEST, Libelle: Gestionnaire }
+    Client: { Code: CLIENT, Libelle: Client }

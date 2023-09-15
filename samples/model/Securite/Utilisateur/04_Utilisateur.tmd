@@ -5,20 +5,50 @@ tags:
   - back
   - api-client
 uses:
+  - meta/decorators
   - Securite/Utilisateur/02_Entities
   - Securite/Utilisateur/03_Dtos
-  - meta/decorators
 options:
   endpoints:
     prefix: utilisateur
     fileName: UtilisateurApi
+
 ---
 endpoint:
-  name: find
+  name: AddUtilisateur
+  method: POST
+  route: /
+  description: Ajoute un utilisateur
+  decorators:
+    - Security: ["hasRole('CREATE')"]
+  params:
+    - composition: UtilisateurWrite
+      comment: Utilisateur à sauvegarder
+      name: utilisateur
+  returns:
+    composition: UtilisateurRead
+    name: utilisateurList # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
+    comment: Utilisateur sauvegardé
+---
+endpoint:
+  name: DeleteUtilisateur
+  method: DELETE
+  route: /{utiId}
+  description: Supprime un utilisateur
+  decorators:
+    - Security: ["hasRole('DELETE')"]
+  params:
+    - alias:
+        class: Utilisateur
+        property: Id
+---
+endpoint:
+  name: GetUtilisateur
   method: GET
   route: /{utiId}
   description: Charge le détail d'un utilisateur
-
+  decorators:
+    - Security: ["hasRole('READ')"]
   # Liste des paramètres du endpoint. Ce sont des propriétés de modèle comme pour les classes. Il peut ne pas y en avoir.
   params:
     - alias:
@@ -26,63 +56,46 @@ endpoint:
         property: Id
   # Type de retour du endpoint. La aussi, c'est une propriété du modèle et il peut ne pas y en avoir.
   returns:
-    composition: UtilisateurDto
+    composition: UtilisateurRead
     name: detail # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
     comment: Le détail de l'utilisateur
 ---
 endpoint:
-  name: findAllByType
+  name: SearchUtilisateur
   method: GET
-  route: /list
-  description: Charge une liste d'utilisateurs par leur type
-  params:
-    - alias:
-        property: TypeUtilisateurCode
-        class: Utilisateur
-  returns:
-    composition: UtilisateurSearch
-    name: utilisateurList # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
-    domain: DO_LIST
-    comment: Liste des utilisateurs
----
-endpoint:
-  name: save
-  method: POST
-  route: /save
-  description: Sauvegarde un utilisateur
-  decorators:
-    - Security: ["hasRole('ROLE_ADMIN')"]
-  params:
-    - composition: UtilisateurDto
-      comment: Utilisateur à sauvegarder
-      name: utilisateur
-  returns:
-    composition: UtilisateurDto
-    name: utilisateurList # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
-    comment: Utilisateur sauvegardé
----
-endpoint:
-  name: search
-  method: POST
-  route: /search
+  route: /
   description: Recherche des utilisateurs
+  decorators:
+    - Security: ["hasRole('READ')"]
   params:
     - alias:
-        class: UtilisateurDto
+        class: Utilisateur
+        exclude:
+          - Id
+          - DateCreation
+          - DateModification
       defaultValue: null
   returns:
-    composition: UtilisateurSearch
+    composition: UtilisateurItem
     name: utilisateurList
-    domain: DO_PAGE
+    domain: DO_LISTE
     comment: Utilisateurs matchant les critères
 ---
 endpoint:
-  name: deleteAll
-  method: DELETE
-  route: /deleteAll
-  description: Recherche des utilisateurs
+  name: UpdateUtilisateur
+  method: PUT
+  route: /{utiId}
+  description: Sauvegarde un utilisateur
+  decorators:
+    - Security: ["hasRole('UPDATE')"]
   params:
     - alias:
         class: Utilisateur
         property: Id
-      as: list
+    - composition: UtilisateurWrite
+      comment: Utilisateur à sauvegarder
+      name: utilisateur
+  returns:
+    composition: UtilisateurRead
+    name: utilisateurList # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
+    comment: Utilisateur sauvegardé

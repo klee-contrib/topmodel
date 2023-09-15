@@ -4,14 +4,11 @@
 
 package topmodel.jpa.sample.demo.api.client.securite.utilisateur;
 
-import java.math.BigDecimal;
 import java.net.URI;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,9 +18,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.annotation.Generated;
 
-import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurDto;
-import topmodel.jpa.sample.demo.dtos.utilisateur.UtilisateurSearch;
-import topmodel.jpa.sample.demo.enums.utilisateur.TypeUtilisateurCode;
+import topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurItem;
+import topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead;
+import topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurWrite;
+import topmodel.jpa.sample.demo.enums.securite.utilisateur.TypeUtilisateurCode;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public abstract class AbstractUtilisateurApiClient {
@@ -48,167 +46,128 @@ public abstract class AbstractUtilisateurApiClient {
 	protected abstract HttpHeaders getHeaders();
 
 	/**
-	 * UriComponentsBuilder pour la méthode deleteAll.
-	 * @param utiId Id technique
+	 * UriComponentsBuilder pour la méthode addUtilisateur.
+	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder deleteAllUriComponentsBuilder(List<Integer> utiId) {
-		String uri = host + "/utilisateur/deleteAll";
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
-		uriBuilder.queryParam("utiId", utiId);
-		return uriBuilder;
+	protected UriComponentsBuilder addUtilisateurUriComponentsBuilder() {
+		String uri = host + "/utilisateur";
+		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 
 	/**
-	 * Recherche des utilisateurs.
-	 * @param utiId Id technique
+	 * Ajoute un utilisateur.
+	 * @param utilisateur Utilisateur à sauvegarder
+	 * @return Utilisateur sauvegardé
 	 */
-	public ResponseEntity deleteAll(List<Integer> utiId){
+	public ResponseEntity<UtilisateurRead> addUtilisateur(UtilisateurWrite utilisateur){
 		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.deleteAllUriComponentsBuilder(utiId);
+		UriComponentsBuilder uri = this.addUtilisateurUriComponentsBuilder();
+		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(utilisateur, headers), UtilisateurRead.class);
+	}
+
+	/**
+	 * UriComponentsBuilder pour la méthode deleteUtilisateur.
+	 * @param utiId Id de l'utilisateur
+	 */
+	protected UriComponentsBuilder deleteUtilisateurUriComponentsBuilder(Integer utiId) {
+		String uri = host + "/utilisateur/%s".formatted(utiId);;
+		return UriComponentsBuilder.fromUri(URI.create(uri));
+	}
+
+	/**
+	 * Supprime un utilisateur.
+	 * @param utiId Id de l'utilisateur
+	 */
+	public ResponseEntity deleteUtilisateur(Integer utiId){
+		HttpHeaders headers = this.getHeaders();
+		UriComponentsBuilder uri = this.deleteUtilisateurUriComponentsBuilder(utiId);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.DELETE, new HttpEntity<>(headers), (Class<?>) null);
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode find.
-	 * @param utiId Id technique
+	 * UriComponentsBuilder pour la méthode getUtilisateur.
+	 * @param utiId Id de l'utilisateur
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder findUriComponentsBuilder(Integer utiId) {
+	protected UriComponentsBuilder getUtilisateurUriComponentsBuilder(Integer utiId) {
 		String uri = host + "/utilisateur/%s".formatted(utiId);;
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 
 	/**
 	 * Charge le détail d'un utilisateur.
-	 * @param utiId Id technique
+	 * @param utiId Id de l'utilisateur
 	 * @return Le détail de l'utilisateur
 	 */
-	public ResponseEntity<UtilisateurDto> find(Integer utiId){
+	public ResponseEntity<UtilisateurRead> getUtilisateur(Integer utiId){
 		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.findUriComponentsBuilder(utiId);
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), UtilisateurDto.class);
+		UriComponentsBuilder uri = this.getUtilisateurUriComponentsBuilder(utiId);
+		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), UtilisateurRead.class);
 	}
 
 	/**
-	 * UriComponentsBuilder pour la méthode findAllByType.
-	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
-	 * @return uriBuilder avec les query params remplis
-	 */
-	protected UriComponentsBuilder findAllByTypeUriComponentsBuilder(TypeUtilisateurCode typeUtilisateurCode) {
-		String uri = host + "/utilisateur/list";
-		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
-		if (typeUtilisateurCode != null) {
-			uriBuilder.queryParam("typeUtilisateurCode", typeUtilisateurCode);
-		}
-
-		return uriBuilder;
-	}
-
-	/**
-	 * Charge une liste d'utilisateurs par leur type.
-	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
-	 * @return Liste des utilisateurs
-	 */
-	public ResponseEntity<List<UtilisateurSearch>> findAllByType(TypeUtilisateurCode typeUtilisateurCode){
-		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.findAllByTypeUriComponentsBuilder(typeUtilisateurCode);
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<UtilisateurSearch>>() {});
-	}
-
-	/**
-	 * UriComponentsBuilder pour la méthode save.
-	 * @return uriBuilder avec les query params remplis
-	 */
-	protected UriComponentsBuilder saveUriComponentsBuilder() {
-		String uri = host + "/utilisateur/save";
-		return UriComponentsBuilder.fromUri(URI.create(uri));
-	}
-
-	/**
-	 * Sauvegarde un utilisateur.
-	 * @param utilisateur Utilisateur à sauvegarder
-	 * @return Utilisateur sauvegardé
-	 */
-	public ResponseEntity<UtilisateurDto> save(UtilisateurDto utilisateur){
-		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.saveUriComponentsBuilder();
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(utilisateur, headers), UtilisateurDto.class);
-	}
-
-	/**
-	 * UriComponentsBuilder pour la méthode search.
-	 * @param utiId Id technique
-	 * @param age Age en années de l'utilisateur
-	 * @param profilId Profil de l'utilisateur
-	 * @param email Email de l'utilisateur
+	 * UriComponentsBuilder pour la méthode searchUtilisateur.
 	 * @param nom Nom de l'utilisateur
+	 * @param prenom Nom de l'utilisateur
+	 * @param email Email de l'utilisateur
+	 * @param dateNaissance Age de l'utilisateur
 	 * @param actif Si l'utilisateur est actif
-	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
-	 * @param utilisateursEnfant Utilisateur enfants
-	 * @param dateCreation Date de création de l'utilisateur
-	 * @param dateModification Date de modification de l'utilisateur
+	 * @param profilId Profil de l'utilisateur
+	 * @param typeUtilisateurCode Type d'utilisateur
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder searchUriComponentsBuilder(Integer utiId, BigDecimal age, Integer profilId, String email, String nom, Boolean actif, TypeUtilisateurCode typeUtilisateurCode, List<Integer> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification) {
-		String uri = host + "/utilisateur/search";
+	protected UriComponentsBuilder searchUtilisateurUriComponentsBuilder(String nom, String prenom, String email, LocalDateTime dateNaissance, Boolean actif, Integer profilId, TypeUtilisateurCode typeUtilisateurCode) {
+		String uri = host + "/utilisateur";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
-		uriBuilder.queryParam("utiId", utiId);
-		if (age != null) {
-			uriBuilder.queryParam("age", age);
+		uriBuilder.queryParam("nom", nom);
+		uriBuilder.queryParam("prenom", prenom);
+		uriBuilder.queryParam("email", email);
+		if (dateNaissance != null) {
+			uriBuilder.queryParam("dateNaissance", dateNaissance);
 		}
 
-		if (profilId != null) {
-			uriBuilder.queryParam("profilId", profilId);
-		}
-
-		if (email != null) {
-			uriBuilder.queryParam("email", email);
-		}
-
-		if (nom != null) {
-			uriBuilder.queryParam("nom", nom);
-		}
-
-		if (actif != null) {
-			uriBuilder.queryParam("actif", actif);
-		}
-
-		if (typeUtilisateurCode != null) {
-			uriBuilder.queryParam("typeUtilisateurCode", typeUtilisateurCode);
-		}
-
-		if (utilisateursEnfant != null) {
-			uriBuilder.queryParam("utilisateursEnfant", utilisateursEnfant);
-		}
-
-		if (dateCreation != null) {
-			uriBuilder.queryParam("dateCreation", dateCreation);
-		}
-
-		if (dateModification != null) {
-			uriBuilder.queryParam("dateModification", dateModification);
-		}
-
+		uriBuilder.queryParam("actif", actif);
+		uriBuilder.queryParam("profilId", profilId);
+		uriBuilder.queryParam("typeUtilisateurCode", typeUtilisateurCode);
 		return uriBuilder;
 	}
 
 	/**
 	 * Recherche des utilisateurs.
-	 * @param utiId Id technique
-	 * @param age Age en années de l'utilisateur
-	 * @param profilId Profil de l'utilisateur
-	 * @param email Email de l'utilisateur
 	 * @param nom Nom de l'utilisateur
+	 * @param prenom Nom de l'utilisateur
+	 * @param email Email de l'utilisateur
+	 * @param dateNaissance Age de l'utilisateur
 	 * @param actif Si l'utilisateur est actif
-	 * @param typeUtilisateurCode Type d'utilisateur en Many to one
-	 * @param utilisateursEnfant Utilisateur enfants
-	 * @param dateCreation Date de création de l'utilisateur
-	 * @param dateModification Date de modification de l'utilisateur
+	 * @param profilId Profil de l'utilisateur
+	 * @param typeUtilisateurCode Type d'utilisateur
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<Page<UtilisateurSearch>> search(Integer utiId, BigDecimal age, Integer profilId, String email, String nom, Boolean actif, TypeUtilisateurCode typeUtilisateurCode, List<Integer> utilisateursEnfant, LocalDate dateCreation, LocalDateTime dateModification){
+	public ResponseEntity<List<UtilisateurItem>> searchUtilisateur(String nom, String prenom, String email, LocalDateTime dateNaissance, Boolean actif, Integer profilId, TypeUtilisateurCode typeUtilisateurCode){
 		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.searchUriComponentsBuilder(utiId, age, profilId, email, nom, actif, typeUtilisateurCode, utilisateursEnfant, dateCreation, dateModification);
-		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.POST, new HttpEntity<>(headers), new ParameterizedTypeReference<Page<UtilisateurSearch>>() {});
+		UriComponentsBuilder uri = this.searchUtilisateurUriComponentsBuilder(nom, prenom, email, dateNaissance, actif, profilId, typeUtilisateurCode);
+		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<UtilisateurItem>>() {});
+	}
+
+	/**
+	 * UriComponentsBuilder pour la méthode updateUtilisateur.
+	 * @param utiId Id de l'utilisateur
+	 * @return uriBuilder avec les query params remplis
+	 */
+	protected UriComponentsBuilder updateUtilisateurUriComponentsBuilder(Integer utiId) {
+		String uri = host + "/utilisateur/%s".formatted(utiId);;
+		return UriComponentsBuilder.fromUri(URI.create(uri));
+	}
+
+	/**
+	 * Sauvegarde un utilisateur.
+	 * @param utiId Id de l'utilisateur
+	 * @param utilisateur Utilisateur à sauvegarder
+	 * @return Utilisateur sauvegardé
+	 */
+	public ResponseEntity<UtilisateurRead> updateUtilisateur(Integer utiId, UtilisateurWrite utilisateur){
+		HttpHeaders headers = this.getHeaders();
+		UriComponentsBuilder uri = this.updateUtilisateurUriComponentsBuilder(utiId);
+		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.PUT, new HttpEntity<>(utilisateur, headers), UtilisateurRead.class);
 	}
 }

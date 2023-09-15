@@ -78,7 +78,11 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         var converter = Config.GetConverter((propertySource as IFieldProperty)?.Domain, (propertyTarget as IFieldProperty)?.Domain);
         if (converter != null)
         {
-            fw.AddImports(Config.GetImplementation(converter)!.Imports);
+            var impl = Config.GetImplementation(converter);
+            if (impl != null)
+            {
+                fw.AddImports(impl.Imports);
+            }
         }
 
         if (Config.UseJdbc)

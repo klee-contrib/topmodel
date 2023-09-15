@@ -8,32 +8,18 @@
 --   Description		:	Script de création des indexes et des clef étrangères. 
 -- =========================================================================================== 
 /**
-  * Création de l'index de clef étrangère pour DROIT.TPR_CODE
+  * Création de l'index de clef étrangère pour DROIT.TDR_CODE
  **/
-create index IDX_DRO_TPR_CODE_FK on DROIT (
-	TPR_CODE ASC
+create index IDX_DRO_TDR_CODE_FK on DROIT (
+	TDR_CODE ASC
 );
 
 /**
-  * Génération de la contrainte de clef étrangère pour DROIT.TPR_CODE
+  * Génération de la contrainte de clef étrangère pour DROIT.TDR_CODE
  **/
 alter table DROIT
-	add constraint FK_DROIT_TPR_CODE foreign key (TPR_CODE)
-		references TYPE_PROFIL (TPR_CODE);
-
-/**
-  * Création de l'index de clef étrangère pour PROFIL.TPR_CODE
- **/
-create index IDX_PROFIL_TPR_CODE_FK on PROFIL (
-	TPR_CODE ASC
-);
-
-/**
-  * Génération de la contrainte de clef étrangère pour PROFIL.TPR_CODE
- **/
-alter table PROFIL
-	add constraint FK_PROFIL_TPR_CODE foreign key (TPR_CODE)
-		references TYPE_PROFIL (TPR_CODE);
+	add constraint FK_DROIT_TDR_CODE foreign key (TDR_CODE)
+		references TYPE_DROIT (TDR_CODE);
 
 /**
   * Création de l'index de clef étrangère pour PROFIL_DROIT.PRO_ID
@@ -64,20 +50,6 @@ alter table PROFIL_DROIT
 		references DROIT (DRO_CODE);
 
 /**
-  * Création de l'index de clef étrangère pour SECTEUR.PRO_ID
- **/
-create index IDX_SEC_PRO_ID_FK on SECTEUR (
-	PRO_ID ASC
-);
-
-/**
-  * Génération de la contrainte de clef étrangère pour SECTEUR.PRO_ID
- **/
-alter table SECTEUR
-	add constraint FK_SECTEUR_PRO_ID foreign key (PRO_ID)
-		references PROFIL (PRO_ID);
-
-/**
   * Création de l'index de clef étrangère pour UTILISATEUR.PRO_ID
  **/
 create index IDX_UTI_PRO_ID_FK on UTILISATEUR (
@@ -104,32 +76,4 @@ create index IDX_UTI_TUT_CODE_FK on UTILISATEUR (
 alter table UTILISATEUR
 	add constraint FK_UTILISATEUR_TUT_CODE foreign key (TUT_CODE)
 		references TYPE_UTILISATEUR (TUT_CODE);
-
-/**
-  * Création de l'index de clef étrangère pour UTILISATEUR.UTI_ID_PARENT
- **/
-create index IDX_UTI_UTI_ID_PARENT_FK on UTILISATEUR (
-	UTI_ID_PARENT ASC
-);
-
-/**
-  * Génération de la contrainte de clef étrangère pour UTILISATEUR.UTI_ID_PARENT
- **/
-alter table UTILISATEUR
-	add constraint FK_UTILISATEUR_UTI_ID_PARENT foreign key (UTI_ID_PARENT)
-		references UTILISATEUR (UTI_ID);
-
-/**
-  * Création de l'index de clef étrangère pour UTILISATEUR.UTI_ID_ENFANT
- **/
-create index IDX_UTI_UTI_ID_ENFANT_FK on UTILISATEUR (
-	UTI_ID_ENFANT ASC
-);
-
-/**
-  * Génération de la contrainte de clef étrangère pour UTILISATEUR.UTI_ID_ENFANT
- **/
-alter table UTILISATEUR
-	add constraint FK_UTILISATEUR_UTI_ID_ENFANT foreign key (UTI_ID_ENFANT)
-		references UTILISATEUR (UTI_ID);
 

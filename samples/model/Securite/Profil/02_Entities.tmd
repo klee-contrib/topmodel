@@ -1,46 +1,41 @@
 ---
-module: Securite
+module: Securite.Profil
 tags:
   - back
 uses:
   - Securite/Profil/01_References
+  - meta/decorators
+
 ---
 class:
   name: Profil
+  trigram: PRO
   label: Profil
   comment: Profil des utilisateurs
+  decorators:
+    - EntityListeners
+
   properties:
     - name: Id
       label: Id technique du profil
-      required: true
       primaryKey: true
       domain: DO_ID
       comment: Id technique
-      trigram: PRO
-    - association: TypeProfil
-      label: Profil
-      comment: Type de profil
-      type: manyToOne
+
+    - name: Libelle
+      domain: DO_LIBELLE
+      required: true
+      comment: Libellé du profil.
+
     - association: Droit
       label: Droits
-      comment: Liste des droits de l'utilisateur
+      comment: Liste des droits du profil
       type: manyToMany
-    - association: Secteur
-      comment: Liste des secteurs de l'utilisateur
-      type: oneToMany
+
   mappers:
     to:
       - class: Profil
----
-class:
-  name: Secteur
-  label: Secteur
-  comment: Secteur d'application du profil
-  trigram: SEC
-  properties:
-    - name: Id
-      label: Id technique du secteur
-      required: true
-      primaryKey: true
-      domain: DO_ID
-      comment: Id technique
+        mappings:
+          Id: false
+          DateCreation: false
+          DateModification: false

@@ -1,56 +1,63 @@
 ---
-module: Utilisateur
-uses:
-  - Securite/Profil/02_Entities
-  - Securite/Utilisateur/01_References
-  - meta/decorators
+module: Securite.Utilisateur
 tags:
   - back
+uses:
+  - meta/decorators
+  - Securite/Profil/02_Entities
+  - Securite/Utilisateur/01_References
+
 ---
 class:
   name: Utilisateur
-  label: Utilisateur
-  comment: Utilisateur de l'application
   trigram: UTI
+  comment: Utilisateur de l'application
   decorators:
     - EntityListeners
+
   properties:
     - name: Id
       label: Id technique
-      required: true
       primaryKey: true
       domain: DO_ID
-      comment: Id technique
-    - name: Age
-      label: Age
-      required: false
-      domain: DO_NUMBER
-      comment: Age en années de l'utilisateur
-      defaultValue: 6
-    - association: Profil
-      comment: Profil de l'utilisateur
-      type: manyToOne
-    - name: email
-      comment: Email de l'utilisateur
-      domain: DO_EMAIL
+      comment: Id de l'utilisateur
+
     - name: Nom
-      comment: Nom de l'utilisateur
       domain: DO_LIBELLE
-      defaultValue: Jabx
+      required: true
+      comment: Nom de l'utilisateur
+
+    - name: Prenom
+      label: Prénom
+      domain: DO_LIBELLE
+      required: true
+      comment: Nom de l'utilisateur
+
+    - name: Email
+      label: Adresse email
+      domain: DO_EMAIL
+      required: true
+      comment: Email de l'utilisateur
+
+    - name: DateNaissance
+      label: Date de naissance
+      domain: DO_DATE_HEURE
+      comment: Age de l'utilisateur
+
     - name: Actif
+      domain: DO_BOOLEEN
+      required: true
+      defaultValue: true
       comment: Si l'utilisateur est actif
-      domain: DO_BOOLEAN
+
+    - association: Profil
+      required: true
+      comment: Profil de l'utilisateur
+
     - association: TypeUtilisateur
-      comment: Type d'utilisateur en Many to one
-      type: manyToOne
-      defaultValue: ADM
-    - association: Utilisateur
-      comment: Utilisateur parent
-      role: Parent
-      type: oneToOne
-    - association: Utilisateur
-      comment: Utilisateur enfants
-      role: Enfant
-      type: oneToMany
+      required: true
+      defaultValue: GEST
+      comment: Type d'utilisateur
+
   unique:
-    - [email, UtilisateurIdParent]
+    - [Email]

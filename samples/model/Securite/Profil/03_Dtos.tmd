@@ -1,46 +1,53 @@
 ---
-module: Securite
+module: Securite.Profil
 tags:
   - front
   - back
 uses:
   - Securite/Profil/02_Entities
   - Securite/Utilisateur/03_Dtos
+
 ---
 class:
-  name: ProfilDto
-  label: ProfilDto
-  comment: Objet métier non persisté représentant Profil
+  name: ProfilRead
+  comment: Détail d'un profil en lecture.
+
   properties:
     - alias:
         class: Profil
         exclude:
-          - Secteurs
-    - composition: UtilisateurDto
-      name: utilisateurs # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
-      domain: DO_LIST
-      comment: Liste paginée des utilisateurs de ce profil
-    - composition: SecteurDto
-      name: secteurs # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
-      domain: DO_LIST
-      comment: Liste des secteurs du profil
+          - DateCreation
+          - DateModification
+
+    - alias:
+        class: Profil
+        include:
+          - DateCreation
+          - DateModification
+      defaultValue: null
+      domain: DO_DATE_HEURE
+
+    - composition: UtilisateurItem
+      name: Utilisateurs
+      domain: DO_LISTE
+      comment: Utilisateurs ayant ce profil.
+
   mappers:
     from:
       - params:
           - class: Profil
-    to:
-      - class: Profil
 ---
 class:
-  name: SecteurDto
-  label: SecteurDto
-  comment: Objet métier non persisté représentant Profil
+  name: ProfilWrite
+  comment: Détail d'un profil en écriture.
   properties:
     - alias:
-        class: Secteur
+        class: Profil
+        exclude:
+          - Id
+          - DateCreation
+          - DateModification
+
   mappers:
     to:
-      - class: Secteur
-    from:
-      - params:
-          - class: Secteur
+      - class: Profil

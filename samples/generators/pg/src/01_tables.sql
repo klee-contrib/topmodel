@@ -13,7 +13,7 @@
 create table DROIT (
 	DRO_CODE varchar(3) not null,
 	DRO_LIBELLE varchar(3) not null,
-	TPR_CODE varchar(3),
+	TDR_CODE varchar(3) not null,
 	constraint PK_DROIT primary key (DRO_CODE)
 );
 
@@ -26,7 +26,9 @@ create sequence SEQ_PROFIL start 1000 increment 50;
  **/
 create table PROFIL (
 	PRO_ID int not null,
-	TPR_CODE varchar(3),
+	PRO_LIBELLE varchar(3) not null,
+	PRO_DATE_CREATION date not null,
+	PRO_DATE_MODIFICATION date,
 	constraint PK_PROFIL primary key (PRO_ID)
 );
 
@@ -40,25 +42,12 @@ create table PROFIL_DROIT (
 );
 
 /**
-  * Création de la séquence pour la clé primaire de la table SECTEUR
+  * Création de la table TYPE_DROIT
  **/
-create sequence SEQ_SECTEUR start 1000 increment 50;
-/**
-  * Création de la table SECTEUR
- **/
-create table SECTEUR (
-	SEC_ID int not null,
-	PRO_ID int,
-	constraint PK_SECTEUR primary key (SEC_ID)
-);
-
-/**
-  * Création de la table TYPE_PROFIL
- **/
-create table TYPE_PROFIL (
-	TPR_CODE varchar(3) not null,
-	TPR_LIBELLE varchar(3) not null,
-	constraint PK_TYPE_PROFIL primary key (TPR_CODE)
+create table TYPE_DROIT (
+	TDR_CODE varchar(3) not null,
+	TDR_LIBELLE varchar(3) not null,
+	constraint PK_TYPE_DROIT primary key (TDR_CODE)
 );
 
 /**
@@ -79,16 +68,15 @@ create sequence SEQ_UTILISATEUR start 1000 increment 50;
  **/
 create table UTILISATEUR (
 	UTI_ID int not null,
-	UTI_AGE numeric(20, 9),
-	PRO_ID int,
-	UTI_EMAIL varchar(50),
-	UTI_NOM varchar(3),
-	UTI_ACTIF boolean,
-	TUT_CODE varchar(3),
-	UTI_ID_PARENT int,
-	UTI_DATE_CREATION date,
+	UTI_NOM varchar(3) not null,
+	UTI_PRENOM varchar(3) not null,
+	UTI_EMAIL varchar(50) not null,
+	UTI_DATE_NAISSANCE date,
+	UTI_ACTIF boolean not null,
+	PRO_ID int not null,
+	TUT_CODE varchar(3) not null,
+	UTI_DATE_CREATION date not null,
 	UTI_DATE_MODIFICATION date,
-	UTI_ID_ENFANT int,
 	constraint PK_UTILISATEUR primary key (UTI_ID)
 );
 

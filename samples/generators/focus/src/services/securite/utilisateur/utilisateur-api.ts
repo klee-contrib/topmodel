@@ -4,65 +4,63 @@
 
 import {coreFetch} from "@focus4/core";
 
-import {Page} from "@/types";
-import {TypeUtilisateurCode} from "../../../model/utilisateur/references";
-import {UtilisateurDto} from "../../../model/utilisateur/utilisateur-dto";
-import {UtilisateurSearch} from "../../../model/utilisateur/utilisateur-search";
+import {TypeUtilisateurCode} from "../../../model/securite/utilisateur/references";
+import {UtilisateurItem} from "../../../model/securite/utilisateur/utilisateur-item";
+import {UtilisateurRead} from "../../../model/securite/utilisateur/utilisateur-read";
+import {UtilisateurWrite} from "../../../model/securite/utilisateur/utilisateur-write";
 
 /**
- * Recherche des utilisateurs
- * @param utiId Id technique
- * @param options Options pour 'fetch'.
- */
-export function deleteAll(utiId?: number[], options: RequestInit = {}): Promise<void> {
-    return coreFetch("DELETE", `./utilisateur/deleteAll`, {query: {utiId}}, options);
-}
-
-/**
- * Charge le détail d'un utilisateur
- * @param utiId Id technique
- * @param options Options pour 'fetch'.
- * @returns Le détail de l'utilisateur
- */
-export function find(utiId: number, options: RequestInit = {}): Promise<UtilisateurDto> {
-    return coreFetch("GET", `./utilisateur/${utiId}`, {}, options);
-}
-
-/**
- * Charge une liste d'utilisateurs par leur type
- * @param typeUtilisateurCode Type d'utilisateur en Many to one
- * @param options Options pour 'fetch'.
- * @returns Liste des utilisateurs
- */
-export function findAllByType(typeUtilisateurCode: TypeUtilisateurCode = "ADM", options: RequestInit = {}): Promise<UtilisateurSearch[]> {
-    return coreFetch("GET", `./utilisateur/list`, {query: {typeUtilisateurCode}}, options);
-}
-
-/**
- * Sauvegarde un utilisateur
+ * Ajoute un utilisateur
  * @param utilisateur Utilisateur à sauvegarder
  * @param options Options pour 'fetch'.
  * @returns Utilisateur sauvegardé
  */
-export function save(utilisateur: UtilisateurDto, options: RequestInit = {}): Promise<UtilisateurDto> {
-    return coreFetch("POST", `./utilisateur/save`, {body: utilisateur}, options);
+export function addUtilisateur(utilisateur: UtilisateurWrite, options: RequestInit = {}): Promise<UtilisateurRead> {
+    return coreFetch("POST", `./utilisateur`, {body: utilisateur}, options);
+}
+
+/**
+ * Supprime un utilisateur
+ * @param utiId Id de l'utilisateur
+ * @param options Options pour 'fetch'.
+ */
+export function deleteUtilisateur(utiId: number, options: RequestInit = {}): Promise<void> {
+    return coreFetch("DELETE", `./utilisateur/${utiId}`, {}, options);
+}
+
+/**
+ * Charge le détail d'un utilisateur
+ * @param utiId Id de l'utilisateur
+ * @param options Options pour 'fetch'.
+ * @returns Le détail de l'utilisateur
+ */
+export function getUtilisateur(utiId: number, options: RequestInit = {}): Promise<UtilisateurRead> {
+    return coreFetch("GET", `./utilisateur/${utiId}`, {}, options);
 }
 
 /**
  * Recherche des utilisateurs
- * @param utiId Id technique
- * @param age Age en années de l'utilisateur
- * @param profilId Profil de l'utilisateur
- * @param email Email de l'utilisateur
  * @param nom Nom de l'utilisateur
+ * @param prenom Nom de l'utilisateur
+ * @param email Email de l'utilisateur
+ * @param dateNaissance Age de l'utilisateur
  * @param actif Si l'utilisateur est actif
- * @param typeUtilisateurCode Type d'utilisateur en Many to one
- * @param utilisateursEnfant Utilisateur enfants
- * @param dateCreation Date de création de l'utilisateur
- * @param dateModification Date de modification de l'utilisateur
+ * @param profilId Profil de l'utilisateur
+ * @param typeUtilisateurCode Type d'utilisateur
  * @param options Options pour 'fetch'.
  * @returns Utilisateurs matchant les critères
  */
-export function search(utiId?: number, age?: number, profilId?: number, email?: string, nom?: string, actif?: boolean, typeUtilisateurCode?: TypeUtilisateurCode, utilisateursEnfant?: number[], dateCreation?: string, dateModification?: string, options: RequestInit = {}): Promise<Page<UtilisateurSearch>> {
-    return coreFetch("POST", `./utilisateur/search`, {query: {utiId, age, profilId, email, nom, actif, typeUtilisateurCode, utilisateursEnfant, dateCreation, dateModification}}, options);
+export function searchUtilisateur(nom?: string, prenom?: string, email?: string, dateNaissance?: string, actif?: boolean, profilId?: number, typeUtilisateurCode?: TypeUtilisateurCode, options: RequestInit = {}): Promise<UtilisateurItem[]> {
+    return coreFetch("GET", `./utilisateur`, {query: {nom, prenom, email, dateNaissance, actif, profilId, typeUtilisateurCode}}, options);
+}
+
+/**
+ * Sauvegarde un utilisateur
+ * @param utiId Id de l'utilisateur
+ * @param utilisateur Utilisateur à sauvegarder
+ * @param options Options pour 'fetch'.
+ * @returns Utilisateur sauvegardé
+ */
+export function updateUtilisateur(utiId: number, utilisateur: UtilisateurWrite, options: RequestInit = {}): Promise<UtilisateurRead> {
+    return coreFetch("PUT", `./utilisateur/${utiId}`, {body: utilisateur}, options);
 }

@@ -8,3 +8,13 @@ converter:
     - DO_EMAIL
   to:
     - DO_LIBELLE
+---
+converter:
+  from:
+    - DO_DATE_HEURE
+    - DO_DATE_CREATION
+    - DO_DATE_MODIFICATION
+  to:
+    - DO_DATE_HEURE
+    - DO_DATE_CREATION
+    - DO_DATE_MODIFICATION

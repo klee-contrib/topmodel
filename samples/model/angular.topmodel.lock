@@ -5,11 +5,12 @@
 version: 1.36.2
 generatedFiles:
   - ../generators/angular/src/appgenerated/api/securite/utilisateur/utilisateur-api.ts
-  - ../generators/angular/src/appgenerated/model/securite/profil-dto.ts
-  - ../generators/angular/src/appgenerated/model/securite/references.ts
-  - ../generators/angular/src/appgenerated/model/securite/secteur-dto.ts
-  - ../generators/angular/src/appgenerated/model/utilisateur/references.ts
-  - ../generators/angular/src/appgenerated/model/utilisateur/utilisateur-dto.ts
-  - ../generators/angular/src/appgenerated/model/utilisateur/utilisateur-search.ts
+  - ../generators/angular/src/appgenerated/model/securite/profil/profil-read.ts
+  - ../generators/angular/src/appgenerated/model/securite/profil/profil-write.ts
+  - ../generators/angular/src/appgenerated/model/securite/profil/references.ts
+  - ../generators/angular/src/appgenerated/model/securite/utilisateur/references.ts
+  - ../generators/angular/src/appgenerated/model/securite/utilisateur/utilisateur-item.ts
+  - ../generators/angular/src/appgenerated/model/securite/utilisateur/utilisateur-read.ts
+  - ../generators/angular/src/appgenerated/model/securite/utilisateur/utilisateur-write.ts
+  - ../generators/angular/src/appgenerated/resources/common.json
   - ../generators/angular/src/appgenerated/resources/securite.json
-  - ../generators/angular/src/appgenerated/resources/utilisateur.json

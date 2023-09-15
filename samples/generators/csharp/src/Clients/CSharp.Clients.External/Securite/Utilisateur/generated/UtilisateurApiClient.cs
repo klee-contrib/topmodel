@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Models.CSharp.Utilisateur.Models;
+using Models.CSharp.Securite.Utilisateur.Models;
 
 namespace CSharp.Clients.External.Securite.Utilisateur;
 
@@ -29,97 +29,84 @@ public partial class UtilisateurApiClient
     }
 
     /// <summary>
-    /// Recherche des utilisateurs.
+    /// Ajoute un utilisateur.
     /// </summary>
-    /// <param name="utiId">Id technique.</param>
-    /// <returns>Task.</returns>
-    public async Task DeleteAll(int[] utiId = null)
+    /// <param name="utilisateur">Utilisateur à sauvegarder.</param>
+    /// <returns>Utilisateur sauvegardé.</returns>
+    public async Task<UtilisateurRead> AddUtilisateur(UtilisateurWrite utilisateur)
     {
         await EnsureAuthentication();
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
-        {
-        }.Concat(utiId?.Select(i => new KeyValuePair<string, string>("utiId", i.ToString(CultureInfo.InvariantCulture))) ?? new Dictionary<string, string>())
-         .Where(kv => kv.Value != null)).ReadAsStringAsync();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, $"utilisateur/deleteAll?{query}"));
+        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"utilisateur") { Content = GetBody(utilisateur) }, HttpCompletionOption.ResponseHeadersRead);
+        await EnsureSuccess(res);
+        return await Deserialize<UtilisateurRead>(res);
+    }
+
+    /// <summary>
+    /// Supprime un utilisateur.
+    /// </summary>
+    /// <param name="utiId">Id de l'utilisateur.</param>
+    /// <returns>Task.</returns>
+    public async Task DeleteUtilisateur(int utiId)
+    {
+        await EnsureAuthentication();
+        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, $"utilisateur/{utiId}"));
         await EnsureSuccess(res);
     }
 
     /// <summary>
     /// Charge le détail d'un utilisateur.
     /// </summary>
-    /// <param name="utiId">Id technique.</param>
+    /// <param name="utiId">Id de l'utilisateur.</param>
     /// <returns>Le détail de l'utilisateur.</returns>
-    public async Task<UtilisateurDto> Find(int utiId)
+    public async Task<UtilisateurRead> GetUtilisateur(int utiId)
     {
         await EnsureAuthentication();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"utilisateur/{utiId}"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
-        return await Deserialize<UtilisateurDto>(res);
-    }
-
-    /// <summary>
-    /// Charge une liste d'utilisateurs par leur type.
-    /// </summary>
-    /// <param name="typeUtilisateurCode">Type d'utilisateur en Many to one.</param>
-    /// <returns>Liste des utilisateurs.</returns>
-    public async Task<ICollection<UtilisateurSearch>> FindAllByType(TypeUtilisateur.Codes typeUtilisateurCode = TypeUtilisateur.Codes.ADM)
-    {
-        await EnsureAuthentication();
-        var query = await new FormUrlEncodedContent(new Dictionary<string, string>
-        {
-            ["typeUtilisateurCode"] = typeUtilisateurCode?.ToString(CultureInfo.InvariantCulture),
-        }.Where(kv => kv.Value != null)).ReadAsStringAsync();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"utilisateur/list?{query}"), HttpCompletionOption.ResponseHeadersRead);
-        await EnsureSuccess(res);
-        return await Deserialize<ICollection<UtilisateurSearch>>(res);
-    }
-
-    /// <summary>
-    /// Sauvegarde un utilisateur.
-    /// </summary>
-    /// <param name="utilisateur">Utilisateur à sauvegarder.</param>
-    /// <returns>Utilisateur sauvegardé.</returns>
-    public async Task<UtilisateurDto> Save(UtilisateurDto utilisateur)
-    {
-        await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"utilisateur/save") { Content = GetBody(utilisateur) }, HttpCompletionOption.ResponseHeadersRead);
-        await EnsureSuccess(res);
-        return await Deserialize<UtilisateurDto>(res);
+        return await Deserialize<UtilisateurRead>(res);
     }
 
     /// <summary>
     /// Recherche des utilisateurs.
     /// </summary>
-    /// <param name="utiId">Id technique.</param>
-    /// <param name="age">Age en années de l'utilisateur.</param>
-    /// <param name="profilId">Profil de l'utilisateur.</param>
-    /// <param name="email">Email de l'utilisateur.</param>
     /// <param name="nom">Nom de l'utilisateur.</param>
+    /// <param name="prenom">Nom de l'utilisateur.</param>
+    /// <param name="email">Email de l'utilisateur.</param>
+    /// <param name="dateNaissance">Age de l'utilisateur.</param>
     /// <param name="actif">Si l'utilisateur est actif.</param>
-    /// <param name="typeUtilisateurCode">Type d'utilisateur en Many to one.</param>
-    /// <param name="utilisateursEnfant">Utilisateur enfants.</param>
-    /// <param name="dateCreation">Date de création de l'utilisateur.</param>
-    /// <param name="dateModification">Date de modification de l'utilisateur.</param>
+    /// <param name="profilId">Profil de l'utilisateur.</param>
+    /// <param name="typeUtilisateurCode">Type d'utilisateur.</param>
     /// <returns>Utilisateurs matchant les critères.</returns>
-    public async Task<ICollection<UtilisateurSearch>> Search(int? utiId = null, decimal? age = null, int? profilId = null, string email = null, string nom = null, bool? actif = null, TypeUtilisateur.Codes? typeUtilisateurCode = null, int[] utilisateursEnfant = null, DateOnly? dateCreation = null, DateOnly? dateModification = null)
+    public async Task<ICollection<UtilisateurItem>> SearchUtilisateur(string nom = null, string prenom = null, string email = null, DateTime? dateNaissance = null, bool? actif = null, int? profilId = null, TypeUtilisateur.Codes? typeUtilisateurCode = null)
     {
         await EnsureAuthentication();
         var query = await new FormUrlEncodedContent(new Dictionary<string, string>
         {
-            ["utiId"] = utiId?.ToString(CultureInfo.InvariantCulture),
-            ["age"] = age?.ToString(CultureInfo.InvariantCulture),
-            ["profilId"] = profilId?.ToString(CultureInfo.InvariantCulture),
-            ["email"] = email,
             ["nom"] = nom,
+            ["prenom"] = prenom,
+            ["email"] = email,
+            ["dateNaissance"] = dateNaissance?.ToString(CultureInfo.InvariantCulture),
             ["actif"] = actif?.ToString(CultureInfo.InvariantCulture),
+            ["profilId"] = profilId?.ToString(CultureInfo.InvariantCulture),
             ["typeUtilisateurCode"] = typeUtilisateurCode?.ToString(CultureInfo.InvariantCulture),
-            ["dateCreation"] = dateCreation?.ToString(CultureInfo.InvariantCulture),
-            ["dateModification"] = dateModification?.ToString(CultureInfo.InvariantCulture),
-        }.Concat(utilisateursEnfant?.Select(i => new KeyValuePair<string, string>("utilisateursEnfant", i.ToString(CultureInfo.InvariantCulture))) ?? new Dictionary<string, string>())
-         .Where(kv => kv.Value != null)).ReadAsStringAsync();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"utilisateur/search?{query}"), HttpCompletionOption.ResponseHeadersRead);
+        }.Where(kv => kv.Value != null)).ReadAsStringAsync();
+        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"utilisateur?{query}"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
-        return await Deserialize<ICollection<UtilisateurSearch>>(res);
+        return await Deserialize<ICollection<UtilisateurItem>>(res);
+    }
+
+    /// <summary>
+    /// Sauvegarde un utilisateur.
+    /// </summary>
+    /// <param name="utiId">Id de l'utilisateur.</param>
+    /// <param name="utilisateur">Utilisateur à sauvegarder.</param>
+    /// <returns>Utilisateur sauvegardé.</returns>
+    public async Task<UtilisateurRead> UpdateUtilisateur(int utiId, UtilisateurWrite utilisateur)
+    {
+        await EnsureAuthentication();
+        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Put, $"utilisateur/{utiId}") { Content = GetBody(utilisateur) }, HttpCompletionOption.ResponseHeadersRead);
+        await EnsureSuccess(res);
+        return await Deserialize<UtilisateurRead>(res);
     }
 
     /// <summary>

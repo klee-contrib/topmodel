@@ -6,8 +6,8 @@
 --   Description		:	Insertion des valeurs de listes statiques.
 -- ===========================================================================================
 
-/* Insertion dans la table TYPE_PROFIL. */
-:r .\TYPE_PROFIL.insert.sql
+/* Insertion dans la table TYPE_DROIT. */
+:r .\TYPE_DROIT.insert.sql
 
 /* Insertion dans la table DROIT. */
 :r .\DROIT.insert.sql

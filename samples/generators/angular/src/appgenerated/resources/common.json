@@ -1,0 +1,6 @@
+{
+    "entityListeners": {
+        "dateCreation": "Date de création",
+        "dateModification": "Date de modification"
+    }
+}

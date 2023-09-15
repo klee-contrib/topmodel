@@ -6,27 +6,25 @@ version: 1.36.2
 generatedFiles:
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/utilisateur/AbstractUtilisateurApiClient.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/utilisateur/UtilisateurApiController.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/DroitDAO.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/ProfilDAO.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/SecteurDAO.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/TypeProfilDAO.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/TypeUtilisateurDAO.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/utilisateur/UtilisateurDAO.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/ProfilDto.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/SecteurDto.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/UtilisateurDto.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/UtilisateurDTOMappers.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/utilisateur/UtilisateurSearch.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/Droit.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/Profil.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/Secteur.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/SecuriteMappers.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/TypeProfil.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/utilisateur/TypeUtilisateur.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/utilisateur/Utilisateur.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/utilisateur/UtilisateurMappers.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/enums/securite/DroitCode.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/enums/securite/TypeProfilCode.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/enums/utilisateur/TypeUtilisateurCode.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/profil/DroitDAO.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/profil/ProfilDAO.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/profil/TypeDroitDAO.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/utilisateur/TypeUtilisateurDAO.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/utilisateur/UtilisateurDAO.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/profil/ProfilRead.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/profil/ProfilWrite.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/utilisateur/UtilisateurItem.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/utilisateur/UtilisateurRead.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/utilisateur/UtilisateurWrite.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/Droit.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/Profil.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/SecuriteProfilMappers.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/profil/TypeDroit.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/utilisateur/SecuriteUtilisateurMappers.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/utilisateur/TypeUtilisateur.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/entities/securite/utilisateur/Utilisateur.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/enums/securite/profil/DroitCode.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/enums/securite/profil/TypeDroitCode.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/enums/securite/utilisateur/TypeUtilisateurCode.java
+  - ../generators/jpa/src/main/resources/i18n/model/common.properties
   - ../generators/jpa/src/main/resources/i18n/model/securite.properties
-  - ../generators/jpa/src/main/resources/i18n/model/utilisateur.properties

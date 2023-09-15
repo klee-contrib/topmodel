@@ -2,11 +2,11 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-using CSharp.Clients.Db.Models.Securite;
-using CSharp.Clients.Db.Models.Utilisateur;
+using CSharp.Clients.Db.Models.Securite.Profil;
+using CSharp.Clients.Db.Models.Securite.Utilisateur;
 using Microsoft.EntityFrameworkCore;
-using Models.CSharp.Securite.Models;
-using Models.CSharp.Utilisateur.Models;
+using Models.CSharp.Securite.Profil.Models;
+using Models.CSharp.Securite.Utilisateur.Models;
 
 namespace CSharp.Clients.Db;
 
@@ -35,14 +35,9 @@ public partial class CSharpDbContext : DbContext
     public DbSet<Profil> Profils { get; set; }
 
     /// <summary>
-    /// Accès à l'entité Secteur.
+    /// Accès à l'entité TypeDroit.
     /// </summary>
-    public DbSet<Secteur> Secteurs { get; set; }
-
-    /// <summary>
-    /// Accès à l'entité TypeProfil.
-    /// </summary>
-    public DbSet<TypeProfil> TypeProfils { get; set; }
+    public DbSet<TypeDroit> TypeDroits { get; set; }
 
     /// <summary>
     /// Accès à l'entité TypeUtilisateur.
@@ -61,33 +56,31 @@ public partial class CSharpDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Droit>().Property(p => p.Code).HasConversion<string>().HasMaxLength(3);
-        modelBuilder.Entity<Droit>().Property(p => p.TypeProfilCode).HasConversion<string>().HasMaxLength(3);
-        modelBuilder.Entity<Profil>().Property(p => p.TypeProfilCode).HasConversion<string>().HasMaxLength(3);
+        modelBuilder.Entity<Droit>().Property(p => p.TypeDroitCode).HasConversion<string>().HasMaxLength(3);
         modelBuilder.Entity<Profil>().Property(p => p.Droits).HasConversion<string[]>().HasMaxLength(3);
-        modelBuilder.Entity<TypeProfil>().Property(p => p.Code).HasConversion<string>().HasMaxLength(3);
+        modelBuilder.Entity<TypeDroit>().Property(p => p.Code).HasConversion<string>().HasMaxLength(3);
         modelBuilder.Entity<TypeUtilisateur>().Property(p => p.Code).HasConversion<string>().HasMaxLength(3);
-        modelBuilder.Entity<Utilisateur>().Property(x => x.Age).HasPrecision(20, 9);
         modelBuilder.Entity<Utilisateur>().Property(p => p.TypeUtilisateurCode).HasConversion<string>().HasMaxLength(3);
 
-        modelBuilder.Entity<Droit>().HasOne<TypeProfil>().WithMany().HasForeignKey(p => p.TypeProfilCode).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<Profil>().HasOne<TypeProfil>().WithMany().HasForeignKey(p => p.TypeProfilCode).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Droit>().HasOne<TypeDroit>().WithMany().HasForeignKey(p => p.TypeDroitCode).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Utilisateur>().HasOne<Profil>().WithMany().HasForeignKey(p => p.ProfilId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Utilisateur>().HasOne<TypeUtilisateur>().WithMany().HasForeignKey(p => p.TypeUtilisateurCode).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<Utilisateur>().HasOne<Utilisateur>().WithOne().HasForeignKey<Utilisateur>(p => p.UtilisateurIdParent).OnDelete(DeleteBehavior.Restrict);
 
-        modelBuilder.Entity<Utilisateur>().HasIndex(p => new { p.Email, p.UtilisateurIdParent }).IsUnique();
+        modelBuilder.Entity<Utilisateur>().HasIndex(p => p.Email).IsUnique();
 
         modelBuilder.Entity<Droit>().HasData(
-            new Droit { Code = Droit.Codes.CRE, Libelle = "Créer", TypeProfilCode = TypeProfil.Codes.ADM },
-            new Droit { Code = Droit.Codes.MOD, Libelle = "Modifier" },
-            new Droit { Code = Droit.Codes.SUP, Libelle = "Supprimer" });
-        modelBuilder.Entity<TypeProfil>().HasData(
-            new TypeProfil { Code = TypeProfil.Codes.ADM, Libelle = "Administrateur" },
-            new TypeProfil { Code = TypeProfil.Codes.GES, Libelle = "Gestionnaire" });
+            new Droit { Code = Droit.Codes.CREATE, Libelle = "Création", TypeDroitCode = TypeDroit.Codes.WRITE },
+            new Droit { Code = Droit.Codes.READ, Libelle = "Lecture", TypeDroitCode = TypeDroit.Codes.READ },
+            new Droit { Code = Droit.Codes.UPDATE, Libelle = "Mise à jour", TypeDroitCode = TypeDroit.Codes.WRITE },
+            new Droit { Code = Droit.Codes.DELETE, Libelle = "Suppression", TypeDroitCode = TypeDroit.Codes.ADMIN });
+        modelBuilder.Entity<TypeDroit>().HasData(
+            new TypeDroit { Code = TypeDroit.Codes.READ, Libelle = "Lecture" },
+            new TypeDroit { Code = TypeDroit.Codes.WRITE, Libelle = "Ecriture" },
+            new TypeDroit { Code = TypeDroit.Codes.ADMIN, Libelle = "Administration" });
         modelBuilder.Entity<TypeUtilisateur>().HasData(
-            new TypeUtilisateur { Code = TypeUtilisateur.Codes.ADM, Libelle = "Administrateur" },
-            new TypeUtilisateur { Code = TypeUtilisateur.Codes.GES, Libelle = "Gestionnaire" },
-            new TypeUtilisateur { Code = TypeUtilisateur.Codes.CLI, Libelle = "Client" });
+            new TypeUtilisateur { Code = TypeUtilisateur.Codes.ADMIN, Libelle = "Administrateur" },
+            new TypeUtilisateur { Code = TypeUtilisateur.Codes.GEST, Libelle = "Gestionnaire" },
+            new TypeUtilisateur { Code = TypeUtilisateur.Codes.CLIENT, Libelle = "Client" });
 
         AddComments(modelBuilder);
         OnModelCreatingPartial(modelBuilder);
