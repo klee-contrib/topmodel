@@ -12,5 +12,7 @@
     "samples/generators/ssdt/topmodel.config.schema.json": "samples/generators/ssdt/topmodel.config",
     "samples/generators/translation/topmodel.config.schema.json": "samples/generators/translation/topmodel.config"
   },
-  "dotnet.defaultSolution": "TopModel.sln"
+  "dotnet.defaultSolution": "TopModel.sln",
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.compile.nullAnalysis.mode": "disabled"
 }
