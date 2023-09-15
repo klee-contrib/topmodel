@@ -118,13 +118,13 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
         if (dataFlow.Hooks.Contains(FlowHook.AfterFlow))
         {
             w.WriteLine();
-            w.WriteLine(1, $"protected override bool PostQuery => true;");
+            w.WriteLine(1, $"protected override bool PostFlow => true;");
         }
 
         if (dataFlow.Hooks.Contains(FlowHook.BeforeFlow))
         {
             w.WriteLine();
-            w.WriteLine(1, $"protected override bool PreQuery => true;");
+            w.WriteLine(1, $"protected override bool PreFlow => true;");
         }
 
         w.WriteLine();
@@ -268,13 +268,13 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
         if (dataFlow.Hooks.Contains(FlowHook.AfterFlow))
         {
             w.WriteLine();
-            w.WriteLine(1, $"protected override partial Task<int> ExecutePostQuery(IConnection connection);");
+            w.WriteLine(1, $"protected override partial Task<int> ExecutePostFlow(IConnection connection);");
         }
 
         if (dataFlow.Hooks.Contains(FlowHook.BeforeFlow))
         {
             w.WriteLine();
-            w.WriteLine(1, $"protected override partial Task<int> ExecutePreQuery(IConnection connection);");
+            w.WriteLine(1, $"protected override partial Task<int> ExecutePreFlow(IConnection connection);");
         }
 
         foreach (var source in dataFlow.Sources.OrderBy(s => s.Source))
@@ -313,7 +313,7 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
 
         if (dataFlow.Hooks.Contains(FlowHook.AfterFlow))
         {
-            w.WriteLine(1, $"protected override partial async Task<int> ExecutePostQuery(IConnection connection)");
+            w.WriteLine(1, $"protected override partial async Task<int> ExecutePostFlow(IConnection connection)");
             w.WriteLine(1, "{");
             w.WriteLine(1, "}");
         }
@@ -325,7 +325,7 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
                 w.WriteLine();
             }
 
-            w.WriteLine(1, $"protected override partial async Task<int> ExecutePreQuery(IConnection connection)");
+            w.WriteLine(1, $"protected override partial async Task<int> ExecutePreFlow(IConnection connection)");
             w.WriteLine(1, "{");
             w.WriteLine(1, "}");
         }
