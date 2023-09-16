@@ -4,13 +4,16 @@
 
 version: 1.36.2
 generatedFiles:
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/utilisateur/AbstractUtilisateurApiClient.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/utilisateur/UtilisateurApiController.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/profil/AbstractProfilClient.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/utilisateur/AbstractUtilisateurClient.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/profil/ProfilController.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/utilisateur/UtilisateurController.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/profil/DroitDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/profil/ProfilDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/profil/TypeDroitDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/utilisateur/TypeUtilisateurDAO.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/utilisateur/UtilisateurDAO.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/profil/ProfilItem.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/profil/ProfilRead.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/profil/ProfilWrite.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/dtos/securite/utilisateur/UtilisateurItem.java

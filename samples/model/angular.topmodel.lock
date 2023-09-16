@@ -4,7 +4,9 @@
 
 version: 1.36.2
 generatedFiles:
-  - ../generators/angular/src/appgenerated/api/securite/utilisateur/utilisateur-api.ts
+  - ../generators/angular/src/appgenerated/api/securite/profil/profil.ts
+  - ../generators/angular/src/appgenerated/api/securite/utilisateur/utilisateur.ts
+  - ../generators/angular/src/appgenerated/model/securite/profil/profil-item.ts
   - ../generators/angular/src/appgenerated/model/securite/profil/profil-read.ts
   - ../generators/angular/src/appgenerated/model/securite/profil/profil-write.ts
   - ../generators/angular/src/appgenerated/model/securite/profil/references.ts

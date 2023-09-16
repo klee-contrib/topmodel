@@ -9,6 +9,18 @@ uses:
 
 ---
 class:
+  name: ProfilItem
+  abstract: true
+  comment: Détail d'un profil en liste.
+
+  properties:
+    - alias:
+        class: Profil
+        include:
+          - Id
+          - Libelle
+---
+class:
   name: ProfilRead
   comment: Détail d'un profil en lecture.
 

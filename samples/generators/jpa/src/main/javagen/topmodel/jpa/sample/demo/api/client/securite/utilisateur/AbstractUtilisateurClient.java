@@ -24,7 +24,7 @@ import topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurWrite;
 import topmodel.jpa.sample.demo.enums.securite.utilisateur.TypeUtilisateurCode;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
-public abstract class AbstractUtilisateurApiClient {
+public abstract class AbstractUtilisateurClient {
 
 	protected RestTemplate restTemplate;
 	protected String host;
@@ -34,7 +34,7 @@ public abstract class AbstractUtilisateurApiClient {
 	 * @param restTemplate
 	 * @param host
 	 */
-	protected AbstractUtilisateurApiClient(RestTemplate restTemplate, String host) {
+	protected AbstractUtilisateurClient(RestTemplate restTemplate, String host) {
 		this.restTemplate = restTemplate;
 		this.host = host;
 	}

@@ -14,9 +14,12 @@ generatedFiles:
   - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/ISecuriteUtilisateurReferenceAccessors.cs
   - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/SecuriteProfilReferenceAccessors.cs
   - ../generators/csharp/src/Clients/CSharp.Clients.Db/Reference/generated/SecuriteUtilisateurReferenceAccessors.cs
-  - ../generators/csharp/src/Clients/CSharp.Clients.External/Securite/Utilisateur/generated/UtilisateurApiClient.cs
-  - ../generators/csharp/src/CSharp.Api/Controllers/Securite/Utilisateur/UtilisateurApiController.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.External/Securite/Profil/generated/ProfilClient.cs
+  - ../generators/csharp/src/Clients/CSharp.Clients.External/Securite/Utilisateur/generated/UtilisateurClient.cs
+  - ../generators/csharp/src/CSharp.Api/Controllers/Securite/Profil/ProfilController.cs
+  - ../generators/csharp/src/CSharp.Api/Controllers/Securite/Utilisateur/UtilisateurController.cs
   - ../generators/csharp/src/Models/CSharp.Securite/Profil.Models/generated/Droit.cs
+  - ../generators/csharp/src/Models/CSharp.Securite/Profil.Models/generated/IProfilItem.cs
   - ../generators/csharp/src/Models/CSharp.Securite/Profil.Models/generated/ProfilRead.cs
   - ../generators/csharp/src/Models/CSharp.Securite/Profil.Models/generated/ProfilWrite.cs
   - ../generators/csharp/src/Models/CSharp.Securite/Profil.Models/generated/TypeDroit.cs

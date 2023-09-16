@@ -1,0 +1,80 @@
+---
+module: Securite.Profil
+tags:
+  - front
+  - back
+  - api-client
+uses:
+  - meta/decorators
+  - Securite/Profil/02_Entities
+  - Securite/Profil/03_Dtos
+options:
+  endpoints:
+    prefix: profil
+
+---
+endpoint:
+  name: AddProfil
+  method: POST
+  route: /
+  description: Ajoute un Profil
+  decorators:
+    - Security: ["hasRole('CREATE')"]
+  params:
+    - composition: ProfilWrite
+      comment: Profil à sauvegarder
+      name: Profil
+  returns:
+    composition: ProfilRead
+    name: ProfilList # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
+    comment: Profil sauvegardé
+---
+endpoint:
+  name: GetProfil
+  method: GET
+  route: /{proId}
+  description: Charge le détail d'un Profil
+  decorators:
+    - Security: ["hasRole('READ')"]
+  # Liste des paramètres du endpoint. Ce sont des propriétés de modèle comme pour les classes. Il peut ne pas y en avoir.
+  params:
+    - alias:
+        class: Profil
+        property: Id
+  # Type de retour du endpoint. La aussi, c'est une propriété du modèle et il peut ne pas y en avoir.
+  returns:
+    composition: ProfilRead
+    name: detail # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
+    comment: Le détail de l'Profil
+---
+endpoint:
+  name: GetProfils
+  method: GET
+  route: /
+  description: Liste tous les Profils
+  decorators:
+    - Security: ["hasRole('READ')"]
+  returns:
+    composition: ProfilItem
+    name: ProfilList
+    domain: DO_LISTE
+    comment: Profils matchant les critères
+---
+endpoint:
+  name: UpdateProfil
+  method: PUT
+  route: /{proId}
+  description: Sauvegarde un Profil
+  decorators:
+    - Security: ["hasRole('UPDATE')"]
+  params:
+    - alias:
+        class: Profil
+        property: Id
+    - composition: ProfilWrite
+      comment: Profil à sauvegarder
+      name: Profil
+  returns:
+    composition: ProfilRead
+    name: ProfilList # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
+    comment: Profil sauvegardé

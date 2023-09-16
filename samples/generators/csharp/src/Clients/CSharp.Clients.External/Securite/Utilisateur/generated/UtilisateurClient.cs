@@ -12,9 +12,9 @@ using Models.CSharp.Securite.Utilisateur.Models;
 namespace CSharp.Clients.External.Securite.Utilisateur;
 
 /// <summary>
-/// Client UtilisateurApi.
+/// Client Utilisateur.
 /// </summary>
-public partial class UtilisateurApiClient
+public partial class UtilisateurClient
 {
     private readonly HttpClient _client;
     private readonly JsonSerializerOptions _jsOptions = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
@@ -23,7 +23,7 @@ public partial class UtilisateurApiClient
     /// Constructeur.
     /// </summary>
     /// <param name="client">HttpClient injecté.</param>
-    public UtilisateurApiClient(HttpClient client)
+    public UtilisateurClient(HttpClient client)
     {
         _client = client;
     }

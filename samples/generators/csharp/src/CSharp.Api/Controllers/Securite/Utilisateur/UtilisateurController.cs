@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CSharp.Api.Securite.Utilisateur;
 
-public class UtilisateurApiController : Controller
+public class UtilisateurController : Controller
 {
 
     /// <summary>

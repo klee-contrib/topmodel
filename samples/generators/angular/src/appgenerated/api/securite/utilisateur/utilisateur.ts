@@ -13,7 +13,7 @@ import {UtilisateurWrite} from "../../../model/securite/utilisateur/utilisateur-
 @Injectable({
     providedIn: 'root'
 })
-export class UtilisateurApiService {
+export class UtilisateurService {
 
     constructor(private http: HttpClient) {}
 
