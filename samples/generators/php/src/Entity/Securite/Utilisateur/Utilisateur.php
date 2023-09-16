@@ -28,10 +28,10 @@ class Utilisateur
   #[Column(name: 'UTI_ID')]
   private int $id;
 
-  #[Column(name: 'UTI_NOM', length: 3)]
+  #[Column(name: 'UTI_NOM', length: 100)]
   private string $nom;
 
-  #[Column(name: 'UTI_PRENOM', length: 3)]
+  #[Column(name: 'UTI_PRENOM', length: 100)]
   private string $prenom;
 
   #[Column(name: 'UTI_EMAIL', length: 50)]

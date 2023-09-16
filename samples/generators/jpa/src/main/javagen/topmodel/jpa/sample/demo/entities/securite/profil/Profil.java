@@ -50,7 +50,7 @@ public class Profil {
 	/**
 	 * Libellé du profil.
 	 */
-	@Column(name = "PRO_LIBELLE", nullable = false, length = 3, columnDefinition = "varchar")
+	@Column(name = "PRO_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
 	private String libelle;
 
 	/**

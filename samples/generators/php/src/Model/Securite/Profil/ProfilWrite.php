@@ -13,10 +13,10 @@ use Symfony\Component\Validator\Constraints\Length;
 class ProfilWrite
 {
   #[Symfony\Component\Validator\Constraints\NotNull]
-  #[Length(max: 3)]
+  #[Length(max: 100)]
   private string $libelle;
 
-  #[Length(max: 3)]
+  #[Length(max: 10)]
   private Collection|null $droits;
 
   public function __construct()

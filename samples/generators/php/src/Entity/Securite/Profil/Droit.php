@@ -18,10 +18,10 @@ use Doctrine\ORM\Mapping\Table;
 class Droit
 {
   #[Id]
-  #[Column(name: 'DRO_CODE', length: 3)]
+  #[Column(name: 'DRO_CODE', length: 10)]
   private string $code;
 
-  #[Column(name: 'DRO_LIBELLE', length: 3)]
+  #[Column(name: 'DRO_LIBELLE', length: 100)]
   private string $libelle;
 
   #[ManyToOne(targetEntity: TypeDroit::class)]

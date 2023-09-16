@@ -20,7 +20,7 @@ domain:
 domain:
   name: DO_CODE
   label: Code
-  length: 3
+  length: 10
   asDomains:
     list: DO_CODE_LISTE
   ts:
@@ -37,7 +37,7 @@ domain:
 domain:
   name: DO_CODE_LISTE
   label: Code
-  length: 3
+  length: 10
   ts:
     type: string[]
     genericType: "{T}[]"
@@ -180,6 +180,7 @@ domain:
 domain:
   name: DO_LIBELLE
   label: Libellé
+  length: 100
   ts:
     type: string
   csharp:
@@ -188,7 +189,6 @@ domain:
     type: String
   sql:
     type: varchar
-  length: 3
   php:
     type: string
 ---

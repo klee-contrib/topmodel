@@ -13,11 +13,11 @@ class UtilisateurRead
   private int $id;
 
   #[Symfony\Component\Validator\Constraints\NotNull]
-  #[Length(max: 3)]
+  #[Length(max: 100)]
   private string $nom;
 
   #[Symfony\Component\Validator\Constraints\NotNull]
-  #[Length(max: 3)]
+  #[Length(max: 100)]
   private string $prenom;
 
   #[Symfony\Component\Validator\Constraints\NotNull]
@@ -33,7 +33,7 @@ class UtilisateurRead
   private int $profilId;
 
   #[Symfony\Component\Validator\Constraints\NotNull]
-  #[Length(max: 3)]
+  #[Length(max: 10)]
   private string $typeUtilisateurCode = TypeUtilisateur.Gestionnaire;
 
   #[Symfony\Component\Validator\Constraints\NotNull]

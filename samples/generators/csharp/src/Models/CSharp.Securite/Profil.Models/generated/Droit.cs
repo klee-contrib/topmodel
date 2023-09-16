@@ -58,7 +58,7 @@ public partial class Droit
     [Column("dro_libelle")]
     [Required]
     [Domain(Domains.Libelle)]
-    [StringLength(3)]
+    [StringLength(100)]
     public string Libelle { get; set; }
 
     /// <summary>

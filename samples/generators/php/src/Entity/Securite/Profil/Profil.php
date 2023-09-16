@@ -30,7 +30,7 @@ class Profil
   #[Column(name: 'PRO_ID')]
   private int $id;
 
-  #[Column(name: 'PRO_LIBELLE', length: 3)]
+  #[Column(name: 'PRO_LIBELLE', length: 100)]
   private string $libelle;
 
   /**

@@ -11,11 +11,11 @@ use Symfony\Component\Validator\Constraints\Length;
 class UtilisateurWrite
 {
   #[Symfony\Component\Validator\Constraints\NotNull]
-  #[Length(max: 3)]
+  #[Length(max: 100)]
   private string $nom;
 
   #[Symfony\Component\Validator\Constraints\NotNull]
-  #[Length(max: 3)]
+  #[Length(max: 100)]
   private string $prenom;
 
   #[Symfony\Component\Validator\Constraints\NotNull]
@@ -31,7 +31,7 @@ class UtilisateurWrite
   private int $profilId;
 
   #[Symfony\Component\Validator\Constraints\NotNull]
-  #[Length(max: 3)]
+  #[Length(max: 10)]
   private string $typeUtilisateurCode = TypeUtilisateur.Gestionnaire;
 
   public function getNom(): string

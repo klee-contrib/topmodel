@@ -30,7 +30,7 @@ public partial class Profil
     [Column("pro_libelle")]
     [Required]
     [Domain(Domains.Libelle)]
-    [StringLength(3)]
+    [StringLength(100)]
     public string Libelle { get; set; }
 
     /// <summary>

@@ -16,10 +16,10 @@ use Doctrine\ORM\Mapping\Table;
 class TypeDroit
 {
   #[Id]
-  #[Column(name: 'TDR_CODE', length: 3)]
+  #[Column(name: 'TDR_CODE', length: 10)]
   private string $code;
 
-  #[Column(name: 'TDR_LIBELLE', length: 3)]
+  #[Column(name: 'TDR_LIBELLE', length: 100)]
   private string $libelle;
 
   public function getCode(): string

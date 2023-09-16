@@ -16,10 +16,10 @@ use Doctrine\ORM\Mapping\Table;
 class TypeUtilisateur
 {
   #[Id]
-  #[Column(name: 'TUT_CODE', length: 3)]
+  #[Column(name: 'TUT_CODE', length: 10)]
   private string $code;
 
-  #[Column(name: 'TUT_LIBELLE', length: 3)]
+  #[Column(name: 'TUT_LIBELLE', length: 100)]
   private string $libelle;
 
   public function getCode(): string

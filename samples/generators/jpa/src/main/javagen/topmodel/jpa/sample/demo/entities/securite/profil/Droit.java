@@ -35,14 +35,14 @@ public class Droit {
 	 * Code du droit.
 	 */
 	@Id
-	@Column(name = "DRO_CODE", nullable = false, length = 3, columnDefinition = "varchar")
+	@Column(name = "DRO_CODE", nullable = false, length = 10, columnDefinition = "varchar")
 	@Enumerated(EnumType.STRING)
 	private DroitCode code;
 
 	/**
 	 * Libellé du droit.
 	 */
-	@Column(name = "DRO_LIBELLE", nullable = false, length = 3, columnDefinition = "varchar")
+	@Column(name = "DRO_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
 	private String libelle;
 
 	/**

@@ -30,7 +30,7 @@ public partial class Utilisateur
     [Column("uti_nom")]
     [Required]
     [Domain(Domains.Libelle)]
-    [StringLength(3)]
+    [StringLength(100)]
     public string Nom { get; set; }
 
     /// <summary>
@@ -39,7 +39,7 @@ public partial class Utilisateur
     [Column("uti_prenom")]
     [Required]
     [Domain(Domains.Libelle)]
-    [StringLength(3)]
+    [StringLength(100)]
     public string Prenom { get; set; }
 
     /// <summary>

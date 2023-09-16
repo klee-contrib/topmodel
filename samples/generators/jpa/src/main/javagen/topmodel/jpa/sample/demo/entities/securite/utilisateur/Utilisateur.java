@@ -46,13 +46,13 @@ public class Utilisateur {
 	/**
 	 * Nom de l'utilisateur.
 	 */
-	@Column(name = "UTI_NOM", nullable = false, length = 3, columnDefinition = "varchar")
+	@Column(name = "UTI_NOM", nullable = false, length = 100, columnDefinition = "varchar")
 	private String nom;
 
 	/**
 	 * Nom de l'utilisateur.
 	 */
-	@Column(name = "UTI_PRENOM", nullable = false, length = 3, columnDefinition = "varchar")
+	@Column(name = "UTI_PRENOM", nullable = false, length = 100, columnDefinition = "varchar")
 	private String prenom;
 
 	/**

@@ -15,10 +15,10 @@ class ProfilRead
   private int $id;
 
   #[Symfony\Component\Validator\Constraints\NotNull]
-  #[Length(max: 3)]
+  #[Length(max: 100)]
   private string $libelle;
 
-  #[Length(max: 3)]
+  #[Length(max: 10)]
   private Collection|null $droits;
 
   #[Symfony\Component\Validator\Constraints\NotNull]
