@@ -23,6 +23,7 @@ class:
       comment: Id technique
 
     - name: Libelle
+      label: Libellé du profil
       domain: DO_LIBELLE
       required: true
       comment: Libellé du profil.

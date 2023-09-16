@@ -14,7 +14,12 @@ export const securite = {
             dateModification: "Date de modification",
             droits: "Droits",
             id: "Id technique du profil",
-            libelle: "Libelle"
+            libelle: "Libellé du profil"
+        },
+        profilItem: {
+            id: "Id technique du profil",
+            libelle: "Libellé du profil",
+            nombreUtilisateurs: "Nombre d'utilisateurs affectés"
         },
         typeDroit: {
             code: "Type de droit",

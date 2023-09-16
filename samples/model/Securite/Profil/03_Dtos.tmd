@@ -19,6 +19,12 @@ class:
         include:
           - Id
           - Libelle
+
+    - name: NombreUtilisateurs
+      label: Nombre d'utilisateurs affectés
+      domain: DO_ENTIER
+      required: true
+      comment: Nombre d'utilisateurs affectés au profil.
 ---
 class:
   name: ProfilRead

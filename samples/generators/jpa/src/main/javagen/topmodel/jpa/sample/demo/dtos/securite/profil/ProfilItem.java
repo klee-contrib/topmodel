@@ -24,9 +24,17 @@ public interface ProfilItem {
 	String getLibelle();
 
 	/**
+	 * Getter for nombreUtilisateurs.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilItem#nombreUtilisateurs nombreUtilisateurs}.
+	 */
+	Long getNombreUtilisateurs();
+
+	/**
 	 * hydrate values of instance.
 	 * @param id value to set
 	 * @param libelle value to set
+	 * @param nombreUtilisateurs value to set
 	 */
-	void hydrate(Integer id, String libelle);
+	void hydrate(Integer id, String libelle, Long nombreUtilisateurs);
 }

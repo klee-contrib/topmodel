@@ -2,11 +2,12 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_ID, DO_LIBELLE} from "@domains";
+import {DO_ENTIER, DO_ID, DO_LIBELLE} from "@domains";
 
 export interface ProfilItem {
     id?: number,
-    libelle?: string
+    libelle?: string,
+    nombreUtilisateurs?: number
 }
 
 export const ProfilItemEntity = {
@@ -23,5 +24,12 @@ export const ProfilItemEntity = {
         domain: DO_LIBELLE,
         isRequired: true,
         label: "securite.profil.profil.libelle"
+    },
+    nombreUtilisateurs: {
+        type: "field",
+        name: "nombreUtilisateurs",
+        domain: DO_ENTIER,
+        isRequired: true,
+        label: "securite.profil.profilItem.nombreUtilisateurs"
     }
 } as const
