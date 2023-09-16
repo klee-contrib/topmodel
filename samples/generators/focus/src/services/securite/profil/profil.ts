@@ -15,7 +15,7 @@ import {ProfilWrite} from "../../../model/securite/profil/profil-write";
  * @returns Profil sauvegardé
  */
 export function addProfil(profil: ProfilWrite, options: RequestInit = {}): Promise<ProfilRead> {
-    return coreFetch("POST", `./profil`, {body: profil}, options);
+    return coreFetch("POST", `./api/profils`, {body: profil}, options);
 }
 
 /**
@@ -25,7 +25,7 @@ export function addProfil(profil: ProfilWrite, options: RequestInit = {}): Promi
  * @returns Le détail de l'Profil
  */
 export function getProfil(proId: number, options: RequestInit = {}): Promise<ProfilRead> {
-    return coreFetch("GET", `./profil/${proId}`, {}, options);
+    return coreFetch("GET", `./api/profils/${proId}`, {}, options);
 }
 
 /**
@@ -34,7 +34,7 @@ export function getProfil(proId: number, options: RequestInit = {}): Promise<Pro
  * @returns Profils matchant les critères
  */
 export function getProfils(options: RequestInit = {}): Promise<ProfilItem[]> {
-    return coreFetch("GET", `./profil`, {}, options);
+    return coreFetch("GET", `./api/profils`, {}, options);
 }
 
 /**
@@ -45,5 +45,5 @@ export function getProfils(options: RequestInit = {}): Promise<ProfilItem[]> {
  * @returns Profil sauvegardé
  */
 export function updateProfil(proId: number, profil: ProfilWrite, options: RequestInit = {}): Promise<ProfilRead> {
-    return coreFetch("PUT", `./profil/${proId}`, {body: profil}, options);
+    return coreFetch("PUT", `./api/profils/${proId}`, {body: profil}, options);
 }

@@ -10,7 +10,7 @@ uses:
   - Securite/Profil/03_Dtos
 options:
   endpoints:
-    prefix: profil
+    prefix: api/profils
 
 ---
 endpoint:

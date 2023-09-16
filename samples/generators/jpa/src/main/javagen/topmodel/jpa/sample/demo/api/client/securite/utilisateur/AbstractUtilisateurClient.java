@@ -50,7 +50,7 @@ public abstract class AbstractUtilisateurClient {
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder addUtilisateurUriComponentsBuilder() {
-		String uri = host + "/utilisateur";
+		String uri = host + "/api/utilisateurs";
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 
@@ -70,7 +70,7 @@ public abstract class AbstractUtilisateurClient {
 	 * @param utiId Id de l'utilisateur
 	 */
 	protected UriComponentsBuilder deleteUtilisateurUriComponentsBuilder(Integer utiId) {
-		String uri = host + "/utilisateur/%s".formatted(utiId);;
+		String uri = host + "/api/utilisateurs/%s".formatted(utiId);;
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 
@@ -90,7 +90,7 @@ public abstract class AbstractUtilisateurClient {
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder getUtilisateurUriComponentsBuilder(Integer utiId) {
-		String uri = host + "/utilisateur/%s".formatted(utiId);;
+		String uri = host + "/api/utilisateurs/%s".formatted(utiId);;
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 
@@ -117,7 +117,7 @@ public abstract class AbstractUtilisateurClient {
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder searchUtilisateurUriComponentsBuilder(String nom, String prenom, String email, LocalDateTime dateNaissance, Boolean actif, Integer profilId, TypeUtilisateurCode typeUtilisateurCode) {
-		String uri = host + "/utilisateur";
+		String uri = host + "/api/utilisateurs";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("nom", nom);
 		uriBuilder.queryParam("prenom", prenom);
@@ -155,7 +155,7 @@ public abstract class AbstractUtilisateurClient {
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder updateUtilisateurUriComponentsBuilder(Integer utiId) {
-		String uri = host + "/utilisateur/%s".formatted(utiId);;
+		String uri = host + "/api/utilisateurs/%s".formatted(utiId);;
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 

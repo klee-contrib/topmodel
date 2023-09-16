@@ -48,7 +48,7 @@ public abstract class AbstractProfilClient {
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder addProfilUriComponentsBuilder() {
-		String uri = host + "/profil";
+		String uri = host + "/api/profils";
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 
@@ -69,7 +69,7 @@ public abstract class AbstractProfilClient {
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder getProfilUriComponentsBuilder(Integer proId) {
-		String uri = host + "/profil/%s".formatted(proId);;
+		String uri = host + "/api/profils/%s".formatted(proId);;
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 
@@ -89,7 +89,7 @@ public abstract class AbstractProfilClient {
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder getProfilsUriComponentsBuilder() {
-		String uri = host + "/profil";
+		String uri = host + "/api/profils";
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 
@@ -109,7 +109,7 @@ public abstract class AbstractProfilClient {
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder updateProfilUriComponentsBuilder(Integer proId) {
-		String uri = host + "/profil/%s".formatted(proId);;
+		String uri = host + "/api/profils/%s".formatted(proId);;
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 

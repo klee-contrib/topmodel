@@ -14,7 +14,7 @@ public class ProfilController : Controller
     /// </summary>
     /// <param name="profil">Profil à sauvegarder</param>
     /// <returns>Profil sauvegardé</returns>
-    [HttpPost("profil")]
+    [HttpPost("api/profils")]
     public async Task<ProfilRead> AddProfil([FromBody] ProfilWrite profil)
     {
 
@@ -25,7 +25,7 @@ public class ProfilController : Controller
     /// </summary>
     /// <param name="proId">Id technique</param>
     /// <returns>Le détail de l'Profil</returns>
-    [HttpGet("profil/{proId:int}")]
+    [HttpGet("api/profils/{proId:int}")]
     public async Task<ProfilRead> GetProfil(int proId)
     {
 
@@ -35,7 +35,7 @@ public class ProfilController : Controller
     /// Liste tous les Profils
     /// </summary>
     /// <returns>Profils matchant les critères</returns>
-    [HttpGet("profil")]
+    [HttpGet("api/profils")]
     public async Task<ICollection<ProfilItem>> GetProfils()
     {
 
@@ -47,7 +47,7 @@ public class ProfilController : Controller
     /// <param name="proId">Id technique</param>
     /// <param name="profil">Profil à sauvegarder</param>
     /// <returns>Profil sauvegardé</returns>
-    [HttpPut("profil/{proId:int}")]
+    [HttpPut("api/profils/{proId:int}")]
     public async Task<ProfilRead> UpdateProfil(int proId, [FromBody] ProfilWrite profil)
     {
 

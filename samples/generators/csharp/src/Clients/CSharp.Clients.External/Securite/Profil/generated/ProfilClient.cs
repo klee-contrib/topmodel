@@ -35,7 +35,7 @@ public partial class ProfilClient
     public async Task<ProfilRead> AddProfil(ProfilWrite profil)
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"profil") { Content = GetBody(profil) }, HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"api/profils") { Content = GetBody(profil) }, HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
         return await Deserialize<ProfilRead>(res);
     }
@@ -48,7 +48,7 @@ public partial class ProfilClient
     public async Task<ProfilRead> GetProfil(int proId)
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"profil/{proId}"), HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"api/profils/{proId}"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
         return await Deserialize<ProfilRead>(res);
     }
@@ -60,7 +60,7 @@ public partial class ProfilClient
     public async Task<ICollection<ProfilItem>> GetProfils()
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"profil"), HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"api/profils"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
         return await Deserialize<ICollection<ProfilItem>>(res);
     }
@@ -74,7 +74,7 @@ public partial class ProfilClient
     public async Task<ProfilRead> UpdateProfil(int proId, ProfilWrite profil)
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Put, $"profil/{proId}") { Content = GetBody(profil) }, HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Put, $"api/profils/{proId}") { Content = GetBody(profil) }, HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
         return await Deserialize<ProfilRead>(res);
     }

@@ -23,7 +23,7 @@ export class ProfilService {
      * @returns Profil sauvegardé
      */
     addProfil(profil: ProfilWrite): Observable<ProfilRead> {
-        return this.http.post<ProfilRead>(`/profil`, profil);
+        return this.http.post<ProfilRead>(`/api/profils`, profil);
     }
 
     /**
@@ -33,7 +33,7 @@ export class ProfilService {
      * @returns Le détail de l'Profil
      */
     getProfil(proId: number): Observable<ProfilRead> {
-        return this.http.get<ProfilRead>(`/profil/${proId}`);
+        return this.http.get<ProfilRead>(`/api/profils/${proId}`);
     }
 
     /**
@@ -42,7 +42,7 @@ export class ProfilService {
      * @returns Profils matchant les critères
      */
     getProfils(): Observable<ProfilItem[]> {
-        return this.http.get<ProfilItem[]>(`/profil`);
+        return this.http.get<ProfilItem[]>(`/api/profils`);
     }
 
     /**
@@ -53,6 +53,6 @@ export class ProfilService {
      * @returns Profil sauvegardé
      */
     updateProfil(proId: number, profil: ProfilWrite): Observable<ProfilRead> {
-        return this.http.put<ProfilRead>(`/profil/${proId}`, profil);
+        return this.http.put<ProfilRead>(`/api/profils/${proId}`, profil);
     }
 }

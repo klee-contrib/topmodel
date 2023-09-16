@@ -16,7 +16,7 @@ import {UtilisateurWrite} from "../../../model/securite/utilisateur/utilisateur-
  * @returns Utilisateur sauvegardé
  */
 export function addUtilisateur(utilisateur: UtilisateurWrite, options: RequestInit = {}): Promise<UtilisateurRead> {
-    return coreFetch("POST", `./utilisateur`, {body: utilisateur}, options);
+    return coreFetch("POST", `./api/utilisateurs`, {body: utilisateur}, options);
 }
 
 /**
@@ -25,7 +25,7 @@ export function addUtilisateur(utilisateur: UtilisateurWrite, options: RequestIn
  * @param options Options pour 'fetch'.
  */
 export function deleteUtilisateur(utiId: number, options: RequestInit = {}): Promise<void> {
-    return coreFetch("DELETE", `./utilisateur/${utiId}`, {}, options);
+    return coreFetch("DELETE", `./api/utilisateurs/${utiId}`, {}, options);
 }
 
 /**
@@ -35,7 +35,7 @@ export function deleteUtilisateur(utiId: number, options: RequestInit = {}): Pro
  * @returns Le détail de l'utilisateur
  */
 export function getUtilisateur(utiId: number, options: RequestInit = {}): Promise<UtilisateurRead> {
-    return coreFetch("GET", `./utilisateur/${utiId}`, {}, options);
+    return coreFetch("GET", `./api/utilisateurs/${utiId}`, {}, options);
 }
 
 /**
@@ -51,7 +51,7 @@ export function getUtilisateur(utiId: number, options: RequestInit = {}): Promis
  * @returns Utilisateurs matchant les critères
  */
 export function searchUtilisateur(nom?: string, prenom?: string, email?: string, dateNaissance?: string, actif?: boolean, profilId?: number, typeUtilisateurCode?: TypeUtilisateurCode, options: RequestInit = {}): Promise<UtilisateurItem[]> {
-    return coreFetch("GET", `./utilisateur`, {query: {nom, prenom, email, dateNaissance, actif, profilId, typeUtilisateurCode}}, options);
+    return coreFetch("GET", `./api/utilisateurs`, {query: {nom, prenom, email, dateNaissance, actif, profilId, typeUtilisateurCode}}, options);
 }
 
 /**
@@ -62,5 +62,5 @@ export function searchUtilisateur(nom?: string, prenom?: string, email?: string,
  * @returns Utilisateur sauvegardé
  */
 export function updateUtilisateur(utiId: number, utilisateur: UtilisateurWrite, options: RequestInit = {}): Promise<UtilisateurRead> {
-    return coreFetch("PUT", `./utilisateur/${utiId}`, {body: utilisateur}, options);
+    return coreFetch("PUT", `./api/utilisateurs/${utiId}`, {body: utilisateur}, options);
 }

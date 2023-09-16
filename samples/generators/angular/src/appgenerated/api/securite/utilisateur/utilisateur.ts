@@ -24,7 +24,7 @@ export class UtilisateurService {
      * @returns Utilisateur sauvegardé
      */
     addUtilisateur(utilisateur: UtilisateurWrite): Observable<UtilisateurRead> {
-        return this.http.post<UtilisateurRead>(`/utilisateur`, utilisateur);
+        return this.http.post<UtilisateurRead>(`/api/utilisateurs`, utilisateur);
     }
 
     /**
@@ -33,7 +33,7 @@ export class UtilisateurService {
      * @param options Options pour 'fetch'.
      */
     deleteUtilisateur(utiId: number): Observable<void> {
-        return this.http.delete<void>(`/utilisateur/${utiId}`);
+        return this.http.delete<void>(`/api/utilisateurs/${utiId}`);
     }
 
     /**
@@ -43,7 +43,7 @@ export class UtilisateurService {
      * @returns Le détail de l'utilisateur
      */
     getUtilisateur(utiId: number): Observable<UtilisateurRead> {
-        return this.http.get<UtilisateurRead>(`/utilisateur/${utiId}`);
+        return this.http.get<UtilisateurRead>(`/api/utilisateurs/${utiId}`);
     }
 
     /**
@@ -90,7 +90,7 @@ export class UtilisateurService {
         const httpParams = new HttpParams({fromObject : queryParams});
         const httpOptions = { params: httpParams }
 
-        return this.http.get<UtilisateurItem[]>(`/utilisateur`, httpOptions);
+        return this.http.get<UtilisateurItem[]>(`/api/utilisateurs`, httpOptions);
     }
 
     /**
@@ -101,6 +101,6 @@ export class UtilisateurService {
      * @returns Utilisateur sauvegardé
      */
     updateUtilisateur(utiId: number, utilisateur: UtilisateurWrite): Observable<UtilisateurRead> {
-        return this.http.put<UtilisateurRead>(`/utilisateur/${utiId}`, utilisateur);
+        return this.http.put<UtilisateurRead>(`/api/utilisateurs/${utiId}`, utilisateur);
     }
 }

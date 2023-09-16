@@ -25,7 +25,7 @@ import topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead;
 import topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurWrite;
 import topmodel.jpa.sample.demo.enums.securite.utilisateur.TypeUtilisateurCode;
 
-@RequestMapping("utilisateur")
+@RequestMapping("api/utilisateurs")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface UtilisateurController {
 

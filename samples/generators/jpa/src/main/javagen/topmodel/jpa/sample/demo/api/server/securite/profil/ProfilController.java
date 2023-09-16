@@ -21,7 +21,7 @@ import topmodel.jpa.sample.demo.dtos.securite.profil.ProfilItem;
 import topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead;
 import topmodel.jpa.sample.demo.dtos.securite.profil.ProfilWrite;
 
-@RequestMapping("profil")
+@RequestMapping("api/profils")
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface ProfilController {
 

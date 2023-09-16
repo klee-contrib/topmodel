@@ -14,7 +14,7 @@ public class UtilisateurController : Controller
     /// </summary>
     /// <param name="utilisateur">Utilisateur à sauvegarder</param>
     /// <returns>Utilisateur sauvegardé</returns>
-    [HttpPost("utilisateur")]
+    [HttpPost("api/utilisateurs")]
     public async Task<UtilisateurRead> AddUtilisateur([FromBody] UtilisateurWrite utilisateur)
     {
 
@@ -25,7 +25,7 @@ public class UtilisateurController : Controller
     /// </summary>
     /// <param name="utiId">Id de l'utilisateur</param>
     /// <returns>Task.</returns>
-    [HttpDelete("utilisateur/{utiId:int}")]
+    [HttpDelete("api/utilisateurs/{utiId:int}")]
     public async Task DeleteUtilisateur(int utiId)
     {
 
@@ -36,7 +36,7 @@ public class UtilisateurController : Controller
     /// </summary>
     /// <param name="utiId">Id de l'utilisateur</param>
     /// <returns>Le détail de l'utilisateur</returns>
-    [HttpGet("utilisateur/{utiId:int}")]
+    [HttpGet("api/utilisateurs/{utiId:int}")]
     public async Task<UtilisateurRead> GetUtilisateur(int utiId)
     {
 
@@ -53,7 +53,7 @@ public class UtilisateurController : Controller
     /// <param name="profilId">Profil de l'utilisateur</param>
     /// <param name="typeUtilisateurCode">Type d'utilisateur</param>
     /// <returns>Utilisateurs matchant les critères</returns>
-    [HttpGet("utilisateur")]
+    [HttpGet("api/utilisateurs")]
     public async Task<ICollection<UtilisateurItem>> SearchUtilisateur(string nom = null, string prenom = null, string email = null, DateTime? dateNaissance = null, bool? actif = null, int? profilId = null, TypeUtilisateur.Codes? typeUtilisateurCode = null)
     {
 
@@ -65,7 +65,7 @@ public class UtilisateurController : Controller
     /// <param name="utiId">Id de l'utilisateur</param>
     /// <param name="utilisateur">Utilisateur à sauvegarder</param>
     /// <returns>Utilisateur sauvegardé</returns>
-    [HttpPut("utilisateur/{utiId:int}")]
+    [HttpPut("api/utilisateurs/{utiId:int}")]
     public async Task<UtilisateurRead> UpdateUtilisateur(int utiId, [FromBody] UtilisateurWrite utilisateur)
     {
 

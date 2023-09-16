@@ -10,7 +10,7 @@ uses:
   - Securite/Utilisateur/03_Dtos
 options:
   endpoints:
-    prefix: utilisateur
+    prefix: api/utilisateurs
 
 ---
 endpoint:

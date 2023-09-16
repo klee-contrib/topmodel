@@ -36,7 +36,7 @@ public partial class UtilisateurClient
     public async Task<UtilisateurRead> AddUtilisateur(UtilisateurWrite utilisateur)
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"utilisateur") { Content = GetBody(utilisateur) }, HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"api/utilisateurs") { Content = GetBody(utilisateur) }, HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
         return await Deserialize<UtilisateurRead>(res);
     }
@@ -49,7 +49,7 @@ public partial class UtilisateurClient
     public async Task DeleteUtilisateur(int utiId)
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, $"utilisateur/{utiId}"));
+        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, $"api/utilisateurs/{utiId}"));
         await EnsureSuccess(res);
     }
 
@@ -61,7 +61,7 @@ public partial class UtilisateurClient
     public async Task<UtilisateurRead> GetUtilisateur(int utiId)
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"utilisateur/{utiId}"), HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"api/utilisateurs/{utiId}"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
         return await Deserialize<UtilisateurRead>(res);
     }
@@ -90,7 +90,7 @@ public partial class UtilisateurClient
             ["profilId"] = profilId?.ToString(CultureInfo.InvariantCulture),
             ["typeUtilisateurCode"] = typeUtilisateurCode?.ToString(CultureInfo.InvariantCulture),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"utilisateur?{query}"), HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"api/utilisateurs?{query}"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
         return await Deserialize<ICollection<UtilisateurItem>>(res);
     }
@@ -104,7 +104,7 @@ public partial class UtilisateurClient
     public async Task<UtilisateurRead> UpdateUtilisateur(int utiId, UtilisateurWrite utilisateur)
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Put, $"utilisateur/{utiId}") { Content = GetBody(utilisateur) }, HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Put, $"api/utilisateurs/{utiId}") { Content = GetBody(utilisateur) }, HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
         return await Deserialize<UtilisateurRead>(res);
     }
