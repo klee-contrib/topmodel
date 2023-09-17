@@ -55,6 +55,22 @@ domain:
     type: Collection
 ---
 domain:
+  name: DO_DATE
+  label: Date
+  ts:
+    type: string
+  csharp:
+    type: DateOnly?
+  java:
+    type: LocalDate
+    imports:
+      - java.time.LocalDate
+  sql:
+    type: date
+  php:
+    type: Date
+---
+domain:
   name: DO_DATE_HEURE
   label: Date
   ts:

@@ -53,8 +53,8 @@ public partial class UtilisateurRead
     /// Age de l'utilisateur.
     /// </summary>
     [Column("uti_date_naissance")]
-    [Domain(Domains.DateHeure)]
-    public DateTime? DateNaissance { get; set; }
+    [Domain(Domains.Date)]
+    public DateOnly? DateNaissance { get; set; }
 
     /// <summary>
     /// Si l'utilisateur est actif.

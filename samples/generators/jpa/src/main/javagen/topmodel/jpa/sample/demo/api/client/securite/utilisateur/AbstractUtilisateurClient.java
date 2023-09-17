@@ -5,7 +5,7 @@
 package topmodel.jpa.sample.demo.api.client.securite.utilisateur;
 
 import java.net.URI;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.core.ParameterizedTypeReference;
@@ -116,7 +116,7 @@ public abstract class AbstractUtilisateurClient {
 	 * @param typeUtilisateurCode Type d'utilisateur
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder searchUtilisateurUriComponentsBuilder(String nom, String prenom, String email, LocalDateTime dateNaissance, Boolean actif, Integer profilId, TypeUtilisateurCode typeUtilisateurCode) {
+	protected UriComponentsBuilder searchUtilisateurUriComponentsBuilder(String nom, String prenom, String email, LocalDate dateNaissance, Boolean actif, Integer profilId, TypeUtilisateurCode typeUtilisateurCode) {
 		String uri = host + "/api/utilisateurs";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("nom", nom);
@@ -143,7 +143,7 @@ public abstract class AbstractUtilisateurClient {
 	 * @param typeUtilisateurCode Type d'utilisateur
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<List<UtilisateurItem>> searchUtilisateur(String nom, String prenom, String email, LocalDateTime dateNaissance, Boolean actif, Integer profilId, TypeUtilisateurCode typeUtilisateurCode){
+	public ResponseEntity<List<UtilisateurItem>> searchUtilisateur(String nom, String prenom, String email, LocalDate dateNaissance, Boolean actif, Integer profilId, TypeUtilisateurCode typeUtilisateurCode){
 		HttpHeaders headers = this.getHeaders();
 		UriComponentsBuilder uri = this.searchUtilisateurUriComponentsBuilder(nom, prenom, email, dateNaissance, actif, profilId, typeUtilisateurCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<UtilisateurItem>>() {});

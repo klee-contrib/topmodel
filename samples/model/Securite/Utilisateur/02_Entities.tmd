@@ -41,7 +41,7 @@ class:
 
     - name: DateNaissance
       label: Date de naissance
-      domain: DO_DATE_HEURE
+      domain: DO_DATE
       comment: Age de l'utilisateur
 
     - name: Actif

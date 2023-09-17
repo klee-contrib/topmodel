@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-import {DO_BOOLEEN, DO_CODE, DO_DATE_HEURE, DO_EMAIL, DO_ID, DO_LIBELLE} from "@domains";
+import {DO_BOOLEEN, DO_CODE, DO_DATE, DO_DATE_HEURE, DO_EMAIL, DO_ID, DO_LIBELLE} from "@domains";
 
 import {TypeUtilisateurCode} from "./references";
 
@@ -51,7 +51,7 @@ export const UtilisateurReadEntity = {
     dateNaissance: {
         type: "field",
         name: "dateNaissance",
-        domain: DO_DATE_HEURE,
+        domain: DO_DATE,
         isRequired: false,
         label: "securite.utilisateur.utilisateur.dateNaissance"
     },

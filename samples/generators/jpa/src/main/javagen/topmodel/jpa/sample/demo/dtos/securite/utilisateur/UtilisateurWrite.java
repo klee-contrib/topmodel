@@ -5,7 +5,7 @@
 package topmodel.jpa.sample.demo.dtos.securite.utilisateur;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.annotation.Generated;
 import jakarta.validation.constraints.Email;
@@ -49,7 +49,7 @@ public class UtilisateurWrite implements Serializable {
 	 * Age de l'utilisateur.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getDateNaissance() Utilisateur#getDateNaissance()} 
 	 */
-	private LocalDateTime dateNaissance;
+	private LocalDate dateNaissance;
 
 	/**
 	 * Si l'utilisateur est actif.
@@ -110,7 +110,7 @@ public class UtilisateurWrite implements Serializable {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurWrite#dateNaissance dateNaissance}.
 	 */
-	public LocalDateTime getDateNaissance() {
+	public LocalDate getDateNaissance() {
 		return this.dateNaissance;
 	}
 
@@ -169,7 +169,7 @@ public class UtilisateurWrite implements Serializable {
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurWrite#dateNaissance dateNaissance}.
 	 * @param dateNaissance value to set
 	 */
-	public void setDateNaissance(LocalDateTime dateNaissance) {
+	public void setDateNaissance(LocalDate dateNaissance) {
 		this.dateNaissance = dateNaissance;
 	}
 
@@ -214,7 +214,7 @@ public class UtilisateurWrite implements Serializable {
         NOM(String.class), //
         PRENOM(String.class), //
         EMAIL(String.class), //
-        DATE_NAISSANCE(LocalDateTime.class), //
+        DATE_NAISSANCE(LocalDate.class), //
         ACTIF(Boolean.class), //
         PROFIL_ID(Integer.class), //
         TYPE_UTILISATEUR_CODE(TypeUtilisateurCode.class);

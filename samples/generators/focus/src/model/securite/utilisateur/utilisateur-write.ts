@@ -3,7 +3,7 @@
 ////
 
 import {EntityToType, FieldEntry2} from "@focus4/stores";
-import {DO_BOOLEEN, DO_CODE, DO_DATE_HEURE, DO_EMAIL, DO_ID, DO_LIBELLE} from "../../../domains";
+import {DO_BOOLEEN, DO_CODE, DO_DATE, DO_EMAIL, DO_ID, DO_LIBELLE} from "../../../domains";
 
 import {TypeUtilisateurCode} from "./references";
 
@@ -12,7 +12,7 @@ export interface UtilisateurWriteEntityType {
     nom: FieldEntry2<typeof DO_LIBELLE, string>,
     prenom: FieldEntry2<typeof DO_LIBELLE, string>,
     email: FieldEntry2<typeof DO_EMAIL, string>,
-    dateNaissance: FieldEntry2<typeof DO_DATE_HEURE, string>,
+    dateNaissance: FieldEntry2<typeof DO_DATE, string>,
     actif: FieldEntry2<typeof DO_BOOLEEN, boolean>,
     profilId: FieldEntry2<typeof DO_ID, number>,
     typeUtilisateurCode: FieldEntry2<typeof DO_CODE, TypeUtilisateurCode>
@@ -43,7 +43,7 @@ export const UtilisateurWriteEntity: UtilisateurWriteEntityType = {
     dateNaissance: {
         type: "field",
         name: "dateNaissance",
-        domain: DO_DATE_HEURE,
+        domain: DO_DATE,
         isRequired: false,
         label: "securite.utilisateur.utilisateur.dateNaissance"
     },

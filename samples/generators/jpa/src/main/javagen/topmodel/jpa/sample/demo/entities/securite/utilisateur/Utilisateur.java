@@ -4,6 +4,7 @@
 
 package topmodel.jpa.sample.demo.entities.securite.utilisateur;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -65,7 +66,7 @@ public class Utilisateur {
 	 * Age de l'utilisateur.
 	 */
 	@Column(name = "UTI_DATE_NAISSANCE", nullable = true, columnDefinition = "date")
-	private LocalDateTime dateNaissance;
+	private LocalDate dateNaissance;
 
 	/**
 	 * Si l'utilisateur est actif.
@@ -148,7 +149,7 @@ public class Utilisateur {
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#dateNaissance dateNaissance}.
 	 */
-	public LocalDateTime getDateNaissance() {
+	public LocalDate getDateNaissance() {
 		return this.dateNaissance;
 	}
 
@@ -233,7 +234,7 @@ public class Utilisateur {
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#dateNaissance dateNaissance}.
 	 * @param dateNaissance value to set
 	 */
-	public void setDateNaissance(LocalDateTime dateNaissance) {
+	public void setDateNaissance(LocalDate dateNaissance) {
 		this.dateNaissance = dateNaissance;
 	}
 
@@ -285,7 +286,7 @@ public class Utilisateur {
         NOM(String.class), //
         PRENOM(String.class), //
         EMAIL(String.class), //
-        DATE_NAISSANCE(LocalDateTime.class), //
+        DATE_NAISSANCE(LocalDate.class), //
         ACTIF(Boolean.class), //
         PROFIL(Profil.class), //
         TYPE_UTILISATEUR(TypeUtilisateur.class), //

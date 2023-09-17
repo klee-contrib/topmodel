@@ -77,7 +77,7 @@ public partial class UtilisateurClient
     /// <param name="profilId">Profil de l'utilisateur.</param>
     /// <param name="typeUtilisateurCode">Type d'utilisateur.</param>
     /// <returns>Utilisateurs matchant les critères.</returns>
-    public async Task<ICollection<UtilisateurItem>> SearchUtilisateur(string nom = null, string prenom = null, string email = null, DateTime? dateNaissance = null, bool? actif = null, int? profilId = null, TypeUtilisateur.Codes? typeUtilisateurCode = null)
+    public async Task<ICollection<UtilisateurItem>> SearchUtilisateur(string nom = null, string prenom = null, string email = null, DateOnly? dateNaissance = null, bool? actif = null, int? profilId = null, TypeUtilisateur.Codes? typeUtilisateurCode = null)
     {
         await EnsureAuthentication();
         var query = await new FormUrlEncodedContent(new Dictionary<string, string>
