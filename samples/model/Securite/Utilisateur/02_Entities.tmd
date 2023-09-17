@@ -51,10 +51,12 @@ class:
       comment: Si l'utilisateur est actif
 
     - association: Profil
+      label: Profil
       required: true
       comment: Profil de l'utilisateur
 
     - association: TypeUtilisateur
+      label: Type d'utilisateur
       required: true
       defaultValue: GEST
       comment: Type d'utilisateur

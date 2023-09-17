@@ -40,8 +40,8 @@ export const securite = {
             id: "Id technique",
             nom: "Nom",
             prenom: "Prénom",
-            profilId: "ProfilId",
-            typeUtilisateurCode: "TypeUtilisateurCode"
+            profilId: "Profil",
+            typeUtilisateurCode: "Type d'utilisateur"
         }
     }
 };
