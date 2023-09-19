@@ -202,24 +202,13 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         {
             if (Config.UseJdbc)
             {
-                var table = @$"@Table(name = ""{classe.SqlName}""";
-                if (Config.ResolveVariables(Config.DbSchema!, tag: tag) != null)
-                {
-                    table += @$", schema = ""{Config.ResolveVariables(Config.DbSchema!, tag: tag)}""";
-                }
-
-                table += ")";
+                var table = @$"@Table(name = ""{classe.SqlName.ToLower()}"")";
                 fw.AddImport($"org.springframework.data.relational.core.mapping.Table");
                 fw.WriteLine(table);
             }
             else
             {
                 var table = @$"@Table(name = ""{classe.SqlName}""";
-                if (Config.DbSchema != null && Config.ResolveVariables(Config.DbSchema, tag: tag) != null)
-                {
-                    table += @$", schema = ""{Config.ResolveVariables(Config.DbSchema, tag: tag)}""";
-                }
-
                 fw.AddImport($"{javaOrJakarta}.persistence.Table");
                 if (classe.UniqueKeys.Any())
                 {

@@ -279,7 +279,16 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
                 indentLevel++;
             }
 
-            fw.WriteLine(indentLevel, @$"uriBuilder.queryParam(""{p.GetParamName()}"", {p.GetParamName()});");
+            if (Config.GetType(p).StartsWith("List"))
+            {
+                fw.AddImport("java.util.stream.Collectors");
+                fw.WriteLine(indentLevel, @$"uriBuilder.queryParam(""{p.GetParamName()}"", {p.GetParamName()}.stream().collect(Collectors.joining("","")));");
+            }
+            else
+            {
+                fw.WriteLine(indentLevel, @$"uriBuilder.queryParam(""{p.GetParamName()}"", {p.GetParamName()});");
+            }
+
             if (!isRequired)
             {
                 fw.WriteLine(2, @$"}}");
