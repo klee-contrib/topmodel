@@ -25,7 +25,9 @@
         {
           "type": "object",
           "description": "Domaine a utiliser pour le type de composition (si ce n'est pas une composition simple).",
-          "required": [ "name" ],
+          "required": [
+            "name"
+          ],
           "additionalProperties": false,
           "properties": {
             "name": {
@@ -353,7 +355,9 @@
         {
           "type": "object",
           "description": "Template de valeur à utiliser, avec des imports supplémentaires si besoin.",
-          "required": [ "value" ],
+          "required": [
+            "value"
+          ],
           "additionalProperties": false,
           "properties": {
             "value": {
@@ -1053,13 +1057,20 @@
                 "description": "Flux de données à exécuter avant celui-ci."
               }
             },
-            "postQuery": {
-              "type": "boolean",
-              "description": "Si le flux de données doit définir une requête à jouer après son exécution."
-            },
-            "preQuery": {
-              "type": "boolean",
-              "description": "Si le flux de données doit définir une requête à jouer avant son exécution."
+            "hooks": {
+              "type": "array",
+              "description": "Hooks à ajouter au flow",
+              "items": {
+                "type": "string",
+                "description": "Nom du hook",
+                "enum": [
+                  "beforeFlow",
+                  "afterSource",
+                  "map",
+                  "beforeTarget",
+                  "afterFlow"
+                ]
+              }
             },
             "activeProperty": {
               "type": "string",

@@ -63,22 +63,22 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
             fw.WriteLine(1, @$"			@Qualifier(""{dataFlow.Name.ToPascalCase()}TruncateStep"") Step {dataFlow.Name.ToCamelCase()}TruncateStep,");
         }
 
-        if (dataFlow.PreQuery)
+        if (dataFlow.Hooks.Contains(FlowHook.BeforeFlow))
         {
-            fw.WriteLine(1, @$"			@Qualifier(""{dataFlow.Name.ToPascalCase()}PreQueryStep"") Step {dataFlow.Name.ToCamelCase()}PreStep,");
+            fw.WriteLine(1, @$"			@Qualifier(""{dataFlow.Name.ToPascalCase()}BeforeFLowStep"") Step {dataFlow.Name.ToCamelCase()}BeforeFLowStep,");
         }
 
-        if (dataFlow.PostQuery)
+        if (dataFlow.Hooks.Contains(FlowHook.AfterFlow))
         {
-            fw.WriteLine(1, @$"			@Qualifier(""{dataFlow.Name.ToPascalCase()}PostQueryStep"") Step {dataFlow.Name.ToCamelCase()}PostStep,");
+            fw.WriteLine(1, @$"			@Qualifier(""{dataFlow.Name.ToPascalCase()}AfterFLowStep"") Step {dataFlow.Name.ToCamelCase()}AfterFLowStep,");
         }
 
         fw.WriteLine(1, @$"			@Qualifier(""{dataFlow.Name.ToPascalCase()}Step"") Step {dataFlow.Name.ToCamelCase()}Step) {{");
         fw.WriteLine(2, @$"return new FlowBuilder<Flow>(""{dataFlow.Name.ToPascalCase()}Flow"") //");
         var isFirst = true;
-        if (dataFlow.PreQuery)
+        if (dataFlow.Hooks.Contains(FlowHook.BeforeFlow))
         {
-            fw.WriteLine(3, @$".start({dataFlow.Name.ToCamelCase()}PreStep) //");
+            fw.WriteLine(3, @$".start({dataFlow.Name.ToCamelCase()}BeforeFLowStep) //");
             isFirst = false;
         }
 
@@ -92,9 +92,9 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
             fw.WriteLine(3, @$".{(isFirst ? "start" : "next")}({dataFlow.Name.ToCamelCase()}Step) //");
         }
 
-        if (dataFlow.PostQuery)
+        if (dataFlow.Hooks.Contains(FlowHook.AfterFlow))
         {
-            fw.WriteLine(3, @$".next({dataFlow.Name.ToCamelCase()}PostStep) //");
+            fw.WriteLine(3, @$".next({dataFlow.Name.ToCamelCase()}AfterFLowStep) //");
         }
 
         fw.WriteLine(3, ".build();");
@@ -137,7 +137,8 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
             tagToUse = Config.Tags.Intersect(dataFlow.Sources.First().Class.ModelFile.Tags).First();
         }
 
-        var query = $"select * from {(Config.ResolveVariables(Config.DbSchema!, tag: tagToUse) == null ? string.Empty : $"{Config.ResolveVariables(Config.DbSchema!, tag: tagToUse)}.")}{dataFlow.Sources.First().Class.SqlName}";
+        var properties = dataFlow.Sources[0].Class.Properties.OfType<IFieldProperty>();
+        var query = $"select {string.Join(", ", properties.Select(p => $"{p.SqlName} as {p.NameCamel}"))} from {(Config.ResolveVariables(Config.DbSchema!, tag: tagToUse) == null ? string.Empty : $"{Config.ResolveVariables(Config.DbSchema!, tag: tagToUse)}.")}{dataFlow.Sources.First().Class.SqlName}";
         if (dataFlow.Sources.First().Mode == DataFlowSourceMode.Partial)
         {
             query = string.Empty;
@@ -167,25 +168,111 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.AddImport(dataFlow.Sources.First().Class.GetImport(Config, tag));
         fw.AddImport(dataFlow.Class.GetImport(Config, tag));
 
+        var hookStep = dataFlow.Hooks.Where(h => h != FlowHook.BeforeFlow && h != FlowHook.AfterFlow);
+
         fw.WriteLine();
         fw.WriteLine(1, @$"@Bean(""{dataFlow.Name.ToPascalCase()}Step"")");
         fw.WriteLine(1, @$"public static Step {dataFlow.Name.ToCamelCase()}Step(");
         fw.WriteLine(1, @$"		JobRepository jobRepository, //");
         fw.WriteLine(1, @$"		PlatformTransactionManager transactionManager, //");
+        foreach (var listener in Config.DataFlowsListeners)
+        {
+            fw.AddImport("org.springframework.batch.core.StepListener");
+            fw.WriteLine(1, @$"		@Qualifier(""{listener}"") StepListener {listener.ToCamelCase()}, //");
+        }
+
         fw.WriteLine(1, @$"		@Qualifier(""{dataFlow.Name.ToPascalCase()}Reader"") ItemReader<{dataFlow.Sources.First().Class.NamePascal}> reader, //");
-        fw.WriteLine(1, @$"		@Qualifier(""{dataFlow.Name.ToPascalCase()}Writer"") ItemWriter<{dataFlow.Class.NamePascal}> writer //");
+        fw.WriteLine(1, @$"		@Qualifier(""{dataFlow.Name.ToPascalCase()}Writer"") ItemWriter<{dataFlow.Class.NamePascal}> writer{(hookStep.Any() ? ',' : string.Empty)} //");
+        var index = 0;
+        foreach (var hook in hookStep)
+        {
+            var isLast = index == hookStep.Count() - 1;
+            var processorName = GetProcessorName(dataFlow, hook, index).ToCamelCase();
+            var processorSourceClass = GetProcessorSourceClass(hook, dataFlow);
+            var processorTargetClass = GetProcessorTargetClass(hook, dataFlow);
+            fw.AddImport("org.springframework.batch.item.ItemProcessor");
+            fw.WriteLine(1, @$"		@Qualifier(""{GetProcessorName(dataFlow, hook, index)}"") ItemProcessor<{processorSourceClass}, {processorTargetClass}> {processorName}{(isLast ? string.Empty : ",")} //");
+            index++;
+        }
+
+        var processors = new List<string>();
         fw.WriteLine(1, ") {");
         fw.WriteLine(2, @$"return new StepBuilder(""{dataFlow.Name.ToPascalCase()}Step"", jobRepository) //");
         fw.WriteLine(3, @$".<{dataFlow.Sources.First().Class.NamePascal}, {dataFlow.Class.NamePascal}>chunk({Config.DataFlowsBulkSize}, transactionManager) //");
         fw.WriteLine(3, ".reader(reader) //");
-        if (dataFlow.Sources.First().Class != dataFlow.Class)
+        var i = 0;
+        foreach (var t in dataFlow.Hooks.Where(h => h == FlowHook.AfterSource))
         {
-            fw.WriteLine(3, $".processor({dataFlow.Class.NamePascal}::new) //");
+            processors.Add(GetProcessorName(dataFlow, FlowHook.AfterSource, i++).ToCamelCase());
+        }
+
+        if (dataFlow.Hooks.Contains(FlowHook.Map))
+        {
+            foreach (var t in dataFlow.Hooks.Where(h => h == FlowHook.Map))
+            {
+                processors.Add(GetProcessorName(dataFlow, FlowHook.Map, 0).ToCamelCase());
+            }
+        }
+        else if (dataFlow.Sources.First().Class != dataFlow.Class)
+        {
+            processors.Add($"({dataFlow.Sources[0].Class.NamePascal} item) -> new {dataFlow.Class.NamePascal}(item)");
+        }
+
+        i = 0;
+        foreach (var t in dataFlow.Hooks.Where(h => h == FlowHook.BeforeTarget))
+        {
+            processors.Add(GetProcessorName(dataFlow, FlowHook.BeforeTarget, i++).ToCamelCase());
+        }
+
+        if (processors.Count() == 1)
+        {
+            fw.WriteLine(3, $".processor({processors[0]}) //");
+        }
+        else if (processors.Count() > 1)
+        {
+            fw.AddImport("org.springframework.batch.item.support.CompositeItemProcessor");
+            fw.WriteLine(3, $".processor(new CompositeItemProcessor<>({string.Join(", ", processors)})) //");
+        }
+
+        foreach (var listener in Config.DataFlowsListeners)
+        {
+            fw.WriteLine(3, $".listener({listener.ToCamelCase()}) //");
         }
 
         fw.WriteLine(3, ".writer(writer) //");
         fw.WriteLine(3, ".build();");
         fw.WriteLine(1, "}");
+    }
+
+    private string GetProcessorSourceClass(FlowHook flowHook, DataFlow flow)
+    {
+        return flowHook switch
+        {
+            FlowHook.AfterSource or FlowHook.Map => flow.Sources[0].Class.NamePascal,
+            FlowHook.BeforeTarget => flow.Class.NamePascal,
+            _ => string.Empty,
+        };
+    }
+
+    private string GetProcessorTargetClass(FlowHook flowHook, DataFlow flow)
+    {
+        return flowHook switch
+        {
+            FlowHook.AfterSource => flow.Sources[0].Class.NamePascal,
+            FlowHook.BeforeTarget or FlowHook.Map => flow.Class.NamePascal,
+            _ => string.Empty,
+        };
+    }
+
+    private string GetProcessorName(DataFlow dataFlow, FlowHook flowHook, int index)
+    {
+        var suffix = string.Empty;
+        if (dataFlow.Hooks.Where(h => h == flowHook).Count() > 1)
+        {
+            suffix = "_" + dataFlow.Hooks.Take(index + 1).Where(h => h == flowHook).Count();
+        }
+
+        return $@"{dataFlow.Name.ToPascalCase()}{flowHook}{suffix}";
     }
 
     private void WriteBeanWriter(JavaWriter fw, DataFlow dataFlow, string tag)
@@ -245,6 +332,11 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
 
                 return result;
             }).FirstOrDefault();
+        if (dataFlow.Hooks.Contains(FlowHook.Map))
+        {
+            mapper = null;
+        }
+
         foreach (var property in dataFlow.Class.Properties.OfType<IFieldProperty>()
             .Where(p => mapper == null || mapper.Params.SelectMany(pa => pa.Mappings).Select(mapping => mapping.Key).Contains(p)))
         {
@@ -272,6 +364,7 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.WriteClassDeclaration($"{dataFlow.Name}Flow", null);
         WriteBeanFlow(fw, dataFlow);
         WriteBeanStep(fw, dataFlow, tag);
+
         if (dataFlow.Type == DataFlowType.Replace)
         {
             WriteBeanTruncateStep(fw, dataFlow);
