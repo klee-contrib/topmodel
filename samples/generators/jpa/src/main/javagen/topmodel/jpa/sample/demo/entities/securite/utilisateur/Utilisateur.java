@@ -25,6 +25,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 import topmodel.jpa.sample.demo.entities.securite.profil.Profil;
+import topmodel.jpa.sample.demo.enums.securite.utilisateur.TypeUtilisateurCode;
 
 /**
  * Utilisateur de l'application.

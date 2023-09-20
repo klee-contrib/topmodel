@@ -78,7 +78,7 @@ public class JpaModelPropertyGenerator
                 WriteProperty(fw, cp);
                 break;
             case AssociationProperty { Association.IsPersistent: true } ap:
-                WriteProperty(fw, classe, ap);
+                WriteProperty(fw, classe, ap, tag);
                 break;
             case IFieldProperty fp:
                 WriteProperty(fw, classe, fp, tag);
@@ -153,7 +153,7 @@ public class JpaModelPropertyGenerator
         fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
     }
 
-    private void WriteProperty(JavaWriter fw, Class classe, AssociationProperty property)
+    private void WriteProperty(JavaWriter fw, Class classe, AssociationProperty property, string tag)
     {
         fw.WriteDocEnd(1);
         if (!_config.UseJdbc)
@@ -193,6 +193,7 @@ public class JpaModelPropertyGenerator
                 var defaultValue = _config.GetValue(property, _classes);
                 if (defaultValue != "null")
                 {
+                    fw.AddImport($"{_config.GetEnumPackageName(classe, tag)}.{_config.GetType(property.Association.PrimaryKey.Single())}");
                     suffix = $" = new {property.Association.NamePascal}({defaultValue})";
                 }
             }

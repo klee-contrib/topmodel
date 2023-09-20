@@ -49,6 +49,11 @@ public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
         fw.WriteLine();
         WriteImports(fw, classe, tag);
         fw.WriteLine();
+        if (Config.CanClassUseEnums(classe))
+        {
+            fw.AddImport($"{Config.GetEnumPackageName(classe, tag)}.{Config.GetType(classe.PrimaryKey.Single())}");
+        }
+
         var pk = classe.PrimaryKey.Count() > 1 ? $"{classe.NamePascal}.{classe.NamePascal}Id" : Config.GetType(classe.PrimaryKey.Single());
         fw.WriteLine($"public interface {classe.NamePascal}DAO extends {(classe.Reference || Config.UseJdbc ? "CrudRepository" : "JpaRepository")}<{classe.NamePascal}, {pk}> {{");
         fw.WriteLine();

@@ -11,7 +11,6 @@ import jakarta.annotation.Generated;
 
 import topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead;
 import topmodel.jpa.sample.demo.dtos.securite.profil.ProfilWrite;
-import topmodel.jpa.sample.demo.enums.securite.profil.DroitCode;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class SecuriteProfilMappers {

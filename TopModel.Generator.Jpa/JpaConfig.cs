@@ -185,7 +185,7 @@ public class JpaConfig : GeneratorConfigBase
         return $"{classe.NamePascal}{classe.EnumKey!.Name.ToPascalCase()}";
     }
 
-    public string GetEnumPackageName(Class classe, string tag, bool? isPersistent = null)
+    public string GetEnumPackageName(Class classe, string tag)
     {
         return GetPackageName(classe.Namespace, EnumsPath, tag);
     }
