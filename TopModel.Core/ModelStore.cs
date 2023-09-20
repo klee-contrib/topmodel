@@ -1416,6 +1416,15 @@ public class ModelStore
                     ModelErrorType = ModelErrorType.TMD0003
                 };
             }
+
+            foreach (var property in classe.Properties.OfType<AssociationProperty>().Where(p => p.Association == classe && string.IsNullOrEmpty(p.Role)))
+            {
+                yield return new ModelError(modelFile, $"Cette association sur la classe '{classe}' doit définir un rôle.", property.Decorator is not null ? classe.DecoratorReferences.FirstOrDefault(dr => dr.ReferenceName == property.Decorator.Name) : property.GetLocation())
+                {
+                    IsError = true,
+                    ModelErrorType = ModelErrorType.TMD1029
+                };
+            }
         }
 
         foreach (var use in modelFile.UselessImports.Where(u => dependencies.Any(d => d.Name == u.ReferenceName)))
