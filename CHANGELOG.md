@@ -1,5 +1,13 @@
 # TopModel.Generator (`modgen`)
 
+## 1.36.3
+
+- [#300](https://github.com/klee-contrib/topmodel/pull/30) - DataFlows hooks
+  - Ajout des `hooks`
+  - Implémentation spring-batch des `hooks`
+- [`769bfa58b`](https://github.com/klee-contrib/topmodel/commit/769bfa58b1ea78749a7607efbe5e3a10749797fc) - [Jpa] Bug fixs sur les imports des types d'enum.
+- [`159efe90`](https://github.com/klee-contrib/topmodel/commit/159efe90c1a74858ba09a1c96c4b307458fe4c80) - [Jpa] Ajout de la notion de listener
+
 ## 1.36.2
 
 - [`51fb64d3`](https://github.com/klee-contrib/topmodel/commit/51fb64d37543f173bb38925d779ed97b588b4020) - [C#] params de doc sur plusieurs lignes + gestion api cliente qui renvoie byte[]
