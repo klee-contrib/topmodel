@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.36.4
+
+- [`d3f3a426`](https://github.com/klee-contrib/topmodel/commit/159efe90c1a74858ba09a1c96c4b307458fe4c80) - [Jpa] Data flows ajout des partials
+
 ## 1.36.3
 
 - [#300](https://github.com/klee-contrib/topmodel/pull/30) - DataFlows hooks
