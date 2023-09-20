@@ -17,6 +17,11 @@
       rel="stylesheet"
       href="//unpkg.com/docsify-gifcontrol/dist/docsify-gifcontrol.css"
     />
+    <link
+      rel="stylesheet"
+      href="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.css"
+    />
+    <script src="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
     <style>
       :root {
         --content-max-width: 80em;
@@ -33,6 +38,9 @@
   <body>
     <div id="app"></div>
     <script>
+      var num = 0;
+      mermaid.initialize({ startOnLoad: false });
+
       window.$docsify = {
         name: "TopModel",
         search: {
@@ -48,7 +56,19 @@
           nextText: "Suivant"
         },
         auto2top: true,
-        logo: "./media/logo-Dark.svg"
+        logo: "./media/logo-Dark.svg",
+        markdown: {
+          renderer: {
+            code: function(code, lang) {
+              if (lang === "mermaid") {
+                return (
+                  '<div class="mermaid">' + mermaid.render('mermaid-svg-' + num++, code) + "</div>"
+                );
+              }
+              return this.origin.code.apply(this, arguments);
+            }
+          }
+        }
       };
     </script>
     <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
