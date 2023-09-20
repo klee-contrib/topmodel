@@ -19,6 +19,7 @@
   - [Endpoints](/model/endpoints.md)
   - [Mappers](/model/mappers.md)
   - [Décorateurs](/model/decorators.md)
+  - [Flux de données](/model/dataFlows.md)
   - [Multilinguisme](/model/i18n.md)
 
 - **[Configuration](/configuration.md)**
