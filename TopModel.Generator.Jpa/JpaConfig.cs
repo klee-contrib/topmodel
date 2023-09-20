@@ -107,7 +107,7 @@ public class JpaConfig : GeneratorConfigBase
     /// <summary>
     /// Listeners à ajouter aux dataflows
     /// </summary>
-    public List<string> DataFlowsListeners { get; set; } = new ();
+    public List<string> DataFlowsListeners { get; set; } = new();
 
     public override string[] PropertiesWithLangVariableSupport => new[]
     {
@@ -170,6 +170,14 @@ public class JpaConfig : GeneratorConfigBase
             OutputDirectory,
             ResolveVariables(DataFlowsPath!, tag: tag, module: df.ModelFile.Namespace.ModulePath).ToFilePath(),
             $"{df.Name.ToPascalCase()}Flow.java");
+    }
+
+    public string GetDataFlowPartialFilePath(DataFlow df, string tag)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(DataFlowsPath!, tag: tag, module: df.ModelFile.Namespace.ModulePath).ToFilePath(),
+            $"{df.Name.ToPascalCase()}PartialFlow.java");
     }
 
     public string GetEnumFileName(Class classe, string tag)

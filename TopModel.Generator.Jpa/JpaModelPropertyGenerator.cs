@@ -264,7 +264,7 @@ public class JpaModelPropertyGenerator
             fw.WriteLine(1, "@Id");
         }
 
-        if (classe.IsPersistent && !_config.GetImplementation(property.Domain)!.Annotations
+        if ((classe.IsPersistent || _config.UseJdbc) && !_config.GetImplementation(property.Domain)!.Annotations
         .Where(i =>
                 classe.IsPersistent && (Target.Persisted & i.Target) > 0
             || !classe.IsPersistent && (Target.Dto & i.Target) > 0)
@@ -298,12 +298,13 @@ public class JpaModelPropertyGenerator
             else
             {
                 fw.AddImport("org.springframework.data.relational.core.mapping.Column");
-                column = $@"@Column(""{property.SqlName}"")";
+                column = $@"@Column(""{property.SqlName.ToLower()}"")";
             }
 
             fw.WriteLine(1, column);
         }
-        else if (property.Required && !property.PrimaryKey && !classe.IsPersistent)
+
+        if (property.Required && !property.PrimaryKey && (!classe.IsPersistent || _config.UseJdbc))
         {
             fw.WriteLine(1, @$"@NotNull");
             fw.AddImport($"{javaOrJakarta}.validation.constraints.NotNull");
