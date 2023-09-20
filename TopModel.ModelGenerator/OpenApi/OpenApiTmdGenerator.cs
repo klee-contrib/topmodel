@@ -80,7 +80,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
             var className = schema.Value.Type == "array" ? schema.Key.Unplurialize() : schema.Key;
 
-            fw.WriteLine($"  name: {className}");
+            fw.WriteLine($"  name: {_config.ClassPrefix}{className}");
 
             if (_config.PreservePropertyCasing)
             {
@@ -110,7 +110,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                 else
                 {
                     fw.WriteLine("    - alias:");
-                    fw.WriteLine($@"        class: {schema.Key.ToPascalCase()}{property.Key.ToPascalCase()}");
+                    fw.WriteLine($@"        class: {_config.ClassPrefix}{schema.Key.ToPascalCase()}{property.Key.ToPascalCase()}");
                     fw.WriteLine($"      name: {property.Key.ToPascalCase()}");
                 }
 
@@ -124,7 +124,7 @@ public class OpenApiTmdGenerator : ModelGenerator
             {
                 fw.WriteLine("---");
                 fw.WriteLine("class:");
-                fw.WriteLine($"  name: {schema.Key.ToPascalCase()}{property.Key.ToPascalCase()}");
+                fw.WriteLine($"  name: {_config.ClassPrefix}{schema.Key.ToPascalCase()}{property.Key.ToPascalCase()}");
 
                 if (_config.PreservePropertyCasing)
                 {
@@ -414,7 +414,7 @@ public class OpenApiTmdGenerator : ModelGenerator
         if (kind != null && name != null)
         {
             var domainKind = TmdGenUtils.GetDomainString(config.Domains, type: kind);
-            sw.WriteLine($"    {(noList ? string.Empty : "- ")}composition: {name}");
+            sw.WriteLine($"    {(noList ? string.Empty : "- ")}composition: {_config.ClassPrefix}{name}");
             sw.WriteLine($"    {(noList ? string.Empty : "  ")}name: {property.Key}");
             if (kind != "object")
             {

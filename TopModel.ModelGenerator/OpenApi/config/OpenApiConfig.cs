@@ -23,4 +23,6 @@ public class OpenApiConfig
     public string ModelFileName { get; set; } = "Model";
 
     public bool PreservePropertyCasing { get; set; } = true;
+
+    public string? ClassPrefix { get; set; }
 }

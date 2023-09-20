@@ -247,6 +247,10 @@
           "preservePropertyCasing": {
             "type": "boolean",
             "description": "Garde les noms des propriétés générées tels quels pour la génération via `modgen`, au lieu de les convertir dans le format du langage cible. Par défaut : `true`."
+          },
+          "classPrefix": {
+            "type": "string",
+            "description": "Préfixe à ajouter à toutes les classes générées pour cette source."
           }
         }
       }
