@@ -11,12 +11,6 @@ public class JpaEnumGenerator : ClassGeneratorBase<JpaConfig>
 {
     private readonly ILogger<JpaEnumGenerator> _logger;
 
-    private readonly Dictionary<string, string> _newableTypes = new()
-    {
-        ["List"] = "ArrayList",
-        ["Set"] = "HashSet"
-    };
-
     public JpaEnumGenerator(ILogger<JpaEnumGenerator> logger, ModelConfig modelConfig)
         : base(logger)
     {

@@ -13,7 +13,7 @@ public class ProceduralSqlConfig
     public string? CrebasFile { get; set; }
 
     /// <summary>
-    /// Retourne ou définit l'emplacement du fichier de création des index uniques (SQL).
+    /// Retourne ou définit l'emplacement du fichier de création des contraintes d'unicité (SQL).
     /// </summary>
     public string? UniqueKeysFile { get; set; }
 

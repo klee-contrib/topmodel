@@ -131,7 +131,7 @@ public abstract class AbstractSchemaGenerator
         writerUk?.WriteLine("-- =========================================================================================== ");
         writerUk?.WriteLine($"--   Application Name	:	{appName} ");
         writerUk?.WriteLine("--   Script Name		:	" + Config.UniqueKeysFile?.Split('/').Last());
-        writerUk?.WriteLine("--   Description		:	Script de création des index uniques.");
+        writerUk?.WriteLine("--   Description		:	Script de création des contraintes d'unicité.");
         writerUk?.WriteLine("-- =========================================================================================== ");
 
         writerType?.WriteLine("-- =========================================================================================== ");
