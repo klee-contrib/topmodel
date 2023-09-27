@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.36.5
+
+- [`320992ad`](https://github.com/klee-contrib/topmodel/commit/320992ad685150647adca250d07228af1d4110f8) - [Jpa] Implémentation annotations api
+
 ## 1.36.4
 
 - [`d3f3a426`](https://github.com/klee-contrib/topmodel/commit/159efe90c1a74858ba09a1c96c4b307458fe4c80) - [Jpa] Data flows ajout des partials
