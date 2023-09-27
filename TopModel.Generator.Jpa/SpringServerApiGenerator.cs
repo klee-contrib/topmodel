@@ -59,7 +59,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
         foreach (var endpoint in endpoints)
         {
-            WriteEndpoint(fw, endpoint);
+            WriteEndpoint(fw, endpoint, tag);
         }
 
         fw.WriteLine("}");
@@ -97,7 +97,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
                 .SelectMany(c => c.GetKindImports(Config, tag)));
     }
 
-    private void WriteEndPointMethod(JavaWriter fw, Endpoint endpoint)
+    private void WriteEndPointMethod(JavaWriter fw, Endpoint endpoint, string tag)
     {
         fw.WriteDocStart(1, endpoint.Description);
 
@@ -145,10 +145,12 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         var methodParams = new List<string>();
         foreach (var param in endpoint.GetRouteParams())
         {
-            var ann = string.Empty;
-            ann += @$"@PathVariable(""{param.GetParamName()}"") ";
+            var pathParamAnnotation = @$"@PathVariable(""{param.GetParamName()}"")";
+
             fw.AddImport("org.springframework.web.bind.annotation.PathVariable");
-            methodParams.Add($"{ann}{Config.GetType(param)} {param.GetParamName()}");
+            fw.AddImports(Config.GetDomainImports(param, tag));
+            var decoratorAnnotations = string.Join(' ', Config.GetDomainAnnotations(param, tag).Select(a => a.StartsWith("@") ? a : "@" + a));
+            methodParams.Add($"{pathParamAnnotation}{(decoratorAnnotations.Length > 0 ? $" {decoratorAnnotations}" : string.Empty)} {Config.GetType(param)} {param.GetParamName()}");
         }
 
         foreach (var param in endpoint.GetQueryParams())
@@ -156,7 +158,9 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
             var ann = string.Empty;
             ann += @$"@RequestParam(value = ""{param.GetParamName()}"", required = {(param is not IFieldProperty fp || fp.Required).ToString().ToFirstLower()}) ";
             fw.AddImport("org.springframework.web.bind.annotation.RequestParam");
-            methodParams.Add($"{ann}{Config.GetType(param)} {param.GetParamName()}");
+            fw.AddImports(Config.GetDomainImports(param, tag));
+            var decoratorAnnotations = string.Join(' ', Config.GetDomainAnnotations(param, tag).Select(a => a.StartsWith("@") ? a : "@" + a));
+            methodParams.Add($"{ann}{(decoratorAnnotations.Length > 0 ? $" {decoratorAnnotations}" : string.Empty)}{Config.GetType(param)} {param.GetParamName()}");
         }
 
         var bodyParam = endpoint.GetBodyParam();
@@ -189,10 +193,10 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         }
     }
 
-    private void WriteEndpoint(JavaWriter fw, Endpoint endpoint)
+    private void WriteEndpoint(JavaWriter fw, Endpoint endpoint, string tag)
     {
         fw.WriteLine();
-        WriteEndPointMethod(fw, endpoint);
+        WriteEndPointMethod(fw, endpoint, tag);
     }
 
     private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
