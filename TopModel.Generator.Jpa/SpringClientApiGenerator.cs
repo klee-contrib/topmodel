@@ -33,11 +33,6 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        foreach (var endpoint in endpoints)
-        {
-            CheckEndpoint(endpoint);
-        }
-
         var className = GetClassName(fileName);
         var packageName = Config.GetPackageName(endpoints.First(), tag);
         using var fw = new JavaWriter(filePath, _logger, packageName, null);
@@ -77,22 +72,6 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         }
 
         fw.WriteLine("}");
-    }
-
-    private static void CheckEndpoint(Endpoint endpoint)
-    {
-        foreach (var q in endpoint.GetQueryParams().Concat(endpoint.GetRouteParams()))
-        {
-            if (q is AssociationProperty ap)
-            {
-                throw new ModelException(endpoint, $"Le endpoint {endpoint.Route} ne peut pas contenir d'association");
-            }
-        }
-
-        if (endpoint.Returns != null && endpoint.Returns is AssociationProperty)
-        {
-            throw new ModelException(endpoint, $"Le retour du endpoint {endpoint.Route} ne peut pas être une association");
-        }
     }
 
     private static string GetClassName(string fileName)

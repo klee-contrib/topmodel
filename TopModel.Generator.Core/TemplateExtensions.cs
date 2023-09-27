@@ -132,17 +132,41 @@ internal static class TemplateExtensions
 
     private static IEnumerable<Match> ExtractVariables(this string input)
     {
-        var regex = new Regex(@"(\{[$a-zA-Z0-9:.]+\})");
+        var regex = new Regex(@"(\{[$a-zA-Z0-9:.\[\]]+\})");
         return regex.Matches(input).Cast<Match>();
+    }
+
+    private static string ResolveVariable(this string input, IPropertyContainer container, string[] parameters)
+    {
+        switch (container)
+        {
+            case Endpoint e:
+                return ResolveVariable(input, e, parameters);
+            case Class c: return ResolveVariable(input, c, parameters);
+            default: return string.Empty;
+        }
     }
 
     private static string ResolveVariable(this string input, IFieldProperty rp, string[] parameters)
     {
+        if (input == null || input.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        if (input.StartsWith("parent."))
+        {
+            return ResolveVariable(input["parent.".Length..], rp.Parent, parameters);
+        }
+
+        if (input.StartsWith("association.") && rp is AssociationProperty ap)
+        {
+            return ResolveVariable(input["association.".Length..], ap.Association, parameters);
+        }
+
         var transform = input.GetTransformation();
         var result = input.Split(':').First() switch
         {
-            "class.name" => transform(rp.Class?.Name.ToString() ?? string.Empty),
-            "class.sqlName" => transform(rp.Class?.SqlName ?? string.Empty),
             "name" => transform(rp.Name ?? string.Empty),
             "sqlName" => transform(rp.SqlName ?? string.Empty),
             "trigram" => transform(rp.Trigram ?? rp.Class?.Trigram ?? string.Empty),
@@ -165,11 +189,24 @@ internal static class TemplateExtensions
 
     private static string ResolveVariable(this string input, CompositionProperty cp, string[] parameters)
     {
+        if (input == null || input.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        if (input.StartsWith("parent."))
+        {
+            return ResolveVariable(input["parent.".Length..], cp.Class, parameters);
+        }
+
+        if (input.StartsWith("composition."))
+        {
+            return ResolveVariable(input["composition.".Length..], cp.Composition, parameters);
+        }
+
         var transform = input.GetTransformation();
         var result = input.Split(':').First() switch
         {
-            "class.name" => transform(cp.Class?.Name.ToString() ?? string.Empty),
-            "composition.name" => transform(cp.Composition?.Name.ToString() ?? string.Empty),
             "name" => transform(cp.Name ?? string.Empty),
             "label" => transform(cp.Label ?? string.Empty),
             "comment" => transform(cp.Comment),
@@ -184,12 +221,49 @@ internal static class TemplateExtensions
         return result;
     }
 
+    private static string ResolveVariable(this string input, IProperty c, string[] parameters)
+    {
+        switch (c)
+        {
+            case IFieldProperty fp: return ResolveVariable(input, fp, parameters);
+            case CompositionProperty cp: return ResolveVariable(input, cp, parameters);
+            default: return string.Empty;
+        }
+    }
+
     private static string ResolveVariable(this string input, Class c, string[] parameters)
     {
+        if (input == null || input.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        if (input.StartsWith("primaryKey."))
+        {
+            if (c.PrimaryKey.FirstOrDefault() == null)
+            {
+                return string.Empty;
+            }
+
+            return ResolveVariable(input["primaryKey.".Length..], c.PrimaryKey.FirstOrDefault()!, parameters);
+        }
+
+        if (input.StartsWith("properties["))
+        {
+            var indexSize = input["properties[".Length..].IndexOf("]");
+            var index = int.Parse(input.Split("properties[")[1].Split("]")[0]);
+            var nextInput = input[("properties[].".Length + indexSize)..];
+            if (c.Properties.Count < index)
+            {
+                return string.Empty;
+            }
+
+            return ResolveVariable(nextInput, c.Properties[index], parameters);
+        }
+
         var transform = input.GetTransformation();
         var result = input.Split(':').First() switch
         {
-            "primaryKey.name" => transform(c.PrimaryKey.FirstOrDefault()?.Name ?? string.Empty),
             "trigram" => transform(c.Trigram),
             "name" => transform(c.Name),
             "sqlName" => transform(c.SqlName),
@@ -210,6 +284,29 @@ internal static class TemplateExtensions
 
     private static string ResolveVariable(this string input, Endpoint e, string[] parameters)
     {
+        if (input.StartsWith("returns."))
+        {
+            if (e.Returns == null)
+            {
+                return string.Empty;
+            }
+
+            return ResolveVariable(input["returns.".Length..], e.Returns, parameters);
+        }
+
+        if (input.StartsWith("params["))
+        {
+            var indexSize = input["params[".Length..].IndexOf("]");
+            var index = int.Parse(input.Split("params[")[1].Split("]")[0]);
+            var nextInput = input[("params[].".Length + indexSize)..];
+            if (e.Params.Count < index)
+            {
+                return string.Empty;
+            }
+
+            return ResolveVariable(nextInput, e.Params[index], parameters);
+        }
+
         var transform = input.GetTransformation();
         var result = input.Split(':').First() switch
         {
@@ -229,24 +326,31 @@ internal static class TemplateExtensions
         return result;
     }
 
-    private static string ResolveVariable(this string input, Domain domainFrom, Domain domainTo, string targetLanguage)
+    private static string ResolveVariable(this string input, Domain domain, string targetLanguage)
     {
         var transform = input.GetTransformation();
         var variable = input.Split(':').First();
 
         return input.Split(':').First() switch
         {
-            "from.mediaType" => transform(domainFrom.MediaType ?? string.Empty),
-            "from.length" => transform(domainFrom.Length?.ToString() ?? string.Empty),
-            "from.scale" => transform(domainFrom.Scale?.ToString() ?? string.Empty),
-            "from.name" => transform(domainFrom.Name ?? string.Empty),
-            "from.type" => transform(domainFrom.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty),
-            "to.mediaType" => transform(domainTo.MediaType ?? string.Empty),
-            "to.length" => transform(domainTo.Length?.ToString() ?? string.Empty),
-            "to.scale" => transform(domainTo.Scale?.ToString() ?? string.Empty),
-            "to.name" => transform(domainTo.Name ?? string.Empty),
-            "to.type" => transform(domainTo.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty),
+            "mediaType" => transform(domain.MediaType ?? string.Empty),
+            "length" => transform(domain.Length?.ToString() ?? string.Empty),
+            "scale" => transform(domain.Scale?.ToString() ?? string.Empty),
+            "name" => transform(domain.Name ?? string.Empty),
+            "type" => transform(domain.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty),
             var i => i
         };
+    }
+
+    private static string ResolveVariable(this string input, Domain domainFrom, Domain domainTo, string targetLanguage)
+    {
+        if (input.StartsWith("from."))
+        {
+            return ResolveVariable(input.Split("from.")[1], domainFrom, targetLanguage);
+        }
+        else
+        {
+            return ResolveVariable(input.Split("to.")[1], domainTo, targetLanguage);
+        }
     }
 }
