@@ -159,9 +159,25 @@ internal static class TemplateExtensions
             return ResolveVariable(input["parent.".Length..], rp.Parent, parameters);
         }
 
-        if (input.StartsWith("association.") && rp is AssociationProperty ap)
+        if (input.StartsWith("class."))
         {
-            return ResolveVariable(input["association.".Length..], ap.Association, parameters);
+            return ResolveVariable(input["class.".Length..], rp.Parent, parameters);
+        }
+
+        if (input.StartsWith("endpoint."))
+        {
+            return ResolveVariable(input["endpoint.".Length..], rp.Parent, parameters);
+        }
+
+        if (input.StartsWith("association.") && (rp is AssociationProperty ap || rp is AliasProperty alp && alp.Property is AssociationProperty asp))
+        {
+            var asso = rp switch
+            {
+                AssociationProperty assop => assop.Association,
+                AliasProperty { Property: AssociationProperty alip } => alip.Association,
+                _ => null // impossible
+            };
+            return ResolveVariable(input["association.".Length..], asso!, parameters);
         }
 
         var transform = input.GetTransformation();
@@ -197,6 +213,16 @@ internal static class TemplateExtensions
         if (input.StartsWith("parent."))
         {
             return ResolveVariable(input["parent.".Length..], cp.Class, parameters);
+        }
+
+        if (input.StartsWith("class."))
+        {
+            return ResolveVariable(input["class.".Length..], cp.Class, parameters);
+        }
+
+        if (input.StartsWith("endpoint."))
+        {
+            return ResolveVariable(input["endpoint.".Length..], cp.Class, parameters);
         }
 
         if (input.StartsWith("composition."))
@@ -251,14 +277,21 @@ internal static class TemplateExtensions
         if (input.StartsWith("properties["))
         {
             var indexSize = input["properties[".Length..].IndexOf("]");
-            var index = int.Parse(input.Split("properties[")[1].Split("]")[0]);
-            var nextInput = input[("properties[].".Length + indexSize)..];
-            if (c.Properties.Count < index)
+            var indexString = input.Split("properties[")[1].Split("]")[0];
+            if (int.TryParse(indexString, out var index))
+            {
+                var nextInput = input[("properties[].".Length + indexSize)..];
+                if (c.Properties.Count < index)
+                {
+                    return string.Empty;
+                }
+
+                return ResolveVariable(nextInput, c.Properties[index], parameters);
+            }
+            else
             {
                 return string.Empty;
             }
-
-            return ResolveVariable(nextInput, c.Properties[index], parameters);
         }
 
         var transform = input.GetTransformation();
