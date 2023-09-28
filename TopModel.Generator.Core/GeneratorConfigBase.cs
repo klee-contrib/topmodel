@@ -96,13 +96,13 @@ public abstract class GeneratorConfigBase
     public string? GetClassExtends(Class item)
     {
         var extendsDecorator = item.Decorators.SingleOrDefault(d => GetImplementation(d.Decorator)?.Extends != null);
-        return item.Extends?.NamePascal ?? GetImplementation(extendsDecorator.Decorator)?.Extends!.ParseTemplate(item, extendsDecorator.Parameters);
+        return item.Extends?.NamePascal ?? GetImplementation(extendsDecorator.Decorator)?.Extends!.ParseTemplate(item, extendsDecorator.Parameters, this);
     }
 
     public IEnumerable<string> GetClassImplements(Class classe)
     {
         return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Implements ?? Array.Empty<string>())
-            .Select(i => i.ParseTemplate(classe, d.Parameters)))
+            .Select(i => i.ParseTemplate(classe, d.Parameters, this)))
             .Distinct();
     }
 
@@ -116,7 +116,7 @@ public abstract class GeneratorConfigBase
             {
                 value = GetImplementation(converter)!.Text
                     .Replace("{value}", value)
-                    .ParseTemplate(fromDomain, toDomain, Language);
+                    .ParseTemplate(fromDomain, toDomain, Language, this);
             }
         }
 
@@ -133,31 +133,31 @@ public abstract class GeneratorConfigBase
         return null;
     }
 
-    public IEnumerable<string> GetDecoratorAnnotations(Class classe)
+    public IEnumerable<string> GetDecoratorAnnotations(Class classe, string tag)
     {
         return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Annotations ?? Array.Empty<string>())
-            .Select(a => a.ParseTemplate(classe, d.Parameters)))
+            .Select(a => a.ParseTemplate(classe, d.Parameters, this, tag)))
             .Distinct();
     }
 
-    public IEnumerable<string> GetDecoratorAnnotations(Endpoint endpoint)
+    public IEnumerable<string> GetDecoratorAnnotations(Endpoint endpoint, string tag)
     {
         return endpoint.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Annotations ?? Array.Empty<string>())
-            .Select(a => a.ParseTemplate(endpoint, d.Parameters)))
+            .Select(a => a.ParseTemplate(endpoint, d.Parameters, this, tag)))
             .Distinct();
     }
 
-    public IEnumerable<string> GetDecoratorImports(Class classe)
+    public IEnumerable<string> GetDecoratorImports(Class classe, string tag)
     {
         return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Imports ?? Array.Empty<string>())
-            .Select(i => i.ParseTemplate(classe, d.Parameters)))
+            .Select(i => i.ParseTemplate(classe, d.Parameters, this, tag)))
             .Distinct();
     }
 
-    public IEnumerable<string> GetDecoratorImports(Endpoint endpoint)
+    public IEnumerable<string> GetDecoratorImports(Endpoint endpoint, string tag)
     {
         return endpoint.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Imports ?? Array.Empty<string>())
-            .Select(i => i.ParseTemplate(endpoint, d.Parameters)))
+            .Select(i => i.ParseTemplate(endpoint, d.Parameters, this, tag)))
             .Distinct();
     }
 
@@ -167,7 +167,7 @@ public abstract class GeneratorConfigBase
         {
             foreach (var annotation in GetImplementation(fp.Domain)!.Annotations
                 .Where(a => FilterAnnotations(a, fp, tag))
-                .Select(a => a.Text.ParseTemplate(fp)))
+                .Select(a => a.Text.ParseTemplate(fp, this, tag)))
             {
                 yield return annotation;
             }
@@ -176,7 +176,7 @@ public abstract class GeneratorConfigBase
         {
             foreach (var annotation in GetImplementation(cp.Domain)!.Annotations
                 .Where(a => FilterAnnotations(a, cp, tag))
-                .Select(a => a.Text.ParseTemplate(cp)))
+                .Select(a => a.Text.ParseTemplate(cp, this, tag)))
             {
                 yield return annotation;
             }
@@ -187,7 +187,7 @@ public abstract class GeneratorConfigBase
     {
         if (property.Domain != null)
         {
-            foreach (var import in GetImplementation(property.Domain)!.Imports.Select(u => u.ParseTemplate(property)))
+            foreach (var import in GetImplementation(property.Domain)!.Imports.Select(u => u.ParseTemplate(property, this, tag)))
             {
                 yield return import;
             }
@@ -195,7 +195,7 @@ public abstract class GeneratorConfigBase
             foreach (var import in GetImplementation(property.Domain)!.Annotations
                 .Where(a => FilterAnnotations(a, property, tag))
                 .SelectMany(a => a.Imports)
-                .Select(u => u.ParseTemplate(property)))
+                .Select(u => u.ParseTemplate(property, this, tag)))
             {
                 yield return import;
             }
@@ -276,13 +276,13 @@ public abstract class GeneratorConfigBase
                 _ => property
             };
 
-            return (GetImplementation(op.Domain)?.GenericType ?? "{T}").Replace("{T}", GetEnumType(className, propName, isPrimaryKeyDef)).ParseTemplate(op);
+            return (GetImplementation(op.Domain)?.GenericType ?? "{T}").Replace("{T}", GetEnumType(className, propName, isPrimaryKeyDef)).ParseTemplate(op, this);
         }
 
         string GetTransformed(string type)
         {
             var domain = GetImplementation(property.Domain);
-            return (domain?.GenericType?.Replace("{T}", type) ?? domain?.Type ?? string.Empty).ParseTemplate(property);
+            return (domain?.GenericType?.Replace("{T}", type) ?? domain?.Type ?? string.Empty).ParseTemplate(property, this);
         }
 
         string HandleAUC(AssociationProperty ap)
@@ -318,8 +318,8 @@ public abstract class GeneratorConfigBase
             AliasProperty { Property: AssociationProperty ap } when CanClassUseEnums(ap.Association, availableClasses) => HandleEnum(ap),
             RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, availableClasses, rp) => HandleEnum(rp),
             AliasProperty { Property: RegularProperty { Class: not null } rp } when CanClassUseEnums(rp.Class, availableClasses, rp) => HandleEnum(rp),
-            IFieldProperty => (GetImplementation(property.Domain)?.Type ?? string.Empty).ParseTemplate(property),
-            CompositionProperty { Domain: not null } => (GetImplementation(property.Domain)?.GenericType ?? "{T}").Replace("{T}", "{composition.name}").ParseTemplate(property),
+            IFieldProperty => (GetImplementation(property.Domain)?.Type ?? string.Empty).ParseTemplate(property, this),
+            CompositionProperty { Domain: not null } => (GetImplementation(property.Domain)?.GenericType ?? "{T}").Replace("{T}", "{composition.name}").ParseTemplate(property, this),
             CompositionProperty cp => cp.Composition.NamePascal,
             _ => string.Empty
         };
@@ -349,7 +349,7 @@ public abstract class GeneratorConfigBase
         var template = GetImplementation(fp.Domain)?.GetValueTemplate(value);
         if (template != null)
         {
-            return template.Value.Replace("{value}", value).ParseTemplate(fp);
+            return template.Value.Replace("{value}", value).ParseTemplate(fp, this);
         }
 
         var prop = fp is AliasProperty alp ? alp.Property : fp;
@@ -392,7 +392,7 @@ public abstract class GeneratorConfigBase
         var template = value != null ? GetImplementation(property.Domain)?.GetValueTemplate(value) : null;
         if (template != null)
         {
-            return template.Imports.Select(i => i.ParseTemplate(property));
+            return template.Imports.Select(i => i.ParseTemplate(property, this));
         }
         else
         {
@@ -443,11 +443,7 @@ public abstract class GeneratorConfigBase
             var value = (string?)property.GetValue(this);
             if (value != null)
             {
-                foreach (var varName in GlobalVariableNames)
-                {
-                    value = ReplaceVariable(value, varName, Variables[varName]);
-                }
-
+                value = ResolveGlobalVariables(value);
                 property.SetValue(this, value);
 
                 foreach (var match in Regex.Matches(value, @"\{([$a-zA-Z0-9_-]+)(:\w+)?\}").Cast<Match>())
@@ -515,6 +511,16 @@ public abstract class GeneratorConfigBase
         return classe.IsPersistent;
     }
 
+    public string ResolveGlobalVariables(string input)
+    {
+        foreach (var varName in GlobalVariableNames)
+        {
+            input = ReplaceVariable(input, varName, Variables[varName]);
+        }
+
+        return input;
+    }
+
     /// <summary>
     /// Résout toutes les variables pour une valeur donnée.
     /// </summary>
@@ -573,7 +579,7 @@ public abstract class GeneratorConfigBase
     }
 
     /// <summary>
-    /// Résout les variables de tag dans un chaîne de caractère.
+    /// Résout les variables de tag dans une chaîne de caractère.
     /// </summary>
     /// <param name="value">Chaîne de caractères.</param>
     /// <param name="tag">Nom du tag.</param>

@@ -156,7 +156,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
         }
 
-        foreach (var annotation in Config.GetDecoratorAnnotations(item))
+        foreach (var annotation in Config.GetDecoratorAnnotations(item, tag))
         {
             w.WriteAttribute(annotation);
         }
@@ -478,7 +478,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
         }
 
-        foreach (var @using in Config.GetDecoratorImports(item))
+        foreach (var @using in Config.GetDecoratorImports(item, tag))
         {
             usings.Add(@using);
         }

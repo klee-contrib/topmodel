@@ -113,7 +113,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
                 consumes = @$", consumes = {{ {string.Join(", ", endpoint.Params.Where(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null).Select(p => $@"""{((IFieldProperty)p).Domain.MediaType}"""))} }}";
             }
 
-            foreach (var annotation in Config.GetDecoratorAnnotations(endpoint))
+            foreach (var annotation in Config.GetDecoratorAnnotations(endpoint, tag))
             {
                 fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : "@")}{annotation}");
             }
@@ -182,6 +182,6 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
     {
         fw.AddImports(endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToPascalCase(true)}Mapping"));
         fw.AddImports(GetTypeImports(endpoints, tag));
-        fw.AddImports(endpoints.SelectMany(Config.GetDecoratorImports));
+        fw.AddImports(endpoints.SelectMany(e => Config.GetDecoratorImports(e, tag)));
     }
 }

@@ -79,7 +79,7 @@ public class {className} : Controller
                 wd.AppendLine($@"{indent}[Produces(""{mediaType}"")]");
             }
 
-            foreach (var annotation in Config.GetDecoratorAnnotations(endpoint))
+            foreach (var annotation in Config.GetDecoratorAnnotations(endpoint, tag))
             {
                 wd.AppendLine($"{indent}[{annotation}]");
             }

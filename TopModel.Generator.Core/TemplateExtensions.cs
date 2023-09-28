@@ -46,7 +46,7 @@ internal static class TemplateExtensions
         return transform;
     }
 
-    public static string ParseTemplate(this string template, IProperty p)
+    public static string ParseTemplate(this string template, IProperty p, GeneratorConfigBase config, string? tag = null)
     {
         if (p is IFieldProperty fp)
         {
@@ -58,7 +58,7 @@ internal static class TemplateExtensions
             var result = template;
             foreach (var t in template.ExtractVariables())
             {
-                result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), fp, fp.DomainParameters));
+                result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), fp, fp.DomainParameters, config, tag));
             }
 
             return result;
@@ -73,7 +73,7 @@ internal static class TemplateExtensions
             var result = template;
             foreach (var t in template.ExtractVariables())
             {
-                result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), cp, cp.DomainParameters));
+                result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), cp, cp.DomainParameters, config, tag));
             }
 
             return result;
@@ -82,7 +82,7 @@ internal static class TemplateExtensions
         return template;
     }
 
-    public static string ParseTemplate(this string template, Class c, string[] parameters)
+    public static string ParseTemplate(this string template, Class c, string[] parameters, GeneratorConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -92,13 +92,13 @@ internal static class TemplateExtensions
         var result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), c, parameters));
+            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), c, parameters, config, tag));
         }
 
         return result;
     }
 
-    public static string ParseTemplate(this string template, Endpoint e, string[] parameters)
+    public static string ParseTemplate(this string template, Endpoint e, string[] parameters, GeneratorConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -108,13 +108,13 @@ internal static class TemplateExtensions
         var result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), e, parameters));
+            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), e, parameters, config, tag));
         }
 
         return result;
     }
 
-    public static string ParseTemplate(this string template, Domain domainFrom, Domain domainTo, string targetLanguage)
+    public static string ParseTemplate(this string template, Domain domainFrom, Domain domainTo, string targetLanguage, GeneratorConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -124,7 +124,7 @@ internal static class TemplateExtensions
         var result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), domainFrom, domainTo, targetLanguage));
+            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), domainFrom, domainTo, targetLanguage, config, tag));
         }
 
         return result;
@@ -136,18 +136,28 @@ internal static class TemplateExtensions
         return regex.Matches(input).Cast<Match>();
     }
 
-    private static string ResolveVariable(this string input, IPropertyContainer container, string[] parameters)
+    private static string ResolveVariable(this string input, IProperty c, string[] parameters, GeneratorConfigBase config, string? tag = null)
     {
-        switch (container)
+        switch (c)
         {
-            case Endpoint e:
-                return ResolveVariable(input, e, parameters);
-            case Class c: return ResolveVariable(input, c, parameters);
+            case IFieldProperty fp: return ResolveVariable(input, fp, parameters, config, tag);
+            case CompositionProperty cp: return ResolveVariable(input, cp, parameters, config, tag);
             default: return string.Empty;
         }
     }
 
-    private static string ResolveVariable(this string input, IFieldProperty rp, string[] parameters)
+    private static string ResolveVariable(this string input, IPropertyContainer container, string[] parameters, GeneratorConfigBase config, string? tag = null)
+    {
+        switch (container)
+        {
+            case Endpoint e:
+                return ResolveVariable(input, e, parameters, config, tag);
+            case Class c: return ResolveVariable(input, c, parameters, config, tag);
+            default: return string.Empty;
+        }
+    }
+
+    private static string ResolveVariable(this string input, IFieldProperty fp, string[] parameters, GeneratorConfigBase config, string? tag = null)
     {
         if (input == null || input.Length == 0)
         {
@@ -156,43 +166,43 @@ internal static class TemplateExtensions
 
         if (input.StartsWith("parent."))
         {
-            return ResolveVariable(input["parent.".Length..], rp.Parent, parameters);
+            return ResolveVariable(input["parent.".Length..], fp.Parent, parameters, config, tag);
         }
 
         if (input.StartsWith("class."))
         {
-            return ResolveVariable(input["class.".Length..], rp.Parent, parameters);
+            return ResolveVariable(input["class.".Length..], fp.Parent, parameters, config, tag);
         }
 
         if (input.StartsWith("endpoint."))
         {
-            return ResolveVariable(input["endpoint.".Length..], rp.Parent, parameters);
+            return ResolveVariable(input["endpoint.".Length..], fp.Parent, parameters, config, tag);
         }
 
-        if (input.StartsWith("association.") && (rp is AssociationProperty ap || rp is AliasProperty alp && alp.Property is AssociationProperty asp))
+        if (input.StartsWith("association.") && (fp is AssociationProperty ap || fp is AliasProperty alp && alp.Property is AssociationProperty asp))
         {
-            var asso = rp switch
+            var asso = fp switch
             {
                 AssociationProperty assop => assop.Association,
                 AliasProperty { Property: AssociationProperty alip } => alip.Association,
                 _ => null // impossible
             };
-            return ResolveVariable(input["association.".Length..], asso!, parameters);
+            return ResolveVariable(input["association.".Length..], asso!, parameters, config, tag);
         }
 
         var transform = input.GetTransformation();
         var result = input.Split(':').First() switch
         {
-            "name" => transform(rp.Name ?? string.Empty),
-            "sqlName" => transform(rp.SqlName ?? string.Empty),
-            "trigram" => transform(rp.Trigram ?? rp.Class?.Trigram ?? string.Empty),
-            "label" => transform(rp.Label ?? string.Empty),
-            "comment" => transform(rp.Comment),
-            "required" => transform(rp.Required.ToString().ToLower()),
-            "resourceKey" => transform(rp.ResourceKey.ToString()),
-            "commentResourceKey" => transform(rp.CommentResourceKey.ToString()),
-            "defaultValue" => transform(rp.DefaultValue?.ToString() ?? string.Empty),
-            var i => i
+            "name" => transform(fp.Name ?? string.Empty),
+            "sqlName" => transform(fp.SqlName ?? string.Empty),
+            "trigram" => transform(fp.Trigram ?? fp.Class?.Trigram ?? string.Empty),
+            "label" => transform(fp.Label ?? string.Empty),
+            "comment" => transform(fp.Comment),
+            "required" => transform(fp.Required.ToString().ToLower()),
+            "resourceKey" => transform(fp.ResourceKey.ToString()),
+            "commentResourceKey" => transform(fp.CommentResourceKey.ToString()),
+            "defaultValue" => transform(fp.DefaultValue?.ToString() ?? string.Empty),
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{').Trim('}'), module: fp.Parent.Namespace.Module, tag: tag)
         };
 
         for (var i = 0; i < parameters.Length; i++)
@@ -203,7 +213,7 @@ internal static class TemplateExtensions
         return result;
     }
 
-    private static string ResolveVariable(this string input, CompositionProperty cp, string[] parameters)
+    private static string ResolveVariable(this string input, CompositionProperty cp, string[] parameters, GeneratorConfigBase config, string? tag = null)
     {
         if (input == null || input.Length == 0)
         {
@@ -212,22 +222,22 @@ internal static class TemplateExtensions
 
         if (input.StartsWith("parent."))
         {
-            return ResolveVariable(input["parent.".Length..], cp.Class, parameters);
+            return ResolveVariable(input["parent.".Length..], cp.Class, parameters, config, tag);
         }
 
         if (input.StartsWith("class."))
         {
-            return ResolveVariable(input["class.".Length..], cp.Class, parameters);
+            return ResolveVariable(input["class.".Length..], cp.Class, parameters, config, tag);
         }
 
         if (input.StartsWith("endpoint."))
         {
-            return ResolveVariable(input["endpoint.".Length..], cp.Class, parameters);
+            return ResolveVariable(input["endpoint.".Length..], cp.Class, parameters, config, tag);
         }
 
         if (input.StartsWith("composition."))
         {
-            return ResolveVariable(input["composition.".Length..], cp.Composition, parameters);
+            return ResolveVariable(input["composition.".Length..], cp.Composition, parameters, config, tag);
         }
 
         var transform = input.GetTransformation();
@@ -236,7 +246,7 @@ internal static class TemplateExtensions
             "name" => transform(cp.Name ?? string.Empty),
             "label" => transform(cp.Label ?? string.Empty),
             "comment" => transform(cp.Comment),
-            var i => i
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{').Trim('}'), module: cp.Class.Namespace.Module, tag: tag)
         };
 
         for (var i = 0; i < parameters.Length; i++)
@@ -247,17 +257,7 @@ internal static class TemplateExtensions
         return result;
     }
 
-    private static string ResolveVariable(this string input, IProperty c, string[] parameters)
-    {
-        switch (c)
-        {
-            case IFieldProperty fp: return ResolveVariable(input, fp, parameters);
-            case CompositionProperty cp: return ResolveVariable(input, cp, parameters);
-            default: return string.Empty;
-        }
-    }
-
-    private static string ResolveVariable(this string input, Class c, string[] parameters)
+    private static string ResolveVariable(this string input, Class c, string[] parameters, GeneratorConfigBase config, string? tag = null)
     {
         if (input == null || input.Length == 0)
         {
@@ -271,7 +271,7 @@ internal static class TemplateExtensions
                 return string.Empty;
             }
 
-            return ResolveVariable(input["primaryKey.".Length..], c.PrimaryKey.FirstOrDefault()!, parameters);
+            return ResolveVariable(input["primaryKey.".Length..], c.PrimaryKey.FirstOrDefault()!, parameters, config, tag);
         }
 
         if (input.StartsWith("properties["))
@@ -286,7 +286,7 @@ internal static class TemplateExtensions
                     return string.Empty;
                 }
 
-                return ResolveVariable(nextInput, c.Properties[index], parameters);
+                return ResolveVariable(nextInput, c.Properties[index], parameters, config, tag);
             }
             else
             {
@@ -304,7 +304,7 @@ internal static class TemplateExtensions
             "label" => transform(c.Label ?? string.Empty),
             "pluralName" => transform(c.PluralName ?? string.Empty),
             "module" => transform(c.Namespace.Module ?? string.Empty),
-            var i => i
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{').Trim('}'), module: c.Namespace.Module, tag: tag)
         };
 
         for (var i = 0; i < parameters.Length; i++)
@@ -315,7 +315,7 @@ internal static class TemplateExtensions
         return result;
     }
 
-    private static string ResolveVariable(this string input, Endpoint e, string[] parameters)
+    private static string ResolveVariable(this string input, Endpoint e, string[] parameters, GeneratorConfigBase config, string? tag = null)
     {
         if (input.StartsWith("returns."))
         {
@@ -324,20 +324,27 @@ internal static class TemplateExtensions
                 return string.Empty;
             }
 
-            return ResolveVariable(input["returns.".Length..], e.Returns, parameters);
+            return ResolveVariable(input["returns.".Length..], e.Returns, parameters, config, tag);
         }
 
         if (input.StartsWith("params["))
         {
             var indexSize = input["params[".Length..].IndexOf("]");
-            var index = int.Parse(input.Split("params[")[1].Split("]")[0]);
-            var nextInput = input[("params[].".Length + indexSize)..];
-            if (e.Params.Count < index)
+            var indexString = input.Split("params[")[1].Split("]")[0];
+            if (int.TryParse(indexString, out var index))
+            {
+                var nextInput = input[("params[].".Length + indexSize)..];
+                if (e.Params.Count < index)
+                {
+                    return string.Empty;
+                }
+
+                return ResolveVariable(nextInput, e.Params[index], parameters, config, tag);
+            }
+            else
             {
                 return string.Empty;
             }
-
-            return ResolveVariable(nextInput, e.Params[index], parameters);
         }
 
         var transform = input.GetTransformation();
@@ -348,7 +355,7 @@ internal static class TemplateExtensions
             "route" => transform(e.Route),
             "description" => transform(e.Description),
             "module" => transform(e.Namespace.Module ?? string.Empty),
-            var i => i
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{').Trim('}'), module: e.Namespace.Module, tag: tag)
         };
 
         for (var i = 0; i < parameters.Length; i++)
@@ -359,7 +366,7 @@ internal static class TemplateExtensions
         return result;
     }
 
-    private static string ResolveVariable(this string input, Domain domain, string targetLanguage)
+    private static string ResolveVariable(this string input, Domain domain, string targetLanguage, GeneratorConfigBase config, string? tag = null)
     {
         var transform = input.GetTransformation();
         var variable = input.Split(':').First();
@@ -371,19 +378,19 @@ internal static class TemplateExtensions
             "scale" => transform(domain.Scale?.ToString() ?? string.Empty),
             "name" => transform(domain.Name ?? string.Empty),
             "type" => transform(domain.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty),
-            var i => i
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{').Trim('}'), tag: tag)
         };
     }
 
-    private static string ResolveVariable(this string input, Domain domainFrom, Domain domainTo, string targetLanguage)
+    private static string ResolveVariable(this string input, Domain domainFrom, Domain domainTo, string targetLanguage, GeneratorConfigBase config, string? tag = null)
     {
         if (input.StartsWith("from."))
         {
-            return ResolveVariable(input.Split("from.")[1], domainFrom, targetLanguage);
+            return ResolveVariable(input.Split("from.")[1], domainFrom, targetLanguage, config, tag);
         }
         else
         {
-            return ResolveVariable(input.Split("to.")[1], domainTo, targetLanguage);
+            return ResolveVariable(input.Split("to.")[1], domainTo, targetLanguage, config, tag);
         }
     }
 }
