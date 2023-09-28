@@ -33,11 +33,6 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
-        foreach (var endpoint in endpoints)
-        {
-            CheckEndpoint(endpoint);
-        }
-
         var className = GetClassName(fileName);
         var packageName = Config.GetPackageName(endpoints.First(), tag);
         using var fw = new JavaWriter(filePath, _logger, packageName, null);
@@ -63,22 +58,6 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         }
 
         fw.WriteLine("}");
-    }
-
-    private static void CheckEndpoint(Endpoint endpoint)
-    {
-        foreach (var q in endpoint.GetQueryParams().Concat(endpoint.GetRouteParams()))
-        {
-            if (q is AssociationProperty ap)
-            {
-                throw new ModelException(endpoint, $"Le endpoint {endpoint.Route} ne peut pas contenir d'association");
-            }
-        }
-
-        if (endpoint.Returns != null && endpoint.Returns is AssociationProperty)
-        {
-            throw new ModelException(endpoint, $"Le retour du endpoint {endpoint.Route} ne peut pas être une association");
-        }
     }
 
     private static string GetClassName(string fileName)
@@ -134,7 +113,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
                 consumes = @$", consumes = {{ {string.Join(", ", endpoint.Params.Where(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null).Select(p => $@"""{((IFieldProperty)p).Domain.MediaType}"""))} }}";
             }
 
-            foreach (var annotation in Config.GetDecoratorAnnotations(endpoint))
+            foreach (var annotation in Config.GetDecoratorAnnotations(endpoint, tag))
             {
                 fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : "@")}{annotation}");
             }
@@ -203,6 +182,6 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
     {
         fw.AddImports(endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToPascalCase(true)}Mapping"));
         fw.AddImports(GetTypeImports(endpoints, tag));
-        fw.AddImports(endpoints.SelectMany(Config.GetDecoratorImports));
+        fw.AddImports(endpoints.SelectMany(e => Config.GetDecoratorImports(e, tag)));
     }
 }

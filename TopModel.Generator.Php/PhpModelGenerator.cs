@@ -86,12 +86,12 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
             }
         }
 
-        foreach (var a in Config.GetDecoratorAnnotations(classe))
+        foreach (var a in Config.GetDecoratorAnnotations(classe, tag))
         {
             fw.WriteLine(a);
         }
 
-        foreach (var i in Config.GetDecoratorImports(classe))
+        foreach (var i in Config.GetDecoratorImports(classe, tag))
         {
             fw.AddImport(i);
         }

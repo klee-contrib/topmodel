@@ -123,7 +123,7 @@ _Remarque 2 : `extends`, `implements` et `generateInterface` ne sont évidemment
 
 ### Variables
 
-Il est possible que certaines propriétés des décorateurs dépendent de la classe sur laquelle vous l'ajouter. Vous pourriez par exemple ajouter une interface `java` générique de la classe sur laquelle est ajouté le décorateur.
+Il est possible que certaines propriétés des décorateurs dépendent de la classe sur laquelle vous l'ajoutez. Vous pourriez par exemple ajouter une interface `java` générique de la classe sur laquelle est ajouté le décorateur.
 
 ```java
 /**
@@ -166,7 +166,6 @@ Permet de généraliser le comportement du décorateur `MonInterface` à toutes 
 
 Actuellement, il est possible d'utiliser ces variables dans une classe :
 
-- `primaryKey.name`
 - `trigram`
 - `name`
 - `sqlName`
@@ -174,6 +173,8 @@ Actuellement, il est possible d'utiliser ces variables dans une classe :
 - `label`
 - `pluralName`
 - `module`
+- `primaryKey.*` permet d'accéder à toutes les variables accessibles dans les templates de propriété, pour la clé primaire de la classe qui fait l'objet du décorateur
+- `properties[i]` permet d'accéder à toutes les variables accessibles dans les templates de propriété, pour la ième propriété de la classe qui fait l'objet du décorateur
 
 Et ces variables dans un endpoint :
 
@@ -182,6 +183,8 @@ Et ces variables dans un endpoint :
 - `route`
 - `method`
 - `module`
+- `returns.*` permet d'accéder à toutes les variables accessibles dans les templates de propriété, pour la propriété définie dans le `returns` du endpoint
+- `params[i].*` permet d'accéder à toutes les variables accessibles dans les templates de propriété, pour le ième param du endpoint qui fait l'objet du décorateur
 
 Dans les propriétés d'implémentation :
 
@@ -189,6 +192,8 @@ Dans les propriétés d'implémentation :
 - `implements`
 - `extends`
 - `imports`
+
+Il est également possible d'utiliser n'importe quelle variable définie dans la configuration (`variable` ou `tagVariable`).
 
 Les templates des domaines des propriétés sont également valorisés.
 

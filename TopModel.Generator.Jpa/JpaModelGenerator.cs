@@ -274,7 +274,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             }
         }
 
-        foreach (var a in Config.GetDecoratorAnnotations(classe))
+        foreach (var a in Config.GetDecoratorAnnotations(classe, tag))
         {
             fw.WriteLine($"{(a.StartsWith("@") ? string.Empty : "@")}{a}");
         }
@@ -429,7 +429,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
     private void WriteImports(JavaWriter fw, Class classe, string tag)
     {
         var imports = classe.GetImports(Config, tag, AvailableClasses);
-        imports.AddRange(Config.GetDecoratorImports(classe));
+        imports.AddRange(Config.GetDecoratorImports(classe, tag));
         foreach (var property in classe.GetProperties(AvailableClasses))
         {
             imports.AddRange(property.GetTypeImports(Config, tag));
