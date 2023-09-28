@@ -87,7 +87,7 @@ domain:
 
 ## Templating
 
-Il est possible que certaines propriétés des domaines dépendent de la propriété sur laquelle vous l'ajouter. Vous pourriez par exemple ajouter une annotation `@Label` dans le code `java` qui aurait besoin du libelle renseigné dans TopModel.
+Il est possible que certaines propriétés des domaines dépendent de la propriété sur laquelle vous l'ajoutez. Vous pourriez par exemple ajouter une annotation `@Label` dans le code `java` qui aurait besoin du libelle renseigné dans TopModel.
 
 Pour utiliser un attribut de la propriété dans le domaine, il suffit de référencer cette propriété entre accolades :
 
@@ -104,12 +104,10 @@ domain:
           - topmodel.sample.custom.annotation.Label
 ```
 
-Le code généré sera ainsi différent selon la propriété sur laquelle vous allez effectivement ajouter ce domaine/
+Le code généré sera ainsi différent selon la propriété sur laquelle vous allez effectivement ajouter ce domaine
 
 Actuellement il est possible d'utiliser ces variables
 
-- `class.name`
-- `class.sqlName`
 - `name`
 - `trigram`
 - `label`
@@ -117,14 +115,17 @@ Actuellement il est possible d'utiliser ces variables
 - `required`
 - `resourceKey`
 - `defaultValue`
+- `class.*` ou `parent.*` ou `endpoint.*` : permet d'accéder à toutes les variables accessibles dans les templates de classe, pour l'objet parent de la propriété (la classe ou le endpoint)
+- `domain.*` permet d'accéder à toutes les variables accessibles dans les templates de domaine, pour le domain de la propriété (plus utile pour les décorateurs...)
 
 Dans le cadre d'une composition, il est possible d'utiliser ces variables :
 
-- `class.name`
-- `composition.name`
 - `name`
 - `label`
 - `comment`
+- `composition.*` : permet d'accéder à toutes les variables accessibles dans les templates de classe, pour la classe qui fait l'objet de la composition
+
+Il est également possible d'utiliser n'importe quelle variable définie dans la configuration (`variable` ou `tagVariable`).
 
 Le tout dans les propriétés d'implémentation :
 

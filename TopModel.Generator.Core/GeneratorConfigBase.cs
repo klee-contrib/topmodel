@@ -116,7 +116,7 @@ public abstract class GeneratorConfigBase
             {
                 value = GetImplementation(converter)!.Text
                     .Replace("{value}", value)
-                    .ParseTemplate(fromDomain, toDomain, Language, this);
+                    .ParseTemplate(fromDomain, toDomain, this);
             }
         }
 

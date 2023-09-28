@@ -114,7 +114,7 @@ internal static class TemplateExtensions
         return result;
     }
 
-    public static string ParseTemplate(this string template, Domain domainFrom, Domain domainTo, string targetLanguage, GeneratorConfigBase config, string? tag = null)
+    public static string ParseTemplate(this string template, Domain domainFrom, Domain domainTo, GeneratorConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -124,7 +124,7 @@ internal static class TemplateExtensions
         var result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), domainFrom, domainTo, targetLanguage, config, tag));
+            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), domainFrom, domainTo, config, tag));
         }
 
         return result;
@@ -182,6 +182,11 @@ internal static class TemplateExtensions
         if (input.StartsWith("endpoint."))
         {
             return ResolveVariable(input["endpoint.".Length..], fp.Parent, parameters, config, tag);
+        }
+
+        if (input.StartsWith("domain."))
+        {
+            return ResolveVariable(input["domain.".Length..], fp.Domain, config, tag);
         }
 
         if (input.StartsWith("association.") && (fp is AssociationProperty ap || fp is AliasProperty alp && alp.Property is AssociationProperty asp))
@@ -371,7 +376,7 @@ internal static class TemplateExtensions
         return result;
     }
 
-    private static string ResolveVariable(this string input, Domain domain, string targetLanguage, GeneratorConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, Domain domain, GeneratorConfigBase config, string? tag = null)
     {
         var transform = input.GetTransformation();
         var variable = input.Split(':').First();
@@ -382,20 +387,20 @@ internal static class TemplateExtensions
             "length" => transform(domain.Length?.ToString() ?? string.Empty),
             "scale" => transform(domain.Scale?.ToString() ?? string.Empty),
             "name" => transform(domain.Name ?? string.Empty),
-            "type" => transform(domain.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty),
+            "type" => transform(domain.Implementations.GetValueOrDefault(config.Language)?.Type ?? string.Empty),
             var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), tag: tag)
         };
     }
 
-    private static string ResolveVariable(this string input, Domain domainFrom, Domain domainTo, string targetLanguage, GeneratorConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, Domain domainFrom, Domain domainTo, GeneratorConfigBase config, string? tag = null)
     {
         if (input.StartsWith("from."))
         {
-            return ResolveVariable(input["from.".Length..], domainFrom, targetLanguage, config, tag);
+            return ResolveVariable(input["from.".Length..], domainFrom, config, tag);
         }
         else
         {
-            return ResolveVariable(input["to.".Length..], domainTo, targetLanguage, config, tag);
+            return ResolveVariable(input["to.".Length..], domainTo, config, tag);
         }
     }
 }
