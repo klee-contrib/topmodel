@@ -164,6 +164,11 @@ internal static class TemplateExtensions
             return string.Empty;
         }
 
+        for (var i = 0; i < parameters.Length; i++)
+        {
+            input = input.Replace($"${i}", parameters[i]);
+        }
+
         if (input.StartsWith("parent."))
         {
             return ResolveVariable(input["parent.".Length..], fp.Parent, parameters, config, tag);
@@ -202,13 +207,8 @@ internal static class TemplateExtensions
             "resourceKey" => transform(fp.ResourceKey.ToString()),
             "commentResourceKey" => transform(fp.CommentResourceKey.ToString()),
             "defaultValue" => transform(fp.DefaultValue?.ToString() ?? string.Empty),
-            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{').Trim('}'), module: fp.Parent.Namespace.Module, tag: tag)
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: fp.Parent.Namespace.Module, tag: tag)
         };
-
-        for (var i = 0; i < parameters.Length; i++)
-        {
-            result = result.Replace($"${i}", parameters[i]);
-        }
 
         return result;
     }
@@ -218,6 +218,11 @@ internal static class TemplateExtensions
         if (input == null || input.Length == 0)
         {
             return string.Empty;
+        }
+
+        for (var i = 0; i < parameters.Length; i++)
+        {
+            input = input.Replace($"${i}", parameters[i]);
         }
 
         if (input.StartsWith("parent."))
@@ -246,13 +251,8 @@ internal static class TemplateExtensions
             "name" => transform(cp.Name ?? string.Empty),
             "label" => transform(cp.Label ?? string.Empty),
             "comment" => transform(cp.Comment),
-            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{').Trim('}'), module: cp.Class.Namespace.Module, tag: tag)
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: cp.Class.Namespace.Module, tag: tag)
         };
-
-        for (var i = 0; i < parameters.Length; i++)
-        {
-            result = result.Replace($"${i}", parameters[i]);
-        }
 
         return result;
     }
@@ -262,6 +262,11 @@ internal static class TemplateExtensions
         if (input == null || input.Length == 0)
         {
             return string.Empty;
+        }
+
+        for (var i = 0; i < parameters.Length; i++)
+        {
+            input = input.Replace($"${i}", parameters[i]);
         }
 
         if (input.StartsWith("primaryKey."))
@@ -304,19 +309,24 @@ internal static class TemplateExtensions
             "label" => transform(c.Label ?? string.Empty),
             "pluralName" => transform(c.PluralName ?? string.Empty),
             "module" => transform(c.Namespace.Module ?? string.Empty),
-            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{').Trim('}'), module: c.Namespace.Module, tag: tag)
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: c.Namespace.Module, tag: tag)
         };
-
-        for (var i = 0; i < parameters.Length; i++)
-        {
-            result = result.Replace($"${i}", parameters[i]);
-        }
 
         return result;
     }
 
     private static string ResolveVariable(this string input, Endpoint e, string[] parameters, GeneratorConfigBase config, string? tag = null)
     {
+        if (input == null || input.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        for (var i = 0; i < parameters.Length; i++)
+        {
+            input = input.Replace($"${i}", parameters[i]);
+        }
+
         if (input.StartsWith("returns."))
         {
             if (e.Returns == null)
@@ -355,13 +365,8 @@ internal static class TemplateExtensions
             "route" => transform(e.Route),
             "description" => transform(e.Description),
             "module" => transform(e.Namespace.Module ?? string.Empty),
-            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{').Trim('}'), module: e.Namespace.Module, tag: tag)
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: e.Namespace.Module, tag: tag)
         };
-
-        for (var i = 0; i < parameters.Length; i++)
-        {
-            result = result.Replace($"${i}", parameters[i]);
-        }
 
         return result;
     }
@@ -378,7 +383,7 @@ internal static class TemplateExtensions
             "scale" => transform(domain.Scale?.ToString() ?? string.Empty),
             "name" => transform(domain.Name ?? string.Empty),
             "type" => transform(domain.Implementations.GetValueOrDefault(targetLanguage)?.Type ?? string.Empty),
-            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{').Trim('}'), tag: tag)
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), tag: tag)
         };
     }
 
@@ -386,11 +391,11 @@ internal static class TemplateExtensions
     {
         if (input.StartsWith("from."))
         {
-            return ResolveVariable(input.Split("from.")[1], domainFrom, targetLanguage, config, tag);
+            return ResolveVariable(input["from.".Length..], domainFrom, targetLanguage, config, tag);
         }
         else
         {
-            return ResolveVariable(input.Split("to.")[1], domainTo, targetLanguage, config, tag);
+            return ResolveVariable(input["to.".Length..], domainTo, targetLanguage, config, tag);
         }
     }
 }
