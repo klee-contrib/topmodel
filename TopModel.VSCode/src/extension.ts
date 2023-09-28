@@ -1,9 +1,4 @@
-import {
-    ExtensionContext,
-    workspace,
-    window,
-    Uri,
-} from "vscode";
+import { ExtensionContext, workspace, window, Uri } from "vscode";
 import * as fs from "fs";
 import { TopModelConfig, TopModelException } from "./types";
 import { Application } from "./application";
@@ -37,14 +32,17 @@ export async function activate(ctx: ExtensionContext) {
 async function checkInstall() {
     const dotnetIsInstalled = await execute('echo ;%PATH%; | find /C /I "dotnet"');
     if (dotnetIsInstalled !== "1\r\n") {
-        const selection = await window.showInformationMessage("Dotnet n'est pas installé", "Ouvrir la page de téléchargement");
+        const selection = await window.showInformationMessage(
+            "Dotnet n'est pas installé",
+            "Ouvrir la page de téléchargement"
+        );
         if (selection === "Ouvrir la page de téléchargement") {
             open("https://dotnet.microsoft.com/download/dotnet/6.0");
         }
     }
 }
 
-async function findConfFiles(): Promise<{ config: TopModelConfig; file: Uri }[]> { 
+async function findConfFiles(): Promise<{ config: TopModelConfig; file: Uri }[]> {
     const files = await workspace.findFiles("**/topmodel*.config");
     let configs: { config: TopModelConfig; file: Uri }[] = files.map((file) => {
         const doc = fs.readFileSync(file.path.substring(1), "utf8");
@@ -53,13 +51,13 @@ async function findConfFiles(): Promise<{ config: TopModelConfig; file: Uri }[]>
             .filter((e) => e)
             .map(yaml.load)
             .map((e) => e as TopModelConfig)
+            .filter((e) => e?.app)
             .filter((e) => e.app)[0];
         return { config: c, file };
     });
 
     return configs;
 }
-
 
 function handleError(exception: TopModelException) {
     window.showErrorMessage(exception.message);
