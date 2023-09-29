@@ -27,6 +27,8 @@ public class TopModelLock
 
     public void Update(string modelRoot, string lockFileName, ILogger logger, IEnumerable<string> generatedFiles)
     {
+        GeneratedFiles ??= new();
+
         var generatedFilesList = generatedFiles
             .Select(f => f.ToRelative(modelRoot))
             .Distinct()
@@ -53,10 +55,13 @@ public class TopModelLock
         };
 
         fw.WriteLine($"version: {Version}");
-        fw.WriteLine("generatedFiles:");
-        foreach (var genFile in GeneratedFiles)
+        if (GeneratedFiles.Count > 0)
         {
-            fw.WriteLine($"  - {genFile}");
+            fw.WriteLine("generatedFiles:");
+            foreach (var genFile in GeneratedFiles)
+            {
+                fw.WriteLine($"  - {genFile}");
+            }
         }
     }
 }
