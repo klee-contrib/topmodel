@@ -180,17 +180,17 @@ public class JpaConfig : GeneratorConfigBase
             $"{df.Name.ToPascalCase()}PartialFlow.java");
     }
 
-    public string GetEnumFileName(Class classe, string tag)
+    public string GetEnumFileName(IFieldProperty property, Class classe, string tag)
     {
         return Path.Combine(
             OutputDirectory,
             ResolveVariables(EnumsPath, tag, module: classe.Namespace.Module).ToFilePath(),
-            $"{GetEnumName(classe)}.java");
+            $"{GetEnumName(property, classe)}.java");
     }
 
-    public string GetEnumName(Class classe)
+    public string GetEnumName(IFieldProperty property, Class classe)
     {
-        return $"{classe.NamePascal}{classe.EnumKey!.Name.ToPascalCase()}";
+        return $"{classe.NamePascal}{property.Name.ToPascalCase()}";
     }
 
     public string GetEnumPackageName(Class classe, string tag)

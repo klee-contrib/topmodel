@@ -67,13 +67,13 @@ public static class ImportsJpaExtensions
     {
         var imports = new List<string>();
 
-        if (config.CanClassUseEnums(ap.Property.Class))
+        if (config.CanClassUseEnums(ap.Property.Class, prop: ap))
         {
-            imports.Add($"{config.GetEnumPackageName(ap.Property.Class, tag)}.{config.GetEnumName(ap.Property.Class)}");
+            imports.Add($"{config.GetEnumPackageName(ap.Property.Class, tag)}.{config.GetEnumName(ap, ap.Property.Class)}");
         }
-        else if (ap.Property is AssociationProperty apr && config.CanClassUseEnums(apr.Property.Class))
+        else if (ap.Property is AssociationProperty apr && config.CanClassUseEnums(apr.Property.Class, prop: apr.Property))
         {
-            imports.Add($"{config.GetEnumPackageName(apr.Association, tag)}.{config.GetEnumName(apr.Association)}");
+            imports.Add($"{config.GetEnumPackageName(apr.Association, tag)}.{config.GetEnumName(apr.Association.PrimaryKey.Single(), apr.Association)}");
         }
 
         imports.AddRange(config.GetDomainImports(ap, tag));
@@ -96,9 +96,9 @@ public static class ImportsJpaExtensions
             imports.AddRange(rpr.GetTypeImports(config, tag));
         }
 
-        if (rp.Class != null && config.CanClassUseEnums(rp.Class) && rp == rp.Class.EnumKey)
+        if (rp.Class != null && config.CanClassUseEnums(rp.Class, prop: rp))
         {
-            imports.Add($"{config.GetEnumPackageName(rp.Class, tag)}.{config.GetEnumName(rp.Class)}");
+            imports.Add($"{config.GetEnumPackageName(rp.Class, tag)}.{config.GetEnumName(rp, rp.Class)}");
         }
 
         return imports;

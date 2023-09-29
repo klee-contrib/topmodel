@@ -22,7 +22,7 @@ public class JpaModelConstructorGenerator
         foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
         {
             var code = refValue.Value[codeProperty];
-            fw.WriteLine(1, $@"public static final {classe.NamePascal} {code} = new {classe.NamePascal}({_config.GetEnumName(classe)}.{code});");
+            fw.WriteLine(1, $@"public static final {classe.NamePascal} {code} = new {classe.NamePascal}({_config.GetEnumName(codeProperty, classe)}.{code});");
         }
 
         fw.WriteLine();
@@ -43,7 +43,7 @@ public class JpaModelConstructorGenerator
             {
                 var code = refValue.Value[codeProperty];
                 fw.WriteLine(2, $@"case {code} :");
-                foreach (var prop in classe.GetProperties(availableClasses)
+                foreach (var prop in classe.GetProperties(availableClasses).OfType<IFieldProperty>()
                     .Where(p => p != codeProperty))
                 {
                     var isString = _config.GetType((IFieldProperty)prop) == "String";
@@ -54,8 +54,12 @@ public class JpaModelConstructorGenerator
                         isString = false;
                         fw.AddImport(ap.Association.GetImport(_config, tag));
                     }
+                    else if (_config.CanClassUseEnums(classe, prop: prop))
+                    {
+                        value = _config.GetType(prop) + "." + value;
+                    }
 
-                    if (modelConfig.I18n.TranslateReferences && classe.DefaultProperty == prop)
+                    if (modelConfig.I18n.TranslateReferences && classe.DefaultProperty == prop && !_config.CanClassUseEnums(classe, prop: prop))
                     {
                         value = refValue.ResourceKey;
                     }
