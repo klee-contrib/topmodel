@@ -14,24 +14,28 @@ let state: State;
 configure({ enforceActions: "never" });
 
 export async function activate(ctx: ExtensionContext) {
-    state = new State(ctx);
-    checkInstall();
-    if (state.applications.length === 0) {
-        const confs = await findConfFiles();
-        try {
-            state.applications.push(...confs.map((conf) => new Application(conf.file.path, conf.config, ctx)));
-        } catch (error: any) {
-            handleError(error);
+    try {
+        const installed = await checkDotnetInstall();
+        if (installed) {
+            state = new State(ctx);
+            if (state.applications.length === 0) {
+                const confs = await findConfFiles();
+                state.applications.push(...confs.map((conf) => new Application(conf.file.path, conf.config, ctx)));
+            }
         }
+    } catch (error: any) {
+        handleError(error);
     }
 }
 
 /********************************************************* */
 /*********************** CHECKS ************************** */
 /********************************************************* */
-async function checkInstall() {
-    const dotnetIsInstalled = await execute('echo ;%PATH%; | find /C /I "dotnet"');
-    if (dotnetIsInstalled !== "1\r\n") {
+async function checkDotnetInstall(): Promise<boolean> {
+    try {
+        await execute("dotnet -h");
+        return true;
+    } catch (err: any) {
         const selection = await window.showInformationMessage(
             "Dotnet n'est pas installé",
             "Ouvrir la page de téléchargement"
@@ -39,6 +43,8 @@ async function checkInstall() {
         if (selection === "Ouvrir la page de téléchargement") {
             open("https://dotnet.microsoft.com/download/dotnet/6.0");
         }
+
+        return false;
     }
 }
 

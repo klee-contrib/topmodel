@@ -173,7 +173,7 @@ export class TmdTool {
         if (this.name === "TopModel.Generator") {
             const extensionConfiguration = workspace.getConfiguration("topmodel");
             if (extensionConfiguration.regenerateSchemaAfterUpdate) {
-                await commands.executeCommand(COMMANDS.schema);
+                await commands.executeCommand(COMMANDS.linkConfigToSchema);
             }
         }
     }

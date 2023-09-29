@@ -575,6 +575,14 @@
             "type": "number",
             "description": "Taille des chunks à extraire et insérer"
           },
+          "dataFlowsListeners": {
+            "type": "array",
+            "description": "Listeners à ajouter à tous les dataflows",
+            "items": {
+              "type": "string",
+              "description": "Listener à ajouter à tous les dataflows"
+            }
+          },
           "dbSchema": {
             "type": "string",
             "description": "Nom du schéma sur lequel les entités sont sauvegardées"

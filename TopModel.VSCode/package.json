@@ -74,8 +74,8 @@
         "category": "TopModel"
       },
       {
-        "command": "topmodel.schema.updateSettings",
-        "title": "Mettre à jour le fichier de settings",
+        "command": "topmodel.schema.linkConfigToSchema",
+        "title": "Relier les fichiers de configurations à leurs schémas",
         "category": "TopModel"
       },
       {
@@ -112,12 +112,6 @@
           "topmodel*.config",
           "tmdgen*.config"
         ]
-      }
-    ],
-    "snippets": [
-      {
-        "language": "yaml",
-        "path": "./snippets.json"
       }
     ],
     "walkthroughs": [

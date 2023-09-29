@@ -8,7 +8,7 @@ export const COMMANDS = {
     releaseNote: "topmodel.releaseNote",
     chooseCommand: "topmodel.chooseCommand",
     schema: "topmodel.schema",
-    updateSettings: "topmodel.schema.updateSettings",
+    linkConfigToSchema: "topmodel.schema.linkConfigToSchema",
 };
 
 // Stockage de l'ensemble des commandes disponibles.

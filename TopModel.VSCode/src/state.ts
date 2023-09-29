@@ -194,29 +194,19 @@ export class State {
 
     private registerUdpateSettings() {
         this.context.subscriptions.push(
-            commands.registerCommand(COMMANDS.updateSettings, async () => {
+            commands.registerCommand(COMMANDS.linkConfigToSchema, async () => {
+                commands.executeCommand(COMMANDS.schema);
                 const textDecoder = new TextDecoder();
                 const textEncoder = new TextEncoder();
-                const settingFiles = await workspace.findFiles(".vscode/settings.json");
-                let settings: any;
-                let uri: Uri;
-                if (settingFiles.length === 1) {
-                    uri = settingFiles[0];
-                    const file = await workspace.fs.readFile(uri);
-                    const settingsFile = textDecoder.decode(file);
-                    settings = JSON.parse(settingsFile);
-                } else {
-                    settings = {};
-                    uri = Uri.joinPath(workspace.workspaceFolders![0].uri, ".vscode", "settings.json");
+                for (const app of this.applications) {
+                    const relativePath = workspace.asRelativePath(app.configPath);
+                    const configFileUri = (await workspace.findFiles(relativePath))[0];
+                    let fileContent = textDecoder.decode(await workspace.fs.readFile(configFileUri));
+                    if (!fileContent.startsWith("# yaml-language-server")) {
+                        fileContent = "# yaml-language-server: $schema=./topmodel.config.schema.json\n" + fileContent;
+                        workspace.fs.writeFile(configFileUri, textEncoder.encode(fileContent));
+                    }
                 }
-                settings["yaml.schemas"] = {};
-                for (let appKey in this.applications) {
-                    const application = this.applications[appKey];
-                    const relativePath = workspace.asRelativePath(application.configPath);
-                    settings["yaml.schemas"][`${relativePath}.schema.json`] = relativePath;
-                }
-
-                workspace.fs.writeFile(uri, textEncoder.encode(JSON.stringify(settings, null, 2)));
             })
         );
     }
