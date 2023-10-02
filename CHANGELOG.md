@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.37.1
+
+- [`a7ec5b7`](https://github.com/klee-contrib/topmodel/commit/a7ec5b704b2b5d15bdc5c9bf553f2a6b6b2a2e1c) - [Jpa] Correction régression lorsque plusieurs clés primaires
+
 ## 1.37.0
 
 - [`b1b42ec8f`](https://github.com/klee-contrib/topmodel/commit/b1b42ec8f270d717c288d7f027d4a20268e7d6c5) - [Jpa] Mode Jdbc correction d'import JPA.
