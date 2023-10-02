@@ -19,30 +19,25 @@ public class JpaEnumGenerator : GeneratorBase<JpaConfig>
     }
 
     public override string Name => "JpaEnumGen";
+    public override IEnumerable<string> GeneratedFiles => Files.Values.SelectMany(f => f.Classes.Where(FilterClass))
+        .SelectMany(c => Config.Tags.Intersect(c.Tags).SelectMany(tag => GetEnumProperties(c).Select(p => GetFileName(p, c, tag)))).Distinct();
 
     protected bool FilterClass(Class classe)
     {
         return !classe.Abstract && Config.CanClassUseEnums(classe, Classes.ToList());
     }
-    public override IEnumerable<string> GeneratedFiles => Files.Values.SelectMany(f => f.Classes.Where(FilterClass))
-        .SelectMany(c => Config.Tags.Intersect(c.Tags).SelectMany(tag => GetEnumProperties(c).Select(p => GetFileName(p, c, tag)))).Distinct();
 
     protected string GetFileName(IFieldProperty property, Class classe, string tag)
     {
         return Config.GetEnumFileName(property, classe, tag);
     }
 
-    private IEnumerable<IFieldProperty> GetEnumProperties(Class classe)
+    protected void HandleClass(Class classe, string tag)
     {
-        List<IFieldProperty> result = new();
-        if (classe.EnumKey != null && Config.CanClassUseEnums(classe, prop: classe.EnumKey))
+        foreach (var p in GetEnumProperties(classe))
         {
-            result.Add(classe.EnumKey);
+            WriteEnum(p, classe, tag);
         }
-
-        var uks = classe.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(classe, Classes, uk.Single())).Select(uk => uk.Single());
-        result.AddRange(uks);
-        return result;
     }
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
@@ -59,12 +54,17 @@ public class JpaEnumGenerator : GeneratorBase<JpaConfig>
         }
     }
 
-    protected void HandleClass(Class classe, string tag)
+    private IEnumerable<IFieldProperty> GetEnumProperties(Class classe)
     {
-        foreach (var p in GetEnumProperties(classe))
+        List<IFieldProperty> result = new();
+        if (classe.EnumKey != null && Config.CanClassUseEnums(classe, prop: classe.EnumKey))
         {
-            WriteEnum(p, classe, tag);
+            result.Add(classe.EnumKey);
         }
+
+        var uks = classe.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(classe, Classes, uk.Single())).Select(uk => uk.Single());
+        result.AddRange(uks);
+        return result;
     }
 
     private void WriteEnum(IFieldProperty property, Class classe, string tag)

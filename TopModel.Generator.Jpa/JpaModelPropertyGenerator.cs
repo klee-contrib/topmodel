@@ -187,8 +187,7 @@ public class JpaModelPropertyGenerator
             }
 
             var suffix = string.Empty;
-
-            if (_config.CanClassUseEnums(property.Association, _classes, prop: property.Association.PrimaryKey.Single()))
+            if (property.Association.PrimaryKey.Count() == 1 && _config.CanClassUseEnums(property.Association, _classes, prop: property.Association.PrimaryKey.Single()))
             {
                 var defaultValue = _config.GetValue(property, _classes);
                 if (defaultValue != "null")
