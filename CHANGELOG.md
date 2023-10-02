@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.37.0
+
+- [`b1b42ec8f`](https://github.com/klee-contrib/topmodel/commit/b1b42ec8f270d717c288d7f027d4a20268e7d6c5) - [Jpa] Mode Jdbc correction d'import JPA.
+
+- [`31df881f2`](https://github.com/klee-contrib/topmodel/commit/31df881f21d186bd961a44e4240ef3b5db998270) - [Jpa] Mauvais type lorsqu'une contrainte d'unicité est ajoutée sur une liste de ref.
+
 ## 1.36.5
 
 - [`320992ad`](https://github.com/klee-contrib/topmodel/commit/320992ad685150647adca250d07228af1d4110f8) - [Jpa] Implémentation annotations api
