@@ -1,20 +1,10 @@
 import { autorun, makeAutoObservable } from "mobx";
-import {
-    commands,
-    ExtensionContext,
-    Position,
-    StatusBarAlignment,
-    StatusBarItem,
-    Uri,
-    window,
-    workspace,
-} from "vscode";
+import { commands, ExtensionContext, Position, StatusBarAlignment, StatusBarItem, Terminal, window } from "vscode";
 import { Application } from "./application";
 import { TopModelPreviewPanel } from "./preview";
 import { TmdTool } from "./tool";
 import { Status } from "./types";
 import { COMMANDS, COMMANDS_OPTIONS } from "./const";
-import { execute } from "./utils";
 
 const open = require("open");
 
@@ -27,6 +17,7 @@ export class State {
     applications: Application[] = [];
     error?: string;
     preview?: TopModelPreviewPanel;
+    _schemaTerminal: Terminal | undefined;
     constructor(public readonly context: ExtensionContext) {
         makeAutoObservable(this);
         this.initTools();
@@ -150,7 +141,6 @@ export class State {
         this.registerPreviewCommand();
         this.registerGoToLocation();
         this.registerSchema();
-        this.registerUdpateSettings();
         this.registerChooseCommand();
         this.registerReleaseNote();
     }
@@ -187,26 +177,11 @@ export class State {
     private registerSchema() {
         this.context.subscriptions.push(
             commands.registerCommand(COMMANDS.schema, async () => {
-                await execute(`modgen -s`);
-            })
-        );
-    }
-
-    private registerUdpateSettings() {
-        this.context.subscriptions.push(
-            commands.registerCommand(COMMANDS.linkConfigToSchema, async () => {
-                commands.executeCommand(COMMANDS.schema);
-                const textDecoder = new TextDecoder();
-                const textEncoder = new TextEncoder();
-                for (const app of this.applications) {
-                    const relativePath = workspace.asRelativePath(app.configPath);
-                    const configFileUri = (await workspace.findFiles(relativePath))[0];
-                    let fileContent = textDecoder.decode(await workspace.fs.readFile(configFileUri));
-                    if (!fileContent.startsWith("# yaml-language-server")) {
-                        fileContent = "# yaml-language-server: $schema=./topmodel.config.schema.json\n" + fileContent;
-                        workspace.fs.writeFile(configFileUri, textEncoder.encode(fileContent));
-                    }
+                if (!this._schemaTerminal) {
+                    this._schemaTerminal = window.createTerminal("generate schema");
                 }
+
+                this._schemaTerminal.sendText("modgen -s");
             })
         );
     }

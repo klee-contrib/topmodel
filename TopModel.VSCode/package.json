@@ -74,11 +74,6 @@
         "category": "TopModel"
       },
       {
-        "command": "topmodel.schema.linkConfigToSchema",
-        "title": "Relier les fichiers de configurations à leurs schémas",
-        "category": "TopModel"
-      },
-      {
         "command": "topmodel.preview",
         "title": "Ouvrir la prévisualisation UML du modèle",
         "category": "TopModel.Generator",
