@@ -41,7 +41,8 @@ command.SetHandler(
             try
             {
                 fileChecker.CheckConfigFile(file.FullName);
-                var text = file.OpenText().ReadToEnd();
+                using var textToRead = file.OpenText();
+                var text = textToRead.ReadToEnd();
                 configs.Add((fileChecker.DeserializeConfig(text), file.FullName, file.DirectoryName!));
             }
             catch (ModelException me)
@@ -218,6 +219,13 @@ for (var i = 0; i < configs.Count; i++)
         }
 
         File.WriteAllText(configs[i].FullPath + ".schema.json", schema.Root.ToJsonString(new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping, WriteIndented = true }));
+        var configFile = File.ReadAllText(fullName);
+        if (!configFile.StartsWith("# yaml-language-server"))
+        {
+            var relativePath = configs[i].FullPath.ToRelative(configs[i].DirectoryName);
+            configFile = $"# yaml-language-server: $schema={relativePath}.schema.json \n" + configFile;
+            File.WriteAllText(configs[i].FullPath, configFile);
+        }
     }
     else
     {

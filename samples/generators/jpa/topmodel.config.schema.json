@@ -621,8 +621,8 @@
             "type": "string",
             "description": "Mode de génération de la persistence ('Javax' ou 'Jakarta')",
             "enum": [
-              "Javax",
-              "Jakarta"
+              "javax",
+              "jakarta"
             ]
           },
           "identity": {
