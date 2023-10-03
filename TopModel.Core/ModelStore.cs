@@ -1205,7 +1205,7 @@ public class ModelStore
                         {
                             foreach (var p in param.Class.Properties.OfType<IFieldProperty>())
                             {
-                                if (p.Name == property.Name && p.Domain != null && (p.Domain == property.Domain || Converters.Any(c => c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain))))
+                                if (!param.Mappings.ContainsKey(property) && p.Name == property.Name && p.Domain != null && (p.Domain == property.Domain || Converters.Any(c => c.From.Any(cf => cf == p.Domain) && c.To.Any(ct => ct == property.Domain))))
                                 {
                                     param.Mappings.Add(property, p);
                                 }
