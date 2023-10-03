@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.37.2
+
+- [`0b12c24`](https://github.com/klee-contrib/topmodel/commit/0b12c24e52f8c4528078b54265bc85cb5c8058af) - [Core] La génération du schéma met à jour le fichier de config
+
 ## 1.37.1
 
 - [`a7ec5b7`](https://github.com/klee-contrib/topmodel/commit/a7ec5b704b2b5d15bdc5c9bf553f2a6b6b2a2e1c) - [Jpa] Correction régression lorsque plusieurs clés primaires
