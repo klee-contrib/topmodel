@@ -1,4 +1,6 @@
 ﻿#nullable disable
+using TopModel.Core.FileModel;
+
 namespace TopModel.Core;
 
 public class ClassValue
@@ -6,6 +8,8 @@ public class ClassValue
     public string Name { get; set; }
 
     public Class Class { get; set; }
+
+    public Reference Reference { get; set; }
 
     public Dictionary<IFieldProperty, string> Value { get; } = new();
 

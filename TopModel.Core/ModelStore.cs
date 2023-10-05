@@ -914,7 +914,7 @@ public class ModelStore
 
             foreach (var valueRef in classe.ValueReferences)
             {
-                var classValue = new ClassValue { Name = valueRef.Key.ReferenceName, Class = classe };
+                var classValue = new ClassValue { Name = valueRef.Key.ReferenceName, Class = classe, Reference = valueRef.Key };
                 classe.Values.Add(classValue);
 
                 foreach (var value in valueRef.Value)
@@ -1424,6 +1424,29 @@ public class ModelStore
                     IsError = true,
                     ModelErrorType = ModelErrorType.TMD1029
                 };
+            }
+        }
+
+        foreach (var classe in modelFile.Classes.Where(c => c.Values.Any() && (c.IsPersistent || c.UniqueKeys.Any())))
+        {
+            var uks = classe.UniqueKeys;
+            if (classe.IsPersistent)
+            {
+                uks.Add(classe.PrimaryKey.ToList());
+            }
+
+            foreach (var uk in uks)
+            {
+                var ukValues = classe.Values.Select(value => string.Concat(uk.Select(p => value.Value[p]))).ToList();
+                for (int i = 0; i < classe.Values.Count; i++)
+                {
+                    var ukValue = string.Concat(uk.Select(p => classe.Values[i].Value[p]));
+                    if (ukValues.IndexOf(ukValue) < i)
+                    {
+                        var duplicateValue = classe.Values[i];
+                        yield return new ModelError(duplicateValue, $"La valeur viole la contrainte d'unicité [{string.Join(", ", uk.Select(u => u.Name))}]", duplicateValue.Reference) { IsError = true, ModelErrorType = ModelErrorType.TMD1013 };
+                    }
+                }
             }
         }
 

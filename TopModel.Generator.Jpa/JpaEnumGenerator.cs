@@ -19,6 +19,7 @@ public class JpaEnumGenerator : GeneratorBase<JpaConfig>
     }
 
     public override string Name => "JpaEnumGen";
+
     public override IEnumerable<string> GeneratedFiles => Files.Values.SelectMany(f => f.Classes.Where(FilterClass))
         .SelectMany(c => Config.Tags.Intersect(c.Tags).SelectMany(tag => GetEnumProperties(c).Select(p => GetFileName(p, c, tag)))).Distinct();
 

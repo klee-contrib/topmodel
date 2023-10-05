@@ -108,6 +108,11 @@ public enum ModelErrorType
     TMD1012,
 
     /// <summary>
+    /// La valeur viole la contrainte d'unicité [{string.Join(", ", uk.Select(u => u.Name))}]
+    /// </summary>
+    TMD1013,
+
+    /// <summary>
     /// La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine.
     /// </summary>
     TMD1014,

@@ -92,6 +92,7 @@ public static class ModelExtensions
             DataFlow dataFlow => dataFlow.ModelFile,
             (Decorator decorator, _) => decorator.ModelFile,
             Keyword keyword => keyword.ModelFile,
+            ClassValue classValue => classValue.Class.ModelFile,
             _ => throw new ArgumentException("Type d'objet non supporté.")
         };
     }
