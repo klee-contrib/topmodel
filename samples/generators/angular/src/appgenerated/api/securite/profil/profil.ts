@@ -17,9 +17,8 @@ export class ProfilService {
     constructor(private http: HttpClient) {}
 
     /**
-     * Ajoute un Profil
+     * @description Ajoute un Profil
      * @param profil Profil à sauvegarder
-     * @param options Options pour 'fetch'.
      * @returns Profil sauvegardé
      */
     addProfil(profil: ProfilWrite): Observable<ProfilRead> {
@@ -27,9 +26,8 @@ export class ProfilService {
     }
 
     /**
-     * Charge le détail d'un Profil
+     * @description Charge le détail d'un Profil
      * @param proId Id technique
-     * @param options Options pour 'fetch'.
      * @returns Le détail de l'Profil
      */
     getProfil(proId: number): Observable<ProfilRead> {
@@ -37,8 +35,7 @@ export class ProfilService {
     }
 
     /**
-     * Liste tous les Profils
-     * @param options Options pour 'fetch'.
+     * @description Liste tous les Profils
      * @returns Profils matchant les critères
      */
     getProfils(): Observable<ProfilItem[]> {
@@ -46,10 +43,9 @@ export class ProfilService {
     }
 
     /**
-     * Sauvegarde un Profil
+     * @description Sauvegarde un Profil
      * @param proId Id technique
      * @param profil Profil à sauvegarder
-     * @param options Options pour 'fetch'.
      * @returns Profil sauvegardé
      */
     updateProfil(proId: number, profil: ProfilWrite): Observable<ProfilRead> {

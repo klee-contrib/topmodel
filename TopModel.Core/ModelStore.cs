@@ -1429,7 +1429,8 @@ public class ModelStore
 
         foreach (var classe in modelFile.Classes.Where(c => c.Values.Any() && (c.IsPersistent || c.UniqueKeys.Any())))
         {
-            var uks = classe.UniqueKeys;
+            var uks = new List<IEnumerable<IFieldProperty>>();
+            uks.AddRange(classe.UniqueKeys);
             if (classe.IsPersistent)
             {
                 uks.Add(classe.PrimaryKey.ToList());
