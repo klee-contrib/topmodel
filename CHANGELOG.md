@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.37.3
+
+- [`dcafd57f8`](https://github.com/klee-contrib/topmodel/commit/dcafd57f88ce8a0fa4c7ad73ac7f7c805c3c4e02) - [JPA] Correction de la génération du classe ID dans le cas des clés composites
+
 ## 1.37.2
 
 - [`0b12c24`](https://github.com/klee-contrib/topmodel/commit/0b12c24e52f8c4528078b54265bc85cb5c8058af) - [Core] La génération du schéma met à jour le fichier de config
