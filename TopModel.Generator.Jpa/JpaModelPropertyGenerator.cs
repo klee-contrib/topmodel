@@ -28,7 +28,7 @@ public class JpaModelPropertyGenerator
 
         fw.WriteLine();
         fw.AddImport("java.io.Serializable");
-        fw.WriteLine(1, @$"public class {classe.NamePascal}Id implements Serializable {{");
+        fw.WriteLine(1, @$"public static class {classe.NamePascal}Id implements Serializable {{");
         foreach (var pk in classe.PrimaryKey)
         {
             fw.WriteLine(2, $"private {_config.GetType(pk, _classes, true)} {pk.NameByClassCamel};");
