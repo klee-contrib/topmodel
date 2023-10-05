@@ -136,6 +136,22 @@ internal static class TemplateExtensions
         return regex.Matches(input).Cast<Match>();
     }
 
+    private static string ResolveVariable(this string input, Domain domain, GeneratorConfigBase config, string? tag = null)
+    {
+        var transform = input.GetTransformation();
+        var variable = input.Split(':').First();
+
+        return input.Split(':').First() switch
+        {
+            "mediaType" => transform(domain.MediaType ?? string.Empty),
+            "length" => transform(domain.Length?.ToString() ?? string.Empty),
+            "scale" => transform(domain.Scale?.ToString() ?? string.Empty),
+            "name" => transform(domain.Name ?? string.Empty),
+            "type" => transform(domain.Implementations.GetValueOrDefault(config.Language)?.Type ?? string.Empty),
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), tag: tag)
+        };
+    }
+
     private static string ResolveVariable(this string input, IProperty c, string[] parameters, GeneratorConfigBase config, string? tag = null)
     {
         switch (c)
@@ -374,22 +390,6 @@ internal static class TemplateExtensions
         };
 
         return result;
-    }
-
-    private static string ResolveVariable(this string input, Domain domain, GeneratorConfigBase config, string? tag = null)
-    {
-        var transform = input.GetTransformation();
-        var variable = input.Split(':').First();
-
-        return input.Split(':').First() switch
-        {
-            "mediaType" => transform(domain.MediaType ?? string.Empty),
-            "length" => transform(domain.Length?.ToString() ?? string.Empty),
-            "scale" => transform(domain.Scale?.ToString() ?? string.Empty),
-            "name" => transform(domain.Name ?? string.Empty),
-            "type" => transform(domain.Implementations.GetValueOrDefault(config.Language)?.Type ?? string.Empty),
-            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), tag: tag)
-        };
     }
 
     private static string ResolveVariable(this string input, Domain domainFrom, Domain domainTo, GeneratorConfigBase config, string? tag = null)
