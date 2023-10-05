@@ -74,14 +74,12 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
     {
         fw.WriteLine();
         fw.WriteLine(1, "/**");
-        fw.WriteLine(1, $" * {endpoint.Description}");
+        fw.WriteLine(1, $" * @description {endpoint.Description}");
 
         foreach (var param in endpoint.Params)
         {
             fw.WriteLine(1, $" * @param {param.GetParamName()} {param.Comment}");
         }
-
-        fw.WriteLine(1, " * @param options Options pour 'fetch'.");
 
         if (endpoint.Returns != null)
         {
