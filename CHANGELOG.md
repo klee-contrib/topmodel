@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.37.5
+
+- [`9ac0734fe7`](https://github.com/klee-contrib/topmodel/commit/d75c18a8e01a8ba062e52e19d53104e6cfb2d190) - [JPA] Correction de l'import de l'enum dans le cas enum alias
+
 ## 1.37.4
 
 - [`d75c18a8e0`](https://github.com/klee-contrib/topmodel/commit/d75c18a8e01a8ba062e52e19d53104e6cfb2d190) - [JPA] Correction de l'import de l'enum dans le cas enum shortcut
