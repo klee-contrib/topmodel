@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.37.4
+
+- [`d75c18a8e0`](https://github.com/klee-contrib/topmodel/commit/d75c18a8e01a8ba062e52e19d53104e6cfb2d190) - [JPA] Correction de l'import de l'enum dans le cas enum shortcut
+
 ## 1.37.3
 
 - [`dcafd57f8`](https://github.com/klee-contrib/topmodel/commit/dcafd57f88ce8a0fa4c7ad73ac7f7c805c3c4e02) - [JPA] Correction de la génération du classe ID dans le cas des clés composites
