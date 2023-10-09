@@ -70,11 +70,11 @@ public static class ImportsJpaExtensions
     {
         var imports = new List<string>();
 
-        if (config.CanClassUseEnums(ap.Property.Class, prop: ap))
+        if (config.CanClassUseEnums(ap.Property.Class, prop: ap.Property))
         {
-            imports.Add($"{config.GetEnumPackageName(ap.Property.Class, tag)}.{config.GetEnumName(ap, ap.Property.Class)}");
+            imports.Add($"{config.GetEnumPackageName(ap.Property.Class, tag)}.{config.GetEnumName(ap.Property, ap.Property.Class)}");
         }
-        else if (ap.Property is AssociationProperty apr && config.CanClassUseEnums(apr.Property.Class, prop: apr.Property))
+        else if (ap.Property is AssociationProperty apr && config.CanClassUseEnums(apr.Association, prop: apr.Association.PrimaryKey.Single()))
         {
             imports.Add($"{config.GetEnumPackageName(apr.Association, tag)}.{config.GetEnumName(apr.Association.PrimaryKey.Single(), apr.Association)}");
         }
