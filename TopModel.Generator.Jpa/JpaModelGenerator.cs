@@ -284,7 +284,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
     {
         foreach (var ap in classe.GetProperties(AvailableClasses).OfType<AssociationProperty>().Where(ap => Config.CanClassUseEnums(ap.Association)))
         {
-            fw.AddImport($"{Config.GetEnumPackageName(ap.Association, tag)}.{Config.GetEnumName(ap, ap.Association)}");
+            fw.AddImport($"{Config.GetEnumPackageName(ap.Association, tag)}.{Config.GetEnumName(ap.Association.PrimaryKey.Single(), ap.Association)}");
             var isMultiple = ap.Type.IsToMany();
             {
                 var propertyName = ap.NameCamel;
