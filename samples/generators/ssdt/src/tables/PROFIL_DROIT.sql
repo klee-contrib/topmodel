@@ -7,7 +7,7 @@
 -- ===========================================================================================
 
 create table [dbo].[PROFIL_DROIT] (
-	[PRO_ID] int identity,
+	[PRO_ID] int,
 	[DRO_CODE] varchar,
 	constraint [PK_PROFIL_DROIT] primary key clustered ([PRO_ID] ASC, [DRO_CODE] ASC),
 	constraint [FK_PROFIL_DROIT_PROFIL_PRO_ID] foreign key ([PRO_ID]) references [dbo].[PROFIL] ([PRO_ID]),
