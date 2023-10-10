@@ -33,10 +33,10 @@ public interface IFieldProperty : IProperty
             var prop = !Class.IsPersistent && this is AliasProperty alp ? alp.Property : this;
 
             var apPk = prop is AssociationProperty ap
-                ? ap.Association switch
+                ? ap switch
                 {
-                    { PrimaryKey: IEnumerable<IFieldProperty> pk } when pk.Count() == 1 => pk.Single(),
-                    Class classe => classe.Properties.OfType<IFieldProperty>().FirstOrDefault()
+                    { Property: IFieldProperty p } => p,
+                    { Association: Class classe } => classe.Properties.OfType<IFieldProperty>().FirstOrDefault()
                 }
                 : null;
 

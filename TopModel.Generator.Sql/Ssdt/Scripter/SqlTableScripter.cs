@@ -208,7 +208,7 @@ public class SqlTableScripter : ISqlScripter<Class>
         }
         else
         {
-            sb.Append($"constraint FK_{tableName}_{referenceClass.SqlName}_{propertyName} foreign key ({propertyName}) references {referenceClass.SqlName} ({referenceClass.PrimaryKey.Single().SqlName})");
+            sb.Append($"constraint FK_{tableName}_{referenceClass.SqlName}_{propertyName} foreign key ({propertyName}) references {referenceClass.SqlName} ({property.Property.SqlName})");
         }
     }
 

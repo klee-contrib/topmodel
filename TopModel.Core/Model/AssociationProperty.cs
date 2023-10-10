@@ -15,7 +15,7 @@ public class AssociationProperty : IFieldProperty
 
     public IFieldProperty Property
     {
-        get => _property ?? Association?.PrimaryKey.FirstOrDefault();
+        get => _property ?? Association?.PrimaryKey.FirstOrDefault() ?? Association?.Extends?.PrimaryKey.FirstOrDefault();
         set => _property = value;
     }
 
@@ -60,7 +60,7 @@ public class AssociationProperty : IFieldProperty
             {
                 name.Append(Association.PluralName);
             }
-            else if (Association.Extends == null)
+            else if (Association.Extends == null || !Association.PrimaryKey.Any())
             {
                 name.Append(Association.Name);
             }
@@ -99,14 +99,14 @@ public class AssociationProperty : IFieldProperty
             {
                 name.Append(Association.PluralNameCamel);
             }
-            else if (Association.Extends == null)
+            else if (Association.Extends == null || !Association.PrimaryKey.Any())
             {
                 name.Append(Association.NameCamel);
             }
 
             if (Type == AssociationType.ManyToOne || Type == AssociationType.OneToOne)
             {
-                if (Association.Extends == null)
+                if (Association.Extends == null || !Association.PrimaryKey.Any())
                 {
                     name.Append(Property?.NameCamel.ToFirstUpper());
                 }

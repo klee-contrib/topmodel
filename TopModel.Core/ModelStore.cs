@@ -611,7 +611,7 @@ public class ModelStore
                         break;
                     }
 
-                    if (ap.PropertyReference == null && !association.Properties.Any(p => p.PrimaryKey))
+                    if (ap.PropertyReference == null && !association.Properties.Any(p => p.PrimaryKey) && (association.Extends == null || !association.Extends.PrimaryKey.Any()))
                     {
                         yield return new ModelError(ap, "La classe '{0}' doit avoir au moins une clé primaire pour être référencée dans une association.", ap.Reference) { ModelErrorType = ModelErrorType.TMD1001 };
                         break;
