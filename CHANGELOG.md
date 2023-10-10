@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.37.6
+
+- [`becb4dd63`](https://github.com/klee-contrib/topmodel/commit/becb4dd639b62edf2b3ac84d4245dcf1198d3639) - [Core] ix erreur lorsqu'un champ n'est pas renseigné dans une value alors qu'il fait l'objet d'une contrainte d'unicité
+
 ## 1.37.5
 
 - [`9ac0734fe7`](https://github.com/klee-contrib/topmodel/commit/d75c18a8e01a8ba062e52e19d53104e6cfb2d190) - [JPA] Correction de l'import de l'enum dans le cas enum alias

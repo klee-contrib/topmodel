@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 1.37.5
+version: 1.37.6
 generatedFiles:
   - ../generators/translation/i18n/de_DE/out/common_de_DE.properties
   - ../generators/translation/i18n/de_DE/out/securite_de_DE.properties
