@@ -124,11 +124,6 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         if ((Config.FieldsEnum & Target.Persisted) > 0 && classe.IsPersistent
             || (Config.FieldsEnum & Target.Dto) > 0 && !classe.IsPersistent)
         {
-            if (Config.FieldsEnumInterface != null)
-            {
-                fw.AddImport(Config.FieldsEnumInterface.Replace("<>", string.Empty));
-            }
-
             WriteFieldsEnum(fw, classe, tag);
         }
 
@@ -208,6 +203,13 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             }
             else
             {
+                if (AvailableClasses.Any(c => c.Extends == classe))
+                {
+                    fw.WriteLine("@Inheritance(strategy = InheritanceType.JOINED)");
+                    fw.AddImport($"{javaOrJakarta}.persistence.Inheritance");
+                    fw.AddImport($"{javaOrJakarta}.persistence.InheritanceType");
+                }
+
                 var table = @$"@Table(name = ""{classe.SqlName}""";
                 fw.AddImport($"{javaOrJakarta}.persistence.Table");
                 if (classe.UniqueKeys.Any())
@@ -349,6 +351,16 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
     private void WriteFieldsEnum(JavaWriter fw, Class classe, string tag)
     {
+        if (!classe.Properties.Any())
+        {
+            return;
+        }
+
+        if (Config.FieldsEnumInterface != null)
+        {
+            fw.AddImport(Config.FieldsEnumInterface.Replace("<>", string.Empty));
+        }
+
         fw.WriteLine();
         fw.WriteDocStart(1, $"Enumération des champs de la classe {{@link {classe.GetImport(Config, tag)} {classe.NamePascal}}}");
         fw.WriteDocEnd(1);

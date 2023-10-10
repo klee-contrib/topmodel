@@ -54,7 +54,16 @@ public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
             fw.AddImport($"{Config.GetEnumPackageName(classe, tag)}.{Config.GetType(classe.PrimaryKey.Single())}");
         }
 
-        var pk = classe.PrimaryKey.Count() > 1 ? $"{classe.NamePascal}.{classe.NamePascal}Id" : Config.GetType(classe.PrimaryKey.Single());
+        string pk;
+        if (!classe.PrimaryKey.Any() && classe.Extends != null)
+        {
+            pk = Config.GetType(classe.Extends.PrimaryKey.Single());
+        }
+        else
+        {
+            pk = classe.PrimaryKey.Count() > 1 ? $"{classe.NamePascal}.{classe.NamePascal}Id" : Config.GetType(classe.PrimaryKey.Single());
+        }
+
         fw.WriteLine($"public interface {classe.NamePascal}DAO extends {(classe.Reference || Config.UseJdbc ? "CrudRepository" : "JpaRepository")}<{classe.NamePascal}, {pk}> {{");
         fw.WriteLine();
         fw.WriteLine("}");
