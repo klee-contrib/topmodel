@@ -505,6 +505,12 @@ public class ModelStore
                 continue;
             }
 
+            if (extends.PrimaryKey.Count() > 1)
+            {
+                yield return new ModelError(classe, $"Impossible de définir la classe '{extends}' comme 'extends' sur la classe '{classe}' car elle a une clé primaire composite.", classe.ExtendsReference!) { ModelErrorType = ModelErrorType.TMD1030 };
+                continue;
+            }
+
             classe.Extends = extends;
         }
 

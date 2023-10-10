@@ -193,6 +193,11 @@ public enum ModelErrorType
     TMD1029,
 
     /// <summary>
+    /// Impossible de définir un 'extends' sur la classe '{classe}' abstraite.
+    /// </summary>
+    TMD1030,
+
+    /// <summary>
     /// Le flux de données est introuvable dans le fichier ou l'une de ses références.
     /// </summary>
     TMD2000,

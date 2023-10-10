@@ -76,7 +76,7 @@ public class Class : IPropertyContainer
 
     public string PluralNamePascal => PluralName.ToPascalCase();
 
-    public bool IsPersistent => Properties.Any(p => p is not AliasProperty && p.PrimaryKey);
+    public bool IsPersistent => Properties.Any(p => p is not AliasProperty && p.PrimaryKey) || (Extends != null && Extends.IsPersistent);
 
     public ClassReference? ExtendsReference { get; set; }
 
