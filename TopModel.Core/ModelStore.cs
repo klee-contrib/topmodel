@@ -1438,6 +1438,11 @@ public class ModelStore
 
             foreach (var uk in uks)
             {
+                if (!classe.Values.All(value => uk.All(p => value.Value.ContainsKey(p))))
+                {
+                    continue;
+                }
+
                 var ukValues = classe.Values.Select(value => string.Concat(uk.Select(p => value.Value[p]))).ToList();
                 for (int i = 0; i < classe.Values.Count; i++)
                 {
