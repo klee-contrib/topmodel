@@ -2,7 +2,7 @@
 
 ## 1.37.6
 
-- [`becb4dd63`](https://github.com/klee-contrib/topmodel/commit/becb4dd639b62edf2b3ac84d4245dcf1198d3639) - [Core] ix erreur lorsqu'un champ n'est pas renseigné dans une value alors qu'il fait l'objet d'une contrainte d'unicité
+- [`becb4dd63`](https://github.com/klee-contrib/topmodel/commit/becb4dd639b62edf2b3ac84d4245dcf1198d3639) - [Core] Fix erreur lorsqu'un champ n'est pas renseigné dans une value alors qu'il fait l'objet d'une contrainte d'unicité
 
 ## 1.37.5
 
@@ -27,8 +27,8 @@
 ## 1.37.0
 
 - [`b1b42ec8f`](https://github.com/klee-contrib/topmodel/commit/b1b42ec8f270d717c288d7f027d4a20268e7d6c5) - [Jpa] Mode Jdbc correction d'import JPA.
-
 - [`31df881f2`](https://github.com/klee-contrib/topmodel/commit/31df881f21d186bd961a44e4240ef3b5db998270) - [Jpa] Mauvais type lorsqu'une contrainte d'unicité est ajoutée sur une liste de ref.
+- [`#311`](https://github.com/klee-contrib/topmodel/pull/311) [Core] Résoudre en cascade les template & variables globales dans les templates
 
 ## 1.36.5
 
@@ -40,7 +40,7 @@
 
 ## 1.36.3
 
-- [#300](https://github.com/klee-contrib/topmodel/pull/30) - DataFlows hooks
+- [#300](https://github.com/klee-contrib/topmodel/pull/300) - DataFlows hooks
   - Ajout des `hooks`
   - Implémentation spring-batch des `hooks`
 - [`769bfa58b`](https://github.com/klee-contrib/topmodel/commit/769bfa58b1ea78749a7607efbe5e3a10749797fc) - [Jpa] Bug fixs sur les imports des types d'enum.
