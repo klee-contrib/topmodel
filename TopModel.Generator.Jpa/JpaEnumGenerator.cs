@@ -58,12 +58,12 @@ public class JpaEnumGenerator : GeneratorBase<JpaConfig>
     private IEnumerable<IFieldProperty> GetEnumProperties(Class classe)
     {
         List<IFieldProperty> result = new();
-        if (classe.EnumKey != null && Config.CanClassUseEnums(classe, prop: classe.EnumKey))
+        if (classe.EnumKey != null && Config.CanClassUseEnums(classe, prop: classe.EnumKey) && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, Classes, prop: classe.EnumKey)))
         {
             result.Add(classe.EnumKey);
         }
 
-        var uks = classe.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(classe, Classes, uk.Single())).Select(uk => uk.Single());
+        var uks = classe.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(classe, Classes, uk.Single()) && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, Classes, prop: classe.EnumKey))).Select(uk => uk.Single());
         result.AddRange(uks);
         return result;
     }
@@ -78,10 +78,20 @@ public class JpaEnumGenerator : GeneratorBase<JpaConfig>
         fw.WriteDocEnd(0);
         fw.WriteLine($@"public enum {Config.GetEnumName(property, classe)} {{");
         var i = 0;
-        foreach (var value in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
+
+        var refs = classe.Values.ToList();
+
+        foreach (var child in Classes.Where(c => c.Extends == classe))
+        {
+            refs.AddRange(child.Values);
+        }
+
+        refs = refs.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
+
+        foreach (var value in refs)
         {
             i++;
-            var isLast = i == classe.Values.Count();
+            var isLast = i == refs.Count();
             if (classe.DefaultProperty != null)
             {
                 fw.WriteDocStart(1, $"{value.Value[classe.DefaultProperty]}");

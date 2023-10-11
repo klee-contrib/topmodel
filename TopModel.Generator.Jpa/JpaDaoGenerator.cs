@@ -51,7 +51,7 @@ public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
         fw.WriteLine();
         if (Config.CanClassUseEnums(classe))
         {
-            fw.AddImport($"{Config.GetEnumPackageName(classe, tag)}.{Config.GetType(classe.PrimaryKey.Single())}");
+            fw.AddImport($"{Config.GetEnumPackageName(classe, tag)}.{Config.GetType(classe.PrimaryKey.SingleOrDefault() ?? classe.Extends?.PrimaryKey.SingleOrDefault())}");
         }
 
         string pk;
