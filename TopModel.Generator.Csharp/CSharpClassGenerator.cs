@@ -291,14 +291,9 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 return false;
             }
 
-            var refs = item.Values.ToList();
-
-            foreach (var child in Classes.Where(c => c.Extends == item))
-            {
-                refs.AddRange(child.Values);
-            }
-
-            refs = refs.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
+            var refs = GetAllValues(item)
+                .OrderBy(x => x.Name, StringComparer.Ordinal)
+                .ToList();
 
             w.WriteSummary(1, $"Valeurs possibles de la liste de référence {item}.");
             w.WriteLine(1, $"public enum {Config.GetEnumType(prop, true)}");

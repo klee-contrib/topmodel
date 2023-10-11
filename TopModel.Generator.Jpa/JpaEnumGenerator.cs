@@ -79,14 +79,9 @@ public class JpaEnumGenerator : GeneratorBase<JpaConfig>
         fw.WriteLine($@"public enum {Config.GetEnumName(property, classe)} {{");
         var i = 0;
 
-        var refs = classe.Values.ToList();
-
-        foreach (var child in Classes.Where(c => c.Extends == classe))
-        {
-            refs.AddRange(child.Values);
-        }
-
-        refs = refs.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
+        var refs = GetAllValues(classe)
+            .OrderBy(x => x.Name, StringComparer.Ordinal)
+            .ToList();
 
         foreach (var value in refs)
         {

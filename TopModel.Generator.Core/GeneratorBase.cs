@@ -76,5 +76,21 @@ public abstract class GeneratorBase<T> : IModelWatcher
         return classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag;
     }
 
+    protected IEnumerable<ClassValue> GetAllValues(Class classe)
+    {
+        foreach (var value in classe.Values)
+        {
+            yield return value;
+        }
+
+        foreach (var child in Classes.Where(c => c.Extends == classe))
+        {
+            foreach (var value in GetAllValues(child))
+            {
+                yield return value;
+            }
+        }
+    }
+
     protected abstract void HandleFiles(IEnumerable<ModelFile> files);
 }

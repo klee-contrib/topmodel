@@ -86,20 +86,25 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptCo
 
             if (reference.EnumKey != null)
             {
-                fw.Write("export type ");
-                fw.Write(reference.NamePascal);
-                fw.Write($"{reference.EnumKey.Name.ToPascalCase()} = ");
-                var type = Config.GetImplementation(reference.EnumKey.Domain)?.Type;
-                var quote = (type == "boolean" || type == "number") ? string.Empty : @"""";
-                fw.Write(string.Join(" | ", reference.Values.Select(r => $@"{quote}{r.Value[reference.EnumKey]}{quote}").OrderBy(x => x, StringComparer.Ordinal)));
-                fw.WriteLine(";");
+                var values = GetAllValues(reference).ToList();
+
+                if (reference.Extends == null)
+                {
+                    fw.Write("export type ");
+                    fw.Write(reference.NamePascal);
+                    fw.Write($"{reference.EnumKey.Name.ToPascalCase()} = ");
+                    var type = Config.GetImplementation(reference.EnumKey.Domain)?.Type;
+                    var quote = (type == "boolean" || type == "number") ? string.Empty : @"""";
+                    fw.Write(string.Join(" | ", values.Select(r => $@"{quote}{r.Value[reference.EnumKey]}{quote}").OrderBy(x => x, StringComparer.Ordinal)));
+                    fw.WriteLine(";");
+                }
 
                 foreach (var uk in reference.UniqueKeys.Where(uk => uk.Count == 1 && uk.Single().Required).Select(uk => uk.Single()))
                 {
                     fw.Write("export type ");
                     fw.Write(reference.NamePascal);
                     fw.Write($"{uk} = ");
-                    fw.Write(string.Join(" | ", reference.Values.Select(r => $@"""{r.Value[uk]}""").OrderBy(x => x, StringComparer.Ordinal)));
+                    fw.Write(string.Join(" | ", values.Select(r => $@"""{r.Value[uk]}""").OrderBy(x => x, StringComparer.Ordinal)));
                     fw.WriteLine(";");
                 }
             }
@@ -126,6 +131,12 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptCo
             {
                 fw.Write("export interface ");
                 fw.Write(reference.NamePascal);
+
+                if (reference.Extends != null)
+                {
+                    fw.Write($" extends {reference.Extends.NamePascal}");
+                }
+
                 fw.Write(" {\r\n");
 
                 foreach (var property in reference.Properties.OfType<IFieldProperty>())
