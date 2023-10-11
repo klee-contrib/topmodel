@@ -198,6 +198,11 @@ public enum ModelErrorType
     TMD1030,
 
     /// <summary>
+    /// La classe '{classe}' et sa classe parente '{classe.Extends}' doivent toutes les deux être des `enum`.
+    /// </summary>
+    TMD1031,
+
+    /// <summary>
     /// Le flux de données est introuvable dans le fichier ou l'une de ses références.
     /// </summary>
     TMD2000,

@@ -284,10 +284,22 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     /// <param name="item">La classe générée.</param>
     private void GenerateEnumValues(CSharpWriter w, Class item)
     {
-        var refs = item.Values.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
-
-        void WriteEnum(IFieldProperty prop)
+        bool WriteEnum(IFieldProperty prop)
         {
+            if (item.Extends != null && Config.CanClassUseEnums(item.Extends, Classes, prop))
+            {
+                return false;
+            }
+
+            var refs = item.Values.ToList();
+
+            foreach (var child in Classes.Where(c => c.Extends == item))
+            {
+                refs.AddRange(child.Values);
+            }
+
+            refs = refs.OrderBy(x => x.Name, StringComparer.Ordinal).ToList();
+
             w.WriteSummary(1, $"Valeurs possibles de la liste de référence {item}.");
             w.WriteLine(1, $"public enum {Config.GetEnumType(prop, true)}");
             w.WriteLine(1, "{");
@@ -306,17 +318,25 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
 
             w.WriteLine(1, "}");
+            return true;
         }
 
-        WriteEnum(item.EnumKey!);
+        var hasLine = WriteEnum(item.EnumKey!);
 
         foreach (var uk in item.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(item, Classes, uk.Single())))
         {
-            w.WriteLine();
-            WriteEnum(uk.Single());
+            if (hasLine)
+            {
+                w.WriteLine();
+            }
+
+            hasLine |= WriteEnum(uk.Single());
         }
 
-        w.WriteLine();
+        if (hasLine)
+        {
+            w.WriteLine();
+        }
     }
 
     /// <summary>
