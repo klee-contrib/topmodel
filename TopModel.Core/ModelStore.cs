@@ -1023,7 +1023,6 @@ public class ModelStore
             if (classe.Extends != null && classe.Enum != classe.Extends.Enum)
             {
                 yield return new ModelError(classe, $"La classe '{classe}' et sa classe parente '{classe.Extends}' doivent toutes les deux être des `enum`.") { ModelErrorType = ModelErrorType.TMD1031 };
-
             }
         }
 
