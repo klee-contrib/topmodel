@@ -7,10 +7,6 @@
 - [`15b94151bb`](https://github.com/klee-contrib/topmodel/commit/15b94151bb0412988199f24087db6ef066a74352) - [JPA] Gestion de l'héritage dans les classes persistées
 - [`49972c10f`](https://github.com/klee-contrib/topmodel/commit/49972c10f9faa21326f7f600fe8a427b4dd34685) - [Core] Association sur des classes dont la PK est dans le parent (avec le mot clé `extends`)
 
-## Héritage étendus aux mappers
-
-La classe enfant hérite maintenant des différentes propriétés de la classe parente, qui pourront être utilisées dans les mappers, mais aussi en tant que `defaultProperty`, `orderProperty` ou `flagProperty` (ou même `joinColumn` dans les [dataFlows](/model/dataFlows.mddata)). Ces propriétés héritées pourront également être utilisées dans des `values`, et être référencées comme propriété cible d'une `association`.
-
 ### Classes persistées héritées
 
 Il existe plusieurs mode de stockage pour les objets contenant de l'héritage. Dans la plupart des cas étudiés, le mode le plus pertinent est le mode `join`, où chaque classe possède sa propre table, ne contenant que les informations minimum.
@@ -18,11 +14,17 @@ Il existe plusieurs mode de stockage pour les objets contenant de l'héritage. D
 Ainsi :
 
 - La table correspondant à la classe parente correspond exactement à sa représentation sans héritage
-- La table enfant contient tous les champs qui lui sont spécifiques, mais aussi un champ qui a une contrainte de clé étrangère vers la table parente. En l'absence d'autre clé primaire dans la classe, ce champ sera sa clé primaire.
+- La table enfant contient tous les champs qui lui sont spécifiques, mais aussi un champ qui a une contrainte de clé étrangère vers la table parente. En l'absence d'autre clé primaire dans la classe, ce champ sera sa clé primaire (attention : votre ORM vous imposera probablement de mettre ou non une clé primaire explicite sur la table enfant).
 
-A la sauvegarde d'un objet enfant, l'ORM effectuera donc des modifications dans deux tables.
+Si votre ORM gère l'héritage (Hibernate, EF Core...), alors la sauvegarde d'un objet enfant effectuera donc des modifications dans les deux tables. De même, si vous renseignez des `values` sur une classe enfant, il faudra également y renseigner toutes les propriétés de la classe parente.
 
-Le code écrit par les différents générateurs correspond à ce mode de fonctionnement, selon les spécificités de chacun
+Les propriétés d'une classe parente peuvent également être référencées en tant que `defaultProperty`, `orderProperty` ou `flagProperty` (ou même `joinColumn` dans les [dataFlows](/model/dataFlows.mddata)), ainsi qu'en tant que propriété cible d'une `association`.
+
+Le code écrit par les différents générateurs correspond à ce mode de fonctionnement, selon les spécificités de chacun.
+
+### Héritage étendus aux mappers
+
+Conjointement à l'évolution précédente, la classe enfant hérite maintenant des différentes propriétés de la classe parente dans les mappers, qui seront incluses dans la constitution des mappings entre les classes (des deux côtés, implicites comme explicites). Il n'y a donc plus besoin de définir des mappers sur les classes parentes pour en avoir sur les classes enfantes (mais ces derniers devront en revanche bien définir tous les mappings de leur parent).
 
 ## 1.37.6
 
