@@ -26,6 +26,14 @@ Le code écrit par les différents générateurs correspond à ce mode de foncti
 
 Conjointement à l'évolution précédente, la classe enfant hérite maintenant des différentes propriétés de la classe parente dans les mappers, qui seront incluses dans la constitution des mappings entre les classes (des deux côtés, implicites comme explicites). Il n'y a donc plus besoin de définir des mappers sur les classes parentes pour en avoir sur les classes enfantes (mais ces derniers devront en revanche bien définir tous les mappings de leur parent).
 
+### Values
+
+Les `values` ajoutées dans la classe enfant viendront implicitement compléter la liste des valeurs des champs de la classe parent. Les `enum` de valeurs seront impactées de la manière suivante :
+
+- Pas d'enum générée pour la clé primaire de la classe enfant. En effet le type de la propriété est le même que celui de la classe parent
+- Les valeurs des champs ajoutées par la classe enfant sont ajoutées à l'enum de la classe parent
+
+
 ## 1.37.6
 
 - [`becb4dd63`](https://github.com/klee-contrib/topmodel/commit/becb4dd639b62edf2b3ac84d4245dcf1198d3639) - [Core] Fix erreur lorsqu'un champ n'est pas renseigné dans une value alors qu'il fait l'objet d'une contrainte d'unicité

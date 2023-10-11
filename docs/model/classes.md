@@ -84,8 +84,15 @@ Il existe plusieurs mode de stockage pour les objets contenant de l'héritage. D
 Ainsi :
 
 - La table correspondant à la classe parente correspond exactement à sa représentation sans héritage
-- La table enfant contient tous les champs qui lui sont spécifiques, mais aussi un champ qui a une contrainte de clé étrangère vers la table parente. En l'absence d'autre clé primaire dans la classe, ce champ sera sa clé primaire.
+- La table enfant contient tous les champs qui lui sont spécifiques, mais aussi un champ qui a une contrainte de clé étrangère vers la table parente. En l'absence d'autre clé primaire dans la classe, ce champ sera sa clé primaire (attention : votre ORM vous imposera probablement de mettre ou non une clé primaire explicite sur la table enfant)
 
 A la sauvegarde d'un objet enfant, l'ORM effectuera donc des modifications dans deux tables.
 
 Le code écrit par les différents générateurs correspond à ce mode de fonctionnement, selon les spécificités de chacun.
+
+### Values
+
+Les `values` ajoutées dans la classe enfant viendront implicitement compléter la liste des valeurs des champs de la classe parent. Les `enum` de valeurs seront impactées de la manière suivante :
+
+- Pas d'enum générée pour la clé primaire de la classe enfant. En effet le type de la propriété est le même que celui de la classe parent
+- Les valeurs des champs ajoutées par la classe enfant sont ajoutées à l'enum de la classe parent
