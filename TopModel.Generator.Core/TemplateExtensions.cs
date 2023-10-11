@@ -300,6 +300,16 @@ internal static class TemplateExtensions
             return ResolveVariable(input["primaryKey.".Length..], c.PrimaryKey.FirstOrDefault()!, parameters, config, tag);
         }
 
+        if (input.StartsWith("extends."))
+        {
+            if (c.Extends == null)
+            {
+                return string.Empty;
+            }
+
+            return ResolveVariable(input["extends.".Length..], c.Extends, parameters, config, tag);
+        }
+
         if (input.StartsWith("properties["))
         {
             var indexSize = input["properties[".Length..].IndexOf("]");
