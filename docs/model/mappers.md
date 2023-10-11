@@ -143,29 +143,4 @@ En plus de mapper des champs sur des champs, certains mappings peuvent être aus
 
 ## Gestion de l'héritage
 
-TopModel est capable de gérer l'héritage des mappers. Prenons une classe A, une classe B qui en hérite. Pour les mappers `to`, si A définit un mapper vers C, alors si B définit aussi un mapper vers la classe C, alors le mapper de A vers C sera appelé dans le mapper de B vers C.
-
-Pour les mappers `from`, TopModel cherchera dans la classe parente le mapper dont les paramètres correspondent le mieux au mapper en cours de définition. Le mieux est le mapper qui a le plus de paramètres en commun dans le même ordre.
-
-> Pour calculer les paramètres `en commun`, TopModel considère également l'héritage.
-
-Quelques exemples :
-
-Exemple 1 :
-
-- A possède un mapper vers Z
-- B hérite de A
-- Y hérite de Z
-- B possède un mapper vers Y
-
--> Appel du mapper de A vers Z dans le mapper B vers Y
-
-Exemple 2 :
-
-- A est parent de B
-- A possède un mapper vers Z
-- B est parent de C
-- Z est parent de Y
-- C possède un mapper vers Y
-
--> Appel du mapper de A vers Z dans le mapper de C vers Y
+Lorsqu'une classe A hérite d'une classe B, alors toutes les propriétés de la classe B sont automatiquement recopiées dans le mapping de A. Ainsi, toutes les propriétés de B pourront être mappée dans un sens ou dans l'autre (mapper `from` ou `to`).
