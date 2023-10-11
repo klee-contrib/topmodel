@@ -21,6 +21,4 @@ public class ClassMappings
     public Dictionary<IProperty, IFieldProperty?> Mappings { get; } = new();
 
     public Dictionary<Reference, Reference> MappingReferences { get; } = new();
-
-    public ClassMappings? ParentMapper { get; set; }
 }

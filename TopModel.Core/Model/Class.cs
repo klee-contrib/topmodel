@@ -43,6 +43,8 @@ public class Class : IPropertyContainer
 
     public IList<IProperty> Properties { get; } = new List<IProperty>();
 
+    public IList<IProperty> ExtendedProperties => Extends != null ? Properties.Concat(Extends.ExtendedProperties).ToList() : Properties;
+
     public bool PreservePropertyCasing { get; set; }
 
     public Namespace Namespace { get; set; }

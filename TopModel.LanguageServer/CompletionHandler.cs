@@ -286,6 +286,8 @@ public class CompletionHandler : CompletionHandlerBase
                     classLine = text.ElementAtOrDefault(requestLine);
                 }
 
+                requestLine = request.Position.Line;
+
                 if (classLine != null && (classLine.Contains("class:") || classLine.Contains("association:")))
                 {
                     className = classLine.Split(':')[1].Trim();
@@ -363,6 +365,7 @@ public class CompletionHandler : CompletionHandlerBase
                     {
                         string? searchText = null;
                         var includeCompositions = false;
+                        var includeExtends = false;
 
                         if (currentLine.Contains("defaultProperty:") || currentLine.Contains("flagProperty:") || currentLine.Contains("orderProperty:"))
                         {
@@ -387,6 +390,7 @@ public class CompletionHandler : CompletionHandlerBase
                             var isUk = ukValuesLine != null && ukValuesLine.Contains("unique:");
                             var isValues = ukValuesLine != null && ukValuesLine.Contains("values:");
                             var isMappings = ukValuesLine != null && ukValuesLine.Contains("mappings:");
+                            includeExtends = isMappings || isValues;
                             var pC = currentLine[..reqChar].LastOrDefault();
                             var pCT = currentLine[..reqChar].TrimEnd().LastOrDefault();
                             if (
@@ -460,10 +464,11 @@ public class CompletionHandler : CompletionHandlerBase
 
                         if (searchText != null)
                         {
+                            var properties = includeExtends ? classe.ExtendedProperties : classe.Properties;
                             return Task.FromResult(new CompletionList(
                                 (includeCompositions
-                                    ? classe.Properties
-                                    : classe.Properties.Where(p => p is IFieldProperty))
+                                    ? properties
+                                    : properties.Where(p => p is IFieldProperty))
                                 .Where(f => f.Name.ShouldMatch(searchText))
                                 .Select(f => new CompletionItem
                                 {

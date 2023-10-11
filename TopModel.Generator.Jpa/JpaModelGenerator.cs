@@ -518,11 +518,6 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             fw.WriteReturns(1, $"Une instance de '{mapper.Class.NamePascal}'");
 
             fw.WriteDocEnd(1);
-            if (mapper.ParentMapper != null && mapper.ParentMapper.Name == mapper.Name)
-            {
-                fw.WriteLine(1, $"@Override");
-            }
-
             var (mapperNs, mapperModelPath) = Config.GetMapperLocation(toMapper);
 
             fw.WriteLine(1, $"public {mapper.Class.NamePascal} {mapper.Name.Value.ToCamelCase()}({mapper.Class.NamePascal} target) {{");

@@ -263,14 +263,6 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         }
 
         var isFirst = true;
-        if (classe.Extends != null)
-        {
-            if (mapper.ParentMapper != null)
-            {
-                var (parentMapperNs, parentMapperModelPath) = Config.GetMapperLocation((classe.Extends!, mapper.ParentMapper));
-                fw.WriteLine(2, $"{Config.GetMapperName(parentMapperNs, parentMapperModelPath)}.create{classe.Extends}({string.Join(", ", mapper.Params.Take(mapper.ParentMapper.Params.Count).Select(p => $"({p.Class.NamePascal}) {p.Name}"))}, target);");
-            }
-        }
 
         foreach (var param in mapper.Params.Where(p => p.Mappings.Count > 0))
         {
@@ -380,13 +372,6 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
         fw.WriteLine(2, "}");
         fw.WriteLine();
-        if (mapper.ParentMapper != null)
-        {
-            var (parentMapperNs, parentMapperModelPath) = Config.GetMapperLocation((classe.Extends!, mapper.ParentMapper));
-            fw.AddImport(Config.GetMapperImport(parentMapperNs, parentMapperModelPath, tag)!);
-            fw.WriteLine(2, $"{Config.GetMapperName(parentMapperNs, parentMapperModelPath)}.{mapper.ParentMapper.Name.Value.ToCamelCase()}(({classe.Extends!.NamePascal}) source, ({mapper.ParentMapper.Class.NamePascal}) target);");
-        }
-
         var hydrate = string.Empty;
         if (mapper.Class.Abstract)
         {

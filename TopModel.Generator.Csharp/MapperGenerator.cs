@@ -113,50 +113,6 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                 w.WriteLine(2, "{");
             }
 
-            if (mapper.ParentMapper != null)
-            {
-                foreach (var param in mapper.ParentMapper.Params)
-                {
-                    var mappings = param.Mappings.ToList();
-                    foreach (var mapping in mappings)
-                    {
-                        w.Write(3, $"{mapping.Key.NamePascal} = ");
-
-                        if (mapping.Value == null)
-                        {
-                            w.Write(param.Name);
-                        }
-                        else
-                        {
-                            var value = $"{mapper.Params[mapper.ParentMapper.Params.IndexOf(param)].Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
-
-                            if (mapping.Key is CompositionProperty cp)
-                            {
-                                w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey.SingleOrDefault()?.NamePascal} = ");
-                            }
-                            else
-                            {
-                                value = Config.GetConvertedValue(value, mapping.Value?.Domain, (mapping.Key as IFieldProperty)?.Domain);
-                            }
-
-                            w.Write(value);
-
-                            if (mapping.Key is CompositionProperty)
-                            {
-                                w.Write("}");
-                            }
-                        }
-
-                        if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1 || mappings.IndexOf(mapping) < mappings.Count - 1)
-                        {
-                            w.Write(",");
-                        }
-
-                        w.WriteLine();
-                    }
-                }
-            }
-
             foreach (var param in mapper.Params)
             {
                 var mappings = param.Mappings.ToList();
@@ -268,8 +224,8 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                 }
             }
 
-            var mappings = (mapper.ParentMapper?.Mappings ?? new Dictionary<IProperty, IFieldProperty?>()).Concat(mapper.Mappings).ToList();
-            foreach (var mapping in mappings)
+            var mappings = mapper.Mappings.ToList();
+            foreach (var mapping in mapper.Mappings)
             {
                 var value = Config.GetConvertedValue($"source.{GetSourceMapping(mapping.Key)}", (mapping.Key as IFieldProperty)?.Domain, mapping.Value?.Domain);
 

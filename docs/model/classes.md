@@ -22,11 +22,13 @@ Une classe doit au minimum avoir un **nom** (`name`), un **commentaire** (`comme
 - `orderProperty` : Propriété de tri de la classe, remplace `defaultProperty` pour cet usage. Si non renseignée et qu'il existe une propriété nommée `Order` ou `Ordre`, elle sera automatiquement ajoutée comme `orderProperty`.
 - `flagProperty` : Propriété de la classe à utiliser comme flag binaire (ayant des valeurs comme 1, 10, 100, 1000...). Si non renseignée et qu'il existe une propriété nommée `Flag`, elle sera automatiquement ajoutée comme `flagProperty`.
 - `unique` : Clés d'unicité de la classe. Une clé d'unicité est définie comme la liste des propriétés qui la compose (il peut bien évidemment y en avoir qu'une seule). Cela se présente donc comme une liste de liste de propriétés, qu'il vaut mieux représenter de la façon suivante pour que l'autocomplétion fonctionne correctement :
+
   ```yaml
   unique:
     - [Code]
     - [TypeProfilCode, TypeDroitCode]
   ```
+
 - `preservePropertyCasing` : Par défaut, TopModel converti les noms de propriétés dans la casse du langage cible. Cela veut dire par exemple qu'en C#, tous les noms de propriétés vont être convertis en `PascalCase`, même si la propriété a été déclarée en `camelCase` dans TopModel, et inversement en Java (ce qui était déjà le cas en revanche). De même, si vous avez des noms avec des `_` dans votre modèle (une classe `Profil_utilisateur` ou une propriété `utilisateur_id`), ils seront également convertis de la même façon (en Java par exemple, ça donnerait `ProfilUtilisateur` et `utilisateurId`). Cette propriété, si renseignée à `true`, permet de désactiver ce comportement s'il est important de garder la casse telle qu'elle a été définie dans le modèle (par exemple pour s'interfacer avec une API externe qui n'a pas les mêmes conventions de nommage).
 
 ## Valeurs d'une classe
@@ -70,3 +72,20 @@ Une classe peut implémenter des **[décorateurs](/model/decorators.md)** et dé
 ## Tags d'une classe
 
 Une classe peut également définir ses propres tags, qui s'ajouteront aux tags du fichier, via la propriété `tags`, pour plus de flexibilité dans l'organisation des classes en fichiers (par exemple, s'il n'y a qu'une seule classe dans un fichier qui a besoin prise en compte par un autre générateur, alors on peut ajouter un tag directement sur cette classe au lieu de la mettre dans un fichier différent).
+
+## Héritage
+
+Il est possible de définir une classe héritée avec le mot clé `extends`. La classe enfant héritera des différentes propriétés, qui pourront être utilisées dans les mappers, mais aussi en tant que `defaultProperty`, `orderProperty` ou `flagProperty` (ou même `joinColumn` dans les [dataFlows](/model/dataFlows.mddata)). Ces propriétés héritées pourront également être utilisées dans des `values`.
+
+### Classes persistées héritées
+
+Il existe plusieurs mode de stockage pour les objets contenant de l'héritage. Dans la plupart des cas étudiés, le mode le plus pertinent est le mode `join`, où chaque classe possède sa propre table, ne contenant que les informations minimum.
+
+Ainsi :
+
+- La table correspondant à la classe parente correspond exactement à sa représentation sans héritage
+- La table enfant contient tous les champs qui lui sont spécifiques, mais aussi un champ qui a une contrainte de clé étrangère vers la table parente. En l'absence d'autre clé primaire dans la classe, ce champ sera sa clé primaire.
+
+A la sauvegarde d'un objet enfant, l'ORM effectuera donc des modifications dans deux tables.
+
+Le code écrit par les différents générateurs correspond à ce mode de fonctionnement, selon les spécificités de chacun.
