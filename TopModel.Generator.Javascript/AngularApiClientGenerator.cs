@@ -168,6 +168,10 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
         {
             fw.Write($", {endpoint.GetBodyParam()!.GetParamName()}");
         }
+        else if (endpoint.Method != "OPTIONS" && endpoint.Method != "GET")
+        {
+            fw.Write(", {}");
+        }
 
         if (returnType == "string")
         {
