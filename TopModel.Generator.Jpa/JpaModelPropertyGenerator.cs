@@ -21,7 +21,7 @@ public class JpaModelPropertyGenerator
 
     public void WriteCompositePrimaryKeyClass(JavaWriter fw, Class classe)
     {
-        if (classe.PrimaryKey.Count() <= 1)
+        if (classe.PrimaryKey.Count() <= 1 || !classe.IsPersistent)
         {
             return;
         }
