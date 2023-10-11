@@ -1,5 +1,29 @@
 # TopModel.Generator (`modgen`)
 
+## 1.38.0
+
+- [`#319`](https://github.com/klee-contrib/topmodel/pull/319) [Core] Héritage étendus aux `mappers`, `values`, `defaultProperty` et classes persistées
+- [`55366e9ad6`](https://github.com/klee-contrib/topmodel/commit/55366e9ad61d322deadf818ac6931f90b5c95246) - [Core] Gestion de l'héritage dans les classes persistées
+- [`15b94151bb`](https://github.com/klee-contrib/topmodel/commit/15b94151bb0412988199f24087db6ef066a74352) - [JPA] Gestion de l'héritage dans les classes persistées
+- [`49972c10f`](https://github.com/klee-contrib/topmodel/commit/49972c10f9faa21326f7f600fe8a427b4dd34685) - [Core] Association sur des classes dont la PK est dans le parent (avec le mot clé `extends`)
+
+## Héritage étendus aux mappers
+
+La classe enfant hérite maintenant des différentes propriétés de la classe parente, qui pourront être utilisées dans les mappers, mais aussi en tant que `defaultProperty`, `orderProperty` ou `flagProperty` (ou même `joinColumn` dans les [dataFlows](/model/dataFlows.mddata)). Ces propriétés héritées pourront également être utilisées dans des `values`, et être référencées comme propriété cible d'une `association`.
+
+### Classes persistées héritées
+
+Il existe plusieurs mode de stockage pour les objets contenant de l'héritage. Dans la plupart des cas étudiés, le mode le plus pertinent est le mode `join`, où chaque classe possède sa propre table, ne contenant que les informations minimum.
+
+Ainsi :
+
+- La table correspondant à la classe parente correspond exactement à sa représentation sans héritage
+- La table enfant contient tous les champs qui lui sont spécifiques, mais aussi un champ qui a une contrainte de clé étrangère vers la table parente. En l'absence d'autre clé primaire dans la classe, ce champ sera sa clé primaire.
+
+A la sauvegarde d'un objet enfant, l'ORM effectuera donc des modifications dans deux tables.
+
+Le code écrit par les différents générateurs correspond à ce mode de fonctionnement, selon les spécificités de chacun
+
 ## 1.37.6
 
 - [`becb4dd63`](https://github.com/klee-contrib/topmodel/commit/becb4dd639b62edf2b3ac84d4245dcf1198d3639) - [Core] Fix erreur lorsqu'un champ n'est pas renseigné dans une value alors qu'il fait l'objet d'une contrainte d'unicité

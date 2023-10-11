@@ -75,7 +75,7 @@ Une classe peut également définir ses propres tags, qui s'ajouteront aux tags 
 
 ## Héritage
 
-Il est possible de définir une classe héritée avec le mot clé `extends`. La classe enfant héritera des différentes propriétés, qui pourront être utilisées dans les mappers, mais aussi en tant que `defaultProperty`, `orderProperty` ou `flagProperty` (ou même `joinColumn` dans les [dataFlows](/model/dataFlows.mddata)). Ces propriétés héritées pourront également être utilisées dans des `values`.
+Il est possible de définir une classe héritée avec le mot clé `extends`. La classe enfant héritera des différentes propriétés, qui pourront être utilisées dans les mappers, mais aussi en tant que `defaultProperty`, `orderProperty` ou `flagProperty` (ou même `joinColumn` dans les [dataFlows](/model/dataFlows.mddata)). Ces propriétés héritées pourront également être utilisées dans des `values`, et être référencées comme propriété cible d'une `association`.
 
 ### Classes persistées héritées
 
