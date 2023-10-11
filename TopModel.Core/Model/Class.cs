@@ -53,7 +53,7 @@ public class Class : IPropertyContainer
 
     public IFieldProperty? ReferenceKey =>
         PrimaryKey.Count() <= 1
-            ? PrimaryKey.SingleOrDefault() ?? Properties.OfType<IFieldProperty>().FirstOrDefault()
+            ? PrimaryKey.SingleOrDefault() ?? Extends?.PrimaryKey.SingleOrDefault() ?? Properties.OfType<IFieldProperty>().FirstOrDefault()
             : null;
 
     public IFieldProperty? EnumKey => Enum ? ReferenceKey : null;

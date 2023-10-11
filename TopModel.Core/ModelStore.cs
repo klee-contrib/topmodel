@@ -1451,7 +1451,10 @@ public class ModelStore
             {
                 foreach (var r in classe.Values)
                 {
-                    _translationStore.Translations[_config.I18n.DefaultLang][r.ResourceKey] = r.Value[classe.DefaultProperty];
+                    if (r.Value.TryGetValue(classe.DefaultProperty, out var labelProperty))
+                    {
+                        _translationStore.Translations[_config.I18n.DefaultLang][r.ResourceKey] = labelProperty;
+                    }
                 }
             }
         }
