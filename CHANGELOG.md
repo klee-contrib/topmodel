@@ -6,6 +6,7 @@
 - [`55366e9ad6`](https://github.com/klee-contrib/topmodel/commit/55366e9ad61d322deadf818ac6931f90b5c95246) - [Core] Gestion de l'héritage dans les classes persistées
 - [`15b94151bb`](https://github.com/klee-contrib/topmodel/commit/15b94151bb0412988199f24087db6ef066a74352) - [JPA] Gestion de l'héritage dans les classes persistées
 - [`49972c10f`](https://github.com/klee-contrib/topmodel/commit/49972c10f9faa21326f7f600fe8a427b4dd34685) - [Core] Association sur des classes dont la PK est dans le parent (avec le mot clé `extends`)
+- [`0a850aa2b8`](https://github.com/klee-contrib/topmodel/commit/0a850aa2b8127f5626e2f930107f3d5a2ec8609a) - [JPA] Ajout des getters et setters sur les clés primaires composites
 
 ### Classes persistées héritées
 
@@ -32,7 +33,6 @@ Les `values` ajoutées dans la classe enfant viendront implicitement compléter 
 
 - Pas d'enum générée pour la clé primaire de la classe enfant. En effet le type de la propriété est le même que celui de la classe parent
 - Les valeurs des champs ajoutées par la classe enfant sont ajoutées à l'enum de la classe parent
-
 
 ## 1.37.6
 
