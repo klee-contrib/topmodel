@@ -12,14 +12,16 @@ public class JpaModelPropertyGenerator
 {
     private readonly IEnumerable<Class> _classes;
     private readonly JpaConfig _config;
+    private readonly Dictionary<string, string> _newableTypes;
 
-    public JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> classes)
+    public JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> classes, Dictionary<string, string> newableTypes)
     {
         _classes = classes;
         _config = config;
+        _newableTypes = newableTypes;
     }
 
-    public void WriteCompositePrimaryKeyClass(JavaWriter fw, Class classe)
+    public void WriteCompositePrimaryKeyClass(JavaWriter fw, Class classe, string tag)
     {
         if (classe.PrimaryKey.Count() <= 1 || !classe.IsPersistent)
         {
@@ -35,6 +37,13 @@ public class JpaModelPropertyGenerator
             fw.WriteLine();
         }
 
+        foreach (var pk in classe.PrimaryKey)
+        {
+            WriteGetter(fw, classe, tag, pk, 2);
+            WriteSetter(fw, classe, tag, pk, 2);
+        }
+
+        fw.WriteLine();
         fw.WriteLine(2, "public boolean equals(Object o) {");
         fw.WriteLine(3, $@"if(!(o instanceof {classe.NamePascal}Id)) {{");
         fw.WriteLine(4, "return false;");
@@ -51,6 +60,31 @@ public class JpaModelPropertyGenerator
         fw.AddImport("java.util.Objects");
         fw.WriteLine(2, "}");
         fw.WriteLine(1, "}");
+    }
+
+    public void WriteGetter(JavaWriter fw, Class classe, string tag, IProperty property, int indentLevel = 1)
+    {
+        var propertyName = _config.UseJdbc ? property.NameCamel : property.NameByClassCamel;
+        fw.WriteLine();
+        fw.WriteDocStart(indentLevel, $"Getter for {propertyName}");
+        fw.WriteReturns(indentLevel, $"value of {{@link {classe.GetImport(_config, tag)}#{propertyName} {propertyName}}}");
+        fw.WriteDocEnd(indentLevel);
+
+        var getterPrefix = _config.GetType(property, _classes, true) == "boolean" ? "is" : "get";
+        fw.WriteLine(indentLevel, @$"public {_config.GetType(property, useClassForAssociation: classe.IsPersistent && !_config.UseJdbc)} {propertyName.ToPascalCase().WithPrefix(getterPrefix)}() {{");
+        if (property is AssociationProperty ap && ap.Type.IsToMany())
+        {
+            var type = _config.GetType(ap, _classes, useClassForAssociation: classe.IsPersistent && !_config.UseJdbc).Split('<').First();
+            if (_newableTypes.TryGetValue(type, out var newableType))
+            {
+                fw.WriteLine(indentLevel + 1, $"if(this.{propertyName} == null)");
+                fw.AddImport($"java.util.{newableType}");
+                fw.WriteLine(indentLevel + 2, $"this.{propertyName} = new {newableType}<>();");
+            }
+        }
+
+        fw.WriteLine(indentLevel + 1, @$"return this.{propertyName};");
+        fw.WriteLine(indentLevel, "}");
     }
 
     public void WriteProperties(JavaWriter fw, Class classe, string tag)
@@ -84,6 +118,18 @@ public class JpaModelPropertyGenerator
                 WriteProperty(fw, classe, fp, tag);
                 break;
         }
+    }
+
+    public void WriteSetter(JavaWriter fw, Class classe, string tag, IProperty property, int indentLevel = 1)
+    {
+        var propertyName = _config.UseJdbc ? property.NameCamel : property.NameByClassCamel;
+        fw.WriteLine();
+        fw.WriteDocStart(indentLevel, $"Set the value of {{@link {classe.GetImport(_config, tag)}#{propertyName} {propertyName}}}");
+        fw.WriteLine(indentLevel, $" * @param {propertyName} value to set");
+        fw.WriteDocEnd(indentLevel);
+        fw.WriteLine(indentLevel, @$"public void {propertyName.WithPrefix("set")}({_config.GetType(property, useClassForAssociation: classe.IsPersistent && !_config.UseJdbc)} {propertyName}) {{");
+        fw.WriteLine(indentLevel + 1, @$"this.{propertyName} = {propertyName};");
+        fw.WriteLine(indentLevel, "}");
     }
 
     private void WriteManyToMany(JavaWriter fw, Class classe, AssociationProperty property)

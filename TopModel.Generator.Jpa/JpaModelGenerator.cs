@@ -47,7 +47,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
     {
         get
         {
-            _jpaModelPropertyGenerator ??= new JpaModelPropertyGenerator(Config, Classes);
+            _jpaModelPropertyGenerator ??= new JpaModelPropertyGenerator(Config, Classes, _newableTypes);
             return _jpaModelPropertyGenerator;
         }
     }
@@ -92,7 +92,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         }
 
         JpaModelPropertyGenerator.WriteProperties(fw, classe, tag);
-        JpaModelPropertyGenerator.WriteCompositePrimaryKeyClass(fw, classe);
+        JpaModelPropertyGenerator.WriteCompositePrimaryKeyClass(fw, classe, tag);
         JpaModelConstructorGenerator.WriteNoArgConstructor(fw, classe);
         if (Config.MappersInClass)
         {
@@ -414,27 +414,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         var properties = Config.UseJdbc ? classe.Properties : classe.GetProperties(AvailableClasses);
         foreach (var property in properties)
         {
-            var propertyName = Config.UseJdbc ? property.NameCamel : property.NameByClassCamel;
-            fw.WriteLine();
-            fw.WriteDocStart(1, $"Getter for {propertyName}");
-            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}");
-            fw.WriteDocEnd(1);
-
-            var getterPrefix = Config.GetType(property, Classes, true) == "boolean" ? "is" : "get";
-            fw.WriteLine(1, @$"public {Config.GetType(property, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc)} {propertyName.ToPascalCase().WithPrefix(getterPrefix)}() {{");
-            if (property is AssociationProperty ap && ap.Type.IsToMany())
-            {
-                var type = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc).Split('<').First();
-                if (_newableTypes.TryGetValue(type, out var newableType))
-                {
-                    fw.WriteLine(2, $"if(this.{propertyName} == null)");
-                    fw.AddImport($"java.util.{newableType}");
-                    fw.WriteLine(3, $"this.{propertyName} = new {newableType}<>();");
-                }
-            }
-
-            fw.WriteLine(2, @$"return this.{propertyName};");
-            fw.WriteLine(1, "}");
+            _jpaModelPropertyGenerator!.WriteGetter(fw, classe, tag, property);
         }
     }
 
@@ -486,14 +466,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         var properties = Config.UseJdbc ? classe.Properties : classe.GetProperties(AvailableClasses);
         foreach (var property in properties)
         {
-            var propertyName = Config.UseJdbc ? property.NameCamel : property.NameByClassCamel;
-            fw.WriteLine();
-            fw.WriteDocStart(1, $"Set the value of {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}");
-            fw.WriteLine(1, $" * @param {propertyName} value to set");
-            fw.WriteDocEnd(1);
-            fw.WriteLine(1, @$"public void {propertyName.WithPrefix("set")}({Config.GetType(property, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc)} {propertyName}) {{");
-            fw.WriteLine(2, @$"this.{propertyName} = {propertyName};");
-            fw.WriteLine(1, "}");
+            _jpaModelPropertyGenerator!.WriteSetter(fw, classe, tag, property);
         }
     }
 
