@@ -44,14 +44,15 @@ export function getUtilisateur(utiId: number, options: RequestInit = {}): Promis
  * @param prenom Nom de l'utilisateur
  * @param email Email de l'utilisateur
  * @param dateNaissance Age de l'utilisateur
+ * @param adresse Adresse de l'utilisateur
  * @param actif Si l'utilisateur est actif
  * @param profilId Profil de l'utilisateur
  * @param typeUtilisateurCode Type d'utilisateur
  * @param options Options pour 'fetch'.
  * @returns Utilisateurs matchant les critères
  */
-export function searchUtilisateur(nom?: string, prenom?: string, email?: string, dateNaissance?: string, actif?: boolean, profilId?: number, typeUtilisateurCode?: TypeUtilisateurCode, options: RequestInit = {}): Promise<UtilisateurItem[]> {
-    return coreFetch("GET", `./api/utilisateurs`, {query: {nom, prenom, email, dateNaissance, actif, profilId, typeUtilisateurCode}}, options);
+export function searchUtilisateur(nom?: string, prenom?: string, email?: string, dateNaissance?: string, adresse?: string, actif?: boolean, profilId?: number, typeUtilisateurCode?: TypeUtilisateurCode, options: RequestInit = {}): Promise<UtilisateurItem[]> {
+    return coreFetch("GET", `./api/utilisateurs`, {query: {nom, prenom, email, dateNaissance, adresse, actif, profilId, typeUtilisateurCode}}, options);
 }
 
 /**

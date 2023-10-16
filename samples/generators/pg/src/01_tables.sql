@@ -72,6 +72,7 @@ create table UTILISATEUR (
 	UTI_PRENOM varchar(100) not null,
 	UTI_EMAIL varchar(50) not null,
 	UTI_DATE_NAISSANCE date,
+	UTI_ADRESSE varchar(100),
 	UTI_ACTIF boolean not null,
 	PRO_ID int not null,
 	TUT_CODE varchar(10) not null,

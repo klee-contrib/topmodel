@@ -111,12 +111,13 @@ public abstract class AbstractUtilisateurClient {
 	 * @param prenom Nom de l'utilisateur
 	 * @param email Email de l'utilisateur
 	 * @param dateNaissance Age de l'utilisateur
+	 * @param adresse Adresse de l'utilisateur
 	 * @param actif Si l'utilisateur est actif
 	 * @param profilId Profil de l'utilisateur
 	 * @param typeUtilisateurCode Type d'utilisateur
 	 * @return uriBuilder avec les query params remplis
 	 */
-	protected UriComponentsBuilder searchUtilisateurUriComponentsBuilder(String nom, String prenom, String email, LocalDate dateNaissance, Boolean actif, Integer profilId, TypeUtilisateurCode typeUtilisateurCode) {
+	protected UriComponentsBuilder searchUtilisateurUriComponentsBuilder(String nom, String prenom, String email, LocalDate dateNaissance, String adresse, Boolean actif, Integer profilId, TypeUtilisateurCode typeUtilisateurCode) {
 		String uri = host + "/api/utilisateurs";
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));
 		uriBuilder.queryParam("nom", nom);
@@ -124,6 +125,10 @@ public abstract class AbstractUtilisateurClient {
 		uriBuilder.queryParam("email", email);
 		if (dateNaissance != null) {
 			uriBuilder.queryParam("dateNaissance", dateNaissance);
+		}
+
+		if (adresse != null) {
+			uriBuilder.queryParam("adresse", adresse);
 		}
 
 		uriBuilder.queryParam("actif", actif);
@@ -138,14 +143,15 @@ public abstract class AbstractUtilisateurClient {
 	 * @param prenom Nom de l'utilisateur
 	 * @param email Email de l'utilisateur
 	 * @param dateNaissance Age de l'utilisateur
+	 * @param adresse Adresse de l'utilisateur
 	 * @param actif Si l'utilisateur est actif
 	 * @param profilId Profil de l'utilisateur
 	 * @param typeUtilisateurCode Type d'utilisateur
 	 * @return Utilisateurs matchant les critères
 	 */
-	public ResponseEntity<List<UtilisateurItem>> searchUtilisateur(String nom, String prenom, String email, LocalDate dateNaissance, Boolean actif, Integer profilId, TypeUtilisateurCode typeUtilisateurCode){
+	public ResponseEntity<List<UtilisateurItem>> searchUtilisateur(String nom, String prenom, String email, LocalDate dateNaissance, String adresse, Boolean actif, Integer profilId, TypeUtilisateurCode typeUtilisateurCode){
 		HttpHeaders headers = this.getHeaders();
-		UriComponentsBuilder uri = this.searchUtilisateurUriComponentsBuilder(nom, prenom, email, dateNaissance, actif, profilId, typeUtilisateurCode);
+		UriComponentsBuilder uri = this.searchUtilisateurUriComponentsBuilder(nom, prenom, email, dateNaissance, adresse, actif, profilId, typeUtilisateurCode);
 		return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.GET, new HttpEntity<>(headers), new ParameterizedTypeReference<List<UtilisateurItem>>() {});
 	}
 

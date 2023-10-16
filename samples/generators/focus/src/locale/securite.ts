@@ -33,6 +33,7 @@ export const securite = {
         },
         utilisateur: {
             actif: "Actif",
+            adresse: "Adresse",
             dateCreation: "Date de création",
             dateModification: "Date de modification",
             dateNaissance: "Date de naissance",

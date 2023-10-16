@@ -48,6 +48,7 @@ public partial class CSharpDbContext : DbContext
         utilisateur.Property(p => p.Prenom).HasComment("Nom de l'utilisateur");
         utilisateur.Property(p => p.Email).HasComment("Email de l'utilisateur");
         utilisateur.Property(p => p.DateNaissance).HasComment("Age de l'utilisateur");
+        utilisateur.Property(p => p.Adresse).HasComment("Adresse de l'utilisateur");
         utilisateur.Property(p => p.Actif).HasComment("Si l'utilisateur est actif");
         utilisateur.Property(p => p.ProfilId).HasComment("Profil de l'utilisateur");
         utilisateur.Property(p => p.TypeUtilisateurCode).HasComment("Type d'utilisateur");

@@ -59,6 +59,12 @@ public class UtilisateurRead implements Serializable {
 	private LocalDate dateNaissance;
 
 	/**
+	 * Adresse de l'utilisateur.
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getAdresse() Utilisateur#getAdresse()} 
+	 */
+	private String adresse;
+
+	/**
 	 * Si l'utilisateur est actif.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getActif() Utilisateur#getActif()} 
 	 */
@@ -154,6 +160,15 @@ public class UtilisateurRead implements Serializable {
 	}
 
 	/**
+	 * Getter for adresse.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#adresse adresse}.
+	 */
+	public String getAdresse() {
+		return this.adresse;
+	}
+
+	/**
 	 * Getter for actif.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#actif actif}.
@@ -239,6 +254,14 @@ public class UtilisateurRead implements Serializable {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#adresse adresse}.
+	 * @param adresse value to set
+	 */
+	public void setAdresse(String adresse) {
+		this.adresse = adresse;
+	}
+
+	/**
 	 * Set the value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead#actif actif}.
 	 * @param actif value to set
 	 */
@@ -287,6 +310,7 @@ public class UtilisateurRead implements Serializable {
         PRENOM(String.class), //
         EMAIL(String.class), //
         DATE_NAISSANCE(LocalDate.class), //
+        ADRESSE(String.class), //
         ACTIF(Boolean.class), //
         PROFIL_ID(Integer.class), //
         TYPE_UTILISATEUR_CODE(TypeUtilisateurCode.class), //

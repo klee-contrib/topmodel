@@ -44,6 +44,11 @@ class:
       domain: DO_DATE
       comment: Age de l'utilisateur
 
+    - name: Adresse
+      label: Adresse
+      domain: DO_LIBELLE
+      comment: Adresse de l'utilisateur
+
     - name: Actif
       domain: DO_BOOLEEN
       required: true

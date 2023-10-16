@@ -30,6 +30,7 @@ public static class SecuriteUtilisateurMappers
             Prenom = utilisateur.Prenom,
             Email = utilisateur.Email,
             DateNaissance = utilisateur.DateNaissance,
+            Adresse = utilisateur.Adresse,
             Actif = utilisateur.Actif,
             ProfilId = utilisateur.ProfilId,
             TypeUtilisateurCode = utilisateur.TypeUtilisateurCode,
@@ -51,6 +52,7 @@ public static class SecuriteUtilisateurMappers
         dest.Prenom = source.Prenom;
         dest.Email = source.Email;
         dest.DateNaissance = source.DateNaissance;
+        dest.Adresse = source.Adresse;
         dest.Actif = source.Actif;
         dest.ProfilId = source.ProfilId;
         dest.TypeUtilisateurCode = source.TypeUtilisateurCode;

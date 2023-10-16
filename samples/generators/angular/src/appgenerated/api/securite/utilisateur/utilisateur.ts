@@ -49,12 +49,13 @@ export class UtilisateurService {
      * @param prenom Nom de l'utilisateur
      * @param email Email de l'utilisateur
      * @param dateNaissance Age de l'utilisateur
+     * @param adresse Adresse de l'utilisateur
      * @param actif Si l'utilisateur est actif
      * @param profilId Profil de l'utilisateur
      * @param typeUtilisateurCode Type d'utilisateur
      * @returns Utilisateurs matchant les critères
      */
-    searchUtilisateur(nom?: string, prenom?: string, email?: string, dateNaissance?: string, actif?: boolean, profilId?: number, typeUtilisateurCode?: TypeUtilisateurCode, queryParams: any = {}): Observable<UtilisateurItem[]> {
+    searchUtilisateur(nom?: string, prenom?: string, email?: string, dateNaissance?: string, adresse?: string, actif?: boolean, profilId?: number, typeUtilisateurCode?: TypeUtilisateurCode, queryParams: any = {}): Observable<UtilisateurItem[]> {
         if(nom) {
             queryParams['nom'] = nom
         }
@@ -69,6 +70,10 @@ export class UtilisateurService {
 
         if(dateNaissance) {
             queryParams['dateNaissance'] = dateNaissance
+        }
+
+        if(adresse) {
+            queryParams['adresse'] = adresse
         }
 
         if(actif) {

@@ -12,6 +12,7 @@ create table [dbo].[UTILISATEUR] (
 	[UTI_PRENOM] varchar not null,
 	[UTI_EMAIL] varchar not null,
 	[UTI_DATE_NAISSANCE] date,
+	[UTI_ADRESSE] varchar,
 	[UTI_ACTIF] boolean not null default true,
 	[PRO_ID] int not null,
 	[TUT_CODE] varchar not null default N'GEST',

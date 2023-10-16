@@ -49,12 +49,13 @@ public class UtilisateurController : Controller
     /// <param name="prenom">Nom de l'utilisateur</param>
     /// <param name="email">Email de l'utilisateur</param>
     /// <param name="dateNaissance">Age de l'utilisateur</param>
+    /// <param name="adresse">Adresse de l'utilisateur</param>
     /// <param name="actif">Si l'utilisateur est actif</param>
     /// <param name="profilId">Profil de l'utilisateur</param>
     /// <param name="typeUtilisateurCode">Type d'utilisateur</param>
     /// <returns>Utilisateurs matchant les critères</returns>
     [HttpGet("api/utilisateurs")]
-    public async Task<ICollection<UtilisateurItem>> SearchUtilisateur(string nom = null, string prenom = null, string email = null, DateOnly? dateNaissance = null, bool? actif = null, int? profilId = null, TypeUtilisateur.Codes? typeUtilisateurCode = null)
+    public async Task<ICollection<UtilisateurItem>> SearchUtilisateur(string nom = null, string prenom = null, string email = null, DateOnly? dateNaissance = null, string adresse = null, bool? actif = null, int? profilId = null, TypeUtilisateur.Codes? typeUtilisateurCode = null)
     {
 
     }

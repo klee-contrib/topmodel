@@ -11,6 +11,7 @@ export interface UtilisateurWrite {
     prenom?: string,
     email?: string,
     dateNaissance?: string,
+    adresse?: string,
     actif?: boolean,
     profilId?: number,
     typeUtilisateurCode?: TypeUtilisateurCode
@@ -44,6 +45,13 @@ export const UtilisateurWriteEntity = {
         domain: DO_DATE,
         isRequired: false,
         label: "securite.utilisateur.utilisateur.dateNaissance"
+    },
+    adresse: {
+        type: "field",
+        name: "adresse",
+        domain: DO_LIBELLE,
+        isRequired: false,
+        label: "securite.utilisateur.utilisateur.adresse"
     },
     actif: {
         type: "field",

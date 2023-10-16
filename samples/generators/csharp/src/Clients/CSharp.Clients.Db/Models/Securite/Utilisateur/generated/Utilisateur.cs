@@ -59,6 +59,14 @@ public partial class Utilisateur
     public DateOnly? DateNaissance { get; set; }
 
     /// <summary>
+    /// Adresse de l'utilisateur.
+    /// </summary>
+    [Column("uti_adresse")]
+    [Domain(Domains.Libelle)]
+    [StringLength(100)]
+    public string Adresse { get; set; }
+
+    /// <summary>
     /// Si l'utilisateur est actif.
     /// </summary>
     [Column("uti_actif")]

@@ -70,6 +70,12 @@ public class Utilisateur {
 	private LocalDate dateNaissance;
 
 	/**
+	 * Adresse de l'utilisateur.
+	 */
+	@Column(name = "UTI_ADRESSE", nullable = true, length = 100, columnDefinition = "varchar")
+	private String adresse;
+
+	/**
 	 * Si l'utilisateur est actif.
 	 */
 	@Column(name = "UTI_ACTIF", nullable = false, columnDefinition = "boolean")
@@ -152,6 +158,15 @@ public class Utilisateur {
 	 */
 	public LocalDate getDateNaissance() {
 		return this.dateNaissance;
+	}
+
+	/**
+	 * Getter for adresse.
+	 *
+	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#adresse adresse}.
+	 */
+	public String getAdresse() {
+		return this.adresse;
 	}
 
 	/**
@@ -240,6 +255,14 @@ public class Utilisateur {
 	}
 
 	/**
+	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#adresse adresse}.
+	 * @param adresse value to set
+	 */
+	public void setAdresse(String adresse) {
+		this.adresse = adresse;
+	}
+
+	/**
 	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#actif actif}.
 	 * @param actif value to set
 	 */
@@ -288,6 +311,7 @@ public class Utilisateur {
         PRENOM(String.class), //
         EMAIL(String.class), //
         DATE_NAISSANCE(LocalDate.class), //
+        ADRESSE(String.class), //
         ACTIF(Boolean.class), //
         PROFIL(Profil.class), //
         TYPE_UTILISATEUR(TypeUtilisateur.class), //

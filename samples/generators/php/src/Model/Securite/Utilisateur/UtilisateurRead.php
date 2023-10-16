@@ -26,6 +26,9 @@ class UtilisateurRead
 
   private Date|null $dateNaissance;
 
+  #[Length(max: 100)]
+  private string|null $adresse;
+
   #[Symfony\Component\Validator\Constraints\NotNull]
   private bool $actif = true;
 
@@ -64,6 +67,11 @@ class UtilisateurRead
   public function getDateNaissance(): Date|null
   {
     return $this->dateNaissance;
+  }
+
+  public function getAdresse(): string|null
+  {
+    return $this->adresse;
   }
 
   public function getActif(): bool
@@ -122,6 +130,13 @@ class UtilisateurRead
   public function setDateNaissance(Date|null $dateNaissance): self
   {
     $this->dateNaissance = $dateNaissance;
+
+    return $this;
+  }
+
+  public function setAdresse(string|null $adresse): self
+  {
+    $this->adresse = $adresse;
 
     return $this;
   }

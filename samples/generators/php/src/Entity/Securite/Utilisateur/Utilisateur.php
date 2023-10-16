@@ -40,6 +40,9 @@ class Utilisateur
   #[Column(name: 'UTI_DATE_NAISSANCE', nullable: true)]
   private Date|null $dateNaissance;
 
+  #[Column(name: 'UTI_ADRESSE', length: 100, nullable: true)]
+  private string|null $adresse;
+
   #[Column(name: 'UTI_ACTIF')]
   private bool $actif = true;
 
@@ -80,6 +83,11 @@ class Utilisateur
   public function getDateNaissance(): Date|null
   {
     return $this->dateNaissance;
+  }
+
+  public function getAdresse(): string|null
+  {
+    return $this->adresse;
   }
 
   public function getActif(): bool
@@ -138,6 +146,13 @@ class Utilisateur
   public function setDateNaissance(Date|null $dateNaissance): self
   {
     $this->dateNaissance = $dateNaissance;
+
+    return $this;
+  }
+
+  public function setAdresse(string|null $adresse): self
+  {
+    $this->adresse = $adresse;
 
     return $this;
   }
