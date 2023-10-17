@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.38.1
+
+- [`fbcb0cd1`](https://github.com/klee-contrib/topmodel/commit/0a850aa2b8127f5626e2f930107f3d5a2ec8609a) - [JPA] Correction bug import enum clé composite
+- [`5bcb41123`](https://github.com/klee-contrib/topmodel/commit/0a850aa2b8127f5626e2f930107f3d5a2ec8609a) - [JPA] Correction warning utilisation module dans config flows
+
 ## 1.38.0
 
 - [`#319`](https://github.com/klee-contrib/topmodel/pull/319) [Core] Héritage étendus aux `mappers`, `values`, `defaultProperty` et classes persistées

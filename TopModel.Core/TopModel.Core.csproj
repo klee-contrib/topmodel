@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <PackageOutputPath>../.nupkg</PackageOutputPath>
-    <Version>1.38.0</Version>
+    <Version>1.38.1</Version>
     <Authors>JabX;gideruette</Authors>
     <Description>Librairie de modélisation TopModel.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
