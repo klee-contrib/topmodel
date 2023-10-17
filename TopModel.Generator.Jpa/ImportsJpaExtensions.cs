@@ -74,7 +74,7 @@ public static class ImportsJpaExtensions
         {
             imports.Add($"{config.GetEnumPackageName(ap.Property.Class, tag)}.{config.GetEnumName(ap.Property, ap.Property.Class)}");
         }
-        else if (ap.Property is AssociationProperty apr && config.CanClassUseEnums(apr.Association, prop: apr.Association.PrimaryKey.Single()))
+        else if (ap.Property is AssociationProperty apr && apr.Association.PrimaryKey.Count() == 1 && config.CanClassUseEnums(apr.Association, prop: apr.Association.PrimaryKey.Single()))
         {
             imports.Add($"{config.GetEnumPackageName(apr.Association, tag)}.{config.GetEnumName(apr.Association.PrimaryKey.Single(), apr.Association)}");
         }
