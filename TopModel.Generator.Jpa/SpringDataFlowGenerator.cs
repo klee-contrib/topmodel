@@ -184,7 +184,6 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.AddImport("org.springframework.batch.core.step.builder.StepBuilder");
         fw.AddImport("org.springframework.batch.core.repository.JobRepository");
         fw.AddImport("org.springframework.transaction.PlatformTransactionManager");
-        fw.AddImport("org.springframework.batch.item.ItemReader");
         fw.AddImport("org.springframework.batch.item.ItemWriter");
         fw.AddImport(dataFlow.Sources.First().Class.GetImport(Config, tag));
         fw.AddImport(dataFlow.Class.GetImport(Config, tag));
@@ -202,6 +201,7 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
 
         foreach (var source in dataFlow.Sources.Where(s => s.Mode == DataFlowSourceMode.QueryAll))
         {
+            fw.AddImport("org.springframework.batch.item.ItemReader");
             fw.WriteLine(1, @$"		@Qualifier(""{dataFlow.Name.ToPascalCase()}Reader"") ItemReader<{dataFlow.Sources.First().Class.NamePascal}> reader, //");
         }
 
@@ -482,7 +482,7 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
             mapper = null;
         }
 
-        foreach (var property in dataFlow.Class.Properties.OfType<IFieldProperty>()
+        foreach (var property in dataFlow.Class.ExtendedProperties.OfType<IFieldProperty>()
             .Where(p => mapper == null || mapper.Params.SelectMany(pa => pa.Mappings).Select(mapping => mapping.Key).Contains(p)))
         {
             var sqlType = property.Domain.Implementations["sql"].Type ?? string.Empty;
