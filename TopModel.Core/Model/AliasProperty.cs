@@ -96,7 +96,7 @@ public class AliasProperty : IFieldProperty
         get
         {
             var domain = _domain ?? _property?.Domain;
-            return As != null ? (domain.AsDomains.TryGetValue(As, out var asDomain) ? asDomain : null) : domain;
+            return As != null ? (domain != null && domain.AsDomains.TryGetValue(As, out var asDomain) ? asDomain : null) : domain;
         }
 
         set => _domain = value;
