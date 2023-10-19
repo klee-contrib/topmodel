@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.38.2
+
+- [`405e85105`](https://github.com/klee-contrib/topmodel/commit/405e851054882d805d9100184a8e0688ab6801c8) - [JPA] datflows: récupérer les propriétés du parent dans le mapping
+
 ## 1.38.1
 
 - [`fbcb0cd1`](https://github.com/klee-contrib/topmodel/commit/0a850aa2b8127f5626e2f930107f3d5a2ec8609a) - [JPA] Correction bug import enum clé composite
