@@ -15,6 +15,10 @@ import topmodel.jpa.sample.demo.dtos.securite.profil.ProfilWrite;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class SecuriteProfilMappers {
 
+	private SecuriteProfilMappers() {
+		// private constructor to hide implicite public one
+	}
+
 	/**
 	 * Map les champs des classes passées en paramètre dans l'objet target'.
 	 * @param target Instance de 'ProfilRead' (ou null pour créer une nouvelle instance).
@@ -27,18 +31,17 @@ public class SecuriteProfilMappers {
 			target = new ProfilRead();
 		}
 
-		if (profil != null) {
-			target.setId(profil.getId());
-			target.setLibelle(profil.getLibelle());
-			if (profil.getDroits() != null) {
-				target.setDroits(profil.getDroits().stream().filter(Objects::nonNull).map(Droit::getCode).collect(Collectors.toList()));
-			}
-
-			target.setDateCreation(profil.getDateCreation());
-			target.setDateModification(profil.getDateModification());
-		} else {
+		if (profil == null) {
 			throw new IllegalArgumentException("profil cannot be null");
 		}
+		target.setId(profil.getId());
+		target.setLibelle(profil.getLibelle());
+		if (profil.getDroits() != null) {
+			target.setDroits(profil.getDroits().stream().filter(Objects::nonNull).map(Droit::getCode).collect(Collectors.toList()));
+		}
+
+		target.setDateCreation(profil.getDateCreation());
+		target.setDateModification(profil.getDateModification());
 		return target;
 	}
 

@@ -58,6 +58,11 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
         fw.WriteLine($@"public class {Config.GetMapperName(mapperNs, modelPath)} {{");
 
+        fw.WriteLine();
+        fw.WriteLine(1, $@"private {Config.GetMapperName(mapperNs, modelPath)}() {{");
+        fw.WriteLine(2, "// private constructor to hide implicite public one");
+        fw.WriteLine(1, "}");
+
         foreach (var (classe1, mapper) in fromMappers)
         {
             WriteFromMapper(classe1, mapper, fw, tag);
@@ -266,9 +271,17 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
         foreach (var param in mapper.Params.Where(p => p.Mappings.Count > 0))
         {
-            fw.WriteLine(2, $"if ({param.Name.ToCamelCase()} != null) {{");
-            var mappings = param.Mappings.ToList();
+            if (param.Required && !classe.Abstract)
+            {
+                fw.WriteLine(2, $"if ({param.Name.ToCamelCase()} == null) {{");
+                fw.WriteLine(3, $"throw new IllegalArgumentException(\"{param.Name} cannot be null\");");
+                fw.WriteLine(2, "}");
+            }
+        }
 
+        foreach (var param in mapper.Params.Where(p => p.Mappings.Count > 0))
+        {
+            var mappings = param.Mappings.ToList();
             foreach (var mapping in mappings)
             {
                 var propertyTarget = mapping.Key;
@@ -302,27 +315,19 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                     {
                         if (checkSourceNull)
                         {
-                            fw.WriteLine(3, $"if ({param.Name}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}() != null) {{");
+                            fw.WriteLine(2, $"if ({param.Name}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}() != null) {{");
                         }
 
-                        fw.WriteLine(3 + (checkSourceNull ? 1 : 0), $"target.{propertyTargetName!.WithPrefix("set")}({getter});");
+                        fw.WriteLine(2 + (checkSourceNull ? 1 : 0), $"target.{propertyTargetName!.WithPrefix("set")}({getter});");
 
                         if (checkSourceNull)
                         {
-                            fw.WriteLine(3, $"}}");
+                            fw.WriteLine(2, $"}}");
                             fw.WriteLine();
                         }
                     }
                 }
             }
-
-            if (param.Required)
-            {
-                fw.WriteLine(2, "} else {");
-                fw.WriteLine(3, $"throw new IllegalArgumentException(\"{param.Name} cannot be null\");");
-            }
-
-            fw.WriteLine(2, "}");
 
             if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1)
             {

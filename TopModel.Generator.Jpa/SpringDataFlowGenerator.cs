@@ -109,6 +109,7 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.WriteLine(1, @$"public static Step {dataFlow.Name.ToCamelCase()}TruncateStep( //");
         fw.WriteLine(1, @$"		JobRepository jobRepository, //");
         fw.WriteLine(1, @$"		PlatformTransactionManager transactionManager, //");
+        fw.AddImport("javax.sql.DataSource");
         fw.WriteLine(1, @$"		@Qualifier(""{dataFlow.Target}"") DataSource dataSource) {{");
         fw.WriteLine(1, @$"return new StepBuilder(""{dataFlow.Name.ToPascalCase()}TruncateStep"", jobRepository) //");
         fw.WriteLine(2, @$"		.tasklet(new QueryTasklet(dataSource, ""truncate table {dataFlow.Class.SqlName}""), transactionManager) //");
@@ -166,8 +167,10 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         var query = $"select * from {(Config.ResolveVariables(Config.DbSchema!, tag: tagToUse) == null ? string.Empty : $"{Config.ResolveVariables(Config.DbSchema!, tag: tagToUse)}.")}{dataFlow.Sources.First().Class.SqlName}";
         fw.AddImport("org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder");
         fw.AddImport("io.github.kleecontrib.spring.batch.bulk.mapping.JdbcEntityRowMapper");
+        fw.AddImport("org.springframework.batch.item.ItemReader");
         fw.WriteLine(1, @$"@Bean(""{dataFlow.Name.ToPascalCase()}Reader"")");
         fw.WriteLine(1, @$"public static ItemReader<{dataFlow.Sources.First().Class.NamePascal}> {dataFlow.Name.ToCamelCase()}Reader( //");
+        fw.AddImport("javax.sql.DataSource");
         fw.WriteLine(1, @$"		@Qualifier(""{dataFlow.Sources.First().Source}"") DataSource datasource) {{");
         fw.WriteLine(2, $"return new JdbcCursorItemReaderBuilder<{dataFlow.Sources.First().Class.NamePascal}>() //");
         fw.WriteLine(2, @$"		.name(""{dataFlow.Name.ToPascalCase()}Reader"") //");
@@ -279,7 +282,6 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
     private void WriteBeanWriter(JavaWriter fw, DataFlow dataFlow, string tag)
     {
         fw.AddImport("io.github.kleecontrib.spring.batch.bulk.upsert.BulkItemWriter");
-        fw.AddImport("javax.sql.DataSource");
 
         fw.WriteLine();
         fw.WriteLine(1, @$"@Bean(""{dataFlow.Name.ToPascalCase()}Writer"")");
@@ -305,6 +307,11 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.AddImport($"{javaOrJakarta}.annotation.Generated");
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
         fw.WriteClassDeclaration($"{dataFlow.Name}Flow", null);
+        fw.WriteLine();
+        fw.WriteLine(1, $@"private {dataFlow.Name}Flow() {{");
+        fw.WriteLine(2, "// private constructor to hide implicite public one");
+        fw.WriteLine(1, "}");
+
         WriteBeanFlow(fw, dataFlow);
         WriteBeanStep(fw, dataFlow, tag);
 
@@ -462,7 +469,8 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         }
         else
         {
-            fw.WriteLine(3, @$"super(schema, ""{dataFlow.Class.SqlName}"", ""{string.Join(',', dataFlow.Class.PrimaryKey.Select(pk => pk.SqlName))}"");");
+            var primaryKey = dataFlow.Class.Extends != null ? dataFlow.Class.Extends.PrimaryKey : dataFlow.Class.PrimaryKey;
+            fw.WriteLine(3, @$"super(schema, ""{dataFlow.Class.SqlName}"", ""{string.Join(',', primaryKey.Select(pk => pk.SqlName))}"");");
         }
 
         fw.AddImport("de.bytefish.pgbulkinsert.pgsql.constants.DataType");

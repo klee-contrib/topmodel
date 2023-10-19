@@ -12,6 +12,10 @@ import topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurWrite;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class SecuriteUtilisateurMappers {
 
+	private SecuriteUtilisateurMappers() {
+		// private constructor to hide implicite public one
+	}
+
 	/**
 	 * Map les champs des classes passées en paramètre dans l'objet target'.
 	 * @param target Instance de 'UtilisateurRead' (ou null pour créer une nouvelle instance).
@@ -24,27 +28,26 @@ public class SecuriteUtilisateurMappers {
 			target = new UtilisateurRead();
 		}
 
-		if (utilisateur != null) {
-			target.setId(utilisateur.getId());
-			target.setNom(utilisateur.getNom());
-			target.setPrenom(utilisateur.getPrenom());
-			target.setEmail(utilisateur.getEmail());
-			target.setDateNaissance(utilisateur.getDateNaissance());
-			target.setAdresse(utilisateur.getAdresse());
-			target.setActif(utilisateur.getActif());
-			if (utilisateur.getProfil() != null) {
-				target.setProfilId(utilisateur.getProfil().getId());
-			}
-
-			if (utilisateur.getTypeUtilisateur() != null) {
-				target.setTypeUtilisateurCode(utilisateur.getTypeUtilisateur().getCode());
-			}
-
-			target.setDateCreation(utilisateur.getDateCreation());
-			target.setDateModification(utilisateur.getDateModification());
-		} else {
+		if (utilisateur == null) {
 			throw new IllegalArgumentException("utilisateur cannot be null");
 		}
+		target.setId(utilisateur.getId());
+		target.setNom(utilisateur.getNom());
+		target.setPrenom(utilisateur.getPrenom());
+		target.setEmail(utilisateur.getEmail());
+		target.setDateNaissance(utilisateur.getDateNaissance());
+		target.setAdresse(utilisateur.getAdresse());
+		target.setActif(utilisateur.getActif());
+		if (utilisateur.getProfil() != null) {
+			target.setProfilId(utilisateur.getProfil().getId());
+		}
+
+		if (utilisateur.getTypeUtilisateur() != null) {
+			target.setTypeUtilisateurCode(utilisateur.getTypeUtilisateur().getCode());
+		}
+
+		target.setDateCreation(utilisateur.getDateCreation());
+		target.setDateModification(utilisateur.getDateModification());
 		return target;
 	}
 
