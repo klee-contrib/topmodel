@@ -60,7 +60,7 @@ public static class GeneratorUtils
             .OfType<AssociationProperty>()
             .Where(p => p is not ReverseAssociationProperty)
             .Where(p => p.Type != AssociationType.OneToOne)
-            .Where(p => p.Association.PrimaryKey.Count() == 1)
+            .Where(p => p.Association.PrimaryKey.Count() == 1 || p.Type == AssociationType.ManyToOne)
             .Where(p => p.Association == classe
                 && (p.Type == AssociationType.OneToMany || p.Class.Namespace.RootModule == classe.Namespace.RootModule))
             .ToList();

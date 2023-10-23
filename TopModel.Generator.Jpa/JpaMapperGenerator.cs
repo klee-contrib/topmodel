@@ -276,12 +276,20 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                 fw.WriteLine(2, $"if ({param.Name.ToCamelCase()} == null) {{");
                 fw.WriteLine(3, $"throw new IllegalArgumentException(\"{param.Name} cannot be null\");");
                 fw.WriteLine(2, "}");
+                fw.WriteLine();
             }
         }
 
         foreach (var param in mapper.Params.Where(p => p.Mappings.Count > 0))
         {
             var mappings = param.Mappings.ToList();
+            var indent = 2;
+            if (!param.Required)
+            {
+                fw.WriteLine(indent, $"if ({param.Name.ToCamelCase()} != null) {{");
+                indent++;
+            }
+
             foreach (var mapping in mappings)
             {
                 var propertyTarget = mapping.Key;
@@ -315,22 +323,23 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                     {
                         if (checkSourceNull)
                         {
-                            fw.WriteLine(2, $"if ({param.Name}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}() != null) {{");
+                            fw.WriteLine(indent, $"if ({param.Name}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}() != null) {{");
                         }
 
-                        fw.WriteLine(2 + (checkSourceNull ? 1 : 0), $"target.{propertyTargetName!.WithPrefix("set")}({getter});");
+                        fw.WriteLine(indent + (checkSourceNull ? 1 : 0), $"target.{propertyTargetName!.WithPrefix("set")}({getter});");
 
                         if (checkSourceNull)
                         {
-                            fw.WriteLine(2, $"}}");
+                            fw.WriteLine(indent, $"}}");
                             fw.WriteLine();
                         }
                     }
                 }
             }
 
-            if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1)
+            if (!param.Required)
             {
+                fw.WriteLine(indent - 1, "}");
                 fw.WriteLine();
             }
         }
@@ -347,7 +356,6 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
     private void WriteToMapper(Class classe, ClassMappings mapper, JavaWriter fw, string tag)
     {
-        fw.WriteLine();
         fw.WriteDocStart(1, $"Mappe '{classe}' vers '{mapper.Class.NamePascal}'");
         if (mapper.Comment != null)
         {

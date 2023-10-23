@@ -169,7 +169,6 @@ public class JpaModelPropertyGenerator
 
     private void WriteOneToMany(JavaWriter fw, Class classe, AssociationProperty property)
     {
-        var pk = classe.PrimaryKey.Single().SqlName;
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
         if (property is ReverseAssociationProperty rap)
@@ -178,6 +177,7 @@ public class JpaModelPropertyGenerator
         }
         else
         {
+            var pk = classe.PrimaryKey.Single().SqlName;
             var hasReverse = property.Class.Namespace.RootModule == property.Association.Namespace.RootModule;
             fw.WriteLine(1, @$"@{property.Type}(cascade = CascadeType.ALL, fetch = FetchType.LAZY{(hasReverse ? @$", mappedBy = ""{property.Class.NameCamel}{property.Role ?? string.Empty}""" : string.Empty)})");
             if (!hasReverse)
