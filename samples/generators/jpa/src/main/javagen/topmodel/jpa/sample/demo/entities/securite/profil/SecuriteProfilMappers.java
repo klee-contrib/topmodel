@@ -34,6 +34,7 @@ public class SecuriteProfilMappers {
 		if (profil == null) {
 			throw new IllegalArgumentException("profil cannot be null");
 		}
+
 		target.setId(profil.getId());
 		target.setLibelle(profil.getLibelle());
 		if (profil.getDroits() != null) {

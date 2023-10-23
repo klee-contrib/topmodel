@@ -31,6 +31,7 @@ public class SecuriteUtilisateurMappers {
 		if (utilisateur == null) {
 			throw new IllegalArgumentException("utilisateur cannot be null");
 		}
+
 		target.setId(utilisateur.getId());
 		target.setNom(utilisateur.getNom());
 		target.setPrenom(utilisateur.getPrenom());

@@ -356,6 +356,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
     private void WriteToMapper(Class classe, ClassMappings mapper, JavaWriter fw, string tag)
     {
+        fw.WriteLine();
         fw.WriteDocStart(1, $"Mappe '{classe}' vers '{mapper.Class.NamePascal}'");
         if (mapper.Comment != null)
         {
