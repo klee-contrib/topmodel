@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <PackageOutputPath>../.nupkg</PackageOutputPath>
-    <Version>1.38.3</Version>
+    <Version>1.38.4</Version>
     <Authors>JabX;gideruette</Authors>
     <Description>Utilitaires TopModel.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

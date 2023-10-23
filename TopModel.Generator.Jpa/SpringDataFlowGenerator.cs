@@ -308,8 +308,8 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
         fw.WriteClassDeclaration($"{dataFlow.Name}Flow", null);
         fw.WriteLine();
-        fw.WriteLine(1, $@"private {dataFlow.Name}Flow() {{");
-        fw.WriteLine(2, "// private constructor to hide implicite public one");
+        fw.WriteLine(1, $@"protected {dataFlow.Name}Flow() {{");
+        fw.WriteLine(2, "// protected constructor to hide implicite public one");
         fw.WriteLine(1, "}");
 
         WriteBeanFlow(fw, dataFlow);

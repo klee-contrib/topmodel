@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.38.4
+
+- [`edfdc21`](https://github.com/klee-contrib/topmodel/commit/edfdc211d0f714a866a2a2f172552ef73ebfab9b) - [JPA] Correction visibilité flows
+
 ## 1.38.3
 
 - [`edfdc21`](https://github.com/klee-contrib/topmodel/commit/edfdc211d0f714a866a2a2f172552ef73ebfab9b) - [JPA] Correction champs nulls nullables dans les mappers, associations réciproques mal générées
