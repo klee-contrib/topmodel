@@ -6,6 +6,11 @@ public static class TmdGenUtils
 {
     public static string GetDomainString(IList<DomainMapping> domains, string? type = null, string? name = null, string? scale = null, string? precision = null)
     {
+        if (name == null && string.IsNullOrEmpty(type))
+        {
+            type = "object";
+        }
+
         return domains.Select(d =>
         {
             var score = 0;
