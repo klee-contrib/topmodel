@@ -71,11 +71,6 @@ public abstract class GeneratorBase<T> : IModelWatcher
         HandleFiles(handledFiles);
     }
 
-    protected string GetBestClassTag(Class classe, string tag)
-    {
-        return classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag;
-    }
-
     protected IEnumerable<ClassValue> GetAllValues(Class classe)
     {
         foreach (var value in classe.Values)
@@ -90,6 +85,11 @@ public abstract class GeneratorBase<T> : IModelWatcher
                 yield return value;
             }
         }
+    }
+
+    protected string GetBestClassTag(Class classe, string tag)
+    {
+        return classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag;
     }
 
     protected abstract void HandleFiles(IEnumerable<ModelFile> files);
