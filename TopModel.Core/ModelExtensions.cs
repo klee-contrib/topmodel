@@ -27,7 +27,7 @@ public static class ModelExtensions
                 .Select(c => (Reference: c.ExtendsReference!, File: c.GetFile())))
             .Concat(modelStore.DataFlows.Where(d => d.Class == classe).Select(d => (Reference: d.ClassReference, File: d.GetFile())))
             .Concat(modelStore.DataFlows.SelectMany(d => d.Sources.Where(s => s.Class == classe).Select(s => (Reference: s.ClassReference, File: d.GetFile()))))
-            .Concat(modelStore.Classes.SelectMany(c => c.FromMappers.SelectMany(c => c.Params).Concat(c.ToMappers).Where(m => m.Class == classe).Select(m => (Reference: m.ClassReference, File: c.GetFile()))))
+            .Concat(modelStore.Classes.SelectMany(c => c.FromMappers.SelectMany(c => c.ClassParams).Concat(c.ToMappers).Where(m => m.Class == classe).Select(m => (Reference: m.ClassReference, File: c.GetFile()))))
             .Where(r => r.Reference is not null)
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
@@ -198,7 +198,7 @@ public static class ModelExtensions
 
             foreach (var classe in modelStore.Classes)
             {
-                foreach (var mappings in classe.FromMappers.SelectMany(m => m.Params).Concat(classe.ToMappers))
+                foreach (var mappings in classe.FromMappers.SelectMany(m => m.ClassParams).Concat(classe.ToMappers))
                 {
                     if (mappings.Mappings.ContainsKey(fp))
                     {

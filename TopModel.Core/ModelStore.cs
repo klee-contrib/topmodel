@@ -1074,7 +1074,7 @@ public class ModelStore
         // Résolutions des mappers
         foreach (var classe in modelFile.Classes)
         {
-            foreach (var mappings in classe.FromMappers.SelectMany(m => m.Params).Concat(classe.ToMappers))
+            foreach (var mappings in classe.FromMappers.SelectMany(m => m.ClassParams).Concat(classe.ToMappers))
             {
                 if (!referencedClasses.TryGetValue(mappings.ClassReference.ReferenceName, out var mappedClass))
                 {
@@ -1174,12 +1174,12 @@ public class ModelStore
 
             foreach (var mapper in classe.FromMappers)
             {
-                foreach (var param in mapper.Params.Where((e, i) => mapper.Params.Where((p, j) => p.Name == e.Name && j < i).Any()))
+                foreach (var param in mapper.ClassParams.Where((e, i) => mapper.ClassParams.Where((p, j) => p.Name == e.Name && j < i).Any()))
                 {
                     yield return new ModelError(classe, $"Le nom '{param.Name}' est déjà utilisé.", param.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
                 }
 
-                var mappings = mapper.Params.SelectMany(p => p.MappingReferences);
+                var mappings = mapper.ClassParams.SelectMany(p => p.MappingReferences);
 
                 var hasDoublon = false;
                 foreach (var mapping in mappings.Where((e, i) => e.Value.ReferenceName != "false" && mappings.Where((p, j) => p.Value.ReferenceName != "false" && p.Key.ReferenceName == e.Key.ReferenceName && j < i).Any()))
@@ -1190,9 +1190,9 @@ public class ModelStore
 
                 if (!hasDoublon)
                 {
-                    var explicitMappings = mapper.Params.SelectMany(p => p.Mappings).ToList();
+                    var explicitMappings = mapper.ClassParams.SelectMany(p => p.Mappings).ToList();
 
-                    foreach (var param in mapper.Params.Where(p => p.Class != null))
+                    foreach (var param in mapper.ClassParams.Where(p => p.Class != null))
                     {
                         foreach (var property in classe.ExtendedProperties.OfType<AliasProperty>().Where(property => !property.Readonly && !explicitMappings.Any(m => m.Key == property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
                         {
@@ -1208,9 +1208,9 @@ public class ModelStore
                         }
                     }
 
-                    var explicitAndAliasMappings = mapper.Params.SelectMany(p => p.Mappings).ToList();
+                    var explicitAndAliasMappings = mapper.ClassParams.SelectMany(p => p.Mappings).ToList();
 
-                    foreach (var param in mapper.Params.Where(p => p.Class != null))
+                    foreach (var param in mapper.ClassParams.Where(p => p.Class != null))
                     {
                         foreach (var property in classe.ExtendedProperties.OfType<IFieldProperty>().Where(property => !property.Readonly && !explicitAndAliasMappings.Any(m => m.Key == property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
                         {
@@ -1224,11 +1224,11 @@ public class ModelStore
                         }
                     }
 
-                    var finalMappings = mapper.Params.SelectMany(p => p.Mappings).ToList();
+                    var finalMappings = mapper.ClassParams.SelectMany(p => p.Mappings).ToList();
 
                     foreach (var mapping in finalMappings.Where((e, i) => finalMappings.Where((p, j) => p.Key == e.Key && j < i).Any()))
                     {
-                        yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Key.Name}' : {string.Join(", ", mapper.Params.SelectMany(p => p.Mappings.Where(m => m.Key == mapping.Key).Select(m => $"'{p.Name}.{m.Value}'")))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
+                        yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Key.Name}' : {string.Join(", ", mapper.ClassParams.SelectMany(p => p.Mappings.Where(m => m.Key == mapping.Key).Select(m => $"'{p.Name}.{m.Value}'")))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
                     }
                 }
             }
@@ -1287,7 +1287,7 @@ public class ModelStore
         {
             foreach (var mapper in classe.FromMappers)
             {
-                if (!mapper.Params.SelectMany(p => p.Mappings).Any())
+                if (!mapper.ClassParams.SelectMany(p => p.Mappings).Any())
                 {
                     yield return new ModelError(classe, "Aucun mapping n'a été trouvé sur ce mapper.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1025 };
                 }

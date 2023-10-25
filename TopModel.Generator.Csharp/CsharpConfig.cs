@@ -272,7 +272,7 @@ public class CsharpConfig : GeneratorConfigBase
             return (mapper.Classe.Namespace, pmp);
         }
 
-        var persistentParam = mapper.Mapper.Params.FirstOrDefault(p => p.Class.IsPersistent);
+        var persistentParam = mapper.Mapper.ClassParams.FirstOrDefault(p => p.Class.IsPersistent);
         if (persistentParam != null)
         {
             return (persistentParam.Class.Namespace, pmp);

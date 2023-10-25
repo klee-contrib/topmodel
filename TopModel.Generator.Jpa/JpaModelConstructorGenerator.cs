@@ -80,9 +80,9 @@ public class JpaModelConstructorGenerator
 
     public void WriteFromMappers(JavaWriter fw, Class classe, List<Class> availableClasses, string tag)
     {
-        var fromMappers = classe.FromMappers.Where(c => c.Params.All(p => availableClasses.Contains(p.Class))).Select(m => (classe, m))
-        .OrderBy(m => m.classe.NamePascal)
-        .ToList();
+        var fromMappers = classe.FromMappers.Where(c => c.ClassParams.All(p => availableClasses.Contains(p.Class))).Select(m => (classe, m))
+            .OrderBy(m => m.classe.NamePascal)
+            .ToList();
 
         foreach (var fromMapper in fromMappers)
         {
@@ -94,7 +94,7 @@ public class JpaModelConstructorGenerator
                 fw.WriteLine(1, $" * {mapper.Comment}");
             }
 
-            foreach (var param in mapper.Params)
+            foreach (var param in mapper.ClassParams)
             {
                 if (param.Comment != null)
                 {
@@ -106,14 +106,14 @@ public class JpaModelConstructorGenerator
 
             fw.WriteReturns(1, $"Une nouvelle instance de '{classe.NamePascal}'");
             fw.WriteDocEnd(1);
-            fw.WriteLine(1, $"public {classe.NamePascal}({string.Join(", ", mapper.Params.Select(p => $"{p.Class.NamePascal} {p.Name.ToCamelCase()}"))}) {{");
+            fw.WriteLine(1, $"public {classe.NamePascal}({string.Join(", ", mapper.ClassParams.Select(p => $"{p.Class.NamePascal} {p.Name.ToCamelCase()}"))}) {{");
             if (classe.Extends != null)
             {
                 fw.WriteLine(2, $"super();");
             }
 
             var (mapperNs, mapperModelPath) = _config.GetMapperLocation(fromMapper);
-            fw.WriteLine(2, $"{_config.GetMapperName(mapperNs, mapperModelPath)}.create{classe.NamePascal}({string.Join(", ", mapper.Params.Select(p => p.Name.ToCamelCase()))}, this);");
+            fw.WriteLine(2, $"{_config.GetMapperName(mapperNs, mapperModelPath)}.create{classe.NamePascal}({string.Join(", ", mapper.ClassParams.Select(p => p.Name.ToCamelCase()))}, this);");
             fw.AddImport(_config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
             fw.WriteLine(1, "}");
         }

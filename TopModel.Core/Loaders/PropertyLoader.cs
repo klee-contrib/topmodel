@@ -19,7 +19,7 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
         parser.Consume<MappingStart>();
         switch (parser.Current)
         {
-            case Scalar { Value: "name" } s:
+            case Scalar { Value: "name" }:
                 var rp = new RegularProperty { UseLegacyRoleName = _modelConfig.UseLegacyRoleNames };
 
                 while (parser.Current is not MappingEnd)

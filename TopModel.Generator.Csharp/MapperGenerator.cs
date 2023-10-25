@@ -39,7 +39,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
         var ns = Config.GetNamespace(mapperNs, modelPath, tag);
 
-        var usings = fromMappers.SelectMany(m => m.Mapper.Params.Select(p => p.Class).Concat(new[] { m.Classe }))
+        var usings = fromMappers.SelectMany(m => m.Mapper.ClassParams.Select(p => p.Class).Concat(new[] { m.Classe }))
             .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
             .Select(c => Config.GetNamespace(c, GetBestClassTag(c, tag)))
             .Where(@using => !ns.Contains(@using))
@@ -62,7 +62,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
             var (classe, mapper) = fromMapper;
 
             w.WriteSummary(1, $"Crée une nouvelle instance de '{classe.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
-            foreach (var param in mapper.Params)
+            foreach (var param in mapper.ClassParams)
             {
                 if (param.Comment != null)
                 {
@@ -85,7 +85,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                 w.Write(1, $"public static {classe.NamePascal} Create{classe.NamePascal}");
             }
 
-            w.WriteLine($"({string.Join(", ", mapper.Params.Select(p => $"{(p.Class.Abstract ? "I" : string.Empty)}{p.Class.NamePascal} {p.Name}{(!p.Required ? " = null" : string.Empty)}"))})");
+            w.WriteLine($"({string.Join(", ", mapper.ClassParams.Select(p => $"{(p.Class.Abstract ? "I" : string.Empty)}{p.Class.NamePascal} {p.Name}{(!p.Required ? " = null" : string.Empty)}"))})");
 
             if (classe.Abstract)
             {
@@ -94,7 +94,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
             w.WriteLine(1, "{");
 
-            foreach (var param in mapper.Params.Where(p => p.Required))
+            foreach (var param in mapper.ClassParams.Where(p => p.Required))
             {
                 w.WriteLine(2, $"if ({param.Name} is null)");
                 w.WriteLine(2, "{");
@@ -113,7 +113,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                 w.WriteLine(2, "{");
             }
 
-            foreach (var param in mapper.Params)
+            foreach (var param in mapper.ClassParams)
             {
                 var mappings = param.Mappings.ToList();
                 foreach (var mapping in mappings)
@@ -152,7 +152,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                         }
                     }
 
-                    if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1 || mappings.IndexOf(mapping) < mappings.Count - 1)
+                    if (mapper.Params.IndexOf(param) < mapper.ClassParams.Count() - 1 || mappings.IndexOf(mapping) < mappings.Count - 1)
                     {
                         w.Write(",");
                     }

@@ -152,37 +152,74 @@ public class ClassLoader : ILoader<Class>
                                                 mapper.Reference = new LocatedString(prop);
                                                 parser.ConsumeSequence(() =>
                                                 {
-                                                    var param = new ClassMappings();
-                                                    mapper.Params.Add(param);
-
-                                                    Scalar classScalar = null!;
-                                                    parser.ConsumeMapping(prop =>
+                                                    parser.Consume<MappingStart>();
+                                                    if (parser.Current is Scalar { Value: "class" })
                                                     {
-                                                        switch (prop.Value)
-                                                        {
-                                                            case "class":
-                                                                classScalar = parser.Consume<Scalar>();
-                                                                param.ClassReference = new ClassReference(classScalar);
-                                                                break;
-                                                            case "required":
-                                                                param.Required = parser.Consume<Scalar>().Value == "true";
-                                                                break;
-                                                            case "comment":
-                                                                param.Comment = parser.Consume<Scalar>().Value;
-                                                                break;
-                                                            case "name":
-                                                                param.Name = new LocatedString(parser.Consume<Scalar>());
-                                                                break;
-                                                            case "mappings":
-                                                                parser.ConsumeMapping(prop =>
-                                                                {
-                                                                    param.MappingReferences.Add(new Reference(prop), new Reference(parser.Consume<Scalar>()));
-                                                                });
-                                                                break;
-                                                        }
-                                                    });
+                                                        var param = new ClassMappings();
+                                                        mapper.Params.Add(param);
 
-                                                    param.Name ??= new LocatedString(classScalar) { Value = param.ClassReference.ReferenceName.ToCamelCase(strictIfUppercase: true) };
+                                                        Scalar classScalar = null!;
+                                                        while (parser.Current is not MappingEnd)
+                                                        {
+                                                            var prop = parser.Consume<Scalar>();
+                                                            switch (prop.Value)
+                                                            {
+                                                                case "class":
+                                                                    classScalar = parser.Consume<Scalar>();
+                                                                    param.ClassReference = new ClassReference(classScalar);
+                                                                    break;
+                                                                case "required":
+                                                                    param.Required = parser.Consume<Scalar>().Value == "true";
+                                                                    break;
+                                                                case "comment":
+                                                                    param.Comment = parser.Consume<Scalar>().Value;
+                                                                    break;
+                                                                case "name":
+                                                                    param.Name = new LocatedString(parser.Consume<Scalar>());
+                                                                    break;
+                                                                case "mappings":
+                                                                    parser.ConsumeMapping(prop =>
+                                                                    {
+                                                                        param.MappingReferences.Add(new Reference(prop), new Reference(parser.Consume<Scalar>()));
+                                                                    });
+                                                                    break;
+                                                            }
+                                                        }
+
+                                                        param.Name ??= new LocatedString(classScalar) { Value = param.ClassReference.ReferenceName.ToCamelCase(strictIfUppercase: true) };
+                                                    }
+                                                    else if (parser.Current is Scalar { Value: "property" })
+                                                    {
+                                                        while (parser.Current is not MappingEnd)
+                                                        {
+                                                            var prop = parser.Consume<Scalar>();
+                                                            switch (prop.Value)
+                                                            {
+                                                                case "property":
+                                                                    foreach (var p in _propertyLoader.Load(parser))
+                                                                    {
+                                                                        var param = new PropertyMapping { Property = p };
+                                                                        mapper.Params.Add(param);
+                                                                    }
+
+                                                                    break;
+                                                                case "target":
+                                                                    var targetReference = new Reference(parser.Consume<Scalar>());
+                                                                    foreach (var cp in mapper.PropertyParams)
+                                                                    {
+                                                                        cp.TargetPropertyReference = targetReference;
+                                                                    }
+
+                                                                    break;
+                                                            }
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        throw new ModelException(classe, $"Erreur dans la construction des paramètres du mapper 'from'.");
+                                                    }
+
+                                                    parser.Consume<MappingEnd>();
                                                 });
                                                 break;
                                         }

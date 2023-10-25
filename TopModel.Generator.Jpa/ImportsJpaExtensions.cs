@@ -21,7 +21,7 @@ public static class ImportsJpaExtensions
         if (config.MappersInClass)
         {
             imports
-                .AddRange(classe.FromMappers.Where(fm => fm.Params.All(fmp => availableClasses.Contains(fmp.Class))).SelectMany(fm => fm.Params).Select(fmp => fmp.Class.GetImport(config, tag)));
+                .AddRange(classe.FromMappers.Where(fm => fm.ClassParams.All(fmp => availableClasses.Contains(fmp.Class))).SelectMany(fm => fm.ClassParams).Select(fmp => fmp.Class.GetImport(config, tag)));
             imports
                 .AddRange(classe.ToMappers.Where(tm => availableClasses.Contains(tm.Class)).Select(fmp => fmp.Class.GetImport(config, tag)));
         }

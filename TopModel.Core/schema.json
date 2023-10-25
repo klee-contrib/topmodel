@@ -826,44 +826,63 @@
                         "type": "array",
                         "description": "Liste des paramètres du mapper.",
                         "items": {
-                          "type": "object",
-                          "description": "Paramètre pour le mapper.",
-                          "required": [
-                            "class"
-                          ],
-                          "additionalProperties": false,
-                          "properties": {
-                            "class": {
-                              "type": "string",
-                              "description": "Classe depuis laquelle recopier des propriétés."
-                            },
-                            "required": {
-                              "type": "boolean",
-                              "description": "Paramètre obligatoire. 'true' par défaut."
-                            },
-                            "comment": {
-                              "type": "string",
-                              "description": "Commentaire facultatif du mapper."
-                            },
-                            "name": {
-                              "type": "string",
-                              "description": "Nom du paramètre. Utilise le nom de la classe par défaut."
-                            },
-                            "mappings": {
+                          "oneOf": [
+                            {
                               "type": "object",
-                              "description": "Correspondances de champs entre la classe courante et la classe en paramètre. Les propriétés doivent avoir le même domaine pour pouvoir établir une correspondance.\n\nLes correspondances entre alias, puis entre propriétés de même nom et de même domaine sont ajoutées automatiquement sauf indication contraire (correspondance explicite sur une autre propriété, ou correspondance renseignée à `false` pour la désactiver).",
-                              "additionalProperties": {
-                                "oneOf": [
-                                  {
-                                    "type": "string"
-                                  },
-                                  {
-                                    "type": "boolean"
+                              "description": "Paramètre pour le mapper.",
+                              "required": [
+                                "class"
+                              ],
+                              "additionalProperties": false,
+                              "properties": {
+                                "class": {
+                                  "type": "string",
+                                  "description": "Classe depuis laquelle recopier des propriétés."
+                                },
+                                "required": {
+                                  "type": "boolean",
+                                  "description": "Paramètre obligatoire. 'true' par défaut."
+                                },
+                                "comment": {
+                                  "type": "string",
+                                  "description": "Commentaire facultatif du mapper."
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "description": "Nom du paramètre. Utilise le nom de la classe par défaut."
+                                },
+                                "mappings": {
+                                  "type": "object",
+                                  "description": "Correspondances de champs entre la classe courante et la classe en paramètre. Les propriétés doivent avoir le même domaine pour pouvoir établir une correspondance.\n\nLes correspondances entre alias, puis entre propriétés de même nom et de même domaine sont ajoutées automatiquement sauf indication contraire (correspondance explicite sur une autre propriété, ou correspondance renseignée à `false` pour la désactiver).",
+                                  "additionalProperties": {
+                                    "oneOf": [
+                                      {
+                                        "type": "string"
+                                      },
+                                      {
+                                        "type": "boolean"
+                                      }
+                                    ]
                                   }
-                                ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "description": "Paramètre pour le mapper",
+                              "required": [ "property" ],
+                              "additionalProperties": false,
+                              "properties": {
+                                "property": {
+                                  "$ref": "#/definitions/property"
+                                },
+                                "target": {
+                                  "type": "string",
+                                  "description": "Propriété cible de la classe courante pour cette propriété. Cette propriété doit avoir le même domaine que la propriété source."
+                                }
                               }
                             }
-                          }
+                          ]
                         }
                       }
                     }

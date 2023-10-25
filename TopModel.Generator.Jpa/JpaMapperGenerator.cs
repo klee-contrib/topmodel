@@ -40,7 +40,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
         using var fw = new JavaWriter(fileName, _logger, package, null);
 
-        var imports = fromMappers.SelectMany(m => m.Mapper.Params.Select(p => p.Class).Concat(new[] { m.Classe }))
+        var imports = fromMappers.SelectMany(m => m.Mapper.ClassParams.Select(p => p.Class).Concat(new[] { m.Classe }))
             .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
             .Where(c => Classes.Contains(c))
             .Select(c => c.GetImport(Config, c.Tags.Contains(tag) ? tag : c.Tags.Intersect(Config.Tags).First()))
@@ -118,9 +118,9 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                     getter = $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{cp.NameByClassPascal.WithPrefix(getterPrefix)}(), target.get{apSource.NameByClassPascal}())";
                     fw.AddImport(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
                 }
-                else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.Params.First().Class == apSource.Association))
+                else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.ClassParams.First().Class == apSource.Association))
                 {
-                    var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.Params.First().Class == apSource.Association)!;
+                    var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.ClassParams.First().Class == apSource.Association)!;
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cp.Composition, cpMapper));
 
                     getter = $"{sourceName}.{apSource.NameByClassPascal.WithPrefix(getterPrefix)}()";
@@ -234,7 +234,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         fw.WriteLine();
         fw.WriteDocStart(1, $"Map les champs des classes passées en paramètre dans l'objet target'");
         fw.WriteParam("target", $"Instance de '{classe}' (ou null pour créer une nouvelle instance)");
-        foreach (var param in mapper.Params)
+        foreach (var param in mapper.ClassParams)
         {
             if (param.Comment != null)
             {
@@ -248,7 +248,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
         fw.WriteReturns(1, $"Une nouvelle instance de '{classe.NamePascal}' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée");
         fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"public static {classe.NamePascal} create{classe.NamePascal}({string.Join(", ", mapper.Params.Select(p => $"{p.Class} {p.Name.ToCamelCase()}"))}, {classe.NamePascal} target) {{");
+        fw.WriteLine(1, $"public static {classe.NamePascal} create{classe.NamePascal}({string.Join(", ", mapper.ClassParams.Select(p => $"{p.Class} {p.Name.ToCamelCase()}"))}, {classe.NamePascal} target) {{");
         fw.WriteLine(2, "if (target == null) {");
         if (classe.Abstract)
         {
@@ -269,7 +269,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
         var isFirst = true;
 
-        foreach (var param in mapper.Params.Where(p => p.Mappings.Count > 0))
+        foreach (var param in mapper.ClassParams.Where(p => p.Mappings.Count > 0))
         {
             if (param.Required && !classe.Abstract)
             {
@@ -280,7 +280,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
             }
         }
 
-        foreach (var param in mapper.Params.Where(p => p.Mappings.Count > 0))
+        foreach (var param in mapper.ClassParams.Where(p => p.Mappings.Count > 0))
         {
             var mappings = param.Mappings.ToList();
             var indent = 2;
