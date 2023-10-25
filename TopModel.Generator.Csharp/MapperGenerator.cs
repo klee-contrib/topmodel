@@ -127,29 +127,22 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                         w.Write(3, $"{mapping.Key.NamePascal} = ");
                     }
 
-                    if (mapping.Value == null)
+                    var value = $"{param.Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
+
+                    if (mapping.Key is CompositionProperty cp)
                     {
-                        w.Write(param.Name);
+                        w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey.SingleOrDefault()?.NamePascal} = ");
                     }
                     else
                     {
-                        var value = $"{param.Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
+                        value = Config.GetConvertedValue(value, mapping.Value.Domain, (mapping.Key as IFieldProperty)?.Domain);
+                    }
 
-                        if (mapping.Key is CompositionProperty cp)
-                        {
-                            w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey.SingleOrDefault()?.NamePascal} = ");
-                        }
-                        else
-                        {
-                            value = Config.GetConvertedValue(value, mapping.Value?.Domain, (mapping.Key as IFieldProperty)?.Domain);
-                        }
+                    w.Write(value);
 
-                        w.Write(value);
-
-                        if (mapping.Key is CompositionProperty)
-                        {
-                            w.Write(" }");
-                        }
+                    if (mapping.Key is CompositionProperty)
+                    {
+                        w.Write(" }");
                     }
 
                     if (mapper.Params.IndexOf(param) < mapper.ClassParams.Count() - 1 || mappings.IndexOf(mapping) < mappings.Count - 1)
@@ -227,11 +220,11 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
             var mappings = mapper.Mappings.ToList();
             foreach (var mapping in mapper.Mappings)
             {
-                var value = Config.GetConvertedValue($"source.{GetSourceMapping(mapping.Key)}", (mapping.Key as IFieldProperty)?.Domain, mapping.Value?.Domain);
+                var value = Config.GetConvertedValue($"source.{GetSourceMapping(mapping.Key)}", (mapping.Key as IFieldProperty)?.Domain, mapping.Value.Domain);
 
                 if (mapper.Class.Abstract)
                 {
-                    w.Write(3, $"{mapping.Value?.NameCamel}: {value}");
+                    w.Write(3, $"{mapping.Value.NameCamel}: {value}");
 
                     if (mappings.IndexOf(mapping) < mappings.Count - 1)
                     {
@@ -244,7 +237,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                 }
                 else
                 {
-                    w.WriteLine(2, $"dest.{mapping.Value?.NamePascal} = {value};");
+                    w.WriteLine(2, $"dest.{mapping.Value.NamePascal} = {value};");
                 }
             }
 

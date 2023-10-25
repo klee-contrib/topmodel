@@ -1099,20 +1099,6 @@ public class ModelStore
                         continue;
                     }
 
-                    if (currentProperty != null && mapping.Value.ReferenceName == "this")
-                    {
-                        if (currentProperty is CompositionProperty cp && cp.Composition == mappedClass)
-                        {
-                            mappings.Mappings.Add(currentProperty, null);
-                        }
-                        else
-                        {
-                            yield return new ModelError(classe, $"La classe '{mappedClass.Name}' ne peut pas être mappée sur la propriété '{currentProperty.Name}' car ce n'est pas une composition de cette classe.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1020 };
-                        }
-
-                        continue;
-                    }
-
                     var mappedProperty = mappedClass.ExtendedProperties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == mapping.Value.ReferenceName);
                     if (mappedProperty == null)
                     {
@@ -1287,7 +1273,7 @@ public class ModelStore
         {
             foreach (var mapper in classe.FromMappers)
             {
-                if (!mapper.ClassParams.SelectMany(p => p.Mappings).Any())
+                if (!mapper.ClassParams.SelectMany(p => p.Mappings).Any() && !mapper.PropertyParams.Any())
                 {
                     yield return new ModelError(classe, "Aucun mapping n'a été trouvé sur ce mapper.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1025 };
                 }
