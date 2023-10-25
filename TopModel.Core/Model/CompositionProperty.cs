@@ -32,6 +32,8 @@ public class CompositionProperty : IProperty
 
     public Decorator Decorator { get; set; }
 
+    public PropertyMapping PropertyMapping { get; set; }
+
     public string Label => Name;
 
     public bool PrimaryKey => false;

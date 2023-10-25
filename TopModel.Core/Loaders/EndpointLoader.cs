@@ -45,17 +45,14 @@ public class EndpointLoader : ILoader<Endpoint>
                 case "params":
                     parser.ConsumeSequence(() =>
                     {
-                        foreach (var property in _propertyLoader.Load(parser))
-                        {
-                            property.Endpoint = endpoint;
-                            endpoint.Params.Add(property);
-                        }
+                        var property = _propertyLoader.Load(parser);
+                        property.Endpoint = endpoint;
+                        endpoint.Params.Add(property);
                     });
                     break;
                 case "returns":
-                    endpoint.Returns = _propertyLoader.Load(parser).First();
+                    endpoint.Returns = _propertyLoader.Load(parser);
                     endpoint.Returns.Endpoint = endpoint;
-                    parser.Consume<MappingEnd>();
                     break;
                 case "decorators":
                     parser.ConsumeSequence(() =>

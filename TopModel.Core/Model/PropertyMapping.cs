@@ -10,4 +10,6 @@ public class PropertyMapping
     public IProperty TargetProperty { get; set; }
 
     public Reference TargetPropertyReference { get; set; }
+
+    public FromMapper FromMapper { get; set; }
 }

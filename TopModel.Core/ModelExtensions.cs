@@ -7,6 +7,7 @@ public static class ModelExtensions
     public static IEnumerable<(ClassReference Reference, ModelFile File)> GetClassReferences(this ModelStore modelStore, Class classe)
     {
         return modelStore.Classes.SelectMany(c => c.Properties)
+            .Concat(modelStore.Classes.SelectMany(c => c.FromMapperProperties))
             .Concat(modelStore.Endpoints.SelectMany(e => e.Properties))
             .Concat(modelStore.Decorators.SelectMany(d => d.Properties))
             .Where(p =>
@@ -54,6 +55,7 @@ public static class ModelExtensions
     public static IEnumerable<(DomainReference Reference, ModelFile File)> GetDomainReferences(this ModelStore modelStore, Domain domain)
     {
         return modelStore.Classes.SelectMany(c => c.Properties)
+            .Concat(modelStore.Classes.SelectMany(c => c.FromMapperProperties))
             .Concat(modelStore.Decorators.SelectMany(c => c.Properties))
             .Concat(modelStore.Endpoints.SelectMany(e => e.Properties))
             .Where(p =>
@@ -86,6 +88,7 @@ public static class ModelExtensions
             IProperty { Decorator: Decorator decorator } => decorator.ModelFile,
             IProperty { Class: Class classe } => classe.ModelFile,
             IProperty { Endpoint: Endpoint endpoint } => endpoint.ModelFile,
+            IProperty { PropertyMapping: PropertyMapping param } => param.FromMapper.Class.ModelFile,
             Domain domain => domain.ModelFile,
             Converter converter => converter.ModelFile,
             Decorator decorator => decorator.ModelFile,

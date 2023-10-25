@@ -41,6 +41,8 @@ public class RegularProperty : IFieldProperty
 
     public Decorator Decorator { get; set; }
 
+    public PropertyMapping PropertyMapping { get; set; }
+
     public DomainReference DomainReference { get; set; }
 
 #nullable enable

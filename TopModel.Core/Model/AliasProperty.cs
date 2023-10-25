@@ -39,6 +39,8 @@ public class AliasProperty : IFieldProperty
 
     public Decorator Decorator { get; set; }
 
+    public PropertyMapping PropertyMapping { get; set; }
+
 #nullable enable
 
     public LocatedString? Trigram { get; set; }

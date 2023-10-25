@@ -670,10 +670,29 @@ public class ModelStore
                 if (alp.OriginalAliasProperty is not null)
                 {
                     var index = classe.Properties.IndexOf(alp);
-                    classe.Properties.RemoveAt(classe.Properties.IndexOf(alp));
+                    classe.Properties.RemoveAt(index);
                     if (!classe.Properties.Contains(alp.OriginalAliasProperty))
                     {
                         classe.Properties.Insert(index, alp.OriginalAliasProperty);
+                    }
+                }
+            }
+
+            foreach (var alp in classe.FromMapperProperties.OfType<AliasProperty>().ToList())
+            {
+                if (alp.OriginalAliasProperty is not null)
+                {
+                    var index = alp.PropertyMapping.FromMapper.Params.IndexOf(alp.PropertyMapping);
+                    alp.PropertyMapping.FromMapper.Params.RemoveAt(index);
+                    if (!alp.PropertyMapping.FromMapper.Params.Contains(alp.OriginalAliasProperty.PropertyMapping))
+                    {
+                        alp.PropertyMapping.FromMapper.Params.Insert(index, new PropertyMapping
+                        {
+                            FromMapper = alp.PropertyMapping.FromMapper,
+                            Property = alp.OriginalAliasProperty,
+                            TargetProperty = alp.PropertyMapping.TargetProperty,
+                            TargetPropertyReference = alp.PropertyMapping.TargetPropertyReference
+                        });
                     }
                 }
             }
@@ -803,6 +822,22 @@ public class ModelStore
                             alp.Decorator.Properties.Insert(index + 1, prop);
                         }
                     }
+                    else if (alp.PropertyMapping != null)
+                    {
+                        var index = alp.PropertyMapping.FromMapper.Params.IndexOf(alp.PropertyMapping);
+                        if (index >= 0)
+                        {
+                            var mapping = new PropertyMapping
+                            {
+                                FromMapper = alp.PropertyMapping.FromMapper,
+                                Property = prop,
+                                TargetProperty = alp.PropertyMapping.TargetProperty,
+                                TargetPropertyReference = alp.PropertyMapping.TargetPropertyReference,
+                            };
+                            prop.PropertyMapping = mapping;
+                            alp.PropertyMapping.FromMapper.Params.Insert(index + 1, mapping);
+                        }
+                    }
                 }
 
                 if (alp.Class != null)
@@ -812,6 +847,10 @@ public class ModelStore
                 else if (alp.Endpoint?.Params.Contains(alp) ?? false)
                 {
                     alp.Endpoint.Params.Remove(alp);
+                }
+                else if (alp.PropertyMapping != null)
+                {
+                    alp.PropertyMapping.FromMapper.Params.Remove(alp.PropertyMapping);
                 }
                 else
                 {

@@ -80,6 +80,7 @@ public class ModelFile
         .ToList();
 
     public IList<IProperty> Properties => Classes.SelectMany(c => c.Properties)
+        .Concat(Classes.SelectMany(c => c.FromMapperProperties))
         .Concat(Endpoints.SelectMany(e => e.Params))
         .Concat(Endpoints.Select(e => e.Returns))
         .Concat(Decorators.SelectMany(e => e.Properties))

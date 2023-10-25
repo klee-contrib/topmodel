@@ -98,10 +98,7 @@ public class ClassLoader : ILoader<Class>
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        foreach (var property in _propertyLoader.Load(parser))
-                        {
-                            classe.Properties.Add(property);
-                        }
+                        classe.Properties.Add(_propertyLoader.Load(parser));
                     });
                     break;
                 case "unique":
@@ -138,7 +135,7 @@ public class ClassLoader : ILoader<Class>
                             case "from":
                                 parser.ConsumeSequence(() =>
                                 {
-                                    var mapper = new FromMapper();
+                                    var mapper = new FromMapper { Class = classe };
                                     classe.FromMappers.Add(mapper);
 
                                     parser.ConsumeMapping(prop =>
@@ -196,12 +193,10 @@ public class ClassLoader : ILoader<Class>
                                                             switch (prop.Value)
                                                             {
                                                                 case "property":
-                                                                    foreach (var p in _propertyLoader.Load(parser))
-                                                                    {
-                                                                        var param = new PropertyMapping { Property = p };
-                                                                        mapper.Params.Add(param);
-                                                                    }
-
+                                                                    var p = _propertyLoader.Load(parser);
+                                                                    var param = new PropertyMapping { Property = p, FromMapper = mapper };
+                                                                    p.PropertyMapping = param;
+                                                                    mapper.Params.Add(param);
                                                                     break;
                                                                 case "target":
                                                                     var targetReference = new Reference(parser.Consume<Scalar>());

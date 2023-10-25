@@ -4,7 +4,7 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class PropertyLoader : ILoader<IEnumerable<IProperty>>
+public class PropertyLoader : ILoader<IProperty>
 {
     private readonly ModelConfig _modelConfig;
 
@@ -14,7 +14,7 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
     }
 
     /// <inheritdoc cref="ILoader{T}.Load" />
-    public IEnumerable<IProperty> Load(Parser parser)
+    public IProperty Load(Parser parser)
     {
         parser.Consume<MappingStart>();
         switch (parser.Current)
@@ -67,8 +67,8 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                     rp.Required = true;
                 }
 
-                yield return rp;
-                break;
+                parser.Consume<MappingEnd>();
+                return rp;
 
             case Scalar { Value: "association" } s:
                 var ap = new AssociationProperty
@@ -136,8 +136,8 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                     ap.Required = true;
                 }
 
-                yield return ap;
-                break;
+                parser.Consume<MappingEnd>();
+                return ap;
 
             case Scalar { Value: "composition" } s:
                 var cp = new CompositionProperty
@@ -172,8 +172,8 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                     }
                 }
 
-                yield return cp;
-                break;
+                parser.Consume<MappingEnd>();
+                return cp;
 
             case Scalar { Value: "alias" } s:
                 var aliasReference = new AliasReference();
@@ -274,13 +274,11 @@ public class PropertyLoader : ILoader<IEnumerable<IProperty>>
                 }
 
                 alp.Reference = aliasReference;
-                yield return alp;
-                break;
+                parser.Consume<MappingEnd>();
+                return alp;
 
             default:
                 throw new ModelException($"Type de propriété inconnu.");
         }
-
-        parser.Consume<MappingEnd>();
     }
 }
