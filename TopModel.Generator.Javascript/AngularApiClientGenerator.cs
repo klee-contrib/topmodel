@@ -67,6 +67,23 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             WriteEndpoint(endpoint, fw);
         }
 
+        var hasForm = endpoints.Any(endpoint => endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetType(fp).Contains("File")));
+        if (hasForm)
+        {
+            fw.WriteLine(@"
+    private fillFormData(data: any, formData: FormData, prefix = """") {
+        if (Array.isArray(data)) {
+            data.forEach((item, i) => this.fillFormData(item, formData, prefix + (typeof item === ""object"" && !(item instanceof File) ? `[${i}]` : """")));
+        } else if (typeof data === ""object"" && !(data instanceof File)) {
+            for (const key in data) {
+                this.fillFormData(data[key], formData, (prefix ? `${prefix}.` : """") + key);
+            }
+        } else {
+            formData.append(prefix, data);
+        }
+    }");
+        }
+
         fw.WriteLine("}");
     }
 
@@ -130,14 +147,38 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
 
         if (hasForm)
         {
-            fw.WriteLine(2, "let formData: FormData = new FormData();");
-            fw.WriteLine(2, "if (file) {");
-            fw.WriteLine(3, "formData.append('file', file);");
-            fw.WriteLine(2, "}");
+            fw.WriteLine("    const formData = new FormData();");
+            fw.WriteLine("    this.fillFormData(");
+            fw.WriteLine("        {");
+            foreach (var param in endpoint.Params)
+            {
+                if (param is IFieldProperty)
+                {
+                    fw.Write($@"            {param.GetParamName()}");
+                }
+                else
+                {
+                    fw.Write($@"            ...{param.GetParamName()}");
+                }
+
+                if (endpoint.Params.IndexOf(param) < endpoint.Params.Count - 1)
+                {
+                    fw.WriteLine(",");
+                }
+                else
+                {
+                    fw.WriteLine();
+                }
+            }
+
+            fw.WriteLine("        },");
+            fw.WriteLine("        formData");
+            fw.WriteLine("    );");
+
             fw.WriteLine(2, $@"return this.http.{endpoint.Method.ToLower()}<{returnType}>(`/{endpoint.FullRoute}`, formData);");
-            fw.WriteLine(1, "}");
+            fw.WriteLine("}");
             return;
-        }
+            }
 
         if (endpoint.GetQueryParams().Any())
         {
