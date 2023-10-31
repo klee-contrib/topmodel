@@ -76,8 +76,9 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
                 .SelectMany(c => c.GetKindImports(Config, tag)));
     }
 
-    private void WriteEndPointMethod(JavaWriter fw, Endpoint endpoint, string tag)
+    private void WriteEndpoint(JavaWriter fw, Endpoint endpoint, string tag)
     {
+        fw.WriteLine();
         fw.WriteDocStart(1, endpoint.Description);
 
         foreach (var param in endpoint.Params)
@@ -98,7 +99,6 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
             returnType = Config.GetType(endpoint.Returns);
         }
 
-        var hasForm = endpoint.Params.Any(p => Config.GetType(p) == "MultipartFile");
         {
             var produces = string.Empty;
             if (endpoint.Returns != null && endpoint.Returns is IFieldProperty fp && fp.Domain.MediaType != null)
@@ -107,7 +107,6 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
             }
 
             var consumes = string.Empty;
-
             if (endpoint.Params.Any(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null))
             {
                 consumes = @$", consumes = {{ {string.Join(", ", endpoint.Params.Where(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null).Select(p => $@"""{((IFieldProperty)p).Domain.MediaType}"""))} }}";
@@ -143,39 +142,34 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         }
 
         var bodyParam = endpoint.GetBodyParam();
+        var formParam = endpoint.Params.FirstOrDefault(p => p.Domain?.MediaType == "multipart/form-data", null);
         if (bodyParam != null)
         {
             var ann = string.Empty;
-            ann += @$"@RequestBody @Valid ";
-            fw.AddImport("org.springframework.web.bind.annotation.RequestBody");
-            fw.AddImport(Config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
+            if (formParam != null)
+            {
+                if (formParam != bodyParam)
+                {
+                    ann += @$"@ModelAttribute ";
+                    fw.AddImport("org.springframework.web.bind.annotation.ModelAttribute");
+                }
+                else
+                {
+                    ann += @$"@RequestPart(value = ""{bodyParam.GetParamName()}"", required = {(bodyParam is not IFieldProperty fp || fp.Required).ToString().ToFirstLower()}) ";
+                    fw.AddImport("org.springframework.web.bind.annotation.RequestPart");
+                }
+            }
+            else
+            {
+                ann += @$"@RequestBody @Valid ";
+                fw.AddImport("org.springframework.web.bind.annotation.RequestBody");
+                fw.AddImport(Config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
+            }
 
             methodParams.Add($"{ann}{Config.GetType(bodyParam)} {bodyParam.GetParamName()}");
         }
 
         fw.WriteLine(1, $"{returnType} {endpoint.NameCamel}({string.Join(", ", methodParams)});");
-
-        var methodCallParams = new List<string>();
-        foreach (var param in endpoint.GetRouteParams().OfType<IFieldProperty>())
-        {
-            methodCallParams.Add($"{param.GetParamName()}");
-        }
-
-        foreach (var param in endpoint.GetQueryParams().OfType<IFieldProperty>())
-        {
-            methodCallParams.Add($"{param.GetParamName()}");
-        }
-
-        if (bodyParam != null && bodyParam is CompositionProperty)
-        {
-            methodCallParams.Add($"{bodyParam.GetParamName()}");
-        }
-    }
-
-    private void WriteEndpoint(JavaWriter fw, Endpoint endpoint, string tag)
-    {
-        fw.WriteLine();
-        WriteEndPointMethod(fw, endpoint, tag);
     }
 
     private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
