@@ -142,30 +142,33 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         }
 
         var bodyParam = endpoint.GetBodyParam();
-        var formParam = endpoint.Params.FirstOrDefault(p => p.Domain?.MediaType == "multipart/form-data", null);
-        if (bodyParam != null)
+        var hasForm = endpoint.Params.Any(p => p.Domain?.MediaType == "multipart/form-data");
+
+        if (hasForm)
         {
-            var ann = string.Empty;
-            if (formParam != null)
+            foreach (var param in endpoint.Params.Where(param => param is CompositionProperty || param is IFieldProperty { Domain.BodyParam: true }))
             {
-                if (formParam != bodyParam)
+                var ann = string.Empty;
+                if (param.Domain.MediaType != "multipart/form-data")
                 {
                     ann += @$"@ModelAttribute ";
                     fw.AddImport("org.springframework.web.bind.annotation.ModelAttribute");
                 }
                 else
                 {
-                    ann += @$"@RequestPart(value = ""{bodyParam.GetParamName()}"", required = {(bodyParam is not IFieldProperty fp || fp.Required).ToString().ToFirstLower()}) ";
+                    ann += @$"@RequestPart(value = ""{param.GetParamName()}"", required = {(param is not IFieldProperty fp || fp.Required).ToString().ToFirstLower()}) ";
                     fw.AddImport("org.springframework.web.bind.annotation.RequestPart");
                 }
-            }
-            else
-            {
-                ann += @$"@RequestBody @Valid ";
-                fw.AddImport("org.springframework.web.bind.annotation.RequestBody");
-                fw.AddImport(Config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
-            }
 
+                methodParams.Add($"{ann}{Config.GetType(param)} {param.GetParamName()}");
+            }
+        }
+        else if (bodyParam != null)
+        {
+            var ann = string.Empty;
+            ann += @$"@RequestBody @Valid ";
+            fw.AddImport("org.springframework.web.bind.annotation.RequestBody");
+            fw.AddImport(Config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
             methodParams.Add($"{ann}{Config.GetType(bodyParam)} {bodyParam.GetParamName()}");
         }
 

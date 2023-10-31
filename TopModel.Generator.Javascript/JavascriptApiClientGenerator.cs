@@ -69,7 +69,7 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
             fw.WriteLine(" */");
             fw.Write($"export function {endpoint.NameCamel}(");
 
-            var hasForm = endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetType(fp).Contains("File"));
+            var hasForm = endpoint.Params.Any(p => p.Domain?.MediaType == "multipart/form-data");
 
             foreach (var param in endpoint.Params)
             {

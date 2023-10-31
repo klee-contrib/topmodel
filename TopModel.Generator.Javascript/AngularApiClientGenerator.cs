@@ -67,7 +67,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             WriteEndpoint(endpoint, fw);
         }
 
-        var hasForm = endpoints.Any(endpoint => endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetType(fp).Contains("File")));
+        var hasForm = endpoints.Any(endpoint => endpoint.Params.Any(p => p.Domain?.MediaType == "multipart/form-data"));
         if (hasForm)
         {
             fw.WriteLine(@"
@@ -106,7 +106,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
         fw.WriteLine(1, " */");
         fw.Write(1, $"{endpoint.NameCamel}(");
 
-        var hasForm = endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetType(fp).Contains("File"));
+        var hasForm = endpoint.Params.Any(p => p.Domain?.MediaType == "multipart/form-data");
         var hasProperty = false;
         foreach (var param in endpoint.Params)
         {

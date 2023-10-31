@@ -123,7 +123,7 @@ public class {className} : Controller
     {
         var sb = new StringBuilder();
 
-        var hasForm = param.Endpoint.Params.Any(p => Config.GetType(p).Contains("IFormFile"));
+        var hasForm = param.Endpoint.Params.Any(p => p.Domain?.MediaType == "multipart/form-data");
 
         if (param.IsBodyParam())
         {

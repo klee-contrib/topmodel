@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.39.0
+
+- [`#322`](https://github.com/klee-contrib/topmodel/pull/322) - [Core] Modification de la détection des requêtes contenant un formulaire. Il faut désormais préciser sur les domaines de fichiers le mediaType : `multipart/form-data`.
+
 ## 1.38.4
 
 - [`edfdc21`](https://github.com/klee-contrib/topmodel/commit/edfdc211d0f714a866a2a2f172552ef73ebfab9b) - [JPA] Correction visibilité flows
