@@ -69,12 +69,10 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
             fw.WriteLine(" */");
             fw.Write($"export function {endpoint.NameCamel}(");
 
-            var hasForm = endpoint.Params.Any(p => p.Domain?.MediaType == "multipart/form-data");
-
             foreach (var param in endpoint.Params)
             {
                 var defaultValue = Config.GetValue(param, Classes);
-                fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, ");
+                fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}, ");
             }
 
             fw.Write("options: RequestInit = {}): Promise<");
@@ -89,7 +87,7 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
 
             fw.WriteLine("> {");
 
-            if (hasForm)
+            if (endpoint.IsMultipart)
             {
                 fw.WriteLine("    const body = new FormData();");
                 fw.WriteLine("    fillFormData(");
@@ -126,12 +124,12 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
 
             fw.Write($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.FullRoute.Replace("{", "${")}`, {{");
 
-            if (endpoint.GetBodyParam() != null)
+            if (endpoint.GetJsonBodyParam() != null)
             {
-                fw.Write($"body: {endpoint.GetBodyParam()!.GetParamName()}");
+                fw.Write($"body: {endpoint.GetJsonBodyParam()!.GetParamName()}");
             }
 
-            if (endpoint.GetBodyParam() != null && endpoint.GetQueryParams().Any())
+            if (endpoint.GetJsonBodyParam() != null && endpoint.GetQueryParams().Any())
             {
                 fw.Write(", ");
             }

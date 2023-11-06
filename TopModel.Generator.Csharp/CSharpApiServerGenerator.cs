@@ -123,23 +123,18 @@ public class {className} : Controller
     {
         var sb = new StringBuilder();
 
-        var hasForm = param.Endpoint.Params.Any(p => p.Domain?.MediaType == "multipart/form-data");
-
-        if (param.IsBodyParam())
+        if (param.Endpoint.IsMultipart)
         {
-            if (hasForm)
-            {
-                sb.Append("[FromForm] ");
-            }
-            else
-            {
-                sb.Append("[FromBody] ");
-            }
+            sb.Append("[FromForm] ");
+        }
+        else if (param.IsJsonBodyParam())
+        {
+            sb.Append("[FromBody] ");
         }
 
-        sb.Append($@"{Config.GetType(param, nonNullable: param.IsRouteParam() || param.IsQueryParam() && !hasForm && Config.GetValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
+        sb.Append($@"{Config.GetType(param, nonNullable: param.IsRouteParam() || param.IsQueryParam() && !param.Endpoint.IsMultipart && Config.GetValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
 
-        if (param.IsQueryParam() && !hasForm)
+        if (param.IsQueryParam() && !param.Endpoint.IsMultipart)
         {
             sb.Append($" = {Config.GetValue(param, Classes)}");
         }

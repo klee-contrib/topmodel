@@ -106,7 +106,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
             }
         }
 
-        var bodyParam = endpoint.GetBodyParam();
+        var bodyParam = endpoint.GetJsonBodyParam();
         if (bodyParam != null && withBody)
         {
             if (withType)
@@ -176,7 +176,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         fw.WriteLine(1, $"public {returnType} {endpoint.NameCamel}({string.Join(", ", GetMethodParams(endpoint))}){{");
         fw.WriteLine(2, $"HttpHeaders headers = this.getHeaders();");
         fw.WriteLine(2, $"UriComponentsBuilder uri = this.{endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, false, false))});");
-        var body = $"new HttpEntity<>({(endpoint.GetBodyParam()?.GetParamName() != null ? $"{endpoint.GetBodyParam()?.GetParamName()}, " : string.Empty)}headers)";
+        var body = $"new HttpEntity<>({(endpoint.GetJsonBodyParam()?.GetParamName() != null ? $"{endpoint.GetJsonBodyParam()?.GetParamName()}, " : string.Empty)}headers)";
         if (endpoint.Returns != null)
         {
             fw.WriteLine(2, $"return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.{endpoint.Method}, {body}, {returnClass});");

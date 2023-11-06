@@ -141,10 +141,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
             methodParams.Add($"{ann}{(decoratorAnnotations.Length > 0 ? $" {decoratorAnnotations}" : string.Empty)}{Config.GetType(param)} {param.GetParamName()}");
         }
 
-        var bodyParam = endpoint.GetBodyParam();
-        var hasForm = endpoint.Params.Any(p => p.Domain?.MediaType == "multipart/form-data");
-
-        if (hasForm)
+        if (endpoint.IsMultipart)
         {
             foreach (var param in endpoint.Params.Where(param => param is CompositionProperty || param is IFieldProperty { Domain.BodyParam: true }))
             {
@@ -163,13 +160,17 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
                 methodParams.Add($"{ann}{Config.GetType(param)} {param.GetParamName()}");
             }
         }
-        else if (bodyParam != null)
+        else
         {
-            var ann = string.Empty;
-            ann += @$"@RequestBody @Valid ";
-            fw.AddImport("org.springframework.web.bind.annotation.RequestBody");
-            fw.AddImport(Config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
-            methodParams.Add($"{ann}{Config.GetType(bodyParam)} {bodyParam.GetParamName()}");
+            var bodyParam = endpoint.GetJsonBodyParam();
+            if (bodyParam != null)
+            {
+                var ann = string.Empty;
+                ann += @$"@RequestBody @Valid ";
+                fw.AddImport("org.springframework.web.bind.annotation.RequestBody");
+                fw.AddImport(Config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
+                methodParams.Add($"{ann}{Config.GetType(bodyParam)} {bodyParam.GetParamName()}");
+            }
         }
 
         fw.WriteLine(1, $"{returnType} {endpoint.NameCamel}({string.Join(", ", methodParams)});");

@@ -33,7 +33,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
     {
         using var fw = new CSharpWriter(filePath, _logger);
 
-        var hasBody = endpoints.Any(e => e.GetBodyParam() != null);
+        var hasBody = endpoints.Any(e => e.GetJsonBodyParam() != null);
         var hasReturn = endpoints.Any(e => e.Returns != null);
         var hasJson = hasReturn || hasBody;
 
@@ -166,7 +166,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
             fw.WriteLine(")");
             fw.WriteLine(1, "{");
 
-            var bodyParam = endpoint.GetBodyParam();
+            var bodyParam = endpoint.GetJsonBodyParam();
 
             fw.WriteLine(2, $"await EnsureAuthentication();");
 

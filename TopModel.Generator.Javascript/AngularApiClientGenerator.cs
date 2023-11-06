@@ -67,8 +67,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             WriteEndpoint(endpoint, fw);
         }
 
-        var hasForm = endpoints.Any(endpoint => endpoint.Params.Any(p => p.Domain?.MediaType == "multipart/form-data"));
-        if (hasForm)
+        if (endpoints.Any(e => e.IsMultipart))
         {
             fw.WriteLine(@"
     private fillFormData(data: any, formData: FormData, prefix = """") {
@@ -106,7 +105,6 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
         fw.WriteLine(1, " */");
         fw.Write(1, $"{endpoint.NameCamel}(");
 
-        var hasForm = endpoint.Params.Any(p => p.Domain?.MediaType == "multipart/form-data");
         var hasProperty = false;
         foreach (var param in endpoint.Params)
         {
@@ -117,10 +115,10 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
 
             hasProperty = true;
             var defaultValue = Config.GetValue(param, Classes);
-            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !hasForm && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}");
+            fw.Write($"{param.GetParamName()}{(param.IsQueryParam() && !endpoint.IsMultipart && defaultValue == "undefined" ? "?" : string.Empty)}: {Config.GetType(param, Classes)}{(defaultValue != "undefined" ? $" = {defaultValue}" : string.Empty)}");
         }
 
-        if (endpoint.GetQueryParams().Any() && !hasForm)
+        if (endpoint.GetQueryParams().Any() && !endpoint.IsMultipart)
         {
             if (hasProperty)
             {
@@ -145,7 +143,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
         fw.Write(returnType);
         fw.WriteLine("> {");
 
-        if (hasForm)
+        if (endpoint.IsMultipart)
         {
             fw.WriteLine("    const formData = new FormData();");
             fw.WriteLine("    this.fillFormData(");
@@ -178,7 +176,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             fw.WriteLine(2, $@"return this.http.{endpoint.Method.ToLower()}<{returnType}>(`/{endpoint.FullRoute}`, formData);");
             fw.WriteLine("}");
             return;
-            }
+        }
 
         if (endpoint.GetQueryParams().Any())
         {
@@ -205,9 +203,9 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}<{returnType}>(`/{endpoint.FullRoute.Replace("{", "${")}`");
         }
 
-        if (endpoint.GetBodyParam() != null)
+        if (endpoint.GetJsonBodyParam() != null)
         {
-            fw.Write($", {endpoint.GetBodyParam()!.GetParamName()}");
+            fw.Write($", {endpoint.GetJsonBodyParam()!.GetParamName()}");
         }
         else if (endpoint.Method != "OPTIONS" && endpoint.Method != "GET" && endpoint.Method != "DELETE")
         {
