@@ -26,7 +26,7 @@ public static class EndpointExtensions
 
     public static IEnumerable<IProperty> GetQueryParams(this Endpoint endpoint)
     {
-        return endpoint.Params.Where(param => param != endpoint.GetBodyParam()).Except(endpoint.GetRouteParams());
+        return endpoint.Params.Where(param => !(param is CompositionProperty || param is IFieldProperty { Domain.BodyParam: true })).Except(endpoint.GetRouteParams());
     }
 
     public static IEnumerable<IProperty> GetRouteParams(this Endpoint endpoint)
