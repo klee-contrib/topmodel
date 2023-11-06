@@ -34,6 +34,8 @@ public class Domain
 
     public string? MediaType { get; set; }
 
+    public bool IsMultipart => MediaType == "multipart/form-data";
+
     public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCase(true);
 
 #nullable disable

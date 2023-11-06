@@ -39,7 +39,7 @@ public class Endpoint : IPropertyContainer
 
     public IList<IProperty> Params { get; set; } = new List<IProperty>();
 
-    public bool IsMultipart => Params.Any(p => p.Domain?.MediaType == "multipart/form-data");
+    public bool IsMultipart => Params.Any(p => p.Domain?.IsMultipart ?? false);
 
     public IList<IProperty> Properties => Params.Concat(new[] { Returns! }).Where(p => p != null).ToList();
 

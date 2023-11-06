@@ -123,7 +123,7 @@ public class {className} : Controller
     {
         var sb = new StringBuilder();
 
-        if (param.Endpoint.IsMultipart)
+        if (param.Endpoint.IsMultipart && !param.IsQueryParam() && !param.IsRouteParam())
         {
             sb.Append("[FromForm] ");
         }
