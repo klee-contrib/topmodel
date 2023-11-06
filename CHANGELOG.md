@@ -2,7 +2,9 @@
 
 ## 1.39.0
 
-- [`#322`](https://github.com/klee-contrib/topmodel/pull/322) - [Core] Modification de la détection des requêtes contenant un formulaire. Il faut désormais préciser sur les domaines de fichiers le mediaType : `multipart/form-data`.
+- [`#322`](https://github.com/klee-contrib/topmodel/pull/322) - [Core] Modification de la détection des requêtes contenant un formulaire. 
+
+> **Breaking Change** Précédemment, la génération des endpoints s'appuyait sur le type du domaine pour savoir si elle devait être `multipart`. Il faut désormais préciser sur les domaines de fichiers : `mediaType: multipart/form-data`.
 
 ## 1.38.4
 
