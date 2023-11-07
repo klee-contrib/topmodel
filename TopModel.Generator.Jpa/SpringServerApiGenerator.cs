@@ -143,10 +143,10 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
         if (endpoint.IsMultipart)
         {
-            foreach (var param in endpoint.Params.Where(param => param is CompositionProperty || param is IFieldProperty { Domain.BodyParam: true }))
+            foreach (var param in endpoint.Params.Where(param => param is CompositionProperty || (param.Domain?.BodyParam ?? false) || (param.Domain?.IsMultipart ?? false)))
             {
                 var ann = string.Empty;
-                if (param.Domain.MediaType != "multipart/form-data")
+                if (!(param.Domain?.IsMultipart ?? false))
                 {
                     ann += @$"@ModelAttribute ";
                     fw.AddImport("org.springframework.web.bind.annotation.ModelAttribute");
