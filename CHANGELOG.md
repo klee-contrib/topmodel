@@ -1,8 +1,10 @@
 # TopModel.Generator (`modgen`)
 
-## 1.39.0
+## 1.39.1
 
-- [`#322`](https://github.com/klee-contrib/topmodel/pull/322) - [Core] Modification de la détection des requêtes contenant un formulaire. 
+- [`72a5c3c10b`](https://github.com/klee-contrib/topmodel/commit/72a5c3c10b99d13de066951f39efa10100bfdcd7) - [JPA] Correction génération multipart
+
+## 1.39.0
 
 > **Breaking Change** Précédemment, la génération des endpoints s'appuyait sur le type du domaine pour savoir si elle devait être `multipart`. Il faut désormais préciser sur les domaines de fichiers : `mediaType: multipart/form-data`.
 
