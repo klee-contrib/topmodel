@@ -8,6 +8,11 @@ public enum TargetFramework
     ANGULAR,
 
     /// <summary>
+    /// Nuxt.
+    /// </summary>
+    NUXT,
+
+    /// <summary>
     /// Vanilla.
     /// </summary>
     VANILLA
