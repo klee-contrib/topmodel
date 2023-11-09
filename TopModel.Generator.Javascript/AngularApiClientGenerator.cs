@@ -91,7 +91,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
         fw.WriteLine();
         fw.WriteLine(1, "/**");
         fw.WriteLine(1, $" * @description {endpoint.Description}");
-
+        var fullRoute = endpoint.FullRoute.Replace("{", "${");
         foreach (var param in endpoint.Params)
         {
             fw.WriteLine(1, $" * @param {param.GetParamName()} {param.Comment}");
@@ -173,7 +173,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             fw.WriteLine("        formData");
             fw.WriteLine("    );");
 
-            fw.WriteLine(2, $@"return this.http.{endpoint.Method.ToLower()}<{returnType}>(`/{endpoint.FullRoute}`, formData);");
+            fw.WriteLine(2, $@"return this.http.{endpoint.Method.ToLower()}<{returnType}>(`/{fullRoute}`, formData);");
             fw.WriteLine("}");
             return;
         }
@@ -196,11 +196,11 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
 
         if (returnType == "string")
         {
-            fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}(`/{endpoint.FullRoute.Replace("{", "${")}`");
+            fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}(`/{fullRoute}`");
         }
         else
         {
-            fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}<{returnType}>(`/{endpoint.FullRoute.Replace("{", "${")}`");
+            fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}<{returnType}>(`/{fullRoute}`");
         }
 
         if (endpoint.GetJsonBodyParam() != null)
