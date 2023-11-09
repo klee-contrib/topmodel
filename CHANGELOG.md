@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.39.2
+
+- [`1f80d97c2`](https://github.com/klee-contrib/topmodel/commit/1f80d97c24bad8cda81dc3f2ad079569104060bc) - [Angular] Correction fullroute dans le cas multipart
+
 ## 1.39.1
 
 - [`72a5c3c10b`](https://github.com/klee-contrib/topmodel/commit/72a5c3c10b99d13de066951f39efa10100bfdcd7) - [JPA] Correction génération multipart
