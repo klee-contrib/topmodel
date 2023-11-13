@@ -105,7 +105,7 @@ public class NuxtApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig>
                 fw.WriteLine("    );");
             }
 
-            var fetchRoute = $@"`./{endpoint.FullRoute.Replace("{", "${")}`";
+            var fetchRoute = $@"`/{endpoint.FullRoute.Replace("{", "${")}`";
 
             fw.WriteLine($@"    return useAsyncData({fetchRoute}, () => ");
             fw.WriteLine($@"         $fetch<{fetchReturnType}>({fetchRoute}, {{");
