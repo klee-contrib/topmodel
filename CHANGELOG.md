@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.39.3
+
+- [`04b6ac06`](https://github.com/klee-contrib/topmodel/commit/04b6ac066e7f24e18abbad9c99a5da6a3033ed6d) - [SQL] Possibilité de s'auto-référencer dans une enum
+
 ## 1.39.2
 
 - [`1f80d97c2`](https://github.com/klee-contrib/topmodel/commit/1f80d97c24bad8cda81dc3f2ad079569104060bc) - [Angular] Correction fullroute dans le cas multipart
