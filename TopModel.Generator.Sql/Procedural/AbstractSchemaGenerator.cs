@@ -78,7 +78,7 @@ public abstract class AbstractSchemaGenerator
         var orderList = CoreUtils.Sort(classes.OrderBy(c => c.SqlName), c => c.Properties
             .OfType<AssociationProperty>()
             .Select(a => a.Association)
-            .Where(a => a.Values.Any()));
+            .Where(a => a != c && a.Values.Any()));
 
         foreach (var classe in orderList)
         {
