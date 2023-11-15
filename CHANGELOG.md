@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.39.4
+
+- [`cb8ada08`](https://github.com/klee-contrib/topmodel/commit/cb8ada08472eb5d3cc281760f351a38c5566a7a3) - [Core/C#] Fix génération SqlName pour alias persistés d'associations + pose de l'annotation Column manquante en C#
+
 ## 1.39.3
 
 - [`04b6ac06`](https://github.com/klee-contrib/topmodel/commit/04b6ac066e7f24e18abbad9c99a5da6a3033ed6d) - [SQL] Possibilité de s'auto-référencer dans une enum
