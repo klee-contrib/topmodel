@@ -372,15 +372,14 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         {
             if (property is IFieldProperty fp)
             {
-                var prop = fp is AliasProperty alp && (!fp.Class.IsPersistent || alp.Property is AssociationProperty) ? alp.Property : fp;
+                var prop = (fp as AliasProperty)?.PersistentProperty ?? fp;
                 if (
-                    (!Config.NoColumnOnAlias || fp is not AliasProperty || fp.Class.IsPersistent)
-                    && fp is not AliasProperty { As: not null }
-                    && (prop.Class.IsPersistent || fp.Class.IsPersistent)
-                    && !Config.NoPersistence(tag) && !sameColumnSet.Contains(prop.SqlName)
-                    && Classes.Contains(prop.Class))
+                    (fp.Class.IsPersistent || fp is AliasProperty { PersistentProperty: not null, As: null } && !Config.NoColumnOnAlias)
+                    && Classes.Contains(prop.Class)
+                    && !Config.NoPersistence(tag)
+                    && !sameColumnSet.Contains(fp.SqlName))
                 {
-                    var sqlName = Config.UseLowerCaseSqlNames ? prop.SqlName.ToLower() : prop.SqlName;
+                    var sqlName = Config.UseLowerCaseSqlNames ? fp.SqlName.ToLower() : fp.SqlName;
                     if (!Config.GetDomainAnnotations(fp, tag).Any(a => a.TrimStart('[').StartsWith("Column")))
                     {
                         w.WriteAttribute(1, "Column", $@"""{sqlName}""");
@@ -394,7 +393,8 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
                 if (Config.Kinetix)
                 {
-                    if (prop is AssociationProperty ap && Classes.Contains(ap.Association) && ap.Association.IsPersistent && ap.Association.Reference)
+                    var ap = (prop as AssociationProperty) ?? ((prop as AliasProperty)?.Property as AssociationProperty);
+                    if (ap != null && Classes.Contains(ap.Association) && ap.Association.IsPersistent && ap.Association.Reference)
                     {
                         w.WriteAttribute(1, "ReferencedType", $"typeof({ap.Association.NamePascal})");
                     }

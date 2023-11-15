@@ -127,6 +127,14 @@ public class AliasProperty : IFieldProperty
 
     public IFieldProperty? OriginalProperty => _property;
 
+    public IFieldProperty? PersistentProperty => (Class?.IsPersistent ?? false)
+        ? this
+        : OriginalProperty is AliasProperty op
+            ? op.PersistentProperty
+            : (OriginalProperty?.Class?.IsPersistent ?? false)
+                ? OriginalProperty
+                : null;
+
     public AliasReference? Reference { get; set; }
 
     public Reference? PropertyReference { get; set; }
