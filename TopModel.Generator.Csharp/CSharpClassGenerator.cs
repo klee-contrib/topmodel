@@ -474,8 +474,10 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             if (item.Properties.Any(p => p is CompositionProperty) ||
                 item.Properties.OfType<IFieldProperty>().Any(fp =>
                 {
-                    var prop = fp is AliasProperty alp ? alp.Property : fp;
-                    return (!Config.NoColumnOnAlias || fp is not AliasProperty) && prop.Class.IsPersistent && !Config.NoPersistence(tag) && Classes.Contains(prop.Class);
+                    var prop = (fp as AliasProperty)?.PersistentProperty ?? fp;
+                    return (fp.Class.IsPersistent || fp is AliasProperty { PersistentProperty: not null, As: null } && !Config.NoColumnOnAlias)
+                        && Classes.Contains(prop.Class)
+                        && !Config.NoPersistence(tag);
                 }))
             {
                 usings.Add("System.ComponentModel.DataAnnotations.Schema");
