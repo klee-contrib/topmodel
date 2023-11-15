@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.39.5
+
+- [`1e37d6e8`](https://github.com/klee-contrib/topmodel/commit/1e37d6e83237d9a325bba7692e9a162f438fcceb) - [C#] Fix import column manquant des fois
+
 ## 1.39.4
 
 - [`cb8ada08`](https://github.com/klee-contrib/topmodel/commit/cb8ada08472eb5d3cc281760f351a38c5566a7a3) - [Core/C#] Fix génération SqlName pour alias persistés d'associations + pose de l'annotation Column manquante en C#
