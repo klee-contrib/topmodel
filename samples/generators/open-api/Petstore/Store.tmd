@@ -1,4 +1,4 @@
-####
+﻿####
 #### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ####
 
@@ -8,7 +8,6 @@ tags:
   - petstore
 uses:
   - Petstore/Model
-
 ---
 endpoint:
   name: deleteOrder
@@ -17,6 +16,7 @@ endpoint:
   description: Delete purchase order by ID
   preservePropertyCasing: true
   params:
+
     - name: orderId
       domain: DO_ID
       comment: ID of the order that needs to be deleted
@@ -28,10 +28,11 @@ endpoint:
   description: Returns pet inventories by status
   preservePropertyCasing: true
   returns:
+
     name: Result
     domain: DO_ENTIER_MAP
     required: true
-    comment: Result
+    comment: Non documenté
 ---
 endpoint:
   name: getOrderById
@@ -40,13 +41,15 @@ endpoint:
   description: Find purchase order by ID
   preservePropertyCasing: true
   params:
+
     - name: orderId
       domain: DO_ID
       comment: ID of order that needs to be fetched
   returns:
+
     composition: Order
     name: Result
-    comment: Result
+    comment: Non documenté
 ---
 endpoint:
   name: placeOrder
@@ -55,10 +58,12 @@ endpoint:
   description: Place an order for a pet
   preservePropertyCasing: true
   params:
+
     - composition: Order
       name: body
-      comment: body
+      comment: Non documenté
   returns:
+
     composition: Order
     name: Result
-    comment: Result
+    comment: Non documenté

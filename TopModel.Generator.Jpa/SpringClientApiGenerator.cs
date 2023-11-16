@@ -232,7 +232,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
         if (endpoint.GetRouteParams().Any())
         {
-            fullRoute = $@"""{fullRoute}"".formatted({string.Join(", ", endpoint.GetRouteParams().Select(p => p.GetParamName()))});";
+            fullRoute = $@"""{fullRoute}"".formatted({string.Join(", ", endpoint.GetRouteParams().Select(p => p.GetParamName()))})";
         }
         else
         {

@@ -97,13 +97,13 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
         {
             var uniqConstraints = group.GroupBy(g => g.Name);
             classe.Unique
-                .AddRange(uniqConstraints.Select(u => u.Where(c => classe.Properties.Any(p => p.SqlName == c.ColumnName)).Select(c =>
+                .AddRange(uniqConstraints.Select(u => u.Where(c => classe.Properties.OfType<TmdRegularProperty>().Any(p => p.SqlName == c.ColumnName)).Select(c =>
                 {
-                    var property = classe.Properties.First(p => p.SqlName == c.ColumnName);
+                    var property = classe.Properties.OfType<TmdRegularProperty>().First(p => p.SqlName == c.ColumnName);
                     string name = string.Empty;
                     if (property is TmdAssociationProperty ap)
                     {
-                        name = ap.ForeignClass.Name + ap.ForeignProperty!.Name + ap.Role;
+                        name = ap.Association.Name + ap.ForeignProperty!.Name + ap.Role;
                     }
                     else
                     {
@@ -144,16 +144,16 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
 
         var columnName = column.ColumnName;
 
-        TmdProperty tmdProperty;
+        TmdRegularProperty tmdProperty;
         if (foreignConstraint != null && _classes.ContainsKey(foreignConstraint.ForeignTableName))
         {
             tmdProperty = new TmdAssociationProperty();
             var foreignClass = _classes[foreignConstraint.ForeignTableName];
-            ((TmdAssociationProperty)tmdProperty).ForeignClass = foreignClass;
+            ((TmdAssociationProperty)tmdProperty).Association = foreignClass;
         }
         else
         {
-            tmdProperty = new TmdProperty();
+            tmdProperty = new TmdRegularProperty();
             if (!string.IsNullOrEmpty(trigram))
             {
                 var regex = new Regex(Regex.Escape(trigram));
@@ -479,7 +479,7 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
                 var d = new Dictionary<string, string?>();
                 foreach (var kv in r)
                 {
-                    d.Add(classe.Value.Properties.First(p => p.SqlName == kv.Key).Name, kv.Value?.ToString());
+                    d.Add(classe.Value.Properties.OfType<TmdRegularProperty>().First(p => p.SqlName == kv.Key).Name, kv.Value?.ToString());
                 }
 
                 return d;
@@ -509,7 +509,7 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
             foreach (var fk in classe.Properties.OfType<TmdAssociationProperty>())
             {
                 var foreignColumnName = foreignKeys.First(p => p.ColumnName == fk.SqlName).ForeignColumnName;
-                fk.ForeignProperty = fk.ForeignClass!.Properties.First(p => p.SqlName == foreignColumnName);
+                fk.ForeignProperty = fk.Association!.Properties.OfType<TmdRegularProperty>().First(p => p.SqlName == foreignColumnName);
             }
         }
     }
@@ -523,7 +523,6 @@ public abstract class DatabaseTmdGenerator : ModelGenerator, IDisposable
             yield return fileName;
 
             using var tmdFileWriter = new TmdWriter(rootPath, file!, _logger, ModelRoot);
-            tmdFileWriter.Write();
         }
     }
 }

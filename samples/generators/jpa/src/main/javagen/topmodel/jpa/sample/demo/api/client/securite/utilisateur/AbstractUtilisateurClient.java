@@ -70,7 +70,7 @@ public abstract class AbstractUtilisateurClient {
 	 * @param utiId Id de l'utilisateur
 	 */
 	protected UriComponentsBuilder deleteUtilisateurUriComponentsBuilder(Integer utiId) {
-		String uri = host + "/api/utilisateurs/%s".formatted(utiId);;
+		String uri = host + "/api/utilisateurs/%s".formatted(utiId);
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 
@@ -90,7 +90,7 @@ public abstract class AbstractUtilisateurClient {
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder getUtilisateurUriComponentsBuilder(Integer utiId) {
-		String uri = host + "/api/utilisateurs/%s".formatted(utiId);;
+		String uri = host + "/api/utilisateurs/%s".formatted(utiId);
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 
@@ -161,7 +161,7 @@ public abstract class AbstractUtilisateurClient {
 	 * @return uriBuilder avec les query params remplis
 	 */
 	protected UriComponentsBuilder updateUtilisateurUriComponentsBuilder(Integer utiId) {
-		String uri = host + "/api/utilisateurs/%s".formatted(utiId);;
+		String uri = host + "/api/utilisateurs/%s".formatted(utiId);
 		return UriComponentsBuilder.fromUri(URI.create(uri));
 	}
 
