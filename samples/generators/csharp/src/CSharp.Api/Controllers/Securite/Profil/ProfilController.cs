@@ -8,7 +8,6 @@ namespace CSharp.Api.Securite.Profil;
 
 public class ProfilController : Controller
 {
-
     /// <summary>
     /// Ajoute un Profil
     /// </summary>

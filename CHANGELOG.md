@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.39.6
+
+- [`dbadf6cb`](https://github.com/klee-contrib/topmodel/commit/dbadf6cbaaa189a403a24aceb6753edc5e3ec318) - Mise à jour libs .net (permet au générateur d'API server C# de comprendre les constructeurs principaux de C# 12, entre autres)
+- [`1969a0f3`](https://github.com/klee-contrib/topmodel/commit/1969a0f3046eaef954138f5a3d8e30eb4162ba87) - [C# ClassGen] Fix using manquant pour alias de PK enum
+
 ## 1.39.5
 
 - [`1e37d6e8`](https://github.com/klee-contrib/topmodel/commit/1e37d6e83237d9a325bba7692e9a162f438fcceb) - [C#] Fix import column manquant des fois

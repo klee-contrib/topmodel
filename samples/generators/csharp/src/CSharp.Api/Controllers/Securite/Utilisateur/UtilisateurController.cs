@@ -8,7 +8,6 @@ namespace CSharp.Api.Securite.Utilisateur;
 
 public class UtilisateurController : Controller
 {
-
     /// <summary>
     /// Ajoute un utilisateur
     /// </summary>
