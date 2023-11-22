@@ -511,13 +511,13 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
             switch (property)
             {
-                case AssociationProperty { Association.IsPersistent: true, Association.Reference: true } ap when Classes.Contains(ap.Association) && (Config.CanClassUseEnums(ap.Association, Classes, ap.Property) || Config.Kinetix):
+                case AssociationProperty ap when Classes.Contains(ap.Association) && (Config.CanClassUseEnums(ap.Association, Classes, ap.Property) || Config.Kinetix && ap.Association.IsPersistent && ap.Association.Reference):
                     usings.Add(GetNamespace(ap.Association, tag));
                     break;
-                case AliasProperty { Property: AssociationProperty { Association.IsPersistent: true, Association.Reference: true } ap2 } when Classes.Contains(ap2.Association) && (Config.CanClassUseEnums(ap2.Association, Classes, ap2.Property) || Config.Kinetix):
+                case AliasProperty { Property: AssociationProperty ap2 } when Classes.Contains(ap2.Association) && (Config.CanClassUseEnums(ap2.Association, Classes, ap2.Property) || Config.Kinetix && ap2.Association.IsPersistent && ap2.Association.Reference):
                     usings.Add(GetNamespace(ap2.Association, tag));
                     break;
-                case AliasProperty { PrimaryKey: false, Property: RegularProperty { PrimaryKey: true, Class.Reference: true } rp } when Classes.Contains(rp.Class) && (Config.CanClassUseEnums(rp.Class, Classes) || Config.Kinetix):
+                case AliasProperty { Property: RegularProperty rp } alp when Classes.Contains(rp.Class) && (Config.CanClassUseEnums(rp.Class, Classes, rp) || Config.Kinetix && !alp.PrimaryKey && rp.PrimaryKey && rp.Class.Reference):
                     usings.Add(GetNamespace(rp.Class, tag));
                     break;
                 case CompositionProperty cp:
