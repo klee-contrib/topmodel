@@ -19,7 +19,7 @@ public class ReferencesHandler : ReferencesHandlerBase
         _modelStore = modelStore;
     }
 
-    public override Task<LocationContainer> Handle(ReferenceParams request, CancellationToken cancellationToken)
+    public override Task<LocationContainer?> Handle(ReferenceParams request, CancellationToken cancellationToken)
     {
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
@@ -27,7 +27,7 @@ public class ReferencesHandler : ReferencesHandlerBase
             var references = _modelStore.GetReferencesForPositionInFile(request.Position, file);
             if (references != null)
             {
-                return Task.FromResult(new LocationContainer(
+                return Task.FromResult<LocationContainer?>(new LocationContainer(
                     references.Select(r => new Location
                     {
                         Uri = new Uri(_facade.GetFilePath(r.File)),
@@ -36,7 +36,7 @@ public class ReferencesHandler : ReferencesHandlerBase
             }
         }
 
-        return Task.FromResult<LocationContainer>(new());
+        return Task.FromResult<LocationContainer?>(new());
     }
 
     protected override ReferenceRegistrationOptions CreateRegistrationOptions(ReferenceCapability capability, ClientCapabilities clientCapabilities)

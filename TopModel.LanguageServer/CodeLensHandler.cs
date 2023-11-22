@@ -25,12 +25,12 @@ public class CodeLensHandler : CodeLensHandlerBase
         return Task.FromResult(request);
     }
 
-    public override Task<CodeLensContainer> Handle(CodeLensParams request, CancellationToken cancellationToken)
+    public override Task<CodeLensContainer?> Handle(CodeLensParams request, CancellationToken cancellationToken)
     {
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            return Task.FromResult(new CodeLensContainer(file.Classes.Select(clazz =>
+            return Task.FromResult<CodeLensContainer?>(new CodeLensContainer(file.Classes.Select(clazz =>
                 new CodeLens
                 {
                     Range = clazz.GetLocation().ToRange()!,
@@ -85,7 +85,7 @@ public class CodeLensHandler : CodeLensHandlerBase
                 })))));
         }
 
-        return Task.FromResult<CodeLensContainer>(new());
+        return Task.FromResult<CodeLensContainer?>(new());
     }
 
     protected override CodeLensRegistrationOptions CreateRegistrationOptions(CodeLensCapability capability, ClientCapabilities clientCapabilities)

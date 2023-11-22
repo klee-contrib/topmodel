@@ -29,7 +29,7 @@ public class CodeActionHandler : CodeActionHandlerBase
         return Task.FromResult(request);
     }
 
-    public override Task<CommandOrCodeActionContainer> Handle(CodeActionParams request, CancellationToken cancellationToken)
+    public override Task<CommandOrCodeActionContainer?> Handle(CodeActionParams request, CancellationToken cancellationToken)
     {
         var modelFile = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         var codeActions = new List<CommandOrCodeAction>();
@@ -64,7 +64,7 @@ public class CodeActionHandler : CodeActionHandlerBase
             }
         }
 
-        return Task.FromResult(CommandOrCodeActionContainer.From(codeActions));
+        return Task.FromResult<CommandOrCodeActionContainer?>(CommandOrCodeActionContainer.From(codeActions));
     }
 
     protected static CodeAction GetCodeActionOrganizeImports(CodeActionParams request, ModelFile modelFile)

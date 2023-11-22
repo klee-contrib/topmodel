@@ -5,8 +5,8 @@ namespace TopModel.LanguageServer;
 
 public static class ModelConfigExtensions
 {
-    public static DocumentSelector GetDocumentSelector(this ModelConfig config)
+    public static TextDocumentSelector GetDocumentSelector(this ModelConfig config)
     {
-        return DocumentSelector.ForPattern($"{config.ModelRoot}/**/*.tmd");
+        return TextDocumentSelector.ForPattern($"{config.ModelRoot}/**/*.tmd");
     }
 }

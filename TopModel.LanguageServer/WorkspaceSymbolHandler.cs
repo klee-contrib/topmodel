@@ -17,13 +17,12 @@ public class WorkspaceSymbolHandler : WorkspaceSymbolsHandlerBase
         _modelStore = modelStore;
     }
 
-    public override Task<Container<SymbolInformation>?> Handle(WorkspaceSymbolParams request, CancellationToken cancellationToken)
+    public override Task<Container<WorkspaceSymbol>?> Handle(WorkspaceSymbolParams request, CancellationToken cancellationToken)
     {
-        return Task.FromResult<Container<SymbolInformation>?>(_modelStore.Classes.Select(c =>
+        return Task.FromResult<Container<WorkspaceSymbol>?>(_modelStore.Classes.Select(c =>
         {
-            return new SymbolInformation
+            return new WorkspaceSymbol
             {
-                Deprecated = false,
                 Kind = SymbolKind.Class,
                 Name = c.Name,
                 Location = new Location
@@ -34,9 +33,8 @@ public class WorkspaceSymbolHandler : WorkspaceSymbolsHandlerBase
             };
         }).Concat(_modelStore.Files.Where(e => e.Endpoints.Count > 0).SelectMany(f => f.Endpoints).Select(e =>
         {
-            return new SymbolInformation
+            return new WorkspaceSymbol
             {
-                Deprecated = false,
                 Kind = SymbolKind.Method,
                 Name = e.Name,
                 Location = new Location
@@ -47,9 +45,8 @@ public class WorkspaceSymbolHandler : WorkspaceSymbolsHandlerBase
             };
         })).Concat(_modelStore.Domains.Select(d =>
         {
-            return new SymbolInformation
+            return new WorkspaceSymbol
             {
-                Deprecated = false,
                 Kind = SymbolKind.Struct,
                 Name = d.Value.Name,
                 Location = new Location
@@ -60,9 +57,8 @@ public class WorkspaceSymbolHandler : WorkspaceSymbolsHandlerBase
             };
         })).Concat(_modelStore.Decorators.Select(d =>
         {
-            return new SymbolInformation
+            return new WorkspaceSymbol
             {
-                Deprecated = false,
                 Kind = SymbolKind.Interface,
                 Name = d.Name,
                 Location = new Location
@@ -73,9 +69,8 @@ public class WorkspaceSymbolHandler : WorkspaceSymbolsHandlerBase
             };
         })).Concat(_modelStore.DataFlows.Select(d =>
         {
-            return new SymbolInformation
+            return new WorkspaceSymbol
             {
-                Deprecated = false,
                 Kind = SymbolKind.Operator,
                 Name = d.Name,
                 Location = new Location

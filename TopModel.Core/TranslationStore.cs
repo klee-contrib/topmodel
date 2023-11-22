@@ -13,6 +13,6 @@ public class TranslationStore
 
     public string GetTranslation(ClassValue refValue, string lang)
     {
-        return Translations.TryGetValue(lang, out var dict) && dict.TryGetValue(refValue.ResourceKey, out var translatedValue) ? translatedValue : refValue.Value[refValue.Class.DefaultProperty];
+        return Translations.TryGetValue(lang, out var dict) && dict.TryGetValue(refValue.ResourceKey, out var translatedValue) ? translatedValue : refValue.Value[refValue.Class.DefaultProperty!];
     }
 }

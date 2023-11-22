@@ -19,7 +19,7 @@ public class DefinitionHandler : DefinitionHandlerBase
         _modelStore = modelStore;
     }
 
-    public override Task<LocationOrLocationLinks> Handle(DefinitionParams request, CancellationToken cancellationToken)
+    public override Task<LocationOrLocationLinks?> Handle(DefinitionParams request, CancellationToken cancellationToken)
     {
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
@@ -34,10 +34,10 @@ public class DefinitionHandler : DefinitionHandlerBase
                 var selectionRange = objet.GetLocation().ToRange();
                 if (selectionRange == null)
                 {
-                    return Task.FromResult<LocationOrLocationLinks>(new());
+                    return Task.FromResult<LocationOrLocationLinks?>(new());
                 }
 
-                return Task.FromResult<LocationOrLocationLinks>(new(new LocationLink
+                return Task.FromResult<LocationOrLocationLinks?>(new(new LocationLink
                 {
                     OriginSelectionRange = matchedReference.ToRange(),
                     TargetRange = objet switch
@@ -60,7 +60,7 @@ public class DefinitionHandler : DefinitionHandlerBase
                 var usedFile = _modelStore.Files.SingleOrDefault(f => f.Name == matchedUse.ReferenceName);
                 if (usedFile != null)
                 {
-                    return Task.FromResult<LocationOrLocationLinks>(new(new LocationLink
+                    return Task.FromResult<LocationOrLocationLinks?>(new(new LocationLink
                     {
                         OriginSelectionRange = matchedReference.ToRange(),
                         TargetRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 5, 200),
@@ -71,7 +71,7 @@ public class DefinitionHandler : DefinitionHandlerBase
             }
         }
 
-        return Task.FromResult<LocationOrLocationLinks>(new());
+        return Task.FromResult<LocationOrLocationLinks?>(new());
     }
 
     protected override DefinitionRegistrationOptions CreateRegistrationOptions(DefinitionCapability capability, ClientCapabilities clientCapabilities)

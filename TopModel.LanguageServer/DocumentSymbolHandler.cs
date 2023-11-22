@@ -19,15 +19,15 @@ public class DocumentSymbolHandler : DocumentSymbolHandlerBase
         _modelStore = modelStore;
     }
 
-    public override Task<SymbolInformationOrDocumentSymbolContainer> Handle(DocumentSymbolParams request, CancellationToken cancellationToken)
+    public override Task<SymbolInformationOrDocumentSymbolContainer?> Handle(DocumentSymbolParams request, CancellationToken cancellationToken)
     {
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri);
         if (file == null)
         {
-            return Task.FromResult(new SymbolInformationOrDocumentSymbolContainer());
+            return Task.FromResult<SymbolInformationOrDocumentSymbolContainer?>(new());
         }
 
-        return Task.FromResult(new SymbolInformationOrDocumentSymbolContainer(
+        return Task.FromResult<SymbolInformationOrDocumentSymbolContainer?>(new(
             file.Classes.Select(c =>
             {
                 return new SymbolInformation

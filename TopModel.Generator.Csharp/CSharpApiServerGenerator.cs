@@ -59,7 +59,11 @@ public class {className} : Controller
         foreach (var endpoint in endpoints)
         {
             var wd = new StringBuilder();
-            wd.AppendLine();
+            if (endpoints.IndexOf(endpoint) != 0 || controller.DescendantNodes().OfType<ConstructorDeclarationSyntax>().Any())
+            {
+                wd.AppendLine();
+            }
+
             wd.AppendLine($"{indent}/// <summary>");
             wd.AppendLine($"{indent}/// {endpoint.Description}");
             wd.AppendLine($"{indent}/// </summary>");
