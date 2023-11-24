@@ -34,7 +34,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
         using var fw = new CSharpWriter(filePath, _logger);
 
         var hasBody = endpoints.Any(e => e.GetJsonBodyParam() != null);
-        var hasReturn = endpoints.Any(e => e.Returns != null);
+        var hasReturn = endpoints.Any(e => e.Returns != null && !new[] { "string", "byte[]" }.Contains(Config.GetType(e.Returns)));
         var hasJson = hasReturn || hasBody;
 
         var usings = new List<string>();
@@ -218,7 +218,11 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
             if (returnType != null)
             {
-                if (returnType == "byte[]")
+                if (returnType == "string")
+                {
+                    fw.WriteLine(2, $"return await res.Content.ReadAsStringAsync();");
+                }
+                else if (returnType == "byte[]")
                 {
                     fw.WriteLine();
                     fw.WriteLine(2, "using var ms = new MemoryStream();");

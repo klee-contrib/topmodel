@@ -420,7 +420,7 @@ public class CsharpConfig : GeneratorConfigBase
             return NoAsyncControllers ? "void" : "async Task";
         }
 
-        var typeName = GetType(prop, nonNullable: true);
+        var typeName = GetType(prop, nonNullable: (prop as IFieldProperty)?.Required ?? true);
         return typeName.StartsWith("IAsyncEnumerable") || NoAsyncControllers
             ? typeName
             : $"async Task<{typeName}>";
