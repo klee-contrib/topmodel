@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.39.7
+
+- [`1994aed7`](https://github.com/klee-contrib/topmodel/commit/1994aed73e1be603c9028ee74a41f0c19d7a627a) - [C# endpoints] required sur returns + gestion string dans les clients
+
 ## 1.39.6
 
 - [`dbadf6cb`](https://github.com/klee-contrib/topmodel/commit/dbadf6cbaaa189a403a24aceb6753edc5e3ec318) - Mise à jour libs .net (permet au générateur d'API server C# de comprendre les constructeurs principaux de C# 12, entre autres)
