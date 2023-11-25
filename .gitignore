@@ -3,7 +3,7 @@ bin
 obj
 TopModel.VSCode/out
 node_modules
-language-server
+language-server-*
 .nupkg
 *.user
 *.vsix

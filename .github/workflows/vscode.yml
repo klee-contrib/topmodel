@@ -15,14 +15,18 @@ jobs:
 
       - uses: actions/setup-node@v1
         with:
-          node-version: 16
+          node-version: 18
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 8.0.x
 
-      - run: dotnet publish
+      - run: dotnet publish -f net8.0
+        name: Build LS
+        working-directory: TopModel.LanguageServer
+
+      - run: dotnet publish -f net6.0
         name: Build LS
         working-directory: TopModel.LanguageServer
 

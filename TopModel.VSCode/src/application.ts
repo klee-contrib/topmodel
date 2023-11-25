@@ -1,8 +1,10 @@
-import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
-import { ExtensionContext, workspace, commands, window, Terminal } from "vscode";
-import { TopModelConfig } from "./types";
-import { COMMANDS, COMMANDS_OPTIONS, SERVER_EXE } from "./const";
 import { makeAutoObservable } from "mobx";
+import { ExtensionContext, workspace, commands, window, Terminal } from "vscode";
+import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
+
+import { COMMANDS, COMMANDS_OPTIONS, SERVER_EXE } from "./const";
+import { TopModelConfig } from "./types";
+import { execute } from "./utils";
 
 export class Application {
     private _terminal?: Terminal;
@@ -55,7 +57,21 @@ export class Application {
     }
 
     private async startLanguageServer() {
-        const args = [this.extensionContext.asAbsolutePath("./language-server/TopModel.LanguageServer.dll")];
+        const stdout = await execute("dotnet --list-runtimes");
+        const runtimeVersion = stdout.includes("Microsoft.NETCore.App 8.0")
+            ? "net8.0"
+            : stdout.includes("Microsoft.NETCore.App 6.0")
+            ? "net6.0"
+            : undefined;
+
+        if (!runtimeVersion) {
+            window.showErrorMessage("Aucun runtime .NET trouvé pour lancer l'extension TopModel (net6.0 ou net8.0)");
+            return;
+        }
+
+        const args = [
+            this.extensionContext.asAbsolutePath(`./language-server-${runtimeVersion}/TopModel.LanguageServer.dll`),
+        ];
         let configRelativePath = workspace.asRelativePath(this._configPath);
         args.push(this._configPath.substring(1));
         let serverOptions: ServerOptions = {
