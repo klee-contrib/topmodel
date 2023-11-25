@@ -1,10 +1,11 @@
-import { ExtensionContext, workspace, window, Uri } from "vscode";
 import * as fs from "fs";
-import { TopModelConfig, TopModelException } from "./types";
-import { Application } from "./application";
-import { execute } from "./utils";
-import { State } from "./state";
 import { configure } from "mobx";
+import { ExtensionContext, Uri, window, workspace } from "vscode";
+
+import { Application } from "./application";
+import { State } from "./state";
+import { TopModelConfig, TopModelException } from "./types";
+import { execute } from "./utils";
 
 const open = require("open");
 const yaml = require("js-yaml");
@@ -41,7 +42,7 @@ async function checkDotnetInstall(): Promise<boolean> {
             "Ouvrir la page de téléchargement"
         );
         if (selection === "Ouvrir la page de téléchargement") {
-            open("https://dotnet.microsoft.com/download/dotnet/6.0");
+            open("https://dotnet.microsoft.com/download/dotnet");
         }
 
         return false;
