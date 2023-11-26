@@ -1,4 +1,5 @@
-﻿using TopModel.Core.FileModel;
+﻿using OneOf;
+using TopModel.Core.FileModel;
 
 namespace TopModel.Core;
 
@@ -118,6 +119,8 @@ public static class ModelExtensions
             DataFlow d => d.Location,
             FromMapper m => m.Reference.Location,
             ClassMappings c => c.Name.Location,
+            PropertyMapping p => p.Property.GetLocation(),
+            OneOf<ClassMappings, PropertyMapping> p => p.Match(c => c.GetLocation(), p => p.GetLocation()),
             Converter c => c.Location,
             _ => null
         };
@@ -137,6 +140,17 @@ public static class ModelExtensions
             foreach (var result in modelStore.GetPropertyReferencesCore(ap.OriginalProperty!, collectBackward: true))
             {
                 yield return result;
+            }
+        }
+
+        if (property.Class != null)
+        {
+            foreach (var mapping in property.Class.FromMappers.SelectMany(fm => fm.PropertyParams))
+            {
+                if (mapping.TargetPropertyReference != null && mapping.TargetProperty == property)
+                {
+                    yield return (mapping.TargetPropertyReference, mapping.TargetProperty.GetFile());
+                }
             }
         }
 

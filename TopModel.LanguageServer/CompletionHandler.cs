@@ -367,9 +367,13 @@ public class CompletionHandler : CompletionHandlerBase
                         var includeCompositions = false;
                         var includeExtends = false;
 
-                        if (currentLine.Contains("defaultProperty:") || currentLine.Contains("flagProperty:") || currentLine.Contains("orderProperty:"))
+                        if (currentLine.Contains("defaultProperty:") || currentLine.Contains("flagProperty:") || currentLine.Contains("orderProperty:") || currentLine.Contains("target:"))
                         {
                             searchText = currentLine.Split(":")[1].Trim();
+                            if (currentLine.Contains("target"))
+                            {
+                                includeCompositions = true;
+                            }
                         }
                         else
                         {

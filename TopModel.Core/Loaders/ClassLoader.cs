@@ -187,24 +187,19 @@ public class ClassLoader : ILoader<Class>
                                                     }
                                                     else if (parser.Current is Scalar { Value: "property" })
                                                     {
+                                                        var param = new PropertyMapping { FromMapper = mapper };
+                                                        mapper.Params.Add(param);
                                                         while (parser.Current is not MappingEnd)
                                                         {
                                                             var prop = parser.Consume<Scalar>();
                                                             switch (prop.Value)
                                                             {
                                                                 case "property":
-                                                                    var p = _propertyLoader.Load(parser);
-                                                                    var param = new PropertyMapping { Property = p, FromMapper = mapper };
-                                                                    p.PropertyMapping = param;
-                                                                    mapper.Params.Add(param);
+                                                                    param.Property = _propertyLoader.Load(parser);
+                                                                    param.Property.PropertyMapping = param;
                                                                     break;
                                                                 case "target":
-                                                                    var targetReference = new Reference(parser.Consume<Scalar>());
-                                                                    foreach (var cp in mapper.PropertyParams)
-                                                                    {
-                                                                        cp.TargetPropertyReference = targetReference;
-                                                                    }
-
+                                                                    param.TargetPropertyReference = new Reference(parser.Consume<Scalar>());
                                                                     break;
                                                             }
                                                         }
