@@ -213,6 +213,11 @@ public enum ModelErrorType
     TMD1033,
 
     /// <summary>
+    /// Le paramètre '{param.GetName()}' du mapper ne peut pas être obligatoire si l'un des paramètres précédents ne l'est pas.
+    /// </summary>
+    TMD1034,
+
+    /// <summary>
     /// Le flux de données est introuvable dans le fichier ou l'une de ses références.
     /// </summary>
     TMD2000,

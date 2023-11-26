@@ -34,7 +34,7 @@ public interface IProperty
 
     PropertyMapping PropertyMapping { get; set; }
 
-    IPropertyContainer Parent => Class ?? (IPropertyContainer)Endpoint ?? Decorator;
+    IPropertyContainer Parent => Class ?? (IPropertyContainer)Endpoint ?? (IPropertyContainer)Decorator ?? PropertyMapping;
 
     IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null);
 }

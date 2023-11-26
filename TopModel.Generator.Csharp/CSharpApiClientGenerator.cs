@@ -67,7 +67,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
             }
         }
 
-        foreach (var property in endpoints.SelectMany(e => e.Params.Concat(new[] { e.Returns! }).Where(p => p != null)))
+        foreach (var property in endpoints.SelectMany(e => e.Properties))
         {
             usings.AddRange(Config.GetDomainImports(property, tag));
 
