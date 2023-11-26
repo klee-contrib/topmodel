@@ -220,7 +220,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
             {
                 if (returnType == "string")
                 {
-                    fw.WriteLine(2, $"return await res.Content.ReadAsStringAsync();");
+                    fw.WriteLine(2, $"return (await res.Content.ReadAsStringAsync()).Trim('\"');");
                 }
                 else if (returnType == "byte[]")
                 {
