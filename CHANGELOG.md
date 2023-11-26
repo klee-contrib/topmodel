@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.39.8
+
+- [#327](https://github.com/klee-contrib/topmodel/pull/327) - Version .NET 8
+- [`a8aa2234`](https://github.com/klee-contrib/topmodel/commit/a8aa2234a20b0adbbb1652a7057233578e4482dc) - [C# APIClient] Fix trim manquant sur returnType string
+
 ## 1.39.7
 
 - [`1994aed7`](https://github.com/klee-contrib/topmodel/commit/1994aed73e1be603c9028ee74a41f0c19d7a627a) - [C# endpoints] required sur returns + gestion string dans les clients
