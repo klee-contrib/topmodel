@@ -9,7 +9,8 @@
 
   <PropertyGroup>
     <PackageOutputPath>../.nupkg</PackageOutputPath>
-    <Version>1.39.8</Version>
+    <Version>1.39.9</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Authors>JabX;gideruette</Authors>
     <Description>Librarie de base pour écrire un générateur TopModel.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.39.9
+
+(Corrige le numéro de version qui incluait le hash du dernier commit suite à la montée de version du SDK .NET)
+
 ## 1.39.8
 
 - [#327](https://github.com/klee-contrib/topmodel/pull/327) - Version .NET 8
