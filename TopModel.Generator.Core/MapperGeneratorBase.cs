@@ -46,7 +46,7 @@ public abstract class MapperGeneratorBase<T> : GeneratorBase<T>
                         .Distinct()
                         .OrderBy(m => m.Classe.NamePascal, StringComparer.Ordinal)
                         .ThenBy(m => m.Mapper.Params.Count)
-                        .ThenBy(m => string.Join(',', m.Mapper.ClassParams.Select(p => p.Name)), StringComparer.Ordinal)
+                        .ThenBy(m => string.Join(',', m.Mapper.Params.Select(p => p.GetName())), StringComparer.Ordinal)
                         .ToArray(),
                     Tags: tags);
             });
