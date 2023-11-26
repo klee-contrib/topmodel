@@ -16,6 +16,8 @@ public interface IProperty
 
     bool PrimaryKey { get; }
 
+    bool Required { get; }
+
     Domain Domain { get; }
 
     string[] DomainParameters { get; }

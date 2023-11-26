@@ -341,6 +341,10 @@
             "readonly": {
               "type": "boolean",
               "description": "Une propriété 'readonly' ne pourra pas être renseignée par un mapper et aucun setter ne sera généré si la classe contenant la propriété est abstraite."
+            },
+            "required": {
+              "type": "boolean",
+              "description": "Précise si la propriété est obligatoire (`true` par défaut sur les compositions). Une composition obligatoire sera initialisée avec une instance vide."
             }
           }
         }

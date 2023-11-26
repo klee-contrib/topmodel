@@ -167,6 +167,9 @@ public class PropertyLoader : ILoader<IProperty>
                         case "readonly":
                             cp.Readonly = value!.Value == "true";
                             break;
+                        case "required":
+                            cp.Required = value!.Value == "true";
+                            break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                     }

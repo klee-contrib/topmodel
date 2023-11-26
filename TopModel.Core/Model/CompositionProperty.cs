@@ -38,6 +38,8 @@ public class CompositionProperty : IProperty
 
     public bool PrimaryKey => false;
 
+    public bool Required { get; set; } = true;
+
     public ClassReference Reference { get; set; }
 
     internal Reference Location { get; set; }
