@@ -22,7 +22,7 @@
   },
   "version": "1.39.1",
   "engines": {
-    "vscode": "^1.74.0"
+    "vscode": "^1.84.1"
   },
   "categories": [
     "Programming Languages"
