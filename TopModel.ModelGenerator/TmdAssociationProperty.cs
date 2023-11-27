@@ -2,14 +2,14 @@
 
 namespace TopModel.ModelGenerator;
 
-public class TmdAssociationProperty : TmdProperty
+public class TmdAssociationProperty : TmdRegularProperty
 {
 #nullable disable
 
-    public TmdClass ForeignClass { get; set; }
+    public TmdClass Association { get; set; }
 
 #nullable enable
-    public TmdProperty? ForeignProperty { get; set; }
+    public TmdRegularProperty? ForeignProperty { get; set; }
 
-    public string Role => ForeignClass != Class ? Name.Replace(ForeignClass!.Trigram.ToPascalCase() + ForeignProperty!.Name, string.Empty) : string.Empty;
+    public string Role => Association != Class ? Name.Replace(Association!.Trigram.ToPascalCase() + ForeignProperty!.Name, string.Empty) : string.Empty;
 }

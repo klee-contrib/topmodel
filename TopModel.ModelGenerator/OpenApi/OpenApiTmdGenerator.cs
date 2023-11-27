@@ -60,97 +60,119 @@ public class OpenApiTmdGenerator : ModelGenerator
         var modelFileName = $"{Path.Combine(ModelRoot, _config.OutputDirectory, _config.ModelFileName)}.tmd";
         yield return modelFileName;
 
-        using var fw = new FileWriter(modelFileName, _logger, false) { StartCommentToken = "####" };
-        fw.WriteLine("---");
-        fw.WriteLine($"module: {_config.Module}");
-        fw.WriteLine("tags:");
-        foreach (var tag in _config.ModelTags)
+        var tmdFile = new TmdFile()
         {
-            fw.WriteLine($"  - {tag}");
-        }
-
-        fw.WriteLine();
+            Module = _config.Module,
+            Name = _config.ModelFileName,
+            Tags = _config.ModelTags.ToList()
+        };
+        var rootPath = Path.Combine(ModelRoot, _config.OutputDirectory);
+        var fileName = Path.Combine(rootPath, tmdFile.Module!, tmdFile.Name + ".tmd");
+        using var tmdFileWriter = new TmdWriter(ModelRoot, tmdFile, _logger, ModelRoot);
 
         var references = new HashSet<string>(referenceMap.SelectMany(r => r.Value).Select(r => r.Id).Distinct());
 
         foreach (var schema in _model.GetSchemas(references).OrderBy(r => r.Key))
         {
-            fw.WriteLine("---");
-            fw.WriteLine("class:");
-
-            var className = schema.Value.Type == "array" ? schema.Key.Unplurialize() : schema.Key;
-
-            fw.WriteLine($"  name: {_config.ClassPrefix}{className}");
-
-            if (_config.PreservePropertyCasing)
+            if (schema.Value.Type == "string" && schema.Value.Enum.Any())
             {
-                fw.WriteLine($"  preservePropertyCasing: true");
-            }
+                var classes = tmdFile.Classes.Select(c => c.Name);
+                if (classes.Contains($"{_config.ClassPrefix}{schema.Key.ToPascalCase()}"))
+                {
+                    continue;
+                }
 
-            if (schema.Value.Description != null)
-            {
-                fw.WriteLine($"  comment: {(schema.Value.Description ?? className).Format()}");
+                var enumClass = new TmdClass()
+                {
+                    File = tmdFile,
+                    Name = $"{_config.ClassPrefix}{schema.Key.ToPascalCase()}",
+                    Comment = $"enum pour les valeurs de {schema.Key.ToPascalCase()}",
+                    PreservePropertyCasing = _config.PreservePropertyCasing
+                };
+
+                tmdFile.Classes.Add(enumClass);
+
+                var p = WriteProperty(_config, new(schema.Key.ToPascalCase(), schema.Value), tmdFile);
+                p.Class = enumClass;
+                enumClass.Properties.Add(p);
+                AddValues(enumClass, schema.Value);
             }
             else
             {
-                fw.WriteLine($"  comment: no description provided");
+                var classe = new TmdClass()
+                {
+                    File = tmdFile,
+                    PreservePropertyCasing = _config.PreservePropertyCasing
+                };
+
+                var className = schema.Value.Type == "array" ? schema.Key.Unplurialize() : schema.Key;
+                classe.Name = $"{_config.ClassPrefix}{className.ToPascalCase()}";
+                var classes = tmdFile.Classes.Select(c => c.Name);
+                if (classes.Contains(classe.Name))
+                {
+                    continue;
+                }
+
+                var parents = _model.GetSchemas().Where(s => s.Value.AnyOf.Contains(schema.Value) || s.Value.OneOf.Contains(schema.Value));
+                if (parents.Count() == 1)
+                {
+                    classe.Extends = parents.Single().Key.ToPascalCase();
+                }
+
+                tmdFile.Classes.Add(classe);
+
+                if (!string.IsNullOrEmpty(schema.Value.Description?.Trim(' ')))
+                {
+                    classe.Comment = $"{schema.Value.Description.Format()}";
+                }
+
+                var classeProperties = classe.Properties;
+                var properties = schema.Value.GetProperties().ToList();
+
+                foreach (var property in properties)
+                {
+                    if (!property.Value.Enum.Any())
+                    {
+                        var p = WriteProperty(_config, property, tmdFile);
+                        p.Class = classe;
+                        classeProperties.Add(p);
+                    }
+                    else
+                    {
+                        var enumClass = tmdFile.Classes.Where(c => c.Name == $"{classe.Name}{property.Key.ToPascalCase()}").SingleOrDefault();
+                        if (enumClass == null)
+                        {
+                            enumClass = new TmdClass()
+                            {
+                                File = tmdFile,
+                                Name = $"{classe.Name}{property.Key.ToPascalCase()}",
+                                Comment = $"enum pour les valeurs de {property.Key.ToPascalCase()}",
+                                PreservePropertyCasing = _config.PreservePropertyCasing
+                            };
+
+                            tmdFile.Classes.Add(enumClass);
+                            var p = WriteProperty(_config, new(property.Key.ToPascalCase(), property.Value), tmdFile);
+                            p.Class = enumClass;
+                            enumClass.Properties.Add(p);
+                            AddValues(enumClass, property.Value);
+                        }
+
+                        classeProperties.Add(new TmdAliasProperty()
+                        {
+                            Alias = enumClass.Properties[0],
+                            Name = $"{property.Key.ToPascalCase()}",
+                            Comment = property.Value.Description.Format(),
+                            Class = classe
+                        });
+                    }
+                }
             }
+        }
 
-            fw.WriteLine();
-            fw.WriteLine($"  properties:");
-
-            var properties = schema.Value.GetProperties().ToList();
-
-            foreach (var property in properties)
-            {
-                if (!property.Value.Enum.Any())
-                {
-                    WriteProperty(_config, fw, property);
-                }
-                else
-                {
-                    fw.WriteLine("    - alias:");
-                    fw.WriteLine($@"        class: {_config.ClassPrefix}{schema.Key.ToPascalCase()}{property.Key.ToPascalCase()}");
-                    fw.WriteLine($"      name: {property.Key.ToPascalCase()}");
-                }
-
-                if (properties.Last().Key != property.Key)
-                {
-                    fw.WriteLine();
-                }
-            }
-
-            foreach (var property in properties.Where(p => (p.Value.Enum?.Any() ?? false)))
-            {
-                fw.WriteLine("---");
-                fw.WriteLine("class:");
-                fw.WriteLine($"  name: {_config.ClassPrefix}{schema.Key.ToPascalCase()}{property.Key.ToPascalCase()}");
-
-                if (_config.PreservePropertyCasing)
-                {
-                    fw.WriteLine($"  preservePropertyCasing: true");
-                }
-
-                fw.WriteLine($"  comment: enum pour les valeurs de {property.Key.ToPascalCase()}");
-
-                fw.WriteLine();
-                fw.WriteLine($"  properties:");
-
-                WriteProperty(_config, fw, new("value", property.Value));
-                fw.WriteLine();
-                fw.WriteLine($"  values:");
-                var u = 0;
-
-                foreach (var val in property.Value.Enum.OfType<OpenApiString>())
-                {
-                    fw.WriteLine($@"    value{u++}: {{ value: {val.Value} }}");
-                }
-
-                foreach (var val in property.Value.Enum.OfType<OpenApiInteger>())
-                {
-                    fw.WriteLine($@"    value{u++}: {{ value: {val.Value} }}");
-                }
-            }
+        foreach (var cp in tmdFile.Classes.SelectMany(c => c.Properties.OfType<TmdCompositionProperty>()))
+        {
+            var composition = tmdFile.Classes.Where(c => c.Name == cp.CompositionReference).FirstOrDefault();
+            cp.Composition = composition;
         }
 
         foreach (var module in modules)
@@ -158,73 +180,104 @@ public class OpenApiTmdGenerator : ModelGenerator
             var endpointFileName = $"{Path.Combine(ModelRoot, _config.OutputDirectory, module.Key)}.tmd";
             yield return endpointFileName;
 
-            using var sw = new FileWriter(endpointFileName, _logger, false) { StartCommentToken = "####" };
-            sw.WriteLine("---");
-            sw.WriteLine($"module: {_config.Module}");
-            sw.WriteLine("tags:");
-            foreach (var tag in _config.EndpointTags)
+            var tmdFileEnpoint = new TmdFile()
             {
-                sw.WriteLine($"  - {tag}");
-            }
+                Module = _config.Module,
+                Name = module.Key,
+                Tags = _config.EndpointTags.ToList()
+            };
+
+            using var tmdEndpointFileWriter = new TmdWriter(ModelRoot, tmdFileEnpoint, _logger, ModelRoot);
 
             if (referenceMap[module.Key].Any())
             {
-                sw.WriteLine("uses:");
                 var use = $"{_config.OutputDirectory.Replace("\\", "/")}/{_config.ModelFileName}".Replace("//", "/");
                 if (use.StartsWith("./"))
                 {
                     use = use.Replace("./", string.Empty);
                 }
-
-                sw.WriteLine($"  - {use}");
             }
-
-            sw.WriteLine();
 
             foreach (var operation in module.OrderBy(o => GetEndpointName(o)))
             {
                 var path = GetOperationPath(operation.Value);
-
-                sw.WriteLine("---");
-                sw.WriteLine("endpoint:");
-                sw.WriteLine($"  name: {GetEndpointName(operation)}");
-                sw.WriteLine($"  method: {operation.Key.ToString().ToUpper()}");
-                sw.WriteLine($"  route: {path}");
-                if (operation.Value.Summary != null)
+                var endPoint = new TmdEndpoint()
                 {
-                    sw.WriteLine($"  description: {operation.Value.Summary.Format()}");
-                }
-                else
+                    Name = GetEndpointName(operation),
+                    Method = operation.Key.ToString().ToUpper(),
+                    Route = path,
+                    File = tmdFileEnpoint
+                };
+                tmdFileEnpoint.Endpoints.Add(endPoint);
+                if (!string.IsNullOrEmpty(operation.Value.Summary))
                 {
-                    sw.WriteLine($"  description: no description provided");
+                    endPoint.Comment = operation.Value.Summary;
                 }
 
-                if (_config.PreservePropertyCasing)
+                endPoint.PreservePropertyCasing = _config.PreservePropertyCasing;
+
+                if (string.IsNullOrEmpty(operation.Value.Summary))
                 {
-                    sw.WriteLine($"  preservePropertyCasing: true");
+                    endPoint.Comment = operation.Value.Summary;
                 }
 
                 if (operation.Value.Parameters.Any(p => p.In == ParameterLocation.Query || p.In == ParameterLocation.Path) || operation.Value.RequestBody != null)
                 {
-                    sw.WriteLine("  params:");
-
                     var bodySchema = operation.Value.GetRequestBodySchema();
                     if (bodySchema != null)
                     {
-                        WriteProperty(_config, sw, new("body", bodySchema));
+                        var p = WriteProperty(_config, new("body", bodySchema), tmdFile);
+                        if (p is TmdCompositionProperty cp)
+                        {
+                            cp.Composition = tmdFile.Classes.Where(c => c.Name == cp.CompositionReference).SingleOrDefault();
+                        }
+
+                        endPoint.Params.Add(p);
                     }
 
                     foreach (var param in operation.Value.Parameters.Where(p => p.In == ParameterLocation.Query || p.In == ParameterLocation.Path).OrderBy(p => path.Contains($@"{{{p.Name}}}") ? 0 + p.Name : 1 + p.Name))
                     {
-                        sw.WriteLine($"    - name: {param.Name}");
-                        sw.WriteLine($"      domain: {_config.GetDomain(param.Name, param.Schema)}");
-                        if (param.Description != null)
+                        TmdProperty property;
+                        if (param.Schema.Enum.Any())
                         {
-                            sw.WriteLine($"      comment: {param.Description.Format()}");
+                            var enumClass = tmdFile.Classes.Where(c => c.Name == $"{endPoint.Name.ToPascalCase()}{param.Name.ToPascalCase()}").SingleOrDefault();
+                            if (enumClass == null)
+                            {
+                                enumClass = new TmdClass()
+                                {
+                                    File = tmdFile,
+                                    Name = $"{endPoint.Name.ToPascalCase()}{param.Name.ToPascalCase()}",
+                                    Comment = $"enum pour les valeurs de {param.Name}",
+                                    PreservePropertyCasing = _config.PreservePropertyCasing
+                                };
+
+                                tmdFile.Classes.Add(enumClass);
+                                var p = WriteProperty(_config, new(param.Name.ToPascalCase(), param.Schema), tmdFile);
+                                p.Class = enumClass;
+                                enumClass.Properties.Add(p);
+                                AddValues(enumClass, param.Schema);
+                            }
+
+                            property = new TmdAliasProperty()
+                            {
+                                Alias = enumClass.Properties[0],
+                                Name = $"{param.Name.ToPascalCase()}",
+                                Class = enumClass
+                            };
                         }
                         else
                         {
-                            sw.WriteLine($"      comment: no description provided");
+                            property = new TmdRegularProperty()
+                            {
+                                Name = param.Name,
+                                Domain = _config.GetDomain(param.Name, param.Schema)
+                            };
+                        }
+
+                        endPoint.Params.Add(property);
+                        if (!string.IsNullOrEmpty(param.Description?.Trim(' ')))
+                        {
+                            property.Comment = param.Description.Format();
                         }
                     }
                 }
@@ -232,15 +285,73 @@ public class OpenApiTmdGenerator : ModelGenerator
                 var responseSchema = GetResponseSchema(operation.Value).Value;
                 if (responseSchema != null)
                 {
-                    sw.WriteLine("  returns:");
-                    WriteProperty(_config, sw, new("Result", responseSchema), noList: true);
+                    var returns = WriteProperty(_config, new("Result", responseSchema), tmdFile);
+                    if (returns is TmdCompositionProperty cp)
+                    {
+                        cp.Composition = tmdFile.Classes.Where(c => c.Name == cp.CompositionReference).SingleOrDefault();
+                    }
+
+                    endPoint.Returns = returns;
                 }
             }
         }
     }
 
+    private static void AddValues(TmdClass classe, OpenApiSchema schema)
+    {
+        foreach (var val in schema.Enum.OfType<OpenApiString>())
+        {
+            Dictionary<string, string?> value = new()
+                {
+                    { classe.Properties.First().Name, val.Value }
+                };
+            classe.Values.Add(value);
+        }
+
+        foreach (var val in schema.Enum.OfType<OpenApiInteger>())
+        {
+            Dictionary<string, string?> value = new()
+                {
+                    { classe.Properties.First().Name, $"{val.Value}" }
+                };
+            classe.Values.Add(value);
+        }
+
+        foreach (var val in schema.Enum.OfType<OpenApiDouble>())
+        {
+            Dictionary<string, string?> value = new()
+                {
+                    { classe.Properties.First().Name, $"{val.Value}" }
+                };
+            classe.Values.Add(value);
+        }
+
+        foreach (var val in schema.Enum.OfType<OpenApiDate>())
+        {
+            Dictionary<string, string?> value = new()
+                {
+                    { classe.Properties.First().Name, $"{val.Value}" }
+                };
+            classe.Values.Add(value);
+        }
+
+        foreach (var val in schema.Enum.OfType<OpenApiBoolean>())
+        {
+            Dictionary<string, string?> value = new()
+                {
+                    { classe.Properties.First().Name, $"{val.Value}" }
+                };
+            classe.Values.Add(value);
+        }
+    }
+
     private (string? Kind, string? Name) GetComposition(OpenApiSchema schema)
     {
+        if (schema.AnyOf.Any() || schema.OneOf.Any())
+        {
+            return (null, null);
+        }
+
         return schema.Items?.Reference != null
             ? ("list", schema.Items.Reference.Id)
             : schema.Reference != null && _model.GetSchemas().Any(s => s.Value.Reference == schema.Reference)
@@ -405,29 +516,101 @@ public class OpenApiTmdGenerator : ModelGenerator
                 yield return reference;
             }
         }
+
+        foreach (var oneOff in schema.OneOf)
+        {
+            foreach (var reference in GetSchemaReferences(oneOff, visited))
+            {
+                yield return reference;
+            }
+        }
+
+        foreach (var anyOff in schema.AnyOf)
+        {
+            foreach (var reference in GetSchemaReferences(anyOff, visited))
+            {
+                yield return reference;
+            }
+        }
     }
 
-    private void WriteProperty(OpenApiConfig config, FileWriter sw, KeyValuePair<string, OpenApiSchema> property, bool noList = false)
+    private TmdProperty WriteProperty(OpenApiConfig config, KeyValuePair<string, OpenApiSchema> property, TmdFile tmdFile)
     {
         var (kind, name) = GetComposition(property.Value);
-
-        if (kind != null && name != null)
+        if (property.Value.Type == "array" && property.Value.Items.Enum.Any() && property.Value.Items.Type == "string" && property.Value.Items.Reference != null)
         {
+            var aliasClass = tmdFile.Classes.Where(c => c.Name == property.Value.Items.Reference.Id.ToPascalCase()).SingleOrDefault();
+            if (aliasClass == null)
+            {
+                aliasClass = new TmdClass()
+                {
+                    File = tmdFile,
+                    Name = $"{_config.ClassPrefix}{property.Value.Items.Reference.Id.ToPascalCase()}",
+                    Comment = $"enum pour les valeurs de {property.Value.Items.Reference.Id.ToPascalCase()}",
+                    PreservePropertyCasing = _config.PreservePropertyCasing
+                };
+
+                tmdFile.Classes.Add(aliasClass);
+
+                var p = WriteProperty(_config, new(property.Key, property.Value.Items), tmdFile);
+                p.Class = aliasClass;
+                aliasClass.Properties.Add(p);
+                AddValues(aliasClass, property.Value.Items);
+            }
+
+            var aliasProperty = new TmdAliasProperty()
+            {
+                Name = $"{property.Key}",
+                Required = !property.Value.Nullable,
+                Domain = $"{config.GetDomain(property.Key, property.Value)}",
+                Alias = aliasClass.Properties.First(),
+                As = "list"
+            };
+
+            if (!string.IsNullOrEmpty(property.Value.Description?.Trim(' ')))
+            {
+                aliasProperty.Comment = $"{property.Value.Description.Format()}";
+            }
+
+            return aliasProperty;
+        }
+        else if (!(property.Value.Type == "string" && property.Value.Enum.Any())
+                && kind != null && name != null)
+        {
+            var compositionProperty = new TmdCompositionProperty()
+            {
+                Name = $"{property.Key}"
+            };
             var domainKind = TmdGenUtils.GetDomainString(config.Domains, type: kind);
-            sw.WriteLine($"    {(noList ? string.Empty : "- ")}composition: {_config.ClassPrefix}{name}");
-            sw.WriteLine($"    {(noList ? string.Empty : "  ")}name: {property.Key}");
             if (kind != "object")
             {
-                sw.WriteLine($"    {(noList ? string.Empty : "  ")}domain: {domainKind ?? kind}");
+                compositionProperty.Domain = $"{domainKind ?? kind}";
             }
+
+            if (!string.IsNullOrEmpty(property.Value.Description?.Trim(' ')))
+            {
+                compositionProperty.Comment = $"{property.Value.Description.Format()}";
+            }
+
+            compositionProperty.CompositionReference = $"{_config.ClassPrefix}{name.ToPascalCase()}";
+
+            return compositionProperty;
         }
         else
         {
-            sw.WriteLine($"    {(noList ? string.Empty : "- ")}name: {property.Key}");
-            sw.WriteLine($"    {(noList ? string.Empty : "  ")}domain: {config.GetDomain(property.Key, property.Value)}");
-            sw.WriteLine($"    {(noList ? string.Empty : "  ")}required: {(!property.Value.Nullable).ToString().ToLower()}");
-        }
+            var regularProperty = new TmdRegularProperty()
+            {
+                Name = $"{property.Key}",
+                Required = !property.Value.Nullable,
+                Domain = $"{config.GetDomain(property.Key, property.Value)}"
+            };
 
-        sw.WriteLine($"    {(noList ? string.Empty : "  ")}comment: {(property.Value.Description ?? property.Key).Format()}");
+            if (!string.IsNullOrEmpty(property.Value.Description?.Trim(' ')))
+            {
+                regularProperty.Comment = $"{property.Value.Description.Format()}";
+            }
+
+            return regularProperty;
+        }
     }
 }

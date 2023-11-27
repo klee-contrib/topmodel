@@ -1,4 +1,4 @@
-####
+﻿####
 #### ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ####
 
@@ -6,202 +6,219 @@
 module: Petstore
 tags:
   - petstore
-
 ---
 class:
   name: ApiResponse
+  comment: Non documenté
   preservePropertyCasing: true
-  comment: no description provided
-
   properties:
+
     - name: code
       domain: DO_ENTIER
       required: true
-      comment: code
+      comment: Non documenté
 
     - name: type
       domain: DO_LIBELLE
       required: true
-      comment: type
+      comment: Non documenté
 
     - name: message
       domain: DO_LIBELLE
       required: true
-      comment: message
+      comment: Non documenté
 ---
 class:
   name: Category
+  comment: Non documenté
   preservePropertyCasing: true
-  comment: no description provided
-
   properties:
+
     - name: id
       domain: DO_ID
       required: true
-      comment: id
+      comment: Non documenté
 
     - name: name
       domain: DO_LIBELLE
       required: true
-      comment: name
+      comment: Non documenté
+---
+class:
+  name: FindPetsByStatusStatus
+  comment: enum pour les valeurs de status
+  preservePropertyCasing: true
+  properties:
+
+    - name: Status
+      domain: DO_LIBELLE
+      required: true
+      comment: Non documenté
+
+  values:
+    Value0: {Status: "available"}
+    Value1: {Status: "pending"}
+    Value2: {Status: "sold"}
 ---
 class:
   name: Order
+  comment: Non documenté
   preservePropertyCasing: true
-  comment: no description provided
-
   properties:
+
     - name: id
       domain: DO_ID
       required: true
-      comment: id
+      comment: Non documenté
 
     - name: petId
       domain: DO_ID
       required: true
-      comment: petId
+      comment: Non documenté
 
     - name: quantity
       domain: DO_ENTIER
       required: true
-      comment: quantity
+      comment: Non documenté
 
     - name: shipDate
       domain: DO_DATE_TIME
       required: true
-      comment: shipDate
+      comment: Non documenté
 
     - alias:
         class: OrderStatus
-      name: Status
+        property: Status
+      comment: Order Status
 
     - name: complete
       domain: DO_BOOLEAN
       required: true
-      comment: complete
+      comment: Non documenté
 ---
 class:
   name: OrderStatus
-  preservePropertyCasing: true
   comment: enum pour les valeurs de Status
-
+  preservePropertyCasing: true
   properties:
-    - name: value
+
+    - name: Status
       domain: DO_LIBELLE
       required: true
       comment: Order Status
 
   values:
-    value0: { value: placed }
-    value1: { value: approved }
-    value2: { value: delivered }
+    Value0: {Status: "placed"}
+    Value1: {Status: "approved"}
+    Value2: {Status: "delivered"}
 ---
 class:
   name: Pet
+  comment: Non documenté
   preservePropertyCasing: true
-  comment: no description provided
-
   properties:
+
     - name: id
       domain: DO_ID
       required: true
-      comment: id
+      comment: Non documenté
 
     - name: name
       domain: DO_LIBELLE
       required: true
-      comment: name
+      comment: Non documenté
 
     - composition: Category
       name: category
-      comment: category
+      comment: Non documenté
 
     - name: photoUrls
       domain: DO_LIBELLE
       required: true
-      comment: photoUrls
+      comment: Non documenté
 
     - composition: Tag
       name: tags
       domain: DO_LIST
-      comment: tags
+      comment: Non documenté
 
     - alias:
         class: PetStatus
-      name: Status
+        property: Status
+      comment: pet status in the store
 ---
 class:
   name: PetStatus
-  preservePropertyCasing: true
   comment: enum pour les valeurs de Status
-
+  preservePropertyCasing: true
   properties:
-    - name: value
+
+    - name: Status
       domain: DO_LIBELLE
       required: true
       comment: pet status in the store
 
   values:
-    value0: { value: available }
-    value1: { value: pending }
-    value2: { value: sold }
+    Value0: {Status: "available"}
+    Value1: {Status: "pending"}
+    Value2: {Status: "sold"}
 ---
 class:
   name: Tag
+  comment: Non documenté
   preservePropertyCasing: true
-  comment: no description provided
-
   properties:
+
     - name: id
       domain: DO_ID
       required: true
-      comment: id
+      comment: Non documenté
 
     - name: name
       domain: DO_LIBELLE
       required: true
-      comment: name
+      comment: Non documenté
 ---
 class:
   name: User
+  comment: Non documenté
   preservePropertyCasing: true
-  comment: no description provided
-
   properties:
+
     - name: id
       domain: DO_ID
       required: true
-      comment: id
+      comment: Non documenté
 
     - name: username
       domain: DO_LIBELLE
       required: true
-      comment: username
+      comment: Non documenté
 
     - name: firstName
       domain: DO_LIBELLE
       required: true
-      comment: firstName
+      comment: Non documenté
 
     - name: lastName
       domain: DO_LIBELLE
       required: true
-      comment: lastName
+      comment: Non documenté
 
     - name: email
       domain: DO_LIBELLE
       required: true
-      comment: email
+      comment: Non documenté
 
     - name: password
       domain: DO_LIBELLE
       required: true
-      comment: password
+      comment: Non documenté
 
     - name: phone
       domain: DO_LIBELLE
       required: true
-      comment: phone
+      comment: Non documenté
 
     - name: userStatus
       domain: DO_ENTIER

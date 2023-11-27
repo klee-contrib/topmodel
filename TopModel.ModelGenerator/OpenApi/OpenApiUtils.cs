@@ -61,7 +61,10 @@ public static class OpenApiUtils
             .Where(s =>
                 s.Value.Type == "object"
                 || s.Value.AllOf.Any() && s.Value.AllOf.All(a => a.Type == "object" || a.Reference != null)
-                || s.Value.Type == "array" && s.Value.Items.Type == "object")
+                || s.Value.Type == "array" && s.Value.Items.Type == "object"
+                || s.Value.AnyOf.Any()
+                || s.Value.OneOf.Any()
+                || s.Value.Type == "string" && s.Value.Enum.Any())
             .Where(s => references == null || references.Contains(s.Key))
             .ToDictionary(a => a.Key, a => a.Value);
     }
