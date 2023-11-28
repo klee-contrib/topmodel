@@ -4,8 +4,6 @@ namespace TopModel.Core;
 
 public interface IFieldProperty : IProperty
 {
-    bool Required { get; }
-
     string? DefaultValue { get; }
 
     LocatedString? Trigram { get; set; }

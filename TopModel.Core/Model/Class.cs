@@ -66,6 +66,8 @@ public class Class : IPropertyContainer
 
     public List<FromMapper> FromMappers { get; } = new();
 
+    public IEnumerable<IProperty> FromMapperProperties => FromMappers.SelectMany(fm => fm.PropertyParams.Select(pp => pp.Property));
+
     public List<ClassMappings> ToMappers { get; } = new();
 
     public string PluralName

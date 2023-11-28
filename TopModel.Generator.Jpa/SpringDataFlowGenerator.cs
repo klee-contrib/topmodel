@@ -477,9 +477,9 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         var mapper = dataFlow.Class.FromMappers.Where(m =>
             {
                 var result = true;
-                for (int i = 0; i < m.Params.Count; i++)
+                for (int i = 0; i < m.ClassParams.Count(); i++)
                 {
-                    result = result && m.Params[i].Class == dataFlow.Sources[i].Class;
+                    result = result && m.ClassParams.ElementAt(i).Class == dataFlow.Sources[i].Class;
                 }
 
                 return result;
@@ -491,7 +491,7 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         }
 
         foreach (var property in dataFlow.Class.ExtendedProperties.OfType<IFieldProperty>()
-            .Where(p => mapper == null || mapper.Params.SelectMany(pa => pa.Mappings).Select(mapping => mapping.Key).Contains(p)))
+            .Where(p => mapper == null || mapper.ClassParams.SelectMany(pa => pa.Mappings).Select(mapping => mapping.Key).Contains(p)))
         {
             var sqlType = property.Domain.Implementations["sql"].Type ?? string.Empty;
             string dataType = sqlType.ToUpper() switch

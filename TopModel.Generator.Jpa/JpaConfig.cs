@@ -229,7 +229,7 @@ public class JpaConfig : GeneratorConfigBase
             return (mapper.Classe.Namespace, EntitiesPath);
         }
 
-        var persistentParam = mapper.Mapper.Params.FirstOrDefault(p => p.Class.IsPersistent);
+        var persistentParam = mapper.Mapper.ClassParams.FirstOrDefault(p => p.Class.IsPersistent);
         if (persistentParam != null)
         {
             return (persistentParam.Class.Namespace, EntitiesPath);

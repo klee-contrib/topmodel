@@ -1,4 +1,5 @@
-﻿using TopModel.Core.FileModel;
+﻿using OneOf;
+using TopModel.Core.FileModel;
 
 namespace TopModel.Core;
 
@@ -7,6 +8,7 @@ public static class ModelExtensions
     public static IEnumerable<(ClassReference Reference, ModelFile File)> GetClassReferences(this ModelStore modelStore, Class classe)
     {
         return modelStore.Classes.SelectMany(c => c.Properties)
+            .Concat(modelStore.Classes.SelectMany(c => c.FromMapperProperties))
             .Concat(modelStore.Endpoints.SelectMany(e => e.Properties))
             .Concat(modelStore.Decorators.SelectMany(d => d.Properties))
             .Where(p =>
@@ -27,7 +29,7 @@ public static class ModelExtensions
                 .Select(c => (Reference: c.ExtendsReference!, File: c.GetFile())))
             .Concat(modelStore.DataFlows.Where(d => d.Class == classe).Select(d => (Reference: d.ClassReference, File: d.GetFile())))
             .Concat(modelStore.DataFlows.SelectMany(d => d.Sources.Where(s => s.Class == classe).Select(s => (Reference: s.ClassReference, File: d.GetFile()))))
-            .Concat(modelStore.Classes.SelectMany(c => c.FromMappers.SelectMany(c => c.Params).Concat(c.ToMappers).Where(m => m.Class == classe).Select(m => (Reference: m.ClassReference, File: c.GetFile()))))
+            .Concat(modelStore.Classes.SelectMany(c => c.FromMappers.SelectMany(c => c.ClassParams).Concat(c.ToMappers).Where(m => m.Class == classe).Select(m => (Reference: m.ClassReference, File: c.GetFile()))))
             .Where(r => r.Reference is not null)
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
@@ -54,6 +56,7 @@ public static class ModelExtensions
     public static IEnumerable<(DomainReference Reference, ModelFile File)> GetDomainReferences(this ModelStore modelStore, Domain domain)
     {
         return modelStore.Classes.SelectMany(c => c.Properties)
+            .Concat(modelStore.Classes.SelectMany(c => c.FromMapperProperties))
             .Concat(modelStore.Decorators.SelectMany(c => c.Properties))
             .Concat(modelStore.Endpoints.SelectMany(e => e.Properties))
             .Where(p =>
@@ -86,6 +89,7 @@ public static class ModelExtensions
             IProperty { Decorator: Decorator decorator } => decorator.ModelFile,
             IProperty { Class: Class classe } => classe.ModelFile,
             IProperty { Endpoint: Endpoint endpoint } => endpoint.ModelFile,
+            IProperty { PropertyMapping: PropertyMapping param } => param.FromMapper.Class.ModelFile,
             Domain domain => domain.ModelFile,
             Converter converter => converter.ModelFile,
             Decorator decorator => decorator.ModelFile,
@@ -115,6 +119,8 @@ public static class ModelExtensions
             DataFlow d => d.Location,
             FromMapper m => m.Reference.Location,
             ClassMappings c => c.Name.Location,
+            PropertyMapping p => p.Property.GetLocation(),
+            OneOf<ClassMappings, PropertyMapping> p => p.Match(c => c.GetLocation(), p => p.GetLocation()),
             Converter c => c.Location,
             _ => null
         };
@@ -134,6 +140,17 @@ public static class ModelExtensions
             foreach (var result in modelStore.GetPropertyReferencesCore(ap.OriginalProperty!, collectBackward: true))
             {
                 yield return result;
+            }
+        }
+
+        if (property.Class != null)
+        {
+            foreach (var mapping in property.Class.FromMappers.SelectMany(fm => fm.PropertyParams))
+            {
+                if (mapping.TargetPropertyReference != null && mapping.TargetProperty == property)
+                {
+                    yield return (mapping.TargetPropertyReference, mapping.TargetProperty.GetFile());
+                }
             }
         }
 
@@ -198,7 +215,7 @@ public static class ModelExtensions
 
             foreach (var classe in modelStore.Classes)
             {
-                foreach (var mappings in classe.FromMappers.SelectMany(m => m.Params).Concat(classe.ToMappers))
+                foreach (var mappings in classe.FromMappers.SelectMany(m => m.ClassParams).Concat(classe.ToMappers))
                 {
                     if (mappings.Mappings.ContainsKey(fp))
                     {

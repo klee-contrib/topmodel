@@ -32,9 +32,13 @@ public class CompositionProperty : IProperty
 
     public Decorator Decorator { get; set; }
 
+    public PropertyMapping PropertyMapping { get; set; }
+
     public string Label => Name;
 
     public bool PrimaryKey => false;
+
+    public bool Required { get; set; } = true;
 
     public ClassReference Reference { get; set; }
 

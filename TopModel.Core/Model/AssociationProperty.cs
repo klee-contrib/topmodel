@@ -31,6 +31,8 @@ public class AssociationProperty : IFieldProperty
     public Endpoint Endpoint { get; set; }
 
     public Decorator Decorator { get; set; }
+
+    public PropertyMapping PropertyMapping { get; set; }
 #nullable enable
 
     public string? Role { get; set; }

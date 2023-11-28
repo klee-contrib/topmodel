@@ -16,6 +16,8 @@ public interface IProperty
 
     bool PrimaryKey { get; }
 
+    bool Required { get; }
+
     Domain Domain { get; }
 
     string[] DomainParameters { get; }
@@ -30,7 +32,9 @@ public interface IProperty
 
     Decorator Decorator { get; set; }
 
-    IPropertyContainer Parent => Class ?? (IPropertyContainer)Endpoint ?? Decorator;
+    PropertyMapping PropertyMapping { get; set; }
+
+    IPropertyContainer Parent => Class ?? (IPropertyContainer)Endpoint ?? (IPropertyContainer)Decorator ?? PropertyMapping;
 
     IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null);
 }

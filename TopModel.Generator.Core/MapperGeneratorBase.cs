@@ -19,7 +19,7 @@ public abstract class MapperGeneratorBase<T> : GeneratorBase<T>
 
     protected IEnumerable<(Class Classe, FromMapper Mapper)> FromMappers => Classes
         .SelectMany(classe => classe.FromMappers.Select(mapper => (classe, mapper)))
-        .Where(mapper => mapper.mapper.Params.All(p => Classes.Contains(p.Class)))
+        .Where(mapper => mapper.mapper.ClassParams.All(p => Classes.Contains(p.Class)))
         .Select(c => (c.classe, c.mapper));
 
     protected IEnumerable<(Class Classe, ClassMappings Mapper)> ToMappers => Classes
@@ -46,7 +46,7 @@ public abstract class MapperGeneratorBase<T> : GeneratorBase<T>
                         .Distinct()
                         .OrderBy(m => m.Classe.NamePascal, StringComparer.Ordinal)
                         .ThenBy(m => m.Mapper.Params.Count)
-                        .ThenBy(m => string.Join(',', m.Mapper.Params.Select(p => p.Name)), StringComparer.Ordinal)
+                        .ThenBy(m => string.Join(',', m.Mapper.Params.Select(p => p.GetName())), StringComparer.Ordinal)
                         .ToArray(),
                     Tags: tags);
             });
@@ -81,7 +81,7 @@ public abstract class MapperGeneratorBase<T> : GeneratorBase<T>
             return mapper.Classe.Tags;
         }
 
-        var persistentParam = mapper.Mapper.Params.FirstOrDefault(p => IsPersistent(p.Class));
+        var persistentParam = mapper.Mapper.ClassParams.FirstOrDefault(p => IsPersistent(p.Class));
         if (persistentParam != null)
         {
             return persistentParam.Class.Tags;

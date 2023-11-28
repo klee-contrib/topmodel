@@ -63,7 +63,7 @@ public class SemanticTokensHandler : SemanticTokensHandlerBase
                     ClassReference or DecoratorReference => SemanticTokenType.Class,
                     DataFlowReference => SemanticTokenType.Operator,
                     DomainReference => SemanticTokenType.EnumMember,
-                    Reference r when r.ReferenceName == "this" || r.ReferenceName == "false" => SemanticTokenType.Keyword,
+                    Reference r when r.ReferenceName == "false" => SemanticTokenType.Keyword,
                     _ => SemanticTokenType.Function
                 };
 

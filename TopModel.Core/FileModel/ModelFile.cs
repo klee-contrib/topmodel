@@ -61,8 +61,9 @@ public class ModelFile
         .Concat(Classes.SelectMany(c => new[] { c.DefaultPropertyReference, c.OrderPropertyReference, c.FlagPropertyReference }.Select(r => (r, (object)c.ExtendedProperties.FirstOrDefault(p => p.Name == r?.ReferenceName)))))
         .Concat(Classes.SelectMany(c => c.UniqueKeyReferences.SelectMany(uk => uk).Select(propRef => (propRef, (object)c.Properties.FirstOrDefault(p => p.Name == propRef.ReferenceName)))))
         .Concat(Classes.SelectMany(c => c.ValueReferences.SelectMany(rv => rv.Value).Select(prop => (prop.Key, (object)c.ExtendedProperties.FirstOrDefault(p => p.Name == prop.Key.ReferenceName)))))
-        .Concat(Classes.SelectMany(c => c.FromMappers.SelectMany(m => m.Params).Concat(c.ToMappers)).Select(p => (p.ClassReference as Reference, (object)p.Class)))
-        .Concat(Classes.SelectMany(c => c.FromMappers.SelectMany(m => m.Params).Concat(c.ToMappers).SelectMany(m => m.MappingReferences.SelectMany(mr => new[] { (mr.Key, (object)c.ExtendedProperties.FirstOrDefault(k => k.Name == mr.Key.ReferenceName)), (mr.Value, mr.Value.ReferenceName == "this" || mr.Value.ReferenceName == "false" ? new Keyword { ModelFile = c.ModelFile } : m.Mappings.Values.FirstOrDefault(k => k.Name == mr.Value.ReferenceName)) }))))
+        .Concat(Classes.SelectMany(c => c.FromMappers.SelectMany(m => m.ClassParams).Concat(c.ToMappers)).Select(p => (p.ClassReference as Reference, (object)p.Class)))
+        .Concat(Classes.SelectMany(c => c.FromMappers.SelectMany(m => m.PropertyParams)).Select(p => (p.TargetPropertyReference as Reference, (object)p.TargetProperty)))
+        .Concat(Classes.SelectMany(c => c.FromMappers.SelectMany(m => m.ClassParams).Concat(c.ToMappers).SelectMany(m => m.MappingReferences.SelectMany(mr => new[] { (mr.Key, (object)c.ExtendedProperties.FirstOrDefault(k => k.Name == mr.Key.ReferenceName)), (mr.Value, mr.Value.ReferenceName == "false" ? new Keyword { ModelFile = c.ModelFile } : m.Mappings.Values.FirstOrDefault(k => k.Name == mr.Value.ReferenceName)) }))))
         .Concat(Converters.SelectMany(c => c.DomainsFromReferences.Select(d => (d as Reference, c.From.FirstOrDefault(dom => dom.Name == d.ReferenceName) as object))))
         .Concat(Converters.SelectMany(c => c.DomainsToReferences.Select(d => (d as Reference, c.To.FirstOrDefault(dom => dom.Name == d.ReferenceName) as object))))
         .Concat(DataFlows.Select(d => (d.ClassReference as Reference, d.Class as object)))
@@ -80,6 +81,7 @@ public class ModelFile
         .ToList();
 
     public IList<IProperty> Properties => Classes.SelectMany(c => c.Properties)
+        .Concat(Classes.SelectMany(c => c.FromMapperProperties))
         .Concat(Endpoints.SelectMany(e => e.Params))
         .Concat(Endpoints.Select(e => e.Returns))
         .Concat(Decorators.SelectMany(e => e.Properties))

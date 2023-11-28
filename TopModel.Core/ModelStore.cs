@@ -670,10 +670,29 @@ public class ModelStore
                 if (alp.OriginalAliasProperty is not null)
                 {
                     var index = classe.Properties.IndexOf(alp);
-                    classe.Properties.RemoveAt(classe.Properties.IndexOf(alp));
+                    classe.Properties.RemoveAt(index);
                     if (!classe.Properties.Contains(alp.OriginalAliasProperty))
                     {
                         classe.Properties.Insert(index, alp.OriginalAliasProperty);
+                    }
+                }
+            }
+
+            foreach (var alp in classe.FromMapperProperties.OfType<AliasProperty>().ToList())
+            {
+                if (alp.OriginalAliasProperty is not null)
+                {
+                    var index = alp.PropertyMapping.FromMapper.Params.IndexOf(alp.PropertyMapping);
+                    alp.PropertyMapping.FromMapper.Params.RemoveAt(index);
+                    if (!alp.PropertyMapping.FromMapper.Params.Contains(alp.OriginalAliasProperty.PropertyMapping))
+                    {
+                        alp.PropertyMapping.FromMapper.Params.Insert(index, new PropertyMapping
+                        {
+                            FromMapper = alp.PropertyMapping.FromMapper,
+                            Property = alp.OriginalAliasProperty,
+                            TargetProperty = alp.PropertyMapping.TargetProperty,
+                            TargetPropertyReference = alp.PropertyMapping.TargetPropertyReference
+                        });
                     }
                 }
             }
@@ -803,6 +822,22 @@ public class ModelStore
                             alp.Decorator.Properties.Insert(index + 1, prop);
                         }
                     }
+                    else if (alp.PropertyMapping != null)
+                    {
+                        var index = alp.PropertyMapping.FromMapper.Params.IndexOf(alp.PropertyMapping);
+                        if (index >= 0)
+                        {
+                            var mapping = new PropertyMapping
+                            {
+                                FromMapper = alp.PropertyMapping.FromMapper,
+                                Property = prop,
+                                TargetProperty = alp.PropertyMapping.TargetProperty,
+                                TargetPropertyReference = alp.PropertyMapping.TargetPropertyReference,
+                            };
+                            prop.PropertyMapping = mapping;
+                            alp.PropertyMapping.FromMapper.Params.Insert(index + 1, mapping);
+                        }
+                    }
                 }
 
                 if (alp.Class != null)
@@ -812,6 +847,10 @@ public class ModelStore
                 else if (alp.Endpoint?.Params.Contains(alp) ?? false)
                 {
                     alp.Endpoint.Params.Remove(alp);
+                }
+                else if (alp.PropertyMapping != null)
+                {
+                    alp.PropertyMapping.FromMapper.Params.Remove(alp.PropertyMapping);
                 }
                 else
                 {
@@ -1074,7 +1113,7 @@ public class ModelStore
         // Résolutions des mappers
         foreach (var classe in modelFile.Classes)
         {
-            foreach (var mappings in classe.FromMappers.SelectMany(m => m.Params).Concat(classe.ToMappers))
+            foreach (var mappings in classe.FromMappers.SelectMany(m => m.ClassParams).Concat(classe.ToMappers))
             {
                 if (!referencedClasses.TryGetValue(mappings.ClassReference.ReferenceName, out var mappedClass))
                 {
@@ -1096,20 +1135,6 @@ public class ModelStore
 
                     if (mapping.Value.ReferenceName == "false")
                     {
-                        continue;
-                    }
-
-                    if (currentProperty != null && mapping.Value.ReferenceName == "this")
-                    {
-                        if (currentProperty is CompositionProperty cp && cp.Composition == mappedClass)
-                        {
-                            mappings.Mappings.Add(currentProperty, null);
-                        }
-                        else
-                        {
-                            yield return new ModelError(classe, $"La classe '{mappedClass.Name}' ne peut pas être mappée sur la propriété '{currentProperty.Name}' car ce n'est pas une composition de cette classe.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1020 };
-                        }
-
                         continue;
                     }
 
@@ -1172,27 +1197,87 @@ public class ModelStore
                 }
             }
 
+            foreach (var mapping in classe.FromMappers.SelectMany(fm => fm.PropertyParams))
+            {
+                if (mapping.Property != null)
+                {
+                    if (mapping.TargetPropertyReference != null)
+                    {
+                        var currentProperty = classe.ExtendedProperties.FirstOrDefault(p => p.Name == mapping.TargetPropertyReference.ReferenceName);
+                        if (currentProperty == null)
+                        {
+                            yield return new ModelError(classe, $"La propriété '{{0}}' est introuvable sur la classe '{classe}'.", mapping.TargetPropertyReference) { ModelErrorType = ModelErrorType.TMD1004 };
+                        }
+
+                        mapping.TargetProperty = currentProperty;
+                    }
+                    else
+                    {
+                        var mappedProperty = classe.ExtendedProperties.FirstOrDefault(p => p.Name == mapping.Property.Name);
+                        if (mappedProperty == null)
+                        {
+                            yield return new ModelError(classe, $"La propriété '{mapping.Property.Name}' est introuvable sur la classe '{classe}'.", mapping.Property.GetLocation()) { ModelErrorType = ModelErrorType.TMD1004 };
+                        }
+
+                        mapping.TargetProperty = mappedProperty;
+                    }
+
+                    if (mapping.TargetProperty != null)
+                    {
+                        if (mapping.TargetProperty is not CompositionProperty && mapping.Property is CompositionProperty)
+                        {
+                            yield return new ModelError(classe, $"La propriété '{mapping.Property.Name}' ne peut pas être une composition pour définir un mapping vers '{mapping.TargetProperty.Name}'.", mapping.Property.GetLocation()) { ModelErrorType = ModelErrorType.TMD1033 };
+                        }
+
+                        if (mapping.TargetProperty is CompositionProperty { Composition: Class cpClass } && (mapping.Property is not CompositionProperty || ((CompositionProperty)mapping.Property).Composition != cpClass))
+                        {
+                            yield return new ModelError(classe, $"La propriété '{mapping.Property.Name}' doit être une composition de la même classe que '{mapping.TargetProperty.Name}' pour définir un mapping entre les deux.", mapping.Property.GetLocation()) { ModelErrorType = ModelErrorType.TMD1032 };
+                        }
+
+                        if (mapping.Property.Domain != mapping.TargetProperty.Domain
+                            && !Converters.Any(c => c.From.Any(cf => cf == mapping.Property.Domain) && c.To.Any(ct => ct == mapping.TargetProperty.Domain)))
+                        {
+                            yield return new ModelError(classe, $"La propriété '{mapping.Property.Name}' ne peut pas être mappée à '{mapping.TargetProperty.Name}' car elle n'a pas le même domaine ('{mapping.Property.Domain?.Name}' au lieu de '{mapping.TargetProperty.Domain?.Name}') et qu'il n'existe pas de convertisseur entre les deux.", mapping.Property.GetLocation()) { ModelErrorType = ModelErrorType.TMD1014 };
+                        }
+                    }
+                }
+            }
+
             foreach (var mapper in classe.FromMappers)
             {
-                foreach (var param in mapper.Params.Where((e, i) => mapper.Params.Where((p, j) => p.Name == e.Name && j < i).Any()))
+                foreach (var param in mapper.Params.Where((e, i) => mapper.Params.Where((p, j) => p.GetName() == e.GetName() && j < i).Any()))
                 {
-                    yield return new ModelError(classe, $"Le nom '{param.Name}' est déjà utilisé.", param.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
+                    yield return new ModelError(classe, $"Le nom '{param.GetName()}' est déjà utilisé.", param.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
                 }
 
-                var mappings = mapper.Params.SelectMany(p => p.MappingReferences);
+                var mappedProperties = mapper.Params.SelectMany(p => p.Match(
+                    p => p.MappingReferences.Where(e => e.Value.ReferenceName != "false").Select(e => e.Key),
+                    p =>
+                    {
+                        if (p.TargetPropertyReference != null)
+                        {
+                            return [p.TargetPropertyReference];
+                        }
+
+                        var propRef = p.Property.GetLocation() ?? new Reference();
+                        propRef.ReferenceName = p.Property.Name;
+                        return [propRef];
+                    }));
 
                 var hasDoublon = false;
-                foreach (var mapping in mappings.Where((e, i) => e.Value.ReferenceName != "false" && mappings.Where((p, j) => p.Value.ReferenceName != "false" && p.Key.ReferenceName == e.Key.ReferenceName && j < i).Any()))
+                foreach (var mapping in mappedProperties.Where((e, i) => mappedProperties.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i).Any()))
                 {
                     hasDoublon = true;
-                    yield return new ModelError(classe, $"La propriété '{mapping.Key.ReferenceName}' est déjà initialisée dans ce mapper.", mapping.Key) { ModelErrorType = ModelErrorType.TMD1015 };
+                    yield return new ModelError(classe, $"La propriété '{mapping.ReferenceName}' est déjà initialisée dans ce mapper.", mapping) { ModelErrorType = ModelErrorType.TMD1015 };
                 }
 
                 if (!hasDoublon)
                 {
-                    var explicitMappings = mapper.Params.SelectMany(p => p.Mappings).ToList();
+                    var explicitMappings = mapper.ClassParams.SelectMany(p => p.Mappings)
+                        .Concat(mapper.PropertyParams.Select(p => new KeyValuePair<IProperty, IProperty>(p.TargetProperty, p.Property)))
+                        .ToList();
 
-                    foreach (var param in mapper.Params.Where(p => p.Class != null))
+                    foreach (var param in mapper.ClassParams.Where(p => p.Class != null))
                     {
                         foreach (var property in classe.ExtendedProperties.OfType<AliasProperty>().Where(property => !property.Readonly && !explicitMappings.Any(m => m.Key == property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
                         {
@@ -1208,9 +1293,11 @@ public class ModelStore
                         }
                     }
 
-                    var explicitAndAliasMappings = mapper.Params.SelectMany(p => p.Mappings).ToList();
+                    var explicitAndAliasMappings = mapper.ClassParams.SelectMany(p => p.Mappings)
+                        .Concat(mapper.PropertyParams.Select(p => new KeyValuePair<IProperty, IProperty>(p.TargetProperty, p.Property)))
+                        .ToList();
 
-                    foreach (var param in mapper.Params.Where(p => p.Class != null))
+                    foreach (var param in mapper.ClassParams.Where(p => p.Class != null))
                     {
                         foreach (var property in classe.ExtendedProperties.OfType<IFieldProperty>().Where(property => !property.Readonly && !explicitAndAliasMappings.Any(m => m.Key == property) && !param.MappingReferences.Any(m => m.Key.ReferenceName == property.Name && m.Value.ReferenceName == "false")))
                         {
@@ -1224,11 +1311,18 @@ public class ModelStore
                         }
                     }
 
-                    var finalMappings = mapper.Params.SelectMany(p => p.Mappings).ToList();
+                    var finalMappings = mapper.ClassParams.SelectMany(p => p.Mappings)
+                        .Concat(mapper.PropertyParams.Select(p => new KeyValuePair<IProperty, IProperty>(p.TargetProperty, p.Property)))
+                        .ToList();
 
                     foreach (var mapping in finalMappings.Where((e, i) => finalMappings.Where((p, j) => p.Key == e.Key && j < i).Any()))
                     {
-                        yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Key.Name}' : {string.Join(", ", mapper.Params.SelectMany(p => p.Mappings.Where(m => m.Key == mapping.Key).Select(m => $"'{p.Name}.{m.Value}'")))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
+                        yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Key.Name}' : {string.Join(", ", mapper.ClassParams.SelectMany(p => p.Mappings.Where(m => m.Key == mapping.Key).Select(m => $"'{p.Name}.{m.Value}'")))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
+                    }
+
+                    foreach (var param in mapper.Params.Where((p, i) => p.GetRequired() && mapper.Params.Where((q, j) => !q.GetRequired() && j < i).Any()))
+                    {
+                        yield return new ModelError(classe, $"Le paramètre '{param.GetName()}' du mapper ne peut pas être obligatoire si l'un des paramètres précédents ne l'est pas.", param.GetLocation()) { ModelErrorType = ModelErrorType.TMD1034 };
                     }
                 }
             }
@@ -1287,7 +1381,7 @@ public class ModelStore
         {
             foreach (var mapper in classe.FromMappers)
             {
-                if (!mapper.Params.SelectMany(p => p.Mappings).Any())
+                if (!mapper.ClassParams.SelectMany(p => p.Mappings).Any() && !mapper.PropertyParams.Any())
                 {
                     yield return new ModelError(classe, "Aucun mapping n'a été trouvé sur ce mapper.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1025 };
                 }

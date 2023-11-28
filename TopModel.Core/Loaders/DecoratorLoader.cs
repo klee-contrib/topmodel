@@ -38,10 +38,7 @@ public class DecoratorLoader : ILoader<Decorator>
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        foreach (var property in _propertyLoader.Load(parser))
-                        {
-                            decorator.Properties.Add(property);
-                        }
+                        decorator.Properties.Add(_propertyLoader.Load(parser));
                     });
                     break;
                 default:

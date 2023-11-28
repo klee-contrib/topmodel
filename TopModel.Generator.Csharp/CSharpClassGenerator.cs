@@ -432,7 +432,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
             var defaultValue = Config.GetValue(property, Classes);
 
-            if (defaultValue == "null" && property is CompositionProperty cp)
+            if (defaultValue == "null" && property is CompositionProperty { Required: true } cp)
             {
                 var newableType = GetNewableType(property);
                 if (newableType != null)

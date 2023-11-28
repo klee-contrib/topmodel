@@ -39,16 +39,40 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
         var ns = Config.GetNamespace(mapperNs, modelPath, tag);
 
-        var usings = fromMappers.SelectMany(m => m.Mapper.Params.Select(p => p.Class).Concat(new[] { m.Classe }))
+        var usings = fromMappers.SelectMany(m => m.Mapper.ClassParams.Select(p => p.Class).Concat(new[] { m.Classe }))
             .Concat(toMappers.SelectMany(m => new[] { m.Classe, m.Mapper.Class }))
             .Select(c => Config.GetNamespace(c, GetBestClassTag(c, tag)))
-            .Where(@using => !ns.Contains(@using))
-            .Distinct()
-            .ToArray();
+            .ToList();
 
-        if (usings.Any())
+        foreach (var mapping in fromMappers.SelectMany(fm => fm.Mapper.PropertyParams))
         {
-            w.WriteUsings(usings);
+            usings.AddRange(Config.GetDomainImports(mapping.Property, tag));
+
+            if (mapping.Property is IFieldProperty fp)
+            {
+                usings.AddRange(Config.GetValueImports(fp));
+            }
+
+            switch (mapping.Property)
+            {
+                case AssociationProperty ap when Classes.Contains(ap.Association) && Config.CanClassUseEnums(ap.Association, Classes, ap.Property):
+                    usings.Add(Config.GetNamespace(ap.Association, GetBestClassTag(ap.Association, tag)));
+                    break;
+                case AliasProperty { Property: AssociationProperty ap2 } when Classes.Contains(ap2.Association) && Config.CanClassUseEnums(ap2.Association, Classes, ap2.Property):
+                    usings.Add(Config.GetNamespace(ap2.Association, GetBestClassTag(ap2.Association, tag)));
+                    break;
+                case AliasProperty { Property: RegularProperty rp } alp when Classes.Contains(rp.Class) && Config.CanClassUseEnums(rp.Class, Classes, rp):
+                    usings.Add(Config.GetNamespace(rp.Class, GetBestClassTag(rp.Class, tag)));
+                    break;
+                case CompositionProperty cp:
+                    usings.Add(Config.GetNamespace(cp.Composition, GetBestClassTag(cp.Composition, tag)));
+                    break;
+            }
+        }
+
+        if (usings.Any(@using => !ns.Contains(@using)))
+        {
+            w.WriteUsings(usings.Where(@using => !ns.Contains(@using)).Distinct().ToArray());
             w.WriteLine();
         }
 
@@ -64,14 +88,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
             w.WriteSummary(1, $"Crée une nouvelle instance de '{classe.NamePascal}'{(mapper.Comment != null ? $"\n{mapper.Comment}" : string.Empty)}");
             foreach (var param in mapper.Params)
             {
-                if (param.Comment != null)
-                {
-                    w.WriteParam(param.Name, param.Comment);
-                }
-                else
-                {
-                    w.WriteParam(param.Name, $"Instance de '{param.Class.NamePascal}'");
-                }
+                w.WriteParam(param.GetNameCamel(), param.GetComment());
             }
 
             w.WriteReturns(1, $"Une nouvelle instance de '{classe.NamePascal}'");
@@ -85,7 +102,9 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                 w.Write(1, $"public static {classe.NamePascal} Create{classe.NamePascal}");
             }
 
-            w.WriteLine($"({string.Join(", ", mapper.Params.Select(p => $"{(p.Class.Abstract ? "I" : string.Empty)}{p.Class.NamePascal} {p.Name}{(!p.Required ? " = null" : string.Empty)}"))})");
+            w.WriteLine($"({string.Join(", ", mapper.Params.Select(mp => mp.Match(
+                c => $"{(c.Class.Abstract ? "I" : string.Empty)}{c.Class.NamePascal} {c.Name}{(!c.Required ? " = null" : string.Empty)}",
+                p => $"{Config.GetType(p.Property)} {p.Property.NameCamel}{(!mp.GetRequired() ? $" = {Config.GetValue(p.Property, Classes)}" : string.Empty)}")))})");
 
             if (classe.Abstract)
             {
@@ -94,11 +113,11 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
             w.WriteLine(1, "{");
 
-            foreach (var param in mapper.Params.Where(p => p.Required))
+            foreach (var param in mapper.Params.Where(p => p.GetRequired()))
             {
-                w.WriteLine(2, $"if ({param.Name} is null)");
+                w.WriteLine(2, $"if ({param.GetNameCamel()} is null)");
                 w.WriteLine(2, "{");
-                w.WriteLine(3, $"throw new ArgumentNullException(nameof({param.Name}));");
+                w.WriteLine(3, $"throw new ArgumentNullException(nameof({param.GetNameCamel()}));");
                 w.WriteLine(2, "}");
                 w.WriteLine();
             }
@@ -113,56 +132,75 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                 w.WriteLine(2, "{");
             }
 
-            foreach (var param in mapper.Params)
+            foreach (var lol in mapper.Params)
             {
-                var mappings = param.Mappings.ToList();
-                foreach (var mapping in mappings)
-                {
-                    if (classe.Abstract)
+                lol.Switch(
+                    param =>
                     {
-                        w.Write(3, $"{mapping.Key.NameCamel}: ");
-                    }
-                    else
-                    {
-                        w.Write(3, $"{mapping.Key.NamePascal} = ");
-                    }
-
-                    if (mapping.Value == null)
-                    {
-                        w.Write(param.Name);
-                    }
-                    else
-                    {
-                        var value = $"{param.Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
-
-                        if (mapping.Key is CompositionProperty cp)
+                        var mappings = param.Mappings.ToList();
+                        foreach (var mapping in mappings)
                         {
-                            w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey.SingleOrDefault()?.NamePascal} = ");
+                            if (classe.Abstract)
+                            {
+                                w.Write(3, $"{mapping.Key.NameCamel}: ");
+                            }
+                            else
+                            {
+                                w.Write(3, $"{mapping.Key.NamePascal} = ");
+                            }
+
+                            var value = $"{param.Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
+
+                            if (mapping.Key is CompositionProperty cp)
+                            {
+                                w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey.SingleOrDefault()?.NamePascal} = ");
+                            }
+                            else
+                            {
+                                value = Config.GetConvertedValue(value, mapping.Value.Domain, (mapping.Key as IFieldProperty)?.Domain);
+                            }
+
+                            w.Write(value);
+
+                            if (mapping.Key is CompositionProperty)
+                            {
+                                w.Write(" }");
+                            }
+
+                            if (mapper.Params.IndexOf(param) < mapper.Params.Count() - 1 || mappings.IndexOf(mapping) < mappings.Count - 1)
+                            {
+                                w.Write(",");
+                            }
+                            else if (classe.Abstract)
+                            {
+                                w.Write(");");
+                            }
+
+                            w.WriteLine();
+                        }
+                    },
+                    param =>
+                    {
+                        if (classe.Abstract)
+                        {
+                            w.Write(3, $"{param.TargetProperty.NameCamel}: {param.NameCamel}");
                         }
                         else
                         {
-                            value = Config.GetConvertedValue(value, mapping.Value?.Domain, (mapping.Key as IFieldProperty)?.Domain);
+                            w.Write(3, $"{param.TargetProperty.NamePascal} = {param.NameCamel}");
                         }
 
-                        w.Write(value);
-
-                        if (mapping.Key is CompositionProperty)
+                        if (mapper.Params.IndexOf(param) < mapper.Params.Count() - 1)
                         {
-                            w.Write(" }");
+                            w.Write(",");
                         }
-                    }
+                        else if (classe.Abstract)
+                        {
+                            w.Write(");");
+                        }
 
-                    if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1 || mappings.IndexOf(mapping) < mappings.Count - 1)
-                    {
-                        w.Write(",");
-                    }
-                    else if (classe.Abstract)
-                    {
-                        w.Write(");");
-                    }
-
-                    w.WriteLine();
-                }
+                        w.WriteLine();
+                    });
             }
 
             if (!classe.Abstract)
@@ -227,11 +265,11 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
             var mappings = mapper.Mappings.ToList();
             foreach (var mapping in mapper.Mappings)
             {
-                var value = Config.GetConvertedValue($"source.{GetSourceMapping(mapping.Key)}", (mapping.Key as IFieldProperty)?.Domain, mapping.Value?.Domain);
+                var value = Config.GetConvertedValue($"source.{GetSourceMapping(mapping.Key)}", (mapping.Key as IFieldProperty)?.Domain, mapping.Value.Domain);
 
                 if (mapper.Class.Abstract)
                 {
-                    w.Write(3, $"{mapping.Value?.NameCamel}: {value}");
+                    w.Write(3, $"{mapping.Value.NameCamel}: {value}");
 
                     if (mappings.IndexOf(mapping) < mappings.Count - 1)
                     {
@@ -244,7 +282,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                 }
                 else
                 {
-                    w.WriteLine(2, $"dest.{mapping.Value?.NamePascal} = {value};");
+                    w.WriteLine(2, $"dest.{mapping.Value.NamePascal} = {value};");
                 }
             }
 

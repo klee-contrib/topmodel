@@ -24,7 +24,7 @@ public class DataFlowSource
 #nullable enable
     public FromMapper? TargetFromMapper
     {
-        get => DataFlow.Class.FromMappers.FirstOrDefault(fm => fm.Params.Count == 1 && fm.Params.First().Class == Class);
+        get => DataFlow.Class.FromMappers.FirstOrDefault(fm => fm.Params.Count == 1 && fm.ClassParams.First().Class == Class);
     }
 
     public ClassMappings? FirstSourceToMapper

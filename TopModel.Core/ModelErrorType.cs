@@ -203,6 +203,21 @@ public enum ModelErrorType
     TMD1031,
 
     /// <summary>
+    /// La propriété '{mapping.Property.Name}' doit être une composition de la même classe que '{mapping.TargetProperty.Name}' pour définir un mapping entre les deux.
+    /// </summary>
+    TMD1032,
+
+    /// <summary>
+    /// La propriété '{mapping.Property.Name}' ne peut pas être une composition pour définir un mapping vers '{mapping.TargetProperty.Name}'.
+    /// </summary>
+    TMD1033,
+
+    /// <summary>
+    /// Le paramètre '{param.GetName()}' du mapper ne peut pas être obligatoire si l'un des paramètres précédents ne l'est pas.
+    /// </summary>
+    TMD1034,
+
+    /// <summary>
     /// Le flux de données est introuvable dans le fichier ou l'une de ses références.
     /// </summary>
     TMD2000,
