@@ -22,6 +22,7 @@ public class TmdClass
 #nullable enable
 
     public string? Extends { get; set; }
+
     public List<Dictionary<string, string?>> Values { get; set; } = new();
 
     public TmdFile? File { get; set; }

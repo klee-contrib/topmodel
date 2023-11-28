@@ -1,5 +1,39 @@
 # TopModel.Generator (`modgen`)
 
+## 1.40.0
+
+- [#328](https://github.com/klee-contrib/topmodel/pull/328) - Propriétés comme paramètres de mapper `from`
+
+  **breaking change**
+  Il n'est plus possible de spécifier `this` dans un mapping explicite de classe dans un mapper `from`, il faut utiliser une composition à la place.
+
+  Par exemple :
+
+  ```yaml
+  mappers:
+    from:
+      - params:
+          - class: MyDto
+          - class: MySubDto
+            mappings:
+              Sub: this
+  ```
+
+  devient
+
+  ```yaml
+  mappers:
+    from:
+      - params:
+          - class: MyDto
+          - property:
+              composition: MySubDto
+              name: Sub
+              comment: Instance de 'MySubDto'
+  ```
+
+  Cela ne fonctionne qu'en génération C#, le générateur JPA ignore les mappings de propriétés.
+
 ## 1.39.9
 
 (Corrige le numéro de version qui incluait le hash du dernier commit suite à la montée de version du SDK .NET)
