@@ -4,35 +4,38 @@
 
 - [#328](https://github.com/klee-contrib/topmodel/pull/328) - Propriétés comme paramètres de mapper `from`
 
-  **breaking change**
-  Il n'est plus possible de spécifier `this` dans un mapping explicite de classe dans un mapper `from`, il faut utiliser une composition à la place.
+  **breaking changes**
 
-  Par exemple :
+  - Il n'est plus possible de spécifier `this` dans un mapping explicite de classe dans un mapper `from`, il faut utiliser une composition à la place.
 
-  ```yaml
-  mappers:
-    from:
-      - params:
-          - class: MyDto
-          - class: MySubDto
-            mappings:
-              Sub: this
-  ```
+    Par exemple :
 
-  devient
+    ```yaml
+    mappers:
+      from:
+        - params:
+            - class: MyDto
+            - class: MySubDto
+              mappings:
+                Sub: this
+    ```
 
-  ```yaml
-  mappers:
-    from:
-      - params:
-          - class: MyDto
-          - property:
-              composition: MySubDto
-              name: Sub
-              comment: Instance de 'MySubDto'
-  ```
+    devient
 
-  Cela ne fonctionne qu'en génération C#, le générateur JPA ignore les mappings de propriétés.
+    ```yaml
+    mappers:
+      from:
+        - params:
+            - class: MyDto
+            - property:
+                composition: MySubDto
+                name: Sub
+                comment: Instance de 'MySubDto'
+    ```
+
+    Cela ne fonctionne qu'en génération C#, le générateur JPA ignore les mappings de propriétés.
+
+  - Les paramètres `required: false` dans les mapper `from` doivent maintenant être placés **après tous les autres paramètres obligatoires**. En C#, le code généré était invalide dans ce cas donc c'est maintenant forcé côté modèle. Si vous êtes en Java et que vous n'aviez pas respecté cet ordre, il suffit de changer l'ordre des paramètres dans le modèle puis dans votre code.
 
 ## 1.39.9
 
