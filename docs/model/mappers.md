@@ -65,6 +65,75 @@ La propriété à gauche est toujours celle de la classe courante (pour un `from
 
 En dehors des mappings automatiques qui respectent forcément cette règle, **tous les mappings manuels ne peuvent être définis qu'entre deux propriétés de même domaine**. A moins qu'il existe un `converter` entre les deux domaines.
 
+## Mappings de compositions
+
+En plus de mapper des champs d'une classe sur des champs de la classe cible, certains mappings peuvent être aussi définis sur des **compositions** (uniquement sur la classe qui définit les mappers). Les mappings possibles sont :
+
+- Une association (ou alias vers une association) dont la clé primaire est de même domaine que celle de la classe composée. Cela n'est possible qu'entre des associations `oneToOne`/`manyToOne` et des compositions sans domaines.
+
+  Exemple :
+
+  ```yaml
+  # classe "ContactDTO"
+  to:
+    - class: Contact
+      mappings:
+        Adresse: AdresseId
+  ```
+
+  Ce mapping est possible dans les deux sens :
+
+  - En C#, le mapping ne concerne que la clé primaire (`from` crée une nouvelle instance en renseignant simplement la PK, `to` récupère la clé primaire)
+  - En JPA, il faut avoir défini un mapper entre les deux classes (celle de l'association et celle de la composition), et le mapping généré mappe la classe dans l'autre dans le sens demandé.
+
+## Mapping d'une propriété unique
+
+Dans un mapper `from`, en plus de pouvoir spécifier une classe comme paramètre, il est également possible d'avoir une **propriété
+comme paramètre**.
+
+Cela permet par exemple d'ajouter les champs supplémentaires d'un DTO par rapport à sa classe persistée dans le mapper qui le crée. Tous les types de propriétés sont supportés, y compris les compositions.
+
+Par exemple :
+
+```yaml
+class:
+  name: MyDTO
+  comment: DTO.
+  properties:
+    - alias:
+        class: MyEntity
+
+    - name: MyProperty
+      domain: DO_LABEL
+      required: true
+      comment: Extra property.
+
+    - composition: MyOtherDTO
+      name: others
+      domain: DO_LIST
+      comment: Other DTOs
+
+  mappers:
+    from:
+      - params:
+          - class: MyEntity
+          - property:
+              alias:
+                class: MyDTO
+                property: MyProperty
+          - property:
+              composition: MyOtherDTO
+              name: others
+              domain: DO_LIST
+              comment: Other DTOs
+```
+
+Le mapping se fera vers la propriété de la classe qui a le même nom. On vérifie que les deux propriétés ont le même domaine, et dans le cas d'une composition, que ce sont bien des compositions des deux côtés et de la même classe. Il est possible de surcharger la propriété cible en renseignant `target` (au même niveau que `property`), si jamais les noms ne peuvent pas correspondre pour une raison ou une autre.
+
+Les mappings renseignés via des propriétés comptent comme des mappings explicites sur les classes et obéissent donc aux mêmes règles (impossible d'initialiser 2 fois la même propriété, et ils ont la priorité sur les mappings implicites générés depuis les classes). De même, il n'est pas possible d'avoir deux paramètres de même nom.
+
+Le paramètre est obligatoire si la propriété est obligatoire (via `required`). La valeur par défaut de la propriété sera utilisée dans le mapper si elle est renseignée. Par conséquent, une propriété avec une valeur par défaut sera forcément non obligatoire.
+
 ## Converters
 
 Pour mapper deux champs de domaine différent, il est possible de définir un `converter`. Si la conversion ne nécessite pas d'opération particulière (mapper un champ `email` vers `libelle` par exemple), alors la définition est simple :
@@ -105,41 +174,6 @@ converter:
   java:
     text: "{value} != null ? {value}.toString() : null"
 ```
-
-## Mappings de compositions
-
-En plus de mapper des champs sur des champs, certains mappings peuvent être aussi définis sur des **compositions** (uniquement sur la classe qui définit les mappers). Les mappings possibles sont :
-
-- Un paramètre entier d'un mapping `from`, si la classe composée est la même que le paramètre.
-
-  Exemple :
-
-  ```yaml
-  # classe "ContactDTO"
-  from:
-    - params:
-        - class: Contact
-        - class: AdresseDTO
-          mappings:
-            Adresse: this
-  ```
-
-- Une association (ou alias vers une association) dont la clé primaire et de même domaine que celle de la classe composée.
-
-  Exemple :
-
-  ```yaml
-  # classe "ContactDTO"
-  to:
-    - class: Contact
-      mappings:
-        Adresse: AdresseId
-  ```
-
-  Ce mapping est possible dans les deux sens :
-
-  - En C#, le mapping ne concerne que la clé primaire (`from` crée une nouvelle instance en renseignant simplement la PK, `to` récupère la clé primaire)
-  - En JPA, il faut avoir défini un mapper entre les deux classes (celle de l'association et celle de la composition), et le mapping généré mappe la classe dans l'autre dans le sens demandé. Les types de l'association et de la composition doivent également correspondre (`oneToOne`/`manyToOne` <> `object`, `oneToMany`/`manyToMany` <> `list`).
 
 ## Gestion de l'héritage
 
