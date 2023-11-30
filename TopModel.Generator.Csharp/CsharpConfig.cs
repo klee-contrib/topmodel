@@ -243,7 +243,7 @@ public class CsharpConfig : GeneratorConfigBase
             .ToNamespace();
     }
 
-    public string GetMapperFilePath((Class Classe, FromMapper Mapper) mapper, string tag)
+    public string GetMapperFilePath((Class Class, FromMapper Mapper) mapper, string tag)
     {
         var (ns, modelPath) = GetMapperLocation(mapper, tag);
         return Path.Combine(
@@ -253,7 +253,7 @@ public class CsharpConfig : GeneratorConfigBase
             $"{GetMapperName(ns, modelPath)}.cs");
     }
 
-    public string GetMapperFilePath((Class Classe, ClassMappings Mapper) mapper, string tag)
+    public string GetMapperFilePath((Class Class, ClassMappings Mapper) mapper, string tag)
     {
         var (ns, modelPath) = GetMapperLocation(mapper, tag);
         return Path.Combine(
@@ -263,31 +263,31 @@ public class CsharpConfig : GeneratorConfigBase
             $"{GetMapperName(ns, modelPath)}.cs");
     }
 
-    public (Namespace Namespace, string ModelPath) GetMapperLocation((Class Classe, FromMapper Mapper) mapper, string tag)
+    public (Namespace Namespace, string ModelPath) GetMapperLocation((Class Class, FromMapper Mapper) mapper, string tag)
     {
         var pmp = NoPersistence(tag) ? NonPersistentModelPath : PersistentModelPath;
 
-        if (mapper.Classe.IsPersistent)
+        if (mapper.Class.IsPersistent)
         {
-            return (mapper.Classe.Namespace, pmp);
+            return (mapper.Class.Namespace, pmp);
         }
 
-        var persistentParam = mapper.Mapper.ClassParams.FirstOrDefault(p => p.Class.IsPersistent);
+        var persistentParam = mapper.Mapper.ClassParams.FirstOrDefault(p => p.Class.IsPersistent && (!p.Class.Reference || PersistentReferencesModelPath == PersistentModelPath));
         if (persistentParam != null)
         {
             return (persistentParam.Class.Namespace, pmp);
         }
 
-        return (mapper.Classe.Namespace, NonPersistentModelPath);
+        return (mapper.Class.Namespace, NonPersistentModelPath);
     }
 
-    public (Namespace Namespace, string ModelPath) GetMapperLocation((Class Classe, ClassMappings Mapper) mapper, string tag)
+    public (Namespace Namespace, string ModelPath) GetMapperLocation((Class Class, ClassMappings Mapper) mapper, string tag)
     {
         var pmp = NoPersistence(tag) ? NonPersistentModelPath : PersistentModelPath;
 
-        if (mapper.Classe.IsPersistent)
+        if (mapper.Class.IsPersistent)
         {
-            return (mapper.Classe.Namespace, pmp);
+            return (mapper.Class.Namespace, pmp);
         }
 
         if (mapper.Mapper.Class.IsPersistent)
@@ -295,7 +295,7 @@ public class CsharpConfig : GeneratorConfigBase
             return (mapper.Mapper.Class.Namespace, pmp);
         }
 
-        return (mapper.Classe.Namespace, NonPersistentModelPath);
+        return (mapper.Class.Namespace, NonPersistentModelPath);
     }
 
     public string GetMapperName(Namespace ns, string modelPath)
