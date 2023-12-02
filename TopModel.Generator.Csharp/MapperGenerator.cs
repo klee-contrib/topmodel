@@ -115,10 +115,11 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
             foreach (var param in mapper.Params.Where(p => p.GetRequired()))
             {
-                w.WriteLine(2, $"if ({param.GetNameCamel()} is null)");
-                w.WriteLine(2, "{");
-                w.WriteLine(3, $"throw new ArgumentNullException(nameof({param.GetNameCamel()}));");
-                w.WriteLine(2, "}");
+                w.WriteLine(2, $"ArgumentNullException.ThrowIfNull({param.GetNameCamel()});");
+            }
+
+            if (mapper.Params.Any(p => p.GetRequired()))
+            {
                 w.WriteLine();
             }
 
