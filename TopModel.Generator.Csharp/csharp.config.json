@@ -188,6 +188,11 @@
         "type": "string"
       }
     },
+    "mapperLocationPriority": {
+      "type": "string",
+      "description": "Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persistent` ou `non-persistent`). Par défaut : 'persistent'",
+      "enum": [ "persistent", "non-persistent" ]
+    },
     "enumsForStaticReferences": {
       "type": "boolean",
       "description": "Utilise des enums au lieu de strings pour les PKs de listes de référence statiques."

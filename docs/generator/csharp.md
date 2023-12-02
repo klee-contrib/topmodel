@@ -250,6 +250,12 @@ _(en preview, documentation à venir)_
 
   Si un mapper contient au moins une classe de ces tags, alors il sera généré avec les tags de cette classe (au lieu du comportement par défaut qui priorise les tags de la classe persistée puis de celle qui définit le mapper).
 
+- `mapperLocationPriority`
+
+  Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persistent` ou `non-persistent`).
+
+  _Valeur par défaut_: `persistent`
+
 - `enumsForStaticReferences`
 
   Utilise des enums C# à la place du type original pour les listes de références statiques (= clé primaire non-autogénérée).
