@@ -209,6 +209,10 @@
         false,
         "dtos-only"
       ]
+    },
+    "usePrimaryConstructors": {
+      "type": "boolean",
+      "description": "Utilise les constructeurs principaux pour la génération des classes avec dépendances (clients d'API, accesseurs de références)."
     }
   }
 }

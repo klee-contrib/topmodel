@@ -158,6 +158,11 @@ public class CsharpConfig : GeneratorConfigBase
         _ => Target.None
     };
 
+    /// <summary>
+    /// Utilise les constructeurs principaux pour la génération des classes avec dépendances (clients d'API, accesseurs de références).
+    /// </summary>
+    public bool UsePrimaryConstructors { get; set; }
+
     public override string[] PropertiesWithModuleVariableSupport => new[]
     {
         nameof(PersistentModelPath),

@@ -264,6 +264,10 @@ _(en preview, documentation à venir)_
 
   Utilise des records (mutables) au lieu de classes pour la génération de classes. Valeurs possibles : `true`, `false` et `dtos-only`.
 
+- `usePrimaryConstructors`
+
+  Utilise les constructeurs principaux pour la génération des classes avec dépendances (clients d'API, accesseurs de références).
+
 - `useEFComments`
 
   Génère les commentaires en SQL pour les migrations EF Core (à partir des commentaires du modèle).

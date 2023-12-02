@@ -104,26 +104,46 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
         fw.WriteNamespace(ns);
 
-        fw.WriteSummary($"Client {fileName}");
-        fw.WriteClassDeclaration(className, null, false);
+        var parameters = "HttpClient client";
 
-        fw.WriteLine(1, "private readonly HttpClient _client;");
+        fw.WriteSummary($"Client {fileName}");
+        if (Config.UsePrimaryConstructors)
+        {
+            fw.WriteParam("client", "HttpClient injecté.", 0);
+        }
+
+        fw.WriteClassDeclaration(className, null, false, parameters: Config.UsePrimaryConstructors ? parameters : null);
+
+        if (!Config.UsePrimaryConstructors)
+        {
+            fw.WriteLine(1, "private readonly HttpClient _client;");
+        }
+
         if (hasJson)
         {
             fw.WriteLine(1, "private readonly JsonSerializerOptions _jsOptions = new() { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };");
         }
 
-        fw.WriteLine();
-        fw.WriteSummary(1, "Constructeur");
-        fw.WriteParam("client", "HttpClient injecté.");
-        fw.WriteLine(1, $"public {className}(HttpClient client)");
-        fw.WriteLine(1, "{");
-        fw.WriteLine(2, "_client = client;");
-        fw.WriteLine(1, "}");
-
-        foreach (var endpoint in endpoints.OrderBy(endpoint => endpoint.NamePascal))
+        if (!Config.UsePrimaryConstructors)
         {
             fw.WriteLine();
+            fw.WriteSummary(1, "Constructeur");
+            fw.WriteParam("client", "HttpClient injecté.");
+            fw.WriteLine(1, $"public {className}(HttpClient client)");
+            fw.WriteLine(1, "{");
+            fw.WriteLine(2, "_client = client;");
+            fw.WriteLine(1, "}");
+        }
+
+        var orderedEndpoints = endpoints.OrderBy(endpoint => endpoint.NamePascal).ToList();
+
+        foreach (var endpoint in orderedEndpoints)
+        {
+            if (orderedEndpoints.IndexOf(endpoint) > 0 || !Config.UsePrimaryConstructors || hasJson)
+            {
+                fw.WriteLine();
+            }
+
             fw.WriteSummary(1, endpoint.Description);
 
             foreach (var param in endpoint.Params)
@@ -213,7 +233,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
                 }
             }
 
-            fw.WriteLine(2, $"using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.{endpoint.Method.ToPascalCase(true)}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = GetBody({bodyParam.NameCamel}) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)});");
+            fw.WriteLine(2, $"using var res = await {(Config.UsePrimaryConstructors ? string.Empty : "_")}client.SendAsync(new HttpRequestMessage(HttpMethod.{endpoint.Method.ToPascalCase(true)}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = GetBody({bodyParam.NameCamel}) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)});");
             fw.WriteLine(2, $"await EnsureSuccess(res);");
 
             if (returnType != null)

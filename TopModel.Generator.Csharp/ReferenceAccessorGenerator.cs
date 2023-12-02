@@ -113,35 +113,57 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
         w.WriteNamespace(implementationNamespace);
 
         w.WriteSummary("This interface was automatically generated. It contains all the operations to load the reference lists declared in module " + ns.Module + ".");
-        w.WriteLine("[RegisterImpl]");
 
-        w.WriteClassDeclaration(implementationName, null, false, interfaceName);
+        if (Config.UsePrimaryConstructors)
+        {
+            if (Config.DbContextPath != null)
+            {
+                w.WriteParam("dbContext", "DbContext", 0);
+            }
+            else
+            {
+                w.WriteParam("brokerManager", "BrokerManager", 0);
+            }
+        }
+
+        w.WriteLine("[RegisterImpl]");
 
         if (Config.DbContextPath != null)
         {
             var dbContextName = Config.GetDbContextName(tag);
+            var parameters = $"{dbContextName} dbContext";
 
-            w.WriteLine(1, $"private readonly {dbContextName} _dbContext;");
-            w.WriteLine();
-            w.WriteSummary(1, "Constructeur");
-            w.WriteParam("dbContext", "DbContext");
-            w.WriteLine(1, $"public {implementationName}({dbContextName} dbContext)");
-            w.WriteLine(1, "{");
-            w.WriteLine(2, "_dbContext = dbContext;");
-            w.WriteLine(1, "}");
-            w.WriteLine();
+            w.WriteClassDeclaration(implementationName, null, false, [interfaceName], Config.UsePrimaryConstructors ? parameters : null);
+            if (!Config.UsePrimaryConstructors)
+            {
+                w.WriteLine(1, $"private readonly {dbContextName} _dbContext;");
+                w.WriteLine();
+                w.WriteSummary(1, "Constructeur");
+                w.WriteParam("dbContext", "DbContext");
+                w.WriteLine(1, $"public {implementationName}({parameters})");
+                w.WriteLine(1, "{");
+                w.WriteLine(2, "_dbContext = dbContext;");
+                w.WriteLine(1, "}");
+                w.WriteLine();
+            }
         }
         else
         {
-            w.WriteLine(1, $"private readonly BrokerManager _brokerManager;");
-            w.WriteLine();
-            w.WriteSummary(1, "Constructeur");
-            w.WriteParam("brokerManager", "BrokerManager");
-            w.WriteLine(1, $"public {implementationName}(BrokerManager brokerManager)");
-            w.WriteLine(1, "{");
-            w.WriteLine(2, "_brokerManager = brokerManager;");
-            w.WriteLine(1, "}");
-            w.WriteLine();
+            var parameters = $"BrokerManager brokerManager";
+
+            w.WriteClassDeclaration(implementationName, null, false, [interfaceName], Config.UsePrimaryConstructors ? parameters : null);
+            if (!Config.UsePrimaryConstructors)
+            {
+                w.WriteLine(1, $"private readonly BrokerManager _brokerManager;");
+                w.WriteLine();
+                w.WriteSummary(1, "Constructeur");
+                w.WriteParam("brokerManager", "BrokerManager");
+                w.WriteLine(1, $"public {implementationName}({parameters})");
+                w.WriteLine(1, "{");
+                w.WriteLine(2, "_brokerManager = brokerManager;");
+                w.WriteLine(1, "}");
+                w.WriteLine();
+            }
         }
 
         foreach (var classe in classList.Where(c => !Config.NoPersistence(tag) && (c.IsPersistent || c.Values.Any())))
@@ -238,16 +260,16 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
                 queryParameter = $".OrderBy(row => row.{defaultProperty.NamePascal})";
             }
 
-            return $"return _dbContext.{classe.PluralNamePascal}{queryParameter}.ToList();";
+            return $"return {(Config.UsePrimaryConstructors ? string.Empty : "_")}dbContext.{classe.PluralNamePascal}{queryParameter}.ToList();";
         }
         else
         {
             if (defaultProperty != null)
             {
-                queryParameter = "new QueryParameter(" + classe.NamePascal + ".Cols." + defaultProperty.SqlName + ", SortOrder.Asc)";
+                queryParameter = $"new QueryParameter({classe.NamePascal}.Cols.{defaultProperty.SqlName}, SortOrder.Asc)";
             }
 
-            return "return _brokerManager.GetBroker<" + classe.NamePascal + ">().GetAll(" + queryParameter + ");";
+            return $"return {(Config.UsePrimaryConstructors ? string.Empty : "_")}brokerManager.GetBroker<{classe.NamePascal}>().GetAll({queryParameter});";
         }
     }
 }

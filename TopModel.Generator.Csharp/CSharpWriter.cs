@@ -89,16 +89,12 @@ public class CSharpWriter : IDisposable
     /// <param name="inheritedClass">Classe parente.</param>
     /// <param name="isRecord">Génère un record au lieu d'une classe.</param>
     /// <param name="ifList">Liste des interfaces implémentées.</param>
-    public void WriteClassDeclaration(string name, string? inheritedClass, bool isRecord, params string[] ifList)
+    /// <param name="parameters">Paramètres (si constructeur principal).</param>
+    public void WriteClassDeclaration(string name, string? inheritedClass, bool isRecord, string[]? ifList = null, string? parameters = null)
     {
         if (string.IsNullOrEmpty(name))
         {
             throw new ArgumentNullException(nameof(name));
-        }
-
-        if (ifList == null)
-        {
-            throw new ArgumentNullException(nameof(ifList));
         }
 
         var sb = new StringBuilder();
@@ -114,19 +110,25 @@ public class CSharpWriter : IDisposable
         }
 
         sb.Append(name);
+
+        if (parameters != null)
+        {
+            sb.Append($"({parameters})");
+        }
+
         if (!string.IsNullOrEmpty(inheritedClass) || ifList != null && ifList.Length > 0)
         {
             sb.Append(" : ");
             if (!string.IsNullOrEmpty(inheritedClass))
             {
                 sb.Append(inheritedClass);
-                if (ifList.Length > 0)
+                if (ifList != null && ifList.Length > 0)
                 {
                     sb.Append(", ");
                 }
             }
 
-            if (ifList.Length > 0)
+            if (ifList != null && ifList.Length > 0)
             {
                 var enumerator = ifList.GetEnumerator();
                 for (var i = 0; i < ifList.Length; ++i)
@@ -185,11 +187,11 @@ public class CSharpWriter : IDisposable
     /// </summary>
     /// <param name="paramName">Nom du paramètre.</param>
     /// <param name="value">Valeur du paramètre.</param>
-    public void WriteParam(string paramName, string value)
+    public void WriteParam(string paramName, string value, int indent = 1)
     {
         if (!string.IsNullOrEmpty(paramName) && !string.IsNullOrEmpty(value))
         {
-            WriteLine(1, LoadParam(paramName, value, "param"));
+            WriteLine(indent, LoadParam(paramName, value, "param"));
         }
     }
 
