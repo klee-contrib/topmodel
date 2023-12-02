@@ -31,6 +31,11 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
+        var className = $"{fileName.ToPascalCase()}Client";
+        var ns = Config.GetNamespace(endpoints.First(), tag);
+
+        HandleFilePartial(filePath.Replace($"{Path.DirectorySeparatorChar}generated", string.Empty).Replace(".cs", ".partial.cs"), className, ns);
+
         using var fw = new CSharpWriter(filePath, _logger);
 
         var hasBody = endpoints.Any(e => e.GetJsonBodyParam() != null);
@@ -92,9 +97,6 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
                     break;
             }
         }
-
-        var className = $"{fileName.ToPascalCase()}Client";
-        var ns = Config.GetNamespace(endpoints.First(), tag);
 
         fw.WriteUsings(usings.Distinct().Where(u => u != ns).ToArray());
         if (usings.Any())
@@ -305,5 +307,34 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
     private string GetNamespace(Class classe, string tag)
     {
         return Config.GetNamespace(classe, classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag);
+    }
+
+    private void HandleFilePartial(string filePath, string className, string ns)
+    {
+        if (File.Exists(filePath))
+        {
+            return;
+        }
+
+        using var w = new CSharpWriter(filePath, _logger) { EnableHeader = false };
+
+        w.WriteNamespace(ns);
+
+        w.WriteSummary($"Client {className[..^6]}");
+        w.WriteClassDeclaration(className, null, false);
+
+        w.WriteLine(1, "private partial Task EnsureAuthentication()");
+        w.WriteLine(1, "{");
+        w.WriteLine(2, "return Task.CompletedTask;");
+        w.WriteLine(1, "}");
+
+        w.WriteLine();
+        w.WriteLine(1, "private partial Task EnsureSuccess(HttpResponseMessage response)");
+        w.WriteLine(1, "{");
+        w.WriteLine(2, "response.EnsureSuccessStatusCode();");
+        w.WriteLine(2, "return Task.CompletedTask;");
+        w.WriteLine(1, "}");
+
+        w.WriteLine("}");
     }
 }
