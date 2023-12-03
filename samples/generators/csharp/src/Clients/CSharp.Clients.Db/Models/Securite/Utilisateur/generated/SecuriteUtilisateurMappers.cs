@@ -18,10 +18,7 @@ public static class SecuriteUtilisateurMappers
     /// <returns>Une nouvelle instance de 'UtilisateurRead'.</returns>
     public static UtilisateurRead CreateUtilisateurRead(Utilisateur utilisateur)
     {
-        if (utilisateur is null)
-        {
-            throw new ArgumentNullException(nameof(utilisateur));
-        }
+        ArgumentNullException.ThrowIfNull(utilisateur);
 
         return new UtilisateurRead
         {

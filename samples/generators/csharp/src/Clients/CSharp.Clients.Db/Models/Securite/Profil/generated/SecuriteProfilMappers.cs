@@ -18,10 +18,7 @@ public static class SecuriteProfilMappers
     /// <returns>Une nouvelle instance de 'ProfilRead'.</returns>
     public static ProfilRead CreateProfilRead(Profil profil)
     {
-        if (profil is null)
-        {
-            throw new ArgumentNullException(nameof(profil));
-        }
+        ArgumentNullException.ThrowIfNull(profil);
 
         return new ProfilRead
         {
