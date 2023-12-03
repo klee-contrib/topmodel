@@ -1,5 +1,23 @@
 # TopModel.Generator (`modgen`)
 
+## 1.41.0
+
+(Cette release n'impacte que le générateur C#)
+
+- [`c96d889c`](https://github.com/klee-contrib/topmodel/commit/c96d889cf0f1128f38c89c8ab1e29fa7cf52b4de) - [C#] Gestion des types (non-)nullables dans le générateur
+- [`70015d29`](https://github.com/klee-contrib/topmodel/commit/70015d29b060be8de8877755e8863bc9b2269a7b) - [C# Mappers] Ignore les classes de références persistées (si générées ailleurs) pour déterminer l'endroit de génération d'un mapper
+- [`31100a0b`](https://github.com/klee-contrib/topmodel/commit/31100a0b4d7cfc0a8bb27a215e3854923dbaf18a) - [C#] `mapperLocationPriority: non-persistent`
+- [`f6c04733`](https://github.com/klee-contrib/topmodel/commit/f6c04733ee3167ae2dfffe3eb2a040818e413f46) - [C#] Mappers : ArgumentException.ThrowIfNull
+- [`5ea56dc1`](https://github.com/klee-contrib/topmodel/commit/5ea56dc151169b6ef666c00fd297cedacf289bc5) - [C#] `usePrimaryConstructors`
+- [`d9f1284a`](https://github.com/klee-contrib/topmodel/commit/d9f1284a24ccd2b71e0b20e3cf47b6974a2dd322) - [C# ApiClient] Génération d'un fichier partial initial s'il n'existe pas
+
+**breaking changes**
+
+- **impact : moyen** - Les types C# dans les domaines ne doivent plus être indiqués comme nullables (`int?` => `int`). Un simple Ctrl+F "?" => "" dans votre fichier de domaines devrait suffire. Si vous aviez des types non standard à indiquer comme nullables, vous pouvez les lister dans le nouveau paramètre `nonNullableTypes` de la config C#. Dans le code généré, si vous utilisiez bien des types nullables partout (ce qui devrait être le cas), il ne devrait pas y avoir beaucoup d'impacts hormis certains types de paramètres et de retour d'API ou de mappers qui ne devraient plus être nullables s'ils sont obligatoires (ce qui n'était pas toujours le cas avant). Si vous aviez déjà des types non nullables volontairement, désolé mais ils seront nullables maintenant donc il y aura peut être quelques adaptations à faire dans votre code (quelques `.Value` en plus quoi).
+- **impact : très mineur** - Du fait de la non-prise en compte des classes de référence dans la localisation des mappers générés, certains mappers pourraient être générés ailleurs, mais cela ne devrait pas être difficile à rattraper (quelques `using static` à changer probablement).
+- **impact : très mineur** - Puisque qu'on génère désormais un fichier `.partial.cs` avec chaque client d'API s'il n'existe pas, si votre fichier partial existant n'est pas au bon endroit et avec le bon nom, un fichier partial supplémentaire sera généré à tort. Si c'est le cas, il faudra renommer votre fichier existant pour qu'il corresponde au fichier généré.
+- **aucun impact** : La vérification de non nullabilité des paramètres des mappers se fait en une seule ligne avec `ArgumentException.ThrowIfNull`
+
 ## 1.40.0
 
 - [#328](https://github.com/klee-contrib/topmodel/pull/328) - Propriétés comme paramètres de mapper `from`
