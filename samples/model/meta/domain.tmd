@@ -9,7 +9,7 @@ domain:
   ts:
     type: boolean
   csharp:
-    type: bool?
+    type: bool
   java:
     type: Boolean
   sql:
@@ -60,7 +60,7 @@ domain:
   ts:
     type: string
   csharp:
-    type: DateOnly?
+    type: DateOnly
   java:
     type: LocalDate
     imports:
@@ -82,7 +82,7 @@ domain:
           imports:
             - "./common/utils/today"
   csharp:
-    type: DateTime?
+    type: DateTime
     values:
       overrides:
         now: DateTime.UtcNow
@@ -105,7 +105,7 @@ domain:
   name: DO_DATE_CREATION
   label: Date de création
   csharp:
-    type: DateTime?
+    type: DateTime
     values:
       overrides:
         now: DateTime.UtcNow
@@ -133,7 +133,7 @@ domain:
   name: DO_DATE_MODIFICATION
   label: Date de modification
   csharp:
-    type: DateTime?
+    type: DateTime
     values:
       overrides:
         now: DateTime.UtcNow
@@ -184,7 +184,7 @@ domain:
   ts:
     type: number
   csharp:
-    type: long?
+    type: long
   java:
     type: Long
   sql:
@@ -199,7 +199,7 @@ domain:
   ts:
     type: number
   csharp:
-    type: int?
+    type: int
   java:
     type: Integer
   sql:

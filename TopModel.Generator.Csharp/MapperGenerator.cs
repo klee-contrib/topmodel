@@ -103,8 +103,8 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
             }
 
             w.WriteLine($"({string.Join(", ", mapper.Params.Select(mp => mp.Match(
-                c => $"{(c.Class.Abstract ? "I" : string.Empty)}{c.Class.NamePascal} {c.Name}{(!c.Required ? " = null" : string.Empty)}",
-                p => $"{Config.GetType(p.Property)} {p.Property.NameCamel}{(!mp.GetRequired() ? $" = {Config.GetValue(p.Property, Classes)}" : string.Empty)}")))})");
+                c => $"{(c.Class.Abstract ? "I" : string.Empty)}{c.Class.NamePascal}{(!c.Required && Config.IsNullableEnabled ? "?" : string.Empty)} {c.Name}{(!c.Required ? " = null" : string.Empty)}",
+                p => $"{Config.GetType(p.Property, nonNullable: mp.GetRequired() || Config.GetValue(p.Property, Classes) != "null")} {p.Property.NameCamel}{(!mp.GetRequired() ? $" = {Config.GetValue(p.Property, Classes)}" : string.Empty)}")))})");
 
             if (classe.Abstract)
             {
@@ -113,7 +113,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
             w.WriteLine(1, "{");
 
-            foreach (var param in mapper.Params.Where(p => p.GetRequired()))
+            foreach (var param in mapper.Params.Where(p => p.GetRequired() && (p.IsT0 || !Config.NonNullableTypes.Contains(Config.GetImplementation(p.AsT1.Property.Domain)?.Type ?? string.Empty))))
             {
                 w.WriteLine(2, $"ArgumentNullException.ThrowIfNull({param.GetNameCamel()});");
             }
@@ -237,7 +237,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
             }
             else
             {
-                w.WriteLine(1, $"public static {mapper.Class.NamePascal} {mapper.Name}(this {(classe.Abstract ? "I" : string.Empty)}{classe.NamePascal} source, {mapper.Class.NamePascal} dest = null)");
+                w.WriteLine(1, $"public static {mapper.Class.NamePascal} {mapper.Name}(this {(classe.Abstract ? "I" : string.Empty)}{classe.NamePascal} source, {mapper.Class.NamePascal}{(Config.IsNullableEnabled ? "?" : string.Empty)} dest = null)");
             }
 
             w.WriteLine(1, "{");

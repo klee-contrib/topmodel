@@ -12,6 +12,8 @@ namespace TopModel.Generator.Csharp;
 /// </summary>
 public class CsharpConfig : GeneratorConfigBase
 {
+    private readonly string[] _builtInNonNullableTypes = ["bool", "short", "ushort", "int", "uint", "long", "ulong", "double", "float", "decimal", "Guid", "DateTime", "DateOnly", "TimeOnly", "TimeSpan"];
+
     private string? _referencesModelPath;
 
     /// <summary>
@@ -106,6 +108,23 @@ public class CsharpConfig : GeneratorConfigBase
     /// Namespace de l'enum de domaine pour Kinetix. Par défaut : '{app}.Common'.
     /// </summary>
     public string DomainNamespace { get; set; } = "{app}.Common";
+
+    [YamlMember(Alias = "nonNullableTypes")]
+    public object? NonNullableTypesParam { get; set; }
+
+    /// <summary>
+    /// Types C# que le générateur doit considérer comme étant non nullables (nécessitant donc l'ajout d'un '?' pour l'être).
+    /// La plupart des types standard comme 'int', 'bool' ou 'DateTime' sont déjà connus du générateur.
+    /// Ce paramètre permet soit de spécifier une liste de types non-nullables supplémentaires,
+    /// soit 'true' pour considérer que tous les types sont non-nullables (pour correspondre à &lt;nullable&gt;enable&lt;/nullable&gt;).
+    /// </summary>
+    public IList<string> NonNullableTypes => NonNullableTypesParam switch
+    {
+        IEnumerable<object> list => _builtInNonNullableTypes.Concat(list.OfType<string>()).Distinct().ToList(),
+        _ => _builtInNonNullableTypes
+    };
+
+    public bool IsNullableEnabled => NonNullableTypesParam?.Equals(true) ?? false;
 
     /// <summary>
     /// Retire les attributs de colonnes sur les alias.
@@ -470,7 +489,7 @@ public class CsharpConfig : GeneratorConfigBase
             return NoAsyncControllers ? "void" : "async Task";
         }
 
-        var typeName = GetType(prop, nonNullable: (prop as IFieldProperty)?.Required ?? true);
+        var typeName = GetType(prop, nonNullable: prop.Required);
         return typeName.StartsWith("IAsyncEnumerable") || NoAsyncControllers
             ? typeName
             : $"async Task<{typeName}>";
@@ -480,13 +499,9 @@ public class CsharpConfig : GeneratorConfigBase
     {
         var type = base.GetType(prop, availableClasses, useClassForAssociation);
 
-        if (!nonNullable && prop is IFieldProperty f && GetEnumType(f, f is RegularProperty) == type)
+        if (!nonNullable && (IsNullableEnabled || NonNullableTypes.Contains(type) || prop is IFieldProperty f && GetEnumType(f, f is RegularProperty) == type))
         {
             type += "?";
-        }
-        else if (nonNullable && type.EndsWith("?"))
-        {
-            type = type[0..^1];
         }
 
         return type;

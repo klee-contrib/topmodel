@@ -164,6 +164,22 @@
       "type": "string",
       "description": "Namespace de l'enum de domaine pour Kinetix. Par défaut : '{app}.Common'."
     },
+    "nonNullableTypes": {
+      "oneOf": [
+        {
+          "type": "boolean",
+          "description": "Types C# que le générateur doit considérer comme étant non nullables (nécessitant donc l'ajout d'un '?' pour l'être).\r\nLa plupart des types standard comme 'int', 'bool' ou 'DateTime' sont déjà connus du générateur.\r\nCe paramètre permet soit de spécifier une liste de types non-nullables supplémentaires, soit 'true' pour considérer que tous les types sont non-nullables (pour correspondre à <nullable>enable</nullable>).",
+          "enum": [ true ]
+        },
+        {
+          "type": "array",
+          "description": "Types C# que le générateur doit considérer comme étant non nullables (nécessitant donc l'ajout d'un '?' pour l'être).\r\nLa plupart des types standard comme 'int', 'bool' ou 'DateTime' sont déjà connus du générateur.\r\nCe paramètre permet soit de spécifier une liste de types non-nullables supplémentaires, soit 'true' pour considérer que tous les types sont non-nullables (pour correspondre à <nullable>enable</nullable>).",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
     "noColumnOnAlias": {
       "type": "boolean",
       "description": "Retire les attributs de colonnes sur les alias."

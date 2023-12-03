@@ -14,6 +14,10 @@ Le générateur C# peut générer les fichiers suivants :
 
 Le code généré n'a aucune dépendance externe à part EF Core et Kinetix, et uniquement s'ils sont explicitement demandés dans la configuration.
 
+### Types C#
+
+Tous les types C# écrits par le générateur doivent être nullables (sauf si le type est utilisé pour un paramètre ou un type de retour obligatoire d'endpoint ou de mapper). C'est le générateur qui va s'occuper d'ajouter un `?` derrière le type si nécessaire, donc en particulier tous les types définis dans les domaines ne doivent pas le renseigner (ce qui n'était pas le cas pour avant la 1.41). Le générateur connaît la plupart des types non-nullables courants (comme `int`, `bool`, `DateTime`), mais il est possible de lui en spécifier d'autre via la propriété `nonNullableTypes`. Enfin, si vous souhaitez utiliser `nullable: enable` en C# pour rendre tous les types non-nullables par défaut, vous pouvez renseigner `nonNullableTypes: true` pour que le code généré soit compatible.
+
 ### Génération des classes
 
 Le générateur C# fait peu de différences à la génération entre une classe persistée et non persistée. Seule l'annotation `[Table]` est ajoutée en plus sur une classe persistée, et les annotations `[Column]` sont conservées à moins de les désactiver explicitement sur les alias via le paramètre de config `noColumnOnAlias`.
@@ -233,6 +237,14 @@ _(en preview, documentation à venir)_
   Namespace de l'enum de domaine pour Kinetix.
 
   _Valeur par défaut_: `{app}.Common`
+
+- `nonNullableTypes`
+
+  Types C# que le générateur doit considérer comme étant non nullables (nécessitant donc l'ajout d'un `?` pour l'être).
+
+  La plupart des types standard comme `int`, `bool` ou `DateTime` sont déjà connus du générateur.
+
+  Ce paramètre permet soit de spécifier une liste de types non-nullables supplémentaires, soit 'true' pour considérer que tous les types sont non-nullables (pour correspondre à &lt;nullable&gt;enable&lt;/nullable&gt;).
 
 - `noColumnOnAlias`
 

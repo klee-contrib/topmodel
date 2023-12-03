@@ -227,7 +227,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
             foreach (var uk in item.UniqueKeys.Where(uk =>
                 uk.Count == 1
-                && Config.GetType(uk.Single()) == "string"
+                && Config.GetType(uk.Single())?.TrimEnd('?') == "string"
                 && refValue.Value.ContainsKey(uk.Single())))
             {
                 var prop = uk.Single();
@@ -366,7 +366,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     {
         w.WriteSummary(1, property.Comment);
 
-        var type = Config.GetType(property);
+        var type = Config.GetType(property, nonNullable: property is CompositionProperty { Required: true });
 
         if (!property.Class.Abstract)
         {
@@ -409,7 +409,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                     w.WriteAttribute(1, "Domain", $@"Domains.{fp.Domain.CSharpName}");
                 }
 
-                if (type == "string" && fp.Domain.Length != null)
+                if (type?.TrimEnd('?') == "string" && fp.Domain.Length != null)
                 {
                     w.WriteAttribute(1, "StringLength", $"{fp.Domain.Length}");
                 }
@@ -466,7 +466,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 usings.Add("System.ComponentModel");
             }
 
-            if (item.Properties.OfType<IFieldProperty>().Any(p => p.Required || p.PrimaryKey || Config.GetType(p) == "string" && p.Domain.Length != null))
+            if (item.Properties.OfType<IFieldProperty>().Any(p => p.Required || p.PrimaryKey || Config.GetType(p)?.TrimEnd('?') == "string" && p.Domain.Length != null))
             {
                 usings.Add("System.ComponentModel.DataAnnotations");
             }
@@ -546,7 +546,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     {
         if (property is CompositionProperty cp)
         {
-            var type = Config.GetType(property);
+            var type = Config.GetType(property, nonNullable: true);
             var genericType = type.Split('<').First();
 
             if (cp.Domain == null)

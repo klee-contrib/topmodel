@@ -136,7 +136,7 @@ public class {className} : Controller
             sb.Append("[FromBody] ");
         }
 
-        sb.Append($@"{Config.GetType(param, nonNullable: param.IsRouteParam() || param.IsQueryParam() && !param.Endpoint.IsMultipart && Config.GetValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
+        sb.Append($@"{Config.GetType(param, nonNullable: param.IsJsonBodyParam() || param.IsRouteParam() || param.IsQueryParam() && !param.Endpoint.IsMultipart && Config.GetValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
 
         if (param.IsQueryParam() && !param.Endpoint.IsMultipart)
         {

@@ -39,7 +39,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
         using var fw = new CSharpWriter(filePath, _logger);
 
         var hasBody = endpoints.Any(e => e.GetJsonBodyParam() != null);
-        var hasReturn = endpoints.Any(e => e.Returns != null && !new[] { "string", "byte[]" }.Contains(Config.GetType(e.Returns)));
+        var hasReturn = endpoints.Any(e => e.Returns != null && !new[] { "string", "byte[]" }.Contains(Config.GetType(e.Returns)?.TrimEnd('?')));
         var hasJson = hasReturn || hasBody;
 
         var usings = new List<string>();
@@ -157,7 +157,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
             fw.Write("    public async Task");
 
-            var returnType = endpoint.Returns != null ? Config.GetType(endpoint.Returns) : null;
+            var returnType = endpoint.Returns != null ? Config.GetType(endpoint.Returns, nonNullable: endpoint.Returns.Required) : null;
             if (returnType?.StartsWith("IAsyncEnumerable") ?? false)
             {
                 returnType = returnType.Replace("IAsyncEnumerable", "IEnumerable");
@@ -172,7 +172,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
             foreach (var param in endpoint.Params)
             {
-                fw.Write($"{Config.GetType(param, nonNullable: param.IsRouteParam() || param.IsQueryParam() && Config.GetValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
+                fw.Write($"{Config.GetType(param, nonNullable: param.IsJsonBodyParam() || param.IsRouteParam() || param.IsQueryParam() && Config.GetValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
 
                 if (param.IsQueryParam())
                 {
@@ -199,10 +199,10 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
                 foreach (var qp in endpoint.GetQueryParams().Where(qp => !Config.GetType(qp).Contains("[]")))
                 {
-                    var toString = Config.GetType(qp) switch
+                    var toString = Config.GetType(qp)?.TrimEnd('?') switch
                     {
                         "string" => string.Empty,
-                        "Guid" or "Guid?" => "?.ToString()",
+                        "Guid" => "?.ToString()",
                         _ => $"?.ToString(CultureInfo.InvariantCulture)"
                     };
 
@@ -240,7 +240,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
             if (returnType != null)
             {
-                if (returnType == "string")
+                if (returnType.TrimEnd('?') == "string")
                 {
                     fw.WriteLine(2, $"return (await res.Content.ReadAsStringAsync()).Trim('\"');");
                 }

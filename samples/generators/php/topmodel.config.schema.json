@@ -252,6 +252,24 @@
             "type": "string",
             "description": "Namespace de l'enum de domaine pour Kinetix. Par défaut : '{app}.Common'."
           },
+          "nonNullableTypes": {
+            "oneOf": [
+              {
+                "type": "boolean",
+                "description": "Types C# que le générateur doit considérer comme étant non nullables (nécessitant donc l'ajout d'un '?' pour l'être).\r\nLa plupart des types standard comme 'int', 'bool' ou 'DateTime' sont déjà connus du générateur.\r\nCe paramètre permet soit de spécifier une liste de types non-nullables supplémentaires, soit 'true' pour considérer que tous les types sont non-nullables (pour correspondre à <nullable>enable</nullable>).",
+                "enum": [
+                  true
+                ]
+              },
+              {
+                "type": "array",
+                "description": "Types C# que le générateur doit considérer comme étant non nullables (nécessitant donc l'ajout d'un '?' pour l'être).\r\nLa plupart des types standard comme 'int', 'bool' ou 'DateTime' sont déjà connus du générateur.\r\nCe paramètre permet soit de spécifier une liste de types non-nullables supplémentaires, soit 'true' pour considérer que tous les types sont non-nullables (pour correspondre à <nullable>enable</nullable>).",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
           "noColumnOnAlias": {
             "type": "boolean",
             "description": "Retire les attributs de colonnes sur les alias."
@@ -276,6 +294,14 @@
               "type": "string"
             }
           },
+          "mapperLocationPriority": {
+            "type": "string",
+            "description": "Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persistent` ou `non-persistent`). Par défaut : 'persistent'",
+            "enum": [
+              "persistent",
+              "non-persistent"
+            ]
+          },
           "enumsForStaticReferences": {
             "type": "boolean",
             "description": "Utilise des enums au lieu de strings pour les PKs de listes de référence statiques."
@@ -295,6 +321,10 @@
               false,
               "dtos-only"
             ]
+          },
+          "usePrimaryConstructors": {
+            "type": "boolean",
+            "description": "Utilise les constructeurs principaux pour la génération des classes avec dépendances (clients d'API, accesseurs de références)."
           }
         }
       }
