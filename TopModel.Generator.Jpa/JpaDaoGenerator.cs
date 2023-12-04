@@ -21,7 +21,7 @@ public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
 
     protected override bool FilterClass(Class classe)
     {
-        return classe.IsPersistent;
+        return classe.IsPersistent && (!Config.UseJdbc || classe.PrimaryKey.Count() <= 1);
     }
 
     protected override string GetFileName(Class classe, string tag)
