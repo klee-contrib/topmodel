@@ -92,7 +92,11 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         }
 
         JpaModelPropertyGenerator.WriteProperties(fw, classe, tag);
-        JpaModelPropertyGenerator.WriteCompositePrimaryKeyClass(fw, classe, tag);
+        if (!Config.UseJdbc)
+        {
+            JpaModelPropertyGenerator.WriteCompositePrimaryKeyClass(fw, classe, tag);
+        }
+
         JpaModelConstructorGenerator.WriteNoArgConstructor(fw, classe);
         if (Config.MappersInClass)
         {
