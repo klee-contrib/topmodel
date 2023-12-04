@@ -253,7 +253,7 @@ public class JpaModelPropertyGenerator
         }
         else
         {
-            if (property.PrimaryKey)
+            if (property.PrimaryKey && classe.PrimaryKey.Count() <= 1)
             {
                 fw.AddImport("org.springframework.data.annotation.Id");
                 fw.WriteLine(1, "@Id");
