@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.41.1
+
+- [`f82d037`](https://github.com/klee-contrib/topmodel/commit/f82d037ea86747a9ed7f428cf07daf2e57e4def6) - [JPA] Ne pas ajouter l'annotation id dans le cas composite primary key & jdbc
+
 ## 1.41.0
 
 (Cette release n'impacte que le générateur C#)
