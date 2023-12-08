@@ -305,6 +305,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
     protected override bool IsPersistent(Class classe)
     {
-        return classe.Tags.Intersect(Config.MapperTagsOverrides).Any() || classe.IsPersistent;
+        return (classe.Tags.Intersect(Config.MapperTagsOverrides).Any() || classe.IsPersistent)
+            && (Config.PersistentModelPath == Config.PersistentReferencesModelPath || !classe.Reference);
     }
 }
