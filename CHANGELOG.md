@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.41.2
+
+- [`7ab0c37`](https://github.com/klee-contrib/topmodel/commit/7ab0c37668f01dd20c6f553529519ba1b0d3a637) - [C# Mappers] Fix tags utilisés pour mappers avec classes de références
+
 ## 1.41.1
 
 - [`f82d037`](https://github.com/klee-contrib/topmodel/commit/f82d037ea86747a9ed7f428cf07daf2e57e4def6) - [JPA] Ne pas ajouter l'annotation id dans le cas composite primary key & jdbc
