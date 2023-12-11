@@ -39,36 +39,22 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
         WriteImports(endpoints, fw, tag);
         fw.WriteLine();
+        if (endpoints.First().ModelFile.Options.Endpoints.Prefix != null)
+        {
+            fw.WriteLine($@"@HttpExchange(""{endpoints.First().ModelFile.Options.Endpoints.Prefix}"")");
+            fw.AddImport("org.springframework.web.service.annotation");
+        }
 
         var javaOrJakarta = Config.PersistenceMode.ToString().ToLower();
         fw.AddImport($"{javaOrJakarta}.annotation.Generated");
         fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
-        fw.WriteLine($"public abstract class {className} {{");
+        fw.WriteLine($"public interface {className} {{");
 
         fw.WriteLine();
-
-        fw.WriteLine(1, $"protected RestTemplate restTemplate;");
-        fw.WriteLine(1, $"protected String host;");
-
-        fw.WriteLine();
-        fw.WriteDocStart(1, "Constructeur par paramètres");
-        fw.WriteLine(1, " * @param restTemplate");
-        fw.WriteLine(1, " * @param host");
-        fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"protected {className}(RestTemplate restTemplate, String host) {{");
-        fw.WriteLine(2, $"this.restTemplate = restTemplate;");
-        fw.WriteLine(2, $"this.host = host;");
-        fw.WriteLine(1, $"}}");
-
-        fw.WriteLine();
-        fw.WriteDocStart(1, "Méthode de récupération des headers");
-        fw.WriteLine(1, " * @return les headers à ajouter à la requête");
-        fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"protected abstract HttpHeaders getHeaders();");
 
         foreach (var endpoint in endpoints)
         {
-            WriteEndpoint(fw, endpoint);
+            WriteEndpoint(fw, endpoint, tag);
         }
 
         fw.WriteLine("}");
@@ -76,68 +62,23 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
     private static string GetClassName(string fileName)
     {
-        return $"Abstract{fileName.ToPascalCase()}Client";
-    }
-
-    private List<string> GetMethodParams(Endpoint endpoint, bool withType = true, bool withBody = true)
-    {
-        var methodParams = new List<string>();
-        foreach (var param in endpoint.GetRouteParams())
-        {
-            if (withType)
-            {
-                methodParams.Add($"{Config.GetType(param)} {param.GetParamName()}");
-            }
-            else
-            {
-                methodParams.Add(param.GetParamName());
-            }
-        }
-
-        foreach (var param in endpoint.GetQueryParams())
-        {
-            if (withType)
-            {
-                methodParams.Add($"{Config.GetType(param)} {param.GetParamName()}");
-            }
-            else
-            {
-                methodParams.Add(param.GetParamName());
-            }
-        }
-
-        var bodyParam = endpoint.GetJsonBodyParam();
-        if (bodyParam != null && withBody)
-        {
-            if (withType)
-            {
-                methodParams.Add($"{Config.GetType(bodyParam)} {bodyParam.GetParamName()}");
-            }
-            else
-            {
-                methodParams.Add(bodyParam.GetParamName());
-            }
-        }
-
-        return methodParams;
+        return $"{fileName.ToPascalCase()}Client";
     }
 
     private IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
     {
-        var properties = endpoints.SelectMany(endpoint => endpoint.Params).Concat(endpoints.Where(endpoint => endpoint.Returns is not null).Select(endpoint => endpoint.Returns));
-        return properties.SelectMany(property => property!.GetTypeImports(Config, tag));
+        var properties = endpoints.SelectMany(endpoint => endpoint.Params)
+            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
+            .Select(endpoint => endpoint.Returns));
+        return properties.SelectMany(property => property!.GetTypeImports(Config, tag))
+                .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
+                .Select(e => e.Returns).OfType<CompositionProperty>()
+                .SelectMany(c => c.GetKindImports(Config, tag)));
     }
 
-    private void WriteEndpoint(JavaWriter fw, Endpoint endpoint)
+    private void WriteEndpoint(JavaWriter fw, Endpoint endpoint, string tag)
     {
         fw.WriteLine();
-        WriteUriBuilderMethod(fw, endpoint);
-        fw.WriteLine();
-        WriteEndpointCallMethod(fw, endpoint);
-    }
-
-    private void WriteEndpointCallMethod(JavaWriter fw, Endpoint endpoint)
-    {
         fw.WriteDocStart(1, endpoint.Description);
 
         foreach (var param in endpoint.Params)
@@ -151,131 +92,94 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         }
 
         fw.WriteLine(1, " */");
-        var returnType = "ResponseEntity";
-        var returnClass = "(Class<?>) null";
+        var returnType = "void";
+
         if (endpoint.Returns != null)
         {
-            if (Config.GetType(endpoint.Returns) == "ResponseEntity" && Config.GetType(endpoint.Returns).Split('<').Length > 1)
-            {
-                returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns).Split('<')[1].Split('>').First()}>";
-                returnClass = $"{Config.GetType(endpoint.Returns).Split('<')[1].Split('>').First()}.class";
-            }
-            else if (Config.GetType(endpoint.Returns).Contains('<'))
-            {
-                returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns)}>";
-                returnClass = @$"new ParameterizedTypeReference<{Config.GetType(endpoint.Returns)}>() {{}}";
-                fw.AddImport("org.springframework.core.ParameterizedTypeReference");
-            }
-            else
-            {
-                returnType = $"ResponseEntity<{Config.GetType(endpoint.Returns)}>";
-                returnClass = $"{Config.GetType(endpoint.Returns)}.class";
-            }
+            returnType = Config.GetType(endpoint.Returns);
         }
 
-        fw.WriteLine(1, $"public {returnType} {endpoint.NameCamel}({string.Join(", ", GetMethodParams(endpoint))}){{");
-        fw.WriteLine(2, $"HttpHeaders headers = this.getHeaders();");
-        fw.WriteLine(2, $"UriComponentsBuilder uri = this.{endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", GetMethodParams(endpoint, false, false))});");
-        var body = $"new HttpEntity<>({(endpoint.GetJsonBodyParam()?.GetParamName() != null ? $"{endpoint.GetJsonBodyParam()?.GetParamName()}, " : string.Empty)}headers)";
-        if (endpoint.Returns != null)
         {
-            fw.WriteLine(2, $"return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.{endpoint.Method}, {body}, {returnClass});");
+            var produces = string.Empty;
+            if (endpoint.Returns != null && endpoint.Returns is IFieldProperty fp && fp.Domain.MediaType != null)
+            {
+                produces = @$", produces = {{ ""{fp.Domain.MediaType}"" }}";
+            }
+
+            var consumes = string.Empty;
+            if (endpoint.Params.Any(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null))
+            {
+                consumes = @$", consumes = {{ {string.Join(", ", endpoint.Params.Where(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null).Select(p => $@"""{((IFieldProperty)p).Domain.MediaType}"""))} }}";
+            }
+
+            foreach (var annotation in Config.GetDecoratorAnnotations(endpoint, tag))
+            {
+                fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : "@")}{annotation}");
+            }
+
+            fw.WriteLine(1, @$"@{endpoint.Method.ToPascalCase(true)}Exchange(""{endpoint.Route}""{consumes}{produces})");
+        }
+
+        var methodParams = new List<string>();
+        foreach (var param in endpoint.GetRouteParams())
+        {
+            var pathParamAnnotation = @$"@PathVariable(""{param.GetParamName()}"")";
+
+            fw.AddImport("org.springframework.web.bind.annotation.PathVariable");
+            fw.AddImports(Config.GetDomainImports(param, tag));
+            var decoratorAnnotations = string.Join(' ', Config.GetDomainAnnotations(param, tag).Select(a => a.StartsWith("@") ? a : "@" + a));
+            methodParams.Add($"{pathParamAnnotation}{(decoratorAnnotations.Length > 0 ? $" {decoratorAnnotations}" : string.Empty)} {Config.GetType(param)} {param.GetParamName()}");
+        }
+
+        foreach (var param in endpoint.GetQueryParams())
+        {
+            var ann = string.Empty;
+            ann += @$"@RequestParam(value = ""{param.GetParamName()}"", required = {(param is not IFieldProperty fp || fp.Required).ToString().ToFirstLower()}) ";
+            fw.AddImport("org.springframework.web.bind.annotation.RequestParam");
+            fw.AddImports(Config.GetDomainImports(param, tag));
+            var decoratorAnnotations = string.Join(' ', Config.GetDomainAnnotations(param, tag).Select(a => a.StartsWith("@") ? a : "@" + a));
+            methodParams.Add($"{ann}{(decoratorAnnotations.Length > 0 ? $" {decoratorAnnotations}" : string.Empty)}{Config.GetType(param)} {param.GetParamName()}");
+        }
+
+        if (endpoint.IsMultipart)
+        {
+            foreach (var param in endpoint.Params.Where(param => param is CompositionProperty || (param.Domain?.BodyParam ?? false) || (param.Domain?.IsMultipart ?? false)))
+            {
+                var ann = string.Empty;
+                if (!(param.Domain?.IsMultipart ?? false))
+                {
+                    ann += @$"@ModelAttribute ";
+                    fw.AddImport("org.springframework.web.bind.annotation.ModelAttribute");
+                }
+                else
+                {
+                    ann += @$"@RequestPart(value = ""{param.GetParamName()}"", required = {(param is not IFieldProperty fp || fp.Required).ToString().ToFirstLower()}) ";
+                    fw.AddImport("org.springframework.web.bind.annotation.RequestPart");
+                }
+
+                methodParams.Add($"{ann}{Config.GetType(param)} {param.GetParamName()}");
+            }
         }
         else
         {
-            fw.WriteLine(2, $"return this.restTemplate.exchange(uri.build().toUri(), HttpMethod.{endpoint.Method}, {body}, {returnClass});");
+            var bodyParam = endpoint.GetJsonBodyParam();
+            if (bodyParam != null)
+            {
+                var ann = string.Empty;
+                ann += @$"@RequestBody @Valid ";
+                fw.AddImport("org.springframework.web.bind.annotation.RequestBody");
+                fw.AddImport(Config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
+                methodParams.Add($"{ann}{Config.GetType(bodyParam)} {bodyParam.GetParamName()}");
+            }
         }
 
-        fw.WriteLine(1, "}");
+        fw.WriteLine(1, $"{returnType} {endpoint.NameCamel}({string.Join(", ", methodParams)});");
     }
 
     private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
     {
-        var imports = new List<string>();
-        imports.AddRange(GetTypeImports(endpoints, tag).Distinct());
-        imports.Add(Config.PersistenceMode.ToString().ToLower() + ".annotation.Generated");
-        imports.Add("org.springframework.web.util.UriComponentsBuilder");
-        imports.Add("org.springframework.web.client.RestTemplate");
-        imports.Add("java.net.URI");
-        imports.Add("org.springframework.http.HttpMethod");
-        imports.Add("org.springframework.http.HttpEntity");
-        imports.Add("org.springframework.http.HttpHeaders");
-        imports.Add("org.springframework.http.ResponseEntity");
-        fw.AddImports(imports);
-    }
-
-    private void WriteUriBuilderMethod(JavaWriter fw, Endpoint endpoint)
-    {
-        fw.WriteDocStart(1, $"UriComponentsBuilder pour la méthode {endpoint.NameCamel}");
-
-        foreach (var param in endpoint.GetRouteParams().Concat(endpoint.GetQueryParams()))
-        {
-            fw.WriteLine(1, $" * @param {param.GetParamName()} {param.Comment}");
-        }
-
-        if (endpoint.Returns != null)
-        {
-            fw.WriteLine(1, $" * @return uriBuilder avec les query params remplis");
-        }
-
-        fw.WriteLine(1, " */");
-        var returnType = "UriComponentsBuilder";
-        var methodParams = GetMethodParams(endpoint, true, false);
-
-        fw.WriteLine(1, $"protected {returnType} {endpoint.NameCamel}UriComponentsBuilder({string.Join(", ", methodParams)}) {{");
-        var fullRoute = endpoint.FullRoute;
-        fullRoute = "/" + fullRoute;
-        foreach (IProperty p in endpoint.GetRouteParams())
-        {
-            fullRoute = fullRoute.Replace(@$"{{{p.GetParamName()}}}", "%s");
-        }
-
-        if (endpoint.GetRouteParams().Any())
-        {
-            fullRoute = $@"""{fullRoute}"".formatted({string.Join(", ", endpoint.GetRouteParams().Select(p => p.GetParamName()))})";
-        }
-        else
-        {
-            fullRoute = $@"""{fullRoute}""";
-        }
-
-        fw.WriteLine(2, @$"String uri = host + {fullRoute};");
-        if (!endpoint.GetQueryParams().Any())
-        {
-            fw.WriteLine(2, @$"return UriComponentsBuilder.fromUri(URI.create(uri));");
-            fw.WriteLine(1, "}");
-            return;
-        }
-
-        fw.WriteLine(2, @$"UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUri(URI.create(uri));");
-        foreach (IProperty p in endpoint.GetQueryParams())
-        {
-            var indentLevel = 2;
-            var isRequired = p is IFieldProperty fp && fp.Required;
-            if (!isRequired)
-            {
-                fw.WriteLine(2, @$"if ({p.GetParamName()} != null) {{");
-                indentLevel++;
-            }
-
-            if (Config.GetType(p).StartsWith("List"))
-            {
-                fw.AddImport("java.util.stream.Collectors");
-                fw.WriteLine(indentLevel, @$"uriBuilder.queryParam(""{p.GetParamName()}"", {p.GetParamName()}.stream().collect(Collectors.joining("","")));");
-            }
-            else
-            {
-                fw.WriteLine(indentLevel, @$"uriBuilder.queryParam(""{p.GetParamName()}"", {p.GetParamName()});");
-            }
-
-            if (!isRequired)
-            {
-                fw.WriteLine(2, @$"}}");
-                fw.WriteLine();
-            }
-        }
-
-        fw.WriteLine(2, $"return uriBuilder;");
-        fw.WriteLine(1, "}");
+        fw.AddImports(endpoints.Select(e => $"org.springframework.web.service.annotation.{e.Method.ToPascalCase(true)}Exchange"));
+        fw.AddImports(GetTypeImports(endpoints, tag));
+        fw.AddImports(endpoints.SelectMany(e => Config.GetDecoratorImports(e, tag)));
     }
 }

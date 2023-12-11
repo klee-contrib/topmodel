@@ -4,8 +4,8 @@
 
 version: 1.41.2
 generatedFiles:
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/profil/AbstractProfilClient.java
-  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/utilisateur/AbstractUtilisateurClient.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/profil/ProfilClient.java
+  - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/utilisateur/UtilisateurClient.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/profil/ProfilController.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/server/securite/utilisateur/UtilisateurController.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/daos/securite/profil/DroitDAO.java
