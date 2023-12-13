@@ -44,7 +44,7 @@ endpoint:
   params:
     - alias:
         class: FindPetsByStatusStatus
-        property: value
+        property: Value
       name: Status
       comment: Status values that need to be considered for filter
   returns:

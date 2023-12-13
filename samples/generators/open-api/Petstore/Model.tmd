@@ -47,15 +47,15 @@ class:
   comment: enum pour les valeurs de status
   preservePropertyCasing: true
   properties:
-    - name: value
+    - name: Value
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
 
   values:
-    Value0: {value: "available"}
-    Value1: {value: "pending"}
-    Value2: {value: "sold"}
+    Value0: {Value: "available"}
+    Value1: {Value: "pending"}
+    Value2: {Value: "sold"}
 ---
 class:
   name: Order
@@ -84,7 +84,7 @@ class:
 
     - alias:
         class: OrderStatus
-        property: Status
+        property: Value
       name: Status
       comment: Order Status
 
@@ -98,15 +98,15 @@ class:
   comment: enum pour les valeurs de Status
   preservePropertyCasing: true
   properties:
-    - name: Status
+    - name: Value
       domain: DO_LIBELLE
       required: true
       comment: Order Status
 
   values:
-    Value0: {Status: "placed"}
-    Value1: {Status: "approved"}
-    Value2: {Status: "delivered"}
+    Value0: {Value: "placed"}
+    Value1: {Value: "approved"}
+    Value2: {Value: "delivered"}
 ---
 class:
   name: Pet
@@ -139,7 +139,7 @@ class:
 
     - alias:
         class: PetStatus
-        property: Status
+        property: Value
       name: Status
       comment: pet status in the store
 ---
@@ -148,15 +148,15 @@ class:
   comment: enum pour les valeurs de Status
   preservePropertyCasing: true
   properties:
-    - name: Status
+    - name: Value
       domain: DO_LIBELLE
       required: true
       comment: pet status in the store
 
   values:
-    Value0: {Status: "available"}
-    Value1: {Status: "pending"}
-    Value2: {Status: "sold"}
+    Value0: {Value: "available"}
+    Value1: {Value: "pending"}
+    Value2: {Value: "sold"}
 ---
 class:
   name: Tag
