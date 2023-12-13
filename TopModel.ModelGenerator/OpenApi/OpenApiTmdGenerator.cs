@@ -92,7 +92,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
                 tmdFile.Classes.Add(enumClass);
 
-                var p = WriteProperty(_config, new(schema.Key.ToPascalCase(), schema.Value), tmdFile);
+                var p = WriteProperty(_config, new("value", schema.Value), tmdFile);
                 p.Class = enumClass;
                 enumClass.Properties.Add(p);
                 AddValues(enumClass, schema.Value);
