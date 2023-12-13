@@ -59,10 +59,8 @@ public class {className} : Controller
         foreach (var endpoint in endpoints)
         {
             var wd = new StringBuilder();
-            if (endpoints.IndexOf(endpoint) != 0 || controller.DescendantNodes().OfType<ConstructorDeclarationSyntax>().Any())
-            {
-                wd.AppendLine();
-            }
+
+            wd.AppendLine();
 
             wd.AppendLine($"{indent}/// <summary>");
             wd.AppendLine($"{indent}/// {endpoint.Description}");
@@ -119,6 +117,11 @@ public class {className} : Controller
             }
         }
 
+        if (controller.OpenBraceToken.HasTrailingTrivia && !controller.Members.OfType<FieldDeclarationSyntax>().Any())
+        {
+            controller = controller.WithOpenBraceToken(controller.OpenBraceToken.WithoutTrivia());
+        }
+
         using var fw = new FileWriter(filePath, _logger, true) { HeaderMessage = "ATTENTION, CE FICHIER EST PARTIELLEMENT GENERE AUTOMATIQUEMENT !" };
         fw.Write(syntaxTree.GetRoot().ReplaceNode(existingController, controller).ToString());
     }
@@ -152,7 +155,7 @@ public class {className} : Controller
 
         for (var i = 0; i < split.Length; i++)
         {
-            if (split[i].StartsWith("{"))
+            if (split[i].StartsWith('{'))
             {
                 var routeParamName = split[i][1..^1];
                 var param = endpoint.Params.OfType<IFieldProperty>().Single(param => param.GetParamName() == routeParamName);
