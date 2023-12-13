@@ -900,7 +900,7 @@ public class ModelStore
         }
 
         // Résolution des alias des classes et endpoints.
-        foreach (var modelError in ResolveAliases(modelFile.Properties.OfType<AliasProperty>().Where(alp => alp.Reference is not null)))
+        foreach (var modelError in ResolveAliases(modelFile.Properties.OfType<AliasProperty>().Where(alp => alp.Decorator is null && alp.Reference is not null)))
         {
             yield return modelError;
         }
