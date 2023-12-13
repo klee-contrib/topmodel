@@ -32,7 +32,7 @@ public interface ProfilClient {
 	 * @return Profil sauvegardé
 	 */
 	@PreAuthorize("hasRole('CREATE')")
-	@PostExchange("/")
+	@PostExchange(value = "/")
 	ProfilRead addProfil(@RequestBody @Valid ProfilWrite profil);
 
 	/**
@@ -41,7 +41,7 @@ public interface ProfilClient {
 	 * @return Le détail de l'Profil
 	 */
 	@PreAuthorize("hasRole('READ')")
-	@GetExchange("/{proId}")
+	@GetExchange(value = "/{proId}")
 	ProfilRead getProfil(@PathVariable("proId") Integer proId);
 
 	/**
@@ -49,7 +49,7 @@ public interface ProfilClient {
 	 * @return Profils matchant les critères
 	 */
 	@PreAuthorize("hasRole('READ')")
-	@GetExchange("/")
+	@GetExchange(value = "/")
 	List<ProfilItem> getProfils();
 
 	/**
@@ -59,6 +59,6 @@ public interface ProfilClient {
 	 * @return Profil sauvegardé
 	 */
 	@PreAuthorize("hasRole('UPDATE')")
-	@PutExchange("/{proId}")
+	@PutExchange(value = "/{proId}")
 	ProfilRead updateProfil(@PathVariable("proId") Integer proId, @RequestBody @Valid ProfilWrite profil);
 }
