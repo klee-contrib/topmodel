@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.42.0
+
+- [#332](https://github.com/klee-contrib/topmodel/pull/332) - [Spring] Génération des api clientes en mode exchange
+- [#324](https://github.com/klee-contrib/topmodel/pull/324) - [TS] Mode `Nuxt` pour l'api cliente TS
+
 ## 1.41.2
 
 - [`7ab0c37`](https://github.com/klee-contrib/topmodel/commit/7ab0c37668f01dd20c6f553529519ba1b0d3a637) - [C# Mappers] Fix tags utilisés pour mappers avec classes de références

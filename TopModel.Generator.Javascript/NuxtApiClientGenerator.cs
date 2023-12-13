@@ -32,7 +32,6 @@ public class NuxtApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig>
 
         fw.WriteLine($@"import {{AsyncData, AsyncDataOptions}} from ""nuxt/app"";");
 
-
         var imports = Config.GetEndpointImports(filePath, endpoints, tag, Classes);
         if (imports.Any())
         {
@@ -110,10 +109,12 @@ public class NuxtApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig>
             fw.WriteLine($@"    return useAsyncData({fetchRoute}, () => ");
             fw.WriteLine($@"         $fetch<{fetchReturnType}>({fetchRoute}, {{");
             fw.WriteLine($@"               method: '{endpoint.Method}',");
-            
-            if (endpoint.IsMultipart) {
+
+            if (endpoint.IsMultipart)
+            {
                 fw.WriteLine("               body,");
-            } else if (endpoint.GetJsonBodyParam() != null)
+            }
+            else if (endpoint.GetJsonBodyParam() != null)
             {
                 fw.WriteLine($@"               body: {endpoint.GetJsonBodyParam()!.GetParamName()},");
             }
