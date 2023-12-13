@@ -98,8 +98,15 @@ public class TmdWriter : IDisposable
         else
         {
             _writer.WriteLine($"  properties:");
+            var isFirst = true;
             foreach (var property in classe.Properties)
             {
+                if (isFirst)
+                {
+                    _writer.WriteLine();
+                }
+
+                isFirst = false;
                 WriteProperty(property);
             }
         }
@@ -142,9 +149,15 @@ public class TmdWriter : IDisposable
         if (endpoint.Params.Any())
         {
             _writer.WriteLine($"  params:");
-
+            var isFirst = true;
             foreach (var property in endpoint.Params)
             {
+                if (isFirst)
+                {
+                    _writer.WriteLine();
+                }
+
+                isFirst = false;
                 WriteProperty(property);
             }
         }
@@ -158,7 +171,6 @@ public class TmdWriter : IDisposable
 
     private void WriteProperty(TmdProperty property, bool noList = false)
     {
-        _writer.WriteLine();
         var listPrefix = noList ? string.Empty : "  ";
         if (property is TmdAssociationProperty ap)
         {
@@ -217,10 +229,7 @@ public class TmdWriter : IDisposable
             _writer.WriteLine($"    {listPrefix}  class: {sp.Alias.Class.Name}");
             _writer.WriteLine($"    {listPrefix}  property: {sp.Alias.Name}");
 
-            if (!string.IsNullOrEmpty(property.Name) && property.Name != sp.Alias.Name)
-            {
-                _writer.WriteLine($"    {listPrefix}name: {property.Name}");
-            }
+            _writer.WriteLine($"    {listPrefix}name: {property.Name}");
 
             if (sp.Required)
             {

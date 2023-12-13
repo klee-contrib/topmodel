@@ -21,7 +21,6 @@ endpoint:
       name: body
       comment: Non documenté
   returns:
-
     composition: Pet
     name: Result
     comment: Non documenté
@@ -48,10 +47,10 @@ endpoint:
 
     - alias:
         class: FindPetsByStatusStatus
-        property: Status
+        property: value
+      name: Status
       comment: Status values that need to be considered for filter
   returns:
-
     composition: Pet
     name: Result
     domain: DO_LIST
@@ -69,7 +68,6 @@ endpoint:
       domain: DO_LIBELLE
       comment: Tags to filter by
   returns:
-
     composition: Pet
     name: Result
     domain: DO_LIST
@@ -87,7 +85,6 @@ endpoint:
       domain: DO_ID
       comment: ID of pet to return
   returns:
-
     composition: Pet
     name: Result
     comment: Non documenté
@@ -104,7 +101,6 @@ endpoint:
       name: body
       comment: Non documenté
   returns:
-
     composition: Pet
     name: Result
     comment: Non documenté
@@ -120,11 +116,9 @@ endpoint:
     - name: petId
       domain: DO_ID
       comment: ID of pet that needs to be updated
-
     - name: name
       domain: DO_LIBELLE
       comment: Name of pet that needs to be updated
-
     - name: status
       domain: DO_LIBELLE
       comment: Status of pet that needs to be updated
@@ -141,16 +135,13 @@ endpoint:
       domain: DO_FILE
       required: true
       comment: Non documenté
-
     - name: petId
       domain: DO_ID
       comment: ID of pet to update
-
     - name: additionalMetadata
       domain: DO_LIBELLE
       comment: Additional Metadata
   returns:
-
     composition: ApiResponse
     name: Result
     comment: Non documenté

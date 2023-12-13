@@ -17,12 +17,10 @@ class:
       domain: DO_ENTIER
       required: true
       comment: Non documenté
-
     - name: type
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
-
     - name: message
       domain: DO_LIBELLE
       required: true
@@ -38,7 +36,6 @@ class:
       domain: DO_ID
       required: true
       comment: Non documenté
-
     - name: name
       domain: DO_LIBELLE
       required: true
@@ -50,15 +47,15 @@ class:
   preservePropertyCasing: true
   properties:
 
-    - name: Status
+    - name: value
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
 
   values:
-    Value0: {Status: "available"}
-    Value1: {Status: "pending"}
-    Value2: {Status: "sold"}
+    Value0: {value: "available"}
+    Value1: {value: "pending"}
+    Value2: {value: "sold"}
 ---
 class:
   name: Order
@@ -70,27 +67,23 @@ class:
       domain: DO_ID
       required: true
       comment: Non documenté
-
     - name: petId
       domain: DO_ID
       required: true
       comment: Non documenté
-
     - name: quantity
       domain: DO_ENTIER
       required: true
       comment: Non documenté
-
     - name: shipDate
       domain: DO_DATE_TIME
       required: true
       comment: Non documenté
-
     - alias:
         class: OrderStatus
         property: Status
+      name: Status
       comment: Order Status
-
     - name: complete
       domain: DO_BOOLEAN
       required: true
@@ -122,29 +115,25 @@ class:
       domain: DO_ID
       required: true
       comment: Non documenté
-
     - name: name
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
-
     - composition: Category
       name: category
       comment: Non documenté
-
     - name: photoUrls
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
-
     - composition: Tag
       name: tags
       domain: DO_LIST
       comment: Non documenté
-
     - alias:
         class: PetStatus
         property: Status
+      name: Status
       comment: pet status in the store
 ---
 class:
@@ -173,7 +162,6 @@ class:
       domain: DO_ID
       required: true
       comment: Non documenté
-
     - name: name
       domain: DO_LIBELLE
       required: true
@@ -189,37 +177,30 @@ class:
       domain: DO_ID
       required: true
       comment: Non documenté
-
     - name: username
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
-
     - name: firstName
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
-
     - name: lastName
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
-
     - name: email
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
-
     - name: password
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
-
     - name: phone
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
-
     - name: userStatus
       domain: DO_ENTIER
       required: true

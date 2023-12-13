@@ -216,7 +216,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
                 endPoint.PreservePropertyCasing = _config.PreservePropertyCasing;
 
-                if (string.IsNullOrEmpty(operation.Value.Summary))
+                if (!string.IsNullOrEmpty(operation.Value.Summary))
                 {
                     endPoint.Comment = operation.Value.Summary;
                 }
@@ -252,7 +252,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                                 };
 
                                 tmdFile.Classes.Add(enumClass);
-                                var p = WriteProperty(_config, new(param.Name.ToPascalCase(), param.Schema), tmdFile);
+                                var p = WriteProperty(_config, new("value", param.Schema), tmdFile);
                                 p.Class = enumClass;
                                 enumClass.Properties.Add(p);
                                 AddValues(enumClass, param.Schema);

@@ -28,7 +28,6 @@ endpoint:
   description: Returns pet inventories by status
   preservePropertyCasing: true
   returns:
-
     name: Result
     domain: DO_ENTIER_MAP
     required: true
@@ -46,7 +45,6 @@ endpoint:
       domain: DO_ID
       comment: ID of order that needs to be fetched
   returns:
-
     composition: Order
     name: Result
     comment: Non documenté
@@ -63,7 +61,6 @@ endpoint:
       name: body
       comment: Non documenté
   returns:
-
     composition: Order
     name: Result
     comment: Non documenté
