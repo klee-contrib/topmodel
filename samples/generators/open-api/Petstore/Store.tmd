@@ -16,7 +16,6 @@ endpoint:
   description: Delete purchase order by ID
   preservePropertyCasing: true
   params:
-
     - name: orderId
       domain: DO_ID
       comment: ID of the order that needs to be deleted
@@ -40,7 +39,6 @@ endpoint:
   description: Find purchase order by ID
   preservePropertyCasing: true
   params:
-
     - name: orderId
       domain: DO_ID
       comment: ID of order that needs to be fetched
@@ -56,7 +54,6 @@ endpoint:
   description: Place an order for a pet
   preservePropertyCasing: true
   params:
-
     - composition: Order
       name: body
       comment: Non documenté

@@ -12,15 +12,16 @@ class:
   comment: Non documenté
   preservePropertyCasing: true
   properties:
-
     - name: code
       domain: DO_ENTIER
       required: true
       comment: Non documenté
+
     - name: type
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
+
     - name: message
       domain: DO_LIBELLE
       required: true
@@ -31,11 +32,11 @@ class:
   comment: Non documenté
   preservePropertyCasing: true
   properties:
-
     - name: id
       domain: DO_ID
       required: true
       comment: Non documenté
+
     - name: name
       domain: DO_LIBELLE
       required: true
@@ -46,7 +47,6 @@ class:
   comment: enum pour les valeurs de status
   preservePropertyCasing: true
   properties:
-
     - name: value
       domain: DO_LIBELLE
       required: true
@@ -62,28 +62,32 @@ class:
   comment: Non documenté
   preservePropertyCasing: true
   properties:
-
     - name: id
       domain: DO_ID
       required: true
       comment: Non documenté
+
     - name: petId
       domain: DO_ID
       required: true
       comment: Non documenté
+
     - name: quantity
       domain: DO_ENTIER
       required: true
       comment: Non documenté
+
     - name: shipDate
       domain: DO_DATE_TIME
       required: true
       comment: Non documenté
+
     - alias:
         class: OrderStatus
         property: Status
       name: Status
       comment: Order Status
+
     - name: complete
       domain: DO_BOOLEAN
       required: true
@@ -94,7 +98,6 @@ class:
   comment: enum pour les valeurs de Status
   preservePropertyCasing: true
   properties:
-
     - name: Status
       domain: DO_LIBELLE
       required: true
@@ -110,26 +113,30 @@ class:
   comment: Non documenté
   preservePropertyCasing: true
   properties:
-
     - name: id
       domain: DO_ID
       required: true
       comment: Non documenté
+
     - name: name
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
+
     - composition: Category
       name: category
       comment: Non documenté
+
     - name: photoUrls
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
+
     - composition: Tag
       name: tags
       domain: DO_LIST
       comment: Non documenté
+
     - alias:
         class: PetStatus
         property: Status
@@ -141,7 +148,6 @@ class:
   comment: enum pour les valeurs de Status
   preservePropertyCasing: true
   properties:
-
     - name: Status
       domain: DO_LIBELLE
       required: true
@@ -157,11 +163,11 @@ class:
   comment: Non documenté
   preservePropertyCasing: true
   properties:
-
     - name: id
       domain: DO_ID
       required: true
       comment: Non documenté
+
     - name: name
       domain: DO_LIBELLE
       required: true
@@ -172,35 +178,41 @@ class:
   comment: Non documenté
   preservePropertyCasing: true
   properties:
-
     - name: id
       domain: DO_ID
       required: true
       comment: Non documenté
+
     - name: username
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
+
     - name: firstName
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
+
     - name: lastName
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
+
     - name: email
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
+
     - name: password
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
+
     - name: phone
       domain: DO_LIBELLE
       required: true
       comment: Non documenté
+
     - name: userStatus
       domain: DO_ENTIER
       required: true

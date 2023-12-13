@@ -552,7 +552,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
                 tmdFile.Classes.Add(aliasClass);
 
-                var p = WriteProperty(_config, new(property.Key, property.Value.Items), tmdFile);
+                var p = WriteProperty(_config, new("value", property.Value.Items), tmdFile);
                 p.Class = aliasClass;
                 aliasClass.Properties.Add(p);
                 AddValues(aliasClass, property.Value.Items);

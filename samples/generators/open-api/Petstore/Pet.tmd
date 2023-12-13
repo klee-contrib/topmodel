@@ -16,7 +16,6 @@ endpoint:
   description: Add a new pet to the store
   preservePropertyCasing: true
   params:
-
     - composition: Pet
       name: body
       comment: Non documenté
@@ -32,7 +31,6 @@ endpoint:
   description: Deletes a pet
   preservePropertyCasing: true
   params:
-
     - name: petId
       domain: DO_ID
       comment: Pet id to delete
@@ -44,7 +42,6 @@ endpoint:
   description: Finds Pets by status
   preservePropertyCasing: true
   params:
-
     - alias:
         class: FindPetsByStatusStatus
         property: value
@@ -63,7 +60,6 @@ endpoint:
   description: Finds Pets by tags
   preservePropertyCasing: true
   params:
-
     - name: tags
       domain: DO_LIBELLE
       comment: Tags to filter by
@@ -80,7 +76,6 @@ endpoint:
   description: Find pet by ID
   preservePropertyCasing: true
   params:
-
     - name: petId
       domain: DO_ID
       comment: ID of pet to return
@@ -96,7 +91,6 @@ endpoint:
   description: Update an existing pet
   preservePropertyCasing: true
   params:
-
     - composition: Pet
       name: body
       comment: Non documenté
@@ -112,13 +106,14 @@ endpoint:
   description: Updates a pet in the store with form data
   preservePropertyCasing: true
   params:
-
     - name: petId
       domain: DO_ID
       comment: ID of pet that needs to be updated
+
     - name: name
       domain: DO_LIBELLE
       comment: Name of pet that needs to be updated
+
     - name: status
       domain: DO_LIBELLE
       comment: Status of pet that needs to be updated
@@ -130,14 +125,15 @@ endpoint:
   description: uploads an image
   preservePropertyCasing: true
   params:
-
     - name: body
       domain: DO_FILE
       required: true
       comment: Non documenté
+
     - name: petId
       domain: DO_ID
       comment: ID of pet to update
+
     - name: additionalMetadata
       domain: DO_LIBELLE
       comment: Additional Metadata
