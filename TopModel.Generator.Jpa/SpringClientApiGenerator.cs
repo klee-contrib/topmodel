@@ -103,13 +103,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
             var produces = string.Empty;
             if (endpoint.Returns != null && endpoint.Returns is IFieldProperty fp && fp.Domain.MediaType != null)
             {
-                produces = @$", produces = {{ ""{fp.Domain.MediaType}"" }}";
-            }
-
-            var consumes = string.Empty;
-            if (endpoint.Params.Any(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null))
-            {
-                consumes = @$", consumes = {{ {string.Join(", ", endpoint.Params.Where(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null).Select(p => $@"""{((IFieldProperty)p).Domain.MediaType}"""))} }}";
+                produces = @$", accept = {{ ""{fp.Domain.MediaType}"" }}";
             }
 
             foreach (var annotation in Config.GetDecoratorAnnotations(endpoint, tag))
@@ -117,7 +111,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
                 fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : "@")}{annotation}");
             }
 
-            fw.WriteLine(1, @$"@{endpoint.Method.ToPascalCase(true)}Exchange(""{endpoint.Route}""{consumes}{produces})");
+            fw.WriteLine(1, @$"@{endpoint.Method.ToPascalCase(true)}Exchange(value = ""{endpoint.Route}""{produces})");
         }
 
         var methodParams = new List<string>();
