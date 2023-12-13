@@ -101,7 +101,7 @@ public class TmdWriter : IDisposable
             var isFirst = true;
             foreach (var property in classe.Properties)
             {
-                if (isFirst)
+                if (!isFirst)
                 {
                     _writer.WriteLine();
                 }
@@ -152,7 +152,7 @@ public class TmdWriter : IDisposable
             var isFirst = true;
             foreach (var property in endpoint.Params)
             {
-                if (isFirst)
+                if (!isFirst)
                 {
                     _writer.WriteLine();
                 }
