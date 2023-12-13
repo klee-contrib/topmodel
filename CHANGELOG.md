@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.42.2
+
+- [`b141e30`](https://github.com/klee-contrib/topmodel/commit/b141e30665fad3dcc526265ef728c27a9ef8f98f) - [Spring API] Correction bug accept
+
 ## 1.42.1
 
 - [`b78f252`](https://github.com/klee-contrib/topmodel/commit/b78f252edc917f1b635b32fa04c1d8514e7579f4) - [C#] Fix espace en trop potentiel dans les contrôleurs au début
