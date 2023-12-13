@@ -92,7 +92,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
                 tmdFile.Classes.Add(enumClass);
 
-                var p = WriteProperty(_config, new("value", schema.Value), tmdFile);
+                var p = WriteProperty(_config, new("Value", schema.Value), tmdFile);
                 p.Class = enumClass;
                 enumClass.Properties.Add(p);
                 AddValues(enumClass, schema.Value);
@@ -151,7 +151,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                             };
 
                             tmdFile.Classes.Add(enumClass);
-                            var p = WriteProperty(_config, new("value", property.Value), tmdFile);
+                            var p = WriteProperty(_config, new("Value", property.Value), tmdFile);
                             p.Class = enumClass;
                             enumClass.Properties.Add(p);
                             AddValues(enumClass, property.Value);
@@ -252,7 +252,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                                 };
 
                                 tmdFile.Classes.Add(enumClass);
-                                var p = WriteProperty(_config, new("value", param.Schema), tmdFile);
+                                var p = WriteProperty(_config, new("Value", param.Schema), tmdFile);
                                 p.Class = enumClass;
                                 enumClass.Properties.Add(p);
                                 AddValues(enumClass, param.Schema);
@@ -552,7 +552,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
                 tmdFile.Classes.Add(aliasClass);
 
-                var p = WriteProperty(_config, new("value", property.Value.Items), tmdFile);
+                var p = WriteProperty(_config, new("Value", property.Value.Items), tmdFile);
                 p.Class = aliasClass;
                 aliasClass.Properties.Add(p);
                 AddValues(aliasClass, property.Value.Items);
