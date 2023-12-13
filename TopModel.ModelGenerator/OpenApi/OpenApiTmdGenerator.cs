@@ -151,7 +151,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                             };
 
                             tmdFile.Classes.Add(enumClass);
-                            var p = WriteProperty(_config, new(property.Key.ToPascalCase(), property.Value), tmdFile);
+                            var p = WriteProperty(_config, new("value", property.Value), tmdFile);
                             p.Class = enumClass;
                             enumClass.Properties.Add(p);
                             AddValues(enumClass, property.Value);
