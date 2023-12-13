@@ -2,10 +2,7 @@
   "type": "object",
   "description": "Config pour la génération de Javascript.",
   "additionalProperties": false,
-  "required": [
-    "outputDirectory",
-    "tags"
-  ],
+  "required": ["outputDirectory", "tags"],
   "properties": {
     "language": {
       "type": "string",
@@ -94,19 +91,13 @@
       "type": "string",
       "description": "Framework cible pour la génération.",
       "default": "focus",
-      "enum": [
-        "angular",
-        "vanilla"
-      ]
+      "enum": ["angular", "vanilla", "nuxt"]
     },
     "entityMode": {
       "type": "string",
       "description": "Framework cible pour la génération.",
       "default": "typed",
-      "enum": [
-        "untyped",
-        "typed"
-      ]
+      "enum": ["untyped", "typed"]
     },
     "entityTypesPath": {
       "type": "string",
@@ -116,10 +107,7 @@
     "resourceMode": {
       "type": "string",
       "description": "Mode de génération (JS, JSON ou JSON Schema).",
-      "enum": [
-        "js",
-        "json"
-      ]
+      "enum": ["js", "json"]
     },
     "translateReferences": {
       "type": "boolean",
@@ -133,10 +121,7 @@
     "referenceMode": {
       "type": "string",
       "description": "Mode de génération des listes de références (définitions ou valeurs).",
-      "enum": [
-        "definition",
-        "values"
-      ],
+      "enum": ["definition", "values"],
       "default": "definition"
     }
   }

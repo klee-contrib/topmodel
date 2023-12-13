@@ -30,6 +30,10 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
                 {
                     services.AddGenerator<AngularApiClientGenerator, JavascriptConfig>(config, number);
                 }
+                else if (config.ApiMode == TargetFramework.NUXT)
+                {
+                    services.AddGenerator<NuxtApiClientGenerator, JavascriptConfig>(config, number);
+                }
                 else
                 {
                     services.AddGenerator<JavascriptApiClientGenerator, JavascriptConfig>(config, number);
