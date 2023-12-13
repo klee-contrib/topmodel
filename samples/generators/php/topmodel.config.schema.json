@@ -429,7 +429,8 @@
             "default": "focus",
             "enum": [
               "angular",
-              "vanilla"
+              "vanilla",
+              "nuxt"
             ]
           },
           "entityMode": {

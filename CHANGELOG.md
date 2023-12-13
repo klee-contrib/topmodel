@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.42.1
+
+- [`b78f252`](https://github.com/klee-contrib/topmodel/commit/b78f252edc917f1b635b32fa04c1d8514e7579f4) - [C#] Fix espace en trop potentiel dans les contrôleurs au début
+- [`e9637ca`](https://github.com/klee-contrib/topmodel/commit/e9637ca77996f36bd8f0c6f80ce9d165e7d3bc6f) - Fix alias dans les décorateurs rerésolus à chaque watch
+
 ## 1.42.0
 
 - [#332](https://github.com/klee-contrib/topmodel/pull/332) - [Spring] Génération des api clientes en mode exchange
