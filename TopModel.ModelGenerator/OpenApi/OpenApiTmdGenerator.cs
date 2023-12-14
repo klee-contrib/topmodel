@@ -53,7 +53,7 @@ public class OpenApiTmdGenerator : ModelGenerator
         var modules = _model.Paths
             .SelectMany(p => p.Value.Operations.Where(o => o.Value.Tags.Any()))
             .GroupBy(o => o.Value.Tags.First().Name.ToPascalCase())
-            .Where(m => m.Key != "Null" && (_config.Include == null || _config.Include.Contains(m.Key)));
+            .Where(m => m.Key != "Null" && (_config.Include == null || _config.Include.Select(i => i.ToPascalCase()).Contains(m.Key)));
 
         var referenceMap = modules.ToDictionary(m => m.Key, m => GetModuleReferences(m));
 
@@ -123,7 +123,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
                 if (!string.IsNullOrEmpty(schema.Value.Description?.Trim(' ')))
                 {
-                    classe.Comment = $"{schema.Value.Description.Format()}";
+                    classe.Comment = @$"""{schema.Value.Description.Format()}""";
                 }
 
                 var classeProperties = classe.Properties;
@@ -161,7 +161,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                         {
                             Alias = enumClass.Properties[0],
                             Name = $"{property.Key.ToPascalCase()}",
-                            Comment = property.Value.Description.Format(),
+                            Comment = @$"""property.Value.Description.Format()""",
                             Class = classe
                         });
                     }
@@ -211,15 +211,10 @@ public class OpenApiTmdGenerator : ModelGenerator
                 tmdFileEnpoint.Endpoints.Add(endPoint);
                 if (!string.IsNullOrEmpty(operation.Value.Summary))
                 {
-                    endPoint.Comment = operation.Value.Summary;
+                    endPoint.Comment = @$"""{operation.Value.Summary}""";
                 }
 
                 endPoint.PreservePropertyCasing = _config.PreservePropertyCasing;
-
-                if (!string.IsNullOrEmpty(operation.Value.Summary))
-                {
-                    endPoint.Comment = operation.Value.Summary;
-                }
 
                 if (operation.Value.Parameters.Any(p => p.In == ParameterLocation.Query || p.In == ParameterLocation.Path) || operation.Value.RequestBody != null)
                 {
@@ -277,7 +272,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                         endPoint.Params.Add(property);
                         if (!string.IsNullOrEmpty(param.Description?.Trim(' ')))
                         {
-                            property.Comment = param.Description.Format();
+                            property.Comment = $@"""{param.Description.Format()}""";
                         }
                     }
                 }
@@ -349,7 +344,7 @@ public class OpenApiTmdGenerator : ModelGenerator
     {
         if (schema.AnyOf.Any() || schema.OneOf.Any())
         {
-            return (null, null);
+            return ("object", schema.Reference.Id);
         }
 
         return schema.Items?.Reference != null

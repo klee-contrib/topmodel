@@ -36,6 +36,8 @@ public class CompositionProperty : IProperty
 
     public string Label => Name;
 
+    public bool IsMultipart => Composition.Properties.Any(cpp => cpp is IFieldProperty fp && fp.Domain.IsMultipart || cpp is CompositionProperty cp && cp.IsMultipart);
+
     public bool PrimaryKey => false;
 
     public bool Required { get; set; } = true;
