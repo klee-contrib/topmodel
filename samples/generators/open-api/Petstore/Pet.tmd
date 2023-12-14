@@ -13,7 +13,7 @@ endpoint:
   name: addPet
   method: POST
   route: pet
-  description: Add a new pet to the store
+  description: "Add a new pet to the store"
   preservePropertyCasing: true
   params:
     - composition: Pet
@@ -28,25 +28,25 @@ endpoint:
   name: deletePet
   method: DELETE
   route: pet/{petId}
-  description: Deletes a pet
+  description: "Deletes a pet"
   preservePropertyCasing: true
   params:
     - name: petId
       domain: DO_ID
-      comment: Pet id to delete
+      comment: "Pet id to delete"
 ---
 endpoint:
   name: findPetsByStatus
   method: GET
   route: pet/findByStatus
-  description: Finds Pets by status
+  description: "Finds Pets by status"
   preservePropertyCasing: true
   params:
     - alias:
         class: FindPetsByStatusStatus
         property: Value
       name: Status
-      comment: Status values that need to be considered for filter
+      comment: "Status values that need to be considered for filter"
   returns:
     composition: Pet
     name: Result
@@ -57,12 +57,12 @@ endpoint:
   name: findPetsByTags
   method: GET
   route: pet/findByTags
-  description: Finds Pets by tags
+  description: "Finds Pets by tags"
   preservePropertyCasing: true
   params:
     - name: tags
       domain: DO_LIBELLE
-      comment: Tags to filter by
+      comment: "Tags to filter by"
   returns:
     composition: Pet
     name: Result
@@ -73,12 +73,12 @@ endpoint:
   name: getPetById
   method: GET
   route: pet/{petId}
-  description: Find pet by ID
+  description: "Find pet by ID"
   preservePropertyCasing: true
   params:
     - name: petId
       domain: DO_ID
-      comment: ID of pet to return
+      comment: "ID of pet to return"
   returns:
     composition: Pet
     name: Result
@@ -88,7 +88,7 @@ endpoint:
   name: updatePet
   method: PUT
   route: pet
-  description: Update an existing pet
+  description: "Update an existing pet"
   preservePropertyCasing: true
   params:
     - composition: Pet
@@ -103,26 +103,26 @@ endpoint:
   name: updatePetWithForm
   method: POST
   route: pet/{petId}
-  description: Updates a pet in the store with form data
+  description: "Updates a pet in the store with form data"
   preservePropertyCasing: true
   params:
     - name: petId
       domain: DO_ID
-      comment: ID of pet that needs to be updated
+      comment: "ID of pet that needs to be updated"
 
     - name: name
       domain: DO_LIBELLE
-      comment: Name of pet that needs to be updated
+      comment: "Name of pet that needs to be updated"
 
     - name: status
       domain: DO_LIBELLE
-      comment: Status of pet that needs to be updated
+      comment: "Status of pet that needs to be updated"
 ---
 endpoint:
   name: uploadFile
   method: POST
   route: pet/{petId}/uploadImage
-  description: uploads an image
+  description: "uploads an image"
   preservePropertyCasing: true
   params:
     - name: body
@@ -132,11 +132,11 @@ endpoint:
 
     - name: petId
       domain: DO_ID
-      comment: ID of pet to update
+      comment: "ID of pet to update"
 
     - name: additionalMetadata
       domain: DO_LIBELLE
-      comment: Additional Metadata
+      comment: "Additional Metadata"
   returns:
     composition: ApiResponse
     name: Result

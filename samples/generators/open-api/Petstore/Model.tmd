@@ -86,7 +86,7 @@ class:
         class: OrderStatus
         property: Value
       name: Status
-      comment: Order Status
+      comment: "Order Status"
 
     - name: complete
       domain: DO_BOOLEAN
@@ -141,7 +141,7 @@ class:
         class: PetStatus
         property: Value
       name: Status
-      comment: pet status in the store
+      comment: "pet status in the store"
 ---
 class:
   name: PetStatus

@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.42.3
+
+- [`44eb93`](https://github.com/klee-contrib/topmodel/commit/27da8fd072cd4534e43fcee758d737b8e5128bf0) - [SQL] Ne pas générer de script d'insert pour le classes non persistées
+- [`56c2dde`](https://github.com/klee-contrib/topmodel/commit/56c2dde501b97cf9fc9ce0228f57a7b2c61c2b3a) - [JPA] Choix du mode de génération de l'api cliente : RestTemplate ou RestClient
+
 ## 1.42.2
 
 - [`b141e30`](https://github.com/klee-contrib/topmodel/commit/b141e30665fad3dcc526265ef728c27a9ef8f98f) - [Spring API] Correction bug accept
