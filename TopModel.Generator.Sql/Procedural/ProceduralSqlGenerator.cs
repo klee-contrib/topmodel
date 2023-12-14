@@ -45,7 +45,7 @@ public class ProceduralSqlGenerator : GeneratorBase<SqlConfig>
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        var classes = Classes.ToList();
+        var classes = Classes.Where(c => c.IsPersistent).ToList();
 
         var manyToManyProperties = Classes.SelectMany(cl => cl.Properties).Where(p => p is AssociationProperty ap && ap.Type == AssociationType.ManyToMany).Select(p => (AssociationProperty)p);
         foreach (var ap in manyToManyProperties)
@@ -95,7 +95,7 @@ public class ProceduralSqlGenerator : GeneratorBase<SqlConfig>
 
     private void GenerateListInitScript()
     {
-        var classes = Classes.Where(c => c.Values.Any());
+        var classes = Classes.Where(c => c.IsPersistent).Where(c => c.Values.Any());
 
         if (classes.Any())
         {
