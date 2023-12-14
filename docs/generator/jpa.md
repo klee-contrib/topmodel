@@ -238,7 +238,28 @@ Si le domain du body du `endpoint` défini un `mediaType`, alors il sera valoris
 
 ## Api Client (Spring)
 
-Le générateur créé des classes abstraites contenant, toutes les méthodes permettant d'accéder aux endpoints paramétrés.
+### RestClient (spring-web 6+)
+
+Il s'agit du mode par défaut, soit lorsque la variable `clientApiGeneration` vaut `RestClient`.
+
+Le générateur créé alors des interfaces contenant des annotations `XXXExchange`, dont il faudra configurer un bean d'implémentation.
+
+```java
+	@Bean
+	protected UtilisateurApiClient utilisateurApiClient(UtilisateurApiClient restTemplate) {
+		var restClient = RestClient.builder().baseUrl("http://localhost:8080/my-app/api/") //
+				.build();
+		var adapter = RestClientAdapter.create(restClient);
+		var factory = HttpServiceProxyFactory.builderFor(adapter).build();
+		return factory.createClient(UtilisateurApiClient.class);
+	}
+```
+
+### RestTemplate
+
+Pour activer ce mode de génération, positionner la variable `clientApiGeneration` à `RestTemplate`.
+
+Le générateur créé alors des classes abstraites contenant, toutes les méthodes permettant d'accéder aux endpoints paramétrés.
 
 Pour créer votre client d'API, il suffit de créer une classe qui hérite de cette classe abstraite. Pour fonctionner, elle devra appeler le constructeur de la classe abrstaite, en renseignant :
 

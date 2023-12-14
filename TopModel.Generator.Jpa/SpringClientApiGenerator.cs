@@ -100,10 +100,16 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         }
 
         {
-            var produces = string.Empty;
+            var accept = string.Empty;
             if (endpoint.Returns != null && endpoint.Returns is IFieldProperty fp && fp.Domain.MediaType != null)
             {
-                produces = @$", accept = {{ ""{fp.Domain.MediaType}"" }}";
+                accept = @$", accept = {{ ""{fp.Domain.MediaType}"" }}";
+            }
+
+            var contentType = string.Empty;
+            if (endpoint.Params.Any(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null))
+            {
+                contentType = @$", contentType = {string.Join(", ", endpoint.Params.Where(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null).Select(p => $@"""{((IFieldProperty)p).Domain.MediaType}""")).First()} ";
             }
 
             foreach (var annotation in Config.GetDecoratorAnnotations(endpoint, tag))
@@ -111,7 +117,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
                 fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : "@")}{annotation}");
             }
 
-            fw.WriteLine(1, @$"@{endpoint.Method.ToPascalCase(true)}Exchange(value = ""{endpoint.Route}""{produces})");
+            fw.WriteLine(1, @$"@{endpoint.Method.ToPascalCase(true)}Exchange(value = ""{endpoint.Route}""{contentType}{accept})");
         }
 
         var methodParams = new List<string>();
@@ -140,18 +146,20 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
             foreach (var param in endpoint.Params.Where(param => param is CompositionProperty || (param.Domain?.BodyParam ?? false) || (param.Domain?.IsMultipart ?? false)))
             {
                 var ann = string.Empty;
-                if (!(param.Domain?.IsMultipart ?? false))
+
+                if (param is CompositionProperty cp)
                 {
-                    ann += @$"@ModelAttribute ";
-                    fw.AddImport("org.springframework.web.bind.annotation.ModelAttribute");
+                    fw.AddImport("org.springframework.web.bind.annotation.RequestPart");
+                    fw.AddImport("org.springframework.util.MultiValueMap");
+                    ann += @$"@RequestPart ";
+                    methodParams.Add($"{ann}MultiValueMap<K, V> {param.GetParamName()}");
                 }
                 else
                 {
                     ann += @$"@RequestPart(value = ""{param.GetParamName()}"", required = {(param is not IFieldProperty fp || fp.Required).ToString().ToFirstLower()}) ";
                     fw.AddImport("org.springframework.web.bind.annotation.RequestPart");
+                    methodParams.Add($"{ann}{Config.GetType(param)} {param.GetParamName()}");
                 }
-
-                methodParams.Add($"{ann}{Config.GetType(param)} {param.GetParamName()}");
             }
         }
         else
@@ -167,7 +175,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
             }
         }
 
-        fw.WriteLine(1, $"{returnType} {endpoint.NameCamel}({string.Join(", ", methodParams)});");
+        fw.WriteLine(1, $"{(endpoint.IsMultipart ? "<K, V> " : string.Empty)}{returnType} {endpoint.NameCamel}({string.Join(", ", methodParams)});");
     }
 
     private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)

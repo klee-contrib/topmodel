@@ -46,7 +46,14 @@ public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
 
             if (config.ApiGeneration != ApiGeneration.Server)
             {
-                services.AddGenerator<SpringClientApiGenerator, JpaConfig>(config, number);
+                if (config.ClientApiGeneration == ClientApiMode.RestClient)
+                {
+                    services.AddGenerator<SpringClientApiGenerator, JpaConfig>(config, number);
+                }
+                else
+                {
+                    services.AddGenerator<SpringRestTemplateApiGenerator, JpaConfig>(config, number);
+                }
             }
         }
     }

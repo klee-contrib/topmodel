@@ -40,6 +40,11 @@ public class JpaConfig : GeneratorConfigBase
     public string? ApiGeneration { get; set; }
 
     /// <summary>
+    /// Mode de génération de l'API Client ('Client' ou 'Server').
+    /// </summary>
+    public string? ClientApiGeneration { get; set; } = ClientApiMode.RestClient;
+
+    /// <summary>
     /// Localisation des ressources, relative au répertoire de génération.
     /// </summary>
     public string? ResourcesPath { get; set; }

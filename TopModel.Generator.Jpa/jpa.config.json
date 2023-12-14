@@ -105,6 +105,25 @@
         }
       ]
     },
+    "clientApiGeneration": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Mode de génération de l'API Client ('Client' ou 'Server')",
+          "default": "RestClient",
+          "enum": [
+            "RestTemplate",
+            "RestClient"
+          ]
+        },
+        {
+          "type": "string",
+          "description": "Mode de génération de l'API ('RestTemplate' ou 'RestClient')",
+          "default": "RestClient",
+          "pattern": "^\\{[^\\}]+\\}$"
+        }
+      ]
+    },
     "resourcesPath": {
       "type": "string",
       "description": "Localisation des ressources, relative au répertoire de génération."
