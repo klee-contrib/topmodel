@@ -18,11 +18,11 @@ endpoint:
   params:
     - composition: Pet
       name: body
-      comment: Non documenté
+      comment: "Non documenté"
   returns:
     composition: Pet
     name: Result
-    comment: Non documenté
+    comment: "Non documenté"
 ---
 endpoint:
   name: deletePet
@@ -51,7 +51,7 @@ endpoint:
     composition: Pet
     name: Result
     domain: DO_LIST
-    comment: Non documenté
+    comment: "Non documenté"
 ---
 endpoint:
   name: findPetsByTags
@@ -67,7 +67,7 @@ endpoint:
     composition: Pet
     name: Result
     domain: DO_LIST
-    comment: Non documenté
+    comment: "Non documenté"
 ---
 endpoint:
   name: getPetById
@@ -82,7 +82,7 @@ endpoint:
   returns:
     composition: Pet
     name: Result
-    comment: Non documenté
+    comment: "Non documenté"
 ---
 endpoint:
   name: updatePet
@@ -93,11 +93,11 @@ endpoint:
   params:
     - composition: Pet
       name: body
-      comment: Non documenté
+      comment: "Non documenté"
   returns:
     composition: Pet
     name: Result
-    comment: Non documenté
+    comment: "Non documenté"
 ---
 endpoint:
   name: updatePetWithForm
@@ -128,7 +128,7 @@ endpoint:
     - name: body
       domain: DO_FILE
       required: true
-      comment: Non documenté
+      comment: "Non documenté"
 
     - name: petId
       domain: DO_ID
@@ -140,4 +140,4 @@ endpoint:
   returns:
     composition: ApiResponse
     name: Result
-    comment: Non documenté
+    comment: "Non documenté"

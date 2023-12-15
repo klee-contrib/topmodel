@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.42.4
+
+- [`5b6e6a`](https://github.com/klee-contrib/topmodel/commit/5b6e6a7e5d24aeb4cc4d7a1c8a82aeb72cc173ae) - [JPA] Prise en compte du property casing dans les getters
+
 ## 1.42.3
 
 - [`44eb93`](https://github.com/klee-contrib/topmodel/commit/27da8fd072cd4534e43fcee758d737b8e5128bf0) - [SQL] Ne pas générer de script d'insert pour le classes non persistées

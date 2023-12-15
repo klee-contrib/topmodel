@@ -5,7 +5,6 @@
 /// </summary>
 public static class ClientApiMode
 {
-
     /// <summary>
     /// Génération d'un client en mode RestClient (interface Exchange).
     /// </summary>

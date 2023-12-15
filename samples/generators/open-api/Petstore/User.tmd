@@ -18,7 +18,7 @@ endpoint:
   params:
     - composition: User
       name: body
-      comment: Non documenté
+      comment: "Non documenté"
 ---
 endpoint:
   name: createUsersWithListInput
@@ -30,11 +30,11 @@ endpoint:
     - composition: User
       name: body
       domain: DO_LIST
-      comment: Non documenté
+      comment: "Non documenté"
   returns:
     composition: User
     name: Result
-    comment: Non documenté
+    comment: "Non documenté"
 ---
 endpoint:
   name: deleteUser
@@ -60,7 +60,7 @@ endpoint:
   returns:
     composition: User
     name: Result
-    comment: Non documenté
+    comment: "Non documenté"
 ---
 endpoint:
   name: loginUser
@@ -80,7 +80,7 @@ endpoint:
     name: Result
     domain: DO_LIBELLE
     required: true
-    comment: Non documenté
+    comment: "Non documenté"
 ---
 endpoint:
   name: logoutUser
@@ -98,7 +98,7 @@ endpoint:
   params:
     - composition: User
       name: body
-      comment: Non documenté
+      comment: "Non documenté"
 
     - name: username
       domain: DO_LIBELLE
