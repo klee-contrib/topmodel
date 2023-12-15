@@ -71,7 +71,13 @@ public class JpaModelPropertyGenerator
         fw.WriteDocEnd(indentLevel);
 
         var getterPrefix = _config.GetType(property, _classes, true) == "boolean" ? "is" : "get";
-        fw.WriteLine(indentLevel, @$"public {_config.GetType(property, useClassForAssociation: classe.IsPersistent && !_config.UseJdbc)} {propertyName.ToPascalCase().WithPrefix(getterPrefix)}() {{");
+        var getterName = propertyName.ToPascalCase().WithPrefix(getterPrefix);
+        if (property.Class.PreservePropertyCasing)
+        {
+            getterName = propertyName.ToFirstUpper().WithPrefix(getterPrefix);
+        }
+
+        fw.WriteLine(indentLevel, @$"public {_config.GetType(property, useClassForAssociation: classe.IsPersistent && !_config.UseJdbc)} {getterName}() {{");
         if (property is AssociationProperty ap && ap.Type.IsToMany())
         {
             var type = _config.GetType(ap, _classes, useClassForAssociation: classe.IsPersistent && !_config.UseJdbc).Split('<').First();
@@ -259,6 +265,8 @@ public class JpaModelPropertyGenerator
                 fw.WriteLine(1, "@Id");
             }
 
+            fw.AddImport("org.springframework.data.relational.core.mapping.Column");
+            fw.WriteLine(1, $@"@Column(""{property.Association.PrimaryKey.First().SqlName.ToLower()}"")");
             fw.WriteLine(1, $"private {_config.GetType(property)} {property.NameCamel};");
         }
     }
