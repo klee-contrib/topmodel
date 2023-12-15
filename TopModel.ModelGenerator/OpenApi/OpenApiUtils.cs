@@ -11,7 +11,7 @@ public static class OpenApiUtils
             return string.Empty;
         }
 
-        if (description.Contains('"') || description.Contains('\n') || description.Contains(':'))
+        if (description.Contains('"') || description.Contains('\n') || description.Contains(':') || description.Contains('#'))
         {
             var lines = description.ReplaceLineEndings().Split(Environment.NewLine);
             if (string.IsNullOrWhiteSpace(lines.Last()))

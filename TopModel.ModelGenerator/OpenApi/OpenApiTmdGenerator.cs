@@ -123,7 +123,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
                 if (!string.IsNullOrEmpty(schema.Value.Description?.Trim(' ')))
                 {
-                    classe.Comment = @$"""{schema.Value.Description.Format()}""";
+                    classe.Comment = @$"{schema.Value.Description.Format()}";
                 }
 
                 var classeProperties = classe.Properties;
@@ -272,7 +272,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                         endPoint.Params.Add(property);
                         if (!string.IsNullOrEmpty(param.Description?.Trim(' ')))
                         {
-                            property.Comment = $@"""{param.Description.Format()}""";
+                            property.Comment = $@"{param.Description.Format()}";
                         }
                     }
                 }

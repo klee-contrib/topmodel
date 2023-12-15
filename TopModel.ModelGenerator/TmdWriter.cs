@@ -140,7 +140,7 @@ public class TmdWriter : IDisposable
         _writer.WriteLine($"  name: {endpoint.Name}");
         _writer.WriteLine($"  method: {endpoint.Method}");
         _writer.WriteLine($"  route: {endpoint.Route}");
-        _writer.WriteLine(@$"  description: ""{endpoint.Comment.Trim('"').Replace(@"""", @"\""")}""");
+        _writer.WriteLine(@$"  description: {endpoint.Comment}");
         if (endpoint.PreservePropertyCasing)
         {
             _writer.WriteLine($"  preservePropertyCasing: {endpoint.PreservePropertyCasing.ToString().ToLower()}");
@@ -175,7 +175,7 @@ public class TmdWriter : IDisposable
         if (property is TmdAssociationProperty ap)
         {
             _writer.WriteLine($"    {(noList ? string.Empty : "- ")}association: {ap.Association.Name}");
-            _writer.WriteLine($@"    {listPrefix}comment: ""{property.Comment.Trim('"').Replace(@"""", @"\""")}""");
+            _writer.WriteLine($@"    {listPrefix}comment: {property.Comment}");
             if (!string.IsNullOrEmpty(ap.Role))
             {
                 _writer.WriteLine($"    {listPrefix}role: {ap.Role}");
@@ -205,7 +205,7 @@ public class TmdWriter : IDisposable
                 _writer.WriteLine($"    {listPrefix}primaryKey: true");
             }
 
-            _writer.WriteLine($@"    {listPrefix}comment: ""{property.Comment.Trim('"').Replace(@"""", @"\""")}""");
+            _writer.WriteLine($@"    {listPrefix}comment: {property.Comment}");
         }
         else if (property is TmdCompositionProperty cp)
         {
@@ -221,7 +221,7 @@ public class TmdWriter : IDisposable
                 _writer.WriteLine($"    {listPrefix}domain: {property.Domain}");
             }
 
-            _writer.WriteLine($@"    {listPrefix}comment: ""{property.Comment.Trim('"').Replace(@"""", @"\""")}""");
+            _writer.WriteLine($@"    {listPrefix}comment: {property.Comment}");
         }
         else if (property is TmdAliasProperty sp)
         {
@@ -243,7 +243,7 @@ public class TmdWriter : IDisposable
 
             if (!string.IsNullOrEmpty(property.Comment))
             {
-                _writer.WriteLine(@$"    {listPrefix}comment: ""{property.Comment.Trim('"').Replace(@"""", @"\""")}""");
+                _writer.WriteLine(@$"    {listPrefix}comment: {property.Comment}");
             }
         }
     }
