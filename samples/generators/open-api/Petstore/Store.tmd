@@ -18,7 +18,7 @@ endpoint:
   params:
     - name: orderId
       domain: DO_ID
-      comment: "ID of the order that needs to be deleted"
+      comment: ID of the order that needs to be deleted
 ---
 endpoint:
   name: getInventory
@@ -30,7 +30,7 @@ endpoint:
     name: Result
     domain: DO_ENTIER_MAP
     required: true
-    comment: "Non documenté"
+    comment: Non documenté
 ---
 endpoint:
   name: getOrderById
@@ -41,11 +41,11 @@ endpoint:
   params:
     - name: orderId
       domain: DO_ID
-      comment: "ID of order that needs to be fetched"
+      comment: ID of order that needs to be fetched
   returns:
     composition: Order
     name: Result
-    comment: "Non documenté"
+    comment: Non documenté
 ---
 endpoint:
   name: placeOrder
@@ -56,8 +56,8 @@ endpoint:
   params:
     - composition: Order
       name: body
-      comment: "Non documenté"
+      comment: Non documenté
   returns:
     composition: Order
     name: Result
-    comment: "Non documenté"
+    comment: Non documenté

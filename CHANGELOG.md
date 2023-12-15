@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.42.5
+
+- [`2a3b27654a3c739d15a12c52775733001639e839`](https://github.com/klee-contrib/topmodel/commit/2a3b27654a3c739d15a12c52775733001639e839) - [modgen] correction boucle infinie IsMultipart
+
 ## 1.42.4
 
 - [`5b6e6a`](https://github.com/klee-contrib/topmodel/commit/5b6e6a7e5d24aeb4cc4d7a1c8a82aeb72cc173ae) - [JPA] Prise en compte du property casing dans les getters

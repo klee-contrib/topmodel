@@ -15,17 +15,17 @@ class:
     - name: code
       domain: DO_ENTIER
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: type
       domain: DO_LIBELLE
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: message
       domain: DO_LIBELLE
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 ---
 class:
   name: Category
@@ -35,12 +35,12 @@ class:
     - name: id
       domain: DO_ID
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: name
       domain: DO_LIBELLE
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 ---
 class:
   name: FindPetsByStatusStatus
@@ -50,7 +50,7 @@ class:
     - name: Value
       domain: DO_LIBELLE
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
   values:
     Value0: {Value: "available"}
@@ -65,33 +65,33 @@ class:
     - name: id
       domain: DO_ID
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: petId
       domain: DO_ID
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: quantity
       domain: DO_ENTIER
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: shipDate
       domain: DO_DATE_TIME
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - alias:
         class: OrderStatus
         property: Value
       name: Status
-      comment: "Order Status"
+      comment: Order Status
 
     - name: complete
       domain: DO_BOOLEAN
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 ---
 class:
   name: OrderStatus
@@ -101,7 +101,7 @@ class:
     - name: Value
       domain: DO_LIBELLE
       required: true
-      comment: "Order Status"
+      comment: Order Status
 
   values:
     Value0: {Value: "placed"}
@@ -116,32 +116,32 @@ class:
     - name: id
       domain: DO_ID
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: name
       domain: DO_LIBELLE
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - composition: Category
       name: category
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: photoUrls
       domain: DO_LIBELLE
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - composition: Tag
       name: tags
       domain: DO_LIST
-      comment: "Non documenté"
+      comment: Non documenté
 
     - alias:
         class: PetStatus
         property: Value
       name: Status
-      comment: "pet status in the store"
+      comment: pet status in the store
 ---
 class:
   name: PetStatus
@@ -151,7 +151,7 @@ class:
     - name: Value
       domain: DO_LIBELLE
       required: true
-      comment: "pet status in the store"
+      comment: pet status in the store
 
   values:
     Value0: {Value: "available"}
@@ -166,12 +166,12 @@ class:
     - name: id
       domain: DO_ID
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: name
       domain: DO_LIBELLE
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 ---
 class:
   name: User
@@ -181,39 +181,39 @@ class:
     - name: id
       domain: DO_ID
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: username
       domain: DO_LIBELLE
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: firstName
       domain: DO_LIBELLE
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: lastName
       domain: DO_LIBELLE
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: email
       domain: DO_LIBELLE
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: password
       domain: DO_LIBELLE
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: phone
       domain: DO_LIBELLE
       required: true
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: userStatus
       domain: DO_ENTIER
       required: true
-      comment: "User Status"
+      comment: User Status

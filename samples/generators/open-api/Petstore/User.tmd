@@ -18,7 +18,7 @@ endpoint:
   params:
     - composition: User
       name: body
-      comment: "Non documenté"
+      comment: Non documenté
 ---
 endpoint:
   name: createUsersWithListInput
@@ -30,11 +30,11 @@ endpoint:
     - composition: User
       name: body
       domain: DO_LIST
-      comment: "Non documenté"
+      comment: Non documenté
   returns:
     composition: User
     name: Result
-    comment: "Non documenté"
+    comment: Non documenté
 ---
 endpoint:
   name: deleteUser
@@ -45,7 +45,7 @@ endpoint:
   params:
     - name: username
       domain: DO_LIBELLE
-      comment: "The name that needs to be deleted"
+      comment: The name that needs to be deleted
 ---
 endpoint:
   name: getUserByName
@@ -56,11 +56,11 @@ endpoint:
   params:
     - name: username
       domain: DO_LIBELLE
-      comment: "The name that needs to be fetched. Use user1 for testing. "
+      comment: The name that needs to be fetched. Use user1 for testing. 
   returns:
     composition: User
     name: Result
-    comment: "Non documenté"
+    comment: Non documenté
 ---
 endpoint:
   name: loginUser
@@ -71,16 +71,16 @@ endpoint:
   params:
     - name: password
       domain: DO_LIBELLE
-      comment: "The password for login in clear text"
+      comment: The password for login in clear text
 
     - name: username
       domain: DO_LIBELLE
-      comment: "The user name for login"
+      comment: The user name for login
   returns:
     name: Result
     domain: DO_LIBELLE
     required: true
-    comment: "Non documenté"
+    comment: Non documenté
 ---
 endpoint:
   name: logoutUser
@@ -98,8 +98,8 @@ endpoint:
   params:
     - composition: User
       name: body
-      comment: "Non documenté"
+      comment: Non documenté
 
     - name: username
       domain: DO_LIBELLE
-      comment: "name that need to be deleted"
+      comment: name that need to be deleted
