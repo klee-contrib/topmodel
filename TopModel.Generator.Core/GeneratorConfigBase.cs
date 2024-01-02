@@ -20,6 +20,11 @@ public abstract class GeneratorConfigBase
     public IList<string> Tags { get; set; }
 
     /// <summary>
+    /// Tags pour lesquels il ne faut pas générer les fichiers (surchage en CLI).
+    /// </summary>
+    public IList<string> ExcludedTags { get; set; } = [];
+
+    /// <summary>
     /// Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration.
     /// </summary>
     public virtual bool IgnoreDefaultValues { get; set; }

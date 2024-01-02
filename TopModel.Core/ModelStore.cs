@@ -51,6 +51,8 @@ public class ModelStore
 
     public event Action<bool>? OnResolve;
 
+    public bool DisableLockfile { get; set; }
+
     public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes).Distinct();
 
     public IEnumerable<Endpoint> Endpoints => _modelFiles.SelectMany(mf => mf.Value.Endpoints).Distinct();
@@ -221,13 +223,10 @@ public class ModelStore
                     modelWatcher.OnFilesChanged(sortedFiles, _storeConfig);
                 }
 
-                if (_modelWatchers.Any(m => m.GeneratedFiles != null))
+                var generatedFiles = _modelWatchers.Where(m => m.GeneratedFiles != null).SelectMany(m => m.GeneratedFiles!);
+                if (generatedFiles.Any() && !DisableLockfile)
                 {
-                    _topModelLock.Update(
-                        _config.ModelRoot,
-                        _config.LockFileName,
-                        _logger,
-                        _modelWatchers.Where(m => m.GeneratedFiles != null).SelectMany(m => m.GeneratedFiles!));
+                    _topModelLock.Update(_config.ModelRoot, _config.LockFileName, _logger, generatedFiles);
                 }
 
                 _logger.LogInformation($"Mise à jour terminée avec succès.");

@@ -48,7 +48,7 @@ public abstract class GeneratorBase<T> : IModelWatcher
         using var scope = _logger.BeginScope(((IModelWatcher)this).FullName);
         using var scope2 = _logger.BeginScope(storeConfig!);
 
-        var handledFiles = files.Where(file => Config.Tags.Intersect(file.AllTags).Any());
+        var handledFiles = files.Where(file => Config.Tags.Intersect(file.AllTags.Except(Config.ExcludedTags)).Any());
 
         if (!NoLanguage)
         {

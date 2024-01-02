@@ -12,6 +12,7 @@ using TopModel.Utils;
 var fileChecker = new FileChecker("schema.config.json");
 
 var configs = new List<(ModelConfig Config, string FullPath, string DirectoryName)>();
+var excludedTags = Array.Empty<string>();
 var watchMode = false;
 var checkMode = false;
 var schemaMode = false;
@@ -21,17 +22,20 @@ var returnCode = 0;
 var command = new RootCommand("Lance le générateur topmodel.") { Name = "modgen" };
 
 var fileOption = new Option<IEnumerable<FileInfo>>(new[] { "-f", "--file" }, "Chemin vers un fichier de config.");
+var excludeOption = new Option<IEnumerable<string>>(new[] { "-e", "--exclude" }, "Tag à ignorer lors de la génération.");
 var watchOption = new Option<bool>(new[] { "-w", "--watch" }, "Lance le générateur en mode 'watch'");
 var checkOption = new Option<bool>(new[] { "-c", "--check" }, "Vérifie que le code généré est conforme au modèle.");
 var schemaOption = new Option<bool>(new[] { "-s", "--schema" }, "Génère le fichier de schéma JSON du fichier de config.");
 command.AddOption(fileOption);
+command.AddOption(excludeOption);
 command.AddOption(watchOption);
 command.AddOption(checkOption);
 command.AddOption(schemaOption);
 command.SetHandler(
-    (files, watch, check, schema) =>
+    (files, excludes, watch, check, schema) =>
     {
         regularCommand = true;
+        excludedTags = excludes.ToArray();
         watchMode = watch;
         checkMode = check;
         schemaMode = schema;
@@ -98,6 +102,7 @@ command.SetHandler(
         }
     },
     fileOption,
+    excludeOption,
     watchOption,
     checkOption,
     schemaOption);
@@ -124,6 +129,15 @@ var colors = new[] { ConsoleColor.DarkCyan, ConsoleColor.DarkYellow, ConsoleColo
 
 Console.WriteLine($"========= TopModel.Generator v{version} =========");
 Console.WriteLine();
+
+if (excludedTags.Any())
+{
+    Console.Write("Tags");
+    Console.ForegroundColor = ConsoleColor.DarkCyan;
+    Console.Write(" exclus ");
+    Console.ForegroundColor = ConsoleColor.Gray;
+    Console.WriteLine($"de la génération : {string.Join(", ", excludedTags)}.");
+}
 
 if (watchMode)
 {
@@ -251,6 +265,7 @@ for (var i = 0; i < configs.Count; i++)
                     {
                         var genConfig = (GeneratorConfigBase)fileChecker.GetGenConfig(configName, configType, genConfigMap);
 
+                        genConfig.ExcludedTags = excludedTags;
                         genConfig.InitVariables(config.App, number);
 
                         ModelUtils.TrimSlashes(genConfig, c => c.OutputDirectory);
@@ -281,6 +296,8 @@ for (var i = 0; i < configs.Count; i++)
             disposables.Add(provider);
 
             var modelStore = provider.GetRequiredService<ModelStore>();
+
+            modelStore.DisableLockfile = excludedTags.Any();
 
             var k = i;
             modelStore.OnResolve += hasError =>
