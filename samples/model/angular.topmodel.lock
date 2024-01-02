@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 1.42.5
+version: 1.42.6
 generatedFiles:
   - ../generators/angular/src/appgenerated/api/securite/profil/profil.ts
   - ../generators/angular/src/appgenerated/api/securite/utilisateur/utilisateur.ts

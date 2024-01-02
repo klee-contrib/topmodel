@@ -1,8 +1,12 @@
 # TopModel.Generator (`modgen`)
 
+## 1.42.6
+
+- [`eef607`](https://github.com/klee-contrib/topmodel/commit/eef6070036f4c97d5ce8159a8f9ef71abe5cac10) - modgen -e pour exclure des tags de la génération
+
 ## 1.42.5
 
-- [`2a3b27654a3c739d15a12c52775733001639e839`](https://github.com/klee-contrib/topmodel/commit/2a3b27654a3c739d15a12c52775733001639e839) - [modgen] correction boucle infinie IsMultipart
+- [`2a3b27`](https://github.com/klee-contrib/topmodel/commit/2a3b27654a3c739d15a12c52775733001639e839) - [modgen] correction boucle infinie IsMultipart
 
 ## 1.42.4
 
