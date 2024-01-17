@@ -57,7 +57,7 @@ public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
         string pk;
         if (!classe.PrimaryKey.Any() && classe.Extends != null)
         {
-            pk = Config.GetType(classe.Extends.PrimaryKey.Single());
+            pk = Config.GetType(classe.ExtendedProperties.Single(p => p.PrimaryKey));
         }
         else
         {
