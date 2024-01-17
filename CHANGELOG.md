@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.42.7
+
+- [`6948f3`](https://github.com/klee-contrib/topmodel/commit/6948f37238a4c8d8b2252ef007b5ec0b3fe279f1) - [Core] Mauvaise récupération de la clé primaire dans le cas d'héritage en cascade
+
+
 ## 1.42.6
 
 - [`eef607`](https://github.com/klee-contrib/topmodel/commit/eef6070036f4c97d5ce8159a8f9ef71abe5cac10) - modgen -e pour exclure des tags de la génération
