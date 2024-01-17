@@ -266,7 +266,7 @@ public class JpaModelPropertyGenerator
             }
 
             fw.AddImport("org.springframework.data.relational.core.mapping.Column");
-            fw.WriteLine(1, $@"@Column(""{property.Association.PrimaryKey.First().SqlName.ToLower()}"")");
+            fw.WriteLine(1, $@"@Column(""{property.Property.SqlName.ToLower()}"")");
             fw.WriteLine(1, $"private {_config.GetType(property)} {property.NameCamel};");
         }
     }
