@@ -15,7 +15,24 @@ public class AssociationProperty : IFieldProperty
 
     public IFieldProperty Property
     {
-        get => _property ?? Association?.PrimaryKey.FirstOrDefault() ?? Association?.Extends?.PrimaryKey.FirstOrDefault();
+        get
+        {
+            if (_property is not null)
+            {
+                return _property;
+            }
+
+            var prop = _property;
+            var ass = Association;
+
+            while (ass is not null && prop is null)
+            {
+                prop = ass.PrimaryKey.FirstOrDefault();
+                ass = ass.Extends;
+            }
+
+            return prop;
+        }
         set => _property = value;
     }
 
