@@ -515,6 +515,29 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   _Variables par tag_: **oui** (plusieurs DAOs pourraient être générés si un fichier à plusieurs tags)
 
+
+- `daosAbstract`
+
+  Génération des DAO sous forme 'Abtract' à hériter pour l'utiliser dans le projet dans le projet avec :
+  - le nom Abstract{classe.NamePascal}DAO
+  - le fichier java sera mise à jour (écrasé) à chaque génération de code
+  - l'annotation @NoRepositoryBean ajoutée (org.springframework.data.repository.NoRepositoryBean) permettant de ne pas considérer cette interface comme un DAO
+    - il faut donc créer une interface qui en hérite dans le projet
+  - le 'daosPath' peut être dans un répertoire de type 'javagen'
+
+- `daosInterface`
+
+  Permet de surcharger les interfaces par default des DAOS:
+  - si UseJdbc, l'interface est org.springframework.data.repository.CrudRepository
+  - si Reference, l'interface est org.springframework.data.repository.CrudRepository
+  - si aucun des deux, l'interface est org.springframework.data.jpa.repository.JpaRepository
+  - si daosInterface est précisée, les autres cas ne sont pas utilisés.
+
+  Seul le nom de la classe est configurable, elle doit respecter le même pattern générique que JpaRespository et CrudRepository soit :
+  - La classe de l'entité en premier 
+  - La classe de l'identifiant en second 
+  - {DaosInterface}<{classe.NamePascal}, {pk}>
+
 - `dtosPath`
 
   Localisation des classes non persistées du modèle, relative au répertoire de génération.

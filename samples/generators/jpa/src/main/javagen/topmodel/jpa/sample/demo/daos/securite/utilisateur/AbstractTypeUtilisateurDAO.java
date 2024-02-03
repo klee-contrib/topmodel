@@ -4,12 +4,14 @@
 
 package topmodel.jpa.sample.demo.daos.securite.utilisateur;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
+import topmodel.jpa.sample.demo.daos.repository.CustomCrudRepository;
 import topmodel.jpa.sample.demo.entities.securite.utilisateur.TypeUtilisateur;
 import topmodel.jpa.sample.demo.enums.securite.utilisateur.TypeUtilisateurCode;
 
 
-public interface TypeUtilisateurDAO extends CrudRepository<TypeUtilisateur, TypeUtilisateurCode> {
+@NoRepositoryBean
+interface AbstractTypeUtilisateurDAO extends CustomCrudRepository<TypeUtilisateur, TypeUtilisateurCode> {
 
 }
