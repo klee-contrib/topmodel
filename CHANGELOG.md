@@ -1,9 +1,12 @@
 # TopModel.Generator (`modgen`)
 
+## 1.42.8
+
+- [#334](https://github.com/klee-contrib/topmodel/pull/334) - [JPA] Permettre de personnaliser l'interface dont héritent les daos + dao abstract
+
 ## 1.42.7
 
 - [`6948f3`](https://github.com/klee-contrib/topmodel/commit/6948f37238a4c8d8b2252ef007b5ec0b3fe279f1) - [Core] Mauvaise récupération de la clé primaire dans le cas d'héritage en cascade
-
 
 ## 1.42.6
 

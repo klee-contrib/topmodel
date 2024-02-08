@@ -613,6 +613,16 @@
             "description": "Générer les entités en mode JDBC",
             "default": "false"
           },
+          "daosAbstract": {
+            "type": "boolean",
+            "description": " Génération d'interface Abstract avec @NoRepositoryBean permettant de mettre à jour le code généré",
+            "default": "false"
+          },
+          "daosInterface": {
+            "type": "string",
+            "description": "Précise l'interface des Daos générés.",
+            "default": "false"
+          },
           "mappersInClass": {
             "type": "boolean",
             "description": "Indique s'il faut ajouter les mappers en tant méthode ou constructeur dans les classes qui les déclarent"
