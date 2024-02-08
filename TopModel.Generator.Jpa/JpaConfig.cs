@@ -100,6 +100,16 @@ public class JpaConfig : GeneratorConfigBase
     public bool UseJdbc { get; set; } = false;
 
     /// <summary>
+    /// Génération d'interface Abstract avec @NoRepositoryBean permettant de mettre à jour le code généré.
+    /// </summary>
+    public bool DaosAbstract { get; set; } = false;
+
+    /// <summary>
+    /// Précise l'interface des Daos générés.
+    /// </summary>
+    public string? DaosInterface { get; set; }
+
+    /// <summary>
     /// Indique s'il faut ajouter les mappers en tant méthode ou constructeur dans les classes qui les déclarent.
     /// </summary>
     public bool MappersInClass { get; set; } = true;

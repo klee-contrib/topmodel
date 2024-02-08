@@ -26,16 +26,17 @@ public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
 
     protected override string GetFileName(Class classe, string tag)
     {
+        string path = Config.DaosAbstract ? $"Abstract{classe.NamePascal}DAO.java" : $"{classe.NamePascal}DAO.java";
         return Path.Combine(
             Config.OutputDirectory,
             Config.ResolveVariables(Config.DaosPath!, tag, module: classe.Namespace.Module).ToFilePath(),
-            $"{classe.NamePascal}DAO.java");
+            path);
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         // Ne génère le DAO qu'une seule fois
-        if (File.Exists(fileName))
+        if (!Config.DaosAbstract && File.Exists(fileName))
         {
             return;
         }
@@ -64,7 +65,32 @@ public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
             pk = classe.PrimaryKey.Count() > 1 ? $"{classe.NamePascal}.{classe.NamePascal}Id" : Config.GetType(classe.PrimaryKey.Single());
         }
 
-        fw.WriteLine($"public interface {classe.NamePascal}DAO extends {(classe.Reference || Config.UseJdbc ? "CrudRepository" : "JpaRepository")}<{classe.NamePascal}, {pk}> {{");
+        string daosInterface;
+        if (Config.DaosInterface != null)
+        {
+            int lastIndexOf = Config.DaosInterface.LastIndexOf(".");
+            string daosInterfaceName = lastIndexOf > -1 ? Config.DaosInterface.Substring(lastIndexOf + 1) : Config.DaosInterface;
+            daosInterface = $"{daosInterfaceName}<{classe.NamePascal}, {pk}>";
+        }
+        else if (classe.Reference || Config.UseJdbc)
+        {
+            daosInterface = $"CrudRepository<{classe.NamePascal}, {pk}>";
+        }
+        else
+        {
+            daosInterface = $"JpaRepository<{classe.NamePascal}, {pk}>";
+        }
+
+        if (Config.DaosAbstract)
+        {
+            fw.WriteLine("@NoRepositoryBean");
+            fw.WriteLine($"interface Abstract{classe.NamePascal}DAO extends {daosInterface} {{");
+        }
+        else
+        {
+            fw.WriteLine($"interface {classe.NamePascal}DAO extends {daosInterface} {{");
+        }
+
         fw.WriteLine();
         fw.WriteLine("}");
     }
@@ -75,17 +101,23 @@ public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
         {
             classe.GetImport(Config, tag)
         };
-        if (Config.UseJdbc)
+
+        if (Config.DaosInterface != null)
         {
-            imports.Add("org.springframework.data.repository.CrudRepository");
+            imports.Add($"{Config.DaosInterface}");
         }
-        else if (classe.Reference)
+        else if (classe.Reference || Config.UseJdbc)
         {
             imports.Add("org.springframework.data.repository.CrudRepository");
         }
         else
         {
             imports.Add("org.springframework.data.jpa.repository.JpaRepository");
+        }
+
+        if (Config.DaosAbstract)
+        {
+            imports.Add("org.springframework.data.repository.NoRepositoryBean");
         }
 
         fw.AddImports(imports);
