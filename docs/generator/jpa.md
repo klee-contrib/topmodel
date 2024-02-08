@@ -439,9 +439,9 @@ Pour que, pour chaque module, soit généré les fichiers de resources dans les 
   - si UseJdbc, l'interface est org.springframework.data.repository.CrudRepository
   - si Reference, l'interface est org.springframework.data.repository.CrudRepository
   - si aucun des deux, l'interface est org.springframework.data.jpa.repository.JpaRepository
-  - si daosInterface est préciser, les autres cas ne sont pas utilisés.
+  - si daosInterface est précisée, les autres cas ne sont pas utilisés.
 
-  Seul le nom de la classe est configurable, elle doit respecté le même pattern générique que JpaRespository et CrudRepository soit:
+  Seul le nom de la classe est configurable, elle doit respecter le même pattern générique que JpaRespository et CrudRepository soit :
   - La classe de l'entité en premier 
   - La classe de l'identifiant en second 
   - {DaosInterface}<{classe.NamePascal}, {pk}>
