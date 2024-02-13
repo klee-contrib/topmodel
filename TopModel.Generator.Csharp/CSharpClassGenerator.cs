@@ -188,10 +188,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 GenerateEnumCols(w, item);
             }
 
-            if (Config.CanClassUseEnums(item, Classes))
-            {
-                GenerateEnumValues(w, item);
-            }
+            GenerateEnumValues(w, item);
 
             GenerateFlags(w, item);
         }
@@ -316,7 +313,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             return true;
         }
 
-        var hasLine = WriteEnum(item.EnumKey!);
+        var hasLine = Config.CanClassUseEnums(item, Classes) && WriteEnum(item.EnumKey!);
 
         foreach (var uk in item.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(item, Classes, uk.Single())))
         {
