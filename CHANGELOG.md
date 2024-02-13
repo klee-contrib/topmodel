@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.42.9
+
+- [`76ade23`](https://github.com/klee-contrib/topmodel/commit/76ade23bd1a8d26ca99630041c96faeaa82b53c6) - [C#] Fix génération enum si PK ne peut pas être un enum (genre int)
+
 ## 1.42.8
 
 - [#334](https://github.com/klee-contrib/topmodel/pull/334) - [JPA] Permettre de personnaliser l'interface dont héritent les daos + dao abstract
