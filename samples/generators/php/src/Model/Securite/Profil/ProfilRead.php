@@ -12,6 +12,7 @@ use Symfony\Component\Validator\Constraints\Length;
 
 class ProfilRead
 {
+  #[Symfony\Component\Validator\Constraints\NotNull]
   private int $id;
 
   #[Symfony\Component\Validator\Constraints\NotNull]

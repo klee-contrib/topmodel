@@ -67,7 +67,7 @@
             },
             "primaryKey": {
               "type": "boolean",
-              "description": "Précise si la propriété est la clé primaire de la table associée à la classe."
+              "description": "Précise si la propriété fait partie de la clé primaire de la table associée à la classe. Une classe avec au moins une clé primaire sera persistée."
             },
             "required": {
               "type": "boolean",
@@ -134,7 +134,7 @@
             },
             "primaryKey": {
               "type": "boolean",
-              "description": "Précise si la propriété est la clé primaire de la table associée à la classe."
+              "description": "Précise si la propriété fait partie de la clé primaire de la table associée à la classe. Une classe avec au moins une clé primaire sera persistée."
             },
             "readonly": {
               "type": "boolean",
@@ -295,6 +295,10 @@
             "required": {
               "type": "boolean",
               "description": "Surcharge le caractère obligatoire de la propriété aliasée."
+            },
+            "primaryKey": {
+              "type": "boolean",
+              "description": "Précise si la propriété fait partie de la clé primaire de la table associée à la classe. Une classe avec au moins une clé primaire sera persistée. **Un alias ne récupère pas `primaryKey: true` de la propriété qu'il recopie.**"
             },
             "readonly": {
               "type": "boolean",

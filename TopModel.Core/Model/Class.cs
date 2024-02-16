@@ -27,7 +27,7 @@ public class Class : IPropertyContainer
 #nullable enable
     public Class? Extends { get; set; }
 
-    public List<(Decorator Decorator, string[] Parameters)> Decorators { get; } = new();
+    public List<(Decorator Decorator, string[] Parameters)> Decorators { get; } = [];
 
     public string? Label { get; set; }
 
@@ -60,15 +60,15 @@ public class Class : IPropertyContainer
 
     public bool Enum { get; set; }
 
-    public List<ClassValue> Values { get; } = new();
+    public List<ClassValue> Values { get; } = [];
 
-    public List<List<IFieldProperty>> UniqueKeys { get; } = new();
+    public List<List<IFieldProperty>> UniqueKeys { get; } = [];
 
-    public List<FromMapper> FromMappers { get; } = new();
+    public List<FromMapper> FromMappers { get; } = [];
 
     public IEnumerable<IProperty> FromMapperProperties => FromMappers.SelectMany(fm => fm.PropertyParams.Select(pp => pp.Property));
 
-    public List<ClassMappings> ToMappers { get; } = new();
+    public List<ClassMappings> ToMappers { get; } = [];
 
     public string PluralName
     {
@@ -80,7 +80,7 @@ public class Class : IPropertyContainer
 
     public string PluralNamePascal => PluralName.ToPascalCase();
 
-    public bool IsPersistent => Properties.Any(p => p is not AliasProperty && p.PrimaryKey) || (Extends != null && Extends.IsPersistent);
+    public bool IsPersistent => Properties.Any(p => p.PrimaryKey) || (Extends != null && Extends.IsPersistent);
 
     public ClassReference? ExtendsReference { get; set; }
 
@@ -90,21 +90,21 @@ public class Class : IPropertyContainer
 
     public Reference? FlagPropertyReference { get; set; }
 
-    public List<DecoratorReference> DecoratorReferences { get; } = new();
+    public List<DecoratorReference> DecoratorReferences { get; } = [];
 
-    public List<List<Reference>> UniqueKeyReferences { get; } = new();
+    public List<List<Reference>> UniqueKeyReferences { get; } = [];
 
-    public Dictionary<Reference, Dictionary<Reference, string>> ValueReferences { get; } = new();
+    public Dictionary<Reference, Dictionary<Reference, string>> ValueReferences { get; } = [];
 
     public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies(this)
-        .Concat(Extends != null ? new[] { new ClassDependency(Extends, this) } : Array.Empty<ClassDependency>());
+        .Concat(Extends != null ? [new ClassDependency(Extends, this)] : Array.Empty<ClassDependency>());
 
     internal LocatedString? EnumOverride { get; set; }
 
 #nullable disable
     internal Reference Location { get; set; }
 
-    internal List<string> OwnTags { get; set; } = new();
+    internal List<string> OwnTags { get; set; } = [];
 
     public bool Inherit(Class classe) => this == classe || this.Extends != null && this.Extends.Inherit(classe);
 

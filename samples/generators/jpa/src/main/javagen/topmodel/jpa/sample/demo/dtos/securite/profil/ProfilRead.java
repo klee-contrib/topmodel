@@ -28,6 +28,7 @@ public class ProfilRead implements Serializable {
 	 * Id technique.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getId() Profil#getId()} 
 	 */
+	@NotNull
 	private Integer id;
 
 	/**

@@ -1181,15 +1181,9 @@ public class ModelStore
                             {
                                 yield return new ModelError(classe, $"L'association '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car l'association et la composition doivent toutes les deux être simples.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1018 };
                             }
-                            else
+                            else if (!_config.UseLegacyAssociationCompositionMappers && cp.CompositionPrimaryKey?.Domain != mappedAp.Domain && !Converters.Any(c => c.From.Any(cf => cf == cp.CompositionPrimaryKey?.Domain) && c.To.Any(ct => ct == mappedAp.Domain)))
                             {
-                                var cpPks = cp.Composition.ExtendedProperties.OfType<IFieldProperty>().Where(p => p.PrimaryKey);
-                                var cpPk = cpPks.Count() == 1 ? cpPks.Single() : null;
-
-                                if (!_config.UseLegacyAssociationCompositionMappers && cpPk?.Domain != mappedAp.Domain && !Converters.Any(c => c.From.Any(cf => cf == cpPk?.Domain) && c.To.Any(ct => ct == mappedAp.Domain)))
-                                {
-                                    yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la composition '{cp.Composition.Name}' ('{mappedProperty.Domain.Name}' au lieu de '{cpPk?.Domain?.Name ?? string.Empty}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1019 };
-                                }
+                                yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la composition '{cp.Composition.Name}' ('{mappedProperty.Domain.Name}' au lieu de '{cp.CompositionPrimaryKey?.Domain?.Name ?? string.Empty}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1019 };
                             }
                         }
                     }
