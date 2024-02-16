@@ -70,6 +70,11 @@ public class JavascriptConfig : GeneratorConfigBase
     /// </summary>
     public bool GenerateComments { get; set; }
 
+    /// <summary>
+    /// Génère un fichier 'index.ts' qui importe et réexporte tous les fichiers de resources générés par langue. Uniquement compatible avec `resourceMode: js`.
+    /// </summary>
+    public bool GenerateMainResourceFiles { get; set; }
+
     public override string[] PropertiesWithModuleVariableSupport => new[]
     {
         nameof(ApiClientFilePath)
@@ -111,7 +116,7 @@ public class JavascriptConfig : GeneratorConfigBase
     public IEnumerable<(string Import, string Path)> GetDomainImportPaths(string fileName, IProperty prop, string tag)
     {
         return GetDomainImports(prop, tag)
-            .Select(import => (Import: import.Split("/").Last(), Path: GetRelativePath(import[..import.LastIndexOf("/")], fileName)));
+            .Select(import => (Import: import.Split("/").Last(), Path: GetRelativePath(import[..import.LastIndexOf('/')], fileName)));
     }
 
     public List<(string Import, string Path)> GetEndpointImports(string fileName, IEnumerable<Endpoint> endpoints, string tag, IEnumerable<Class> availableClasses)
@@ -174,12 +179,22 @@ public class JavascriptConfig : GeneratorConfigBase
 
         var path = Path.GetRelativePath(string.Join('/', source.Split('/').SkipLast(1)), target)[..^3].Replace("\\", "/");
 
-        if (!path.StartsWith("."))
+        if (!path.StartsWith('.'))
         {
             path = $"./{path}";
         }
 
         return path;
+    }
+
+    public string GetMainResourceFilePath(string tag, string lang)
+    {
+        return Path.Combine(
+            OutputDirectory,
+            ResolveVariables(ResourceRootPath!, tag),
+            lang,
+            "index.ts")
+        .Replace("\\", "/");
     }
 
     public string GetReferencesFileName(Namespace ns, string tag)
@@ -189,7 +204,7 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public string GetRelativePath(string path, string fileName)
     {
-        return !path.StartsWith(".")
+        return !path.StartsWith('.')
             ? path
             : Path.GetRelativePath(string.Join('/', fileName.Split('/').SkipLast(1)), Path.Combine(OutputDirectory, path)).Replace("\\", "/");
     }
@@ -207,7 +222,7 @@ public class JavascriptConfig : GeneratorConfigBase
     public IEnumerable<(string Import, string Path)> GetValueImportPaths(string fileName, IFieldProperty prop, string? value = null)
     {
         return GetValueImports(prop, value)
-            .Select(import => (Import: import.Split("/").Last(), Path: GetRelativePath(import[..import.LastIndexOf("/")], fileName)));
+            .Select(import => (Import: import.Split("/").Last(), Path: GetRelativePath(import[..import.LastIndexOf('/')], fileName)));
     }
 
     public bool IsListComposition(IProperty property)

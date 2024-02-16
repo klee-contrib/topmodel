@@ -34,6 +34,16 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
         return Config.GetCommentResourcesFilePath(property.Parent.Namespace, tag, _modelConfig.I18n.DefaultLang);
     }
 
+    protected override string? GetMainResourceFilePath(string tag, string lang)
+    {
+        if (!Config.GenerateMainResourceFiles || Config.ResourceMode != ResourceMode.JS)
+        {
+            return null;
+        }
+
+        return Config.GetMainResourceFilePath(tag, lang);
+    }
+
     protected override string GetResourceFilePath(IFieldProperty property, string tag, string lang)
     {
         return Config.GetResourcesFilePath(property.Parent.Namespace, tag, lang);
@@ -51,7 +61,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
         }
         else
         {
-            fw.WriteLine($"export const {module.ToCamelCase()} = {{");
+            fw.WriteLine($"export const {module.ToCamelCase()}Comments = {{");
         }
 
         WriteSubModule(fw, _modelConfig.I18n.DefaultLang, properties, true, 1);
@@ -63,6 +73,25 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
         else
         {
             fw.WriteLine("};");
+        }
+    }
+
+    protected override void HandleMainResourceFile(string mainFilePath, IEnumerable<(string ModuleFilePath, string ModuleName)> modules)
+    {
+        using var fw = new FileWriter(mainFilePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = true };
+
+        foreach (var (moduleFilePath, moduleName) in modules)
+        {
+            fw.WriteLine($"import {{{moduleName.ToCamelCase()}}} from \"./{Path.GetRelativePath(Path.GetDirectoryName(mainFilePath)!, moduleFilePath).Replace("\\", "/").Replace(".ts", string.Empty)}\";");
+        }
+
+        fw.WriteLine();
+        fw.WriteLine($"export const all = {{{string.Join(", ", modules.Where(m => !m.ModuleFilePath.EndsWith(".comments.ts")).Select(m => m.ModuleName.ToCamelCase()))}}};");
+
+        var comments = modules.Where(m => m.ModuleFilePath.EndsWith(".comments.ts")).Select(m => m.ModuleName.ToCamelCase());
+        if (comments.Any())
+        {
+            fw.WriteLine($"export const allComments = {{{string.Join(", ", comments)}}};");
         }
     }
 
