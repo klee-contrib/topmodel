@@ -1,5 +1,25 @@
 # TopModel.Generator (`modgen`)
 
+## 1.43.0
+
+- [#336](https://github.com/klee-contrib/topmodel/pull/336) - `primaryKey: true` sur alias
+
+  Les clés primaires ne sont plus implicitement recopiées sur un alias de clé primaire, ce qui permet de pouvoir mettre un `required: false` dessus, où bien de pouvoir définir un alias comme clé primaire sur une classe persistée (avec `primaryKey: true`).
+
+  **petits breaking changes**
+
+  - Les `required: false` sur les PK sont désormais bien pris en compte.
+  - Il y a maintenant `@NotNull` sur les alias de PK sur les DTOs en JPA (si pas de surcharge avec `required: false`).
+  - Les DTOs ne peuvent plus avoir de PK (implicite), ce qui empêche de faire des associations dessus sans spécifier de propriété (...)
+
+- [`d723e5f`](https://github.com/klee-contrib/topmodel/commit/d723e5fbd98917250a3ac5c1f2eb4af28bb278a8) - [JS] `generateMainResourceFile`
+
+  Vous pouvez désormais générer un fichier `index.ts` à la racine des traductions côté JS qui réexporte tous les modules dans un seul objet `all` (et `allComments` si vous avez activé la génération des commentaires).
+
+  **minuscule breaking change**
+
+  - Les objets exportés contenant les commentaires s'appellent désormais `{module}Comments` au lieu de `{module}`.
+
 ## 1.42.9
 
 - [`76ade23`](https://github.com/klee-contrib/topmodel/commit/76ade23bd1a8d26ca99630041c96faeaa82b53c6) - [C#] Fix génération enum si PK ne peut pas être un enum (genre int)

@@ -464,6 +464,10 @@
             "type": "boolean",
             "description": "Ajoute les commentaires dans les entités JS générées."
           },
+          "generateMainResourceFiles": {
+            "type": "boolean",
+            "description": "Génère un fichier 'index.ts' qui importe et réexporte tous les fichiers de resources générés par langue. Uniquement compatible avec `resourceMode: js`."
+          },
           "referenceMode": {
             "type": "string",
             "description": "Mode de génération des listes de références (définitions ou valeurs).",
