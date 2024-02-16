@@ -167,6 +167,8 @@ De plus, il est possible de surcharger les propriétés suivantes de la proprié
 
 Ces surcharges s'appliqueront, comme toutes les autres propriétés de configuration de l'alias, sur toutes les propriétés incluses dans la définition. Par conséquent, si vous voulez changer le libellé ou le nom d'un champ dans un alias, il vous faudra très certainement séparer vos définitions d'alias.
 
+La valeur de `primaryKey` n'est **pas recopiée** depuis la définition de la propriété initiale. Un alias peut néanmoins faire partie de la clé primaire de la classe qui le défini (avec `primaryKey: true`, comme pour les autres propriétés). La notion de clé primaire étant liée à la classe (et permettant de déterminer si la classe est [persistée](./classes.md#classe-persistée)), il est logique qu'elle ne soit pas recopiée sur l'alias.
+
 ## Valeurs par défaut
 
 La propriété `defaultValue` permet de définir une valeur par défaut sur toutes les propriétés hors composition. Elle sera être utilisée dans les définitions de classes et d'endpoints générés, à condition que la configuration du générateur en question ne spécifie pas `ignoreDefaultValues: true` (ce qui est le cas par défaut du générateur SQL). Les générateurs utiliseront les [templates de valeurs](./domains.md#templates-de-valeurs) associés à leur implémentation pour la génération.

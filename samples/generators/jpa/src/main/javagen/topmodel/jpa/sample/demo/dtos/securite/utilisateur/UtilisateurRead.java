@@ -28,6 +28,7 @@ public class UtilisateurRead implements Serializable {
 	 * Id de l'utilisateur.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getId() Utilisateur#getId()} 
 	 */
+	@NotNull
 	private Integer id;
 
 	/**

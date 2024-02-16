@@ -61,7 +61,7 @@ Une classe peut être définie comme **abstraite** (via `abstract: true`), pour 
 
 ## Classe persistée
 
-TopModel considère une classe comme étant **persistée** si elle définit **au moins une clé primaire qui n'est pas un alias**. Cette catégorisation est largement utilisée par les divers générateurs pour déterminer si une classe fait partie du modèle de base de données ou s'il d'agit d'un DTO. Cette distinction, bien qu'importante dans l'architecture générale du modèle d'une application, n'a (presque) aucun impact dans la façon de modéliser des classes dans TopModel. De ce fait, **il n'est pas possible de surcharger cette classification**.
+TopModel considère une classe comme étant **persistée** si elle définit **au moins une propriété de clé primaire** (`primaryKey: true`). Cette catégorisation est largement utilisée par les divers générateurs pour déterminer si une classe fait partie du modèle de base de données ou s'il d'agit d'un DTO. Cette distinction, bien qu'importante dans l'architecture générale du modèle d'une application, n'a (presque) aucun impact dans la façon de modéliser des classes dans TopModel. De ce fait, **il n'est pas possible de surcharger cette classification**.
 
 _Remarque : en particulier, une classe enum, une classe de référence, une classe abstraite, ou une classe avec des valeurs peuvent tout à fait être persistées comme non persistées. Naturellement, cela impactera ce qui sera généré._
 

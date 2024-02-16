@@ -78,7 +78,7 @@ public class AliasProperty : IFieldProperty
         set => _label = value;
     }
 
-    public bool PrimaryKey => (_property?.PrimaryKey ?? false) && Prefix == null && Suffix == null;
+    public bool PrimaryKey { get; set; }
 
     public bool Required
     {
@@ -107,7 +107,7 @@ public class AliasProperty : IFieldProperty
 
     public string[] DomainParameters
     {
-        get => _domainParameters ?? _property?.DomainParameters ?? Array.Empty<string>();
+        get => _domainParameters ?? _property?.DomainParameters ?? [];
         set => _domainParameters = value;
     }
 
@@ -136,6 +136,11 @@ public class AliasProperty : IFieldProperty
             : (OriginalProperty?.Class?.IsPersistent ?? false)
                 ? OriginalProperty
                 : null;
+
+    public bool AliasedPrimaryKey => (OriginalProperty is AliasProperty op
+        ? op.PrimaryKey || op.AliasedPrimaryKey
+        : (OriginalProperty?.PrimaryKey ?? false))
+        && Prefix == null && Suffix == null;
 
     public AliasReference? Reference { get; set; }
 
@@ -166,6 +171,7 @@ public class AliasProperty : IFieldProperty
             Label = _label,
             Location = Location,
             As = As,
+            PrimaryKey = PrimaryKey,
             OriginalAliasProperty = OriginalAliasProperty,
             Prefix = Prefix,
             Property = _property,
@@ -211,6 +217,7 @@ public class AliasProperty : IFieldProperty
             Decorator = Decorator,
             DomainReference = DomainReference,
             Endpoint = Endpoint,
+            PrimaryKey = PrimaryKey,
             Prefix = Prefix,
             Suffix = Suffix,
             Comment = _comment!,

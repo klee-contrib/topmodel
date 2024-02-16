@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints\Length;
 
 class UtilisateurRead
 {
+  #[Symfony\Component\Validator\Constraints\NotNull]
   private int $id;
 
   #[Symfony\Component\Validator\Constraints\NotNull]

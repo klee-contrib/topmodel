@@ -395,7 +395,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                     {
                         w.WriteAttribute(1, "ReferencedType", $"typeof({ap.Association.NamePascal})");
                     }
-                    else if (fp is AliasProperty alp2 && !alp2.PrimaryKey && alp2.Property.PrimaryKey && Classes.Contains(alp2.Property.Class) && alp2.Property.Class.Reference)
+                    else if (fp is AliasProperty alp2 && !alp2.AliasedPrimaryKey && alp2.Property.PrimaryKey && Classes.Contains(alp2.Property.Class) && alp2.Property.Class.Reference)
                     {
                         w.WriteAttribute(1, "ReferencedType", $"typeof({alp2.Property.Class.NamePascal})");
                     }
@@ -514,7 +514,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 case AliasProperty { Property: AssociationProperty ap2 } when Classes.Contains(ap2.Association) && (Config.CanClassUseEnums(ap2.Association, Classes, ap2.Property) || Config.Kinetix && ap2.Association.IsPersistent && ap2.Association.Reference):
                     usings.Add(GetNamespace(ap2.Association, tag));
                     break;
-                case AliasProperty { Property: RegularProperty rp } alp when Classes.Contains(rp.Class) && (Config.CanClassUseEnums(rp.Class, Classes, rp) || Config.Kinetix && !alp.PrimaryKey && rp.PrimaryKey && rp.Class.Reference):
+                case AliasProperty { Property: RegularProperty rp } alp when Classes.Contains(rp.Class) && (Config.CanClassUseEnums(rp.Class, Classes, rp) || Config.Kinetix && !alp.AliasedPrimaryKey && rp.PrimaryKey && rp.Class.Reference):
                     usings.Add(GetNamespace(rp.Class, tag));
                     break;
                 case CompositionProperty cp:

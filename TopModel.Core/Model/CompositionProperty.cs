@@ -42,6 +42,22 @@ public class CompositionProperty : IProperty
 
     public bool Required { get; set; } = true;
 
+#nullable enable
+    public IFieldProperty? CompositionPrimaryKey
+    {
+        get
+        {
+            var cpPks = Composition.ExtendedProperties.OfType<IFieldProperty>().Where(p => p.PrimaryKey);
+            if (!cpPks.Any())
+            {
+                cpPks = Composition.ExtendedProperties.OfType<AliasProperty>().Where(p => p.AliasedPrimaryKey);
+            }
+
+            return cpPks.Count() == 1 ? cpPks.Single() : null;
+        }
+    }
+
+#nullable disable
     public ClassReference Reference { get; set; }
 
     internal Reference Location { get; set; }

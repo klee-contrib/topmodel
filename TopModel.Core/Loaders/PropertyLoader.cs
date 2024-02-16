@@ -253,6 +253,9 @@ public class PropertyLoader : ILoader<IProperty>
                         case "required":
                             alp.Required = value!.Value == "true";
                             break;
+                        case "primaryKey":
+                            alp.PrimaryKey = value!.Value == "true";
+                            break;
                         case "readonly":
                             alp.Readonly = value!.Value == "true";
                             break;

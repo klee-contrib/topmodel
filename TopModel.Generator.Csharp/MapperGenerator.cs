@@ -154,7 +154,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
                             if (mapping.Key is CompositionProperty cp)
                             {
-                                w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.Composition.PrimaryKey.SingleOrDefault()?.NamePascal} = ");
+                                w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.CompositionPrimaryKey?.NamePascal} = ");
                             }
                             else
                             {
@@ -168,7 +168,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                                 w.Write(" }");
                             }
 
-                            if (mapper.Params.IndexOf(param) < mapper.Params.Count() - 1 || mappings.IndexOf(mapping) < mappings.Count - 1)
+                            if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1 || mappings.IndexOf(mapping) < mappings.Count - 1)
                             {
                                 w.Write(",");
                             }
@@ -191,7 +191,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                             w.Write(3, $"{param.TargetProperty.NamePascal} = {param.NameCamel}");
                         }
 
-                        if (mapper.Params.IndexOf(param) < mapper.Params.Count() - 1)
+                        if (mapper.Params.IndexOf(param) < mapper.Params.Count - 1)
                         {
                             w.Write(",");
                         }
@@ -255,7 +255,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
             {
                 if (property is CompositionProperty cp)
                 {
-                    return $"{cp.NamePascal}?.{cp.Composition.PrimaryKey.SingleOrDefault()?.NamePascal}";
+                    return $"{cp.NamePascal}?.{cp.CompositionPrimaryKey?.NamePascal}";
                 }
                 else
                 {
