@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.43.1
+
+- [`1832387`](https://github.com/klee-contrib/topmodel/commit/1832387ea30fbd265281e9c260abb06431386656) - [JS] Fix génération `allComments`
+
 ## 1.43.0
 
 - [#336](https://github.com/klee-contrib/topmodel/pull/336) - `primaryKey: true` sur alias
