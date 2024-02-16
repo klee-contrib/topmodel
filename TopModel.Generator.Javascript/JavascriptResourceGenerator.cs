@@ -91,7 +91,9 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
         var comments = modules.Where(m => m.ModuleFilePath.EndsWith(".comments.ts")).Select(m => m.ModuleName.ToCamelCase());
         if (comments.Any())
         {
-            fw.WriteLine($"export const allComments = {{{string.Join(", ", comments)}}};");
+            fw.WriteLine($@"export const allComments = {{
+    {string.Join($",{Environment.NewLine}    ", comments.Select(c => $"{c[0..^8]}: {c}"))}
+}};");
         }
     }
 
