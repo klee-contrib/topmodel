@@ -16,7 +16,7 @@
   - Il y a maintenant `@NotNull` sur les alias de PK sur les DTOs en JPA (si pas de surcharge avec `required: false`).
   - Les DTOs ne peuvent plus avoir de PK (implicite), ce qui empêche de faire des associations dessus sans spécifier de propriété (...)
 
-- [`d723e5f`](https://github.com/klee-contrib/topmodel/commit/d723e5fbd98917250a3ac5c1f2eb4af28bb278a8) - [JS] `generateMainResourceFile`
+- [`d723e5f`](https://github.com/klee-contrib/topmodel/commit/d723e5fbd98917250a3ac5c1f2eb4af28bb278a8) - [JS] `generateMainResourceFiles`
 
   Vous pouvez désormais générer un fichier `index.ts` à la racine des traductions côté JS qui réexporte tous les modules dans un seul objet `all` (et `allComments` si vous avez activé la génération des commentaires).
 
