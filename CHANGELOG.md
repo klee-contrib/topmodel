@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.43.2
+
+- [#340](https://github.com/klee-contrib/topmodel/pull/340) - [JPA] [Flux de données] ne pas générer colonne pour les attributs @OneToMany 
+- [#338](https://github.com/klee-contrib/topmodel/pull/338) - [JPA] Import manquant lors de la génération d'une classe étendant une classe d'un autre module 
+
 ## 1.43.1
 
 - [`1832387`](https://github.com/klee-contrib/topmodel/commit/1832387ea30fbd265281e9c260abb06431386656) - [JS] Fix génération `allComments`
