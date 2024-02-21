@@ -95,7 +95,7 @@ public class JpaModelPropertyGenerator
 
     public void WriteProperties(JavaWriter fw, Class classe, string tag)
     {
-        var properties = _config.UseJdbc ? classe.Properties : classe.GetProperties(_classes);
+        var properties = _config.UseJdbc ? classe.Properties.Where(p => !(p is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany))) : classe.GetProperties(_classes);
         foreach (var property in properties)
         {
             WriteProperty(fw, classe, property, tag);
