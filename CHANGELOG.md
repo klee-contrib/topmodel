@@ -1,8 +1,13 @@
 # TopModel.Generator (`modgen`)
 
+## 1.43.3
+
+- [`3d2c1f0`](https://github.com/klee-contrib/topmodel/commit/3d2c1f0492f7bbc4c6365a3a694ea717b21e0b6a)  - [JPA] Correction mapping dataflow
+
 ## 1.43.2
 
 - [#340](https://github.com/klee-contrib/topmodel/pull/340) - [JPA] [Flux de données] ne pas générer colonne pour les attributs @OneToMany 
+
 - [#338](https://github.com/klee-contrib/topmodel/pull/338) - [JPA] Import manquant lors de la génération d'une classe étendant une classe d'un autre module 
 
 ## 1.43.1

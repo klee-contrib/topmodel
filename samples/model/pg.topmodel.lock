@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 1.43.2
+version: 1.43.3
 generatedFiles:
   - ../generators/pg/src/01_tables.sql
   - ../generators/pg/src/02_fk_indexes.sql
