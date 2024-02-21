@@ -420,7 +420,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
     private void WriteGetters(JavaWriter fw, Class classe, string tag)
     {
-        var properties = Config.UseJdbc ? classe.Properties : classe.GetProperties(AvailableClasses);
+        var properties = Config.UseJdbc ? classe.Properties.Where(p => !(p is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany))) : classe.GetProperties(AvailableClasses);
         foreach (var property in properties)
         {
             _jpaModelPropertyGenerator!.WriteGetter(fw, classe, tag, property);
@@ -472,7 +472,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
     private void WriteSetters(JavaWriter fw, Class classe, string tag)
     {
-        var properties = Config.UseJdbc ? classe.Properties : classe.GetProperties(AvailableClasses);
+        var properties = Config.UseJdbc ? classe.Properties.Where(p => !(p is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany))) : classe.GetProperties(AvailableClasses);
         foreach (var property in properties)
         {
             _jpaModelPropertyGenerator!.WriteSetter(fw, classe, tag, property);
