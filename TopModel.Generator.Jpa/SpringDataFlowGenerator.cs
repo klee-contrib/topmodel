@@ -491,6 +491,7 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         }
 
         foreach (var property in dataFlow.Class.ExtendedProperties.OfType<IFieldProperty>()
+            .Where(p => !(p is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.OneToMany)))
             .Where(p => mapper == null || mapper.ClassParams.SelectMany(pa => pa.Mappings).Select(mapping => mapping.Key).Contains(p)))
         {
             var sqlType = property.Domain.Implementations["sql"].Type ?? string.Empty;
