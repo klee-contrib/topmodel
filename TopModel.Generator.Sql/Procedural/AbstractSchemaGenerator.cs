@@ -425,6 +425,7 @@ public abstract class AbstractSchemaGenerator
             {
                 Association = classe.Extends,
                 Class = classe,
+                Comment = "Association vers la clé primaire de la classe parente",
                 Required = true,
                 PrimaryKey = !classe.PrimaryKey.Any()
             });

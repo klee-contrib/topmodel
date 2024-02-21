@@ -45,10 +45,6 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
     {
     }
 
-    protected virtual void HandleMainResourceFile(string mainFilePath, IEnumerable<(string ModuleFilePath, string ModuleName)> modules)
-    {
-    }
-
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
         var modules = new List<(string MainFilePath, string ModuleFilePath, string ModuleName)>();
@@ -89,6 +85,10 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
         {
             HandleMainResourceFile(g.Key, g.Select(l => (l.ModuleFilePath, l.ModuleName)).OrderBy(m => m.ModuleFilePath));
         }
+    }
+
+    protected virtual void HandleMainResourceFile(string mainFilePath, IEnumerable<(string ModuleFilePath, string ModuleName)> modules)
+    {
     }
 
     protected abstract void HandleResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties);
