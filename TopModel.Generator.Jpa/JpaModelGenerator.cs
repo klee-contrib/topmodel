@@ -75,6 +75,11 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         WriteAnnotations(fw, classe, tag);
 
         var extends = Config.GetClassExtends(classe);
+        if (classe.Extends is not null)
+        {
+            fw.AddImport($"{Config.GetPackageName(classe.Extends, tag)}.{classe.Extends.NamePascal}");
+        }
+
         var implements = Config.GetClassImplements(classe).ToList();
 
         if (!classe.IsPersistent)
