@@ -133,9 +133,9 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                 w.WriteLine(2, "{");
             }
 
-            foreach (var lol in mapper.Params)
+            foreach (var p in mapper.Params)
             {
-                lol.Switch(
+                p.Switch(
                     param =>
                     {
                         var mappings = param.Mappings.ToList();

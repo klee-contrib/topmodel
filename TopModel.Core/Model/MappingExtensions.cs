@@ -1,5 +1,4 @@
 ﻿using OneOf;
-using TopModel.Utils;
 
 namespace TopModel.Core;
 
@@ -17,7 +16,7 @@ public static class MappingExtensions
 
     public static string GetNameCamel(this OneOf<ClassMappings, PropertyMapping> mapping)
     {
-        return mapping.GetName().ToCamelCase();
+        return mapping.Match(c => c.Name.ToCamelCase(), p => p.Property.NameCamel);
     }
 
     public static bool GetRequired(this OneOf<ClassMappings, PropertyMapping> mapping)
