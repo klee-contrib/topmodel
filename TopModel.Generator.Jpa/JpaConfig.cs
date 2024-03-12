@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model.Implementation;
@@ -48,6 +49,11 @@ public class JpaConfig : GeneratorConfigBase
     /// Localisation des ressources, relative au répertoire de génération.
     /// </summary>
     public string? ResourcesPath { get; set; }
+
+    /// <summary>
+    /// Localisation des ressources, relative au répertoire de génération.
+    /// </summary>
+    public ResourcesEncoding? ResourcesEncoding { get; set; } = Jpa.ResourcesEncoding.Latin1;
 
     /// <summary>
     /// Option pour générer des getters et setters vers l'enum des références plutôt que sur la table
