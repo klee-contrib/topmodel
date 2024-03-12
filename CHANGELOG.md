@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.43.4
+
+- [#343](https://github.com/klee-contrib/topmodel/pull/343)  - [i18n] Permettre de modifier la génération des fichiers properties java en UTF 8
+
 ## 1.43.3
 
 - [`3d2c1f0`](https://github.com/klee-contrib/topmodel/commit/3d2c1f0492f7bbc4c6365a3a694ea717b21e0b6a)  - [JPA] Correction mapping dataflow
