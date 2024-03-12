@@ -416,6 +416,16 @@ jpa:
 
 Pour que, pour chaque module, soit généré les fichiers de resources dans les différentes langues configurées globalement.
 
+Par défaut, les fichiers sont générés avec l'encodage Latin1, mais il est possible de les générer en UTF8 avec la propriété resourcesEncoding
+
+```yaml
+jpa:
+  - tags:
+      - dto
+    resourcesPath: resources/i18n/model # Chemin des fichiers de ressource générés.
+    resourcesEncoding: UTF8 # Encodage fichiers de ressource générés (Latin1 ou UTF8).
+```
+
 ## Générateur de flow
 
 Le générateur de data flow s'appuie sur `spring-batch`. Il permet de générer du code permettant de récupérer des données d'une source, appliquer éventuellement une transformation, puis les insérer dans une base de données. Les outils mis en oeuvre ont été sélectionnés pour leur capacité à traiter un grand nombre de données, avec les meilleures performances possibles.
@@ -585,6 +595,15 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
   Localisation des ressources, relative au répertoire de génération.
 
   _Variables par tag_: **oui**
+
+- `resourcesEncoding`
+
+  Encodage des fichiers de ressources. Les valeurs possibles sont :
+
+  - `Latin1` : valeur par défaut
+  - `UTF8`
+
+  _Variables par tag_: **non**
 
 - `enumShortcutMode`
 

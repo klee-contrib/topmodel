@@ -39,7 +39,17 @@ public class JpaResourceGenerator : TranslationGeneratorBase<JpaConfig>
 
     protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties)
     {
-        using var fw = new FileWriter(filePath, _logger, Encoding.Latin1) { EnableHeader = false };
+        var encoding = Encoding.Latin1;
+        if (Config.ResourcesEncoding is not null)
+        {
+            encoding = Config.ResourcesEncoding switch
+            {
+                ResourcesEncoding.UTF8 => Encoding.UTF8,
+                _ => Encoding.Latin1
+            };
+        }
+
+        using var fw = new FileWriter(filePath, _logger, encoding) { EnableHeader = false };
         var containers = properties.GroupBy(prop => prop.Parent);
 
         foreach (var container in containers.OrderBy(c => c.Key.NameCamel))
