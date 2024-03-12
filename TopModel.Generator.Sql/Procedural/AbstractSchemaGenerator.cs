@@ -17,11 +17,13 @@ public abstract class AbstractSchemaGenerator
 
     private readonly SqlConfig _config;
     private readonly ILogger<ProceduralSqlGenerator> _logger;
+    private readonly ModelConfig _modelConfig;
 
-    public AbstractSchemaGenerator(SqlConfig config, ILogger<ProceduralSqlGenerator> logger)
+    public AbstractSchemaGenerator(SqlConfig config, ILogger<ProceduralSqlGenerator> logger, ModelConfig modelConfig)
     {
         _config = config;
         _logger = logger;
+        _modelConfig = modelConfig;
     }
 
     protected ProceduralSqlConfig Config => _config.Procedural!;
@@ -200,6 +202,11 @@ public abstract class AbstractSchemaGenerator
             {
                 definition.TryGetValue(property, out var value);
                 nameValueDict[property.SqlName] = _config.GetValue(property, availableClasses, value);
+
+                if (_modelConfig.I18n.TranslateReferences && modelClass.DefaultProperty == property && !_config.CanClassUseEnums(modelClass, prop: property))
+                {
+                    nameValueDict[property.SqlName] = $@"""{initItem.ResourceKey}""";
+                }
             }
         }
 
