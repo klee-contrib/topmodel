@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.43.5
+
+- [`699ae26`](https://github.com/klee-contrib/topmodel/commit/699ae267441bcec5c4c5d226bd39f6a4dbe83d42)  - [JPA] Correction sqlName Jdbc pour les associations
+
 ## 1.43.4
 
 - [#343](https://github.com/klee-contrib/topmodel/pull/343)  - [i18n] Permettre de modifier la génération des fichiers properties java en UTF 8
