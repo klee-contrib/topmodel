@@ -25,9 +25,9 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         .Concat(Files.Values.Where(f => f.DataFlows.Any()).Select(f => Config.GetDataFlowConfigFilePath(f.Namespace.Module)))
         .Concat(
         Files.Values.SelectMany(f => f.DataFlows)
-        .Where(df => df.Hooks.Any() || df.Sources.Any(source => source.Mode == DataFlowSourceMode.Partial))
-        .SelectMany(df => Config.Tags.Intersect(df.ModelFile.Tags)
-            .SelectMany(tag => new[] { Config.GetDataFlowFilePath(df, tag) + "Partial" })));
+            .Where(df => df.Hooks.Any() || df.Sources.Any(source => source.Mode == DataFlowSourceMode.Partial))
+            .SelectMany(df => Config.Tags.Intersect(df.ModelFile.Tags)
+            .SelectMany(tag => new[] { Config.GetDataFlowPartialFilePath(df, tag) })));
 
     public override string Name => "SpringDataFlowGen";
 
@@ -366,8 +366,8 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.WriteLine(2, $@"		.incrementer(new RunIdIncrementer()) //");
 
         var flowTree = new FlowTree(flows.ToList());
-        fw.WriteLine(2, $"		.start({flowTree.ToFlow(0)})");
-        fw.WriteLine(2, "		.end()");
+        fw.WriteLine(2, $"		.start({flowTree.ToFlow(4)})");
+        fw.WriteLine(2, "		.end() //");
         fw.WriteLine(2, "		.build();");
         fw.WriteLine(1, "}");
         fw.WriteLine("}");
