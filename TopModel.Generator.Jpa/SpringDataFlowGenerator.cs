@@ -62,7 +62,7 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.WriteLine();
         fw.WriteLine(1, @$"@Bean(""{dataFlow.Name.ToPascalCase()}Flow"")");
         fw.WriteLine(1, @$"public static Flow {dataFlow.Name.ToCamelCase()}Flow(");
-        if (dataFlow.Type == DataFlowType.Replace)
+        if (dataFlow.Type == DataFlowType.Replace || dataFlow.Type == DataFlowType.HardReplace)
         {
             fw.WriteLine(1, @$"			@Qualifier(""{dataFlow.Name.ToPascalCase()}TruncateStep"") Step {dataFlow.Name.ToCamelCase()}TruncateStep,");
         }
@@ -82,7 +82,7 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
             isFirst = false;
         }
 
-        if (dataFlow.Type == DataFlowType.Replace)
+        if (dataFlow.Type == DataFlowType.Replace || dataFlow.Type == DataFlowType.HardReplace)
         {
             fw.WriteLine(3, @$".{(isFirst ? "start" : "next")}({dataFlow.Name.ToCamelCase()}TruncateStep) //");
             fw.WriteLine(3, @$".next({dataFlow.Name.ToCamelCase()}Step) //");
@@ -112,7 +112,7 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.AddImport("javax.sql.DataSource");
         fw.WriteLine(1, @$"		@Qualifier(""{dataFlow.Target}"") DataSource dataSource) {{");
         fw.WriteLine(1, @$"return new StepBuilder(""{dataFlow.Name.ToPascalCase()}TruncateStep"", jobRepository) //");
-        fw.WriteLine(2, @$"		.tasklet(new QueryTasklet(dataSource, ""truncate table {dataFlow.Class.SqlName}""), transactionManager) //");
+        fw.WriteLine(2, @$"		.tasklet(new QueryTasklet(dataSource, ""truncate table {dataFlow.Class.SqlName}{(dataFlow.Type == DataFlowType.HardReplace ? " cascade" : string.Empty)}""), transactionManager) //");
 
         fw.WriteLine(3, ".build();");
         fw.WriteLine(1, "}");
@@ -315,7 +315,7 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         WriteBeanFlow(fw, dataFlow);
         WriteBeanStep(fw, dataFlow, tag);
 
-        if (dataFlow.Type == DataFlowType.Replace)
+        if (dataFlow.Type == DataFlowType.Replace || dataFlow.Type == DataFlowType.HardReplace)
         {
             WriteBeanTruncateStep(fw, dataFlow);
         }

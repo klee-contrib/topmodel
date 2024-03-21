@@ -34,6 +34,10 @@ Le flux de données doit insérer les éléments provenant de la source qui ne s
 
 Le flux de données doit supprimer tous les éléments déjà existants, puis insérer les éléments provenant de la source.
 
+### HardReplace
+
+Le flux de données doit supprimer **en cascade** tous les éléments déjà existants, puis insérer les éléments provenant de la source.
+
 ### Merge-disable
 
 Le comportement est le même que pour les flux de type merge, mais flux de données doit également effectuer une suppression logique (passer la propriété définie dans `activeProperty` à `false`) de tous les éléments qui ne font pas l'objet d'une mise à jour.

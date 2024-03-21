@@ -13,6 +13,11 @@ public enum DataFlowType
     Replace,
 
     /// <summary>
+    /// Remplacement des données (truncate cascade puis bulk insert).
+    /// </summary>
+    HardReplace,
+
+    /// <summary>
     /// Fusion des données (bulk merge).
     /// </summary>
     Merge,

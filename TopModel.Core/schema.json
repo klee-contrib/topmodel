@@ -1072,6 +1072,7 @@
               "enum": [
                 "insert",
                 "replace",
+                "hardReplace",
                 "merge",
                 "mergeDisable"
               ]
