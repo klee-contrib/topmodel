@@ -6,7 +6,7 @@ public class FlowTree
 {
     public FlowTree(List<DataFlow> flows)
     {
-        var hasIndependantFlow = flows.Where(f => !flows.Intersect(f.DependsOn).Any() && !flows.SelectMany(fl => fl.DependsOn).Contains(f)).Any() && flows.Count() > 1;
+        var hasIndependantFlow = Graps(flows).Count() > 1;
         RootFlows = hasIndependantFlow ? new() : flows.Where(f => !flows.Intersect(f.DependsOn).Any()).ToList();
         while (flows.Any(f => !Flows.Contains(f)))
         {
@@ -84,8 +84,12 @@ public class FlowTree
         }
         else
         {
-            result += $" //\n{indent}.{next}(";
-            result += $" //\n{indent}{baseIndent}new FlowBuilder<Flow>(\"{string.Join('-', Subflows.SelectMany(s => s.Flows).Select(r => r.Name))}\")";
+            if (RootFlows.Any())
+            {
+                result += $" //\n{indent}.{next}(";
+                result += $" //\n{indent}{baseIndent}new FlowBuilder<Flow>(\"{string.Join('-', Subflows.SelectMany(s => s.Flows).Select(r => r.Name))}\")";
+            }
+
             result += $" //\n{indent}{baseIndent}.split(taskExecutor)";
             result += $" //\n{indent}{baseIndent}.add(";
             foreach (var subflow in Subflows)
@@ -97,12 +101,41 @@ public class FlowTree
                 }
             }
 
-            result += $" //\n{indent}{baseIndent})";
-            result += $" //\n{indent}{baseIndent}.end()";
+            if (RootFlows.Any())
+            {
+                result += $" //\n{indent}{baseIndent})";
+                result += $" //\n{indent}{baseIndent}.end()";
+            }
+
             result += $" //\n{indent})";
         }
 
         result += $" //\n{indent}.build()";
         return result;
+    }
+
+    private List<List<DataFlow>> Graps(List<DataFlow> flows)
+    {
+        var graps = new List<List<DataFlow>>();
+        while (flows.Any(f => !graps.SelectMany(t => t).Contains(f)))
+        {
+            var f = flows.Where(f => !graps.SelectMany(t => t).Contains(f)).First();
+            var subFlowDataFlows = new List<DataFlow>();
+            var stack = new Queue<DataFlow>();
+            stack.Enqueue(f);
+            var flowsToAdd = new List<DataFlow>();
+            while (stack.TryDequeue(out var s))
+            {
+                subFlowDataFlows.Add(s);
+                foreach (var depFlow in flows.Where(f => !graps.SelectMany(t => t).Concat(subFlowDataFlows).Contains(f)).Where(f => s.DependsOn.Contains(f) || f.DependsOn.Contains(s)))
+                {
+                    stack.Enqueue(depFlow);
+                }
+            }
+
+            graps.Add(subFlowDataFlows);
+        }
+
+        return graps;
     }
 }

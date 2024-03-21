@@ -58,7 +58,6 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.AddImport("org.springframework.batch.core.job.flow.Flow");
         fw.AddImport("org.springframework.beans.factory.annotation.Qualifier");
         fw.AddImport("org.springframework.batch.core.Step");
-        fw.AddImport("org.springframework.batch.core.job.builder.FlowBuilder");
 
         fw.WriteLine();
         fw.WriteLine(1, @$"@Bean(""{dataFlow.Name.ToPascalCase()}Flow"")");
@@ -74,6 +73,7 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         }
 
         fw.WriteLine(1, @$"			@Qualifier(""{dataFlow.Name.ToPascalCase()}Step"") Step {dataFlow.Name.ToCamelCase()}Step) {{");
+        fw.AddImport("org.springframework.batch.core.job.builder.FlowBuilder");
         fw.WriteLine(2, @$"return new FlowBuilder<Flow>(""{dataFlow.Name.ToPascalCase()}Flow"") //");
         var isFirst = true;
         if (dataFlow.Hooks.Contains(FlowHook.BeforeFlow))
@@ -344,7 +344,6 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.AddImport("org.springframework.batch.core.job.flow.Flow");
         fw.AddImport("org.springframework.batch.core.job.builder.JobBuilder");
         fw.AddImport("org.springframework.batch.core.launch.support.RunIdIncrementer");
-        fw.AddImport("org.springframework.batch.core.job.builder.FlowBuilder");
         fw.AddImport("org.springframework.core.task.TaskExecutor");
         fw.AddImport("org.springframework.context.annotation.Import");
         fw.WriteLine();
@@ -366,7 +365,13 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.WriteLine(2, $@"		.incrementer(new RunIdIncrementer()) //");
 
         var flowTree = new FlowTree(flows.ToList());
-        fw.WriteLine(2, $"		.start({flowTree.ToFlow(4)})");
+        var toFlow = flowTree.ToFlow(4);
+        if (toFlow.Contains("FlowBuilder"))
+        {
+            fw.AddImport("org.springframework.batch.core.job.builder.FlowBuilder");
+        }
+
+        fw.WriteLine(2, $"		.start({toFlow})");
         fw.WriteLine(2, "		.end() //");
         fw.WriteLine(2, "		.build();");
         fw.WriteLine(1, "}");
