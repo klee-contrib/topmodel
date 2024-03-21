@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.43.6
+
+- [`803ebd9`](https://github.com/klee-contrib/topmodel/commit/803ebd9bf9eb6d497e811e5669f2ac2110a566c9)  - [JPA] Corrections sur les data flows
+
 ## 1.43.5
 
 - [`699ae26`](https://github.com/klee-contrib/topmodel/commit/699ae267441bcec5c4c5d226bd39f6a4dbe83d42)  - [JPA] Correction sqlName Jdbc pour les associations
