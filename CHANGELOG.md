@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.44.0
+
+- [`7574a46`](https://github.com/klee-contrib/topmodel/commit/7574a46b1a3f832bd181af5602f2fb9c0103baa2)  - [Core] Ajout du type de flow `HardReplace`, qui effectue la suppression des données dans la table cible **en cascade**
+
 ## 1.43.6
 
 - [`803ebd9`](https://github.com/klee-contrib/topmodel/commit/803ebd9bf9eb6d497e811e5669f2ac2110a566c9)  - [JPA] Corrections sur les data flows
