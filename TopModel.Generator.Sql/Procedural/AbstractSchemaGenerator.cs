@@ -17,13 +17,11 @@ public abstract class AbstractSchemaGenerator
 
     private readonly SqlConfig _config;
     private readonly ILogger<ProceduralSqlGenerator> _logger;
-    private readonly ModelConfig _modelConfig;
 
-    public AbstractSchemaGenerator(SqlConfig config, ILogger<ProceduralSqlGenerator> logger, ModelConfig modelConfig)
+    public AbstractSchemaGenerator(SqlConfig config, ILogger<ProceduralSqlGenerator> logger)
     {
         _config = config;
         _logger = logger;
-        _modelConfig = modelConfig;
     }
 
     protected ProceduralSqlConfig Config => _config.Procedural!;

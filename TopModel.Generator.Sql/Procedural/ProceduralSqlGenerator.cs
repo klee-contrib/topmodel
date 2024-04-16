@@ -10,15 +10,12 @@ public class ProceduralSqlGenerator : GeneratorBase<SqlConfig>
 {
     private readonly ILogger<ProceduralSqlGenerator> _logger;
 
-    private ModelConfig _modelConfig;
-
     private AbstractSchemaGenerator? _schemaGenerator;
 
-    public ProceduralSqlGenerator(ILogger<ProceduralSqlGenerator> logger, ModelConfig modelConfig)
+    public ProceduralSqlGenerator(ILogger<ProceduralSqlGenerator> logger)
         : base(logger)
     {
         _logger = logger;
-        _modelConfig = modelConfig;
     }
 
     public override string Name => "ProceduralSqlGen";
@@ -39,8 +36,8 @@ public class ProceduralSqlGenerator : GeneratorBase<SqlConfig>
         get
         {
             _schemaGenerator ??= Config.TargetDBMS == TargetDBMS.Postgre
-                ? new PostgreSchemaGenerator(Config, _logger, _modelConfig)
-                : new SqlServerSchemaGenerator(Config, _logger, _modelConfig);
+                ? new PostgreSchemaGenerator(Config, _logger)
+                : new SqlServerSchemaGenerator(Config, _logger);
 
             return _schemaGenerator;
         }
