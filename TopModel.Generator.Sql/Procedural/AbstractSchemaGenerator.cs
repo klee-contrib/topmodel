@@ -203,7 +203,7 @@ public abstract class AbstractSchemaGenerator
                 definition.TryGetValue(property, out var value);
                 nameValueDict[property.SqlName] = _config.GetValue(property, availableClasses, value);
 
-                if (_modelConfig.I18n.TranslateReferences && modelClass.DefaultProperty == property && !_config.CanClassUseEnums(modelClass, prop: property))
+                if ((_config.TranslateReferences ?? true) && modelClass.DefaultProperty == property && !_config.CanClassUseEnums(modelClass, prop: property))
                 {
                     nameValueDict[property.SqlName] = $@"""{initItem.ResourceKey}""";
                 }

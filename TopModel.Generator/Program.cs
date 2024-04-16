@@ -267,6 +267,10 @@ for (var i = 0; i < configs.Count; i++)
 
                         genConfig.ExcludedTags = excludedTags;
                         genConfig.InitVariables(config.App, number);
+                        if (genConfig.TranslateReferences == null)
+                        {
+                            genConfig.TranslateReferences = config.I18n.TranslateReferences;
+                        }
 
                         ModelUtils.TrimSlashes(genConfig, c => c.OutputDirectory);
                         ModelUtils.CombinePath(dn, genConfig, c => c.OutputDirectory);

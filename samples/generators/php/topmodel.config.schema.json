@@ -163,6 +163,11 @@
             "type": "string",
             "description": "Racine du répertoire de génération."
           },
+          "translateReferences": {
+            "type": "boolean",
+            "description": "Si les libellés des listes de références doivent être traduits.",
+            "default": "true"
+          },
           "ignoreDefaultValues": {
             "type": "boolean",
             "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
@@ -547,6 +552,11 @@
             "type": "string",
             "description": "Racine du répertoire de génération."
           },
+          "translateReferences": {
+            "type": "boolean",
+            "description": "Si les libellés des listes de références doivent être traduits.",
+            "default": "true"
+          },
           "ignoreDefaultValues": {
             "type": "boolean",
             "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
@@ -611,6 +621,15 @@
           "resourcesPath": {
             "type": "string",
             "description": "Localisation des ressources, relative au répertoire de génération."
+          },
+          "resourcesEncoding": {
+            "type": "string",
+            "description": "Encodage des fichiers de resource.",
+            "default": "Latin1",
+            "enum": [
+              "Latin1",
+              "UTF8"
+            ]
           },
           "useJdbc": {
             "type": "boolean",
@@ -763,6 +782,11 @@
             "type": "string",
             "description": "Racine du répertoire de génération."
           },
+          "translateReferences": {
+            "type": "boolean",
+            "description": "Si les libellés des listes de références doivent être traduits.",
+            "default": "true"
+          },
           "ignoreDefaultValues": {
             "type": "boolean",
             "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
@@ -900,6 +924,11 @@
           "outputDirectory": {
             "type": "string",
             "description": "Racine du répertoire de génération."
+          },
+          "translateReferences": {
+            "type": "boolean",
+            "description": "Si les libellés des listes de références doivent être traduits.",
+            "default": "true"
           },
           "ignoreDefaultValues": {
             "type": "boolean",
