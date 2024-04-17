@@ -73,7 +73,7 @@ public class JpaResourceGenerator : TranslationGeneratorBase<JpaConfig>
             }
         }
 
-        if (container.Key is Class classe && classe.DefaultProperty != null)
+        if (container.Key is Class classe && classe.DefaultProperty != null && (Config.TranslateReferences ?? true))
         {
             foreach (var val in classe.Values)
             {
