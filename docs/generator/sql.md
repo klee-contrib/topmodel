@@ -12,6 +12,7 @@ Le générateur SQL en mode `procedural` peut générer les fichiers suivants :
 - Un fichier d'insertion des valeurs pour toutes les classes persistées du modèle qui ont des `values`.
 - Un fichier d'insertion des commentaires pour toutes les classes persistées du modèle, ainsi que pour leurs colonnes (`postgresql` uniquement).
 - Un fichier de définition des types toutes les classes persistées du modèle, ainsi que pour leurs colonnes (`sqlserver` uniquement).
+- Un fichier d'insertion des traductions dans la table définie par le paramètre `resourcesTableName`.
 
 ### SSDT
 
@@ -39,6 +40,7 @@ _Remarque : A l'inverse de tous les autres générateurs, le générateur SQL es
   - `initListFile` : Nom du fichier d'insertion des listes de références.
   - `commentFile` : Nom du fichier d'insertion des commentaires.
   - `typeFile` : Nom du fichier de création des types.
+  - `resourceFile` : Nom du fichier d'insertion des traductions.
 
 - `ssdt`
 
@@ -68,6 +70,10 @@ _Remarque : A l'inverse de tous les autres générateurs, le générateur SQL es
 
     Début de la séquence générée.
 
+- `resourcesTableName`
+
+  Nom de la table contenant les traductions
+
 ### Exemple
 
 ```yaml
@@ -82,6 +88,7 @@ sql:
       uniqueKeysFile: 03_unique_keys.sql
       initListFile: 04_references.sql
       commentFile: 05_comments.sql
+      resourceFile: 06_resources.sql
       identity:
         increment: 50
         start: 1000

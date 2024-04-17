@@ -30,6 +30,7 @@ public class ProceduralSqlGenerator : GeneratorBase<SqlConfig>
         Config.Procedural!.InitListFile!,
         Config.Procedural!.UniqueKeysFile!,
         Config.Procedural!.CommentFile!,
+        Config.Procedural!.ResourceFile!,
     }.Where(t => !string.IsNullOrEmpty(t));
 
     protected override bool PersistentOnly => true;

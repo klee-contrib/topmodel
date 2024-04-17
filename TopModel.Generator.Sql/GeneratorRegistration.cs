@@ -31,6 +31,7 @@ public class GeneratorRegistration : IGeneratorRegistration<SqlConfig>
             CombinePath(config.OutputDirectory, config.Procedural, c => c.TypeFile);
             CombinePath(config.OutputDirectory, config.Procedural, c => c.UniqueKeysFile);
             CombinePath(config.OutputDirectory, config.Procedural, c => c.CommentFile);
+            CombinePath(config.OutputDirectory, config.Procedural, c => c.ResourceFile);
 
             services.AddGenerator<ProceduralSqlGenerator, SqlConfig>(config, number);
         }

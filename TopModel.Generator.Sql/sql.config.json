@@ -94,6 +94,10 @@
           "type": "string",
           "description": "Emplacement du fichier de création des commentaires."
         },
+        "resourceFile": {
+          "type": "string",
+          "description": "Emplacement du fichier d'insertion des resources (libellés traduits)."
+        },
         "initListFile": {
           "type": "string",
           "description": "Emplacement du script d'insertion des données des listes de référence."
