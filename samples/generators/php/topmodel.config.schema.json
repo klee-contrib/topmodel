@@ -168,6 +168,11 @@
             "description": "Si les libellés des listes de références doivent être traduits.",
             "default": "true"
           },
+          "translateLabels": {
+            "type": "boolean",
+            "description": "Si les libellés des propriétés doivent être traduits.",
+            "default": "true"
+          },
           "ignoreDefaultValues": {
             "type": "boolean",
             "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
@@ -465,6 +470,11 @@
             "description": "Si les listes de référence doivent être traduites",
             "default": "true"
           },
+          "translateLabels": {
+            "type": "boolean",
+            "description": "Si les libellés des propriétés doivent être traduits",
+            "default": "true"
+          },
           "generateComments": {
             "type": "boolean",
             "description": "Ajoute les commentaires dans les entités JS générées."
@@ -555,6 +565,11 @@
           "translateReferences": {
             "type": "boolean",
             "description": "Si les libellés des listes de références doivent être traduits.",
+            "default": "true"
+          },
+          "translateLabels": {
+            "type": "boolean",
+            "description": "Si les libellés des propriétés doivent être traduits.",
             "default": "true"
           },
           "ignoreDefaultValues": {
@@ -787,6 +802,11 @@
             "description": "Si les libellés des listes de références doivent être traduits.",
             "default": "true"
           },
+          "translateLabels": {
+            "type": "boolean",
+            "description": "Si les libellés des propriétés doivent être traduits.",
+            "default": "true"
+          },
           "ignoreDefaultValues": {
             "type": "boolean",
             "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
@@ -928,6 +948,11 @@
           "translateReferences": {
             "type": "boolean",
             "description": "Si les libellés des listes de références doivent être traduits.",
+            "default": "true"
+          },
+          "translateLabels": {
+            "type": "boolean",
+            "description": "Si les libellés des propriétés doivent être traduits.",
             "default": "true"
           },
           "ignoreDefaultValues": {

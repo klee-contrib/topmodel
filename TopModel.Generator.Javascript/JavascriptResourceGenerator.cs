@@ -134,20 +134,23 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
         fw.WriteLine(indentLevel, $"{Quote(container.Key.NameCamel)}: {{");
 
         var i = 1;
-        foreach (var property in container.OrderBy(p => p.NameCamel, StringComparer.Ordinal))
+        if (Config.TranslateLabels ?? true)
         {
-            var translation = isComment
-                ? property.CommentResourceProperty.Comment.Replace(Environment.NewLine, " ").Replace("\"", "'")
-                : _translationStore.GetTranslation(property, lang);
-
-            if (translation == string.Empty)
+            foreach (var property in container.OrderBy(p => p.NameCamel, StringComparer.Ordinal))
             {
-                translation = property.Name;
-            }
+                var translation = isComment
+                    ? property.CommentResourceProperty.Comment.Replace(Environment.NewLine, " ").Replace("\"", "'")
+                    : _translationStore.GetTranslation(property, lang);
 
-            fw.Write(indentLevel + 1, $"{Quote(property.NameCamel)}: ");
-            fw.Write($@"""{translation}""");
-            fw.WriteLine(container.Count() == i++ && !((Config.TranslateReferences ?? true) && container.Key is Class { DefaultProperty: not null, Enum: true } && ((container.Key as Class)?.Values.Any() ?? false)) ? string.Empty : ",");
+                if (translation == string.Empty)
+                {
+                    translation = property.Name;
+                }
+
+                fw.Write(indentLevel + 1, $"{Quote(property.NameCamel)}: ");
+                fw.Write($@"""{translation}""");
+                fw.WriteLine(container.Count() == i++ && !((Config.TranslateReferences ?? true) && container.Key is Class { DefaultProperty: not null, Enum: true } && ((container.Key as Class)?.Values.Any() ?? false)) ? string.Empty : ",");
+            }
         }
 
         if ((Config.TranslateReferences ?? true) && container.Key is Class { DefaultProperty: not null, Enum: true } classe && (classe?.Values.Any() ?? false))

@@ -26,4 +26,9 @@ public class I18nConfig
     /// Si les libellés des listes de références doivent être traduits.
     /// </summary>
     public bool TranslateReferences { get; set; } = true;
+
+    /// <summary>
+    /// Si les libellés des propriétés doivent être traduits.
+    /// </summary>
+    public bool TranslateLabels { get; set; } = true;
 }

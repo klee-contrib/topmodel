@@ -196,11 +196,25 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                     fw.WriteLine($"        defaultValue: {defaultValue},");
                 }
 
-                fw.WriteLine($"        label: \"{field.ResourceKey}\"{(Config.GenerateComments ? "," : string.Empty)}");
+                if (Config.TranslateLabels ?? true)
+                {
+                    fw.WriteLine($"        label: \"{field.ResourceKey}\"{(Config.GenerateComments ? "," : string.Empty)}");
+                }
+                else
+                {
+                    fw.WriteLine($"        label: \"{field.Label}\"{(Config.GenerateComments ? "," : string.Empty)}");
+                }
 
                 if (Config.GenerateComments)
                 {
-                    fw.WriteLine($"        comment: \"{field.CommentResourceKey}\"");
+                    if (Config.TranslateLabels ?? true)
+                    {
+                        fw.WriteLine($"        comment: \"{field.Comment}\"");
+                    }
+                    else
+                    {
+                        fw.WriteLine($"        comment: \"{field.CommentResourceKey}\"");
+                    }
                 }
             }
             else if (property is CompositionProperty cp3 && cp3.Domain != null && !Config.IsListComposition(cp3))
@@ -212,11 +226,19 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                 fw.Write(cp3.Domain.Name);
                 fw.Write(",\r\n        isRequired: true");
                 fw.Write(",\r\n        label: \"");
-                fw.Write(classe.Namespace.ModuleCamel);
-                fw.Write(".");
-                fw.Write(classe.NameCamel);
-                fw.Write(".");
-                fw.Write(property.NameCamel);
+                if (Config.TranslateLabels ?? true)
+                {
+                    fw.Write(classe.Namespace.ModuleCamel);
+                    fw.Write(".");
+                    fw.Write(classe.NameCamel);
+                    fw.Write(".");
+                    fw.Write(property.NameCamel);
+                }
+                else
+                {
+                    fw.Write(property.Label);
+                }
+
                 fw.Write("\"\r\n");
             }
             else if (property is CompositionProperty cp2 && cp2.Composition.Name != classe.Name)

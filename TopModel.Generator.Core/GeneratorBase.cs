@@ -31,6 +31,7 @@ public abstract class GeneratorBase<T> : IModelWatcher
 
     protected IEnumerable<Class> Classes => Files
         .SelectMany(f => f.Value.Classes.Where(c => Config.Tags.Intersect(c.Tags).Any()))
+        .Where(c => c.Values.Any() && (Config.TranslateReferences ?? true) || (Config.TranslateLabels ?? true))
         .Distinct();
 
     protected virtual bool PersistentOnly => false;

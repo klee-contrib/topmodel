@@ -114,6 +114,11 @@
       "description": "Si les listes de référence doivent être traduites",
       "default": "true"
     },
+    "translateLabels": {
+      "type": "boolean",
+      "description": "Si les libellés des propriétés doivent être traduits",
+      "default": "true"
+    },
     "generateComments": {
       "type": "boolean",
       "description": "Ajoute les commentaires dans les entités JS générées."

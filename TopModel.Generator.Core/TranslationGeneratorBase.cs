@@ -22,7 +22,8 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
                 .Where(c => c.Tags.Contains(tag))
                 .SelectMany(c => c.Properties.OfType<IFieldProperty>());
 
-            return properties.SelectMany(p => GetResourceFileNames(p, tag))
+            return properties
+                .SelectMany(p => GetResourceFileNames(p, tag))
                 .Concat(properties.SelectMany(p => GetCommentResourceFileNames(p, tag)))
                 .Concat(GetMainResourceFileNames(tag))
                 .Select(p => p.FilePath);

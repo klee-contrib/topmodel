@@ -272,6 +272,11 @@ for (var i = 0; i < configs.Count; i++)
                             genConfig.TranslateReferences = config.I18n.TranslateReferences;
                         }
 
+                        if (genConfig.TranslateLabels == null)
+                        {
+                            genConfig.TranslateLabels = config.I18n.TranslateLabels;
+                        }
+
                         ModelUtils.TrimSlashes(genConfig, c => c.OutputDirectory);
                         ModelUtils.CombinePath(dn, genConfig, c => c.OutputDirectory);
 
