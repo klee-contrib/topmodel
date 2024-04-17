@@ -30,5 +30,5 @@ public class I18nConfig
     /// <summary>
     /// Si les libellés des propriétés doivent être traduits.
     /// </summary>
-    public bool TranslateLabels { get; set; } = true;
+    public bool TranslateProperties { get; set; } = true;
 }

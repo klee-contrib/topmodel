@@ -134,7 +134,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
         fw.WriteLine(indentLevel, $"{Quote(container.Key.NameCamel)}: {{");
 
         var i = 1;
-        if (Config.TranslateLabels ?? true)
+        if (Config.TranslateProperties!.Value)
         {
             foreach (var property in container.OrderBy(p => p.NameCamel, StringComparer.Ordinal))
             {
@@ -149,11 +149,11 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
 
                 fw.Write(indentLevel + 1, $"{Quote(property.NameCamel)}: ");
                 fw.Write($@"""{translation}""");
-                fw.WriteLine(container.Count() == i++ && !((Config.TranslateReferences ?? true) && container.Key is Class { DefaultProperty: not null, Enum: true } && ((container.Key as Class)?.Values.Any() ?? false)) ? string.Empty : ",");
+                fw.WriteLine(container.Count() == i++ && !(Config.TranslateReferences!.Value && container.Key is Class { DefaultProperty: not null, Enum: true } && ((container.Key as Class)?.Values.Any() ?? false)) ? string.Empty : ",");
             }
         }
 
-        if ((Config.TranslateReferences ?? true) && container.Key is Class { DefaultProperty: not null, Enum: true } classe && (classe?.Values.Any() ?? false))
+        if (Config.TranslateReferences!.Value && container.Key is Class { DefaultProperty: not null, Enum: true } classe && (classe?.Values.Any() ?? false))
         {
             i = 1;
             fw.WriteLine(indentLevel + 1, @$"{Quote("values")}: {{");

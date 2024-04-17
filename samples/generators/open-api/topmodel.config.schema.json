@@ -168,7 +168,7 @@
             "description": "Si les libellés des listes de références doivent être traduits.",
             "default": "true"
           },
-          "translateLabels": {
+          "translateProperties": {
             "type": "boolean",
             "description": "Si les libellés des propriétés doivent être traduits.",
             "default": "true"
@@ -470,7 +470,7 @@
             "description": "Si les listes de référence doivent être traduites",
             "default": "true"
           },
-          "translateLabels": {
+          "translateProperties": {
             "type": "boolean",
             "description": "Si les libellés des propriétés doivent être traduits",
             "default": "true"
@@ -567,7 +567,7 @@
             "description": "Si les libellés des listes de références doivent être traduits.",
             "default": "true"
           },
-          "translateLabels": {
+          "translateProperties": {
             "type": "boolean",
             "description": "Si les libellés des propriétés doivent être traduits.",
             "default": "true"
@@ -802,7 +802,7 @@
             "description": "Si les libellés des listes de références doivent être traduits.",
             "default": "true"
           },
-          "translateLabels": {
+          "translateProperties": {
             "type": "boolean",
             "description": "Si les libellés des propriétés doivent être traduits.",
             "default": "true"
@@ -950,7 +950,7 @@
             "description": "Si les libellés des listes de références doivent être traduits.",
             "default": "true"
           },
-          "translateLabels": {
+          "translateProperties": {
             "type": "boolean",
             "description": "Si les libellés des propriétés doivent être traduits.",
             "default": "true"

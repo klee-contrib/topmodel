@@ -43,7 +43,7 @@ public abstract class GeneratorConfigBase
     /// <summary>
     /// Si les libellés des propriétés doivent être traduits.
     /// </summary>
-    public bool? TranslateLabels { get; set; }
+    public bool? TranslateProperties { get; set; }
 
     /// <summary>
     /// Générateurs désactivés.
