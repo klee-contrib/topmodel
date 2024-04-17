@@ -30,6 +30,11 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
         })
         .Distinct();
 
+    protected override IEnumerable<Class> Classes => Files
+        .SelectMany(f => f.Value.Classes.Where(c => Config.Tags.Intersect(c.Tags).Any()))
+        .Where(c => c.Values.Any() && Config.TranslateReferences!.Value || (Config.TranslateProperties! ?? true))
+        .Distinct();
+
     protected virtual string? GetCommentResourceFilePath(IFieldProperty property, string tag, string lang)
     {
         return null;

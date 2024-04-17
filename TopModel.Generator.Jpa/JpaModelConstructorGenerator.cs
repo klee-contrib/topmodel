@@ -59,7 +59,7 @@ public class JpaModelConstructorGenerator
                         value = _config.GetType(prop) + "." + value;
                     }
 
-                    if ((_config.TranslateReferences!.Value) && classe.DefaultProperty == prop && !_config.CanClassUseEnums(classe, prop: prop))
+                    if (_config.TranslateReferences!.Value && classe.DefaultProperty == prop && !_config.CanClassUseEnums(classe, prop: prop))
                     {
                         value = refValue.ResourceKey;
                     }
