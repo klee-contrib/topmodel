@@ -480,7 +480,7 @@ public abstract class AbstractSchemaGenerator
             {
                 foreach (var val in modelClass.Values)
                 {
-                    writer.WriteLine(@$"INSERT INTO {_config.ResourcesTableName}(RESOURCE_KEY, LOCALE, LABEL) VALUES({SingleQuote(val.ResourceKey)}, {(string.IsNullOrEmpty(lang) ? "null" : @$"{SingleQuote(lang)}")}, ""{SingleQuote(_translationStore.GetTranslation(val, lang))});");
+                    writer.WriteLine(@$"INSERT INTO {_config.ResourcesTableName}(RESOURCE_KEY, LOCALE, LABEL) VALUES({SingleQuote(val.ResourceKey)}, {(string.IsNullOrEmpty(lang) ? "null" : @$"{SingleQuote(lang)}")}, {SingleQuote(_translationStore.GetTranslation(val, lang))});");
                 }
             }
         }
