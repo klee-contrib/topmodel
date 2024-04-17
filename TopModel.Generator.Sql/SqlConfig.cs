@@ -25,7 +25,7 @@ public class SqlConfig : GeneratorConfigBase
     /// <summary>
     /// Retourne ou définit le nom de la table contenant les traductions.
     /// </summary>
-    public string ResourcesTableName { get; set; } = "TRANSLATIONS";
+    public string? ResourcesTableName { get; set; }
 
     /// <summary>
     /// SGBD cible ("sqlserver" ou "postgres").

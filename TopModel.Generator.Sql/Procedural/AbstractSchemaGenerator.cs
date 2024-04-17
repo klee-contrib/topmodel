@@ -171,7 +171,13 @@ public abstract class AbstractSchemaGenerator
         writer.WriteLine("--   Description		:	Script de création des indexes et des clef étrangères. ");
         writer.WriteLine("-- =========================================================================================== ");
 
-        if (_config.TranslateReferences!.Value)
+        foreach (var fkProperty in foreignKeys)
+        {
+            GenerateIndexForeignKey(fkProperty, writer);
+            GenerateConstraintForeignKey(fkProperty, writer);
+        }
+
+        if ((_config.TranslateReferences!.Value || _config.TranslateProperties!.Value) && _config.ResourcesTableName != null)
         {
             var targetClass = new Class()
             {
@@ -188,12 +194,6 @@ public abstract class AbstractSchemaGenerator
                 GenerateIndexForeignKey(fkProperty, writer);
                 GenerateConstraintForeignKey(fkProperty, targetProperty, targetClass, writer);
             }
-        }
-
-        foreach (var fkProperty in foreignKeys)
-        {
-            GenerateIndexForeignKey(fkProperty, writer);
-            GenerateConstraintForeignKey(fkProperty, writer);
         }
     }
 
@@ -388,31 +388,34 @@ public abstract class AbstractSchemaGenerator
             writer.WriteLine(GetInsertLine(modelClass, initItem, availableClasses));
         }
 
-        if (_config.TranslateProperties!.Value && modelClass.Properties.OfType<IFieldProperty>().Where(p => p.Label != null).Count() > 0)
+        if (_config.ResourcesTableName != null)
         {
-            writer.WriteLine();
-            writer.WriteLine("/**\t\tInitialisation des traductions des propriétés de la table " + modelClass.SqlName + "\t\t**/");
-            foreach (var lang in _translationStore.Translations.Keys)
+            if (_config.TranslateProperties!.Value && modelClass.Properties.OfType<IFieldProperty>().Where(p => p.Label != null).Count() > 0)
             {
-                foreach (var property in modelClass.Properties.OfType<IFieldProperty>())
+                writer.WriteLine();
+                writer.WriteLine("/**\t\tInitialisation des traductions des propriétés de la table " + modelClass.SqlName + "\t\t**/");
+                foreach (var lang in _translationStore.Translations.Keys)
                 {
-                    if (property.Label != null)
+                    foreach (var property in modelClass.Properties.OfType<IFieldProperty>())
                     {
-                        writer.WriteLine($@"INSERT INTO {_config.ResourcesTableName}(TRAD_KEY, LOCALE, LABEL) VALUES(""{property.ResourceKey}"", ""{lang}"", ""{_translationStore.GetTranslation(property, lang)}"");");
+                        if (property.Label != null)
+                        {
+                            writer.WriteLine($@"INSERT INTO {_config.ResourcesTableName}(TRAD_KEY, LOCALE, LABEL) VALUES(""{property.ResourceKey}"", ""{(string.IsNullOrEmpty(lang) ? "null" : lang)}"", ""{_translationStore.GetTranslation(property, lang)}"");");
+                        }
                     }
                 }
             }
-        }
 
-        if (modelClass.DefaultProperty != null && modelClass.Values.Count() > 0 && _config.TranslateReferences!.Value)
-        {
-            writer.WriteLine();
-            writer.WriteLine("/**\t\tInitialisation des traductions des valeurs de la table " + modelClass.SqlName + "\t\t**/");
-            foreach (var lang in _translationStore.Translations.Keys)
+            if (modelClass.DefaultProperty != null && modelClass.Values.Count() > 0 && _config.TranslateReferences!.Value)
             {
-                foreach (var val in modelClass.Values)
+                writer.WriteLine();
+                writer.WriteLine("/**\t\tInitialisation des traductions des valeurs de la table " + modelClass.SqlName + "\t\t**/");
+                foreach (var lang in _translationStore.Translations.Keys)
                 {
-                    writer.WriteLine(@$"INSERT INTO {_config.ResourcesTableName}(TRAD_KEY, LOCALE, LABEL) VALUES(""{val.ResourceKey}"", ""{lang}"", ""{_translationStore.GetTranslation(val, lang)}"");");
+                    foreach (var val in modelClass.Values)
+                    {
+                        writer.WriteLine(@$"INSERT INTO {_config.ResourcesTableName}(TRAD_KEY, LOCALE, LABEL) VALUES(""{val.ResourceKey}"", ""{(string.IsNullOrEmpty(lang) ? "null" : lang)}"", ""{_translationStore.GetTranslation(val, lang)}"");");
+                    }
                 }
             }
         }
@@ -445,24 +448,27 @@ public abstract class AbstractSchemaGenerator
 
     private void WriteResourceTableDeclaration(SqlFileWriter writer)
     {
-        var tableName = Quote(_config.ResourcesTableName);
-        writer.WriteLine("/**");
-        writer.WriteLine("  * Création de ta table " + tableName + " contenant les traductions");
-        writer.WriteLine(" **/");
-        writer.WriteLine($"create table {_config.ResourcesTableName} (");
-        writer.WriteLine(1, "TRAD_KEY varchar(100) not null,");
-        writer.WriteLine(1, "LOCALE varchar(10) not null,");
-        writer.WriteLine(1, "LABEL varchar(100) not null,");
-        writer.WriteLine(1, "constraint PK_KEY_LOCALE primary key (TRAD_KEY, LOCALE)");
-        writer.WriteLine(")");
+        if (_config.ResourcesTableName != null)
+        {
+            var tableName = Quote(_config.ResourcesTableName);
+            writer.WriteLine("/**");
+            writer.WriteLine("  * Création de ta table " + tableName + " contenant les traductions");
+            writer.WriteLine(" **/");
+            writer.WriteLine($"create table {_config.ResourcesTableName} (");
+            writer.WriteLine(1, "TRAD_KEY varchar(100) not null,");
+            writer.WriteLine(1, "LOCALE varchar(10),");
+            writer.WriteLine(1, "LABEL varchar(100),");
+            writer.WriteLine(1, "constraint PK_KEY_LOCALE primary key (TRAD_KEY, LOCALE)");
+            writer.WriteLine(")");
 
-        writer.WriteLine("/**");
-        writer.WriteLine("  * Création de l'index pour " + tableName + " (TRAD_KEY, LOCALE)");
-        writer.WriteLine(" **/");
-        writer.WriteLine("create index " + Quote($"IDX_{_config.ResourcesTableName}_TRAD_KEY_LOCALE") + " on " + tableName + " (");
-        writer.WriteLine("\t" + "TRAD_KEY, LOCALE" + " ASC");
-        writer.WriteLine($"){BatchSeparator}");
-        writer.WriteLine();
+            writer.WriteLine("/**");
+            writer.WriteLine("  * Création de l'index pour " + tableName + " (TRAD_KEY, LOCALE)");
+            writer.WriteLine(" **/");
+            writer.WriteLine("create index " + Quote($"IDX_{_config.ResourcesTableName}_TRAD_KEY_LOCALE") + " on " + tableName + " (");
+            writer.WriteLine("\t" + "TRAD_KEY, LOCALE" + " ASC");
+            writer.WriteLine($"){BatchSeparator}");
+            writer.WriteLine();
+        }
     }
 
     /// <summary>

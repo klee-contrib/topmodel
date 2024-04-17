@@ -81,19 +81,3 @@ create table UTILISATEUR (
 	constraint PK_UTILISATEUR primary key (UTI_ID)
 );
 
-/**
-  * Création de ta table TRANSLATIONS contenant les traductions
- **/
-create table TRANSLATIONS (
-    TRAD_KEY varchar(100) not null,
-    LOCALE varchar(10) not null,
-    LABEL varchar(100) not null,
-    constraint PK_KEY_LOCALE primary key (TRAD_KEY, LOCALE)
-)
-/**
-  * Création de l'index pour TRANSLATIONS (TRAD_KEY, LOCALE)
- **/
-create index IDX_TRANSLATIONS_TRAD_KEY_LOCALE on TRANSLATIONS (
-	TRAD_KEY, LOCALE ASC
-);
-

@@ -55,8 +55,7 @@
     },
     "resourcesTableName": {
       "type": "string",
-      "description": "Nom de la table dans laquelle doivent être insérées les traductions.",
-      "default": "TRANSLATIONS"
+      "description": "Nom de la table dans laquelle doivent être insérées les traductions."
     },
     "ignoreDefaultValues": {
       "type": "boolean",
