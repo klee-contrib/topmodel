@@ -246,9 +246,15 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
             }
         }
 
+        foreach (var param in mapper.PropertyParams)
+        {
+            fw.WriteParam(param.Property.Name.ToCamelCase(), param.Property.Comment);
+        }
+
         fw.WriteReturns(1, $"Une nouvelle instance de '{classe.NamePascal}' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée");
         fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"public static {classe.NamePascal} create{classe.NamePascal}({string.Join(", ", mapper.ClassParams.Select(p => $"{p.Class} {p.Name.ToCamelCase()}"))}, {classe.NamePascal} target) {{");
+        var entryParams = mapper.ClassParams.Select(p => $"{p.Class} {p.Name.ToCamelCase()}").Concat(mapper.PropertyParams.Select(p => $"{Config.GetType(p.Property, Classes)} {p.Property.Name.ToCamelCase()}"));
+        fw.WriteLine(1, $"public static {classe.NamePascal} create{classe.NamePascal}({string.Join(", ", entryParams)}, {classe.NamePascal} target) {{");
         fw.WriteLine(2, "if (target == null) {");
         if (classe.Abstract)
         {
@@ -275,6 +281,22 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
             {
                 fw.WriteLine(2, $"if ({param.Name.ToCamelCase()} == null) {{");
                 fw.WriteLine(3, $"throw new IllegalArgumentException(\"{param.Name} cannot be null\");");
+                fw.WriteLine(2, "}");
+                fw.WriteLine();
+            }
+        }
+
+        foreach (var param in mapper.PropertyParams)
+        {
+            if (param.Property.Required && !classe.Abstract)
+            {
+                if (param.TargetProperty is AssociationProperty && classe.IsPersistent)
+                {
+                    continue;
+                }
+
+                fw.WriteLine(2, $"if ({param.Property.Name.ToCamelCase()} == null) {{");
+                fw.WriteLine(3, $"throw new IllegalArgumentException(\"{param.Property.Name} cannot be null\");");
                 fw.WriteLine(2, "}");
                 fw.WriteLine();
             }
@@ -341,6 +363,33 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
             {
                 fw.WriteLine(indent - 1, "}");
                 fw.WriteLine();
+            }
+        }
+
+        foreach (var param in mapper.PropertyParams)
+        {
+            var propertyTargetName = Config.UseJdbc ? param.TargetProperty.NamePascal : param.TargetProperty.NameByClassPascal;
+            if (param.TargetProperty is AssociationProperty && classe.IsPersistent)
+            {
+                continue;
+            }
+
+            if (classe.Abstract)
+            {
+                if (!isFirst)
+                {
+                    hydrate += ", ";
+                }
+                else
+                {
+                    isFirst = false;
+                }
+
+                hydrate += param.Property.NameCamel;
+            }
+            else
+            {
+                fw.WriteLine(2, $"target.{propertyTargetName.WithPrefix("set")}({param.Property.NameCamel});");
             }
         }
 
