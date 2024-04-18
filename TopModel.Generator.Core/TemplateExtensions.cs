@@ -221,6 +221,7 @@ internal static class TemplateExtensions
         {
             "name" => transform(fp.Name ?? string.Empty),
             "sqlName" => transform(fp.SqlName ?? string.Empty),
+            "paramName" => transform(fp.GetParamName().ToString()),
             "trigram" => transform(fp.Trigram ?? fp.Class?.Trigram ?? string.Empty),
             "label" => transform(fp.Label ?? string.Empty),
             "comment" => transform(fp.Comment),
