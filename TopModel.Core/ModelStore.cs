@@ -1526,7 +1526,7 @@ public class ModelStore
 
                     if (param == null)
                     {
-                        yield return new ModelError(endpoint, $"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres.") { ModelErrorType = ModelErrorType.TMD1027 };
+                        yield return new ModelError(endpoint, $"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres. Les valeurs possibles sont : {string.Join(", ", endpoint.Params.OfType<IFieldProperty>().Select(p => p.GetParamName()))}.") { ModelErrorType = ModelErrorType.TMD1027 };
                     }
                 }
             }
