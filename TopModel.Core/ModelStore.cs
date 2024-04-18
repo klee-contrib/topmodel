@@ -1252,7 +1252,7 @@ public class ModelStore
                             return [p.TargetPropertyReference];
                         }
 
-                        var propRef = p.Property.GetLocation() ?? new Reference();
+                        var propRef = new Reference();
                         propRef.ReferenceName = p.Property.Name;
                         return [propRef];
                     }));
@@ -1315,7 +1315,8 @@ public class ModelStore
 
                     foreach (var param in mapper.Params.Where((p, i) => p.GetRequired() && mapper.Params.Where((q, j) => !q.GetRequired() && j < i).Any()))
                     {
-                        yield return new ModelError(classe, $"Le paramètre '{param.GetName()}' du mapper ne peut pas être obligatoire si l'un des paramètres précédents ne l'est pas.", param.GetLocation()) { ModelErrorType = ModelErrorType.TMD1034 };
+                        var previousRequired = mapper.Params.Where((q, j) => !q.GetRequired() && j < mapper.Params.IndexOf(param)).Select(p => p.GetName());
+                        yield return new ModelError(classe, $"Le paramètre '{param.GetName()}' du mapper ne peut pas être obligatoire si l'un des paramètres précédents ({string.Join(", ", previousRequired)}) ne l'est pas.", param.GetLocation()) { ModelErrorType = ModelErrorType.TMD1034 };
                     }
                 }
             }
