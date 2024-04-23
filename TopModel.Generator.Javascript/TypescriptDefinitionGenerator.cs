@@ -209,11 +209,11 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                 {
                     if (Config.TranslateProperties == true)
                     {
-                        fw.WriteLine($"        comment: \"{field.Comment}\"");
+                        fw.WriteLine($"        comment: \"{field.CommentResourceKey}\"");
                     }
                     else
                     {
-                        fw.WriteLine($"        comment: \"{field.CommentResourceKey}\"");
+                        fw.WriteLine($"        comment: \"{field.Comment}\"");
                     }
                 }
             }
