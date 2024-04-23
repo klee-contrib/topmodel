@@ -22,7 +22,8 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
                 .Where(c => c.Tags.Contains(tag))
                 .SelectMany(c => c.Properties.OfType<IFieldProperty>());
 
-            return properties.SelectMany(p => GetResourceFileNames(p, tag))
+            return properties
+                .SelectMany(p => GetResourceFileNames(p, tag))
                 .Concat(properties.SelectMany(p => GetCommentResourceFileNames(p, tag)))
                 .Concat(GetMainResourceFileNames(tag))
                 .Select(p => p.FilePath);
@@ -95,6 +96,11 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
 
     private IEnumerable<(string Lang, string FilePath)> GetCommentResourceFileNames(IFieldProperty property, string tag)
     {
+        if (Config.TranslateProperties != true)
+        {
+            return [];
+        }
+
         return _translationStore.Translations
             .Select(lang => (lang: lang.Key, file: GetCommentResourceFilePath(property.CommentResourceProperty, tag, lang.Key)!))
             .Where(g => g.file != null);
@@ -109,6 +115,11 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
 
     private IEnumerable<(string Lang, string FilePath)> GetResourceFileNames(IFieldProperty property, string tag)
     {
+        if (Config.TranslateProperties != true && (Config.TranslateReferences != true || !(property.Class?.Values.Any() ?? false)))
+        {
+            return [];
+        }
+
         return _translationStore.Translations
             .Select(lang => (lang: lang.Key, file: GetResourceFilePath(property.ResourceProperty, tag, lang.Key)!))
             .Where(g => g.file != null);

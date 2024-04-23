@@ -17,11 +17,13 @@ public abstract class AbstractSchemaGenerator
 
     private readonly SqlConfig _config;
     private readonly ILogger<ProceduralSqlGenerator> _logger;
+    private readonly TranslationStore _translationStore;
 
-    public AbstractSchemaGenerator(SqlConfig config, ILogger<ProceduralSqlGenerator> logger)
+    public AbstractSchemaGenerator(SqlConfig config, ILogger<ProceduralSqlGenerator> logger, TranslationStore translationStore)
     {
         _config = config;
         _logger = logger;
+        _translationStore = translationStore;
     }
 
     protected ProceduralSqlConfig Config => _config.Procedural!;
@@ -104,6 +106,7 @@ public abstract class AbstractSchemaGenerator
         SqlFileWriter? writerType = null;
         SqlFileWriter? writerUk = null;
         SqlFileWriter? writerComment = null;
+        SqlFileWriter? writerResource = null;
 
         if (Config.TypeFile != null)
         {
@@ -118,6 +121,11 @@ public abstract class AbstractSchemaGenerator
         if (Config.CommentFile != null)
         {
             writerComment = new SqlFileWriter(Config.CommentFile, _logger);
+        }
+
+        if (Config.ResourceFile != null)
+        {
+            writerResource = new SqlFileWriter(Config.ResourceFile, _logger);
         }
 
         var appName = classes.First().Namespace.App;
@@ -146,15 +154,27 @@ public abstract class AbstractSchemaGenerator
         writerComment?.WriteLine("--   Description		:	Script de création des commentaires. ");
         writerComment?.WriteLine("-- =========================================================================================== ");
 
+        writerResource?.WriteLine("-- =========================================================================================== ");
+        writerResource?.WriteLine($"--   Application Name	:	{appName} ");
+        writerResource?.WriteLine("--   Script Name		:	" + Config.ResourceFile?.Split('/').Last());
+        writerResource?.WriteLine("--   Description		:	Script de création des resources (libellés traduits). ");
+        writerResource?.WriteLine("-- =========================================================================================== ");
+
         var foreignKeys = classes
             .OrderBy(c => c.SqlName)
             .Where(c => c.IsPersistent && !c.Abstract && classes.Contains(c))
-            .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType, writerComment, classes.ToList()))
+            .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType, writerComment, writerResource, classes.ToList()))
             .ToList();
+
+        if (_config.TranslateProperties == true || _config.TranslateReferences == true)
+        {
+            WriteResourceTableDeclaration(writerCrebas);
+        }
 
         writerType?.Dispose();
         writerUk?.Dispose();
         writerComment?.Dispose();
+        writerResource?.Dispose();
 
         using var writer = new SqlFileWriter(Config.IndexFKFile, _logger);
 
@@ -166,8 +186,27 @@ public abstract class AbstractSchemaGenerator
 
         foreach (var fkProperty in foreignKeys)
         {
-            GenerateIndexForeignKey(writer, fkProperty);
+            GenerateIndexForeignKey(fkProperty, writer);
             GenerateConstraintForeignKey(fkProperty, writer);
+        }
+
+        if ((_config.TranslateReferences == true || _config.TranslateProperties == true) && _config.ResourcesTableName != null)
+        {
+            var targetClass = new Class()
+            {
+                SqlName = _config.ResourcesTableName
+            };
+            var targetProperty = new RegularProperty()
+            {
+                Name = "ResourceKey",
+                Class = targetClass
+            };
+            var resourceProperties = classes.Where(c => c.DefaultProperty != null && c.Values.Count() > 0 && c.Enum).Select(c => c.DefaultProperty!);
+            foreach (var fkProperty in resourceProperties)
+            {
+                GenerateIndexForeignKey(fkProperty, writer);
+                GenerateConstraintForeignKey(fkProperty, targetProperty, targetClass, writer);
+            }
         }
     }
 
@@ -200,6 +239,11 @@ public abstract class AbstractSchemaGenerator
             {
                 definition.TryGetValue(property, out var value);
                 nameValueDict[property.SqlName] = _config.GetValue(property, availableClasses, value);
+
+                if (_config.TranslateReferences == true && modelClass.DefaultProperty == property && !_config.CanClassUseEnums(modelClass, prop: property))
+                {
+                    nameValueDict[property.SqlName] = $@"""{initItem.ResourceKey}""";
+                }
             }
         }
 
@@ -238,18 +282,30 @@ public abstract class AbstractSchemaGenerator
     /// <param name="writer">Flux d'écriture.</param>
     private void GenerateConstraintForeignKey(AssociationProperty property, SqlFileWriter writer)
     {
-        var tableName = property.Class.SqlName;
-        var propertyName = ((IFieldProperty)property).SqlName;
+        GenerateConstraintForeignKey(property, property.Property, property.Association, writer);
+    }
+
+    /// <summary>
+    /// Génère la contrainte de clef étrangère.
+    /// </summary>
+    /// <param name="propertySource">Propriété portant la clef étrangère.</param>
+    /// <param name="propertyTarget">Propriété destination de la contrainte.</param>
+    /// <param name="association">Association destination de la clef étrangère.</param>
+    /// <param name="writer">Flux d'écriture.</param>
+    private void GenerateConstraintForeignKey(IFieldProperty propertySource, IFieldProperty propertyTarget, Class association, SqlFileWriter writer)
+    {
+        var tableName = propertySource.Class.SqlName;
+        var propertyName = propertySource.SqlName;
         writer.WriteLine("/**");
         writer.WriteLine("  * Génération de la contrainte de clef étrangère pour " + tableName + "." + propertyName);
         writer.WriteLine(" **/");
         writer.WriteLine("alter table " + Quote(tableName));
-        var constraintName = Quote($"FK_{property.Class.SqlName}_{propertyName}");
+        var constraintName = Quote($"FK_{propertySource.Class.SqlName}_{propertyName}");
 
         writer.WriteLine("\tadd constraint " + constraintName + " foreign key (" + Quote(propertyName) + ")");
-        writer.Write("\t\treferences " + Quote(property.Association.SqlName) + " (");
+        writer.Write("\t\treferences " + Quote(association.SqlName) + " (");
 
-        writer.Write(Quote(property.Property.SqlName));
+        writer.Write(Quote(propertyTarget.SqlName));
 
         writer.WriteLine($"){BatchSeparator}");
         writer.WriteLine();
@@ -258,12 +314,12 @@ public abstract class AbstractSchemaGenerator
     /// <summary>
     /// Génère l'index portant sur la clef étrangère.
     /// </summary>
-    /// <param name="writer">Flux d'écriture.</param>
     /// <param name="property">Propriété cible de l'index.</param>
-    private void GenerateIndexForeignKey(SqlFileWriter writer, AssociationProperty property)
+    /// <param name="writer">Flux d'écriture.</param>
+    private void GenerateIndexForeignKey(IFieldProperty property, SqlFileWriter writer)
     {
         var tableName = Quote(property.Class.SqlName);
-        var propertyName = ((IFieldProperty)property).SqlName;
+        var propertyName = property.SqlName;
         writer.WriteLine("/**");
         writer.WriteLine("  * Création de l'index de clef étrangère pour " + tableName + "." + propertyName);
         writer.WriteLine(" **/");
@@ -331,6 +387,11 @@ public abstract class AbstractSchemaGenerator
         return !UseQuotes ? name : $@"""{name}""";
     }
 
+    private string SingleQuote(string name)
+    {
+        return $@"'{name.Replace("'", "''")}'";
+    }
+
     /// <summary>
     /// Ecrit dans le writer le script d'insertion dans la table staticTable ayant pour model modelClass.
     /// </summary>
@@ -371,6 +432,60 @@ public abstract class AbstractSchemaGenerator
         writerCrebas.WriteLine($"){BatchSeparator}");
     }
 
+    private void WriteResourceTableDeclaration(SqlFileWriter writer)
+    {
+        if (_config.ResourcesTableName != null)
+        {
+            var tableName = Quote(_config.ResourcesTableName);
+            writer.WriteLine("/**");
+            writer.WriteLine("  * Création de ta table " + tableName + " contenant les traductions");
+            writer.WriteLine(" **/");
+            writer.WriteLine($"create table {_config.ResourcesTableName} (");
+            writer.WriteLine(1, "RESOURCE_KEY varchar(255),");
+            writer.WriteLine(1, "LOCALE varchar(10),");
+            writer.WriteLine(1, "LABEL varchar(255),");
+            writer.WriteLine(1, "constraint PK_KEY_LOCALE primary key (RESOURCE_KEY, LOCALE)");
+            writer.WriteLine(")");
+
+            writer.WriteLine("/**");
+            writer.WriteLine("  * Création de l'index pour " + tableName + " (RESOURCE_KEY, LOCALE)");
+            writer.WriteLine(" **/");
+            writer.WriteLine("create index " + Quote($"IDX_{_config.ResourcesTableName}_RESOURCE_KEY_LOCALE") + " on " + tableName + " (");
+            writer.WriteLine("\t" + "RESOURCE_KEY, LOCALE" + " ASC");
+            writer.WriteLine($"){BatchSeparator}");
+            writer.WriteLine();
+        }
+    }
+
+    private void WriteResources(SqlFileWriter writer, Class modelClass)
+    {
+        if (_config.TranslateProperties == true && modelClass.Properties.OfType<IFieldProperty>().Where(p => p.Label != null).Count() > 0 && modelClass.ModelFile != null)
+        {
+            writer.WriteLine();
+            writer.WriteLine("/**\t\tInitialisation des traductions des propriétés de la table " + modelClass.SqlName + "\t\t**/");
+            foreach (var lang in _translationStore.Translations.Keys)
+            {
+                foreach (var property in modelClass.Properties.OfType<IFieldProperty>().Where(p => p.Label != null))
+                {
+                    writer.WriteLine($@"INSERT INTO {_config.ResourcesTableName}(RESOURCE_KEY, LOCALE, LABEL) VALUES({SingleQuote(property.ResourceKey)}, {(string.IsNullOrEmpty(lang) ? "null" : @$"{SingleQuote(lang)}")}, {SingleQuote(_translationStore.GetTranslation(property, lang))});");
+                }
+            }
+        }
+
+        if (modelClass.DefaultProperty != null && modelClass.Values.Count() > 0 && _config.TranslateReferences == true)
+        {
+            writer.WriteLine();
+            writer.WriteLine("/**\t\tInitialisation des traductions des valeurs de la table " + modelClass.SqlName + "\t\t**/");
+            foreach (var lang in _translationStore.Translations.Keys)
+            {
+                foreach (var val in modelClass.Values)
+                {
+                    writer.WriteLine(@$"INSERT INTO {_config.ResourcesTableName}(RESOURCE_KEY, LOCALE, LABEL) VALUES({SingleQuote(val.ResourceKey)}, {(string.IsNullOrEmpty(lang) ? "null" : @$"{SingleQuote(lang)}")}, {SingleQuote(_translationStore.GetTranslation(val, lang))});");
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// Déclaration de la table.
     /// </summary>
@@ -379,8 +494,9 @@ public abstract class AbstractSchemaGenerator
     /// <param name="writerUk">Flux d'écriture Unique Key.</param>
     /// <param name="writerType">Flux d'écritures des types.</param>
     /// <param name="writerComment">Flux d'écritures des commentaires.</param>
+    /// <param name="writerResources">Flux d'écritures des commentaires.</param>
     /// <returns>Liste des propriétés étrangères persistentes.</returns>
-    private IEnumerable<AssociationProperty> WriteTableDeclaration(Class classe, SqlFileWriter writerCrebas, SqlFileWriter? writerUk, SqlFileWriter? writerType, SqlFileWriter? writerComment, IList<Class> availableClasses)
+    private IEnumerable<AssociationProperty> WriteTableDeclaration(Class classe, SqlFileWriter writerCrebas, SqlFileWriter? writerUk, SqlFileWriter? writerType, SqlFileWriter? writerComment, SqlFileWriter? writerResources, IList<Class> availableClasses)
     {
         var fkPropertiesList = new List<AssociationProperty>();
 
@@ -505,6 +621,11 @@ public abstract class AbstractSchemaGenerator
         if (writerComment is not null)
         {
             WriteComments(writerComment, classe, tableName, properties);
+        }
+
+        if (writerResources is not null)
+        {
+            WriteResources(writerResources, classe);
         }
 
         writerCrebas.WriteLine();

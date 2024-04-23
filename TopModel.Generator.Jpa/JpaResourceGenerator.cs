@@ -65,15 +65,18 @@ public class JpaResourceGenerator : TranslationGeneratorBase<JpaConfig>
     /// <param name="container">Classe.</param>
     private void WriteClasse(FileWriter fw, IGrouping<IPropertyContainer, IFieldProperty> container, string lang)
     {
-        foreach (var property in container)
+        if (Config.TranslateProperties == true)
         {
-            if (property.Label != null)
+            foreach (var property in container)
             {
-                fw.WriteLine($"{property.ResourceKey}={_translationStore.GetTranslation(property, lang)}");
+                if (property.Label != null)
+                {
+                    fw.WriteLine($"{property.ResourceKey}={_translationStore.GetTranslation(property, lang)}");
+                }
             }
         }
 
-        if (container.Key is Class classe && classe.DefaultProperty != null)
+        if (container.Key is Class classe && classe.DefaultProperty != null && Config.TranslateReferences == true)
         {
             foreach (var val in classe.Values)
             {

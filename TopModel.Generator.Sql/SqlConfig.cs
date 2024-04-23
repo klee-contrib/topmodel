@@ -23,6 +23,11 @@ public class SqlConfig : GeneratorConfigBase
     public override bool IgnoreDefaultValues { get; set; } = true;
 
     /// <summary>
+    /// Retourne ou définit le nom de la table contenant les traductions.
+    /// </summary>
+    public string? ResourcesTableName { get; set; }
+
+    /// <summary>
     /// SGBD cible ("sqlserver" ou "postgres").
     /// </summary>
     public TargetDBMS TargetDBMS { get; set; } = TargetDBMS.Postgre;

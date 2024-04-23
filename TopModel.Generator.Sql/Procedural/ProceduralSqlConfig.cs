@@ -33,6 +33,11 @@ public class ProceduralSqlConfig
     public string? CommentFile { get; set; }
 
     /// <summary>
+    /// Retourne ou définit l'emplacement du fichier de création des commentaires (SQL).
+    /// </summary>
+    public string? ResourceFile { get; set; }
+
+    /// <summary>
     /// Retourne ou définit l'emplacement du script d'insertion des données des listes de référence (SQL).
     /// </summary>
     public string? InitListFile { get; set; }

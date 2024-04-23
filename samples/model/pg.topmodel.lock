@@ -9,3 +9,4 @@ generatedFiles:
   - ../generators/pg/src/03_unique_keys.sql
   - ../generators/pg/src/04_references.sql
   - ../generators/pg/src/05_comments.sql
+  - ../generators/pg/src/06_resources.sql

@@ -36,6 +36,16 @@ public abstract class GeneratorConfigBase
 #nullable enable
 
     /// <summary>
+    /// Si les libellés des listes de références doivent être traduits.
+    /// </summary>
+    public bool? TranslateReferences { get; set; }
+
+    /// <summary>
+    /// Si les libellés des propriétés doivent être traduits.
+    /// </summary>
+    public bool? TranslateProperties { get; set; }
+
+    /// <summary>
     /// Générateurs désactivés.
     /// </summary>
     public IList<string>? Disable { get; set; }

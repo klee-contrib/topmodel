@@ -41,7 +41,7 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
             }
         }
 
-        if (config.ResourceRootPath != null)
+        if (config.ResourceRootPath != null && config.TranslateProperties == true || config.TranslateReferences == true)
         {
             services.AddGenerator<JavascriptResourceGenerator, JavascriptConfig>(config, number);
         }

@@ -10,12 +10,15 @@ public class ProceduralSqlGenerator : GeneratorBase<SqlConfig>
 {
     private readonly ILogger<ProceduralSqlGenerator> _logger;
 
+    private readonly TranslationStore _translationStore;
+
     private AbstractSchemaGenerator? _schemaGenerator;
 
-    public ProceduralSqlGenerator(ILogger<ProceduralSqlGenerator> logger)
+    public ProceduralSqlGenerator(ILogger<ProceduralSqlGenerator> logger, TranslationStore translationStore)
         : base(logger)
     {
         _logger = logger;
+        _translationStore = translationStore;
     }
 
     public override string Name => "ProceduralSqlGen";
@@ -27,6 +30,7 @@ public class ProceduralSqlGenerator : GeneratorBase<SqlConfig>
         Config.Procedural!.InitListFile!,
         Config.Procedural!.UniqueKeysFile!,
         Config.Procedural!.CommentFile!,
+        Config.Procedural!.ResourceFile!,
     }.Where(t => !string.IsNullOrEmpty(t));
 
     protected override bool PersistentOnly => true;
@@ -36,8 +40,8 @@ public class ProceduralSqlGenerator : GeneratorBase<SqlConfig>
         get
         {
             _schemaGenerator ??= Config.TargetDBMS == TargetDBMS.Postgre
-                ? new PostgreSchemaGenerator(Config, _logger)
-                : new SqlServerSchemaGenerator(Config, _logger);
+                ? new PostgreSchemaGenerator(Config, _logger, _translationStore)
+                : new SqlServerSchemaGenerator(Config, _logger, _translationStore);
 
             return _schemaGenerator;
         }

@@ -46,8 +46,8 @@ public class JpaModelConstructorGenerator
                 foreach (var prop in classe.GetProperties(availableClasses).OfType<IFieldProperty>()
                     .Where(p => p != codeProperty))
                 {
-                    var isString = _config.GetType((IFieldProperty)prop) == "String";
-                    var value = refValue.Value.ContainsKey((IFieldProperty)prop) ? refValue.Value[(IFieldProperty)prop] : "null";
+                    var isString = _config.GetType(prop) == "String";
+                    var value = refValue.Value.ContainsKey(prop) ? refValue.Value[prop] : "null";
                     if (prop is AssociationProperty ap && codeProperty.PrimaryKey && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Property) && r.Value[ap.Property] == value))
                     {
                         value = ap.Association.NamePascal + "." + value;
@@ -59,7 +59,7 @@ public class JpaModelConstructorGenerator
                         value = _config.GetType(prop) + "." + value;
                     }
 
-                    if (modelConfig.I18n.TranslateReferences && classe.DefaultProperty == prop && !_config.CanClassUseEnums(classe, prop: prop))
+                    if (_config.TranslateReferences == true && classe.DefaultProperty == prop && !_config.CanClassUseEnums(classe, prop: prop))
                     {
                         value = refValue.ResourceKey;
                     }
