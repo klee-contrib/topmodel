@@ -196,7 +196,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                     fw.WriteLine($"        defaultValue: {defaultValue},");
                 }
 
-                if (Config.TranslateProperties!.Value)
+                if (Config.TranslateProperties == true)
                 {
                     fw.WriteLine($"        label: \"{field.ResourceKey}\"{(Config.GenerateComments ? "," : string.Empty)}");
                 }
@@ -207,7 +207,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
 
                 if (Config.GenerateComments)
                 {
-                    if (Config.TranslateProperties!.Value)
+                    if (Config.TranslateProperties == true)
                     {
                         fw.WriteLine($"        comment: \"{field.Comment}\"");
                     }
@@ -226,7 +226,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                 fw.Write(cp3.Domain.Name);
                 fw.Write(",\r\n        isRequired: true");
                 fw.Write(",\r\n        label: \"");
-                if (Config.TranslateProperties!.Value)
+                if (Config.TranslateProperties == true)
                 {
                     fw.Write(classe.Namespace.ModuleCamel);
                     fw.Write(".");

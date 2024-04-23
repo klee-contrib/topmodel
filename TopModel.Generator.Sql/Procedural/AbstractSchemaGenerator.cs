@@ -166,7 +166,7 @@ public abstract class AbstractSchemaGenerator
             .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType, writerComment, writerResource, classes.ToList()))
             .ToList();
 
-        if (_config.TranslateProperties!.Value || _config.TranslateReferences!.Value)
+        if (_config.TranslateProperties == true || _config.TranslateReferences == true)
         {
             WriteResourceTableDeclaration(writerCrebas);
         }
@@ -190,7 +190,7 @@ public abstract class AbstractSchemaGenerator
             GenerateConstraintForeignKey(fkProperty, writer);
         }
 
-        if ((_config.TranslateReferences!.Value || _config.TranslateProperties!.Value) && _config.ResourcesTableName != null)
+        if ((_config.TranslateReferences == true || _config.TranslateProperties == true) && _config.ResourcesTableName != null)
         {
             var targetClass = new Class()
             {
@@ -240,7 +240,7 @@ public abstract class AbstractSchemaGenerator
                 definition.TryGetValue(property, out var value);
                 nameValueDict[property.SqlName] = _config.GetValue(property, availableClasses, value);
 
-                if (_config.TranslateReferences!.Value && modelClass.DefaultProperty == property && !_config.CanClassUseEnums(modelClass, prop: property))
+                if (_config.TranslateReferences == true && modelClass.DefaultProperty == property && !_config.CanClassUseEnums(modelClass, prop: property))
                 {
                     nameValueDict[property.SqlName] = $@"""{initItem.ResourceKey}""";
                 }
@@ -459,7 +459,7 @@ public abstract class AbstractSchemaGenerator
 
     private void WriteResources(SqlFileWriter writer, Class modelClass)
     {
-        if (_config.TranslateProperties!.Value && modelClass.Properties.OfType<IFieldProperty>().Where(p => p.Label != null).Count() > 0 && modelClass.ModelFile != null)
+        if (_config.TranslateProperties == true && modelClass.Properties.OfType<IFieldProperty>().Where(p => p.Label != null).Count() > 0 && modelClass.ModelFile != null)
         {
             writer.WriteLine();
             writer.WriteLine("/**\t\tInitialisation des traductions des propriétés de la table " + modelClass.SqlName + "\t\t**/");
@@ -472,7 +472,7 @@ public abstract class AbstractSchemaGenerator
             }
         }
 
-        if (modelClass.DefaultProperty != null && modelClass.Values.Count() > 0 && _config.TranslateReferences!.Value)
+        if (modelClass.DefaultProperty != null && modelClass.Values.Count() > 0 && _config.TranslateReferences == true)
         {
             writer.WriteLine();
             writer.WriteLine("/**\t\tInitialisation des traductions des valeurs de la table " + modelClass.SqlName + "\t\t**/");

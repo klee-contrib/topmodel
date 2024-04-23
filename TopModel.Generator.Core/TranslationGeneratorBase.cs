@@ -30,11 +30,6 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
         })
         .Distinct();
 
-    protected override IEnumerable<Class> Classes => Files
-        .SelectMany(f => f.Value.Classes.Where(c => Config.Tags.Intersect(c.Tags).Any()))
-        .Where(c => c.Values.Any() && Config.TranslateReferences!.Value || (Config.TranslateProperties! ?? true))
-        .Distinct();
-
     protected virtual string? GetCommentResourceFilePath(IFieldProperty property, string tag, string lang)
     {
         return null;
@@ -101,6 +96,11 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
 
     private IEnumerable<(string Lang, string FilePath)> GetCommentResourceFileNames(IFieldProperty property, string tag)
     {
+        if (Config.TranslateProperties != true)
+        {
+            return [];
+        }
+
         return _translationStore.Translations
             .Select(lang => (lang: lang.Key, file: GetCommentResourceFilePath(property.CommentResourceProperty, tag, lang.Key)!))
             .Where(g => g.file != null);
@@ -115,6 +115,11 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
 
     private IEnumerable<(string Lang, string FilePath)> GetResourceFileNames(IFieldProperty property, string tag)
     {
+        if (Config.TranslateProperties != true && (Config.TranslateReferences != true || !(property.Class?.Values.Any() ?? false)))
+        {
+            return [];
+        }
+
         return _translationStore.Translations
             .Select(lang => (lang: lang.Key, file: GetResourceFilePath(property.ResourceProperty, tag, lang.Key)!))
             .Where(g => g.file != null);

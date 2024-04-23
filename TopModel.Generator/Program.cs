@@ -267,15 +267,9 @@ for (var i = 0; i < configs.Count; i++)
 
                         genConfig.ExcludedTags = excludedTags;
                         genConfig.InitVariables(config.App, number);
-                        if (genConfig.TranslateReferences == null)
-                        {
-                            genConfig.TranslateReferences = config.I18n.TranslateReferences;
-                        }
 
-                        if (genConfig.TranslateProperties == null)
-                        {
-                            genConfig.TranslateProperties = config.I18n.TranslateProperties;
-                        }
+                        genConfig.TranslateReferences ??= config.I18n.TranslateReferences;
+                        genConfig.TranslateProperties ??= config.I18n.TranslateProperties;
 
                         ModelUtils.TrimSlashes(genConfig, c => c.OutputDirectory);
                         ModelUtils.CombinePath(dn, genConfig, c => c.OutputDirectory);
