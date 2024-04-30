@@ -1,5 +1,33 @@
 # TopModel.Generator (`modgen`)
 
+## 1.45.0
+
+- [`de48408`](https://github.com/klee-contrib/topmodel/commit/de48408da4232d0096da9e43e20055704bbebe20) [JPA] Implémenter les mappers de propriétés dans les mapers from
+
+- [`d45ab79`](https://github.com/klee-contrib/topmodel/commit/d45ab794e98affa685935ebc1b1869c9e4b8b381) [Propriétés sur mappers] Fix affichage erreurs sur alias + fix alias mal recalculés en watch
+
+- [`2ce3101`](https://github.com/klee-contrib/topmodel/commit/2ce31010a7e61b21f2ad6051b291b8d5770b27dc) [Core] Property param dans les mappers : l'alias "full" remonte est toujours en erreur
+
+- [`abbb542`](https://github.com/klee-contrib/topmodel/commit/abbb5422de17bf8151117359c6f3baa00865914c) [Core] Utilisation du genericType sur alias "as" dans le cas général (fix #346)
+
+- [#350](https://github.com/klee-contrib/topmodel/pull/350) Exposer paramName dans les templates Fixes #307
+
+- [#351](https://github.com/klee-contrib/topmodel/issues/351)
+  - Implémentation SQL de la gestion des resources:
+    - Ajouter la propriété `resourceTableName`
+    - Générer le script de création de la table de traduction avec :
+      - `resource_key`  : correspond à la clé de traduction
+      - locale : correspond à la langue traduite
+      - label : traduction
+    - La pk porte sur les colonnes (`resource_key`, locale)
+    - Pour les listes de références, ajouter la FK vers la table de traduction, mais uniquement sur la colonne `resource_key` 
+    - Ajouter les insertions de traductions, des propriétés et des libellés de listes de références selon le paramétrage
+
+Sur les générateurs qui le supportent (JPA, SQL, JS), il est maintenant possible de surcharger les configurations `translateReferences` et `translateProperties` afin de remplacer les libellés par la clé de traduction correspondant. Il est également possible de générer les traductions correspondantes, chaque générateur ayant ses spécificités à ce sujet.
+
+**Breaking change** : Sans modification de la configuration, dans le générateur SQL, les libellés des listes de références sont maintenant remplacés par leur clé de traduction si le paramètre `translateReferences` est à `true` dans la configuration i18n. **Pour que rien ne change dans le code généré, ajouter à la configuration du générateur SQL `translateReferences: false`.**
+
+
 ## 1.44.0
 
 - [`7574a46`](https://github.com/klee-contrib/topmodel/commit/7574a46b1a3f832bd181af5602f2fb9c0103baa2)  - [Core] Ajout du type de flow `HardReplace`, qui effectue la suppression des données dans la table cible **en cascade**
