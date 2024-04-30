@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.45.1
+
+- [`a43cd0`](https://github.com/klee-contrib/topmodel/commit/a43cd0123e938d5c382ef04ca54ca7ebd04e144a) [JS] Fix enregistrement générateur ressources
+
 ## 1.45.0
 
 - [`de48408`](https://github.com/klee-contrib/topmodel/commit/de48408da4232d0096da9e43e20055704bbebe20) [JPA] Implémenter les mappers de propriétés dans les mapers from
