@@ -78,7 +78,8 @@ public class NuxtApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig>
                 fw.WriteLine("    const body = new FormData();");
                 fw.WriteLine("    fillFormData(");
                 fw.WriteLine("        {");
-                foreach (var param in endpoint.Params)
+
+                foreach (var param in endpoint.Params.Where(p => !p.IsRouteParam() && !p.IsQueryParam()))
                 {
                     if (param is IFieldProperty)
                     {
@@ -106,32 +107,32 @@ public class NuxtApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig>
 
             var fetchRoute = $@"`/{endpoint.FullRoute.Replace("{", "${")}`";
 
-            fw.WriteLine($@"    return useAsyncData({fetchRoute}, () => ");
-            fw.WriteLine($@"         $fetch<{fetchReturnType}>({fetchRoute}, {{");
-            fw.WriteLine($@"               method: '{endpoint.Method}',");
+            fw.WriteLine(1, $@"return useAsyncData({fetchRoute}, () => ");
+            fw.WriteLine(2, $@"$fetch<{fetchReturnType}>({fetchRoute}, {{");
+            fw.WriteLine(3, $@"method: '{endpoint.Method}',");
 
             if (endpoint.IsMultipart)
             {
-                fw.WriteLine("               body,");
+                fw.WriteLine(3, "body,");
             }
             else if (endpoint.GetJsonBodyParam() != null)
             {
-                fw.WriteLine($@"               body: {endpoint.GetJsonBodyParam()!.GetParamName()},");
+                fw.WriteLine(3, $@"body: {endpoint.GetJsonBodyParam()!.GetParamName()},");
             }
 
             if (endpoint.GetQueryParams().Any())
             {
-                fw.WriteLine("               query: {");
+                fw.WriteLine(4, "query: {");
 
                 foreach (var qParam in endpoint.GetQueryParams())
                 {
-                    fw.WriteLine($@"                    {qParam.GetParamName()},");
+                    fw.WriteLine(5, $@"{qParam.GetParamName()},");
                 }
 
-                fw.WriteLine("               }");
+                fw.WriteLine(4, "}");
             }
 
-            fw.WriteLine("          }), options);");
+            fw.WriteLine(2, "}), options);");
             fw.WriteLine("}");
         }
 

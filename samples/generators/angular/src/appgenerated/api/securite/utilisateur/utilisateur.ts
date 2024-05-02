@@ -56,40 +56,40 @@ export class UtilisateurService {
      * @returns Utilisateurs matchant les critères
      */
     searchUtilisateur(nom?: string, prenom?: string, email?: string, dateNaissance?: string, adresse?: string, actif?: boolean, profilId?: number, typeUtilisateurCode?: TypeUtilisateurCode, queryParams: any = {}): Observable<UtilisateurItem[]> {
-        if(nom) {
+        if (nom) {
             queryParams['nom'] = nom
         }
 
-        if(prenom) {
+        if (prenom) {
             queryParams['prenom'] = prenom
         }
 
-        if(email) {
+        if (email) {
             queryParams['email'] = email
         }
 
-        if(dateNaissance) {
+        if (dateNaissance) {
             queryParams['dateNaissance'] = dateNaissance
         }
 
-        if(adresse) {
+        if (adresse) {
             queryParams['adresse'] = adresse
         }
 
-        if(actif) {
+        if (actif) {
             queryParams['actif'] = actif
         }
 
-        if(profilId) {
+        if (profilId) {
             queryParams['profilId'] = profilId
         }
 
-        if(typeUtilisateurCode) {
+        if (typeUtilisateurCode) {
             queryParams['typeUtilisateurCode'] = typeUtilisateurCode
         }
 
-        const httpParams = new HttpParams({fromObject : queryParams});
-        const httpOptions = { params: httpParams }
+        const httpParams = new HttpParams({fromObject: queryParams});
+        const httpOptions = {params: httpParams}
 
         return this.http.get<UtilisateurItem[]>(`/api/utilisateurs`, httpOptions);
     }

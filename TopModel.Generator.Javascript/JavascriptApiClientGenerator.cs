@@ -89,18 +89,19 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
 
             if (endpoint.IsMultipart)
             {
-                fw.WriteLine("    const body = new FormData();");
-                fw.WriteLine("    fillFormData(");
-                fw.WriteLine("        {");
-                foreach (var param in endpoint.Params)
+                fw.WriteLine(1, "const body = new FormData();");
+                fw.WriteLine(1, "fillFormData(");
+                fw.WriteLine(2, "{");
+
+                foreach (var param in endpoint.Params.Where(p => !p.IsRouteParam() && !p.IsQueryParam()))
                 {
                     if (param is IFieldProperty)
                     {
-                        fw.Write($@"            {param.GetParamName()}");
+                        fw.Write(3, $@"{param.GetParamName()}");
                     }
                     else
                     {
-                        fw.Write($@"            ...{param.GetParamName()}");
+                        fw.Write(3, $@"...{param.GetParamName()}");
                     }
 
                     if (endpoint.Params.IndexOf(param) < endpoint.Params.Count - 1)
@@ -113,23 +114,23 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
                     }
                 }
 
-                fw.WriteLine("        },");
-                fw.WriteLine("        body");
-                fw.WriteLine("    );");
-
-                fw.WriteLine($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.FullRoute.Replace("{", "${")}`, {{body}}, options);");
-                fw.WriteLine("}");
-                continue;
+                fw.WriteLine(2, "},");
+                fw.WriteLine(2, "body");
+                fw.WriteLine(1, ");");
             }
 
-            fw.Write($@"    return {fetch}(""{endpoint.Method}"", `./{endpoint.FullRoute.Replace("{", "${")}`, {{");
+            fw.Write(1, $@"return {fetch}(""{endpoint.Method}"", `./{endpoint.FullRoute.Replace("{", "${")}`, {{");
 
             if (endpoint.GetJsonBodyParam() != null)
             {
                 fw.Write($"body: {endpoint.GetJsonBodyParam()!.GetParamName()}");
             }
+            else if (endpoint.IsMultipart)
+            {
+                fw.Write("body");
+            }
 
-            if (endpoint.GetJsonBodyParam() != null && endpoint.GetQueryParams().Any())
+            if ((endpoint.GetJsonBodyParam() != null || endpoint.IsMultipart) && endpoint.GetQueryParams().Any())
             {
                 fw.Write(", ");
             }
