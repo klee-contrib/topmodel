@@ -61,7 +61,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
 
         fw.WriteLine(@$"export class {fileName.ToPascalCase()}Service {{");
         fw.WriteLine();
-        fw.WriteLine(1, "constructor(private http: HttpClient) {}");
+        fw.WriteLine(1, "constructor(private readonly http: HttpClient) {}");
         foreach (var endpoint in endpoints)
         {
             WriteEndpoint(endpoint, fw);
@@ -145,18 +145,18 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
 
         if (endpoint.IsMultipart)
         {
-            fw.WriteLine("    const formData = new FormData();");
-            fw.WriteLine("    this.fillFormData(");
-            fw.WriteLine("        {");
+            fw.WriteLine("      const formData = new FormData();");
+            fw.WriteLine("      this.fillFormData(");
+            fw.WriteLine("          {");
             foreach (var param in endpoint.Params)
             {
                 if (param is IFieldProperty)
                 {
-                    fw.Write($@"            {param.GetParamName()}");
+                    fw.Write($@"                {param.GetParamName()}");
                 }
                 else
                 {
-                    fw.Write($@"            ...{param.GetParamName()}");
+                    fw.Write($@"                ...{param.GetParamName()}");
                 }
 
                 if (endpoint.Params.IndexOf(param) < endpoint.Params.Count - 1)
@@ -169,9 +169,9 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
                 }
             }
 
-            fw.WriteLine("        },");
-            fw.WriteLine("        formData");
-            fw.WriteLine("    );");
+            fw.WriteLine("          },");
+            fw.WriteLine("          formData");
+            fw.WriteLine("      );");
 
             fw.WriteLine(2, $@"return this.http.{endpoint.Method.ToLower()}<{returnType}>(`/{fullRoute}`, formData);");
             fw.WriteLine("}");

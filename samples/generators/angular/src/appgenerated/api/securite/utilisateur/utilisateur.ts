@@ -15,7 +15,7 @@ import {UtilisateurWrite} from "../../../model/securite/utilisateur/utilisateur-
 })
 export class UtilisateurService {
 
-    constructor(private http: HttpClient) {}
+    constructor(private readonly http: HttpClient) {}
 
     /**
      * @description Ajoute un utilisateur

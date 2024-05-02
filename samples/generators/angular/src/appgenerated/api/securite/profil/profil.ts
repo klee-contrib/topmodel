@@ -14,7 +14,7 @@ import {ProfilWrite} from "../../../model/securite/profil/profil-write";
 })
 export class ProfilService {
 
-    constructor(private http: HttpClient) {}
+    constructor(private readonly http: HttpClient) {}
 
     /**
      * @description Ajoute un Profil
