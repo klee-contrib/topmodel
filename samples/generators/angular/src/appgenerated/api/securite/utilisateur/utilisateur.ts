@@ -3,13 +3,13 @@
 ////
 
 
-import {HttpClient, HttpParams} from "@angular/common/http";
-import {Injectable} from "@angular/core";
-import {Observable} from "rxjs";
-import {TypeUtilisateurCode} from "../../../model/securite/utilisateur/references";
-import {UtilisateurItem} from "../../../model/securite/utilisateur/utilisateur-item";
-import {UtilisateurRead} from "../../../model/securite/utilisateur/utilisateur-read";
-import {UtilisateurWrite} from "../../../model/securite/utilisateur/utilisateur-write";
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { TypeUtilisateurCode } from "../../../model/securite/utilisateur/references";
+import { UtilisateurItem } from "../../../model/securite/utilisateur/utilisateur-item";
+import { UtilisateurRead } from "../../../model/securite/utilisateur/utilisateur-read";
+import { UtilisateurWrite } from "../../../model/securite/utilisateur/utilisateur-write";
 @Injectable({
     providedIn: 'root'
 })

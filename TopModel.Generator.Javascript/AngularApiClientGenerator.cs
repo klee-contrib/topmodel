@@ -51,7 +51,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
 
             foreach (var (import, path) in imports)
             {
-                fw.WriteLine($@"import {{{import}}} from ""{path}"";");
+                fw.WriteLine($@"import {{ {import} }} from ""{path}"";");
             }
         }
 
