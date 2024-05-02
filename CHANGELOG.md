@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.45.2
+
+- [`dd31cf`](https://github.com/klee-contrib/topmodel/commit/dd31cf8282fdf0343e8337bbfe594da2309a9b76) - [JSAPIClient] Fix génération multipart + query param + fix spacing dans le code généré (Angular + Nuxt)
+
 ## 1.45.1
 
 - [`a43cd0`](https://github.com/klee-contrib/topmodel/commit/a43cd0123e938d5c382ef04ca54ca7ebd04e144a) [JS] Fix enregistrement générateur ressources
@@ -20,43 +24,42 @@
   - Implémentation SQL de la gestion des resources:
     - Ajouter la propriété `resourceTableName`
     - Générer le script de création de la table de traduction avec :
-      - `resource_key`  : correspond à la clé de traduction
+      - `resource_key` : correspond à la clé de traduction
       - locale : correspond à la langue traduite
       - label : traduction
     - La pk porte sur les colonnes (`resource_key`, locale)
-    - Pour les listes de références, ajouter la FK vers la table de traduction, mais uniquement sur la colonne `resource_key` 
+    - Pour les listes de références, ajouter la FK vers la table de traduction, mais uniquement sur la colonne `resource_key`
     - Ajouter les insertions de traductions, des propriétés et des libellés de listes de références selon le paramétrage
 
 Sur les générateurs qui le supportent (JPA, SQL, JS), il est maintenant possible de surcharger les configurations `translateReferences` et `translateProperties` afin de remplacer les libellés par la clé de traduction correspondant. Il est également possible de générer les traductions correspondantes, chaque générateur ayant ses spécificités à ce sujet.
 
 **Breaking change** : Sans modification de la configuration, dans le générateur SQL, les libellés des listes de références sont maintenant remplacés par leur clé de traduction si le paramètre `translateReferences` est à `true` dans la configuration i18n. **Pour que rien ne change dans le code généré, ajouter à la configuration du générateur SQL `translateReferences: false`.**
 
-
 ## 1.44.0
 
-- [`7574a46`](https://github.com/klee-contrib/topmodel/commit/7574a46b1a3f832bd181af5602f2fb9c0103baa2)  - [Core] Ajout du type de flow `HardReplace`, qui effectue la suppression des données dans la table cible **en cascade**
+- [`7574a46`](https://github.com/klee-contrib/topmodel/commit/7574a46b1a3f832bd181af5602f2fb9c0103baa2) - [Core] Ajout du type de flow `HardReplace`, qui effectue la suppression des données dans la table cible **en cascade**
 
 ## 1.43.6
 
-- [`803ebd9`](https://github.com/klee-contrib/topmodel/commit/803ebd9bf9eb6d497e811e5669f2ac2110a566c9)  - [JPA] Corrections sur les data flows
+- [`803ebd9`](https://github.com/klee-contrib/topmodel/commit/803ebd9bf9eb6d497e811e5669f2ac2110a566c9) - [JPA] Corrections sur les data flows
 
 ## 1.43.5
 
-- [`699ae26`](https://github.com/klee-contrib/topmodel/commit/699ae267441bcec5c4c5d226bd39f6a4dbe83d42)  - [JPA] Correction sqlName Jdbc pour les associations
+- [`699ae26`](https://github.com/klee-contrib/topmodel/commit/699ae267441bcec5c4c5d226bd39f6a4dbe83d42) - [JPA] Correction sqlName Jdbc pour les associations
 
 ## 1.43.4
 
-- [#343](https://github.com/klee-contrib/topmodel/pull/343)  - [i18n] Permettre de modifier la génération des fichiers properties java en UTF 8
+- [#343](https://github.com/klee-contrib/topmodel/pull/343) - [i18n] Permettre de modifier la génération des fichiers properties java en UTF 8
 
 ## 1.43.3
 
-- [`3d2c1f0`](https://github.com/klee-contrib/topmodel/commit/3d2c1f0492f7bbc4c6365a3a694ea717b21e0b6a)  - [JPA] Correction mapping dataflow
+- [`3d2c1f0`](https://github.com/klee-contrib/topmodel/commit/3d2c1f0492f7bbc4c6365a3a694ea717b21e0b6a) - [JPA] Correction mapping dataflow
 
 ## 1.43.2
 
-- [#340](https://github.com/klee-contrib/topmodel/pull/340) - [JPA] [Flux de données] ne pas générer colonne pour les attributs @OneToMany 
+- [#340](https://github.com/klee-contrib/topmodel/pull/340) - [JPA] [Flux de données] ne pas générer colonne pour les attributs @OneToMany
 
-- [#338](https://github.com/klee-contrib/topmodel/pull/338) - [JPA] Import manquant lors de la génération d'une classe étendant une classe d'un autre module 
+- [#338](https://github.com/klee-contrib/topmodel/pull/338) - [JPA] Import manquant lors de la génération d'une classe étendant une classe d'un autre module
 
 ## 1.43.1
 
