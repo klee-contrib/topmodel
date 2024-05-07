@@ -6,7 +6,7 @@ _Remarque : tous les imports spécifiés pour le générateur JS dans les domain
 
 ### Modes de génération de l'API client
 
-Il est possible de générer l'API cliente selon deux modes (`apiMode`) : `vanilla` ou `angular`.
+Il est possible de générer l'API cliente selon deux modes (`apiMode`) : `vanilla`, `nuxt` ou `angular`.
 
 #### Angular
 
@@ -21,6 +21,13 @@ exemple :
 ```yaml
 fetchPath: "@api-services"
 ```
+### ApiFilePath
+
+Par défaut, les fichiers d'api client sont placés dans le dossier `{module}`. Ils sont nommés d'après le fichier qui les contient, sauf dans le cas du mode `angular`, où le nom du fichier sera de la forme `{fileName}.service.ts`.
+
+Pour modifier ce comportement, ajuster le paramètre `apiFilePath`.
+
+L'extension `.ts` est ajoutée automatiquement
 
 ### Modes de génération des entités
 

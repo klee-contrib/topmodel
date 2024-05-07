@@ -75,8 +75,8 @@
     },
     "apiClientFilePath": {
       "type": "string",
-      "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.",
-      "default": "{module}"
+      "description": "Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API. En mode Angular, la valeur par défaut est `{module}/{filePath}.service`",
+      "default": "{module}/{filePath}"
     },
     "fetchPath": {
       "type": "string",
