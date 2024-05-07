@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-using YamlDotNet.Core;
+﻿using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.FileModel;
@@ -9,6 +7,7 @@ public class Reference
 {
     internal Reference()
     {
+        ReferenceName = string.Empty;
     }
 
     internal Reference(Scalar scalar)

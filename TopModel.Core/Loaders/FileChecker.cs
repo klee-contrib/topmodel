@@ -132,7 +132,7 @@ public class FileChecker
         return _deserializer.Deserialize(_serializer.Serialize(genConfigMap), configType)!;
     }
 
-    private static void Validate(string fileName, JsonSchema schema, string? json)
+    private static void Validate(string fileName, JsonSchema schema, string json)
     {
         var errors = schema.Validate(json);
 

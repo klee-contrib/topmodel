@@ -7,17 +7,15 @@ namespace TopModel.Generator.Core;
 
 public abstract class GeneratorConfigBase
 {
-#nullable disable
-
     /// <summary>
     /// Racine du répertoire de génération.
     /// </summary>
-    public string OutputDirectory { get; set; }
+    public required string OutputDirectory { get; set; }
 
     /// <summary>
     /// Tags du générateur.
     /// </summary>
-    public IList<string> Tags { get; set; }
+    public required IList<string> Tags { get; set; }
 
     /// <summary>
     /// Tags pour lesquels il ne faut pas générer les fichiers (surchage en CLI).
@@ -32,7 +30,7 @@ public abstract class GeneratorConfigBase
     /// <summary>
     /// Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.
     /// </summary>
-    public string Language { get; set; }
+    public required string Language { get; set; }
 #nullable enable
 
     /// <summary>
@@ -53,12 +51,12 @@ public abstract class GeneratorConfigBase
     /// <summary>
     /// Variables globales du générateur.
     /// </summary>
-    public Dictionary<string, string> Variables { get; set; } = new();
+    public Dictionary<string, string> Variables { get; set; } = [];
 
     /// <summary>
     /// Variables par tag du générateur.
     /// </summary>
-    public Dictionary<string, Dictionary<string, string>> TagVariables { get; set; } = new();
+    public Dictionary<string, Dictionary<string, string>> TagVariables { get; set; } = [];
 
     public IEnumerable<string> TagVariableNames => TagVariables.Values.SelectMany(v => v.Keys).Distinct();
 
@@ -67,17 +65,17 @@ public abstract class GeneratorConfigBase
     /// <summary>
     /// Propriétés qui supportent la variable "module".
     /// </summary>
-    public virtual string[] PropertiesWithModuleVariableSupport => Array.Empty<string>();
+    public virtual string[] PropertiesWithModuleVariableSupport => [];
 
     /// <summary>
     /// Propriétés qui supportent la variable "lang".
     /// </summary>
-    public virtual string[] PropertiesWithLangVariableSupport => Array.Empty<string>();
+    public virtual string[] PropertiesWithLangVariableSupport => [];
 
     /// <summary>
     /// Propriétés qui supportent les variables par tag de la configuration courante.
     /// </summary>
-    public virtual string[] PropertiesWithTagVariableSupport => Array.Empty<string>();
+    public virtual string[] PropertiesWithTagVariableSupport => [];
 
     protected virtual bool UseNamedEnums => true;
 
@@ -116,7 +114,7 @@ public abstract class GeneratorConfigBase
 
     public IEnumerable<string> GetClassImplements(Class classe)
     {
-        return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Implements ?? Array.Empty<string>())
+        return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Implements ?? [])
             .Select(i => i.ParseTemplate(classe, d.Parameters, this)))
             .Distinct();
     }
@@ -150,28 +148,28 @@ public abstract class GeneratorConfigBase
 
     public IEnumerable<string> GetDecoratorAnnotations(Class classe, string tag)
     {
-        return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Annotations ?? Array.Empty<string>())
+        return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Annotations ?? [])
             .Select(a => a.ParseTemplate(classe, d.Parameters, this, tag)))
             .Distinct();
     }
 
     public IEnumerable<string> GetDecoratorAnnotations(Endpoint endpoint, string tag)
     {
-        return endpoint.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Annotations ?? Array.Empty<string>())
+        return endpoint.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Annotations ?? [])
             .Select(a => a.ParseTemplate(endpoint, d.Parameters, this, tag)))
             .Distinct();
     }
 
     public IEnumerable<string> GetDecoratorImports(Class classe, string tag)
     {
-        return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Imports ?? Array.Empty<string>())
+        return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Imports ?? [])
             .Select(i => i.ParseTemplate(classe, d.Parameters, this, tag)))
             .Distinct();
     }
 
     public IEnumerable<string> GetDecoratorImports(Endpoint endpoint, string tag)
     {
-        return endpoint.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Imports ?? Array.Empty<string>())
+        return endpoint.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Imports ?? [])
             .Select(i => i.ParseTemplate(endpoint, d.Parameters, this, tag)))
             .Distinct();
     }
@@ -412,7 +410,7 @@ public abstract class GeneratorConfigBase
         }
         else
         {
-            return new List<string>();
+            return [];
         }
     }
 
@@ -435,7 +433,7 @@ public abstract class GeneratorConfigBase
             {
                 if (!TagVariables.ContainsKey(tag))
                 {
-                    TagVariables[tag] = new();
+                    TagVariables[tag] = [];
                 }
             }
 

@@ -1,6 +1,4 @@
-﻿using TopModel.Utils;
-
-namespace TopModel.ModelGenerator;
+﻿namespace TopModel.ModelGenerator;
 
 public class TmdCompositionProperty : TmdProperty
 {

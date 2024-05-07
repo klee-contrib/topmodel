@@ -8,5 +8,5 @@ public class ValueTemplate
     public string Value { get; set; }
 #nullable enable
 
-    public List<string> Imports { get; set; } = new List<string>();
+    public List<string> Imports { get; set; } = [];
 }

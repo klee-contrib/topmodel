@@ -1,6 +1,4 @@
-﻿#nullable disable
-
-namespace TopModel.Core;
+﻿namespace TopModel.Core;
 
 /// <summary>
 /// Configuration i18n.
@@ -15,7 +13,7 @@ public class I18nConfig
     /// <summary>
     /// Liste des langues de l'application (autre que la langue par défaut).
     /// </summary>
-    public List<string> Langs { get; set; } = new();
+    public List<string> Langs { get; set; } = [];
 
     /// <summary>
     /// Template du chemin des dossiers de traductions entrants. Doit contenir le template {lang}.

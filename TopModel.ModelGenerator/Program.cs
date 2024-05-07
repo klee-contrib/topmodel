@@ -139,7 +139,7 @@ var disposables = new List<IDisposable>();
 var loggerProvider = new LoggerProvider();
 
 var fsCache = new MemoryCache(new MemoryCacheOptions());
-Dictionary<string, string> passwords = new();
+Dictionary<string, string> passwords = [];
 
 async Task StartGeneration(string filePath, string directoryName, int i)
 {

@@ -2,8 +2,7 @@
 
 public class WriterLine
 {
-#nullable disable
-    public string Line { get; set; }
+    public required string Line { get; set; }
 
-    public int Indent { get; set; }
+    public required int Indent { get; set; }
 }

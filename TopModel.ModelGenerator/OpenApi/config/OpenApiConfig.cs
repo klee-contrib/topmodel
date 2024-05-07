@@ -8,17 +8,15 @@ public class OpenApiConfig
 
     public string Module { get; set; } = "OpenApi";
 
-    public IList<DomainMapping> Domains { get; set; } = new List<DomainMapping>();
+    public IList<DomainMapping> Domains { get; set; } = [];
 
-#nullable disable
-    public string Source { get; set; }
-#nullable enable
+    public required string Source { get; set; }
 
     public string[]? Include { get; set; }
 
-    public IList<string> EndpointTags { get; set; } = new List<string>();
+    public IList<string> EndpointTags { get; set; } = [];
 
-    public IList<string> ModelTags { get; set; } = new List<string>();
+    public IList<string> ModelTags { get; set; } = [];
 
     public string ModelFileName { get; set; } = "Model";
 

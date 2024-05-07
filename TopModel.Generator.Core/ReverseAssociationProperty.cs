@@ -4,6 +4,5 @@ namespace TopModel.Generator;
 
 public class ReverseAssociationProperty : AssociationProperty
 {
-#nullable disable
-    public AssociationProperty ReverseProperty { get; set; }
+    public required AssociationProperty ReverseProperty { get; set; }
 }

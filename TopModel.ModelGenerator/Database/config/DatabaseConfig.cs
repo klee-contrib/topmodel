@@ -4,17 +4,17 @@ public class DatabaseConfig
 {
     public string OutputDirectory { get; set; } = "./";
 
-    public IList<DomainMapping> Domains { get; set; } = new List<DomainMapping>();
+    public IList<DomainMapping> Domains { get; set; } = [];
 
     public DatabaseSource Source { get; set; } = new();
 
-    public List<string> Exclude { get; set; } = new();
+    public List<string> Exclude { get; set; } = [];
 
-    public List<string> Tags { get; set; } = new();
+    public List<string> Tags { get; set; } = [];
 
-    public List<string> ExtractValues { get; set; } = new();
+    public List<string> ExtractValues { get; set; } = [];
 
-    public List<ModuleConfig> Modules { get; set; } = new();
+    public List<ModuleConfig> Modules { get; set; } = [];
 
     public string ConnectionString => Source.DbType switch
     {

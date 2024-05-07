@@ -182,8 +182,8 @@ public class CsharpConfig : GeneratorConfigBase
     /// </summary>
     public bool UsePrimaryConstructors { get; set; }
 
-    public override string[] PropertiesWithModuleVariableSupport => new[]
-    {
+    public override string[] PropertiesWithModuleVariableSupport =>
+    [
         nameof(PersistentModelPath),
         nameof(PersistentReferencesModelPath),
         nameof(NonPersistentModelPath),
@@ -193,10 +193,10 @@ public class CsharpConfig : GeneratorConfigBase
         nameof(ReferenceAccessorsInterfacePath),
         nameof(ReferenceAccessorsImplementationPath),
         nameof(DataFlowsPath)
-    };
+    ];
 
-    public override string[] PropertiesWithTagVariableSupport => new[]
-    {
+    public override string[] PropertiesWithTagVariableSupport =>
+    [
         nameof(PersistentModelPath),
         nameof(PersistentReferencesModelPath),
         nameof(NonPersistentModelPath),
@@ -211,7 +211,7 @@ public class CsharpConfig : GeneratorConfigBase
         nameof(ApiRootPath),
         nameof(ApiFilePath),
         nameof(DataFlowsPath)
-    };
+    ];
 
     public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses, IFieldProperty? prop = null)
     {
@@ -519,7 +519,7 @@ public class CsharpConfig : GeneratorConfigBase
 
     protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
     {
-        return $"{(isPrimaryKeyDef ? string.Empty : $"{className.ToPascalCase()}.")}{propName.ToPascalCase()}{(!propName.EndsWith("s") ? "s" : string.Empty)}";
+        return $"{(isPrimaryKeyDef ? string.Empty : $"{className.ToPascalCase()}.")}{propName.ToPascalCase()}{(!propName.EndsWith('s') ? "s" : string.Empty)}";
     }
 
     protected override bool IsEnumNameValid(string name)
