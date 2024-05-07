@@ -13,6 +13,18 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
         if (config.ApiClientFilePath != null)
         {
             TrimSlashes(config, c => c.ApiClientFilePath);
+            if (!config.ApiClientFilePath.Contains("{fileName}"))
+            {
+                config.ApiClientFilePath = config.ApiClientFilePath + "/{fileName}";
+            }
+        }
+        else if (config.ApiMode == TargetFramework.ANGULAR)
+        {
+            config.ApiClientFilePath = "{module}/{fileName}.service";
+        }
+        else
+        {
+            config.ApiClientFilePath = "{module}/{fileName}";
         }
 
         TrimSlashes(config, c => c.ApiClientRootPath);

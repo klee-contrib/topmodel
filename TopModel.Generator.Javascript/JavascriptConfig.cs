@@ -93,11 +93,6 @@ public class JavascriptConfig : GeneratorConfigBase
 
     protected override string NullValue => "undefined";
 
-    /// <summary>
-    /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.
-    /// </summary>
-    private string ComputedApiClientFilePath => ApiClientFilePath != null ? ApiClientFilePath : ApiMode == TargetFramework.ANGULAR ? "{module}/{fileName}.service.ts" : "{module}/{fileName}.ts";
-
     public string GetClassFileName(Class classe, string tag)
     {
         return Path.Combine(
@@ -143,8 +138,8 @@ public class JavascriptConfig : GeneratorConfigBase
         return Path.Combine(
             OutputDirectory,
             ResolveVariables(ApiClientRootPath!, tag),
-            ResolveVariables(ComputedApiClientFilePath, module: file.Namespace.ModulePathKebab)
-                .Replace("{fileName}", file.Options.Endpoints.FileName.ToKebabCase()))
+            ResolveVariables(ApiClientFilePath!, module: file.Namespace.ModulePathKebab)
+                .Replace("{fileName}", file.Options.Endpoints.FileName.ToKebabCase())) + ".ts"
         .Replace("\\", "/");
     }
 
