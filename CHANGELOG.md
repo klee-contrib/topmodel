@@ -1,9 +1,12 @@
 # TopModel.Generator (`modgen`)
-## 1.45.0
+
+## 1.46.0
 
 - [`354`](https://github.com/klee-contrib/topmodel/issues/354) [JS] Template pour les noms des fichiers contenant les api clientes
 
-**Breaking change** : Pour les utilisateurs angular, les services d'api client sont déplacés dans un fichier `*.service.ts`. Pour retrouver le comportement initial, définir la propriété `apiClientFilePath` à `{module}.{fileName}.ts`
+**Breaking changes** : 
+  - Pour les utilisateurs angular, les services d'api client sont déplacés dans un fichier `*.service.ts`. Pour retrouver le comportement initial, définir la propriété `apiClientFilePath` à `{module}.{fileName}.ts`
+  - Les utilisateurs ayant déjà défini la variable `apiClientFilePath` doivent également ajouter le template `{fileName}` dans leur surcharge, afin de retrouver le comportement initial
 
 ## 1.45.2
 
