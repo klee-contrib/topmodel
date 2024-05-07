@@ -15,7 +15,7 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
             TrimSlashes(config, c => c.ApiClientFilePath);
             if (!config.ApiClientFilePath.Contains("{fileName}"))
             {
-                config.ApiClientFilePath = config.ApiClientFilePath + "/{fileName}";
+                config.ApiClientFilePath = Path.Combine(config.ApiClientFilePath, "{fileName}").Replace("\\", "/");
             }
         }
         else if (config.ApiMode == TargetFramework.ANGULAR)

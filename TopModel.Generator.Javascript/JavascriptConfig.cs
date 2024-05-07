@@ -138,8 +138,7 @@ public class JavascriptConfig : GeneratorConfigBase
         return Path.Combine(
             OutputDirectory,
             ResolveVariables(ApiClientRootPath!, tag),
-            ResolveVariables(ApiClientFilePath!, module: file.Namespace.ModulePathKebab)
-                .Replace("{fileName}", file.Options.Endpoints.FileName.ToKebabCase())) + ".ts"
+            ResolveVariables(ApiClientFilePath!, module: file.Namespace.ModulePathKebab).Replace("{fileName}", file.Options.Endpoints.FileName.ToKebabCase()) + ".ts")
         .Replace("\\", "/");
     }
 
