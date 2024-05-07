@@ -1,5 +1,12 @@
 # TopModel.Generator (`modgen`)
 
+## 1.46.0
+
+- [`354`](https://github.com/klee-contrib/topmodel/issues/354) [JS] Template pour les noms des fichiers contenant les api clientes
+
+**Breaking changes** : 
+  - Pour les utilisateurs angular, les services d'api client sont déplacés dans un fichier `*.service.ts`. Pour retrouver le comportement initial, définir la propriété `apiClientFilePath` à `{module}/{fileName}`
+
 ## 1.45.2
 
 - [`dd31cf`](https://github.com/klee-contrib/topmodel/commit/dd31cf8282fdf0343e8337bbfe594da2309a9b76) - [JSAPIClient] Fix génération multipart + query param + fix spacing dans le code généré (Angular + Nuxt)
