@@ -28,7 +28,7 @@ public class JavascriptConfig : GeneratorConfigBase
     /// <summary>
     /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.
     /// </summary>
-    public string ApiClientFilePath { get; set; } = "{module}";
+    public string? ApiClientFilePath { get; set; }
 
     /// <summary>
     /// Chemin (ou alias commençant par '@') vers un 'fetch' personnalisé, relatif au répertoire de génération.
@@ -93,6 +93,11 @@ public class JavascriptConfig : GeneratorConfigBase
 
     protected override string NullValue => "undefined";
 
+    /// <summary>
+    /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relatif à la racine de l'API.
+    /// </summary>
+    private string ComputedApiClientFilePath => ApiClientFilePath != null ? ApiClientFilePath : ApiMode == TargetFramework.ANGULAR ? "{module}/{fileName}.service.ts" : "{module}/{fileName}.ts";
+
     public string GetClassFileName(Class classe, string tag)
     {
         return Path.Combine(
@@ -138,8 +143,8 @@ public class JavascriptConfig : GeneratorConfigBase
         return Path.Combine(
             OutputDirectory,
             ResolveVariables(ApiClientRootPath!, tag),
-            ResolveVariables(ApiClientFilePath, module: file.Namespace.ModulePathKebab),
-            $"{file.Options.Endpoints.FileName.ToKebabCase()}.ts")
+            ResolveVariables(ComputedApiClientFilePath, module: file.Namespace.ModulePathKebab)
+                .Replace("{fileName}", file.Options.Endpoints.FileName.ToKebabCase()))
         .Replace("\\", "/");
     }
 

@@ -10,7 +10,11 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
     /// <inheritdoc cref="IGeneratorRegistration{T}.Register" />
     public void Register(IServiceCollection services, JavascriptConfig config, int number)
     {
-        TrimSlashes(config, c => c.ApiClientFilePath);
+        if (config.ApiClientFilePath != null)
+        {
+            TrimSlashes(config, c => c.ApiClientFilePath);
+        }
+
         TrimSlashes(config, c => c.ApiClientRootPath);
         TrimSlashes(config, c => c.DomainPath);
         TrimSlashes(config, c => c.FetchPath);
