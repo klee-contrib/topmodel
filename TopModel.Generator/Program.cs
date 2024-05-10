@@ -245,7 +245,9 @@ for (var i = 0; i < configs.Count; i++)
     else
     {
         var services = new ServiceCollection()
-            .AddLogging(builder => builder.AddProvider(loggerProvider))
+            .AddTransient(typeof(ILogger<>), typeof(Logger<>))
+            .AddTransient<ILoggerFactory, LoggerFactory>()
+            .AddSingleton<ILoggerProvider>(loggerProvider)
             .AddModelStore(fileChecker, config, dn);
 
         var hasError = false;
