@@ -50,42 +50,47 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
     {
         var modules = new List<(string MainFilePath, string ModuleFilePath, string ModuleName)>();
 
-        foreach (var resources in Classes
-            .SelectMany(classe => Config.Tags.Intersect(classe.Tags)
-                .SelectMany(tag => classe.Properties.OfType<IFieldProperty>()
-                    .SelectMany(p => GetResourceFileNames(p, tag)
-                        .Select(f => (key: (MainFilePath: GetMainResourceFilePath(tag, f.Lang), ModuleFilePath: f.FilePath, f.Lang), p)))))
-                .GroupBy(f => f.key))
-        {
-            var properties = resources.Select(r => r.p.ResourceProperty).Distinct();
-            HandleResourceFile(resources.Key.ModuleFilePath, resources.Key.Lang, properties);
-
-            if (resources.Key.MainFilePath != null)
+        Parallel.ForEach(
+            Classes
+                .SelectMany(classe => Config.Tags.Intersect(classe.Tags)
+                    .SelectMany(tag => classe.Properties.OfType<IFieldProperty>()
+                        .SelectMany(p => GetResourceFileNames(p, tag)
+                            .Select(f => (key: (MainFilePath: GetMainResourceFilePath(tag, f.Lang), ModuleFilePath: f.FilePath, f.Lang), p)))))
+                    .GroupBy(f => f.key),
+            resources =>
             {
-                modules.Add((resources.Key.MainFilePath, resources.Key.ModuleFilePath, properties.First().Parent.Namespace.RootModule));
-            }
-        }
+                var properties = resources.Select(r => r.p.ResourceProperty).Distinct();
+                HandleResourceFile(resources.Key.ModuleFilePath, resources.Key.Lang, properties);
 
-        foreach (var resources in Classes
-            .SelectMany(classe => Config.Tags.Intersect(classe.Tags)
-                .SelectMany(tag => classe.Properties.OfType<IFieldProperty>()
-                    .SelectMany(p => GetCommentResourceFileNames(p, tag)
-                        .Select(f => (key: (MainFilePath: GetMainResourceFilePath(tag, f.Lang), ModuleFilePath: f.FilePath, f.Lang), p)))))
-                .GroupBy(f => f.key))
-        {
-            var properties = resources.Select(r => r.p.CommentResourceProperty).Distinct();
-            HandleCommentResourceFile(resources.Key.ModuleFilePath, resources.Key.Lang, properties);
+                if (resources.Key.MainFilePath != null)
+                {
+                    modules.Add((resources.Key.MainFilePath, resources.Key.ModuleFilePath, properties.First().Parent.Namespace.RootModule));
+                }
+            });
 
-            if (resources.Key.MainFilePath != null)
+        Parallel.ForEach(
+            Classes
+                .SelectMany(classe => Config.Tags.Intersect(classe.Tags)
+                    .SelectMany(tag => classe.Properties.OfType<IFieldProperty>()
+                        .SelectMany(p => GetCommentResourceFileNames(p, tag)
+                            .Select(f => (key: (MainFilePath: GetMainResourceFilePath(tag, f.Lang), ModuleFilePath: f.FilePath, f.Lang), p)))))
+                    .GroupBy(f => f.key),
+            resources =>
             {
-                modules.Add((resources.Key.MainFilePath, resources.Key.ModuleFilePath, $"{properties.First().Parent.Namespace.RootModule}Comments"));
-            }
-        }
+                var properties = resources.Select(r => r.p.CommentResourceProperty).Distinct();
+                HandleCommentResourceFile(resources.Key.ModuleFilePath, resources.Key.Lang, properties);
 
-        foreach (var g in modules.GroupBy(m => m.MainFilePath))
-        {
-            HandleMainResourceFile(g.Key, g.Select(l => (l.ModuleFilePath, l.ModuleName)).OrderBy(m => m.ModuleFilePath));
-        }
+                if (resources.Key.MainFilePath != null)
+                {
+                    modules.Add((resources.Key.MainFilePath, resources.Key.ModuleFilePath, $"{properties.First().Parent.Namespace.RootModule}Comments"));
+                }
+            });
+
+        Parallel.ForEach(
+            modules.GroupBy(m => m.MainFilePath),
+            g => HandleMainResourceFile(
+                g.Key,
+                g.Select(l => (l.ModuleFilePath, l.ModuleName)).OrderBy(m => m.ModuleFilePath)));
     }
 
     protected virtual void HandleMainResourceFile(string mainFilePath, IEnumerable<(string ModuleFilePath, string ModuleName)> modules)

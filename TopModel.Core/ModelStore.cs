@@ -190,12 +190,12 @@ public class ModelStore
 
                 referenceErrors.AddRange(GetGlobalErrors());
 
-                foreach (var modelWatcher in _modelWatchers)
+                Parallel.ForEach(_modelWatchers, modelWatcher =>
                 {
                     modelWatcher.OnErrors(affectedFiles
                         .Select(file => (file, errors: referenceErrors.Where(e => e.File == file && !_config.NoWarn.Contains(e.ModelErrorType))))
                         .ToDictionary(i => i.file, i => i.errors));
-                }
+                });
 
                 foreach (var error in referenceErrors.Where(e => e.IsError))
                 {
@@ -219,10 +219,10 @@ public class ModelStore
                     _logger.LogInformation("Modèle chargé avec succès.");
                 }
 
-                foreach (var modelWatcher in _modelWatchers)
+                Parallel.ForEach(_modelWatchers, modelWatcher =>
                 {
                     modelWatcher.OnFilesChanged(sortedFiles, _storeConfig);
-                }
+                });
 
                 var generatedFiles = _modelWatchers.Where(m => m.GeneratedFiles != null).SelectMany(m => m.GeneratedFiles!);
                 if (generatedFiles.Any() && !DisableLockfile)

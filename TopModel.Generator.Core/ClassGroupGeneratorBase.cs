@@ -24,13 +24,16 @@ public abstract class ClassGroupGeneratorBase<T> : GeneratorBase<T>
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in Classes
-            .SelectMany(classe => Config.Tags.Intersect(classe.Tags)
-                .SelectMany(tag => GetFileNames(classe, tag)
-                    .Select(f => (key: (f.FileType, f.FileName), tag, classe))))
-            .GroupBy(f => f.key))
-        {
-            HandleFile(file.Key.FileType, file.Key.FileName, file.First().tag, file.Select(f => f.classe).Distinct());
-        }
+        Parallel.ForEach(
+            Classes
+                .SelectMany(classe => Config.Tags.Intersect(classe.Tags)
+                    .SelectMany(tag => GetFileNames(classe, tag)
+                        .Select(f => (key: (f.FileType, f.FileName), tag, classe))))
+                .GroupBy(f => f.key),
+            file => HandleFile(
+                file.Key.FileType,
+                file.Key.FileName,
+                file.First().tag,
+                file.Select(f => f.classe).Distinct()));
     }
 }

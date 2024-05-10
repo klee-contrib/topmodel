@@ -27,17 +27,12 @@ public abstract class ClassGeneratorBase<T> : GeneratorBase<T>
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in files)
-        {
-            foreach (var classe in file.Classes.Where(FilterClass))
-            {
-                foreach (var (tag, fileName) in Config.Tags.Intersect(classe.Tags)
-                     .Select(tag => (tag, fileName: GetFileName(classe, tag)))
-                     .DistinctBy(t => t.fileName))
-                {
-                    HandleClass(fileName, classe, tag);
-                }
-            }
-        }
+        Parallel.ForEach(files, file =>
+            Parallel.ForEach(file.Classes.Where(FilterClass), classe =>
+                Parallel.ForEach(
+                    Config.Tags.Intersect(classe.Tags)
+                         .Select(tag => (tag, fileName: GetFileName(classe, tag)))
+                         .DistinctBy(t => t.fileName),
+                    l => HandleClass(l.fileName, classe, l.tag))));
     }
 }

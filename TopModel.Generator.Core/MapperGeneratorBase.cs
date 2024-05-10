@@ -61,12 +61,12 @@ public abstract class MapperGeneratorBase<T> : GeneratorBase<T>
                     .ToArray(),
                 Tags: f.Select(m => m.Tag)));
 
-        foreach (var fileName in fromMappers.Keys.Concat(toMappers.Keys).Distinct())
+        Parallel.ForEach(fromMappers.Keys.Concat(toMappers.Keys).Distinct(), fileName =>
         {
             var (fileFromMappers, fromTags) = fromMappers.ContainsKey(fileName) ? fromMappers[fileName] : (Array.Empty<(Class, FromMapper)>(), Array.Empty<string>());
             var (fileToMappers, toTags) = toMappers.ContainsKey(fileName) ? toMappers[fileName] : (Mappers: Array.Empty<(Class, ClassMappings)>(), Tags: Array.Empty<string>());
             HandleFile(fileName, fromTags.Concat(toTags).First(), fileFromMappers, fileToMappers);
-        }
+        });
     }
 
     protected virtual bool IsPersistent(Class classe)

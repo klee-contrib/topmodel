@@ -30,22 +30,24 @@ public abstract class EndpointsGeneratorBase<T> : GeneratorBase<T>
 
     protected override void HandleFiles(IEnumerable<ModelFile> files)
     {
-        foreach (var file in Files.Values
-            .SelectMany(file => Config.Tags.Intersect(file.AllTags.Where(FilterTag))
-                .Select(tag => (tag, file, filePath: GetFilePath(file, tag))))
-            .GroupBy(file => file.filePath))
-        {
-            var endpoints = file
-                .SelectMany(f => f.file.Endpoints)
-                .Where(e => e.Tags.Intersect(file.Select(f => f.tag)).Any())
-                .Distinct()
-                .OrderBy(e => e.Name, StringComparer.Ordinal)
-                .ToList();
-
-            if (endpoints.Any())
+        Parallel.ForEach(
+            Files.Values
+                .SelectMany(file => Config.Tags.Intersect(file.AllTags.Where(FilterTag))
+                    .Select(tag => (tag, file, filePath: GetFilePath(file, tag))))
+                .GroupBy(file => file.filePath),
+            file =>
             {
-                HandleFile(file.Key, file.First().file.Options.Endpoints.FileName, file.First().tag, endpoints);
-            }
-        }
+                var endpoints = file
+                    .SelectMany(f => f.file.Endpoints)
+                    .Where(e => e.Tags.Intersect(file.Select(f => f.tag)).Any())
+                    .Distinct()
+                    .OrderBy(e => e.Name, StringComparer.Ordinal)
+                    .ToList();
+
+                if (endpoints.Any())
+                {
+                    HandleFile(file.Key, file.First().file.Options.Endpoints.FileName, file.First().tag, endpoints);
+                }
+            });
     }
 }
