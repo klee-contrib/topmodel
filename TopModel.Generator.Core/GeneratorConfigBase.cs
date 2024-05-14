@@ -68,6 +68,11 @@ public abstract class GeneratorConfigBase
     public virtual string[] PropertiesWithModuleVariableSupport => [];
 
     /// <summary>
+    /// Propriétés qui supportent la variable "module".
+    /// </summary>
+    public virtual string[] PropertiesWithFileNameVariableSupport => [];
+
+    /// <summary>
     /// Propriétés qui supportent la variable "lang".
     /// </summary>
     public virtual string[] PropertiesWithLangVariableSupport => [];
@@ -463,12 +468,13 @@ public abstract class GeneratorConfigBase
                 foreach (var match in Regex.Matches(value, @"\{([$a-zA-Z0-9_-]+)(:\w+)?\}").Cast<Match>())
                 {
                     var varName = match.Groups[1].Value;
-                    if (varName == "module" || varName == "lang")
+                    if (varName == "module" || varName == "lang" || varName == "fileName")
                     {
                         var supportedProperties = varName switch
                         {
                             "module" => PropertiesWithModuleVariableSupport,
                             "lang" => PropertiesWithLangVariableSupport,
+                            "fileName" => PropertiesWithFileNameVariableSupport,
                             _ => null!
                         };
 

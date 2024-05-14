@@ -100,6 +100,6 @@ javascript:
 
 ### Résolution des variables
 
-Les variables globales sont résolues en premier (une fois que celles qui devaient être transformées en variables par tag l'ont été), puis les variables par tag, et enfin les variables contextuelles. Cela implique en particulier que les variables contextuelles (`{app}`, `{module}` et `{lang}`) peuvent être "écrasées" par d'autres variables, et ainsi perdre leur contextualité. C'est rarement souhaitable, donc il vaut mieux en général éviter de provoquer des surcharges non intentionnelles.
+Les variables globales sont résolues en premier (une fois que celles qui devaient être transformées en variables par tag l'ont été), puis les variables par tag, et enfin les variables contextuelles. Cela implique en particulier que les variables contextuelles (`{module}` et `{lang}`) peuvent être "écrasées" par d'autres variables, et ainsi perdre leur contextualité. C'est rarement souhaitable, donc il vaut mieux en général éviter de provoquer des surcharges non intentionnelles.
 
 `modgen` affichera un warning s'il trouve une variable non définie ou non supportée dans un paramètre (et précisera pourquoi, en particulier si la variable contextuelle ou par tag n'est pas supportée par le paramètre). Les variables non définies seront gardées telles quelles dans la génération, avec leurs `{}` (au cas où ça soit le comportement voulu dans ce cas précis, ce qui reste peu probable).

@@ -80,6 +80,11 @@ public class JavascriptConfig : GeneratorConfigBase
         nameof(ApiClientFilePath)
     };
 
+    public override string[] PropertiesWithFileNameVariableSupport => new[]
+    {
+        nameof(ApiClientFilePath)
+    };
+
     public override string[] PropertiesWithTagVariableSupport => new[]
     {
         nameof(ModelRootPath),
