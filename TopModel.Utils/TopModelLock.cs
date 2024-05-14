@@ -41,11 +41,11 @@ public class TopModelLock
             .Where(f => !generatedFilesList.Select(gf => isWindows ? gf.ToLowerInvariant() : gf).Contains(isWindows ? f.ToLowerInvariant() : f))
             .Select(f => Path.Combine(modelRoot, f));
 
-        foreach (var fileToPrune in filesToPrune.Where(File.Exists))
+        Parallel.ForEach(filesToPrune.Where(File.Exists), fileToPrune =>
         {
             File.Delete(fileToPrune);
             logger.LogInformation($"Supprimé: {fileToPrune.ToRelative()}");
-        }
+        });
 
         GeneratedFiles = generatedFilesList;
 
