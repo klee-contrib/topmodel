@@ -130,7 +130,9 @@ public class {className} : Controller
     {
         var sb = new StringBuilder();
 
-        if (param.Endpoint.IsMultipart && !param.IsQueryParam() && !param.IsRouteParam())
+        var type = Config.GetType(param, nonNullable: param.IsJsonBodyParam() || param.IsRouteParam() || param.IsQueryParam() && !param.Endpoint.IsMultipart && Config.GetValue(param, Classes) != "null");
+
+        if (param.Endpoint.IsMultipart && !param.IsQueryParam() && !param.IsRouteParam() && type != "IFormFile")
         {
             sb.Append("[FromForm] ");
         }
@@ -138,8 +140,12 @@ public class {className} : Controller
         {
             sb.Append("[FromBody] ");
         }
+        else if (type.EndsWith("[]"))
+        {
+            sb.Append("[FromQuery] ");
+        }
 
-        sb.Append($@"{Config.GetType(param, nonNullable: param.IsJsonBodyParam() || param.IsRouteParam() || param.IsQueryParam() && !param.Endpoint.IsMultipart && Config.GetValue(param, Classes) != "null")} {param.GetParamName().Verbatim()}");
+        sb.Append($@"{type} {param.GetParamName().Verbatim()}");
 
         if (param.IsQueryParam() && !param.Endpoint.IsMultipart)
         {
