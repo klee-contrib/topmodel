@@ -2,10 +2,17 @@
 
 ## 1.46.0
 
-- [`354`](https://github.com/klee-contrib/topmodel/issues/354) [JS] Template pour les noms des fichiers contenant les api clientes
+- [`#354`](https://github.com/klee-contrib/topmodel/issues/354) [JS] Template pour les noms des fichiers contenant les api clientes
 
-**Breaking changes** : 
+  **Breaking changes** :
+
   - Pour les utilisateurs angular, les services d'api client sont déplacés dans un fichier `*.service.ts`. Pour retrouver le comportement initial, définir la propriété `apiClientFilePath` à `{module}/{fileName}`
+
+- [`a6c10f6`](https://github.com/klee-contrib/topmodel/commit/a6c10f6b4a44cc8c318c037bdfb5d38cb2b54d98) - Parallélisation de la génération de fichiers
+
+  Avec cette release, `modgen` devrait être beaucoup plus rapide qu'avant pour générer les fichiers !
+
+- [`785bb3a`](https://github.com/klee-contrib/topmodel/commit/785bb3a003dee49db3e610ad4ab72db0b0b4ca0d) - [C#ApiServer] Fix [FromQuery] manquant pour les arrays et [FromForm] en trop pour IFormFile
 
 ## 1.45.2
 
