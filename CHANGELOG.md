@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.46.1
+
+- [`92da932854689`](https://github.com/klee-contrib/topmodel/commit/92da932854689da9bcb83081a9ffcb3d7d08a0ed) [SQL] Suppression de la FK vers la locale car pg n'autorise pas de fk vers une colonne qui ne contient pas de clé d'unicité
+
 ## 1.46.0
 
 - [`#354`](https://github.com/klee-contrib/topmodel/issues/354) [JS] Template pour les noms des fichiers contenant les api clientes
