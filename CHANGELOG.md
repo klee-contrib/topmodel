@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.46.2
+
+- [`#357`](https://github.com/klee-contrib/topmodel/issues/357) [SQL] Traduction des libellés en bdd avec double quotes au lieu de simple quotes
+Fix: #357
+
 ## 1.46.1
 
 - [`92da932854689`](https://github.com/klee-contrib/topmodel/commit/92da932854689da9bcb83081a9ffcb3d7d08a0ed) [SQL] Suppression de la FK vers la locale car pg n'autorise pas de fk vers une colonne qui ne contient pas de clé d'unicité
