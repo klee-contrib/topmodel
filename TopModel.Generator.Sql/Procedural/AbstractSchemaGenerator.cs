@@ -232,7 +232,7 @@ public abstract class AbstractSchemaGenerator
 
                 if (_config.TranslateReferences == true && modelClass.DefaultProperty == property && !_config.CanClassUseEnums(modelClass, prop: property))
                 {
-                    nameValueDict[property.SqlName] = $@"""{initItem.ResourceKey}""";
+                    nameValueDict[property.SqlName] = $@"'{initItem.ResourceKey}'";
                 }
             }
         }
