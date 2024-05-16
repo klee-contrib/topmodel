@@ -89,7 +89,7 @@ create table TRANSLATION (
     LOCALE varchar(10),
     LABEL varchar(255),
     constraint PK_KEY_LOCALE primary key (RESOURCE_KEY, LOCALE)
-)
+);
 /**
   * Création de l'index pour TRANSLATION (RESOURCE_KEY, LOCALE)
  **/

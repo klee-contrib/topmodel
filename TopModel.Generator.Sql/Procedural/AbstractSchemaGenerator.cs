@@ -192,20 +192,10 @@ public abstract class AbstractSchemaGenerator
 
         if ((_config.TranslateReferences == true || _config.TranslateProperties == true) && _config.ResourcesTableName != null)
         {
-            var targetClass = new Class()
-            {
-                SqlName = _config.ResourcesTableName
-            };
-            var targetProperty = new RegularProperty()
-            {
-                Name = "ResourceKey",
-                Class = targetClass
-            };
             var resourceProperties = classes.Where(c => c.DefaultProperty != null && c.Values.Count() > 0 && c.Enum).Select(c => c.DefaultProperty!);
             foreach (var fkProperty in resourceProperties)
             {
                 GenerateIndexForeignKey(fkProperty, writer);
-                GenerateConstraintForeignKey(fkProperty, targetProperty, targetClass, writer);
             }
         }
     }
@@ -445,7 +435,7 @@ public abstract class AbstractSchemaGenerator
             writer.WriteLine(1, "LOCALE varchar(10),");
             writer.WriteLine(1, "LABEL varchar(255),");
             writer.WriteLine(1, "constraint PK_KEY_LOCALE primary key (RESOURCE_KEY, LOCALE)");
-            writer.WriteLine(")");
+            writer.WriteLine($"){BatchSeparator}");
 
             writer.WriteLine("/**");
             writer.WriteLine("  * Création de l'index pour " + tableName + " (RESOURCE_KEY, LOCALE)");
