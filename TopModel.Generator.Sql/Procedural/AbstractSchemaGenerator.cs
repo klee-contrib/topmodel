@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Generator.Core;
+using TopModel.Utils;
 
 namespace TopModel.Generator.Sql.Procedural;
 
@@ -432,16 +433,21 @@ public abstract class AbstractSchemaGenerator
             writer.WriteLine(" **/");
             writer.WriteLine($"create table {_config.ResourcesTableName} (");
             writer.WriteLine(1, "RESOURCE_KEY varchar(255),");
-            writer.WriteLine(1, "LOCALE varchar(10),");
-            writer.WriteLine(1, "LABEL varchar(255),");
-            writer.WriteLine(1, "constraint PK_KEY_LOCALE primary key (RESOURCE_KEY, LOCALE)");
+            var hasLocale = _translationStore.Translations.Keys.Count > 1 || _translationStore.Translations.Keys.Any(a => a != string.Empty);
+            if (hasLocale)
+            {
+                writer.WriteLine(1, "LOCALE varchar(10),");
+            }
+
+            writer.WriteLine(1, "LABEL varchar(4000),");
+            writer.WriteLine(1, $"constraint PK_{_config.ResourcesTableName.ToConstantCase()} primary key (RESOURCE_KEY, LOCALE)");
             writer.WriteLine($"){BatchSeparator}");
 
             writer.WriteLine("/**");
             writer.WriteLine("  * Création de l'index pour " + tableName + " (RESOURCE_KEY, LOCALE)");
             writer.WriteLine(" **/");
-            writer.WriteLine("create index " + Quote($"IDX_{_config.ResourcesTableName}_RESOURCE_KEY_LOCALE") + " on " + tableName + " (");
-            writer.WriteLine("\t" + "RESOURCE_KEY, LOCALE" + " ASC");
+            writer.WriteLine("create index " + Quote($"IDX_{_config.ResourcesTableName}_RESOURCE_KEY{(hasLocale ? "_LOCALE" : string.Empty)}") + " on " + tableName + " (");
+            writer.WriteLine("\t" + $"RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}" + " ASC");
             writer.WriteLine($"){BatchSeparator}");
             writer.WriteLine();
         }
@@ -449,15 +455,17 @@ public abstract class AbstractSchemaGenerator
 
     private void WriteResources(SqlFileWriter writer, Class modelClass)
     {
+        var hasLocale = _translationStore.Translations.Keys.Count > 1 || _translationStore.Translations.Keys.Any(a => a != string.Empty);
         if (_config.TranslateProperties == true && modelClass.Properties.OfType<IFieldProperty>().Where(p => p.Label != null).Count() > 0 && modelClass.ModelFile != null)
         {
             writer.WriteLine();
             writer.WriteLine("/**\t\tInitialisation des traductions des propriétés de la table " + modelClass.SqlName + "\t\t**/");
+
             foreach (var lang in _translationStore.Translations.Keys)
             {
                 foreach (var property in modelClass.Properties.OfType<IFieldProperty>().Where(p => p.Label != null))
                 {
-                    writer.WriteLine($@"INSERT INTO {_config.ResourcesTableName}(RESOURCE_KEY, LOCALE, LABEL) VALUES({SingleQuote(property.ResourceKey)}, {(string.IsNullOrEmpty(lang) ? "null" : @$"{SingleQuote(lang)}")}, {SingleQuote(_translationStore.GetTranslation(property, lang))});");
+                    writer.WriteLine($@"INSERT INTO {_config.ResourcesTableName}(RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}, LABEL) VALUES({SingleQuote(property.ResourceKey)}{(string.IsNullOrEmpty(lang) ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(_translationStore.GetTranslation(property, lang))});");
                 }
             }
         }
@@ -470,7 +478,7 @@ public abstract class AbstractSchemaGenerator
             {
                 foreach (var val in modelClass.Values)
                 {
-                    writer.WriteLine(@$"INSERT INTO {_config.ResourcesTableName}(RESOURCE_KEY, LOCALE, LABEL) VALUES({SingleQuote(val.ResourceKey)}, {(string.IsNullOrEmpty(lang) ? "null" : @$"{SingleQuote(lang)}")}, {SingleQuote(_translationStore.GetTranslation(val, lang))});");
+                    writer.WriteLine(@$"INSERT INTO {_config.ResourcesTableName}(RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}, LABEL) VALUES({SingleQuote(val.ResourceKey)}{(string.IsNullOrEmpty(lang) ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(_translationStore.GetTranslation(val, lang))});");
                 }
             }
         }

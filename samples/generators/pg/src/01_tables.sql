@@ -86,14 +86,13 @@ create table UTILISATEUR (
  **/
 create table TRANSLATION (
     RESOURCE_KEY varchar(255),
-    LOCALE varchar(10),
-    LABEL varchar(255),
-    constraint PK_KEY_LOCALE primary key (RESOURCE_KEY, LOCALE)
+    LABEL varchar(4000),
+    constraint PK_TRANSLATION primary key (RESOURCE_KEY, LOCALE)
 );
 /**
   * Création de l'index pour TRANSLATION (RESOURCE_KEY, LOCALE)
  **/
-create index IDX_TRANSLATION_RESOURCE_KEY_LOCALE on TRANSLATION (
-	RESOURCE_KEY, LOCALE ASC
+create index IDX_TRANSLATION_RESOURCE_KEY on TRANSLATION (
+	RESOURCE_KEY ASC
 );
 
