@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <PackageOutputPath>../.nupkg</PackageOutputPath>
-    <Version>1.46.2</Version>
+    <Version>1.46.3</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Authors>JabX;gideruette</Authors>
     <Description>Librarie de base pour écrire un générateur TopModel.</Description>
