@@ -431,7 +431,8 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
     {
         var imports = classe.GetImports(Config, tag, AvailableClasses);
         imports.AddRange(Config.GetDecoratorImports(classe, tag));
-        foreach (var property in classe.GetProperties(AvailableClasses))
+        var properties = Config.UseJdbc ? classe.Properties.Where(p => !(p is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany))) : classe.GetProperties(AvailableClasses);
+        foreach (var property in properties)
         {
             imports.AddRange(property.GetTypeImports(Config, tag));
         }
