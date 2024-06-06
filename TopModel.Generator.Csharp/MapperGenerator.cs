@@ -113,12 +113,14 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
             w.WriteLine(1, "{");
 
-            foreach (var param in mapper.Params.Where(p => p.GetRequired() && (p.IsT0 || !Config.NonNullableTypes.Contains(Config.GetImplementation(p.AsT1.Property.Domain)?.Type ?? string.Empty))))
+            var requiredParams = mapper.Params.Where(p => p.GetRequired() && (p.IsT0 || !Config.NonNullableTypes.Contains(Config.GetImplementation(p.AsT1.Property.Domain)?.Type ?? string.Empty)));
+
+            foreach (var param in requiredParams)
             {
                 w.WriteLine(2, $"ArgumentNullException.ThrowIfNull({param.GetNameCamel()});");
             }
 
-            if (mapper.Params.Any(p => p.GetRequired()))
+            if (requiredParams.Any())
             {
                 w.WriteLine();
             }
