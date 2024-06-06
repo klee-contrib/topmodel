@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.46.4
+
+- [`f5a109`](https://github.com/klee-contrib/topmodel/commit/f5a109ca66dcb9105f8f977679f5b2cc8457cf55) - [C#] Fix ligne en trop mapper si required.
+
 ## 1.46.3
 
 - [`b4d495`](https://github.com/klee-contrib/topmodel/commit/b4d49559404b93502f9b4f8bfa2aee114486f98d) [SQL] Traduction des libellés : augmentation taille champ & renommage de la pk. Suppression de la colonne locale si pas de langue par défaut
@@ -7,7 +11,7 @@
 ## 1.46.2
 
 - [`#357`](https://github.com/klee-contrib/topmodel/issues/357) [SQL] Traduction des libellés en bdd avec double quotes au lieu de simple quotes
-Fix: #357
+  Fix: #357
 
 ## 1.46.1
 
