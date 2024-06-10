@@ -59,10 +59,20 @@ public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
         if (!classe.PrimaryKey.Any() && classe.Extends != null)
         {
             pk = Config.GetType(classe.ExtendedProperties.Single(p => p.PrimaryKey));
+            fw.AddImports(classe.ExtendedProperties.Single(p => p.PrimaryKey).GetTypeImports(Config, tag));
         }
         else
         {
-            pk = classe.PrimaryKey.Count() > 1 ? $"{classe.NamePascal}.{classe.NamePascal}Id" : Config.GetType(classe.PrimaryKey.Single());
+            if (classe.PrimaryKey.Count() > 1)
+            {
+                pk = $"{classe.NamePascal}.{classe.NamePascal}Id";
+                fw.AddImport($"{classe.GetImport(Config, tag)}Id");
+            }
+            else
+            {
+                pk = Config.GetType(classe.PrimaryKey.Single());
+                fw.AddImports(classe.PrimaryKey.Single().GetTypeImports(Config, tag));
+            }
         }
 
         string daosInterface;
