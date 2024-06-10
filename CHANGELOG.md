@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.46.5
+
+- [`c301c5`](https://github.com/klee-contrib/topmodel/commit/c301c5d078914a20500e4f609929443fa99b0987) - [JPA] Fix #358 Les imports d'un domaine ne sont pas reportés dans les repositories
+
 ## 1.46.4
 
 - [`f5a109`](https://github.com/klee-contrib/topmodel/commit/f5a109ca66dcb9105f8f977679f5b2cc8457cf55) - [C#] Fix ligne en trop mapper si required.
