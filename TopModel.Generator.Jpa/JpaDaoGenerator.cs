@@ -66,7 +66,6 @@ public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
             if (classe.PrimaryKey.Count() > 1)
             {
                 pk = $"{classe.NamePascal}.{classe.NamePascal}Id";
-                fw.AddImport($"{classe.GetImport(Config, tag)}Id");
             }
             else
             {
