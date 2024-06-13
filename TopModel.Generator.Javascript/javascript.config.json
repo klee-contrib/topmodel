@@ -91,7 +91,7 @@
       "type": "string",
       "description": "Framework cible pour la génération.",
       "default": "focus",
-      "enum": ["angular", "vanilla", "nuxt"]
+      "enum": ["angular", "angular_promise", "vanilla", "nuxt"]
     },
     "entityMode": {
       "type": "string",

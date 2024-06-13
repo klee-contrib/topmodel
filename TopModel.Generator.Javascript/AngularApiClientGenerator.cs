@@ -35,8 +35,16 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
         {
             (Import: "Injectable", Path: "@angular/core"),
             (Import: "HttpClient", Path: "@angular/common/http"),
-            (Import: "Observable", Path: "rxjs"),
         });
+
+        if (Config.ApiMode == TargetFramework.ANGULAR)
+        {
+            imports.Add((Import: "Observable", Path: "rxjs"));
+        }
+        else
+        {
+            imports.Add((Import: "lastValueFrom", Path: "rxjs"));
+        }
 
         if (endpoints.Any(e => e.GetQueryParams().Any()))
         {
@@ -128,7 +136,14 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             fw.Write("queryParams: any = {}");
         }
 
-        fw.Write("): Observable<");
+        if (Config.ApiMode == TargetFramework.ANGULAR)
+        {
+            fw.Write("): Observable<");
+        }
+        else
+        {
+            fw.Write("): Promise<");
+        }
 
         string returnType;
         if (endpoint.Returns == null)
@@ -193,11 +208,11 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
 
         if (returnType == "string")
         {
-            fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}(`/{fullRoute}`");
+            fw.Write(2, $@"return {(Config.ApiMode == TargetFramework.ANGULAR_PROMISE ? "lastValueFrom(" : string.Empty)}this.http.{endpoint.Method.ToLower()}(`/{fullRoute}`");
         }
         else
         {
-            fw.Write(2, $@"return this.http.{endpoint.Method.ToLower()}<{returnType}>(`/{fullRoute}`");
+            fw.Write(2, $@"return {(Config.ApiMode == TargetFramework.ANGULAR_PROMISE ? "lastValueFrom(" : string.Empty)}this.http.{endpoint.Method.ToLower()}<{returnType}>(`/{fullRoute}`");
         }
 
         if (endpoint.GetJsonBodyParam() != null)
@@ -223,7 +238,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             fw.Write(", httpOptions");
         }
 
-        fw.WriteLine(");");
+        fw.WriteLine($"{(Config.ApiMode == TargetFramework.ANGULAR_PROMISE ? ")" : string.Empty)});");
         fw.WriteLine(1, "}");
     }
 }
