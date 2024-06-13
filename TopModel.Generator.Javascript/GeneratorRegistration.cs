@@ -18,7 +18,7 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
                 config.ApiClientFilePath = Path.Combine(config.ApiClientFilePath, "{fileName}").Replace("\\", "/");
             }
         }
-        else if (config.ApiMode == TargetFramework.ANGULAR)
+        else if (config.ApiMode == TargetFramework.ANGULAR || config.ApiMode == TargetFramework.ANGULAR_PROMISE)
         {
             config.ApiClientFilePath = "{module}/{fileName}.service";
         }
