@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.47.1
+
+- [`9c55e`](https://github.com/klee-contrib/topmodel/commit/9c55eba0bb81f8042c05f28958a29fe6f94f7884) - [JS] Doner la possibilité de générer le client Angular en remplaçant les observables par des promesses hot fix
+
 ## 1.47.0
 
 - [`4f39e`](https://github.com/klee-contrib/topmodel/commit/944fd8200a1fe05dfa9f6a1b2d23f12f102f64c1) - [JS] Doner la possibilité de générer le client Angular en remplaçant les observables par des promesses
