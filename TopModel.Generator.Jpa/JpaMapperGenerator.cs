@@ -254,6 +254,8 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         fw.WriteReturns(1, $"Une nouvelle instance de '{classe.NamePascal}' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée");
         fw.WriteDocEnd(1);
         var entryParams = mapper.ClassParams.Select(p => $"{p.Class} {p.Name.ToCamelCase()}").Concat(mapper.PropertyParams.Select(p => $"{Config.GetType(p.Property, Classes)} {p.Property.Name.ToCamelCase()}"));
+        var entryParamImports = mapper.PropertyParams.Select(p => p.Property.GetTypeImports(Config, tag)).SelectMany(p => p);
+        fw.AddImports(entryParamImports.ToList());
         fw.WriteLine(1, $"public static {classe.NamePascal} create{classe.NamePascal}({string.Join(", ", entryParams)}, {classe.NamePascal} target) {{");
         fw.WriteLine(2, "if (target == null) {");
         if (classe.Abstract)
