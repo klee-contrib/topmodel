@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.47.2
+
+- [`e8745`](https://github.com/klee-contrib/topmodel/commit/9c55eba0bb81f8042c05f28958a29fe6f94f7884) - [JPA] Correction import mapper from dans le cas d'une propriété
+
 ## 1.47.1
 
 - [`9c55e`](https://github.com/klee-contrib/topmodel/commit/9c55eba0bb81f8042c05f28958a29fe6f94f7884) - [JS] Doner la possibilité de générer le client Angular en remplaçant les observables par des promesses hot fix
