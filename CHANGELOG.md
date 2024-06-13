@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.47.0
+
+- [`4f39e`](https://github.com/klee-contrib/topmodel/commit/944fd8200a1fe05dfa9f6a1b2d23f12f102f64c1) - [JS] Doner la possibilité de générer le client Angular en remplaçant les observables par des promesses
+
 ## 1.46.6
 
 - [`944fd`](https://github.com/klee-contrib/topmodel/commit/944fd8200a1fe05dfa9f6a1b2d23f12f102f64c1) - [JPA] Les imports d'un domaine ne sont pas reportés dans les repositories - Hot fix
