@@ -97,7 +97,7 @@ public class JpaDaoGenerator : ClassGeneratorBase<JpaConfig>
         }
         else
         {
-            fw.WriteLine($"interface {classe.NamePascal}DAO extends {daosInterface} {{");
+            fw.WriteLine($"public interface {classe.NamePascal}DAO extends {daosInterface} {{");
         }
 
         fw.WriteLine();
