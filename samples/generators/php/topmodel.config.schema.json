@@ -444,6 +444,7 @@
             "default": "focus",
             "enum": [
               "angular",
+              "angular_promise",
               "vanilla",
               "nuxt"
             ]

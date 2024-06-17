@@ -248,12 +248,12 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
         foreach (var param in mapper.PropertyParams)
         {
-            fw.WriteParam(param.Property.Name.ToCamelCase(), param.Property.Comment);
+            fw.WriteParam(param.Property.NameCamel, param.Property.Comment);
         }
 
         fw.WriteReturns(1, $"Une nouvelle instance de '{classe.NamePascal}' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée");
         fw.WriteDocEnd(1);
-        var entryParams = mapper.ClassParams.Select(p => $"{p.Class} {p.Name.ToCamelCase()}").Concat(mapper.PropertyParams.Select(p => $"{Config.GetType(p.Property, Classes)} {p.Property.Name.ToCamelCase()}"));
+        var entryParams = mapper.ClassParams.Select(p => $"{p.Class} {p.Name.ToCamelCase()}").Concat(mapper.PropertyParams.Select(p => $"{Config.GetType(p.Property, Classes)} {p.Property.NameCamel}"));
         var entryParamImports = mapper.PropertyParams.Select(p => p.Property.GetTypeImports(Config, tag)).SelectMany(p => p);
         fw.AddImports(entryParamImports.ToList());
         fw.WriteLine(1, $"public static {classe.NamePascal} create{classe.NamePascal}({string.Join(", ", entryParams)}, {classe.NamePascal} target) {{");
@@ -297,8 +297,8 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                     continue;
                 }
 
-                fw.WriteLine(2, $"if ({param.Property.Name.ToCamelCase()} == null) {{");
-                fw.WriteLine(3, $"throw new IllegalArgumentException(\"{param.Property.Name} cannot be null\");");
+                fw.WriteLine(2, $"if ({param.Property.NameCamel} == null) {{");
+                fw.WriteLine(3, $"throw new IllegalArgumentException(\"{param.Property.NameCamel} cannot be null\");");
                 fw.WriteLine(2, "}");
                 fw.WriteLine();
             }
