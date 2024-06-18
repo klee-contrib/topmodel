@@ -20,7 +20,7 @@ create table DROIT (
 /**
   * Création de la séquence pour la clé primaire de la table PROFIL
  **/
-create sequence SEQ_PROFIL start 1000 increment 50;
+create sequence SEQ_PROFIL as INT start 1000 increment 50 owned by PROFIL.PRO_ID;
 /**
   * Création de la table PROFIL
  **/
@@ -62,7 +62,7 @@ create table TYPE_UTILISATEUR (
 /**
   * Création de la séquence pour la clé primaire de la table UTILISATEUR
  **/
-create sequence SEQ_UTILISATEUR start 1000 increment 50;
+create sequence SEQ_UTILISATEUR as INT start 1000 increment 50 owned by UTILISATEUR.UTI_ID;
 /**
   * Création de la table UTILISATEUR
  **/
