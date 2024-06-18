@@ -504,7 +504,7 @@ public abstract class AbstractSchemaGenerator
             writerCrebas.WriteLine("/**");
             writerCrebas.WriteLine($"  * Création de la séquence pour la clé primaire de la table {tableName}");
             writerCrebas.WriteLine(" **/");
-            writerCrebas.Write($"create sequence SEQ_{tableName}");
+            writerCrebas.Write($"create sequence SEQ_{tableName} as {_config.GetType(classe.PrimaryKey.Single()).ToUpper()}");
 
             if (Config.Identity.Start != null)
             {
@@ -515,6 +515,8 @@ public abstract class AbstractSchemaGenerator
             {
                 writerCrebas.Write($"{$" increment {Config.Identity.Increment}"}");
             }
+
+            writerCrebas.Write($" owned by {tableName}.{classe.PrimaryKey.Single().SqlName}");
 
             writerCrebas.WriteLine(BatchSeparator);
         }
