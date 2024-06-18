@@ -394,39 +394,25 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 name = prop.Name.ToConstantCase();
             }
 
-            var propertyName = Config.UseJdbc ? prop.NameCamel : prop.NameByClassCamel;
-            var getterPrefix = Config.GetType(prop, Classes, true) == "boolean" ? "is" : "get";
             var javaType = Config.GetType(prop, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc);
-            javaType = javaType.Split("<")[0];
-            return $"        {name}({javaType}.class, {classe.NamePascal}::{propertyName.ToFirstUpper().WithPrefix(getterPrefix)})";
+            javaType = javaType.Split("<").First();
+            return $"        {name}({javaType}.class)";
         });
 
         fw.WriteLine(string.Join(", //\n", props) + ";");
+
         fw.WriteLine();
 
         fw.WriteLine(2, "private Class<?> type;");
-
         fw.WriteLine();
-
-        fw.AddImport("java.util.function.Function");
-        fw.WriteLine(2, $@"private Function<{classe.NamePascal}, ?> getter;");
-
-        fw.WriteLine();
-
-        fw.WriteLine(2, $@"private <T> Fields(Class<T> type, Function<{classe.NamePascal}, T> getter) {{");
+        fw.WriteLine(2, "private Fields(Class<?> type) {");
         fw.WriteLine(3, "this.type = type;");
-        fw.WriteLine(3, "this.getter = getter;");
         fw.WriteLine(2, "}");
 
         fw.WriteLine();
+
         fw.WriteLine(2, "public Class<?> getType() {");
         fw.WriteLine(3, "return this.type;");
-        fw.WriteLine(2, "}");
-
-        fw.WriteLine();
-
-        fw.WriteLine(2, @$"public Function<{classe.NamePascal}, ?> getter() {{");
-        fw.WriteLine(3, "return this.getter;");
         fw.WriteLine(2, "}");
 
         fw.WriteLine(1, "}");
