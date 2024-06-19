@@ -148,19 +148,6 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 throw new ModelException(property, $"La propriété ${property} persistée ne peut pas faire l'objet d'une composition dans la classe {classe.Name} car elle ne l'est pas");
             }
         }
-
-        foreach (var property in classe.GetProperties(AvailableClasses).OfType<AssociationProperty>())
-        {
-            if (!classe.IsPersistent)
-            {
-                throw new ModelException(classe, $"La classe {classe} est non persistée, elle ne peut donc pas être associée à {property.Association.Name}");
-            }
-
-            if (!property.Association.IsPersistent)
-            {
-                throw new ModelException(classe, $"La classe {property.Association} est non persistée, elle ne peut donc pas être associée à {classe.Name}");
-            }
-        }
     }
 
     private void WriteAdders(JavaWriter fw, Class classe, string tag)
@@ -312,7 +299,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 }
                 else
                 {
-                    var type = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc).Split('<').First();
+                    var type = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc && ap.Association.IsPersistent).Split('<').First();
 
                     if (_newableTypes.TryGetValue(type, out var newableType))
                     {
@@ -348,7 +335,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
                 }
                 else
                 {
-                    var listOrSet = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc).Split('<').First();
+                    var listOrSet = Config.GetType(ap, AvailableClasses, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc && ap.Association.IsPersistent).Split('<').First();
                     fw.WriteLine(2, @$"return this.{ap.NameByClassCamel} != null ? this.{ap.NameByClassCamel}.stream().map({ap.Association.NamePascal}::get{ap.Property.NameCamel.ToFirstUpper()}).collect(Collectors.to{listOrSet}()) : null;");
                     fw.AddImport("java.util.stream.Collectors");
                 }
@@ -385,17 +372,17 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         var props = classe.GetProperties(AvailableClasses).Select(prop =>
         {
             string name;
-            if (prop is AssociationProperty ap && !Config.UseJdbc)
+            if (prop is AssociationProperty ap && ap.Association.IsPersistent && !Config.UseJdbc)
             {
                 name = ap.NameByClassCamel.ToConstantCase();
             }
             else
             {
-                name = prop.Name.ToConstantCase();
+                name = prop.NameCamel.ToConstantCase();
             }
 
-            var javaType = Config.GetType(prop, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc);
-            javaType = javaType.Split("<").First();
+            var javaType = Config.GetType(prop, useClassForAssociation: classe.IsPersistent && !Config.UseJdbc && prop is AssociationProperty asp && asp.Association.IsPersistent);
+            javaType = javaType.Split("<")[0];
             return $"        {name}({javaType}.class)";
         });
 

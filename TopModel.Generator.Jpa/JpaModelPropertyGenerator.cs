@@ -64,7 +64,8 @@ public class JpaModelPropertyGenerator
 
     public void WriteGetter(JavaWriter fw, Class classe, string tag, IProperty property, int indentLevel = 1)
     {
-        var propertyName = _config.UseJdbc ? property.NameCamel : property.NameByClassCamel;
+        var isAssociationNotPersistent = property is AssociationProperty apr && !apr.Association.IsPersistent;
+        var propertyName = _config.UseJdbc || isAssociationNotPersistent ? property.NameCamel : property.NameByClassCamel;
         fw.WriteLine();
         fw.WriteDocStart(indentLevel, $"Getter for {propertyName}");
         fw.WriteReturns(indentLevel, $"value of {{@link {classe.GetImport(_config, tag)}#{propertyName} {propertyName}}}");
@@ -77,10 +78,11 @@ public class JpaModelPropertyGenerator
             getterName = propertyName.ToFirstUpper().WithPrefix(getterPrefix);
         }
 
-        fw.WriteLine(indentLevel, @$"public {_config.GetType(property, useClassForAssociation: classe.IsPersistent && !_config.UseJdbc)} {getterName}() {{");
+        var useClassForAssociation = classe.IsPersistent && !isAssociationNotPersistent && !_config.UseJdbc;
+        fw.WriteLine(indentLevel, @$"public {_config.GetType(property, useClassForAssociation: useClassForAssociation)} {getterName}() {{");
         if (property is AssociationProperty ap && ap.Type.IsToMany())
         {
-            var type = _config.GetType(ap, _classes, useClassForAssociation: classe.IsPersistent && !_config.UseJdbc).Split('<').First();
+            var type = _config.GetType(ap, _classes, useClassForAssociation: useClassForAssociation).Split('<').First();
             if (_newableTypes.TryGetValue(type, out var newableType))
             {
                 fw.WriteLine(indentLevel + 1, $"if(this.{propertyName} == null)");
@@ -128,12 +130,14 @@ public class JpaModelPropertyGenerator
 
     public void WriteSetter(JavaWriter fw, Class classe, string tag, IProperty property, int indentLevel = 1)
     {
-        var propertyName = _config.UseJdbc ? property.NameCamel : property.NameByClassCamel;
+        var isAssociationNotPersistent = property is AssociationProperty apr && !apr.Association.IsPersistent;
+        var propertyName = _config.UseJdbc || isAssociationNotPersistent ? property.NameCamel : property.NameByClassCamel;
         fw.WriteLine();
         fw.WriteDocStart(indentLevel, $"Set the value of {{@link {classe.GetImport(_config, tag)}#{propertyName} {propertyName}}}");
         fw.WriteLine(indentLevel, $" * @param {propertyName} value to set");
         fw.WriteDocEnd(indentLevel);
-        fw.WriteLine(indentLevel, @$"public void {propertyName.WithPrefix("set")}({_config.GetType(property, useClassForAssociation: classe.IsPersistent && !_config.UseJdbc)} {propertyName}) {{");
+        var useClassForAssociation = classe.IsPersistent && !isAssociationNotPersistent && !_config.UseJdbc;
+        fw.WriteLine(indentLevel, @$"public void {propertyName.WithPrefix("set")}({_config.GetType(property, useClassForAssociation: useClassForAssociation)} {propertyName}) {{");
         fw.WriteLine(indentLevel + 1, @$"this.{propertyName} = {propertyName};");
         fw.WriteLine(indentLevel, "}");
     }
@@ -255,7 +259,9 @@ public class JpaModelPropertyGenerator
                 fw.WriteLine(1, "@Id");
             }
 
-            fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent)} {property.NameByClassCamel}{suffix};");
+            var isAssociationNotPersistent = !property.Association.IsPersistent;
+            var useClassForAssociation = classe.IsPersistent && !isAssociationNotPersistent && !_config.UseJdbc;
+            fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: useClassForAssociation)} {property.NameByClassCamel}{suffix};");
         }
         else
         {
@@ -380,6 +386,8 @@ public class JpaModelPropertyGenerator
 
         var defaultValue = _config.GetValue(property, _classes);
         var suffix = defaultValue != "null" ? $" = {defaultValue}" : string.Empty;
-        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: classe.IsPersistent && !_config.UseJdbc)} {property.NameByClassCamel}{suffix};");
+        var isAssociationNotPersistent = property is AssociationProperty ap && !ap.Association.IsPersistent;
+        var useClassForAssociation = classe.IsPersistent && !isAssociationNotPersistent && !_config.UseJdbc;
+        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: useClassForAssociation)} {(isAssociationNotPersistent ? property.NameCamel : property.NameByClassCamel)}{suffix};");
     }
 }
