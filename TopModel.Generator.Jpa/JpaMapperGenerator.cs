@@ -101,11 +101,11 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
         var checkSourceNull = false;
         if ((!propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent)
-            || !(propertySource is AssociationProperty || propertyTarget is AssociationProperty))
+             || !(propertySource is AssociationProperty || propertyTarget is AssociationProperty))
         {
             getter = $"{sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}()";
         }
-        else if (propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent && propertySource is AssociationProperty apSource)
+        else if (propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent && propertySource is AssociationProperty apSource && apSource.Association.IsPersistent)
         {
             checkSourceNull = true;
             if (propertyTarget is CompositionProperty cp)
@@ -156,7 +156,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                 }
             }
         }
-        else if (!propertySource.Class.IsPersistent && propertyTarget.Class.IsPersistent && propertyTarget is AssociationProperty apTarget)
+        else if (!propertySource.Class.IsPersistent && propertyTarget.Class.IsPersistent && propertyTarget is AssociationProperty apTarget && apTarget.Association.IsPersistent)
         {
             if (Config.CanClassUseEnums(apTarget.Property.Class))
             {
@@ -220,7 +220,14 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         }
         else
         {
-            getter = $"{sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}()";
+            if (propertySource is AssociationProperty ap && !ap.Association.IsPersistent)
+            {
+                getter = $"{sourceName}.{propertySource.NamePascal.WithPrefix(getterPrefix)}()";
+            }
+            else
+            {
+                getter = $"{sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}()";
+            }
         }
 
         return (Getter: Config.GetConvertedValue(
@@ -253,7 +260,8 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
         fw.WriteReturns(1, $"Une nouvelle instance de '{classe.NamePascal}' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée");
         fw.WriteDocEnd(1);
-        var entryParams = mapper.ClassParams.Select(p => $"{p.Class} {p.Name.ToCamelCase()}").Concat(mapper.PropertyParams.Select(p => $"{Config.GetType(p.Property, Classes)} {p.Property.NameCamel}"));
+        var useClassForAssociation = (IProperty p) => classe.IsPersistent && !Config.UseJdbc && p is AssociationProperty ap && ap.Association.IsPersistent;
+        var entryParams = mapper.ClassParams.Select(p => $"{p.Class} {p.Name.ToCamelCase()}").Concat(mapper.PropertyParams.Select(p => $"{Config.GetType(p.Property, Classes, useClassForAssociation: useClassForAssociation(p.Property))} {p.Property.NameCamel}"));
         var entryParamImports = mapper.PropertyParams.Select(p => p.Property.GetTypeImports(Config, tag)).SelectMany(p => p);
         fw.AddImports(entryParamImports.ToList());
         fw.WriteLine(1, $"public static {classe.NamePascal} create{classe.NamePascal}({string.Join(", ", entryParams)}, {classe.NamePascal} target) {{");
@@ -292,7 +300,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         {
             if (param.Property.Required && !classe.Abstract)
             {
-                if (param.TargetProperty is AssociationProperty && classe.IsPersistent)
+                if (param.TargetProperty is AssociationProperty atg && atg.Association.IsPersistent && classe.IsPersistent)
                 {
                     continue;
                 }
@@ -320,7 +328,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                 var propertySource = mapping.Value!;
                 var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
                 var (getter, checkSourceNull) = GetSourceGetter(propertySource, propertyTarget, classe, fw, param.Name.ToCamelCase(), tag);
-                var propertyTargetName = Config.UseJdbc ? propertyTarget.NamePascal : propertyTarget.NameByClassPascal;
+                var propertyTargetName = Config.UseJdbc || propertyTarget is AssociationProperty ap && !ap.Association.IsPersistent ? propertyTarget.NamePascal : propertyTarget.NameByClassPascal;
                 if (classe.Abstract)
                 {
                     if (!isFirst)
@@ -371,7 +379,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         foreach (var param in mapper.PropertyParams)
         {
             var propertyTargetName = Config.UseJdbc ? param.TargetProperty.NamePascal : param.TargetProperty.NameByClassPascal;
-            if (param.TargetProperty is AssociationProperty && classe.IsPersistent)
+            if (param.TargetProperty is AssociationProperty apTg && apTg.Association.IsPersistent && classe.IsPersistent)
             {
                 continue;
             }
@@ -450,7 +458,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
             var propertySource = mapping.Key;
             var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
             var (getter, checkSourceNull) = GetSourceGetter(propertySource, propertyTarget!, classe, fw, "source", tag);
-            var propertyTargetName = Config.UseJdbc ? propertyTarget!.NamePascal : propertyTarget!.NameByClassPascal;
+            var propertyTargetName = Config.UseJdbc || propertyTarget is AssociationProperty asp && !asp.Association.IsPersistent ? propertyTarget!.NamePascal : propertyTarget!.NameByClassPascal;
             if (mapper.Class.Abstract)
             {
                 if (!isFirst)

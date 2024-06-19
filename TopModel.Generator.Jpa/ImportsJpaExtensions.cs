@@ -50,7 +50,7 @@ public static class ImportsJpaExtensions
         var imports = new List<string>();
 
         imports.AddRange(config.GetDomainImports(ap, tag));
-        if (!config.UseJdbc && ap.Class != null)
+        if (!config.UseJdbc && ap.Class != null && ap.Association.IsPersistent)
         {
             imports.Add(ap.Association.GetImport(config, tag));
         }
