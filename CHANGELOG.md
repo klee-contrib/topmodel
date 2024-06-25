@@ -1,5 +1,16 @@
 # TopModel.Generator (`modgen`)
 
+## 1.48.0
+
+
+- [`78cd90`](https://github.com/klee-contrib/topmodel/commit/78cd90abbac03bd3359271034aa45d251803b2a2) - [JPA] Donner la possibilité de masquer l'annotation @Generated
+
+- [`#197`](https://github.com/klee-contrib/topmodel/issues/197)[JPA] Supprimer la règle qui empêche de faire des associations dans des classes non persistées
+
+- [`e8fd3`](https://github.com/klee-contrib/topmodel/commit/e8fd3bc3282b0012d86ebbb46dc966ee65a3e3fb) - [JPA] Ne générer le constructeur par défaut que si un autre constructeur est généré. Y ajouter un commentaire
+
+- [`#359`](https://github.com/klee-contrib/topmodel/issues/359) - [SQL] Mode "séquence", ajouter l'information "owned by" : Fixes #
+
 ## 1.47.3
 
 - [`161a4`](https://github.com/klee-contrib/topmodel/commit/9c55eba0bb81f8042c05f28958a29fe6f94f7884) - [JPA] Fix génération constructeur avec property
