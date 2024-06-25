@@ -46,6 +46,7 @@ public class TypeUtilisateur {
 	 * No arg constructor.
 	 */
 	public TypeUtilisateur() {
+		// No arg constructor
 	}
 
 	public static final TypeUtilisateur ADMIN = new TypeUtilisateur(TypeUtilisateurCode.ADMIN);

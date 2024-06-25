@@ -82,12 +82,6 @@ public class Profil {
 	private Utilisateur utilisateurs;
 
 	/**
-	 * No arg constructor.
-	 */
-	public Profil() {
-	}
-
-	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#id id}.

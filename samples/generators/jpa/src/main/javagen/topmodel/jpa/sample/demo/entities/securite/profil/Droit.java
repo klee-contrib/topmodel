@@ -56,6 +56,7 @@ public class Droit {
 	 * No arg constructor.
 	 */
 	public Droit() {
+		// No arg constructor
 	}
 
 	public static final Droit CREATE = new Droit(DroitCode.CREATE);

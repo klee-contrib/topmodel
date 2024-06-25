@@ -66,6 +66,7 @@ public class ProfilRead implements Serializable {
 	 * No arg constructor.
 	 */
 	public ProfilRead() {
+		// No arg constructor
 	}
 
 	/**

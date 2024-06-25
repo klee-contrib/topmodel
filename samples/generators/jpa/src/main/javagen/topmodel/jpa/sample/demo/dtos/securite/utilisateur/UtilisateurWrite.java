@@ -79,12 +79,6 @@ public class UtilisateurWrite implements Serializable {
 	private TypeUtilisateurCode typeUtilisateurCode = TypeUtilisateurCode.GEST;
 
 	/**
-	 * No arg constructor.
-	 */
-	public UtilisateurWrite() {
-	}
-
-	/**
 	 * Getter for nom.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurWrite#nom nom}.

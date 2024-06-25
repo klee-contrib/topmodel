@@ -36,12 +36,6 @@ public class ProfilWrite implements Serializable {
 	private List<DroitCode> droits;
 
 	/**
-	 * No arg constructor.
-	 */
-	public ProfilWrite() {
-	}
-
-	/**
 	 * Getter for libelle.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilWrite#libelle libelle}.

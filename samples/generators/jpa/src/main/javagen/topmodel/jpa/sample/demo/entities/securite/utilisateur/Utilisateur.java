@@ -110,12 +110,6 @@ public class Utilisateur {
 	private LocalDateTime dateModification = LocalDateTime.now();
 
 	/**
-	 * No arg constructor.
-	 */
-	public Utilisateur() {
-	}
-
-	/**
 	 * Getter for id.
 	 *
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#id id}.

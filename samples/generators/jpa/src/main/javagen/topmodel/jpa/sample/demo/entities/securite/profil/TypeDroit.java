@@ -46,6 +46,7 @@ public class TypeDroit {
 	 * No arg constructor.
 	 */
 	public TypeDroit() {
+		// No arg constructor
 	}
 
 	public static final TypeDroit ADMIN = new TypeDroit(TypeDroitCode.ADMIN);

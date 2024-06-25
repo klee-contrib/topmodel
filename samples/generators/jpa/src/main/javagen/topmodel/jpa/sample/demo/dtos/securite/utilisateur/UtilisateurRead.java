@@ -103,6 +103,7 @@ public class UtilisateurRead implements Serializable {
 	 * No arg constructor.
 	 */
 	public UtilisateurRead() {
+		// No arg constructor
 	}
 
 	/**
