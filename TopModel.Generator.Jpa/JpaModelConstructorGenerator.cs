@@ -104,7 +104,6 @@ public class JpaModelConstructorGenerator
                 fw.WriteParam(param.Name.ToCamelCase(), $"Instance de '{param.Class.NamePascal}'");
             }
 
-
             foreach (var param in mapper.PropertyParams)
             {
                 fw.WriteParam(param.Property.NameCamel, param.Property.Comment);
@@ -139,6 +138,7 @@ public class JpaModelConstructorGenerator
             fw.WriteLine(2, $"super();");
         }
 
+        fw.WriteLine(2, "// No arg constructor");
         fw.WriteLine(1, $"}}");
     }
 }
