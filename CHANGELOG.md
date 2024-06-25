@@ -5,11 +5,13 @@
 
 - [`78cd90`](https://github.com/klee-contrib/topmodel/commit/78cd90abbac03bd3359271034aa45d251803b2a2) - [JPA] Donner la possibilité de masquer l'annotation @Generated
 
+- [`3293bd8`](https://github.com/klee-contrib/topmodel/commit/3293bd8f17e2e75f58bbfa703403137c4ac00223) - [JPA] Correction DAO correction visibilité interface
+
 - [`#197`](https://github.com/klee-contrib/topmodel/issues/197)[JPA] Supprimer la règle qui empêche de faire des associations dans des classes non persistées
 
 - [`e8fd3`](https://github.com/klee-contrib/topmodel/commit/e8fd3bc3282b0012d86ebbb46dc966ee65a3e3fb) - [JPA] Ne générer le constructeur par défaut que si un autre constructeur est généré. Y ajouter un commentaire
 
-- [`#359`](https://github.com/klee-contrib/topmodel/issues/359) - [SQL] Mode "séquence", ajouter l'information "owned by" : Fixes #
+- [`#359`](https://github.com/klee-contrib/topmodel/issues/359) - [SQL] Mode "séquence", ajouter l'information "owned by"
 
 ## 1.47.3
 
