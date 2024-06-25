@@ -54,8 +54,12 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
         }
 
         var javaOrJakarta = Config.PersistenceMode.ToString().ToLower();
-        fw.AddImport($"{javaOrJakarta}.annotation.Generated");
-        fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        if (Config.GeneratedHint)
+        {
+            fw.AddImport($"{javaOrJakarta}.annotation.Generated");
+            fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        }
+
         fw.WriteLine($@"public class {Config.GetMapperName(mapperNs, modelPath)} {{");
 
         fw.WriteLine();

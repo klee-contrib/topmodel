@@ -190,8 +190,11 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         fw.WriteDocStart(0, classe.Comment);
         fw.WriteDocEnd(0);
         var javaOrJakarta = Config.PersistenceMode.ToString().ToLower();
-        fw.AddImport($"{javaOrJakarta}.annotation.Generated");
-        fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        if (Config.GeneratedHint)
+        {
+            fw.AddImport($"{javaOrJakarta}.annotation.Generated");
+            fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        }
 
         if (classe.IsPersistent)
         {

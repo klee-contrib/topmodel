@@ -636,6 +636,12 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   _Valeur par défaut_: `false`
 
+- `generatedHint`
+
+  Option pour générer l'annotation @Generated("TopModel : https://github.com/klee-contrib/topmodel")
+
+  _Valeur par défaut_: `true`
+
 - `persistenceMode`
 
   Mode de génération de la persistence (`"javax"` ou `"jakarta"`).

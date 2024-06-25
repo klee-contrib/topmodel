@@ -304,8 +304,12 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.WriteLine();
         fw.WriteLine("@Configuration");
         var javaOrJakarta = Config.PersistenceMode.ToString().ToLower();
-        fw.AddImport($"{javaOrJakarta}.annotation.Generated");
-        fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        if (Config.GeneratedHint)
+        {
+            fw.AddImport($"{javaOrJakarta}.annotation.Generated");
+            fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        }
+
         fw.WriteClassDeclaration($"{dataFlow.Name}Flow", null);
         fw.WriteLine();
         fw.WriteLine(1, $@"protected {dataFlow.Name}Flow() {{");
@@ -349,8 +353,12 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
         fw.WriteLine();
         fw.WriteLine("@Configuration");
         var javaOrJakarta = Config.PersistenceMode.ToString().ToLower();
-        fw.AddImport($"{javaOrJakarta}.annotation.Generated");
-        fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        if (Config.GeneratedHint)
+        {
+            fw.AddImport($"{javaOrJakarta}.annotation.Generated");
+            fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        }
+
         fw.WriteLine(@$"@Import({{{string.Join(", ", flows.Select(f => $@"{f.Name.ToPascalCase()}Flow.class"))}}})");
 
         var className = configFilePath.Split("\\").Last().Split('.').First();

@@ -41,8 +41,12 @@ public class JpaModelInterfaceGenerator : ClassGeneratorBase<JpaConfig>
         var extends = Config.GetClassExtends(classe);
         var implements = Config.GetClassImplements(classe);
 
-        fw.AddImport($"{javaOrJakarta}.annotation.Generated");
-        fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        if (Config.GeneratedHint)
+        {
+            fw.AddImport($"{javaOrJakarta}.annotation.Generated");
+            fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        }
+
         fw.WriteLine($"public interface {classe.NamePascal} {{");
 
         WriteGetters(fw, classe, tag);

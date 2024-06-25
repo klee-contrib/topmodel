@@ -46,8 +46,12 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         }
 
         var javaOrJakarta = Config.PersistenceMode.ToString().ToLower();
-        fw.AddImport($"{javaOrJakarta}.annotation.Generated");
-        fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        if (Config.GeneratedHint)
+        {
+            fw.AddImport($"{javaOrJakarta}.annotation.Generated");
+            fw.WriteLine("@Generated(\"TopModel : https://github.com/klee-contrib/topmodel\")");
+        }
+
         fw.WriteLine($"public interface {className} {{");
 
         fw.WriteLine();

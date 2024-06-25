@@ -76,6 +76,11 @@ public class JpaConfig : GeneratorConfigBase
     public bool AssociationRemovers { get; set; } = false;
 
     /// <summary>
+    /// Option pour générer l'annotation @Generated("TopModel : https://github.com/klee-contrib/topmodel")
+    /// </summary>
+    public bool GeneratedHint { get; set; } = true;
+
+    /// <summary>
     /// Option pour générer une enum des champs des classes persistées
     /// </summary>
     public Target FieldsEnum { get; set; } = Target.None;

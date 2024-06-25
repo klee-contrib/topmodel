@@ -192,6 +192,11 @@
       "description": "Option pour générer des méthodes de suppression pour les associations oneToMany et manyToMany. Ces méthodes permettent de synchroniser les objets supprimés",
       "default": "false"
     },
+    "generatedHint": {
+      "type": "boolean",
+      "description": "Option pour générer l'annotation @Generated('TopModel : https://github.com/klee-contrib/topmodel')",
+      "default": "true"
+    },
     "fieldsEnum": {
       "type": "string",
       "description": "Option pour générer une enum des champs des classes persistées",
