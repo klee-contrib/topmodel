@@ -1,7 +1,10 @@
 # TopModel.Generator (`modgen`)
 
-## 1.48.0
+## 1.48.1
 
+- [`1e4600`](https://github.com/klee-contrib/topmodel/commit/1e460044b5fd9fc734c8be90bdc0fecd3bf2f97a) - [JPA] Ajouter le constructeur sans argument dans le cas où la classe a une classe parente
+
+## 1.48.0
 
 - [`78cd90`](https://github.com/klee-contrib/topmodel/commit/78cd90abbac03bd3359271034aa45d251803b2a2) - [JPA] Donner la possibilité de masquer l'annotation @Generated
 
