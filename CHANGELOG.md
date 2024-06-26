@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.48.2
+
+- [`f3bb29`](https://github.com/klee-contrib/topmodel/commit/f3bb29cccebb7cf9680a014bb6d75e5f7d4d9150) - [JPA] Ajouter le constructeur sans argument dans le cas où la classe a une classe parente
+
 ## 1.48.1
 
 - [`1e4600`](https://github.com/klee-contrib/topmodel/commit/1e460044b5fd9fc734c8be90bdc0fecd3bf2f97a) - [JPA] Ajouter le constructeur sans argument dans le cas où la classe a une classe parente
