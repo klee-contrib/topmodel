@@ -102,7 +102,10 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             JpaModelPropertyGenerator.WriteCompositePrimaryKeyClass(fw, classe, tag);
         }
 
-        if (Config.CanClassUseEnums(classe, Classes) || Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => AvailableClasses.Contains(p.Class))))
+        if (Config.CanClassUseEnums(classe, Classes)
+            || Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => AvailableClasses.Contains(p.Class)))
+            || classe.Extends != null
+            || classe.Decorators.Any(d => Config.GetImplementation(d.Decorator)?.Extends is not null))
         {
             JpaModelConstructorGenerator.WriteNoArgConstructor(fw, classe);
         }
