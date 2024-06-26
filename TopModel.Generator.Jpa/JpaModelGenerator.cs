@@ -105,6 +105,7 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         if (Config.CanClassUseEnums(classe, Classes)
             || Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => AvailableClasses.Contains(p.Class)))
             || classe.Extends != null
+            || AvailableClasses.Any(c => c.Extends == classe)
             || classe.Decorators.Any(d => Config.GetImplementation(d.Decorator)?.Extends is not null))
         {
             JpaModelConstructorGenerator.WriteNoArgConstructor(fw, classe);
