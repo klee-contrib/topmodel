@@ -42,9 +42,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
-    <PackageReference Include="NJsonSchema" Version="11.0.0" />
-    <PackageReference Include="OneOf" Version="3.0.263" />
-    <PackageReference Include="YamlDotNet" Version="15.1.2" />
+    <PackageReference Include="NJsonSchema" Version="11.0.1" />
+    <PackageReference Include="OneOf" Version="3.0.271" />
+    <PackageReference Include="YamlDotNet" Version="15.3.0" />
   </ItemGroup>
 
   <ItemGroup>
