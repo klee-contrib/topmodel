@@ -109,22 +109,24 @@ public class CsharpConfig : GeneratorConfigBase
     /// </summary>
     public string DomainNamespace { get; set; } = "{app}.Common";
 
-    [YamlMember(Alias = "nonNullableTypes")]
-    public object? NonNullableTypesParam { get; set; }
+    /// <summary>
+    /// Types C# que le générateur doit considérer comme étant types valeurs (en plus des plus standard comme 'int', 'bool' ou 'DateTime'),
+    /// qu'il faudra wrapper dans un `Nullable` (avec un `?`) pour les rendre nullables.
+    /// </summary>
+    public string[] ValueTypes { get; set; } = [];
+
+    public string[] AllValueTypes => _builtInNonNullableTypes.Concat(ValueTypes).Distinct().ToArray();
 
     /// <summary>
-    /// Types C# que le générateur doit considérer comme étant non nullables (nécessitant donc l'ajout d'un '?' pour l'être).
-    /// La plupart des types standard comme 'int', 'bool' ou 'DateTime' sont déjà connus du générateur.
-    /// Ce paramètre permet soit de spécifier une liste de types non-nullables supplémentaires,
-    /// soit 'true' pour considérer que tous les types sont non-nullables (pour correspondre à &lt;nullable&gt;enable&lt;/nullable&gt;).
+    /// Prend en compte l'activation du paramètre `nullable: enable` dans le code généré.
     /// </summary>
-    public IList<string> NonNullableTypes => NonNullableTypesParam switch
-    {
-        IEnumerable<object> list => _builtInNonNullableTypes.Concat(list.OfType<string>()).Distinct().ToList(),
-        _ => _builtInNonNullableTypes
-    };
+    public bool NullableEnable { get; set; }
 
-    public bool IsNullableEnabled => NonNullableTypesParam?.Equals(true) ?? false;
+    /// <summary>
+    /// Génère des types non-nullables pour les propriétés obligatoires.
+    /// </summary>
+    [YamlMember(Alias = "requiredNonNullable")]
+    public string? RequiredNonNullableParam { get; set; }
 
     /// <summary>
     /// Retire les attributs de colonnes sur les alias.
@@ -201,6 +203,7 @@ public class CsharpConfig : GeneratorConfigBase
         nameof(PersistentReferencesModelPath),
         nameof(NonPersistentModelPath),
         nameof(NoPersistenceParam),
+        nameof(RequiredNonNullableParam),
         nameof(DbContextPath),
         nameof(DbContextName),
         nameof(DbSchema),
@@ -234,6 +237,24 @@ public class CsharpConfig : GeneratorConfigBase
             GetModelPath(classe, tag),
             "generated",
             (classe.Abstract ? "I" : string.Empty) + classe.NamePascal + ".cs");
+    }
+
+    public string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain, bool nullableValueType)
+    {
+        if (nullableValueType && fromDomain != null && toDomain != null)
+        {
+            var converter = GetConverter(fromDomain, toDomain);
+            if (converter != null)
+            {
+                var text = GetImplementation(converter)?.Text;
+                if (text != null && text.Contains("{value}."))
+                {
+                    value += "?";
+                }
+            }
+        }
+
+        return GetConvertedValue(value, fromDomain, toDomain);
     }
 
     public string GetDataFlowFilePath(DataFlow df, string tag)
@@ -499,7 +520,7 @@ public class CsharpConfig : GeneratorConfigBase
     {
         var type = base.GetType(prop, availableClasses, useClassForAssociation);
 
-        if (!nonNullable && (IsNullableEnabled || NonNullableTypes.Contains(type) || prop is IFieldProperty f && GetEnumType(f, f is RegularProperty) == type))
+        if (!nonNullable && (NullableEnable || AllValueTypes.Contains(type) || prop is IFieldProperty f && GetEnumType(f, f is RegularProperty) == type))
         {
             type += "?";
         }
@@ -512,9 +533,27 @@ public class CsharpConfig : GeneratorConfigBase
         return base.IsPersistent(classe, tag) && !NoPersistence(tag);
     }
 
+    public bool IsValueType(IProperty prop, IEnumerable<Class>? availableClasses)
+    {
+        return prop switch
+        {
+            AssociationProperty ap when CanClassUseEnums(ap.Association, availableClasses, ap.Property) => true,
+            AliasProperty { Property: AssociationProperty ap } when CanClassUseEnums(ap.Association, availableClasses) => true,
+            RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, availableClasses, rp) => true,
+            AliasProperty { Property: RegularProperty { Class: not null } rp } when CanClassUseEnums(rp.Class, availableClasses, rp) => true,
+            IFieldProperty => AllValueTypes.Contains(GetType(prop, availableClasses, nonNullable: true)),
+            _ => false
+        };
+    }
+
     public bool NoPersistence(string tag)
     {
         return ResolveVariables(NoPersistenceParam ?? string.Empty, tag) == true.ToString();
+    }
+
+    public bool RequiredNonNullable(string tag)
+    {
+        return ResolveVariables(RequiredNonNullableParam ?? string.Empty, tag) == true.ToString();
     }
 
     protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
