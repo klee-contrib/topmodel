@@ -34,11 +34,24 @@ public static class SecuriteProfilMappers
     /// Mappe 'Profil' vers 'Profil'.
     /// </summary>
     /// <param name="source">Instance de 'Profil'.</param>
-    /// <param name="dest">Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.</param>
-    /// <returns>Une instance de 'Profil'.</returns>
-    public static Profil ToProfil(this Profil source, Profil dest = null)
+    /// <returns>Une nouvelle instance de 'Profil'.</returns>
+    public static Profil ToProfil(this Profil source)
     {
-        dest ??= new Profil();
+        return new Profil
+        {
+            Libelle = source.Libelle,
+            Droits = source.Droits
+        };
+    }
+
+    /// <summary>
+    /// Mappe 'Profil' vers 'Profil'.
+    /// </summary>
+    /// <param name="source">Instance de 'Profil'.</param>
+    /// <param name="dest">Instance pré-existante de 'Profil'.</param>
+    /// <returns>L'instance pré-existante de 'Profil'.</returns>
+    public static Profil ToProfil(this Profil source, Profil dest)
+    {
         dest.Libelle = source.Libelle;
         dest.Droits = source.Droits;
         return dest;
@@ -48,11 +61,24 @@ public static class SecuriteProfilMappers
     /// Mappe 'ProfilWrite' vers 'Profil'.
     /// </summary>
     /// <param name="source">Instance de 'ProfilWrite'.</param>
-    /// <param name="dest">Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.</param>
-    /// <returns>Une instance de 'Profil'.</returns>
-    public static Profil ToProfil(this ProfilWrite source, Profil dest = null)
+    /// <returns>Une nouvelle instance de 'Profil'.</returns>
+    public static Profil ToProfil(this ProfilWrite source)
     {
-        dest ??= new Profil();
+        return new Profil
+        {
+            Libelle = source.Libelle,
+            Droits = source.Droits
+        };
+    }
+
+    /// <summary>
+    /// Mappe 'ProfilWrite' vers 'Profil'.
+    /// </summary>
+    /// <param name="source">Instance de 'ProfilWrite'.</param>
+    /// <param name="dest">Instance pré-existante de 'Profil'.</param>
+    /// <returns>L'instance pré-existante de 'Profil'.</returns>
+    public static Profil ToProfil(this ProfilWrite source, Profil dest)
+    {
         dest.Libelle = source.Libelle;
         dest.Droits = source.Droits;
         return dest;

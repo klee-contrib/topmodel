@@ -174,19 +174,27 @@
       "type": "string",
       "description": "Namespace de l'enum de domaine pour Kinetix. Par défaut : '{app}.Common'."
     },
-    "nonNullableTypes": {
+    "valueTypes": {
+      "type": "array",
+      "description": "Types C# que le générateur doit considérer comme étant types valeurs (en plus des plus standard comme 'int', 'bool' ou 'DateTime'), qu'il faudra wrapper dans un `Nullable` (avec un `?`) pour les rendre nullables.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "nullableEnable": {
+      "type": "boolean",
+      "description": "Prend en compte l'activation du paramètre `nullable: enable` dans le code généré (pour ajouter des `?` derrière les types références nullables)."
+    },
+    "requiredNonNullable": {
       "oneOf": [
         {
           "type": "boolean",
-          "description": "Types C# que le générateur doit considérer comme étant non nullables (nécessitant donc l'ajout d'un '?' pour l'être).\r\nLa plupart des types standard comme 'int', 'bool' ou 'DateTime' sont déjà connus du générateur.\r\nCe paramètre permet soit de spécifier une liste de types non-nullables supplémentaires, soit 'true' pour considérer que tous les types sont non-nullables (pour correspondre à <nullable>enable</nullable>).",
-          "enum": [ true ]
+          "description": "Génère des types non-nullables pour les propriétés obligatoires."
         },
         {
-          "type": "array",
-          "description": "Types C# que le générateur doit considérer comme étant non nullables (nécessitant donc l'ajout d'un '?' pour l'être).\r\nLa plupart des types standard comme 'int', 'bool' ou 'DateTime' sont déjà connus du générateur.\r\nCe paramètre permet soit de spécifier une liste de types non-nullables supplémentaires, soit 'true' pour considérer que tous les types sont non-nullables (pour correspondre à <nullable>enable</nullable>).",
-          "items": {
-            "type": "string"
-          }
+          "type": "string",
+          "description": "Génère des types non-nullables pour les propriétés obligatoires.",
+          "pattern": "^\\{[^\\}]+\\}$"
         }
       ]
     },

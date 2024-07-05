@@ -39,6 +39,18 @@ De plus, pour un module, on sépare les mappers en deux fichiers potentiels :
 
 _Remarque : le module utilisé pour un mapper est celui de la classe persistée qui a été trouvée, où à défaut celui de la classe qui définit le mapper. Dans le cas où toutes les classes sont non persistées, il est possible de spécifier un tag dans la liste du paramètre `moduleTagsOverrides` pour choisir les classes définies dans les fichiers avec ce tag._
 
+#### Impacts de `requiredNonNullable`
+
+Afin de gérer tous les cas où des propriétés nullables pourraient être mappées vers des propriétés non-nullables (soit parce que c'est `required` d'un côté et pas de l'autre, soit parce que la valeur du paramètre n'est pas la même pour les deux classes), on générera en plus :
+
+- Un check de non-nullité sur toutes les propriétés et paramètres nullables lorsqu'on veut les mapper vers une propriété non-nullable
+- Un `.Value` (ou un cast vers le type non-nullable) derrière les propriétés de type valeur qu'on a vérifié dans le point précédent (si votre type n'est pas reconnu par le générateur comme un type valeur, vous pouvez l'ajouter via la propriété `valueTypes`)
+
+Dans le cas où le mapper ne renseigne pas toutes les propriétés obligatoires de la classe cible (celles qui ont un `required` dans leur définition C# générée) :
+
+- Si c'est un mapper `from`, **le mapper généré lèvera une erreur C#**, et vous devrez modifier votre modèle pour que le code généré compile correctement (soit en ajoutant les propriétés manquantes dans le mapper, soit en rendant les propriétés non obligatoires, soit en leur mettant des valeurs par défaut).
+- Si c'est un mapper `to`, **la surcharge qui instancie une nouvelle classe ne sera pas générée**. Vous pourrez en revanche toujours utiliser le mapper vers une classe préexistante (qui a forcément toutes ses propriétés obligatoires déjà renseignées, par définition).
+
 ### Génération du DbContext
 
 Le DbContext peut être généré soit comme un simple "repository" avec juste la liste de tous les `DbSet` des classes persistées, ou alors il peut être complété avec l'ensemble des informations nécessaires pour générer les migrations de base de données avec EF Core. Dans le premier cas, le modèle de base de données devra être généré et mis à jour autrement (par exemple avec le générateur SQL de TopModel).
@@ -238,13 +250,21 @@ _(en preview, documentation à venir)_
 
   _Valeur par défaut_: `{app}.Common`
 
-- `nonNullableTypes`
+- `valueTypes`
 
-  Types C# que le générateur doit considérer comme étant non nullables (nécessitant donc l'ajout d'un `?` pour l'être).
+  Types C# que le générateur doit considérer comme étant types valeurs (en plus des plus standard comme 'int', 'bool' ou 'DateTime'), qu'il faudra wrapper dans un `Nullable` (avec un `?`) pour les rendre nullables.
 
-  La plupart des types standard comme `int`, `bool` ou `DateTime` sont déjà connus du générateur.
+- `nullableEnable`
 
-  Ce paramètre permet soit de spécifier une liste de types non-nullables supplémentaires, soit 'true' pour considérer que tous les types sont non-nullables (pour correspondre à &lt;nullable&gt;enable&lt;/nullable&gt;).
+  Prend en compte l'activation du paramètre `nullable: enable` dans le code généré (pour ajouter des `?` derrière les types références nullables).
+
+- `requiredNonNullable`
+
+  Génère des types non-nullables pour les propriétés obligatoires.
+
+  Idéalement, cette propriété est activée pour vos objets persistés et vos DTOs de lecture. Vous ne pouvez pas l'utiliser pour des DTOs d'écriture car l'usage de types non-nullables (en particulier pour les types valeurs) empêcheront leur validation (il ne sera pas possible de distinguer un entier valant `0` et non renseigné par exemple).
+
+  _Variables par tag_: **oui**
 
 - `noColumnOnAlias`
 
