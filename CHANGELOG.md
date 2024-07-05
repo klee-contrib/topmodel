@@ -1,5 +1,20 @@
 # TopModel.Generator (`modgen`)
 
+## 1.49.0
+
+- [#365](https://github.com/klee-contrib/topmodel/pull/365) - [C#] - `requiredNonNullable`
+
+  Cette release ajoute une option de génération pour le générateur C#. Il n'y a pas d'impact sur les autres générateurs.
+
+  **Impacts génération** :
+
+  - Les mappers `to` sont désormais générés avec 2 surcharges, une avec l'instance cible et une autre sans, au lieu de n'en générer qu'une seule qui gère les deux cas.
+
+  **(tout petits) breaking changes** :
+
+  - Les implémentations de converter ne doivent plus inclure de `?` pour les types valeurs (il sera rajouté automatiquement par le générateur si besoin).
+  - L'option `nonNullableTypes` a été divisée en `valueTypes` (pour renseigner les types valeurs qu'il faudra wrapper dans un `Nullable` avec un `?`) et en `nullableEnable` pour activer l'option de même nom (à priori, personne n'utilisait cette option jusqu'à présent, car il manquait justement `requiredNonNullable` pour qu'elle soit vraiment utile 😉).
+
 ## 1.48.2
 
 - [`f3bb29`](https://github.com/klee-contrib/topmodel/commit/f3bb29cccebb7cf9680a014bb6d75e5f7d4d9150) - [JPA] Ajouter le constructeur sans argument dans le cas où la classe a une classe parente

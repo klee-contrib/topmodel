@@ -183,7 +183,7 @@
     },
     "nullableEnable": {
       "type": "boolean",
-      "description": "Prend en compte l'activation du paramètre `nullable: enable` dans le code généré."
+      "description": "Prend en compte l'activation du paramètre `nullable: enable` dans le code généré (pour ajouter des `?` derrière les types références nullables)."
     },
     "requiredNonNullable": {
       "oneOf": [

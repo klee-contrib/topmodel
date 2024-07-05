@@ -40,11 +40,30 @@ public static class SecuriteUtilisateurMappers
     /// Mappe 'UtilisateurWrite' vers 'Utilisateur'.
     /// </summary>
     /// <param name="source">Instance de 'UtilisateurWrite'.</param>
-    /// <param name="dest">Instance pré-existante de 'Utilisateur'. Une nouvelle instance sera créée si non spécifié.</param>
-    /// <returns>Une instance de 'Utilisateur'.</returns>
-    public static Utilisateur ToUtilisateur(this UtilisateurWrite source, Utilisateur dest = null)
+    /// <returns>Une nouvelle instance de 'Utilisateur'.</returns>
+    public static Utilisateur ToUtilisateur(this UtilisateurWrite source)
     {
-        dest ??= new Utilisateur();
+        return new Utilisateur
+        {
+            Nom = source.Nom,
+            Prenom = source.Prenom,
+            Email = source.Email,
+            DateNaissance = source.DateNaissance,
+            Adresse = source.Adresse,
+            Actif = source.Actif,
+            ProfilId = source.ProfilId,
+            TypeUtilisateurCode = source.TypeUtilisateurCode
+        };
+    }
+
+    /// <summary>
+    /// Mappe 'UtilisateurWrite' vers 'Utilisateur'.
+    /// </summary>
+    /// <param name="source">Instance de 'UtilisateurWrite'.</param>
+    /// <param name="dest">Instance pré-existante de 'Utilisateur'.</param>
+    /// <returns>L'instance pré-existante de 'Utilisateur'.</returns>
+    public static Utilisateur ToUtilisateur(this UtilisateurWrite source, Utilisateur dest)
+    {
         dest.Nom = source.Nom;
         dest.Prenom = source.Prenom;
         dest.Email = source.Email;
