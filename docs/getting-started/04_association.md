@@ -214,6 +214,8 @@ domain:
 
 Aller plus loin dans la documentation complète des [associations](/model/properties?id=association)
 
+> **Attention** : Une refonte de la gestion des types d'association est prévue pour une prochaine version. Nous vous recommandons de ne pas utiliser les types d'association `oneToMany` et `manyToMany`. Les remplacer par des `manyToOne` dans l'autre sens, ou par des `manyToMany` explicites (classe contenant deux associations qui ont toutes les deux `primaryKey: true`)
+
 ## Répertoire Projet
 A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers suivants:
 - Projet
