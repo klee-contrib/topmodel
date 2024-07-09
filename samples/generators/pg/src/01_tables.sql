@@ -18,10 +18,6 @@ create table DROIT (
 );
 
 /**
-  * Création de la séquence pour la clé primaire de la table PROFIL
- **/
-create sequence SEQ_PROFIL as INT start 1000 increment 50 owned by PROFIL.PRO_ID;
-/**
   * Création de la table PROFIL
  **/
 create table PROFIL (
@@ -31,6 +27,11 @@ create table PROFIL (
 	PRO_DATE_MODIFICATION date,
 	constraint PK_PROFIL primary key (PRO_ID)
 );
+
+/**
+  * Création de la séquence pour la clé primaire de la table PROFIL
+ **/
+create sequence SEQ_PROFIL as INT start 1000 increment 50 owned by PROFIL.PRO_ID;
 
 /**
   * Création de la table PROFIL_DROIT
@@ -60,10 +61,6 @@ create table TYPE_UTILISATEUR (
 );
 
 /**
-  * Création de la séquence pour la clé primaire de la table UTILISATEUR
- **/
-create sequence SEQ_UTILISATEUR as INT start 1000 increment 50 owned by UTILISATEUR.UTI_ID;
-/**
   * Création de la table UTILISATEUR
  **/
 create table UTILISATEUR (
@@ -80,6 +77,11 @@ create table UTILISATEUR (
 	UTI_DATE_MODIFICATION date,
 	constraint PK_UTILISATEUR primary key (UTI_ID)
 );
+
+/**
+  * Création de la séquence pour la clé primaire de la table UTILISATEUR
+ **/
+create sequence SEQ_UTILISATEUR as INT start 1000 increment 50 owned by UTILISATEUR.UTI_ID;
 
 /**
   * Création de ta table TRANSLATION contenant les traductions
