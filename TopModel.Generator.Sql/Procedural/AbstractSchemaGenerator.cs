@@ -484,6 +484,29 @@ public abstract class AbstractSchemaGenerator
         }
     }
 
+    private void WriteSequence(Class classe, SqlFileWriter writerCrebas, string tableName)
+    {
+        writerCrebas.WriteLine("/**");
+        writerCrebas.WriteLine($"  * Création de la séquence pour la clé primaire de la table {tableName}");
+        writerCrebas.WriteLine(" **/");
+        writerCrebas.Write($"create sequence SEQ_{tableName} as {_config.GetType(classe.PrimaryKey.Single()).ToUpper()}");
+
+        if (Config.Identity.Start != null)
+        {
+            writerCrebas.Write($"{$" start {Config.Identity.Start}"}");
+        }
+
+        if (Config.Identity.Increment != null)
+        {
+            writerCrebas.Write($"{$" increment {Config.Identity.Increment}"}");
+        }
+
+        writerCrebas.Write($" owned by {tableName}.{classe.PrimaryKey.Single().SqlName}");
+
+        writerCrebas.WriteLine(BatchSeparator);
+        writerCrebas.WriteLine();
+    }
+
     /// <summary>
     /// Déclaration de la table.
     /// </summary>
@@ -635,29 +658,6 @@ public abstract class AbstractSchemaGenerator
         }
 
         return fkPropertiesList;
-    }
-
-    private void WriteSequence(Class classe, SqlFileWriter writerCrebas, string tableName)
-    {
-        writerCrebas.WriteLine("/**");
-        writerCrebas.WriteLine($"  * Création de la séquence pour la clé primaire de la table {tableName}");
-        writerCrebas.WriteLine(" **/");
-        writerCrebas.Write($"create sequence SEQ_{tableName} as {_config.GetType(classe.PrimaryKey.Single()).ToUpper()}");
-
-        if (Config.Identity.Start != null)
-        {
-            writerCrebas.Write($"{$" start {Config.Identity.Start}"}");
-        }
-
-        if (Config.Identity.Increment != null)
-        {
-            writerCrebas.Write($"{$" increment {Config.Identity.Increment}"}");
-        }
-
-        writerCrebas.Write($" owned by {tableName}.{classe.PrimaryKey.Single().SqlName}");
-
-        writerCrebas.WriteLine(BatchSeparator);
-        writerCrebas.WriteLine();
     }
 
     /// <summary>
