@@ -33,6 +33,16 @@ public class JpaModelPropertyGenerator
         fw.WriteLine(1, @$"public static class {classe.NamePascal}Id implements Serializable {{");
         foreach (var pk in classe.PrimaryKey)
         {
+            if (pk is AssociationProperty ap)
+            {
+                WriteAssociationAnnotations(fw, classe, ap, 2);
+            }
+            else if (ShouldWriteColumnAnnotation(classe, pk))
+            {
+                WriteColumnAnnotation(fw, pk, 2);
+            }
+
+            WriteDomainAnnotations(fw, pk, tag, 2);
             fw.WriteLine(2, $"private {_config.GetType(pk, _classes, true)} {pk.NameByClassCamel};");
             fw.WriteLine();
         }
@@ -60,6 +70,12 @@ public class JpaModelPropertyGenerator
         fw.AddImport("java.util.Objects");
         fw.WriteLine(2, "}");
         fw.WriteLine(1, "}");
+    }
+
+    public void WriteCompositionProperty(JavaWriter fw, CompositionProperty property)
+    {
+        fw.WriteDocEnd(1);
+        fw.WriteLine(1, $"private {_config.GetType(property)} {property.NameCamel};");
     }
 
     public void WriteGetter(JavaWriter fw, Class classe, string tag, IProperty property, int indentLevel = 1)
@@ -104,12 +120,6 @@ public class JpaModelPropertyGenerator
         }
     }
 
-    public void WriteProperty(JavaWriter fw, CompositionProperty property)
-    {
-        fw.WriteDocEnd(1);
-        fw.WriteLine(1, $"private {_config.GetType(property)} {property.NameCamel};");
-    }
-
     public void WriteProperty(JavaWriter fw, Class classe, IProperty property, string tag)
     {
         fw.WriteLine();
@@ -117,13 +127,13 @@ public class JpaModelPropertyGenerator
         switch (property)
         {
             case CompositionProperty cp:
-                WriteProperty(fw, cp);
+                WriteCompositionProperty(fw, cp);
                 break;
             case AssociationProperty { Association.IsPersistent: true } ap:
-                WriteProperty(fw, classe, ap, tag);
+                WriteAssociationProperty(fw, classe, ap, tag);
                 break;
             case IFieldProperty fp:
-                WriteProperty(fw, classe, fp, tag);
+                WriteIFieldProperty(fw, classe, fp, tag);
                 break;
         }
     }
@@ -142,74 +152,51 @@ public class JpaModelPropertyGenerator
         fw.WriteLine(indentLevel, "}");
     }
 
-    private void WriteManyToMany(JavaWriter fw, Class classe, AssociationProperty property)
+    private static void WriteEnumAnnotation(JavaWriter fw, string javaOrJakarta)
     {
-        var role = property.Role is not null ? "_" + property.Role.ToConstantCase() : string.Empty;
-        var fk = ((IFieldProperty)property).SqlName;
-        var pk = classe.PrimaryKey.Single().SqlName + role;
-        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
-        if (!_config.CanClassUseEnums(property.Association))
-        {
-            fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
-        }
-
-        var cascade = _config.CanClassUseEnums(property.Association) ? string.Empty : $", cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }}";
-        if (property is ReverseAssociationProperty rap)
-        {
-            fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, mappedBy = ""{rap.ReverseProperty.NameByClassCamel}""{cascade})");
-        }
-        else
-        {
-            fw.AddImport($"{javaOrJakarta}.persistence.JoinTable");
-            fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY{cascade})");
-            fw.WriteLine(1, @$"@JoinTable(name = ""{property.Class.SqlName}_{property.Association.SqlName}{(property.Role != null ? "_" + property.Role.ToConstantCase() : string.Empty)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
-            fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
-        }
-    }
-
-    private void WriteManyToOne(JavaWriter fw, AssociationProperty property)
-    {
-        var fk = ((IFieldProperty)property).SqlName;
-        var apk = property.Property.SqlName;
-        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
-        fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, optional = {(property.Required ? "false" : "true")}, targetEntity = {property.Association.NamePascal}.class)");
-        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
-        fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
-    }
-
-    private void WriteOneToMany(JavaWriter fw, Class classe, AssociationProperty property)
-    {
-        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
-        fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
-        if (property is ReverseAssociationProperty rap)
-        {
-            fw.WriteLine(1, @$"@{property.Type}(cascade = {{CascadeType.PERSIST, CascadeType.MERGE}}, fetch = FetchType.LAZY, mappedBy = ""{rap.ReverseProperty.NameByClassCamel}"")");
-        }
-        else
-        {
-            var pk = classe.PrimaryKey.Single().SqlName;
-            var hasReverse = property.Class.Namespace.RootModule == property.Association.Namespace.RootModule;
-            fw.WriteLine(1, @$"@{property.Type}(cascade = CascadeType.ALL, fetch = FetchType.LAZY{(hasReverse ? @$", mappedBy = ""{property.Class.NameCamel}{property.Role ?? string.Empty}""" : string.Empty)})");
-            if (!hasReverse)
+        fw.AddImports(new List<string>
             {
-                fw.WriteLine(1, @$"@JoinColumn(name = ""{pk}"", referencedColumnName = ""{pk}"")");
-                fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
-            }
+                $"{javaOrJakarta}.persistence.Enumerated",
+                $"{javaOrJakarta}.persistence.EnumType",
+            });
+        fw.WriteLine(1, "@Enumerated(EnumType.STRING)");
+    }
+
+    private static void WriteValidationAnnotations(JavaWriter fw, string javaOrJakarta)
+    {
+        fw.WriteLine(1, @$"@NotNull");
+        fw.AddImport($"{javaOrJakarta}.validation.constraints.NotNull");
+    }
+
+    private bool ShouldWriteColumnAnnotation(Class classe, IFieldProperty property)
+    {
+        return (classe.IsPersistent || _config.UseJdbc) && !_config.GetImplementation(property.Domain)!.Annotations
+                .Where(i =>
+                        classe.IsPersistent && (Target.Persisted & i.Target) > 0
+                    || !classe.IsPersistent && (Target.Dto & i.Target) > 0)
+                    .Any(a => a.Text.Replace("@", string.Empty).StartsWith("Column"));
+    }
+
+    private void WriteAssociationAnnotations(JavaWriter fw, Class classe, AssociationProperty property, int indentLevel)
+    {
+        switch (property.Type)
+        {
+            case AssociationType.ManyToOne:
+                WriteManyToOneAnnotations(fw, property, indentLevel);
+                break;
+            case AssociationType.OneToMany:
+                WriteOneToManyAnnotations(fw, classe, property, indentLevel);
+                break;
+            case AssociationType.ManyToMany:
+                WriteManyToManyAnnotations(fw, classe, property, indentLevel);
+                break;
+            case AssociationType.OneToOne:
+                WriteOneToOneAnnotations(fw, property, indentLevel);
+                break;
         }
     }
 
-    private void WriteOneToOne(JavaWriter fw, AssociationProperty property)
-    {
-        var fk = ((IFieldProperty)property).SqlName;
-        var apk = property.Property.SqlName;
-        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
-        fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
-        fw.WriteLine(1, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = {(!property.Required).ToString().ToLower()})");
-        fw.WriteLine(1, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"", unique = true)");
-        fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
-    }
-
-    private void WriteProperty(JavaWriter fw, Class classe, AssociationProperty property, string tag)
+    private void WriteAssociationProperty(JavaWriter fw, Class classe, AssociationProperty property, string tag)
     {
         fw.WriteDocEnd(1);
         if (!_config.UseJdbc)
@@ -217,20 +204,10 @@ public class JpaModelPropertyGenerator
             var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
             fw.AddImport($"{javaOrJakarta}.persistence.FetchType");
             fw.AddImport($"{javaOrJakarta}.persistence.{property.Type}");
-            switch (property.Type)
+
+            if (!property.PrimaryKey || classe.PrimaryKey.Count() <= 1)
             {
-                case AssociationType.ManyToOne:
-                    WriteManyToOne(fw, property);
-                    break;
-                case AssociationType.OneToMany:
-                    WriteOneToMany(fw, classe, property);
-                    break;
-                case AssociationType.ManyToMany:
-                    WriteManyToMany(fw, classe, property);
-                    break;
-                case AssociationType.OneToOne:
-                    WriteOneToOne(fw, property);
-                    break;
+                WriteAssociationAnnotations(fw, classe, property, 1);
             }
 
             if (property.Type == AssociationType.ManyToMany || property.Type == AssociationType.OneToMany)
@@ -277,7 +254,75 @@ public class JpaModelPropertyGenerator
         }
     }
 
-    private void WriteProperty(JavaWriter fw, Class classe, IFieldProperty property, string tag)
+    private void WriteAutogeneratedAnnotations(JavaWriter fw, Class classe, string javaOrJakarta)
+    {
+        fw.AddImports(new List<string>
+                {
+                    $"{javaOrJakarta}.persistence.GeneratedValue",
+                    $"{javaOrJakarta}.persistence.GenerationType"
+                });
+
+        if (_config.Identity.Mode == IdentityMode.IDENTITY)
+        {
+            fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.IDENTITY)");
+        }
+        else if (_config.Identity.Mode == IdentityMode.SEQUENCE)
+        {
+            fw.AddImport($"{javaOrJakarta}.persistence.SequenceGenerator");
+            var seqName = $"SEQ_{classe.SqlName}";
+            var initialValue = _config.Identity.Start != null ? $", initialValue = {_config.Identity.Start}" : string.Empty;
+            var increment = _config.Identity.Increment != null ? $", allocationSize = {_config.Identity.Increment}" : string.Empty;
+            fw.WriteLine(1, @$"@SequenceGenerator(name = ""{seqName}"", sequenceName = ""{seqName}""{initialValue}{increment})");
+            fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ""{seqName}"")");
+        }
+    }
+
+    private void WriteColumnAnnotation(JavaWriter fw, IFieldProperty property, int indentLevel)
+    {
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+        string column;
+        if (!_config.UseJdbc)
+        {
+            column = @$"@Column(name = ""{property.SqlName}"", nullable = {(!property.Required).ToString().ToFirstLower()}";
+            if (property.Domain.Length != null)
+            {
+                if (_config.GetImplementation(property.Domain)?.Type?.ToUpper() == "STRING")
+                {
+                    column += $", length = {property.Domain.Length}";
+                }
+                else
+                {
+                    column += $", precision = {property.Domain.Length}";
+                }
+            }
+
+            if (property.Domain.Scale != null)
+            {
+                column += $", scale = {property.Domain.Scale}";
+            }
+
+            column += @$", columnDefinition = ""{property.Domain.Implementations["sql"].Type}""";
+            column += ")";
+            fw.AddImport($"{javaOrJakarta}.persistence.Column");
+        }
+        else
+        {
+            fw.AddImport("org.springframework.data.relational.core.mapping.Column");
+            column = $@"@Column(""{property.SqlName.ToLower()}"")";
+        }
+
+        fw.WriteLine(indentLevel, column);
+    }
+
+    private void WriteDomainAnnotations(JavaWriter fw, IFieldProperty property, string tag, int indentLevel)
+    {
+        foreach (var annotation in _config.GetDomainAnnotations(property, tag))
+        {
+            fw.WriteLine(indentLevel, $"{(annotation.StartsWith('@') ? string.Empty : '@')}{annotation}");
+        }
+    }
+
+    private void WriteIFieldProperty(JavaWriter fw, Class classe, IFieldProperty property, string tag)
     {
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         if (property is AliasProperty alp)
@@ -288,100 +333,27 @@ public class JpaModelPropertyGenerator
         fw.WriteDocEnd(1);
         if (property.PrimaryKey && classe.IsPersistent)
         {
-            if (!_config.UseJdbc)
-            {
-                fw.AddImport($"{javaOrJakarta}.persistence.Id");
-
-                if (property.Domain.AutoGeneratedValue && classe.PrimaryKey.Count() == 1)
-                {
-                    fw.AddImports(new List<string>
-                {
-                    $"{javaOrJakarta}.persistence.GeneratedValue",
-                    $"{javaOrJakarta}.persistence.GenerationType"
-                });
-
-                    if (_config.Identity.Mode == IdentityMode.IDENTITY)
-                    {
-                        fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.IDENTITY)");
-                    }
-                    else if (_config.Identity.Mode == IdentityMode.SEQUENCE)
-                    {
-                        fw.AddImport($"{javaOrJakarta}.persistence.SequenceGenerator");
-                        var seqName = $"SEQ_{classe.SqlName}";
-                        var initialValue = _config.Identity.Start != null ? $", initialValue = {_config.Identity.Start}" : string.Empty;
-                        var increment = _config.Identity.Increment != null ? $", allocationSize = {_config.Identity.Increment}" : string.Empty;
-                        fw.WriteLine(1, @$"@SequenceGenerator(name = ""{seqName}"", sequenceName = ""{seqName}""{initialValue}{increment})");
-                        fw.WriteLine(1, @$"@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = ""{seqName}"")");
-                    }
-                }
-            }
-            else
-            {
-                fw.AddImport("org.springframework.data.annotation.Id");
-            }
-
-            fw.WriteLine(1, "@Id");
+            WriteIdAnnotation(fw, classe, property);
         }
 
-        if ((classe.IsPersistent || _config.UseJdbc) && !_config.GetImplementation(property.Domain)!.Annotations
-        .Where(i =>
-                classe.IsPersistent && (Target.Persisted & i.Target) > 0
-            || !classe.IsPersistent && (Target.Dto & i.Target) > 0)
-            .Any(a => a.Text.Replace("@", string.Empty).StartsWith("Column")))
+        if (ShouldWriteColumnAnnotation(classe, property) && (_config.UseJdbc || !(property.PrimaryKey && classe.PrimaryKey.Count() > 1)))
         {
-            string column = string.Empty;
-            if (!_config.UseJdbc)
-            {
-                column = @$"@Column(name = ""{property.SqlName}"", nullable = {(!property.Required).ToString().ToFirstLower()}";
-                if (property.Domain.Length != null)
-                {
-                    if (_config.GetImplementation(property.Domain)?.Type?.ToUpper() == "STRING")
-                    {
-                        column += $", length = {property.Domain.Length}";
-                    }
-                    else
-                    {
-                        column += $", precision = {property.Domain.Length}";
-                    }
-                }
-
-                if (property.Domain.Scale != null)
-                {
-                    column += $", scale = {property.Domain.Scale}";
-                }
-
-                column += @$", columnDefinition = ""{property.Domain.Implementations["sql"].Type}""";
-                column += ")";
-                fw.AddImport($"{javaOrJakarta}.persistence.Column");
-            }
-            else
-            {
-                fw.AddImport("org.springframework.data.relational.core.mapping.Column");
-                column = $@"@Column(""{property.SqlName.ToLower()}"")";
-            }
-
-            fw.WriteLine(1, column);
+            WriteColumnAnnotation(fw, property, 1);
         }
 
         if (property.Required && !property.PrimaryKey && (!classe.IsPersistent || _config.UseJdbc))
         {
-            fw.WriteLine(1, @$"@NotNull");
-            fw.AddImport($"{javaOrJakarta}.validation.constraints.NotNull");
+            WriteValidationAnnotations(fw, javaOrJakarta);
         }
 
         if (_config.CanClassUseEnums(classe) && property.PrimaryKey && !_config.UseJdbc)
         {
-            fw.AddImports(new List<string>
-            {
-                $"{javaOrJakarta}.persistence.Enumerated",
-                $"{javaOrJakarta}.persistence.EnumType",
-            });
-            fw.WriteLine(1, "@Enumerated(EnumType.STRING)");
+            WriteEnumAnnotation(fw, javaOrJakarta);
         }
 
-        foreach (var annotation in _config.GetDomainAnnotations(property, tag))
+        if (!property.PrimaryKey || classe.PrimaryKey.Count() <= 1)
         {
-            fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : '@')}{annotation}");
+            WriteDomainAnnotations(fw, property, tag, 1);
         }
 
         var defaultValue = _config.GetValue(property, _classes);
@@ -389,5 +361,92 @@ public class JpaModelPropertyGenerator
         var isAssociationNotPersistent = property is AssociationProperty ap && !ap.Association.IsPersistent;
         var useClassForAssociation = classe.IsPersistent && !isAssociationNotPersistent && !_config.UseJdbc;
         fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: useClassForAssociation)} {(isAssociationNotPersistent ? property.NameCamel : property.NameByClassCamel)}{suffix};");
+    }
+
+    private void WriteIdAnnotation(JavaWriter fw, Class classe, IFieldProperty property)
+    {
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+        if (!_config.UseJdbc)
+        {
+            fw.AddImport($"{javaOrJakarta}.persistence.Id");
+
+            if (property.Domain.AutoGeneratedValue && classe.PrimaryKey.Count() == 1)
+            {
+                WriteAutogeneratedAnnotations(fw, classe, javaOrJakarta);
+            }
+        }
+        else
+        {
+            fw.AddImport("org.springframework.data.annotation.Id");
+        }
+
+        fw.WriteLine(1, "@Id");
+    }
+
+    private void WriteManyToManyAnnotations(JavaWriter fw, Class classe, AssociationProperty property, int indentLevel)
+    {
+        var role = property.Role is not null ? "_" + property.Role.ToConstantCase() : string.Empty;
+        var fk = ((IFieldProperty)property).SqlName;
+        var pk = classe.PrimaryKey.Single().SqlName + role;
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+        if (!_config.CanClassUseEnums(property.Association))
+        {
+            fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
+        }
+
+        var cascade = _config.CanClassUseEnums(property.Association) ? string.Empty : $", cascade = {{ CascadeType.PERSIST, CascadeType.MERGE }}";
+        if (property is ReverseAssociationProperty rap)
+        {
+            fw.WriteLine(indentLevel, @$"@{property.Type}(fetch = FetchType.LAZY, mappedBy = ""{rap.ReverseProperty.NameByClassCamel}""{cascade})");
+        }
+        else
+        {
+            fw.AddImport($"{javaOrJakarta}.persistence.JoinTable");
+            fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
+            fw.WriteLine(indentLevel, @$"@{property.Type}(fetch = FetchType.LAZY{cascade})");
+            fw.WriteLine(indentLevel, @$"@JoinTable(name = ""{property.Class.SqlName}_{property.Association.SqlName}{(property.Role != null ? "_" + property.Role.ToConstantCase() : string.Empty)}"", joinColumns = @JoinColumn(name = ""{pk}""), inverseJoinColumns = @JoinColumn(name = ""{fk}""))");
+        }
+    }
+
+    private void WriteManyToOneAnnotations(JavaWriter fw, AssociationProperty property, int indentLevel)
+    {
+        var fk = ((IFieldProperty)property).SqlName;
+        var apk = property.Property.SqlName;
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+        fw.WriteLine(indentLevel, @$"@{property.Type}(fetch = FetchType.LAZY, optional = {(property.Required ? "false" : "true")}, targetEntity = {property.Association.NamePascal}.class)");
+        fw.WriteLine(indentLevel, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"")");
+        fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
+    }
+
+    private void WriteOneToManyAnnotations(JavaWriter fw, Class classe, AssociationProperty property, int indentLevel)
+    {
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+        fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
+        if (property is ReverseAssociationProperty rap)
+        {
+            fw.WriteLine(1, @$"@{property.Type}(cascade = {{CascadeType.PERSIST, CascadeType.MERGE}}, fetch = FetchType.LAZY, mappedBy = ""{rap.ReverseProperty.NameByClassCamel}"")");
+        }
+        else
+        {
+            var pk = classe.PrimaryKey.Single().SqlName;
+            var hasReverse = property.Class.Namespace.RootModule == property.Association.Namespace.RootModule;
+            fw.WriteLine(indentLevel, @$"@{property.Type}(cascade = CascadeType.ALL, fetch = FetchType.LAZY{(hasReverse ? @$", mappedBy = ""{property.Class.NameCamel}{property.Role ?? string.Empty}""" : string.Empty)})");
+            if (!hasReverse)
+            {
+                fw.WriteLine(indentLevel, @$"@JoinColumn(name = ""{pk}"", referencedColumnName = ""{pk}"")");
+                fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
+            }
+        }
+    }
+
+    private void WriteOneToOneAnnotations(JavaWriter fw, AssociationProperty property, int indentLevel)
+    {
+        var fk = ((IFieldProperty)property).SqlName;
+        var apk = property.Property.SqlName;
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+        fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");
+        fw.WriteLine(indentLevel, @$"@{property.Type}(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = {(!property.Required).ToString().ToLower()})");
+        fw.WriteLine(indentLevel, @$"@JoinColumn(name = ""{fk}"", referencedColumnName = ""{apk}"", unique = true)");
+        fw.AddImport($"{javaOrJakarta}.persistence.JoinColumn");
     }
 }
