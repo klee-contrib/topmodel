@@ -1,7 +1,10 @@
 # TopModel.Generator (`modgen`)
 
-- [#366](https://github.com/klee-contrib/topmodel/pull/366) - [SQL] Ordre de génération des séquences
 
+## 1.49.1
+
+- [#368](https://github.com/klee-contrib/topmodel/pull/368) - [JPA] Clef primaire composite : annotations @Id et @Convert non compatibles
+- [#366](https://github.com/klee-contrib/topmodel/pull/366) - [SQL] Ordre de génération des séquences
 
 ## 1.49.0
 
