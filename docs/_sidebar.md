@@ -39,3 +39,5 @@
   - [database](/tmdgen/database.md)
 
 - **[Visualisation](/ui.md)**
+
+- **[Ligne de commandes](/cli.md)**
