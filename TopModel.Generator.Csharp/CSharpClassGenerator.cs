@@ -533,7 +533,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         }
 
         w.WriteUsings(usings
-            .Where(u => u != GetNamespace(item, tag))
+            .Where(u => !GetNamespace(item, tag).StartsWith(u))
             .Distinct()
             .ToArray());
 
