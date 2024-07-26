@@ -2,7 +2,6 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -37,7 +36,9 @@ public partial class ProfilClient
         await EnsureAuthentication();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"api/profils") { Content = GetBody(profil) }, HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
-        return await Deserialize<ProfilRead>(res);
+
+        using var content = await res.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<ProfilRead>(content, _jsOptions);
     }
 
     /// <summary>
@@ -50,7 +51,9 @@ public partial class ProfilClient
         await EnsureAuthentication();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"api/profils/{proId}"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
-        return await Deserialize<ProfilRead>(res);
+
+        using var content = await res.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<ProfilRead>(content, _jsOptions);
     }
 
     /// <summary>
@@ -62,7 +65,9 @@ public partial class ProfilClient
         await EnsureAuthentication();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"api/profils"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
-        return await Deserialize<ICollection<ProfilItem>>(res);
+
+        using var content = await res.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<ICollection<ProfilItem>>(content, _jsOptions);
     }
 
     /// <summary>
@@ -76,24 +81,9 @@ public partial class ProfilClient
         await EnsureAuthentication();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Put, $"api/profils/{proId}") { Content = GetBody(profil) }, HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
-        return await Deserialize<ProfilRead>(res);
-    }
 
-    /// <summary>
-    /// Déserialize le contenu d'une réponse HTTP.
-    /// </summary>
-    /// <typeparam name="T">Type de destination.</typeparam>
-    /// <param name="response">Réponse HTTP.</param>
-    /// <returns>Contenu.</returns>
-    private async Task<T> Deserialize<T>(HttpResponseMessage response)
-    {
-        if (response.StatusCode == HttpStatusCode.NoContent)
-        {
-            return default;
-        }
-
-        using var res = await response.Content.ReadAsStreamAsync();
-        return await JsonSerializer.DeserializeAsync<T>(res, _jsOptions);
+        using var content = await res.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<ProfilRead>(content, _jsOptions);
     }
 
     /// <summary>

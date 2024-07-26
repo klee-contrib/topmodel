@@ -3,7 +3,6 @@
 ////
 
 using System.Globalization;
-using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -38,7 +37,9 @@ public partial class UtilisateurClient
         await EnsureAuthentication();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"api/utilisateurs") { Content = GetBody(utilisateur) }, HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
-        return await Deserialize<UtilisateurRead>(res);
+
+        using var content = await res.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<UtilisateurRead>(content, _jsOptions);
     }
 
     /// <summary>
@@ -63,7 +64,9 @@ public partial class UtilisateurClient
         await EnsureAuthentication();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"api/utilisateurs/{utiId}"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
-        return await Deserialize<UtilisateurRead>(res);
+
+        using var content = await res.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<UtilisateurRead>(content, _jsOptions);
     }
 
     /// <summary>
@@ -94,7 +97,9 @@ public partial class UtilisateurClient
         }.Where(kv => kv.Value != null)).ReadAsStringAsync();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"api/utilisateurs?{query}"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
-        return await Deserialize<ICollection<UtilisateurItem>>(res);
+
+        using var content = await res.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<ICollection<UtilisateurItem>>(content, _jsOptions);
     }
 
     /// <summary>
@@ -108,24 +113,9 @@ public partial class UtilisateurClient
         await EnsureAuthentication();
         using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Put, $"api/utilisateurs/{utiId}") { Content = GetBody(utilisateur) }, HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
-        return await Deserialize<UtilisateurRead>(res);
-    }
 
-    /// <summary>
-    /// Déserialize le contenu d'une réponse HTTP.
-    /// </summary>
-    /// <typeparam name="T">Type de destination.</typeparam>
-    /// <param name="response">Réponse HTTP.</param>
-    /// <returns>Contenu.</returns>
-    private async Task<T> Deserialize<T>(HttpResponseMessage response)
-    {
-        if (response.StatusCode == HttpStatusCode.NoContent)
-        {
-            return default;
-        }
-
-        using var res = await response.Content.ReadAsStreamAsync();
-        return await JsonSerializer.DeserializeAsync<T>(res, _jsOptions);
+        using var content = await res.Content.ReadAsStreamAsync();
+        return await JsonSerializer.DeserializeAsync<UtilisateurRead>(content, _jsOptions);
     }
 
     /// <summary>

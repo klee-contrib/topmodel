@@ -1,5 +1,17 @@
 # TopModel.Generator (`modgen`)
 
+## 1.49.2
+
+- [`e92be4d4`](https://github.com/klee-contrib/topmodel/commit/e92be4d4b9da18140daa80147cbf0ef8801fd4c4) - [C#Client] Gestion propre returns required/pas required
+
+  **(petit) breaking change** : 
+  
+  Le méthode `Deserialize<T>` n'est plus générée et son contenu est désormais inline dans le retour de la méthode.
+
+  De plus, le check `if 204 return null` n'est désormais fait que si le `returns` n'est pas `required` (pour rappel, les compositions sont `required` par défaut, mais pas les autres propriétés). Si le check a été retiré alors qu'il était utile, alors vous devez passer `required: false` dans votre `returns`.
+
+- [`23e6f4be`](https://github.com/klee-contrib/topmodel/commit/23e6f4be0913d02f0f78de2a1ef2bfde5ba945a8) - [C#Class] Pas de `[Required]` si `required`
+- [`166c3fbb`](https://github.com/klee-contrib/topmodel/commit/166c3fbb16b1c2de1ff6d38baedc04afe3dca683) - [C#ClassGen] Fix usings en trop
 
 ## 1.49.1
 
