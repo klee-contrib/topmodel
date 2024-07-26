@@ -383,7 +383,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                     }
                 }
 
-                if (fp.Required && !fp.PrimaryKey || fp is AliasProperty { PrimaryKey: true } || fp.PrimaryKey && fp.Class.PrimaryKey.Count() > 1)
+                if (fp.Required && !Config.RequiredNonNullable(tag) && !fp.PrimaryKey || fp is AliasProperty { PrimaryKey: true } || fp.PrimaryKey && fp.Class.PrimaryKey.Count() > 1)
                 {
                     w.WriteAttribute(1, "Required");
                 }
