@@ -49,7 +49,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
             usings.Add("System.Text");
         }
 
-        if (hasReturn)
+        if (endpoints.Any(e => e.Returns != null && !e.Returns.Required))
         {
             usings.Add("System.Net");
         }
@@ -240,8 +240,18 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
             if (returnType != null)
             {
+                if (!endpoint.Returns!.Required)
+                {
+                    fw.WriteLine();
+                    fw.WriteLine(2, "if (res.StatusCode == HttpStatusCode.NoContent)");
+                    fw.WriteLine(2, "{");
+                    fw.WriteLine(3, "return null;");
+                    fw.WriteLine(2, "}");
+                }
+
                 if (returnType.TrimEnd('?') == "string")
                 {
+                    fw.WriteLine();
                     fw.WriteLine(2, $"return (await res.Content.ReadAsStringAsync()).Trim('\"');");
                 }
                 else if (returnType == "byte[]")
@@ -253,29 +263,26 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
                 }
                 else
                 {
-                    fw.WriteLine(2, $"return await Deserialize<{returnType}>(res);");
+                    fw.WriteLine();
+                    fw.WriteLine(2, "using var content = await res.Content.ReadAsStreamAsync();");
+                    fw.Write(2, $"return ");
+
+                    if (Config.NullableEnable && endpoint.Returns.Required)
+                    {
+                        fw.Write("(");
+                    }
+
+                    fw.Write($"await JsonSerializer.DeserializeAsync<{returnType}>(content, _jsOptions)");
+
+                    if (Config.NullableEnable && endpoint.Returns.Required)
+                    {
+                        fw.Write(")!");
+                    }
+
+                    fw.WriteLine(";");
                 }
             }
 
-            fw.WriteLine(1, "}");
-        }
-
-        if (hasReturn)
-        {
-            fw.WriteLine();
-            fw.WriteSummary(1, "Déserialize le contenu d'une réponse HTTP.");
-            fw.WriteTypeParam(1, "T", "Type de destination.");
-            fw.WriteParam("response", "Réponse HTTP");
-            fw.WriteReturns(1, "Contenu.");
-            fw.WriteLine(1, "private async Task<T> Deserialize<T>(HttpResponseMessage response)");
-            fw.WriteLine(1, "{");
-            fw.WriteLine(2, "if (response.StatusCode == HttpStatusCode.NoContent)");
-            fw.WriteLine(2, "{");
-            fw.WriteLine(3, "return default;");
-            fw.WriteLine(2, "}");
-            fw.WriteLine();
-            fw.WriteLine(2, "using var res = await response.Content.ReadAsStreamAsync();");
-            fw.WriteLine(2, "return await JsonSerializer.DeserializeAsync<T>(res, _jsOptions);");
             fw.WriteLine(1, "}");
         }
 
