@@ -1,5 +1,11 @@
 # TopModel.Generator (`modgen`)
 
+## 1.49.3
+
+- [`eb6f4ef`](https://github.com/klee-contrib/topmodel/commit/eb6f4ef7a6d703ddd34ae80bcfc0a7f07abce8e3) [JPA] Fix multiple :
+  - Erreur de compilation dans le cas d'alias vers des associations
+  - Correction javadoc lorsqu'une classe non accessible est utilisée
+
 ## 1.49.2
 
 - [`e92be4d4`](https://github.com/klee-contrib/topmodel/commit/e92be4d4b9da18140daa80147cbf0ef8801fd4c4) - [C#Client] Gestion propre returns required/pas required
