@@ -105,12 +105,16 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
         var checkSourceNull = false;
         if ((!propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent)
-             || !(propertySource is AssociationProperty || propertyTarget is AssociationProperty))
+             || !(propertySource is AssociationProperty
+                || propertySource is AliasProperty psAlp && psAlp.Property is AssociationProperty
+                || propertyTarget is AssociationProperty
+                || propertySource is AliasProperty ptAlp && ptAlp.Property is AssociationProperty))
         {
             getter = $"{sourceName}.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}()";
         }
-        else if (propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent && propertySource is AssociationProperty apSource && apSource.Association.IsPersistent)
+        else if (propertySource.Class.IsPersistent && (!propertyTarget.Class.IsPersistent || !(propertyTarget is AssociationProperty)) && (propertySource is AssociationProperty apSource && apSource.Association.IsPersistent || propertySource is AliasProperty alpSource && alpSource.Property is AssociationProperty apSource2 && apSource2.Association.IsPersistent))
         {
+            apSource = propertySource is AssociationProperty ? (AssociationProperty)propertySource : (AssociationProperty)((AliasProperty)propertySource).Property;
             checkSourceNull = true;
             if (propertyTarget is CompositionProperty cp)
             {
@@ -160,8 +164,9 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
                 }
             }
         }
-        else if (!propertySource.Class.IsPersistent && propertyTarget.Class.IsPersistent && propertyTarget is AssociationProperty apTarget && apTarget.Association.IsPersistent)
+        else if ((!propertySource.Class.IsPersistent || !(propertySource is AssociationProperty)) && propertyTarget.Class.IsPersistent && (propertyTarget is AssociationProperty apTarget && apTarget.Association.IsPersistent || propertyTarget is AliasProperty ptAp && ptAp.Property is AssociationProperty ptApAss && ptApAss.Association.IsPersistent))
         {
+            apTarget = propertyTarget is AssociationProperty ? (AssociationProperty)propertyTarget : (AssociationProperty)((AliasProperty)propertyTarget).Property;
             if (Config.CanClassUseEnums(apTarget.Property.Class))
             {
                 if (!propertySource.Class.IsPersistent)
