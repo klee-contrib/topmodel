@@ -131,8 +131,8 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
             fw.AddImport("org.springframework.web.bind.annotation.PathVariable");
             fw.AddImports(Config.GetDomainImports(param, tag));
-            var decoratorAnnotations = string.Join(' ', Config.GetDomainAnnotations(param, tag).Select(a => a.StartsWith("@") ? a : "@" + a));
-            methodParams.Add($"{pathParamAnnotation}{(decoratorAnnotations.Length > 0 ? $" {decoratorAnnotations}" : string.Empty)} {Config.GetType(param)} {param.GetParamName()}");
+            var decoratorAnnotations = string.Join(' ', Config.GetDomainAnnotations(param, tag).Select(a => a.StartsWith('@') ? a : "@" + a));
+            methodParams.Add($"{pathParamAnnotation}{(decoratorAnnotations.Length > 0 ? $" {decoratorAnnotations} " : string.Empty)} {Config.GetType(param)} {param.GetParamName()}");
         }
 
         foreach (var param in endpoint.GetQueryParams())
