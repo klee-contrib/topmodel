@@ -18,7 +18,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
 
     protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
     {
-        if (classe.IsPersistent && !classe.Abstract)
+        if (classe.IsPersistent && !classe.Abstract && !Config.NoPersistence(tag))
         {
             yield return ("main", Config.GetDbContextFilePath(tag));
 
