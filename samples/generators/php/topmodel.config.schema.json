@@ -186,9 +186,9 @@
             "type": "string",
             "description": "Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models."
           },
-          "persistentReferencesModelPath": {
+          "referencesModelPath": {
             "type": "string",
-            "description": "Localisation des classes de références persistées, relative au répertoire de génération. Par défaut égal à 'persistentModelPath'."
+            "description": "Localisation des classes de références, relative au répertoire de génération. Si non renseigné, ces classes seront générées comme les autres (selon si elles sont persistantes ou non)."
           },
           "nonPersistentModelPath": {
             "type": "string",

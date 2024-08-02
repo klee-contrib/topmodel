@@ -1,5 +1,15 @@
 # TopModel.Generator (`modgen`)
 
+## 1.50.0
+
+- [`7371cac8`](https://github.com/klee-contrib/topmodel/commit/7371cac83fda315aa4fa76965c254b9033ca709b) - [C#] `persistentReferencesModelPath` => `referencesModelPath`
+
+  **(petit) breaking change** :
+
+  `persistentReferencesModelPath` a été remplacé par `referencesModelPath`, qui concerne donc maintenant toutes les listes de références. Par conséquent, vos listes de références non persistées seront désormais générées au même endroit que vos listes de références persistées si vous utilisez ce paramètre. Cela ne devrait pas poser de problèmes particuliers (hormis peut être quelques usings à changer dans votre code applicatif), puisque l'objectif initial de ce paramètre était de pouvoir générer les listes de références persistées avec le modèle non persisté.
+
+- [`524c41d9`](https://github.com/klee-contrib/topmodel/commit/524c41d9eab115b99d706136687fa87e6623a89d) - [C#DbContext] Fix `NoPersistence` non respecté.
+
 ## 1.49.3
 
 - [`eb6f4ef`](https://github.com/klee-contrib/topmodel/commit/eb6f4ef7a6d703ddd34ae80bcfc0a7f07abce8e3) [JPA] Fix multiple :
@@ -10,8 +20,8 @@
 
 - [`e92be4d4`](https://github.com/klee-contrib/topmodel/commit/e92be4d4b9da18140daa80147cbf0ef8801fd4c4) - [C#Client] Gestion propre returns required/pas required
 
-  **(petit) breaking change** : 
-  
+  **(petit) breaking change** :
+
   Le méthode `Deserialize<T>` n'est plus générée et son contenu est désormais inline dans le retour de la méthode.
 
   De plus, le check `if 204 return null` n'est désormais fait que si le `returns` n'est pas `required` (pour rappel, les compositions sont `required` par défaut, mais pas les autres propriétés). Si le check a été retiré alors qu'il était utile, alors vous devez passer `required: false` dans votre `returns`.
