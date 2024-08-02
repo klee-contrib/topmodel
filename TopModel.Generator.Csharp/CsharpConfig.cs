@@ -14,17 +14,16 @@ public class CsharpConfig : GeneratorConfigBase
 {
     private readonly string[] _builtInNonNullableTypes = ["bool", "short", "ushort", "int", "uint", "long", "ulong", "double", "float", "decimal", "Guid", "DateTime", "DateOnly", "TimeOnly", "TimeSpan"];
 
-    private string? _referencesModelPath;
-
     /// <summary>
     /// Localisation du modèle persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models.
     /// </summary>
     public string PersistentModelPath { get; set; } = "{app}.{module}.Models";
 
     /// <summary>
-    /// Localisation des classes de références persistées, relative au répertoire de génération. Par défaut égal à "PersistentModelPath".
+    /// Localisation des classes de références, relative au répertoire de génération.
+    /// Si non renseigné, ces classes seront générées comme les autres (selon si elles sont persistantes ou non).
     /// </summary>
-    public string PersistentReferencesModelPath { get => _referencesModelPath ?? PersistentModelPath; set => _referencesModelPath = value; }
+    public string? ReferencesModelPath { get; set; }
 
     /// <summary>
     /// Localisation du modèle non persisté, relative au répertoire de génération. Par défaut : {app}.{module}.Models/Dto.
@@ -187,7 +186,7 @@ public class CsharpConfig : GeneratorConfigBase
     public override string[] PropertiesWithModuleVariableSupport =>
     [
         nameof(PersistentModelPath),
-        nameof(PersistentReferencesModelPath),
+        nameof(ReferencesModelPath),
         nameof(NonPersistentModelPath),
         nameof(ApiFilePath),
         nameof(DbSchema),
@@ -200,7 +199,7 @@ public class CsharpConfig : GeneratorConfigBase
     public override string[] PropertiesWithTagVariableSupport =>
     [
         nameof(PersistentModelPath),
-        nameof(PersistentReferencesModelPath),
+        nameof(ReferencesModelPath),
         nameof(NonPersistentModelPath),
         nameof(NoPersistenceParam),
         nameof(RequiredNonNullableParam),
@@ -330,7 +329,7 @@ public class CsharpConfig : GeneratorConfigBase
                 return (mapper.Class.Namespace, pmp);
             }
 
-            var persistentParam = mapper.Mapper.ClassParams.FirstOrDefault(p => p.Class.IsPersistent && (!p.Class.Reference || PersistentReferencesModelPath == PersistentModelPath));
+            var persistentParam = mapper.Mapper.ClassParams.FirstOrDefault(p => p.Class.IsPersistent && (!p.Class.Reference || ReferencesModelPath == null));
             if (persistentParam != null)
             {
                 return (persistentParam.Class.Namespace, pmp);
@@ -402,11 +401,7 @@ public class CsharpConfig : GeneratorConfigBase
     public string GetModelPath(Class classe, string tag)
     {
         return ResolveVariables(
-            classe.IsPersistent && !NoPersistence(tag)
-                ? classe.Reference
-                    ? PersistentReferencesModelPath
-                    : PersistentModelPath
-                : NonPersistentModelPath,
+            GetModelPathRaw(classe, tag),
             tag: tag,
             module: classe.Namespace.ModulePath).ToFilePath();
     }
@@ -438,14 +433,10 @@ public class CsharpConfig : GeneratorConfigBase
     /// </summary>
     /// <param name="classe">La classe.</param>
     /// <param name="tag">Tag.</param>
-    /// <param name="isPersistent">Surcharge le caractère Persistent</param>
     /// <returns>Namespace.</returns>
-    public string GetNamespace(Class classe, string tag, bool? isPersistent = null)
+    public string GetNamespace(Class classe, string tag)
     {
-        return GetNamespace(
-            classe.Namespace,
-            isPersistent.HasValue ? isPersistent.Value ? PersistentModelPath : NonPersistentModelPath : classe.IsPersistent && !NoPersistence(tag) ? classe.Reference ? PersistentReferencesModelPath : PersistentModelPath : NonPersistentModelPath,
-            tag);
+        return GetNamespace(classe.Namespace, GetModelPathRaw(classe, tag), tag);
     }
 
     public string GetNamespace(Namespace ns, string modelPath, string tag)
@@ -564,5 +555,14 @@ public class CsharpConfig : GeneratorConfigBase
     protected override bool IsEnumNameValid(string name)
     {
         return base.IsEnumNameValid(name) && !name.Contains('-') && name.FirstOrDefault() != name.ToLower().FirstOrDefault();
+    }
+
+    private string GetModelPathRaw(Class classe, string tag)
+    {
+        return classe.Reference && ReferencesModelPath != null
+            ? ReferencesModelPath
+            : classe.IsPersistent && !NoPersistence(tag)
+                ? PersistentModelPath
+                : NonPersistentModelPath;
     }
 }

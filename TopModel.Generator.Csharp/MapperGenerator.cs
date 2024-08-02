@@ -429,7 +429,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
     protected override bool IsPersistent(Class classe)
     {
         return (classe.Tags.Intersect(Config.MapperTagsOverrides).Any() || classe.IsPersistent)
-            && (Config.PersistentModelPath == Config.PersistentReferencesModelPath || !classe.Reference);
+            && (Config.ReferencesModelPath == null || !classe.Reference);
     }
 
     private static string GetSourceMapping(IProperty property)

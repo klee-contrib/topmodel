@@ -16,7 +16,9 @@ Le code généré n'a aucune dépendance externe à part EF Core et Kinetix, et 
 
 ### Types C#
 
-Tous les types C# écrits par le générateur doivent être nullables (sauf si le type est utilisé pour un paramètre ou un type de retour obligatoire d'endpoint ou de mapper). C'est le générateur qui va s'occuper d'ajouter un `?` derrière le type si nécessaire, donc en particulier tous les types définis dans les domaines ne doivent pas le renseigner (ce qui n'était pas le cas pour avant la 1.41). Le générateur connaît la plupart des types non-nullables courants (comme `int`, `bool`, `DateTime`), mais il est possible de lui en spécifier d'autre via la propriété `nonNullableTypes`. Enfin, si vous souhaitez utiliser `nullable: enable` en C# pour rendre tous les types non-nullables par défaut, vous pouvez renseigner `nonNullableTypes: true` pour que le code généré soit compatible.
+Tous les types C# renseignés dans les domaines doivent être non-nullables (toujours utiliser `int` à la place de `int?` par exemple), et c'est le générateur qui s'occupera de le rendre nullable (en ajoutant un `?`) si besoin, selon le caractère obligatoire du champ et le paramétrage du générateur (en particulier l'usage de `nullableEnable` et de `requiredNonNullable`).
+
+Pour pouvoir renseigner les éventuels `?` ou `.Value` nécessaires, le générateur a besoin de connaître les types valeurs (comme `int`, `bool` ou `DateTime` par exemple) que vous utilisez. Il connaît déjà la plupart des types courants, et vous pouvez compléter cette liste via la propriété `valueTypes`.
 
 ### Génération des classes
 
@@ -97,9 +99,11 @@ _(en preview, documentation à venir)_
 
   _Variables par tag_: **oui** (plusieurs définition de classes pourraient être générées si un fichier à plusieurs tags)
 
-- `persistentReferencesModelPath`
+- `referencesModelPath`
 
-  Localisation des classes de références persistées, relative au répertoire de génération.
+  Localisation des classes de références, relative au répertoire de génération.
+
+  Si non renseigné, ces classes seront générées comme les autres (selon si elles sont persistantes ou non).
 
   Le chemin des fichiers cibles sera calculé en remplaçant les `:` par des `/` dans cette valeur, tandis que le nom du namespace des classes générées sera calculé en prenant ce qui est à droite du dernier `:` et en remplaçant tous les `/` par des `.`.
 
