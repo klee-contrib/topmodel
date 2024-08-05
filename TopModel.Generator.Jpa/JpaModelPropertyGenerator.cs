@@ -180,6 +180,54 @@ public class JpaModelPropertyGenerator
                     .Any(a => a.Text.Replace("@", string.Empty).StartsWith("Column"));
     }
 
+    private void WriteAliasProperty(JavaWriter fw, Class classe, AliasProperty property, string tag)
+    {
+        if (_classes.Contains(property.Property.Class))
+        {
+            fw.WriteLine(1, $" * Alias of {{@link {property.Property.Class.GetImport(_config, tag)}#get{property.Property.NameCamel.ToFirstUpper()}() {property.Property.Class.NamePascal}#get{property.Property.NameCamel.ToFirstUpper()}()}} ");
+        }
+
+        fw.WriteDocEnd(1);
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+        var shouldWriteAssociation = classe.IsPersistent && property.Property is AssociationProperty;
+
+        if (property.PrimaryKey && classe.IsPersistent)
+        {
+            WriteIdAnnotation(fw, classe, property);
+        }
+
+        if (!shouldWriteAssociation && ShouldWriteColumnAnnotation(classe, property) && (_config.UseJdbc || !(property.PrimaryKey && classe.PrimaryKey.Count() > 1)))
+        {
+            WriteColumnAnnotation(fw, property, 1);
+        }
+
+        if (shouldWriteAssociation)
+        {
+            WriteAssociationAnnotations(fw, classe, (AssociationProperty)property.Property, 1);
+        }
+
+        if (property.Required && !property.PrimaryKey && (!classe.IsPersistent || _config.UseJdbc))
+        {
+            WriteValidationAnnotations(fw, javaOrJakarta);
+        }
+
+        if (_config.CanClassUseEnums(property.Property.Class) && property.Property.PrimaryKey && classe.IsPersistent && !_config.UseJdbc)
+        {
+            WriteEnumAnnotation(fw, javaOrJakarta);
+        }
+
+        if (!property.PrimaryKey || classe.PrimaryKey.Count() <= 1)
+        {
+            WriteDomainAnnotations(fw, property, tag, 1);
+        }
+
+        var defaultValue = _config.GetValue(property, _classes);
+        var suffix = defaultValue != "null" ? $" = {defaultValue}" : string.Empty;
+        var isAssociationNotPersistent = property.Property is AssociationProperty ap && !ap.Association.IsPersistent;
+        var useClassForAssociation = classe.IsPersistent && !isAssociationNotPersistent && !_config.UseJdbc;
+        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: useClassForAssociation)} {(isAssociationNotPersistent && !shouldWriteAssociation ? property.NameCamel : property.NameByClassCamel)}{suffix};");
+    }
+
     private void WriteAssociationAnnotations(JavaWriter fw, Class classe, AssociationProperty property, int indentLevel)
     {
         switch (property.Type)
@@ -360,54 +408,6 @@ public class JpaModelPropertyGenerator
         var isAssociationNotPersistent = property is AssociationProperty ap && !ap.Association.IsPersistent;
         var useClassForAssociation = classe.IsPersistent && !isAssociationNotPersistent && !_config.UseJdbc;
         fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: useClassForAssociation)} {(isAssociationNotPersistent ? property.NameCamel : property.NameByClassCamel)}{suffix};");
-    }
-
-    private void WriteAliasProperty(JavaWriter fw, Class classe, AliasProperty property, string tag)
-    {
-        if (_classes.Contains(property.Property.Class))
-        {
-            fw.WriteLine(1, $" * Alias of {{@link {property.Property.Class.GetImport(_config, tag)}#get{property.Property.NameCamel.ToFirstUpper()}() {property.Property.Class.NamePascal}#get{property.Property.NameCamel.ToFirstUpper()}()}} ");
-        }
-
-        fw.WriteDocEnd(1);
-        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
-        var shouldWriteAssociation = classe.IsPersistent && property.Property is AssociationProperty;
-
-        if (property.PrimaryKey && classe.IsPersistent)
-        {
-            WriteIdAnnotation(fw, classe, property);
-        }
-
-        if (!shouldWriteAssociation && ShouldWriteColumnAnnotation(classe, property) && (_config.UseJdbc || !(property.PrimaryKey && classe.PrimaryKey.Count() > 1)))
-        {
-            WriteColumnAnnotation(fw, property, 1);
-        }
-
-        if (shouldWriteAssociation)
-        {
-            WriteAssociationAnnotations(fw, classe, (AssociationProperty)property.Property, 1);
-        }
-
-        if (property.Required && !property.PrimaryKey && (!classe.IsPersistent || _config.UseJdbc))
-        {
-            WriteValidationAnnotations(fw, javaOrJakarta);
-        }
-
-        if (_config.CanClassUseEnums(property.Property.Class) && property.Property.PrimaryKey && classe.IsPersistent && !_config.UseJdbc)
-        {
-            WriteEnumAnnotation(fw, javaOrJakarta);
-        }
-
-        if (!property.PrimaryKey || classe.PrimaryKey.Count() <= 1)
-        {
-            WriteDomainAnnotations(fw, property, tag, 1);
-        }
-
-        var defaultValue = _config.GetValue(property, _classes);
-        var suffix = defaultValue != "null" ? $" = {defaultValue}" : string.Empty;
-        var isAssociationNotPersistent = property.Property is AssociationProperty ap && !ap.Association.IsPersistent;
-        var useClassForAssociation = classe.IsPersistent && !isAssociationNotPersistent && !_config.UseJdbc;
-        fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: useClassForAssociation)} {(isAssociationNotPersistent && !shouldWriteAssociation ? property.NameCamel : property.NameByClassCamel)}{suffix};");
     }
 
     private void WriteIdAnnotation(JavaWriter fw, Class classe, IFieldProperty property)
