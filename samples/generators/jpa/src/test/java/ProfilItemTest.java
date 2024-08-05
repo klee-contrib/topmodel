@@ -8,7 +8,7 @@ class ProfilItemTest {
     @Test
     void isInterfaceWithMethods() {
         assertThat(ProfilItem.class)
-        .isInterface()
-        .hasMethods("getId", "getLibelle", "getNombreUtilisateurs", "hydrate");    
+                .isInterface()
+                .hasMethods("getId", "getLibelle", "getNombreUtilisateurs", "hydrate");
     }
 }
