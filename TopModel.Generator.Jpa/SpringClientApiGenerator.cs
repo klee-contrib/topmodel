@@ -42,7 +42,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         if (endpoints.First().ModelFile.Options.Endpoints.Prefix != null)
         {
             fw.WriteLine($@"@HttpExchange(""{endpoints.First().ModelFile.Options.Endpoints.Prefix}"")");
-            fw.AddImport("org.springframework.web.service.annotation");
+            fw.AddImport("org.springframework.web.service.annotation.HttpExchange");
         }
 
         var javaOrJakarta = Config.PersistenceMode.ToString().ToLower();
