@@ -341,7 +341,8 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     {
         var sameColumnSet = new HashSet<string>(item.Properties.OfType<IFieldProperty>()
             .GroupBy(g => g.SqlName).Where(g => g.Count() > 1).Select(g => g.Key));
-        foreach (var property in item.Properties)
+
+        foreach (var property in item.Properties.Where(p => p is not CompositionProperty cp || Classes.Contains(cp.Composition)))
         {
             if (item.Properties.IndexOf(property) > 0)
             {
@@ -363,7 +364,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     {
         w.WriteSummary(1, property.Comment);
 
-        var type = Config.GetType(property, nonNullable: property is CompositionProperty { Required: true } || property.Required && Config.RequiredNonNullable(tag));
+        var type = Config.GetType(property, Classes, nonNullable: property is CompositionProperty { Required: true } || property.Required && Config.RequiredNonNullable(tag));
 
         if (!property.Class.Abstract)
         {
@@ -526,7 +527,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 case AliasProperty { Property: RegularProperty rp } alp when Classes.Contains(rp.Class) && (Config.CanClassUseEnums(rp.Class, Classes, rp) || Config.Kinetix && !alp.AliasedPrimaryKey && rp.PrimaryKey && rp.Class.Reference):
                     usings.Add(GetNamespace(rp.Class, tag));
                     break;
-                case CompositionProperty cp:
+                case CompositionProperty cp when Classes.Contains(cp.Composition):
                     usings.Add(GetNamespace(cp.Composition, tag));
                     break;
             }

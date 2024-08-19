@@ -55,7 +55,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
         }
     }
 
-    private static IEnumerable<(IFieldProperty Property, AssociationProperty AssociationProperty)> GetAssociationProperties(IEnumerable<Class> classes)
+    private IEnumerable<(IFieldProperty Property, AssociationProperty AssociationProperty)> GetAssociationProperties(IEnumerable<Class> classes)
     {
         return classes
             .Distinct()
@@ -68,7 +68,8 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
                 AliasProperty { Property: AssociationProperty ap } => ((IFieldProperty)p, ap),
                 _ => (null!, null!)
             })
-            .Where(p => p.ap.Type == AssociationType.ManyToOne || p.ap.Type == AssociationType.OneToOne);
+            .Where(p => p.ap.Type == AssociationType.ManyToOne || p.ap.Type == AssociationType.OneToOne)
+            .Where(p => Classes.Contains(p.ap.Association));
     }
 
     private void HandleCommentsFile(string fileName, string tag, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
