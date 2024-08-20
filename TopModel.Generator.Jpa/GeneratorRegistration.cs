@@ -13,6 +13,7 @@ public class GeneratorRegistration : IGeneratorRegistration<JpaConfig>
         TrimSlashes(config, c => c.EntitiesPath);
         TrimSlashes(config, c => c.DaosPath);
         TrimSlashes(config, c => c.DtosPath);
+        TrimSlashes(config, c => c.EnumsPath);
         TrimSlashes(config, c => c.ApiPath);
         TrimSlashes(config, c => c.ResourcesPath);
 

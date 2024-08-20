@@ -1,5 +1,4 @@
-﻿using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model.Implementation;
@@ -146,6 +145,7 @@ public class JpaConfig : GeneratorConfigBase
         nameof(DaosPath),
         nameof(DtosPath),
         nameof(ApiPath),
+        nameof(EnumsPath),
         nameof(ApiGeneration),
         nameof(ResourcesPath),
         nameof(DbSchema)
