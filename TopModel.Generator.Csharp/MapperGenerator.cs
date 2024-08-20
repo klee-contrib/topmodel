@@ -184,7 +184,38 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                             {
                                 var isValueType = Config.IsValueType(mapping.Value, Classes);
 
-                                if (isValueType && requiredNonNullable && mapping.Key.Required && !param.Required)
+                                var targetType = Config.GetType(mapping.Key, Classes, nonNullable: true);
+                                var sourceType = Config.GetType(mapping.Value, Classes, nonNullable: true);
+                                if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType((IFieldProperty)mapping.Key).EndsWith(targetType))
+                                {
+                                    value = $"<{Config.GetEnumType((IFieldProperty)mapping.Key)}>({value}";
+
+                                    if (!requiredNonNullable || !mapping.Key.Required && !mapping.Value.Required)
+                                    {
+                                        value = $"Enum.TryParse{value}, out var {mapping.Value.NameCamel}) ? {mapping.Value.NameCamel} : null";
+                                    }
+                                    else
+                                    {
+                                        value = $"Enum.Parse{value})";
+                                    }
+                                }
+                                else if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType((IFieldProperty)mapping.Value).EndsWith(sourceType))
+                                {
+                                    if (!requiredNonNullable || !mapping.Key.Required && !mapping.Value.Required)
+                                    {
+                                        value = $"{value} != null ? Enum.GetName({value}.Value) : null";
+                                    }
+                                    else
+                                    {
+                                        if (requiredNonNullable && !mapping.Value.Required)
+                                        {
+                                            value += ".Value";
+                                        }
+
+                                        value = $"Enum.GetName({value})";
+                                    }
+                                }
+                                else if (isValueType && requiredNonNullable && mapping.Key.Required && !param.Required)
                                 {
                                     var type = Config.GetType(mapping.Value, Classes, nonNullable: true);
                                     var enumType = Config.GetEnumType((IFieldProperty)mapping.Value);
@@ -338,6 +369,33 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                     value += ".Value";
                 }
 
+                var sourceType = Config.GetType(mapping.Key, Classes, nonNullable: true);
+                var targetType = Config.GetType(mapping.Value, Classes, nonNullable: true);
+                if (mapping.Key is IFieldProperty keyFp && !sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(keyFp).EndsWith(sourceType))
+                {
+                    if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
+                    {
+                        value = $"{value} != null ? Enum.GetName({value}.Value) : null";
+                    }
+                    else
+                    {
+                        value = $"Enum.GetName({value})";
+                    }
+                }
+                else if (mapping.Value is IFieldProperty valueFp && !sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(valueFp).EndsWith(targetType))
+                {
+                    value = $"<{Config.GetEnumType(valueFp)}>({value}";
+
+                    if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
+                    {
+                        value = $"Enum.TryParse{value}, out var {mapping.Key.NameCamel}) ? {mapping.Key.NameCamel} : null";
+                    }
+                    else
+                    {
+                        value = $"Enum.Parse{value})";
+                    }
+                }
+
                 value = Config.GetConvertedValue(value, (mapping.Key as IFieldProperty)?.Domain, mapping.Value.Domain, isValueType && (!rrnSource || !mapping.Key.Required));
 
                 if (mapper.Class.Abstract)
@@ -427,6 +485,33 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                     if (isValueType && rrnTarget && (!rrnSource || !mapping.Key.Required) && mapping.Value.Required)
                     {
                         value += ".Value";
+                    }
+
+                    var sourceType = Config.GetType(mapping.Key, Classes, nonNullable: true);
+                    var targetType = Config.GetType(mapping.Value, Classes, nonNullable: true);
+                    if (mapping.Key is IFieldProperty keyFp && !sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(keyFp).EndsWith(sourceType))
+                    {
+                        if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
+                        {
+                            value = $"{value} != null ? Enum.GetName({value}.Value) : null";
+                        }
+                        else
+                        {
+                            value = $"Enum.GetName({value})";
+                        }
+                    }
+                    else if (mapping.Value is IFieldProperty valueFp && !sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(valueFp).EndsWith(targetType))
+                    {
+                        value = $"<{Config.GetEnumType(valueFp)}>({value}";
+
+                        if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
+                        {
+                            value = $"Enum.TryParse{value}, out var {mapping.Key.NameCamel}) ? {mapping.Key.NameCamel} : null";
+                        }
+                        else
+                        {
+                            value = $"Enum.Parse{value})";
+                        }
                     }
 
                     value = Config.GetConvertedValue(value, (mapping.Key as IFieldProperty)?.Domain, mapping.Value.Domain, isValueType && (!rrnSource || !mapping.Key.Required));
