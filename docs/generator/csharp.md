@@ -34,6 +34,11 @@ De plus, si la classe définit des `values` et une clé d'unicité simple sur un
 
 Les mappers sont générés comme des méthodes statiques dans une classe statique. Les mappers `to` peuvent être utilisés comme méthodes d'extensions sur la classe qui le définit. Il est conseillé d'utiliser un `using static ModuleMappers;` dans les fichiers où on utilise des mappers pour pouvoir référencer un mapper `from` directement avec son nom (par exemple `CreateMyClassDTO(myClass)` au lieu de `ModuleMappers.CreateMyClassDTO(myClass)`)
 
+Chaque mapper `to` sera généré avec 2 surcharges :
+
+- Une surcharge qui permet de créer une nouvelle instance. Cette surcharge prendra en paramètres (optionnels si `requiredNonNullable` est désactivé) l'ensemble des propriétés obligatoires de la classe cible pour lesquels il n'existe pas de mapping depuis la classe source.
+- Une surcharge qui permet de mapper vers une instance existante, passée en unique paramètre. Cette surcharge ne sera pas générée pour une classe abstraite.
+
 De plus, pour un module, on sépare les mappers en deux fichiers potentiels :
 
 - Tous les mappers qui référencent au moins une classe persistée seront générés dans un fichier `ModuleMappers`, qui sera généré à côté des classes persistées du module.
@@ -51,7 +56,7 @@ Afin de gérer tous les cas où des propriétés nullables pourraient être mapp
 Dans le cas où le mapper ne renseigne pas toutes les propriétés obligatoires de la classe cible (celles qui ont un `required` dans leur définition C# générée) :
 
 - Si c'est un mapper `from`, **le mapper généré lèvera une erreur C#**, et vous devrez modifier votre modèle pour que le code généré compile correctement (soit en ajoutant les propriétés manquantes dans le mapper, soit en rendant les propriétés non obligatoires, soit en leur mettant des valeurs par défaut).
-- Si c'est un mapper `to`, **la surcharge qui instancie une nouvelle classe ne sera pas générée**. Vous pourrez en revanche toujours utiliser le mapper vers une classe préexistante (qui a forcément toutes ses propriétés obligatoires déjà renseignées, par définition).
+- Si c'est un mapper `to`, il n'y aura pas de problème parce que les propriétés obligatoires manquantes ont été ajoutées en paramètre de la surcharge qui instancie une nouvelle classe. Ces paramètres seront en revanche bien obligatoires, comme les propriétés cibles.
 
 ### Génération du DbContext
 
