@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.51.1
+
+- [`c1be8736`](https://github.com/klee-contrib/topmodel/commit/c1be8736e67001a6c6745b6cf568623d42a7c999) - [C#] Fix verbatim manquant
+
 ## 1.51.0
 
 - [`941b82f7`](https://github.com/klee-contrib/topmodel/commit/941b82f761dc4787c8627bc0f37eae7d6055702b) - [C#] Propriétés obligatoires manquantes en paramètres dans les mappers `to` vers une nouvelle instance.
