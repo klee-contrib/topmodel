@@ -320,7 +320,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
             var extraParams = string.Empty;
             if (missingRequiredProperties.Any())
             {
-                extraParams = $", {string.Join(", ", missingRequiredProperties.Select(mrp => $"{Config.GetType(mrp, Classes, nonNullable: rrnTarget)} {mrp.NameCamel}{(!rrnTarget ? " = null" : string.Empty)}"))}";
+                extraParams = $", {string.Join(", ", missingRequiredProperties.Select(mrp => $"{Config.GetType(mrp, Classes, nonNullable: rrnTarget)} {mrp.NameCamel.Verbatim()}{(!rrnTarget ? " = null" : string.Empty)}"))}";
             }
 
             if (mapper.Class.Abstract)
@@ -425,11 +425,11 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
             {
                 if (mapper.Class.Abstract)
                 {
-                    w.Write(3, $"{mrp.NameCamel}: {mrp.NameCamel}");
+                    w.Write(3, $"{mrp.NameCamel}: {mrp.NameCamel.Verbatim()}");
                 }
                 else
                 {
-                    w.Write(3, $"{mrp.NamePascal} = {mrp.NameCamel}");
+                    w.Write(3, $"{mrp.NamePascal} = {mrp.NameCamel.Verbatim()}");
                 }
 
                 if (missingRequiredProperties.IndexOf(mrp) < missingRequiredProperties.Count - 1)
