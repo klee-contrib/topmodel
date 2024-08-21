@@ -1,5 +1,22 @@
 # TopModel.Generator (`modgen`)
 
+## 1.51.0
+
+- [`941b82f7`](https://github.com/klee-contrib/topmodel/commit/941b82f761dc4787c8627bc0f37eae7d6055702b) - [C#] Propriétés obligatoires manquantes en paramètres dans les mappers `to` vers une nouvelle instance.
+
+  C'est un **tout petit breaking change** malgré le fait que les nouveaux paramètres sont facultatifs (sans `requiredNonNullable`, avec le mapper n'était pas généré avant), car il peut y avoir ambiguïté à l'appel avec l'autre mapper `to`. Le cas pourrait se produire avec un appel du style `dto.ToDb(new() { AutreId = autreId })`, que vous pouvez de toute façon probablement écrire `dto.ToDb(autreId)` maintenant 🙂.
+
+- [`45fd16ff`](https://github.com/klee-contrib/topmodel/commit/45fd16ff0d7704cff9c1fefe35f5ff8fc2ad50b9) - [C#] Mapping enum <> pas enum avec Parse/GetName.
+
+  Le cas était auparavant généré sans conversion et le code C# était donc en erreur.
+
+- [`f07aa133`](https://github.com/klee-contrib/topmodel/commit/f07aa1336810e4622554457b64e9268477b78c9e) - [C#] Fix/Gestion génération associations/compositions si classe pas générée.
+
+  S'il manquait la classe d'une composition ou d'une association (avec enum) d'une classe générée dans un générateur (à cause de son tag), on générait quand même la propriété avec un type inexistant (avec encore du code en erreur donc). Le code généré omet donc maintenant les compositions dans ce cas (de la même façon qu'il omettait déjà les mappers vers des classes inexistantes), et met le type non enum pour les associations. Normalement, le seul cas restant où il reste possible de générer du code invalide pour tag manquant sur des classes est dans les propriétés d'endpoints, mais en même temps ici il n'y a pas vraiment d'autre solution que d'inclure la classe manquante 😉.
+
+- [`78a70093`](https://github.com/klee-contrib/topmodel/commit/78a700938cda924907ac1b2186ccea53ec26ffef) - [JPA] Fix TrimSlashes manquant sur EnumsPath + warning à tort sur les variables par tag
+- [`dbfc6fb8`](https://github.com/klee-contrib/topmodel/commit/dbfc6fb82c183fe32face1e0c6378261bf25b3a7) - [JPA] Correction indentation spring client API
+
 ## 1.50.0
 
 - [`7371cac8`](https://github.com/klee-contrib/topmodel/commit/7371cac83fda315aa4fa76965c254b9033ca709b) - [C#] `persistentReferencesModelPath` => `referencesModelPath`

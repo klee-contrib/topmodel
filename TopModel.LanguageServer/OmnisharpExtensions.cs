@@ -91,9 +91,9 @@ public static class OmnisharpExtensions
         return loc == null
             ? null
             : new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                loc.Start.Line - 1,
-                loc.Start.Column - 1,
-                loc.End.Line - 1,
-                loc.End.Column - 1);
+                (int)loc.Start.Line - 1,
+                (int)loc.Start.Column - 1,
+                (int)loc.End.Line - 1,
+                (int)loc.End.Column - 1);
     }
 }

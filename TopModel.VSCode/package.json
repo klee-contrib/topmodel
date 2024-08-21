@@ -20,7 +20,7 @@
     "directory": "TopModel.VSCode",
     "type": "git"
   },
-  "version": "1.48.0",
+  "version": "1.51.0",
   "engines": {
     "vscode": "^1.84.1"
   },
