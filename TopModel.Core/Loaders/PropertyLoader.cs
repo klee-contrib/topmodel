@@ -142,7 +142,8 @@ public class PropertyLoader : ILoader<IProperty>
             case Scalar { Value: "composition" } s:
                 var cp = new CompositionProperty
                 {
-                    Location = new Reference(s)
+                    Location = new Reference(s),
+                    UseLegacyRoleName = _modelConfig.UseLegacyRoleNames
                 };
 
                 while (parser.Current is not MappingEnd)
@@ -169,6 +170,9 @@ public class PropertyLoader : ILoader<IProperty>
                             break;
                         case "required":
                             cp.Required = value!.Value == "true";
+                            break;
+                        case "trigram":
+                            cp.Trigram = new LocatedString(value);
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");

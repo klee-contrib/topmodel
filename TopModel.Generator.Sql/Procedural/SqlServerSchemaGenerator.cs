@@ -17,7 +17,7 @@ public class SqlServerSchemaGenerator : AbstractSchemaGenerator
 
     protected override bool SupportsClusteredKey => true;
 
-    protected override void WriteComments(SqlFileWriter writerCrebas, Class classe, string tableName, List<IFieldProperty> properties)
+    protected override void WriteComments(SqlFileWriter writerCrebas, Class classe, string tableName, List<IProperty> properties)
     {
         // Nothing to do
     }

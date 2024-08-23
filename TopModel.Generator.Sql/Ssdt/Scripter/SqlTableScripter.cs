@@ -105,12 +105,12 @@ public class SqlTableScripter : ISqlScripter<Class>
     /// <param name="writer">Flux d'écriture.</param>
     /// <param name="tableName">Nom de la table.</param>
     /// <param name="properties">Champs.</param>
-    private void GenerateIndexForeignKey(TextWriter writer, string tableName, IList<IFieldProperty> properties)
+    private void GenerateIndexForeignKey(TextWriter writer, string tableName, IList<IProperty> properties)
     {
         var fkList = properties.OfType<AssociationProperty>().ToList();
         foreach (var property in fkList)
         {
-            var propertyName = ((IFieldProperty)property).SqlName;
+            var propertyName = ((IProperty)property).SqlName;
             var indexName = "IDX_" + tableName + "_" + propertyName + "_FK";
 
             writer.WriteLine("/* Index on foreign key column for " + tableName + "." + propertyName + " */");
@@ -144,9 +144,12 @@ public class SqlTableScripter : ISqlScripter<Class>
     /// </summary>
     /// <param name="sb">Flux.</param>
     /// <param name="property">Propriété.</param>
-    private void WriteColumn(StringBuilder sb, IFieldProperty property, IEnumerable<Class> availableClasses)
+    private void WriteColumn(StringBuilder sb, IProperty property, IEnumerable<Class> availableClasses)
     {
-        var persistentType = _config.GetType(property, availableClasses);
+        var persistentType = property is IFieldProperty
+            ? _config.GetType(property, availableClasses)
+            : _config.TargetDBMS == TargetDBMS.Postgre ? "jsonb" : "json";
+
         if (_config.TargetDBMS == TargetDBMS.Sqlserver)
         {
             sb.Append('[');
@@ -194,7 +197,7 @@ public class SqlTableScripter : ISqlScripter<Class>
     {
         var tableName = property.Class.SqlName;
 
-        var propertyName = ((IFieldProperty)property).SqlName;
+        var propertyName = ((IProperty)property).SqlName;
         var referenceClass = property.Association;
 
         if (_config.TargetDBMS == TargetDBMS.Sqlserver)
@@ -264,14 +267,14 @@ public class SqlTableScripter : ISqlScripter<Class>
     /// <param name="writer">Flux.</param>
     /// <param name="table">Table.</param>
     /// <param name="availableClasses">Classes disponibles.</param>
-    private IList<IFieldProperty> WriteInsideInstructions(TextWriter writer, Class table, IEnumerable<Class> availableClasses)
+    private IList<IProperty> WriteInsideInstructions(TextWriter writer, Class table, IEnumerable<Class> availableClasses)
     {
         // Construction d'une liste de toutes les instructions.
         var definitions = new List<string>();
         var sb = new StringBuilder();
 
         // Colonnes
-        var properties = table.Properties.OfType<IFieldProperty>().Where(p => p is not AssociationProperty ap || ap.Type == AssociationType.ManyToOne || ap.Type == AssociationType.OneToOne).ToList();
+        var properties = table.Properties.Where(p => p is not AssociationProperty ap || ap.Type == AssociationType.ManyToOne || ap.Type == AssociationType.OneToOne).ToList();
 
         if (table.Extends != null)
         {
@@ -337,7 +340,7 @@ public class SqlTableScripter : ISqlScripter<Class>
     /// </summary>
     /// <param name="sb">Flux.</param>
     /// <param name="classe">Classe.</param>
-    private void WritePkLine(StringBuilder sb, Class classe, List<IFieldProperty> properties)
+    private void WritePkLine(StringBuilder sb, Class classe, List<IProperty> properties)
     {
         var pkCount = 0;
 

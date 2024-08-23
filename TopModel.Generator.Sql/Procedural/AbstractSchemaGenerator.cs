@@ -38,6 +38,11 @@ public abstract class AbstractSchemaGenerator
     }
 
     /// <summary>
+    /// Type json pour les compositions.
+    /// </summary>
+    protected virtual string JsonType => "json";
+
+    /// <summary>
     /// Utilise des guillemets autour des noms d'objets dans les scripts.
     /// </summary>
     protected virtual bool UseQuotes => false;
@@ -241,7 +246,7 @@ public abstract class AbstractSchemaGenerator
         return nameValueDict;
     }
 
-    protected abstract void WriteComments(SqlFileWriter writerCrebas, Class classe, string tableName, List<IFieldProperty> properties);
+    protected abstract void WriteComments(SqlFileWriter writerCrebas, Class classe, string tableName, List<IProperty> properties);
 
     /// <summary>
     /// Gère l'auto-incrémentation des clés primaires.
@@ -405,7 +410,7 @@ public abstract class AbstractSchemaGenerator
     /// </summary>
     /// <param name="writerCrebas">Writer.</param>
     /// <param name="classe">Classe.</param>
-    private void WritePrimaryKeyConstraint(SqlFileWriter writerCrebas, Class classe, List<IFieldProperty> properties)
+    private void WritePrimaryKeyConstraint(SqlFileWriter writerCrebas, Class classe, List<IProperty> properties)
     {
         if (!properties.Any(p => p.PrimaryKey))
         {
@@ -534,7 +539,7 @@ public abstract class AbstractSchemaGenerator
             WriteType(classe, writerType);
         }
 
-        var properties = classe.Properties.OfType<IFieldProperty>().Where(p => p is not AssociationProperty ap || ap.Type == AssociationType.ManyToOne || ap.Type == AssociationType.OneToOne).ToList();
+        var properties = classe.Properties.Where(p => p is not AssociationProperty ap || ap.Type == AssociationType.ManyToOne || ap.Type == AssociationType.OneToOne).ToList();
         var t = 0;
         var classes = availableClasses.Distinct();
         if (classe.Extends != null)
@@ -568,7 +573,7 @@ public abstract class AbstractSchemaGenerator
 
         foreach (var property in properties)
         {
-            var persistentType = _config.GetType(property);
+            var persistentType = property is IFieldProperty ? _config.GetType(property, availableClasses) : JsonType;
 
             if (persistentType.ToLower().Equals("varchar") && property.Domain.Length != null)
             {
