@@ -44,11 +44,6 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
         var usings = new List<string>();
 
-        if (hasBody)
-        {
-            usings.Add("System.Text");
-        }
-
         if (endpoints.Any(e => e.Returns != null && !e.Returns.Required))
         {
             usings.Add("System.Net");
@@ -56,6 +51,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
 
         if (hasJson)
         {
+            usings.Add("System.Net.Http.Json");
             usings.Add("System.Text.Json");
             usings.Add("System.Text.Json.Serialization");
         }
@@ -235,7 +231,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
                 }
             }
 
-            fw.WriteLine(2, $"using var res = await {(Config.UsePrimaryConstructors ? string.Empty : "_")}client.SendAsync(new HttpRequestMessage(HttpMethod.{endpoint.Method.ToPascalCase(true)}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = GetBody({bodyParam.NameCamel}) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)});");
+            fw.WriteLine(2, $"using var res = await {(Config.UsePrimaryConstructors ? string.Empty : "_")}client.SendAsync(new(HttpMethod.{endpoint.Method.ToPascalCase(true)}, $\"{endpoint.FullRoute}{(endpoint.GetQueryParams().Any() ? "?{query}" : string.Empty)}\"){(bodyParam != null ? $" {{ Content = JsonContent.Create({bodyParam.NameCamel}, options: _jsOptions) }}" : string.Empty)}{(returnType != null ? ", HttpCompletionOption.ResponseHeadersRead" : string.Empty)});");
             fw.WriteLine(2, $"await EnsureSuccess(res);");
 
             if (returnType != null)
@@ -264,7 +260,6 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
                 else
                 {
                     fw.WriteLine();
-                    fw.WriteLine(2, "using var content = await res.Content.ReadAsStreamAsync();");
                     fw.Write(2, $"return ");
 
                     if (Config.NullableEnable && endpoint.Returns.Required)
@@ -272,7 +267,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
                         fw.Write("(");
                     }
 
-                    fw.Write($"await JsonSerializer.DeserializeAsync<{returnType}>(content, _jsOptions)");
+                    fw.Write($"await res.Content.ReadFromJsonAsync<{returnType}>(_jsOptions)");
 
                     if (Config.NullableEnable && endpoint.Returns.Required)
                     {
@@ -294,19 +289,6 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
         fw.WriteSummary(1, "Gère les erreurs éventuelles retournées par l'API appelée.");
         fw.WriteParam("response", "Réponse HTTP");
         fw.WriteLine(1, "private partial Task EnsureSuccess(HttpResponseMessage response);");
-
-        if (hasBody)
-        {
-            fw.WriteLine();
-            fw.WriteSummary(1, "Récupère le body d'une requête pour l'objet donné.");
-            fw.WriteTypeParam(1, "T", "Type source.");
-            fw.WriteParam("input", "Entrée");
-            fw.WriteReturns(1, "Contenu.");
-            fw.WriteLine(1, "private StringContent GetBody<T>(T input)");
-            fw.WriteLine(1, "{");
-            fw.WriteLine(2, "return new StringContent(JsonSerializer.Serialize(input, _jsOptions), Encoding.UTF8, \"application/json\");");
-            fw.WriteLine(1, "}");
-        }
 
         fw.WriteLine("}");
     }
