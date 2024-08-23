@@ -3,7 +3,6 @@
 ////
 
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using CSharp.Common;
 using Kinetix.Modeling.Annotations;
 
@@ -17,7 +16,6 @@ public partial class UtilisateurRead
     /// <summary>
     /// Id de l'utilisateur.
     /// </summary>
-    [Column("uti_id")]
     [Required]
     [Domain(Domains.Id)]
     public int? Id { get; set; }
@@ -25,7 +23,6 @@ public partial class UtilisateurRead
     /// <summary>
     /// Nom de l'utilisateur.
     /// </summary>
-    [Column("uti_nom")]
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
@@ -34,7 +31,6 @@ public partial class UtilisateurRead
     /// <summary>
     /// Nom de l'utilisateur.
     /// </summary>
-    [Column("uti_prenom")]
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
@@ -43,7 +39,6 @@ public partial class UtilisateurRead
     /// <summary>
     /// Email de l'utilisateur.
     /// </summary>
-    [Column("uti_email")]
     [Required]
     [Domain(Domains.Email)]
     [StringLength(50)]
@@ -52,14 +47,12 @@ public partial class UtilisateurRead
     /// <summary>
     /// Age de l'utilisateur.
     /// </summary>
-    [Column("uti_date_naissance")]
     [Domain(Domains.Date)]
     public DateOnly? DateNaissance { get; set; }
 
     /// <summary>
     /// Adresse de l'utilisateur.
     /// </summary>
-    [Column("uti_adresse")]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
     public string Adresse { get; set; }
@@ -67,7 +60,6 @@ public partial class UtilisateurRead
     /// <summary>
     /// Si l'utilisateur est actif.
     /// </summary>
-    [Column("uti_actif")]
     [Required]
     [Domain(Domains.Booleen)]
     public bool? Actif { get; set; } = true;
@@ -75,7 +67,6 @@ public partial class UtilisateurRead
     /// <summary>
     /// Profil de l'utilisateur.
     /// </summary>
-    [Column("pro_id")]
     [Required]
     [Domain(Domains.Id)]
     public int? ProfilId { get; set; }
@@ -83,7 +74,6 @@ public partial class UtilisateurRead
     /// <summary>
     /// Type d'utilisateur.
     /// </summary>
-    [Column("tut_code")]
     [Required]
     [ReferencedType(typeof(TypeUtilisateur))]
     [Domain(Domains.Code)]
@@ -92,7 +82,6 @@ public partial class UtilisateurRead
     /// <summary>
     /// Date de création de l'utilisateur.
     /// </summary>
-    [Column("uti_date_creation")]
     [Required]
     [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; set; }
@@ -100,7 +89,6 @@ public partial class UtilisateurRead
     /// <summary>
     /// Date de modification de l'utilisateur.
     /// </summary>
-    [Column("uti_date_modification")]
     [Domain(Domains.DateHeure)]
     public DateTime? DateModification { get; set; }
 }

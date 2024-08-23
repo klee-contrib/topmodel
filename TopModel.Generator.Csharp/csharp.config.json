@@ -132,7 +132,7 @@
     },
     "useEFMigrations": {
       "type": "boolean",
-      "description": "Utilise les migrations EF pour créer/mettre à jour la base de données."
+      "description": "Utilise les migrations EF pour créer/mettre à jour la base de données. Par défaut : 'true'."
     },
     "dbContextPath": {
       "type": "string",
@@ -160,7 +160,7 @@
     },
     "useLowerCaseSqlNames": {
       "type": "boolean",
-      "description": "Utilise des noms de tables et de colonnes en lowercase."
+      "description": "Utilise des noms de tables et de colonnes en lowercase. Par défaut : 'true'."
     },
     "dbSchema": {
       "type": "string",
@@ -200,7 +200,7 @@
     },
     "noColumnOnAlias": {
       "type": "boolean",
-      "description": "Retire les attributs de colonnes sur les alias."
+      "description": "Ne génère pas les attributs de colonnes sur les alias dans les classes non persistées. Par défaut : 'true'."
     },
     "noPersistence": {
       "oneOf": [

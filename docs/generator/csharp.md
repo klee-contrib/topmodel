@@ -22,7 +22,7 @@ Pour pouvoir renseigner les éventuels `?` ou `.Value` nécessaires, le généra
 
 ### Génération des classes
 
-Le générateur C# fait peu de différences à la génération entre une classe persistée et non persistée. Seule l'annotation `[Table]` est ajoutée en plus sur une classe persistée, et les annotations `[Column]` sont conservées à moins de les désactiver explicitement sur les alias via le paramètre de config `noColumnOnAlias`.
+Le générateur C# fait peu de différences à la génération entre une classe persistée et non persistée. Seule l'annotation `[Table]` est ajoutée en plus sur une classe persistée, et les annotations `[Column]` sont conservées à moins de les désactiver explicitement sur les alias via le paramètre de config `noColumnOnAlias` (qui est `true` par défaut).
 
 Les propriétés d'associations sont toujours gérées comme en SQL, avec la clé primaire de la classe cible. Les associations `oneToMany` et `manyToMany` auront le type du domaine liste de la clé primaire, munie d'une annotation `[NotMapped]` pour indiquer qu'elle ne seront pas implicitement supportées.
 
@@ -229,12 +229,16 @@ _(en preview, documentation à venir)_
 - `useEFMigrations`
 
   Utilise les migrations EF pour créer/mettre à jour la base de données.
+  
+  _Valeur par défaut_: `true`
 
 - `useLowerCaseSqlNames`
 
   Utilise des noms de tables et de colonnes en lowercase.
 
   EF Core met des guillemets autour de tous les noms de table dans les requêtes qu'il génère (ainsi que dans les migrations), ce qui pose problème avec PostgreSQL qui est case-sensitive mais utilise les minuscules par défaut.
+
+  _Valeur par défaut_: `true`
 
 - `dbSchema`
 
@@ -277,7 +281,11 @@ _(en preview, documentation à venir)_
 
 - `noColumnOnAlias`
 
-  Retire les attributs de colonnes sur les alias (ça ne plaît pas à EF Core mais ça peut être utile pour d'autres ORMs pour mapper directement les colonnes)
+  Ne génère pas les attributs de colonnes sur les alias dans les classes non persistées. 
+  
+  EF Core n'en a pas besoin mais ça peut être utile pour d'autres ORMs afin de pouvoir mapper directement les colonnes depuis une requête SQL manuelle.
+
+  _Valeur par défaut_: `true`
 
 - `noPersistence`
 

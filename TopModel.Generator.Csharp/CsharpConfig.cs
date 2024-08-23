@@ -84,14 +84,14 @@ public class CsharpConfig : GeneratorConfigBase
     public string ReferenceAccessorsName { get; set; } = "{module}ReferenceAccessors";
 
     /// <summary>
-    /// Utilise les migrations EF pour créer/mettre à jour la base de données.
+    /// Utilise les migrations EF pour créer/mettre à jour la base de données. Par défaut : 'true'.
     /// </summary>
-    public bool UseEFMigrations { get; set; }
+    public bool UseEFMigrations { get; set; } = true;
 
     /// <summary>
-    /// Utilise des noms de tables et de colonnes en lowercase.
+    /// Utilise des noms de tables et de colonnes en lowercase. Par défaut : 'true'.
     /// </summary>
-    public bool UseLowerCaseSqlNames { get; set; }
+    public bool UseLowerCaseSqlNames { get; set; } = true;
 
     /// <summary>
     /// Le nom du schéma de base de données à cibler (si non renseigné, EF utilise 'dbo'/"public').
@@ -128,9 +128,9 @@ public class CsharpConfig : GeneratorConfigBase
     public string? RequiredNonNullableParam { get; set; }
 
     /// <summary>
-    /// Retire les attributs de colonnes sur les alias.
+    /// Ne génère pas les attributs de colonnes sur les alias dans les classes non persistées. Par défaut : 'true'.
     /// </summary>
-    public bool NoColumnOnAlias { get; set; }
+    public bool NoColumnOnAlias { get; set; } = true;
 
     /// <summary>
     /// Considère tous les classes comme étant non-Persistentes (= pas d'attribut SQL).
