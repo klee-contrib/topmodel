@@ -183,6 +183,19 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
             w.WriteLine();
         }
 
+        var hasJson = false;
+        foreach (var cp in classes.Distinct().SelectMany(c => c.Properties.Where(p => p is CompositionProperty)))
+        {
+            hasJson = true;
+            var sqlName = Config.UseLowerCaseSqlNames ? cp.SqlName.ToLower() : cp.SqlName;
+            w.WriteLine(2, $@"modelBuilder.Entity<{cp.Class}>().Owns{(cp.Domain == null ? "One" : "Many")}(p => p.{cp.NamePascal}, p => p.ToJson(""{sqlName}""));");
+        }
+
+        if (hasJson)
+        {
+            w.WriteLine();
+        }
+
         if (Config.UseEFMigrations)
         {
             var hasFk = false;

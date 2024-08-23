@@ -43,6 +43,9 @@ public class CompositionProperty : IProperty
     public bool Required { get; set; } = true;
 
 #nullable enable
+
+    public LocatedString? Trigram { get; set; }
+
     public IFieldProperty? CompositionPrimaryKey
     {
         get
@@ -56,6 +59,8 @@ public class CompositionProperty : IProperty
             return cpPks.Count() == 1 ? cpPks.Single() : null;
         }
     }
+
+    public bool UseLegacyRoleName { get; init; }
 
 #nullable disable
     public ClassReference Reference { get; set; }

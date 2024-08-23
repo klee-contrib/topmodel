@@ -52,5 +52,6 @@ public partial class ProfilRead
     /// <summary>
     /// Utilisateurs ayant ce profil.
     /// </summary>
+    [Required]
     public ICollection<UtilisateurItem> Utilisateurs { get; set; } = new List<UtilisateurItem>();
 }

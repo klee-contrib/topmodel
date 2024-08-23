@@ -368,57 +368,54 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
         if (!property.Class.Abstract)
         {
-            if (property is IFieldProperty fp)
+            var prop = (property as AliasProperty)?.PersistentProperty ?? property;
+            if (
+                (property.Class.IsPersistent || property is AliasProperty { PersistentProperty: not null, As: null } && !Config.NoColumnOnAlias)
+                && Classes.Contains(prop.Class)
+                && !Config.NoPersistence(tag)
+                && !sameColumnSet.Contains(property.SqlName))
             {
-                var prop = (fp as AliasProperty)?.PersistentProperty ?? fp;
-                if (
-                    (fp.Class.IsPersistent || fp is AliasProperty { PersistentProperty: not null, As: null } && !Config.NoColumnOnAlias)
-                    && Classes.Contains(prop.Class)
-                    && !Config.NoPersistence(tag)
-                    && !sameColumnSet.Contains(fp.SqlName))
+                var sqlName = Config.UseLowerCaseSqlNames ? property.SqlName.ToLower() : property.SqlName;
+                if (!Config.GetDomainAnnotations(property, tag).Any(a => a.TrimStart('[').StartsWith("Column")))
                 {
-                    var sqlName = Config.UseLowerCaseSqlNames ? fp.SqlName.ToLower() : fp.SqlName;
-                    if (!Config.GetDomainAnnotations(fp, tag).Any(a => a.TrimStart('[').StartsWith("Column")))
-                    {
-                        w.WriteAttribute(1, "Column", $@"""{sqlName}""");
-                    }
-                }
-
-                if (fp.Required && !Config.RequiredNonNullable(tag) && !fp.PrimaryKey || fp is AliasProperty { PrimaryKey: true } || fp.PrimaryKey && fp.Class.PrimaryKey.Count() > 1)
-                {
-                    w.WriteAttribute(1, "Required");
-                }
-
-                if (Config.Kinetix)
-                {
-                    var ap = (prop as AssociationProperty) ?? ((prop as AliasProperty)?.Property as AssociationProperty);
-                    if (ap != null && Classes.Contains(ap.Association) && ap.Association.IsPersistent && ap.Association.Reference)
-                    {
-                        w.WriteAttribute(1, "ReferencedType", $"typeof({ap.Association.NamePascal})");
-                    }
-                    else if (fp is AliasProperty alp2 && !alp2.AliasedPrimaryKey && alp2.Property.PrimaryKey && Classes.Contains(alp2.Property.Class) && alp2.Property.Class.Reference)
-                    {
-                        w.WriteAttribute(1, "ReferencedType", $"typeof({alp2.Property.Class.NamePascal})");
-                    }
-                }
-
-                if (Config.Kinetix)
-                {
-                    w.WriteAttribute(1, "Domain", $@"Domains.{fp.Domain.CSharpName}");
-                }
-
-                if (type?.TrimEnd('?') == "string" && fp.Domain.Length != null)
-                {
-                    w.WriteAttribute(1, "StringLength", $"{fp.Domain.Length}");
-                }
-
-                foreach (var annotation in Config.GetDomainAnnotations(property, tag))
-                {
-                    w.WriteAttribute(1, annotation);
+                    w.WriteAttribute(1, "Column", $@"""{sqlName}""");
                 }
             }
 
-            if (Config.IsPersistent(property.Class, tag) && (property is CompositionProperty or AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }))
+            if (property.Required && !Config.RequiredNonNullable(tag) && !property.PrimaryKey || property is AliasProperty { PrimaryKey: true } || property.PrimaryKey && property.Class.PrimaryKey.Count() > 1)
+            {
+                w.WriteAttribute(1, "Required");
+            }
+
+            if (Config.Kinetix)
+            {
+                var ap = (prop as AssociationProperty) ?? ((prop as AliasProperty)?.Property as AssociationProperty);
+                if (ap != null && Classes.Contains(ap.Association) && ap.Association.IsPersistent && ap.Association.Reference)
+                {
+                    w.WriteAttribute(1, "ReferencedType", $"typeof({ap.Association.NamePascal})");
+                }
+                else if (property is AliasProperty alp2 && !alp2.AliasedPrimaryKey && alp2.Property.PrimaryKey && Classes.Contains(alp2.Property.Class) && alp2.Property.Class.Reference)
+                {
+                    w.WriteAttribute(1, "ReferencedType", $"typeof({alp2.Property.Class.NamePascal})");
+                }
+            }
+
+            if (Config.Kinetix && property is not CompositionProperty)
+            {
+                w.WriteAttribute(1, "Domain", $@"Domains.{property.Domain.CSharpName}");
+            }
+
+            if (type?.TrimEnd('?') == "string" && property.Domain.Length != null)
+            {
+                w.WriteAttribute(1, "StringLength", $"{property.Domain.Length}");
+            }
+
+            foreach (var annotation in Config.GetDomainAnnotations(property, tag))
+            {
+                w.WriteAttribute(1, annotation);
+            }
+
+            if (Config.IsPersistent(property.Class, tag) && property is AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany })
             {
                 w.WriteAttribute(1, "NotMapped");
             }
@@ -478,8 +475,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 usings.Add("System.ComponentModel.DataAnnotations");
             }
 
-            if (item.Properties.Any(p => p is CompositionProperty) && Config.IsPersistent(item, tag) ||
-                item.Properties.OfType<IFieldProperty>().Any(fp =>
+            if (item.Properties.OfType<IFieldProperty>().Any(fp =>
                 {
                     var prop = (fp as AliasProperty)?.PersistentProperty ?? fp;
                     return (fp.Class.IsPersistent || fp is AliasProperty { PersistentProperty: not null, As: null } && !Config.NoColumnOnAlias)
