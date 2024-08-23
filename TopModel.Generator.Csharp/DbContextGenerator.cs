@@ -36,7 +36,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
         var contextNs = Config.GetDbContextNamespace(tag);
 
         foreach (var ns in classes
-            .Concat(GetAssociationProperties(classes).Select(ap => ap.AssociationProperty.Association))
+            .Concat(GetAssociationProperties(classes, tag).Select(ap => ap.AssociationProperty.Association))
             .Select(c => Config.GetNamespace(c, GetBestClassTag(c, tag)))
             .Distinct())
         {
@@ -55,7 +55,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
         }
     }
 
-    private IEnumerable<(IFieldProperty Property, AssociationProperty AssociationProperty)> GetAssociationProperties(IEnumerable<Class> classes)
+    private IEnumerable<(IFieldProperty Property, AssociationProperty AssociationProperty)> GetAssociationProperties(IEnumerable<Class> classes, string tag)
     {
         return classes
             .Distinct()
@@ -69,7 +69,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
                 _ => (null!, null!)
             })
             .Where(p => p.ap.Type == AssociationType.ManyToOne || p.ap.Type == AssociationType.OneToOne)
-            .Where(p => Classes.Contains(p.ap.Association));
+            .Where(p => Classes.Contains(p.ap.Association) && Config.IsPersistent(p.ap.Association, GetBestClassTag(p.ap.Association, tag)));
     }
 
     private void HandleCommentsFile(string fileName, string tag, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
@@ -186,7 +186,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
         if (Config.UseEFMigrations)
         {
             var hasFk = false;
-            foreach (var (prop, ap) in GetAssociationProperties(classes))
+            foreach (var (prop, ap) in GetAssociationProperties(classes, tag))
             {
                 hasFk = true;
                 w.WriteLine(2, $"modelBuilder.Entity<{prop.Class}>().HasOne<{ap.Association}>().With{(ap.Type == AssociationType.ManyToOne ? "Many" : "One")}().HasForeignKey{(ap.Type == AssociationType.ManyToOne ? string.Empty : $"<{prop.Class}>")}(p => p.{prop.NamePascal}).OnDelete(DeleteBehavior.Restrict);");
