@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-using System.Text;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Models.CSharp.Securite.Profil.Models;
@@ -34,11 +34,10 @@ public partial class ProfilClient
     public async Task<ProfilRead> AddProfil(ProfilWrite profil)
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"api/profils") { Content = GetBody(profil) }, HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new(HttpMethod.Post, $"api/profils") { Content = JsonContent.Create(profil, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
 
-        using var content = await res.Content.ReadAsStreamAsync();
-        return await JsonSerializer.DeserializeAsync<ProfilRead>(content, _jsOptions);
+        return await res.Content.ReadFromJsonAsync<ProfilRead>(_jsOptions);
     }
 
     /// <summary>
@@ -49,11 +48,10 @@ public partial class ProfilClient
     public async Task<ProfilRead> GetProfil(int proId)
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"api/profils/{proId}"), HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new(HttpMethod.Get, $"api/profils/{proId}"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
 
-        using var content = await res.Content.ReadAsStreamAsync();
-        return await JsonSerializer.DeserializeAsync<ProfilRead>(content, _jsOptions);
+        return await res.Content.ReadFromJsonAsync<ProfilRead>(_jsOptions);
     }
 
     /// <summary>
@@ -63,11 +61,10 @@ public partial class ProfilClient
     public async Task<ICollection<ProfilItem>> GetProfils()
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"api/profils"), HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new(HttpMethod.Get, $"api/profils"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
 
-        using var content = await res.Content.ReadAsStreamAsync();
-        return await JsonSerializer.DeserializeAsync<ICollection<ProfilItem>>(content, _jsOptions);
+        return await res.Content.ReadFromJsonAsync<ICollection<ProfilItem>>(_jsOptions);
     }
 
     /// <summary>
@@ -79,11 +76,10 @@ public partial class ProfilClient
     public async Task<ProfilRead> UpdateProfil(int proId, ProfilWrite profil)
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Put, $"api/profils/{proId}") { Content = GetBody(profil) }, HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new(HttpMethod.Put, $"api/profils/{proId}") { Content = JsonContent.Create(profil, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
 
-        using var content = await res.Content.ReadAsStreamAsync();
-        return await JsonSerializer.DeserializeAsync<ProfilRead>(content, _jsOptions);
+        return await res.Content.ReadFromJsonAsync<ProfilRead>(_jsOptions);
     }
 
     /// <summary>
@@ -96,15 +92,4 @@ public partial class ProfilClient
     /// </summary>
     /// <param name="response">Réponse HTTP.</param>
     private partial Task EnsureSuccess(HttpResponseMessage response);
-
-    /// <summary>
-    /// Récupère le body d'une requête pour l'objet donné.
-    /// </summary>
-    /// <typeparam name="T">Type source.</typeparam>
-    /// <param name="input">Entrée.</param>
-    /// <returns>Contenu.</returns>
-    private StringContent GetBody<T>(T input)
-    {
-        return new StringContent(JsonSerializer.Serialize(input, _jsOptions), Encoding.UTF8, "application/json");
-    }
 }

@@ -3,7 +3,7 @@
 ////
 
 using System.Globalization;
-using System.Text;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Models.CSharp.Securite.Utilisateur.Models;
@@ -35,11 +35,10 @@ public partial class UtilisateurClient
     public async Task<UtilisateurRead> AddUtilisateur(UtilisateurWrite utilisateur)
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Post, $"api/utilisateurs") { Content = GetBody(utilisateur) }, HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new(HttpMethod.Post, $"api/utilisateurs") { Content = JsonContent.Create(utilisateur, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
 
-        using var content = await res.Content.ReadAsStreamAsync();
-        return await JsonSerializer.DeserializeAsync<UtilisateurRead>(content, _jsOptions);
+        return await res.Content.ReadFromJsonAsync<UtilisateurRead>(_jsOptions);
     }
 
     /// <summary>
@@ -50,7 +49,7 @@ public partial class UtilisateurClient
     public async Task DeleteUtilisateur(int utiId)
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Delete, $"api/utilisateurs/{utiId}"));
+        using var res = await _client.SendAsync(new(HttpMethod.Delete, $"api/utilisateurs/{utiId}"));
         await EnsureSuccess(res);
     }
 
@@ -62,11 +61,10 @@ public partial class UtilisateurClient
     public async Task<UtilisateurRead> GetUtilisateur(int utiId)
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"api/utilisateurs/{utiId}"), HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new(HttpMethod.Get, $"api/utilisateurs/{utiId}"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
 
-        using var content = await res.Content.ReadAsStreamAsync();
-        return await JsonSerializer.DeserializeAsync<UtilisateurRead>(content, _jsOptions);
+        return await res.Content.ReadFromJsonAsync<UtilisateurRead>(_jsOptions);
     }
 
     /// <summary>
@@ -95,11 +93,10 @@ public partial class UtilisateurClient
             ["profilId"] = profilId?.ToString(CultureInfo.InvariantCulture),
             ["typeUtilisateurCode"] = typeUtilisateurCode?.ToString(CultureInfo.InvariantCulture),
         }.Where(kv => kv.Value != null)).ReadAsStringAsync();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Get, $"api/utilisateurs?{query}"), HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new(HttpMethod.Get, $"api/utilisateurs?{query}"), HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
 
-        using var content = await res.Content.ReadAsStreamAsync();
-        return await JsonSerializer.DeserializeAsync<ICollection<UtilisateurItem>>(content, _jsOptions);
+        return await res.Content.ReadFromJsonAsync<ICollection<UtilisateurItem>>(_jsOptions);
     }
 
     /// <summary>
@@ -111,11 +108,10 @@ public partial class UtilisateurClient
     public async Task<UtilisateurRead> UpdateUtilisateur(int utiId, UtilisateurWrite utilisateur)
     {
         await EnsureAuthentication();
-        using var res = await _client.SendAsync(new HttpRequestMessage(HttpMethod.Put, $"api/utilisateurs/{utiId}") { Content = GetBody(utilisateur) }, HttpCompletionOption.ResponseHeadersRead);
+        using var res = await _client.SendAsync(new(HttpMethod.Put, $"api/utilisateurs/{utiId}") { Content = JsonContent.Create(utilisateur, options: _jsOptions) }, HttpCompletionOption.ResponseHeadersRead);
         await EnsureSuccess(res);
 
-        using var content = await res.Content.ReadAsStreamAsync();
-        return await JsonSerializer.DeserializeAsync<UtilisateurRead>(content, _jsOptions);
+        return await res.Content.ReadFromJsonAsync<UtilisateurRead>(_jsOptions);
     }
 
     /// <summary>
@@ -128,15 +124,4 @@ public partial class UtilisateurClient
     /// </summary>
     /// <param name="response">Réponse HTTP.</param>
     private partial Task EnsureSuccess(HttpResponseMessage response);
-
-    /// <summary>
-    /// Récupère le body d'une requête pour l'objet donné.
-    /// </summary>
-    /// <typeparam name="T">Type source.</typeparam>
-    /// <param name="input">Entrée.</param>
-    /// <returns>Contenu.</returns>
-    private StringContent GetBody<T>(T input)
-    {
-        return new StringContent(JsonSerializer.Serialize(input, _jsOptions), Encoding.UTF8, "application/json");
-    }
 }

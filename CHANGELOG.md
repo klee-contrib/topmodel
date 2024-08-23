@@ -1,5 +1,21 @@
 # TopModel.Generator (`modgen`)
 
+## 1.51.2
+
+- [`06a32515`](https://github.com/klee-contrib/topmodel/commit/06a32515b689e371a222a01291df83eec7d389b5) - [C#] `noColumnOnAlias`, `useEFMigrations`, et `useLowerCaseSqlNames` à `true` par défaut
+
+  C'est un **breaking change sur la config**, mais ces trois options sont déjà activées explicitement (et nécessaires) sur la plupart des projets...
+
+- [`2d9847b0`](https://github.com/klee-contrib/topmodel/commit/2d9847b016082298acf43dad47cbeda80c06b236) - [C#] Retrait annotations `[NotMapped]` inutiles
+
+  On ne génère plus ces annotations sur les compositions dans les classes non persistées, ce qui n'a jamais eu beaucoup de sens. Elles avaient été initialement mises pour EF Core lorsque l'on voulait faire des requêtes SQL manuelles directement sur un DTO qui avait une composition (car il plantait car la propriété n'était pas renseignée dans le SQL), mais cette limitation a depuis été levée. **Le code généré est donc différent**, mais cela ne devrait avoir **aucun impact** dans votre application.
+
+- [`b37b78f6`](https://github.com/klee-contrib/topmodel/commit/b37b78f6c5c50db1e4c2382645852ee55b6bf7cc) - [C#] Simplification code généré pour client d'API
+
+  Cela aurait dû être fait avec la 1.49.2 mais le travail avait été fait à moitié... **Le code généré est différent**, mais cela ne devrait avoir **aucun impact** dans votre application.
+
+- [`364defa2`](https://github.com/klee-contrib/topmodel/commit/364defa27982638e03aa4d63e56c27e074e7258f) - [C#] Fix FK en trop sur DbContext
+
 ## 1.51.1
 
 - [`c1be8736`](https://github.com/klee-contrib/topmodel/commit/c1be8736e67001a6c6745b6cf568623d42a7c999) - [C#] Fix verbatim manquant
