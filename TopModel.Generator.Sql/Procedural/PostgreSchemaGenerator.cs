@@ -15,11 +15,13 @@ public class PostgreSchemaGenerator : AbstractSchemaGenerator
 
     protected override string BatchSeparator => ";";
 
+    protected override string JsonType => "jsonb";
+
     protected override bool SupportsClusteredKey => false;
 
     protected override bool UseQuotes => false;
 
-    protected override void WriteComments(SqlFileWriter writerComment, Class classe, string tableName, List<IFieldProperty> properties)
+    protected override void WriteComments(SqlFileWriter writerComment, Class classe, string tableName, List<IProperty> properties)
     {
         writerComment.WriteLine();
         writerComment.WriteLine("/**");
