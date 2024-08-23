@@ -418,7 +418,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 }
             }
 
-            if (property is CompositionProperty or AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany })
+            if (Config.IsPersistent(property.Class, tag) && (property is CompositionProperty or AssociationProperty { Type: AssociationType.OneToMany or AssociationType.ManyToMany }))
             {
                 w.WriteAttribute(1, "NotMapped");
             }
@@ -478,7 +478,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 usings.Add("System.ComponentModel.DataAnnotations");
             }
 
-            if (item.Properties.Any(p => p is CompositionProperty) ||
+            if (item.Properties.Any(p => p is CompositionProperty) && Config.IsPersistent(item, tag) ||
                 item.Properties.OfType<IFieldProperty>().Any(fp =>
                 {
                     var prop = (fp as AliasProperty)?.PersistentProperty ?? fp;
@@ -533,12 +533,14 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             }
         }
 
-        w.WriteUsings(usings
+        var finalUsings = usings
             .Where(u => !GetNamespace(item, tag).StartsWith(u))
             .Distinct()
-            .ToArray());
+            .ToArray();
 
-        if (usings.Any())
+        w.WriteUsings(finalUsings);
+
+        if (finalUsings.Length > 0)
         {
             w.WriteLine();
         }

@@ -2,7 +2,6 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-
 namespace Models.CSharp.Securite.Utilisateur.Models;
 
 /// <summary>
