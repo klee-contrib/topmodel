@@ -1,9 +1,9 @@
-import { autorun, makeAutoObservable } from "mobx";
 import { request } from "https";
-import { execute } from "./utils";
+import { autorun, makeAutoObservable } from "mobx";
 import { commands, ExtensionContext, Terminal, window, workspace } from "vscode";
-import { Status } from "./types";
 import { COMMANDS, COMMANDS_OPTIONS } from "./const";
+import { Status } from "./types";
+import { execute } from "./utils";
 const open = require("open");
 
 export class TmdTool {
@@ -31,7 +31,7 @@ export class TmdTool {
     }
 
     get statusText(): string {
-        let text: string = `${this.command}${this.currentVersion ? " v" + this.currentVersion : ""} `;
+        let text: string = `${this.command}${this.currentVersion ? " v" + this.currentVersion : ""}`;
         let icon: string | undefined;
         switch (this.status) {
             case "ERROR":

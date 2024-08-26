@@ -1,14 +1,33 @@
-﻿using System.Text.RegularExpressions;
-using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
+using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer;
 
 public class CompletionHandler : CompletionHandlerBase
 {
+    private static readonly List<char> Separators = new()
+        {
+            ':',
+            ',',
+            '{',
+            '}',
+            '[',
+            ']',
+            ' ',
+            '(',
+            ')',
+            '-',
+            '=',
+            '\'',
+            '#',
+            '\n',
+            '.'
+        };
+
     private readonly ModelConfig _config;
     private readonly ILanguageServerFacade _facade;
     private readonly ModelFileCache _fileCache;
@@ -29,8 +48,6 @@ public class CompletionHandler : CompletionHandlerBase
 
     public override Task<CompletionList> Handle(CompletionParams request, CancellationToken cancellationToken)
     {
-        var completionList = new CompletionList(isIncomplete: false);
-
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var currentLine = text.ElementAtOrDefault(request.Position.Line);
 
@@ -40,463 +57,64 @@ public class CompletionHandler : CompletionHandlerBase
         }
 
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
-        if (file != null)
+        if (file == null)
         {
-            var reqChar = Math.Min(request.Position.Character, currentLine.Length);
-
-            if (currentLine.Contains("domain: ")
-                || GetParentObject(request) == "asDomains" && currentLine[..reqChar].Contains(':')
-                || GetParentObject(request) == "domain" && GetRootObject(request) != "domain" && currentLine.TrimStart().StartsWith("name:")
-                || currentLine.TrimStart().StartsWith("-")
-                    && GetRootObject(request) == "converter"
-                    && (text.ElementAtOrDefault(request.Position.Line - 1)?.Trim() == "to:"
-                        || text.ElementAtOrDefault(request.Position.Line - 1)?.Trim() == "from:"
-                        || file.Converters.SelectMany(c => c.DomainsFromReferences).Union(file.Converters.SelectMany(c => c.DomainsToReferences)).Any(dr => dr.Start.Line == request.Position.Line)))
-            {
-                string searchText;
-                if (currentLine.TrimStart().StartsWith("-"))
-                {
-                    searchText = currentLine.TrimStart()[1..].Trim();
-                }
-                else
-                {
-                    searchText = currentLine.Split(":")[1].Trim();
-                }
-
-                return Task.FromResult(new CompletionList(
-                    _modelStore.Domains
-                        .Select(domain => domain.Key)
-                        .OrderBy(domain => domain)
-                        .Where(domain => domain.ToLower().ShouldMatch(searchText))
-                        .Select(domain => new CompletionItem
-                        {
-                            Kind = CompletionItemKind.EnumMember,
-                            Label = domain,
-                            TextEdit = !string.IsNullOrWhiteSpace(searchText)
-                                ? new TextEditOrInsertReplaceEdit(new TextEdit
-                                {
-                                    NewText = domain,
-                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                                        request.Position.Line,
-                                        currentLine.IndexOf(searchText),
-                                        request.Position.Line,
-                                        currentLine.IndexOf(searchText) + searchText.Length)
-                                })
-                                : null,
-                        })));
-            }
-
-            if (currentLine.Contains("association: ") || currentLine.Contains("composition: ") || currentLine.Contains("  class:") || currentLine.Contains("    - class:") || currentLine.Contains("extends: "))
-            {
-                var searchText = currentLine.Split(":")[1].Trim();
-                var availableClasses = new HashSet<Class>(_modelStore.GetAvailableClasses(file));
-
-                var useIndex = file.Uses.Any()
-                    ? file.Uses.Last().ToRange()!.Start.Line + 1
-                    : text.First().StartsWith("-")
-                        ? 1
-                        : 0;
-
-                return Task.FromResult(new CompletionList(
-                    _modelStore.Classes
-                        .Where(classe => classe.Name.ToLower().ShouldMatch(searchText))
-                        .Select(classe => new CompletionItem
-                        {
-                            Kind = CompletionItemKind.Class,
-                            Label = availableClasses.Contains(classe) ? classe.Name : $"{classe.Name} - ({classe.ModelFile.Name})",
-                            InsertText = classe.Name,
-                            SortText = availableClasses.Contains(classe) ? "0000" + classe.Name : classe.Name,
-                            TextEdit = !string.IsNullOrWhiteSpace(searchText)
-                                ? new TextEditOrInsertReplaceEdit(new TextEdit
-                                {
-                                    NewText = classe.Name,
-                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                                        request.Position.Line,
-                                        currentLine.IndexOf(searchText),
-                                        request.Position.Line,
-                                        currentLine.IndexOf(searchText) + searchText.Length)
-                                })
-                                : null,
-                            AdditionalTextEdits = !availableClasses.Contains(classe) ?
-                                new TextEditContainer(new TextEdit
-                                {
-                                    NewText = file.Uses.Any() ? $"  - {classe.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {classe.ModelFile.Name}{Environment.NewLine}",
-                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
-                                })
-                                : null
-                        })));
-            }
-
-            // Tags
-            if (GetParentObject(request) == "tags")
-            {
-                var searchText = currentLine.TrimStart()[1..].Trim();
-                return Task.FromResult(new CompletionList(
-                    _modelStore.Files.SelectMany(f => f.Tags)
-                    .Distinct()
-                    .Where(t => !file.Tags.Contains(t))
-                    .Where(tag => tag.ShouldMatch(searchText))
-                    .Select(tag => new CompletionItem
-                    {
-                        Kind = CompletionItemKind.Keyword,
-                        Label = tag,
-                        TextEdit = !string.IsNullOrWhiteSpace(searchText)
-                                ? new TextEditOrInsertReplaceEdit(new TextEdit
-                                {
-                                    NewText = tag,
-                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                                        request.Position.Line,
-                                        currentLine.IndexOf(searchText),
-                                        request.Position.Line,
-                                        currentLine.IndexOf(searchText) + searchText.Length)
-                                })
-                                : null
-                    })));
-            }
-
-            // Use
-            if (currentLine.TrimStart().StartsWith("-") && (
-                text.ElementAtOrDefault(request.Position.Line - 1) == "uses:"
-                || file.Uses.Select(u => u.Start.Line).Any(l => l == request.Position.Line)))
-            {
-                var searchText = currentLine.TrimStart()[1..].Trim();
-
-                return Task.FromResult(new CompletionList(
-                    _modelStore.Files.Select(f => f.Name)
-                        .Except(file.Uses.Select(u => u.ReferenceName))
-                        .Where(name => name != file.Name && name.ToLower().ShouldMatch(searchText))
-                        .Select(name => new CompletionItem
-                        {
-                            Kind = CompletionItemKind.File,
-                            Label = name,
-                            TextEdit = !string.IsNullOrWhiteSpace(searchText)
-                                ? new TextEditOrInsertReplaceEdit(new TextEdit
-                                {
-                                    NewText = name,
-                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                                        request.Position.Line,
-                                        currentLine.IndexOf(searchText),
-                                        request.Position.Line,
-                                        currentLine.IndexOf(searchText) + searchText.Length)
-                                })
-                                : null
-                        })));
-            }
-
-            // Décorateur
-            else if (currentLine.TrimStart().StartsWith("-") && (
-                text.ElementAtOrDefault(request.Position.Line - 1)?.TrimStart() == "decorators:"
-                || file.Classes.SelectMany(c => c.DecoratorReferences).Any(dr => dr.Start.Line == request.Position.Line)))
-            {
-                var searchText = currentLine.TrimStart()[1..].Trim();
-                var availableDecorators = new HashSet<Decorator>(_modelStore.GetAvailableDecorators(file));
-
-                var useIndex = file.Uses.Any()
-                    ? file.Uses.Last().ToRange()!.Start.Line + 1
-                    : text.First().StartsWith("-")
-                        ? 1
-                        : 0;
-
-                return Task.FromResult(new CompletionList(
-                    _modelStore.Decorators
-                        .OrderBy(decorator => decorator.Name)
-                        .Where(decorator => decorator.Name.ToLower().ShouldMatch(searchText))
-                        .Select(decorator => new CompletionItem
-                        {
-                            Kind = CompletionItemKind.Class,
-                            Label = availableDecorators.Contains(decorator) ? decorator.Name : $"{decorator.Name} - ({decorator.ModelFile.Name})",
-                            InsertText = decorator.Name,
-                            SortText = availableDecorators.Contains(decorator) ? "0000" + decorator.Name : decorator.Name,
-                            TextEdit = !string.IsNullOrWhiteSpace(searchText)
-                                ? new TextEditOrInsertReplaceEdit(new TextEdit
-                                {
-                                    NewText = decorator.Name,
-                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                                        request.Position.Line,
-                                        currentLine.IndexOf(searchText),
-                                        request.Position.Line,
-                                        currentLine.IndexOf(searchText) + searchText.Length)
-                                })
-                                : null,
-                            AdditionalTextEdits = !availableDecorators.Contains(decorator) ?
-                                new TextEditContainer(new TextEdit
-                                {
-                                    NewText = file.Uses.Any() ? $"  - {decorator.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {decorator.ModelFile.Name}{Environment.NewLine}",
-                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
-                                })
-                                : null
-                        })));
-            }
-
-            // DataFlow
-            else if (currentLine.TrimStart().StartsWith("-") && (
-                text.ElementAtOrDefault(request.Position.Line - 1)?.TrimStart() == "dependsOn:"
-                || file.DataFlows.SelectMany(c => c.DependsOnReference).Any(dr => dr.Start.Line == request.Position.Line)))
-            {
-                var searchText = currentLine.TrimStart()[1..].Trim();
-                var availableDataFlows = new HashSet<DataFlow>(_modelStore.GetAvailableDataFlows(file));
-
-                var useIndex = file.Uses.Any()
-                    ? file.Uses.Last().ToRange()!.Start.Line + 1
-                    : text.First().StartsWith("-")
-                        ? 1
-                        : 0;
-
-                return Task.FromResult(new CompletionList(
-                    _modelStore.DataFlows
-                        .OrderBy(dataFlow => dataFlow.Name)
-                        .Where(dataFlow => dataFlow.Name.ToLower().ShouldMatch(searchText))
-                        .Select(dataFlow => new CompletionItem
-                        {
-                            Kind = CompletionItemKind.Class,
-                            Label = availableDataFlows.Contains(dataFlow) ? dataFlow.Name : $"{dataFlow.Name} - ({dataFlow.ModelFile.Name})",
-                            InsertText = dataFlow.Name,
-                            SortText = availableDataFlows.Contains(dataFlow) ? "0000" + dataFlow.Name : dataFlow.Name,
-                            TextEdit = !string.IsNullOrWhiteSpace(searchText)
-                                ? new TextEditOrInsertReplaceEdit(new TextEdit
-                                {
-                                    NewText = dataFlow.Name,
-                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                                        request.Position.Line,
-                                        currentLine.IndexOf(searchText),
-                                        request.Position.Line,
-                                        currentLine.IndexOf(searchText) + searchText.Length)
-                                })
-                                : null,
-                            AdditionalTextEdits = !availableDataFlows.Contains(dataFlow) ?
-                                new TextEditContainer(new TextEdit
-                                {
-                                    NewText = file.Uses.Any() ? $"  - {dataFlow.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {dataFlow.ModelFile.Name}{Environment.NewLine}",
-                                    Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
-                                })
-                                : null
-                        })));
-            }
-            else
-            {
-                // Alias, propriété d'association ou propriété de flux de données
-                string? className = null;
-                var requestLine = request.Position.Line;
-                var classLine = currentLine;
-                var currentObject = new List<string> { currentLine };
-
-                while (requestLine > 0 && classLine != null && (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.Contains("activeProperty:") || classLine.Contains("joinProperties:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('[')))
-                {
-                    requestLine--;
-                    classLine = text.ElementAtOrDefault(requestLine);
-                }
-
-                requestLine = request.Position.Line;
-
-                if (classLine != null && (classLine.Contains("class:") || classLine.Contains("association:")))
-                {
-                    className = classLine.Split(':')[1].Trim();
-                }
-
-                if (className == null)
-                {
-                    classLine = text.ElementAtOrDefault(request.Position.Line);
-
-                    while (requestLine < text.Length - 1 && classLine != null && (classLine.Contains("property:") || classLine.Contains("include:") || classLine.Contains("exclude:") || classLine.Contains("activeProperty:") || classLine.Contains("joinProperties:") || classLine.TrimStart().StartsWith("-") && !classLine.Contains(':') && !classLine.Contains('[')))
-                    {
-                        requestLine++;
-                        classLine = text.ElementAtOrDefault(requestLine);
-                    }
-
-                    if (classLine != null && classLine.Contains("class:"))
-                    {
-                        className = classLine.Split(':')[1].Trim();
-                    }
-                }
-
-                if (className != null)
-                {
-                    var searchText = currentLine.Contains(':')
-                        ? currentLine.Split(':')[1].Trim()
-                        : currentLine.Trim().StartsWith('-')
-                        ? currentLine.Trim()[1..].Trim()
-                        : string.Empty;
-
-                    var referencedClasses = _modelStore.GetReferencedClasses(file);
-                    if (referencedClasses.TryGetValue(className, out var aliasedClass))
-                    {
-                        return Task.FromResult(new CompletionList(aliasedClass.Properties.OfType<IFieldProperty>()
-                            .Where(f => f.Name.ShouldMatch(searchText))
-                            .Select(f => new CompletionItem
-                            {
-                                Kind = CompletionItemKind.Property,
-                                Label = f.Name,
-                                TextEdit = !string.IsNullOrWhiteSpace(searchText)
-                                    ? new TextEditOrInsertReplaceEdit(new TextEdit
-                                    {
-                                        NewText = f.Name,
-                                        Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                                            request.Position.Line,
-                                            currentLine.IndexOf(searchText),
-                                            request.Position.Line,
-                                            currentLine.IndexOf(searchText) + searchText.Length)
-                                    })
-                                    : null
-                            })));
-                    }
-                }
-            }
-
-            // Propriétés de la classe courante
-            {
-                var requestLine = request.Position.Line;
-                var classLine = currentLine;
-                while (classLine != "class:")
-                {
-                    requestLine--;
-                    if (requestLine < 0)
-                    {
-                        break;
-                    }
-
-                    classLine = text.ElementAtOrDefault(requestLine);
-                }
-
-                if (classLine == "class:")
-                {
-                    var classe = file.Classes.FirstOrDefault(f => f.GetLocation()?.Start.Line == requestLine + 1);
-
-                    if (classe != null)
-                    {
-                        string? searchText = null;
-                        var includeCompositions = false;
-                        var includeExtends = false;
-
-                        if (currentLine.Contains("defaultProperty:") || currentLine.Contains("flagProperty:") || currentLine.Contains("orderProperty:") || currentLine.Contains("target:"))
-                        {
-                            searchText = currentLine.Split(":")[1].Trim();
-                            if (currentLine.Contains("target"))
-                            {
-                                includeCompositions = true;
-                            }
-                        }
-                        else
-                        {
-                            requestLine = request.Position.Line - 1;
-                            var ukValuesLine = text.ElementAtOrDefault(requestLine);
-                            while (ukValuesLine != null && !Regex.IsMatch(ukValuesLine, "^  \\w") && !ukValuesLine.Contains("mappings:"))
-                            {
-                                requestLine--;
-                                if (requestLine < 0)
-                                {
-                                    break;
-                                }
-
-                                ukValuesLine = text.ElementAtOrDefault(requestLine);
-                            }
-
-                            reqChar = Math.Min(request.Position.Character, currentLine.Length);
-                            var isUk = ukValuesLine != null && ukValuesLine.Contains("unique:");
-                            var isValues = ukValuesLine != null && ukValuesLine.Contains("values:");
-                            var isMappings = ukValuesLine != null && ukValuesLine.Contains("mappings:");
-                            includeExtends = isMappings || isValues;
-                            var pC = currentLine[..reqChar].LastOrDefault();
-                            var pCT = currentLine[..reqChar].TrimEnd().LastOrDefault();
-                            if (
-                                isUk
-                                    && currentLine.Contains('[') && currentLine.IndexOf('[') < reqChar
-                                    && (!currentLine.Contains(']') || currentLine.IndexOf(']') >= reqChar)
-                                    && (pC != ' ' || pCT == '[' || pCT == ',')
-                                || isValues
-                                    && currentLine.Contains('{') && currentLine.IndexOf('{') < reqChar
-                                    && (!currentLine.Contains('}') || currentLine.IndexOf('}') >= reqChar)
-                                    && (pC != ' ' || pCT == '{' || pCT == ',')
-                                || isMappings)
-                            {
-                                searchText = string.Join(
-                                    string.Empty,
-                                    currentLine[..reqChar].Reverse().TakeWhile(c => c != ',' && c != '[' && c != ' ' && c != '{').Reverse()
-                                        .Concat(currentLine[reqChar..].TakeWhile(c => c != ',' && c != ']' && c != ' ' && c != '}' && c != ':')));
-                            }
-
-                            if (isMappings && currentLine.Contains(':') && currentLine.IndexOf(':') < reqChar)
-                            {
-                                string? className = null;
-                                classLine = ukValuesLine;
-
-                                while (requestLine > 0 && classLine != null && !classLine.TrimStart().StartsWith('-') && !classLine.Contains("class:"))
-                                {
-                                    requestLine--;
-                                    classLine = text.ElementAtOrDefault(requestLine);
-                                }
-
-                                if (classLine != null && classLine.Contains("class:"))
-                                {
-                                    className = classLine.Split(':')[1].Trim();
-                                }
-
-                                if (className == null)
-                                {
-                                    requestLine = request.Position.Line;
-                                    classLine = text.ElementAtOrDefault(requestLine);
-
-                                    while (requestLine < text.Length - 1 && classLine != null && !classLine.Contains("class:"))
-                                    {
-                                        requestLine++;
-                                        classLine = text.ElementAtOrDefault(requestLine);
-                                    }
-
-                                    if (classLine != null && classLine.Contains("class:"))
-                                    {
-                                        className = classLine.Split(':')[1].Trim();
-                                    }
-                                }
-
-                                if (className != null)
-                                {
-                                    var referencedClasses = _modelStore.GetReferencedClasses(file);
-                                    if (referencedClasses.TryGetValue(className, out var aliasedClass))
-                                    {
-                                        classe = aliasedClass;
-                                    }
-                                    else
-                                    {
-                                        searchText = null;
-                                    }
-                                }
-                            }
-                            else if (isMappings)
-                            {
-                                includeCompositions = true;
-                            }
-                        }
-
-                        if (searchText != null)
-                        {
-                            var properties = includeExtends ? classe.ExtendedProperties : classe.Properties;
-                            return Task.FromResult(new CompletionList(
-                                (includeCompositions
-                                    ? properties
-                                    : properties.Where(p => p is IFieldProperty))
-                                .Where(f => f.Name.ShouldMatch(searchText))
-                                .Select(f => new CompletionItem
-                                {
-                                    Kind = CompletionItemKind.Property,
-                                    Label = f.Name,
-                                    TextEdit = !string.IsNullOrWhiteSpace(searchText)
-                                        ? new TextEditOrInsertReplaceEdit(new TextEdit
-                                        {
-                                            NewText = f.Name,
-                                            Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                                                request.Position.Line,
-                                                currentLine.IndexOf(searchText),
-                                                request.Position.Line,
-                                                currentLine.IndexOf(searchText) + searchText.Length)
-                                        })
-                                        : null
-                                })));
-                        }
-                    }
-                }
-            }
+            return Task.FromResult(new CompletionList());
         }
 
-        return Task.FromResult(new CompletionList());
+        var reqChar = Math.Min(request.Position.Character, currentLine.Length);
+        var rootObject = GetRootObject(request).Object;
+        var currentKey = GetCurrentKey(request).Key;
+        var parentKey = GetParentKey(request).Key;
+        var useIndex = GetUseIndex(file, text);
+
+        if (parentKey == "asDomains" && currentLine[..reqChar].Contains(':')
+            || currentKey == "domain"
+            || rootObject == "converter"
+                && (currentKey == "to" || currentKey == "from"))
+        {
+            return Task.FromResult(CompleteDomain(request));
+        }
+
+        List<string> classCompleteKeys = new()
+        {
+            "association",
+            "composition",
+            "class",
+            "extends"
+        };
+        if (classCompleteKeys.Contains(currentKey))
+        {
+            return Task.FromResult(CompleteClass(request, file, useIndex));
+        }
+
+        // Tags
+        if (currentKey == "tags")
+        {
+            return Task.FromResult(CompleteTag(request, file));
+        }
+
+        // Use
+        if (currentKey == "uses")
+        {
+            return Task.FromResult(CompleteFile(request, file));
+        }
+
+        // Décorateur
+        else if (currentKey == "decorators")
+        {
+            return Task.FromResult(CompleteDecorator(request, file, useIndex));
+        }
+
+        // DataFlow
+        else if (currentKey == "dependsOn:")
+        {
+            return Task.FromResult(CompleteDataFlow(request, file, useIndex));
+        }
+        else
+        {
+            return Task.FromResult(CompleteProperty(request, text, currentLine, file));
+        }
     }
 
     protected override CompletionRegistrationOptions CreateRegistrationOptions(CompletionCapability capability, ClientCapabilities clientCapabilities)
@@ -507,13 +125,344 @@ public class CompletionHandler : CompletionHandlerBase
         };
     }
 
-    private string GetParentObject(CompletionParams request)
+    private CompletionList CompleteClass(CompletionParams request, ModelFile file, int useIndex)
+    {
+        var searchText = GetSearchText(request);
+        var availableClasses = new HashSet<Class>(_modelStore.GetAvailableClasses(file));
+
+        return new CompletionList(
+            _modelStore.Classes
+                .Where(classe => classe.Name.ToLower().ShouldMatch(searchText))
+                .Select(classe => new CompletionItem
+                {
+                    Kind = CompletionItemKind.Class,
+                    Label = availableClasses.Contains(classe) ? classe.Name : $"{classe.Name} - ({classe.ModelFile.Name})",
+                    InsertText = classe.Name,
+                    SortText = availableClasses.Contains(classe) ? "0000" + classe.Name : classe.Name,
+                    TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
+                    {
+                        NewText = classe.Name,
+                        Range = GetCompleteRange(searchText, request)
+                    }),
+                    AdditionalTextEdits = !availableClasses.Contains(classe) ?
+                        new TextEditContainer(new TextEdit
+                        {
+                            NewText = file.Uses.Any() ? $"  - {classe.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {classe.ModelFile.Name}{Environment.NewLine}",
+                            Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
+                        })
+                        : null
+                }));
+    }
+
+    private CompletionList CompleteDataFlow(CompletionParams request, ModelFile file, int useIndex)
+    {
+        var searchText = GetSearchText(request);
+        var availableDataFlows = new HashSet<DataFlow>(_modelStore.GetAvailableDataFlows(file));
+
+        return new CompletionList(
+            _modelStore.DataFlows
+                .Where(dataFlow => dataFlow.Name.ToLower().ShouldMatch(searchText))
+                .OrderBy(dataFlow => dataFlow.Name)
+                .Select(dataFlow => new CompletionItem
+                {
+                    Kind = CompletionItemKind.Class,
+                    Label = availableDataFlows.Contains(dataFlow) ? dataFlow.Name : $"{dataFlow.Name} - ({dataFlow.ModelFile.Name})",
+                    InsertText = dataFlow.Name,
+                    SortText = availableDataFlows.Contains(dataFlow) ? "0000" + dataFlow.Name : dataFlow.Name,
+                    TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
+                    {
+                        NewText = dataFlow.Name,
+                        Range = GetCompleteRange(searchText, request)
+                    }),
+                    AdditionalTextEdits = !availableDataFlows.Contains(dataFlow) ?
+                        new TextEditContainer(new TextEdit
+                        {
+                            NewText = file.Uses.Any() ? $"  - {dataFlow.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {dataFlow.ModelFile.Name}{Environment.NewLine}",
+                            Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
+                        })
+                        : null
+                }));
+    }
+
+    private CompletionList CompleteDecorator(CompletionParams request, ModelFile file, int useIndex)
+    {
+        var searchText = GetSearchText(request);
+        var availableDecorators = new HashSet<Decorator>(_modelStore.GetAvailableDecorators(file));
+
+        return new CompletionList(
+            _modelStore.Decorators
+                .Where(decorator => decorator.Name.ToLower().ShouldMatch(searchText))
+                .OrderBy(decorator => decorator.Name)
+                .Select(decorator => new CompletionItem
+                {
+                    Kind = CompletionItemKind.Class,
+                    Label = availableDecorators.Contains(decorator) ? decorator.Name : $"{decorator.Name} - ({decorator.ModelFile.Name})",
+                    InsertText = decorator.Name,
+                    SortText = availableDecorators.Contains(decorator) ? "0000" + decorator.Name : decorator.Name,
+                    TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
+                    {
+                        NewText = decorator.Name,
+                        Range = GetCompleteRange(searchText, request)
+                    }),
+                    AdditionalTextEdits = !availableDecorators.Contains(decorator) ?
+                        new TextEditContainer(new TextEdit
+                        {
+                            NewText = file.Uses.Any() ? $"  - {decorator.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {decorator.ModelFile.Name}{Environment.NewLine}",
+                            Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
+                        })
+                        : null
+                }));
+    }
+
+    private CompletionList CompleteDomain(CompletionParams request)
+    {
+        var searchText = GetSearchText(request);
+        return new CompletionList(
+            _modelStore.Domains
+                .Select(domain => domain.Key)
+                .Where(domain => domain.ToLower().ShouldMatch(searchText))
+                .OrderBy(domain => domain)
+                .Select(domain => new CompletionItem
+                {
+                    Kind = CompletionItemKind.EnumMember,
+                    Label = domain,
+                    TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
+                    {
+                        NewText = domain,
+                        Range = GetCompleteRange(searchText, request)
+                    }),
+                }));
+    }
+
+    private CompletionList CompleteFile(CompletionParams request, ModelFile file)
+    {
+        var searchText = GetSearchText(request);
+        return new CompletionList(
+            _modelStore.Files.Select(f => f.Name)
+                .Except(file.Uses.Select(u => u.ReferenceName))
+                .Where(name => name != file.Name && name.ToLower().ShouldMatch(searchText))
+                .Select(name => new CompletionItem
+                {
+                    Kind = CompletionItemKind.File,
+                    Label = name,
+                    TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
+                    {
+                        NewText = name,
+                        Range = GetCompleteRange(searchText, request)
+                    })
+                }));
+    }
+
+    private CompletionList CompleteProperty(CompletionParams request, string[] text, string currentLine, ModelFile file)
+    {
+        // Alias, propriété d'association ou propriété de flux de données
+        string? className = null;
+        var requestLine = request.Position.Line;
+        var isListElement = currentLine.TrimStart().StartsWith('-');
+        var isInlineList = currentLine.Contains(':') && currentLine.Split(':')[1].TrimStart().StartsWith('[');
+        var objectRange = isListElement ? GetParentRange(text, requestLine) : GetObjectRange(text, requestLine);
+        var objectLines = text[objectRange.Start..objectRange.End];
+        var searchText = GetSearchText(request);
+        var cl = objectLines.ToList().Find(o => o.Contains("class: ") || o.Contains("association: "));
+        if (cl != null)
+        {
+            className = cl.Split(": ")[1].Trim();
+        }
+
+        var currentKey = GetCurrentKey(request);
+        var propertyListKeyWords = new List<string>()
+        {
+            "include", "exclude", "property", "joinProperties"
+        };
+        var propertyKeyWords = new List<string>()
+        {
+            "property", "activeProperty", "exclude"
+        };
+        if (className != null && ((isListElement || isInlineList) && propertyListKeyWords.Contains(currentKey.Key)
+                                || propertyKeyWords.Contains(currentKey.Key)))
+        {
+            var referencedClasses = _modelStore.GetReferencedClasses(file);
+            if (referencedClasses.TryGetValue(className, out var aliasedClass))
+            {
+                return CompleteProperty(request, aliasedClass, true, false);
+            }
+        }
+
+        var rootObject = GetRootObject(request);
+        if (rootObject.Object == "class")
+        {
+            var classRange = GetObjectRange(text, rootObject.Line);
+            var classLines = text[classRange.Start..classRange.End];
+            var nameLine = classLines.OrderBy(GetIndentLevel).First(l => l.Trim().StartsWith("name: "));
+            className = nameLine.Split(':')[1].Trim();
+            var classe = file.Classes.Find(c => c.Name == className);
+            if (classe != null)
+            {
+                var includeCompositions = false;
+                var includeExtends = false;
+
+                var selfClassropertyKeyWords = new List<string>()
+                {
+                    "defaultProperty", "flagProperty", "orderProperty", "target", "unique"
+                };
+
+                var isValues = false;
+                var isMappings = false;
+                if (selfClassropertyKeyWords.Contains(currentKey.Key))
+                {
+                    if (currentKey.Key == "target")
+                    {
+                        includeCompositions = true;
+                    }
+                }
+                else
+                {
+                    var parentKey = currentKey;
+                    while (parentKey.Key != "class" && parentKey.Key != "mappings" && parentKey.Key != "values")
+                    {
+                        parentKey = GetParentKey(text, parentKey.Line, parentKey.End);
+                    }
+
+                    isValues = parentKey.Key == "values";
+                    isMappings = parentKey.Key == "mappings";
+                    includeExtends = isMappings || isValues;
+
+                    if (isMappings)
+                    {
+                        var parentObjectRange = GetObjectRange(text, parentKey.Line);
+                        var parentObjectLines = text[parentObjectRange.Start..(parentObjectRange.End + 1)];
+                        var requestLineText = text[request.Position.Line];
+                        if (!requestLineText[..Math.Min(requestLineText.Length - 1, request.Position.Character + 1)].Contains(':'))
+                        {
+                            className = parentObjectLines.First(l => l.Contains("class: ")).TrimStart().Split(':')[1];
+                        }
+                    }
+                    else if (isValues)
+                    {
+                        var requestLineText = text[request.Position.Line];
+                        var textBefore = requestLineText[..request.Position.Character];
+                        var isKey = textBefore.LastIndexOf(':') == -1 || textBefore.LastIndexOf(':') < Math.Max(textBefore.LastIndexOf(','), textBefore.LastIndexOf('{'));
+                        if (!isKey)
+                        {
+                            return new CompletionList();
+                        }
+                    }
+                }
+
+                if (searchText != null && (isValues || isMappings || selfClassropertyKeyWords.Contains(currentKey.Key)))
+                {
+                    return CompleteProperty(request, classe, includeCompositions, includeExtends);
+                }
+            }
+        }
+
+        return new CompletionList();
+    }
+
+    private CompletionList CompleteProperty(CompletionParams request, Class classe, bool includeCompositions, bool includeExtends)
+    {
+        var properties = includeExtends ? classe.ExtendedProperties : classe.Properties;
+        var searchText = GetSearchText(request);
+        return new CompletionList(
+            (includeCompositions
+                ? properties
+                : properties.Where(p => p is IFieldProperty))
+            .Where(f => f.Name.ShouldMatch(searchText))
+            .Select(f => new CompletionItem
+            {
+                Kind = CompletionItemKind.Property,
+                Label = f.Name,
+                TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
+                {
+                    NewText = f.Name,
+                    Range = GetCompleteRange(searchText, request)
+                })
+            }));
+    }
+
+    private CompletionList CompleteTag(CompletionParams request, ModelFile file)
+    {
+        var searchText = GetSearchText(request);
+        return new CompletionList(
+            _modelStore.Files.SelectMany(f => f.Tags)
+            .Distinct()
+            .Where(t => !file.Tags.Contains(t))
+            .Where(tag => tag.ShouldMatch(searchText))
+            .Select(tag => new CompletionItem
+            {
+                Kind = CompletionItemKind.Keyword,
+                Label = tag,
+                TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
+                {
+                    NewText = tag,
+                    Range = GetCompleteRange(searchText, request)
+                })
+            }));
+    }
+
+    private OmniSharp.Extensions.LanguageServer.Protocol.Models.Range GetCompleteRange(string searchText, CompletionParams request)
     {
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
-        var currentLine = text.ElementAtOrDefault(request.Position.Line);
-        var requestLine = request.Position.Line;
+        var currentLine = text.ElementAtOrDefault(request.Position.Line)!;
+        int start, end = currentLine.Length;
+        if (currentLine.Length > 0 && Separators.Exists(currentLine.Contains))
+        {
+            var left = currentLine[..request.Position.Character];
+            start = left.LastIndexOfAny(Separators.ToArray()) + 1;
+            var right = currentLine[request.Position.Character..];
+            if (right.IndexOfAny(Separators.ToArray()) >= 0)
+            {
+                end = request.Position.Character + right.IndexOfAny(Separators.ToArray());
+            }
+        }
+        else
+        {
+            start = currentLine.IndexOf(searchText);
+        }
+
+        return new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
+                            request.Position.Line,
+                            start,
+                            request.Position.Line,
+                            Math.Max(end, start + 1));
+    }
+
+    private (string Key, int Line, int End, bool IsKey) GetCurrentKey(CompletionParams request)
+    {
+        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        return GetCurrentKey(text, request.Position.Line, request.Position.Character);
+    }
+
+    private (string Key, int Line, int End, bool IsKey) GetCurrentKey(string[] text, int line, int position)
+    {
+        var currentLine = text.ElementAtOrDefault(line);
         var rootLine = currentLine ?? string.Empty;
-        var currentIndent = rootLine.TakeWhile(c => c == ' ').Count();
+        if (rootLine.Trim().StartsWith('-'))
+        {
+            rootLine = rootLine.Replace('-', ' ');
+        }
+
+        var isInLineObject = rootLine[..position].Contains(": {");
+        if (isInLineObject)
+        {
+            var isKey = rootLine[..position].LastIndexOf(':') < Math.Max(rootLine[..position].LastIndexOf(','), rootLine[..position].LastIndexOf('{'));
+            if (isKey)
+            {
+                return (Key: rootLine.TrimStart().Split(':')[0], Line: line, End: rootLine.Split(':')[0].Length - 1, IsKey: true);
+            }
+            else
+            {
+                return (Key: rootLine[rootLine[..position].LastIndexOf(':')..position].Split(':')[0], Line: line, End: rootLine[..position].LastIndexOf(':') - 1, IsKey: false);
+            }
+        }
+
+        if (rootLine[..position].Contains(": "))
+        {
+            return (Key: rootLine.TrimStart().Split(':')[0], Line: line, End: rootLine.Split(':')[0].Length - 1, IsKey: false);
+        }
+
+        var requestLine = line;
+        var currentIndent = GetIndentLevel(text, line);
         var rootIndent = currentIndent;
 
         while (rootIndent >= currentIndent)
@@ -525,13 +474,104 @@ public class CompletionHandler : CompletionHandlerBase
             }
 
             rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
-            rootIndent = rootLine.TakeWhile(c => c == ' ').Count();
+            rootIndent = GetIndentLevel(text, requestLine);
+            if (rootLine.Trim().StartsWith('-'))
+            {
+                rootLine = rootLine.Replace('-', ' ');
+            }
         }
 
-        return rootLine.Split(":")[0].Trim();
+        return (Key: rootLine.Split(":")[0].Trim(), Line: requestLine, End: rootLine.Split(":")[0].Length - 1, IsKey: false);
     }
 
-    private string GetRootObject(CompletionParams request)
+    private int GetIndentLevel(string[] text, int lineNumber)
+    {
+        var line = text[lineNumber];
+        return GetIndentLevel(line);
+    }
+
+    private int GetIndentLevel(string line)
+    {
+        var isList = line.TrimStart().StartsWith('-');
+        if (isList)
+        {
+            line = line.Replace('-', ' ');
+        }
+
+        return line.Length - line.TrimStart().Length;
+    }
+
+    private (int Start, int End) GetObjectRange(string[] text, int lineNumber)
+    {
+        var start = lineNumber;
+        var end = lineNumber;
+        var indentLevelLine = GetIndentLevel(text, lineNumber);
+        while (start > 0 && !text[start].StartsWith("---") && GetIndentLevel(text, start) >= indentLevelLine)
+        {
+            start--;
+            if (GetIndentLevel(text, start) == indentLevelLine && text[start].TrimStart().StartsWith('-'))
+            {
+                start--;
+                break;
+            }
+        }
+
+        while (end < text.Length && !text[end].StartsWith("---") && GetIndentLevel(text, end) >= indentLevelLine && !(GetIndentLevel(text, end) == indentLevelLine && text[end].TrimStart().StartsWith('-')))
+        {
+            end++;
+        }
+
+        return (start + 1, end - 1);
+    }
+
+    private (string Key, int Line, int End, bool IsKey) GetParentKey(CompletionParams request)
+    {
+        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        return GetParentKey(text, request.Position.Line, request.Position.Character);
+    }
+
+    private (string Key, int Line, int End, bool IsKey) GetParentKey(string[] text, int line, int position)
+    {
+        var currentLine = text.ElementAtOrDefault(line);
+        var rootLine = currentLine ?? string.Empty;
+        var isInLineObject = position < rootLine.Length && rootLine[..position].Contains(": {");
+        if (isInLineObject)
+        {
+            return (Key: rootLine.TrimStart().Split(':')[0], Line: line, End: rootLine[..position].LastIndexOf(':') - 1, IsKey: false);
+        }
+
+        var requestLine = line;
+        var currentIndent = GetIndentLevel(text, line);
+        var rootIndent = currentIndent;
+
+        while (rootIndent >= currentIndent)
+        {
+            requestLine--;
+            if (requestLine < 0 || rootLine.StartsWith("---"))
+            {
+                break;
+            }
+
+            rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
+            rootIndent = GetIndentLevel(text, requestLine);
+        }
+
+        return (Key: rootLine.Split(":")[0].Trim(), Line: requestLine, End: rootLine.Split(":")[0].Length - 1, IsKey: false);
+    }
+
+    private (int Start, int End) GetParentRange(string[] text, int lineNumber)
+    {
+        var start = lineNumber;
+        var indentLevelLine = GetIndentLevel(text, lineNumber);
+        while (GetIndentLevel(text, start) >= indentLevelLine)
+        {
+            start--;
+        }
+
+        return GetObjectRange(text, start);
+    }
+
+    private (string Object, int Line) GetRootObject(CompletionParams request)
     {
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var currentLine = text.ElementAtOrDefault(request.Position.Line);
@@ -542,7 +582,8 @@ public class CompletionHandler : CompletionHandlerBase
             || rootLine.StartsWith("domain")
             || rootLine.StartsWith("decorator")
             || rootLine.StartsWith("converter")
-            || rootLine.StartsWith("endpoint")))
+            || rootLine.StartsWith("endpoint")
+            || rootLine.StartsWith("dataFlow")))
         {
             requestLine--;
             if (requestLine < 0 || rootLine.StartsWith("---"))
@@ -553,6 +594,34 @@ public class CompletionHandler : CompletionHandlerBase
             rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
         }
 
-        return rootLine.Split(":")[0];
+        return (Object: rootLine.Split(":")[0], Line: requestLine);
+    }
+
+    private string GetSearchText(CompletionParams request)
+    {
+        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var currentLine = text.ElementAtOrDefault(request.Position.Line)!;
+        int start = 0, end = request.Position.Character;
+        if (currentLine.Length > 0 && Separators.Exists(currentLine.Contains))
+        {
+            var left = currentLine[..request.Position.Character];
+            start = left.LastIndexOfAny(Separators.ToArray());
+        }
+
+        return currentLine[start..end].Trim();
+    }
+
+    private int GetUseIndex(ModelFile file, string[] text)
+    {
+        if (file.Uses.Any())
+        {
+            return file.Uses.Last().ToRange()!.Start.Line + 1;
+        }
+        else if (text.First().StartsWith('-'))
+        {
+            return 1;
+        }
+
+        return 0;
     }
 }
