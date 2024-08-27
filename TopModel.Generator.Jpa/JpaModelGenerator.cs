@@ -64,8 +64,6 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        CheckClass(classe);
-
         var packageName = Config.GetPackageName(classe, tag);
         using var fw = new JavaWriter(fileName, _logger, packageName, null);
 
@@ -145,17 +143,6 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
         }
 
         fw.WriteLine("}");
-    }
-
-    private void CheckClass(Class classe)
-    {
-        foreach (var property in classe.GetProperties(AvailableClasses).OfType<CompositionProperty>())
-        {
-            if (!classe.IsPersistent && property.Composition.IsPersistent)
-            {
-                throw new ModelException(property, $"La propriété ${property} persistée ne peut pas faire l'objet d'une composition dans la classe {classe.Name} car elle ne l'est pas");
-            }
-        }
     }
 
     private void WriteAdders(JavaWriter fw, Class classe, string tag)

@@ -457,7 +457,7 @@ public abstract class GeneratorConfigBase
 
         var hasMissingVar = false;
 
-        foreach (var property in GetType().GetProperties().Where(p => p.PropertyType == typeof(string)))
+        foreach (var property in GetType().GetProperties().Where(p => p.PropertyType == typeof(string) && p.CanWrite))
         {
             var value = (string?)property.GetValue(this);
             if (value != null)

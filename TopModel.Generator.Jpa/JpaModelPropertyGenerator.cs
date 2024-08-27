@@ -72,9 +72,18 @@ public class JpaModelPropertyGenerator
         fw.WriteLine(1, "}");
     }
 
-    public void WriteCompositionProperty(JavaWriter fw, CompositionProperty property)
+    public void WriteCompositionProperty(JavaWriter fw, CompositionProperty property, string tag)
     {
         fw.WriteDocEnd(1);
+        if (property.Class.IsPersistent)
+        {
+            var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+            fw.AddImport($"{javaOrJakarta}.persistence.Convert");
+            fw.AddImport(_config.CompositionConverterCanonicalName.Replace("{class}", property.Class.Name).Replace("{package}", _config.GetPackageName(property.Class, tag)));
+            fw.WriteLine(1, $"@Convert(converter = {_config.CompositionConverterSimpleName.Replace("{class}", property.Class.Name)}.class)");
+            WriteColumnAnnotation(fw, property, 1);
+        }
+
         fw.WriteLine(1, $"private {_config.GetType(property)} {property.NameCamel};");
     }
 
@@ -127,7 +136,7 @@ public class JpaModelPropertyGenerator
         switch (property)
         {
             case CompositionProperty cp:
-                WriteCompositionProperty(fw, cp);
+                WriteCompositionProperty(fw, cp, tag);
                 break;
             case AssociationProperty { Association.IsPersistent: true } ap:
                 WriteAssociationProperty(fw, classe, ap, tag);
@@ -328,31 +337,41 @@ public class JpaModelPropertyGenerator
         }
     }
 
-    private void WriteColumnAnnotation(JavaWriter fw, IFieldProperty property, int indentLevel)
+    private void WriteColumnAnnotation(JavaWriter fw, IProperty property, int indentLevel)
     {
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         string column;
         if (!_config.UseJdbc)
         {
             column = @$"@Column(name = ""{property.SqlName}"", nullable = {(!property.Required).ToString().ToFirstLower()}";
-            if (property.Domain.Length != null)
+            if (property.Domain != null)
             {
-                if (_config.GetImplementation(property.Domain)?.Type?.ToUpper() == "STRING")
+
+                if (property.Domain.Length != null)
                 {
-                    column += $", length = {property.Domain.Length}";
+                    if (_config.GetImplementation(property.Domain)?.Type?.ToUpper() == "STRING")
+                    {
+                        column += $", length = {property.Domain.Length}";
+                    }
+                    else
+                    {
+                        column += $", precision = {property.Domain.Length}";
+                    }
                 }
-                else
+
+                if (property.Domain.Scale != null)
                 {
-                    column += $", precision = {property.Domain.Length}";
+                    column += $", scale = {property.Domain.Scale}";
                 }
+
+                column += @$", columnDefinition = ""{property.Domain.Implementations["sql"].Type}""";
             }
 
-            if (property.Domain.Scale != null)
+            if (property is CompositionProperty && property.Domain is null)
             {
-                column += $", scale = {property.Domain.Scale}";
+                column += @$", columnDefinition = ""jsonb""";
             }
 
-            column += @$", columnDefinition = ""{property.Domain.Implementations["sql"].Type}""";
             column += ")";
             fw.AddImport($"{javaOrJakarta}.persistence.Column");
         }

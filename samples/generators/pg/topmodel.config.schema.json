@@ -607,7 +607,13 @@
           },
           "apiPath": {
             "type": "string",
-            "description": "Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut, 'javagen:{app}/api/{module}'."
+            "description": "Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut, 'javagen:{app}/api/{module}'.",
+            "default": "javagen:{app}/api/{module}"
+          },
+          "compositionConverterCanonicalName": {
+            "type": "string",
+            "description": "Nom complet de la classe permettant de convertir les compositions stockées en json dans la bdd. Supporte le template {package} et {class}",
+            "default": "{package}.{class}Converter"
           },
           "apiGeneration": {
             "oneOf": [

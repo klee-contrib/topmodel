@@ -65,6 +65,13 @@ public class JpaConfig : GeneratorConfigBase
     public string? DbSchema { get; set; }
 
     /// <summary>
+    /// Nom complet de la classe permettant de convertir les compositions stockées en json dans la bdd
+    /// </summary>
+    public string CompositionConverterCanonicalName { get; set; } = "{package}.{class}Converter";
+
+    public string CompositionConverterSimpleName => CompositionConverterCanonicalName.Split('.').Last();
+
+    /// <summary>
     /// Option pour générer des adders pour les associations oneToMany et ManyToMany
     /// </summary>
     public bool AssociationAdders { get; set; } = false;
