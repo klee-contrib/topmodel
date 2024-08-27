@@ -11,7 +11,7 @@ Le générateur JPA peut générer les fichiers suivants :
 - Un fichier de client d'API pour chaque fichier d'endpoints dans le modèle, si les APIs sont générées en mode client.
 - Des fichiers de resources contenant les traductions (`label`) du modèle
 
-Sur toutes les classes, interfaces générées, est ajoutée l'annotation `@Generated("TopModel : https://github.com/klee-contrib/topmodel")` pour permettre de retrouver la doc au cas où 😜.
+Sur toutes les classes, interfaces générées, est ajoutée l'annotation `@Generated("TopModel : https://github.com/klee-contrib/topmodel")` pour permettre de retrouver la doc au cas où 😜. Cette annotation peut être masquée avec le paramètre `generatedHint`.
 
 ## Génération des classes
 
@@ -57,6 +57,7 @@ Sur chacune des propriété :
 | `@JoinColumn`                  | Sur les associations `manyToOne` et `oneToOne`                                                              |
 | `@JoinTable`                   | Sur les associations `manyToMany`                                                                           |
 | `@OrderBy`                     | Sur les associations `manyToMany` et `oneToMany` pour lesquelles la classe cible défini une `orderProperty` |
+| `@Convert`                     | Sur les compositions. Le converter utilisé est paramétrable.                                                |
 
 Les paramétrages de ces annotations correspondent à ce qui est défini dans le modèle ou dans la configuration, à l'exception de :
 
@@ -525,10 +526,10 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   _Variables par tag_: **oui** (plusieurs DAOs pourraient être générés si un fichier à plusieurs tags)
 
-
 - `daosAbstract`
 
   Génération des DAO sous forme 'Abtract' à hériter pour l'utiliser dans le projet dans le projet avec :
+
   - le nom Abstract{classe.NamePascal}DAO
   - le fichier java sera mise à jour (écrasé) à chaque génération de code
   - l'annotation @NoRepositoryBean ajoutée (org.springframework.data.repository.NoRepositoryBean) permettant de ne pas considérer cette interface comme un DAO
@@ -538,14 +539,16 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 - `daosInterface`
 
   Permet de surcharger les interfaces par default des DAOS:
+
   - si UseJdbc, l'interface est org.springframework.data.repository.CrudRepository
   - si Reference, l'interface est org.springframework.data.repository.CrudRepository
   - si aucun des deux, l'interface est org.springframework.data.jpa.repository.JpaRepository
   - si daosInterface est précisée, les autres cas ne sont pas utilisés.
 
   Seul le nom de la classe est configurable, elle doit respecter le même pattern générique que JpaRespository et CrudRepository soit :
-  - La classe de l'entité en premier 
-  - La classe de l'identifiant en second 
+
+  - La classe de l'entité en premier
+  - La classe de l'identifiant en second
   - {DaosInterface}<{classe.NamePascal}, {pk}>
 
 - `dtosPath`
@@ -589,6 +592,14 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
   Mode de génération de l'API (`"client"` ou `"server"`).
 
   _Variables par tag_: **oui** (la valeur de la variable doit être `"client"` ou `"server"`. le client et le serveur pourraient être générés si un fichier à plusieurs tags)
+
+- `compositionConverterCanonicalName`
+  Nom complet de la classe permettant de convertir les compositions stockées en json dans la bdd.
+  _Templating_:
+
+  - `{package}` : remplacé par le package de la classe composée
+  - `{class}` : remplacé par le nom de la classe composée
+    _Variables par tag_: **non**
 
 - `resourcesPath`
 

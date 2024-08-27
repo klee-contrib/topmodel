@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.52.0
+
+- [`379`](https://github.com/klee-contrib/topmodel/pull/379) - Compositions sur classes persistées (en JSON)
+- [`371`](https://github.com/klee-contrib/topmodel/pull/371) - [LS] Refonte système d'auto-complétion
+
 ## 1.51.2
 
 - [`06a32515`](https://github.com/klee-contrib/topmodel/commit/06a32515b689e371a222a01291df83eec7d389b5) - [C#] `noColumnOnAlias`, `useEFMigrations`, et `useLowerCaseSqlNames` à `true` par défaut
