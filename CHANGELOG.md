@@ -2,8 +2,11 @@
 
 ## 1.52.0
 
-- [`379`](https://github.com/klee-contrib/topmodel/pull/379) - Compositions sur classes persistées (en JSON)
-- [`371`](https://github.com/klee-contrib/topmodel/pull/371) - [LS] Refonte système d'auto-complétion
+- [`#379`](https://github.com/klee-contrib/topmodel/pull/379) - [C# + SQL] Compositions sur classes persistées (en JSON)
+
+  **impact génération** : Les annotations `[Required]` sont désormais générées sur les compositions `required` (les compositions étant `required` par défaut, cela devrait donc concerner la grande majorité de vos compositions).
+
+- [`ea971f22`](https://github.com/klee-contrib/topmodel/commit/ea971f22044c8831e161322454b8fd511aa866b4) - [JPA] Implémentation des compositions sur les classes persistées
 
 ## 1.51.2
 
