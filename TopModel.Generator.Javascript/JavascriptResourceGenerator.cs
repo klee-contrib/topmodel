@@ -191,7 +191,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
             else
             {
                 fw.WriteLine(level, $@"""{submodule.Key.Split('.').First().ToCamelCase()}"": {{");
-                WriteSubModule(fw, lang, submodule.Select(m => m.Key).SelectMany(c => c.Properties).OfType<IFieldProperty>(), isComment, level + 1);
+                WriteSubModule(fw, lang, submodule.SelectMany(m => m), isComment, level + 1);
                 if (isLast)
                 {
                     fw.WriteLine(level, "}");
