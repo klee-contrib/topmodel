@@ -284,7 +284,7 @@ public class CompletionHandler : CompletionHandlerBase
             var referencedClasses = _modelStore.GetReferencedClasses(file);
             if (referencedClasses.TryGetValue(className, out var aliasedClass))
             {
-                return CompleteProperty(request, aliasedClass, true, false);
+                return CompleteProperty(request, aliasedClass, false);
             }
         }
 
@@ -298,7 +298,6 @@ public class CompletionHandler : CompletionHandlerBase
             var classe = file.Classes.Find(c => c.Name == className);
             if (classe != null)
             {
-                var includeCompositions = false;
                 var includeExtends = false;
 
                 var selfClassropertyKeyWords = new List<string>()
@@ -308,14 +307,7 @@ public class CompletionHandler : CompletionHandlerBase
 
                 var isValues = false;
                 var isMappings = false;
-                if (selfClassropertyKeyWords.Contains(currentKey.Key))
-                {
-                    if (currentKey.Key == "target")
-                    {
-                        includeCompositions = true;
-                    }
-                }
-                else
+                if (!selfClassropertyKeyWords.Contains(currentKey.Key))
                 {
                     var parentKey = currentKey;
                     while (parentKey.Key != "class" && parentKey.Key != "mappings" && parentKey.Key != "values")
@@ -351,7 +343,7 @@ public class CompletionHandler : CompletionHandlerBase
 
                 if (searchText != null && (isValues || isMappings || selfClassropertyKeyWords.Contains(currentKey.Key)))
                 {
-                    return CompleteProperty(request, classe, includeCompositions, includeExtends);
+                    return CompleteProperty(request, classe, includeExtends);
                 }
             }
         }
@@ -359,14 +351,11 @@ public class CompletionHandler : CompletionHandlerBase
         return new CompletionList();
     }
 
-    private CompletionList CompleteProperty(CompletionParams request, Class classe, bool includeCompositions, bool includeExtends)
+    private CompletionList CompleteProperty(CompletionParams request, Class classe, bool includeExtends)
     {
         var properties = includeExtends ? classe.ExtendedProperties : classe.Properties;
         var searchText = GetSearchText(request);
-        return new CompletionList(
-            (includeCompositions
-                ? properties
-                : properties.Where(p => p is IFieldProperty))
+        return new CompletionList(properties
             .Where(f => f.Name.ShouldMatch(searchText))
             .Select(f => new CompletionItem
             {

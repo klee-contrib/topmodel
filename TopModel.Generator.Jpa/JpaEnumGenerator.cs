@@ -28,7 +28,7 @@ public class JpaEnumGenerator : GeneratorBase<JpaConfig>
         return !classe.Abstract && Config.CanClassUseEnums(classe, Classes.ToList());
     }
 
-    protected string GetFileName(IFieldProperty property, Class classe, string tag)
+    protected string GetFileName(IProperty property, Class classe, string tag)
     {
         return Config.GetEnumFileName(property, classe, tag);
     }
@@ -55,9 +55,9 @@ public class JpaEnumGenerator : GeneratorBase<JpaConfig>
         }
     }
 
-    private IEnumerable<IFieldProperty> GetEnumProperties(Class classe)
+    private IEnumerable<IProperty> GetEnumProperties(Class classe)
     {
-        List<IFieldProperty> result = new();
+        List<IProperty> result = new();
         if (classe.EnumKey != null && Config.CanClassUseEnums(classe, prop: classe.EnumKey) && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, Classes, prop: classe.EnumKey)))
         {
             result.Add(classe.EnumKey);
@@ -68,7 +68,7 @@ public class JpaEnumGenerator : GeneratorBase<JpaConfig>
         return result;
     }
 
-    private void WriteEnum(IFieldProperty property, Class classe, string tag)
+    private void WriteEnum(IProperty property, Class classe, string tag)
     {
         var packageName = Config.GetEnumPackageName(classe, tag);
         using var fw = new JavaWriter(Config.GetEnumFileName(property, classe, tag), _logger, packageName, null);

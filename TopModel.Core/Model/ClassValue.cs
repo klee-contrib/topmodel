@@ -11,7 +11,7 @@ public class ClassValue
 
     public Reference Reference { get; set; }
 
-    public Dictionary<IFieldProperty, string> Value { get; } = new();
+    public Dictionary<IProperty, string> Value { get; } = new();
 
     public string ResourceKey => $"{Class.Namespace.ModuleCamel}.{Class.NameCamel}.values.{Name}";
 

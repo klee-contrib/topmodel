@@ -168,7 +168,7 @@ public class JpaConfig : GeneratorConfigBase
         nameof(DataFlowsPath)
     };
 
-    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IFieldProperty? prop = null)
+    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IProperty? prop = null)
     {
         return !UseJdbc && base.CanClassUseEnums(classe, availableClasses, prop)
             && !classe.Properties.OfType<AssociationProperty>().Any(a => a.Association != classe && !CanClassUseEnums(a.Association, availableClasses));
@@ -214,7 +214,7 @@ public class JpaConfig : GeneratorConfigBase
             $"{df.Name.ToPascalCase()}PartialFlow.java");
     }
 
-    public string GetEnumFileName(IFieldProperty property, Class classe, string tag)
+    public string GetEnumFileName(IProperty property, Class classe, string tag)
     {
         return Path.Combine(
             OutputDirectory,
@@ -222,7 +222,7 @@ public class JpaConfig : GeneratorConfigBase
             $"{GetEnumName(property, classe)}.java");
     }
 
-    public string GetEnumName(IFieldProperty property, Class classe)
+    public string GetEnumName(IProperty property, Class classe)
     {
         return $"{classe.NamePascal}{property.Name.ToPascalCase()}";
     }

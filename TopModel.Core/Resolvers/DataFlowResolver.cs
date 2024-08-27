@@ -22,7 +22,7 @@ internal class DataFlowResolver(ModelFile modelFile, IDictionary<string, DataFlo
 
             if (dataFlow.ActivePropertyReference != null)
             {
-                dataFlow.ActiveProperty = classe.ExtendedProperties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == dataFlow.ActivePropertyReference.ReferenceName);
+                dataFlow.ActiveProperty = classe.ExtendedProperties.FirstOrDefault(fp => fp.Name == dataFlow.ActivePropertyReference.ReferenceName);
                 if (dataFlow.ActiveProperty == null)
                 {
                     yield return new ModelError(dataFlow, $"La propriété '{dataFlow.ActivePropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", dataFlow.ActivePropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
@@ -55,7 +55,7 @@ internal class DataFlowResolver(ModelFile modelFile, IDictionary<string, DataFlo
 
                 foreach (var joinPropertyReference in source.JoinPropertyReferences)
                 {
-                    var joinProperty = sourceClass.ExtendedProperties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == joinPropertyReference.ReferenceName);
+                    var joinProperty = sourceClass.ExtendedProperties.FirstOrDefault(fp => fp.Name == joinPropertyReference.ReferenceName);
                     if (joinProperty == null)
                     {
                         yield return new ModelError(dataFlow, $"La propriété '{joinPropertyReference.ReferenceName}' n'existe pas sur la classe '{sourceClass}'.", joinPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };

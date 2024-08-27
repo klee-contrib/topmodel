@@ -129,8 +129,7 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                 (alp.Reference.IncludeReferences.Count > 0
                     ? alp.Reference.IncludeReferences.Select(p => aliasedClass.Properties.First(prop => prop.Name == p.ReferenceName))
                     : aliasedClass.Properties.Where(prop => !alp.Reference.ExcludeReferences.Select(p => p.ReferenceName).Contains(prop.Name)))
-                .Reverse()
-                .OfType<IFieldProperty>();
+                .Reverse();
 
             foreach (var property in propertiesToAlias)
             {
@@ -222,7 +221,7 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
 
             if (ap.PropertyReference != null)
             {
-                var referencedProperty = ap.Association.ExtendedProperties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == ap.PropertyReference!.ReferenceName);
+                var referencedProperty = ap.Association.ExtendedProperties.FirstOrDefault(p => p.Name == ap.PropertyReference!.ReferenceName);
                 if (referencedProperty == null)
                 {
                     yield return new ModelError(ap, $"La propriété '{{0}}' est introuvable sur la classe '{ap.Association}'.", ap.PropertyReference) { ModelErrorType = ModelErrorType.TMD1004 };

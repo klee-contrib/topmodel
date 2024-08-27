@@ -95,7 +95,7 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
 
                 foreach (var param in endpoint.Params.Where(p => !p.IsRouteParam() && !p.IsQueryParam()))
                 {
-                    if (param is IFieldProperty)
+                    if (param is not CompositionProperty)
                     {
                         fw.Write(3, $@"{param.GetParamName()}");
                     }
@@ -156,7 +156,7 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
             fw.WriteLine("}");
         }
 
-        if (endpoints.Any(endpoint => endpoint.Params.Any(p => p is IFieldProperty fp && Config.GetType(fp).Contains("File"))))
+        if (endpoints.Any(endpoint => endpoint.Params.Any(p => p is not CompositionProperty && Config.GetType(p).Contains("File"))))
         {
             fw.WriteLine(@"
 function fillFormData(data: any, formData: FormData, prefix = """") {

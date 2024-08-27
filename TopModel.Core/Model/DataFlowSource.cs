@@ -13,9 +13,9 @@ public class DataFlowSource
 
     public DataFlowSourceMode Mode { get; set; }
 
-    public List<IFieldProperty> JoinProperties { get; set; } = new();
+    public List<IProperty> JoinProperties { get; set; } = [];
 
-    public List<Reference> JoinPropertyReferences { get; set; } = new();
+    public List<Reference> JoinPropertyReferences { get; set; } = [];
 
     public bool InnerJoin { get; set; }
 

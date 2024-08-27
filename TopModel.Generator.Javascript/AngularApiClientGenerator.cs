@@ -166,7 +166,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
 
             foreach (var param in endpoint.Params.Where(p => !p.IsRouteParam() && !p.IsQueryParam()))
             {
-                if (param is IFieldProperty)
+                if (param is not CompositionProperty)
                 {
                     fw.Write($@"                {param.GetParamName()}");
                 }

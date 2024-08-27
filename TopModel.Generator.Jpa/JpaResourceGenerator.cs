@@ -23,7 +23,7 @@ public class JpaResourceGenerator : TranslationGeneratorBase<JpaConfig>
 
     public override string Name => "JpaResourceGen";
 
-    protected override string? GetResourceFilePath(IFieldProperty property, string tag, string lang)
+    protected override string? GetResourceFilePath(IProperty property, string tag, string lang)
     {
         var p = property.ResourceProperty;
         if (p.Label != null || (p.Class?.Values.Any() ?? false) && p.Class?.DefaultProperty != null)
@@ -37,7 +37,7 @@ public class JpaResourceGenerator : TranslationGeneratorBase<JpaConfig>
         return null;
     }
 
-    protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties)
+    protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IProperty> properties)
     {
         var encoding = Encoding.Latin1;
         if (Config.ResourcesEncoding is not null)
@@ -63,7 +63,7 @@ public class JpaResourceGenerator : TranslationGeneratorBase<JpaConfig>
     /// </summary>
     /// <param name="fw">Flux de sortie.</param>
     /// <param name="container">Classe.</param>
-    private void WriteClasse(FileWriter fw, IGrouping<IPropertyContainer, IFieldProperty> container, string lang)
+    private void WriteClasse(FileWriter fw, IGrouping<IPropertyContainer, IProperty> container, string lang)
     {
         if (Config.TranslateProperties == true)
         {

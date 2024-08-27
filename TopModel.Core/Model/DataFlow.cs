@@ -20,17 +20,17 @@ public class DataFlow
     public DataFlowType Type { get; set; }
 #nullable enable
 
-    public List<DataFlow> DependsOn { get; set; } = new();
+    public List<DataFlow> DependsOn { get; set; } = [];
 
-    public List<DataFlowReference> DependsOnReference { get; set; } = new();
+    public List<DataFlowReference> DependsOnReference { get; set; } = [];
 
-    public List<FlowHook> Hooks { get; set; } = new();
+    public List<FlowHook> Hooks { get; set; } = [];
 
-    public IFieldProperty? ActiveProperty { get; set; }
+    public IProperty? ActiveProperty { get; set; }
 
     public Reference? ActivePropertyReference { get; set; }
 
-    public List<DataFlowSource> Sources { get; set; } = new();
+    public List<DataFlowSource> Sources { get; set; } = [];
 
     public override string ToString()
     {

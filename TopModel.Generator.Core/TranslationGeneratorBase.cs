@@ -20,7 +20,7 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
         {
             var properties = Classes
                 .Where(c => c.Tags.Contains(tag))
-                .SelectMany(c => c.Properties.OfType<IFieldProperty>());
+                .SelectMany(c => c.Properties);
 
             return properties
                 .SelectMany(p => GetResourceFileNames(p, tag))
@@ -30,7 +30,7 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
         })
         .Distinct();
 
-    protected virtual string? GetCommentResourceFilePath(IFieldProperty property, string tag, string lang)
+    protected virtual string? GetCommentResourceFilePath(IProperty property, string tag, string lang)
     {
         return null;
     }
@@ -40,9 +40,9 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
         return null;
     }
 
-    protected abstract string? GetResourceFilePath(IFieldProperty property, string tag, string lang);
+    protected abstract string? GetResourceFilePath(IProperty property, string tag, string lang);
 
-    protected virtual void HandleCommentResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties)
+    protected virtual void HandleCommentResourceFile(string filePath, string lang, IEnumerable<IProperty> properties)
     {
     }
 
@@ -53,7 +53,7 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
         Parallel.ForEach(
             Classes
                 .SelectMany(classe => Config.Tags.Intersect(classe.Tags)
-                    .SelectMany(tag => classe.Properties.OfType<IFieldProperty>()
+                    .SelectMany(tag => classe.Properties.OfType<IProperty>()
                         .SelectMany(p => GetResourceFileNames(p, tag)
                             .Select(f => (key: (MainFilePath: GetMainResourceFilePath(tag, f.Lang), ModuleFilePath: f.FilePath, f.Lang), p)))))
                     .GroupBy(f => f.key),
@@ -71,7 +71,7 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
         Parallel.ForEach(
             Classes
                 .SelectMany(classe => Config.Tags.Intersect(classe.Tags)
-                    .SelectMany(tag => classe.Properties.OfType<IFieldProperty>()
+                    .SelectMany(tag => classe.Properties.OfType<IProperty>()
                         .SelectMany(p => GetCommentResourceFileNames(p, tag)
                             .Select(f => (key: (MainFilePath: GetMainResourceFilePath(tag, f.Lang), ModuleFilePath: f.FilePath, f.Lang), p)))))
                     .GroupBy(f => f.key),
@@ -97,9 +97,9 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
     {
     }
 
-    protected abstract void HandleResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties);
+    protected abstract void HandleResourceFile(string filePath, string lang, IEnumerable<IProperty> properties);
 
-    private IEnumerable<(string Lang, string FilePath)> GetCommentResourceFileNames(IFieldProperty property, string tag)
+    private IEnumerable<(string Lang, string FilePath)> GetCommentResourceFileNames(IProperty property, string tag)
     {
         if (Config.TranslateProperties != true)
         {
@@ -118,7 +118,7 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
             .Where(g => g.file != null);
     }
 
-    private IEnumerable<(string Lang, string FilePath)> GetResourceFileNames(IFieldProperty property, string tag)
+    private IEnumerable<(string Lang, string FilePath)> GetResourceFileNames(IProperty property, string tag)
     {
         if (Config.TranslateProperties != true && (Config.TranslateReferences != true || !(property.Class?.Values.Any() ?? false)))
         {

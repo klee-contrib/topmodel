@@ -34,12 +34,12 @@ public class SqlConfig : GeneratorConfigBase
 
     protected override bool UseNamedEnums => false;
 
-    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IFieldProperty? prop = null)
+    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IProperty? prop = null)
     {
         return false;
     }
 
-    public override bool ShouldQuoteValue(IFieldProperty prop)
+    public override bool ShouldQuoteValue(IProperty prop)
     {
         var type = GetType(prop);
         return (type ?? string.Empty).Contains("varchar")

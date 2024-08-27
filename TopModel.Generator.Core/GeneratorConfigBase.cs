@@ -93,7 +93,7 @@ public abstract class GeneratorConfigBase
     /// <param name="availableClasses">Classes disponibles.</param>
     /// <param name="prop">Propriété à vérifier (si c'est pas la clé primaire).</param>
     /// <returns>Oui/non.</returns>
-    public virtual bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IFieldProperty? prop = null)
+    public virtual bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IProperty? prop = null)
     {
         if (availableClasses != null && !availableClasses.Contains(classe))
         {
@@ -102,7 +102,7 @@ public abstract class GeneratorConfigBase
 
         prop ??= classe.EnumKey;
 
-        bool CheckProperty(IFieldProperty fp)
+        bool CheckProperty(IProperty fp)
         {
             return (fp == classe.EnumKey || classe.UniqueKeys.Where(uk => uk.Count == 1).Select(uk => uk.Single()).Contains(prop))
                 && classe.Values.All(r => r.Value.ContainsKey(fp) && IsEnumNameValid(r.Value[fp].ToString()));
@@ -181,20 +181,11 @@ public abstract class GeneratorConfigBase
 
     public IEnumerable<string> GetDomainAnnotations(IProperty property, string tag)
     {
-        if (property is IFieldProperty fp)
+        if (property.Domain is not null)
         {
-            foreach (var annotation in GetImplementation(fp.Domain)!.Annotations
-                .Where(a => FilterAnnotations(a, fp, tag))
-                .Select(a => a.Text.ParseTemplate(fp, this, tag)))
-            {
-                yield return annotation;
-            }
-        }
-        else if (property is CompositionProperty { Domain: not null } cp)
-        {
-            foreach (var annotation in GetImplementation(cp.Domain)!.Annotations
-                .Where(a => FilterAnnotations(a, cp, tag))
-                .Select(a => a.Text.ParseTemplate(cp, this, tag)))
+            foreach (var annotation in GetImplementation(property.Domain)!.Annotations
+               .Where(a => FilterAnnotations(a, property, tag))
+               .Select(a => a.Text.ParseTemplate(property, this, tag)))
             {
                 yield return annotation;
             }
@@ -228,7 +219,7 @@ public abstract class GeneratorConfigBase
         }
     }
 
-    public string GetEnumType(IFieldProperty fp, bool isPrimaryKeyDef = false)
+    public string GetEnumType(IProperty fp, bool isPrimaryKeyDef = false)
     {
         var op = fp switch
         {
@@ -310,7 +301,7 @@ public abstract class GeneratorConfigBase
                 : ap.Association.NamePascal;
         }
 
-        string HandleEnum(IFieldProperty op)
+        string HandleEnum(IProperty op)
         {
             var type = op is AssociationProperty ap
                 ? GetEnum(ap.Association.Name, ap.Property.Name)
@@ -337,9 +328,11 @@ public abstract class GeneratorConfigBase
             RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, availableClasses, rp) => HandleEnum(rp),
             AliasProperty { Property: RegularProperty { Class: not null } rp } when CanClassUseEnums(rp.Class, availableClasses, rp) => HandleEnum(rp),
             AliasProperty { As: not null } alp when GetImplementation(alp.Domain)?.GenericType != null => GetImplementation(alp.Domain)!.GenericType!.Replace("{T}", GetType(alp.OriginalProperty!, availableClasses, useClassForAssociation)),
-            IFieldProperty => (GetImplementation(property.Domain)?.Type ?? string.Empty).ParseTemplate(property, this),
             CompositionProperty { Domain: not null } => (GetImplementation(property.Domain)?.GenericType ?? "{T}").Replace("{T}", "{composition.name}").ParseTemplate(property, this),
+            AliasProperty { Property: CompositionProperty { Domain: not null } } => (GetImplementation(property.Domain)?.GenericType ?? "{T}").Replace("{T}", "{composition.name}").ParseTemplate(property, this),
             CompositionProperty cp => cp.Composition.NamePascal,
+            AliasProperty { Property: CompositionProperty cp } => cp.Composition.NamePascal,
+            IProperty => (GetImplementation(property.Domain)?.Type ?? string.Empty).ParseTemplate(property, this),
             _ => string.Empty
         };
     }
@@ -353,25 +346,23 @@ public abstract class GeneratorConfigBase
     /// <returns>La valeur.</returns>
     public virtual string GetValue(IProperty property, IEnumerable<Class> availableClasses, string? value = null)
     {
-        var fp = property as IFieldProperty;
-
-        if (!IgnoreDefaultValues)
+        if (!IgnoreDefaultValues && property is not CompositionProperty and not AliasProperty { Property: CompositionProperty })
         {
-            value ??= fp?.DefaultValue;
+            value ??= property?.DefaultValue;
         }
 
-        if (fp == null || value == null || value == "null" || value == "undefined")
+        if (property == null || value == null || value == "null" || value == "undefined")
         {
             return NullValue;
         }
 
-        var template = GetImplementation(fp.Domain)?.GetValueTemplate(value);
+        var template = GetImplementation(property.Domain)?.GetValueTemplate(value);
         if (template != null)
         {
-            return template.Value.Replace("{value}", value).ParseTemplate(fp, this);
+            return template.Value.Replace("{value}", value).ParseTemplate(property, this);
         }
 
-        var prop = fp is AliasProperty alp ? alp.Property : fp;
+        var prop = property is AliasProperty alp ? alp.Property : property;
         var ap = prop as AssociationProperty;
 
         var classe = ap != null ? ap.Association : prop.Class;
@@ -393,7 +384,7 @@ public abstract class GeneratorConfigBase
             }
         }
 
-        if (ShouldQuoteValue(fp))
+        if (ShouldQuoteValue(property))
         {
             return QuoteValue(value);
         }
@@ -401,9 +392,9 @@ public abstract class GeneratorConfigBase
         return value;
     }
 
-    public IEnumerable<string> GetValueImports(IFieldProperty property, string? value = null)
+    public IEnumerable<string> GetValueImports(IProperty property, string? value = null)
     {
-        if (!IgnoreDefaultValues)
+        if (!IgnoreDefaultValues && property is not CompositionProperty and not AliasProperty { Property: CompositionProperty })
         {
             value ??= property.DefaultValue;
         }
@@ -576,7 +567,7 @@ public abstract class GeneratorConfigBase
     /// </summary>
     /// <param name="property">Propriété.</param>
     /// <returns>Oui/non.</returns>
-    public virtual bool ShouldQuoteValue(IFieldProperty property)
+    public virtual bool ShouldQuoteValue(IProperty property)
     {
         return GetImplementation(property.Domain)?.Type?.ToLower() == "string";
     }

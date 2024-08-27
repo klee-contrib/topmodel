@@ -128,12 +128,12 @@ public class JavascriptConfig : GeneratorConfigBase
     {
         return endpoints.SelectMany(e => e.ClassDependencies)
             .Select(dep => (
-                Import: dep is { Source: IFieldProperty fp }
+                Import: dep is { Source: IProperty fp and not CompositionProperty }
                     ? GetEnumType(fp)
                     : dep.Classe.NamePascal,
                 Path: GetImportPathForClass(dep, dep.Classe.Tags.Contains(tag) ? tag : dep.Classe.Tags.Intersect(Tags).FirstOrDefault() ?? tag, tag, availableClasses)!))
             .Concat(endpoints.SelectMany(d => d.Properties).SelectMany(dep => GetDomainImportPaths(fileName, dep, tag)))
-            .Concat(endpoints.SelectMany(d => d.Params).OfType<IFieldProperty>().Where(p => p.IsQueryParam()).SelectMany(dep => GetValueImportPaths(fileName, dep)))
+            .Concat(endpoints.SelectMany(d => d.Params).Where(p => p.IsQueryParam()).SelectMany(dep => GetValueImportPaths(fileName, dep)))
             .Where(i => i.Path != null)
             .GroupAndSort();
     }
@@ -150,7 +150,7 @@ public class JavascriptConfig : GeneratorConfigBase
     public string? GetImportPathForClass(ClassDependency dep, string targetTag, string sourceTag, IEnumerable<Class> availableClasses)
     {
         string target;
-        if (dep.Source is IFieldProperty)
+        if (dep.Source is IProperty and not CompositionProperty)
         {
             if (dep.Classe.EnumKey != null && availableClasses.Contains(dep.Classe))
             {
@@ -223,7 +223,7 @@ public class JavascriptConfig : GeneratorConfigBase
         .Replace("\\", "/");
     }
 
-    public IEnumerable<(string Import, string Path)> GetValueImportPaths(string fileName, IFieldProperty prop, string? value = null)
+    public IEnumerable<(string Import, string Path)> GetValueImportPaths(string fileName, IProperty prop, string? value = null)
     {
         return GetValueImports(prop, value)
             .Select(import => (Import: import.Split("/").Last(), Path: GetRelativePath(import[..import.LastIndexOf('/')], fileName)));

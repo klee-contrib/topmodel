@@ -144,8 +144,8 @@ public class JpaModelPropertyGenerator
             case AliasProperty alp:
                 WriteAliasProperty(fw, classe, alp, tag);
                 break;
-            case IFieldProperty fp:
-                WriteIFieldProperty(fw, classe, fp, tag);
+            default:
+                WriteIFieldProperty(fw, classe, property, tag);
                 break;
         }
     }
@@ -180,7 +180,7 @@ public class JpaModelPropertyGenerator
         fw.AddImport($"{javaOrJakarta}.validation.constraints.NotNull");
     }
 
-    private bool ShouldWriteColumnAnnotation(Class classe, IFieldProperty property)
+    private bool ShouldWriteColumnAnnotation(Class classe, IProperty property)
     {
         return (classe.IsPersistent || _config.UseJdbc) && !_config.GetImplementation(property.Domain)!.Annotations
                 .Where(i =>
@@ -309,7 +309,7 @@ public class JpaModelPropertyGenerator
             }
 
             fw.AddImport("org.springframework.data.relational.core.mapping.Column");
-            fw.WriteLine(1, $@"@Column(""{((IFieldProperty)property).SqlName.ToLower()}"")");
+            fw.WriteLine(1, $@"@Column(""{((IProperty)property).SqlName.ToLower()}"")");
             fw.WriteLine(1, $"private {_config.GetType(property)} {property.NameCamel};");
         }
     }
@@ -346,7 +346,6 @@ public class JpaModelPropertyGenerator
             column = @$"@Column(name = ""{property.SqlName}"", nullable = {(!property.Required).ToString().ToFirstLower()}";
             if (property.Domain != null)
             {
-
                 if (property.Domain.Length != null)
                 {
                     if (_config.GetImplementation(property.Domain)?.Type?.ToUpper() == "STRING")
@@ -384,7 +383,7 @@ public class JpaModelPropertyGenerator
         fw.WriteLine(indentLevel, column);
     }
 
-    private void WriteDomainAnnotations(JavaWriter fw, IFieldProperty property, string tag, int indentLevel)
+    private void WriteDomainAnnotations(JavaWriter fw, IProperty property, string tag, int indentLevel)
     {
         foreach (var annotation in _config.GetDomainAnnotations(property, tag))
         {
@@ -392,7 +391,7 @@ public class JpaModelPropertyGenerator
         }
     }
 
-    private void WriteIFieldProperty(JavaWriter fw, Class classe, IFieldProperty property, string tag)
+    private void WriteIFieldProperty(JavaWriter fw, Class classe, IProperty property, string tag)
     {
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
 
@@ -429,7 +428,7 @@ public class JpaModelPropertyGenerator
         fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: useClassForAssociation)} {(isAssociationNotPersistent ? property.NameCamel : property.NameByClassCamel)}{suffix};");
     }
 
-    private void WriteIdAnnotation(JavaWriter fw, Class classe, IFieldProperty property)
+    private void WriteIdAnnotation(JavaWriter fw, Class classe, IProperty property)
     {
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         if (!_config.UseJdbc)
@@ -452,7 +451,7 @@ public class JpaModelPropertyGenerator
     private void WriteManyToManyAnnotations(JavaWriter fw, Class classe, AssociationProperty property, int indentLevel)
     {
         var role = property.Role is not null ? "_" + property.Role.ToConstantCase() : string.Empty;
-        var fk = ((IFieldProperty)property).SqlName;
+        var fk = ((IProperty)property).SqlName;
         var pk = classe.PrimaryKey.Single().SqlName + role;
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         if (!_config.CanClassUseEnums(property.Association))
@@ -476,7 +475,7 @@ public class JpaModelPropertyGenerator
 
     private void WriteManyToOneAnnotations(JavaWriter fw, AssociationProperty property, int indentLevel)
     {
-        var fk = ((IFieldProperty)property).SqlName;
+        var fk = ((IProperty)property).SqlName;
         var apk = property.Property.SqlName;
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         fw.WriteLine(indentLevel, @$"@{property.Type}(fetch = FetchType.LAZY, optional = {(property.Required ? "false" : "true")}, targetEntity = {property.Association.NamePascal}.class)");
@@ -507,7 +506,7 @@ public class JpaModelPropertyGenerator
 
     private void WriteOneToOneAnnotations(JavaWriter fw, AssociationProperty property, int indentLevel)
     {
-        var fk = ((IFieldProperty)property).SqlName;
+        var fk = ((IProperty)property).SqlName;
         var apk = property.Property.SqlName;
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         fw.AddImport($"{javaOrJakarta}.persistence.CascadeType");

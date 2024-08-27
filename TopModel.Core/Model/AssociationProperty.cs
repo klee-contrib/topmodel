@@ -4,16 +4,16 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public class AssociationProperty : IFieldProperty
+public class AssociationProperty : IProperty
 {
-    private IFieldProperty? _property;
+    private IProperty? _property;
 
     public LocatedString? Trigram { get; set; }
 
 #nullable disable
     public Class Association { get; set; }
 
-    public IFieldProperty Property
+    public IProperty Property
     {
         get
         {
@@ -152,7 +152,7 @@ public class AssociationProperty : IFieldProperty
 
     public Domain Domain => Type.IsToMany() && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
 
-    public string[] DomainParameters => Property?.DomainParameters ?? Array.Empty<string>();
+    public string[] DomainParameters => Property?.DomainParameters ?? [];
 
     public bool PrimaryKey { get; set; }
 
@@ -165,7 +165,9 @@ public class AssociationProperty : IFieldProperty
 
     internal Reference Location { get; set; }
 #nullable enable
+#pragma warning disable KTA1600
 
+    /// <inheritdoc cref="IProperty.CloneWithClassOrEndpoint" />
     public IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null)
     {
         return new AssociationProperty

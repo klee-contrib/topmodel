@@ -40,9 +40,31 @@ public static class ImportsJpaExtensions
         {
             CompositionProperty cp => cp.GetTypeImports(config, tag),
             AssociationProperty ap => ap.GetTypeImports(config, tag),
-            IFieldProperty fp => fp.GetTypeImports(config, tag),
-            _ => new List<string>(),
+            _ => p.GetRegularTypeImports(config, tag)
         };
+    }
+
+    private static List<string> GetRegularTypeImports(this IProperty rp, JpaConfig config, string tag)
+    {
+        var imports = new List<string>();
+
+        imports.AddRange(config.GetDomainImports(rp, tag));
+
+        if (rp is AliasProperty apo)
+        {
+            imports.AddRange(apo.GetTypeImports(config, tag));
+        }
+        else if (rp is RegularProperty rpr)
+        {
+            imports.AddRange(rpr.GetTypeImports(config, tag));
+        }
+
+        if (rp.Class != null && config.CanClassUseEnums(rp.Class, prop: rp))
+        {
+            imports.Add($"{config.GetEnumPackageName(rp.Class, tag)}.{config.GetEnumName(rp, rp.Class)}");
+        }
+
+        return imports;
     }
 
     private static List<string> GetTypeImports(this AssociationProperty ap, JpaConfig config, string tag)
@@ -80,29 +102,6 @@ public static class ImportsJpaExtensions
         }
 
         imports.AddRange(config.GetDomainImports(ap, tag));
-
-        return imports;
-    }
-
-    private static List<string> GetTypeImports(this IFieldProperty rp, JpaConfig config, string tag)
-    {
-        var imports = new List<string>();
-
-        imports.AddRange(config.GetDomainImports(rp, tag));
-
-        if (rp is AliasProperty apo)
-        {
-            imports.AddRange(apo.GetTypeImports(config, tag));
-        }
-        else if (rp is RegularProperty rpr)
-        {
-            imports.AddRange(rpr.GetTypeImports(config, tag));
-        }
-
-        if (rp.Class != null && config.CanClassUseEnums(rp.Class, prop: rp))
-        {
-            imports.Add($"{config.GetEnumPackageName(rp.Class, tag)}.{config.GetEnumName(rp, rp.Class)}");
-        }
 
         return imports;
     }

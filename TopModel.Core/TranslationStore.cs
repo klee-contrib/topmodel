@@ -4,7 +4,7 @@ public class TranslationStore
 {
     public Dictionary<string, Dictionary<string, string>> Translations { get; } = new();
 
-    public string GetTranslation(IFieldProperty property, string lang)
+    public string GetTranslation(IProperty property, string lang)
     {
         return Translations.TryGetValue(lang, out var dict)
             && dict.TryGetValue(property.ResourceKey, out var translatedValue)

@@ -21,6 +21,6 @@ public static class MappingExtensions
 
     public static bool GetRequired(this OneOf<ClassMappings, PropertyMapping> mapping)
     {
-        return mapping.Match(c => c.Required, p => p.Property.Required && p.Property is not IFieldProperty { DefaultValue: not null });
+        return mapping.Match(c => c.Required, p => p.Property.Required && p.Property is CompositionProperty or AliasProperty { Property: CompositionProperty } or { DefaultValue: null });
     }
 }

@@ -130,8 +130,7 @@ public class PhpModelGenerator : ClassGeneratorBase<PhpConfig>
             }
 
             var getterPrefix = Config.GetType(property, Classes, classe.IsPersistent) == "boolean" ? "is" : "get";
-            var required = property is IFieldProperty rp && rp.Required || false;
-            fw.WriteLine(1, @$"public function {property.NameByClassPascal.WithPrefix(getterPrefix)}(): {Config.GetType(property, Classes, classe.IsPersistent)}{(required ? string.Empty : "|null")}");
+            fw.WriteLine(1, @$"public function {property.NameByClassPascal.WithPrefix(getterPrefix)}(): {Config.GetType(property, Classes, classe.IsPersistent)}{(property.Required ? string.Empty : "|null")}");
             fw.WriteLine(1, "{");
             fw.WriteLine(2, @$"return $this->{property.NameByClassCamel};");
             fw.WriteLine(1, "}");

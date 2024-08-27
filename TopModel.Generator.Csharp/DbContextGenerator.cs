@@ -55,7 +55,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
         }
     }
 
-    private IEnumerable<(IFieldProperty Property, AssociationProperty AssociationProperty)> GetAssociationProperties(IEnumerable<Class> classes, string tag)
+    private IEnumerable<(IProperty Property, AssociationProperty AssociationProperty)> GetAssociationProperties(IEnumerable<Class> classes, string tag)
     {
         return classes
             .Distinct()
@@ -64,8 +64,8 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
             .Where(p => p is AssociationProperty { Association.IsPersistent: true } || p is AliasProperty { Property: AssociationProperty { Association.IsPersistent: true } })
             .Select(p => p switch
             {
-                AssociationProperty ap => ((IFieldProperty)p, ap),
-                AliasProperty { Property: AssociationProperty ap } => ((IFieldProperty)p, ap),
+                AssociationProperty ap => (p, ap),
+                AliasProperty { Property: AssociationProperty ap } => (p, ap),
                 _ => (null!, null!)
             })
             .Where(p => p.ap.Type == AssociationType.ManyToOne || p.ap.Type == AssociationType.OneToOne)
@@ -92,7 +92,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
             cw.WriteLine(2, $"var {classe.NameCamel} = modelBuilder.Entity<{classe.NamePascal}>();");
             cw.WriteLine(2, $"{classe.NameCamel}.ToTable(t => t.HasComment(\"{classe.Comment.Replace("\"", "\\\"")}\"));");
 
-            foreach (var property in classe.Properties.OfType<IFieldProperty>())
+            foreach (var property in classe.Properties)
             {
                 cw.WriteLine(2, $"{classe.NameCamel}.Property(p => p.{property.NamePascal}).HasComment(\"{property.Comment.Replace("\"", "\\\"")}\");");
             }
@@ -145,7 +145,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
         w.WriteLine(1, "{");
 
         var hasPropConfig = false;
-        foreach (var fp in classes.Distinct().OrderBy(c => c.NamePascal).SelectMany(c => c.Properties.OfType<IFieldProperty>()))
+        foreach (var fp in classes.Distinct().OrderBy(c => c.NamePascal).SelectMany(c => c.Properties))
         {
             var prop = fp is AliasProperty alp ? alp.Property : fp;
             var ap = prop as AssociationProperty;

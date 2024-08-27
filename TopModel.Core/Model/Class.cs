@@ -35,13 +35,13 @@ public class Class : IPropertyContainer
 
     public bool Abstract { get; set; }
 
-    public IFieldProperty? OrderProperty { get; set; }
+    public IProperty? OrderProperty { get; set; }
 
-    public IFieldProperty? DefaultProperty { get; set; }
+    public IProperty? DefaultProperty { get; set; }
 
-    public IFieldProperty? FlagProperty { get; set; }
+    public IProperty? FlagProperty { get; set; }
 
-    public IList<IProperty> Properties { get; } = new List<IProperty>();
+    public IList<IProperty> Properties { get; } = [];
 
     public IList<IProperty> ExtendedProperties => Extends != null ? Properties.Concat(Extends.ExtendedProperties).ToList() : Properties;
 
@@ -49,20 +49,20 @@ public class Class : IPropertyContainer
 
     public Namespace Namespace { get; set; }
 
-    public IEnumerable<IFieldProperty> PrimaryKey => Properties.OfType<IFieldProperty>().Where(p => p.PrimaryKey);
+    public IEnumerable<IProperty> PrimaryKey => Properties.Where(p => p.PrimaryKey);
 
-    public IFieldProperty? ReferenceKey =>
+    public IProperty? ReferenceKey =>
         PrimaryKey.Count() <= 1
-            ? PrimaryKey.SingleOrDefault() ?? Extends?.PrimaryKey.SingleOrDefault() ?? Properties.OfType<IFieldProperty>().FirstOrDefault()
+            ? PrimaryKey.SingleOrDefault() ?? Extends?.PrimaryKey.SingleOrDefault() ?? Properties.FirstOrDefault()
             : null;
 
-    public IFieldProperty? EnumKey => Enum ? ReferenceKey : null;
+    public IProperty? EnumKey => Enum ? ReferenceKey : null;
 
     public bool Enum { get; set; }
 
     public List<ClassValue> Values { get; } = [];
 
-    public List<List<IFieldProperty>> UniqueKeys { get; } = [];
+    public List<List<IProperty>> UniqueKeys { get; } = [];
 
     public List<FromMapper> FromMappers { get; } = [];
 

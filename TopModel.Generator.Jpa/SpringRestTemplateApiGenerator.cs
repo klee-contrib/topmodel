@@ -255,8 +255,7 @@ public class SpringRestTemplateApiGenerator : EndpointsGeneratorBase<JpaConfig>
         foreach (IProperty p in endpoint.GetQueryParams())
         {
             var indentLevel = 2;
-            var isRequired = p is IFieldProperty fp && fp.Required;
-            if (!isRequired)
+            if (!p.Required)
             {
                 fw.WriteLine(2, @$"if ({p.GetParamName()} != null) {{");
                 indentLevel++;
@@ -272,7 +271,7 @@ public class SpringRestTemplateApiGenerator : EndpointsGeneratorBase<JpaConfig>
                 fw.WriteLine(indentLevel, @$"uriBuilder.queryParam(""{p.GetParamName()}"", {p.GetParamName()});");
             }
 
-            if (!isRequired)
+            if (!p.Required)
             {
                 fw.WriteLine(2, @$"}}");
                 fw.WriteLine();

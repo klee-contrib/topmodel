@@ -29,11 +29,11 @@ internal class EndpointResolver(ModelFile modelFile)
                 if (split[i].StartsWith('{'))
                 {
                     var routeParamName = split[i][1..^1];
-                    var param = endpoint.Params.OfType<IFieldProperty>().SingleOrDefault(param => param.GetParamName() == routeParamName);
+                    var param = endpoint.Params.SingleOrDefault(param => param.GetParamName() == routeParamName);
 
                     if (param == null)
                     {
-                        yield return new ModelError(endpoint, $"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres. Les valeurs possibles sont : {string.Join(", ", endpoint.Params.OfType<IFieldProperty>().Select(p => p.GetParamName()))}.") { ModelErrorType = ModelErrorType.TMD1027 };
+                        yield return new ModelError(endpoint, $"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres. Les valeurs possibles sont : {string.Join(", ", endpoint.Params.Select(p => p.GetParamName()))}.") { ModelErrorType = ModelErrorType.TMD1027 };
                     }
                 }
             }

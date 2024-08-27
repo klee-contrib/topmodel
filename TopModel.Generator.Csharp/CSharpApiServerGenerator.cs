@@ -76,7 +76,7 @@ public class {className} : Controller
                 wd.AppendLine($"{indent}/// <returns>{(endpoint.Returns != null ? endpoint.Returns.Comment : "Task.")}</returns>");
             }
 
-            if (endpoint.Returns is IFieldProperty { Domain.MediaType: string mediaType })
+            if (endpoint.Returns is { Domain.MediaType: string mediaType })
             {
                 wd.AppendLine($@"{indent}[Produces(""{mediaType}"")]");
             }
@@ -164,7 +164,7 @@ public class {className} : Controller
             if (split[i].StartsWith('{'))
             {
                 var routeParamName = split[i][1..^1];
-                var param = endpoint.Params.OfType<IFieldProperty>().Single(param => param.GetParamName() == routeParamName);
+                var param = endpoint.Params.Single(param => param.GetParamName() == routeParamName);
 
                 var paramType = Config.GetType(param) switch
                 {

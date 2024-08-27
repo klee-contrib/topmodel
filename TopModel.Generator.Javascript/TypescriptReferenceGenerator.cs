@@ -139,7 +139,7 @@ public class TypescriptReferenceGenerator : ClassGroupGeneratorBase<JavascriptCo
 
                 fw.Write(" {\r\n");
 
-                foreach (var property in reference.Properties.OfType<IFieldProperty>())
+                foreach (var property in reference.Properties)
                 {
                     fw.Write("    ");
                     fw.Write(property.NameCamel);
