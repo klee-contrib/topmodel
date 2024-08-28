@@ -2,11 +2,31 @@
 
 ## 1.52.0
 
+- [`#380`](https://github.com/klee-contrib/topmodel/pull/380) - Suppression de IFieldProperty (et donc alias de compositions)
 - [`#379`](https://github.com/klee-contrib/topmodel/pull/379) - [C# + SQL] Compositions sur classes persistées (en JSON)
-
-  **impact génération** : Les annotations `[Required]` sont désormais générées sur les compositions `required` (les compositions étant `required` par défaut, cela devrait donc concerner la grande majorité de vos compositions).
-
 - [`ea971f22`](https://github.com/klee-contrib/topmodel/commit/ea971f22044c8831e161322454b8fd511aa866b4) - [JPA] Implémentation des compositions sur les classes persistées
+- [`999b8e60`](https://github.com/klee-contrib/topmodel/commit/999b8e607017e6a7bf8c80c7a629f3a493569d33) - [JS] `extendedCompositions`
+
+  L'ensemble de ces fonctionnalités permet **d'unifier les propriétés de composition avec les autres types de propriétés**, pour arrêter de les considérer différemment dans TopModel. Cela implique que vous pouvez désormais utiliser des compositions à tous les endroits où vous pouviez auparavant ne pas en mettre, en particulier :
+
+  - Vous pouvez désormais créer des **alias sur des compositions**
+  - Vous pouvez désormais **persister une composition en base de données** (dans une colonne JSON)
+  - Vous pouvez désormais mapper des compositions (de la même classe) dans les mappers
+  - Les compositions peuvent donc avoir un libellé et un trigramme.
+
+  **breaking changes** :
+
+  - Les alias sans `include` explicite incluent désormais les compositions. Si vous en avez, il faudra donc soit retirer la composition que vous avez manuellement recopiée (ce qui est le cas le plus probable), soit ajouter la composition dans l'`exclude`
+  - Les mappers généreront des mappings automatiques entre compositions de même nom, classe et domaine (à voir si vous voulez le garder ou le retirer manuellement).
+  - Si vous développez des générateurs personnalisés, la suppression du type `IFieldProperty` (pour représenter une propriété qui n'est pas une composition) vous impactera probablement dans ce que vous faites.
+
+  **impacts génération** :
+
+  - Les libellés de compositions sont désormais générés dans tous les fichiers de traductions (si vous les voulez dans les définitions d'entité JS, il vous faudra utiliser la nouvelle option `extendedCompositions` et une librairie à jour pour les interpréter).
+  - [JS] L'ordre de `defaultValue` et `isRequired` a été inversé dans la génération.
+  - [C#] Les annotations `[Required]` sont désormais générées sur les compositions `required` (les compositions étant `required` par défaut, cela devrait donc concerner la grande majorité de vos compositions).
+
+- [`d2dab384`](https://github.com/klee-contrib/topmodel/commit/d2dab3849c42312a9ff01a6a1d19e58aed0803d4) - [JS] Fix clés de traduction générées à tort
 
 ## 1.51.2
 
