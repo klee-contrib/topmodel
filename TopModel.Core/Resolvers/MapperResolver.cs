@@ -45,23 +45,6 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
 
                     if (currentProperty != null && mappedProperty != null)
                     {
-                        mappings.Mappings.Add(currentProperty, mappedProperty);
-
-                        if (mappings.To && mappedProperty.Readonly)
-                        {
-                            yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1024 };
-                        }
-                        else if (!mappings.To && currentProperty.Readonly)
-                        {
-                            yield return new ModelError(classe, $"La propriété '{currentProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.", mapping.Key) { ModelErrorType = ModelErrorType.TMD1024 };
-                        }
-
-                        if (currentProperty.Domain != mappedProperty.Domain
-                                && !converters.Any(c => c.From.Any(cf => cf == (mappings.To ? currentProperty.Domain : mappedProperty.Domain)) && c.To.Any(ct => ct == (mappings.To ? mappedProperty.Domain : currentProperty.Domain))))
-                        {
-                            yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine ('{mappedProperty.Domain.Name}' au lieu de '{currentProperty.Domain.Name}') et qu'il n'existe pas de convertisseur entre les deux.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1014 };
-                        }
-
                         var sourceCp = currentProperty switch
                         {
                             CompositionProperty cp => cp,
@@ -76,6 +59,24 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
                             _ => null
                         };
 
+                        mappings.Mappings.Add(currentProperty, mappedProperty);
+
+                        if (mappings.To && mappedProperty.Readonly)
+                        {
+                            yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1024 };
+                        }
+                        else if (!mappings.To && currentProperty.Readonly)
+                        {
+                            yield return new ModelError(classe, $"La propriété '{currentProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.", mapping.Key) { ModelErrorType = ModelErrorType.TMD1024 };
+                        }
+
+                        if ((sourceCp == null || mappedAp == null)
+                            && currentProperty.Domain != mappedProperty.Domain
+                            && !converters.Any(c => c.From.Any(cf => cf == (mappings.To ? currentProperty.Domain : mappedProperty.Domain)) && c.To.Any(ct => ct == (mappings.To ? mappedProperty.Domain : currentProperty.Domain))))
+                        {
+                            yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine ('{mappedProperty.Domain?.Name}' au lieu de '{currentProperty.Domain?.Name}') et qu'il n'existe pas de convertisseur entre les deux.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1014 };
+                        }
+
                         if (sourceCp != null)
                         {
                             if (mappedAp == null)
@@ -88,7 +89,7 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
                             }
                             else if (!useLegacyAssociationCompositionMappers && sourceCp.CompositionPrimaryKey?.Domain != mappedAp.Domain && !converters.Any(c => c.From.Any(cf => cf == sourceCp.CompositionPrimaryKey?.Domain) && c.To.Any(ct => ct == mappedAp.Domain)))
                             {
-                                yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la composition '{sourceCp.Composition.Name}' ('{mappedProperty.Domain.Name}' au lieu de '{sourceCp.CompositionPrimaryKey?.Domain?.Name ?? string.Empty}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1019 };
+                                yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la composition '{sourceCp.Composition.Name}' ('{mappedProperty.Domain?.Name}' au lieu de '{sourceCp.CompositionPrimaryKey?.Domain?.Name ?? string.Empty}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1019 };
                             }
                         }
                     }

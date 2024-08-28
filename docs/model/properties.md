@@ -59,7 +59,7 @@ Une association peut référencer une classe non persistée, dans ce cas il faut
 
 ## Composition
 
-Une composition est une propriété spéciale qui permet de **référencer une autre classe**, à l'inverse de l'association qui ne concerne que la clé primaire. Par conséquent, la composition est le seul type de **propriété non primitif**, ce qui à priori proscrit son usage dans un objet persisté (dans lequel on utilisera plutôt une association). Elle est identifiée par la présence de la propriété `composition` en premier.
+Une composition est une propriété spéciale qui permet de **référencer une autre classe**, à l'inverse de l'association qui ne concerne que la clé primaire. Par conséquent, la composition est le seul type de **propriété non primitif** (ce qui ne prescrit pas à priori son usage dans un objet persisté puisqu'elle pourrait y être stockée en JSON, mais on préfèrera bien souvent utiliser une association à la place). Elle est identifiée par la présence de la propriété `composition` en premier.
 
 Exemple :
 
@@ -138,7 +138,7 @@ prefix: Class
 
 La classe référencée par l'alias doit être connue du fichier de modèle courant, soit parce qu'elle est définie dedans, soit parce que son fichier est référencé dans la section `uses`.
 
-Il n'est pas possible de définir un alias sur une propriété de type composition, mais en revanche il est possible de définir un alias d'alias.
+Il est tout à fait possible de définir un alias d'alias.
 
 Enfin, via la propriété `as`, il est possible de remplacer le domaine de la propriété par le `asDomain` correspondant à la valeur de la propriété `as` définie sur le domaine de la propriété aliasée, au lieu de son domaine.
 

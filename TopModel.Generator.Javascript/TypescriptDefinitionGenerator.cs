@@ -193,8 +193,8 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                 case AliasProperty { Property: CompositionProperty cp2 } when Config.IsListComposition(cp2) && cp2.Composition.Name == classe.Name:
                     fw.Write("\"recursive-list\"");
                     break;
-                case CompositionProperty:
-                case AliasProperty { Property: CompositionProperty }:
+                case CompositionProperty when Config.IsListComposition(property):
+                case AliasProperty { Property: CompositionProperty } when Config.IsListComposition(property):
                     fw.Write("\"list\",");
                     break;
                 default:
@@ -268,7 +268,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
 
                 fw.Write("\"\r\n");
             }
-            else
+            else if (cp.Composition.Name != classe.Name)
             {
                 fw.Write("        entity: ");
                 fw.Write(cp.Composition.NamePascal);
