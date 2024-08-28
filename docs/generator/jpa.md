@@ -5,6 +5,7 @@
 Le générateur JPA peut générer les fichiers suivants :
 
 - Un fichier de définition de classe pour chaque classe dans le modèle.
+- Un fichier de définition de classe pour chaque enum.
 - Un fichier d'interface DAO `JpaRepository` pour chacune des classes persistées du modèle.
 - Un (ou deux) fichier(s) par module avec les mappers des classes du module.
 - Un fichier de contrôleur pour chaque fichier d'endpoints dans le modèle, si les APIs sont générées en mode serveur.
