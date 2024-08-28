@@ -51,6 +51,11 @@ public class JavascriptConfig : GeneratorConfigBase
     public EntityMode EntityMode { get; set; } = EntityMode.TYPED;
 
     /// <summary>
+    /// Génère `isRequired`, `label` (et `comment`) sur les compositions dans les entitées typées.
+    /// </summary>
+    public bool ExtendedCompositions { get; set; }
+
+    /// <summary>
     /// Chemin (ou alias commençant par '@') vers le fichier 'domain', relatif au répertoire de génération.
     /// </summary>
     public string EntityTypesPath { get; set; } = "@focus4/stores";

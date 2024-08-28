@@ -91,13 +91,17 @@
       "type": "string",
       "description": "Framework cible pour la génération.",
       "default": "focus",
-      "enum": ["angular", "angular_promise", "vanilla", "nuxt"]
+      "enum": [ "angular", "angular_promise", "vanilla", "nuxt" ]
     },
     "entityMode": {
       "type": "string",
       "description": "Framework cible pour la génération.",
       "default": "typed",
-      "enum": ["untyped", "typed"]
+      "enum": [ "untyped", "typed" ]
+    },
+    "extendedCompositions": {
+      "type": "boolean",
+      "description": "Génère `isRequired`, `label` (et `comment`) sur les compositions dans les entitées typées."
     },
     "entityTypesPath": {
       "type": "string",
@@ -107,7 +111,7 @@
     "resourceMode": {
       "type": "string",
       "description": "Mode de génération (JS, JSON ou JSON Schema).",
-      "enum": ["js", "json"]
+      "enum": [ "js", "json" ]
     },
     "translateReferences": {
       "type": "boolean",
@@ -130,7 +134,7 @@
     "referenceMode": {
       "type": "string",
       "description": "Mode de génération des listes de références (définitions ou valeurs).",
-      "enum": ["definition", "values"],
+      "enum": [ "definition", "values" ],
       "default": "definition"
     }
   }

@@ -67,8 +67,8 @@ export const UtilisateurReadEntity = {
         type: "field",
         name: "actif",
         domain: DO_BOOLEEN,
-        isRequired: true,
         defaultValue: true,
+        isRequired: true,
         label: "securite.utilisateur.utilisateur.actif"
     },
     profilId: {
@@ -82,8 +82,8 @@ export const UtilisateurReadEntity = {
         type: "field",
         name: "typeUtilisateurCode",
         domain: DO_CODE,
-        isRequired: true,
         defaultValue: "GEST",
+        isRequired: true,
         label: "securite.utilisateur.utilisateur.typeUtilisateurCode"
     },
     dateCreation: {

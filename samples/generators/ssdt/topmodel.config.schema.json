@@ -464,6 +464,10 @@
               "typed"
             ]
           },
+          "extendedCompositions": {
+            "type": "boolean",
+            "description": "Génère `isRequired`, `label` (et `comment`) sur les compositions dans les entitées typées."
+          },
           "entityTypesPath": {
             "type": "string",
             "description": "Chemin d'import des type d'entités",

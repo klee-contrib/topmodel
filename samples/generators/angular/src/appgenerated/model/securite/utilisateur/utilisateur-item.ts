@@ -47,8 +47,8 @@ export const UtilisateurItemEntity = {
         type: "field",
         name: "typeUtilisateurCode",
         domain: DO_CODE,
-        isRequired: true,
         defaultValue: "GEST",
+        isRequired: true,
         label: "securite.utilisateur.utilisateur.typeUtilisateurCode"
     }
 } as const

@@ -21,6 +21,7 @@ exemple :
 ```yaml
 fetchPath: "@api-services"
 ```
+
 ### ApiFilePath
 
 Par défaut, les fichiers d'api client sont placés dans le dossier `{module}`. Ils sont nommés d'après le fichier qui les contient, sauf dans le cas du mode `angular`, où le nom du fichier sera de la forme `{fileName}.service.ts`.
@@ -36,6 +37,8 @@ Il est possible de générer les entités selon deux modes (`entityMode`) : `typ
 #### Typed
 
 Le mode `typed` permet de générer la description des entités métier contenant des types. Ces types sont importés par défaut de `@focus4/stores`, mais ce chemin peut être surchargé avec la propriété `entityTypesPath`.
+
+Vous pouvez également activer l'option `extendedCompositions` pour générer toutes les propriétés sur les compositions (`label`, `isRequired`, `comment`), qui ne sont pas générées par défaut.
 
 #### Untyped
 
