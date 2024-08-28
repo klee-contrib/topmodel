@@ -159,6 +159,9 @@ public class PropertyLoader : ILoader<IProperty>
                         case "name":
                             cp.Name = value!.Value;
                             break;
+                        case "label":
+                            cp.Label = value!.Value;
+                            break;
                         case "domain":
                             cp.DomainReference = parser.ConsumeDomain(value);
                             break;

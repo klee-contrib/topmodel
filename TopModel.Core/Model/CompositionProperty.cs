@@ -34,7 +34,7 @@ public class CompositionProperty : IProperty
 
     public PropertyMapping PropertyMapping { get; set; }
 
-    public string Label => Name;
+    public string Label { get; set; }
 
     public bool IsMultipart => Composition.Properties.Any(cpp => cpp.Domain?.IsMultipart ?? false);
 
