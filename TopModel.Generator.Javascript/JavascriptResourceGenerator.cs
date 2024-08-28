@@ -24,7 +24,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
 
     public override string Name => "JSResourceGen";
 
-    protected override string? GetCommentResourceFilePath(IFieldProperty property, string tag, string lang)
+    protected override string? GetCommentResourceFilePath(IProperty property, string tag, string lang)
     {
         if (!Config.GenerateComments)
         {
@@ -44,12 +44,12 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
         return Config.GetMainResourceFilePath(tag, lang);
     }
 
-    protected override string GetResourceFilePath(IFieldProperty property, string tag, string lang)
+    protected override string GetResourceFilePath(IProperty property, string tag, string lang)
     {
         return Config.GetResourcesFilePath(property.Parent.Namespace, tag, lang);
     }
 
-    protected override void HandleCommentResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties)
+    protected override void HandleCommentResourceFile(string filePath, string lang, IEnumerable<IProperty> properties)
     {
         using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = Config.ResourceMode == ResourceMode.JS };
 
@@ -97,7 +97,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
         }
     }
 
-    protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties)
+    protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IProperty> properties)
     {
         using var fw = new FileWriter(filePath, _logger, encoderShouldEmitUTF8Identifier: false) { EnableHeader = Config.ResourceMode == ResourceMode.JS };
 
@@ -129,7 +129,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
         return Config.ResourceMode == ResourceMode.JS ? name : $@"""{name}""";
     }
 
-    private void WriteClasseNode(FileWriter fw, IGrouping<IPropertyContainer, IFieldProperty> container, bool isComment, bool isLast, string lang, int indentLevel)
+    private void WriteClasseNode(FileWriter fw, IGrouping<IPropertyContainer, IProperty> container, bool isComment, bool isLast, string lang, int indentLevel)
     {
         fw.WriteLine(indentLevel, $"{Quote(container.Key.NameCamel)}: {{");
 
@@ -171,7 +171,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
         fw.WriteLine(!isLast ? "," : string.Empty);
     }
 
-    private void WriteSubModule(FileWriter fw, string lang, IEnumerable<IFieldProperty> properties, bool isComment, int level)
+    private void WriteSubModule(FileWriter fw, string lang, IEnumerable<IProperty> properties, bool isComment, int level)
     {
         var classes = properties.GroupBy(prop => prop.Parent);
         var modules = classes

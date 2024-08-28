@@ -60,7 +60,7 @@ class ProfilRead
     return $this->dateModification;
   }
 
-  public function getUtilisateurs(): Collection|null
+  public function getUtilisateurs(): Collection
   {
     return $this->utilisateurs;
   }

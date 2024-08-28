@@ -33,7 +33,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
 
         foreach (var classe in modelFile.Classes.Where(c => c.Values.Count > 0 && (c.IsPersistent || c.UniqueKeys.Count > 0)))
         {
-            var uks = new List<IEnumerable<IFieldProperty>>();
+            var uks = new List<IEnumerable<IProperty>>();
             uks.AddRange(classe.UniqueKeys);
             if (classe.IsPersistent)
             {
@@ -143,7 +143,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
         {
             if (classe.DefaultPropertyReference != null)
             {
-                classe.DefaultProperty = classe.ExtendedProperties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == classe.DefaultPropertyReference.ReferenceName);
+                classe.DefaultProperty = classe.ExtendedProperties.FirstOrDefault(fp => fp.Name == classe.DefaultPropertyReference.ReferenceName);
                 if (classe.DefaultProperty == null)
                 {
                     yield return new ModelError(classe, $"La propriété '{classe.DefaultPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.DefaultPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
@@ -152,12 +152,12 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
             else
             {
                 // Si la classe a une propriété "Label" ou "Libelle", alors on la considère par défaut (sic) comme propriété par défaut.
-                classe.DefaultProperty = classe.ExtendedProperties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.NamePascal == "Label" || fp.NamePascal == "Libelle");
+                classe.DefaultProperty = classe.ExtendedProperties.FirstOrDefault(fp => fp.NamePascal == "Label" || fp.NamePascal == "Libelle");
             }
 
             if (classe.OrderPropertyReference != null)
             {
-                classe.OrderProperty = classe.ExtendedProperties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == classe.OrderPropertyReference.ReferenceName);
+                classe.OrderProperty = classe.ExtendedProperties.FirstOrDefault(fp => fp.Name == classe.OrderPropertyReference.ReferenceName);
                 if (classe.OrderProperty == null)
                 {
                     yield return new ModelError(classe, $"La propriété '{classe.OrderPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.OrderPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
@@ -166,12 +166,12 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
             else
             {
                 // Si la classe a une propriété "Order" ou "Ordre", alors on la considère par défaut comme propriété d'ordre.
-                classe.OrderProperty = classe.ExtendedProperties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.NamePascal == "Order" || fp.NamePascal == "Ordre");
+                classe.OrderProperty = classe.ExtendedProperties.FirstOrDefault(fp => fp.NamePascal == "Order" || fp.NamePascal == "Ordre");
             }
 
             if (classe.FlagPropertyReference != null)
             {
-                classe.FlagProperty = classe.ExtendedProperties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.Name == classe.FlagPropertyReference.ReferenceName);
+                classe.FlagProperty = classe.ExtendedProperties.FirstOrDefault(fp => fp.Name == classe.FlagPropertyReference.ReferenceName);
                 if (classe.FlagProperty == null)
                 {
                     yield return new ModelError(classe, $"La propriété '{classe.FlagPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.FlagPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
@@ -180,7 +180,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
             else
             {
                 // Si la classe a une propriété "Flag", alors on la considère par défaut comme propriété de flag.
-                classe.FlagProperty = classe.ExtendedProperties.OfType<IFieldProperty>().FirstOrDefault(fp => fp.NamePascal == "Flag");
+                classe.FlagProperty = classe.ExtendedProperties.FirstOrDefault(fp => fp.NamePascal == "Flag");
             }
         }
     }
@@ -194,7 +194,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
     {
         foreach (var classe in modelFile.Classes)
         {
-            foreach (var p in classe.Properties.OfType<IFieldProperty>().Where(p => p.Label != null))
+            foreach (var p in classe.Properties.Where(p => p.Label != null))
             {
                 translationStore.Translations[defaultLang][p.ResourceKey] = p.Label!;
             }
@@ -224,12 +224,12 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
 
             foreach (var ukRef in classe.UniqueKeyReferences)
             {
-                var uk = new List<IFieldProperty>();
+                var uk = new List<IProperty>();
                 classe.UniqueKeys.Add(uk);
 
                 foreach (var ukPropRef in ukRef)
                 {
-                    var property = classe.Properties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == ukPropRef.ReferenceName);
+                    var property = classe.Properties.FirstOrDefault(p => p.Name == ukPropRef.ReferenceName);
 
                     if (property == null)
                     {
@@ -261,7 +261,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
 
                 foreach (var value in valueRef.Value)
                 {
-                    var property = classe.ExtendedProperties.OfType<IFieldProperty>().FirstOrDefault(p => p.Name == value.Key.ReferenceName);
+                    var property = classe.ExtendedProperties.FirstOrDefault(p => p.Name == value.Key.ReferenceName);
 
                     if (property == null)
                     {
@@ -273,7 +273,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
                     }
                 }
 
-                var missingRequiredProperties = classe.ExtendedProperties.OfType<IFieldProperty>()
+                var missingRequiredProperties = classe.ExtendedProperties
                     .Where(p =>
                         p.Required
                         && (!(p.Domain?.AutoGeneratedValue ?? false) || p is AssociationProperty or AliasProperty { Property: AssociationProperty })

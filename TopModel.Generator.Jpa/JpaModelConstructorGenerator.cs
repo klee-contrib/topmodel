@@ -43,8 +43,7 @@ public class JpaModelConstructorGenerator
             {
                 var code = refValue.Value[codeProperty];
                 fw.WriteLine(2, $@"case {code} :");
-                foreach (var prop in classe.GetProperties(availableClasses).OfType<IFieldProperty>()
-                    .Where(p => p != codeProperty))
+                foreach (var prop in classe.GetProperties(availableClasses).Where(p => p != codeProperty))
                 {
                     var isString = _config.GetType(prop) == "String";
                     var value = refValue.Value.ContainsKey(prop) ? refValue.Value[prop] : "null";

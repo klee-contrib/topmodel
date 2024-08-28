@@ -105,15 +105,15 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
 
         {
             var accept = string.Empty;
-            if (endpoint.Returns != null && endpoint.Returns is IFieldProperty fp && fp.Domain.MediaType != null)
+            if (endpoint.Returns != null && endpoint.Returns.Domain?.MediaType != null)
             {
-                accept = @$", accept = {{ ""{fp.Domain.MediaType}"" }}";
+                accept = @$", accept = {{ ""{endpoint.Returns.Domain.MediaType}"" }}";
             }
 
             var contentType = string.Empty;
-            if (endpoint.Params.Any(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null))
+            if (endpoint.Params.Any(p => p.Domain?.MediaType != null))
             {
-                contentType = @$", contentType = {string.Join(", ", endpoint.Params.Where(p => p is IFieldProperty fdp && fdp.Domain.MediaType != null).Select(p => $@"""{((IFieldProperty)p).Domain.MediaType}""")).First()} ";
+                contentType = @$", contentType = {string.Join(", ", endpoint.Params.Where(p => p.Domain?.MediaType != null).Select(p => $@"""{p.Domain.MediaType}""")).First()} ";
             }
 
             foreach (var annotation in Config.GetDecoratorAnnotations(endpoint, tag))
@@ -138,7 +138,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
         foreach (var param in endpoint.GetQueryParams())
         {
             var ann = string.Empty;
-            ann += @$"@RequestParam(value = ""{param.GetParamName()}"", required = {(param is not IFieldProperty fp || fp.Required).ToString().ToFirstLower()}) ";
+            ann += @$"@RequestParam(value = ""{param.GetParamName()}"", required = {param.Required.ToString().ToFirstLower()}) ";
             fw.AddImport("org.springframework.web.bind.annotation.RequestParam");
             fw.AddImports(Config.GetDomainImports(param, tag));
             var decoratorAnnotations = string.Join(' ', Config.GetDomainAnnotations(param, tag).Select(a => a.StartsWith("@") ? a : "@" + a));
@@ -160,7 +160,7 @@ public class SpringClientApiGenerator : EndpointsGeneratorBase<JpaConfig>
                 }
                 else
                 {
-                    ann += @$"@RequestPart(value = ""{param.GetParamName()}"", required = {(param is not IFieldProperty fp || fp.Required).ToString().ToFirstLower()}) ";
+                    ann += @$"@RequestPart(value = ""{param.GetParamName()}"", required = {param.Required.ToString().ToFirstLower()}) ";
                     fw.AddImport("org.springframework.web.bind.annotation.RequestPart");
                     methodParams.Add($"{ann}{Config.GetType(param)} {param.GetParamName()}");
                 }

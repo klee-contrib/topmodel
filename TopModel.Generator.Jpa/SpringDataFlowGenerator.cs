@@ -503,7 +503,7 @@ public class SpringDataFlowGenerator : GeneratorBase<JpaConfig>
             mapper = null;
         }
 
-        foreach (var property in dataFlow.Class.ExtendedProperties.OfType<IFieldProperty>()
+        foreach (var property in dataFlow.Class.ExtendedProperties
             .Where(p => !(p is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.OneToMany)))
             .Where(p => mapper == null || mapper.ClassParams.SelectMany(pa => pa.Mappings).Select(mapping => mapping.Key).Contains(p)))
         {

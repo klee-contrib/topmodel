@@ -26,6 +26,8 @@ public interface IProperty
 
     string Comment { get; }
 
+    string? DefaultValue { get; }
+
     bool Readonly { get; set; }
 
     LocatedString? Trigram { get; set; }
@@ -50,8 +52,8 @@ public interface IProperty
 
             var apPk = ap switch
             {
-                { Property: IFieldProperty p } => p,
-                { Association: Class classe } => classe.Properties.OfType<IFieldProperty>().FirstOrDefault(),
+                { Property: IProperty p } => p,
+                { Association: Class classe } => classe.Properties.FirstOrDefault(),
                 _ => null
             };
 
@@ -77,6 +79,22 @@ public interface IProperty
             return $"{prefix}{sqlName}{suffix}";
         }
     }
+
+    IProperty ResourceProperty => Decorator != null && Parent != Decorator
+       ? Decorator.Properties.First(p => p.Name == Name).ResourceProperty
+       : this is AliasProperty alp && alp.Label == alp.OriginalProperty?.Label
+       ? alp.OriginalProperty!.ResourceProperty
+       : this;
+
+    string ResourceKey => $"{ResourceProperty.Parent.Namespace.ModuleCamel}.{ResourceProperty.Parent.NameCamel}.{ResourceProperty.NameCamel}";
+
+    IProperty CommentResourceProperty => Decorator != null && Parent != Decorator
+        ? Decorator.Properties.First(p => p.Name == Name).CommentResourceProperty
+        : this is AliasProperty alp && alp.Comment == alp.OriginalProperty?.Comment
+        ? alp.OriginalProperty!.CommentResourceProperty
+        : this;
+
+    string CommentResourceKey => $"comments.{CommentResourceProperty.Parent.Namespace.ModuleCamel}.{CommentResourceProperty.Parent.NameCamel}.{CommentResourceProperty.NameCamel}";
 
     bool UseLegacyRoleName { get; init; }
 

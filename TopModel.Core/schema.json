@@ -335,6 +335,10 @@
               "type": "string",
               "description": "Nom de la propriété."
             },
+            "label": {
+              "type": "string",
+              "description": "Libellé de la propriété. Sera utilisé comme libellé pour le champ dans Focus."
+            },
             "domain": {
               "$ref": "#/definitions/domain"
             },

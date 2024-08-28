@@ -16,7 +16,7 @@ public class Label
         AddRow($"<u><b>{classe}</b></u>");
         AddRow();
 
-        foreach (var prop in classe.Properties.OfType<IFieldProperty>())
+        foreach (var prop in classe.Properties)
         {
             if (prop is AssociationProperty)
             {

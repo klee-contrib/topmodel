@@ -84,7 +84,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
     {
         var getterPrefix = Config.GetType(propertyTarget!) == "boolean" ? "is" : "get";
         var getter = string.Empty;
-        var converter = Config.GetConverter((propertySource as IFieldProperty)?.Domain, (propertyTarget as IFieldProperty)?.Domain);
+        var converter = Config.GetConverter(propertySource.Domain, propertyTarget.Domain);
         if (converter != null && Config.GetImplementation(converter) != null)
         {
             var impl = Config.GetImplementation(converter);
@@ -99,8 +99,8 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
             getter = $"{sourceName}.{getterPrefix}{propertySource.NamePascal.ToFirstUpper()}()";
             return (Getter: Config.GetConvertedValue(
                 getter,
-                (propertySource as IFieldProperty)?.Domain,
-                (propertyTarget as IFieldProperty)?.Domain), CheckSourceNull: false);
+                propertySource.Domain,
+                propertyTarget.Domain), CheckSourceNull: false);
         }
 
         var checkSourceNull = false;
@@ -241,8 +241,8 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
         return (Getter: Config.GetConvertedValue(
                 getter,
-                (propertySource as IFieldProperty)?.Domain,
-                (propertyTarget as IFieldProperty)?.Domain), CheckSourceNull: checkSourceNull);
+                propertySource.Domain,
+                propertyTarget.Domain), CheckSourceNull: checkSourceNull);
     }
 
     private void WriteFromMapper(Class classe, FromMapper mapper, JavaWriter fw, string tag)

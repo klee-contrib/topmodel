@@ -48,8 +48,8 @@ public class PhpModelPropertyGenerator
             case AssociationProperty { Association.IsPersistent: true } ap:
                 WriteProperty(fw, classe, ap, tag);
                 break;
-            case IFieldProperty fp:
-                WriteProperty(fw, classe, fp, tag);
+            default:
+                WriteRegularProperty(fw, classe, property, tag);
                 break;
         }
     }
@@ -71,7 +71,7 @@ public class PhpModelPropertyGenerator
 
     private static void WriteManyToOne(PhpWriter fw, AssociationProperty property)
     {
-        var fk = ((IFieldProperty)property).SqlName;
+        var fk = ((IProperty)property).SqlName;
         var apk = property.Property.SqlName;
         fw.AddImport(@$"Doctrine\ORM\Mapping\ManyToOne");
         fw.AddImport(@$"Doctrine\ORM\Mapping\JoinColumn");
@@ -87,7 +87,7 @@ public class PhpModelPropertyGenerator
 
     private static void WriteOneToOne(PhpWriter fw, AssociationProperty property)
     {
-        var fk = ((IFieldProperty)property).SqlName;
+        var fk = ((IProperty)property).SqlName;
         var apk = property.Property.SqlName;
         fw.AddImport(@$"Doctrine\ORM\Mapping\OneToOne");
         fw.AddImport(@$"Doctrine\ORM\Mapping\JoinColumn");
@@ -124,7 +124,7 @@ public class PhpModelPropertyGenerator
         fw.WriteLine(1, $"private {_config.GetType(property, _classes, classe.IsPersistent)} ${property.NameByClassCamel};");
     }
 
-    private void WriteProperty(PhpWriter fw, Class classe, IFieldProperty property, string tag)
+    private void WriteRegularProperty(PhpWriter fw, Class classe, IProperty property, string tag)
     {
         if (classe.IsPersistent)
         {

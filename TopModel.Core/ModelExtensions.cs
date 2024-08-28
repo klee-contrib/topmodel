@@ -154,105 +154,102 @@ public static class ModelExtensions
             }
         }
 
-        if (property is IFieldProperty fp)
+        foreach (var alp in modelStore.Files.SelectMany(c => c.Properties).OfType<AliasProperty>())
         {
-            foreach (var alp in modelStore.Files.SelectMany(c => c.Properties).OfType<AliasProperty>())
+            if (alp.OriginalProperty == property)
             {
-                if (alp.OriginalProperty == fp)
+                var reference = alp.PropertyReference ?? alp.Reference;
+                if (reference != null)
                 {
-                    var reference = alp.PropertyReference ?? alp.Reference;
+                    yield return (reference, alp.GetFile());
+                }
+
+                if (collectForward)
+                {
+                    foreach (var result in modelStore.GetPropertyReferencesCore(alp, collectForward: true))
+                    {
+                        yield return result;
+                    }
+                }
+            }
+            else if (alp.OriginalProperty?.Class == property.Class)
+            {
+                var excludeReference = alp.OriginalAliasProperty?.Reference?.ExcludeReferences.FirstOrDefault(er => er.ReferenceName == property.Name);
+                if (excludeReference != null)
+                {
+                    yield return (excludeReference, alp.GetFile());
+                }
+            }
+        }
+
+        if (property.Class != null)
+        {
+            foreach (var uk in property.Class.UniqueKeyReferences)
+            {
+                foreach (var prop in uk)
+                {
+                    if (prop.ReferenceName == property.Name)
+                    {
+                        yield return (prop, property.Class.GetFile());
+                    }
+                }
+            }
+
+            if (property.Class.DefaultPropertyReference?.ReferenceName == property.Name)
+            {
+                yield return (property.Class.DefaultPropertyReference, property.Class.GetFile());
+            }
+
+            if (property.Class.OrderPropertyReference?.ReferenceName == property.Name)
+            {
+                yield return (property.Class.OrderPropertyReference, property.Class.GetFile());
+            }
+
+            if (property.Class.FlagPropertyReference?.ReferenceName == property.Name)
+            {
+                yield return (property.Class.FlagPropertyReference, property.Class.GetFile());
+            }
+        }
+
+        foreach (var classe in modelStore.Classes)
+        {
+            foreach (var mappings in classe.FromMappers.SelectMany(m => m.ClassParams).Concat(classe.ToMappers))
+            {
+                if (mappings.Mappings.ContainsKey(property))
+                {
+                    var reference = mappings.MappingReferences.Keys.FirstOrDefault(f => f.ReferenceName == property.Name);
                     if (reference != null)
                     {
-                        yield return (reference, alp.GetFile());
-                    }
-
-                    if (collectForward)
-                    {
-                        foreach (var result in modelStore.GetPropertyReferencesCore(alp, collectForward: true))
-                        {
-                            yield return result;
-                        }
+                        yield return (reference, classe.GetFile());
                     }
                 }
-                else if (alp.OriginalProperty?.Class == fp.Class)
+
+                if (mappings.Mappings.ContainsValue(property))
                 {
-                    var excludeReference = alp.OriginalAliasProperty?.Reference?.ExcludeReferences.FirstOrDefault(er => er.ReferenceName == fp.Name);
-                    if (excludeReference != null)
+                    var reference = mappings.MappingReferences.Values.FirstOrDefault(f => f.ReferenceName == property.Name);
+                    if (reference != null)
                     {
-                        yield return (excludeReference, alp.GetFile());
+                        yield return (reference, classe.GetFile());
                     }
                 }
             }
+        }
 
-            if (fp.Class != null)
+        foreach (var dataFlow in modelStore.DataFlows)
+        {
+            if (dataFlow.ActiveProperty == property)
             {
-                foreach (var uk in fp.Class.UniqueKeyReferences)
-                {
-                    foreach (var prop in uk)
-                    {
-                        if (prop.ReferenceName == fp.Name)
-                        {
-                            yield return (prop, fp.Class.GetFile());
-                        }
-                    }
-                }
-
-                if (fp.Class.DefaultPropertyReference?.ReferenceName == fp.Name)
-                {
-                    yield return (fp.Class.DefaultPropertyReference, fp.Class.GetFile());
-                }
-
-                if (fp.Class.OrderPropertyReference?.ReferenceName == fp.Name)
-                {
-                    yield return (fp.Class.OrderPropertyReference, fp.Class.GetFile());
-                }
-
-                if (fp.Class.FlagPropertyReference?.ReferenceName == fp.Name)
-                {
-                    yield return (fp.Class.FlagPropertyReference, fp.Class.GetFile());
-                }
+                yield return (dataFlow.ActivePropertyReference!, dataFlow.GetFile());
             }
 
-            foreach (var classe in modelStore.Classes)
+            foreach (var source in dataFlow.Sources)
             {
-                foreach (var mappings in classe.FromMappers.SelectMany(m => m.ClassParams).Concat(classe.ToMappers))
+                if (source.JoinProperties.Contains(property))
                 {
-                    if (mappings.Mappings.ContainsKey(fp))
+                    var reference = source.JoinPropertyReferences.FirstOrDefault(f => f.ReferenceName == property.Name);
+                    if (reference != null)
                     {
-                        var reference = mappings.MappingReferences.Keys.FirstOrDefault(f => f.ReferenceName == fp.Name);
-                        if (reference != null)
-                        {
-                            yield return (reference, classe.GetFile());
-                        }
-                    }
-
-                    if (mappings.Mappings.ContainsValue(fp))
-                    {
-                        var reference = mappings.MappingReferences.Values.FirstOrDefault(f => f.ReferenceName == fp.Name);
-                        if (reference != null)
-                        {
-                            yield return (reference, classe.GetFile());
-                        }
-                    }
-                }
-            }
-
-            foreach (var dataFlow in modelStore.DataFlows)
-            {
-                if (dataFlow.ActiveProperty == fp)
-                {
-                    yield return (dataFlow.ActivePropertyReference!, dataFlow.GetFile());
-                }
-
-                foreach (var source in dataFlow.Sources)
-                {
-                    if (source.JoinProperties.Contains(fp))
-                    {
-                        var reference = source.JoinPropertyReferences.FirstOrDefault(f => f.ReferenceName == fp.Name);
-                        if (reference != null)
-                        {
-                            yield return (reference, dataFlow.GetFile());
-                        }
+                        yield return (reference, dataFlow.GetFile());
                     }
                 }
             }

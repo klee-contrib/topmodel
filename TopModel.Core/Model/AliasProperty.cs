@@ -3,7 +3,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public class AliasProperty : IFieldProperty
+public class AliasProperty : IProperty
 {
     private string? _comment;
     private string? _defaultValue;
@@ -13,11 +13,11 @@ public class AliasProperty : IFieldProperty
     private string? _name;
 
 #nullable disable
-    private IFieldProperty _property;
+    private IProperty _property;
     private bool? _readonly;
     private bool? _required;
 
-    public IFieldProperty Property
+    public IProperty Property
     {
         get
         {
@@ -133,9 +133,9 @@ public class AliasProperty : IFieldProperty
 
     public string? As { get; set; }
 
-    public IFieldProperty? OriginalProperty => _property;
+    public IProperty? OriginalProperty => _property;
 
-    public IFieldProperty? PersistentProperty => (Class?.IsPersistent ?? false)
+    public IProperty? PersistentProperty => (Class?.IsPersistent ?? false)
         ? this
         : OriginalProperty is AliasProperty op
             ? op.PersistentProperty
@@ -165,6 +165,7 @@ public class AliasProperty : IFieldProperty
 
     internal AliasProperty? OriginalAliasProperty { get; private set; }
 
+    /// <inheritdoc cref="IProperty.CloneWithClassOrEndpoint" />
     public IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null)
     {
         var alp = new AliasProperty
@@ -211,7 +212,7 @@ public class AliasProperty : IFieldProperty
         return Name;
     }
 
-    internal AliasProperty Clone(IFieldProperty prop, Reference? includeReference)
+    internal AliasProperty Clone(IProperty prop, Reference? includeReference)
     {
         var alp = new AliasProperty
         {

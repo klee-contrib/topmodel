@@ -20,7 +20,7 @@ public class CompositionProperty : IProperty
 
     public Domain Domain { get; set; }
 
-    public string[] DomainParameters { get; set; } = Array.Empty<string>();
+    public string[] DomainParameters { get; set; } = [];
 
     public string Comment { get; set; }
 
@@ -34,9 +34,9 @@ public class CompositionProperty : IProperty
 
     public PropertyMapping PropertyMapping { get; set; }
 
-    public string Label => Name;
+    public string Label { get; set; }
 
-    public bool IsMultipart => Composition.Properties.Any(cpp => cpp is IFieldProperty fp && fp.Domain.IsMultipart);
+    public bool IsMultipart => Composition.Properties.Any(cpp => cpp.Domain?.IsMultipart ?? false);
 
     public bool PrimaryKey => false;
 
@@ -44,13 +44,15 @@ public class CompositionProperty : IProperty
 
 #nullable enable
 
+    public string DefaultValue => throw new NotImplementedException();
+
     public LocatedString? Trigram { get; set; }
 
-    public IFieldProperty? CompositionPrimaryKey
+    public IProperty? CompositionPrimaryKey
     {
         get
         {
-            var cpPks = Composition.ExtendedProperties.OfType<IFieldProperty>().Where(p => p.PrimaryKey);
+            var cpPks = Composition.ExtendedProperties.Where(p => p.PrimaryKey);
             if (!cpPks.Any())
             {
                 cpPks = Composition.ExtendedProperties.OfType<AliasProperty>().Where(p => p.AliasedPrimaryKey);

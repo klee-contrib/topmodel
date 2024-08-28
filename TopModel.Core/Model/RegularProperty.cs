@@ -3,7 +3,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public class RegularProperty : IFieldProperty
+public class RegularProperty : IProperty
 {
 #nullable disable
     public string Name { get; set; }
@@ -31,7 +31,7 @@ public class RegularProperty : IFieldProperty
 #nullable disable
     public Domain Domain { get; set; }
 
-    public string[] DomainParameters { get; set; } = Array.Empty<string>();
+    public string[] DomainParameters { get; set; } = [];
 
     public string Comment { get; set; }
 
@@ -54,7 +54,9 @@ public class RegularProperty : IFieldProperty
 #nullable disable
     internal Reference Location { get; set; }
 #nullable enable
+#pragma warning disable KTA1600
 
+    /// <inheritdoc cref="IProperty.CloneWithClassOrEndpoint" />
     public IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null)
     {
         return new RegularProperty

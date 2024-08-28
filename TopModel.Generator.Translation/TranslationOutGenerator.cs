@@ -26,7 +26,7 @@ public class TranslationOutGenerator : TranslationGeneratorBase<TranslationConfi
 
     protected override bool NoLanguage => true;
 
-    protected override string? GetResourceFilePath(IFieldProperty property, string tag, string lang)
+    protected override string? GetResourceFilePath(IProperty property, string tag, string lang)
     {
         if (lang == _modelConfig.I18n.DefaultLang)
         {
@@ -49,7 +49,7 @@ public class TranslationOutGenerator : TranslationGeneratorBase<TranslationConfi
         return null;
     }
 
-    protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IFieldProperty> properties)
+    protected override void HandleResourceFile(string filePath, string lang, IEnumerable<IProperty> properties)
     {
         using var fw = new FileWriter(filePath, _logger) { EnableHeader = false };
         var containers = properties.GroupBy(prop => prop.Parent);
@@ -66,7 +66,7 @@ public class TranslationOutGenerator : TranslationGeneratorBase<TranslationConfi
             && langDict.ContainsKey(key);
     }
 
-    private void WriteClasse(FileWriter fw, IGrouping<IPropertyContainer, IFieldProperty> container, string lang)
+    private void WriteClasse(FileWriter fw, IGrouping<IPropertyContainer, IProperty> container, string lang)
     {
         foreach (var property in container)
         {

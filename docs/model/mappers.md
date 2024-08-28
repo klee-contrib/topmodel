@@ -65,34 +65,31 @@ La propriété à gauche est toujours celle de la classe courante (pour un `from
 
 En dehors des mappings automatiques qui respectent forcément cette règle, **tous les mappings manuels ne peuvent être définis qu'entre deux propriétés de même domaine**. A moins qu'il existe un `converter` entre les deux domaines.
 
-## Mappings de compositions
+## Mappings entre compositions et associations
 
-En plus de mapper des champs d'une classe sur des champs de la classe cible, certains mappings peuvent être aussi définis sur des **compositions** (uniquement sur la classe qui définit les mappers). Les mappings possibles sont :
+En plus de mapper des champs d'une classe sur des champs de même type de la classe cible, il est également possible de définir un mapping sur une composition de la classe qui définit le mapper avec une association, dans le cas où sa clé primaire est de même domaine que celle de la classe composée. Cela n'est possible qu'entre des associations `oneToOne`/`manyToOne` et des compositions sans domaines.
 
-- Une association (ou alias vers une association) dont la clé primaire est de même domaine que celle de la classe composée. Cela n'est possible qu'entre des associations `oneToOne`/`manyToOne` et des compositions sans domaines.
+Exemple :
 
-  Exemple :
+```yaml
+# classe "ContactDTO"
+to:
+  - class: Contact
+    mappings:
+      Adresse: AdresseId
+```
 
-  ```yaml
-  # classe "ContactDTO"
-  to:
-    - class: Contact
-      mappings:
-        Adresse: AdresseId
-  ```
+Ce mapping est possible dans les deux sens :
 
-  Ce mapping est possible dans les deux sens :
-
-  - En C#, le mapping ne concerne que la clé primaire (`from` crée une nouvelle instance en renseignant simplement la PK, `to` récupère la clé primaire)
-  - En JPA, il faut avoir défini un mapper entre les deux classes (celle de l'association et celle de la composition), et le mapping généré mappe la classe dans l'autre dans le sens demandé.
+- En C#, le mapping ne concerne que la clé primaire (`from` crée une nouvelle instance en renseignant simplement la PK, `to` récupère la clé primaire)
+- En JPA, il faut avoir défini un mapper entre les deux classes (celle de l'association et celle de la composition), et le mapping généré mappe la classe dans l'autre dans le sens demandé.
 
 ## Mapping d'une propriété unique
 
 Dans un mapper `from`, en plus de pouvoir spécifier une classe comme paramètre, il est également possible d'avoir une **propriété
 comme paramètre**.
 
-Cela permet par exemple d'ajouter les champs supplémentaires d'un DTO par rapport à sa classe persistée dans le mapper qui le crée. Tous les types de propriétés sont supportés, y compris les compositions.
-
+Cela permet par exemple d'ajouter les champs supplémentaires d'un DTO par rapport à sa classe persistée dans le mapper qui le crée.
 Par exemple :
 
 ```yaml
@@ -120,12 +117,9 @@ class:
           - property:
               alias:
                 class: MyDTO
-                property: MyProperty
-          - property:
-              composition: MyOtherDTO
-              name: others
-              domain: DO_LIST
-              comment: Other DTOs
+                property:
+                  - MyProperty
+                  - MyOtherDTO
 ```
 
 Le mapping se fera vers la propriété de la classe qui a le même nom. On vérifie que les deux propriétés ont le même domaine, et dans le cas d'une composition, que ce sont bien des compositions des deux côtés et de la même classe. Il est possible de surcharger la propriété cible en renseignant `target` (au même niveau que `property`), si jamais les noms ne peuvent pas correspondre pour une raison ou une autre.

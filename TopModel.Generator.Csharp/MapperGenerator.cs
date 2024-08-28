@@ -47,11 +47,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
         foreach (var property in fromMappers.SelectMany(fm => fm.Mapper.PropertyParams.Select(pp => pp.Property).Concat(toMappers.SelectMany(tm => tm.Mapper.MissingRequiredProperties))))
         {
             usings.AddRange(Config.GetDomainImports(property, tag));
-
-            if (property is IFieldProperty fp)
-            {
-                usings.AddRange(Config.GetValueImports(fp));
-            }
+            usings.AddRange(Config.GetValueImports(property));
 
             switch (property)
             {
@@ -65,6 +61,9 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                     usings.Add(Config.GetNamespace(rp.Class, GetBestClassTag(rp.Class, tag)));
                     break;
                 case CompositionProperty cp when Classes.Contains(cp.Composition):
+                    usings.Add(Config.GetNamespace(cp.Composition, GetBestClassTag(cp.Composition, tag)));
+                    break;
+                case AliasProperty { Property: CompositionProperty cp } when Classes.Contains(cp.Composition):
                     usings.Add(Config.GetNamespace(cp.Composition, GetBestClassTag(cp.Composition, tag)));
                     break;
             }
@@ -176,7 +175,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
                             var value = $"{param.Name}{(!param.Required && mapping.Key is not CompositionProperty ? "?" : string.Empty)}.{mapping.Value.NamePascal}";
 
-                            if (mapping.Key is CompositionProperty cp)
+                            if (mapping.Key is CompositionProperty cp && mapping.Value is not CompositionProperty)
                             {
                                 w.Write($"{(!param.Required ? $"{param.Name} is null ? null : " : string.Empty)}new() {{ {cp.CompositionPrimaryKey?.NamePascal} = ");
                             }
@@ -186,9 +185,9 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
                                 var targetType = Config.GetType(mapping.Key, Classes, nonNullable: true);
                                 var sourceType = Config.GetType(mapping.Value, Classes, nonNullable: true);
-                                if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType((IFieldProperty)mapping.Key).EndsWith(targetType))
+                                if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Key).EndsWith(targetType))
                                 {
-                                    value = $"<{Config.GetEnumType((IFieldProperty)mapping.Key)}>({value}";
+                                    value = $"<{Config.GetEnumType(mapping.Key)}>({value}";
 
                                     if (!requiredNonNullable || !mapping.Key.Required && !mapping.Value.Required)
                                     {
@@ -199,7 +198,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                                         value = $"Enum.Parse{value})";
                                     }
                                 }
-                                else if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType((IFieldProperty)mapping.Value).EndsWith(sourceType))
+                                else if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Value).EndsWith(sourceType))
                                 {
                                     if (!requiredNonNullable || !mapping.Key.Required && !mapping.Value.Required)
                                     {
@@ -218,7 +217,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                                 else if (isValueType && requiredNonNullable && mapping.Key.Required && !param.Required)
                                 {
                                     var type = Config.GetType(mapping.Value, Classes, nonNullable: true);
-                                    var enumType = Config.GetEnumType((IFieldProperty)mapping.Value);
+                                    var enumType = Config.GetEnumType(mapping.Value);
                                     var cast = enumType.Contains($".{type}") ? enumType : type;
 
                                     value = $"({cast}){value}";
@@ -228,12 +227,12 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                                     value += ".Value";
                                 }
 
-                                value = Config.GetConvertedValue(value, mapping.Value.Domain, (mapping.Key as IFieldProperty)?.Domain, isValueType && (!requiredNonNullable || !mapping.Value.Required));
+                                value = Config.GetConvertedValue(value, mapping.Value.Domain, mapping.Key.Domain, isValueType && (!requiredNonNullable || !mapping.Value.Required));
                             }
 
                             w.Write(value);
 
-                            if (mapping.Key is CompositionProperty)
+                            if (mapping.Key is CompositionProperty && mapping.Value is not CompositionProperty)
                             {
                                 w.Write(" }");
                             }
@@ -371,7 +370,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
                 var sourceType = Config.GetType(mapping.Key, Classes, nonNullable: true);
                 var targetType = Config.GetType(mapping.Value, Classes, nonNullable: true);
-                if (mapping.Key is IFieldProperty keyFp && !sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(keyFp).EndsWith(sourceType))
+                if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Key).EndsWith(sourceType))
                 {
                     if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
                     {
@@ -382,9 +381,9 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                         value = $"Enum.GetName({value})";
                     }
                 }
-                else if (mapping.Value is IFieldProperty valueFp && !sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(valueFp).EndsWith(targetType))
+                else if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Value).EndsWith(targetType))
                 {
-                    value = $"<{Config.GetEnumType(valueFp)}>({value}";
+                    value = $"<{Config.GetEnumType(mapping.Value)}>({value}";
 
                     if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
                     {
@@ -396,7 +395,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                     }
                 }
 
-                value = Config.GetConvertedValue(value, (mapping.Key as IFieldProperty)?.Domain, mapping.Value.Domain, isValueType && (!rrnSource || !mapping.Key.Required));
+                value = Config.GetConvertedValue(value, mapping.Key.Domain, mapping.Value.Domain, isValueType && (!rrnSource || !mapping.Key.Required));
 
                 if (mapper.Class.Abstract)
                 {
@@ -489,7 +488,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
 
                     var sourceType = Config.GetType(mapping.Key, Classes, nonNullable: true);
                     var targetType = Config.GetType(mapping.Value, Classes, nonNullable: true);
-                    if (mapping.Key is IFieldProperty keyFp && !sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(keyFp).EndsWith(sourceType))
+                    if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Key).EndsWith(sourceType))
                     {
                         if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
                         {
@@ -500,9 +499,9 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                             value = $"Enum.GetName({value})";
                         }
                     }
-                    else if (mapping.Value is IFieldProperty valueFp && !sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(valueFp).EndsWith(targetType))
+                    else if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Value).EndsWith(targetType))
                     {
-                        value = $"<{Config.GetEnumType(valueFp)}>({value}";
+                        value = $"<{Config.GetEnumType(mapping.Value)}>({value}";
 
                         if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
                         {
@@ -514,7 +513,7 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
                         }
                     }
 
-                    value = Config.GetConvertedValue(value, (mapping.Key as IFieldProperty)?.Domain, mapping.Value.Domain, isValueType && (!rrnSource || !mapping.Key.Required));
+                    value = Config.GetConvertedValue(value, mapping.Key.Domain, mapping.Value.Domain, isValueType && (!rrnSource || !mapping.Key.Required));
 
                     w.WriteLine(2, $"dest.{mapping.Value.NamePascal} = {value};");
                 }

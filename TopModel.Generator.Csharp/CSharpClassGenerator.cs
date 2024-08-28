@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Data;
+using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
@@ -64,12 +65,11 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
         w.WriteLine(1, "{");
 
-        var cols = item.Properties.OfType<IFieldProperty>().ToList();
-        foreach (var property in cols)
+        foreach (var property in item.Properties)
         {
             w.WriteSummary(2, "Nom de la colonne en base associée à la propriété " + property.NamePascal + ".");
             w.WriteLine(2, $"{property.SqlName},");
-            if (cols.IndexOf(property) != cols.Count - 1)
+            if (item.Properties.IndexOf(property) != item.Properties.Count - 1)
             {
                 w.WriteLine();
             }
@@ -210,7 +210,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     /// <param name="item">La classe générée.</param>
     private void GenerateConstProperties(CSharpWriter w, Class item)
     {
-        var consts = new List<(IFieldProperty Prop, string Name, string Code, string Label)>();
+        var consts = new List<(IProperty Prop, string Name, string Code, string Label)>();
 
         foreach (var refValue in item.Values)
         {
@@ -281,7 +281,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     /// <param name="item">La classe générée.</param>
     private void GenerateEnumValues(CSharpWriter w, Class item)
     {
-        bool WriteEnum(IFieldProperty prop)
+        bool WriteEnum(IProperty prop)
         {
             if (item.Extends != null && Config.CanClassUseEnums(item.Extends, Classes, prop))
             {
@@ -339,7 +339,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     /// <param name="tag">Tag.</param>
     private void GenerateProperties(CSharpWriter w, Class item, string tag)
     {
-        var sameColumnSet = new HashSet<string>(item.Properties.OfType<IFieldProperty>()
+        var sameColumnSet = new HashSet<string>(item.Properties
             .GroupBy(g => g.SqlName).Where(g => g.Count() > 1).Select(g => g.Key));
 
         foreach (var property in item.Properties.Where(p => p is not CompositionProperty cp || Classes.Contains(cp.Composition)))
@@ -364,7 +364,14 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     {
         w.WriteSummary(1, property.Comment);
 
-        var type = Config.GetType(property, Classes, nonNullable: property is CompositionProperty { Required: true } || property.Required && Config.RequiredNonNullable(tag));
+        var cp = property switch
+        {
+            CompositionProperty c => c,
+            AliasProperty { Property: CompositionProperty c } => c,
+            _ => null
+        };
+
+        var type = Config.GetType(property, Classes, nonNullable: cp != null && cp.Required || property.Required && Config.RequiredNonNullable(tag));
 
         if (!property.Class.Abstract)
         {
@@ -400,7 +407,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 }
             }
 
-            if (Config.Kinetix && property is not CompositionProperty)
+            if (Config.Kinetix && property is not CompositionProperty and not AliasProperty { Property: CompositionProperty })
             {
                 w.WriteAttribute(1, "Domain", $@"Domains.{property.Domain.CSharpName}");
             }
@@ -429,9 +436,9 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
             var defaultValue = Config.GetValue(property, Classes);
 
-            if (defaultValue == "null" && property is CompositionProperty { Required: true } cp)
+            if (cp != null && cp.Required)
             {
-                var newableType = GetNewableType(property);
+                var newableType = GetNewableType(cp);
                 if (newableType != null && (!Config.RequiredNonNullable(tag) || newableType != type))
                 {
                     defaultValue = $"new {newableType}()";
@@ -470,12 +477,12 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 usings.Add("System.ComponentModel");
             }
 
-            if (item.Properties.OfType<IFieldProperty>().Any(p => p.Required || p.PrimaryKey || Config.GetType(p)?.TrimEnd('?') == "string" && p.Domain.Length != null))
+            if (item.Properties.Any(p => p.Required || p.PrimaryKey || Config.GetType(p)?.TrimEnd('?') == "string" && p.Domain.Length != null))
             {
                 usings.Add("System.ComponentModel.DataAnnotations");
             }
 
-            if (item.Properties.OfType<IFieldProperty>().Any(fp =>
+            if (item.Properties.Any(fp =>
                 {
                     var prop = (fp as AliasProperty)?.PersistentProperty ?? fp;
                     return (fp.Class.IsPersistent || fp is AliasProperty { PersistentProperty: not null, As: null } && !Config.NoColumnOnAlias)
@@ -486,7 +493,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 usings.Add("System.ComponentModel.DataAnnotations.Schema");
             }
 
-            if (item.Properties.OfType<IFieldProperty>().Any() && Config.Kinetix)
+            if (item.Properties.Any(p => p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }) && Config.Kinetix)
             {
                 usings.Add("Kinetix.Modeling.Annotations");
                 usings.Add(Config.DomainNamespace);
@@ -506,11 +513,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         foreach (var property in item.Properties)
         {
             usings.AddRange(Config.GetDomainImports(property, tag));
-
-            if (property is IFieldProperty fp)
-            {
-                usings.AddRange(Config.GetValueImports(fp));
-            }
+            usings.AddRange(Config.GetValueImports(property));
 
             switch (property)
             {
@@ -524,6 +527,9 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                     usings.Add(GetNamespace(rp.Class, tag));
                     break;
                 case CompositionProperty cp when Classes.Contains(cp.Composition):
+                    usings.Add(GetNamespace(cp.Composition, tag));
+                    break;
+                case AliasProperty { Property: CompositionProperty cp } when Classes.Contains(cp.Composition):
                     usings.Add(GetNamespace(cp.Composition, tag));
                     break;
             }
@@ -547,22 +553,19 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         return Config.GetNamespace(classe, classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag);
     }
 
-    private string? GetNewableType(IProperty property)
+    private string? GetNewableType(CompositionProperty property)
     {
-        if (property is CompositionProperty cp)
+        var type = Config.GetType(property, nonNullable: true);
+        var genericType = type.Split('<').First();
+
+        if (property.Domain == null)
         {
-            var type = Config.GetType(property, nonNullable: true);
-            var genericType = type.Split('<').First();
+            return type;
+        }
 
-            if (cp.Domain == null)
-            {
-                return type;
-            }
-
-            if (_newableTypes.TryGetValue(genericType, out var newableType))
-            {
-                return type.Replace(genericType, newableType);
-            }
+        if (_newableTypes.TryGetValue(genericType, out var newableType))
+        {
+            return type.Replace(genericType, newableType);
         }
 
         return null;

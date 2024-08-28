@@ -72,9 +72,9 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
         {
             usings.AddRange(Config.GetDomainImports(property, tag));
 
-            if (property is IFieldProperty fp && fp.IsQueryParam())
+            if (property.IsQueryParam())
             {
-                usings.AddRange(Config.GetValueImports(fp));
+                usings.AddRange(Config.GetValueImports(property));
             }
 
             switch (property)
@@ -89,6 +89,9 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
                     usings.Add(GetNamespace(rp.Class, tag));
                     break;
                 case CompositionProperty cp:
+                    usings.Add(GetNamespace(cp.Composition, tag));
+                    break;
+                case AliasProperty { Property: CompositionProperty cp }:
                     usings.Add(GetNamespace(cp.Composition, tag));
                     break;
             }

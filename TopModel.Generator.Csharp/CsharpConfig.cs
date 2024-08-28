@@ -215,7 +215,7 @@ public class CsharpConfig : GeneratorConfigBase
         nameof(DataFlowsPath)
     ];
 
-    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses, IFieldProperty? prop = null)
+    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses, IProperty? prop = null)
     {
         return EnumsForStaticReferences && base.CanClassUseEnums(classe, availableClasses, prop);
     }
@@ -511,7 +511,7 @@ public class CsharpConfig : GeneratorConfigBase
     {
         var type = base.GetType(prop, availableClasses, useClassForAssociation);
 
-        if (!nonNullable && (NullableEnable || AllValueTypes.Contains(type) || prop is IFieldProperty f && GetEnumType(f, f is RegularProperty) == type))
+        if (!nonNullable && (NullableEnable || AllValueTypes.Contains(type) || GetEnumType(prop, prop is RegularProperty) == type))
         {
             type += "?";
         }
@@ -532,8 +532,8 @@ public class CsharpConfig : GeneratorConfigBase
             AliasProperty { Property: AssociationProperty ap } when CanClassUseEnums(ap.Association, availableClasses) => true,
             RegularProperty { Class: not null } rp when CanClassUseEnums(rp.Class, availableClasses, rp) => true,
             AliasProperty { Property: RegularProperty { Class: not null } rp } when CanClassUseEnums(rp.Class, availableClasses, rp) => true,
-            IFieldProperty => AllValueTypes.Contains(GetType(prop, availableClasses, nonNullable: true)),
-            _ => false
+            CompositionProperty => false,
+            _ => AllValueTypes.Contains(GetType(prop, availableClasses, nonNullable: true))
         };
     }
 

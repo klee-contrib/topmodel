@@ -146,7 +146,7 @@ public class SqlTableScripter : ISqlScripter<Class>
     /// <param name="property">Propriété.</param>
     private void WriteColumn(StringBuilder sb, IProperty property, IEnumerable<Class> availableClasses)
     {
-        var persistentType = property is IFieldProperty
+        var persistentType = property is not CompositionProperty
             ? _config.GetType(property, availableClasses)
             : _config.TargetDBMS == TargetDBMS.Postgre ? "jsonb" : "json";
 
@@ -387,7 +387,7 @@ public class SqlTableScripter : ISqlScripter<Class>
     private IList<string> WriteUniqueConstraints(Class classe)
     {
         return classe.UniqueKeys
-            .Concat(classe.Properties.OfType<AssociationProperty>().Where(ap => ap.Type == AssociationType.OneToOne).Select(ap => new List<IFieldProperty> { ap }))
+            .Concat(classe.Properties.OfType<AssociationProperty>().Where(ap => ap.Type == AssociationType.OneToOne).Select(ap => new List<IProperty> { ap }))
             .Select(uk => _config.TargetDBMS == TargetDBMS.Sqlserver
              ? $"constraint [UK_{classe.SqlName}_{string.Join("_", uk.Select(p => p.SqlName))}] unique nonclustered ({string.Join(", ", uk.Select(p => $"[{p.SqlName}] ASC"))})"
              : $"constraint UK_{classe.SqlName}_{string.Join("_", uk.Select(p => p.SqlName))} unique ({string.Join(", ", uk.Select(p => $"{p.SqlName}"))})")

@@ -41,22 +41,30 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
             fw.WriteLine($"import {{{string.Join(", ", GetFocusStoresImports(fileName, classe, tag).OrderBy(x => x))}}} from \"{Config.EntityTypesPath}\";");
         }
 
-        if (classe.Properties.Any(c => c is IFieldProperty or CompositionProperty { Domain: not null } && !Config.IsListComposition(c)))
+        if (classe.Properties.Any(c => c.Domain is not null && !Config.IsListComposition(c)))
         {
             var domainImport = Config.GetRelativePath(Config.ResolveVariables(Config.DomainPath, tag), fileName);
-            fw.WriteLine($"import {{{string.Join(", ", classe.Properties.Select(p => p is IFieldProperty fp ? fp.Domain : p is CompositionProperty cp && !Config.IsListComposition(cp) ? cp.Domain! : null!).Where(d => d != null).OrderBy(d => d.Name).Select(d => d.Name).Distinct())}}} from \"{domainImport}\";");
+            fw.WriteLine($"import {{{string.Join(", ", classe.Properties
+                .Select(p => p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }
+                    ? p.Domain
+                    : p is CompositionProperty or AliasProperty { Property: CompositionProperty } && !Config.IsListComposition(p)
+                        ? p.Domain
+                        : null!)
+                .Where(d => d != null)
+                .OrderBy(d => d.Name)
+                .Select(d => d.Name).Distinct())}}} from \"{domainImport}\";");
         }
 
         var imports = classe.ClassDependencies
             .Select(dep => (
-                Import: dep is { Source: CompositionProperty { Domain: not null } cp } && !Config.IsListComposition(cp)
+                Import: (dep is { Source: CompositionProperty { Domain: not null } cp } && !Config.IsListComposition(cp)) || (dep is { Source: AliasProperty { Property: CompositionProperty { Domain: not null } cp2 } } && !Config.IsListComposition(cp2))
                     ? dep.Classe.NamePascal
-                    : dep is { Source: IFieldProperty fp }
+                    : dep is { Source: IProperty fp and not CompositionProperty and not AliasProperty { Property: CompositionProperty } }
                     ? Config.GetEnumType(fp)
                     : $"{dep.Classe.NamePascal}Entity, {dep.Classe.NamePascal}{(Config.EntityMode == EntityMode.TYPED ? "EntityType" : string.Empty)}",
                 Path: Config.GetImportPathForClass(dep, dep.Classe.Tags.Contains(tag) ? tag : dep.Classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag, tag, Classes)!))
             .Concat(classe.Properties.SelectMany(dep => Config.GetDomainImportPaths(fileName, dep, tag)))
-            .Concat(classe.Properties.OfType<IFieldProperty>().SelectMany(dep => Config.GetValueImportPaths(fileName, dep)))
+            .Concat(classe.Properties.SelectMany(dep => Config.GetValueImportPaths(fileName, dep)))
             .Where(p => p.Path != null && p.Path != Config.EntityTypesPath)
             .GroupAndSort();
 
@@ -107,14 +115,28 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                     case CompositionProperty { Domain: null } cp:
                         fw.Write($"ObjectEntry<{cp.Composition.NamePascal}EntityType>");
                         break;
-                    case CompositionProperty cp2 when Config.IsListComposition(cp2):
-                        if (cp2.Composition.Name == classe.Name)
+                    case AliasProperty { Property: CompositionProperty { Domain: null } cp }:
+                        fw.Write($"ObjectEntry<{cp.Composition.NamePascal}EntityType>");
+                        break;
+                    case CompositionProperty cp when Config.IsListComposition(cp):
+                        if (cp.Composition.Name == classe.Name)
                         {
                             fw.Write($"RecursiveListEntry");
                         }
                         else
                         {
-                            fw.Write($"ListEntry<{cp2.Composition.NamePascal}EntityType>");
+                            fw.Write($"ListEntry<{cp.Composition.NamePascal}EntityType>");
+                        }
+
+                        break;
+                    case AliasProperty { Property: CompositionProperty cp } when Config.IsListComposition(cp):
+                        if (cp.Composition.Name == classe.Name)
+                        {
+                            fw.Write($"RecursiveListEntry");
+                        }
+                        else
+                        {
+                            fw.Write($"ListEntry<{cp.Composition.NamePascal}EntityType>");
                         }
 
                         break;
@@ -163,19 +185,17 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
 
             switch (property)
             {
-                case CompositionProperty { Domain: null } cp:
+                case CompositionProperty { Domain: null }:
+                case AliasProperty { Property: CompositionProperty { Domain: null } }:
                     fw.Write("\"object\",");
                     break;
-                case CompositionProperty cp2 when Config.IsListComposition(cp2):
-                    if (cp2.Composition.Name == classe.Name)
-                    {
-                        fw.Write("\"recursive-list\"");
-                    }
-                    else
-                    {
-                        fw.Write("\"list\",");
-                    }
-
+                case CompositionProperty cp1 when Config.IsListComposition(cp1) && cp1.Composition.Name == classe.Name:
+                case AliasProperty { Property: CompositionProperty cp2 } when Config.IsListComposition(cp2) && cp2.Composition.Name == classe.Name:
+                    fw.Write("\"recursive-list\"");
+                    break;
+                case CompositionProperty when Config.IsListComposition(property):
+                case AliasProperty { Property: CompositionProperty } when Config.IsListComposition(property):
+                    fw.Write("\"list\",");
                     break;
                 default:
                     fw.Write("\"field\",");
@@ -184,13 +204,20 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
 
             fw.Write("\r\n");
 
-            if (property is IFieldProperty field)
+            var cp = property switch
             {
-                fw.WriteLine($"        name: \"{field.NameCamel}\",");
-                fw.WriteLine($"        domain: {field.Domain.Name},");
-                fw.WriteLine($"        isRequired: {(field.Required && !((field.PrimaryKey || field is AliasProperty { AliasedPrimaryKey: true }) && field.Domain.AutoGeneratedValue)).ToString().ToFirstLower()},");
+                CompositionProperty c => c,
+                AliasProperty { Property: CompositionProperty c } => c,
+                _ => null
+            };
 
-                var defaultValue = Config.GetValue(field, Classes);
+            if (cp == null)
+            {
+                fw.WriteLine($"        name: \"{property.NameCamel}\",");
+                fw.WriteLine($"        domain: {property.Domain.Name},");
+                fw.WriteLine($"        isRequired: {(property.Required && !((property.PrimaryKey || property is AliasProperty { AliasedPrimaryKey: true }) && property.Domain.AutoGeneratedValue)).ToString().ToFirstLower()},");
+
+                var defaultValue = Config.GetValue(property, Classes);
                 if (defaultValue != "undefined")
                 {
                     fw.WriteLine($"        defaultValue: {defaultValue},");
@@ -198,32 +225,32 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
 
                 if (Config.TranslateProperties == true)
                 {
-                    fw.WriteLine($"        label: \"{field.ResourceKey}\"{(Config.GenerateComments ? "," : string.Empty)}");
+                    fw.WriteLine($"        label: \"{property.ResourceKey}\"{(Config.GenerateComments ? "," : string.Empty)}");
                 }
                 else
                 {
-                    fw.WriteLine($"        label: \"{field.Label}\"{(Config.GenerateComments ? "," : string.Empty)}");
+                    fw.WriteLine($"        label: \"{property.Label}\"{(Config.GenerateComments ? "," : string.Empty)}");
                 }
 
                 if (Config.GenerateComments)
                 {
                     if (Config.TranslateProperties == true)
                     {
-                        fw.WriteLine($"        comment: \"{field.CommentResourceKey}\"");
+                        fw.WriteLine($"        comment: \"{property.CommentResourceKey}\"");
                     }
                     else
                     {
-                        fw.WriteLine($"        comment: \"{field.Comment}\"");
+                        fw.WriteLine($"        comment: \"{property.Comment}\"");
                     }
                 }
             }
-            else if (property is CompositionProperty cp3 && cp3.Domain != null && !Config.IsListComposition(cp3))
+            else if (cp.Domain != null && !Config.IsListComposition(cp))
             {
                 fw.Write("        name: \"");
-                fw.Write(cp3.NameCamel);
+                fw.Write(cp.NameCamel);
                 fw.Write("\"");
                 fw.Write(",\r\n        domain: ");
-                fw.Write(cp3.Domain.Name);
+                fw.Write(cp.Domain.Name);
                 fw.Write(",\r\n        isRequired: true");
                 fw.Write(",\r\n        label: \"");
                 if (Config.TranslateProperties == true)
@@ -241,10 +268,10 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
 
                 fw.Write("\"\r\n");
             }
-            else if (property is CompositionProperty cp2 && cp2.Composition.Name != classe.Name)
+            else if (cp.Composition.Name != classe.Name)
             {
                 fw.Write("        entity: ");
-                fw.Write(cp2.Composition.NamePascal);
+                fw.Write(cp.Composition.NamePascal);
                 fw.Write("Entity");
                 fw.Write("\r\n");
             }
@@ -270,22 +297,22 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
 
     private IEnumerable<string> GetFocusStoresImports(string fileName, Class classe, string tag)
     {
-        if (classe.Properties.Any(p => p is IFieldProperty || p is CompositionProperty { Domain: not null } && !Config.IsListComposition(p)))
+        if (classe.Properties.Any(p => p.Domain is not null && !Config.IsListComposition(p)))
         {
             yield return "FieldEntry2";
         }
 
-        if (classe.Properties.Any(p => p is CompositionProperty { Domain: null }))
+        if (classe.Properties.Any(p => p is CompositionProperty { Domain: null } or AliasProperty { Property: CompositionProperty { Domain: null } }))
         {
             yield return "ObjectEntry";
         }
 
-        if (classe.Properties.Any(p => p is CompositionProperty cp && cp.Class == classe && Config.IsListComposition(p)))
+        if (classe.Properties.Any(p => (p is CompositionProperty && p.Class == classe && Config.IsListComposition(p)) || (p is AliasProperty { Property: CompositionProperty } && p.Class == classe && Config.IsListComposition(p))))
         {
             yield return "ListEntry";
         }
 
-        if (classe.Properties.Any(p => p is CompositionProperty cp && cp.Composition == classe && Config.IsListComposition(p)))
+        if (classe.Properties.Any(p => (p is CompositionProperty cp && cp.Composition == classe && Config.IsListComposition(p)) || (p is AliasProperty { Property: CompositionProperty cp2 } && cp2.Composition == classe && Config.IsListComposition(p))))
         {
             yield return "RecursiveListEntry";
         }

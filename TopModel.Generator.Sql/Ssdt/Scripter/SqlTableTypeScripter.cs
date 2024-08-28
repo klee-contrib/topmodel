@@ -110,7 +110,7 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
     /// </summary>
     /// <param name="sb">Flux.</param>
     /// <param name="property">Propriété.</param>
-    private void WriteColumn(StringBuilder sb, IFieldProperty property)
+    private void WriteColumn(StringBuilder sb, IProperty property)
     {
         var persistentType = _config.GetType(property);
         sb.Append('[').Append(property.SqlName).Append("] ").Append(persistentType).Append(" null");
@@ -128,7 +128,7 @@ public class SqlTableTypeScripter : ISqlScripter<Class>
         var sb = new StringBuilder();
 
         // Colonnes
-        foreach (var property in table.Properties.OfType<IFieldProperty>())
+        foreach (var property in table.Properties)
         {
             if ((!property.PrimaryKey || _config.ShouldQuoteValue(property)) && property.Name != ScriptUtils.InsertKeyName)
             {

@@ -39,7 +39,7 @@ public class PhpConfig : GeneratorConfigBase
         nameof(DtosPath),
     };
 
-    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IFieldProperty? prop = null)
+    public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IProperty? prop = null)
     {
         return false;
     }
