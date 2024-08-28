@@ -128,7 +128,7 @@ public class JavascriptConfig : GeneratorConfigBase
     {
         return endpoints.SelectMany(e => e.ClassDependencies)
             .Select(dep => (
-                Import: dep is { Source: IProperty fp and not CompositionProperty }
+                Import: dep is { Source: IProperty fp and not CompositionProperty and not AliasProperty { Property: CompositionProperty } }
                     ? GetEnumType(fp)
                     : dep.Classe.NamePascal,
                 Path: GetImportPathForClass(dep, dep.Classe.Tags.Contains(tag) ? tag : dep.Classe.Tags.Intersect(Tags).FirstOrDefault() ?? tag, tag, availableClasses)!))
@@ -150,7 +150,7 @@ public class JavascriptConfig : GeneratorConfigBase
     public string? GetImportPathForClass(ClassDependency dep, string targetTag, string sourceTag, IEnumerable<Class> availableClasses)
     {
         string target;
-        if (dep.Source is IProperty and not CompositionProperty)
+        if (dep is { Source: IProperty and not CompositionProperty and not AliasProperty { Property: CompositionProperty } })
         {
             if (dep.Classe.EnumKey != null && availableClasses.Contains(dep.Classe))
             {
@@ -231,7 +231,14 @@ public class JavascriptConfig : GeneratorConfigBase
 
     public bool IsListComposition(IProperty property)
     {
-        return property is CompositionProperty cp && cp.Domain != null && (GetImplementation(cp.Domain)?.GenericType?.EndsWith("[]") ?? false);
+        var cp = property switch
+        {
+            CompositionProperty p => p,
+            AliasProperty { Property: CompositionProperty p } => p,
+            _ => null
+        };
+
+        return cp != null && cp.Domain != null && (GetImplementation(cp.Domain)?.GenericType?.EndsWith("[]") ?? false);
     }
 
     protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
