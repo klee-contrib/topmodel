@@ -113,12 +113,12 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
             var consumes = string.Empty;
             if (endpoint.Params.Any(p => p.Domain?.MediaType != null))
             {
-                consumes = @$", consumes = {{ {string.Join(", ", endpoint.Params.Where(p => p.Domain.MediaType != null).Select(p => $@"""{p.Domain.MediaType}"""))} }}";
+                consumes = @$", consumes = {{ {string.Join(", ", endpoint.Params.Where(p => p.Domain?.MediaType != null).Select(p => $@"""{p.Domain.MediaType}"""))} }}";
             }
 
             foreach (var annotation in Config.GetDecoratorAnnotations(endpoint, tag))
             {
-                fw.WriteLine(1, $"{(annotation.StartsWith("@") ? string.Empty : "@")}{annotation}");
+                fw.WriteLine(1, $"{(annotation.StartsWith('@') ? string.Empty : "@")}{annotation}");
             }
 
             fw.WriteLine(1, @$"@{endpoint.Method.ToPascalCase(true)}Mapping(path = ""{endpoint.Route}""{consumes}{produces})");

@@ -77,13 +77,11 @@ public class JpaModelPropertyGenerator
         fw.WriteDocEnd(1);
         if (property.Class.IsPersistent)
         {
-            var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
-            fw.AddImport($"{javaOrJakarta}.persistence.Convert");
-            fw.AddImport(_config.CompositionConverterCanonicalName.Replace("{class}", property.Class.Name).Replace("{package}", _config.GetPackageName(property.Class, tag)));
-            fw.WriteLine(1, $"@Convert(converter = {_config.CompositionConverterSimpleName.Replace("{class}", property.Class.Name)}.class)");
+            WriteConvertAnnotation(fw, property, 1, tag);
             WriteColumnAnnotation(fw, property, 1);
         }
 
+        fw.AddImport(property.Composition.GetImport(_config, tag));
         fw.WriteLine(1, $"private {_config.GetType(property)} {property.NameCamel};");
     }
 
@@ -182,11 +180,11 @@ public class JpaModelPropertyGenerator
 
     private bool ShouldWriteColumnAnnotation(Class classe, IProperty property)
     {
-        return (classe.IsPersistent || _config.UseJdbc) && !_config.GetImplementation(property.Domain)!.Annotations
+        return (classe.IsPersistent || _config.UseJdbc) && (property.Domain is null || !_config.GetImplementation(property.Domain)!.Annotations
                 .Where(i =>
                         classe.IsPersistent && (Target.Persisted & i.Target) > 0
                     || !classe.IsPersistent && (Target.Dto & i.Target) > 0)
-                    .Any(a => a.Text.Replace("@", string.Empty).StartsWith("Column"));
+                    .Any(a => a.Text.Replace("@", string.Empty).StartsWith("Column")));
     }
 
     private void WriteAliasProperty(JavaWriter fw, Class classe, AliasProperty property, string tag)
@@ -215,6 +213,15 @@ public class JpaModelPropertyGenerator
             WriteAssociationAnnotations(fw, classe, (AssociationProperty)property.Property, 1);
         }
 
+        if (property.Property is CompositionProperty cp)
+        {
+            fw.AddImport(cp.Composition.GetImport(_config, tag));
+            if (classe.IsPersistent)
+            {
+                WriteConvertAnnotation(fw, cp, 1, tag);
+            }
+        }
+
         if (property.Required && !property.PrimaryKey && (!classe.IsPersistent || _config.UseJdbc))
         {
             WriteValidationAnnotations(fw, javaOrJakarta);
@@ -225,7 +232,7 @@ public class JpaModelPropertyGenerator
             WriteEnumAnnotation(fw, javaOrJakarta);
         }
 
-        if (!property.PrimaryKey || classe.PrimaryKey.Count() <= 1)
+        if (property.Domain is not null && (!property.PrimaryKey || classe.PrimaryKey.Count() <= 1))
         {
             WriteDomainAnnotations(fw, property, tag, 1);
         }
@@ -235,6 +242,14 @@ public class JpaModelPropertyGenerator
         var isAssociationNotPersistent = property.Property is AssociationProperty ap && !ap.Association.IsPersistent;
         var useClassForAssociation = classe.IsPersistent && !isAssociationNotPersistent && !_config.UseJdbc;
         fw.WriteLine(1, $"private {_config.GetType(property, useClassForAssociation: useClassForAssociation)} {(isAssociationNotPersistent && !shouldWriteAssociation ? property.NameCamel : property.NameByClassCamel)}{suffix};");
+    }
+
+    private void WriteConvertAnnotation(JavaWriter fw, CompositionProperty property, int indentLevel, string tag)
+    {
+        var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
+        fw.AddImport($"{javaOrJakarta}.persistence.Convert");
+        fw.AddImport(_config.CompositionConverterCanonicalName.Replace("{class}", property.Class.Name).Replace("{package}", _config.GetPackageName(property.Class, tag)));
+        fw.WriteLine(indentLevel, $"@Convert(converter = {_config.CompositionConverterSimpleName.Replace("{class}", property.Class.Name)}.class)");
     }
 
     private void WriteAssociationAnnotations(JavaWriter fw, Class classe, AssociationProperty property, int indentLevel)
