@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Reflection;
+using System.Text.RegularExpressions;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model.Implementation;
@@ -70,6 +71,9 @@ public class JpaConfig : GeneratorConfigBase
     public string CompositionConverterCanonicalName { get; set; } = "{package}.{class}Converter";
 
     public string CompositionConverterSimpleName => CompositionConverterCanonicalName.Split('.').Last();
+
+    /// <inheritdoc cref="GeneratorConfigBase.TemplateAttributes"/>
+    public override Dictionary<string, List<string>> TemplateAttributes => new() { { nameof(CompositionConverterCanonicalName), new() { "package", "class" } } };
 
     /// <summary>
     /// Option pour générer des adders pour les associations oneToMany et ManyToMany

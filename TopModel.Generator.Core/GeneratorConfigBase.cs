@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Reflection;
+using System.Text.RegularExpressions;
 using TopModel.Core;
 using TopModel.Core.Model.Implementation;
 using TopModel.Utils;
@@ -7,6 +8,7 @@ namespace TopModel.Generator.Core;
 
 public abstract class GeneratorConfigBase
 {
+
     /// <summary>
     /// Racine du répertoire de génération.
     /// </summary>
@@ -76,6 +78,11 @@ public abstract class GeneratorConfigBase
     /// Propriétés qui supportent la variable "lang".
     /// </summary>
     public virtual string[] PropertiesWithLangVariableSupport => [];
+
+    /// <summary>
+    /// Propriétés qui peuvent contenir des templates à ne pas interprêter dans la résolution des variables globales ou par tag. 
+    /// </summary>
+    public virtual Dictionary<string, List<string>> TemplateAttributes => new();
 
     /// <summary>
     /// Propriétés qui supportent les variables par tag de la configuration courante.
@@ -447,7 +454,6 @@ public abstract class GeneratorConfigBase
         }
 
         var hasMissingVar = false;
-
         foreach (var property in GetType().GetProperties().Where(p => p.PropertyType == typeof(string) && p.CanWrite))
         {
             var value = (string?)property.GetValue(this);
@@ -459,6 +465,11 @@ public abstract class GeneratorConfigBase
                 foreach (var match in Regex.Matches(value, @"\{([$a-zA-Z0-9_-]+)(:\w+)?\}").Cast<Match>())
                 {
                     var varName = match.Groups[1].Value;
+                    if (TemplateAttributes.TryGetValue(property.Name, out var ta) && ta.Contains(varName))
+                    {
+                        continue;
+                    }
+
                     if (varName == "module" || varName == "lang" || varName == "fileName")
                     {
                         var supportedProperties = varName switch
