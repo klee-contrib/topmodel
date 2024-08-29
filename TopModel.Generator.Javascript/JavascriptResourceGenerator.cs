@@ -64,7 +64,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
             fw.WriteLine($"export const {module.ToCamelCase()}Comments = {{");
         }
 
-        WriteSubModule(fw, _modelConfig.I18n.DefaultLang, properties, true, 1);
+        WriteSubModule(fw, _modelConfig.I18n.DefaultLang, properties.Where(p => Config.ExtendedCompositions || p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }), true, 1);
 
         if (Config.ResourceMode != ResourceMode.JS)
         {
@@ -112,7 +112,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
             fw.WriteLine($"export const {module.ToCamelCase()} = {{");
         }
 
-        WriteSubModule(fw, lang, properties, false, 1);
+        WriteSubModule(fw, lang, properties.Where(p => Config.ExtendedCompositions || p is not CompositionProperty and not AliasProperty { Property: CompositionProperty }), false, 1);
 
         if (Config.ResourceMode != ResourceMode.JS)
         {
