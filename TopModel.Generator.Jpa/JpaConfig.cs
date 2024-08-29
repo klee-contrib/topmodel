@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model.Implementation;
@@ -72,8 +71,10 @@ public class JpaConfig : GeneratorConfigBase
 
     public string CompositionConverterSimpleName => CompositionConverterCanonicalName.Split('.').Last();
 
-    /// <inheritdoc cref="GeneratorConfigBase.TemplateAttributes"/>
-    public override Dictionary<string, List<string>> TemplateAttributes => new() { { nameof(CompositionConverterCanonicalName), new() { "package", "class" } } };
+    public override Dictionary<string, List<string>> TemplateAttributes => new()
+    {
+        [nameof(CompositionConverterCanonicalName)] = ["package", "class"]
+    };
 
     /// <summary>
     /// Option pour générer des adders pour les associations oneToMany et ManyToMany
@@ -143,15 +144,15 @@ public class JpaConfig : GeneratorConfigBase
     /// <summary>
     /// Listeners à ajouter aux dataflows
     /// </summary>
-    public List<string> DataFlowsListeners { get; set; } = new();
+    public List<string> DataFlowsListeners { get; set; } = [];
 
-    public override string[] PropertiesWithLangVariableSupport => new[]
-    {
+    public override string[] PropertiesWithLangVariableSupport =>
+    [
         nameof(ResourcesPath)
-    };
+    ];
 
-    public override string[] PropertiesWithTagVariableSupport => new[]
-    {
+    public override string[] PropertiesWithTagVariableSupport =>
+    [
         nameof(EntitiesPath),
         nameof(DaosPath),
         nameof(DtosPath),
@@ -160,17 +161,17 @@ public class JpaConfig : GeneratorConfigBase
         nameof(ApiGeneration),
         nameof(ResourcesPath),
         nameof(DbSchema)
-    };
+    ];
 
-    public override string[] PropertiesWithModuleVariableSupport => new[]
-    {
+    public override string[] PropertiesWithModuleVariableSupport =>
+    [
         nameof(EntitiesPath),
         nameof(DaosPath),
         nameof(DtosPath),
         nameof(ApiPath),
         nameof(EnumsPath),
         nameof(DataFlowsPath)
-    };
+    ];
 
     public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IProperty? prop = null)
     {

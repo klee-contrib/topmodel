@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using TopModel.Core;
 using TopModel.Core.Model.Implementation;
 using TopModel.Utils;
@@ -8,7 +7,6 @@ namespace TopModel.Generator.Core;
 
 public abstract class GeneratorConfigBase
 {
-
     /// <summary>
     /// Racine du répertoire de génération.
     /// </summary>
@@ -80,9 +78,9 @@ public abstract class GeneratorConfigBase
     public virtual string[] PropertiesWithLangVariableSupport => [];
 
     /// <summary>
-    /// Propriétés qui peuvent contenir des templates à ne pas interprêter dans la résolution des variables globales ou par tag. 
+    /// Propriétés qui peuvent contenir des templates à ne pas interprêter dans la résolution des variables globales ou par tag.
     /// </summary>
-    public virtual Dictionary<string, List<string>> TemplateAttributes => new();
+    public virtual Dictionary<string, List<string>> TemplateAttributes => [];
 
     /// <summary>
     /// Propriétés qui supportent les variables par tag de la configuration courante.

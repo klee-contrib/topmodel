@@ -28,6 +28,10 @@
 
 - [`d2dab384`](https://github.com/klee-contrib/topmodel/commit/d2dab3849c42312a9ff01a6a1d19e58aed0803d4) - [JS] Fix clés de traduction générées à tort
 
+  **breaking changes (JS)** :
+
+  Si vous utilisiez des sous-modules, des clés de traductions en doublon étaient générées pour tous les alias, même si le libellé était inchangé. Ce n'est désormais plus le cas. La clé de traduction renseignée sur la propriété dans l'entité générée a toujours été celle du libellé original, donc si vous référenciez bien `Entity.property.label` dans votre code cela n'aura pas d'impact.
+
 ## 1.51.2
 
 - [`06a32515`](https://github.com/klee-contrib/topmodel/commit/06a32515b689e371a222a01291df83eec7d389b5) - [C#] `noColumnOnAlias`, `useEFMigrations`, et `useLowerCaseSqlNames` à `true` par défaut
