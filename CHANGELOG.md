@@ -1,5 +1,9 @@
 # TopModel.Generator (`modgen`)
 
+## 1.52.2
+
+- HotFix sur [`#382`](https://github.com/klee-contrib/topmodel/issue/382)
+
 ## 1.52.1
 
 - [`#381`](https://github.com/klee-contrib/topmodel/issue/381) - [JAVA] SonarQube règles java:S2057 and java:S2162
