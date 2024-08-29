@@ -29,10 +29,10 @@ public class JpaModelPropertyGenerator
         }
 
         fw.WriteLine();
-        fw.AddImport("java.io.Serializable");
-        fw.WriteLine(1, @$"public static class {classe.NamePascal}Id implements Serializable {{");
+        fw.WriteLine(1, @$"public static class {classe.NamePascal}Id {{");
         foreach (var pk in classe.PrimaryKey)
         {
+            fw.WriteLine();
             if (pk is AssociationProperty ap)
             {
                 WriteAssociationAnnotations(fw, classe, ap, 2);
@@ -44,7 +44,6 @@ public class JpaModelPropertyGenerator
 
             WriteDomainAnnotations(fw, pk, tag, 2);
             fw.WriteLine(2, $"private {_config.GetType(pk, _classes, true)} {pk.NameByClassCamel};");
-            fw.WriteLine();
         }
 
         foreach (var pk in classe.PrimaryKey)
@@ -55,21 +54,53 @@ public class JpaModelPropertyGenerator
 
         fw.WriteLine();
         fw.WriteLine(2, "public boolean equals(Object o) {");
-        fw.WriteLine(3, $@"if(!(o instanceof {classe.NamePascal}Id)) {{");
+        fw.WriteLine(3, "if(o == this) {");
+        fw.WriteLine(4, "return true;");
+        fw.WriteLine(3, "}");
+        fw.WriteLine();
+        fw.WriteLine(3, "if(o == null) {");
+        fw.WriteLine(4, "return false;");
+        fw.WriteLine(3, "}");
+        fw.WriteLine();
+        fw.WriteLine(3, "if(this.getClass() != o.getClass()) {");
         fw.WriteLine(4, "return false;");
         fw.WriteLine(3, "}");
         fw.WriteLine();
         fw.WriteLine(3, $"{classe.NamePascal}Id oId = ({classe.NamePascal}Id) o;");
-        fw.WriteLine(3, $@"return !({string.Join("\n || ", classe.PrimaryKey.Select(pk => $@"!this.{pk.NameByClassCamel}.equals(oId.{pk.NameByClassCamel})"))});");
+        var associations = classe.PrimaryKey.Where(p => p is AssociationProperty || p is AliasProperty ap && ap.Property is AssociationProperty);
+        if (associations.Any())
+        {
+            fw.WriteLine();
+            fw.WriteLine(3, @$"if({string.Join(" || ", associations.Select(pk => pk.NameByClassCamel).Select(pk => $"this.{pk} == null || oId.{pk} == null"))}) {{");
+            fw.WriteLine(4, "return false;");
+            fw.WriteLine(3, "}");
+        }
+
+        fw.WriteLine();
+        fw.WriteLine(3, $@"return {string.Join("\n && ", classe.PrimaryKey.Select(pk => $@"Objects.equals(this.{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)}, oId.{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)})"))};");
         fw.WriteLine(2, "}");
 
         fw.WriteLine();
         fw.WriteLine(2, "@Override");
         fw.WriteLine(2, "public int hashCode() {");
-        fw.WriteLine(3, $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => pk.NameByClassCamel))});");
+        fw.WriteLine(3, $"return Objects.hash({string.Join(", ", classe.PrimaryKey.Select(pk => $"{pk.NameByClassCamel}{GetterToCompareCompositePkPk(pk)}"))});");
         fw.AddImport("java.util.Objects");
         fw.WriteLine(2, "}");
         fw.WriteLine(1, "}");
+    }
+
+    private string GetterToCompareCompositePkPk(IProperty pk)
+    {
+        if (pk is AssociationProperty ap)
+        {
+            return $".get{ap.Property.NamePascal}()";
+        }
+        else if (pk is AliasProperty al && al.Property is AssociationProperty asp)
+        {
+            return $".get{asp.Property.NamePascal}()";
+        }
+
+        return string.Empty;
     }
 
     public void WriteCompositionProperty(JavaWriter fw, CompositionProperty property, string tag)
