@@ -1,5 +1,10 @@
 # TopModel.Generator (`modgen`)
 
+## 1.52.1
+
+- [`#381`](https://github.com/klee-contrib/topmodel/issue/381) - [JAVA] SonarQube règles java:S2057 and java:S2162
+- [`#382`](https://github.com/klee-contrib/topmodel/issue/382) - [JPA] Comparaison des clés primaires composites sur des associations (manyToMany explicite)
+
 ## 1.52.0
 
 - [`#380`](https://github.com/klee-contrib/topmodel/pull/380) - Suppression de IFieldProperty (et donc alias de compositions)
