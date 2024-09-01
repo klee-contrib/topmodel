@@ -6,6 +6,7 @@
 
 ## 1.52.1
 
+- [`ac556c1`](https://github.com/klee-contrib/topmodel/commit/ac556c17dfc84ec52035ceddcbda0d956cf6b4a9) - [JS] Traductions de compositions générées qu'avec `extendedCompositions`
 - [`#381`](https://github.com/klee-contrib/topmodel/issue/381) - [JAVA] SonarQube règles java:S2057 and java:S2162
 - [`#382`](https://github.com/klee-contrib/topmodel/issue/382) - [JPA] Comparaison des clés primaires composites sur des associations (manyToMany explicite)
 

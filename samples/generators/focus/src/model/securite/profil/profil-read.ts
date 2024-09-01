@@ -56,6 +56,8 @@ export const ProfilReadEntity: ProfilReadEntityType = {
     },
     utilisateurs: {
         type: "list",
-        entity: UtilisateurItemEntity
+        entity: UtilisateurItemEntity,
+        isRequired: true,
+        label: "securite.profil.profilRead.utilisateurs"
     }
 }
