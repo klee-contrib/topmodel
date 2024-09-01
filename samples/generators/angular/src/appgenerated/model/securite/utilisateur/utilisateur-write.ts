@@ -7,14 +7,14 @@ import {DO_BOOLEEN, DO_CODE, DO_DATE, DO_EMAIL, DO_ID, DO_LIBELLE} from "@domain
 import {TypeUtilisateurCode} from "./references";
 
 export interface UtilisateurWrite {
-    nom?: string,
-    prenom?: string,
-    email?: string,
-    dateNaissance?: string,
-    adresse?: string,
-    actif?: boolean,
-    profilId?: number,
-    typeUtilisateurCode?: TypeUtilisateurCode
+    nom?: string;
+    prenom?: string;
+    email?: string;
+    dateNaissance?: string;
+    adresse?: string;
+    actif?: boolean;
+    profilId?: number;
+    typeUtilisateurCode?: TypeUtilisateurCode;
 }
 
 export const UtilisateurWriteEntity = {
@@ -76,4 +76,4 @@ export const UtilisateurWriteEntity = {
         isRequired: true,
         label: "securite.utilisateur.utilisateur.typeUtilisateurCode"
     }
-} as const
+} as const;

@@ -7,13 +7,13 @@ import {DO_CODE, DO_EMAIL, DO_ID, DO_LIBELLE} from "../../../domains";
 
 import {TypeUtilisateurCode} from "./references";
 
-export type UtilisateurItem = EntityToType<UtilisateurItemEntityType>
+export type UtilisateurItem = EntityToType<UtilisateurItemEntityType>;
 export interface UtilisateurItemEntityType {
-    id: FieldEntry2<typeof DO_ID, number>,
-    nom: FieldEntry2<typeof DO_LIBELLE, string>,
-    prenom: FieldEntry2<typeof DO_LIBELLE, string>,
-    email: FieldEntry2<typeof DO_EMAIL, string>,
-    typeUtilisateurCode: FieldEntry2<typeof DO_CODE, TypeUtilisateurCode>
+    id: FieldEntry2<typeof DO_ID, number>;
+    nom: FieldEntry2<typeof DO_LIBELLE, string>;
+    prenom: FieldEntry2<typeof DO_LIBELLE, string>;
+    email: FieldEntry2<typeof DO_EMAIL, string>;
+    typeUtilisateurCode: FieldEntry2<typeof DO_CODE, TypeUtilisateurCode>;
 }
 
 export const UtilisateurItemEntity: UtilisateurItemEntityType = {
@@ -53,4 +53,4 @@ export const UtilisateurItemEntity: UtilisateurItemEntityType = {
         isRequired: true,
         label: "securite.utilisateur.utilisateur.typeUtilisateurCode"
     }
-}
+};

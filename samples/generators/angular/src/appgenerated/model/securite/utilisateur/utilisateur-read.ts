@@ -7,17 +7,17 @@ import {DO_BOOLEEN, DO_CODE, DO_DATE, DO_DATE_HEURE, DO_EMAIL, DO_ID, DO_LIBELLE
 import {TypeUtilisateurCode} from "./references";
 
 export interface UtilisateurRead {
-    id?: number,
-    nom?: string,
-    prenom?: string,
-    email?: string,
-    dateNaissance?: string,
-    adresse?: string,
-    actif?: boolean,
-    profilId?: number,
-    typeUtilisateurCode?: TypeUtilisateurCode,
-    dateCreation?: string,
-    dateModification?: string
+    id?: number;
+    nom?: string;
+    prenom?: string;
+    email?: string;
+    dateNaissance?: string;
+    adresse?: string;
+    actif?: boolean;
+    profilId?: number;
+    typeUtilisateurCode?: TypeUtilisateurCode;
+    dateCreation?: string;
+    dateModification?: string;
 }
 
 export const UtilisateurReadEntity = {
@@ -100,4 +100,4 @@ export const UtilisateurReadEntity = {
         isRequired: false,
         label: "common.entityListeners.dateModification"
     }
-} as const
+} as const;

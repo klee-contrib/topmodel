@@ -5,11 +5,11 @@
 import {EntityToType, FieldEntry2} from "@focus4/stores";
 import {DO_ENTIER, DO_ID, DO_LIBELLE} from "../../../domains";
 
-export type ProfilItem = EntityToType<ProfilItemEntityType>
+export type ProfilItem = EntityToType<ProfilItemEntityType>;
 export interface ProfilItemEntityType {
-    id: FieldEntry2<typeof DO_ID, number>,
-    libelle: FieldEntry2<typeof DO_LIBELLE, string>,
-    nombreUtilisateurs: FieldEntry2<typeof DO_ENTIER, number>
+    id: FieldEntry2<typeof DO_ID, number>;
+    libelle: FieldEntry2<typeof DO_LIBELLE, string>;
+    nombreUtilisateurs: FieldEntry2<typeof DO_ENTIER, number>;
 }
 
 export const ProfilItemEntity: ProfilItemEntityType = {
@@ -34,4 +34,4 @@ export const ProfilItemEntity: ProfilItemEntityType = {
         isRequired: true,
         label: "securite.profil.profilItem.nombreUtilisateurs"
     }
-}
+};

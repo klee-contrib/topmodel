@@ -5,9 +5,9 @@
 import {DO_ENTIER, DO_ID, DO_LIBELLE} from "@domains";
 
 export interface ProfilItem {
-    id?: number,
-    libelle?: string,
-    nombreUtilisateurs?: number
+    id?: number;
+    libelle?: string;
+    nombreUtilisateurs?: number;
 }
 
 export const ProfilItemEntity = {
@@ -32,4 +32,4 @@ export const ProfilItemEntity = {
         isRequired: true,
         label: "securite.profil.profilItem.nombreUtilisateurs"
     }
-} as const
+} as const;

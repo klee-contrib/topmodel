@@ -7,19 +7,19 @@ import {DO_BOOLEEN, DO_CODE, DO_DATE, DO_DATE_HEURE, DO_EMAIL, DO_ID, DO_LIBELLE
 
 import {TypeUtilisateurCode} from "./references";
 
-export type UtilisateurRead = EntityToType<UtilisateurReadEntityType>
+export type UtilisateurRead = EntityToType<UtilisateurReadEntityType>;
 export interface UtilisateurReadEntityType {
-    id: FieldEntry2<typeof DO_ID, number>,
-    nom: FieldEntry2<typeof DO_LIBELLE, string>,
-    prenom: FieldEntry2<typeof DO_LIBELLE, string>,
-    email: FieldEntry2<typeof DO_EMAIL, string>,
-    dateNaissance: FieldEntry2<typeof DO_DATE, string>,
-    adresse: FieldEntry2<typeof DO_LIBELLE, string>,
-    actif: FieldEntry2<typeof DO_BOOLEEN, boolean>,
-    profilId: FieldEntry2<typeof DO_ID, number>,
-    typeUtilisateurCode: FieldEntry2<typeof DO_CODE, TypeUtilisateurCode>,
-    dateCreation: FieldEntry2<typeof DO_DATE_HEURE, string>,
-    dateModification: FieldEntry2<typeof DO_DATE_HEURE, string>
+    id: FieldEntry2<typeof DO_ID, number>;
+    nom: FieldEntry2<typeof DO_LIBELLE, string>;
+    prenom: FieldEntry2<typeof DO_LIBELLE, string>;
+    email: FieldEntry2<typeof DO_EMAIL, string>;
+    dateNaissance: FieldEntry2<typeof DO_DATE, string>;
+    adresse: FieldEntry2<typeof DO_LIBELLE, string>;
+    actif: FieldEntry2<typeof DO_BOOLEEN, boolean>;
+    profilId: FieldEntry2<typeof DO_ID, number>;
+    typeUtilisateurCode: FieldEntry2<typeof DO_CODE, TypeUtilisateurCode>;
+    dateCreation: FieldEntry2<typeof DO_DATE_HEURE, string>;
+    dateModification: FieldEntry2<typeof DO_DATE_HEURE, string>;
 }
 
 export const UtilisateurReadEntity: UtilisateurReadEntityType = {
@@ -102,4 +102,4 @@ export const UtilisateurReadEntity: UtilisateurReadEntityType = {
         isRequired: false,
         label: "common.entityListeners.dateModification"
     }
-}
+};

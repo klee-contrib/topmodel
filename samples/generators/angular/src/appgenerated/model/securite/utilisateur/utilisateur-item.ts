@@ -7,11 +7,11 @@ import {DO_CODE, DO_EMAIL, DO_ID, DO_LIBELLE} from "@domains";
 import {TypeUtilisateurCode} from "./references";
 
 export interface UtilisateurItem {
-    id?: number,
-    nom?: string,
-    prenom?: string,
-    email?: string,
-    typeUtilisateurCode?: TypeUtilisateurCode
+    id?: number;
+    nom?: string;
+    prenom?: string;
+    email?: string;
+    typeUtilisateurCode?: TypeUtilisateurCode;
 }
 
 export const UtilisateurItemEntity = {
@@ -51,4 +51,4 @@ export const UtilisateurItemEntity = {
         isRequired: true,
         label: "securite.utilisateur.utilisateur.typeUtilisateurCode"
     }
-} as const
+} as const;

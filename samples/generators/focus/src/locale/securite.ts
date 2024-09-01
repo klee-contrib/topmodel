@@ -3,7 +3,7 @@
 ////
 
 export const securite = {
-    "profil": {
+    profil: {
         droit: {
             code: "Droit",
             libelle: "Droit",
@@ -25,7 +25,7 @@ export const securite = {
             libelle: "Libelle"
         }
     },
-    "utilisateur": {
+    utilisateur: {
         typeUtilisateur: {
             code: "Type d'utilisateur",
             libelle: "Libelle"

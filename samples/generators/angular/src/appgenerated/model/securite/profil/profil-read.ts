@@ -8,12 +8,12 @@ import {UtilisateurItemEntity, UtilisateurItem} from "../utilisateur/utilisateur
 import {DroitCode} from "./references";
 
 export interface ProfilRead {
-    id?: number,
-    libelle?: string,
-    droits?: DroitCode[],
-    dateCreation?: string,
-    dateModification?: string,
-    utilisateurs?: UtilisateurItem[]
+    id?: number;
+    libelle?: string;
+    droits?: DroitCode[];
+    dateCreation?: string;
+    dateModification?: string;
+    utilisateurs?: UtilisateurItem[];
 }
 
 export const ProfilReadEntity = {
@@ -56,4 +56,4 @@ export const ProfilReadEntity = {
         type: "list",
         entity: UtilisateurItemEntity
     }
-} as const
+} as const;

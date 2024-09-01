@@ -190,7 +190,7 @@ public class JavascriptResourceGenerator : TranslationGeneratorBase<JavascriptCo
             }
             else
             {
-                fw.WriteLine(level, $@"""{submodule.Key.Split('.').First().ToCamelCase()}"": {{");
+                fw.WriteLine(level, $@"{Quote(submodule.Key.Split('.').First().ToCamelCase())}: {{");
                 WriteSubModule(fw, lang, submodule.SelectMany(m => m), isComment, level + 1);
                 if (isLast)
                 {

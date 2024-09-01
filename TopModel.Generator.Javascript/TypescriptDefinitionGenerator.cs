@@ -82,7 +82,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
 
         if (Config.EntityMode == EntityMode.TYPED)
         {
-            fw.WriteLine($"export type {classe.NamePascal} = EntityToType<{classe.NamePascal}EntityType>");
+            fw.WriteLine($"export type {classe.NamePascal} = EntityToType<{classe.NamePascal}EntityType>;");
 
             fw.Write($"export interface {classe.NamePascal}EntityType ");
 
@@ -113,10 +113,10 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                 switch (property)
                 {
                     case CompositionProperty { Domain: null } cp:
-                        fw.Write($"ObjectEntry<{cp.Composition.NamePascal}EntityType>");
+                        fw.Write($"ObjectEntry<{cp.Composition.NamePascal}EntityType>;");
                         break;
                     case AliasProperty { Property: CompositionProperty { Domain: null } cp }:
-                        fw.Write($"ObjectEntry<{cp.Composition.NamePascal}EntityType>");
+                        fw.Write($"ObjectEntry<{cp.Composition.NamePascal}EntityType>;");
                         break;
                     case CompositionProperty cp when Config.IsListComposition(cp):
                         if (cp.Composition.Name == classe.Name)
@@ -125,34 +125,29 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
                         }
                         else
                         {
-                            fw.Write($"ListEntry<{cp.Composition.NamePascal}EntityType>");
+                            fw.Write($"ListEntry<{cp.Composition.NamePascal}EntityType>;");
                         }
 
                         break;
                     case AliasProperty { Property: CompositionProperty cp } when Config.IsListComposition(cp):
                         if (cp.Composition.Name == classe.Name)
                         {
-                            fw.Write($"RecursiveListEntry");
+                            fw.Write($"RecursiveListEntry;");
                         }
                         else
                         {
-                            fw.Write($"ListEntry<{cp.Composition.NamePascal}EntityType>");
+                            fw.Write($"ListEntry<{cp.Composition.NamePascal}EntityType>;");
                         }
 
                         break;
                     default:
-                        fw.Write($"FieldEntry2<typeof {property.Domain.Name}, {Config.GetType(property, Classes)}>");
+                        fw.Write($"FieldEntry2<typeof {property.Domain.Name}, {Config.GetType(property, Classes)}>;");
                         break;
                 }
             }
             else
             {
-                fw.Write(Config.GetType(property, Classes));
-            }
-
-            if (property != classe.Properties.Last())
-            {
-                fw.Write(",");
+                fw.Write($"{Config.GetType(property, Classes)};");
             }
 
             fw.Write("\r\n");
@@ -275,7 +270,7 @@ public class TypescriptDefinitionGenerator : ClassGeneratorBase<JavascriptConfig
             fw.WriteLine();
         }
 
-        fw.WriteLine($"}}{(Config.EntityMode == EntityMode.TYPED ? string.Empty : " as const")}");
+        fw.WriteLine($"}}{(Config.EntityMode == EntityMode.TYPED ? string.Empty : " as const")};");
 
         if (classe.Reference)
         {

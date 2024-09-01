@@ -7,10 +7,10 @@ import {DO_CODE_LISTE, DO_LIBELLE} from "../../../domains";
 
 import {DroitCode} from "./references";
 
-export type ProfilWrite = EntityToType<ProfilWriteEntityType>
+export type ProfilWrite = EntityToType<ProfilWriteEntityType>;
 export interface ProfilWriteEntityType {
-    libelle: FieldEntry2<typeof DO_LIBELLE, string>,
-    droits: FieldEntry2<typeof DO_CODE_LISTE, DroitCode[]>
+    libelle: FieldEntry2<typeof DO_LIBELLE, string>;
+    droits: FieldEntry2<typeof DO_CODE_LISTE, DroitCode[]>;
 }
 
 export const ProfilWriteEntity: ProfilWriteEntityType = {
@@ -28,4 +28,4 @@ export const ProfilWriteEntity: ProfilWriteEntityType = {
         isRequired: false,
         label: "securite.profil.profil.droits"
     }
-}
+};
