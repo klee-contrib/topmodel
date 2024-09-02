@@ -137,6 +137,10 @@ public class CompletionHandler : CompletionHandlerBase
                 {
                     Kind = CompletionItemKind.Class,
                     Label = availableClasses.Contains(classe) ? classe.Name : $"{classe.Name} - ({classe.ModelFile.Name})",
+                    LabelDetails = new()
+                    {
+                        Description = $"{classe.Comment}"
+                    },
                     InsertText = classe.Name,
                     SortText = availableClasses.Contains(classe) ? "0000" + classe.Name : classe.Name,
                     TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
@@ -197,6 +201,10 @@ public class CompletionHandler : CompletionHandlerBase
                 {
                     Kind = CompletionItemKind.Class,
                     Label = availableDecorators.Contains(decorator) ? decorator.Name : $"{decorator.Name} - ({decorator.ModelFile.Name})",
+                    LabelDetails = new()
+                    {
+                        Description = $"{decorator.Description}"
+                    },
                     InsertText = decorator.Name,
                     SortText = availableDecorators.Contains(decorator) ? "0000" + decorator.Name : decorator.Name,
                     TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
@@ -219,16 +227,19 @@ public class CompletionHandler : CompletionHandlerBase
         var searchText = GetSearchText(request);
         return new CompletionList(
             _modelStore.Domains
-                .Select(domain => domain.Key)
-                .Where(domain => domain.ToLower().ShouldMatch(searchText))
+                .Where(domain => domain.Key.ToLower().ShouldMatch(searchText))
                 .OrderBy(domain => domain)
                 .Select(domain => new CompletionItem
                 {
                     Kind = CompletionItemKind.EnumMember,
-                    Label = domain,
+                    Label = domain.Key,
+                    LabelDetails = new()
+                    {
+                        Description = $"{domain.Value.Label}"
+                    },
                     TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
                     {
-                        NewText = domain,
+                        NewText = domain.Key,
                         Range = GetCompleteRange(searchText, request)
                     }),
                 }));
