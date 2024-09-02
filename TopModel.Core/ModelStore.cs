@@ -212,7 +212,7 @@ public class ModelStore
                 var generatedFiles = _modelWatchers.Where(m => m.GeneratedFiles != null).SelectMany(m => m.GeneratedFiles!);
                 if (generatedFiles.Any() && !DisableLockfile && _topModelLock != null)
                 {
-                    _topModelLock.Update(generatedFiles);
+                    _topModelLock.UpdateFiles(generatedFiles);
                 }
 
                 _logger.LogInformation($"Mise à jour terminée avec succès.");
