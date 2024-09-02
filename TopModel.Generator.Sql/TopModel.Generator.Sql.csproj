@@ -7,9 +7,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
+  
   <PropertyGroup>
     <PackageOutputPath>../.nupkg</PackageOutputPath>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Authors>JabX;gideruette</Authors>
     <Description>Générateurs SQL pour TopModel</Description>
@@ -44,9 +45,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="sql.config.json">
+    <Content Include="sql.config.json">
+      <Pack>true</Pack>
+      <PackagePath>contentFiles</PackagePath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
