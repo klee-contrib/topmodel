@@ -18,11 +18,10 @@ export async function activate(ctx: ExtensionContext) {
     try {
         const installed = await checkDotnetInstall();
         if (installed) {
+            const confs = await findConfFiles();
+            const applications = confs.map((conf) => new Application(conf.file.path, conf.config, ctx));
             state = new State(ctx);
-            if (state.applications.length === 0) {
-                const confs = await findConfFiles();
-                state.applications.push(...confs.map((conf) => new Application(conf.file.path, conf.config, ctx)));
-            }
+            state.applications.push(...applications);
         }
     } catch (error: any) {
         handleError(error);

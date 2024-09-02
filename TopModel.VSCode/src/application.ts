@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { ExtensionContext, workspace, commands, window, Terminal } from "vscode";
+import { commands, ExtensionContext, Terminal, window, workspace } from "vscode";
 import { LanguageClient, ServerOptions } from "vscode-languageclient/node";
 
 import { COMMANDS, COMMANDS_OPTIONS, SERVER_EXE } from "./const";
@@ -41,9 +41,8 @@ export class Application {
     }
 
     public async start() {
-        await this.startLanguageServer();
+        this.startLanguageServer();
         this.registerCommands();
-        this.status = "STARTED";
     }
 
     public startModgen(watch: boolean) {
@@ -93,6 +92,7 @@ export class Application {
             }
         );
         await this.client.start();
+        this.status = "STARTED";
     }
 
     private registerCommands() {

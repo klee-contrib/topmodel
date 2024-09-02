@@ -70,6 +70,7 @@ public class CompletionHandler : CompletionHandlerBase
 
         if (parentKey == "asDomains" && currentLine[..reqChar].Contains(':')
             || currentKey == "domain"
+            || parentKey == "domain" && currentLine[..reqChar].Contains("name: ")
             || rootObject == "converter"
                 && (currentKey == "to" || currentKey == "from"))
         {
@@ -228,15 +229,11 @@ public class CompletionHandler : CompletionHandlerBase
         return new CompletionList(
             _modelStore.Domains
                 .Where(domain => domain.Key.ToLower().ShouldMatch(searchText))
-                .OrderBy(domain => domain)
+                .OrderBy(domain => domain.Key)
                 .Select(domain => new CompletionItem
                 {
                     Kind = CompletionItemKind.EnumMember,
                     Label = domain.Key,
-                    LabelDetails = new()
-                    {
-                        Description = $"{domain.Value.Label}"
-                    },
                     TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
                     {
                         NewText = domain.Key,
