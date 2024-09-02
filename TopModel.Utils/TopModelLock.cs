@@ -1,19 +1,47 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace TopModel.Utils;
 
-public class TopModelLock
+public class TopModelLock : TopModelLockFile
 {
-#nullable disable
-    public string Version { get; set; }
-#nullable enable
+    private readonly IDeserializer _deserializer = new DeserializerBuilder()
+        .WithNamingConvention(CamelCaseNamingConvention.Instance)
+        .Build();
 
-    public List<string> GeneratedFiles { get; set; } = new();
+    private readonly string _lockFileName;
+    private readonly ILogger _logger;
+    private readonly string _modelRoot;
 
-    public void Init(ILogger logger)
+    [SetsRequiredMembers]
+    public TopModelLock(ILogger logger, string modelRoot, string lockFileName)
     {
+        _lockFileName = lockFileName;
+        _logger = logger;
+        _modelRoot = modelRoot;
+
+        var lockFile = new FileInfo(Path.Combine(modelRoot, lockFileName));
+
+        if (lockFile.Exists)
+        {
+            try
+            {
+                using var file = lockFile.OpenText();
+                var lf = _deserializer.Deserialize<TopModelLockFile>(file);
+                Version = lf.Version;
+                GeneratedFiles = lf.GeneratedFiles;
+            }
+            catch
+            {
+                _logger.LogError($"Erreur à la lecture du fichier {lockFileName}. Merci de rétablir la version générée automatiquement.");
+                throw;
+            }
+        }
+
         var assembly = Assembly.GetEntryAssembly()!.GetName()!;
         var version = $"{assembly.Version!.Major}.{assembly.Version!.Minor}.{assembly.Version!.Build}";
 
@@ -25,12 +53,12 @@ public class TopModelLock
         Version = version;
     }
 
-    public void Update(string modelRoot, string lockFileName, ILogger logger, IEnumerable<string> generatedFiles)
+    public void Update(IEnumerable<string> generatedFiles)
     {
-        GeneratedFiles ??= new();
+        GeneratedFiles ??= [];
 
         var generatedFilesList = generatedFiles
-            .Select(f => f.ToRelative(modelRoot))
+            .Select(f => f.ToRelative(_modelRoot))
             .Distinct()
             .OrderBy(f => f)
             .ToList();
@@ -39,17 +67,17 @@ public class TopModelLock
         var filesToPrune = GeneratedFiles
             .Select(f => f.Replace("\\", "/"))
             .Where(f => !generatedFilesList.Select(gf => isWindows ? gf.ToLowerInvariant() : gf).Contains(isWindows ? f.ToLowerInvariant() : f))
-            .Select(f => Path.Combine(modelRoot, f));
+            .Select(f => Path.Combine(_modelRoot, f));
 
         Parallel.ForEach(filesToPrune.Where(File.Exists), fileToPrune =>
         {
             File.Delete(fileToPrune);
-            logger.LogInformation($"Supprimé: {fileToPrune.ToRelative()}");
+            _logger.LogInformation($"Supprimé: {fileToPrune.ToRelative()}");
         });
 
         GeneratedFiles = generatedFilesList;
 
-        using var fw = new FileWriter(Path.Combine(modelRoot, lockFileName), logger)
+        using var fw = new FileWriter(Path.Combine(_modelRoot, _lockFileName), _logger)
         {
             StartCommentToken = "#"
         };

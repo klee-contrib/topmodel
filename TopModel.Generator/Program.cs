@@ -188,6 +188,13 @@ for (var i = 0; i < configs.Count; i++)
 {
     var (config, fullName, dn) = configs[i];
 
+    config.FixConfig(dn);
+
+    var storeConfig = new LoggingScope(i + 1, colors[i % colors.Length]);
+    var logger = loggerProvider.CreateLogger("TopModel.Generator");
+    using var scope = logger.BeginScope(storeConfig);
+    var topModelLock = new TopModelLock(logger, config.ModelRoot, config.LockFileName);
+
     Console.WriteLine();
 
     var generators = baseGenerators
@@ -248,7 +255,7 @@ for (var i = 0; i < configs.Count; i++)
             .AddTransient(typeof(ILogger<>), typeof(Logger<>))
             .AddTransient<ILoggerFactory, LoggerFactory>()
             .AddSingleton<ILoggerProvider>(loggerProvider)
-            .AddModelStore(fileChecker, config, dn);
+            .AddModelStore(fileChecker, config);
 
         var hasError = false;
 
@@ -278,9 +285,7 @@ for (var i = 0; i < configs.Count; i++)
 
                         var instance = Activator.CreateInstance(generator);
                         instance!.GetType().GetMethod("Register")!
-                            .Invoke(
-                                instance,
-                                new object[] { services, genConfig, number });
+                            .Invoke(instance, [services, genConfig, number]);
                     }
                     catch (ModelException me)
                     {
@@ -310,7 +315,7 @@ for (var i = 0; i < configs.Count; i++)
                 hasErrors[k] = hasError;
             };
 
-            var watcher = modelStore.LoadFromConfig(watchMode, new(i + 1, colors[i % colors.Length]));
+            var watcher = modelStore.LoadFromConfig(watchMode, topModelLock, storeConfig);
             if (watcher != null)
             {
                 disposables.Add(watcher);

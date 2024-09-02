@@ -6,7 +6,7 @@ namespace TopModel.Core;
 
 public static class ServiceExtensions
 {
-    public static IServiceCollection AddModelStore(this IServiceCollection services, FileChecker fileChecker, ModelConfig? config = null, string? rootDir = null)
+    public static IServiceCollection AddModelStore(this IServiceCollection services, FileChecker fileChecker, ModelConfig config)
     {
         services
             .AddMemoryCache()
@@ -21,17 +21,17 @@ public static class ServiceExtensions
             .AddSingleton<ModelFileLoader>()
             .AddSingleton<ModelConfig>()
             .AddSingleton<TranslationStore>()
-            .AddSingleton<ModelStore>();
-
-        if (config != null && rootDir != null)
-        {
-            config.ModelRoot ??= string.Empty;
-            ModelUtils.TrimSlashes(config, c => c.ModelRoot);
-            ModelUtils.CombinePath(rootDir, config, c => c.ModelRoot);
-            ModelUtils.CombinePath(rootDir, config.I18n, c => c.RootPath);
-            services.AddSingleton(config);
-        }
+            .AddSingleton<ModelStore>()
+            .AddSingleton(config);
 
         return services;
+    }
+
+    public static void FixConfig(this ModelConfig config, string rootDir)
+    {
+        config.ModelRoot ??= string.Empty;
+        ModelUtils.TrimSlashes(config, c => c.ModelRoot);
+        ModelUtils.CombinePath(rootDir, config, c => c.ModelRoot);
+        ModelUtils.CombinePath(rootDir, config.I18n, c => c.RootPath);
     }
 }

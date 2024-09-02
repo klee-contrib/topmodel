@@ -18,9 +18,10 @@ public class Program
                var configFile = new FileInfo(args[0]);
                var config = fileChecker.Deserialize<ModelConfig>(configFile.OpenText().ReadToEnd());
                var dn = configFile.DirectoryName;
+               config.FixConfig(dn!);
 
                services
-                   .AddModelStore(fileChecker, config, dn)
+                   .AddModelStore(fileChecker, config)
                    .AddHostedService<ModelWatcherService>()
                    .AddSingleton<ModelFileProvider>()
                    .AddSingleton<IModelWatcher>(p => p.GetRequiredService<ModelFileProvider>());

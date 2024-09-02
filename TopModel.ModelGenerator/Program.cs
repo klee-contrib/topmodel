@@ -17,9 +17,9 @@ var regularCommand = false;
 var configs = new List<(ModelGeneratorConfig Config, string FullPath, string DirectoryName)>();
 var serializer = new Serializer(new() { NamingConvention = new CamelCaseNamingConvention() });
 
-var fileOption = new Option<IEnumerable<FileInfo>>(new[] { "-f", "--file" }, "Chemin vers un fichier de config.");
-var watchOption = new Option<bool>(new[] { "-w", "--watch" }, "Lance le générateur en mode 'watch'");
-var checkOption = new Option<bool>(new[] { "-c", "--check" }, "Vérifie que le modèle généré est conforme aux sources.");
+var fileOption = new Option<IEnumerable<FileInfo>>(["-f", "--file"], "Chemin vers un fichier de config.");
+var watchOption = new Option<bool>(["-w", "--watch"], "Lance le générateur en mode 'watch'");
+var checkOption = new Option<bool>(["-c", "--check"], "Vérifie que le modèle généré est conforme aux sources.");
 command.AddOption(fileOption);
 command.AddOption(watchOption);
 command.AddOption(checkOption);
@@ -210,23 +210,7 @@ async Task StartGeneration(string filePath, string directoryName, int i)
 
     mainLogger.LogInformation($"Générateurs enregistrés :\n                          {string.Join("\n                          ", generators.Select(g => $"- {g.Name}@{{{g.Number}}}"))}");
 
-    TopModelLock tmdLock = new();
-    var lockFile = new FileInfo(Path.Combine(config.ModelRoot, config.LockFileName));
-    if (lockFile.Exists)
-    {
-        try
-        {
-            using var file = lockFile.OpenText();
-            tmdLock = serializer.Deserialize<TopModelLock>(file)!;
-        }
-        catch
-        {
-            mainLogger.LogError($"Erreur à la lecture du fichier {config.LockFileName}. Merci de rétablir la version générée automatiquement.");
-        }
-    }
-
-    tmdLock.Init(mainLogger);
-
+    var tmdLock = new TopModelLock(mainLogger, config.ModelRoot, config.LockFileName);
     var generatedFiles = new List<string>();
 
     foreach (var generator in generators)
@@ -234,7 +218,7 @@ async Task StartGeneration(string filePath, string directoryName, int i)
         generatedFiles.AddRange(await generator.Generate(loggingScope));
     }
 
-    tmdLock.Update(config.ModelRoot, config.LockFileName, mainLogger, generatedFiles);
+    tmdLock.Update(generatedFiles);
 
     mainLogger.LogInformation("Mise à jour terminée avec succès.");
 }

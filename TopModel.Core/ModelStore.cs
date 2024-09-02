@@ -20,11 +20,11 @@ public class ModelStore
     private readonly HashSet<string> _pendingUpdates = [];
 
     private readonly object _puLock = new();
-    private readonly TopModelLock _topModelLock = new();
 
     private readonly TranslationStore _translationStore;
 
     private LoggingScope? _storeConfig;
+    private TopModelLock? _topModelLock;
 
     public ModelStore(IMemoryCache fsCache, ModelFileLoader modelFileLoader, ILogger<ModelStore> logger, ModelConfig config, IEnumerable<IModelWatcher> modelWatchers, TranslationStore translationStore)
     {
@@ -34,20 +34,6 @@ public class ModelStore
         _modelFileLoader = modelFileLoader;
         _translationStore = translationStore;
         _modelWatchers = modelWatchers.Where(mw => !mw.Disabled);
-
-        var lockFile = new FileInfo(Path.Combine(_config.ModelRoot, _config.LockFileName));
-        if (lockFile.Exists)
-        {
-            try
-            {
-                using var file = lockFile.OpenText();
-                _topModelLock = new FileChecker().Deserialize<TopModelLock>(file);
-            }
-            catch
-            {
-                logger.LogError($"Erreur à la lecture du fichier {_config.LockFileName}. Merci de rétablir la version générée automatiquement.");
-            }
-        }
     }
 
     public event Action<bool>? OnResolve;
@@ -97,13 +83,12 @@ public class ModelStore
             .ToDictionary(c => c.Key, c => c.First());
     }
 
-    public IDisposable? LoadFromConfig(bool watch = false, LoggingScope? storeConfig = null)
+    public IDisposable? LoadFromConfig(bool watch = false, TopModelLock? topModelLock = null, LoggingScope? storeConfig = null)
     {
         _storeConfig = storeConfig;
+        _topModelLock = topModelLock;
 
         using var scope = _logger.BeginScope(_storeConfig!);
-
-        _topModelLock.Init(_logger);
 
         var watchers = _modelWatchers.Select(mw => mw.FullName.Split("@")).GroupBy(split => split[0]).Select(grp => $"{grp.Key}@{{{string.Join(",", grp.Select(split => split[1]))}}}");
         _logger.LogInformation($"Watchers enregistrés : \n                          - {string.Join("\n                          - ", watchers.OrderBy(x => x))}");
@@ -225,9 +210,9 @@ public class ModelStore
                 });
 
                 var generatedFiles = _modelWatchers.Where(m => m.GeneratedFiles != null).SelectMany(m => m.GeneratedFiles!);
-                if (generatedFiles.Any() && !DisableLockfile)
+                if (generatedFiles.Any() && !DisableLockfile && _topModelLock != null)
                 {
-                    _topModelLock.Update(_config.ModelRoot, _config.LockFileName, _logger, generatedFiles);
+                    _topModelLock.Update(generatedFiles);
                 }
 
                 _logger.LogInformation($"Mise à jour terminée avec succès.");
