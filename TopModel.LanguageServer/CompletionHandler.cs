@@ -321,12 +321,20 @@ public class CompletionHandler : CompletionHandlerBase
 
                     if (isMappings)
                     {
-                        var parentObjectRange = GetObjectRange(text, parentKey.Line);
-                        var parentObjectLines = text[parentObjectRange.Start..(parentObjectRange.End + 1)];
                         var requestLineText = text[request.Position.Line];
-                        if (!requestLineText[..Math.Min(requestLineText.Length - 1, request.Position.Character + 1)].Contains(':'))
+                        var textBefore = requestLineText[..request.Position.Character];
+                        var isKey = textBefore.LastIndexOf(':') == -1 || textBefore.LastIndexOf(':') < Math.Max(textBefore.LastIndexOf(','), textBefore.LastIndexOf('{'));
+                        if (!isKey)
                         {
-                            className = parentObjectLines.First(l => l.Contains("class: ")).TrimStart().Split(':')[1];
+                            var parentObjectRange = GetObjectRange(text, parentKey.Line);
+                            var parentObjectLines = text[parentObjectRange.Start..(parentObjectRange.End + 1)];
+                            className = parentObjectLines.First(l => l.Contains("class: ")).TrimStart().Split(':')[1].Trim();
+                        }
+
+                        var referencedClasses = _modelStore.GetReferencedClasses(file);
+                        if (referencedClasses.TryGetValue(className, out var aliasedClass))
+                        {
+                            classe = aliasedClass;
                         }
                     }
                     else if (isValues)
@@ -361,6 +369,10 @@ public class CompletionHandler : CompletionHandlerBase
             {
                 Kind = CompletionItemKind.Property,
                 Label = f.Name,
+                LabelDetails = new()
+                {
+                    Description = $"{f.Comment}"
+                },
                 TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
                 {
                     NewText = f.Name,
