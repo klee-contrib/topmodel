@@ -234,7 +234,19 @@ for (var i = 0; i < configs.Count; i++)
         {
             if (dep.Key == "TopModel.Generator.Core")
             {
-                // TODO : Gérer version min.
+                var depVersion = dep.Value.Split('.').Select(int.Parse).ToArray();
+                if (depVersion[0] != fullVersion.Major)
+                {
+                    logger.LogError($"Le module de générateurs '{cg}' ne référence pas la bonne version majeure de TopModel ({dep.Value} < {version}).");
+                    returnCode = 1;
+                    continue;
+                }
+                else if (depVersion[1] > fullVersion.Minor)
+                {
+                    logger.LogError($"Le module de générateurs '{cg}' référence une version plus récente de TopModel ({dep.Value} > {version}).");
+                    returnCode = 1;
+                    continue;
+                }
             }
             else
             {
@@ -301,14 +313,6 @@ for (var i = 0; i < configs.Count; i++)
             var nugetVersion = moduleVersions.Last().Version;
             moduleVersion = $"{nugetVersion.Major}.{nugetVersion.Minor}.{nugetVersion.Build}";
             topModelLock.Modules.Add(configKey, moduleVersion);
-
-            var topmodelDep = (await nugetResource.GetDependencyInfoAsync(fullModuleName, new NuGetVersion(moduleVersion), nugetCache, NullLogger.Instance, ct))
-               .DependencyGroups
-               .Single(dg => dg.TargetFramework.ToString() == framework)
-               .Packages
-               .Single(d => d.Id == "TopModel.Generator.Core");
-
-            // TODO : Gérer version min.
         }
 
         deps.Add(new(configKey, moduleVersion));
@@ -342,6 +346,13 @@ for (var i = 0; i < configs.Count; i++)
                 using var packageReader = new PackageArchiveReader(packageStream);
                 var nuspecReader = await packageReader.GetNuspecReaderAsync(ct);
 
+                File.WriteAllText(
+                    Path.Combine(moduleFolder, "min-version"),
+                    nuspecReader.GetDependencyGroups()
+                       .Single(dg => dg.TargetFramework.ToString() == framework)
+                       .Packages
+                       .Single(d => d.Id == "TopModel.Generator.Core").VersionRange.MinVersion!.ToString());
+
                 foreach (var file in packageReader.GetFiles().Where(f => f == $"lib/{framework}/{dep.FullName}.dll" || f.EndsWith("config.json")))
                 {
                     packageReader.ExtractFile(file, Path.Combine(moduleFolder, file.Split('/').Last()), NullLogger.Instance);
@@ -349,6 +360,21 @@ for (var i = 0; i < configs.Count; i++)
 
                 hasInstalled = true;
                 logger.LogInformation($"({dep.ConfigKey}) Installation de {dep.FullName}@{dep.Version} terminée avec succès.");
+            }
+
+            var depVersionText = File.ReadAllText(Path.Combine(moduleFolder, "min-version"));
+            var depVersion = depVersionText.Split('.').Select(int.Parse).ToArray();
+            if (depVersion[0] != fullVersion.Major)
+            {
+                logger.LogError($"Le module '{dep.ConfigKey}' ne référence pas la bonne version majeure de TopModel ({dep.Version} < {version}).");
+                returnCode = 1;
+                continue;
+            }
+            else if (depVersion[1] > fullVersion.Minor)
+            {
+                logger.LogError($"Le module '{dep.ConfigKey}' référence une version plus récente de TopModel ({depVersionText} > {version}).");
+                returnCode = 1;
+                continue;
             }
 
             generators.AddRange(Assembly.LoadFrom(Path.Combine(moduleFolder, $"{dep.FullName}.dll")).GetExportedTypes().Where(t => GetIGenRegInterface(t) != null));
@@ -511,4 +537,4 @@ if (checkMode && loggerProvider.Changes > 0)
     return 1;
 }
 
-return 0;
+return returnCode;
