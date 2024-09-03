@@ -18,9 +18,8 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: build phpgen
-        run: dotnet build
-        working-directory: TopModel.Generator.Php
+      - name: build
+        run: dotnet build -f net8.0
 
       - name: modgen
         run: dotnet run --project TopModel.Generator/TopModel.Generator.csproj -f net8.0 -- -c
