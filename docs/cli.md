@@ -18,6 +18,9 @@ Tag à ignorer lors de la génération.
 -w, --watch
 Lance le générateur en mode 'watch'.
 
+-u, --update <update>    
+Met à jour le module de générateurs spécifié (ou tous les modules si 'all').
+
 -c, --check
 Vérifie que le code généré est conforme au modèle.
 

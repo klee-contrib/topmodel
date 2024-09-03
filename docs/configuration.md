@@ -4,7 +4,7 @@ Pour démarrer votre projet TopModel, vous devez d'abord écrire un fichier de c
 
 - Le nom de l'application
 - Le répertoire racine des fichiers de modèle
-- La configuration des générateurs
+- La configuration des modules de générateurs
 - Un système de filtre (tags) pour la sélection des générateurs par langage sur lesquels TopModel sera utilisé.
 
 Exemple :
@@ -17,11 +17,11 @@ app: Hello World
 
 Le fichier de configuration doit s'appeler `topmodel.config` ou `topmodel.[NOM DE L'APPLICATION].config`.
 
-## Générateurs
+## Modules de générateurs
 
-Chaque générateur possède sa propre configuration. Néanmoins, la structure globale reste identique pour tous.
+Chaque module de générateurs possède sa propre configuration. Néanmoins, la structure globale reste identique pour tous.
 
-1. Commencer par le nom du générateur
+1. Commencer par le nom du module
 2. Ajouter ensuite une liste de configurations
 3. Chaque configuration **doit** préciser une liste de `tags`
 4. Chaque configuration **doit** préciser le `outputDirectory`
