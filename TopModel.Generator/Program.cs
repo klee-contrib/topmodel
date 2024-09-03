@@ -22,6 +22,7 @@ var configs = new List<(ModelConfig Config, string FullPath, string DirectoryNam
 var excludedTags = Array.Empty<string>();
 var watchMode = false;
 var checkMode = false;
+string? updateMode = null;
 var schemaMode = false;
 var regularCommand = false;
 var returnCode = 0;
@@ -32,19 +33,22 @@ var fileOption = new Option<IEnumerable<FileInfo>>(["-f", "--file"], "Chemin ver
 var excludeOption = new Option<IEnumerable<string>>(["-e", "--exclude"], "Tag à ignorer lors de la génération.");
 var watchOption = new Option<bool>(["-w", "--watch"], "Lance le générateur en mode 'watch'");
 var checkOption = new Option<bool>(["-c", "--check"], "Vérifie que le code généré est conforme au modèle.");
+var updateOption = new Option<string>(["-u", "--update"], "Met à jour le module de générateurs spécifié (ou tous les modules si 'all').");
 var schemaOption = new Option<bool>(["-s", "--schema"], "Génère le fichier de schéma JSON du fichier de config.");
 command.AddOption(fileOption);
 command.AddOption(excludeOption);
 command.AddOption(watchOption);
 command.AddOption(checkOption);
+command.AddOption(updateOption);
 command.AddOption(schemaOption);
 command.SetHandler(
-    (files, excludes, watch, check, schema) =>
+    (files, excludes, watch, update, check, schema) =>
     {
         regularCommand = true;
         excludedTags = excludes.ToArray();
         watchMode = watch;
         checkMode = check;
+        updateMode = update;
         schemaMode = schema;
 
         void HandleFile(FileInfo file)
@@ -111,6 +115,7 @@ command.SetHandler(
     fileOption,
     excludeOption,
     watchOption,
+    updateOption,
     checkOption,
     schemaOption);
 
@@ -144,6 +149,15 @@ if (excludedTags.Any())
     Console.Write(" exclus ");
     Console.ForegroundColor = ConsoleColor.Gray;
     Console.WriteLine($"de la génération : {string.Join(", ", excludedTags)}.");
+}
+
+if (updateMode != null)
+{
+    Console.Write("Mode");
+    Console.ForegroundColor = ConsoleColor.DarkCyan;
+    Console.Write(" update ");
+    Console.ForegroundColor = ConsoleColor.Gray;
+    Console.WriteLine($"activé pour : {updateMode}.");
 }
 
 if (watchMode)
@@ -182,7 +196,7 @@ static Type? GetIGenRegInterface(Type t)
 static (Type Type, string Name) GetIGenRegInterfaceAndName(Type generator)
 {
     var configType = GetIGenRegInterface(generator)!.GetGenericArguments()[0];
-    var configName = configType.Name.Replace("Config", string.Empty).ToCamelCase();
+    var configName = configType.Name.Replace("Config", string.Empty).ToLower();
     return (configType, configName);
 }
 
@@ -212,6 +226,15 @@ for (var i = 0; i < configs.Count; i++)
         var generatorsPath = Path.Combine(new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!, "../../../..");
         var modules = Directory.GetFileSystemEntries(generatorsPath).Where(e => e.Contains("TopModel.Generator.") && !e.Contains("TopModel.Generator.Core"));
         config.CustomGenerators.AddRange(modules.Select(m => Path.GetRelativePath(config.ModelRoot, m)));
+    }
+
+    if (updateMode == "all")
+    {
+        topModelLock.Modules = [];
+    }
+    else if (updateMode != null)
+    {
+        topModelLock.Modules.Remove(updateMode);
     }
 
     foreach (var cg in config.CustomGenerators)
@@ -319,15 +342,28 @@ for (var i = 0; i < configs.Count; i++)
     }
 
     var hasInstalled = false;
+    var modgenRoot = Path.GetFullPath(".modgen", config.ModelRoot);
+
+    if (updateMode == "all" && Directory.Exists(modgenRoot))
+    {
+        Directory.Delete(modgenRoot, true);
+    }
+    else if (updateMode != null)
+    {
+        foreach (var module in Directory.GetFileSystemEntries(modgenRoot).Where(p => p.Split('/').Last().Contains(updateMode)))
+        {
+            Directory.Delete(module, true);
+        }
+    }
 
     if (deps.Count > 0)
     {
-        var modgenRoot = Path.GetFullPath(".modgen", config.ModelRoot);
         Directory.CreateDirectory(modgenRoot);
 
         foreach (var dep in deps)
         {
             var moduleFolder = Path.Combine(modgenRoot, $"{dep.ConfigKey}.{dep.Version}");
+
             if (!Directory.Exists(moduleFolder))
             {
                 logger.LogInformation($"({dep.ConfigKey}) Installation de {dep.FullName}@{dep.Version} en cours...");
