@@ -207,6 +207,13 @@ for (var i = 0; i < configs.Count; i++)
     var generators = new List<Type>();
     var deps = new List<ModgenDependency>();
 
+    if (Environment.GetEnvironmentVariable("LOCAL_DEV") != null)
+    {
+        var generatorsPath = Path.Combine(new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!, "../../../..");
+        var modules = Directory.GetFileSystemEntries(generatorsPath).Where(e => e.Contains("TopModel.Generator.") && !e.Contains("TopModel.Generator.Core"));
+        config.CustomGenerators.AddRange(modules.Select(m => Path.GetRelativePath(config.ModelRoot, m)));
+    }
+
     foreach (var cg in config.CustomGenerators)
     {
         var csproj = Directory.GetFiles(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "*.csproj").FirstOrDefault();
@@ -249,7 +256,8 @@ for (var i = 0; i < configs.Count; i++)
         {
             generators.AddRange(new DirectoryInfo(Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin"))
                 .GetFiles("TopModel.Generator.*.dll", SearchOption.AllDirectories)
-                .Where(a => a.FullName.Contains(framework))
+                .Where(a => a.FullName.Contains(framework) && a.Name != "TopModel.Generator.Core.dll")
+                .DistinctBy(a => a.Name)
                 .Select(f => Assembly.LoadFrom(f.FullName))
                 .SelectMany(a => a.GetExportedTypes())
                 .Where(t => GetIGenRegInterface(t) != null));
@@ -267,10 +275,13 @@ for (var i = 0; i < configs.Count; i++)
     var nugetRepository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
     var nugetResource = await nugetRepository.GetResourceAsync<FindPackageByIdResource>();
 
+    var resolvedConfigKeys = new Dictionary<string, string>();
+
     foreach (var configKey in config.Generators.Keys)
     {
         if (generators.Any(g => GetIGenRegInterfaceAndName(g).Name == configKey))
         {
+            resolvedConfigKeys.Add(configKey, "custom");
             continue;
         }
 
@@ -303,35 +314,46 @@ for (var i = 0; i < configs.Count; i++)
         deps.Add(new(configKey, moduleVersion));
     }
 
-    var modgenRoot = Path.GetFullPath(".modgen", config.ModelRoot);
-    Directory.CreateDirectory(modgenRoot);
+    var hasInstalled = false;
 
-    foreach (var dep in deps)
+    if (deps.Count > 0)
     {
-        var moduleFolder = Path.Combine(modgenRoot, $"{dep.ConfigKey}.{dep.Version}");
-        if (!Directory.Exists(moduleFolder))
+        var modgenRoot = Path.GetFullPath(".modgen", config.ModelRoot);
+        Directory.CreateDirectory(modgenRoot);
+
+        foreach (var dep in deps)
         {
-            if (!await nugetResource.DoesPackageExistAsync(dep.FullName, new NuGetVersion(dep.Version), nugetCache, NullLogger.Instance, ct))
+            var moduleFolder = Path.Combine(modgenRoot, $"{dep.ConfigKey}.{dep.Version}");
+            if (!Directory.Exists(moduleFolder))
             {
-                logger.LogError($"Le package '{dep.FullName}' en version {dep.Version} est introuvable.");
-                returnCode = 1;
-                continue;
+                logger.LogInformation($"({dep.ConfigKey}) Installation de {dep.FullName}@{dep.Version} en cours...");
+
+                if (!await nugetResource.DoesPackageExistAsync(dep.FullName, new NuGetVersion(dep.Version), nugetCache, NullLogger.Instance, ct))
+                {
+                    logger.LogError($"({dep.ConfigKey}) Le package {dep.FullName}@{dep.Version} est introuvable.");
+                    returnCode = 1;
+                    continue;
+                }
+
+                Directory.CreateDirectory(moduleFolder);
+
+                using var packageStream = new MemoryStream();
+                await nugetResource.CopyNupkgToStreamAsync(dep.FullName, new NuGetVersion(dep.Version), packageStream, nugetCache, NullLogger.Instance, ct);
+                using var packageReader = new PackageArchiveReader(packageStream);
+                var nuspecReader = await packageReader.GetNuspecReaderAsync(ct);
+
+                foreach (var file in packageReader.GetFiles().Where(f => f == $"lib/{framework}/{dep.FullName}.dll" || f.EndsWith("config.json")))
+                {
+                    packageReader.ExtractFile(file, Path.Combine(moduleFolder, file.Split('/').Last()), NullLogger.Instance);
+                }
+
+                hasInstalled = true;
+                logger.LogInformation($"({dep.ConfigKey}) Installation de {dep.FullName}@{dep.Version} terminée avec succès.");
             }
 
-            Directory.CreateDirectory(moduleFolder);
-
-            using var packageStream = new MemoryStream();
-            await nugetResource.CopyNupkgToStreamAsync(dep.FullName, new NuGetVersion(dep.Version), packageStream, nugetCache, NullLogger.Instance, ct);
-            using var packageReader = new PackageArchiveReader(packageStream);
-            var nuspecReader = await packageReader.GetNuspecReaderAsync(ct);
-
-            foreach (var file in packageReader.GetFiles().Where(f => f == $"lib/{framework}/{dep.FullName}.dll" || f.EndsWith("config.json")))
-            {
-                packageReader.ExtractFile(file, Path.Combine(moduleFolder, file.Split('/').Last()), NullLogger.Instance);
-            }
+            generators.AddRange(Assembly.LoadFrom(Path.Combine(moduleFolder, $"{dep.FullName}.dll")).GetExportedTypes().Where(t => GetIGenRegInterface(t) != null));
+            resolvedConfigKeys.Add(dep.ConfigKey, dep.Version);
         }
-
-        generators.AddRange(Assembly.LoadFrom(Path.Combine(moduleFolder, $"{dep.FullName}.dll")).GetExportedTypes().Where(t => GetIGenRegInterface(t) != null));
     }
 
     if (returnCode != 0)
@@ -341,12 +363,11 @@ for (var i = 0; i < configs.Count; i++)
 
     topModelLock.Write();
 
-    if (schemaMode)
+    logger.LogInformation($"Générateurs utilisés :{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", resolvedConfigKeys.Select(rck => $"- {rck.Key}: {rck.Value}"))}");
+
+    if (schemaMode || hasInstalled)
     {
-        Console.ForegroundColor = colors[i % colors.Length];
-        Console.Write($"#{i + 1}");
-        Console.ForegroundColor = ConsoleColor.Gray;
-        Console.WriteLine(" Génération du schéma de configuration...");
+        logger.LogInformation("Génération du schéma de configuration...");
 
         var schema = JsonNode.Parse(File.ReadAllText(FileChecker.GetFilePath(Assembly.GetExecutingAssembly(), "schema.config.json")))!.AsObject();
 
@@ -370,78 +391,83 @@ for (var i = 0; i < configs.Count; i++)
             configFile = $"# yaml-language-server: $schema={relativePath}.schema.json \n" + configFile;
             File.WriteAllText(configs[i].FullPath, configFile);
         }
-    }
-    else
-    {
-        var services = new ServiceCollection()
-            .AddTransient(typeof(ILogger<>), typeof(Logger<>))
-            .AddTransient<ILoggerFactory, LoggerFactory>()
-            .AddSingleton<ILoggerProvider>(loggerProvider)
-            .AddModelStore(fileChecker, config);
 
-        var hasError = false;
+        logger.LogInformation("Schéma de configuration généré avec succès.");
 
-        foreach (var generator in generators)
+        if (schemaMode)
         {
-            var (configType, configName) = GetIGenRegInterfaceAndName(generator);
+            return 0;
+        }
+    }
 
-            if (config.Generators.TryGetValue(configName, out var genConfigMaps))
+    var services = new ServiceCollection()
+        .AddTransient(typeof(ILogger<>), typeof(Logger<>))
+        .AddTransient<ILoggerFactory, LoggerFactory>()
+        .AddSingleton<ILoggerProvider>(loggerProvider)
+        .AddModelStore(fileChecker, config);
+
+    var hasError = false;
+
+    foreach (var generator in generators)
+    {
+        var (configType, configName) = GetIGenRegInterfaceAndName(generator);
+
+        if (config.Generators.TryGetValue(configName, out var genConfigMaps))
+        {
+            for (var j = 0; j < genConfigMaps.Count(); j++)
             {
-                for (var j = 0; j < genConfigMaps.Count(); j++)
+                var genConfigMap = genConfigMaps.ElementAt(j);
+                var number = j + 1;
+
+                try
                 {
-                    var genConfigMap = genConfigMaps.ElementAt(j);
-                    var number = j + 1;
+                    var genConfig = (GeneratorConfigBase)fileChecker.GetGenConfig(configName, configType, genConfigMap);
 
-                    try
-                    {
-                        var genConfig = (GeneratorConfigBase)fileChecker.GetGenConfig(configName, configType, genConfigMap);
+                    genConfig.ExcludedTags = excludedTags;
+                    genConfig.InitVariables(config.App, number);
 
-                        genConfig.ExcludedTags = excludedTags;
-                        genConfig.InitVariables(config.App, number);
+                    genConfig.TranslateReferences ??= config.I18n.TranslateReferences;
+                    genConfig.TranslateProperties ??= config.I18n.TranslateProperties;
 
-                        genConfig.TranslateReferences ??= config.I18n.TranslateReferences;
-                        genConfig.TranslateProperties ??= config.I18n.TranslateProperties;
+                    ModelUtils.TrimSlashes(genConfig, c => c.OutputDirectory);
+                    ModelUtils.CombinePath(dn, genConfig, c => c.OutputDirectory);
 
-                        ModelUtils.TrimSlashes(genConfig, c => c.OutputDirectory);
-                        ModelUtils.CombinePath(dn, genConfig, c => c.OutputDirectory);
-
-                        var instance = Activator.CreateInstance(generator);
-                        instance!.GetType().GetMethod("Register")!
-                            .Invoke(instance, [services, genConfig, number]);
-                    }
-                    catch (ModelException me)
-                    {
-                        hasError = true;
-                        returnCode = 1;
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine(me.Message);
-                        Console.WriteLine();
-                        Console.ForegroundColor = ConsoleColor.Gray;
-                    }
+                    var instance = Activator.CreateInstance(generator);
+                    instance!.GetType().GetMethod("Register")!
+                        .Invoke(instance, [services, genConfig, number]);
+                }
+                catch (ModelException me)
+                {
+                    hasError = true;
+                    returnCode = 1;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(me.Message);
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Gray;
                 }
             }
         }
+    }
 
-        if (!hasError)
+    if (!hasError)
+    {
+        var provider = services.BuildServiceProvider();
+        disposables.Add(provider);
+
+        var modelStore = provider.GetRequiredService<ModelStore>();
+
+        modelStore.DisableLockfile = excludedTags.Any();
+
+        var k = i;
+        modelStore.OnResolve += hasError =>
         {
-            var provider = services.BuildServiceProvider();
-            disposables.Add(provider);
+            hasErrors[k] = hasError;
+        };
 
-            var modelStore = provider.GetRequiredService<ModelStore>();
-
-            modelStore.DisableLockfile = excludedTags.Any();
-
-            var k = i;
-            modelStore.OnResolve += hasError =>
-            {
-                hasErrors[k] = hasError;
-            };
-
-            var watcher = modelStore.LoadFromConfig(watchMode, topModelLock, storeConfig);
-            if (watcher != null)
-            {
-                disposables.Add(watcher);
-            }
+        var watcher = modelStore.LoadFromConfig(watchMode, topModelLock, storeConfig);
+        if (watcher != null)
+        {
+            disposables.Add(watcher);
         }
     }
 }
