@@ -1,5 +1,29 @@
 # TopModel.Generator (`modgen`)
 
+Changelogs des modules :
+
+- [`csharp`](./TopModel.Generator.Csharp/CHANGELOG.md)
+- [`javascript`](./TopModel.Generator.Javascript/CHANGELOG.md)
+- [`jpa`](./TopModel.Generator.Jpa/CHANGELOG.md)
+- [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
+- [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
+
+## 2.0.0
+
+- [`#383`](https://github.com/klee-contrib/topmodel/pull/383) - modgen 2.0
+
+  Cette version majeure dissocie les générateurs de `modgen` lui-même, qui ira les installer à la demande selon la configuration. Pour plus d'informations, vous pouvez consulter l'[issue originale](https://github.com/klee-contrib/topmodel/issues/253) et la doc à jour, en particulier la page [Génération](https://klee-contrib.github.io/topmodel/#/generator).
+
+  Les différents générateurs sont tous initialisés avec la version `1.0.2`, et ils auront désormais leurs changelogs respectifs.
+
+  Ce changelog sera donc le dernier qui listera les évolutions des générateurs. Tous les évolutions présentées ici seront donc dans les versions `1.0.2` respectives de chaque générateur.
+
+- [`#386`](https://github.com/klee-contrib/topmodel/pull/386) - Générateur SQL procédural pour Oracle + nouvelles options de générations
+- [`8a7b4f5`](https://github.com/klee-contrib/topmodel/commit/8a7b4f5c02c43279fbc004e685becb8bb063fd12) - [JPA] Correction indentation hasshCode
+- [`0c13a00`](https://github.com/klee-contrib/topmodel/commit/0c13a006b7f176a70df195b781bbbf01eb3f3dc4) - [JS] Fix code généré pour correspondre à prettier
+
+  On va dire qu'on va justifier celui-là avec le fait qu'on release une 2.0 parce que cette modification va impacter **presque tout le code JS généré**, essentiellement pour remplacer des virgules par des points-virgules dans les définitions de type Typescript...
+
 ## 1.52.2
 
 - HotFix sur [`#382`](https://github.com/klee-contrib/topmodel/issue/382)
