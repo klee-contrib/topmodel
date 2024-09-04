@@ -23,6 +23,11 @@ public class PostgreSchemaGenerator : AbstractSchemaGenerator
 
     protected override bool UseQuotes => false;
 
+    protected override string GetSequenceName(Class classe)
+    {
+        return $"SEQ_{classe.SqlName}";
+    }
+
     protected override void WriteComments(SqlFileWriter writerComment, Class classe, string tableName, List<IProperty> properties)
     {
         writerComment.WriteLine();
@@ -58,11 +63,6 @@ public class PostgreSchemaGenerator : AbstractSchemaGenerator
 
             writerCrebas.Write(")");
         }
-    }
-
-    protected override string GetSequenceName(Class classe)
-    {
-        return $"SEQ_{classe.SqlName}";
     }
 
     protected override void WriteSequenceDeclaration(Class classe, SqlFileWriter writerCrebas, string tableName)

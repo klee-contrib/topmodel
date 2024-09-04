@@ -42,14 +42,14 @@ public class SqlConfig : GeneratorConfigBase
     /// Supporte les variables tableName, trigram, columnName.
     /// Valeur par défaut : "FK_{tableName}_{columnName}".
     /// </summary>
-    public string? ForeignKeyConstraintNamePattern { get; set; } = "FK_{tableName}_{columnName}";
+    public string ForeignKeyConstraintNamePattern { get; set; } = "FK_{tableName}_{columnName}";
 
     /// <summary>
     /// Retourne ou définit le pattern pour le nom des contraintes d'unicité.
     /// Supporte les variables tableName, columnNames (avec trigramme), propertyNames (sans le trigramme).
     /// Valeur par défaut : "UK_{tableName}_{columnNames}".
     /// </summary>
-    public string? UniqueConstraintNamePattern { get; set; } = "UK_{tableName}_{columnNames}";
+    public string UniqueConstraintNamePattern { get; set; } = "UK_{tableName}_{columnNames}";
 
     /// <summary>
     /// SGBD cible ("sqlserver" ou "postgres" ou "oracle").
@@ -61,52 +61,6 @@ public class SqlConfig : GeneratorConfigBase
     public override bool CanClassUseEnums(Class classe, IEnumerable<Class>? availableClasses = null, IProperty? prop = null)
     {
         return false;
-    }
-
-    public override bool ShouldQuoteValue(IProperty prop)
-    {
-        var type = GetType(prop);
-        return (type ?? string.Empty).Contains("varchar")
-            || type == "text"
-            || type == "uniqueidentifier"
-            || type == "uuid"
-            || type == "bit"
-            || (type ?? string.Empty).Contains("date")
-            || (type ?? string.Empty).Contains("time");
-    }
-    
-    public override string GetValue(IProperty property, IEnumerable<Class> availableClasses, string? value = null)
-    {
-        /* Cas spécifique d'un booléen sous Oracle, typé comme un numeric(1) */
-        bool NeedsBooleanConversionToNumeric()
-        {
-            if (string.IsNullOrEmpty(value))
-            {
-                return false;
-            }
-
-            return
-                TargetDBMS == TargetDBMS.Oracle &&
-                GetType(property) == "number(1)" &&
-                IsBoolean(property);
-        }
-
-        if (NeedsBooleanConversionToNumeric())
-        {
-            return bool.Parse(value) ? "1" : "0";
-        }
-
-        return base.GetValue(property, availableClasses, value);
-    }
-
-    public bool IsBoolean(IProperty property)
-    {
-        var domain = property.Domain;
-        /* Pour savoir si un domaine est booléen, on regarde grossièrement le mot bool dans le nom du domaine, le label du domaine, un type d'implémeentation de domaine. */
-        return
-            domain.Name.Value.ToLowerInvariant().Contains("bool") ||
-            domain.Label.ToLowerInvariant().Contains("bool") ||
-            domain.Implementations.Values.Any(di => di.Type?.ToLowerInvariant().Contains("bool") ?? false);
     }
 
     public string GetForeignKeyConstraintName(string tableName, string trigram, string columnName)
@@ -131,6 +85,52 @@ public class SqlConfig : GeneratorConfigBase
                 [nameof(columnNames)] = columnNames,
                 [nameof(propertyNames)] = propertyNames,
             });
+    }
+
+    public override string GetValue(IProperty property, IEnumerable<Class> availableClasses, string? value = null)
+    {
+        /* Cas spécifique d'un booléen sous Oracle, typé comme un numeric(1) */
+        bool NeedsBooleanConversionToNumeric()
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return false;
+            }
+
+            return
+                TargetDBMS == TargetDBMS.Oracle &&
+                GetType(property) == "number(1)" &&
+                IsBoolean(property);
+        }
+
+        if (NeedsBooleanConversionToNumeric())
+        {
+            return bool.Parse(value!) ? "1" : "0";
+        }
+
+        return base.GetValue(property, availableClasses, value);
+    }
+
+    public bool IsBoolean(IProperty property)
+    {
+        var domain = property.Domain;
+        /* Pour savoir si un domaine est booléen, on regarde grossièrement le mot bool dans le nom du domaine, le label du domaine, un type d'implémeentation de domaine. */
+        return
+            domain.Name.Value.ToLowerInvariant().Contains("bool") ||
+            domain.Label.ToLowerInvariant().Contains("bool") ||
+            domain.Implementations.Values.Any(di => di.Type?.ToLowerInvariant().Contains("bool") ?? false);
+    }
+
+    public override bool ShouldQuoteValue(IProperty prop)
+    {
+        var type = GetType(prop);
+        return (type ?? string.Empty).Contains("varchar")
+            || type == "text"
+            || type == "uniqueidentifier"
+            || type == "uuid"
+            || type == "bit"
+            || (type ?? string.Empty).Contains("date")
+            || (type ?? string.Empty).Contains("time");
     }
 
     protected override string GetEnumType(string className, string propName, bool isPrimaryKeyDef = false)
@@ -158,5 +158,5 @@ public class SqlConfig : GeneratorConfigBase
         }
 
         return buffer;
-    }    
+    }
 }

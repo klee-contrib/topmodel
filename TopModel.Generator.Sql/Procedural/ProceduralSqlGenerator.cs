@@ -44,6 +44,7 @@ public class ProceduralSqlGenerator : GeneratorBase<SqlConfig>
                 TargetDBMS.Postgre => new PostgreSchemaGenerator(Config, _logger, _translationStore),
                 TargetDBMS.Sqlserver => new SqlServerSchemaGenerator(Config, _logger, _translationStore),
                 TargetDBMS.Oracle => new OracleSchemaGenerator(Config, _logger, _translationStore),
+                _ => throw new NotImplementedException($"Procedural SQL generation is not implemented with {Config.TargetDBMS}")
             };
 
             return _schemaGenerator;

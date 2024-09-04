@@ -43,7 +43,7 @@ public abstract class AbstractSchemaGenerator
     /// Indique si le SGBD gère les tablepspaces.
     /// </summary>
     protected virtual bool AllowTablespace => false;
-    
+
     /// <summary>
     /// Type json pour les compositions.
     /// </summary>
@@ -274,6 +274,18 @@ public abstract class AbstractSchemaGenerator
     protected virtual string GetNextValCall(string sequenceName)
         => throw new NotImplementedException($"Sequence declaration is not implemented with {_config.TargetDBMS}");
 
+    /// <summary>
+    /// Calcule le nom de la séquence associée à une table.
+    /// </summary>
+    /// <param name="classe">Classe.</param>
+    /// <returns>Nom de la séquence.</returns>
+    protected virtual string GetSequenceName(Class classe)
+        => throw new NotImplementedException($"Sequence declaration is not implemented with {_config.TargetDBMS}");
+
+    protected virtual void WriteBooleanCheckConstraints(SqlFileWriter writerCrebas, IList<IProperty> properties)
+    {
+    }
+
     protected abstract void WriteComments(SqlFileWriter writerCrebas, Class classe, string tableName, List<IProperty> properties);
 
     /// <summary>
@@ -289,6 +301,9 @@ public abstract class AbstractSchemaGenerator
     protected virtual void WriteInsertStart(SqlFileWriter writerInsert)
     {
     }
+
+    protected virtual void WriteSequenceDeclaration(Class classe, SqlFileWriter writerCrebas, string tableName)
+        => throw new NotImplementedException($"Sequence declaration is not implemented with {_config.TargetDBMS}");
 
     /// <summary>
     /// Ecrit dans le writer le script de création du type.
@@ -353,6 +368,8 @@ public abstract class AbstractSchemaGenerator
         writer.WriteLine();
     }
 
+    private string GetIndexTablespaceDeclaration() => GetTablespaceDeclaration(_config.IndexTablespace);
+
     /// <summary>
     /// Retourne la ligne d'insert.
     /// </summary>
@@ -406,6 +423,33 @@ public abstract class AbstractSchemaGenerator
         return GetInsertLine(modelClass.SqlName, propertyValueDict);
     }
 
+    private string GetTableTablespaceDeclaration() => GetTablespaceDeclaration(_config.TableTablespace);
+
+    private string GetTablespaceDeclaration(string? tablespace)
+    {
+        bool ShouldGenerateTablespace()
+        {
+            if (!AllowTablespace)
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(tablespace))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        if (ShouldGenerateTablespace())
+        {
+            return $"\r\nTABLESPACE  {tablespace} ";
+        }
+
+        return string.Empty;
+    }
+
     private string Quote(string name)
     {
         return !UseQuotes ? name : $@"""{name}""";
@@ -414,6 +458,25 @@ public abstract class AbstractSchemaGenerator
     private string SingleQuote(string name)
     {
         return $@"'{name.Replace("'", "''")}'";
+    }
+
+    /// <summary>
+    /// Ecrit les contraintes de check.
+    /// </summary>
+    /// <param name="writerCrebas">Flux crebas.</param>
+    /// <param name="properties">Liste des propriétés persistantes.</param>
+    private void WriteCheckConstraints(SqlFileWriter writerCrebas, IList<IProperty> properties)
+    {
+        WriteBooleanCheckConstraints(writerCrebas, properties);
+    }
+
+    /// <summary>
+    /// Ajoute la fin de la déclaration de la table.
+    /// </summary>
+    /// <param name="writerCrebas">Flux d'écriture crebas.</param>
+    private void WriteEndTableDeclaration(SqlFileWriter writerCrebas)
+    {
+        writerCrebas.WriteLine($"){GetTableTablespaceDeclaration()}{BatchSeparator}");
     }
 
     /// <summary>
@@ -452,7 +515,6 @@ public abstract class AbstractSchemaGenerator
         }
 
         writerCrebas.WriteLine($"({string.Join(",", properties.Where(p => p.PrimaryKey).Select(pk => Quote(pk.SqlName)))})");
-        
     }
 
     private void WriteResourceTableDeclaration(SqlFileWriter writer)
@@ -527,17 +589,6 @@ public abstract class AbstractSchemaGenerator
         writerCrebas.WriteLine(BatchSeparator);
         writerCrebas.WriteLine();
     }
-
-    protected virtual void WriteSequenceDeclaration(Class classe, SqlFileWriter writerCrebas, string tableName)
-        => throw new NotImplementedException($"Sequence declaration is not implemented with {_config.TargetDBMS}");
-
-    /// <summary>
-    /// Calcule le nom de la séquence associée à une table.
-    /// </summary>
-    /// <param name="classe">Classe.</param>
-    /// <returns>Nom de la séquence.</returns>
-    protected virtual string GetSequenceName(Class classe)
-        => throw new NotImplementedException($"Sequence declaration is not implemented with {_config.TargetDBMS}");
 
     /// <summary>
     /// Déclaration de la table.
@@ -692,58 +743,6 @@ public abstract class AbstractSchemaGenerator
         }
 
         return fkPropertiesList;
-    }
-
-    /// <summary>
-    /// Ecrit les contraintes de check.
-    /// </summary>
-    /// <param name="writerCrebas">Flux crebas.</param>
-    /// <param name="properties">Liste des propriétés persistantes.</param>
-    private void WriteCheckConstraints(SqlFileWriter writerCrebas, IList<IProperty> properties)
-    {
-        WriteBooleanCheckConstraints(writerCrebas, properties);
-    }
-
-    protected virtual void WriteBooleanCheckConstraints(SqlFileWriter writerCrebas, IList<IProperty> properties)
-    {
-    }
-
-    /// <summary>
-    /// Ajoute la fin de la déclaration de la table.
-    /// </summary>
-    /// <param name="writerCrebas">Flux d'écriture crebas.</param>
-    private void WriteEndTableDeclaration(SqlFileWriter writerCrebas)
-    {
-        writerCrebas.WriteLine($"){GetTableTablespaceDeclaration()}{BatchSeparator}");
-    }
-
-    private string GetTableTablespaceDeclaration() => GetTablespaceDeclaration(_config.TableTablespace);
-
-    private string GetIndexTablespaceDeclaration() => GetTablespaceDeclaration(_config.IndexTablespace);
-
-    private string GetTablespaceDeclaration(string? tablespace)
-    {
-        bool ShouldGenerateTablespace()
-        {
-            if (!AllowTablespace)
-            {
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(tablespace))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        if (ShouldGenerateTablespace())
-        {
-            return $"\r\nTABLESPACE  {tablespace} ";
-        }
-
-        return string.Empty;
     }
 
     /// <summary>

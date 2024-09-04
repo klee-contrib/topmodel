@@ -187,6 +187,7 @@ public class CSharpWriter : IDisposable
     /// </summary>
     /// <param name="paramName">Nom du paramètre.</param>
     /// <param name="value">Valeur du paramètre.</param>
+    /// <param name="indent">Niveau d'indentation.</param>
     public void WriteParam(string paramName, string value, int indent = 1)
     {
         if (!string.IsNullOrEmpty(paramName) && !string.IsNullOrEmpty(value))
