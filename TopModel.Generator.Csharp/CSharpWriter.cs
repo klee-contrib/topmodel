@@ -48,7 +48,7 @@ public class CSharpWriter : IDisposable
     /// </summary>
     /// <param name="indentationLevel">Niveau d'indentation.</param>
     /// <param name="value">Valeur à écrire dans le flux.</param>
-    public void Write(int indentationLevel, string value)
+    public virtual void Write(int indentationLevel, string value)
     {
         var indentValue = GetIdentValue(indentationLevel);
         value = value.Replace("\r\n", "\r\n" + indentValue);
@@ -71,7 +71,7 @@ public class CSharpWriter : IDisposable
     /// <param name="indentLevel">Indentation.</param>
     /// <param name="attributeName">Nom de l'attribut.</param>
     /// <param name="attributeParams">Paramètres.</param>
-    public void WriteAttribute(int indentLevel, string attributeName, params string[] attributeParams)
+    public virtual void WriteAttribute(int indentLevel, string attributeName, params string[] attributeParams)
     {
         var aParams = string.Empty;
         if (attributeParams.Any())
@@ -90,7 +90,7 @@ public class CSharpWriter : IDisposable
     /// <param name="isRecord">Génère un record au lieu d'une classe.</param>
     /// <param name="ifList">Liste des interfaces implémentées.</param>
     /// <param name="parameters">Paramètres (si constructeur principal).</param>
-    public void WriteClassDeclaration(string name, string? inheritedClass, bool isRecord, string[]? ifList = null, string? parameters = null)
+    public virtual void WriteClassDeclaration(string name, string? inheritedClass, bool isRecord, string[]? ifList = null, string? parameters = null)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -165,7 +165,7 @@ public class CSharpWriter : IDisposable
     /// </summary>
     /// <param name="indentationLevel">Niveau d'indentation.</param>
     /// <param name="value">Valeur à écrire dans le flux.</param>
-    public void WriteLine(int indentationLevel, string value)
+    public virtual void WriteLine(int indentationLevel, string value)
     {
         var indentValue = GetIdentValue(indentationLevel);
         value = value.Replace("\r\n", "\r\n" + indentValue);
@@ -176,7 +176,7 @@ public class CSharpWriter : IDisposable
     /// Retourne le code associé à la déclaration d'un namespace.
     /// </summary>
     /// <param name="value">Valeur du namespace.</param>
-    public void WriteNamespace(string value)
+    public virtual void WriteNamespace(string value)
     {
         WriteLine($"namespace {value};");
         WriteLine();
@@ -188,7 +188,7 @@ public class CSharpWriter : IDisposable
     /// <param name="paramName">Nom du paramètre.</param>
     /// <param name="value">Valeur du paramètre.</param>
     /// <param name="indent">Niveau d'indentation.</param>
-    public void WriteParam(string paramName, string value, int indent = 1)
+    public virtual void WriteParam(string paramName, string value, int indent = 1)
     {
         if (!string.IsNullOrEmpty(paramName) && !string.IsNullOrEmpty(value))
         {
@@ -201,7 +201,7 @@ public class CSharpWriter : IDisposable
     /// </summary>
     /// <param name="indentationLevel">Niveau d'indention.</param>
     /// <param name="value">Description du returns.</param>
-    public void WriteReturns(int indentationLevel, string value)
+    public virtual void WriteReturns(int indentationLevel, string value)
     {
         if (!string.IsNullOrEmpty(value))
         {
@@ -223,7 +223,7 @@ public class CSharpWriter : IDisposable
     /// </summary>
     /// <param name="indentationLevel">Niveau d'indentation.</param>
     /// <param name="value">Valeur à écrire.</param>
-    public void WriteSummary(int indentationLevel, string value)
+    public virtual void WriteSummary(int indentationLevel, string value)
     {
         if (!string.IsNullOrEmpty(value))
         {
@@ -237,7 +237,7 @@ public class CSharpWriter : IDisposable
     /// <param name="indentationLevel">Niveau d'indentation.</param>
     /// <param name="paramName">Nom du paramètre.</param>
     /// <param name="value">Valeur du paramètre.</param>
-    public void WriteTypeParam(int indentationLevel, string paramName, string value)
+    public virtual void WriteTypeParam(int indentationLevel, string paramName, string value)
     {
         if (!string.IsNullOrEmpty(paramName) && !string.IsNullOrEmpty(value))
         {
@@ -249,7 +249,7 @@ public class CSharpWriter : IDisposable
     /// Retourne le code associé à la déclaration d'un Using.
     /// </summary>
     /// <param name="nsNames">Nom de la classe/namespace à importer.</param>
-    public void WriteUsings(params string[] nsNames)
+    public virtual void WriteUsings(params string[] nsNames)
     {
         var systemUsings = nsNames.Where(name => name.StartsWith("System"));
         var otherUsings = nsNames.Except(systemUsings);
@@ -267,7 +267,7 @@ public class CSharpWriter : IDisposable
     /// <param name="value">Description du paramètre.</param>
     /// <param name="tag">Tag XML.</param>
     /// <returns>Code généré.</returns>
-    private static string LoadParam(string paramName, string value, string tag)
+    protected static string LoadParam(string paramName, string value, string tag)
     {
         if (string.IsNullOrEmpty(paramName))
         {
@@ -320,7 +320,7 @@ public class CSharpWriter : IDisposable
     /// </summary>
     /// <param name="value">Description de la valeur retournée.</param>
     /// <returns>Code généré.</returns>
-    private static string LoadReturns(string value)
+    protected static string LoadReturns(string value)
     {
         if (string.IsNullOrEmpty(value))
         {
@@ -344,7 +344,7 @@ public class CSharpWriter : IDisposable
     /// </summary>
     /// <param name="summary">Contenu du commentaire.</param>
     /// <returns>Code généré.</returns>
-    private static string LoadSummary(string summary)
+    protected static string LoadSummary(string summary)
     {
         if (string.IsNullOrEmpty(summary))
         {
@@ -380,7 +380,7 @@ public class CSharpWriter : IDisposable
     /// </summary>
     /// <param name="indentationLevel">Niveau d'indention.</param>
     /// <returns>Identation.</returns>
-    private string GetIdentValue(int indentationLevel)
+    protected string GetIdentValue(int indentationLevel)
     {
         var indentValue = string.Empty;
         for (var i = 0; i < indentationLevel; ++i)

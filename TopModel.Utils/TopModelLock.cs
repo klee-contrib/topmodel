@@ -34,6 +34,7 @@ public class TopModelLock : TopModelLockFile
                 var lf = _deserializer.Deserialize<TopModelLockFile>(file);
                 Version = lf.Version;
                 GeneratedFiles = lf.GeneratedFiles;
+                Modules = lf.Modules;
             }
             catch
             {
@@ -53,7 +54,7 @@ public class TopModelLock : TopModelLockFile
         Version = version;
     }
 
-    public void Update(IEnumerable<string> generatedFiles)
+    public void UpdateFiles(IEnumerable<string> generatedFiles)
     {
         GeneratedFiles ??= [];
 
@@ -77,18 +78,36 @@ public class TopModelLock : TopModelLockFile
 
         GeneratedFiles = generatedFilesList;
 
-        using var fw = new FileWriter(Path.Combine(_modelRoot, _lockFileName), _logger)
-        {
-            StartCommentToken = "#"
-        };
+        Write();
+    }
 
-        fw.WriteLine($"version: {Version}");
-        if (GeneratedFiles.Count > 0)
+    public void Write()
+    {
+        if (Modules.Count > 0 || GeneratedFiles.Count > 0)
         {
-            fw.WriteLine("generatedFiles:");
-            foreach (var genFile in GeneratedFiles)
+            using var fw = new FileWriter(Path.Combine(_modelRoot, _lockFileName), _logger)
             {
-                fw.WriteLine($"  - {genFile}");
+                StartCommentToken = "#"
+            };
+
+            fw.WriteLine($"version: {Version}");
+
+            if (Modules.Count > 0)
+            {
+                fw.WriteLine("modules:");
+                foreach (var module in Modules)
+                {
+                    fw.WriteLine($"  {module.Key}: {module.Value}");
+                }
+            }
+
+            if (GeneratedFiles.Count > 0)
+            {
+                fw.WriteLine("generatedFiles:");
+                foreach (var genFile in GeneratedFiles)
+                {
+                    fw.WriteLine($"  - {genFile}");
+                }
             }
         }
     }

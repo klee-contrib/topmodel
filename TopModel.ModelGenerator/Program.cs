@@ -218,7 +218,7 @@ async Task StartGeneration(string filePath, string directoryName, int i)
         generatedFiles.AddRange(await generator.Generate(loggingScope));
     }
 
-    tmdLock.Update(generatedFiles);
+    tmdLock.UpdateFiles(generatedFiles);
 
     mainLogger.LogInformation("Mise à jour terminée avec succès.");
 }

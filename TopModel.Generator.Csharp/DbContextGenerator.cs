@@ -16,46 +16,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
 
     public override string Name => "CSharpDbContextGen";
 
-    protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
-    {
-        if (classe.IsPersistent && !classe.Abstract && !Config.NoPersistence(tag))
-        {
-            yield return ("main", Config.GetDbContextFilePath(tag));
-
-            if (Config.UseEFComments)
-            {
-                yield return ("comments", Config.GetDbContextFilePath(tag).Replace(".cs", ".comments.cs"));
-            }
-        }
-    }
-
-    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
-    {
-        var dbContextName = Config.GetDbContextName(tag);
-        var usings = new List<string> { "Microsoft.EntityFrameworkCore" };
-        var contextNs = Config.GetDbContextNamespace(tag);
-
-        foreach (var ns in classes
-            .Concat(GetAssociationProperties(classes, tag).Select(ap => ap.AssociationProperty.Association))
-            .Select(c => Config.GetNamespace(c, GetBestClassTag(c, tag)))
-            .Distinct())
-        {
-            usings.Add(ns);
-        }
-
-        var classList = classes.OrderBy(c => c.NamePascal).ToList();
-
-        if (fileType == "main")
-        {
-            HandleMainFile(fileName, tag, dbContextName, contextNs, usings, classList);
-        }
-        else
-        {
-            HandleCommentsFile(fileName, tag, dbContextName, contextNs, usings, classList);
-        }
-    }
-
-    private IEnumerable<(IProperty Property, AssociationProperty AssociationProperty)> GetAssociationProperties(IEnumerable<Class> classes, string tag)
+    protected virtual IEnumerable<(IProperty Property, AssociationProperty AssociationProperty)> GetAssociationProperties(IEnumerable<Class> classes, string tag)
     {
         return classes
             .Distinct()
@@ -72,7 +33,20 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
             .Where(p => Classes.Contains(p.ap.Association) && Config.IsPersistent(p.ap.Association, GetBestClassTag(p.ap.Association, tag)));
     }
 
-    private void HandleCommentsFile(string fileName, string tag, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
+    protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
+    {
+        if (classe.IsPersistent && !classe.Abstract && !Config.NoPersistence(tag))
+        {
+            yield return ("main", Config.GetDbContextFilePath(tag));
+
+            if (Config.UseEFComments)
+            {
+                yield return ("comments", Config.GetDbContextFilePath(tag).Replace(".cs", ".comments.cs"));
+            }
+        }
+    }
+
+    protected virtual void HandleCommentsFile(string fileName, string tag, string dbContextName, string contextNs, IList<string> usings, IList<Class> classes)
     {
         using var cw = new CSharpWriter(fileName, _logger);
 
@@ -107,7 +81,33 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
         cw.WriteLine("}");
     }
 
-    private void HandleMainFile(string fileName, string tag, string dbContextName, string contextNs, List<string> usings, List<Class> classes)
+    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
+    {
+        var dbContextName = Config.GetDbContextName(tag);
+        var usings = new List<string> { "Microsoft.EntityFrameworkCore" };
+        var contextNs = Config.GetDbContextNamespace(tag);
+
+        foreach (var ns in classes
+            .Concat(GetAssociationProperties(classes, tag).Select(ap => ap.AssociationProperty.Association))
+            .Select(c => Config.GetNamespace(c, GetBestClassTag(c, tag)))
+            .Distinct())
+        {
+            usings.Add(ns);
+        }
+
+        var classList = classes.OrderBy(c => c.NamePascal).ToList();
+
+        if (fileType == "main")
+        {
+            HandleMainFile(fileName, tag, dbContextName, contextNs, usings, classList);
+        }
+        else
+        {
+            HandleCommentsFile(fileName, tag, dbContextName, contextNs, usings, classList);
+        }
+    }
+
+    protected virtual void HandleMainFile(string fileName, string tag, string dbContextName, string contextNs, List<string> usings, List<Class> classes)
     {
         using var w = new CSharpWriter(fileName, _logger);
 

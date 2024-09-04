@@ -17,7 +17,6 @@ export class State {
     applications: Application[] = [];
     error?: string;
     preview?: TopModelPreviewPanel;
-    _schemaTerminal: Terminal | undefined;
     constructor(public readonly context: ExtensionContext) {
         makeAutoObservable(this);
         this.initTools();
@@ -140,7 +139,6 @@ export class State {
     private registerCommands() {
         this.registerPreviewCommand();
         this.registerGoToLocation();
-        this.registerSchema();
         this.registerChooseCommand();
         this.registerReleaseNote();
     }
@@ -170,18 +168,6 @@ export class State {
                     []
                 );
                 await commands.executeCommand("editor.action.goToReferences");
-            })
-        );
-    }
-
-    private registerSchema() {
-        this.context.subscriptions.push(
-            commands.registerCommand(COMMANDS.schema, async () => {
-                if (!this._schemaTerminal) {
-                    this._schemaTerminal = window.createTerminal("generate schema");
-                }
-
-                this._schemaTerminal.sendText("modgen -s");
             })
         );
     }

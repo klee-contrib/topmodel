@@ -16,39 +16,13 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
 
     public override string Name => "CSharpRefAccessGen";
 
-    protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
-    {
-        if (classe.Reference)
-        {
-            yield return ("interface", Config.GetReferenceInterfaceFilePath(classe.Namespace, tag));
-            if (!Config.NoPersistence(tag) && (classe.IsPersistent || classe.Values.Any()))
-            {
-                yield return ("implementation", Config.GetReferenceImplementationFilePath(classe.Namespace, tag));
-            }
-        }
-    }
-
-    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
-    {
-        var classList = classes
-            .OrderBy(x => Config.DbContextPath == null ? $"{x.NamePascal}List" : x.PluralNamePascal, StringComparer.Ordinal)
-            .ToList();
-
-        if (fileType == "interface")
-        {
-            GenerateReferenceAccessorsInterface(fileName, tag, classList);
-        }
-        else
-        {
-            GenerateReferenceAccessorsImplementation(fileName, tag, classList);
-        }
-    }
-
     /// <summary>
     /// Génère l'implémentation des ReferenceAccessors.
     /// </summary>
-    /// <param name="classList">Liste de ModelClass.</param>
-    private void GenerateReferenceAccessorsImplementation(string fileName, string tag, List<Class> classList)
+    /// <param name="fileName">Nom du fichier cible.</param>
+    /// <param name="tag">Tag du fichier cible.</param>
+    /// <param name="classList">Liste de classes à générer.</param>
+    protected virtual void GenerateReferenceAccessorsImplementation(string fileName, string tag, List<Class> classList)
     {
         var ns = classList.First().Namespace;
 
@@ -186,8 +160,10 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
     /// <summary>
     /// Génère l'interface déclarant les ReferenceAccessors d'un namespace.
     /// </summary>
-    /// <param name="classList">Liste de ModelClass.</param>
-    private void GenerateReferenceAccessorsInterface(string fileName, string tag, IEnumerable<Class> classList)
+    /// <param name="fileName">Nom du fichier cible.</param>
+    /// <param name="tag">Tag du fichier cible.</param>
+    /// <param name="classList">Liste de classes à générer.</param>
+    protected virtual void GenerateReferenceAccessorsInterface(string fileName, string tag, IEnumerable<Class> classList)
     {
         var ns = classList.First().Namespace;
 
@@ -235,12 +211,40 @@ public class ReferenceAccessorGenerator : ClassGroupGeneratorBase<CsharpConfig>
         w.WriteLine("}");
     }
 
+    protected override IEnumerable<(string FileType, string FileName)> GetFileNames(Class classe, string tag)
+    {
+        if (classe.Reference)
+        {
+            yield return ("interface", Config.GetReferenceInterfaceFilePath(classe.Namespace, tag));
+            if (!Config.NoPersistence(tag) && (classe.IsPersistent || classe.Values.Any()))
+            {
+                yield return ("implementation", Config.GetReferenceImplementationFilePath(classe.Namespace, tag));
+            }
+        }
+    }
+
+    protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
+    {
+        var classList = classes
+            .OrderBy(x => Config.DbContextPath == null ? $"{x.NamePascal}List" : x.PluralNamePascal, StringComparer.Ordinal)
+            .ToList();
+
+        if (fileType == "interface")
+        {
+            GenerateReferenceAccessorsInterface(fileName, tag, classList);
+        }
+        else
+        {
+            GenerateReferenceAccessorsImplementation(fileName, tag, classList);
+        }
+    }
+
     /// <summary>
     /// Retourne le code associé au corps de l'implémentation d'un service de type ReferenceAccessor.
     /// </summary>
     /// <param name="classe">Type chargé par le ReferenceAccessor.</param>
     /// <returns>Code généré.</returns>
-    private string LoadReferenceAccessorBody(Class classe)
+    protected virtual string LoadReferenceAccessorBody(Class classe)
     {
         if (!classe.IsPersistent)
         {

@@ -2,10 +2,17 @@
 using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json.Nodes;
+using System.Xml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NuGet.Common;
+using NuGet.Packaging;
+using NuGet.Protocol;
+using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
 using TopModel.Core;
 using TopModel.Core.Loaders;
+using TopModel.Generator;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -15,29 +22,33 @@ var configs = new List<(ModelConfig Config, string FullPath, string DirectoryNam
 var excludedTags = Array.Empty<string>();
 var watchMode = false;
 var checkMode = false;
+string? updateMode = null;
 var schemaMode = false;
 var regularCommand = false;
 var returnCode = 0;
 
 var command = new RootCommand("Lance le générateur topmodel.") { Name = "modgen" };
 
-var fileOption = new Option<IEnumerable<FileInfo>>(new[] { "-f", "--file" }, "Chemin vers un fichier de config.");
-var excludeOption = new Option<IEnumerable<string>>(new[] { "-e", "--exclude" }, "Tag à ignorer lors de la génération.");
-var watchOption = new Option<bool>(new[] { "-w", "--watch" }, "Lance le générateur en mode 'watch'");
-var checkOption = new Option<bool>(new[] { "-c", "--check" }, "Vérifie que le code généré est conforme au modèle.");
-var schemaOption = new Option<bool>(new[] { "-s", "--schema" }, "Génère le fichier de schéma JSON du fichier de config.");
+var fileOption = new Option<IEnumerable<FileInfo>>(["-f", "--file"], "Chemin vers un fichier de config.");
+var excludeOption = new Option<IEnumerable<string>>(["-e", "--exclude"], "Tag à ignorer lors de la génération.");
+var watchOption = new Option<bool>(["-w", "--watch"], "Lance le générateur en mode 'watch'");
+var checkOption = new Option<bool>(["-c", "--check"], "Vérifie que le code généré est conforme au modèle.");
+var updateOption = new Option<string>(["-u", "--update"], "Met à jour le module de générateurs spécifié (ou tous les modules si 'all').");
+var schemaOption = new Option<bool>(["-s", "--schema"], "Génère le fichier de schéma JSON du fichier de config.");
 command.AddOption(fileOption);
 command.AddOption(excludeOption);
 command.AddOption(watchOption);
 command.AddOption(checkOption);
+command.AddOption(updateOption);
 command.AddOption(schemaOption);
 command.SetHandler(
-    (files, excludes, watch, check, schema) =>
+    (files, excludes, watch, update, check, schema) =>
     {
         regularCommand = true;
         excludedTags = excludes.ToArray();
         watchMode = watch;
         checkMode = check;
+        updateMode = update;
         schemaMode = schema;
 
         void HandleFile(FileInfo file)
@@ -104,6 +115,7 @@ command.SetHandler(
     fileOption,
     excludeOption,
     watchOption,
+    updateOption,
     checkOption,
     schemaOption);
 
@@ -137,6 +149,15 @@ if (excludedTags.Any())
     Console.Write(" exclus ");
     Console.ForegroundColor = ConsoleColor.Gray;
     Console.WriteLine($"de la génération : {string.Join(", ", excludedTags)}.");
+}
+
+if (updateMode != null)
+{
+    Console.Write("Mode");
+    Console.ForegroundColor = ConsoleColor.DarkCyan;
+    Console.Write(" update ");
+    Console.ForegroundColor = ConsoleColor.Gray;
+    Console.WriteLine($"activé pour : {updateMode}.");
 }
 
 if (watchMode)
@@ -175,11 +196,11 @@ static Type? GetIGenRegInterface(Type t)
 static (Type Type, string Name) GetIGenRegInterfaceAndName(Type generator)
 {
     var configType = GetIGenRegInterface(generator)!.GetGenericArguments()[0];
-    var configName = configType.Name.Replace("Config", string.Empty).ToCamelCase();
+    var configName = configType.Name.Replace("Config", string.Empty).ToLower();
     return (configType, configName);
 }
 
-var baseGenerators = new FileInfo(Assembly.GetEntryAssembly()!.Location).Directory!.GetFiles("TopModel.Generator.*.dll");
+var framework = $"net{Environment.Version.Major}.{Environment.Version.Minor}";
 var disposables = new List<IDisposable>();
 var loggerProvider = new LoggerProvider();
 var hasErrors = Enumerable.Range(0, configs.Count).Select(_ => false).ToArray();
@@ -197,34 +218,218 @@ for (var i = 0; i < configs.Count; i++)
 
     Console.WriteLine();
 
-    var generators = baseGenerators
-        .Concat(config.CustomGenerators.SelectMany(cg => new DirectoryInfo(Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin")).GetFiles("TopModel.Generator.*.dll", SearchOption.AllDirectories)))
-        .Where(a => a.FullName.Contains($"net{Environment.Version.Major}.{Environment.Version.Minor}"))
-        .DistinctBy(a => a.Name)
-        .Select(f => Assembly.LoadFrom(f.FullName))
-        .SelectMany(a => a.GetExportedTypes())
-        .Where(t => GetIGenRegInterface(t) != null)
-        .ToList();
+    var generators = new List<Type>();
+    var deps = new List<ModgenDependency>();
 
-    var undefinedConfigs = config.Generators.Keys.Except(generators.Select(g => GetIGenRegInterfaceAndName(g).Name))!;
-
-    if (undefinedConfigs.Any())
+    if (Environment.GetEnvironmentVariable("LOCAL_DEV") != null)
     {
-        returnCode = 1;
-        Console.ForegroundColor = colors[i % colors.Length];
-        Console.Write($"#{i + 1}");
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($" Aucune configuration de générateur n'a été trouvée pour : {string.Join(", ", undefinedConfigs)}.");
-        Console.ForegroundColor = ConsoleColor.Gray;
+        var generatorsPath = Path.Combine(new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!, "../../../..");
+        var modules = Directory.GetFileSystemEntries(generatorsPath).Where(e => e.Contains("TopModel.Generator.") && !e.Contains("TopModel.Generator.Core"));
+        config.CustomGenerators.AddRange(modules.Select(m => Path.GetRelativePath(config.ModelRoot, m)));
+    }
+
+    if (updateMode == "all")
+    {
+        topModelLock.Modules = [];
+    }
+    else if (updateMode != null)
+    {
+        topModelLock.Modules.Remove(updateMode);
+    }
+
+    foreach (var cg in config.CustomGenerators)
+    {
+        var csproj = Directory.GetFiles(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "*.csproj").FirstOrDefault();
+        if (csproj == null)
+        {
+            logger.LogError($"Aucun fichier csproj trouvé pour le module de générateurs '{cg}'.");
+            returnCode = 1;
+            continue;
+        }
+
+        var csprojXml = new XmlDocument();
+        csprojXml.LoadXml(File.ReadAllText(csproj));
+
+        foreach (var dep in csprojXml.GetElementsByTagName("PackageReference").Cast<XmlNode>()
+            .Where(n => n.ChildNodes.Count == 0)
+            .ToDictionary(n => n.Attributes!["Include"]!.Value, n => n.Attributes!["Version"]!.Value)
+            .Where(n => n.Key.StartsWith("TopModel.Generator")))
+        {
+            if (dep.Key == "TopModel.Generator.Core")
+            {
+                var depVersion = dep.Value.Split('.').Select(int.Parse).ToArray();
+                if (depVersion[0] != fullVersion.Major)
+                {
+                    logger.LogError($"Le module de générateurs '{cg}' ne référence pas la bonne version majeure de TopModel ({dep.Value} < {version}).");
+                    returnCode = 1;
+                    continue;
+                }
+                else if (depVersion[1] > fullVersion.Minor)
+                {
+                    logger.LogError($"Le module de générateurs '{cg}' référence une version plus récente de TopModel ({dep.Value} > {version}).");
+                    returnCode = 1;
+                    continue;
+                }
+            }
+            else
+            {
+                var configKey = dep.Key.Split('.').Last().ToLower();
+                if (!topModelLock.Modules.TryGetValue(configKey, out var ev))
+                {
+                    topModelLock.Modules.Add(configKey, dep.Value);
+                }
+                else if (ev != dep.Value)
+                {
+                    logger.LogError($"Le module personalisé '{cg}' référence le module '{configKey}' en version '{dep.Value}', ce qui n'est pas la version du lockfile ('{ev}').");
+                    returnCode = 1;
+                    continue;
+                }
+            }
+        }
+
+        if (returnCode == 0)
+        {
+            generators.AddRange(new DirectoryInfo(Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin"))
+                .GetFiles($"{cg.Split('/').Last()}.dll", SearchOption.AllDirectories)
+                .Where(a => a.FullName.Contains(framework) && a.Name != "TopModel.Generator.Core.dll")
+                .DistinctBy(a => a.Name)
+                .Select(f => Assembly.LoadFrom(f.FullName))
+                .SelectMany(a => a.GetExportedTypes())
+                .Where(t => GetIGenRegInterface(t) != null));
+        }
+    }
+
+    if (returnCode != 0)
+    {
         continue;
     }
 
-    if (schemaMode)
+    var ct = CancellationToken.None;
+
+    var nugetCache = new SourceCacheContext();
+    var nugetRepository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
+    var nugetResource = await nugetRepository.GetResourceAsync<FindPackageByIdResource>();
+
+    var resolvedConfigKeys = new Dictionary<string, string>();
+
+    foreach (var configKey in config.Generators.Keys)
     {
-        Console.ForegroundColor = colors[i % colors.Length];
-        Console.Write($"#{i + 1}");
-        Console.ForegroundColor = ConsoleColor.Gray;
-        Console.WriteLine(" Génération du schéma de configuration...");
+        if (generators.Any(g => GetIGenRegInterfaceAndName(g).Name == configKey))
+        {
+            resolvedConfigKeys.Add(configKey, "custom");
+            continue;
+        }
+
+        var fullModuleName = $"TopModel.Generator.{configKey.ToFirstUpper()}";
+
+        if (!topModelLock.Modules.TryGetValue(configKey, out var moduleVersion))
+        {
+            var moduleVersions = await nugetResource.GetAllVersionsAsync(fullModuleName, nugetCache, NullLogger.Instance, ct);
+
+            if (!moduleVersions.Any())
+            {
+                logger.LogError($"Aucun module de générateurs trouvé pour '{configKey}'.");
+                returnCode = 1;
+                continue;
+            }
+
+            var nugetVersion = moduleVersions.Last().Version;
+            moduleVersion = $"{nugetVersion.Major}.{nugetVersion.Minor}.{nugetVersion.Build}";
+            topModelLock.Modules.Add(configKey, moduleVersion);
+        }
+
+        deps.Add(new(configKey, moduleVersion));
+    }
+
+    var hasInstalled = false;
+    var modgenRoot = Path.GetFullPath(".modgen", config.ModelRoot);
+
+    if (updateMode == "all" && Directory.Exists(modgenRoot))
+    {
+        Directory.Delete(modgenRoot, true);
+    }
+    else if (updateMode != null)
+    {
+        foreach (var module in Directory.GetFileSystemEntries(modgenRoot).Where(p => p.Split('/').Last().Contains(updateMode)))
+        {
+            Directory.Delete(module, true);
+        }
+    }
+
+    if (deps.Count > 0)
+    {
+        Directory.CreateDirectory(modgenRoot);
+
+        foreach (var dep in deps)
+        {
+            var moduleFolder = Path.Combine(modgenRoot, $"{dep.ConfigKey}.{dep.Version}");
+
+            if (!Directory.Exists(moduleFolder))
+            {
+                logger.LogInformation($"({dep.ConfigKey}) Installation de {dep.FullName}@{dep.Version} en cours...");
+
+                if (!await nugetResource.DoesPackageExistAsync(dep.FullName, new NuGetVersion(dep.Version), nugetCache, NullLogger.Instance, ct))
+                {
+                    logger.LogError($"({dep.ConfigKey}) Le package {dep.FullName}@{dep.Version} est introuvable.");
+                    returnCode = 1;
+                    continue;
+                }
+
+                Directory.CreateDirectory(moduleFolder);
+
+                using var packageStream = new MemoryStream();
+                await nugetResource.CopyNupkgToStreamAsync(dep.FullName, new NuGetVersion(dep.Version), packageStream, nugetCache, NullLogger.Instance, ct);
+                using var packageReader = new PackageArchiveReader(packageStream);
+                var nuspecReader = await packageReader.GetNuspecReaderAsync(ct);
+
+                File.WriteAllText(
+                    Path.Combine(moduleFolder, "min-version"),
+                    nuspecReader.GetDependencyGroups()
+                       .Single(dg => dg.TargetFramework.ToString() == framework)
+                       .Packages
+                       .Single(d => d.Id == "TopModel.Generator.Core").VersionRange.MinVersion!.ToString());
+
+                foreach (var file in packageReader.GetFiles().Where(f => f == $"lib/{framework}/{dep.FullName}.dll" || f.EndsWith("config.json")))
+                {
+                    packageReader.ExtractFile(file, Path.Combine(moduleFolder, file.Split('/').Last()), NullLogger.Instance);
+                }
+
+                hasInstalled = true;
+                logger.LogInformation($"({dep.ConfigKey}) Installation de {dep.FullName}@{dep.Version} terminée avec succès.");
+            }
+
+            var depVersionText = File.ReadAllText(Path.Combine(moduleFolder, "min-version"));
+            var depVersion = depVersionText.Split('.').Select(int.Parse).ToArray();
+            if (depVersion[0] != fullVersion.Major)
+            {
+                logger.LogError($"Le module '{dep.ConfigKey}' ne référence pas la bonne version majeure de TopModel ({dep.Version} < {version}).");
+                returnCode = 1;
+                continue;
+            }
+            else if (depVersion[1] > fullVersion.Minor)
+            {
+                logger.LogError($"Le module '{dep.ConfigKey}' référence une version plus récente de TopModel ({depVersionText} > {version}).");
+                returnCode = 1;
+                continue;
+            }
+
+            generators.AddRange(Assembly.LoadFrom(Path.Combine(moduleFolder, $"{dep.FullName}.dll")).GetExportedTypes().Where(t => GetIGenRegInterface(t) != null));
+            resolvedConfigKeys.Add(dep.ConfigKey, dep.Version);
+        }
+    }
+
+    if (returnCode != 0)
+    {
+        continue;
+    }
+
+    topModelLock.Write();
+
+    logger.LogInformation($"Générateurs utilisés :{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", resolvedConfigKeys.Select(rck => $"- {rck.Key}: {rck.Value}"))}");
+
+    if (schemaMode || hasInstalled)
+    {
+        logger.LogInformation("Génération du schéma de configuration...");
 
         var schema = JsonNode.Parse(File.ReadAllText(FileChecker.GetFilePath(Assembly.GetExecutingAssembly(), "schema.config.json")))!.AsObject();
 
@@ -248,78 +453,83 @@ for (var i = 0; i < configs.Count; i++)
             configFile = $"# yaml-language-server: $schema={relativePath}.schema.json \n" + configFile;
             File.WriteAllText(configs[i].FullPath, configFile);
         }
-    }
-    else
-    {
-        var services = new ServiceCollection()
-            .AddTransient(typeof(ILogger<>), typeof(Logger<>))
-            .AddTransient<ILoggerFactory, LoggerFactory>()
-            .AddSingleton<ILoggerProvider>(loggerProvider)
-            .AddModelStore(fileChecker, config);
 
-        var hasError = false;
+        logger.LogInformation("Schéma de configuration généré avec succès.");
 
-        foreach (var generator in generators)
+        if (schemaMode)
         {
-            var (configType, configName) = GetIGenRegInterfaceAndName(generator);
+            return 0;
+        }
+    }
 
-            if (config.Generators.TryGetValue(configName, out var genConfigMaps))
+    var services = new ServiceCollection()
+        .AddTransient(typeof(ILogger<>), typeof(Logger<>))
+        .AddTransient<ILoggerFactory, LoggerFactory>()
+        .AddSingleton<ILoggerProvider>(loggerProvider)
+        .AddModelStore(fileChecker, config);
+
+    var hasError = false;
+
+    foreach (var generator in generators)
+    {
+        var (configType, configName) = GetIGenRegInterfaceAndName(generator);
+
+        if (config.Generators.TryGetValue(configName, out var genConfigMaps))
+        {
+            for (var j = 0; j < genConfigMaps.Count(); j++)
             {
-                for (var j = 0; j < genConfigMaps.Count(); j++)
+                var genConfigMap = genConfigMaps.ElementAt(j);
+                var number = j + 1;
+
+                try
                 {
-                    var genConfigMap = genConfigMaps.ElementAt(j);
-                    var number = j + 1;
+                    var genConfig = (GeneratorConfigBase)fileChecker.GetGenConfig(configName, configType, genConfigMap);
 
-                    try
-                    {
-                        var genConfig = (GeneratorConfigBase)fileChecker.GetGenConfig(configName, configType, genConfigMap);
+                    genConfig.ExcludedTags = excludedTags;
+                    genConfig.InitVariables(config.App, number);
 
-                        genConfig.ExcludedTags = excludedTags;
-                        genConfig.InitVariables(config.App, number);
+                    genConfig.TranslateReferences ??= config.I18n.TranslateReferences;
+                    genConfig.TranslateProperties ??= config.I18n.TranslateProperties;
 
-                        genConfig.TranslateReferences ??= config.I18n.TranslateReferences;
-                        genConfig.TranslateProperties ??= config.I18n.TranslateProperties;
+                    ModelUtils.TrimSlashes(genConfig, c => c.OutputDirectory);
+                    ModelUtils.CombinePath(dn, genConfig, c => c.OutputDirectory);
 
-                        ModelUtils.TrimSlashes(genConfig, c => c.OutputDirectory);
-                        ModelUtils.CombinePath(dn, genConfig, c => c.OutputDirectory);
-
-                        var instance = Activator.CreateInstance(generator);
-                        instance!.GetType().GetMethod("Register")!
-                            .Invoke(instance, [services, genConfig, number]);
-                    }
-                    catch (ModelException me)
-                    {
-                        hasError = true;
-                        returnCode = 1;
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine(me.Message);
-                        Console.WriteLine();
-                        Console.ForegroundColor = ConsoleColor.Gray;
-                    }
+                    var instance = Activator.CreateInstance(generator);
+                    instance!.GetType().GetMethod("Register")!
+                        .Invoke(instance, [services, genConfig, number]);
+                }
+                catch (ModelException me)
+                {
+                    hasError = true;
+                    returnCode = 1;
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(me.Message);
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Gray;
                 }
             }
         }
+    }
 
-        if (!hasError)
+    if (!hasError)
+    {
+        var provider = services.BuildServiceProvider();
+        disposables.Add(provider);
+
+        var modelStore = provider.GetRequiredService<ModelStore>();
+
+        modelStore.DisableLockfile = excludedTags.Any();
+
+        var k = i;
+        modelStore.OnResolve += hasError =>
         {
-            var provider = services.BuildServiceProvider();
-            disposables.Add(provider);
+            hasErrors[k] = hasError;
+        };
 
-            var modelStore = provider.GetRequiredService<ModelStore>();
-
-            modelStore.DisableLockfile = excludedTags.Any();
-
-            var k = i;
-            modelStore.OnResolve += hasError =>
-            {
-                hasErrors[k] = hasError;
-            };
-
-            var watcher = modelStore.LoadFromConfig(watchMode, topModelLock, storeConfig);
-            if (watcher != null)
-            {
-                disposables.Add(watcher);
-            }
+        var watcher = modelStore.LoadFromConfig(watchMode, topModelLock, storeConfig);
+        if (watcher != null)
+        {
+            disposables.Add(watcher);
         }
     }
 }
@@ -363,4 +573,4 @@ if (checkMode && loggerProvider.Changes > 0)
     return 1;
 }
 
-return 0;
+return returnCode;

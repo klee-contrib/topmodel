@@ -7,7 +7,6 @@ export const COMMANDS = {
     findRef: "topmodel.findRef",
     releaseNote: "topmodel.releaseNote",
     chooseCommand: "topmodel.chooseCommand",
-    schema: "topmodel.schema",
 };
 
 // Stockage de l'ensemble des commandes disponibles.

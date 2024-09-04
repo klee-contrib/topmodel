@@ -220,7 +220,7 @@ public class CsharpConfig : GeneratorConfigBase
         return EnumsForStaticReferences && base.CanClassUseEnums(classe, availableClasses, prop);
     }
 
-    public string GetApiPath(ModelFile file, string tag, bool withControllers = false)
+    public virtual string GetApiPath(ModelFile file, string tag, bool withControllers = false)
     {
         return Path.Combine(
             OutputDirectory,
@@ -229,7 +229,7 @@ public class CsharpConfig : GeneratorConfigBase
             ResolveVariables(ApiFilePath, tag: tag, module: file.Namespace.ModulePath));
     }
 
-    public string GetClassFileName(Class classe, string tag)
+    public virtual string GetClassFileName(Class classe, string tag)
     {
         return Path.Combine(
             OutputDirectory,
@@ -238,7 +238,7 @@ public class CsharpConfig : GeneratorConfigBase
             (classe.Abstract ? "I" : string.Empty) + classe.NamePascal + ".cs");
     }
 
-    public string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain, bool nullableValueType)
+    public virtual string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain, bool nullableValueType)
     {
         if (nullableValueType && fromDomain != null && toDomain != null)
         {
@@ -256,7 +256,7 @@ public class CsharpConfig : GeneratorConfigBase
         return GetConvertedValue(value, fromDomain, toDomain);
     }
 
-    public string GetDataFlowFilePath(DataFlow df, string tag)
+    public virtual string GetDataFlowFilePath(DataFlow df, string tag)
     {
         return Path.Combine(
             OutputDirectory,
@@ -265,7 +265,7 @@ public class CsharpConfig : GeneratorConfigBase
             $"{df.Name.ToPascalCase()}Flow.cs");
     }
 
-    public string GetDataFlowRegistrationFilePath(DataFlow df, string tag)
+    public virtual string GetDataFlowRegistrationFilePath(DataFlow df, string tag)
     {
         return Path.Combine(
             OutputDirectory,
@@ -274,7 +274,7 @@ public class CsharpConfig : GeneratorConfigBase
             $"ServiceExtensions.cs");
     }
 
-    public string GetDbContextFilePath(string tag)
+    public virtual string GetDbContextFilePath(string tag)
     {
         return Path.Combine(
             OutputDirectory,
@@ -288,18 +288,18 @@ public class CsharpConfig : GeneratorConfigBase
     /// </summary>
     /// <param name="tag">tag</param>
     /// <returns>Nom.</returns>
-    public string GetDbContextName(string tag)
+    public virtual string GetDbContextName(string tag)
     {
         return ResolveVariables(DbContextName, tag: tag).Replace(".", string.Empty);
     }
 
-    public string GetDbContextNamespace(string tag)
+    public virtual string GetDbContextNamespace(string tag)
     {
         return ResolveVariables(DbContextPath!, tag: tag)
             .ToNamespace();
     }
 
-    public string GetMapperFilePath((Class Class, FromMapper Mapper) mapper, string tag)
+    public virtual string GetMapperFilePath((Class Class, FromMapper Mapper) mapper, string tag)
     {
         var (ns, modelPath) = GetMapperLocation(mapper, tag);
         return Path.Combine(
@@ -309,7 +309,7 @@ public class CsharpConfig : GeneratorConfigBase
             $"{GetMapperName(ns, modelPath)}.cs");
     }
 
-    public string GetMapperFilePath((Class Class, ClassMappings Mapper) mapper, string tag)
+    public virtual string GetMapperFilePath((Class Class, ClassMappings Mapper) mapper, string tag)
     {
         var (ns, modelPath) = GetMapperLocation(mapper, tag);
         return Path.Combine(
@@ -319,7 +319,7 @@ public class CsharpConfig : GeneratorConfigBase
             $"{GetMapperName(ns, modelPath)}.cs");
     }
 
-    public (Namespace Namespace, string ModelPath) GetMapperLocation((Class Class, FromMapper Mapper) mapper, string tag)
+    public virtual (Namespace Namespace, string ModelPath) GetMapperLocation((Class Class, FromMapper Mapper) mapper, string tag)
     {
         var pmp = NoPersistence(tag) ? NonPersistentModelPath : PersistentModelPath;
         if (MapperLocationPriority == Target.Persisted)
@@ -354,7 +354,7 @@ public class CsharpConfig : GeneratorConfigBase
         }
     }
 
-    public (Namespace Namespace, string ModelPath) GetMapperLocation((Class Class, ClassMappings Mapper) mapper, string tag)
+    public virtual (Namespace Namespace, string ModelPath) GetMapperLocation((Class Class, ClassMappings Mapper) mapper, string tag)
     {
         var pmp = NoPersistence(tag) ? NonPersistentModelPath : PersistentModelPath;
         if (MapperLocationPriority == Target.Persisted)
@@ -387,7 +387,7 @@ public class CsharpConfig : GeneratorConfigBase
         }
     }
 
-    public string GetMapperName(Namespace ns, string modelPath)
+    public virtual string GetMapperName(Namespace ns, string modelPath)
     {
         return $"{ns.ModuleFlat}{(modelPath == PersistentModelPath ? string.Empty : "DTO")}Mappers";
     }
@@ -398,7 +398,7 @@ public class CsharpConfig : GeneratorConfigBase
     /// <param name="classe">La classe.</param>
     /// <param name="tag">Tag.</param>
     /// <returns>Chemin.</returns>
-    public string GetModelPath(Class classe, string tag)
+    public virtual string GetModelPath(Class classe, string tag)
     {
         return ResolveVariables(
             GetModelPathRaw(classe, tag),
@@ -412,7 +412,7 @@ public class CsharpConfig : GeneratorConfigBase
     /// <param name="endpoint">L'endpoint.</param>
     /// <param name="tag">Tag.</param>
     /// <returns>Namespace.</returns>
-    public string GetNamespace(Endpoint endpoint, string tag)
+    public virtual string GetNamespace(Endpoint endpoint, string tag)
     {
         return GetNamespace(endpoint.Namespace, Path.Combine(ApiRootPath, ApiFilePath), tag);
     }
@@ -423,7 +423,7 @@ public class CsharpConfig : GeneratorConfigBase
     /// <param name="dataFlow">Le flux de données.</param>
     /// <param name="tag">Tag.</param>
     /// <returns>Namespace.</returns>
-    public string GetNamespace(DataFlow dataFlow, string tag)
+    public virtual string GetNamespace(DataFlow dataFlow, string tag)
     {
         return GetNamespace(dataFlow.ModelFile.Namespace, DataFlowsPath!, tag);
     }
@@ -434,19 +434,19 @@ public class CsharpConfig : GeneratorConfigBase
     /// <param name="classe">La classe.</param>
     /// <param name="tag">Tag.</param>
     /// <returns>Namespace.</returns>
-    public string GetNamespace(Class classe, string tag)
+    public virtual string GetNamespace(Class classe, string tag)
     {
         return GetNamespace(classe.Namespace, GetModelPathRaw(classe, tag), tag);
     }
 
-    public string GetNamespace(Namespace ns, string modelPath, string tag)
+    public virtual string GetNamespace(Namespace ns, string modelPath, string tag)
     {
         return ResolveVariables(modelPath, tag: tag, module: ns.Module)
             .ToNamespace()
             .Replace(".Dto", string.Empty);
     }
 
-    public string GetReferenceAccessorName(Namespace ns, string tag)
+    public virtual string GetReferenceAccessorName(Namespace ns, string tag)
     {
         return ResolveVariables(
             ReferenceAccessorsName,
@@ -454,7 +454,7 @@ public class CsharpConfig : GeneratorConfigBase
             module: ns.ModuleFlat);
     }
 
-    public string GetReferenceImplementationFilePath(Namespace ns, string tag)
+    public virtual string GetReferenceImplementationFilePath(Namespace ns, string tag)
     {
         return Path.Combine(
             OutputDirectory,
@@ -466,7 +466,7 @@ public class CsharpConfig : GeneratorConfigBase
             $"{GetReferenceAccessorName(ns, tag)}.cs");
     }
 
-    public string GetReferenceImplementationNamespace(Namespace ns, string tag)
+    public virtual string GetReferenceImplementationNamespace(Namespace ns, string tag)
     {
         return ResolveVariables(
             ReferenceAccessorsImplementationPath,
@@ -474,7 +474,7 @@ public class CsharpConfig : GeneratorConfigBase
             module: ns.Module).ToNamespace();
     }
 
-    public string GetReferenceInterfaceFilePath(Namespace ns, string tag)
+    public virtual string GetReferenceInterfaceFilePath(Namespace ns, string tag)
     {
         return Path.Combine(
             OutputDirectory,
@@ -486,7 +486,7 @@ public class CsharpConfig : GeneratorConfigBase
             $"I{GetReferenceAccessorName(ns, tag)}.cs");
     }
 
-    public string GetReferenceInterfaceNamespace(Namespace ns, string tag)
+    public virtual string GetReferenceInterfaceNamespace(Namespace ns, string tag)
     {
         return ResolveVariables(
             ReferenceAccessorsInterfacePath,
@@ -494,7 +494,7 @@ public class CsharpConfig : GeneratorConfigBase
             module: ns.Module).ToNamespace();
     }
 
-    public string GetReturnTypeName(IProperty? prop)
+    public virtual string GetReturnTypeName(IProperty? prop)
     {
         if (prop == null)
         {
@@ -507,7 +507,7 @@ public class CsharpConfig : GeneratorConfigBase
             : $"async Task<{typeName}>";
     }
 
-    public string GetType(IProperty prop, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false, bool nonNullable = false)
+    public virtual string GetType(IProperty prop, IEnumerable<Class>? availableClasses = null, bool useClassForAssociation = false, bool nonNullable = false)
     {
         var type = base.GetType(prop, availableClasses, useClassForAssociation);
 
@@ -524,7 +524,7 @@ public class CsharpConfig : GeneratorConfigBase
         return base.IsPersistent(classe, tag) && !NoPersistence(tag);
     }
 
-    public bool IsValueType(IProperty prop, IEnumerable<Class>? availableClasses)
+    public virtual bool IsValueType(IProperty prop, IEnumerable<Class>? availableClasses)
     {
         return prop switch
         {
@@ -537,12 +537,12 @@ public class CsharpConfig : GeneratorConfigBase
         };
     }
 
-    public bool NoPersistence(string tag)
+    public virtual bool NoPersistence(string tag)
     {
         return ResolveVariables(NoPersistenceParam ?? string.Empty, tag) == true.ToString();
     }
 
-    public bool RequiredNonNullable(string tag)
+    public virtual bool RequiredNonNullable(string tag)
     {
         return ResolveVariables(RequiredNonNullableParam ?? string.Empty, tag) == true.ToString();
     }
@@ -552,17 +552,17 @@ public class CsharpConfig : GeneratorConfigBase
         return $"{(isPrimaryKeyDef ? string.Empty : $"{className.ToPascalCase()}.")}{propName.ToPascalCase()}{(!propName.EndsWith('s') ? "s" : string.Empty)}";
     }
 
-    protected override bool IsEnumNameValid(string name)
-    {
-        return base.IsEnumNameValid(name) && !name.Contains('-') && name.FirstOrDefault() != name.ToLower().FirstOrDefault();
-    }
-
-    private string GetModelPathRaw(Class classe, string tag)
+    protected virtual string GetModelPathRaw(Class classe, string tag)
     {
         return classe.Reference && ReferencesModelPath != null
             ? ReferencesModelPath
             : classe.IsPersistent && !NoPersistence(tag)
                 ? PersistentModelPath
                 : NonPersistentModelPath;
+    }
+
+    protected override bool IsEnumNameValid(string name)
+    {
+        return base.IsEnumNameValid(name) && !name.Contains('-') && name.FirstOrDefault() != name.ToLower().FirstOrDefault();
     }
 }

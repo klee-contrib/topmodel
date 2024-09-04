@@ -24,32 +24,7 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
 
     public override string Name => "CSharpDataFlowGen";
 
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
-    {
-        foreach (var file in files)
-        {
-            foreach (var dataFlow in file.DataFlows)
-            {
-                foreach (var (tag, fileName) in Config.Tags.Intersect(file.Tags)
-                    .Select(tag => (tag, fileName: Config.GetDataFlowFilePath(dataFlow, tag)))
-                    .DistinctBy(t => t.fileName))
-                {
-                    HandleDataFlow(fileName, dataFlow, tag);
-                    HandleDataFlowPartial(fileName.Replace($"{Path.DirectorySeparatorChar}generated", string.Empty).Replace(".cs", ".partial.cs"), dataFlow, tag);
-                }
-            }
-        }
-
-        foreach (var g in Files.Values.SelectMany(f => f.DataFlows)
-            .SelectMany(df => Config.Tags.Intersect(df.ModelFile.Tags)
-                .Select(tag => (tag, df, fileName: Config.GetDataFlowRegistrationFilePath(df, tag))))
-            .GroupBy(g => g.fileName))
-        {
-            HandleRegistrationFile(g.Key, g.Select(i => i.df), g.First().tag);
-        }
-    }
-
-    private void HandleDataFlow(string fileName, DataFlow dataFlow, string tag)
+    protected virtual void HandleDataFlow(string fileName, DataFlow dataFlow, string tag)
     {
         int GetSourceNumber(DataFlowSource source)
         {
@@ -292,7 +267,7 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
         w.WriteLine("}");
     }
 
-    private void HandleDataFlowPartial(string fileName, DataFlow dataFlow, string tag)
+    protected virtual void HandleDataFlowPartial(string fileName, DataFlow dataFlow, string tag)
     {
         if (!dataFlow.Sources.Any(s => s.Mode == DataFlowSourceMode.Partial) && !dataFlow.Hooks.Contains(FlowHook.AfterFlow) && !dataFlow.Hooks.Contains(FlowHook.BeforeFlow))
         {
@@ -346,7 +321,32 @@ public class DataFlowGenerator : GeneratorBase<CsharpConfig>
         w.WriteLine("}");
     }
 
-    private void HandleRegistrationFile(string fileName, IEnumerable<DataFlow> flows, string tag)
+    protected override void HandleFiles(IEnumerable<ModelFile> files)
+    {
+        foreach (var file in files)
+        {
+            foreach (var dataFlow in file.DataFlows)
+            {
+                foreach (var (tag, fileName) in Config.Tags.Intersect(file.Tags)
+                    .Select(tag => (tag, fileName: Config.GetDataFlowFilePath(dataFlow, tag)))
+                    .DistinctBy(t => t.fileName))
+                {
+                    HandleDataFlow(fileName, dataFlow, tag);
+                    HandleDataFlowPartial(fileName.Replace($"{Path.DirectorySeparatorChar}generated", string.Empty).Replace(".cs", ".partial.cs"), dataFlow, tag);
+                }
+            }
+        }
+
+        foreach (var g in Files.Values.SelectMany(f => f.DataFlows)
+            .SelectMany(df => Config.Tags.Intersect(df.ModelFile.Tags)
+                .Select(tag => (tag, df, fileName: Config.GetDataFlowRegistrationFilePath(df, tag))))
+            .GroupBy(g => g.fileName))
+        {
+            HandleRegistrationFile(g.Key, g.Select(i => i.df), g.First().tag);
+        }
+    }
+
+    protected virtual void HandleRegistrationFile(string fileName, IEnumerable<DataFlow> flows, string tag)
     {
         var firstFlow = flows.First();
         using var w = new CSharpWriter(fileName, _logger);

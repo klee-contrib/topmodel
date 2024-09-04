@@ -11,15 +11,6 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 {
     private readonly ILogger<CSharpClassGenerator> _logger;
 
-    private readonly Dictionary<string, string> _newableTypes = new()
-    {
-        ["IEnumerable"] = "List",
-        ["ICollection"] = "List",
-        ["IList"] = "List",
-        ["List"] = "List",
-        ["HashSet"] = "HashSet"
-    };
-
     public CSharpClassGenerator(ILogger<CSharpClassGenerator> logger)
         : base(logger)
     {
@@ -28,92 +19,14 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
 
     public override string Name => "CSharpClassGen";
 
-    protected override string GetFileName(Class classe, string tag)
+    protected virtual Dictionary<string, string> NewableTypes { get; } = new()
     {
-        return Config.GetClassFileName(classe, tag);
-    }
-
-    protected override void HandleClass(string fileName, Class classe, string tag)
-    {
-        using var w = new CSharpWriter(fileName, _logger);
-
-        GenerateUsings(w, classe, tag);
-        w.WriteNamespace(Config.GetNamespace(classe, tag));
-        w.WriteSummary(classe.Comment);
-        GenerateClassDeclaration(w, classe, tag);
-    }
-
-    /// <summary>
-    /// Génère le type énuméré présentant les colonnes persistentes.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">La classe générée.</param>
-    private static void GenerateEnumCols(CSharpWriter w, Class item)
-    {
-        w.WriteLine(1, "#region Meta données");
-        w.WriteLine();
-        w.WriteSummary(1, "Type énuméré présentant les noms des colonnes en base.");
-
-        if (item.Extends == null)
-        {
-            w.WriteLine(1, "public enum Cols");
-        }
-        else
-        {
-            w.WriteLine(1, "public new enum Cols");
-        }
-
-        w.WriteLine(1, "{");
-
-        foreach (var property in item.Properties)
-        {
-            w.WriteSummary(2, "Nom de la colonne en base associée à la propriété " + property.NamePascal + ".");
-            w.WriteLine(2, $"{property.SqlName},");
-            if (item.Properties.IndexOf(property) != item.Properties.Count - 1)
-            {
-                w.WriteLine();
-            }
-        }
-
-        w.WriteLine(1, "}");
-        w.WriteLine();
-        w.WriteLine(1, "#endregion");
-        w.WriteLine();
-    }
-
-    /// <summary>
-    /// Génère les flags d'une liste de référence statique.
-    /// </summary>
-    /// <param name="w">Writer.</param>
-    /// <param name="item">La classe générée.</param>
-    private static void GenerateFlags(CSharpWriter w, Class item)
-    {
-        if (item.FlagProperty != null && item.Values.Any())
-        {
-            w.WriteLine(1, "#region Flags");
-            w.WriteLine();
-            w.WriteSummary(1, "Flags");
-            w.WriteLine(1, "public enum Flags");
-            w.WriteLine(1, "{");
-
-            var flagValues = item.Values.Where(refValue => refValue.Value.ContainsKey(item.FlagProperty) && int.TryParse(refValue.Value[item.FlagProperty], out var _)).ToList();
-            foreach (var refValue in flagValues)
-            {
-                var flag = int.Parse(refValue.Value[item.FlagProperty]);
-                w.WriteSummary(2, refValue.GetLabel(item));
-                w.WriteLine(2, $"{refValue.Name} = 0b{Convert.ToString(flag, 2)},");
-                if (flagValues.IndexOf(refValue) != flagValues.Count - 1)
-                {
-                    w.WriteLine();
-                }
-            }
-
-            w.WriteLine(1, "}");
-            w.WriteLine();
-            w.WriteLine(1, "#endregion");
-            w.WriteLine();
-        }
-    }
+        ["IEnumerable"] = "List",
+        ["ICollection"] = "List",
+        ["IList"] = "List",
+        ["List"] = "List",
+        ["HashSet"] = "HashSet"
+    };
 
     /// <summary>
     /// Génération de la déclaration de la classe.
@@ -121,7 +34,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     /// <param name="w">Writer</param>
     /// <param name="item">Classe à générer.</param>
     /// <param name="tag">Tag.</param>
-    private void GenerateClassDeclaration(CSharpWriter w, Class item, string tag)
+    protected virtual void GenerateClassDeclaration(CSharpWriter w, Class item, string tag)
     {
         if (!item.Abstract)
         {
@@ -208,7 +121,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     /// </summary>
     /// <param name="w">Writer.</param>
     /// <param name="item">La classe générée.</param>
-    private void GenerateConstProperties(CSharpWriter w, Class item)
+    protected virtual void GenerateConstProperties(CSharpWriter w, Class item)
     {
         var consts = new List<(IProperty Prop, string Name, string Code, string Label)>();
 
@@ -256,7 +169,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         }
     }
 
-    private void GenerateCreateMethod(CSharpWriter w, Class item)
+    protected virtual void GenerateCreateMethod(CSharpWriter w, Class item)
     {
         var writeProperties = item.Properties.Where(p => !p.Readonly);
 
@@ -275,11 +188,49 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     }
 
     /// <summary>
+    /// Génère le type énuméré présentant les colonnes persistentes.
+    /// </summary>
+    /// <param name="w">Writer.</param>
+    /// <param name="item">La classe générée.</param>
+    protected virtual void GenerateEnumCols(CSharpWriter w, Class item)
+    {
+        w.WriteLine(1, "#region Meta données");
+        w.WriteLine();
+        w.WriteSummary(1, "Type énuméré présentant les noms des colonnes en base.");
+
+        if (item.Extends == null)
+        {
+            w.WriteLine(1, "public enum Cols");
+        }
+        else
+        {
+            w.WriteLine(1, "public new enum Cols");
+        }
+
+        w.WriteLine(1, "{");
+
+        foreach (var property in item.Properties)
+        {
+            w.WriteSummary(2, "Nom de la colonne en base associée à la propriété " + property.NamePascal + ".");
+            w.WriteLine(2, $"{property.SqlName},");
+            if (item.Properties.IndexOf(property) != item.Properties.Count - 1)
+            {
+                w.WriteLine();
+            }
+        }
+
+        w.WriteLine(1, "}");
+        w.WriteLine();
+        w.WriteLine(1, "#endregion");
+        w.WriteLine();
+    }
+
+    /// <summary>
     /// Génère l'enum pour les valeurs statiques de références.
     /// </summary>
     /// <param name="w">Writer.</param>
     /// <param name="item">La classe générée.</param>
-    private void GenerateEnumValues(CSharpWriter w, Class item)
+    protected virtual void GenerateEnumValues(CSharpWriter w, Class item)
     {
         bool WriteEnum(IProperty prop)
         {
@@ -332,12 +283,46 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     }
 
     /// <summary>
+    /// Génère les flags d'une liste de référence statique.
+    /// </summary>
+    /// <param name="w">Writer.</param>
+    /// <param name="item">La classe générée.</param>
+    protected virtual void GenerateFlags(CSharpWriter w, Class item)
+    {
+        if (item.FlagProperty != null && item.Values.Any())
+        {
+            w.WriteLine(1, "#region Flags");
+            w.WriteLine();
+            w.WriteSummary(1, "Flags");
+            w.WriteLine(1, "public enum Flags");
+            w.WriteLine(1, "{");
+
+            var flagValues = item.Values.Where(refValue => refValue.Value.ContainsKey(item.FlagProperty) && int.TryParse(refValue.Value[item.FlagProperty], out var _)).ToList();
+            foreach (var refValue in flagValues)
+            {
+                var flag = int.Parse(refValue.Value[item.FlagProperty]);
+                w.WriteSummary(2, refValue.GetLabel(item));
+                w.WriteLine(2, $"{refValue.Name} = 0b{Convert.ToString(flag, 2)},");
+                if (flagValues.IndexOf(refValue) != flagValues.Count - 1)
+                {
+                    w.WriteLine();
+                }
+            }
+
+            w.WriteLine(1, "}");
+            w.WriteLine();
+            w.WriteLine(1, "#endregion");
+            w.WriteLine();
+        }
+    }
+
+    /// <summary>
     /// Génère les propriétés.
     /// </summary>
     /// <param name="w">Writer.</param>
     /// <param name="item">La classe générée.</param>
     /// <param name="tag">Tag.</param>
-    private void GenerateProperties(CSharpWriter w, Class item, string tag)
+    protected virtual void GenerateProperties(CSharpWriter w, Class item, string tag)
     {
         var sameColumnSet = new HashSet<string>(item.Properties
             .GroupBy(g => g.SqlName).Where(g => g.Count() > 1).Select(g => g.Key));
@@ -360,7 +345,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     /// <param name="property">La propriété générée.</param>
     /// <param name="sameColumnSet">Sets des propriétés avec le même nom de colonne, pour ne pas les gérerer (genre alias).</param>
     /// <param name="tag">Tag.</param>
-    private void GenerateProperty(CSharpWriter w, IProperty property, HashSet<string> sameColumnSet, string tag)
+    protected virtual void GenerateProperty(CSharpWriter w, IProperty property, HashSet<string> sameColumnSet, string tag)
     {
         w.WriteSummary(1, property.Comment);
 
@@ -466,7 +451,7 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
     /// <param name="w">Writer.</param>
     /// <param name="item">Classe concernée.</param>
     /// <param name="tag">Tag.</param>
-    private void GenerateUsings(CSharpWriter w, Class item, string tag)
+    protected virtual void GenerateUsings(CSharpWriter w, Class item, string tag)
     {
         var usings = new List<string>();
 
@@ -548,12 +533,17 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
         }
     }
 
-    private string GetNamespace(Class classe, string tag)
+    protected override string GetFileName(Class classe, string tag)
+    {
+        return Config.GetClassFileName(classe, tag);
+    }
+
+    protected virtual string GetNamespace(Class classe, string tag)
     {
         return Config.GetNamespace(classe, classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag);
     }
 
-    private string? GetNewableType(CompositionProperty property)
+    protected virtual string? GetNewableType(CompositionProperty property)
     {
         var type = Config.GetType(property, nonNullable: true);
         var genericType = type.Split('<').First();
@@ -563,11 +553,21 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
             return type;
         }
 
-        if (_newableTypes.TryGetValue(genericType, out var newableType))
+        if (NewableTypes.TryGetValue(genericType, out var newableType))
         {
             return type.Replace(genericType, newableType);
         }
 
         return null;
+    }
+
+    protected override void HandleClass(string fileName, Class classe, string tag)
+    {
+        using var w = new CSharpWriter(fileName, _logger);
+
+        GenerateUsings(w, classe, tag);
+        w.WriteNamespace(Config.GetNamespace(classe, tag));
+        w.WriteSummary(classe.Comment);
+        GenerateClassDeclaration(w, classe, tag);
     }
 }
