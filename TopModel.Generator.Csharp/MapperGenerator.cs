@@ -26,6 +26,18 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
         return Config.GetMapperFilePath(mapper, tag);
     }
 
+    protected virtual string GetSourceMapping(IProperty property)
+    {
+        if (property is CompositionProperty cp)
+        {
+            return $"{cp.NamePascal}?.{cp.CompositionPrimaryKey?.NamePascal}";
+        }
+        else
+        {
+            return property.NamePascal;
+        }
+    }
+
     protected override void HandleFile(string fileName, string tag, IList<(Class Classe, FromMapper Mapper)> fromMappers, IList<(Class Classe, ClassMappings Mapper)> toMappers)
     {
         using var w = new CSharpWriter(fileName, _logger);
@@ -535,17 +547,5 @@ public class MapperGenerator : MapperGeneratorBase<CsharpConfig>
     {
         return (classe.Tags.Intersect(Config.MapperTagsOverrides).Any() || classe.IsPersistent)
             && (Config.ReferencesModelPath == null || !classe.Reference);
-    }
-
-    private static string GetSourceMapping(IProperty property)
-    {
-        if (property is CompositionProperty cp)
-        {
-            return $"{cp.NamePascal}?.{cp.CompositionPrimaryKey?.NamePascal}";
-        }
-        else
-        {
-            return property.NamePascal;
-        }
     }
 }

@@ -33,6 +33,64 @@ public class CSharpApiServerGenerator : EndpointsGeneratorBase<CsharpConfig>
         return Path.Combine(Config.GetApiPath(file, tag, withControllers: true), $"{file.Options.Endpoints.FileName.ToPascalCase()}Controller.cs");
     }
 
+    protected virtual string GetParam(IProperty param)
+    {
+        var sb = new StringBuilder();
+
+        var type = Config.GetType(param, nonNullable: param.IsJsonBodyParam() || param.IsRouteParam() || param.IsQueryParam() && !param.Endpoint.IsMultipart && Config.GetValue(param, Classes) != "null");
+
+        if (param.Endpoint.IsMultipart && !param.IsQueryParam() && !param.IsRouteParam() && type != "IFormFile")
+        {
+            sb.Append("[FromForm] ");
+        }
+        else if (param.IsJsonBodyParam())
+        {
+            sb.Append("[FromBody] ");
+        }
+        else if (type.EndsWith("[]"))
+        {
+            sb.Append("[FromQuery] ");
+        }
+
+        sb.Append($@"{type} {param.GetParamName().Verbatim()}");
+
+        if (param.IsQueryParam() && !param.Endpoint.IsMultipart)
+        {
+            sb.Append($" = {Config.GetValue(param, Classes)}");
+        }
+
+        return sb.ToString();
+    }
+
+    protected virtual string GetRoute(Endpoint endpoint)
+    {
+        var split = endpoint.FullRoute.Split("/");
+
+        for (var i = 0; i < split.Length; i++)
+        {
+            if (split[i].StartsWith('{'))
+            {
+                var routeParamName = split[i][1..^1];
+                var param = endpoint.Params.Single(param => param.GetParamName() == routeParamName);
+
+                var paramType = Config.GetType(param) switch
+                {
+                    "int" => "int",
+                    "int?" => "int",
+                    "Guid" => "guid",
+                    "Guid?" => "guid",
+                    _ => null
+                };
+                if (paramType != null)
+                {
+                    split[i] = $"{{{routeParamName}:{paramType}}}";
+                }
+            }
+        }
+
+        return string.Join("/", split);
+    }
+
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         var className = $"{fileName.ToPascalCase()}Controller";
@@ -124,63 +182,5 @@ public class {className} : Controller
 
         using var fw = new FileWriter(filePath, _logger, true) { HeaderMessage = "ATTENTION, CE FICHIER EST PARTIELLEMENT GENERE AUTOMATIQUEMENT !" };
         fw.Write(syntaxTree.GetRoot().ReplaceNode(existingController, controller).ToString());
-    }
-
-    private string GetParam(IProperty param)
-    {
-        var sb = new StringBuilder();
-
-        var type = Config.GetType(param, nonNullable: param.IsJsonBodyParam() || param.IsRouteParam() || param.IsQueryParam() && !param.Endpoint.IsMultipart && Config.GetValue(param, Classes) != "null");
-
-        if (param.Endpoint.IsMultipart && !param.IsQueryParam() && !param.IsRouteParam() && type != "IFormFile")
-        {
-            sb.Append("[FromForm] ");
-        }
-        else if (param.IsJsonBodyParam())
-        {
-            sb.Append("[FromBody] ");
-        }
-        else if (type.EndsWith("[]"))
-        {
-            sb.Append("[FromQuery] ");
-        }
-
-        sb.Append($@"{type} {param.GetParamName().Verbatim()}");
-
-        if (param.IsQueryParam() && !param.Endpoint.IsMultipart)
-        {
-            sb.Append($" = {Config.GetValue(param, Classes)}");
-        }
-
-        return sb.ToString();
-    }
-
-    private string GetRoute(Endpoint endpoint)
-    {
-        var split = endpoint.FullRoute.Split("/");
-
-        for (var i = 0; i < split.Length; i++)
-        {
-            if (split[i].StartsWith('{'))
-            {
-                var routeParamName = split[i][1..^1];
-                var param = endpoint.Params.Single(param => param.GetParamName() == routeParamName);
-
-                var paramType = Config.GetType(param) switch
-                {
-                    "int" => "int",
-                    "int?" => "int",
-                    "Guid" => "guid",
-                    "Guid?" => "guid",
-                    _ => null
-                };
-                if (paramType != null)
-                {
-                    split[i] = $"{{{routeParamName}:{paramType}}}";
-                }
-            }
-        }
-
-        return string.Join("/", split);
     }
 }

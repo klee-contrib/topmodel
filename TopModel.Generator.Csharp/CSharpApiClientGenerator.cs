@@ -29,6 +29,11 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
         return Path.Combine(Config.GetApiPath(file, tag), "generated", $"{file.Options.Endpoints.FileName.ToPascalCase()}Client.cs");
     }
 
+    protected virtual string GetNamespace(Class classe, string tag)
+    {
+        return Config.GetNamespace(classe, classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag);
+    }
+
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         var className = $"{fileName.ToPascalCase()}Client";
@@ -296,12 +301,7 @@ public class CSharpApiClientGenerator : EndpointsGeneratorBase<CsharpConfig>
         fw.WriteLine("}");
     }
 
-    private string GetNamespace(Class classe, string tag)
-    {
-        return Config.GetNamespace(classe, classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Config.Tags).FirstOrDefault() ?? tag);
-    }
-
-    private void HandleFilePartial(string filePath, string className, string ns)
+    protected virtual void HandleFilePartial(string filePath, string className, string ns)
     {
         if (File.Exists(filePath))
         {
