@@ -45,3 +45,9 @@ Vous pouvez également prendre une dépendance à un module existant (par exempl
 
 - La version du module référencée dans votre module sera automatiquement celle utilisée par `modgen` (ce sera la version renseignée dans le `topmodel.lock` quoi qu'il arrive)
 - Si vous y définissez une `IGeneratorRegistration` pour la même config que le module que vous référencez, alors cette enregistrement **remplacera** celui du module existant, qui ne sera pas enregistré. De fait, vous remplacerez donc l'entièreté du module par le votre. Rien ne vous empêche d'y réenregistrer certains générateurs existants, en plus de ceux que vous remplacerez ou retirerez.
+
+Si vous incluez des dépendances autres que `TopModel.Generator.Core` dans votre générateur personnalisé (y compris une dépendance à un module TopModel existant), il vous faudra utiliser l'option `<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>` pour que TopModel les charge bien toutes avec votre module.
+
+Enfin, il est indispensable de **build votre projet au préalable** avant de lancer la commande `modgen`.
+
+Bon courage !

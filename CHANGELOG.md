@@ -8,15 +8,21 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.0.1 - 2.0.2
+
+Correctifs suite à la version majeure pour faire fonctionner l'installation du module `csharp` et des modules personnalisés.
+
 ## 2.0.0
 
 - [`#383`](https://github.com/klee-contrib/topmodel/pull/383) - modgen 2.0
 
   Cette version majeure dissocie les générateurs de `modgen` lui-même, qui ira les installer à la demande selon la configuration. Pour plus d'informations, vous pouvez consulter l'[issue originale](https://github.com/klee-contrib/topmodel/issues/253) et la doc à jour, en particulier la page [Génération](https://klee-contrib.github.io/topmodel/#/generator).
 
-  Les différents générateurs sont tous initialisés avec la version `1.0.2`, et ils auront désormais leurs changelogs respectifs.
+  Les différents générateurs sont tous initialisés avec la version `1.0.3`, et ils auront désormais leurs changelogs respectifs.
 
-  Ce changelog sera donc le dernier qui listera les évolutions des générateurs. Tous les évolutions présentées ici seront donc dans les versions `1.0.2` respectives de chaque générateur.
+  Ce changelog sera donc le dernier qui listera les évolutions des générateurs. Tous les évolutions présentées ici seront donc dans les versions `1.0.3` respectives de chaque générateur.
+
+  Le seul """breaking change""" associé à cette montée de version est le fait qu'il vous faudra ajouter le répertoire `.modgen` à votre `.gitignore`. De plus, vous verrez que votre schéma JSON pour la configuration TopModel sera modifié pour n'inclure que les schémas des modules de générateurs que vous utilisez.
 
 - [`#386`](https://github.com/klee-contrib/topmodel/pull/386) - Générateur SQL procédural pour Oracle + nouvelles options de générations
 - [`8a7b4f5`](https://github.com/klee-contrib/topmodel/commit/8a7b4f5c02c43279fbc004e685becb8bb063fd12) - [JPA] Correction indentation hasshCode
