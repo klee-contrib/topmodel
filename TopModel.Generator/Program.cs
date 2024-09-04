@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NuGet.Common;
 using NuGet.Packaging;
+using NuGet.Packaging.Core;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
@@ -289,11 +290,15 @@ for (var i = 0; i < configs.Count; i++)
 
         if (returnCode == 0)
         {
-            generators.AddRange(new DirectoryInfo(Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin"))
-                .GetFiles($"{cg.Split('/').Last()}.dll", SearchOption.AllDirectories)
+            var assemblies = new DirectoryInfo(Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin"))
+                .GetFiles($"*.dll", SearchOption.AllDirectories)
                 .Where(a => a.FullName.Contains(framework) && a.Name != "TopModel.Generator.Core.dll")
                 .DistinctBy(a => a.Name)
                 .Select(f => Assembly.LoadFrom(f.FullName))
+                .ToList();
+
+            generators.AddRange(assemblies
+                .Where(a => a.ManifestModule.Name.ToLower() == $"{cg.Split('/').Last().ToLower()}.dll")
                 .SelectMany(a => a.GetExportedTypes())
                 .Where(t => GetIGenRegInterface(t) != null));
         }
@@ -395,15 +400,37 @@ for (var i = 0; i < configs.Count; i++)
                     packageReader.ExtractFile(file, Path.Combine(moduleFolder, file.Split('/').Last()), NullLogger.Instance);
                 }
 
-                foreach (var otherDep in dependencies.Where(d => d.Id != "TopModel.Generator.Core"))
+                var installedDependencies = new List<string>();
+                dependencies = dependencies.Where(d => d.Id != "TopModel.Generator.Core");
+
+                while (dependencies.Any())
                 {
-                    using var packageStreamDep = new MemoryStream();
-                    await nugetResource.CopyNupkgToStreamAsync(otherDep.Id, otherDep.VersionRange.MinVersion, packageStreamDep, nugetCache, NullLogger.Instance, ct);
-                    using var packageReaderDep = new PackageArchiveReader(packageStreamDep);
-                    foreach (var file in packageReaderDep.GetFiles().Where(f => f == $"lib/netstandard2.0/{otherDep.Id}.dll"))
+                    var newDeps = new List<PackageDependency>();
+                    foreach (var otherDep in dependencies)
                     {
-                        packageReaderDep.ExtractFile(file, Path.Combine(moduleFolder, file.Split('/').Last()), NullLogger.Instance);
+                        using var packageStreamDep = new MemoryStream();
+                        await nugetResource.CopyNupkgToStreamAsync(otherDep.Id, otherDep.VersionRange.MinVersion, packageStreamDep, nugetCache, NullLogger.Instance, ct);
+
+                        using var packageReaderDep = new PackageArchiveReader(packageStreamDep);
+                        var file = packageReaderDep.GetFiles().SingleOrDefault(f => f.StartsWith($"lib/{framework}") && f.EndsWith(".dll") && !f.EndsWith(".resources.dll"));
+                        if (file != null)
+                        {
+                            packageReaderDep.ExtractFile(file, Path.Combine(moduleFolder, file.Split('/').Last()), NullLogger.Instance);
+
+                            installedDependencies.Add(otherDep.Id);
+
+                            var nuspecReaderDep = await packageReaderDep.GetNuspecReaderAsync(ct);
+                            if (nuspecReaderDep.GetDependencyGroups().Any())
+                            {
+                                newDeps.AddRange(nuspecReaderDep.GetDependencyGroups()
+                                    .Single(dg => dg.TargetFramework.ToString() == framework)
+                                    .Packages
+                                    .Where(dep => !installedDependencies.Contains(dep.Id)));
+                            }
+                        }
                     }
+
+                    dependencies = newDeps;
                 }
 
                 hasInstalled = true;

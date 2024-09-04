@@ -1,0 +1,8 @@
+<Project>
+  <Target Name="CopyConfigFile" BeforeTargets="BeforeBuild">
+    <ItemGroup>
+      <ConfigFileToCopy Include="$(MSBuildThisFileDirectory)../contentFiles/jpa.config.json" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ConfigFileToCopy)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" UseHardlinksIfPossible="false" />
+  </Target>
+</Project>
