@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <LangVersion>12</LangVersion>
     <OutputType>Exe</OutputType>
     <Nullable>enable</Nullable>
@@ -13,7 +13,7 @@
     <PackAsTool>true</PackAsTool>
     <PackageOutputPath>../.nupkg</PackageOutputPath>
     <ToolCommandName>modgen</ToolCommandName>
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Authors>JabX;gideruette</Authors>
     <Description>Générateur de modèle TopModel.</Description>

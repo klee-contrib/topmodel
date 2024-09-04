@@ -382,16 +382,28 @@ for (var i = 0; i < configs.Count; i++)
                 using var packageReader = new PackageArchiveReader(packageStream);
                 var nuspecReader = await packageReader.GetNuspecReaderAsync(ct);
 
-                File.WriteAllText(
-                    Path.Combine(moduleFolder, "min-version"),
-                    nuspecReader.GetDependencyGroups()
-                       .Single(dg => dg.TargetFramework.ToString() == framework)
-                       .Packages
-                       .Single(d => d.Id == "TopModel.Generator.Core").VersionRange.MinVersion!.ToString());
+                var dependencies = nuspecReader.GetDependencyGroups()
+                    .Single(dg => dg.TargetFramework.ToString() == framework)
+                    .Packages;
+
+                var minVersion = dependencies.Single(d => d.Id == "TopModel.Generator.Core").VersionRange.MinVersion!.ToString();
+
+                File.WriteAllText(Path.Combine(moduleFolder, "min-version"), minVersion);
 
                 foreach (var file in packageReader.GetFiles().Where(f => f == $"lib/{framework}/{dep.FullName}.dll" || f.EndsWith("config.json")))
                 {
                     packageReader.ExtractFile(file, Path.Combine(moduleFolder, file.Split('/').Last()), NullLogger.Instance);
+                }
+
+                foreach (var otherDep in dependencies.Where(d => d.Id != "TopModel.Generator.Core"))
+                {
+                    using var packageStreamDep = new MemoryStream();
+                    await nugetResource.CopyNupkgToStreamAsync(otherDep.Id, otherDep.VersionRange.MinVersion, packageStreamDep, nugetCache, NullLogger.Instance, ct);
+                    using var packageReaderDep = new PackageArchiveReader(packageStreamDep);
+                    foreach (var file in packageReaderDep.GetFiles().Where(f => f == $"lib/netstandard2.0/{otherDep.Id}.dll"))
+                    {
+                        packageReaderDep.ExtractFile(file, Path.Combine(moduleFolder, file.Split('/').Last()), NullLogger.Instance);
+                    }
                 }
 
                 hasInstalled = true;
@@ -413,7 +425,7 @@ for (var i = 0; i < configs.Count; i++)
                 continue;
             }
 
-            generators.AddRange(Assembly.LoadFrom(Path.Combine(moduleFolder, $"{dep.FullName}.dll")).GetExportedTypes().Where(t => GetIGenRegInterface(t) != null));
+            generators.AddRange(Directory.GetFiles(moduleFolder, "*.dll").SelectMany(a => Assembly.LoadFrom(a).GetExportedTypes().Where(t => GetIGenRegInterface(t) != null)));
             resolvedConfigKeys.Add(dep.ConfigKey, dep.Version);
         }
     }
