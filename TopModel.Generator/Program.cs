@@ -290,7 +290,7 @@ for (var i = 0; i < configs.Count; i++)
         if (returnCode == 0)
         {
             generators.AddRange(new DirectoryInfo(Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin"))
-                .GetFiles("TopModel.Generator.*.dll", SearchOption.AllDirectories)
+                .GetFiles($"{cg.Split('/').Last()}.dll", SearchOption.AllDirectories)
                 .Where(a => a.FullName.Contains(framework) && a.Name != "TopModel.Generator.Core.dll")
                 .DistinctBy(a => a.Name)
                 .Select(f => Assembly.LoadFrom(f.FullName))
