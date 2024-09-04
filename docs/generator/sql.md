@@ -29,7 +29,7 @@ _Remarque : A l'inverse de tous les autres générateurs, le générateur SQL es
 
 ### Fichier de configuration
 
-- `targetDBMS` : Système de gestion de base de données cible (`"postgre"` ou `"sqlserver"`).
+- `targetDBMS` : Système de gestion de base de données cible (`"postgre"` ou `"sqlserver"` ou `"oracle"`).
 - `procedural`
 
   Options de génération sql
@@ -73,6 +73,14 @@ _Remarque : A l'inverse de tous les autres générateurs, le générateur SQL es
 - `resourcesTableName`
 
   Nom de la table contenant les traductions
+
+- `tableTablespace`
+
+  Nom du tablespace pour les tables (Postgres ou Oracle).
+
+- `indexTablespace`
+
+  Nom du tablespace pour les index (Postgres ou Oracle).
 
 ### Exemple
 

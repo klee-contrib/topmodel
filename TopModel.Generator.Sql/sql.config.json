@@ -57,16 +57,35 @@
       "type": "string",
       "description": "Nom de la table dans laquelle doivent être insérées les traductions."
     },
+    "tableTablespace": {
+      "type": "string",
+      "description": "Nom du tablespace pour les tables (Postgres ou Oracle)."
+    },
+    "indexTablespace": {
+      "type": "string",
+      "description": "Nom du tablespace pour les index (Postgres ou Oracle)."
+    },
+    "foreignKeyConstraintNamePattern": {
+      "type": "string",
+      "description": "Pattern pour le nom des contraintes de clé étrangère. Supporte les variables tableName, trigram, columnName. Valeur par défaut : \"FK_{tableName}_{columnName}\".",
+      "default": "\"FK_{tableName}_{columnName}\""
+    },
+    "uniqueConstraintNamePattern": {
+      "type": "string",
+      "description": "Pattern pour le nom des contraintes d'unicité. Supporte les variables tableName, columnNames (avec trigramme), propertyNames (sans le trigramme). Valeur par défaut : \"UK_{tableName}_{columnNames}\".",
+      "default": "\"UK_{tableName}_{columnNames}\""
+    },
     "ignoreDefaultValues": {
       "type": "boolean",
       "description": "Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration."
     },
     "targetDBMS": {
       "type": "string",
-      "description": "SGBD cible ('postgre' ou 'sqlserver').",
+      "description": "SGBD cible ('postgre' ou 'sqlserver' ou 'oracle').",
       "enum": [
         "sqlserver",
-        "postgre"
+        "postgre",
+        "oracle"
       ]
     },
     "procedural": {

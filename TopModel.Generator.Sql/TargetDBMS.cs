@@ -10,5 +10,10 @@ public enum TargetDBMS
     /// <summary>
     /// PostgreSQL.
     /// </summary>
-    Postgre
+    Postgre,
+
+    /// <summary>
+    /// Oracle.
+    /// </summary>
+    Oracle
 }
