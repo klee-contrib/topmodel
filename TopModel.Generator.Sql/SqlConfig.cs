@@ -17,6 +17,12 @@ public class SqlConfig : GeneratorConfigBase
     /// </summary>
     public SsdtConfig? Ssdt { get; set; }
 
+    public override Dictionary<string, List<string>> TemplateAttributes => new()
+    {
+        { nameof(ForeignKeyConstraintNamePattern), new() { "tableName", "trigram", "columnName" } },
+        { nameof(UniqueConstraintNamePattern), new() { "tableName", "columnNames", "propertyNames" } }
+    };
+
     /// <summary>
     /// Désactive la génération des valeurs par défaut des propriétés dans les classes et endpoints générés avec cette configuration.
     /// </summary>
