@@ -57,7 +57,7 @@ public class CompletionHandler : CompletionHandlerBase
         }
 
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
-        if (file == null)
+        if (file == null || currentLine == string.Empty)
         {
             return Task.FromResult(new CompletionList());
         }
@@ -318,7 +318,7 @@ public class CompletionHandler : CompletionHandlerBase
                 if (!selfClassropertyKeyWords.Contains(currentKey.Key))
                 {
                     var parentKey = currentKey;
-                    while (parentKey.Key != "class" && parentKey.Key != "mappings" && parentKey.Key != "values")
+                    while (parentKey.Key != "class" && parentKey.Key != "mappings" && parentKey.Key != "values" && parentKey.Line > 0)
                     {
                         parentKey = GetParentKey(text, parentKey.Line, parentKey.End);
                     }
@@ -474,15 +474,17 @@ public class CompletionHandler : CompletionHandlerBase
         var currentIndent = GetIndentLevel(text, line);
         var rootIndent = currentIndent;
 
-        while (rootIndent >= currentIndent)
+        while (rootIndent >= currentIndent && requestLine > 0 && !rootLine.StartsWith("---"))
         {
             requestLine--;
-            if (requestLine < 0 || rootLine.StartsWith("---"))
-            {
-                break;
-            }
 
             rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
+            while ((string.IsNullOrWhiteSpace(rootLine) || rootLine.Contains('#') && string.IsNullOrWhiteSpace(rootLine[..rootLine.IndexOf('#')].Trim())) && requestLine > 0)
+            {
+                requestLine--;
+                rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
+            }
+
             rootIndent = GetIndentLevel(text, requestLine);
             if (rootLine.Trim().StartsWith('-'))
             {
@@ -501,6 +503,11 @@ public class CompletionHandler : CompletionHandlerBase
 
     private int GetIndentLevel(string line)
     {
+        if (line.StartsWith("---"))
+        {
+            return 0;
+        }
+
         var isList = line.TrimStart().StartsWith('-');
         if (isList)
         {
@@ -543,7 +550,7 @@ public class CompletionHandler : CompletionHandlerBase
     {
         var currentLine = text.ElementAtOrDefault(line);
         var rootLine = currentLine ?? string.Empty;
-        var isInLineObject = position < rootLine.Length && rootLine[..position].Contains(": {");
+        var isInLineObject = position < rootLine.Length && rootLine[..Math.Min(position, rootLine.Length - 1)].Contains(": {");
         if (isInLineObject)
         {
             return (Key: rootLine.TrimStart().Split(':')[0], Line: line, End: rootLine[..position].LastIndexOf(':') - 1, IsKey: false);
@@ -553,12 +560,14 @@ public class CompletionHandler : CompletionHandlerBase
         var currentIndent = GetIndentLevel(text, line);
         var rootIndent = currentIndent;
 
-        while (rootIndent >= currentIndent)
+        while (rootIndent >= currentIndent && requestLine > 0 && !rootLine.StartsWith("---"))
         {
             requestLine--;
-            if (requestLine < 0 || rootLine.StartsWith("---"))
+            rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
+            while ((string.IsNullOrWhiteSpace(rootLine) || rootLine.Contains('#') && string.IsNullOrWhiteSpace(rootLine[..rootLine.IndexOf('#')].Trim())) && requestLine > 0)
             {
-                break;
+                requestLine--;
+                rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
             }
 
             rootLine = text.ElementAtOrDefault(requestLine) ?? string.Empty;
