@@ -206,9 +206,9 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             fw.WriteLine();
         }
 
-        if (returnType == "string")
+        if (returnType == "string" || returnType == "Blob" || returnType == "ArrayBuffer")
         {
-            fw.Write(2, $@"return {(Config.ApiMode == TargetFramework.ANGULAR_PROMISE ? "lastValueFrom(" : string.Empty)}this.http.{endpoint.Method.ToLower()}(`/{fullRoute}`");
+              fw.Write(2, $@"return {(Config.ApiMode == TargetFramework.ANGULAR_PROMISE ? "lastValueFrom(" : string.Empty)}this.http.{endpoint.Method.ToLower()}(`/{fullRoute}`");
         }
         else
         {
@@ -228,9 +228,9 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
             fw.Write(", {}");
         }
 
-        if (returnType == "string")
+        if (returnType == "string" || returnType == "Blob" || returnType == "ArrayBuffer")
         {
-            fw.Write($", {{responseType: 'text'}}");
+          fw.Write($", {{responseType: '{returnType.ToLower()}'}}");
         }
 
         if (endpoint.GetQueryParams().Any())
