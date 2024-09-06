@@ -230,7 +230,7 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
         if (needResponseType)
         {
             var responseType = returnType == "string" ? "text" : returnType.ToLower();
-            fw.Write($", {{responseType: '{returnType.ToLower()}'}}");
+            fw.Write($", {{responseType: '{responseType}'}}");
         }
 
         if (endpoint.GetQueryParams().Any())
