@@ -207,10 +207,10 @@ public class AngularApiClientGenerator : EndpointsGeneratorBase<JavascriptConfig
         }
 
         var needResponseType = returnType == "string" || returnType == "Blob" || returnType == "ArrayBuffer";
-        var getter = $"this.http.{endpoint.Method.ToLower()}<{returnType}>";
+        var getter = $"{endpoint.Method.ToLower()}<{returnType}>";
         if (needResponseType)
         {
-            getter = $"{endpoint.Method.ToLower()}(`/{fullRoute}`";
+            getter = $"{endpoint.Method.ToLower()}";
         }
 
         fw.Write(2, $@"return {(Config.ApiMode == TargetFramework.ANGULAR_PROMISE ? "lastValueFrom(" : string.Empty)}this.http.{getter}(`/{fullRoute}`");
