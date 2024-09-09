@@ -462,7 +462,10 @@ public class CSharpClassGenerator : ClassGeneratorBase<CsharpConfig>
                 usings.Add("System.ComponentModel");
             }
 
-            if (item.Properties.Any(p => p.Required || p.PrimaryKey || Config.GetType(p)?.TrimEnd('?') == "string" && p.Domain.Length != null))
+            if (item.Properties.Any(p =>
+                p.Required && !Config.RequiredNonNullable(tag)
+                || p.PrimaryKey
+                || Config.GetType(p)?.TrimEnd('?') == "string" && p.Domain.Length != null))
             {
                 usings.Add("System.ComponentModel.DataAnnotations");
             }

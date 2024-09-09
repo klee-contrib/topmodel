@@ -226,7 +226,7 @@ for (var i = 0; i < configs.Count; i++)
     {
         var generatorsPath = Path.Combine(new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!, "../../../..");
         var modules = Directory.GetFileSystemEntries(generatorsPath).Where(e => e.Contains("TopModel.Generator.") && !e.Contains("TopModel.Generator.Core"));
-        config.CustomGenerators.AddRange(modules.Select(m => Path.GetRelativePath(config.ModelRoot, m)));
+        config.CustomGenerators.AddRange(modules.Select(m => Path.GetRelativePath(config.ModelRoot, m).Replace("\\", "/")));
     }
 
     if (updateMode == "all")
