@@ -207,6 +207,7 @@ var framework = $"net{Environment.Version.Major}.{Environment.Version.Minor}";
 var disposables = new List<IDisposable>();
 var loggerProvider = new LoggerProvider();
 var hasErrors = Enumerable.Range(0, configs.Count).Select(_ => false).ToArray();
+var modgenAssemblies = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.ManifestModule.Name).ToHashSet();
 
 for (var i = 0; i < configs.Count; i++)
 {
@@ -294,7 +295,7 @@ for (var i = 0; i < configs.Count; i++)
         {
             var assemblies = new DirectoryInfo(Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin"))
                 .GetFiles($"*.dll", SearchOption.AllDirectories)
-                .Where(a => a.FullName.Contains(framework) && a.Name != "TopModel.Generator.Core.dll")
+                .Where(a => a.FullName.Contains(framework) && !modgenAssemblies.Contains(a.Name))
                 .DistinctBy(a => a.Name)
                 .Select(f => Assembly.LoadFrom(f.FullName))
                 .ToList();

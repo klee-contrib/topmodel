@@ -2,7 +2,8 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 2.0.2
+version: 2.0.3
+modules: {}
 generatedFiles:
   - ../generators/ssdt/src/init/DROIT.insert.sql
   - ../generators/ssdt/src/init/main.sql

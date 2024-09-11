@@ -8,6 +8,12 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.0.3
+
+- [`90ab7ff`](https://github.com/klee-contrib/topmodel/commit/90ab7ff1638da994b59964f8a432c3080428d17b) - [modgen] Ajout hash des modules dans le lockfile
+
+  Cette évolution permet de tracer le contenu exact d'un module installé via son hash, pour détecter des cas de corruption et forcer une réinstallation si nécessaire. Puisque le hash n'existait pas avant, le premier lancement de cette version va forcer la réinstallation des modules pour le calculer (et le sauvegarder dans le lockfile).
+
 ## 2.0.1 - 2.0.2
 
 Correctifs suite à la version majeure pour faire fonctionner l'installation du module `csharp` et des modules personnalisés.

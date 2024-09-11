@@ -2,7 +2,8 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 2.0.2
+version: 2.0.3
+modules: {}
 generatedFiles:
   - ../generators/php/src/Entity/Securite/Profil/Droit.php
   - ../generators/php/src/Entity/Securite/Profil/Profil.php
