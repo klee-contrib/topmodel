@@ -17,6 +17,11 @@ public class TopModelLock : TopModelLockFile
     private readonly ILogger _logger;
     private readonly string _modelRoot;
 
+    private readonly ISerializer _serializer = new SerializerBuilder()
+        .WithNamingConvention(CamelCaseNamingConvention.Instance)
+        .WithIndentedSequences()
+        .Build();
+
     [SetsRequiredMembers]
     public TopModelLock(ILogger logger, string modelRoot, string lockFileName)
     {
@@ -90,25 +95,7 @@ public class TopModelLock : TopModelLockFile
                 StartCommentToken = "#"
             };
 
-            fw.WriteLine($"version: {Version}");
-
-            if (Modules.Count > 0)
-            {
-                fw.WriteLine("modules:");
-                foreach (var module in Modules)
-                {
-                    fw.WriteLine($"  {module.Key}: {module.Value}");
-                }
-            }
-
-            if (GeneratedFiles.Count > 0)
-            {
-                fw.WriteLine("generatedFiles:");
-                foreach (var genFile in GeneratedFiles)
-                {
-                    fw.WriteLine($"  - {genFile}");
-                }
-            }
+            fw.Write(_serializer.Serialize(this));
         }
     }
 }

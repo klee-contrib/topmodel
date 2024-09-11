@@ -1,5 +1,7 @@
 ﻿using System.CommandLine;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json.Nodes;
 using System.Xml;
@@ -90,7 +92,7 @@ command.SetHandler(
         {
             var dir = Directory.GetCurrentDirectory();
             var pattern = "topmodel*.config";
-            foreach (var fileName in Directory.GetFiles(dir, pattern, SearchOption.AllDirectories))
+            foreach (var fileName in Directory.EnumerateFiles(dir, pattern, SearchOption.AllDirectories))
             {
                 HandleFile(new FileInfo(fileName));
             }
@@ -103,7 +105,7 @@ command.SetHandler(
                     dir = Directory.GetParent(dir)?.FullName;
                     if (dir != null)
                     {
-                        foreach (var fileName in Directory.GetFiles(dir, pattern))
+                        foreach (var fileName in Directory.EnumerateFiles(dir, pattern))
                         {
                             HandleFile(new FileInfo(fileName));
                             found = true;
@@ -277,9 +279,9 @@ for (var i = 0; i < configs.Count; i++)
                 var configKey = dep.Key.Split('.').Last().ToLower();
                 if (!topModelLock.Modules.TryGetValue(configKey, out var ev))
                 {
-                    topModelLock.Modules.Add(configKey, dep.Value);
+                    topModelLock.Modules.Add(configKey, new() { Version = dep.Value });
                 }
-                else if (ev != dep.Value)
+                else if (ev.Version != dep.Value)
                 {
                     logger.LogError($"Le module personalisé '{cg}' référence le module '{configKey}' en version '{dep.Value}', ce qui n'est pas la version du lockfile ('{ev}').");
                     returnCode = 1;
@@ -339,7 +341,7 @@ for (var i = 0; i < configs.Count; i++)
             }
 
             var nugetVersion = moduleVersions.Last().Version;
-            moduleVersion = $"{nugetVersion.Major}.{nugetVersion.Minor}.{nugetVersion.Build}";
+            moduleVersion = new() { Version = $"{nugetVersion.Major}.{nugetVersion.Minor}.{nugetVersion.Build}" };
             topModelLock.Modules.Add(configKey, moduleVersion);
         }
 
@@ -367,15 +369,24 @@ for (var i = 0; i < configs.Count; i++)
 
         foreach (var dep in deps)
         {
-            var moduleFolder = Path.Combine(modgenRoot, $"{dep.ConfigKey}.{dep.Version}");
+            var depVersion = dep.Version.Version;
+            var moduleFolder = Path.Combine(modgenRoot, $"{dep.ConfigKey}.{depVersion}");
 
-            if (!Directory.Exists(moduleFolder))
+            var depHash = GetFolderHash(moduleFolder);
+
+            if (depHash == null || depHash != dep.Version.Hash)
             {
-                logger.LogInformation($"({dep.ConfigKey}) Installation de {dep.FullName}@{dep.Version} en cours...");
-
-                if (!await nugetResource.DoesPackageExistAsync(dep.FullName, new NuGetVersion(dep.Version), nugetCache, NullLogger.Instance, ct))
+                if (Directory.Exists(moduleFolder))
                 {
-                    logger.LogError($"({dep.ConfigKey}) Le package {dep.FullName}@{dep.Version} est introuvable.");
+                    logger.LogInformation($"({dep.ConfigKey}) Module corrompu, réinstallation...");
+                    Directory.Delete(moduleFolder, true);
+                }
+
+                logger.LogInformation($"({dep.ConfigKey}) Installation de {dep.FullName}@{depVersion} en cours...");
+
+                if (!await nugetResource.DoesPackageExistAsync(dep.FullName, new NuGetVersion(depVersion), nugetCache, NullLogger.Instance, ct))
+                {
+                    logger.LogError($"({dep.ConfigKey}) Le package {dep.FullName}@{depVersion} est introuvable.");
                     returnCode = 1;
                     continue;
                 }
@@ -383,7 +394,7 @@ for (var i = 0; i < configs.Count; i++)
                 Directory.CreateDirectory(moduleFolder);
 
                 using var packageStream = new MemoryStream();
-                await nugetResource.CopyNupkgToStreamAsync(dep.FullName, new NuGetVersion(dep.Version), packageStream, nugetCache, NullLogger.Instance, ct);
+                await nugetResource.CopyNupkgToStreamAsync(dep.FullName, new NuGetVersion(depVersion), packageStream, nugetCache, NullLogger.Instance, ct);
                 using var packageReader = new PackageArchiveReader(packageStream);
                 var nuspecReader = await packageReader.GetNuspecReaderAsync(ct);
 
@@ -391,9 +402,7 @@ for (var i = 0; i < configs.Count; i++)
                     .Single(dg => dg.TargetFramework.ToString() == framework)
                     .Packages;
 
-                var minVersion = dependencies.Single(d => d.Id == "TopModel.Generator.Core").VersionRange.MinVersion!.ToString();
-
-                File.WriteAllText(Path.Combine(moduleFolder, "min-version"), minVersion);
+                File.WriteAllText(Path.Combine(moduleFolder, "min-version"), dependencies.Single(d => d.Id == "TopModel.Generator.Core").VersionRange.MinVersion!.ToString());
 
                 foreach (var file in packageReader.GetFiles().Where(f => f == $"lib/{framework}/{dep.FullName}.dll" || f.EndsWith("config.json")))
                 {
@@ -434,26 +443,27 @@ for (var i = 0; i < configs.Count; i++)
                 }
 
                 hasInstalled = true;
-                logger.LogInformation($"({dep.ConfigKey}) Installation de {dep.FullName}@{dep.Version} terminée avec succès.");
+                logger.LogInformation($"({dep.ConfigKey}) Installation de {dep.FullName}@{depVersion} terminée avec succès.");
+                dep.Version.Hash = GetFolderHash(moduleFolder);
             }
 
-            var depVersionText = File.ReadAllText(Path.Combine(moduleFolder, "min-version"));
-            var depVersion = depVersionText.Split('.').Select(int.Parse).ToArray();
-            if (depVersion[0] != fullVersion.Major)
+            var minVersionText = File.ReadAllText(Path.Combine(moduleFolder, "min-version"));
+            var minVersion = minVersionText.Split('.').Select(int.Parse).ToArray();
+            if (minVersion[0] != fullVersion.Major)
             {
-                logger.LogError($"Le module '{dep.ConfigKey}' ne référence pas la bonne version majeure de TopModel ({dep.Version} < {version}).");
+                logger.LogError($"Le module '{dep.ConfigKey}' ne référence pas la bonne version majeure de TopModel ({depVersion} < {version}).");
                 returnCode = 1;
                 continue;
             }
-            else if (depVersion[1] > fullVersion.Minor)
+            else if (minVersion[1] > fullVersion.Minor)
             {
-                logger.LogError($"Le module '{dep.ConfigKey}' référence une version plus récente de TopModel ({depVersionText} > {version}).");
+                logger.LogError($"Le module '{dep.ConfigKey}' référence une version plus récente de TopModel ({minVersionText} > {version}).");
                 returnCode = 1;
                 continue;
             }
 
             generators.AddRange(Directory.GetFiles(moduleFolder, "*.dll").SelectMany(a => Assembly.LoadFrom(a).GetExportedTypes().Where(t => GetIGenRegInterface(t) != null)));
-            resolvedConfigKeys.Add(dep.ConfigKey, dep.Version);
+            resolvedConfigKeys.Add(dep.ConfigKey, depVersion);
         }
     }
 
@@ -613,3 +623,30 @@ if (checkMode && loggerProvider.Changes > 0)
 }
 
 return returnCode;
+
+static string? GetFolderHash(string path)
+{
+    var md5 = MD5.Create();
+
+    var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToList();
+    foreach (var file in files)
+    {
+        var relativePath = file.Substring(path.Length + 1);
+        var pathBytes = Encoding.UTF8.GetBytes(relativePath.ToLower());
+        md5.TransformBlock(pathBytes, 0, pathBytes.Length, pathBytes, 0);
+
+        var contentBytes = File.ReadAllBytes(file);
+        if (files.IndexOf(file) == files.Count - 1)
+        {
+            md5.TransformFinalBlock(contentBytes, 0, contentBytes.Length);
+        }
+        else
+        {
+            md5.TransformBlock(contentBytes, 0, contentBytes.Length, contentBytes, 0);
+        }
+    }
+
+    return md5.Hash != null
+        ? BitConverter.ToString(md5.Hash).Replace("-", string.Empty).ToLower()
+        : null;
+}
