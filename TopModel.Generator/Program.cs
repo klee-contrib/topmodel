@@ -628,6 +628,10 @@ return returnCode;
 static string? GetFolderHash(string path)
 {
     var md5 = MD5.Create();
+    if (!Directory.Exists(path))
+    {
+        return null;
+    }
 
     var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToList();
     foreach (var file in files)
