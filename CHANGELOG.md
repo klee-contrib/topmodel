@@ -8,6 +8,11 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+
+## 2.0.4
+
+- [`9727a4`](https://github.com/klee-contrib/topmodel/commit/9727a440cbfab34c9a51702069402f51f72d56ad) - [modgen] Correction régression 2.0.3 si les répertoires des modules n'existent pas
+
 ## 2.0.3
 
 - [`90ab7ff`](https://github.com/klee-contrib/topmodel/commit/90ab7ff1638da994b59964f8a432c3080428d17b) - [modgen] Ajout hash des modules dans le lockfile

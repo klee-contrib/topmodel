@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 2.0.3
+version: 2.0.4
 modules: {}
 generatedFiles:
   - ../generators/translation/i18n/de_DE/out/common_de_DE.properties
