@@ -229,7 +229,7 @@ for (var i = 0; i < configs.Count; i++)
     {
         var generatorsPath = Path.Combine(new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!, "../../../..");
         var modules = Directory.GetFileSystemEntries(generatorsPath).Where(e => e.Contains("TopModel.Generator.") && !e.Contains("TopModel.Generator.Core"));
-        config.CustomGenerators.AddRange(modules.Select(m => Path.GetRelativePath(config.ModelRoot, m).Replace("\\", "/")));
+        config.CustomGenerators.AddRange(modules.Select(m => Path.GetRelativePath(new FileInfo(fullName).DirectoryName!, m).Replace("\\", "/")));
     }
 
     if (updateMode == "all")
@@ -243,7 +243,12 @@ for (var i = 0; i < configs.Count; i++)
 
     foreach (var cg in config.CustomGenerators)
     {
-        var csproj = Directory.GetFiles(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "*.csproj").FirstOrDefault();
+        string? csproj = null;
+        if (Directory.Exists(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!)))
+        {
+            csproj = Directory.GetFiles(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "*.csproj").FirstOrDefault();
+        }
+
         if (csproj == null)
         {
             logger.LogError($"Aucun fichier csproj trouvé pour le module de générateurs '{cg}'.");
