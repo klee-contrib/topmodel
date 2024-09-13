@@ -93,7 +93,7 @@ public class JpaEnumGenerator : GeneratorBase<JpaConfig>
                 fw.WriteDocEnd(1);
             }
 
-            fw.WriteLine(1, $"{value.Value[property]}{(isLast ? ";" : ",")}");
+            fw.WriteLine(1, $"{value.Value[property]}{(isLast ? string.Empty : ",")}");
         }
 
         fw.WriteLine("}");

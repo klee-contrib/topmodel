@@ -94,6 +94,24 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
             fw.WriteLine(1, "private static final long serialVersionUID = 1L;");
         }
 
+        if (Config.CanClassUseEnums(classe, Classes))
+        {
+            fw.WriteLine();
+            var codeProperty = classe.EnumKey!;
+            var javaOrJakarta = Config.PersistenceMode.ToString().ToLower();
+            foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
+            {
+                var code = refValue.Value[codeProperty];
+                if (classe.IsPersistent)
+                {
+                    fw.AddImport($"{javaOrJakarta}.persistence.Transient");
+                    fw.WriteLine(1, "@Transient");
+                }
+
+                fw.WriteLine(1, $@"public static final {classe.NamePascal} {code} = new {classe.NamePascal}({Config.GetEnumName(codeProperty, classe)}.{code});");
+            }
+        }
+
         JpaModelPropertyGenerator.WriteProperties(fw, classe, tag);
         if (!Config.UseJdbc)
         {
@@ -459,6 +477,11 @@ public class JpaModelGenerator : ClassGeneratorBase<JpaConfig>
     private void WriteSetters(JavaWriter fw, Class classe, string tag)
     {
         var properties = Config.UseJdbc ? classe.Properties.Where(p => !(p is AssociationProperty ap && (ap.Type == AssociationType.OneToMany || ap.Type == AssociationType.ManyToMany))) : classe.GetProperties(AvailableClasses);
+        if (Config.CanClassUseEnums(classe, Classes))
+        {
+            return;
+        }
+
         foreach (var property in properties)
         {
             _jpaModelPropertyGenerator!.WriteSetter(fw, classe, tag, property);

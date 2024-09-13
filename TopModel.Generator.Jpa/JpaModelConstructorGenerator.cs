@@ -19,13 +19,6 @@ public class JpaModelConstructorGenerator
     {
         var codeProperty = classe.EnumKey!;
         fw.WriteLine();
-        foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
-        {
-            var code = refValue.Value[codeProperty];
-            fw.WriteLine(1, $@"public static final {classe.NamePascal} {code} = new {classe.NamePascal}({_config.GetEnumName(codeProperty, classe)}.{code});");
-        }
-
-        fw.WriteLine();
         fw.WriteDocStart(1, "Enum constructor");
         fw.WriteParam(classe.EnumKey!.NameCamel, "Code dont on veut obtenir l'instance");
         fw.WriteDocEnd(1);

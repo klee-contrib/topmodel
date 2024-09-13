@@ -37,7 +37,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         var packageName = Config.GetPackageName(endpoints.First(), tag);
         using var fw = new JavaWriter(filePath, _logger, packageName, null);
 
-        WriteImports(endpoints, fw, tag);
+        AddImports(endpoints, fw, tag);
         fw.WriteLine();
         if (endpoints.First().ModelFile.Options.Endpoints.Prefix != null)
         {
@@ -53,8 +53,6 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         }
 
         fw.WriteLine($"public interface {className} {{");
-
-        fw.WriteLine();
 
         foreach (var endpoint in endpoints)
         {
@@ -180,7 +178,7 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         fw.WriteLine(1, $"{returnType} {endpoint.NameCamel}({string.Join(", ", methodParams)});");
     }
 
-    private void WriteImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
+    private void AddImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
     {
         fw.AddImports(endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToPascalCase(true)}Mapping"));
         fw.AddImports(GetTypeImports(endpoints, tag));

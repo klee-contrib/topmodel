@@ -381,7 +381,8 @@ public class JpaModelPropertyGenerator
         string column;
         if (!_config.UseJdbc)
         {
-            column = @$"@Column(name = ""{property.SqlName}"", nullable = {(!property.Required).ToString().ToFirstLower()}";
+            var nullable = property.Required ? ", nullable = true" : string.Empty;
+            column = @$"@Column(name = ""{property.SqlName}""{nullable}";
             if (property.Domain != null)
             {
                 if (property.Domain.Length != null)
