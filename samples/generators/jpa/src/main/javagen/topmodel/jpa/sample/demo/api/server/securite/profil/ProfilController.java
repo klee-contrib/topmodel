@@ -25,7 +25,6 @@ import topmodel.jpa.sample.demo.dtos.securite.profil.ProfilWrite;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface ProfilController {
 
-
 	/**
 	 * Ajoute un Profil.
 	 * @param profil Profil à sauvegarder

@@ -29,7 +29,6 @@ import topmodel.jpa.sample.demo.enums.securite.utilisateur.TypeUtilisateurCode;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface UtilisateurController {
 
-
 	/**
 	 * Ajoute un utilisateur.
 	 * @param utilisateur Utilisateur à sauvegarder

@@ -18,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import topmodel.jpa.sample.demo.enums.securite.profil.DroitCode;
 
@@ -31,18 +32,27 @@ import topmodel.jpa.sample.demo.enums.securite.profil.DroitCode;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class Droit {
 
+	@Transient
+	public static final Droit CREATE = new Droit(DroitCode.CREATE);
+	@Transient
+	public static final Droit DELETE = new Droit(DroitCode.DELETE);
+	@Transient
+	public static final Droit READ = new Droit(DroitCode.READ);
+	@Transient
+	public static final Droit UPDATE = new Droit(DroitCode.UPDATE);
+
 	/**
 	 * Code du droit.
 	 */
 	@Id
-	@Column(name = "DRO_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(name = "DRO_CODE", nullable = true, length = 10, columnDefinition = "varchar")
 	@Enumerated(EnumType.STRING)
 	private DroitCode code;
 
 	/**
 	 * Libellé du droit.
 	 */
-	@Column(name = "DRO_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "DRO_LIBELLE", nullable = true, length = 100, columnDefinition = "varchar")
 	private String libelle;
 
 	/**
@@ -58,11 +68,6 @@ public class Droit {
 	public Droit() {
 		// No arg constructor
 	}
-
-	public static final Droit CREATE = new Droit(DroitCode.CREATE);
-	public static final Droit DELETE = new Droit(DroitCode.DELETE);
-	public static final Droit READ = new Droit(DroitCode.READ);
-	public static final Droit UPDATE = new Droit(DroitCode.UPDATE);
 
 	/**
 	 * Enum constructor.
@@ -115,30 +120,6 @@ public class Droit {
 	 */
 	public TypeDroit getTypeDroit() {
 		return this.typeDroit;
-	}
-
-	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Droit#code code}.
-	 * @param code value to set
-	 */
-	public void setCode(DroitCode code) {
-		this.code = code;
-	}
-
-	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Droit#libelle libelle}.
-	 * @param libelle value to set
-	 */
-	public void setLibelle(String libelle) {
-		this.libelle = libelle;
-	}
-
-	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Droit#typeDroit typeDroit}.
-	 * @param typeDroit value to set
-	 */
-	public void setTypeDroit(TypeDroit typeDroit) {
-		this.typeDroit = typeDroit;
 	}
 
 	/**

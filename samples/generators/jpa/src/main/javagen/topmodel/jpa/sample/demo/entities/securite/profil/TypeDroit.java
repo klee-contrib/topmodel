@@ -15,6 +15,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import topmodel.jpa.sample.demo.enums.securite.profil.TypeDroitCode;
 
@@ -28,18 +29,25 @@ import topmodel.jpa.sample.demo.enums.securite.profil.TypeDroitCode;
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class TypeDroit {
 
+	@Transient
+	public static final TypeDroit ADMIN = new TypeDroit(TypeDroitCode.ADMIN);
+	@Transient
+	public static final TypeDroit READ = new TypeDroit(TypeDroitCode.READ);
+	@Transient
+	public static final TypeDroit WRITE = new TypeDroit(TypeDroitCode.WRITE);
+
 	/**
 	 * Code du type de droit.
 	 */
 	@Id
-	@Column(name = "TDR_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	@Column(name = "TDR_CODE", nullable = true, length = 10, columnDefinition = "varchar")
 	@Enumerated(EnumType.STRING)
 	private TypeDroitCode code;
 
 	/**
 	 * Libellé du type de droit.
 	 */
-	@Column(name = "TDR_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
+	@Column(name = "TDR_LIBELLE", nullable = true, length = 100, columnDefinition = "varchar")
 	private String libelle;
 
 	/**
@@ -48,10 +56,6 @@ public class TypeDroit {
 	public TypeDroit() {
 		// No arg constructor
 	}
-
-	public static final TypeDroit ADMIN = new TypeDroit(TypeDroitCode.ADMIN);
-	public static final TypeDroit READ = new TypeDroit(TypeDroitCode.READ);
-	public static final TypeDroit WRITE = new TypeDroit(TypeDroitCode.WRITE);
 
 	/**
 	 * Enum constructor.
@@ -88,22 +92,6 @@ public class TypeDroit {
 	 */
 	public String getLibelle() {
 		return this.libelle;
-	}
-
-	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.TypeDroit#code code}.
-	 * @param code value to set
-	 */
-	public void setCode(TypeDroitCode code) {
-		this.code = code;
-	}
-
-	/**
-	 * Set the value of {@link topmodel.jpa.sample.demo.entities.securite.profil.TypeDroit#libelle libelle}.
-	 * @param libelle value to set
-	 */
-	public void setLibelle(String libelle) {
-		this.libelle = libelle;
 	}
 
 	/**

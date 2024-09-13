@@ -19,5 +19,5 @@ public enum TypeUtilisateurCode {
 	/**
 	 * Gestionnaire.
 	 */
-	GEST;
+	GEST
 }

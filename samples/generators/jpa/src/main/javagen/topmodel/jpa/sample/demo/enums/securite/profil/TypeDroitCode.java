@@ -19,5 +19,5 @@ public enum TypeDroitCode {
 	/**
 	 * Ecriture.
 	 */
-	WRITE;
+	WRITE
 }
