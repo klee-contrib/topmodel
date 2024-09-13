@@ -40,14 +40,14 @@ public class TypeDroit {
 	 * Code du type de droit.
 	 */
 	@Id
-	@Column(name = "TDR_CODE", nullable = true, length = 10, columnDefinition = "varchar")
+	@Column(name = "TDR_CODE", nullable = false, length = 10, columnDefinition = "varchar")
 	@Enumerated(EnumType.STRING)
 	private TypeDroitCode code;
 
 	/**
 	 * Libellé du type de droit.
 	 */
-	@Column(name = "TDR_LIBELLE", nullable = true, length = 100, columnDefinition = "varchar")
+	@Column(name = "TDR_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
 	private String libelle;
 
 	/**

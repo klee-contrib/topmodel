@@ -42,25 +42,25 @@ public class Utilisateur {
 	 */
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
-	@Column(name = "UTI_ID", nullable = true, columnDefinition = "int")
+	@Column(name = "UTI_ID", nullable = false, columnDefinition = "int")
 	private Integer id;
 
 	/**
 	 * Nom de l'utilisateur.
 	 */
-	@Column(name = "UTI_NOM", nullable = true, length = 100, columnDefinition = "varchar")
+	@Column(name = "UTI_NOM", nullable = false, length = 100, columnDefinition = "varchar")
 	private String nom;
 
 	/**
 	 * Nom de l'utilisateur.
 	 */
-	@Column(name = "UTI_PRENOM", nullable = true, length = 100, columnDefinition = "varchar")
+	@Column(name = "UTI_PRENOM", nullable = false, length = 100, columnDefinition = "varchar")
 	private String prenom;
 
 	/**
 	 * Email de l'utilisateur.
 	 */
-	@Column(name = "UTI_EMAIL", nullable = true, length = 50, columnDefinition = "varchar")
+	@Column(name = "UTI_EMAIL", nullable = false, length = 50, columnDefinition = "varchar")
 	private String email;
 
 	/**
@@ -78,7 +78,7 @@ public class Utilisateur {
 	/**
 	 * Si l'utilisateur est actif.
 	 */
-	@Column(name = "UTI_ACTIF", nullable = true, columnDefinition = "boolean")
+	@Column(name = "UTI_ACTIF", nullable = false, columnDefinition = "boolean")
 	private Boolean actif = true;
 
 	/**
@@ -98,7 +98,7 @@ public class Utilisateur {
 	/**
 	 * Date de création de l'utilisateur.
 	 */
-	@Column(name = "UTI_DATE_CREATION", nullable = true, columnDefinition = "date")
+	@Column(name = "UTI_DATE_CREATION", nullable = false, columnDefinition = "date")
 	@CreatedDate
 	private LocalDateTime dateCreation = LocalDateTime.now();
 
