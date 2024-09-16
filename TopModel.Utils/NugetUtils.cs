@@ -60,6 +60,11 @@ public static class NugetUtils
             }
             else
             {
+                if (cachedVersion.Version == null)
+                {
+                    return null;
+                }
+
                 return new TopModelLockModule { Version = cachedVersion.Version };
             }
         }
@@ -85,6 +90,8 @@ public static class NugetUtils
         {
             // Si on a pas internet par exemple.
             cantCheckVersion = true;
+            Versions[id] = new(null, DateTime.UtcNow);
+            await WriteAsync();
             return null;
         }
     }

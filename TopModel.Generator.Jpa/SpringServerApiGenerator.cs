@@ -67,6 +67,13 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         return $"{fileName.ToPascalCase()}Controller";
     }
 
+    private void AddImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
+    {
+        fw.AddImports(endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToPascalCase(true)}Mapping"));
+        fw.AddImports(GetTypeImports(endpoints, tag));
+        fw.AddImports(endpoints.SelectMany(e => Config.GetDecoratorImports(e, tag)));
+    }
+
     private IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
     {
         var properties = endpoints.SelectMany(endpoint => endpoint.Params)
@@ -176,12 +183,5 @@ public class SpringServerApiGenerator : EndpointsGeneratorBase<JpaConfig>
         }
 
         fw.WriteLine(1, $"{returnType} {endpoint.NameCamel}({string.Join(", ", methodParams)});");
-    }
-
-    private void AddImports(IEnumerable<Endpoint> endpoints, JavaWriter fw, string tag)
-    {
-        fw.AddImports(endpoints.Select(e => $"org.springframework.web.bind.annotation.{e.Method.ToPascalCase(true)}Mapping"));
-        fw.AddImports(GetTypeImports(endpoints, tag));
-        fw.AddImports(endpoints.SelectMany(e => Config.GetDecoratorImports(e, tag)));
     }
 }
