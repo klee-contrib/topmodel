@@ -57,6 +57,9 @@ public class PropertyLoader : ILoader<IProperty>
                         case "trigram":
                             rp.Trigram = new LocatedString(value);
                             break;
+                        case "customProperties":
+                            parser.ConsumeMapping(prop => rp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
+                            break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                     }
@@ -126,6 +129,9 @@ public class PropertyLoader : ILoader<IProperty>
                         case "trigram":
                             ap.Trigram = new LocatedString(value);
                             break;
+                        case "customProperties":
+                            parser.ConsumeMapping(prop => ap.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
+                            break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
                     }
@@ -176,6 +182,9 @@ public class PropertyLoader : ILoader<IProperty>
                             break;
                         case "trigram":
                             cp.Trigram = new LocatedString(value);
+                            break;
+                        case "customProperties":
+                            parser.ConsumeMapping(prop => cp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");
@@ -280,6 +289,11 @@ public class PropertyLoader : ILoader<IProperty>
                             break;
                         case "defaultValue":
                             alp.DefaultValue = value!.Value;
+                            break;
+                        case "customProperties":
+                            var customProperties = new Dictionary<string, string>();
+                            parser.ConsumeMapping(prop => customProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
+                            alp.CustomProperties = customProperties;
                             break;
                         default:
                             throw new ModelException($"Propriété ${prop} inconnue pour une propriété");

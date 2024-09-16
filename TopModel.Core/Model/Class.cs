@@ -70,6 +70,8 @@ public class Class : IPropertyContainer
 
     public List<ClassMappings> ToMappers { get; } = [];
 
+    public Dictionary<string, string> CustomProperties { get; } = [];
+
     public string PluralName
     {
         get => _pluralName ?? (Name.EndsWith("s") ? Name : $"{Name}s");

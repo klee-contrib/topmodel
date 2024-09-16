@@ -64,6 +64,8 @@ public class AssociationProperty : IProperty
 
     public string? DefaultValue { get; set; }
 
+    public Dictionary<string, string> CustomProperties { get; } = [];
+
     public string Name
     {
         get

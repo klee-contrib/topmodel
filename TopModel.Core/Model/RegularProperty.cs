@@ -35,6 +35,8 @@ public class RegularProperty : IProperty
 
     public string Comment { get; set; }
 
+    public Dictionary<string, string> CustomProperties { get; } = [];
+
     public Class Class { get; set; }
 
     public Endpoint Endpoint { get; set; }

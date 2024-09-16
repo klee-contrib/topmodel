@@ -37,24 +37,26 @@ public class Endpoint : IPropertyContainer
 
     public IProperty? Returns { get; set; }
 
-    public IList<IProperty> Params { get; set; } = new List<IProperty>();
+    public IList<IProperty> Params { get; set; } = [];
 
     public bool IsMultipart => Params.Any(p => p.Domain?.IsMultipart ?? false || p is CompositionProperty cp && cp.IsMultipart);
 
-    public IList<IProperty> Properties => Params.Concat(new[] { Returns! }).Where(p => p != null).ToList();
+    public IList<IProperty> Properties => Params.Concat([Returns!]).Where(p => p != null).ToList();
 
     public bool PreservePropertyCasing { get; set; }
 
-    public List<(Decorator Decorator, string[] Parameters)> Decorators { get; } = new();
+    public Dictionary<string, string> CustomProperties { get; } = [];
+
+    public List<(Decorator Decorator, string[] Parameters)> Decorators { get; } = [];
 
     public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies();
 
-    public List<DecoratorReference> DecoratorReferences { get; } = new();
+    public List<DecoratorReference> DecoratorReferences { get; } = [];
 
 #nullable disable
     internal Reference Location { get; set; }
 
-    internal List<string> OwnTags { get; set; } = new();
+    internal List<string> OwnTags { get; set; } = [];
 
 #nullable enable
 

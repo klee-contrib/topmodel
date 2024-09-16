@@ -32,6 +32,8 @@ public interface IProperty
 
     LocatedString? Trigram { get; set; }
 
+    Dictionary<string, string> CustomProperties { get; }
+
     Class Class { get; set; }
 
     Endpoint Endpoint { get; set; }

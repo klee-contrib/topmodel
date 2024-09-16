@@ -77,6 +77,9 @@ public class EndpointLoader : ILoader<Endpoint>
                         }
                     });
                     break;
+                case "customProperties":
+                    parser.ConsumeMapping(prop => endpoint.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
+                    break;
                 default:
                     throw new ModelException(endpoint, $"Propriété ${prop} inconnue pour un endpoint");
             }

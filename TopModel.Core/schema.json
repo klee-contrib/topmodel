@@ -90,6 +90,13 @@
             },
             "defaultValue": {
               "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
+            },
+            "customProperties": {
+              "type": "object",
+              "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé.",
+              "additionalProperties": {
+                "type": "string"
+              }
             }
           }
         },
@@ -154,6 +161,13 @@
             "property": {
               "type": "string",
               "description": "Propriété de la classe cible à utiliser pour la clé étrangère (au lieu de la clé primaire)."
+            },
+            "customProperties": {
+              "type": "object",
+              "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé.",
+              "additionalProperties": {
+                "type": "string"
+              }
             }
           }
         },
@@ -314,6 +328,13 @@
             },
             "defaultValue": {
               "description": "Surcharge la valeur par défaut de la propriété."
+            },
+            "customProperties": {
+              "type": "object",
+              "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé. Elles s'ajouteront à celles de la propriété originale (avec remplacement si conflit).",
+              "additionalProperties": {
+                "type": "string"
+              }
             }
           }
         },
@@ -357,6 +378,13 @@
             "trigram": {
               "type": "string",
               "description": "Surcharge locale du trigram"
+            },
+            "customProperties": {
+              "type": "object",
+              "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé.",
+              "additionalProperties": {
+                "type": "string"
+              }
             }
           }
         }
@@ -817,6 +845,13 @@
               "type": "object",
               "description": "Liste des valeurs de la table à insérer à la création de la base de données. Il doit d'agir d'un objet ayant pour clés un nom de ligne (qui sera utilisé pour identifier la clé en C#), et pour valeurs un objet de type JSON qui renseigne les valeurs des différentes propriétés."
             },
+            "customProperties": {
+              "type": "object",
+              "description": "Propriétés de classe personnalisées, pour utilisation dans un générateur personnalisé.",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
             "mappers": {
               "type": "object",
               "description": "Définitions de mappers vers et depuis cette classe.",
@@ -1014,6 +1049,13 @@
               "description": "Les paramètres de l'endpoint. Un paramètre, selon son type et sa présence ou non dans la route, sera automatiquement classifié comme 'Route', 'Query' ou 'Body'",
               "items": {
                 "$ref": "#/definitions/property"
+              }
+            },
+            "customProperties": {
+              "type": "object",
+              "description": "Propriétés d'endpoint personnalisées, pour utilisation dans un générateur personnalisé.",
+              "additionalProperties": {
+                "type": "string"
               }
             },
             "decorators": {
