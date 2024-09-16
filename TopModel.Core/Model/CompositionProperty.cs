@@ -48,6 +48,8 @@ public class CompositionProperty : IProperty
 
     public LocatedString? Trigram { get; set; }
 
+    public Dictionary<string, string> CustomProperties { get; } = [];
+
     public IProperty? CompositionPrimaryKey
     {
         get

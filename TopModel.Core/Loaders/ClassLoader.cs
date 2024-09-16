@@ -127,6 +127,9 @@ public class ClassLoader : ILoader<Class>
                         });
                     });
                     break;
+                case "customProperties":
+                    parser.ConsumeMapping(prop => classe.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
+                    break;
                 case "mappers":
                     parser.ConsumeMapping(prop =>
                     {

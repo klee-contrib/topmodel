@@ -6,6 +6,7 @@ namespace TopModel.Core;
 public class AliasProperty : IProperty
 {
     private string? _comment;
+    private Dictionary<string, string> _customProperties = [];
     private string? _defaultValue;
     private Domain? _domain;
     private string[]? _domainParameters;
@@ -133,6 +134,21 @@ public class AliasProperty : IProperty
 
     public string? As { get; set; }
 
+    public Dictionary<string, string> CustomProperties
+    {
+        get
+        {
+            var customProperties = new Dictionary<string, string>(OriginalProperty!.CustomProperties);
+            foreach (var cp in _customProperties)
+            {
+                customProperties[cp.Key] = cp.Value;
+            }
+
+            return customProperties;
+        }
+        set => _customProperties = value;
+    }
+
     public IProperty? OriginalProperty => _property;
 
     public IProperty? PersistentProperty => (Class?.IsPersistent ?? false)
@@ -186,7 +202,8 @@ public class AliasProperty : IProperty
             Name = _name!,
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName,
-            DomainParameters = _domainParameters!
+            DomainParameters = _domainParameters!,
+            CustomProperties = _customProperties
         };
 
         if (_domain != null)
@@ -235,7 +252,8 @@ public class AliasProperty : IProperty
             As = As,
             OriginalAliasProperty = this,
             UseLegacyRoleName = UseLegacyRoleName,
-            DomainParameters = _domainParameters!
+            DomainParameters = _domainParameters!,
+            CustomProperties = _customProperties
         };
 
         if (_domain != null)
