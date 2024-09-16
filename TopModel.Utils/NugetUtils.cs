@@ -45,13 +45,8 @@ public static class NugetUtils
         return new PackageArchiveReader(packageStream);
     }
 
-    public static async Task<TopModelLockModule?> GetLatestVersionAsync(string id)
+    public static async Task<TopModelLockModule?> GetLatestVersionAsync(string id, bool forceCheck = false)
     {
-        if (cantCheckVersion)
-        {
-            return null;
-        }
-
         if (Versions.TryGetValue(id, out var cachedVersion))
         {
             if (cachedVersion.CheckDate.AddHours(6) < DateTime.UtcNow)
@@ -62,11 +57,18 @@ public static class NugetUtils
             {
                 if (cachedVersion.Version == null)
                 {
-                    return null;
+                    cantCheckVersion = true;
                 }
-
-                return new TopModelLockModule { Version = cachedVersion.Version };
+                else
+                {
+                    return new TopModelLockModule { Version = cachedVersion.Version };
+                }
             }
+        }
+
+        if (cantCheckVersion && !forceCheck)
+        {
+            return null;
         }
 
         try

@@ -339,7 +339,7 @@ for (var i = 0; i < configs.Count; i++)
 
         if (!topModelLock.Modules.TryGetValue(configKey, out var moduleVersion))
         {
-            moduleVersion = await NugetUtils.GetLatestVersionAsync(fullModuleName);
+            moduleVersion = await NugetUtils.GetLatestVersionAsync(fullModuleName, forceCheck: true);
 
             if (moduleVersion == null)
             {
