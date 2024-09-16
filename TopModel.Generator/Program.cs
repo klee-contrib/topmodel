@@ -8,11 +8,7 @@ using System.Xml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NuGet.Common;
-using NuGet.Packaging;
 using NuGet.Packaging.Core;
-using NuGet.Protocol;
-using NuGet.Protocol.Core.Types;
-using NuGet.Versioning;
 using TopModel.Core;
 using TopModel.Core.Loaders;
 using TopModel.Generator;
@@ -145,6 +141,16 @@ var colors = new[] { ConsoleColor.DarkCyan, ConsoleColor.DarkYellow, ConsoleColo
 Console.WriteLine($"========= TopModel.Generator v{version} =========");
 Console.WriteLine();
 
+var latestVersion = await NugetUtils.GetLatestVersionAsync("TopModel.Generator");
+if (latestVersion != null && latestVersion.Version != version)
+{
+    Console.ForegroundColor = ConsoleColor.Yellow;
+    Console.WriteLine($"Nouvelle version disponible : {latestVersion.Version}");
+    Console.WriteLine("Vous pouvez lancer la commande `dotnet tool update -g TopModel.Generator` pour effectuer la mise à jour.");
+    Console.ForegroundColor = ConsoleColor.Gray;
+    Console.WriteLine();
+}
+
 if (excludedTags.Length > 0)
 {
     Console.Write("Tags");
@@ -161,6 +167,8 @@ if (updateMode != null)
     Console.Write(" update ");
     Console.ForegroundColor = ConsoleColor.Gray;
     Console.WriteLine($"activé pour : {updateMode}.");
+
+    await NugetUtils.ClearAsync();
 }
 
 if (watchMode)
@@ -317,12 +325,6 @@ for (var i = 0; i < configs.Count; i++)
         continue;
     }
 
-    var ct = CancellationToken.None;
-
-    var nugetCache = new SourceCacheContext();
-    var nugetRepository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
-    var nugetResource = await nugetRepository.GetResourceAsync<FindPackageByIdResource>();
-
     var resolvedConfigKeys = new Dictionary<string, string>();
 
     foreach (var configKey in config.Generators.Keys)
@@ -337,17 +339,15 @@ for (var i = 0; i < configs.Count; i++)
 
         if (!topModelLock.Modules.TryGetValue(configKey, out var moduleVersion))
         {
-            var moduleVersions = await nugetResource.GetAllVersionsAsync(fullModuleName, nugetCache, NullLogger.Instance, ct);
+            moduleVersion = await NugetUtils.GetLatestVersionAsync(fullModuleName);
 
-            if (!moduleVersions.Any())
+            if (moduleVersion == null)
             {
                 logger.LogError($"Aucun module de générateurs trouvé pour '{configKey}'.");
                 returnCode = 1;
                 continue;
             }
 
-            var nugetVersion = moduleVersions.Last().Version;
-            moduleVersion = new() { Version = $"{nugetVersion.Major}.{nugetVersion.Minor}.{nugetVersion.Build}" };
             topModelLock.Modules.Add(configKey, moduleVersion);
         }
 
@@ -390,7 +390,7 @@ for (var i = 0; i < configs.Count; i++)
 
                 logger.LogInformation($"({dep.ConfigKey}) Installation de {dep.FullName}@{depVersion} en cours...");
 
-                if (!await nugetResource.DoesPackageExistAsync(dep.FullName, new NuGetVersion(depVersion), nugetCache, NullLogger.Instance, ct))
+                if (!await NugetUtils.DoesPackageExistsAsync(dep.FullName, depVersion))
                 {
                     logger.LogError($"({dep.ConfigKey}) Le package {dep.FullName}@{depVersion} est introuvable.");
                     returnCode = 1;
@@ -399,10 +399,8 @@ for (var i = 0; i < configs.Count; i++)
 
                 Directory.CreateDirectory(moduleFolder);
 
-                using var packageStream = new MemoryStream();
-                await nugetResource.CopyNupkgToStreamAsync(dep.FullName, new NuGetVersion(depVersion), packageStream, nugetCache, NullLogger.Instance, ct);
-                using var packageReader = new PackageArchiveReader(packageStream);
-                var nuspecReader = await packageReader.GetNuspecReaderAsync(ct);
+                using var packageReader = await NugetUtils.DownloadPackageAsync(dep.FullName, depVersion);
+                var nuspecReader = await packageReader.GetNuspecReaderAsync(CancellationToken.None);
 
                 var dependencies = nuspecReader.GetDependencyGroups()
                     .Single(dg => dg.TargetFramework.ToString() == framework)
@@ -423,10 +421,7 @@ for (var i = 0; i < configs.Count; i++)
                     var newDeps = new List<PackageDependency>();
                     foreach (var otherDep in dependencies)
                     {
-                        using var packageStreamDep = new MemoryStream();
-                        await nugetResource.CopyNupkgToStreamAsync(otherDep.Id, otherDep.VersionRange.MinVersion, packageStreamDep, nugetCache, NullLogger.Instance, ct);
-
-                        using var packageReaderDep = new PackageArchiveReader(packageStreamDep);
+                        using var packageReaderDep = await NugetUtils.DownloadPackageAsync(otherDep.Id, otherDep.VersionRange.MinVersion!.ToString());
                         var file = packageReaderDep.GetFiles().SingleOrDefault(f => f.StartsWith($"lib/{framework}") && f.EndsWith(".dll") && !f.EndsWith(".resources.dll"));
                         if (file != null)
                         {
@@ -434,7 +429,7 @@ for (var i = 0; i < configs.Count; i++)
 
                             installedDependencies.Add(otherDep.Id);
 
-                            var nuspecReaderDep = await packageReaderDep.GetNuspecReaderAsync(ct);
+                            var nuspecReaderDep = await packageReaderDep.GetNuspecReaderAsync(CancellationToken.None);
                             if (nuspecReaderDep.GetDependencyGroups().Any())
                             {
                                 newDeps.AddRange(nuspecReaderDep.GetDependencyGroups()
@@ -480,7 +475,19 @@ for (var i = 0; i < configs.Count; i++)
 
     topModelLock.Write();
 
+    foreach (var dep in deps)
+    {
+        dep.LatestVersion = (await NugetUtils.GetLatestVersionAsync(dep.FullName))?.Version;
+    }
+
     logger.LogInformation($"Générateurs utilisés :{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", resolvedConfigKeys.Select(rck => $"- {rck.Key}: {rck.Value}"))}");
+
+    var depsToUpdate = deps.Where(dep => dep.LatestVersion != null && dep.LatestVersion != dep.Version.Version);
+    if (depsToUpdate.Any())
+    {
+        logger.LogWarning($"Il existe une mise à jour pour les générateurs suivants :{Environment.NewLine}                          {string.Join($"{Environment.NewLine}                          ", depsToUpdate.Select(dep => $"- {dep.ConfigKey}: {dep.Version.Version} -> {dep.LatestVersion}"))}");
+        logger.LogWarning($"Vous pouvez lancer la commande `modgen --update {(depsToUpdate.Count() == 1 ? depsToUpdate.Single().ConfigKey : "all")}` pour effectuer la mise à jour.");
+    }
 
     if (schemaMode || hasInstalled)
     {
