@@ -510,11 +510,6 @@ for (var i = 0; i < configs.Count; i++)
         }
 
         logger.LogInformation("Schéma de configuration généré avec succès.");
-
-        if (schemaMode)
-        {
-            return 0;
-        }
     }
 
     var services = new ServiceCollection()
