@@ -97,7 +97,7 @@ command.SetHandler(
                 HandleFile(new FileInfo(fileName));
             }
 
-            if (!configs.Any())
+            if (configs.Count == 0)
             {
                 var found = false;
                 while (!found && dir != null)
@@ -129,7 +129,7 @@ if (!regularCommand)
     return returnCode;
 }
 
-if (!configs.Any())
+if (configs.Count == 0)
 {
     Console.ForegroundColor = ConsoleColor.Red;
     Console.WriteLine("Aucun fichier de configuration trouvé.");
@@ -145,7 +145,7 @@ var colors = new[] { ConsoleColor.DarkCyan, ConsoleColor.DarkYellow, ConsoleColo
 Console.WriteLine($"========= TopModel.Generator v{version} =========");
 Console.WriteLine();
 
-if (excludedTags.Any())
+if (excludedTags.Length > 0)
 {
     Console.Write("Tags");
     Console.ForegroundColor = ConsoleColor.DarkCyan;
@@ -306,7 +306,7 @@ for (var i = 0; i < configs.Count; i++)
                 .ToList();
 
             generators.AddRange(assemblies
-                .Where(a => a.ManifestModule.Name.ToLower() == $"{cg.Split('/').Last().ToLower()}.dll")
+                .Where(a => a.ManifestModule.Name.Equals($"{cg.Split('/').Last().ToLower()}.dll", StringComparison.CurrentCultureIgnoreCase))
                 .SelectMany(a => a.GetExportedTypes())
                 .Where(t => GetIGenRegInterface(t) != null));
         }
@@ -568,7 +568,7 @@ for (var i = 0; i < configs.Count; i++)
 
         var modelStore = provider.GetRequiredService<ModelStore>();
 
-        modelStore.DisableLockfile = excludedTags.Any();
+        modelStore.DisableLockfile = excludedTags.Length > 0;
 
         var k = i;
         modelStore.OnResolve += hasError =>
@@ -636,7 +636,7 @@ static string? GetFolderHash(string path)
     var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToList();
     foreach (var file in files)
     {
-        var relativePath = file.Substring(path.Length + 1);
+        var relativePath = file[(path.Length + 1)..];
         var pathBytes = Encoding.UTF8.GetBytes(relativePath.ToLower());
         md5.TransformBlock(pathBytes, 0, pathBytes.Length, pathBytes, 0);
 
