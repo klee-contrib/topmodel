@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 2.0.4
+version: 2.1.0
 modules: {}
 generatedFiles:
   - ../generators/csharp/src/Clients/CSharp.Clients.Db/generated/CSharpDbContext.comments.cs

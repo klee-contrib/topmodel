@@ -8,6 +8,11 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.1.0
+
+- [`#390`](https://github.com/klee-contrib/topmodel/pull/390) - `customProperties` sur classes, endpoints et propriétés
+- [`4116b9`](https://github.com/klee-contrib/topmodel/commit/4116b9d0944d81b73d0f231c4101aa00cb11b850) - [modgen] Vérification des dernières versions de modgen + des générateurs au lancement
+- [`6ed0a1`](https://github.com/klee-contrib/topmodel/commit/6ed0a14bd643a10f5668648db65cfa7a727b724d) - modgen -s qui modgen quand même
 
 ## 2.0.4
 
