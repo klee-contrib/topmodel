@@ -159,7 +159,7 @@ public class DbContextGenerator : ClassGroupGeneratorBase<CsharpConfig>
                 w.WriteLine(2, $"modelBuilder.Entity<{fp.Class}>().Property(p => p.{fp.NamePascal}).HasConversion<{Config.GetImplementation(fp.Domain)?.Type ?? string.Empty}>(){(fp.Domain.Length != null ? $".HasMaxLength({fp.Domain.Length})" : string.Empty)};");
             }
 
-            if (fp.Domain.Length != null && fp.Domain.Scale != null)
+            if (fp.Domain?.Length != null && fp.Domain?.Scale != null)
             {
                 hasPropConfig = true;
                 w.WriteLine(2, $"modelBuilder.Entity<{fp.Class}>().Property(x => x.{fp.NamePascal}).HasPrecision({fp.Domain.Length}, {fp.Domain.Scale});");
