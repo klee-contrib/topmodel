@@ -26,6 +26,18 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "build-csharp",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/TopModel.Generator.Csharp/TopModel.Generator.Csharp.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "build-tmd",
             "command": "dotnet",
             "type": "process",
