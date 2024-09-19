@@ -173,6 +173,7 @@ Actuellement, il est possible d'utiliser ces variables dans une classe :
 - `label`
 - `pluralName`
 - `module`
+- `customProperties.*`
 - `primaryKey.*` permet d'accéder à toutes les variables accessibles dans les templates de propriété, pour la clé primaire de la classe qui fait l'objet du décorateur
 - `properties[i]` permet d'accéder à toutes les variables accessibles dans les templates de propriété, pour la ième propriété de la classe qui fait l'objet du décorateur
 - `extends` permet d'accéder à toutes les variables accessibles dans les templates de calsse, pour la classe parente de la classe qui fait l'objet du décorateur
@@ -184,6 +185,7 @@ Et ces variables dans un endpoint :
 - `route`
 - `method`
 - `module`
+- `customProperties.*`
 - `returns.*` permet d'accéder à toutes les variables accessibles dans les templates de propriété, pour la propriété définie dans le `returns` du endpoint
 - `params[i].*` permet d'accéder à toutes les variables accessibles dans les templates de propriété, pour le ième param du endpoint qui fait l'objet du décorateur
 

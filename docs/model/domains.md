@@ -115,6 +115,7 @@ Actuellement il est possible d'utiliser ces variables
 - `required`
 - `resourceKey`
 - `defaultValue`
+- `customProperties.*`
 - `class.*` ou `parent.*` ou `endpoint.*` : permet d'accéder à toutes les variables accessibles dans les templates de classe, pour l'objet parent de la propriété (la classe ou le endpoint)
 - `domain.*` permet d'accéder à toutes les variables accessibles dans les templates de domaine, pour le domain de la propriété (plus utile pour les décorateurs...)
 

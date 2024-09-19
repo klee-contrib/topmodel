@@ -116,6 +116,18 @@ internal static class TemplateExtensions
         return regex.Matches(input).Cast<Match>();
     }
 
+    private static string ResolveCustomProperty(string input, Dictionary<string, string> customProperties)
+    {
+        var transform = input.GetTransformation();
+        var propertyName = input.Split(':').First();
+        if (customProperties.TryGetValue(propertyName, out var value))
+        {
+            return transform(value);
+        }
+
+        return string.Empty;
+    }
+
     private static string ResolveVariable(this string input, Domain domain, GeneratorConfigBase config, string? tag = null)
     {
         var transform = input.GetTransformation();
@@ -128,7 +140,7 @@ internal static class TemplateExtensions
             "scale" => transform(domain.Scale?.ToString() ?? string.Empty),
             "name" => transform(domain.Name ?? string.Empty),
             "type" => transform(domain.Implementations.GetValueOrDefault(config.Language)?.Type ?? string.Empty),
-            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), tag: tag)
+            var i => transform(config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), tag: tag))
         };
     }
 
@@ -174,6 +186,11 @@ internal static class TemplateExtensions
             return ResolveVariable(input["domain.".Length..], p.Domain, config, tag);
         }
 
+        if (input.StartsWith($"customProperties."))
+        {
+            return ResolveCustomProperty(input["customProperties.".Length..], p.CustomProperties);
+        }
+
         if (input.StartsWith("association."))
         {
             var association = p switch
@@ -217,7 +234,7 @@ internal static class TemplateExtensions
             "resourceKey" => transform(p.ResourceKey.ToString()),
             "commentResourceKey" => transform(p.CommentResourceKey.ToString()),
             "defaultValue" => transform(p.DefaultValue?.ToString() ?? string.Empty),
-            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: p.Parent.Namespace.Module, tag: tag)
+            var i => transform(config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: p.Parent.Namespace.Module, tag: tag))
         };
 
         return result;
@@ -255,6 +272,11 @@ internal static class TemplateExtensions
             return ResolveVariable(input["extends.".Length..], c.Extends, parameters, config, tag);
         }
 
+        if (input.StartsWith($"customProperties."))
+        {
+            return ResolveCustomProperty(input["customProperties.".Length..], c.CustomProperties);
+        }
+
         if (input.StartsWith("properties["))
         {
             var indexSize = input["properties[".Length..].IndexOf("]");
@@ -285,7 +307,7 @@ internal static class TemplateExtensions
             "label" => transform(c.Label ?? string.Empty),
             "pluralName" => transform(c.PluralName ?? string.Empty),
             "module" => transform(c.Namespace.Module ?? string.Empty),
-            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: c.Namespace.Module, tag: tag)
+            var i => transform(config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: c.Namespace.Module, tag: tag))
         };
 
         return result;
@@ -311,6 +333,11 @@ internal static class TemplateExtensions
             }
 
             return ResolveVariable(input["returns.".Length..], e.Returns, parameters, config, tag);
+        }
+
+        if (input.StartsWith($"customProperties."))
+        {
+            return ResolveCustomProperty(input["customProperties.".Length..], e.CustomProperties);
         }
 
         if (input.StartsWith("params["))

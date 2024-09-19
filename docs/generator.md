@@ -50,4 +50,12 @@ Si vous incluez des dépendances autres que `TopModel.Generator.Core` dans votre
 
 Enfin, il est indispensable de **build votre projet au préalable** avant de lancer la commande `modgen`.
 
+## Propriétés customs
+
+Votre module peut avoir besoin d'attributs sur les classes, propriétés ou endpoints qui n'existent pas dans la modélisation standard de TopModel. Pour obtenir des propriétés personnalisées dans le modèle, vous pouvez les ajouter dans l'attributs `customProperties`. Vos générateurs pourront ainsi y accéder dans les objets `Classe`, `Endpoint` ou `IProperty`. Le contenu de customProperties peut être utilisé dans les templates des décorateurs et des domains.
+
+Les attributs ajoutés à l'ntérieur de `customProperties` ne peuvent pas être des objets.
+
+Les générateurs standards n'utiliseront **jamais** le contenu de `CustomProperties`. 
+
 Bon courage !
