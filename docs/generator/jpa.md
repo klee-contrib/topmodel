@@ -845,8 +845,6 @@ domain:
   mediaType: "multipart/form-data"
   label: Fichier
   bodyParam: true
-  ts:
-    type: File
   java:
     type: MultipartFile
     imports:
@@ -857,8 +855,6 @@ domain:
   mediaType: "multipart/form-data"
   label: Fichier
   bodyParam: true
-  ts:
-    type: File
   java:
     type: File
     imports:
@@ -867,8 +863,6 @@ domain:
 domain:
   name: RESPONSE_ENTITY
   label: Response Entity
-  ts:
-    type: any
   java:
     type: ResponseEntity<{$0}>
     imports:
