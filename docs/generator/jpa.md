@@ -910,7 +910,6 @@ domain:
     type: ResponseEntity<Void>
     imports:
       - org.springframework.http.ResponseEntity
-
 ```
 
 ### Décorateurs
@@ -986,8 +985,33 @@ decorator:
   description: Droit nécessaire pour pouvoir accéder au endpoint
   java:
     annotations:
-      - "@PreAuthorize(\"hasAuthority('{$0}')\")"
+      - '@PreAuthorize("hasAuthority(''{$0}'')")'
     imports:
       - org.springframework.security.access.prepost.PreAuthorize
 ```
 
+### Configuration maven
+
+Pour ajouter les sources du dossier `javagen` au build, vous pouvez utiliser la configuration suivante :
+
+```xml
+            <!-- Ajout des sources générées -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/javagen</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+```
