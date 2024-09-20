@@ -433,7 +433,7 @@ public class CompletionHandler : CompletionHandlerBase
                             request.Position.Line,
                             start,
                             request.Position.Line,
-                            Math.Max(end, start + 1));
+                            end);
     }
 
     private (string Key, int Line, int End, bool IsKey) GetCurrentKey(CompletionParams request)
@@ -620,10 +620,10 @@ public class CompletionHandler : CompletionHandlerBase
         var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var currentLine = text.ElementAtOrDefault(request.Position.Line)!;
         int start = 0, end = request.Position.Character;
+        var left = currentLine[..end];
         if (currentLine.Length > 0 && Separators.Exists(currentLine.Contains))
         {
-            var left = currentLine[..request.Position.Character];
-            start = left.LastIndexOfAny(Separators.ToArray());
+            start = Math.Min(left.LastIndexOfAny(Separators.ToArray()) + 1, end);
         }
 
         return currentLine[start..end].Trim();
