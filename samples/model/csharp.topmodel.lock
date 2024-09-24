@@ -3,7 +3,8 @@
 #
 
 version: 2.1.0
-modules: {}
+custom:
+  ../../../TopModel.Generator.Csharp: 121e8b5ce6a8be344945262bf8960580
 generatedFiles:
   - ../generators/csharp/src/Clients/CSharp.Clients.Db/generated/CSharpDbContext.comments.cs
   - ../generators/csharp/src/Clients/CSharp.Clients.Db/generated/CSharpDbContext.cs

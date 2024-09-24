@@ -6,7 +6,7 @@ public class TopModelLockFile
 
     public Dictionary<string, TopModelLockModule> Modules { get; set; } = [];
 
-    public Dictionary<string, string>? Custom { get; set; }
+    public Dictionary<string, string> Custom { get; set; } = [];
 
     public List<string> GeneratedFiles { get; set; } = [];
 }

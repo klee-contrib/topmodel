@@ -3,7 +3,6 @@
 #
 
 version: 1.6.9
-modules: {}
 generatedFiles:
   - ./Petstore/Model.tmd
   - ./Petstore/Pet.tmd

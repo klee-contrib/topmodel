@@ -3,7 +3,8 @@
 #
 
 version: 2.1.0
-modules: {}
+custom:
+  ../../../TopModel.Generator.Javascript: e39801d826bcb9c740ebb356ac0b7fbb
 generatedFiles:
   - ../generators/focus/src/locale/common.ts
   - ../generators/focus/src/locale/securite.ts

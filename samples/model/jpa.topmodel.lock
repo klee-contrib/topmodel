@@ -3,7 +3,8 @@
 #
 
 version: 2.1.0
-modules: {}
+custom:
+  ../../../TopModel.Generator.Jpa: 3df4f5992b92ce79d5bfddf465926bd2
 generatedFiles:
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/profil/ProfilClient.java
   - ../generators/jpa/src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/utilisateur/UtilisateurClient.java

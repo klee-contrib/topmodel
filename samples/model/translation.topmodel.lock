@@ -3,7 +3,8 @@
 #
 
 version: 2.1.0
-modules: {}
+custom:
+  ../../../TopModel.Generator.Translation: 9f15a161c1cd09a554e17eb18f624495
 generatedFiles:
   - ../generators/translation/i18n/de_DE/out/common_de_DE.properties
   - ../generators/translation/i18n/de_DE/out/securite_de_DE.properties

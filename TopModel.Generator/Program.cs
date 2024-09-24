@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using System.Xml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -88,11 +89,29 @@ command.SetHandler(
         else
         {
             var dir = Directory.GetCurrentDirectory();
-            var pattern = "topmodel*.config";
-            foreach (var fileName in Directory.EnumerateFiles(dir, pattern, SearchOption.AllDirectories))
+            var pattern = new Regex("topmodel\\.?([a-zA-Z-_.]*)\\.config$");
+
+            void SearchConfigFile(string dirName, int depth = 0)
             {
-                HandleFile(new FileInfo(fileName));
+                if (depth > 3)
+                {
+                    return;
+                }
+
+                foreach (var entryName in Directory.EnumerateFileSystemEntries(dirName))
+                {
+                    if (Directory.Exists(entryName))
+                    {
+                        SearchConfigFile(entryName, depth + 1);
+                    }
+                    else if (pattern.IsMatch(entryName))
+                    {
+                        HandleFile(new FileInfo(entryName));
+                    }
+                }
             }
+
+            SearchConfigFile(dir);
 
             if (configs.Count == 0)
             {
@@ -102,7 +121,7 @@ command.SetHandler(
                     dir = Directory.GetParent(dir)?.FullName;
                     if (dir != null)
                     {
-                        foreach (var fileName in Directory.EnumerateFiles(dir, pattern))
+                        foreach (var fileName in Directory.EnumerateFiles(dir).Where(f => pattern.IsMatch(f)))
                         {
                             HandleFile(new FileInfo(fileName));
                             found = true;
@@ -233,30 +252,31 @@ for (var i = 0; i < configs.Count; i++)
 
     foreach (var cg in config.CustomGenerators)
     {
+        var customDir = Path.GetFullPath(Path.Combine(new FileInfo(Path.GetFullPath(fullName)).DirectoryName!, cg));
+
         string GetCgHash()
         {
             return GetHash(
-                GetCustomAssemblies(cg, fullName).Select(f => f.FullName)
-                    .Concat(Directory.EnumerateFiles(
+                Directory
+                    .EnumerateFiles(
                         Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!),
                         "*.cs",
                         SearchOption.AllDirectories)
-                    .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")))
-                    .ToList(),
-                cg) ?? string.Empty;
+                    .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")),
+                customDir) ?? string.Empty;
         }
 
         var customHash = GetCgHash();
-        if (!(topModelLock.Custom?.TryGetValue(cg, out var customLockHash) ?? false) || customHash != customLockHash)
+        if (!topModelLock.Custom.TryGetValue(cg, out var customLockHash) || customHash != customLockHash)
         {
             logger.LogInformation($"Build de '{cg}' en cours...");
             var build = Process.Start(new ProcessStartInfo
             {
                 CreateNoWindow = true,
                 WindowStyle = ProcessWindowStyle.Hidden,
-                FileName = "dotnet.exe",
+                FileName = "dotnet",
                 Arguments = "build -v q",
-                WorkingDirectory = cg,
+                WorkingDirectory = customDir,
                 RedirectStandardOutput = true,
                 StandardOutputEncoding = Encoding.UTF8
             });
@@ -285,13 +305,25 @@ for (var i = 0; i < configs.Count; i++)
         config.CustomGenerators.AddRange(modules.Select(m => Path.GetRelativePath(new FileInfo(fullName).DirectoryName!, m).Replace("\\", "/")));
     }
 
+    var modgenRoot = Path.GetFullPath(".modgen", config.ModelRoot);
+
     if (updateMode == "all")
     {
         topModelLock.Modules = [];
+
+        if (Directory.Exists(modgenRoot))
+        {
+            Directory.Delete(modgenRoot, true);
+        }
     }
     else if (updateMode != null)
     {
         topModelLock.Modules.Remove(updateMode);
+
+        foreach (var module in Directory.GetFileSystemEntries(modgenRoot).Where(p => p.Split('/').Last().Contains(updateMode)))
+        {
+            Directory.Delete(module, true);
+        }
     }
 
     foreach (var cg in config.CustomGenerators)
@@ -351,7 +383,10 @@ for (var i = 0; i < configs.Count; i++)
 
         if (returnCode == 0)
         {
-            var assemblies = GetCustomAssemblies(cg, fullName)
+            var assemblies = new DirectoryInfo(Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin"))
+                .GetFiles($"*.dll", SearchOption.AllDirectories)
+                .Where(a => a.FullName.Contains(framework) && !modgenAssemblies.Contains(a.Name))
+                .DistinctBy(a => a.Name)
                 .Select(f => Assembly.LoadFrom(f.FullName))
                 .ToList();
 
@@ -397,19 +432,6 @@ for (var i = 0; i < configs.Count; i++)
     }
 
     var hasInstalled = false;
-    var modgenRoot = Path.GetFullPath(".modgen", config.ModelRoot);
-
-    if (updateMode == "all" && Directory.Exists(modgenRoot))
-    {
-        Directory.Delete(modgenRoot, true);
-    }
-    else if (updateMode != null)
-    {
-        foreach (var module in Directory.GetFileSystemEntries(modgenRoot).Where(p => p.Split('/').Last().Contains(updateMode)))
-        {
-            Directory.Delete(module, true);
-        }
-    }
 
     if (deps.Count > 0)
     {
@@ -674,25 +696,18 @@ if (checkMode && loggerProvider.Changes > 0)
 
 return returnCode;
 
-IEnumerable<FileInfo> GetCustomAssemblies(string cg, string fullName)
-{
-    return new DirectoryInfo(Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin"))
-        .GetFiles($"*.dll", SearchOption.AllDirectories)
-        .Where(a => a.FullName.Contains(framework) && !modgenAssemblies.Contains(a.Name))
-        .DistinctBy(a => a.Name);
-}
-
 static string? GetFolderHash(string path)
 {
-    return GetHash(Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToList(), path);
+    return GetHash(Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories), path);
 }
 
-static string? GetHash(IList<string> files, string path)
+static string? GetHash(IEnumerable<string> f, string path)
 {
     var md5 = MD5.Create();
+    var files = f.OrderBy(f => f).ToList();
     foreach (var file in files)
     {
-        var relativePath = file[(path.Length + 1)..];
+        var relativePath = Path.GetRelativePath(path, file).Replace("\\", "/");
         var pathBytes = Encoding.UTF8.GetBytes(relativePath.ToLower());
         md5.TransformBlock(pathBytes, 0, pathBytes.Length, pathBytes, 0);
 

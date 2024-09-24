@@ -3,7 +3,8 @@
 #
 
 version: 2.1.0
-modules: {}
+custom:
+  ../../../TopModel.Generator.Sql: a7d6d70714c8ee38aeac8e9447ed12fd
 generatedFiles:
   - ../generators/ssdt/src/init/DROIT.insert.sql
   - ../generators/ssdt/src/init/main.sql

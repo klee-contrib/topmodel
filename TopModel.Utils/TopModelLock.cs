@@ -18,6 +18,7 @@ public class TopModelLock : TopModelLockFile
     private readonly string _modelRoot;
 
     private readonly ISerializer _serializer = new SerializerBuilder()
+        .ConfigureDefaultValuesHandling(DefaultValuesHandling.OmitEmptyCollections)
         .WithNamingConvention(CamelCaseNamingConvention.Instance)
         .WithIndentedSequences()
         .Build();
@@ -39,8 +40,8 @@ public class TopModelLock : TopModelLockFile
                 var lf = _deserializer.Deserialize<TopModelLockFile>(file);
                 Version = lf.Version;
                 GeneratedFiles = lf.GeneratedFiles;
-                Modules = lf.Modules;
-                Custom = lf.Custom;
+                Modules = lf.Modules ?? [];
+                Custom = lf.Custom ?? [];
             }
             catch
             {
