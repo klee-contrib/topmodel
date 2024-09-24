@@ -40,6 +40,7 @@ public class TopModelLock : TopModelLockFile
                 Version = lf.Version;
                 GeneratedFiles = lf.GeneratedFiles;
                 Modules = lf.Modules;
+                Custom = lf.Custom;
             }
             catch
             {

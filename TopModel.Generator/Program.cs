@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using System.Diagnostics;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -230,6 +231,50 @@ for (var i = 0; i < configs.Count; i++)
 
     Console.WriteLine();
 
+    foreach (var cg in config.CustomGenerators)
+    {
+        string GetCgHash()
+        {
+            return GetHash(
+                GetCustomAssemblies(cg, fullName).Select(f => f.FullName)
+                    .Concat(Directory.EnumerateFiles(
+                        Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!),
+                        "*.cs",
+                        SearchOption.AllDirectories)
+                    .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")))
+                    .ToList(),
+                cg) ?? string.Empty;
+        }
+
+        var customHash = GetCgHash();
+        if (!(topModelLock.Custom?.TryGetValue(cg, out var customLockHash) ?? false) || customHash != customLockHash)
+        {
+            logger.LogInformation($"Build de '{cg}' en cours...");
+            var build = Process.Start(new ProcessStartInfo
+            {
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                FileName = "dotnet.exe",
+                Arguments = "build -v q",
+                WorkingDirectory = cg,
+                RedirectStandardOutput = true,
+                StandardOutputEncoding = Encoding.UTF8
+            });
+            await build!.WaitForExitAsync();
+
+            if (build.ExitCode != 0)
+            {
+                logger.LogError($"Erreur lors du build de '{cg}'");
+                logger.LogError((await build.StandardOutput.ReadToEndAsync()).Trim());
+                return 1;
+            }
+
+            logger.LogInformation($"Build de '{cg}' terminé.");
+            topModelLock.Custom ??= [];
+            topModelLock.Custom[cg] = GetCgHash();
+        }
+    }
+
     var generators = new List<Type>();
     var deps = new List<ModgenDependency>();
 
@@ -306,10 +351,7 @@ for (var i = 0; i < configs.Count; i++)
 
         if (returnCode == 0)
         {
-            var assemblies = new DirectoryInfo(Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin"))
-                .GetFiles($"*.dll", SearchOption.AllDirectories)
-                .Where(a => a.FullName.Contains(framework) && !modgenAssemblies.Contains(a.Name))
-                .DistinctBy(a => a.Name)
+            var assemblies = GetCustomAssemblies(cg, fullName)
                 .Select(f => Assembly.LoadFrom(f.FullName))
                 .ToList();
 
@@ -632,15 +674,22 @@ if (checkMode && loggerProvider.Changes > 0)
 
 return returnCode;
 
+IEnumerable<FileInfo> GetCustomAssemblies(string cg, string fullName)
+{
+    return new DirectoryInfo(Path.Combine(Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!), "bin"))
+        .GetFiles($"*.dll", SearchOption.AllDirectories)
+        .Where(a => a.FullName.Contains(framework) && !modgenAssemblies.Contains(a.Name))
+        .DistinctBy(a => a.Name);
+}
+
 static string? GetFolderHash(string path)
 {
-    var md5 = MD5.Create();
-    if (!Directory.Exists(path))
-    {
-        return null;
-    }
+    return GetHash(Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToList(), path);
+}
 
-    var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories).OrderBy(p => p).ToList();
+static string? GetHash(IList<string> files, string path)
+{
+    var md5 = MD5.Create();
     foreach (var file in files)
     {
         var relativePath = file[(path.Length + 1)..];

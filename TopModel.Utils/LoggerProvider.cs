@@ -101,12 +101,22 @@ public class LoggerProvider : ILoggerProvider
                     var split2 = message.Split('/');
                     if (split2.Length > 1)
                     {
-                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.ForegroundColor = ConsoleColor.Gray;
                         Console.Write($"{string.Join('/', split2[0..^1])}/");
                         Console.ForegroundColor = ConsoleColor.Blue;
                     }
 
-                    Console.WriteLine(split2[^1]);
+                    var split3 = split2[^1].Split('\'');
+                    if (split3.Length == 2)
+                    {
+                        Console.Write(split3[0]);
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                        Console.WriteLine($"'{split3[1]}");
+                    }
+                    else
+                    {
+                        Console.WriteLine(split2[^1]);
+                    }
                 }
                 else
                 {
