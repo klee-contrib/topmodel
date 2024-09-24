@@ -8,6 +8,7 @@ language-server-*
 *.user
 *.vsix
 launchSettings.json
+.modgen
 
 # Intellij Idea
 .idea

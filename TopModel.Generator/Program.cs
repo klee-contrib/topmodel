@@ -250,8 +250,31 @@ for (var i = 0; i < configs.Count; i++)
 
     Console.WriteLine();
 
+    var modgenRoot = Path.GetFullPath(".modgen", config.ModelRoot);
+
+    if (updateMode == "all")
+    {
+        topModelLock.Modules = [];
+
+        if (Directory.Exists(modgenRoot))
+        {
+            Directory.Delete(modgenRoot, true);
+        }
+    }
+    else if (updateMode != null)
+    {
+        topModelLock.Modules.Remove(updateMode);
+
+        foreach (var module in Directory.GetFileSystemEntries(modgenRoot).Where(p => p.Split('/').Last().Contains(updateMode)))
+        {
+            Directory.Delete(module, true);
+        }
+    }
+
     foreach (var cg in config.CustomGenerators)
     {
+        Directory.CreateDirectory(modgenRoot);
+
         var customDir = Path.GetFullPath(Path.Combine(new FileInfo(Path.GetFullPath(fullName)).DirectoryName!, cg));
 
         string GetCgHash()
@@ -267,7 +290,11 @@ for (var i = 0; i < configs.Count; i++)
         }
 
         var customHash = GetCgHash();
-        if (!topModelLock.Custom.TryGetValue(cg, out var customLockHash) || customHash != customLockHash)
+
+        var customHashLocalFile = Path.Combine(modgenRoot, cg.Replace("/", "-").Replace("\\", "-"));
+        var customHashLocal = File.Exists(customHashLocalFile) ? await File.ReadAllTextAsync(customHashLocalFile) : string.Empty;
+
+        if (!topModelLock.Custom.TryGetValue(cg, out var customLockHash) || customHash != customLockHash || customHash != customHashLocal)
         {
             logger.LogInformation($"Build de '{cg}' en cours...");
             var build = Process.Start(new ProcessStartInfo
@@ -292,6 +319,7 @@ for (var i = 0; i < configs.Count; i++)
             logger.LogInformation($"Build de '{cg}' terminé.");
             topModelLock.Custom ??= [];
             topModelLock.Custom[cg] = GetCgHash();
+            await File.WriteAllTextAsync(customHashLocalFile, topModelLock.Custom[cg]);
         }
     }
 
@@ -303,27 +331,6 @@ for (var i = 0; i < configs.Count; i++)
         var generatorsPath = Path.Combine(new FileInfo(Assembly.GetEntryAssembly()!.Location).DirectoryName!, "../../../..");
         var modules = Directory.GetFileSystemEntries(generatorsPath).Where(e => e.Contains("TopModel.Generator.") && !e.Contains("TopModel.Generator.Core"));
         config.CustomGenerators.AddRange(modules.Select(m => Path.GetRelativePath(new FileInfo(fullName).DirectoryName!, m).Replace("\\", "/")));
-    }
-
-    var modgenRoot = Path.GetFullPath(".modgen", config.ModelRoot);
-
-    if (updateMode == "all")
-    {
-        topModelLock.Modules = [];
-
-        if (Directory.Exists(modgenRoot))
-        {
-            Directory.Delete(modgenRoot, true);
-        }
-    }
-    else if (updateMode != null)
-    {
-        topModelLock.Modules.Remove(updateMode);
-
-        foreach (var module in Directory.GetFileSystemEntries(modgenRoot).Where(p => p.Split('/').Last().Contains(updateMode)))
-        {
-            Directory.Delete(module, true);
-        }
     }
 
     foreach (var cg in config.CustomGenerators)
