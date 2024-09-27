@@ -277,19 +277,14 @@ for (var i = 0; i < configs.Count; i++)
 
         var customDir = Path.GetFullPath(Path.Combine(new FileInfo(Path.GetFullPath(fullName)).DirectoryName!, cg));
 
-        string GetCgHash()
-        {
-            return GetHash(
-                Directory
-                    .EnumerateFiles(
-                        Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!),
-                        "*.cs",
-                        SearchOption.AllDirectories)
-                    .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")),
-                customDir) ?? string.Empty;
-        }
-
-        var customHash = GetCgHash();
+        var customHash = GetHash(
+            Directory
+                .EnumerateFiles(
+                    Path.GetFullPath(cg, new FileInfo(fullName).DirectoryName!),
+                    "*.cs",
+                    SearchOption.AllDirectories)
+                .Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}")),
+            customDir) ?? string.Empty;
 
         var customHashLocalFile = Path.Combine(modgenRoot, cg.Replace("/", "-").Replace("\\", "-"));
         var customHashLocal = File.Exists(customHashLocalFile) ? await File.ReadAllTextAsync(customHashLocalFile) : string.Empty;
@@ -318,7 +313,7 @@ for (var i = 0; i < configs.Count; i++)
 
             logger.LogInformation($"Build de '{cg}' terminé.");
             topModelLock.Custom ??= [];
-            topModelLock.Custom[cg] = GetCgHash();
+            topModelLock.Custom[cg] = customHash;
             await File.WriteAllTextAsync(customHashLocalFile, topModelLock.Custom[cg]);
         }
     }

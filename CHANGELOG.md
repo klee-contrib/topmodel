@@ -8,6 +8,17 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.1.1
+
+- [`a27223ef`](https://github.com/klee-contrib/topmodel/commit/a27223ef2969e3df59a455d1c37a86b43c0d834d) - [modgen] maxdepth = 3 lors de la recherche d'un fichier de config
+
+  Au lieu de chercher à profondeur "infinie" les fichiers de config topmodel dans le répertoire courant, on s'arrête aux 3 premiers niveaux (pour éviter que ça soit très long...)
+
+- [`67f27db3`](https://github.com/klee-contrib/topmodel/commit/67f27db3f5fe92b8bc3e8a49634134bbcf70f5ca) - [modgen] Build des générateurs custom si sources modifiées (avec hash dans le lockfile)
+- [`460b5a19`](https://github.com/klee-contrib/topmodel/commit/460b5a198789299e0e2ad7da3a33ad4307de7f24) - [modgen] Sauvegarde des derniers fichiers builds en custom dans .modgen
+
+  `modgen` va build vos générateurs customs au lancement, si les sources de la dernière version utilisée (hash sauvegardé dans le lockfile) ou buildée (hash sauvegardé dans `.modgen`) ont changé.
+
 ## 2.1.0
 
 - [`#390`](https://github.com/klee-contrib/topmodel/pull/390) - `customProperties` sur classes, endpoints et propriétés
