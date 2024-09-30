@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.1.2
+
+- [`a59d49aa`](https://github.com/klee-contrib/topmodel/commit/a59d49aa9fab7eb072799daa74f3d9c34971378c) - [modgen] Fix retour du bug du hash sur les dossiers de modules vide
+
 ## 2.1.1
 
 - [`a27223ef`](https://github.com/klee-contrib/topmodel/commit/a27223ef2969e3df59a455d1c37a86b43c0d834d) - [modgen] maxdepth = 3 lors de la recherche d'un fichier de config
