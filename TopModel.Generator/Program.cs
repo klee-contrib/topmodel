@@ -700,6 +700,11 @@ return returnCode;
 
 static string? GetFolderHash(string path)
 {
+    if (!Directory.Exists(path))
+    {
+        return null;
+    }
+
     return GetHash(Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories), path);
 }
 
