@@ -125,9 +125,10 @@ public class JpaModelPropertyGenerator
             var type = _config.GetType(ap, _classes, useClassForAssociation: useClassForAssociation).Split('<').First();
             if (_newableTypes.TryGetValue(type, out var newableType))
             {
-                fw.WriteLine(indentLevel + 1, $"if(this.{propertyName} == null)");
+                fw.WriteLine(indentLevel + 1, $"if(this.{propertyName} == null) {{");
                 fw.AddImport($"java.util.{newableType}");
                 fw.WriteLine(indentLevel + 2, $"this.{propertyName} = new {newableType}<>();");
+                fw.WriteLine(indentLevel + 1, $"}}");
             }
         }
 
