@@ -181,8 +181,15 @@ public abstract class AbstractSchemaGenerator
         var foreignKeys = classes
             .OrderBy(c => c.SqlName)
             .Where(c => c.IsPersistent && !c.Abstract && classes.Contains(c))
-            .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType, writerComment, writerResource, classes.ToList()))
+            .SelectMany(classe => WriteTableDeclaration(classe, writerCrebas, writerUk, writerType, writerComment, classes.ToList()))
             .ToList();
+
+        if (writerResource is not null)
+        {
+            WriteResources(writerResource, classes
+            .OrderBy(c => c.SqlName)
+            .Where(c => c.IsPersistent && !c.Abstract && classes.Contains(c)));
+        }
 
         if (_config.TranslateProperties == true || _config.TranslateReferences == true)
         {
@@ -547,32 +554,43 @@ public abstract class AbstractSchemaGenerator
         }
     }
 
-    private void WriteResources(SqlFileWriter writer, Class modelClass)
+    private void WriteResources(SqlFileWriter writer, IEnumerable<Class> classes)
     {
-        var hasLocale = _translationStore.Translations.Keys.Count > 1 || _translationStore.Translations.Keys.Any(a => a != string.Empty);
-        if (_config.TranslateProperties == true && modelClass.Properties.Where(p => p.Label != null).Count() > 0 && modelClass.ModelFile != null)
+        var propertiesMap = classes
+            .Where(c => c != null && c.Properties != null)
+            .SelectMany(c => c.Properties)
+            .Where(p => p.ResourceProperty.Parent.Namespace.Module != null && p.Label != null && p.ResourceProperty != null && p.Class != null)
+            .DistinctBy(property => property.ResourceKey).GroupBy(property => property.Class).ToDictionary(g => g.Key, g => g.Select(t => t));
+        foreach (var modelClass in propertiesMap.Keys)
         {
-            writer.WriteLine();
-            writer.WriteLine("/**\t\tInitialisation des traductions des propriétés de la table " + modelClass.SqlName + "\t\t**/");
-
-            foreach (var lang in _translationStore.Translations.Keys)
+            if (propertiesMap.TryGetValue(modelClass, out var properties))
             {
-                foreach (var property in modelClass.Properties.Where(p => p.Label != null))
+                var hasLocale = _translationStore.Translations.Keys.Count > 1 || _translationStore.Translations.Keys.Any(a => a != string.Empty);
+                if (_config.TranslateProperties == true && properties.Where(p => p.Label != null).Count() > 0 && modelClass.ModelFile != null)
                 {
-                    writer.WriteLine($@"INSERT INTO {_config.ResourcesTableName}(RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}, LABEL) VALUES({SingleQuote(property.ResourceKey)}{(string.IsNullOrEmpty(lang) ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(_translationStore.GetTranslation(property, lang))});");
+                    writer.WriteLine();
+                    writer.WriteLine("/**\t\tInitialisation des traductions des propriétés de la table " + modelClass.SqlName + "\t\t**/");
+
+                    foreach (var lang in _translationStore.Translations.Keys)
+                    {
+                        foreach (var property in properties.Where(p => p.Label != null).DistinctBy(property => property.ResourceKey))
+                        {
+                            writer.WriteLine($@"INSERT INTO {_config.ResourcesTableName}(RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}, LABEL) VALUES({SingleQuote(property.ResourceKey)}{(string.IsNullOrEmpty(lang) ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(_translationStore.GetTranslation(property, lang))});");
+                        }
+                    }
                 }
-            }
-        }
 
-        if (modelClass.DefaultProperty != null && modelClass.Values.Count() > 0 && _config.TranslateReferences == true)
-        {
-            writer.WriteLine();
-            writer.WriteLine("/**\t\tInitialisation des traductions des valeurs de la table " + modelClass.SqlName + "\t\t**/");
-            foreach (var lang in _translationStore.Translations.Keys)
-            {
-                foreach (var val in modelClass.Values)
+                if (modelClass.DefaultProperty != null && modelClass.Values.Count() > 0 && _config.TranslateReferences == true)
                 {
-                    writer.WriteLine(@$"INSERT INTO {_config.ResourcesTableName}(RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}, LABEL) VALUES({SingleQuote(val.ResourceKey)}{(string.IsNullOrEmpty(lang) ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(_translationStore.GetTranslation(val, lang))});");
+                    writer.WriteLine();
+                    writer.WriteLine("/**\t\tInitialisation des traductions des valeurs de la table " + modelClass.SqlName + "\t\t**/");
+                    foreach (var lang in _translationStore.Translations.Keys)
+                    {
+                        foreach (var val in modelClass.Values)
+                        {
+                            writer.WriteLine(@$"INSERT INTO {_config.ResourcesTableName}(RESOURCE_KEY{(hasLocale ? ", LOCALE" : string.Empty)}, LABEL) VALUES({SingleQuote(val.ResourceKey)}{(string.IsNullOrEmpty(lang) ? string.Empty : @$", {SingleQuote(lang)}")}, {SingleQuote(_translationStore.GetTranslation(val, lang))});");
+                        }
+                    }
                 }
             }
         }
@@ -598,9 +616,8 @@ public abstract class AbstractSchemaGenerator
     /// <param name="writerUk">Flux d'écriture Unique Key.</param>
     /// <param name="writerType">Flux d'écritures des types.</param>
     /// <param name="writerComment">Flux d'écritures des commentaires.</param>
-    /// <param name="writerResources">Flux d'écritures des ressources.</param>
     /// <returns>Liste des propriétés étrangères persistentes.</returns>
-    private IEnumerable<AssociationProperty> WriteTableDeclaration(Class classe, SqlFileWriter writerCrebas, SqlFileWriter? writerUk, SqlFileWriter? writerType, SqlFileWriter? writerComment, SqlFileWriter? writerResources, IList<Class> availableClasses)
+    private IEnumerable<AssociationProperty> WriteTableDeclaration(Class classe, SqlFileWriter writerCrebas, SqlFileWriter? writerUk, SqlFileWriter? writerType, SqlFileWriter? writerComment, IList<Class> availableClasses)
     {
         var fkPropertiesList = new List<AssociationProperty>();
 
@@ -708,11 +725,6 @@ public abstract class AbstractSchemaGenerator
         if (writerComment is not null)
         {
             WriteComments(writerComment, classe, tableName, properties);
-        }
-
-        if (writerResources is not null)
-        {
-            WriteResources(writerResources, classe);
         }
 
         writerCrebas.WriteLine();
