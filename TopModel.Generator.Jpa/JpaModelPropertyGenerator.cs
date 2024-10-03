@@ -427,8 +427,8 @@ public class JpaModelPropertyGenerator
     {
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         fw.AddImport($"{javaOrJakarta}.persistence.Convert");
-        fw.AddImport(_config.CompositionConverterCanonicalName.Replace("{class}", property.Composition.Name).Replace("{package}", _config.GetPackageName(property.Class, tag)));
-        fw.WriteLine(indentLevel, $"@Convert(converter = {_config.CompositionConverterSimpleName.Replace("{class}", property.Class.Name)}.class)");
+        fw.AddImport(_config.CompositionConverterCanonicalName.Replace("{class}", property.Composition.Name).Replace("{package}", _config.GetPackageName(property.Composition, tag)));
+        fw.WriteLine(indentLevel, $"@Convert(converter = {_config.CompositionConverterSimpleName.Replace("{class}", property.Composition.Name)}.class)");
     }
 
     private void WriteDomainAnnotations(JavaWriter fw, IProperty property, string tag, int indentLevel)
