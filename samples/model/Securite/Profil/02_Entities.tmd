@@ -3,8 +3,8 @@ module: Securite.Profil
 tags:
   - back
 uses:
-  - Securite/Profil/01_References
   - meta/decorators
+  - Securite/Profil/01_References
 
 ---
 class:

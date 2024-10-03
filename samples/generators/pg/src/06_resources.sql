@@ -49,5 +49,3 @@ INSERT INTO TRANSLATION(RESOURCE_KEY, LABEL) VALUES('securite.utilisateur.utilis
 INSERT INTO TRANSLATION(RESOURCE_KEY, LABEL) VALUES('securite.utilisateur.utilisateur.adresse', 'Adresse');
 INSERT INTO TRANSLATION(RESOURCE_KEY, LABEL) VALUES('securite.utilisateur.utilisateur.profilId', 'Profil');
 INSERT INTO TRANSLATION(RESOURCE_KEY, LABEL) VALUES('securite.utilisateur.utilisateur.typeUtilisateurCode', 'Type d''utilisateur');
-INSERT INTO TRANSLATION(RESOURCE_KEY, LABEL) VALUES('common.entityListeners.dateCreation', 'Date de création');
-INSERT INTO TRANSLATION(RESOURCE_KEY, LABEL) VALUES('common.entityListeners.dateModification', 'Date de modification');
