@@ -1,3 +1,7 @@
+## 1.0.8
+
+- [`ab967cd`](https://github.com/klee-contrib/topmodel/commit/ab967cd621e914618d141d62d5182f113fbc306c) [JPA] Correction converter dans le cas de composition
+
 ## 1.0.7
 
 - [#395](https://github.com/klee-contrib/topmodel/pull/395) - Accolades sur le "if liste null".
