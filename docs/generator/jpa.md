@@ -124,7 +124,7 @@ En effet, pour les références dont toutes les valeurs sont connues à l'avance
 
 #### Classes non persistées
 
-Les classes persistées sont générées de la même manière que les classes persistées, mais ne reçoivent pas les annotations JPA.
+Les classes non persistées sont générées de la même manière que les classes persistées, mais ne reçoivent pas les annotations JPA.
 
 Par ailleurs, elles implémentent toutes l'interface `java.io.Serializable`. Est ajouté la propriété suivante :
 
