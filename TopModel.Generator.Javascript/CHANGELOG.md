@@ -1,3 +1,6 @@
+## 1.1.0
+
+- [#400](https://github.com/klee-contrib/topmodel/pull/400) - Ajout entityMode "none"
 
 ## 1.0.7
 

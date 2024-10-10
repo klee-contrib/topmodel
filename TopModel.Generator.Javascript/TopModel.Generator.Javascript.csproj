@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <PackageOutputPath>../.nupkg</PackageOutputPath>
-    <Version>1.0.7</Version>
+    <Version>1.1.0</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Authors>JabX;gideruette</Authors>
     <Description>Générateurs JS/TS pour TopModel</Description>
@@ -39,7 +39,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-   
+
   <ItemGroup>
     <ProjectReference Include="..\TopModel.Generator.Core\TopModel.Generator.Core.csproj" />
   </ItemGroup>
@@ -60,5 +60,5 @@
       <PackagePath>build\</PackagePath>
     </None>
   </ItemGroup>
-  
+
 </Project>
