@@ -97,7 +97,7 @@
       "type": "string",
       "description": "Framework cible pour la génération.",
       "default": "typed",
-      "enum": [ "untyped", "typed" ]
+      "enum": [ "untyped", "typed", "none" ]
     },
     "extendedCompositions": {
       "type": "boolean",

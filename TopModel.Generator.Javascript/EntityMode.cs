@@ -10,5 +10,10 @@ public enum EntityMode
     /// <summary>
     /// Typer les entités.
     /// </summary>
-    TYPED
+    TYPED,
+
+    /// <summary>
+    /// DTO sans entité.
+    /// </summary>
+    NONE
 }
