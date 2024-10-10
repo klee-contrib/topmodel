@@ -19,12 +19,12 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
     protected override string GetFileName((Class Classe, FromMapper Mapper) mapper, string tag)
     {
-        return Config.GetMapperFilePath(mapper, tag);
+        return Config.GetMapperFilePath(mapper, GetBestClassTag(mapper.Classe, tag));
     }
 
     protected override string GetFileName((Class Classe, ClassMappings Mapper) mapper, string tag)
     {
-        return Config.GetMapperFilePath(mapper, tag);
+        return Config.GetMapperFilePath(mapper, GetBestClassTag(mapper.Classe, tag));
     }
 
     protected override void HandleFile(string fileName, string tag, IList<(Class Classe, FromMapper Mapper)> fromMappers, IList<(Class Classe, ClassMappings Mapper)> toMappers)
@@ -36,7 +36,7 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
             ? Config.GetMapperLocation(sampleFromMapper)
             : Config.GetMapperLocation(sampleToMapper);
 
-        var package = Config.GetPackageName(mapperNs, modelPath, tag);
+        var package = Config.GetPackageName(mapperNs, modelPath, GetBestClassTag(fromMappers.FirstOrDefault().Classe, tag));
 
         using var fw = new JavaWriter(fileName, _logger, package, null);
 
@@ -69,12 +69,12 @@ public class JpaMapperGenerator : MapperGeneratorBase<JpaConfig>
 
         foreach (var (classe1, mapper) in fromMappers)
         {
-            WriteFromMapper(classe1, mapper, fw, tag);
+            WriteFromMapper(classe1, mapper, fw, GetBestClassTag(classe1, tag));
         }
 
         foreach (var (classe, mapper1) in toMappers)
         {
-            WriteToMapper(classe, mapper1, fw, tag);
+            WriteToMapper(classe, mapper1, fw, GetBestClassTag(classe, tag));
         }
 
         fw.WriteLine("}");

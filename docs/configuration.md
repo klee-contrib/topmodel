@@ -106,9 +106,4 @@ Les variables globales sont résolues en premier (une fois que celles qui devaie
 
 ### Intersection de tags
 
-Dans le cas où 
-- Deux classes sont reliées soit par une association, soit par une composition, 
-- Qu'elles sont chacune dans des fichiers différents ayant des tags différents
-- Que les variables par tag ont un impact sur leur emplacement et leur import
-
-Alors il y a d'une certaine manière ambiguité sur la valeur de la variable par tag à utiliser dans le générateur. Dans ce cas là, les générateurs procèdent de la manière suivante : la variable par tag prend la valeur du premier tag commun entre les deux fichiers, et s'il n'y en a pas, la valeur du premier tag de la classe cible de la composition ou de l'association.
+Nous nous plaçons dans le cadre de la génération du tag `tag-a` d'une classe `A`, si cette classe a besoin d'importer une classe `B` qui n'est générée qu'avec le tag `tag-b` ce qui a un impact sur l'import à ajouter à A. Dans ce cas, le tag utilisé pour la résolution des variables par tag dans l'écriture de l'import de `B` dans `A` est `tag-b`.
