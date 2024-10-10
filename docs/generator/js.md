@@ -32,7 +32,14 @@ L'extension `.ts` est ajoutée automatiquement
 
 ### Modes de génération des entités
 
-Il est possible de générer les entités selon deux modes (`entityMode`) : `typed` ou `untyped`. Dans les deux cas, la génération utilise le chemin défini dans la propriété `domainPath`, pour importer les objets de définition de domaine. Par défaut `domainPath` vaut `../domains`
+Il est possible de générer les entités selon trois modes (`entityMode`) : 
+- `typed` : génération du DTO et de l'entité, avec typage du DTO via l'entité,
+- `untyped` : génération du DTO et de l'entité, sans typage du DTO via l'entité,
+- `none` : génération du DTO uniquement.
+
+Dans les deux premiers cas, la génération utilise le chemin défini dans la propriété `domainPath`, pour importer les objets de définition de domaine. 
+
+Par défaut `domainPath` vaut `../domains`
 
 #### Typed
 
