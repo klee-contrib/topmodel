@@ -6,7 +6,7 @@ public static class ImportsJpaExtensions
 {
     public static string GetImport(this Class classe, JpaConfig config, string tag)
     {
-        return $"{config.GetPackageName(classe, tag)}.{classe.NamePascal}";
+        return $"{config.GetPackageName(classe, config.GetBestClassTag(classe, tag))}.{classe.NamePascal}";
     }
 
     public static List<string> GetImports(this Class classe, JpaConfig config, string tag, IEnumerable<Class> availableClasses)
@@ -15,7 +15,7 @@ public static class ImportsJpaExtensions
 
         if (classe.Extends != null)
         {
-            imports.Add(classe.GetImport(config, tag));
+            imports.Add(classe.GetImport(config, config.GetBestClassTag(classe, tag)));
         }
 
         if (config.MappersInClass)
@@ -23,7 +23,7 @@ public static class ImportsJpaExtensions
             imports
                 .AddRange(classe.FromMappers.Where(fm => fm.ClassParams.All(fmp => availableClasses.Contains(fmp.Class))).SelectMany(fm => fm.ClassParams).Select(fmp => fmp.Class.GetImport(config, tag)));
             imports
-                .AddRange(classe.ToMappers.Where(tm => availableClasses.Contains(tm.Class)).Select(fmp => fmp.Class.GetImport(config, tag)));
+                .AddRange(classe.ToMappers.Where(tm => availableClasses.Contains(tm.Class)).Select(fmp => fmp.Class.GetImport(config, config.GetBestClassTag(classe, tag))));
         }
 
         return imports;
@@ -31,7 +31,7 @@ public static class ImportsJpaExtensions
 
     public static List<string> GetKindImports(this CompositionProperty cp, JpaConfig config, string tag)
     {
-        return config.GetDomainImports(cp, tag).ToList();
+        return config.GetDomainImports(cp, config.GetBestClassTag(cp.Composition, tag)).ToList();
     }
 
     public static List<string> GetTypeImports(this IProperty p, JpaConfig config, string tag)
@@ -61,7 +61,7 @@ public static class ImportsJpaExtensions
 
         if (rp.Class != null && config.CanClassUseEnums(rp.Class, prop: rp))
         {
-            imports.Add($"{config.GetEnumPackageName(rp.Class, tag)}.{config.GetEnumName(rp, rp.Class)}");
+            imports.Add($"{config.GetEnumPackageName(rp.Class, config.GetBestClassTag(rp.Class, tag))}.{config.GetEnumName(rp, rp.Class)}");
         }
 
         return imports;
@@ -71,10 +71,10 @@ public static class ImportsJpaExtensions
     {
         var imports = new List<string>();
 
-        imports.AddRange(config.GetDomainImports(ap, tag));
+        imports.AddRange(config.GetDomainImports(ap, config.GetBestClassTag(ap.Association, tag)));
         if (!config.UseJdbc && ap.Class != null && ap.Association.IsPersistent)
         {
-            imports.Add(ap.Association.GetImport(config, tag));
+            imports.Add(ap.Association.GetImport(config, config.GetBestClassTag(ap.Association, tag)));
         }
 
         return imports;
@@ -82,8 +82,8 @@ public static class ImportsJpaExtensions
 
     private static List<string> GetTypeImports(this CompositionProperty cp, JpaConfig config, string tag)
     {
-        var imports = new List<string>() { cp.Composition.GetImport(config, tag) };
-        imports.AddRange(config.GetDomainImports(cp, tag));
+        var imports = new List<string>() { cp.Composition.GetImport(config, config.GetBestClassTag(cp.Composition, tag)) };
+        imports.AddRange(config.GetDomainImports(cp, config.GetBestClassTag(cp.Composition, tag)));
 
         return imports;
     }
@@ -94,11 +94,11 @@ public static class ImportsJpaExtensions
 
         if (config.CanClassUseEnums(ap.Property.Class, prop: ap.Property))
         {
-            imports.Add($"{config.GetEnumPackageName(ap.Property.Class, tag)}.{config.GetEnumName(ap.Property, ap.Property.Class)}");
+            imports.Add($"{config.GetEnumPackageName(ap.Property.Class, config.GetBestClassTag(ap.Property.Class, tag))}.{config.GetEnumName(ap.Property, ap.Property.Class)}");
         }
         else if (ap.Property is AssociationProperty apr && apr.Association.PrimaryKey.Count() == 1 && config.CanClassUseEnums(apr.Association, prop: apr.Association.PrimaryKey.Single()))
         {
-            imports.Add($"{config.GetEnumPackageName(apr.Association, tag)}.{config.GetEnumName(apr.Association.PrimaryKey.Single(), apr.Association)}");
+            imports.Add($"{config.GetEnumPackageName(apr.Association, config.GetBestClassTag(apr.Association, tag))}.{config.GetEnumName(apr.Association.PrimaryKey.Single(), apr.Association)}");
         }
 
         imports.AddRange(config.GetDomainImports(ap, tag));

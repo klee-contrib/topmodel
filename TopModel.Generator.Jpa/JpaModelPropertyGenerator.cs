@@ -324,7 +324,7 @@ public class JpaModelPropertyGenerator
                 var defaultValue = _config.GetValue(property, _classes);
                 if (defaultValue != "null")
                 {
-                    fw.AddImport($"{_config.GetEnumPackageName(classe, tag)}.{_config.GetType(property.Association.PrimaryKey.Single())}");
+                    fw.AddImport($"{_config.GetEnumPackageName(classe, _config.GetBestClassTag(classe, tag))}.{_config.GetType(property.Association.PrimaryKey.Single())}");
                     suffix = $" = new {property.Association.NamePascal}({defaultValue})";
                 }
             }
@@ -427,7 +427,9 @@ public class JpaModelPropertyGenerator
     {
         var javaOrJakarta = _config.PersistenceMode.ToString().ToLower();
         fw.AddImport($"{javaOrJakarta}.persistence.Convert");
-        fw.AddImport(_config.CompositionConverterCanonicalName.Replace("{class}", property.Composition.Name).Replace("{package}", _config.GetPackageName(property.Composition, tag)));
+        fw.AddImport(_config.CompositionConverterCanonicalName
+            .Replace("{class}", property.Composition.Name)
+            .Replace("{package}", _config.GetPackageName(property.Composition, _config.GetBestClassTag(property.Composition, tag))));
         fw.WriteLine(indentLevel, $"@Convert(converter = {_config.CompositionConverterSimpleName.Replace("{class}", property.Composition.Name)}.class)");
     }
 

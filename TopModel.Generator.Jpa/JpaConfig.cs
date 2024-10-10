@@ -186,6 +186,11 @@ public class JpaConfig : GeneratorConfigBase
             ResolveVariables(ApiPath!, tag, module: file.Namespace.Module).ToFilePath());
     }
 
+    public string GetBestClassTag(Class classe, string tag)
+    {
+        return classe.Tags.Contains(tag) ? tag : classe.Tags.Intersect(Tags).FirstOrDefault() ?? tag;
+    }
+
     public string GetClassFileName(Class classe, string tag)
     {
         return Path.Combine(
