@@ -1,3 +1,7 @@
+## 1.0.9
+
+- [`e01da3f`](https://github.com/klee-contrib/topmodel/commit/e01da3f1d3b8c0dc39fe1eb8e206b953efb4b882) [JPA] Problème import java entre deux classes générées Fix #398
+
 ## 1.0.8
 
 - [`ab967cd`](https://github.com/klee-contrib/topmodel/commit/ab967cd621e914618d141d62d5182f113fbc306c) [JPA] Correction converter dans le cas de composition
