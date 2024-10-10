@@ -103,3 +103,12 @@ javascript:
 Les variables globales sont résolues en premier (une fois que celles qui devaient être transformées en variables par tag l'ont été), puis les variables par tag, et enfin les variables contextuelles. Cela implique en particulier que les variables contextuelles (`{module}` et `{lang}`) peuvent être "écrasées" par d'autres variables, et ainsi perdre leur contextualité. C'est rarement souhaitable, donc il vaut mieux en général éviter de provoquer des surcharges non intentionnelles.
 
 `modgen` affichera un warning s'il trouve une variable non définie ou non supportée dans un paramètre (et précisera pourquoi, en particulier si la variable contextuelle ou par tag n'est pas supportée par le paramètre). Les variables non définies seront gardées telles quelles dans la génération, avec leurs `{}` (au cas où ça soit le comportement voulu dans ce cas précis, ce qui reste peu probable).
+
+### Intersection de tags
+
+Dans le cas où 
+- Deux classes sont reliées soit par une association, soit par une composition, 
+- Qu'elles sont chacune dans des fichiers différents ayant des tags différents
+- Que les variables par tag ont un impact sur leur emplacement et leur import
+
+Alors il y a d'une certaine manière ambiguité sur la valeur de la variable par tag à utiliser dans le générateur. Dans ce cas là, les générateurs procèdent de la manière suivante : la variable par tag prend la valeur du premier tag commun entre les deux fichiers, et s'il n'y en a pas, la valeur du premier tag de la classe cible de la composition ou de l'association.
