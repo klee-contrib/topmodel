@@ -29,7 +29,7 @@ public class JavascriptApiClientGenerator : EndpointsGeneratorBase<JavascriptCon
     protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
     {
         var fetch = Config.FetchPath != "@focus4/core" ? "fetch" : "coreFetch";
-        var fetchImport = Config.FetchPath.StartsWith('@') || Config.FetchPath.StartsWith('.')
+        var fetchImport = Config.FetchPath.StartsWith('@') || !Config.FetchPath.StartsWith('.')
             ? Config.FetchPath
             : Path.GetRelativePath(string.Join('/', filePath.Split('/').SkipLast(1)), Path.Combine(Config.OutputDirectory, Config.ResolveVariables(Config.FetchPath, tag))).Replace("\\", "/");
 
