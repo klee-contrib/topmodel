@@ -1,3 +1,7 @@
+## 1.1.1
+
+- [7183e6d](https://github.com/klee-contrib/topmodel/commit/7183e6dfc6261e7e096ebc24f0ebb6b70b819442) Ne pas prendre le chemin relatif si le `fetchPath` ne commence pas par '.' (conformément à la documentation)
+
 ## 1.1.0
 
 - [#400](https://github.com/klee-contrib/topmodel/pull/400) - Ajout entityMode "none"
