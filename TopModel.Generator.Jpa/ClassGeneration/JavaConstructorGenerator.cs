@@ -18,45 +18,40 @@ public class JavaConstructorGenerator(JpaConfig config)
         foreach (var fromMapper in fromMappers)
         {
             var (clazz, mapper) = fromMapper;
-            fw.AddImport(clazz.GetImport(Config, tag));
-            fw.WriteLine();
-            fw.WriteDocStart(1, $"Crée une nouvelle instance de '{classe.NamePascal}'");
-            if (mapper.Comment != null)
+
+            var constructor = new JavaConstructor(classe.NamePascal)
             {
-                fw.WriteLine(1, $" * {mapper.Comment}");
-            }
+                Visibility = "public",
+                Comment = mapper.Comment != null ? mapper.Comment : $"Crée une nouvelle instance de '{classe.NamePascal}'"
+            };
 
             foreach (var param in mapper.ClassParams)
             {
-                if (param.Comment != null)
-                {
-                    fw.WriteLine(1, $" * {param.Comment}");
-                }
-
-                fw.AddImport(param.Class.GetImport(Config, tag));
-                fw.WriteParam(param.Name.ToCamelCase(), $"Instance de '{param.Class.NamePascal}'");
+                var parameter = new JavaMethodParameter(param.Class.GetImport(Config, tag), param.Class.Name, param.Name.ToCamelCase());
+                parameter.Comment = param.Comment != null ? param.Comment : $"Instance de '{param.Class.NamePascal}'";
+                constructor.AddParameter(parameter);
             }
 
             foreach (var param in mapper.PropertyParams)
             {
-                fw.WriteParam(param.Property.NameCamel, param.Property.Comment);
+
+                var parameter = new JavaMethodParameter(Config.GetType(param.Property, availableClasses), param.Property.NameCamel);
+                parameter.Comment = param.Property.Comment;
+                parameter.Imports.AddRange(param.Property.GetTypeImports(Config, tag));
+                constructor.AddParameter(parameter);
             }
 
-            fw.WriteReturns(1, $"Une nouvelle instance de '{classe.NamePascal}'");
-            fw.WriteDocEnd(1);
-            var entryParams = mapper.ClassParams.Select(p => $"{p.Class} {p.Name.ToCamelCase()}").Concat(mapper.PropertyParams.Select(p => $"{Config.GetType(p.Property, availableClasses)} {p.Property.NameCamel}"));
-            var entryParamImports = mapper.PropertyParams.Select(p => p.Property.GetTypeImports(Config, tag)).SelectMany(p => p);
-            fw.AddImports(entryParamImports.ToList());
-            fw.WriteLine(1, $"public {classe.NamePascal}({string.Join(", ", entryParams)}) {{");
-            if (classe.Extends != null)
+            if (classe.Extends != null || classe.Decorators.Any(d => Config.GetImplementation(d.Decorator)?.Extends is not null))
             {
-                fw.WriteLine(2, $"super();");
+                constructor.AddBodyLine("super();");
             }
 
             var (mapperNs, mapperModelPath) = Config.GetMapperLocation(fromMapper);
-            fw.WriteLine(2, $"{Config.GetMapperName(mapperNs, mapperModelPath)}.create{classe.NamePascal}({string.Join(", ", mapper.ClassParams.Select(p => p.Name.ToCamelCase()).Concat(mapper.PropertyParams.Select(p => p.Property.NameCamel)))}, this);");
-            fw.AddImport(Config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
-            fw.WriteLine(1, "}");
+            constructor.Imports.Add(Config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
+            constructor.AddBodyLine($"{Config.GetMapperName(mapperNs, mapperModelPath)}.create{classe.NamePascal}({string.Join(", ", mapper.ClassParams.Select(p => p.Name.ToCamelCase()).Concat(mapper.PropertyParams.Select(p => p.Property.NameCamel)))}, this);");
+            constructor.ReturnComment = $"Une nouvelle instance de '{classe.NamePascal}'";
+            fw.WriteLine();
+            fw.Write(1, constructor);
         }
     }
 

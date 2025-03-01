@@ -8,6 +8,8 @@ public class JavaClass(string name)
 
     public List<string> Imports { get; } = [];
 
+    public bool Interface { get; set; }
+
     public List<JavaField> Fields { get; } = [];
 
     public List<JavaConstructor> Constructors { get; } = [];
