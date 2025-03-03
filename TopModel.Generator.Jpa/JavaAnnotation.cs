@@ -10,9 +10,13 @@ public class JavaAnnotation
 
     public JavaAnnotation(string name, string value, params string[] imports)
     {
+        if (!string.IsNullOrEmpty(value))
+        {
+            Attributes["value"] = value;
+        }
+
         Name = name.Trim('@');
         Imports.AddRange(imports);
-        Attributes["value"] = value;
     }
 
     public string Name { get; set; }

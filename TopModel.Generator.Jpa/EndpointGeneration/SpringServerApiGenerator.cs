@@ -102,47 +102,55 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             returnType = Config.GetType(endpoint.Returns);
         }
 
-        {
-            var mappingAnnotation = new JavaAnnotation($@"@{endpoint.Method.ToPascalCase(true)}Mapping", imports: $"org.springframework.web.bind.annotation.{endpoint.Method.ToPascalCase(true)}Mapping")
-                .AddAttribute("path", $@"""{endpoint.Route}""");
-            if (endpoint.Returns != null && endpoint.Returns.Domain?.MediaType != null)
-            {
-                mappingAnnotation.AddAttribute("produces", @$"""{endpoint.Returns.Domain.MediaType}""");
-            }
-
-            var consumes = string.Empty;
-            if (endpoint.Params.Any(p => p.Domain?.MediaType != null))
-            {
-                mappingAnnotation.AddAttribute("consumes", @$"{{ {string.Join(", ", endpoint.Params.Where(p => p.Domain?.MediaType != null).Select(p => $@"""{p.Domain.MediaType}"""))} }}");
-            }
-
-            foreach (var annotation in Config.GetDecoratorAnnotations(endpoint, tag))
-            {
-                fw.WriteLine(1, $"{(annotation.StartsWith('@') ? string.Empty : "@")}{annotation}");
-            }
-
-            fw.WriteLine(1, mappingAnnotation);
-        }
-
-        var methodParams = new List<string>();
         var method = new JavaMethod(returnType, endpoint.NameCamel);
-        foreach (var param in endpoint.GetRouteParams())
+
+        var mappingAnnotation = new JavaAnnotation($@"@{endpoint.Method.ToPascalCase(true)}Mapping", imports: $"org.springframework.web.bind.annotation.{endpoint.Method.ToPascalCase(true)}Mapping")
+            .AddAttribute("path", $@"""{endpoint.Route}""");
+        if (endpoint.Returns != null && endpoint.Returns.Domain?.MediaType != null)
         {
-            var pathParamAnnotation = @$"@PathVariable(""{param.GetParamName()}"")";
-            fw.AddImport("org.springframework.web.bind.annotation.PathVariable");
-            fw.AddImports(Config.GetDomainImports(param, tag));
-            var decoratorAnnotations = string.Join(' ', Config.GetDomainAnnotations(param, tag).Select(a => a.StartsWith('@') ? a : "@" + a));
-            methodParams.Add($"{(pathParamAnnotation.Length > 0 ? $"{pathParamAnnotation} " : string.Empty)}{(decoratorAnnotations.Length > 0 ? $"{decoratorAnnotations} " : string.Empty)}{Config.GetType(param)} {param.GetParamName()}");
+            mappingAnnotation.AddAttribute("produces", @$"""{endpoint.Returns.Domain.MediaType}""");
         }
 
-        foreach (var param in endpoint.GetQueryParams())
+        var consumes = string.Empty;
+        if (endpoint.Params.Any(p => p.Domain?.MediaType != null))
+        {
+            mappingAnnotation.AddAttribute("consumes", @$"{{ {string.Join(", ", endpoint.Params.Where(p => p.Domain?.MediaType != null).Select(p => $@"""{p.Domain.MediaType}"""))} }}");
+        }
+
+        foreach (var annotation in Config.GetDecoratorAnnotations(endpoint, tag))
+        {
+            fw.WriteLine(1, $"{(annotation.StartsWith('@') ? string.Empty : "@")}{annotation}");
+        }
+
+        method.AddAnnotation(mappingAnnotation);
+
+        foreach (var routeParam in endpoint.GetRouteParams())
+        {
+            var param = new JavaMethodParameter(Config.GetType(routeParam), routeParam.GetParamName());
+            var pathParamAnnotation = new JavaAnnotation("PathVariable", imports: "org.springframework.web.bind.annotation.PathVariable", value: @$"""{routeParam.GetParamName()}""");
+            param.AddAnnotation(pathParamAnnotation);
+            param.Imports.AddRange(Config.GetDomainImports(routeParam, tag));
+            method.AddParameter(param);
+            foreach (var (a, i) in Config.GetDomainAnnotationsAndImports(routeParam, tag))
+            {
+                param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
+            }
+        }
+
+        foreach (var queryParam in endpoint.GetQueryParams())
         {
             var ann = string.Empty;
-            ann += @$"@RequestParam(value = ""{param.GetParamName()}"", required = {param.Required.ToString().ToFirstLower()}) ";
-            fw.AddImport("org.springframework.web.bind.annotation.RequestParam");
-            fw.AddImports(Config.GetDomainImports(param, tag));
-            var decoratorAnnotations = string.Join(' ', Config.GetDomainAnnotations(param, tag).Select(a => a.StartsWith('@') ? a : "@" + a));
-            methodParams.Add($"{ann}{(decoratorAnnotations.Length > 0 ? $" {decoratorAnnotations}" : string.Empty)}{Config.GetType(param)} {param.GetParamName()}");
+            var param = new JavaMethodParameter(Config.GetType(queryParam), queryParam.GetParamName());
+            var queryParamAnnotation = new JavaAnnotation("RequestParam", imports: "org.springframework.web.bind.annotation.RequestParam", value: @$"""{queryParam.GetParamName()}""")
+                .AddAttribute("required", queryParam.Required.ToString().ToFirstLower());
+            param.AddAnnotation(queryParamAnnotation);
+            param.Imports.AddRange(Config.GetDomainImports(queryParam, tag));
+            foreach (var (a, i) in Config.GetDomainAnnotationsAndImports(queryParam, tag))
+            {
+                param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
+            }
+
+            method.AddParameter(param);
         }
 
         if (endpoint.IsMultipart)
@@ -150,18 +158,21 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             foreach (var param in endpoint.Params.Where(param => param is CompositionProperty || (param.Domain?.BodyParam ?? false) || (param.Domain?.IsMultipart ?? false)))
             {
                 var ann = string.Empty;
+                JavaAnnotation annotation;
                 if (!(param.Domain?.IsMultipart ?? false))
                 {
-                    ann += @$"@ModelAttribute ";
-                    fw.AddImport("org.springframework.web.bind.annotation.ModelAttribute");
+                    annotation = new JavaAnnotation("ModelAttribute", imports: "org.springframework.web.bind.annotation.ModelAttribute");
                 }
                 else
                 {
-                    ann += @$"@RequestPart(value = ""{param.GetParamName()}"", required = {param.Required.ToString().ToFirstLower()}) ";
-                    fw.AddImport("org.springframework.web.bind.annotation.RequestPart");
+                    annotation = new JavaAnnotation("RequestPart", imports: "org.springframework.web.bind.annotation.RequestPart", value: @$"""{param.GetParamName()}""")
+                        .AddAttribute("required", param.Required.ToString().ToFirstLower());
                 }
 
-                methodParams.Add($"{ann}{Config.GetType(param)} {param.GetParamName()}");
+                var parameter = new JavaMethodParameter(Config.GetType(param), param.GetParamName());
+                parameter.AddAnnotation(annotation);
+                parameter.Imports.AddRange(Config.GetDomainImports(param, tag));
+                method.AddParameter(parameter);
             }
         }
         else
@@ -170,13 +181,21 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             if (bodyParam != null)
             {
                 var ann = string.Empty;
-                ann += @$"@RequestBody @Valid ";
-                fw.AddImport("org.springframework.web.bind.annotation.RequestBody");
-                fw.AddImport(Config.PersistenceMode.ToString().ToLower() + ".validation.Valid");
-                methodParams.Add($"{ann}{Config.GetType(bodyParam)} {bodyParam.GetParamName()}");
+                var annotation = new JavaAnnotation("RequestBody", imports: "org.springframework.web.bind.annotation.RequestBody");
+                var parameter = new JavaMethodParameter(Config.GetType(bodyParam), bodyParam.GetParamName());
+                parameter.AddAnnotation(annotation);
+                parameter.Imports.AddRange(Config.GetDomainImports(bodyParam, tag));
+                foreach (var (a, i) in Config.GetDomainAnnotationsAndImports(bodyParam, tag))
+                {
+                    parameter.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
+                }
+
+                parameter.AddAnnotation(new JavaAnnotation("Valid", imports: Config.JavaxOrJakarta + ".validation.Valid"));
+                method.AddParameter(parameter);
             }
         }
 
-        fw.WriteLine(1, $"{returnType} {endpoint.NameCamel}({string.Join(", ", methodParams)});");
+        fw.AddImports(method.Imports);
+        fw.Write(1, method);
     }
 }
