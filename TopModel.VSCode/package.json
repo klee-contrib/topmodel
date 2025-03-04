@@ -169,7 +169,7 @@
   "dependencies": {
     "mermaid": "8.14.0",
     "mobx": "6.13.1",
-    "open": "8.4.0",
+    "open": "10.1.0",
     "vscode-jsonrpc": "8.2.0",
     "vscode-languageclient": "9.0.1"
   },
