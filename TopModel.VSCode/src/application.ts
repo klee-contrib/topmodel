@@ -60,10 +60,6 @@ export class Application {
 
     public startModgen(watch: boolean) {
         let path = this._configPath;
-        if (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-
         this.terminal.sendText(`modgen -f ${path}` + (watch ? " --watch" : ""));
         this.terminal.show();
     }
@@ -71,7 +67,7 @@ export class Application {
     private async startLanguageServer() {
         const args = [this.extensionContext.asAbsolutePath(`./language-server/TopModel.LanguageServer.dll`)];
         let configRelativePath = workspace.asRelativePath(this._configPath);
-        args.push(this._configPath.substring(1));
+        args.push(this._configPath);
         let serverOptions: ServerOptions = {
             run: { command: SERVER_EXE, args },
             debug: { command: SERVER_EXE, args },

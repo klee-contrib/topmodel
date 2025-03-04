@@ -19,7 +19,7 @@ export async function activate(ctx: ExtensionContext) {
         const installed = await checkDotnetInstall();
         if (installed) {
             const confs = await findConfFiles();
-            const applications = confs.map((conf) => new Application(conf.file.path, conf.config, ctx, confs));
+            const applications = confs.map((conf) => new Application(conf.file.fsPath, conf.config, ctx, confs));
             state = new State(ctx);
             state.applications.push(...applications);
         }
@@ -51,7 +51,7 @@ async function checkDotnetInstall(): Promise<boolean> {
 async function findConfFiles(): Promise<{ config: TopModelConfig; file: Uri }[]> {
     const files = await workspace.findFiles("**/topmodel*.config");
     let configs: { config: TopModelConfig; file: Uri }[] = files.map((file) => {
-        const doc = fs.readFileSync(file.path.substring(1), "utf8");
+        const doc = fs.readFileSync(file.fsPath, "utf8");
         const c = doc
             .split("---")
             .filter((e) => e)
