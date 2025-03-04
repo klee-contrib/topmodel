@@ -10,6 +10,31 @@ function displayCodeClick() {
     sourceCode!.style.display = sourceCode!.style.display === "none" ? "block" : "none";
 }
 
+function copyCode(diagram: string) {
+    const textArea = document.createElement('textarea');
+    textArea.value = `${diagram}`;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    showFeedback("Code copié dans le presse-papiers");
+}
+function showFeedback(message: string) {
+    const feedbackElement = document.createElement('div');
+    feedbackElement.textContent = message;
+    feedbackElement.style.position = 'fixed';
+    feedbackElement.style.top = '10px';
+    feedbackElement.style.right = '10px';
+    feedbackElement.style.backgroundColor = 'green';
+    feedbackElement.style.color = 'white';
+    feedbackElement.style.padding = '10px';
+    feedbackElement.style.borderRadius = '5px';
+    document.body.appendChild(feedbackElement);
+
+    setTimeout(() => {
+        document.body.removeChild(feedbackElement);
+    }, 3000);
+}
 (function () {
     let offsetX: number;
     let offsetY: number;

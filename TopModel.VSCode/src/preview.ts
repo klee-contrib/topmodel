@@ -167,7 +167,7 @@ export class TopModelPreviewPanel {
                     cursor: pointer;
                 }
                 button:hover {
-                    background-color:rgb(2, 75, 153);
+                    background-color: rgb(2, 75, 153);
                 }
                 code {
                     display: block;
@@ -177,6 +177,14 @@ export class TopModelPreviewPanel {
                     border-radius: 4px;
                     font-family: monospace;
                     white-space: pre-wrap;
+                    position: relative;
+                }
+                .copy-button {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background-color: transparent;
+                    cursor: pointer;
                 }
             </style>
         <script>const matrix = {x: ${this.matrix.x}, y: ${this.matrix.y}, scale: ${this.matrix.scale}}</script>
@@ -189,17 +197,21 @@ export class TopModelPreviewPanel {
         <div>
             <button onclick="zoomClick(false)">-</button>
             <button onclick="zoomClick(true)">+</button>
-        </div>
-        <div class="cadre">
-            <div id="draggable" class="dragme">
-                ${this.mermaidContent}
             </div>
-        </div>
-        <button onclick="displayCodeClick(true)">Afficher/masquer le code</button>
-        <code id="sourceCode" style="display: none; overflow: auto;">
+            <div class="cadre">
+            <div id="draggable" class="dragme">
+            ${this.mermaidContent}
+            </div>
+            </div>
+            <button onclick="displayCodeClick()">Afficher/masquer le code</button>
+            <code id="sourceCode" style="display: none; overflow: auto;">
+            <button class="copy-button" onclick="copyCode(currentDiagram)">Copier</button>
             ${this.diagramMap[this.currentFsPath].diagram.replaceAll("\n", "<br/>")}
         </code>
     </body>
+    <script>
+        const currentDiagram = \`${this.diagramMap[this.currentFsPath].diagram}\`;
+    </script>
     </html>`;
     }
 
@@ -213,7 +225,7 @@ export class TopModelPreviewPanel {
             this.diagramMap[this.currentFsPath]?.diagram &&
             this.diagramMap[this.currentFsPath].diagram !== "classDiagram\n\n"
         ) {
-            return `<pre class="mermaid"> 
+            return `<pre class="mermaid">
             %%{init: {'securityLevel': 'loose', 'theme': 'base', 'themeVariables': { 'darkMode': true,  'primaryColor': '#333f85', 'lineColor': '#2d9cdb'}}}%%
                 ${this.diagramMap[this.currentFsPath].diagram}
             </pre>`;
