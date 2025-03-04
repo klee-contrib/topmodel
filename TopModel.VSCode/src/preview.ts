@@ -133,15 +133,16 @@ export class TopModelPreviewPanel {
             <meta name="viewport">
             <style>
                 body {
-                    overflow: hidden;
+                    margin: 0;
+                    padding: 0;
+                    overflow: auto;
                 }
                 .dragme {
-                    position:relative;
+                    position: relative;
                     cursor: move;
                     max-width: fit-content;
                     max-height: fit-content;
                     overflow: hidden;
-                    z-index=-1
                 }
                 .cadre {
                     height: 100%;
@@ -152,12 +153,37 @@ export class TopModelPreviewPanel {
                 #draggable .mermaid g.fileReference.node rect {
                     opacity: 0.5;
                 }
+                h1 {
+                    margin: 1rem;
+                    font-size: 1.5rem;
+                }
+                button {
+                    margin: 0.5rem;
+                    padding: 0.5rem 1rem;
+                    border: none;
+                    border-radius: 4px;
+                    background-color: #333f85;
+                    color: #fff;
+                    cursor: pointer;
+                }
+                button:hover {
+                    background-color:rgb(2, 75, 153);
+                }
+                code {
+                    display: block;
+                    margin: 1rem;
+                    padding: 1rem;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    font-family: monospace;
+                    white-space: pre-wrap;
+                }
             </style>
         <script>const matrix = {x: ${this.matrix.x}, y: ${this.matrix.y}, scale: ${this.matrix.scale}}</script>
         <script src="${this.previewSrcUri}"></script>
         <script src="${this.mermaidSrcUri}"></script>
-        <title>TopModel</title>  
-    </head>   
+        <title>TopModel</title>
+    </head>
     <body>
         <h1>${this.diagramTitle}</h1>
         <div>
@@ -170,7 +196,7 @@ export class TopModelPreviewPanel {
             </div>
         </div>
         <button onclick="displayCodeClick(true)">Afficher/masquer le code</button>
-        <code id="sourceCode" style="display: none"">
+        <code id="sourceCode" style="display: none; overflow: auto;">
             ${this.diagramMap[this.currentFsPath].diagram.replaceAll("\n", "<br/>")}
         </code>
     </body>

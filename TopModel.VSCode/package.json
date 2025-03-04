@@ -169,8 +169,8 @@
   "dependencies": {
     "mermaid": "8.14.0",
     "mobx": "6.13.1",
-    "open": "10.1.0",
-    "vscode-jsonrpc": "8.2.0",
+    "open": "8.4.0",
+    "vscode-jsonrpc": "8.2.1",
     "vscode-languageclient": "9.0.1"
   },
   "devDependencies": {
@@ -183,7 +183,7 @@
     "esbuild": "0.19.5",
     "eslint": "8.54.0",
     "glob": "10.3.10",
-    "typescript": "5.2.2",
+    "typescript": "5.8.2",
     "@vscode/vsce": "3.0.0"
   }
 }
