@@ -27,26 +27,30 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
         var notClasses = new List<Class>();
         foreach (var classe in classes)
         {
-            diagram += @$"%% {classe.Comment}" + '\n';
-            diagram += @$"class {classe.Name}{{" + '\n';
-            if (classe.EnumKey != null)
+            if (classe.Properties.OfType<RegularProperty>().Any())
             {
-                diagram += "&lt;&lt;Enum&gt;&gt;\n";
-                foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
+                diagram += @$"%% {classe.Comment}" + '\n';
+
+                diagram += @$"class {classe.Name}{{" + '\n';
+                if (classe.EnumKey != null)
                 {
-                    diagram += refValue.Value[classe.EnumKey] + '\n';
+                    diagram += "&lt;&lt;Enum&gt;&gt;\n";
+                    foreach (var refValue in classe.Values.OrderBy(x => x.Name, StringComparer.Ordinal))
+                    {
+                        diagram += refValue.Value[classe.EnumKey] + '\n';
+                    }
+
+                    diagram += "}\n";
+                    continue;
+                }
+
+                foreach (var property in classe.Properties.OfType<RegularProperty>())
+                {
+                    diagram += $" {property.Domain.Name} {property.Name}\n";
                 }
 
                 diagram += "}\n";
-                continue;
             }
-
-            foreach (var property in classe.Properties.OfType<RegularProperty>())
-            {
-                diagram += $" {property.Domain.Name} {property.Name}\n";
-            }
-
-            diagram += "}\n";
 
             foreach (var property in classe.Properties.OfType<AssociationProperty>())
             {
