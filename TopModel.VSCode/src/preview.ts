@@ -12,6 +12,7 @@ import {
     TextDocumentChangeEvent,
     SymbolInformation,
     Position,
+    Range,
 } from "vscode";
 import { Application } from "./application";
 import { Mermaid } from "./types";
@@ -103,14 +104,16 @@ export class TopModelPreviewPanel {
                 }
             )!;
             const symbol = symbolInformations.filter((s) => s.name === className)[0];
+            const position = new Position(symbol.location.range.start.line, 0);
             const uri = Uri.parse(symbol.location.uri as any);
-
-            await commands.executeCommand(
-                "editor.action.goToLocations",
-                uri,
-                new Position(symbol.location.range.start.line, 0),
-                [symbol.location]
-            );
+            const textEditor =
+                window.visibleTextEditors.filter((t) => t.document.uri.fsPath === uri.fsPath)[0] ??
+                window.activeTextEditor;
+            await window.showTextDocument(uri, {
+                preserveFocus: false,
+                viewColumn: textEditor.viewColumn,
+            });
+            textEditor?.revealRange(new Range(position, position));
         }
     }
 

@@ -176,14 +176,14 @@
   "devDependencies": {
     "@types/glob": "8.1.0",
     "@types/node": "20.9.1",
-    "@types/vscode": "1.84.1",
+    "@types/vscode": "1.97.0",
     "@typescript-eslint/eslint-plugin": "6.11.0",
     "@typescript-eslint/parser": "6.11.0",
-    "concurrently": "8.2.2",
-    "esbuild": "0.19.5",
+    "concurrently": "9.1.2",
+    "esbuild": "0.25.0",
     "eslint": "8.54.0",
     "glob": "10.3.10",
     "typescript": "5.8.2",
-    "@vscode/vsce": "3.0.0"
+    "@vscode/vsce": "3.2.2"
   }
 }
