@@ -136,6 +136,8 @@ Le tout dans les propriétés d'implémentation :
 
 Les templates des domaines des propriétés sont également valorisés. Ces variables s'ajoutent à la variable `{T}` utilisée dans les types génériques.
 
+Vous pouvez également utiliser des [transformations](/model/templating.md#transformations) sur vos différentes variables, par exemple pour modifier la casse de leur valeur. 
+
 ### Paramètres
 
 Il est également possible de passer des paramètres lorsqu'on associe un domaine à une propriété, en passant un objet `{name, parameters}` au lieu du nom du domaine :
@@ -159,36 +161,6 @@ domain:
 ```
 
 Générera l'annotation `[MyAnnotation("Param1", "Param2")]` sur la propriété `MyProperty`. Si les paramètres ne sont pas renseignés, les variables `$0`, `$1` ne seront simplement pas remplacées. Et bien entendu, rien ne se passera si on passe des paramètres alors que le domaine ne les utilise pas.
-
-### Transformations
-
-Il est possible que la variable que vous utilisez dans votre template ne corresponde pas tout à fait à votre besoin. TopModel gère l'ajout de `transformateurs` sur les templates. Vous pouvez ajouter un `transformateur` après le nom de la variable que vous référencez, précédé de `:`. Le code généré tiendra compte de cette transformation.
-
-Exemple :
-
-```yaml
-domain:
-  name: DO_ID
-  label: Identifiant
-  java:
-    type: Integer
-    annotations:
-      - text: '@Label("{label:lower}")'
-        imports:
-          - topmodel.sample.custom.annotation.Label
-```
-
-Actuellement, voici les transformations gérées par `TopModel` :
-
-| nom          | résultat      |
-| ------------ | ------------- |
-| `kebab`      | kebab-case    |
-| `snake_case` | snake_case    |
-| `constant`   | CONSTANT_CASE |
-| `camel`      | camelCase     |
-| `pascal`     | PascalCase    |
-| `lower`      | lowercase     |
-| `upper`      | UPPERCASE     |
 
 ## Spécialisation des annotations
 

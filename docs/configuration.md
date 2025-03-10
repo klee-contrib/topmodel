@@ -49,7 +49,7 @@ Chaque générateur peut définir et utiliser des **variables** dans sa configur
 
 Les variables sont nécessairement des strings et ne peuvent donc être utilisées que dans des paramètres de type string. Il n'est pas exclu par la suite de gérer par la suite les nombres et les booléens, mais pour rester simple dans un premier temps ils ont été exclus.
 
-Elles se définissent entre crochets (`{variable}`) et peuvent faire l'objet de transformations (`:upper`, `:pascal`, `:camel`...) de la même façon que les variables des templates dans les domaines et décorateurs (par exemple : `{root:lower}`).
+Elles se définissent entre crochets (`{variable}`) et peuvent faire l'objet de [transformations](/model/templating.md#transformations).
 
 Il existe **3 types de variables** :
 

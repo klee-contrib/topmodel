@@ -200,6 +200,8 @@ Il est également possible d'utiliser n'importe quelle variable définie dans la
 
 Les templates des domaines des propriétés sont également valorisés.
 
+Vous pouvez également utiliser des [transformations](/model/templating.md#transformations) sur vos différentes variables, par exemple pour modifier la casse de leur valeur.
+
 ### Paramètres
 
 Il est également possible de passer des paramètres lors de l'instanciation d'un décorateur :
@@ -223,30 +225,3 @@ decorator:
 ```
 
 Génèrera l'annotation `[MyAnnotation("Param1", "Param2")]` sur `MyClass`. Si les paramètres ne sont pas renseignés, les variables `$0`, `$1` ne seront simplement pas remplacées. Et bien entendu, rien ne se passera si on passe des paramètres alors que le décorateur ne les utilise pas.
-
-### Transformation
-
-Il est possible que la variable que vous utilisez dans votre template ne corresponde pas tout à fait à votre besoin. TopModel gère l'ajout de `transformateurs` sur les templates. Vous pouvez ajouter un `transformateur` après le nom de la variable que vous référencez, précédé de `:`. Le code généré tiendra compte de cette transformation.
-
-Exemple :
-
-```yaml
-decorator:
-  name: MonInterface
-  description: Implémente MonInterface pour la classe sur laquelle ce décorateur est ajouté
-  java:
-    annotations:
-      - @Label(\"{name:lower}\")
-```
-
-Actuellement, voici les transformations gérées par `TopModel` :
-
-| nom          | résultat      |
-| ------------ | ------------- |
-| `kebab`      | kebab-case    |
-| `snake_case` | snake_case    |
-| `constant`   | CONSTANT_CASE |
-| `camel`      | camelCase     |
-| `pascal`     | PascalCase    |
-| `lower`      | lowercase     |
-| `upper`      | UPPERCASE     |
