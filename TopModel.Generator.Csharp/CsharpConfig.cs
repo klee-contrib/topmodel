@@ -36,9 +36,9 @@ public class CsharpConfig : GeneratorConfigBase
     public string ApiRootPath { get; set; } = "{app}.Web";
 
     /// <summary>
-    /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relative à la racine de l'API. Par défaut : "{module}".
+    /// Chemin vers lequel sont créés les fichiers d'endpoints générés, relative à la racine de l'API. Par défaut : "{module:path}".
     /// </summary>
-    public string ApiFilePath { get; set; } = "{module}";
+    public string ApiFilePath { get; set; } = "{module:path}";
 
     /// <summary>
     /// Mode de génération de l'API ("Client" ou "Server").
@@ -80,6 +80,7 @@ public class CsharpConfig : GeneratorConfigBase
 
     /// <summary>
     /// Nom des accesseurs de référence (préfixé par 'I' pour l'interface, puis 'Db' pour les accesseurs persistés). Par défaut : {module}ReferenceAccessors.
+    /// (La variable `{module}` aura toujours la transformation `flat` ajoutée).
     /// </summary>
     public string ReferenceAccessorsName { get; set; } = "{module}ReferenceAccessors";
 
@@ -226,7 +227,7 @@ public class CsharpConfig : GeneratorConfigBase
             OutputDirectory,
             ResolveVariables(ApiRootPath, tag: tag).ToFilePath(),
             withControllers ? "Controllers" : string.Empty,
-            ResolveVariables(ApiFilePath, tag: tag, module: file.Namespace.ModulePath));
+            ResolveVariables(ApiFilePath, tag: tag, module: file.Namespace.Module));
     }
 
     public virtual string GetClassFileName(Class classe, string tag)
@@ -260,7 +261,7 @@ public class CsharpConfig : GeneratorConfigBase
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(DataFlowsPath!, tag: tag, module: df.ModelFile.Namespace.ModulePath).ToFilePath(),
+            ResolveVariables(DataFlowsPath!, tag: tag, module: df.ModelFile.Namespace.Module).ToFilePath(),
             "generated",
             $"{df.Name.ToPascalCase()}Flow.cs");
     }
@@ -269,7 +270,7 @@ public class CsharpConfig : GeneratorConfigBase
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(DataFlowsPath!, tag: tag, module: df.ModelFile.Namespace.ModulePath).ToFilePath(),
+            ResolveVariables(DataFlowsPath!, tag: tag, module: df.ModelFile.Namespace.Module).ToFilePath(),
             "generated",
             $"ServiceExtensions.cs");
     }
@@ -304,7 +305,7 @@ public class CsharpConfig : GeneratorConfigBase
         var (ns, modelPath) = GetMapperLocation(mapper, tag);
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(modelPath, tag: tag, module: ns.ModulePath).ToFilePath(),
+            ResolveVariables(modelPath, tag: tag, module: ns.Module).ToFilePath(),
             "generated",
             $"{GetMapperName(ns, modelPath)}.cs");
     }
@@ -314,7 +315,7 @@ public class CsharpConfig : GeneratorConfigBase
         var (ns, modelPath) = GetMapperLocation(mapper, tag);
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(modelPath, tag: tag, module: ns.ModulePath).ToFilePath(),
+            ResolveVariables(modelPath, tag: tag, module: ns.Module).ToFilePath(),
             "generated",
             $"{GetMapperName(ns, modelPath)}.cs");
     }
@@ -403,7 +404,7 @@ public class CsharpConfig : GeneratorConfigBase
         return ResolveVariables(
             GetModelPathRaw(classe, tag),
             tag: tag,
-            module: classe.Namespace.ModulePath).ToFilePath();
+            module: classe.Namespace.Module).ToFilePath();
     }
 
     /// <summary>
@@ -461,7 +462,7 @@ public class CsharpConfig : GeneratorConfigBase
             ResolveVariables(
                 ReferenceAccessorsImplementationPath,
                 tag: tag,
-                module: ns.ModulePath).ToFilePath(),
+                module: ns.Module).ToFilePath(),
             "generated",
             $"Db{GetReferenceAccessorName(ns, tag)}.cs");
     }
@@ -481,7 +482,7 @@ public class CsharpConfig : GeneratorConfigBase
             ResolveVariables(
                 ReferenceAccessorsInterfacePath!,
                 tag: tag,
-                module: ns.ModulePath).ToFilePath(),
+                module: ns.Module).ToFilePath(),
             "generated",
             $"I{prefix}{GetReferenceAccessorName(ns, tag)}.cs");
     }

@@ -6,46 +6,6 @@ namespace TopModel.Generator.Core;
 
 internal static class TemplateExtensions
 {
-    public static Func<string, string> GetTransformation(this string input)
-    {
-        var transform = (string a) => a;
-        var value = input;
-        if (input.Contains(':'))
-        {
-            var splitted = input.Split(':');
-            value = splitted[0];
-            var transformationName = input.Split(':')[1];
-            switch (transformationName)
-            {
-                case "camel":
-                    transform = a => a.ToCamelCase();
-                    break;
-                case "constant":
-                    transform = a => a.ToConstantCase();
-                    break;
-                case "kebab":
-                    transform = a => a.ToKebabCase();
-                    break;
-                case "lower":
-                    transform = a => a.ToLower();
-                    break;
-                case "pascal":
-                    transform = a => a.ToPascalCase();
-                    break;
-                case "snake":
-                    transform = a => a.ToSnakeCase();
-                    break;
-                case "upper":
-                    transform = a => a.ToUpper();
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        return transform;
-    }
-
     public static string ParseTemplate(this string template, IProperty p, GeneratorConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
@@ -110,6 +70,50 @@ internal static class TemplateExtensions
         return result;
     }
 
+    public static string Transform(this string value, string input)
+    {
+        if (input.Contains(':'))
+        {
+            foreach (var transformName in input.Split(':').Skip(1))
+            {
+                switch (transformName)
+                {
+                    case "camel":
+                        value = value.ToCamelCase();
+                        break;
+                    case "constant":
+                        value = value.ToConstantCase();
+                        break;
+                    case "kebab":
+                        value = value.ToKebabCase();
+                        break;
+                    case "lower":
+                        value = value.ToLower();
+                        break;
+                    case "pascal":
+                        value = value.ToPascalCase();
+                        break;
+                    case "snake":
+                        value = value.ToSnakeCase();
+                        break;
+                    case "upper":
+                        value = value.ToUpper();
+                        break;
+                    case "flat":
+                        value = value.Replace(".", string.Empty).Replace("/", string.Empty).Replace("\\", string.Empty);
+                        break;
+                    case "path":
+                        value = value.Replace('.', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        return value;
+    }
+
     private static IEnumerable<Match> ExtractVariables(this string input)
     {
         var regex = new Regex(@"(\{[$a-zA-Z0-9:.\[\]]+\})");
@@ -118,11 +122,10 @@ internal static class TemplateExtensions
 
     private static string ResolveCustomProperty(string input, Dictionary<string, string> customProperties)
     {
-        var transform = input.GetTransformation();
         var propertyName = input.Split(':').First();
         if (customProperties.TryGetValue(propertyName, out var value))
         {
-            return transform(value);
+            return value.Transform(input);
         }
 
         return string.Empty;
@@ -130,18 +133,15 @@ internal static class TemplateExtensions
 
     private static string ResolveVariable(this string input, Domain domain, GeneratorConfigBase config, string? tag = null)
     {
-        var transform = input.GetTransformation();
-        var variable = input.Split(':').First();
-
-        return input.Split(':').First() switch
+        return (input.Split(':').First() switch
         {
-            "mediaType" => transform(domain.MediaType ?? string.Empty),
-            "length" => transform(domain.Length?.ToString() ?? string.Empty),
-            "scale" => transform(domain.Scale?.ToString() ?? string.Empty),
-            "name" => transform(domain.Name ?? string.Empty),
-            "type" => transform(domain.Implementations.GetValueOrDefault(config.Language)?.Type ?? string.Empty),
-            var i => transform(config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), tag: tag))
-        };
+            "mediaType" => domain.MediaType ?? string.Empty,
+            "length" => domain.Length?.ToString() ?? string.Empty,
+            "scale" => domain.Scale?.ToString() ?? string.Empty,
+            "name" => domain.Name ?? string.Empty,
+            "type" => domain.Implementations.GetValueOrDefault(config.Language)?.Type ?? string.Empty,
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), tag: tag)
+        }).Transform(input);
     }
 
     private static string ResolveVariable(this string input, IPropertyContainer container, string[] parameters, GeneratorConfigBase config, string? tag = null)
@@ -221,21 +221,20 @@ internal static class TemplateExtensions
             }
         }
 
-        var transform = input.GetTransformation();
-        var result = input.Split(':').First() switch
+        var result = (input.Split(':').First() switch
         {
-            "name" => transform(p.Name ?? string.Empty),
-            "sqlName" => transform(p.SqlName ?? string.Empty),
-            "paramName" => transform(p.GetParamName().ToString()),
-            "trigram" => transform(p.Trigram ?? p.Class?.Trigram ?? string.Empty),
-            "label" => transform(p.Label ?? string.Empty),
-            "comment" => transform(p.Comment),
-            "required" => transform(p.Required.ToString().ToLower()),
-            "resourceKey" => transform(p.ResourceKey.ToString()),
-            "commentResourceKey" => transform(p.CommentResourceKey.ToString()),
-            "defaultValue" => transform(p.DefaultValue?.ToString() ?? string.Empty),
-            var i => transform(config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: p.Parent.Namespace.Module, tag: tag))
-        };
+            "name" => p.Name ?? string.Empty,
+            "sqlName" => p.SqlName ?? string.Empty,
+            "paramName" => p.GetParamName().ToString(),
+            "trigram" => p.Trigram ?? p.Class?.Trigram ?? string.Empty,
+            "label" => p.Label ?? string.Empty,
+            "comment" => p.Comment,
+            "required" => p.Required.ToString().ToLower(),
+            "resourceKey" => p.ResourceKey.ToString(),
+            "commentResourceKey" => p.CommentResourceKey.ToString(),
+            "defaultValue" => p.DefaultValue?.ToString() ?? string.Empty,
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: p.Parent.Namespace.Module, tag: tag)
+        }).Transform(input);
 
         return result;
     }
@@ -279,7 +278,7 @@ internal static class TemplateExtensions
 
         if (input.StartsWith("properties["))
         {
-            var indexSize = input["properties[".Length..].IndexOf("]");
+            var indexSize = input["properties[".Length..].IndexOf(']');
             var indexString = input.Split("properties[")[1].Split("]")[0];
             if (int.TryParse(indexString, out var index))
             {
@@ -297,18 +296,17 @@ internal static class TemplateExtensions
             }
         }
 
-        var transform = input.GetTransformation();
-        var result = input.Split(':').First() switch
+        var result = (input.Split(':').First() switch
         {
-            "trigram" => transform(c.Trigram),
-            "name" => transform(c.Name),
-            "sqlName" => transform(c.SqlName),
-            "comment" => transform(c.Comment),
-            "label" => transform(c.Label ?? string.Empty),
-            "pluralName" => transform(c.PluralName ?? string.Empty),
-            "module" => transform(c.Namespace.Module ?? string.Empty),
-            var i => transform(config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: c.Namespace.Module, tag: tag))
-        };
+            "trigram" => c.Trigram,
+            "name" => c.Name,
+            "sqlName" => c.SqlName,
+            "comment" => c.Comment,
+            "label" => c.Label ?? string.Empty,
+            "pluralName" => c.PluralName ?? string.Empty,
+            "module" => c.Namespace.Module ?? string.Empty,
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: c.Namespace.Module, tag: tag)
+        }).Transform(input);
 
         return result;
     }
@@ -342,7 +340,7 @@ internal static class TemplateExtensions
 
         if (input.StartsWith("params["))
         {
-            var indexSize = input["params[".Length..].IndexOf("]");
+            var indexSize = input["params[".Length..].IndexOf(']');
             var indexString = input.Split("params[")[1].Split("]")[0];
             if (int.TryParse(indexString, out var index))
             {
@@ -360,16 +358,15 @@ internal static class TemplateExtensions
             }
         }
 
-        var transform = input.GetTransformation();
-        var result = input.Split(':').First() switch
+        var result = (input.Split(':').First() switch
         {
-            "name" => transform(e.Name),
-            "method" => transform(e.Method),
-            "route" => transform(e.Route),
-            "description" => transform(e.Description),
-            "module" => transform(e.Namespace.Module ?? string.Empty),
+            "name" => e.Name,
+            "method" => e.Method,
+            "route" => e.Route,
+            "description" => e.Description,
+            "module" => e.Namespace.Module ?? string.Empty,
             var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: e.Namespace.Module, tag: tag)
-        };
+        }).Transform(input);
 
         return result;
     }
