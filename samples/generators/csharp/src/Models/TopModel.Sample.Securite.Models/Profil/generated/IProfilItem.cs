@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-namespace TopModel.Sample.Securite.Profil.Models;
+namespace TopModel.Sample.Securite.Models.Profil;
 
 /// <summary>
 /// Détail d'un profil en liste.

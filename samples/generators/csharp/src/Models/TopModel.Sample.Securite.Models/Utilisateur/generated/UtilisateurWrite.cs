@@ -6,20 +6,13 @@ using System.ComponentModel.DataAnnotations;
 using Kinetix.Modeling.Annotations;
 using TopModel.Sample.Common;
 
-namespace TopModel.Sample.Securite.Utilisateur.Models;
+namespace TopModel.Sample.Securite.Models.Utilisateur;
 
 /// <summary>
-/// Détail d'un utilisateur en lecture.
+/// Détail d'un utilisateur en écriture.
 /// </summary>
-public partial record UtilisateurRead
+public partial record UtilisateurWrite
 {
-    /// <summary>
-    /// Id de l'utilisateur.
-    /// </summary>
-    [Required]
-    [Domain(Domains.Id)]
-    public int? Id { get; set; }
-
     /// <summary>
     /// Nom de l'utilisateur.
     /// </summary>
@@ -78,17 +71,4 @@ public partial record UtilisateurRead
     [ReferencedType(typeof(TypeUtilisateur))]
     [Domain(Domains.Code)]
     public TypeUtilisateur.Codes? TypeUtilisateurCode { get; set; } = TypeUtilisateur.Codes.GEST;
-
-    /// <summary>
-    /// Date de création de l'utilisateur.
-    /// </summary>
-    [Required]
-    [Domain(Domains.DateHeure)]
-    public DateTime? DateCreation { get; set; }
-
-    /// <summary>
-    /// Date de modification de l'utilisateur.
-    /// </summary>
-    [Domain(Domains.DateHeure)]
-    public DateTime? DateModification { get; set; }
 }

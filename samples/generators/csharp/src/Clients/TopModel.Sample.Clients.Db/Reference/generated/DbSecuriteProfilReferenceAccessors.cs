@@ -3,7 +3,7 @@
 ////
 
 using Kinetix.Services.Annotations;
-using TopModel.Sample.Securite.Profil.Models;
+using TopModel.Sample.Securite.Models.Profil;
 
 namespace TopModel.Sample.Clients.Db.Reference;
 

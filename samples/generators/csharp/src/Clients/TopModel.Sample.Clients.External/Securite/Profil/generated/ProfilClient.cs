@@ -5,7 +5,7 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using TopModel.Sample.Securite.Profil.Models;
+using TopModel.Sample.Securite.Models.Profil;
 
 namespace TopModel.Sample.Clients.External.Securite.Profil;
 

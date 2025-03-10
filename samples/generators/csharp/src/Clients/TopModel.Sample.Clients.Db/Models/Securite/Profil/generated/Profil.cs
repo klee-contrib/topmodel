@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Kinetix.Modeling.Annotations;
 using TopModel.Sample.Common;
-using TopModel.Sample.Securite.Profil.Models;
+using TopModel.Sample.Securite.Models.Profil;
 
 namespace TopModel.Sample.Clients.Db.Models.Securite.Profil;
 

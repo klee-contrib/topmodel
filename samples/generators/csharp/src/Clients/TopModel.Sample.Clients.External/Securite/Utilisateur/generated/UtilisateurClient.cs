@@ -6,7 +6,7 @@ using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using TopModel.Sample.Securite.Utilisateur.Models;
+using TopModel.Sample.Securite.Models.Utilisateur;
 
 namespace TopModel.Sample.Clients.External.Securite.Utilisateur;
 

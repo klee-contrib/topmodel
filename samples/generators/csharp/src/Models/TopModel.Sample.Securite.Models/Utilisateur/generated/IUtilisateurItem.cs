@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-namespace TopModel.Sample.Securite.Utilisateur.Models;
+namespace TopModel.Sample.Securite.Models.Utilisateur;
 
 /// <summary>
 /// Détail d'un utilisateur en liste.

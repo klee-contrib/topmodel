@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using Kinetix.Modeling.Annotations;
 using TopModel.Sample.Common;
 
-namespace TopModel.Sample.Securite.Profil.Models;
+namespace TopModel.Sample.Securite.Models.Profil;
 
 /// <summary>
 /// Détail d'un profil en écriture.

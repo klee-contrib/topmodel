@@ -5,8 +5,8 @@
 using Microsoft.EntityFrameworkCore;
 using TopModel.Sample.Clients.Db.Models.Securite.Profil;
 using TopModel.Sample.Clients.Db.Models.Securite.Utilisateur;
-using TopModel.Sample.Securite.Profil.Models;
-using TopModel.Sample.Securite.Utilisateur.Models;
+using TopModel.Sample.Securite.Models.Profil;
+using TopModel.Sample.Securite.Models.Utilisateur;
 
 namespace TopModel.Sample.Clients.Db;
 

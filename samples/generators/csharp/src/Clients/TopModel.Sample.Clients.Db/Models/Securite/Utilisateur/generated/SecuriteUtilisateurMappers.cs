@@ -2,7 +2,7 @@
 //// ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 ////
 
-using TopModel.Sample.Securite.Utilisateur.Models;
+using TopModel.Sample.Securite.Models.Utilisateur;
 
 namespace TopModel.Sample.Clients.Db.Models.Securite.Utilisateur;
 

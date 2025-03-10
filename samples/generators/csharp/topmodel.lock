@@ -18,14 +18,14 @@ generatedFiles:
   - ./src/Clients/TopModel.Sample.Clients.Db/Reference/generated/IDbSecuriteUtilisateurReferenceAccessors.cs
   - ./src/Clients/TopModel.Sample.Clients.External/Securite/Profil/generated/ProfilClient.cs
   - ./src/Clients/TopModel.Sample.Clients.External/Securite/Utilisateur/generated/UtilisateurClient.cs
-  - ./src/Models/TopModel.Sample.Securite.Profil.Models/generated/Droit.cs
-  - ./src/Models/TopModel.Sample.Securite.Profil.Models/generated/IProfilItem.cs
-  - ./src/Models/TopModel.Sample.Securite.Profil.Models/generated/ProfilRead.cs
-  - ./src/Models/TopModel.Sample.Securite.Profil.Models/generated/ProfilWrite.cs
-  - ./src/Models/TopModel.Sample.Securite.Profil.Models/generated/TypeDroit.cs
-  - ./src/Models/TopModel.Sample.Securite.Utilisateur.Models/generated/IUtilisateurItem.cs
-  - ./src/Models/TopModel.Sample.Securite.Utilisateur.Models/generated/TypeUtilisateur.cs
-  - ./src/Models/TopModel.Sample.Securite.Utilisateur.Models/generated/UtilisateurRead.cs
-  - ./src/Models/TopModel.Sample.Securite.Utilisateur.Models/generated/UtilisateurWrite.cs
+  - ./src/Models/TopModel.Sample.Securite.Models/Profil/generated/Droit.cs
+  - ./src/Models/TopModel.Sample.Securite.Models/Profil/generated/IProfilItem.cs
+  - ./src/Models/TopModel.Sample.Securite.Models/Profil/generated/ProfilRead.cs
+  - ./src/Models/TopModel.Sample.Securite.Models/Profil/generated/ProfilWrite.cs
+  - ./src/Models/TopModel.Sample.Securite.Models/Profil/generated/TypeDroit.cs
+  - ./src/Models/TopModel.Sample.Securite.Models/Utilisateur/generated/IUtilisateurItem.cs
+  - ./src/Models/TopModel.Sample.Securite.Models/Utilisateur/generated/TypeUtilisateur.cs
+  - ./src/Models/TopModel.Sample.Securite.Models/Utilisateur/generated/UtilisateurRead.cs
+  - ./src/Models/TopModel.Sample.Securite.Models/Utilisateur/generated/UtilisateurWrite.cs
   - ./src/TopModel.Sample.Api/Controllers/Securite/Profil/ProfilController.cs
   - ./src/TopModel.Sample.Api/Controllers/Securite/Utilisateur/UtilisateurController.cs

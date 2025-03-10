@@ -105,6 +105,15 @@ internal static class TemplateExtensions
                     case "path":
                         value = Regex.Replace(value, @"[./\\]", Path.DirectorySeparatorChar.ToString());
                         break;
+                    case "head":
+                        value = value.Split('/', '\\', '.').First();
+                        break;
+                    case "last":
+                        value = value.Split('/', '\\', '.').Last();
+                        break;
+                    case "tail":
+                        value = string.Concat(value.SkipWhile(v => v != '/' && v != '\\' && v != '.'));
+                        break;
                     default:
                         break;
                 }

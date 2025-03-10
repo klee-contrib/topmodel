@@ -8,49 +8,49 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Kinetix.Modeling.Annotations;
 using TopModel.Sample.Common;
 
-namespace TopModel.Sample.Securite.Utilisateur.Models;
+namespace TopModel.Sample.Securite.Models.Profil;
 
 /// <summary>
-/// Type d'utilisateur.
+/// Type de droit.
 /// </summary>
 [Reference(true)]
 [DefaultProperty(nameof(Libelle))]
-[Table("type_utilisateur")]
-public partial record TypeUtilisateur
+[Table("type_droit")]
+public partial record TypeDroit
 {
     /// <summary>
-    /// Valeurs possibles de la liste de référence TypeUtilisateur.
+    /// Valeurs possibles de la liste de référence TypeDroit.
     /// </summary>
     public enum Codes
     {
         /// <summary>
-        /// Administrateur.
+        /// Administration.
         /// </summary>
         ADMIN,
 
         /// <summary>
-        /// Client.
+        /// Lecture.
         /// </summary>
-        CLIENT,
+        READ,
 
         /// <summary>
-        /// Gestionnaire.
+        /// Ecriture.
         /// </summary>
-        GEST
+        WRITE
     }
 
     /// <summary>
-    /// Code du type d'utilisateur.
+    /// Code du type de droit.
     /// </summary>
-    [Column("tut_code")]
+    [Column("tdr_code")]
     [Domain(Domains.Code)]
     [Key]
     public Codes? Code { get; set; }
 
     /// <summary>
-    /// Libellé du type d'utilisateur.
+    /// Libellé du type de droit.
     /// </summary>
-    [Column("tut_libelle")]
+    [Column("tdr_libelle")]
     [Required]
     [Domain(Domains.Libelle)]
     [StringLength(100)]
