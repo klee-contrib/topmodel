@@ -18,7 +18,8 @@ public class JavaEnumConstructorGenerator(JpaConfig config)
             Comment = "Enum constructor"
         };
 
-        var parameter = new JavaMethodParameter(Config.GetType(classe.EnumKey!), classe.EnumKey!.NameCamel){
+        var parameter = new JavaMethodParameter(Config.GetType(classe.EnumKey!), classe.EnumKey!.NameCamel)
+        {
             Comment = "Code dont on veut obtenir l'instance."
         };
         constructor.AddParameter(parameter);

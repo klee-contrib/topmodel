@@ -22,21 +22,24 @@ public class JavaConstructorGenerator(JpaConfig config)
             var constructor = new JavaConstructor(classe.NamePascal)
             {
                 Visibility = "public",
-                Comment = mapper.Comment != null ? mapper.Comment : $"Crée une nouvelle instance de '{classe.NamePascal}'"
+                Comment = mapper.Comment ?? $"Crée une nouvelle instance de '{classe.NamePascal}'"
             };
 
             foreach (var param in mapper.ClassParams)
             {
-                var parameter = new JavaMethodParameter(param.Class.GetImport(Config, tag), param.Class.Name, param.Name.ToCamelCase());
-                parameter.Comment = param.Comment != null ? param.Comment : $"Instance de '{param.Class.NamePascal}'";
+                var parameter = new JavaMethodParameter(param.Class.GetImport(Config, tag), param.Class.Name, param.Name.ToCamelCase())
+                {
+                    Comment = param.Comment ?? $"Instance de '{param.Class.NamePascal}'"
+                };
                 constructor.AddParameter(parameter);
             }
 
             foreach (var param in mapper.PropertyParams)
             {
-
-                var parameter = new JavaMethodParameter(Config.GetType(param.Property, availableClasses), param.Property.NameCamel);
-                parameter.Comment = param.Property.Comment;
+                var parameter = new JavaMethodParameter(Config.GetType(param.Property, availableClasses), param.Property.NameCamel)
+                {
+                    Comment = param.Property.Comment
+                };
                 parameter.Imports.AddRange(param.Property.GetTypeImports(Config, tag));
                 constructor.AddParameter(parameter);
             }
