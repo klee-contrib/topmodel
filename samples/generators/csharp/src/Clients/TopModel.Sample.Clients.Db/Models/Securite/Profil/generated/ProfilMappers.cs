@@ -9,7 +9,7 @@ namespace TopModel.Sample.Clients.Db.Models.Securite.Profil;
 /// <summary>
 /// Mappers pour le module 'Securite.Profil'.
 /// </summary>
-public static class SecuriteProfilMappers
+public static class ProfilMappers
 {
     /// <summary>
     /// Crée une nouvelle instance de 'ProfilRead'.

@@ -9,7 +9,7 @@ namespace TopModel.Sample.Clients.Db.Models.Securite.Utilisateur;
 /// <summary>
 /// Mappers pour le module 'Securite.Utilisateur'.
 /// </summary>
-public static class SecuriteUtilisateurMappers
+public static class UtilisateurMappers
 {
     /// <summary>
     /// Crée une nouvelle instance de 'UtilisateurRead'.

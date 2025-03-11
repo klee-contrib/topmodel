@@ -1,4 +1,5 @@
-﻿using TopModel.Core;
+﻿using System.Text.RegularExpressions;
+using TopModel.Core;
 using TopModel.Core.FileModel;
 using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
@@ -83,6 +84,12 @@ public class CsharpConfig : GeneratorConfigBase
     /// (La variable `{module}` aura toujours la transformation `flat` ajoutée).
     /// </summary>
     public string ReferenceAccessorsName { get; set; } = "{module}ReferenceAccessors";
+
+    /// <summary>
+    /// Nom des mappers. Par défaut : {module}Mappers.
+    /// (La variable `{module}` aura toujours la transformation `flat` ajoutée).
+    /// </summary>
+    public string MappersName { get; set; } = "{module}Mappers";
 
     /// <summary>
     /// Utilise les migrations EF pour créer/mettre à jour la base de données. Par défaut : 'true'.
@@ -307,7 +314,7 @@ public class CsharpConfig : GeneratorConfigBase
             OutputDirectory,
             ResolveVariables(modelPath, tag: tag, module: ns.Module).ToFilePath(),
             "generated",
-            $"{GetMapperName(ns, modelPath)}.cs");
+            $"{GetMapperName(ns)}.cs");
     }
 
     public virtual string GetMapperFilePath((Class Class, ClassMappings Mapper) mapper, string tag)
@@ -317,7 +324,7 @@ public class CsharpConfig : GeneratorConfigBase
             OutputDirectory,
             ResolveVariables(modelPath, tag: tag, module: ns.Module).ToFilePath(),
             "generated",
-            $"{GetMapperName(ns, modelPath)}.cs");
+            $"{GetMapperName(ns)}.cs");
     }
 
     public virtual (Namespace Namespace, string ModelPath) GetMapperLocation((Class Class, FromMapper Mapper) mapper, string tag)
@@ -388,9 +395,9 @@ public class CsharpConfig : GeneratorConfigBase
         }
     }
 
-    public virtual string GetMapperName(Namespace ns, string modelPath)
+    public virtual string GetMapperName(Namespace ns)
     {
-        return $"{ns.ModuleFlat}{(modelPath == PersistentModelPath ? string.Empty : "DTO")}Mappers";
+        return ResolveVariables(AddModuleFlat(MappersName), module: ns.Module);
     }
 
     /// <summary>
@@ -450,9 +457,9 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual string GetReferenceAccessorName(Namespace ns, string tag)
     {
         return ResolveVariables(
-            ReferenceAccessorsName,
+            AddModuleFlat(ReferenceAccessorsName),
             tag: tag,
-            module: ns.ModuleFlat);
+            module: ns.Module);
     }
 
     public virtual string GetReferenceImplementationFilePath(Namespace ns, string tag)
@@ -565,5 +572,10 @@ public class CsharpConfig : GeneratorConfigBase
     protected override bool IsEnumNameValid(string name)
     {
         return base.IsEnumNameValid(name) && !name.Contains('-') && name.FirstOrDefault() != name.ToLower().FirstOrDefault();
+    }
+
+    private static string AddModuleFlat(string name)
+    {
+        return Regex.Replace(name, @"\{module(:[^}]*)?\}", "{module$1:flat}");
     }
 }

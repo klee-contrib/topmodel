@@ -223,7 +223,7 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
             if (firstSource?.TargetFromMapper != null)
             {
                 var (ns, modelPath) = Config.GetMapperLocation((dataFlow.Class, firstSource.TargetFromMapper), GetBestClassTag(dataFlow.Class, tag));
-                w.WriteLine(3, $".Select({Config.GetMapperName(ns, modelPath)}.Create{dataFlow.Class.NamePascal});");
+                w.WriteLine(3, $".Select({Config.GetMapperName(ns)}.Create{dataFlow.Class.NamePascal});");
             }
             else
             {

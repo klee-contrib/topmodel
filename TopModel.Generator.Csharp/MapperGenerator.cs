@@ -93,7 +93,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
         w.WriteNamespace(ns);
         w.WriteSummary($"Mappers pour le module '{mapperNs.Module}'.");
-        w.WriteLine($"public static class {Config.GetMapperName(mapperNs, modelPath)}");
+        w.WriteLine($"public static class {Config.GetMapperName(mapperNs)}");
         w.WriteLine("{");
 
         foreach (var fromMapper in fromMappers)

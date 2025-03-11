@@ -4,14 +4,14 @@
 
 version: 2.5.1
 custom:
-  ../../../TopModel.Generator.Csharp: d71f21341f8486d9ba6e838204a21969
+  ../../../TopModel.Generator.Csharp: 2b11796ddcbaa469d32069bd0f1de576
 generatedFiles:
   - ./src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.comments.cs
   - ./src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.cs
   - ./src/Clients/TopModel.Sample.Clients.Db/Models/Securite/Profil/generated/Profil.cs
-  - ./src/Clients/TopModel.Sample.Clients.Db/Models/Securite/Profil/generated/SecuriteProfilMappers.cs
-  - ./src/Clients/TopModel.Sample.Clients.Db/Models/Securite/Utilisateur/generated/SecuriteUtilisateurMappers.cs
+  - ./src/Clients/TopModel.Sample.Clients.Db/Models/Securite/Profil/generated/ProfilMappers.cs
   - ./src/Clients/TopModel.Sample.Clients.Db/Models/Securite/Utilisateur/generated/Utilisateur.cs
+  - ./src/Clients/TopModel.Sample.Clients.Db/Models/Securite/Utilisateur/generated/UtilisateurMappers.cs
   - ./src/Clients/TopModel.Sample.Clients.Db/Reference/generated/DbSecuriteProfilReferenceAccessors.cs
   - ./src/Clients/TopModel.Sample.Clients.Db/Reference/generated/DbSecuriteUtilisateurReferenceAccessors.cs
   - ./src/Clients/TopModel.Sample.Clients.Db/Reference/generated/IDbSecuriteProfilReferenceAccessors.cs
