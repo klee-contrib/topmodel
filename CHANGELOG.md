@@ -8,6 +8,25 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.5.0
+
+- [`#450`](https://github.com/klee-contrib/topmodel/pull/450) - Nouvelles transformations et chaînage sur les variables
+
+  On peut désormais utiliser, comme transformation de variable :
+
+  - `:path` : pour remplacer les `.` par des `/`
+  - `:flat` : pour remplacer les `.` et les `/` par rien
+  - `:head` : pour récupérer la première section d'une variable avec des `.` ou des `/`
+  - `:last` : pour récupérer la dernière section d'une variable avec des `.` ou des `/`
+  - `:tail` : pour récupérer tout sauf la première section d'une variable avec des `.` ou des `/`
+
+  Les transformations peuvent désormais être chaînées, ce qui permet de faire des choses comme :
+
+  - `{variable:tail:path:upper}`, qui pour `My.Top.Module` donnera `TOP/MODULE`
+  - `{variable:path:snake}`, qui pour `My.TopModule` donnera `my/top-module`
+
+  L'idée c'est de pouvoir les utiliser dans les variables de configuration, dans le cas où on veut utiliser des sous-modules, mais ça reste applicable partout.
+
 ## 2.4.3
 
 - [`c2d41a4`](https://github.com/klee-contrib/topmodel/commit/c2d41a4a9c816244a5177ec4bb8fec895663b202) - [Core] Fix génération annotations non parsées Fix #443

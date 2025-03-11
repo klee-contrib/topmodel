@@ -1,3 +1,7 @@
+## 1.5.0
+
+Suite à la gestion de la transformation `:path` dans TopModel 2.5, le générateur C# ne l'applique plus automatiquement sur la variable `{module}` dans les chemins de fichiers. Cela ne devrait avoir d'impact que si vous utilisiez des sous-modules, et peut se résoudre en appliquant le `:path` explicitement.
+
 ## 1.4.0
 
 - [`50c3f6b`](https://github.com/klee-contrib/topmodel/commit/50c3f6b86a71da1e76ca1a63d4372120c788732e) - [C#] Mise au propre de la génération des accesseurs de liste de références
