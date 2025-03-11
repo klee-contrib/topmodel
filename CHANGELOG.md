@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.5.1
+
+- [`79b3b8a`](https://github.com/klee-contrib/topmodel/commit/79b3b8a657fcc8bcbe94eb30da010053939853f0) - [Core] Fix :tail qui gardait le premier séparateur
+
 ## 2.5.0
 
 - [`#450`](https://github.com/klee-contrib/topmodel/pull/450) - Nouvelles transformations et chaînage sur les variables
