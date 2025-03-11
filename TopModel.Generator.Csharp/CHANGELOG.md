@@ -1,3 +1,9 @@
+## 1.5.1
+
+- [`8ea3a07`](https://github.com/klee-contrib/topmodel/commit/8ea3a071b1944b4f1cde1a33240c54f861ebd7a4) - [C#] Ajout `mappersName` + gestion des transforms dans `referenceAccessorsName`
+
+  **breaking changes** : Les mappers de classes non persistées n'ont plus "DTO" dans le nom, et respecteront le nom donné dans le nouveau paramètre (qui vaut `{module}Mappers` par défaut, comme avant).
+
 ## 1.5.0
 
 Suite à la gestion de la transformation `:path` dans TopModel 2.5, le générateur C# ne l'applique plus automatiquement sur la variable `{module}` dans les chemins de fichiers. Cela ne devrait avoir d'impact que si vous utilisiez des sous-modules, et peut se résoudre en appliquant le `:path` explicitement.

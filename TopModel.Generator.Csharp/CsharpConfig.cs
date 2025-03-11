@@ -201,6 +201,7 @@ public class CsharpConfig : GeneratorConfigBase
         nameof(ReferenceAccessorsName),
         nameof(ReferenceAccessorsInterfacePath),
         nameof(ReferenceAccessorsImplementationPath),
+        nameof(MappersName),
         nameof(DataFlowsPath)
     ];
 

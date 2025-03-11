@@ -220,20 +220,28 @@ _(en preview, documentation à venir)_
 
 - `referenceAccessorsName`
 
-  Nom des accesseurs de référence (préfixé par 'I' pour l'interface).
+  Nom des accesseurs de référence (préfixé par 'I' pour l'interface, puis 'Db' pour les accesseurs persistés).
 
   Les accesseurs de référence ne seront générés que si `kinetix: true`.
 
-  _Templating_: `{module}`
+  _Templating_: `{module}` (la transformation `:flat` sera ajoutée à la fin)
 
   _Valeur par défaut_: `"{module}ReferenceAccessors"`
 
   _Variables par tag_: **oui** (plusieurs accesseurs pourraient être générés si un fichier à plusieurs tags)
 
+- `mappersName`
+
+  Nom des mappers.
+
+  _Templating_: `{module}` (la transformation `:flat` sera ajoutée à la fin)
+
+  _Valeur par défaut_: `"{module}Mappers"`
+
 - `useEFMigrations`
 
   Utilise les migrations EF pour créer/mettre à jour la base de données.
-  
+
   _Valeur par défaut_: `true`
 
 - `useLowerCaseSqlNames`
@@ -285,8 +293,8 @@ _(en preview, documentation à venir)_
 
 - `noColumnOnAlias`
 
-  Ne génère pas les attributs de colonnes sur les alias dans les classes non persistées. 
-  
+  Ne génère pas les attributs de colonnes sur les alias dans les classes non persistées.
+
   EF Core n'en a pas besoin mais ça peut être utile pour d'autres ORMs afin de pouvoir mapper directement les colonnes depuis une requête SQL manuelle.
 
   _Valeur par défaut_: `true`
