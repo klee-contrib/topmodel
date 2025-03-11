@@ -639,8 +639,8 @@ public abstract class GeneratorConfigBase
 
     private static string ReplaceVariable(string value, string varName, string varValue)
     {
-        string MatchEvaluator(Match m) => m.Value.Trim('{', '}').GetTransformation()(varValue);
-        return Regex.Replace(value, $"\\{{{varName}(:\\w+)?\\}}", MatchEvaluator);
+        string MatchEvaluator(Match m) => varValue.Transform(m.Value.Trim('{', '}'));
+        return Regex.Replace(value, $"\\{{{varName}(:\\w+)*\\}}", MatchEvaluator);
     }
 
     private bool FilterAnnotations(TargetedText annotation, IProperty property, string tag)
