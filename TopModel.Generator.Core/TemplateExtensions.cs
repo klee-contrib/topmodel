@@ -112,7 +112,7 @@ internal static class TemplateExtensions
                         value = value.Split('/', '\\', '.').Last();
                         break;
                     case "tail":
-                        value = string.Concat(value.SkipWhile(v => v != '/' && v != '\\' && v != '.'));
+                        value = string.Concat(value.SkipWhile(v => v != '/' && v != '\\' && v != '.'))[1..];
                         break;
                     default:
                         break;
