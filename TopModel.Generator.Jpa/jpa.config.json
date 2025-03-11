@@ -84,7 +84,7 @@
     },
     "entitiesPath": {
       "type": "string",
-      "description": "Localisation des classes persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen:{app}/entities/{module}'."
+      "description": "Localisation des classes persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen:{app:path}/entities/{module:path}'."
     },
     "daosPath": {
       "type": "string",
@@ -92,17 +92,17 @@
     },
     "dtosPath": {
       "type": "string",
-      "description": "Localisation des classes non persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen:{app}/dtos/{module}'."
+      "description": "Localisation des classes non persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen:{app:path}/dtos/{module:path}'."
     },
     "enumsPath": {
       "type": "string",
       "description": "Localisation des enums du modèle, relative au répertoire de génération.",
-      "default": "javagen:{app}/enums/{module}"
+      "default": "javagen:{app:path}/enums/{module:path}"
     },
     "enumsValuesPath": {
       "type": "string",
       "description": "Localisation des enums de valeur du modèle, relative au répertoire de génération. Prend la valeur de enumsPath si non défini",
-      "default": "javagen:{app}/enums/{module}"
+      "default": "javagen:{app:path}/enums/{module:path}"
     },
     "enumsAsEnums": {
       "type": "boolean",
@@ -111,8 +111,8 @@
     },
     "apiPath": {
       "type": "string",
-      "description": "Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut, 'javagen:{app}/api/{module}'.",
-      "default": "javagen:{app}/api/{module}"
+      "description": "Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut, 'javagen:{app:path}/api/{module:path}'.",
+      "default": "javagen:{app:path}/api/{module:path}"
     },
     "compositionConverterCanonicalName": {
       "type": "string",

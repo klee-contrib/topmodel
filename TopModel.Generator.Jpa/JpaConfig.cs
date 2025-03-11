@@ -15,14 +15,14 @@ public class JpaConfig : GeneratorConfigBase
     public bool EnumsAsEnums { get; set; } = false;
 
     /// <summary>
-    /// Localisation des classes persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen/{app}/entities/{module}'.
+    /// Localisation des classes persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen/{app:path}/entities/{module:path}'.
     /// </summary>
-    public string EntitiesPath { get; set; } = "javagen:{app}/entities/{module}";
+    public string EntitiesPath { get; set; } = "javagen:{app:path}/entities/{module:path}";
 
     /// <summary>
-    /// Localisation des enums, relative au répertoire de génération. Par défaut, 'javagen:{app}/enums/{module}'.
+    /// Localisation des enums, relative au répertoire de génération. Par défaut, 'javagen:{app:path}/enums/{module:path}'.
     /// </summary>
-    public string EnumsPath { get; set; } = "javagen:{app}/enums/{module}";
+    public string EnumsPath { get; set; } = "javagen:{app:path}/enums/{module:path}";
 
     /// <summary>
     /// Localisation des DAOs, relative au répertoire de génération.
@@ -30,14 +30,14 @@ public class JpaConfig : GeneratorConfigBase
     public string? DaosPath { get; set; }
 
     /// <summary>
-    /// Localisation des classses non persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen/{app}/dtos/{module}'.
+    /// Localisation des classses non persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen/{app:path}/dtos/{module:path}'.
     /// </summary>
-    public string DtosPath { get; set; } = "javagen:{app}/dtos/{module}";
+    public string DtosPath { get; set; } = "javagen:{app:path}/dtos/{module:path}";
 
     /// <summary>
-    /// Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut, 'javagen/{app}/api/{module}'.
+    /// Localisation du l'API générée (client ou serveur), relative au répertoire de génération. Par défaut, 'javagen/{app:path}/api/{module:path}'.
     /// </summary>
-    public string ApiPath { get; set; } = "javagen:{app}/api/{module}";
+    public string ApiPath { get; set; } = "javagen:{app:path}/api/{module:path}";
 
     /// <summary>
     /// Mode de génération de l'API ("Client" ou "Server").
@@ -181,7 +181,7 @@ public class JpaConfig : GeneratorConfigBase
     ];
 
     /// <summary>
-    /// Localisation des enums de valeurs, relative au répertoire de génération. Par défaut, 'javagen:{app}/enums/{module}'.
+    /// Localisation des enums de valeurs, relative au répertoire de génération. Par défaut, 'javagen:{app:path}/enums/{module:path}'.
     /// </summary>
     public string EnumsValuesPath { get; set; } = "default";
 
