@@ -21,6 +21,7 @@
   - [Décorateurs](/model/decorators.md)
   - [Flux de données](/model/dataFlows.md)
   - [Multilinguisme](/model/i18n.md)
+  - [Templating](/model/templating.md)
 
 - **[Configuration](/configuration.md)**
 
