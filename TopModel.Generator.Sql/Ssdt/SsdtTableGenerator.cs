@@ -39,7 +39,7 @@ public class SsdtTableGenerator(ILogger<SsdtTableGenerator> logger, IFileWriterP
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        using var writer = this.OpenFileWriter(fileName);
+        using var writer = this.OpenSqlWriter(fileName);
 
         // TODO : rendre paramétrable.
         var useCompression = false;

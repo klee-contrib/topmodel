@@ -28,7 +28,7 @@ public class SsdtReferenceListGenerator(ILogger<SsdtReferenceListGenerator> logg
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        using var writer = this.OpenFileWriter(fileName);
+        using var writer = this.OpenSqlWriter(fileName);
 
         var tableName = classe.SqlName;
 

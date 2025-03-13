@@ -28,7 +28,7 @@ public class SsdtTableTypeGenerator(ILogger<SsdtTableTypeGenerator> logger, IFil
 
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
-        using var writer = this.OpenFileWriter(fileName);
+        using var writer = this.OpenSqlWriter(fileName);
 
         // Entête du fichier.
         WriteHeader(writer, classe.GetTableTypeName());

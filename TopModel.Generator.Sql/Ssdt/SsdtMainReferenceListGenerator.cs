@@ -25,7 +25,7 @@ public class SsdtMainReferenceListGenerator(ILogger<SsdtMainReferenceListGenerat
 
     protected override void HandleFile(string fileType, string fileName, string tag, IEnumerable<Class> classes)
     {
-        using var writer = this.OpenFileWriter(fileName);
+        using var writer = this.OpenSqlWriter(fileName);
 
         // Entête du fichier.
         WriteHeader(writer);
