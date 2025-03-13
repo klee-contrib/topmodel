@@ -1,3 +1,16 @@
+## 1.6.0
+
+- [bfce6](https://github.com/klee-contrib/topmodel/commit/bfce65f7f62e47a5c43fc2759ab11b9194fec928) Implémentation JPA utilisation de :path
+
+**Breaking change**: Les configuration de chemin (`EntitiesPath`, `dtosPath`, `apiPath` etc) qui contiennent des  `.` doivent maintenant être remplacées par des `/`. La partie du chemin après le `:` est toujours le nom du package cible.
+
+Exemple : `javagen:topmodel.jpa.sample.demo.entities` devient `javagen:topmodel/jpa/sample/demo/entities`
+
+Par ailleurs, il est possible de définir des variables dans la configuration de la génération. Ces variables peuvent être utilisées dans les chemins de sortie. Si ces variables contiennent des `.`, ils peuvent automatiquement être remplacés par des `/` avec l'opérateur `:path`. De même, si un path contenait le mot réservé `module`, il faut désormais le remplacer par `{module:path}`, encore une fois pour remplacer les `.` par des `/`.	
+
+Exemple : `javagen:{app:path}/entities/{module:path}`
+
+
 ## 1.5.6
 
 - [32c1e](https://github.com/klee-contrib/topmodel/commit/32c1e21f1a20940a25670fda12ab1c080f7366db) [JPA] : Erreur lors de l'ajout d'un prefix sur une interface FeignClient
