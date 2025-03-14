@@ -29,7 +29,6 @@ endpoint:
   returns:
     name: Result
     domain: DO_ENTIER_MAP
-    required: true
     comment: Non documenté
 ---
 endpoint:
@@ -45,6 +44,7 @@ endpoint:
   returns:
     composition: Order
     name: Result
+    required: false
     comment: Non documenté
 ---
 endpoint:
@@ -56,8 +56,10 @@ endpoint:
   params:
     - composition: Order
       name: body
+      required: false
       comment: Non documenté
   returns:
     composition: Order
     name: Result
+    required: false
     comment: Non documenté

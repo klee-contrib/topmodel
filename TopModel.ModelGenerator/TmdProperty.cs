@@ -1,11 +1,13 @@
-﻿namespace TopModel.ModelGenerator;
+﻿using Microsoft.OpenApi.Models.Interfaces;
+
+namespace TopModel.ModelGenerator;
 
 public class TmdProperty
 {
 #nullable disable
     public string Name { get; set; }
 
-    public string CompositionReference { get; set; }
+    public IOpenApiSchema CompositionReference { get; set; }
 
     public TmdClass Class { get; set; }
 

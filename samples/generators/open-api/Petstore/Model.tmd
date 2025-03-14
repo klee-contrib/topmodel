@@ -14,17 +14,14 @@ class:
   properties:
     - name: code
       domain: DO_ENTIER
-      required: true
       comment: Non documenté
 
     - name: type
       domain: DO_LIBELLE
-      required: true
       comment: Non documenté
 
     - name: message
       domain: DO_LIBELLE
-      required: true
       comment: Non documenté
 ---
 class:
@@ -34,12 +31,10 @@ class:
   properties:
     - name: id
       domain: DO_ID
-      required: true
       comment: Non documenté
 
     - name: name
       domain: DO_LIBELLE
-      required: true
       comment: Non documenté
 ---
 class:
@@ -49,7 +44,6 @@ class:
   properties:
     - name: Value
       domain: DO_LIBELLE
-      required: true
       comment: Non documenté
 
   values:
@@ -64,22 +58,18 @@ class:
   properties:
     - name: id
       domain: DO_ID
-      required: true
       comment: Non documenté
 
     - name: petId
       domain: DO_ID
-      required: true
       comment: Non documenté
 
     - name: quantity
       domain: DO_ENTIER
-      required: true
       comment: Non documenté
 
     - name: shipDate
       domain: DO_DATE_TIME
-      required: true
       comment: Non documenté
 
     - alias:
@@ -90,7 +80,6 @@ class:
 
     - name: complete
       domain: DO_BOOLEAN
-      required: true
       comment: Non documenté
 ---
 class:
@@ -100,7 +89,6 @@ class:
   properties:
     - name: Value
       domain: DO_LIBELLE
-      required: true
       comment: Order Status
 
   values:
@@ -115,7 +103,6 @@ class:
   properties:
     - name: id
       domain: DO_ID
-      required: true
       comment: Non documenté
 
     - name: name
@@ -125,6 +112,7 @@ class:
 
     - composition: Category
       name: category
+      required: false
       comment: Non documenté
 
     - name: photoUrls
@@ -135,6 +123,7 @@ class:
     - composition: Tag
       name: tags
       domain: DO_LIST
+      required: false
       comment: Non documenté
 
     - alias:
@@ -150,7 +139,6 @@ class:
   properties:
     - name: Value
       domain: DO_LIBELLE
-      required: true
       comment: pet status in the store
 
   values:
@@ -165,12 +153,10 @@ class:
   properties:
     - name: id
       domain: DO_ID
-      required: true
       comment: Non documenté
 
     - name: name
       domain: DO_LIBELLE
-      required: true
       comment: Non documenté
 ---
 class:
@@ -180,40 +166,32 @@ class:
   properties:
     - name: id
       domain: DO_ID
-      required: true
       comment: Non documenté
 
     - name: username
       domain: DO_LIBELLE
-      required: true
       comment: Non documenté
 
     - name: firstName
       domain: DO_LIBELLE
-      required: true
       comment: Non documenté
 
     - name: lastName
       domain: DO_LIBELLE
-      required: true
       comment: Non documenté
 
     - name: email
       domain: DO_LIBELLE
-      required: true
       comment: Non documenté
 
     - name: password
       domain: DO_LIBELLE
-      required: true
       comment: Non documenté
 
     - name: phone
       domain: DO_LIBELLE
-      required: true
       comment: Non documenté
 
     - name: userStatus
       domain: DO_ENTIER
-      required: true
       comment: User Status

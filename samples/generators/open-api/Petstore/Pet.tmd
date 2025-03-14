@@ -18,10 +18,12 @@ endpoint:
   params:
     - composition: Pet
       name: body
+      required: false
       comment: Non documenté
   returns:
     composition: Pet
     name: Result
+    required: false
     comment: Non documenté
 ---
 endpoint:
@@ -51,6 +53,7 @@ endpoint:
     composition: Pet
     name: Result
     domain: DO_LIST
+    required: false
     comment: Non documenté
 ---
 endpoint:
@@ -67,6 +70,7 @@ endpoint:
     composition: Pet
     name: Result
     domain: DO_LIST
+    required: false
     comment: Non documenté
 ---
 endpoint:
@@ -82,6 +86,7 @@ endpoint:
   returns:
     composition: Pet
     name: Result
+    required: false
     comment: Non documenté
 ---
 endpoint:
@@ -93,10 +98,12 @@ endpoint:
   params:
     - composition: Pet
       name: body
+      required: false
       comment: Non documenté
   returns:
     composition: Pet
     name: Result
+    required: false
     comment: Non documenté
 ---
 endpoint:
@@ -127,7 +134,6 @@ endpoint:
   params:
     - name: body
       domain: DO_FILE
-      required: true
       comment: Non documenté
 
     - name: petId
@@ -140,4 +146,5 @@ endpoint:
   returns:
     composition: ApiResponse
     name: Result
+    required: false
     comment: Non documenté
