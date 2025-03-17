@@ -1,3 +1,7 @@
+## 1.3.2
+
+- [`6c6f2`](https://github.com/klee-contrib/topmodel/commit/6c6f24213f125a88b8a683b5116093faef2825ad) - [JS] {lang} ajouté en trop sur index.ts : Fix [#451](https://github.com/klee-contrib/topmodel/issues/451)
+
 ## 1.3.1
 
 - [`da591`](https://github.com/klee-contrib/topmodel/commit/8f9b2535d25ca7918176e7f0c3b62c441612a877) -[JS] Manque `reportProgress`
