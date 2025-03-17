@@ -362,7 +362,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 var propertyTarget = mapping.Key;
                 var propertySource = mapping.Value!;
                 var (getter, checkSourceNull) = GetSourceGetter(propertySource, propertyTarget, classe, fw, param.Name.ToCamelCase(), tag);
-                var propertyTargetName = _jpaModelPropertyGenerator!.GetPropertyName(propertyTarget);
+                var propertyTargetName = JpaModelPropertyGenerator!.GetPropertyName(propertyTarget);
                 if (classe.Abstract)
                 {
                     if (!isFirst)
@@ -376,7 +376,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
                     if (checkSourceNull)
                     {
-                        hydrate += $"{param.Name}.{_jpaModelPropertyGenerator!.GetGetterName(propertyTarget)}() != null ? {getter} : null";
+                        hydrate += $"{param.Name}.{JpaModelPropertyGenerator!.GetGetterName(propertyTarget)}() != null ? {getter} : null";
                     }
                     else
                     {
@@ -389,10 +389,10 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     {
                         if (checkSourceNull)
                         {
-                            fw.WriteLine(indent, $"if ({param.Name}.{_jpaModelPropertyGenerator!.GetGetterName(propertySource)}() != null) {{");
+                            fw.WriteLine(indent, $"if ({param.Name}.{JpaModelPropertyGenerator!.GetGetterName(propertySource)}() != null) {{");
                         }
 
-                        fw.WriteLine(indent + (checkSourceNull ? 1 : 0), $"target.{_jpaModelPropertyGenerator!.GetSetterName(propertyTarget)}({getter});");
+                        fw.WriteLine(indent + (checkSourceNull ? 1 : 0), $"target.{JpaModelPropertyGenerator!.GetSetterName(propertyTarget)}({getter});");
 
                         if (checkSourceNull)
                         {
@@ -433,7 +433,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             }
             else
             {
-                fw.WriteLine(2, $"target.{_jpaModelPropertyGenerator!.GetSetterName(param.TargetProperty)}({param.Property.NameCamel}); /*toto*/");
+                fw.WriteLine(2, $"target.{JpaModelPropertyGenerator!.GetSetterName(param.TargetProperty)}({param.Property.NameCamel}); /*toto*/");
             }
         }
 
@@ -528,7 +528,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                         fw.WriteLine(2, $"if (source.{propertySource.NameByClassPascal.WithPrefix(getterPrefix)}() != null) {{");
                     }
 
-                    fw.WriteLine(2 + (checkSourceNull ? 1 : 0), $"target.{_jpaModelPropertyGenerator!.GetSetterName(propertyTarget)}({getter});");
+                    fw.WriteLine(2 + (checkSourceNull ? 1 : 0), $"target.{JpaModelPropertyGenerator!.GetSetterName(propertyTarget)}({getter});");
 
                     if (checkSourceNull)
                     {
