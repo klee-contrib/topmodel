@@ -4,7 +4,7 @@
 
 version: 2.5.2
 custom:
-  ../../../TopModel.Generator.Javascript: 19f81639abc09dfc224e674789b7e842
+  ../../../TopModel.Generator.Javascript: 20bb987c326e838552579dc7a70eb465
 generatedFiles:
   - ./src/locale/common.ts
   - ./src/locale/securite.ts

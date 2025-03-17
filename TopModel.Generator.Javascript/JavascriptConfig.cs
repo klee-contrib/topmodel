@@ -205,8 +205,7 @@ public class JavascriptConfig : GeneratorConfigBase
     {
         return Path.Combine(
             OutputDirectory,
-            ResolveVariables(ResourceRootPath!, tag),
-            lang,
+            ResolveVariables(ResourceRootPath!, tag, lang: lang),
             "index.ts")
         .Replace("\\", "/");
     }
