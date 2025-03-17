@@ -18,7 +18,7 @@ public static class TmdGenUtils
             {
                 if (d.Name.StartsWith('/'))
                 {
-                    if (Regex.IsMatch(name, d.Name[1..^1]))
+                    if (Regex.IsMatch(name, d.Name.Trim('/')))
                     {
                         score += 10000;
                     }
@@ -35,7 +35,7 @@ public static class TmdGenUtils
             {
                 if (d.Type.StartsWith('/'))
                 {
-                    if (Regex.IsMatch(type, d.Type[1..^1]))
+                    if (Regex.IsMatch(type, d.Type.Trim('/')))
                     {
                         score += 100;
                     }

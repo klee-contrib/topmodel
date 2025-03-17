@@ -1,11 +1,9 @@
 ﻿using System.Collections.Immutable;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Models.Interfaces;
 using Microsoft.OpenApi.Models.References;
 using Microsoft.OpenApi.Reader;
-using Microsoft.OpenApi.Readers;
 using TopModel.Utils;
 
 namespace TopModel.ModelGenerator.OpenApi;
@@ -59,6 +57,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                 string fileContent = reader.ReadToEnd();
                 s += fileContent;
             }
+
             var settings = new OpenApiReaderSettings { LeaveStreamOpen = false };
             settings.AddYamlReader();
             _model = OpenApiDocument.Parse(s, "yaml", settings).Document;
