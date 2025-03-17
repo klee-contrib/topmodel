@@ -1,3 +1,7 @@
+## 1.6.1
+
+- [3133a](https://github.com/klee-contrib/topmodel/commit/3133a91296e0ce50ded4e4b5e60cfa64f50175f7) [JPA] Fix génération mappers
+
 ## 1.6.0
 
 - [bfce6](https://github.com/klee-contrib/topmodel/commit/bfce65f7f62e47a5c43fc2759ab11b9194fec928) Implémentation JPA utilisation de :path
