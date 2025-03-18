@@ -45,7 +45,9 @@ public class OpenApiTmdGenerator : ModelGenerator
         {
             using var client = new HttpClient();
             var openApi = await client.GetAsync(_config.Source);
-            _model = OpenApiDocument.Load((MemoryStream)await openApi.Content.ReadAsStreamAsync()).Document;
+            var settings = new OpenApiReaderSettings { LeaveStreamOpen = false };
+            settings.AddYamlReader();
+            _model = OpenApiDocument.Load((MemoryStream)await openApi.Content.ReadAsStreamAsync(), "yaml", settings).Document;
         }
         else
         {
