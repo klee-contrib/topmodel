@@ -1,3 +1,7 @@
+## 1.6.2
+
+- [cf7bb0](https://github.com/klee-contrib/topmodel/commit/cf7bb01c78ca15ac9a965fd3b78aec6b312d6299) [JPA] EnumsAsEnums fix génération constructeur
+
 ## 1.6.1
 
 - [3133a](https://github.com/klee-contrib/topmodel/commit/3133a91296e0ce50ded4e4b5e60cfa64f50175f7) [JPA] Fix génération mappers
