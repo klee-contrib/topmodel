@@ -69,7 +69,7 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         fw.WriteDocStart(1, "Enum values constructor");
         fw.WriteDocEnd(1);
         var properties = classe.Properties.Where(p => p != classe.EnumKey);
-        var constructor = new JavaConstructor(classe.NamePascal) { Visibility = "private" };
+        var constructor = new JavaConstructor(classe.NamePascal);
         var methodParams = properties.Select((prop, index) =>
             {
                 var fieldName = prop.NameByClassCamel;
@@ -83,6 +83,11 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
                 return new JavaMethodParameter(fieldType, fieldName) { Final = true };
             });
         constructor.AddParameters(methodParams);
+        foreach (var param in methodParams)
+        {
+            constructor.AddBodyLine($@"this.{param.Name} = {param.Name};");
+        }
+
         fw.Write(1, constructor);
     }
 
