@@ -39,19 +39,36 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
             Config.DaosPath!,
             tag,
             module: classe.Namespace.Module).ToPackageName();
+        var javaClass = GetJavaClass(classe, tag);
 
         using var fw = this.OpenJavaWriter(fileName, packageName, null);
-        fw.WriteLine();
+        fw.Write(0, javaClass);
+    }
+
+    private JavaClass GetJavaClass(Class classe, string tag)
+    {
+        var packageName = Config.ResolveVariables(
+            Config.DaosPath!,
+            tag,
+            module: classe.Namespace.Module).ToPackageName();
+        var javaClass = new JavaClass($"{classe.NamePascal}DAO")
+        {
+            Package = packageName,
+            Interface = true,
+            Name = $"{classe.NamePascal}DAO"
+        };
+        javaClass.Imports.Add(classe.GetImport(Config, tag));
+
         if (Config.CanClassUseEnums(classe))
         {
-            fw.AddImport($"{Config.GetEnumPackageName(classe, tag)}.{Config.GetType(classe.PrimaryKey.SingleOrDefault() ?? classe.Extends!.PrimaryKey.Single())}");
+            javaClass.Imports.Add($"{Config.GetEnumPackageName(classe, tag)}.{Config.GetType(classe.PrimaryKey.SingleOrDefault() ?? classe.Extends!.PrimaryKey.Single())}");
         }
 
         string pk;
         if (!classe.PrimaryKey.Any() && classe.Extends != null)
         {
             pk = Config.GetType(classe.ExtendedProperties.Single(p => p.PrimaryKey));
-            fw.AddImports(classe.ExtendedProperties.Single(p => p.PrimaryKey).GetTypeImports(Config, tag));
+            javaClass.Imports.AddRange(classe.ExtendedProperties.Single(p => p.PrimaryKey).GetTypeImports(Config, tag));
         }
         else
         {
@@ -62,42 +79,34 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
             else
             {
                 pk = Config.GetType(classe.PrimaryKey.Single());
-                fw.AddImports(classe.PrimaryKey.Single().GetTypeImports(Config, tag));
+                javaClass.Imports.AddRange(classe.PrimaryKey.Single().GetTypeImports(Config, tag));
             }
         }
 
-        string daosInterface;
-        fw.AddImport(classe.GetImport(Config, tag));
+        string daosInterface = $"JpaRepository";
+        string daosInterfaceImport = "org.springframework.data.jpa.repository.JpaRepository";
         if (Config.DaosInterface != null)
         {
             int lastIndexOf = Config.DaosInterface.LastIndexOf('.');
             string daosInterfaceName = lastIndexOf > -1 ? Config.DaosInterface[(lastIndexOf + 1)..] : Config.DaosInterface;
-            daosInterface = $"{daosInterfaceName}<{classe.NamePascal}, {pk}>";
-            fw.AddImport($"{Config.DaosInterface}");
+            daosInterface = daosInterfaceName;
+            daosInterfaceImport = Config.DaosInterface;
         }
         else if (classe.Reference || Config.UseJdbc)
         {
-            daosInterface = $"CrudRepository<{classe.NamePascal}, {pk}>";
-            fw.AddImport("org.springframework.data.repository.CrudRepository");
+            daosInterface = "CrudRepository";
+            daosInterfaceImport = "org.springframework.data.repository.CrudRepository";
         }
-        else
-        {
-            daosInterface = $"JpaRepository<{classe.NamePascal}, {pk}>";
-            fw.AddImport("org.springframework.data.jpa.repository.JpaRepository");
-        }
+
+        javaClass.Extends = $"{daosInterface}<{classe.NamePascal}, {pk}>";
+        javaClass.Imports.Add(daosInterfaceImport);
 
         if (Config.DaosAbstract)
         {
-            fw.WriteLine("@NoRepositoryBean");
-            fw.AddImport("org.springframework.data.repository.NoRepositoryBean");
-            fw.WriteLine($"interface Abstract{classe.NamePascal}DAO extends {daosInterface} {{");
-        }
-        else
-        {
-            fw.WriteLine($"public interface {classe.NamePascal}DAO extends {daosInterface} {{");
+            javaClass.Add(new JavaAnnotation("NoRepositoryBean", imports: "org.springframework.data.repository.NoRepositoryBean"));
+            javaClass.Name = $"Abstract{classe.NamePascal}DAO";
         }
 
-        fw.WriteLine();
-        fw.WriteLine("}");
+        return javaClass;
     }
 }

@@ -1,12 +1,24 @@
-﻿namespace TopModel.Generator.Jpa;
+﻿using System.Text;
+
+namespace TopModel.Generator.Jpa;
 
 public class JavaClass(string name)
 {
     public string Name { get; set; } = name;
 
+    public string? Package { get; set; }
+
+    public string Visibility { get; set; } = "public";
+
+    public string? Extends { get; set; }
+
+    public string? Modifier { get; set; }
+
     public List<JavaAnnotation> Annotations { get; } = [];
 
     public List<string> Imports { get; } = [];
+
+    public List<string> Implements { get; } = [];
 
     public bool Interface { get; set; }
 
@@ -18,75 +30,59 @@ public class JavaClass(string name)
 
     public string Comment { get; set; } = string.Empty;
 
-    public JavaClass AddAnnotation(JavaAnnotation annotation)
+    public JavaClass Add(JavaAnnotation annotation)
     {
         Imports.AddRange(annotation.Imports);
         Annotations.Add(annotation);
         return this;
     }
 
-    public JavaClass AddConstructor(JavaConstructor constructor)
+    public JavaClass Add(JavaConstructor constructor)
     {
         Imports.AddRange(constructor.Imports);
         Constructors.Add(constructor);
         return this;
     }
 
-    public JavaClass AddField(JavaField field)
+    public JavaClass Add(JavaField field)
     {
         Imports.AddRange(field.Imports);
         Fields.Add(field);
         return this;
     }
 
-    public JavaClass AddImport(string import)
-    {
-        Imports.Add(import);
-        return this;
-    }
-
-    public JavaClass AddMethod(JavaMethod method)
+    public JavaClass Add(JavaMethod method)
     {
         Imports.AddRange(method.Imports);
         Methods.Add(method);
         return this;
     }
 
-    public override string ToString()
+    public string GetDeclaration()
     {
-        var sb = new System.Text.StringBuilder();
-
-        if (!string.IsNullOrEmpty(Comment))
+        var sb = new StringBuilder();
+        if (Visibility != null && Visibility != "public")
         {
-            sb.AppendLine($"/**");
-            sb.AppendLine($" * {Comment}");
-            sb.AppendLine($" */");
+            sb.Append($"{Visibility} ");
         }
 
-        foreach (var annotation in Annotations)
+        var classType = Interface ? "interface" : "class";
+        sb.Append($"{classType}");
+        if (!string.IsNullOrEmpty(Modifier))
         {
-            sb.AppendLine(annotation.ToString());
+            sb.Append($" {Modifier}");
         }
 
-        sb.AppendLine($"public class {Name}");
-        sb.AppendLine("{");
-
-        foreach (var field in Fields)
+        sb.Append($" {Name}");
+        if (!string.IsNullOrEmpty(Extends))
         {
-            sb.AppendLine(field.ToString());
+            sb.Append($" extends {Extends}");
         }
 
-        foreach (var constructor in Constructors)
+        if (Implements.Count > 0)
         {
-            sb.AppendLine(constructor.ToString());
+            sb.Append($" implements {string.Join(", ", Implements)}");
         }
-
-        foreach (var method in Methods)
-        {
-            sb.AppendLine(method.ToString());
-        }
-
-        sb.AppendLine("}");
 
         return sb.ToString();
     }

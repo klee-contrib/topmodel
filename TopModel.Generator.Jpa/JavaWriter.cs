@@ -88,19 +88,18 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// </summary>
     /// <param name="indentationLevel">Niveau d'indentation.</param>
     /// <param name="javaClass">Classe à écrire dans le flux.</param>
-    public void WriteClass(int indentationLevel, JavaClass javaClass)
+    public void Write(int indentationLevel, JavaClass javaClass)
     {
         AddImports(javaClass.Imports);
+        WriteLine();
         WriteAnnotations(indentationLevel, javaClass.Annotations);
-
         if (!string.IsNullOrEmpty(javaClass.Comment))
         {
             WriteDocStart(indentationLevel, javaClass.Comment);
             WriteDocEnd(indentationLevel);
         }
 
-        WriteClassDeclaration(javaClass.Name, "public", null, null);
-
+        WriteLine(indentationLevel, $@"{javaClass.GetDeclaration()} {{");
         foreach (var field in javaClass.Fields)
         {
             WriteField(indentationLevel + 1, field);
