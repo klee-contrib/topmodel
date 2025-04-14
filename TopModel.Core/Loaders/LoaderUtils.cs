@@ -27,9 +27,7 @@ public static class LoaderUtils
 
             if (name != null)
             {
-                var domain = new DomainReference(name);
-                domain.ParameterReferences.AddRange(paramaters);
-                return domain;
+                return new DomainReference(name) { ParameterReferences = paramaters };
             }
             else
             {

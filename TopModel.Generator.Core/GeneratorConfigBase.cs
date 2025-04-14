@@ -125,21 +125,21 @@ public abstract class GeneratorConfigBase
              {
                  var decorator = d.Decorator;
                  var imple = GetImplementation(decorator)!;
-                 return imple.Annotations.Select(a => (Annotation: a.ParseTemplate(classe, d.Parameters, this, tag),
-                 Imports: imple.Imports.Select(i => i.ParseTemplate(classe, d.Parameters, this, tag)).ToList()));
+                 return imple.Annotations.Select(a => (Annotation: a.ParseTemplate(d.Decorator, classe, d.Parameters, this, tag),
+                 Imports: imple.Imports.Select(i => i.ParseTemplate(d.Decorator, classe, d.Parameters, this, tag)).ToList()));
              });
     }
 
     public string? GetClassExtends(Class item)
     {
         var extendsDecorator = item.Decorators.SingleOrDefault(d => GetImplementation(d.Decorator)?.Extends != null);
-        return item.Extends?.NamePascal ?? GetImplementation(extendsDecorator.Decorator)?.Extends!.ParseTemplate(item, extendsDecorator.Parameters, this);
+        return item.Extends?.NamePascal ?? GetImplementation(extendsDecorator.Decorator)?.Extends!.ParseTemplate(extendsDecorator.Decorator, item, extendsDecorator.Parameters, this);
     }
 
     public IEnumerable<string> GetClassImplements(Class classe)
     {
         return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Implements ?? [])
-            .Select(i => i.ParseTemplate(classe, d.Parameters, this)))
+            .Select(i => i.ParseTemplate(d.Decorator, classe, d.Parameters, this)))
             .Distinct();
     }
 
@@ -192,28 +192,28 @@ public abstract class GeneratorConfigBase
     public IEnumerable<string> GetDecoratorAnnotations(Class classe, string tag)
     {
         return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Annotations ?? [])
-            .Select(a => a.ParseTemplate(classe, d.Parameters, this, tag)))
+            .Select(a => a.ParseTemplate(d.Decorator, classe, d.Parameters, this, tag)))
             .Distinct();
     }
 
     public IEnumerable<string> GetDecoratorAnnotations(Endpoint endpoint, string tag)
     {
         return endpoint.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Annotations ?? [])
-            .Select(a => a.ParseTemplate(endpoint, d.Parameters, this, tag)))
+            .Select(a => a.ParseTemplate(d.Decorator, endpoint, d.Parameters, this, tag)))
             .Distinct();
     }
 
     public IEnumerable<string> GetDecoratorImports(Class classe, string tag)
     {
         return classe.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Imports ?? [])
-            .Select(i => i.ParseTemplate(classe, d.Parameters, this, tag)))
+            .Select(i => i.ParseTemplate(d.Decorator, classe, d.Parameters, this, tag)))
             .Distinct();
     }
 
     public IEnumerable<string> GetDecoratorImports(Endpoint endpoint, string tag)
     {
         return endpoint.Decorators.SelectMany(d => (GetImplementation(d.Decorator)?.Imports ?? [])
-            .Select(i => i.ParseTemplate(endpoint, d.Parameters, this, tag)))
+            .Select(i => i.ParseTemplate(d.Decorator, endpoint, d.Parameters, this, tag)))
             .Distinct();
     }
 

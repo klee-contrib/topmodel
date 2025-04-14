@@ -22,7 +22,7 @@ public interface IProperty
 
     Domain Domain { get; }
 
-    string[] DomainParameters { get; }
+    IList<string> DomainParameters { get; }
 
     string Comment { get; }
 

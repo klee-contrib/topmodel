@@ -218,6 +218,11 @@ public enum ModelErrorType
     TMD1034,
 
     /// <summary>
+    /// Le décorateur/domaine '{decorator.Name}' est utilisé avec plus de paramètres qu'il ne définit ({decoratorRef.ParameterReferences.Count} au lieu de {decorator.TemplateParameters.Count} maximum).
+    /// </summary>
+    TMD1035,
+
+    /// <summary>
     /// Le flux de données est introuvable dans le fichier ou l'une de ses références.
     /// </summary>
     TMD2000,

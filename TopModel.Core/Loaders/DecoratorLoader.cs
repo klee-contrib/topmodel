@@ -41,6 +41,9 @@ public class DecoratorLoader : ILoader<Decorator>
                         decorator.Properties.Add(_propertyLoader.Load(parser));
                     });
                     break;
+                case "parameters":
+                    decorator.TemplateParameters = _fileChecker.Deserialize<IList<TemplateParameter>>(parser);
+                    break;
                 default:
                     decorator.Implementations[prop.Value] = _fileChecker.Deserialize<DecoratorImplementation>(parser);
                     break;

@@ -26,11 +26,13 @@ public class Domain
 
     public bool BodyParam { get; set; }
 
-    public Dictionary<string, Domain> AsDomains { get; set; } = new();
+    public Dictionary<string, Domain> AsDomains { get; set; } = [];
 
-    public Dictionary<string, DomainReference> AsDomainReferences { get; set; } = new();
+    public Dictionary<string, DomainReference> AsDomainReferences { get; set; } = [];
 
-    public Dictionary<string, DomainImplementation> Implementations { get; set; } = new();
+    public Dictionary<string, DomainImplementation> Implementations { get; set; } = [];
+
+    public IList<TemplateParameter> TemplateParameters { get; set; } = [];
 
     public string? MediaType { get; set; }
 

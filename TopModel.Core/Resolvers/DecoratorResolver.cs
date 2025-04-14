@@ -76,6 +76,11 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
                             yield return new ModelError(classe, $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à la classe '{classe}' : seul un 'extends' peut être spécifié.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1010 };
                         }
 
+                        if (decoratorRef.ParameterReferences.Count > decorator.TemplateParameters.Count)
+                        {
+                            yield return new ModelError(classe, $"Le décorateur '{decorator.Name}' est utilisé avec plus de paramètres qu'il ne définit ({decoratorRef.ParameterReferences.Count} au lieu de {decorator.TemplateParameters.Count} maximum).", decoratorRef) { ModelErrorType = ModelErrorType.TMD1035 };
+                        }
+
                         classe.Decorators.Add((decorator, decoratorRef.ParameterReferences.Select(p => p.ReferenceName).ToArray()));
                     }
                 }
@@ -108,6 +113,11 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
                     }
                     else
                     {
+                        if (decoratorRef.ParameterReferences.Count > decorator.TemplateParameters.Count)
+                        {
+                            yield return new ModelError(endpoint, $"Le décorateur '{decorator.Name}' est utilisé avec plus de paramètres qu'il ne définit ({decoratorRef.ParameterReferences.Count} au lieu de {decorator.TemplateParameters.Count} maximum).", decoratorRef) { ModelErrorType = ModelErrorType.TMD1035 };
+                        }
+
                         endpoint.Decorators.Add((decorator, decoratorRef.ParameterReferences.Select(p => p.ReferenceName).ToArray()));
                     }
                 }

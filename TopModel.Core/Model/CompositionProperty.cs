@@ -20,7 +20,7 @@ public class CompositionProperty : IProperty
 
     public Domain Domain { get; set; }
 
-    public string[] DomainParameters { get; set; } = [];
+    public IList<string> DomainParameters { get; set; } = [];
 
     public string Comment { get; set; }
 

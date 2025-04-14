@@ -1,5 +1,4 @@
-﻿using NuGet.Packaging;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
 using TopModel.Utils;
 
 namespace TopModel.Core;
@@ -32,7 +31,7 @@ public class RegularProperty : IProperty
 #nullable disable
     public Domain Domain { get; set; }
 
-    public string[] DomainParameters { get; set; } = [];
+    public IList<string> DomainParameters { get; set; } = [];
 
     public string Comment { get; set; }
 

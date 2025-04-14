@@ -9,5 +9,5 @@ public class DomainReference : Reference
     {
     }
 
-    public List<Reference> ParameterReferences { get; set; } = new();
+    public IList<Reference> ParameterReferences { get; set; } = [];
 }
