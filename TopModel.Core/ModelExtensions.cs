@@ -122,6 +122,7 @@ public static class ModelExtensions
             PropertyMapping p => p.Property.GetLocation(),
             OneOf<ClassMappings, PropertyMapping> p => p.Match(c => c.GetLocation(), p => p.GetLocation()),
             Converter c => c.Location,
+            TemplateParameter t => t.Name.Location,
             _ => null
         };
     }

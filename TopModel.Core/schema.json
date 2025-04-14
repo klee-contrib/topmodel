@@ -437,6 +437,10 @@
           "type": "string",
           "description": "Description du paramètre."
         },
+        "required": {
+          "type": "boolean",
+          "description": "Si le paramètre est obligatoire."
+        },
         "defaultValue": {
           "type": "string",
           "description": "Valeur par défaut du paramètre. Si non renseigné, la valeur sera une chaîne de caractères vide."

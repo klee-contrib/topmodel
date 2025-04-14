@@ -336,5 +336,10 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
         {
             yield return new ModelError(property, $"Le domaine '{domain.Name}' est utilisé avec plus de paramètres qu'il ne définit ({domainRef.ParameterReferences.Count} au lieu de {domain.TemplateParameters.Count} maximum).", domainRef) { ModelErrorType = ModelErrorType.TMD1035 };
         }
+
+        if (domainRef.ParameterReferences.Count < domain.TemplateParameters.Count(p => p.Required))
+        {
+            yield return new ModelError(property, $"Le domaine '{domain.Name}' n'est pas utilisé avec tous ses paramètres obligatoires ({domainRef.ParameterReferences.Count} au lieu de {domain.TemplateParameters.Count(p => p.Required)} minimum).", domainRef) { ModelErrorType = ModelErrorType.TMD1036 };
+        }
     }
 }

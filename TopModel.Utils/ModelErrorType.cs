@@ -223,6 +223,16 @@ public enum ModelErrorType
     TMD1035,
 
     /// <summary>
+    /// Le décorateur '{decorator.Name}' n'est pas utilisé avec tous ses paramètres obligatoires ({decoratorRef.ParameterReferences.Count} au lieu de {decorator.TemplateParameters.Count(p => p.Required)} minimum).
+    /// </summary>
+    TMD1036,
+
+    /// <summary>
+    /// Les paramètres obligatoires doivent précéder tous les paramètres faculatifs.
+    /// </summary>
+    TMD1037,
+
+    /// <summary>
     /// Le flux de données est introuvable dans le fichier ou l'une de ses références.
     /// </summary>
     TMD2000,

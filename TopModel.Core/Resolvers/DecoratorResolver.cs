@@ -49,6 +49,23 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveDecorators()
     {
+        foreach (var decorator in modelFile.Decorators)
+        {
+            foreach (var templateParam in decorator.TemplateParameters.Where((e, i) => decorator.TemplateParameters.Where((p, j) => p.Name == e.Name && j < i).Any()))
+            {
+                yield return new ModelError(decorator, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
+            }
+
+            foreach (var templateParam in decorator.TemplateParameters.Where(p => !p.Required))
+            {
+                var index = decorator.TemplateParameters.IndexOf(templateParam);
+                if (decorator.TemplateParameters.Any(param => param.Required && decorator.TemplateParameters.IndexOf(param) > index))
+                {
+                    yield return new ModelError(decorator, $"Le paramètre facultatif '{templateParam.Name}' doit être positionné après tous les paramètres obligatoires.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD1037 };
+                }
+            }
+        }
+
         foreach (var classe in modelFile.Classes.Where(c => c.DecoratorReferences.Count > 0))
         {
             classe.Decorators.Clear();
@@ -76,9 +93,9 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
                             yield return new ModelError(classe, $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à la classe '{classe}' : seul un 'extends' peut être spécifié.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1010 };
                         }
 
-                        if (decoratorRef.ParameterReferences.Count > decorator.TemplateParameters.Count)
+                        foreach (var error in CheckDecoratorParameters(classe, decoratorRef, decorator))
                         {
-                            yield return new ModelError(classe, $"Le décorateur '{decorator.Name}' est utilisé avec plus de paramètres qu'il ne définit ({decoratorRef.ParameterReferences.Count} au lieu de {decorator.TemplateParameters.Count} maximum).", decoratorRef) { ModelErrorType = ModelErrorType.TMD1035 };
+                            yield return error;
                         }
 
                         classe.Decorators.Add((decorator, decoratorRef.ParameterReferences.Select(p => p.ReferenceName).ToArray()));
@@ -113,9 +130,9 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
                     }
                     else
                     {
-                        if (decoratorRef.ParameterReferences.Count > decorator.TemplateParameters.Count)
+                        foreach (var error in CheckDecoratorParameters(endpoint, decoratorRef, decorator))
                         {
-                            yield return new ModelError(endpoint, $"Le décorateur '{decorator.Name}' est utilisé avec plus de paramètres qu'il ne définit ({decoratorRef.ParameterReferences.Count} au lieu de {decorator.TemplateParameters.Count} maximum).", decoratorRef) { ModelErrorType = ModelErrorType.TMD1035 };
+                            yield return error;
                         }
 
                         endpoint.Decorators.Add((decorator, decoratorRef.ParameterReferences.Select(p => p.ReferenceName).ToArray()));
@@ -127,6 +144,19 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
             {
                 continue;
             }
+        }
+    }
+
+    private static IEnumerable<ModelError> CheckDecoratorParameters(IPropertyContainer container, DecoratorReference decoratorRef, Decorator decorator)
+    {
+        if (decoratorRef.ParameterReferences.Count > decorator.TemplateParameters.Count)
+        {
+            yield return new ModelError(container, $"Le décorateur '{decorator.Name}' est utilisé avec plus de paramètres qu'il ne définit ({decoratorRef.ParameterReferences.Count} au lieu de {decorator.TemplateParameters.Count} maximum).", decoratorRef) { ModelErrorType = ModelErrorType.TMD1035 };
+        }
+
+        if (decoratorRef.ParameterReferences.Count < decorator.TemplateParameters.Count(p => p.Required))
+        {
+            yield return new ModelError(container, $"Le décorateur '{decorator.Name}' n'est pas utilisé avec tous ses paramètres obligatoires ({decoratorRef.ParameterReferences.Count} au lieu de {decorator.TemplateParameters.Count(p => p.Required)} minimum).", decoratorRef) { ModelErrorType = ModelErrorType.TMD1036 };
         }
     }
 }

@@ -2,9 +2,11 @@
 
 public class TemplateParameter
 {
-    public required string Name { get; set; }
+    public required LocatedString Name { get; set; }
 
     public required string Comment { get; set; }
+
+    public bool Required { get; set; }
 
     public string DefaultValue { get; set; } = string.Empty;
 }
