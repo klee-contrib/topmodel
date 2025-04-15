@@ -38,7 +38,8 @@
               "type": "array",
               "description": "Paramètres du domaine.",
               "items": {
-                "type": "string"
+                "type": "string",
+                "description": "Paramètre de domaine."
               }
             }
           }
@@ -858,7 +859,7 @@
                       "type": "array",
                       "items": {
                         "type": "string",
-                        "description": "Paramètre du décorator"
+                        "description": "Paramètre du décorateur"
                       }
                     }
                   }
@@ -1116,7 +1117,7 @@
                       "type": "array",
                       "items": {
                         "type": "string",
-                        "description": "Paramètre du décorator"
+                        "description": "Paramètre du décorateur"
                       }
                     }
                   }

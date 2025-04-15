@@ -64,6 +64,7 @@ public class SemanticTokensHandler : SemanticTokensHandlerBase
                     DataFlowReference => SemanticTokenType.Operator,
                     DomainReference => SemanticTokenType.EnumMember,
                     Reference r when r.ReferenceName == "false" => SemanticTokenType.Keyword,
+                    ParameterReference => SemanticTokenType.Parameter,
                     _ => SemanticTokenType.Function
                 };
 

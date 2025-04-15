@@ -9,4 +9,8 @@ public class TemplateParameter
     public bool Required { get; set; }
 
     public string DefaultValue { get; set; } = string.Empty;
+
+    public Decorator? Decorator { get; set; }
+
+    public Domain? Domain { get; set; }
 }
