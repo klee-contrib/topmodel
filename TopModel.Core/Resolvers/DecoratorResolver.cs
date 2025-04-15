@@ -151,7 +151,10 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
     {
         if (decoratorRef.ParameterReferences.Count > decorator.TemplateParameters.Count)
         {
-            yield return new ModelError(container, $"Le décorateur '{decorator.Name}' est utilisé avec plus de paramètres qu'il ne définit ({decoratorRef.ParameterReferences.Count} au lieu de {decorator.TemplateParameters.Count} maximum).", decoratorRef) { ModelErrorType = ModelErrorType.TMD1035 };
+            foreach (var extraParameter in decoratorRef.ParameterReferences.Skip(decorator.TemplateParameters.Count))
+            {
+                yield return new ModelError(container, $"Le décorateur '{decorator.Name}' ne définit que {decorator.TemplateParameters.Count} paramètres.", extraParameter) { ModelErrorType = ModelErrorType.TMD1035 };
+            }
         }
 
         if (decoratorRef.ParameterReferences.Count < decorator.TemplateParameters.Count(p => p.Required))

@@ -218,12 +218,12 @@ public enum ModelErrorType
     TMD1034,
 
     /// <summary>
-    /// Le décorateur/domaine '{decorator.Name}' est utilisé avec plus de paramètres qu'il ne définit ({decoratorRef.ParameterReferences.Count} au lieu de {decorator.TemplateParameters.Count} maximum).
+    /// Le domaine/décorateur '{Name}' ne définit que {domain.TemplateParameters.Count} paramètres.
     /// </summary>
     TMD1035,
 
     /// <summary>
-    /// Le décorateur '{decorator.Name}' n'est pas utilisé avec tous ses paramètres obligatoires ({decoratorRef.ParameterReferences.Count} au lieu de {decorator.TemplateParameters.Count(p => p.Required)} minimum).
+    /// Le domaine/décorateur '{Name}' n'est pas utilisé avec tous ses paramètres obligatoires ({ParameterReferences.Count} au lieu de {TemplateParameters.Count(p => p.Required)} minimum).
     /// </summary>
     TMD1036,
 

@@ -334,7 +334,10 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
     {
         if (domainRef.ParameterReferences.Count > domain.TemplateParameters.Count)
         {
-            yield return new ModelError(property, $"Le domaine '{domain.Name}' est utilisé avec plus de paramètres qu'il ne définit ({domainRef.ParameterReferences.Count} au lieu de {domain.TemplateParameters.Count} maximum).", domainRef) { ModelErrorType = ModelErrorType.TMD1035 };
+            foreach (var extraParameter in domainRef.ParameterReferences.Skip(domain.TemplateParameters.Count))
+            {
+                yield return new ModelError(property, $"Le domaine '{domain.Name}' ne définit que {domain.TemplateParameters.Count} paramètres.", extraParameter) { ModelErrorType = ModelErrorType.TMD1035 };
+            }
         }
 
         if (domainRef.ParameterReferences.Count < domain.TemplateParameters.Count(p => p.Required))
