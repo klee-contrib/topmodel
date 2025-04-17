@@ -1,3 +1,7 @@
+## 1.5.2
+
+- [`6b2182b`](https://github.com/klee-contrib/topmodel/commit/6b2182bdb7aaa6574b684e9f5d4af149f2d382ed) - [C#] Fix usings manquants dans les mappers quand on parse une enum.
+
 ## 1.5.1
 
 - [`8ea3a07`](https://github.com/klee-contrib/topmodel/commit/8ea3a071b1944b4f1cde1a33240c54f861ebd7a4) - [C#] Ajout `mappersName` + gestion des transforms dans `referenceAccessorsName`
