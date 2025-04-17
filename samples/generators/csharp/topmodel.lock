@@ -4,7 +4,7 @@
 
 version: 2.5.2
 custom:
-  ../../../TopModel.Generator.Csharp: 865acafced52f8d069c371eed38ae40b
+  ../../../TopModel.Generator.Csharp: 28f3f1b37f54b2b34e2099808b8780fd
 generatedFiles:
   - ./src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.comments.cs
   - ./src/Clients/TopModel.Sample.Clients.Db/generated/TopModelSampleDbContext.cs

@@ -87,8 +87,7 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
 
         if (usings.Any(@using => !ns.Contains(@using)))
         {
-            w.WriteUsings(usings.Where(@using => !ns.Contains(@using)).Distinct().ToArray());
-            w.WriteLine();
+            w.AddUsings(usings.Where(@using => !ns.Contains(@using)));
         }
 
         w.WriteNamespace(ns);
@@ -203,7 +202,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                                 var sourceType = Config.GetType(mapping.Value, Classes, nonNullable: true);
                                 if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Key).EndsWith(targetType))
                                 {
-                                    value = $"<{Config.GetEnumType(mapping.Key)}>({value}";
+                                    var enumType = Config.GetEnumType(mapping.Key);
+                                    value = $"<{enumType}>({value}";
+
+                                    w.AddUsing(Config.GetEnumTypeNamespace(mapping.Key, GetBestClassTag(mapping.Key.Class, tag)));
 
                                     if (!requiredNonNullable || !mapping.Key.Required && !mapping.Value.Required)
                                     {
@@ -399,7 +401,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                 }
                 else if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Value).EndsWith(targetType))
                 {
-                    value = $"<{Config.GetEnumType(mapping.Value)}>({value}";
+                    var enumType = Config.GetEnumType(mapping.Value);
+                    value = $"<{enumType}>({value}";
+
+                    w.AddUsing(Config.GetEnumTypeNamespace(mapping.Value, GetBestClassTag(mapping.Value.Class, tag)));
 
                     if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
                     {
@@ -517,7 +522,10 @@ public class MapperGenerator(ILogger<MapperGenerator> logger, IFileWriterProvide
                     }
                     else if (!sourceType.EndsWith(targetType) && !targetType.EndsWith(sourceType) && Config.GetEnumType(mapping.Value).EndsWith(targetType))
                     {
-                        value = $"<{Config.GetEnumType(mapping.Value)}>({value}";
+                        var enumType = Config.GetEnumType(mapping.Value);
+                        value = $"<{enumType}>({value}";
+
+                        w.AddUsing(Config.GetEnumTypeNamespace(mapping.Value, GetBestClassTag(mapping.Value.Class, tag)));
 
                         if (!rrnSource || !mapping.Key.Required && !mapping.Value.Required)
                         {

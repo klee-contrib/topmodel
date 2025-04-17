@@ -75,9 +75,8 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
             }
         }
 
-        w.WriteUsings(usings.ToArray());
+        w.AddUsings(usings);
 
-        w.WriteLine();
         w.WriteNamespace(implementationNamespace);
 
         w.WriteSummary($"Implémentation de {interfaceName}.");
@@ -180,9 +179,8 @@ public class ReferenceAccessorGenerator(ILogger<ReferenceAccessorGenerator> logg
 
         usings.Add("Kinetix.Services.Annotations");
 
-        w.WriteUsings(usings.ToArray());
+        w.AddUsings(usings);
 
-        w.WriteLine();
         w.WriteNamespace(interfaceNamespace);
         w.WriteSummary($"Accesseurs de listes de référence {(fileType.StartsWith("db") ? "persistées" : "non persistées")}");
         w.WriteLine("[RegisterContract]");

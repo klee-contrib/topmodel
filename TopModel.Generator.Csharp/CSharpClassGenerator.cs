@@ -516,17 +516,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
             }
         }
 
-        var finalUsings = usings
-            .Where(u => !GetNamespace(item, tag).StartsWith(u))
-            .Distinct()
-            .ToArray();
-
-        w.WriteUsings(finalUsings);
-
-        if (finalUsings.Length > 0)
-        {
-            w.WriteLine();
-        }
+        w.AddUsings(usings.Where(u => !GetNamespace(item, tag).StartsWith(u)));
     }
 
     protected override string GetFileName(Class classe, string tag)

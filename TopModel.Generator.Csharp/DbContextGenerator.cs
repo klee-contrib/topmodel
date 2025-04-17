@@ -44,9 +44,8 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
     {
         using var cw = this.OpenCSharpWriter(fileName);
 
-        cw.WriteUsings([.. usings]);
+        cw.AddUsings(usings);
 
-        cw.WriteLine();
         cw.WriteNamespace(contextNs);
 
         cw.WriteSummary("Partial pour ajouter les commentaires EF.");
@@ -110,8 +109,8 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
             usings.AddRange(Config.GetValueImports(value.Key, value.Value));
         }
 
-        w.WriteUsings(usings.Distinct().ToArray());
-        w.WriteLine();
+        w.AddUsings(usings);
+
         w.WriteNamespace(contextNs);
 
         w.WriteSummary("DbContext généré pour Entity Framework Core.");
@@ -254,11 +253,11 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
                     w.Write(" }");
                     if (classe.Values.IndexOf(refValue) < classe.Values.Count - 1)
                     {
-                        w.Write(",\r\n");
+                        w.WriteLine(",");
                     }
                 }
 
-                w.Write(");\r\n");
+                w.WriteLine(");");
             }
 
             if (hasData)

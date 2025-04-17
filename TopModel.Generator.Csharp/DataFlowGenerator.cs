@@ -43,8 +43,8 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
             usings.Add(Config.GetNamespace(source.Class, GetBestClassTag(source.Class, tag)));
         }
 
-        w.WriteUsings(usings.ToArray());
-        w.WriteLine();
+        w.AddUsings(usings);
+
         w.WriteNamespace(Config.GetNamespace(dataFlow, tag));
 
         var name = $"{dataFlow.Name.ToPascalCase()}Flow";
@@ -275,8 +275,8 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         using var w = this.OpenCSharpWriter(fileName);
         w.EnableHeader = false;
 
-        w.WriteUsings(new[] { "Kinetix.Etl" }.Concat(dataFlow.Sources.Select(source => Config.GetNamespace(source.Class, GetBestClassTag(source.Class, tag)))).ToArray());
-        w.WriteLine();
+        w.AddUsings(["Kinetix.Etl", .. dataFlow.Sources.Select(source => Config.GetNamespace(source.Class, GetBestClassTag(source.Class, tag)))]);
+
         w.WriteNamespace(Config.GetNamespace(dataFlow, tag));
         w.WriteClassDeclaration($"{dataFlow.Name.ToPascalCase()}Flow", null, false);
 
@@ -345,8 +345,8 @@ public class DataFlowGenerator(ILogger<DataFlowGenerator> logger, IFileWriterPro
         var firstFlow = flows.First();
         using var w = this.OpenCSharpWriter(fileName);
 
-        w.WriteUsings("Kinetix.Etl", "Microsoft.Extensions.DependencyInjection");
-        w.WriteLine();
+        w.AddUsings("Kinetix.Etl", "Microsoft.Extensions.DependencyInjection");
+
         w.WriteNamespace(Config.GetNamespace(firstFlow, tag));
         w.WriteLine("public static class ServiceExtensions");
         w.WriteLine("{");

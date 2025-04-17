@@ -308,6 +308,23 @@ public class CsharpConfig : GeneratorConfigBase
             .ToNamespace();
     }
 
+    public virtual string GetEnumTypeNamespace(IProperty fp, string tag)
+    {
+        var op = fp switch
+        {
+            AssociationProperty a => a.Property,
+            AliasProperty { Property: AssociationProperty a } => a.Property,
+            AliasProperty alp => alp.Property,
+            _ => fp
+        };
+
+        return op is AssociationProperty ap
+            ? GetNamespace(ap.Association, tag)
+            : op is RegularProperty rp
+            ? GetNamespace(rp.Class, tag)
+            : string.Empty;
+    }
+
     public virtual string GetMapperFilePath((Class Class, FromMapper Mapper) mapper, string tag)
     {
         var (ns, modelPath) = GetMapperLocation(mapper, tag);

@@ -95,11 +95,7 @@ public class CSharpApiClientGenerator(ILogger<CSharpApiClientGenerator> logger, 
             }
         }
 
-        fw.WriteUsings(usings.Distinct().Where(u => u != ns).ToArray());
-        if (usings.Any())
-        {
-            fw.WriteLine();
-        }
+        fw.AddUsings(usings.Where(u => u != ns));
 
         fw.WriteNamespace(ns);
 

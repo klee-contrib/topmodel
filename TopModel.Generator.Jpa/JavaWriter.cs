@@ -71,19 +71,6 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     }
 
     /// <summary>
-    /// Ecrit l'annotation avec le niveau indenté.
-    /// </summary>
-    /// <param name="indentationLevel">Niveau d'indentation.</param>
-    /// <param name="javaAnnotations">Valeurs à écrire dans le flux.</param>
-    public void WriteAnnotations(int indentationLevel, IEnumerable<JavaAnnotation> javaAnnotations)
-    {
-        foreach (var annotation in javaAnnotations.DistinctBy(e => e.Name.Split('(').First()))
-        {
-            WriteLine(indentationLevel, annotation);
-        }
-    }
-
-    /// <summary>
     /// Ecrit la classe Java avec le niveau indenté.
     /// </summary>
     /// <param name="indentationLevel">Niveau d'indentation.</param>
@@ -116,6 +103,19 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         }
 
         WriteLine(indentationLevel, "}");
+    }
+
+    /// <summary>
+    /// Ecrit l'annotation avec le niveau indenté.
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="javaAnnotations">Valeurs à écrire dans le flux.</param>
+    public void WriteAnnotations(int indentationLevel, IEnumerable<JavaAnnotation> javaAnnotations)
+    {
+        foreach (var annotation in javaAnnotations.DistinctBy(e => e.Name.Split('(').First()))
+        {
+            WriteLine(indentationLevel, annotation);
+        }
     }
 
     /// <summary>

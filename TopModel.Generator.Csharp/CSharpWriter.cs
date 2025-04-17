@@ -8,6 +8,11 @@ namespace TopModel.Generator.Csharp;
 /// </summary>
 public class CSharpWriter(IFileWriter writer) : IDisposable
 {
+    private readonly List<WriterLine> _lines = [];
+    private readonly List<string> _usings = [];
+
+    private WriterLine? _currentLine;
+
     public bool EnableHeader
     {
         get => writer.EnableHeader;
@@ -20,9 +25,54 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
         set => writer.HeaderMessage = value;
     }
 
+    /// <summary>
+    /// Ajoute un using au fichier.
+    /// </summary>
+    /// <param name="nsName">Nom de la classe/namespace à importer.</param>
+    public void AddUsing(string nsName)
+    {
+        _usings.Add(nsName);
+    }
+
+    /// <summary>
+    /// Ajoute des usings au fichier.
+    /// </summary>
+    /// <param name="nsNames">Noms des classes/namespaces à importer.</param>
+    public void AddUsings(IEnumerable<string> nsNames)
+    {
+        _usings.AddRange(nsNames);
+    }
+
+    /// <summary>
+    /// Ajoute des usings au fichier.
+    /// </summary>
+    /// <param name="nsNames">Nom des classes/namespaces à importer.</param>
+    public void AddUsings(params string[] nsNames)
+    {
+        _usings.AddRange(nsNames);
+    }
+
     /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
     {
+        if (_usings.Count > 0)
+        {
+            var systemUsings = _usings.Where(name => name.StartsWith("System"));
+            var otherUsings = _usings.Except(systemUsings);
+
+            foreach (var nsName in systemUsings.OrderBy(x => x).Concat(otherUsings.OrderBy(x => x)).Where(u => !string.IsNullOrWhiteSpace(u)).Distinct())
+            {
+                writer.WriteLine($"using {nsName};");
+            }
+
+            writer.WriteLine();
+        }
+
+        foreach (var line in _lines)
+        {
+            writer.WriteLine(line.Indent, line.Line);
+        }
+
         writer.Dispose();
     }
 
@@ -42,9 +92,14 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
     /// <param name="value">Valeur à écrire dans le flux.</param>
     public virtual void Write(int indentationLevel, string value)
     {
-        var indentValue = GetIdentValue(indentationLevel);
-        value = value.Replace("\r\n", "\r\n" + indentValue);
-        writer.Write(indentValue + value);
+        if (_currentLine == null)
+        {
+            _currentLine = new() { Indent = indentationLevel, Line = value };
+        }
+        else
+        {
+            _currentLine.Line += value;
+        }
     }
 
     /// <summary>
@@ -159,9 +214,16 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
     /// <param name="value">Valeur à écrire dans le flux.</param>
     public virtual void WriteLine(int indentationLevel, string value)
     {
-        var indentValue = GetIdentValue(indentationLevel);
-        value = value.Replace("\r\n", "\r\n" + indentValue);
-        writer.WriteLine(indentValue + value);
+        if (_currentLine != null)
+        {
+            _currentLine.Line += value;
+            _lines.Add(_currentLine);
+            _currentLine = null;
+        }
+        else
+        {
+            _lines.Add(new() { Indent = indentationLevel, Line = value });
+        }
     }
 
     /// <summary>
@@ -234,21 +296,6 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
         if (!string.IsNullOrEmpty(paramName) && !string.IsNullOrEmpty(value))
         {
             WriteLine(indentationLevel, LoadParam(paramName, value, "typeparam"));
-        }
-    }
-
-    /// <summary>
-    /// Retourne le code associé à la déclaration d'un Using.
-    /// </summary>
-    /// <param name="nsNames">Nom de la classe/namespace à importer.</param>
-    public virtual void WriteUsings(params string[] nsNames)
-    {
-        var systemUsings = nsNames.Where(name => name.StartsWith("System"));
-        var otherUsings = nsNames.Except(systemUsings);
-
-        foreach (var nsName in systemUsings.OrderBy(x => x).Concat(otherUsings.OrderBy(x => x)))
-        {
-            WriteLine($"using {nsName};");
         }
     }
 
@@ -365,21 +412,5 @@ public class CSharpWriter(IFileWriter writer) : IDisposable
 
         sb.Append("/// </summary>");
         return sb.ToString();
-    }
-
-    /// <summary>
-    /// Calcule l'identation nécessaire.
-    /// </summary>
-    /// <param name="indentationLevel">Niveau d'indention.</param>
-    /// <returns>Identation.</returns>
-    protected string GetIdentValue(int indentationLevel)
-    {
-        var indentValue = string.Empty;
-        for (var i = 0; i < indentationLevel; ++i)
-        {
-            indentValue += writer.IndentValue;
-        }
-
-        return indentValue;
     }
 }
