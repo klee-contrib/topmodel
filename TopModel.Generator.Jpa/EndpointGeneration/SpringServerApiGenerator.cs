@@ -195,6 +195,11 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             }
         }
 
+        if (method.ReturnType == "void" || method.ReturnType == "Void")
+        {
+            method.AddAnnotation(new JavaAnnotation("ResponseStatus", imports: ["org.springframework.web.bind.annotation.ResponseStatus", "org.springframework.http.HttpStatus"], value: "HttpStatus.NO_CONTENT"));
+        }
+
         fw.AddImports(method.Imports);
         fw.Write(1, method);
     }

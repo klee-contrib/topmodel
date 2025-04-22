@@ -35,9 +35,9 @@ public class JavaMethod
 
     public List<JavaMethodParameter> Parameters { get; } = [];
 
-    protected string Name { get; }
+    public string ReturnType { get; }
 
-    protected string ReturnType { get; }
+    protected string Name { get; }
 
     protected List<string> GenericTypes { get; } = new();
 
