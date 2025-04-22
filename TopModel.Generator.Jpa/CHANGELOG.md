@@ -1,3 +1,7 @@
+## 1.6.3
+
+- [a100a](https://github.com/klee-contrib/topmodel/commit/a100aa225259ce2a71564f95f8b97193c0e5f2b5s) [JPA] Ajout de l'annotation 204 si le controller renvoit void ou Void
+
 ## 1.6.2
 
 - [cf7bb0](https://github.com/klee-contrib/topmodel/commit/cf7bb01c78ca15ac9a965fd3b78aec6b312d6299) [JPA] EnumsAsEnums fix génération constructeur
