@@ -105,7 +105,7 @@ public class Profil {
 	 * @return value of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#droits droits}.
 	 */
 	public List<Droit> getDroits() {
-		if(this.droits == null) {
+		if (this.droits == null) {
 			this.droits = new ArrayList<>();
 		}
 		return this.droits;

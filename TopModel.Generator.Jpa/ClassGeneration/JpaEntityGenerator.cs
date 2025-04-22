@@ -81,7 +81,14 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
     {
         if (pk is AssociationProperty ap)
         {
-            return $".{JpaModelPropertyGenerator.GetGetterName(ap.Property)}()";
+            if (Config.EnumsAsEnums)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return $".{JpaModelPropertyGenerator.GetGetterName(ap.Property)}()";
+            }
         }
         else if (pk is AliasProperty al && al.Property is AssociationProperty asp)
         {
@@ -199,15 +206,15 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
         fw.WriteLine();
         fw.WriteLine(2, "public boolean equals(Object o) {");
-        fw.WriteLine(3, "if(o == this) {");
+        fw.WriteLine(3, "if (o == this) {");
         fw.WriteLine(4, "return true;");
         fw.WriteLine(3, "}");
         fw.WriteLine();
-        fw.WriteLine(3, "if(o == null) {");
+        fw.WriteLine(3, "if (o == null) {");
         fw.WriteLine(4, "return false;");
         fw.WriteLine(3, "}");
         fw.WriteLine();
-        fw.WriteLine(3, "if(this.getClass() != o.getClass()) {");
+        fw.WriteLine(3, "if (this.getClass() != o.getClass()) {");
         fw.WriteLine(4, "return false;");
         fw.WriteLine(3, "}");
         fw.WriteLine();
@@ -216,7 +223,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         if (associations.Any())
         {
             fw.WriteLine();
-            fw.WriteLine(3, @$"if({string.Join(" || ", associations.Select(pk => pk.NameByClassCamel).Select(pk => $"this.{pk} == null || oId.{pk} == null"))}) {{");
+            fw.WriteLine(3, @$"if ({string.Join(" || ", associations.Select(pk => pk.NameByClassCamel).Select(pk => $"this.{pk} == null || oId.{pk} == null"))}) {{");
             fw.WriteLine(4, "return false;");
             fw.WriteLine(3, "}");
         }

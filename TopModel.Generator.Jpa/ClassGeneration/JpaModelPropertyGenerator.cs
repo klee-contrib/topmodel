@@ -186,7 +186,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
         {
             fw.AddImport($"java.util.{newableType}");
             method
-                .AddBodyLine($"if(this.{propertyName} == null) {{")
+                .AddBodyLine($"if (this.{propertyName} == null) {{")
                 .AddBodyLine(1, $"this.{propertyName} = new {newableType}<>();")
                 .AddBodyLine($"}}");
         }
