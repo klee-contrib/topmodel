@@ -1,3 +1,10 @@
+## 1.6.4
+
+- [3b194](https://github.com/klee-contrib/topmodel/commit/a90ecffa2b93af5244d4ee2d5ca24c0756b0f8a4) [JPA] Fix imports enum dans les controllers
+
+- [a90ec](https://github.com/klee-contrib/topmodel/commit/a90ecffa2b93af5244d4ee2d5ca24c0756b0f8a4) [JPA] Ajout des espaces entre le if et sa parenthèse.
+Fix enumAsEnum dans le cas manyToMany explicites
+
 ## 1.6.3
 
 - [a100a](https://github.com/klee-contrib/topmodel/commit/a100aa225259ce2a71564f95f8b97193c0e5f2b5s) [JPA] Ajout de l'annotation 204 si le controller renvoit void ou Void
