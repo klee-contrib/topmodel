@@ -129,7 +129,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             var param = new JavaMethodParameter(Config.GetType(routeParam), routeParam.GetParamName());
             var pathParamAnnotation = new JavaAnnotation("PathVariable", imports: "org.springframework.web.bind.annotation.PathVariable", value: @$"""{routeParam.GetParamName()}""");
             param.AddAnnotation(pathParamAnnotation);
-            param.Imports.AddRange(Config.GetDomainImports(routeParam, tag));
+            param.Imports.AddRange(routeParam.GetTypeImports(Config, tag));
             method.AddParameter(param);
             foreach (var (a, i) in Config.GetDomainAnnotationsAndImports(routeParam, tag))
             {
@@ -144,7 +144,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             var queryParamAnnotation = new JavaAnnotation("RequestParam", imports: "org.springframework.web.bind.annotation.RequestParam", value: @$"""{queryParam.GetParamName()}""")
                 .AddAttribute("required", queryParam.Required.ToString().ToFirstLower());
             param.AddAnnotation(queryParamAnnotation);
-            param.Imports.AddRange(Config.GetDomainImports(queryParam, tag));
+            param.Imports.AddRange(queryParam.GetTypeImports(Config, tag));
             foreach (var (a, i) in Config.GetDomainAnnotationsAndImports(queryParam, tag))
             {
                 param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
@@ -171,7 +171,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
                 var parameter = new JavaMethodParameter(Config.GetType(param), param.GetParamName());
                 parameter.AddAnnotation(annotation);
-                parameter.Imports.AddRange(Config.GetDomainImports(param, tag));
+                parameter.Imports.AddRange(param.GetTypeImports(Config, tag));
                 method.AddParameter(parameter);
             }
         }
@@ -184,7 +184,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
                 var annotation = new JavaAnnotation("RequestBody", imports: "org.springframework.web.bind.annotation.RequestBody");
                 var parameter = new JavaMethodParameter(Config.GetType(bodyParam), bodyParam.GetParamName());
                 parameter.AddAnnotation(annotation);
-                parameter.Imports.AddRange(Config.GetDomainImports(bodyParam, tag));
+                parameter.Imports.AddRange(bodyParam.GetTypeImports(Config, tag));
                 foreach (var (a, i) in Config.GetDomainAnnotationsAndImports(bodyParam, tag))
                 {
                     parameter.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));

@@ -55,9 +55,17 @@ public static class ImportsJpaExtensions
             yield return import;
         }
 
-        if (config.EnumsAsEnums && config.CanClassUseEnums(ap.Association, prop: ap.Property))
+        if (config.CanClassUseEnums(ap.Association, prop: ap.Property))
         {
-            yield return $"{config.GetEnumValuePackageName(ap.Association.EnumKey!.Class, tag)}.{ap.Association.NamePascal}";
+            if (config.EnumsAsEnums)
+            {
+                yield return $"{config.GetEnumValuePackageName(ap.Association.EnumKey!.Class, tag)}.{ap.Association.NamePascal}";
+
+            }
+            else if (ap.Class?.IsPersistent == false || ap.Endpoint != null)
+            {
+                yield return $"{config.GetEnumPackageName(ap.Property.Class, config.GetBestClassTag(ap.Property.Class, tag))}.{config.GetEnumName(ap.Property, ap.Property.Class)}";
+            }
         }
         else
         {
