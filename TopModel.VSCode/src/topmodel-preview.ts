@@ -5,30 +5,36 @@ function zoomClick(inOut: boolean) {
     return false;
 }
 
+function scope(scope: "file" | "module" | "model") {
+    const event = new CustomEvent("update:scope", { detail: { scope } });
+    document.dispatchEvent(event);
+    return false;
+}
+
 function displayCodeClick() {
     const sourceCode = document.getElementById("sourceCode");
     sourceCode!.style.display = sourceCode!.style.display === "none" ? "block" : "none";
 }
 
 function copyCode(diagram: string) {
-    const textArea = document.createElement('textarea');
+    const textArea = document.createElement("textarea");
     textArea.value = `${diagram}`;
     document.body.appendChild(textArea);
     textArea.select();
-    document.execCommand('copy');
+    document.execCommand("copy");
     document.body.removeChild(textArea);
     showFeedback("Code copié dans le presse-papiers");
 }
 function showFeedback(message: string) {
-    const feedbackElement = document.createElement('div');
+    const feedbackElement = document.createElement("div");
     feedbackElement.textContent = message;
-    feedbackElement.style.position = 'fixed';
-    feedbackElement.style.top = '10px';
-    feedbackElement.style.right = '10px';
-    feedbackElement.style.backgroundColor = 'green';
-    feedbackElement.style.color = 'white';
-    feedbackElement.style.padding = '10px';
-    feedbackElement.style.borderRadius = '5px';
+    feedbackElement.style.position = "fixed";
+    feedbackElement.style.top = "10px";
+    feedbackElement.style.right = "10px";
+    feedbackElement.style.backgroundColor = "green";
+    feedbackElement.style.color = "white";
+    feedbackElement.style.padding = "10px";
+    feedbackElement.style.borderRadius = "5px";
     document.body.appendChild(feedbackElement);
 
     setTimeout(() => {
@@ -77,6 +83,7 @@ function showFeedback(message: string) {
         matrix.scale *= zoomScale;
     }
     function handleZoom(wheelEvent: WheelEvent) {
+        wheelEvent.preventDefault();
         const inOut = wheelEvent.deltaY < 0;
         zoomInOut(inOut);
         zoomTranslate(inOut, wheelEvent.clientX, wheelEvent.clientY);
@@ -143,6 +150,13 @@ function showFeedback(message: string) {
         draggable.onmousedown = startDrag;
         //@ts-ignore
         document.addEventListener("zoomClick", handleZoomClick);
+        document.addEventListener("update:scope", (event) => {
+            vscode.postMessage({
+                type: "update:scope",
+                //@ts-ignore
+                scope: event.detail.scope,
+            });
+        });
         setTimeout(() => {
             initNavigation();
             initPosition();

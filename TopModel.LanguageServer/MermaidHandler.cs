@@ -17,19 +17,15 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
         _modelStore = modelStore;
     }
 
-    public static string GenerateDiagramFile(ModelFile file)
+    public static string GenerateDiagramClasses(IEnumerable<Class> classes)
     {
         string diagram = string.Empty;
-        var classes = file.Classes
-            .Where(c => c.IsPersistent);
-
-        diagram += "classDiagram\n";
-        var notClasses = new List<Class>();
+        var externalClasses = new List<Class>();
         foreach (var classe in classes)
         {
             if (classe.Properties.OfType<RegularProperty>().Any())
             {
-                diagram += @$"%% {classe.Comment}" + '\n';
+                diagram += @$"%% {classe.Comment.Replace("\n", "\n%% ")}" + '\n';
 
                 diagram += @$"class {classe.Name}{{" + '\n';
                 if (classe.EnumKey != null)
@@ -54,9 +50,9 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
 
             foreach (var property in classe.Properties.OfType<AssociationProperty>())
             {
-                if (property.Association.ModelFile != file)
+                if (!classes.Contains(property.Association))
                 {
-                    notClasses.Add(property.Association);
+                    externalClasses.Add(property.Association);
                 }
 
                 string cardLeft;
@@ -91,9 +87,9 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
             }
         }
 
-        foreach (var classe in notClasses)
+        foreach (var classe in externalClasses)
         {
-            diagram += @$"%% {classe.Comment}" + '\n';
+            diagram += @$"%% {classe.Comment.Replace("\n", "\n%% ")}" + '\n';
             diagram += @$"class {classe.Name}:::fileReference" + '\n';
         }
 
@@ -106,11 +102,53 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
         return diagram;
     }
 
+    public string GenerateDiagram(MermaidRequest request)
+    {
+        string diagram = string.Empty;
+        var classes = GetClassesForScope(request.Uri, request.Scope).Where(c => c.IsPersistent);
+        diagram += "classDiagram\n";
+        diagram += GenerateDiagramClasses(classes);
+        return diagram;
+    }
+
+    public IEnumerable<Class> GetClassesForScope(string uri, MermaidScope scope)
+    {
+        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == uri);
+        return scope switch
+        {
+            MermaidScope.File => file?.Classes ?? Enumerable.Empty<Class>(),
+            MermaidScope.Module => _modelStore.Files.Where(f => f.Namespace.Module == file?.Namespace.Module)?.SelectMany(f => f.Classes) ?? Enumerable.Empty<Class>(),
+            MermaidScope.Model => _modelStore.Files.SelectMany(f => f.Classes),
+            _ => []
+        };
+    }
+
+    public string GetModule(string uri)
+    {
+        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == uri);
+        if (file is null)
+        {
+            return string.Empty;
+        }
+
+        return file!.Namespace.Module;
+    }
+
+    public string GetFileName(string uri)
+    {
+        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == uri);
+        if (file is null)
+        {
+            return string.Empty;
+        }
+
+        return file!.Name.Split("/").Last();
+    }
+
     /// <inheritdoc cref="IRequestHandler{TRequest, TResponse}.Handle" />
     public Task<Mermaid> Handle(MermaidRequest request, CancellationToken cancellationToken)
     {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.Uri);
-        var result = GenerateDiagramFile(file!);
-        return Task.FromResult(new Mermaid(result, file!.Name));
+        var result = GenerateDiagram(request);
+        return Task.FromResult(new Mermaid(result, GetModule(request.Uri), GetFileName(request.Uri), request.Scope));
     }
 }

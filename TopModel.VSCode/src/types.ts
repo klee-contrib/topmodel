@@ -10,6 +10,7 @@ export class TopModelException {
 export type Mermaid = {
     diagram: string;
     module: string;
+    fileName: string;
 };
 
 export type Status = "LOADING" | "ERROR" | "WARNING" | "READY" | "INSTALLING";

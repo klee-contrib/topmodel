@@ -6,7 +6,6 @@ import {
     Uri,
     window,
     workspace,
-    commands,
     ViewColumn,
     TextEditor,
     TextDocumentChangeEvent,
@@ -26,6 +25,7 @@ export class TopModelPreviewPanel {
 
     public readonly panel: WebviewPanel;
     public currentFsPath: string = "";
+    public currentScope: "file" | "module" | "model" = "file";
 
     constructor(context: ExtensionContext, private readonly applications: Application[]) {
         makeAutoObservable(this);
@@ -60,16 +60,18 @@ export class TopModelPreviewPanel {
     private initSubscriptions() {
         this.context.subscriptions.push(
             window.onDidChangeActiveTextEditor(async (textEditor?: TextEditor) => {
-                if (textEditor) {
+                if (textEditor && textEditor.document.uri.fsPath.endsWith(".tmd")) {
                     this.currentFsPath = textEditor.document.uri.fsPath;
+                    this.currentScope = "file";
                     this.matrix.x = -1;
                     this.matrix.y = -1;
                     this.matrix.scale = 1;
                 }
             }),
             workspace.onDidChangeTextDocument(async (textDocumentChangeEvent?: TextDocumentChangeEvent) => {
-                if (textDocumentChangeEvent) {
+                if (textDocumentChangeEvent && textDocumentChangeEvent.document.uri.fsPath.endsWith(".tmd")) {
                     this.currentFsPath = textDocumentChangeEvent.document.uri.fsPath;
+                    this.currentScope = "file";
                 }
             }),
             this.panel.webview.onDidReceiveMessage((message) => {
@@ -95,6 +97,9 @@ export class TopModelPreviewPanel {
         if (message.type === "update:matrix") {
             this.matrix = message.matrix;
         }
+        if (message.type === "update:scope") {
+            this.currentScope = message.scope as any;
+        }
         if (message.type === "click:class") {
             const className = message.className;
             const symbolInformations: SymbolInformation[] = await this.currentApplication?.client?.sendRequest(
@@ -108,7 +113,9 @@ export class TopModelPreviewPanel {
             const uri = Uri.parse(symbol.location.uri as any);
             const textEditor =
                 window.visibleTextEditors.filter((t) => t.document.uri.fsPath === uri.fsPath)[0] ??
-                window.activeTextEditor;
+                (window.activeTextEditor?.document.uri.fsPath.endsWith(".tmd") ? window.activeTextEditor : undefined) ??
+                window.visibleTextEditors.filter((t) => t.document.uri.fsPath.endsWith(".tmd"))[0] ??
+                window.visibleTextEditors[0];
             await window.showTextDocument(uri, {
                 preserveFocus: false,
                 viewColumn: textEditor.viewColumn,
@@ -119,7 +126,10 @@ export class TopModelPreviewPanel {
 
     async refresh() {
         if (this.currentApplication?.client) {
-            const data = await this.currentApplication.client.sendRequest("mermaid", { uri: this.currentFsPath });
+            const data = await this.currentApplication.client.sendRequest("mermaid", {
+                uri: this.currentFsPath,
+                scope: this.currentScope,
+            });
             this.diagramMap[this.currentFsPath] = data as Mermaid;
             this.panel.webview.html = this.webviewContent;
         }
@@ -160,6 +170,12 @@ export class TopModelPreviewPanel {
                     margin: 1rem;
                     font-size: 1.5rem;
                 }
+                .clickable{
+                    cursor: pointer;
+                }
+                .clickable:hover {
+                    background-color: rgba(2, 75, 153, 0.4);
+                }
                 button {
                     margin: 0.5rem;
                     padding: 0.5rem 1rem;
@@ -196,7 +212,19 @@ export class TopModelPreviewPanel {
         <title>TopModel</title>
     </head>
     <body>
-        <h1>${this.diagramTitle}</h1>
+        <h1>
+            <span class="clickable" onclick="scope('model')">${this.appTitle}</span>
+            ${
+                this.currentScope !== "model"
+                    ? `/ <span class="clickable" onclick="scope('module')">${this.moduleTitle}</span>`
+                    : ""
+            }
+            ${
+                this.currentScope === "file"
+                    ? `/ <span class="clickable" onclick="scope('file')">${this.fileTitle}</span>`
+                    : ""
+            }
+            </h1>
         <div>
             <button onclick="zoomClick(false)">-</button>
             <button onclick="zoomClick(true)">+</button>
@@ -218,9 +246,16 @@ export class TopModelPreviewPanel {
     </html>`;
     }
 
-    get diagramTitle() {
-        const currentAppTitle = this.applications.length > 1 ? "[" + this.currentApplication.config.app + "] : " : "";
-        return `${currentAppTitle}${this.diagramMap[this.currentFsPath].module}`;
+    get appTitle() {
+        return "[" + this.currentApplication.config.app + "]";
+    }
+
+    get moduleTitle() {
+        return `${this.diagramMap[this.currentFsPath].module}`;
+    }
+
+    get fileTitle() {
+        return `${this.diagramMap[this.currentFsPath].fileName}`;
     }
 
     get mermaidContent() {
