@@ -7,7 +7,7 @@ Fix enumAsEnum dans le cas manyToMany explicites
 
 ## 1.6.3
 
-- [a100a](https://github.com/klee-contrib/topmodel/commit/a100aa225259ce2a71564f95f8b97193c0e5f2b5s) [JPA] Ajout de l'annotation 204 si le controller renvoit void ou Void
+- [a100a](https://github.com/klee-contrib/topmodel/commit/a100aa225259ce2a71564f95f8b97193c0e5f2b5s) [JPA] Ajout de l'annotation 204 si le controller renvoie void ou Void
 
 ## 1.6.2
 

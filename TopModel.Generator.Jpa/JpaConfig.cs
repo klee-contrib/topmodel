@@ -122,6 +122,11 @@ public class JpaConfig : GeneratorConfigBase
     public string? DataFlowsPath { get; set; }
 
     /// <summary>
+    /// Writer à utiliser pour les flux de données.
+    /// </summary>
+    public DataFlowsWriter DataFlowsWriter { get; set; } = DataFlowsWriter.Jpa;
+
+    /// <summary>
     /// Génération en mode JDBC.
     /// </summary>
     public bool UseJdbc { get; set; } = false;

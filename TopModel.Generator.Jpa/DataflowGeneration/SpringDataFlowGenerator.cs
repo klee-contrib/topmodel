@@ -276,8 +276,21 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
 
     protected virtual void WriteBeanWriter(JavaWriter fw, DataFlow dataFlow, string tag)
     {
-        fw.AddImport("io.github.kleecontrib.spring.batch.bulk.upsert.BulkItemWriter");
+        if (Config.DataFlowsWriter == DataFlowsWriter.Bulk)
+        {
+            WriteBeanWriterBulk(fw, dataFlow, tag);
+            return;
+        }
+        else if (Config.DataFlowsWriter == DataFlowsWriter.Jpa)
+        {
+            WriteBeanWriterJpa(fw, dataFlow, tag);
+            return;
+        }
+    }
 
+    protected virtual void WriteBeanWriterBulk(JavaWriter fw, DataFlow dataFlow, string tag)
+    {
+        fw.AddImport("io.github.kleecontrib.spring.batch.bulk.upsert.BulkItemWriter");
         fw.WriteLine();
         fw.WriteLine(1, @$"@Bean(""{dataFlow.Name.ToPascalCase()}Writer"")");
         fw.AddImport("com.zaxxer.hikari.HikariDataSource");
@@ -285,6 +298,22 @@ public class SpringDataFlowGenerator(ILogger<SpringDataFlowGenerator> logger, IF
         fw.WriteLine(2, @$"return new BulkItemWriter<>(targetDataSource, new {dataFlow.Class.NamePascal}Mapping(targetDataSource.getSchema()));");
         fw.WriteLine(1, "}");
         WriteWriterMapper(fw, dataFlow, tag);
+    }
+
+    protected virtual void WriteBeanWriterJpa(JavaWriter fw, DataFlow dataFlow, string tag)
+    {
+        var javaMethod = new JavaMethod($"ItemWriter<{dataFlow.Class.NamePascal}>", $"{dataFlow.Name.ToCamelCase()}Writer")
+        {
+            Visibility = "public",
+            Static = true
+        }
+            .AddParameter(new JavaMethodParameter($"{Config.JavaxOrJakarta}.persistence.EntityManagerFactory", "EntityManagerFactory", "entityManagerFactory"))
+            .AddBodyLine(@$"return new JpaItemWriterBuilder<{dataFlow.Class.NamePascal}>().entityManagerFactory(entityManagerFactory).build();")
+            .AddAnnotation(new JavaAnnotation("Bean", $@"""{dataFlow.Name.ToPascalCase()}Writer""", imports: ["org.springframework.context.annotation.Bean"]))
+        ;
+        javaMethod.Imports.Add("org.springframework.batch.item.database.builder.JpaItemWriterBuilder");
+        fw.WriteLine();
+        fw.Write(1, javaMethod);
     }
 
     protected virtual void WriteClassFlow(string fileName, DataFlow dataFlow, string tag)
