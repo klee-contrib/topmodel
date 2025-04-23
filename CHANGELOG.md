@@ -8,6 +8,13 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+
+## 2.5.3
+
+- [`50cd38`](https://github.com/klee-contrib/topmodel/commit/965c56bb0fff05e48b981c8793ca3c7887589d26) [Generator] Fix message d'erreur pour additional properties dans la config  
+
+- [`a617ee`](https://github.com/klee-contrib/topmodel/commit/965c56bb0fff05e48b981c8793ca3c7887589d26) [Core] Suppression dataSource obligatoire dans source dataflow (utile pour le mode partial)
+
 ## 2.5.2
 
 - [`965c56b`](https://github.com/klee-contrib/topmodel/commit/965c56bb0fff05e48b981c8793ca3c7887589d26) - Fix `:tail` s'il n'y a pas de séparateurs
