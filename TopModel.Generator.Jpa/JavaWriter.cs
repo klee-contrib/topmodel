@@ -46,7 +46,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
             WriteDocStart(indentationLevel, javaMethod.Comment);
             foreach (var param in javaMethod.Parameters)
             {
-                WriteParam(param.Name, param.Comment);
+                WriteParam(indentationLevel, param.Name, param.Comment);
             }
 
             if (!string.IsNullOrEmpty(javaMethod.ReturnComment))
@@ -274,9 +274,20 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// <param name="value">Valeur du paramètre.</param>
     public void WriteParam(string paramName, string value)
     {
+        WriteParam(1, paramName, value);
+    }
+
+    /// <summary>
+    /// Ecrit le commentaire de parametre.
+    /// </summary>
+    /// <param name="indentationLevel">Niveau d'indentation.</param>
+    /// <param name="paramName">Nom du paramètre.</param>
+    /// <param name="value">Valeur du paramètre.</param>
+    public void WriteParam(int indentationLevel, string paramName, string value)
+    {
         if (!string.IsNullOrEmpty(paramName) && !string.IsNullOrEmpty(value))
         {
-            WriteLine(1, LoadParam(paramName, value));
+            WriteLine(indentationLevel, LoadParam(paramName, value));
         }
     }
 
