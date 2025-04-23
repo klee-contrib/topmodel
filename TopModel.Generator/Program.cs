@@ -608,7 +608,7 @@ for (var i = 0; i < configs.Count; i++)
                 {
                     hasError = true;
                     returnCode = 1;
-                    AnsiConsole.MarkupLine($"[red]{me.Message}[/]");
+                    AnsiConsole.MarkupLine($"[red]{me.Message.EscapeMarkup()}[/]");
                     AnsiConsole.WriteLine();
                 }
             }
