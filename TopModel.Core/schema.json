@@ -1165,7 +1165,6 @@
                 "type": "object",
                 "description": "Description d'une source de données.",
                 "required": [
-                  "source",
                   "class",
                   "mode"
                 ],
