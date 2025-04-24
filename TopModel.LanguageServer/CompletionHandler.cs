@@ -114,7 +114,7 @@ public class CompletionHandler : CompletionHandlerBase
         }
 
         // DataFlow
-        else if (currentKey == "dependsOn:")
+        else if (currentKey == "dependsOn")
         {
             return Task.FromResult(CompleteDataFlow(request, file, useIndex));
         }
