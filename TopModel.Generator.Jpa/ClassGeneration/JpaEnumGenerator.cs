@@ -80,14 +80,13 @@ public class JpaEnumGenerator(ILogger<JpaEnumGenerator> logger, IFileWriterProvi
         foreach (var value in refs)
         {
             i++;
-            var isLast = i == refs.Count;
             if (classe.DefaultProperty != null)
             {
                 fw.WriteDocStart(1, $"{value.Value[classe.DefaultProperty]}");
                 fw.WriteDocEnd(1);
             }
 
-            fw.WriteLine(1, $"{value.Value[property]}{(isLast ? string.Empty : ",")}");
+            fw.WriteLine(1, $"{value.Value[property]},");
         }
 
         fw.WriteLine("}");
