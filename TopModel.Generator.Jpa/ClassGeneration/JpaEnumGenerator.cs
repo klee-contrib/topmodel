@@ -79,6 +79,11 @@ public class JpaEnumGenerator(ILogger<JpaEnumGenerator> logger, IFileWriterProvi
 
         foreach (var value in refs)
         {
+            if (i > 0)
+            {
+                fw.WriteLine();
+            }
+
             i++;
             if (classe.DefaultProperty != null)
             {
@@ -89,6 +94,7 @@ public class JpaEnumGenerator(ILogger<JpaEnumGenerator> logger, IFileWriterProvi
             fw.WriteLine(1, $"{value.Value[property]},");
         }
 
+        fw.WriteLine();
         fw.WriteLine(1, ";");
 
         fw.WriteLine("}");
