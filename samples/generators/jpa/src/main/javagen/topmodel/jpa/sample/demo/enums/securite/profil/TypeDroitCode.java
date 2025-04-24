@@ -12,12 +12,16 @@ public enum TypeDroitCode {
 	 * Administration.
 	 */
 	ADMIN,
+
 	/**
 	 * Lecture.
 	 */
 	READ,
+
 	/**
 	 * Ecriture.
 	 */
-	WRITE
+	WRITE,
+
+	;
 }
