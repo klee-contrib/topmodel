@@ -113,7 +113,6 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
             }
 
             i++;
-            var isLast = i == refs.Count;
             if (classe.DefaultProperty != null)
             {
                 fw.WriteDocStart(1, $"{refValue.Value[classe.DefaultProperty]}");
@@ -149,9 +148,12 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
                 enumAsString.Add($@"{val}{(prop == classe.Properties.Last() ? string.Empty : ", ")}");
             }
 
-            enumAsString.Add($"){(isLast ? ";" : ",")} ");
+            enumAsString.Add("),");
             fw.WriteLine(1, enumAsString.Aggregate(string.Empty, (acc, curr) => acc + curr));
         }
+
+        fw.WriteLine();
+        fw.WriteLine(1, ";"); // Separation entre valeurs et attributs
 
         foreach (var prop in classe.Properties.Where(p => p != classe.EnumKey))
         {
