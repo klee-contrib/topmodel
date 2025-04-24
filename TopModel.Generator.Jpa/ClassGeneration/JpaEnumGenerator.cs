@@ -89,6 +89,8 @@ public class JpaEnumGenerator(ILogger<JpaEnumGenerator> logger, IFileWriterProvi
             fw.WriteLine(1, $"{value.Value[property]},");
         }
 
+        fw.WriteLine(1, ";");
+
         fw.WriteLine("}");
     }
 }
