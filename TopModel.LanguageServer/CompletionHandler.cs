@@ -26,7 +26,8 @@ public class CompletionHandler : CompletionHandlerBase
             '\'',
             '#',
             '\n',
-            '.'
+            '.',
+            '"'
         };
 
     private readonly ModelConfig _config;
@@ -89,7 +90,7 @@ public class CompletionHandler : CompletionHandlerBase
             "class",
             "extends"
         };
-        if (classCompleteKeys.Contains(currentKey))
+        if (classCompleteKeys.Contains(currentKey) && parentKey != currentKey)
         {
             return Task.FromResult(CompleteClass(request, file, useIndex));
         }
@@ -289,9 +290,9 @@ public class CompletionHandler : CompletionHandlerBase
         };
         var propertyKeyWords = new List<string>()
         {
-            "property", "activeProperty", "exclude"
+            "include", "exclude", "property", "activeProperty"
         };
-        if (className != null && ((isListElement || isInlineList) && propertyListKeyWords.Contains(currentKey.Key)
+        if (!string.IsNullOrEmpty(className) && ((isListElement || isInlineList) && propertyListKeyWords.Contains(currentKey.Key)
                                 || propertyKeyWords.Contains(currentKey.Key)))
         {
             var referencedClasses = _modelStore.GetReferencedClasses(file);
@@ -306,7 +307,12 @@ public class CompletionHandler : CompletionHandlerBase
         {
             var classRange = GetObjectRange(text, rootObject.Line);
             var classLines = text[classRange.Start..classRange.End];
-            var nameLine = classLines.OrderBy(GetIndentLevel).First(l => l.Trim().StartsWith("name: "));
+            var nameLine = classLines.OrderBy(GetIndentLevel).FirstOrDefault(l => l.Trim().StartsWith("name: "));
+            if (nameLine == null)
+            {
+                return new CompletionList();
+            }
+
             className = nameLine.Split(':')[1].Trim();
             var classe = file.Classes.Find(c => c.Name == className);
             if (classe != null)
