@@ -164,7 +164,7 @@ public class AssociationProperty : IProperty
 
     public Domain Domain => Type.IsToMany() && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
 
-    public string[] DomainParameters => Property?.DomainParameters ?? [];
+    public IList<string> DomainParameters => Property?.DomainParameters ?? [];
 
     public bool PrimaryKey { get; set; }
 

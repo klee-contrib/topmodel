@@ -46,6 +46,7 @@ public class HoverHandler : HoverHandlerBase
                         Decorator d => d.Description,
                         DataFlow d => $"Flux de données '{d.Name}'",
                         (Decorator d, _) => d.Description,
+                        TemplateParameter tp => $"**{tp.Name}** ({tp.Comment})",
                         _ => string.Empty
                     }))
                 });

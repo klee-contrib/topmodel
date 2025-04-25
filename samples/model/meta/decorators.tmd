@@ -31,8 +31,12 @@ decorator:
 decorator:
   name: Security
   description: Ajoute une annotation de sécurité sur un endpoint.
+  parameters:
+    - name: permission
+      required: true
+      comment: Permission demandée
   java:
     annotations:
-      - PreAuthorize("{$0}")
+      - PreAuthorize("{permission}")
     imports:
       - org.springframework.security.access.prepost.PreAuthorize

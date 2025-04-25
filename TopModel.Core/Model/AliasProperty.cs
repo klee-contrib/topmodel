@@ -9,7 +9,7 @@ public class AliasProperty : IProperty
     private Dictionary<string, string> _customProperties = [];
     private string? _defaultValue;
     private Domain? _domain;
-    private string[]? _domainParameters;
+    private IList<string>? _domainParameters;
     private string? _label;
     private string? _name;
 
@@ -112,7 +112,7 @@ public class AliasProperty : IProperty
     }
 #nullable enable
 
-    public string[] DomainParameters
+    public IList<string> DomainParameters
     {
         get => _domainParameters ?? _property?.DomainParameters ?? [];
         set => _domainParameters = value;

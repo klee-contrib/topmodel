@@ -11,7 +11,7 @@ public static class LoaderUtils
         if (parser.Current is MappingStart)
         {
             Scalar? name = null;
-            var paramaters = new List<Reference>();
+            var paramaters = new List<ParameterReference>();
             parser.ConsumeMapping(prop =>
             {
                 switch (prop.Value)
@@ -20,16 +20,14 @@ public static class LoaderUtils
                         name = parser.Consume<Scalar>();
                         break;
                     case "parameters":
-                        parser.ConsumeSequence(() => paramaters.Add(new Reference(parser.Consume<Scalar>())));
+                        parser.ConsumeSequence(() => paramaters.Add(new ParameterReference(parser.Consume<Scalar>())));
                         break;
                 }
             });
 
             if (name != null)
             {
-                var domain = new DomainReference(name);
-                domain.ParameterReferences.AddRange(paramaters);
-                return domain;
+                return new DomainReference(name) { ParameterReferences = paramaters };
             }
             else
             {

@@ -85,9 +85,13 @@ En C#, on pourrait définir un décorateur et son utilisation dans un endpoint c
 decorator:
   name: Authorize
   description: Authorize
+  parameters:
+    - name: policy
+      required: true
+      comment: Policy d'autorisation.
   csharp:
     annotations:
-      - Authorize("{$0}") # Le templating est décrit dans la section suivante.
+      - Authorize("{policy}") # Le templating est décrit dans la section suivante.
   properties:
     - name: AdditionalParam
       domain: DO_BOOLEEN
@@ -204,7 +208,24 @@ Vous pouvez également utiliser des [transformations](/model/templating.md#trans
 
 ### Paramètres
 
-Il est également possible de passer des paramètres lors de l'instanciation d'un décorateur :
+Il est également possible de définir des paramètres sur un décorateur, qui pourront être utilisés dans les templates :
+
+```yaml
+decorator:
+  name: MyDecorator
+  parameters:
+    - name: param1
+      required: true
+      comment: Premier paramètre.
+    - name: param2
+      defaultValue: Test
+      comment: Deuxième paramètre.
+  csharp:
+    annotations:
+      - text: MyAnnotation("{param1}", "{param2}"))
+```
+
+Ces paramètres pourront être passés lors de l'instanciation du décorateur :
 
 ```yaml
 class:
@@ -214,14 +235,4 @@ class:
     - OtherDecorator
 ```
 
-Les paramètres seront utilisés dans la résolution des variables `$0`, `$1`... Par exemple :
-
-```yaml
-decorator:
-  name: MyDecorator
-  csharp:
-    annotations:
-      - text: MyAnnotation("{$0}", "{$1}"))
-```
-
-Génèrera l'annotation `[MyAnnotation("Param1", "Param2")]` sur `MyClass`. Si les paramètres ne sont pas renseignés, les variables `$0`, `$1` ne seront simplement pas remplacées. Et bien entendu, rien ne se passera si on passe des paramètres alors que le décorateur ne les utilise pas.
+Tous les paramètres passés doivent être définis au prélable sur le décorateur. Les paramètres obligatoires doivent être renseignés avec le décorateur, et les paramètres non renseignés le seront avec leur `defaultValue` (qui vaut `""` si non renseignée).

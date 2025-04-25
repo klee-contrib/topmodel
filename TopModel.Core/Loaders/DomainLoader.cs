@@ -53,6 +53,14 @@ public class DomainLoader : ILoader<Domain>
                 case "mediaType":
                     domain.MediaType = value!.Value;
                     break;
+                case "parameters":
+                    domain.TemplateParameters = _fileChecker.Deserialize<IList<TemplateParameter>>(parser);
+                    foreach (var param in domain.TemplateParameters)
+                    {
+                        param.Domain = domain;
+                    }
+
+                    break;
                 default:
                     var implementation = new DomainImplementation();
 

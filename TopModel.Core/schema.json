@@ -38,7 +38,8 @@
               "type": "array",
               "description": "Paramètres du domaine.",
               "items": {
-                "type": "string"
+                "type": "string",
+                "description": "Paramètre de domaine."
               }
             }
           }
@@ -422,6 +423,30 @@
           }
         }
       ]
+    },
+    "parameter": {
+      "type": "object",
+      "description": "Paramètre à utiliser dans un template.",
+      "additionalProperties": false,
+      "required": [ "name", "comment" ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Nom du paramètre."
+        },
+        "comment": {
+          "type": "string",
+          "description": "Description du paramètre."
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Si le paramètre est obligatoire."
+        },
+        "defaultValue": {
+          "type": "string",
+          "description": "Valeur par défaut du paramètre. Si non renseigné, la valeur sera une chaîne de caractères vide."
+        }
+      }
     }
   },
   "oneOf": [
@@ -527,6 +552,13 @@
             "mediaType": {
               "type": "string",
               "description": "Type de médias (utilisé si retourné par un endpoint)."
+            },
+            "parameters": {
+              "type": "array",
+              "description": "Définitions de paramètres, utilisables dans les templates pour les implémentations.",
+              "items": {
+                "$ref": "#/definitions/parameter"
+              }
             }
           },
           "additionalProperties": {
@@ -686,6 +718,13 @@
               "items": {
                 "$ref": "#/definitions/property"
               }
+            },
+            "parameters": {
+              "type": "array",
+              "description": "Définitions de paramètre, utilisables dans les templates pour les implémentations.",
+              "items": {
+                "$ref": "#/definitions/parameter"
+              }
             }
           },
           "additionalProperties": {
@@ -820,7 +859,7 @@
                       "type": "array",
                       "items": {
                         "type": "string",
-                        "description": "Paramètre du décorator"
+                        "description": "Paramètre du décorateur"
                       }
                     }
                   }
@@ -1078,7 +1117,7 @@
                       "type": "array",
                       "items": {
                         "type": "string",
-                        "description": "Paramètre du décorator"
+                        "description": "Paramètre du décorateur"
                       }
                     }
                   }

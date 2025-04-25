@@ -292,14 +292,16 @@ Par ailleurs, elles implémentent toutes l'interface `java.io.Serializable`. Est
 
 De plus, toutes les propriétés `required: true` reçoivent l'annotation `javax.validation.constraints.NotNull` (ou `jakarata.validation.constraints.NotNull` selon la configuration choisie).
 Par ailleurs, si le domain a :
+
 - Le type java est `String`, `CharSequence`, `Set`,`Map`,`List`, ou `Collection`
 - `length` est défini
-Alors la propriété portera l'annotation `@Size(max = [length défini dans le domain])`
+  Alors la propriété portera l'annotation `@Size(max = [length défini dans le domain])`
 
 Egalement, si le domain a :
+
 - Le type java est `BigDecimal`, `BigInteger`, `byte`, `short`, `int`, `long`, `Byte`, `Short`, `Integer`, `Long`, `double` ou `Double`
 - `length` est défini ou `scale` est défini
-Alors la propriété portera l'annotation `@Digits(integer = [length défini dans le domain], fraction = [scale défini dans le domain])`
+  Alors la propriété portera l'annotation `@Digits(integer = [length défini dans le domain], fraction = [scale défini dans le domain])`
 
 Précautions d'emploi :
 
@@ -1057,11 +1059,18 @@ domain:
 domain:
   name: RESPONSE_ENTITY
   label: Response Entity
+  parameters:
+    - name: type
+      required: true
+      comment: Type de réponse
+    - name: import
+      required: true
+      comment: Import pour le type de la réponse
   java:
-    type: ResponseEntity<{$0}>
+    type: ResponseEntity<{type}>
     imports:
       - org.springframework.http.ResponseEntity
-      - "{$1}"
+      - "{import}"
 ---
 domain:
   name: LIST
@@ -1177,9 +1186,13 @@ decorator:
 decorator:
   name: HasAuthority
   description: Droit nécessaire pour pouvoir accéder au endpoint
+  parameters:
+    - name: authority
+      required: true
+      comment: Autorité a passer à `PreAuthorize`.
   java:
     annotations:
-      - '@PreAuthorize("hasAuthority(''{$0}'')")'
+      - '@PreAuthorize("hasAuthority(''{authority}'')")'
     imports:
       - org.springframework.security.access.prepost.PreAuthorize
 ```

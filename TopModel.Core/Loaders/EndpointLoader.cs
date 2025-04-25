@@ -65,7 +65,7 @@ public class EndpointLoader : ILoader<Endpoint>
 
                                 parser.ConsumeSequence(() =>
                                 {
-                                    decorator.ParameterReferences.Add(new Reference(parser.Consume<Scalar>()));
+                                    decorator.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
                                 });
 
                                 endpoint.DecoratorReferences.Add(decorator);

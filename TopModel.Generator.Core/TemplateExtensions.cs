@@ -16,13 +16,13 @@ internal static class TemplateExtensions
         var result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), p, p.DomainParameters, config, tag));
+            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), p, p.Domain?.TemplateParameters ?? [], p.DomainParameters, config, tag));
         }
 
         return result;
     }
 
-    public static string ParseTemplate(this string template, Class c, string[] parameters, GeneratorConfigBase config, string? tag = null)
+    public static string ParseTemplate(this string template, Decorator d, Class c, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -32,13 +32,13 @@ internal static class TemplateExtensions
         var result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), c, parameters, config, tag));
+            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), c, d.TemplateParameters, parameterValues, config, tag));
         }
 
         return result;
     }
 
-    public static string ParseTemplate(this string template, Endpoint e, string[] parameters, GeneratorConfigBase config, string? tag = null)
+    public static string ParseTemplate(this string template, Decorator d, Endpoint e, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -48,7 +48,7 @@ internal static class TemplateExtensions
         var result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), e, parameters, config, tag));
+            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), e, d.TemplateParameters, parameterValues, config, tag));
         }
 
         return result;
@@ -155,41 +155,42 @@ internal static class TemplateExtensions
         }).Transform(input);
     }
 
-    private static string ResolveVariable(this string input, IPropertyContainer container, string[] parameters, GeneratorConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, IPropertyContainer container, IList<TemplateParameter> templateParameters, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
     {
         return container switch
         {
-            Endpoint e => ResolveVariable(input, e, parameters, config, tag),
-            Class c => ResolveVariable(input, c, parameters, config, tag),
+            Endpoint e => input.ResolveVariable(e, templateParameters, parameterValues, config, tag),
+            Class c => input.ResolveVariable(c, templateParameters, parameterValues, config, tag),
             _ => string.Empty,
         };
     }
 
-    private static string ResolveVariable(this string input, IProperty p, string[] parameters, GeneratorConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, IProperty p, IList<TemplateParameter> templateParameters, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
     {
         if (input == null || input.Length == 0)
         {
             return string.Empty;
         }
 
-        for (var i = 0; i < parameters.Length; i++)
+        for (var i = 0; i < templateParameters.Count; i++)
         {
-            input = input.Replace($"${i}", parameters[i]);
+            var param = templateParameters[i];
+            input = input.Replace($"{param.Name}", parameterValues.ElementAtOrDefault(i) ?? param.DefaultValue);
         }
 
         if (input.StartsWith("parent."))
         {
-            return ResolveVariable(input["parent.".Length..], p.Parent, parameters, config, tag);
+            return ResolveVariable(input["parent.".Length..], p.Parent, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith("class."))
         {
-            return ResolveVariable(input["class.".Length..], p.Parent, parameters, config, tag);
+            return ResolveVariable(input["class.".Length..], p.Parent, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith("endpoint."))
         {
-            return ResolveVariable(input["endpoint.".Length..], p.Parent, parameters, config, tag);
+            return ResolveVariable(input["endpoint.".Length..], p.Parent, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith("domain."))
@@ -213,7 +214,7 @@ internal static class TemplateExtensions
 
             if (association != null)
             {
-                return ResolveVariable(input["association.".Length..], association, parameters, config, tag);
+                return ResolveVariable(input["association.".Length..], association, templateParameters, parameterValues, config, tag);
             }
         }
 
@@ -228,7 +229,7 @@ internal static class TemplateExtensions
 
             if (composition != null)
             {
-                return ResolveVariable(input["composition.".Length..], composition, parameters, config, tag);
+                return ResolveVariable(input["composition.".Length..], composition, templateParameters, parameterValues, config, tag);
             }
         }
 
@@ -250,16 +251,17 @@ internal static class TemplateExtensions
         return result;
     }
 
-    private static string ResolveVariable(this string input, Class c, string[] parameters, GeneratorConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, Class c, IList<TemplateParameter> templateParameters, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
     {
         if (input == null || input.Length == 0)
         {
             return string.Empty;
         }
 
-        for (var i = 0; i < parameters.Length; i++)
+        for (var i = 0; i < templateParameters.Count; i++)
         {
-            input = input.Replace($"${i}", parameters[i]);
+            var param = templateParameters[i];
+            input = input.Replace($"{param.Name}", parameterValues.ElementAtOrDefault(i) ?? param.DefaultValue);
         }
 
         if (input.StartsWith("primaryKey."))
@@ -269,7 +271,7 @@ internal static class TemplateExtensions
                 return string.Empty;
             }
 
-            return ResolveVariable(input["primaryKey.".Length..], c.PrimaryKey.FirstOrDefault()!, parameters, config, tag);
+            return ResolveVariable(input["primaryKey.".Length..], c.PrimaryKey.FirstOrDefault()!, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith("extends."))
@@ -279,7 +281,7 @@ internal static class TemplateExtensions
                 return string.Empty;
             }
 
-            return ResolveVariable(input["extends.".Length..], c.Extends, parameters, config, tag);
+            return ResolveVariable(input["extends.".Length..], c.Extends, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith($"customProperties."))
@@ -299,7 +301,7 @@ internal static class TemplateExtensions
                     return string.Empty;
                 }
 
-                return ResolveVariable(nextInput, c.Properties[index], parameters, config, tag);
+                return ResolveVariable(nextInput, c.Properties[index], templateParameters, parameterValues, config, tag);
             }
             else
             {
@@ -322,16 +324,17 @@ internal static class TemplateExtensions
         return result;
     }
 
-    private static string ResolveVariable(this string input, Endpoint e, string[] parameters, GeneratorConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, Endpoint e, IList<TemplateParameter> templateParameters, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
     {
         if (input == null || input.Length == 0)
         {
             return string.Empty;
         }
 
-        for (var i = 0; i < parameters.Length; i++)
+        for (var i = 0; i < templateParameters.Count; i++)
         {
-            input = input.Replace($"${i}", parameters[i]);
+            var param = templateParameters[i];
+            input = input.Replace($"{param.Name}", parameterValues.ElementAtOrDefault(i) ?? param.DefaultValue);
         }
 
         if (input.StartsWith("returns."))
@@ -341,7 +344,7 @@ internal static class TemplateExtensions
                 return string.Empty;
             }
 
-            return ResolveVariable(input["returns.".Length..], e.Returns, parameters, config, tag);
+            return ResolveVariable(input["returns.".Length..], e.Returns, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith($"customProperties."))
@@ -361,7 +364,7 @@ internal static class TemplateExtensions
                     return string.Empty;
                 }
 
-                return ResolveVariable(nextInput, e.Params[index], parameters, config, tag);
+                return ResolveVariable(nextInput, e.Params[index], templateParameters, parameterValues, config, tag);
             }
             else
             {

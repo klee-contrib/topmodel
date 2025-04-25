@@ -16,16 +16,18 @@ public class Decorator : IPropertyContainer
     public string Description { get; set; }
 #nullable enable
 
-    public Dictionary<string, DecoratorImplementation> Implementations { get; set; } = new();
+    public Dictionary<string, DecoratorImplementation> Implementations { get; set; } = [];
 
 #nullable disable
     public ModelFile ModelFile { get; set; }
 
     public Namespace Namespace { get; set; }
 
-    public IList<IProperty> Properties { get; } = new List<IProperty>();
+    public IList<IProperty> Properties { get; } = [];
 
     public bool PreservePropertyCasing { get; set; }
+
+    public IList<TemplateParameter> TemplateParameters { get; set; } = [];
 
     internal Reference Location { get; set; }
 

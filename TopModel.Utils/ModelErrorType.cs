@@ -218,6 +218,21 @@ public enum ModelErrorType
     TMD1034,
 
     /// <summary>
+    /// Le domaine/décorateur '{Name}' ne définit que {domain.TemplateParameters.Count} paramètres.
+    /// </summary>
+    TMD1035,
+
+    /// <summary>
+    /// Le domaine/décorateur '{Name}' n'est pas utilisé avec tous ses paramètres obligatoires ({ParameterReferences.Count} au lieu de {TemplateParameters.Count(p => p.Required)} minimum).
+    /// </summary>
+    TMD1036,
+
+    /// <summary>
+    /// Les paramètres obligatoires doivent précéder tous les paramètres faculatifs.
+    /// </summary>
+    TMD1037,
+
+    /// <summary>
     /// Le flux de données est introuvable dans le fichier ou l'une de ses références.
     /// </summary>
     TMD2000,

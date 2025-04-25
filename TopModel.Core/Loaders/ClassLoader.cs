@@ -83,7 +83,7 @@ public class ClassLoader : ILoader<Class>
 
                                 parser.ConsumeSequence(() =>
                                 {
-                                    decorator.ParameterReferences.Add(new Reference(parser.Consume<Scalar>()));
+                                    decorator.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
                                 });
 
                                 classe.DecoratorReferences.Add(decorator);

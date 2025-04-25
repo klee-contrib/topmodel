@@ -252,6 +252,11 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                         break;
                     }
 
+                    foreach (var error in CheckDomainParameters(rp, rp.DomainReference, domain))
+                    {
+                        yield return error;
+                    }
+
                     rp.Domain = domain;
                     rp.DomainParameters = rp.DomainReference.ParameterReferences.Select(p => p.ReferenceName).ToArray();
                     break;
@@ -295,6 +300,11 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                             break;
                         }
 
+                        foreach (var error in CheckDomainParameters(cp, cp.DomainReference, cpDomain))
+                        {
+                            yield return error;
+                        }
+
                         cp.Domain = cpDomain;
                         cp.DomainParameters = cp.DomainReference.ParameterReferences.Select(p => p.ReferenceName).ToArray();
                     }
@@ -308,10 +318,31 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                         break;
                     }
 
+                    foreach (var error in CheckDomainParameters(alp, alp.DomainReference, aliasDomain))
+                    {
+                        yield return error;
+                    }
+
                     alp.Domain = aliasDomain;
                     alp.DomainParameters = alp.DomainReference.ParameterReferences.Select(p => p.ReferenceName).ToArray();
                     break;
             }
+        }
+    }
+
+    private static IEnumerable<ModelError> CheckDomainParameters(IProperty property, DomainReference domainRef, Domain domain)
+    {
+        if (domainRef.ParameterReferences.Count > domain.TemplateParameters.Count)
+        {
+            foreach (var extraParameter in domainRef.ParameterReferences.Skip(domain.TemplateParameters.Count))
+            {
+                yield return new ModelError(property, $"Le domaine '{domain.Name}' ne définit que {domain.TemplateParameters.Count} paramètres.", extraParameter) { ModelErrorType = ModelErrorType.TMD1035 };
+            }
+        }
+
+        if (domainRef.ParameterReferences.Count < domain.TemplateParameters.Count(p => p.Required))
+        {
+            yield return new ModelError(property, $"Le domaine '{domain.Name}' n'est pas utilisé avec tous ses paramètres obligatoires ({domainRef.ParameterReferences.Count} au lieu de {domain.TemplateParameters.Count(p => p.Required)} minimum).", domainRef) { ModelErrorType = ModelErrorType.TMD1036 };
         }
     }
 }
