@@ -8,10 +8,34 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.6.0
+
+- [#453](https://github.com/klee-contrib/topmodel/pull/453) - Définitions de paramètres de domaines/décorateurs explicites
+
+  ⚡**breaking change**⚡: les définitions de domaines et de décorateurs qui utilisent des paramètres pour les templates **doivent explicitement leurs paramètres**, par exemple :
+
+  ```yaml
+  decorator:
+  name: Security
+  description: Ajoute une annotation de sécurité sur un endpoint.
+  parameters:
+    - name: permission
+      required: true
+      comment: Permission demandée
+  java:
+    annotations:
+      - PreAuthorize("{permission}")
+    imports:
+      - org.springframework.security.access.prepost.PreAuthorize
+  ```
+
+  Les paramètres dans les templates sont référencés par leur nom et non plus leurs numéros. De nouvelles vérifications sont faites à l'utilisation pour vérifier que les paramètres existent, et que les paramètres obligatoires (nouveauté !) sont bien renseignés. Vous devriez donc avoir des erreurs à la mise à jour qui vous demandera de définir les paramètres que vous utilisez déjà.
+
+  Cela n'a pas d'impact sur le code généré.
 
 ## 2.5.3
 
-- [`50cd38`](https://github.com/klee-contrib/topmodel/commit/965c56bb0fff05e48b981c8793ca3c7887589d26) [Generator] Fix message d'erreur pour additional properties dans la config  
+- [`50cd38`](https://github.com/klee-contrib/topmodel/commit/965c56bb0fff05e48b981c8793ca3c7887589d26) [Generator] Fix message d'erreur pour additional properties dans la config
 
 - [`a617ee`](https://github.com/klee-contrib/topmodel/commit/965c56bb0fff05e48b981c8793ca3c7887589d26) [Core] Suppression dataSource obligatoire dans source dataflow (utile pour le mode partial)
 
