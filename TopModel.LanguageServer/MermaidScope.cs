@@ -1,7 +1,4 @@
-using MediatR;
-using OmniSharp.Extensions.JsonRpc;
-
-namespace TopModel.LanguageServer;
+﻿namespace TopModel.LanguageServer;
 
 public enum MermaidScope
 {

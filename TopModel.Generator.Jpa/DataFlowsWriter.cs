@@ -1,4 +1,4 @@
-namespace TopModel.Generator.Jpa;
+﻿namespace TopModel.Generator.Jpa;
 
 public enum DataFlowsWriter
 {

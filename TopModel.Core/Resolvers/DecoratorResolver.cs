@@ -153,13 +153,22 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
         {
             foreach (var extraParameter in decoratorRef.ParameterReferences.Skip(decorator.TemplateParameters.Count))
             {
-                yield return new ModelError(container, $"Le décorateur '{decorator.Name}' ne définit que {decorator.TemplateParameters.Count} paramètres.", extraParameter) { ModelErrorType = ModelErrorType.TMD1035 };
+                yield return new ModelError(
+                    container,
+                    decorator.TemplateParameters.Count > 1 ? $"Le décorateur '{decorator.Name}' ne définit que {decorator.TemplateParameters.Count} paramètres." : $"Le décorateur '{decorator.Name}' ne définit qu'un seul paramètre.",
+                    extraParameter)
+                { ModelErrorType = ModelErrorType.TMD1035 };
             }
         }
 
         if (decoratorRef.ParameterReferences.Count < decorator.TemplateParameters.Count(p => p.Required))
         {
-            yield return new ModelError(container, $"Le décorateur '{decorator.Name}' n'est pas utilisé avec tous ses paramètres obligatoires ({decoratorRef.ParameterReferences.Count} au lieu de {decorator.TemplateParameters.Count(p => p.Required)} minimum).", decoratorRef) { ModelErrorType = ModelErrorType.TMD1036 };
+            var parametres = decorator.TemplateParameters.Skip(decoratorRef.ParameterReferences.Count).Where(p => p.Required).Select(p => $"'{p.Name}'");
+            yield return new ModelError(
+                container,
+                parametres.Count() > 1 ? $"Les paramètres {string.Join(", ", parametres)} du décorateur '{decorator.Name}' sont obligatoires." : $"Le paramètre {string.Join(", ", parametres)} du décorateur '{decorator.Name}' est obligatoire.",
+                decoratorRef)
+            { ModelErrorType = ModelErrorType.TMD1036 };
         }
     }
 }

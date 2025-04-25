@@ -312,6 +312,15 @@
             "type": "string",
             "description": "Localisation des flux de données générés."
           },
+          "dataFlowsWriter": {
+            "type": "string",
+            "description": "Writer à utiliser pour les flux de données.",
+            "default": "jpa",
+            "enum": [
+              "bulk",
+              "jpa"
+            ]
+          },
           "dataFlowsBulkSize": {
             "type": "number",
             "description": "Taille des chunks à extraire et insérer"

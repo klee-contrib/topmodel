@@ -218,7 +218,7 @@ public enum ModelErrorType
     TMD1034,
 
     /// <summary>
-    /// Le domaine/décorateur '{Name}' ne définit que {domain.TemplateParameters.Count} paramètres.
+    /// Le domaine/décorateur '{Name}' ne définit que {domain.TemplateParameters.Count} paramètre(s).
     /// </summary>
     TMD1035,
 

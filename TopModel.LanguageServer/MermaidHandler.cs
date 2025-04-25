@@ -2,7 +2,6 @@
 using OmniSharp.Extensions.JsonRpc;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
-using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer;
 
@@ -123,17 +122,6 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
         };
     }
 
-    public string GetModule(string uri)
-    {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == uri);
-        if (file is null)
-        {
-            return string.Empty;
-        }
-
-        return file!.Namespace.Module;
-    }
-
     public string GetFileName(string uri)
     {
         var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == uri);
@@ -143,6 +131,17 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
         }
 
         return file!.Name.Split("/").Last();
+    }
+
+    public string GetModule(string uri)
+    {
+        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == uri);
+        if (file is null)
+        {
+            return string.Empty;
+        }
+
+        return file!.Namespace.Module;
     }
 
     /// <inheritdoc cref="IRequestHandler{TRequest, TResponse}.Handle" />

@@ -336,13 +336,22 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
         {
             foreach (var extraParameter in domainRef.ParameterReferences.Skip(domain.TemplateParameters.Count))
             {
-                yield return new ModelError(property, $"Le domaine '{domain.Name}' ne définit que {domain.TemplateParameters.Count} paramètres.", extraParameter) { ModelErrorType = ModelErrorType.TMD1035 };
+                yield return new ModelError(
+                        property,
+                        domain.TemplateParameters.Count > 1 ? $"Le domaine '{domain.Name}' ne définit que {domain.TemplateParameters.Count} paramètres." : $"Le domaine '{domain.Name}' ne définit qu'un seul paramètre.",
+                        extraParameter)
+                { ModelErrorType = ModelErrorType.TMD1035 };
             }
         }
 
         if (domainRef.ParameterReferences.Count < domain.TemplateParameters.Count(p => p.Required))
         {
-            yield return new ModelError(property, $"Le domaine '{domain.Name}' n'est pas utilisé avec tous ses paramètres obligatoires ({domainRef.ParameterReferences.Count} au lieu de {domain.TemplateParameters.Count(p => p.Required)} minimum).", domainRef) { ModelErrorType = ModelErrorType.TMD1036 };
+            var parametres = domain.TemplateParameters.Skip(domainRef.ParameterReferences.Count).Where(p => p.Required).Select(p => $"'{p.Name}'");
+            yield return new ModelError(
+                property,
+                parametres.Count() > 1 ? $"Les paramètres {string.Join(", ", parametres)} du domaine '{domain.Name}' sont obligatoires." : $"Le paramètre {string.Join(", ", parametres)} du domaine '{domain.Name}' est obligatoire.",
+                domainRef)
+            { ModelErrorType = ModelErrorType.TMD1036 };
         }
     }
 }
