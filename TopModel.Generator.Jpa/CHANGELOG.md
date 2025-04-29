@@ -1,3 +1,8 @@
+## 1.6.5
+
+- [d3ed6a](https://github.com/klee-contrib/topmodel/commit/d3ed6ae2aec14dfee9a179661d4ff69ad1de9945) [JPA] Support pour la génération d'id en mode UUID
+Fixes [#457](https://github.com/klee-contrib/topmodel/issues/457)
+
 ## 1.6.4
 
 - [3b194](https://github.com/klee-contrib/topmodel/commit/a90ecffa2b93af5244d4ee2d5ca24c0756b0f8a4) [JPA] Fix imports enum dans les controllers

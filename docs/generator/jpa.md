@@ -654,7 +654,15 @@ Si la classe source et la classe cible sont différentes, un processor est ajout
 
 #### Writer
 
-Les writers utilisent le `PgBulkWriter` de la librairie `spring-batch-bulk`. Il existe deux modes
+Il existe deux mode de génération des writers : `jpa` ou `bulk`.
+
+##### JPA
+
+Le writer utilise le `JpaItemWriter` de spring-batch.
+
+##### Bulk
+
+Les writers utilisent le `PgBulkWriter` de la librairie `spring-batch-bulk`.
 
 ##### Insert
 
@@ -868,7 +876,7 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   - `mode`
 
-    Mode de génération de la persistence (`"none"` ou `"sequence"` ou `"identity"`).
+    Mode de génération de la persistence (`"none"`, `"sequence"`, `"identity"` ou `"uuid"`).
 
     _Valeur par défaut_: `identity`
 
