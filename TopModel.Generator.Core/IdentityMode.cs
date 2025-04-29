@@ -15,5 +15,10 @@ public enum IdentityMode
     /// <summary>
     /// Identité avec identity de la BDD.
     /// </summary>
-    IDENTITY
+    IDENTITY,
+
+    /// <summary>
+    /// Identité sous forme d'UUID.
+    /// </summary>
+    UUID
 }
