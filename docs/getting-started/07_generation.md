@@ -117,7 +117,7 @@ class:
       domain: DO_LIBELLE
       label: Nom 
       
-    - name: DateInscriptoin
+    - name: DateInscription
       comment: Date d'inscription
       domain: DO_DATE
       label: Inscrit depuis le

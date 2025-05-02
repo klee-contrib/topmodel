@@ -193,3 +193,72 @@ Nous venons de couvrir beacoup de notions essentielles. Au début du chapitre, n
   - References.tmd
   - Dto.tmd
   - Endpoints.tmd
+
+
+## Exemple de code généré
+
+<!-- tabs:start -->
+
+#### **Java**
+```java
+package tuto.api.server.users;
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
+public interface EndpointsController {
+
+	/**
+	 * Charge le détail d'un Utilisateur.
+	 * @param utilisateurId Identifiant unique de l'utilisateur
+	 * @return Le détail d'un Utilisateur
+	 */
+	@GetMapping(path = "Utilisateur/{utilisateurId}")
+	UtilisateurDetailDto getUtilisateur(@PathVariable("utilisateurId") Integer utilisateurId);
+}
+
+```
+
+
+#### **C#**
+
+
+```csharp
+public class EndpointsController : Controller
+{
+    /// <summary>
+    /// Charge le détail d'un Utilisateur
+    /// </summary>
+    /// <param name="utilisateurId">Identifiant unique de l'utilisateur</param>
+    /// <returns>Le détail d'un Utilisateur</returns>
+    [HttpGet("Utilisateur/{utilisateurId:int}")]
+    public async Task<UtilisateurDetailDto> GetUtilisateur(int utilisateurId)
+    {
+
+    }
+
+}
+
+```
+
+#### **Angular**
+
+
+```javascript
+@Injectable({
+    providedIn: 'root'
+})
+export class EndpointsService {
+
+    private readonly http = inject(HttpClient);
+
+    /**
+     * @description Charge le détail d'un Utilisateur
+     * @param utilisateurId Identifiant unique de l'utilisateur
+     * @returns Le détail d'un Utilisateur
+     */
+    getUtilisateur(utilisateurId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<UtilisateurDetailDto> {
+        return this.http.get<UtilisateurDetailDto>(`/Utilisateur/${utilisateurId}`, {observe: 'body', ...options});
+    }
+}
+
+```
+
+<!-- tabs:end -->

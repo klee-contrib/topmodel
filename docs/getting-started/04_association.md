@@ -36,7 +36,7 @@ class:
       domain: DO_LIBELLE
       label: Nom 
       
-    - name: DateInscriptoin
+    - name: DateInscription
       comment: Date d'inscription
       domain: DO_DATE
       label: Inscrit depuis le
@@ -93,7 +93,7 @@ class:
       domain: DO_LIBELLE
       label: Nom 
       
-    - name: DateInscriptoin
+    - name: DateInscription
       comment: Date d'inscription
       domain: DO_DATE
       label: Inscrit depuis le
@@ -223,3 +223,100 @@ A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers
   - Utilisateur.tmd
   - Domains.tmd
   - References.tmd
+
+## Exemple de code généré
+
+<!-- tabs:start -->
+
+#### **Java**
+```java
+	/**
+	 * Type de l'utilisateur.
+	 */
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = TypeUtilisateur.class)
+	@JoinColumn(name = "CODE", referencedColumnName = "CODE")
+	private TypeUtilisateur typeUtilisateur;
+
+	/**
+	 * Profil de l'utilisateur.
+	 */
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "UTILISATEUR_PROFIL", joinColumns = @JoinColumn(name = "ID"), inverseJoinColumns = @JoinColumn(name = "ID"))
+	private List<Profil> profils;
+
+```
+
+#### **C#**
+
+
+```csharp
+    /// <summary>
+    /// Type de l'utilisateur.
+    /// </summary>
+    [Column("code")]
+    [Required]
+    [ReferencedType(typeof(TypeUtilisateur))]
+    [Domain(Domains.Code)]
+    public TypeUtilisateur.Codes? TypeUtilisateurCode { get; set; }
+
+    /// <summary>
+    /// Profil de l'utilisateur.
+    /// </summary>
+    [Domain(Domains.Liste)]
+    [NotMapped]
+    public  Profils { get; set; }
+```
+
+
+#### **SQL**
+
+```sql
+
+/**
+  * Création de la table UTILISATEUR
+ **/
+create table UTILISATEUR (
+	ID int not null,
+	EMAIL varchar(50) not null,
+	NOM varchar(100),
+	DATE_INSCRIPTION date,
+	CODE varchar(10) not null,
+	constraint PK_UTILISATEUR primary key (ID)
+);
+
+/**
+  * Création de l'index de clef étrangère pour UTILISATEUR_PROFIL.ID
+ **/
+create index IDX_UTILISATEUR_PROFIL_ID_FK on UTILISATEUR_PROFIL (
+	ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour UTILISATEUR_PROFIL.ID
+ **/
+alter table UTILISATEUR_PROFIL
+	add constraint FK_UTILISATEUR_PROFIL_ID foreign key (ID)
+		references UTILISATEUR (ID);
+
+/**
+  * Création de l'index de clef étrangère pour UTILISATEUR_PROFIL.ID
+ **/
+create index IDX_UTILISATEUR_PROFIL_ID_FK on UTILISATEUR_PROFIL (
+	ID ASC
+);
+
+/**
+  * Génération de la contrainte de clef étrangère pour UTILISATEUR_PROFIL.ID
+ **/
+alter table UTILISATEUR_PROFIL
+	add constraint FK_UTILISATEUR_PROFIL_ID foreign key (ID)
+		references PROFIL (ID);
+
+/**
+  * Création de l'index de clef étrangère pour TYPE_UTILISATEUR.LIBELLE
+ **/
+create index IDX_TYPE_UTILISATEUR_LIBELLE_FK on TYPE_UTILISATEUR (
+	LIBELLE ASC
+);
+```
+<!-- tabs:end -->

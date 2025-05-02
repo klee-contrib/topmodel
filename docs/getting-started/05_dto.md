@@ -356,4 +356,207 @@ Nous venons de couvrir beacoup de notions essentielles. Au début du chapitre, n
   - Dto.tmd
 
 
+## Exemple de code généré
 
+### Classes non persistées
+<!-- tabs:start -->
+
+#### **Java**
+```java
+
+package tuto.dtos.users;
+
+/**
+ * Objet de transfert pour la classe Utilisateur, dans le cas d'une recherche.
+ */
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
+public class UtilisateurSearchResultDto implements Serializable {
+	/** Serial ID */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Adresse mail de l'utilisateur.
+	 * Alias of {@link tuto.entities.users.Utilisateur#getEmail() Utilisateur#getEmail()} 
+	 */
+	@Email
+	@Size(max = 50)
+	@NotNull
+	private String email;
+
+	/**
+	 * Nom de l'utilisateur.
+	 * Alias of {@link tuto.entities.users.Utilisateur#getNom() Utilisateur#getNom()} 
+	 */
+	@Size(max = 100)
+	private String nom;
+
+	/**
+	 * Date d'inscription.
+	 * Alias of {@link tuto.entities.users.Utilisateur#getDateInscription() Utilisateur#getDateInscription()} 
+	 */
+	private LocalDate dateInscription;
+
+	/**
+	 * Type de l'utilisateur.
+	 * Alias of {@link tuto.entities.users.Utilisateur#getTypeUtilisateur() Utilisateur#getTypeUtilisateur()} 
+	 */
+	@NotNull
+	private TypeUtilisateurCode typeUtilisateurCode;
+
+	/**
+	 * Profil de l'utilisateur.
+	 * Alias of {@link tuto.entities.users.Utilisateur#getProfils() Utilisateur#getProfils()} 
+	 */
+	private  profils;
+
+	/**
+	 * Nom du profil.
+	 * Alias of {@link tuto.entities.users.Profil#getNom() Profil#getNom()} 
+	 */
+	@Size(max = 100)
+	private String nomProfil;
+  // ...
+}
+
+```
+
+
+#### **C#**
+
+
+```csharp
+namespace Tuto.Users.Models;
+
+/// <summary>
+/// Objet de transfert pour la classe Utilisateur, dans le cas d'une recherche.
+/// </summary>
+public partial record UtilisateurSearchResultDto
+{
+    /// <summary>
+    /// Adresse mail de l'utilisateur.
+    /// </summary>
+    [Required]
+    [Domain(Domains.Email)]
+    [StringLength(50)]
+    public string Email { get; set; }
+
+    /// <summary>
+    /// Nom de l'utilisateur.
+    /// </summary>
+    [Domain(Domains.Libelle)]
+    [StringLength(100)]
+    public string Nom { get; set; }
+
+    /// <summary>
+    /// Date d'inscription.
+    /// </summary>
+    [Domain(Domains.Date)]
+    public DateOnly? DateInscription { get; set; }
+
+    /// <summary>
+    /// Type de l'utilisateur.
+    /// </summary>
+    [Required]
+    [ReferencedType(typeof(TypeUtilisateur))]
+    [Domain(Domains.Code)]
+    public TypeUtilisateur.Codes? TypeUtilisateurCode { get; set; }
+
+    /// <summary>
+    /// Profil de l'utilisateur.
+    /// </summary>
+    [Domain(Domains.Liste)]
+    public  Profils { get; set; }
+
+    /// <summary>
+    /// Nom du profil.
+    /// </summary>
+    [Domain(Domains.Libelle)]
+    [StringLength(100)]
+    public string NomProfil { get; set; }
+}
+
+```
+
+
+<!-- tabs:end -->
+
+
+### Mappers
+<!-- tabs:start -->
+
+#### **Java**
+
+```java
+package tuto.entities.users;
+
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
+public class UsersMappers {
+
+	/**
+	 * Map les champs des classes passées en paramètre dans l'objet target'.
+	 * @param target Instance de 'UtilisateurSearchResultDto' (ou null pour créer une nouvelle instance).
+	 * @param utilisateur Instance de 'Utilisateur'.
+	 * @param profil Instance de 'Profil'.
+	 *
+	 * @return Une nouvelle instance de 'UtilisateurSearchResultDto' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée.
+	 */
+	public static UtilisateurSearchResultDto createUtilisateurSearchResultDto(Utilisateur utilisateur, Profil profil, UtilisateurSearchResultDto target) {
+		if (target == null) {
+			target = new UtilisateurSearchResultDto();
+		}
+
+		if (utilisateur == null) {
+			throw new IllegalArgumentException("utilisateur cannot be null");
+		}
+
+		if (profil == null) {
+			throw new IllegalArgumentException("profil cannot be null");
+		}
+
+		target.setEmail(utilisateur.getEmail());
+		target.setNom(utilisateur.getNom());
+		target.setDateInscription(utilisateur.getDateInscription());
+		if (utilisateur.getTypeUtilisateur() != null) {
+			target.setTypeUtilisateurCode(utilisateur.getTypeUtilisateur().getCode());
+		}
+
+		target.setNomProfil(profil.getNom());
+		return target;
+	}
+}
+
+```
+
+
+#### **C#**
+
+```csharp
+namespace Tuto.Clients.Db.Models.Users;
+
+public static class Mappers
+{
+    /// <summary>
+    /// Crée une nouvelle instance de 'UtilisateurSearchResultDto'.
+    /// </summary>
+    /// <param name="utilisateur">Instance de 'Utilisateur'.</param>
+    /// <param name="profil">Instance de 'Profil'.</param>
+    /// <returns>Une nouvelle instance de 'UtilisateurSearchResultDto'.</returns>
+    public static UtilisateurSearchResultDto CreateUtilisateurSearchResultDto(Utilisateur utilisateur, Profil profil)
+    {
+        ArgumentNullException.ThrowIfNull(utilisateur);
+        ArgumentNullException.ThrowIfNull(profil);
+
+        return new UtilisateurSearchResultDto
+        {
+            Email = utilisateur.Email,
+            Nom = utilisateur.Nom,
+            DateInscription = utilisateur.DateInscription,
+            TypeUtilisateurCode = utilisateur.TypeUtilisateurCode,
+            Profils = utilisateur.Profils,
+            NomProfil = profil.Nom
+        };
+    }
+}
+```
+
+<!-- tabs:end -->

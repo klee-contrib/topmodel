@@ -161,7 +161,7 @@ class:
       domain: DO_LIBELLE
       label: Nom # Libelle d'affichage de la propriété
       
-    - name: DateInscriptoin
+    - name: DateInscription
       comment: Date d'inscription
       domain: DO_DATE
       label: Inscrit depuis le # Libelle d'affichage de la propriété
@@ -177,3 +177,137 @@ A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers
   - topmodel.config
   - Utilisateur.tmd
   - Domains.tmd
+
+## Exemple de code généré
+
+<!-- tabs:start -->
+
+#### **Java**
+
+```java
+package tuto.entities.users;
+
+/**
+ * Utilisateur de l'application.
+ */
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
+@Entity
+@Table(name = "UTILISATEUR")
+public class Utilisateur {
+
+	/**
+	 * Identifiant unique de l'utilisateur.
+	 */
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@Column(name = "ID", nullable = false, columnDefinition = "int")
+	private Integer id;
+
+	/**
+	 * Adresse mail de l'utilisateur.
+	 */
+	@Column(name = "EMAIL", nullable = false, length = 50, columnDefinition = "varchar")
+	private String email;
+
+	/**
+	 * Nom de l'utilisateur.
+	 */
+	@Column(name = "NOM", length = 100, columnDefinition = "varchar")
+	private String nom;
+
+	/**
+	 * Date d'inscription.
+	 */
+	@Column(name = "DATE_INSCRIPTION", columnDefinition = "date")
+	private LocalDate dateInscription;
+
+   // Getters and Setters
+}
+
+```
+
+#### **C#**
+
+
+```csharp
+namespace Tuto.Clients.Db.Models.Users;
+
+/// <summary>
+/// Utilisateur de l'application.
+/// </summary>
+[Table("utilisateur")]
+public partial record Utilisateur
+{
+    /// <summary>
+    /// Identifiant unique de l'utilisateur.
+    /// </summary>
+    [Column("id")]
+    [Domain(Domains.Id)]
+    [Key]
+    public int? Id { get; set; }
+
+    /// <summary>
+    /// Adresse mail de l'utilisateur.
+    /// </summary>
+    [Column("email")]
+    [Required]
+    [Domain(Domains.Email)]
+    [StringLength(50)]
+    public string Email { get; set; }
+
+    /// <summary>
+    /// Nom de l'utilisateur.
+    /// </summary>
+    [Column("nom")]
+    [Domain(Domains.Libelle)]
+    [StringLength(100)]
+    public string Nom { get; set; }
+
+    /// <summary>
+    /// Date d'inscription.
+    /// </summary>
+    [Column("date_inscription")]
+    [Domain(Domains.Date)]
+    public DateOnly? DateInscription { get; set; }
+}
+
+```
+
+
+#### **SQL**
+
+```sql
+/**
+  * Création de la table UTILISATEUR
+ **/
+create table UTILISATEUR (
+	ID int not null,
+	EMAIL varchar(50) not null,
+	NOM varchar(100),
+	DATE_INSCRIPTION date,
+	constraint PK_UTILISATEUR primary key (ID)
+);
+
+/**
+  * Création de la séquence pour la clé primaire de la table UTILISATEUR
+ **/
+create sequence SEQ_UTILISATEUR as INT start 1000 increment 50 owned by UTILISATEUR.ID;
+
+/**
+  * Création de ta table TRANSLATION contenant les traductions
+ **/
+create table TRANSLATION (
+    RESOURCE_KEY varchar(255),
+    LABEL varchar(4000),
+    constraint PK_TRANSLATION primary key (RESOURCE_KEY, LOCALE)
+);
+/**
+  * Création de l'index pour TRANSLATION (RESOURCE_KEY, LOCALE)
+ **/
+create index IDX_TRANSLATION_RESOURCE_KEY on TRANSLATION (
+	RESOURCE_KEY ASC
+);
+
+```
+
+<!-- tabs:end -->

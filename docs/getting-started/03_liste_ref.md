@@ -75,3 +75,120 @@ A ce stade du tutoriel, notre répertoire "Projet" devrait contenir les fichiers
   - Utilisateur.tmd
   - Domains.tmd
   - References.tmd
+
+
+## Exemple de code généré
+
+<!-- tabs:start -->
+#### **Java**
+```java
+package tuto.enums.refs;
+
+/**
+ * Enumération des valeurs possibles de la propriété Code de la classe TypeUtilisateur.
+ */
+public enum TypeUtilisateurCode {
+	/**
+	 * Administrateur.
+	 */
+	ADM,
+	/**
+	 * Client.
+	 */
+	CLI,
+	/**
+	 * Gestionnaire.
+	 */
+	GES
+}
+
+```
+
+```java
+
+package tuto.entities.refs;
+
+/**
+ * Type d'utilisateur.
+ */
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
+@Entity
+@Table(name = "TYPE_UTILISATEUR")
+@Immutable
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+public class TypeUtilisateur {
+
+  // [...]
+	/**
+	 * Code du type d'utilisateur.
+	 */
+	@Id
+	@Column(name = "CODE", nullable = false, length = 10, columnDefinition = "varchar")
+	@Enumerated(EnumType.STRING)
+	private TypeUtilisateurCode code;
+
+	// Libellé du type d'utilisateur.
+	@Column(name = "LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
+	private String libelle;
+
+  // ...
+}
+
+```
+
+#### **C#**
+
+
+```csharp
+namespace Tuto.Refs.Models;
+
+/// <summary>
+/// Type d'utilisateur.
+/// </summary>
+[Reference(true)]
+[DefaultProperty(nameof(Libelle))]
+[Table("type_utilisateur")]
+public partial record TypeUtilisateur
+{
+    /// <summary>
+    /// Valeurs possibles de la liste de référence TypeUtilisateur.
+    /// </summary>
+    public enum Codes
+    {
+        /// <summary>
+        /// Administrateur.
+        /// </summary>
+        ADM,
+
+        /// <summary>
+        /// Client.
+        /// </summary>
+        CLI,
+
+        /// <summary>
+        /// Gestionnaire.
+        /// </summary>
+        GES
+    }
+
+/// ...
+}
+
+```
+
+
+#### **SQL**
+
+```sql
+create table TYPE_UTILISATEUR (
+	CODE varchar(10) not null,
+	LIBELLE varchar(100) not null,
+	constraint PK_TYPE_UTILISATEUR primary key (CODE)
+);
+
+INSERT INTO TYPE_UTILISATEUR(CODE, LIBELLE) VALUES('ADM', 'refs.typeUtilisateur.values.ADM');
+INSERT INTO TYPE_UTILISATEUR(CODE, LIBELLE) VALUES('GES', 'refs.typeUtilisateur.values.GES');
+INSERT INTO TYPE_UTILISATEUR(CODE, LIBELLE) VALUES('CLI', 'refs.typeUtilisateur.values.CLI');
+```
+
+<!-- tabs:end -->
