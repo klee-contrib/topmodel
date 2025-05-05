@@ -32,7 +32,7 @@ public static class OpenApiUtils
 
     public static (string? Kind, IOpenApiSchema? Schema) GetComposition(this OpenApiDocument model, IOpenApiSchema schema)
     {
-        if (schema.AnyOf.Any() || schema.OneOf.Any())
+        if ((schema.AnyOf?.Any() ?? false) || (schema.OneOf?.Any() ?? false))
         {
             return ("object", schema);
         }
@@ -61,7 +61,7 @@ public static class OpenApiUtils
         return resolvedDomain;
     }
 
-    public static string GetOperationId(this OpenApiDocument model, KeyValuePair<OperationType, OpenApiOperation> operation)
+    public static string GetOperationId(this OpenApiDocument model, KeyValuePair<HttpMethod, OpenApiOperation> operation)
     {
         if (operation.Value.OperationId != null)
         {
@@ -75,9 +75,9 @@ public static class OpenApiUtils
             return path.ToPascalCase();
         }
 
-        var id = operation.Key.ToString().ToPascalCase();
+        var id = operation.Key.ToString().ToPascalCase(strictIfUppercase: true);
 
-        if (operation.Key == OperationType.Get || operation.Key == OperationType.Head)
+        if (operation.Key == HttpMethod.Get || operation.Key == HttpMethod.Head)
         {
             var responseSchema = model.GetResponseSchema(operation.Value);
             if (responseSchema.Key != null)
@@ -90,8 +90,12 @@ public static class OpenApiUtils
             var bodySchema = operation.Value.GetRequestBodySchema();
             if (bodySchema != null)
             {
-                var (kind, name) = model.GetComposition(bodySchema);
-                id += name;
+                var (kind, schema) = model.GetComposition(bodySchema);
+                id += schema switch
+                {
+                    OpenApiSchemaReference schemaRef => schemaRef.Reference.Id,
+                    _ => string.Empty
+                };
 
                 if (kind != null && kind != "object")
                 {
@@ -105,32 +109,36 @@ public static class OpenApiUtils
 
     public static string GetOperationPath(this OpenApiDocument model, OpenApiOperation operation)
     {
-        return model.Paths.Single(p => p.Value.Operations.Any(o => o.Value == operation)).Key[1..];
+        return model.Paths.Single(p => p.Value.Operations!.Any(o => o.Value == operation)).Key[1..];
     }
 
-    public static IDictionary<string, IOpenApiSchema> GetProperties(this IOpenApiSchema schema)
+    public static Dictionary<string, IOpenApiSchema> GetProperties(this IOpenApiSchema schema)
     {
         if (schema.Type == JsonSchemaType.Array)
         {
-            return schema.Items.GetProperties();
+            return schema.Items?.GetProperties() ?? [];
         }
 
-        return schema.Properties
-            .Concat(schema.AllOf.Where(a => a.Type == JsonSchemaType.Object).SelectMany(a => a.Properties))
-            .ToDictionary(a => a.Key, a => a.Value);
+        return schema.Properties?
+            .Concat((schema.AllOf ?? []).Where(a => a.Type == JsonSchemaType.Object).SelectMany(a => a.Properties ?? []))
+            .ToDictionary(a => a.Key, a => a.Value) ?? [];
     }
 
     public static IOpenApiSchema? GetRequestBodySchema(this OpenApiOperation operation)
     {
-        return operation.RequestBody?.Content.First().Value.Schema;
+        return operation.RequestBody?.Content?.FirstOrDefault().Value.Schema;
     }
 
     public static KeyValuePair<string, IOpenApiSchema> GetResponseSchema(this OpenApiDocument model, OpenApiOperation operation)
     {
-        var response = operation.Responses.FirstOrDefault(r => r.Key == "200" || r.Key == "201").Value;
-        if (response != null && response.Content.Any())
+        var response = operation.Responses?.FirstOrDefault(r => r.Key == "200" || r.Key == "201").Value;
+        if (response?.Content?.Any() ?? false)
         {
-            return new(model.Components.Schemas.FirstOrDefault(s => s.Value == response.Content.First().Value.Schema).Key, response.Content.First().Value.Schema);
+            var contentSchema = response.Content.First().Value.Schema;
+            return new(
+                (contentSchema as OpenApiSchemaReference)?.Reference.Id
+                    ?? model.Components?.Schemas?.FirstOrDefault(s => s.Value == response.Content.First().Value.Schema).Key!,
+                contentSchema!);
         }
 
         return default;
@@ -138,45 +146,42 @@ public static class OpenApiUtils
 
     public static IDictionary<string, IOpenApiSchema> GetSchemas(this OpenApiDocument model)
     {
-        var schemas = model?.Components?.Schemas;
-        foreach (var s in model.Components.RequestBodies.ToDictionary(r => r.Key, r => r.Value.Content.First().Value.Schema))
+        var schemas = model.Components?.Schemas ?? [];
+        foreach (var s in model.Components?.RequestBodies?.ToDictionary(r => r.Key, r => r.Value.Content?.FirstOrDefault().Value.Schema) ?? [])
         {
-            if (!schemas.ContainsKey(s.Key)
-                && !schemas.Values.Any(sc => sc == s.Value))
+            if (s.Value != null && !schemas.ContainsKey(s.Key) && !schemas.Values.Any(sc => sc == s.Value))
             {
-                schemas.Add(s);
+                schemas.Add(s.Key, s.Value);
             }
         }
 
-        foreach (var s in model.Components.Responses.Where(r => r.Value.Content.Any()).ToDictionary(r => r.Key, r => r.Value.Content.First().Value.Schema))
+        foreach (var s in model.Components?.Responses?.Where(r => r.Value.Content?.Any() ?? false)?.ToDictionary(r => r.Key, r => r.Value.Content?.FirstOrDefault().Value.Schema) ?? [])
         {
-            if (!schemas.ContainsKey(s.Key)
-                && !schemas.Values.Any(sc => sc == s.Value))
+            if (s.Value != null && !schemas.ContainsKey(s.Key) && !schemas.Values.Any(sc => sc == s.Value))
             {
-                schemas.Add(s);
+                schemas.Add(s.Key, s.Value);
             }
         }
 
         foreach (var s in model.Paths
-            .SelectMany(p => p.Value.Operations.Where(o => o.Value.Tags.Any()))
+            .SelectMany(p => p.Value.Operations?.Where(o => o.Value.Tags?.Any() ?? false) ?? [])
             .Where(o => o.Value.RequestBody != null)
-            .ToDictionary(r => $"{r.Key}{model.GetOperationId(r)}Body", r => r.Value.RequestBody.Content.First().Value.Schema))
+            .ToDictionary(r => $"{r.Key.Method.ToPascalCase(strictIfUppercase: true)}{model.GetOperationId(r)}Body", r => r.Value.RequestBody?.Content?.FirstOrDefault().Value.Schema))
         {
-            if (!schemas.ContainsKey(s.Key)
-                && !schemas.Values.Any(sc => sc == s.Value))
+            if (s.Value != null && !schemas.ContainsKey(s.Key) && !schemas.Values.Any(sc => sc == s.Value))
             {
-                schemas.Add(s);
+                schemas.Add(s.Key, s.Value);
             }
         }
 
-        return schemas.Where(s =>
-             s.Value.Type == JsonSchemaType.Object
-             || s.Value.Type == JsonSchemaType.String && s.Value.Enum.Any()
-             || s.Value.AllOf.Any() && s.Value.AllOf.All(a => a.Type == JsonSchemaType.Object)
-             || s.Value.AnyOf.Any()
-             || s.Value.OneOf.Any())
-
-         .ToDictionary(a => a.Key, a => a.Value);
+        return schemas
+            .Where(s =>
+                s.Value.Type == JsonSchemaType.Object
+                || s.Value.Type == JsonSchemaType.String && (s.Value.Enum?.Any() ?? false)
+                || (s.Value.AllOf?.Any() ?? false) && s.Value.AllOf.All(a => a.Type == JsonSchemaType.Object)
+                || (s.Value.AnyOf?.Any() ?? false)
+                || (s.Value.OneOf?.Any() ?? false))
+            .ToDictionary(a => a.Key, a => a.Value);
     }
 
     public static string Unplurialize(this string name)
@@ -192,7 +197,7 @@ public static class OpenApiUtils
         {
             return schema.Format + length;
         }
-        else if (schema.Type == JsonSchemaType.Array)
+        else if (schema.Type == JsonSchemaType.Array && schema.Items != null)
         {
             return $"{GetDomainCore(schema.Items)}-array";
         }
@@ -201,7 +206,7 @@ public static class OpenApiUtils
             return $"{GetDomainCore(schema.AdditionalProperties)}-map";
         }
 
-        return schema.Type + length;
+        return (schema.Type == JsonSchemaType.Null ? JsonSchemaType.Object : (schema.Type & ~JsonSchemaType.Null)) + length;
     }
 
     private static string GetDomainSchema(this OpenApiConfig config, IOpenApiSchema schema)

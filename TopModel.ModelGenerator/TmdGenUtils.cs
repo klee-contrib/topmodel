@@ -25,7 +25,7 @@ public static class TmdGenUtils
                 }
                 else
                 {
-                    if (name == d.Name)
+                    if (name.Equals(d.Name, StringComparison.InvariantCultureIgnoreCase))
                     {
                         score += 100000;
                     }
@@ -40,7 +40,7 @@ public static class TmdGenUtils
                         score += 100;
                     }
                 }
-                else if (type == d.Type)
+                else if (type.Equals(d.Type, StringComparison.InvariantCultureIgnoreCase))
                 {
                     score += 1000;
                 }
