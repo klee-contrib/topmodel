@@ -68,7 +68,7 @@ public static class ImportsJpaExtensions
         }
         else
         {
-            if (!config.UseJdbc && ap.Class != null && ap.Association.IsPersistent)
+            if (!config.UseJdbc && ap.Class != null && ap.Association.IsPersistent && ap.Class.IsPersistent)
             {
                 yield return ap.Association.GetImport(config, config.GetBestClassTag(ap.Association, tag));
             }
