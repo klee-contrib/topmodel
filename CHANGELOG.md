@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.6.1
+
+- [`d3ed6`](https://github.com/klee-contrib/topmodel/commit/d3ed6ae2aec14dfee9a179661d4ff69ad1de9945) [Core] Support du mode UUID pour les clés primaires
+
 ## 2.6.0
 
 - [#453](https://github.com/klee-contrib/topmodel/pull/453) - Définitions de paramètres de domaines/décorateurs explicites
