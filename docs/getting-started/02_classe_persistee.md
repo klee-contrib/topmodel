@@ -292,22 +292,6 @@ create table UTILISATEUR (
   * Création de la séquence pour la clé primaire de la table UTILISATEUR
  **/
 create sequence SEQ_UTILISATEUR as INT start 1000 increment 50 owned by UTILISATEUR.ID;
-
-/**
-  * Création de ta table TRANSLATION contenant les traductions
- **/
-create table TRANSLATION (
-    RESOURCE_KEY varchar(255),
-    LABEL varchar(4000),
-    constraint PK_TRANSLATION primary key (RESOURCE_KEY, LOCALE)
-);
-/**
-  * Création de l'index pour TRANSLATION (RESOURCE_KEY, LOCALE)
- **/
-create index IDX_TRANSLATION_RESOURCE_KEY on TRANSLATION (
-	RESOURCE_KEY ASC
-);
-
 ```
 
 <!-- tabs:end -->
