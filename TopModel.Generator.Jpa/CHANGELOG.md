@@ -1,3 +1,7 @@
+## 1.6.6
+
+- [ccc854](https://github.com/klee-contrib/topmodel/commit/ccc85468600ee0c698ec7fce6b77580b093b7caf) Fix : [JPA] Association non persistée [#459](https://github.com/klee-contrib/topmodel/issues/459)
+
 ## 1.6.5
 
 - [d3ed6a](https://github.com/klee-contrib/topmodel/commit/d3ed6ae2aec14dfee9a179661d4ff69ad1de9945) [JPA] Support pour la génération d'id en mode UUID
