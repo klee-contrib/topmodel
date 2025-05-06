@@ -440,7 +440,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
     private TmdProperty WriteProperty(OpenApiConfig config, KeyValuePair<string, IOpenApiSchema> property, IOpenApiSchema? schema, TmdFile tmdFile)
     {
-        var (kind, sc) = _model.GetComposition(property.Value);
+        var (kind, sc) = OpenApiUtils.GetComposition(property.Value);
         if (property.Value.Type == JsonSchemaType.Array && (property.Value.Items?.Enum ?? []).Any() && property.Value.Items?.Type == JsonSchemaType.String)
         {
             var aliasClass = tmdFile.Classes.Where(c => c.Name == $"{_config.ClassPrefix}{property.Key.ToPascalCase()}").SingleOrDefault();
@@ -498,7 +498,6 @@ public class OpenApiTmdGenerator : ModelGenerator
             }
 
             compositionProperty.CompositionReference = sch;
-
             return compositionProperty;
         }
         else

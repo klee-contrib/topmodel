@@ -30,7 +30,7 @@ public static class OpenApiUtils
         }
     }
 
-    public static (string? Kind, IOpenApiSchema? Schema) GetComposition(this OpenApiDocument model, IOpenApiSchema schema)
+    public static (string? Kind, IOpenApiSchema? Schema) GetComposition(IOpenApiSchema schema)
     {
         if ((schema.AnyOf?.Any() ?? false) || (schema.OneOf?.Any() ?? false))
         {
@@ -90,7 +90,7 @@ public static class OpenApiUtils
             var bodySchema = operation.Value.GetRequestBodySchema();
             if (bodySchema != null)
             {
-                var (kind, schema) = model.GetComposition(bodySchema);
+                var (kind, schema) = GetComposition(bodySchema);
                 id += schema switch
                 {
                     OpenApiSchemaReference schemaRef => schemaRef.Reference.Id,
@@ -119,7 +119,7 @@ public static class OpenApiUtils
             return schema.Items?.GetProperties() ?? [];
         }
 
-        return schema.Properties?
+        return (schema.Properties ?? [])
             .Concat((schema.AllOf ?? []).Where(a => a.Type == JsonSchemaType.Object).SelectMany(a => a.Properties ?? []))
             .ToDictionary(a => a.Key, a => a.Value) ?? [];
     }
