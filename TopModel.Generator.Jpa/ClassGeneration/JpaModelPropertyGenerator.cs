@@ -505,8 +505,12 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
         var role = property.Role is not null ? "_" + property.Role.ToConstantCase() : string.Empty;
         var fk = ((IProperty)property).SqlName;
         var pk = property.Class.PrimaryKey.Single().SqlName + role;
-        var association = new JavaAnnotation($"{property.Type}", imports: $"{JavaxOrJakarta}.persistence.{property.Type}")
-            .AddAttribute("fetch", "FetchType.LAZY", $"{JavaxOrJakarta}.persistence.FetchType");
+        var association = new JavaAnnotation($"{property.Type}", imports: $"{JavaxOrJakarta}.persistence.{property.Type}");
+        if (property.Type == AssociationType.ManyToOne || property.Type == AssociationType.OneToOne)
+        {
+            association.AddAttribute("fetch", "FetchType.LAZY", $"{JavaxOrJakarta}.persistence.FetchType");
+        }
+
         if (!Config.CanClassUseEnums(property.Association))
         {
             association.AddAttribute("cascade", "{ CascadeType.PERSIST, CascadeType.MERGE }", $"{JavaxOrJakarta}.persistence.CascadeType");

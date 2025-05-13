@@ -56,7 +56,7 @@ public class Profil {
 	/**
 	 * Liste des droits du profil.
 	 */
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany
 	@JoinTable(name = "PROFIL_DROIT", joinColumns = @JoinColumn(name = "PRO_ID"), inverseJoinColumns = @JoinColumn(name = "DRO_CODE"))
 	@OrderBy("code ASC")
 	private List<Droit> droits;
