@@ -150,7 +150,7 @@ internal static class TemplateExtensions
             "length" => domain.Length?.ToString() ?? string.Empty,
             "scale" => domain.Scale?.ToString() ?? string.Empty,
             "name" => domain.Name ?? string.Empty,
-            "type" => domain.Implementations.GetValueOrDefault(config.Language)?.Type ?? string.Empty,
+            "type" => config.GetImplementation(domain)?.Type ?? string.Empty,
             var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), tag: tag)
         }).Transform(input);
     }

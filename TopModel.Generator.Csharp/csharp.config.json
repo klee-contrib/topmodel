@@ -2,14 +2,26 @@
   "type": "object",
   "description": "Config pour la génération de C#.",
   "additionalProperties": false,
-  "required": [
-    "outputDirectory",
-    "tags"
-  ],
+  "required": ["outputDirectory", "tags"],
   "properties": {
     "language": {
-      "type": "string",
-      "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'csharp'."
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs",
+          "default": "csharp"
+        },
+        {
+          "type": "array",
+          "description": "Langages du générateur, utilisés pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Les différentes options sont testées dans l'ordre de définition, la première pour laquelle il existe une implémentation est sélectionnée",
+          "default": "csharp",
+          "items": {
+            "type": "string",
+            "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'csharp'.",
+            "default": "csharp"
+          }
+        }
+      ]
     },
     "tags": {
       "type": "array",
@@ -114,10 +126,7 @@
         {
           "type": "string",
           "description": "Mode de génération de l'API ('Client' ou 'Server')",
-          "enum": [
-            "Client",
-            "Server"
-          ]
+          "enum": ["Client", "Server"]
         },
         {
           "type": "string",
@@ -229,7 +238,7 @@
     "mapperLocationPriority": {
       "type": "string",
       "description": "Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persistent` ou `non-persistent`). Par défaut : 'persistent'",
-      "enum": [ "persistent", "non-persistent" ]
+      "enum": ["persistent", "non-persistent"]
     },
     "enumsForStaticReferences": {
       "type": "boolean",
@@ -240,13 +249,9 @@
       "description": "Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `UseEFMigrations`)."
     },
     "useRecords": {
-      "type": [ "string", "boolean" ],
+      "type": ["string", "boolean"],
       "description": "Utilise des records (mutables) au lieu de classes pour la génération de classes. Par défaut : 'true'.",
-      "enum": [
-        true,
-        false,
-        "dtos-only"
-      ]
+      "enum": [true, false, "dtos-only"]
     },
     "usePrimaryConstructors": {
       "type": "boolean",

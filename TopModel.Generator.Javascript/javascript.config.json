@@ -5,8 +5,23 @@
   "required": ["outputDirectory", "tags"],
   "properties": {
     "language": {
-      "type": "string",
-      "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'ts'."
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.",
+          "default": "ts"
+        },
+        {
+          "type": "array",
+          "description": "Langages du générateur, utilisés pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : '[ts]'. Les différentes options sont testées dans l'ordre de définition, la première pour laquelle il existe une implémentation est sélectionnée",
+          "default": "[ts]",
+          "items": {
+            "type": "string",
+            "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'ts'.",
+            "default": "ts"
+          }
+        }
+      ]
     },
     "tags": {
       "type": "array",
@@ -91,13 +106,13 @@
       "type": "string",
       "description": "Framework cible pour la génération.",
       "default": "focus",
-      "enum": [ "angular", "angular_promise", "vanilla", "nuxt" ]
+      "enum": ["angular", "angular_promise", "vanilla", "nuxt"]
     },
     "entityMode": {
       "type": "string",
       "description": "Framework cible pour la génération.",
       "default": "typed",
-      "enum": [ "untyped", "typed", "none" ]
+      "enum": ["untyped", "typed", "none"]
     },
     "extendedCompositions": {
       "type": "boolean",
@@ -111,7 +126,7 @@
     "resourceMode": {
       "type": "string",
       "description": "Mode de génération (JS, JSON ou JSON Schema).",
-      "enum": [ "js", "json" ]
+      "enum": ["js", "json"]
     },
     "translateReferences": {
       "type": "boolean",
@@ -134,7 +149,7 @@
     "referenceMode": {
       "type": "string",
       "description": "Mode de génération des listes de références (définitions ou valeurs).",
-      "enum": [ "definition", "values" ],
+      "enum": ["definition", "values"],
       "default": "definition"
     }
   }

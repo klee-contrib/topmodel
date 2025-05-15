@@ -8,8 +8,23 @@
   ],
   "properties": {
     "language": {
-      "type": "string",
-      "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'sql'."
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs",
+          "default": "sql"
+        },
+        {
+          "type": "array",
+          "description": "Langages du générateur, utilisés pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Les différentes options sont testées dans l'ordre de définition, la première pour laquelle il existe une implémentation est sélectionnée",
+          "default": "[sql]",
+          "items": {
+            "type": "string",
+            "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.",
+            "default": "sql"
+          }
+        }
+      ]
     },
     "tags": {
       "type": "array",

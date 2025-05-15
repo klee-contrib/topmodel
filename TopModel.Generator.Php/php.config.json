@@ -2,14 +2,26 @@
   "type": "object",
   "description": "Config pour la génération de Jpa.",
   "additionalProperties": false,
-  "required": [
-    "tags",
-    "outputDirectory"
-  ],
+  "required": ["tags", "outputDirectory"],
   "properties": {
     "language": {
-      "type": "string",
-      "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'java'."
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs",
+          "default": "php"
+        },
+        {
+          "type": "array",
+          "description": "Langages du générateur, utilisés pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Les différentes options sont testées dans l'ordre de définition, la première pour laquelle il existe une implémentation est sélectionnée",
+          "default": "[php]",
+          "items": {
+            "type": "string",
+            "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.",
+            "default": "php"
+          }
+        }
+      ]
     },
     "tags": {
       "type": "array",
@@ -47,10 +59,7 @@
       "description": "Désactive les générateurs demandés",
       "items": {
         "type": "string",
-        "enum": [
-          "PhpModelGen",
-          "PhpRepositoryGen"
-        ]
+        "enum": ["PhpModelGen", "PhpRepositoryGen"]
       }
     },
     "outputDirectory": {
@@ -90,11 +99,7 @@
         "mode": {
           "type": "string",
           "description": "Mode de génération des séquences.",
-          "enum": [
-            "none",
-            "sequence",
-            "identity"
-          ],
+          "enum": ["none", "sequence", "identity"],
           "default": "identity"
         },
         "increment": {

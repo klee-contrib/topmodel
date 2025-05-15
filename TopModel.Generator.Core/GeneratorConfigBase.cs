@@ -31,7 +31,7 @@ public abstract class GeneratorConfigBase
     /// <summary>
     /// Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.
     /// </summary>
-    public required string Language { get; set; }
+    public required IList<string> Language { get; set; }
 #nullable enable
 
     /// <summary>
@@ -274,7 +274,26 @@ public abstract class GeneratorConfigBase
     /// <returns>Implémentation.</returns>
     public DomainImplementation? GetImplementation(Domain? domain)
     {
-        return domain?.Implementations.GetValueOrDefault(Language);
+        return GetImplementation(domain?.Implementations);
+    }
+
+    /// <summary>
+    /// Pour un dictionnaire d'implémentations, retourne la première valeur qui match avec un langages
+    /// </summary>
+    /// <typeparam name="T">Type d'implémentation</typeparam>
+    /// <param name="implementations">Dictionnaire de toutes les implémentations</param>
+    /// <returns>L'implémentation sélectionnée si elle existe</returns>
+    public T? GetImplementation<T>(IDictionary<string, T>? implementations)
+    {
+        foreach (var language in Language)
+        {
+            if (implementations?.ContainsKey(language) ?? false)
+            {
+                return implementations[language];
+            }
+        }
+
+        return default;
     }
 
     /// <summary>
@@ -284,7 +303,7 @@ public abstract class GeneratorConfigBase
     /// <returns>Implémentation.</returns>
     public DecoratorImplementation? GetImplementation(Decorator? decorator)
     {
-        return decorator?.Implementations.GetValueOrDefault(Language);
+        return GetImplementation(decorator?.Implementations);
     }
 
     /// <summary>
@@ -294,7 +313,7 @@ public abstract class GeneratorConfigBase
     /// <returns>Implémentation.</returns>
     public ConverterImplementation? GetImplementation(Converter? converter)
     {
-        return converter?.Implementations.GetValueOrDefault(Language);
+        return GetImplementation(converter?.Implementations);
     }
 
     /// <summary>
