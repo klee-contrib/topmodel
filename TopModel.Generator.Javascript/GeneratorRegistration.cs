@@ -33,7 +33,7 @@ public class GeneratorRegistration : IGeneratorRegistration<JavascriptConfig>
         TrimSlashes(config, c => c.ModelRootPath);
         TrimSlashes(config, c => c.ResourceRootPath);
 
-        config.Language ??= ["ts"];
+        config.Language ??= "ts";
 
         if (config.ModelRootPath != null)
         {

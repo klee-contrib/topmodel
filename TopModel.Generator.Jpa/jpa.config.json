@@ -14,7 +14,7 @@
         {
           "type": "array",
           "description": "Langages du générateur, utilisés pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Les différentes options sont testées dans l'ordre de définition, la première pour laquelle il existe une implémentation est sélectionnée",
-          "default": "[java]",
+          "default": "java",
           "items": {
             "type": "string",
             "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.",

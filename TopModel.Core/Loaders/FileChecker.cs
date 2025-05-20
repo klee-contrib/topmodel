@@ -29,6 +29,7 @@ public class FileChecker
         _deserializer = new DeserializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .WithNodeTypeResolver(new InferTypeFromValueResolver())
+            .WithTypeConverter(new StringListTypeConverter())
             .WithTypeConverter(new LocatedStringTypeConverter())
             .IgnoreUnmatchedProperties()
             .Build();

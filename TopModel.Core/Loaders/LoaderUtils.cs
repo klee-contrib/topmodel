@@ -6,7 +6,7 @@ namespace TopModel.Core.Loaders;
 
 public static class LoaderUtils
 {
-    public static DomainReference ConsumeDomain(this Parser parser, Scalar? value)
+    public static DomainReference ConsumeDomain(this IParser parser, Scalar? value)
     {
         if (parser.Current is MappingStart)
         {
@@ -40,7 +40,7 @@ public static class LoaderUtils
         }
     }
 
-    public static void ConsumeMapping(this Parser parser, Action<Scalar> consumer)
+    public static void ConsumeMapping(this IParser parser, Action<Scalar> consumer)
     {
         parser.Consume<MappingStart>();
 
@@ -53,7 +53,7 @@ public static class LoaderUtils
         parser.Consume<MappingEnd>();
     }
 
-    public static void ConsumeSequence(this Parser parser, Action consumer)
+    public static void ConsumeSequence(this IParser parser, Action consumer)
     {
         parser.Consume<SequenceStart>();
 
