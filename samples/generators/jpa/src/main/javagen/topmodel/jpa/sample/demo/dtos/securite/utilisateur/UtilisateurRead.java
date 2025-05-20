@@ -311,7 +311,7 @@ public class UtilisateurRead implements Serializable {
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurRead UtilisateurRead}.
 	 */
-	public enum Fields  {
+	public enum Fields {
         ID(Integer.class), //
         NOM(String.class), //
         PRENOM(String.class), //

@@ -85,7 +85,7 @@ public class ProfilWrite implements Serializable {
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilWrite ProfilWrite}.
 	 */
-	public enum Fields  {
+	public enum Fields {
         LIBELLE(String.class), //
         DROITS(List.class);
 

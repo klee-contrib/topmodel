@@ -199,7 +199,7 @@ public class Profil {
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil Profil}.
 	 */
-	public enum Fields  {
+	public enum Fields {
         ID(Integer.class), //
         LIBELLE(String.class), //
         DROITS(List.class), //

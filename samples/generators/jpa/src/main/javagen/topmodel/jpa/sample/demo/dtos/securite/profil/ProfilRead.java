@@ -190,7 +190,7 @@ public class ProfilRead implements Serializable {
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead ProfilRead}.
 	 */
-	public enum Fields  {
+	public enum Fields {
         ID(Integer.class), //
         LIBELLE(String.class), //
         DROITS(List.class), //

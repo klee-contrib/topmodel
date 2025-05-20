@@ -232,7 +232,7 @@ public class UtilisateurWrite implements Serializable {
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.dtos.securite.utilisateur.UtilisateurWrite UtilisateurWrite}.
 	 */
-	public enum Fields  {
+	public enum Fields {
         NOM(String.class), //
         PRENOM(String.class), //
         EMAIL(String.class), //

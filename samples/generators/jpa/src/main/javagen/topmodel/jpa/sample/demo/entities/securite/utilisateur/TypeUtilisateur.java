@@ -97,7 +97,7 @@ public class TypeUtilisateur {
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.TypeUtilisateur TypeUtilisateur}.
 	 */
-	public enum Fields  {
+	public enum Fields {
         CODE(TypeUtilisateurCode.class), //
         LIBELLE(String.class);
 

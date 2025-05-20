@@ -65,16 +65,16 @@ public static class ImportsJpaExtensions
             {
                 yield return $"{config.GetEnumPackageName(ap.Property.Class, config.GetBestClassTag(ap.Property.Class, tag))}.{config.GetEnumName(ap.Property, ap.Property.Class)}";
             }
+            else if (!config.UseJdbc && ap.Class != null && ap.Association.IsPersistent && ap.Class.IsPersistent)
+            {
+                yield return ap.Association.GetImport(config, config.GetBestClassTag(ap.Association, tag));
+            }
         }
         else
         {
             if (!config.UseJdbc && ap.Class != null && ap.Association.IsPersistent && ap.Class.IsPersistent)
             {
                 yield return ap.Association.GetImport(config, config.GetBestClassTag(ap.Association, tag));
-            }
-            else if (!(ap.Association.IsPersistent || ap.Class != null && !ap.Class.IsPersistent || ap.Class == null) && config.CanClassUseEnums(ap.Association, prop: ap.Property))
-            {
-                yield return $"{config.GetEnumPackageName(ap.Association, config.GetBestClassTag(ap.Association, tag))}.{config.GetEnumName(ap.Property, ap.Association)}";
             }
         }
     }

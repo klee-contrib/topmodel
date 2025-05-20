@@ -80,10 +80,10 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         fw.WriteLine();
         fw.WriteDocStart(1, $"Enumération des champs de la classe {{@link {classe.GetImport(Config, tag)} {classe.NamePascal}}}");
         fw.WriteDocEnd(1);
-        string enumDeclaration = @$"public enum Fields ";
+        string enumDeclaration = @$"public enum Fields";
         if (Config.FieldsEnumInterface != null)
         {
-            enumDeclaration += $"implements {Config.FieldsEnumInterface.Split(".").Last().Replace("<>", $"<{classe.NamePascal}>")}";
+            enumDeclaration += $" implements {Config.FieldsEnumInterface.Split(".").Last().Replace("<>", $"<{classe.NamePascal}>")}";
         }
 
         enumDeclaration += " {";

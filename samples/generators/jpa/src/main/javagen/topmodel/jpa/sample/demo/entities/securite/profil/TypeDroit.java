@@ -97,7 +97,7 @@ public class TypeDroit {
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.profil.TypeDroit TypeDroit}.
 	 */
-	public enum Fields  {
+	public enum Fields {
         CODE(TypeDroitCode.class), //
         LIBELLE(String.class);
 

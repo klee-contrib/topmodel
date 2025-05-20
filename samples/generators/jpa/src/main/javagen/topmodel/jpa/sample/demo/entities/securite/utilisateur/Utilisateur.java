@@ -298,7 +298,7 @@ public class Utilisateur {
 	/**
 	 * Enumération des champs de la classe {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur Utilisateur}.
 	 */
-	public enum Fields  {
+	public enum Fields {
         ID(Integer.class), //
         NOM(String.class), //
         PRENOM(String.class), //
