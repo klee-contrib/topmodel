@@ -110,7 +110,7 @@ public static class ImportsJpaExtensions
             }
             else
             {
-                imports.Add($"{config.GetEnumPackageName(ap.Property.Class, config.GetBestClassTag(ap.Property.Class, tag))}.{config.GetEnumName(apr.Property, apr.Property.Class)}");
+                imports.Add($"{config.GetEnumPackageName(apr.Association, config.GetBestClassTag(apr.Association, tag))}.{config.GetEnumName(apr.Property, apr.Property.Class)}");
             }
         }
         else if (ap.Property is CompositionProperty cp)
