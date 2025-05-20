@@ -1,18 +1,22 @@
+## 1.6.7
+
+- [c1a3b2](https://github.com/klee-contrib/topmodel/commit/c1a3b24fc33fc741676fdecb1126e8d9adfabd62) Fix :
+
 ## 1.6.6
 
-- [ccc854](https://github.com/klee-contrib/topmodel/commit/ccc85468600ee0c698ec7fce6b77580b093b7caf) Fix : [JPA] Association non persistée [#459](https://github.com/klee-contrib/topmodel/issues/459)
+- [ccc854](https://github.com/klee-contrib/topmodel/commit/ccc85468600ee0c698ec7fce6b77580b093b7caf) Fix : [JPA] Fix import alias d'association d'enum
 
 ## 1.6.5
 
 - [d3ed6a](https://github.com/klee-contrib/topmodel/commit/d3ed6ae2aec14dfee9a179661d4ff69ad1de9945) [JPA] Support pour la génération d'id en mode UUID
-Fixes [#457](https://github.com/klee-contrib/topmodel/issues/457)
+  Fixes [#457](https://github.com/klee-contrib/topmodel/issues/457)
 
 ## 1.6.4
 
 - [3b194](https://github.com/klee-contrib/topmodel/commit/a90ecffa2b93af5244d4ee2d5ca24c0756b0f8a4) [JPA] Fix imports enum dans les controllers
 
 - [a90ec](https://github.com/klee-contrib/topmodel/commit/a90ecffa2b93af5244d4ee2d5ca24c0756b0f8a4) [JPA] Ajout des espaces entre le if et sa parenthèse.
-Fix enumAsEnum dans le cas manyToMany explicites
+  Fix enumAsEnum dans le cas manyToMany explicites
 
 ## 1.6.3
 
@@ -30,14 +34,13 @@ Fix enumAsEnum dans le cas manyToMany explicites
 
 - [bfce6](https://github.com/klee-contrib/topmodel/commit/bfce65f7f62e47a5c43fc2759ab11b9194fec928) Implémentation JPA utilisation de :path
 
-**Breaking change**: Les configuration de chemin (`EntitiesPath`, `dtosPath`, `apiPath` etc) qui contiennent des  `.` doivent maintenant être remplacées par des `/`. La partie du chemin après le `:` est toujours le nom du package cible.
+**Breaking change**: Les configuration de chemin (`EntitiesPath`, `dtosPath`, `apiPath` etc) qui contiennent des `.` doivent maintenant être remplacées par des `/`. La partie du chemin après le `:` est toujours le nom du package cible.
 
 Exemple : `javagen:topmodel.jpa.sample.demo.entities` devient `javagen:topmodel/jpa/sample/demo/entities`
 
-Par ailleurs, il est possible de définir des variables dans la configuration de la génération. Ces variables peuvent être utilisées dans les chemins de sortie. Si ces variables contiennent des `.`, ils peuvent automatiquement être remplacés par des `/` avec l'opérateur `:path`. De même, si un path contenait le mot réservé `module`, il faut désormais le remplacer par `{module:path}`, encore une fois pour remplacer les `.` par des `/`.	
+Par ailleurs, il est possible de définir des variables dans la configuration de la génération. Ces variables peuvent être utilisées dans les chemins de sortie. Si ces variables contiennent des `.`, ils peuvent automatiquement être remplacés par des `/` avec l'opérateur `:path`. De même, si un path contenait le mot réservé `module`, il faut désormais le remplacer par `{module:path}`, encore une fois pour remplacer les `.` par des `/`.
 
 Exemple : `javagen:{app:path}/entities/{module:path}`
-
 
 ## 1.5.6
 
@@ -48,7 +51,7 @@ Fix [#447](https://github.com/klee-contrib/topmodel/issues/447)
 ## 1.5.5
 
 - [06a1a](https://github.com/klee-contrib/topmodel/commit/06a1a02dbfb8361e918744f588d82de084805b13) [JPA] Erreur lorsqu'on génère une entité persistée alors que le type sql n'est pas défini
-Fix [#446](https://github.com/klee-contrib/topmodel/issues/446)
+  Fix [#446](https://github.com/klee-contrib/topmodel/issues/446)
 
 ## 1.5.4
 
@@ -70,7 +73,7 @@ Release technique
 
 ## 1.5.0
 
-- [e48e5a](https://github.com/klee-contrib/topmodel/commit/e48e5a0e1ec3ab5634cb0ac4d5af78c55c8bfae7) [JPA] Ajouter les annotations de validations @Size ou @Digits aux Dtos des propriétés dont les domains définissent Length ou Scale 
+- [e48e5a](https://github.com/klee-contrib/topmodel/commit/e48e5a0e1ec3ab5634cb0ac4d5af78c55c8bfae7) [JPA] Ajouter les annotations de validations @Size ou @Digits aux Dtos des propriétés dont les domains définissent Length ou Scale
   Fix #437
 
 > BREAKING CHANGE : Certaines api risquent de renvoyer des erreurs `400`
@@ -95,7 +98,6 @@ Compatibilité avec `ignoredFiles` de TopModel 2.4
 
 - [deeed](https://github.com/klee-contrib/topmodel/commit/deeed8d1703ee0009d642b681469f01a65abcabb) [JPA] annotation @NotNull non générée Fix #428
 
-
 ## 1.2.2
 
 - [90a2c](https://github.com/klee-contrib/topmodel/commit/90a2c757fd7580dddd0bce938374db702db853a2) [JPA] Fix génération séquence
@@ -110,7 +112,6 @@ Compatibilité avec `ignoredFiles` de TopModel 2.4
 
 - [8e6c7e](https://github.com/klee-contrib/topmodel/commit/8e6c7e91211edf29108254fc0aef630157c69c90) [JPA] Fix annotation Column sur association manyToMany
 - [a8cfea](https://github.com/klee-contrib/topmodel/commit/a8cfea155d4bcfe6d196cd9e8de2e529d16dea98) [JPA] Fix import alias de composition dans un module distant
-
 
 ## 1.1.2
 
@@ -128,14 +129,17 @@ Compatibilité avec `ignoredFiles` de TopModel 2.4
 - [db1f14](https://github.com/klee-contrib/topmodel/commit/db1f14fd5aa5e71f9667a448f419dfa5838b42dc) [JAVA] annotation absente sur un champ issu d'une composition #414
 
 Breaking changes :
+
 - Suppression du mode `enumShortcut`
 - Les DAO des listes de références ne sont plus générés. La première génération risque de les supprimer
   - Annuler la suppression des DAO utilisés. Normalement, il y en a peu, d'où la suppression de la génération automatique...
 
 ## 1.0.11
+
 - [d31beb](https://github.com/klee-contrib/topmodel/commit/d31beb5e0d42178e62f6b19316abcbbccde8884d) Fix Initialisation enum dans le cas d'alias ou d'association : cas null
 
 ## 1.0.10
+
 - [acddcfe](https://github.com/klee-contrib/topmodel/commit/acddcfe1ed07577a7188768d674ee805764da6d4) Fix Initialisation enum dans le cas d'alias ou d'association
 
 ## 1.0.9
