@@ -1,10 +1,14 @@
+## 1.6.8
+
+- [42efb3](https://github.com/klee-contrib/topmodel/commit/42efb3828c66486244ee715194aebb1d7b72abcc) [JPA] Fix import manquant dans le cadre d'une association persistée vers une classe d'un autre module
+
 ## 1.6.7
 
-- [c1a3b2](https://github.com/klee-contrib/topmodel/commit/c1a3b24fc33fc741676fdecb1126e8d9adfabd62) Fix :
+- [c1a3b2](https://github.com/klee-contrib/topmodel/commit/c1a3b24fc33fc741676fdecb1126e8d9adfabd62) [JPA] Fix import alias d'association d'enum
 
 ## 1.6.6
 
-- [ccc854](https://github.com/klee-contrib/topmodel/commit/ccc85468600ee0c698ec7fce6b77580b093b7caf) Fix : [JPA] Fix import alias d'association d'enum
+- [ccc854](https://github.com/klee-contrib/topmodel/commit/ccc85468600ee0c698ec7fce6b77580b093b7caf) Fix : [JPA] Association non persistée [#459](https://github.com/klee-contrib/topmodel/issues/459)
 
 ## 1.6.5
 
