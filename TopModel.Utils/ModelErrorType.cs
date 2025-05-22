@@ -23,7 +23,7 @@ public enum ModelErrorType
     TMD0003,
 
     /// <summary>
-    /// La propriété '{propertyReference.Name}' est déjà référencée dans la définition de l'alias.
+    /// La propriété '{propertyReference.Name}' est déjà référencée.
     /// </summary>
     TMD0004,
 
