@@ -1,3 +1,7 @@
+## 1.6.9
+
+- [65e08](https://github.com/klee-contrib/topmodel/commit/65e0872c0190bb93f779405f8254c58962d6ad4f) [JPA] Corrections imports & jdbc mode
+
 ## 1.6.8
 
 - [42efb3](https://github.com/klee-contrib/topmodel/commit/42efb3828c66486244ee715194aebb1d7b72abcc) [JPA] Fix import manquant dans le cadre d'une association persistée vers une classe d'un autre module
