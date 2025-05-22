@@ -1,190 +1,190 @@
 {
-  "name": "topmodel",
-  "displayName": "topmodel",
-  "description": "Extension pour TopModel",
-  "publisher": "JabX",
-  "icon": "icon.png",
-  "contributors": [
-    {
-      "name": "gideruette"
-    },
-    {
-      "name": "Jabx"
-    }
-  ],
-  "extensionDependencies": [
-    "redhat.vscode-yaml"
-  ],
-  "repository": {
-    "url": "https://github.com/klee-contrib/topmodel",
-    "directory": "TopModel.VSCode",
-    "type": "git"
-  },
-  "version": "2.6.0",
-  "license": "MIT",
-  "engines": {
-    "vscode": "^1.97.0"
-  },
-  "categories": [
-    "Programming Languages"
-  ],
-  "activationEvents": [
-    "workspaceContains:**/topmodel*.config"
-  ],
-  "contributes": {
-    "iconThemes": [
-      {
-        "id": "topModel",
-        "label": "TopModel",
-        "path": "./icon-theme.json"
-      }
-    ],
-    "menus": {
-      "editor/title": [
+    "name": "topmodel",
+    "displayName": "topmodel",
+    "description": "Extension pour TopModel",
+    "publisher": "JabX",
+    "icon": "icon.png",
+    "contributors": [
         {
-          "command": "topmodel.preview",
-          "group": "navigation",
-          "when": "resourceExtname==.tmd"
+            "name": "gideruette"
+        },
+        {
+            "name": "Jabx"
         }
-      ]
+    ],
+    "extensionDependencies": [
+        "redhat.vscode-yaml"
+    ],
+    "repository": {
+        "url": "https://github.com/klee-contrib/topmodel",
+        "directory": "TopModel.VSCode",
+        "type": "git"
     },
-    "commands": [
-      {
-        "command": "topmodel.modgen.update",
-        "title": "Mettre à jour TopModel.Generator",
-        "category": "TopModel.Generator"
-      },
-      {
-        "command": "topmodel.modgen",
-        "title": "Lancer la génération du modèle",
-        "category": "TopModel.Generator"
-      },
-      {
-        "command": "topmodel.modgen.watch",
-        "title": "Lancer la génération du modèle en continu",
-        "category": "TopModel.Generator"
-      },
-      {
-        "command": "topmodel.releaseNote",
-        "title": "Ouvrir le changelog",
-        "category": "TopModel"
-      },
-      {
-        "command": "topmodel.preview",
-        "title": "Ouvrir la prévisualisation UML du modèle",
-        "category": "TopModel.Generator",
-        "icon": {
-          "light": "Preview.svg",
-          "dark": "Preview_inverse.svg"
-        }
-      }
+    "version": "2.6.2",
+    "license": "MIT",
+    "engines": {
+        "vscode": "^1.97.0"
+    },
+    "categories": [
+        "Programming Languages"
     ],
-    "yamlValidation": [
-      {
-        "fileMatch": "topmodel*.config",
-        "url": "./language-server/schema.config.json"
-      },
-      {
-        "fileMatch": "tmdgen*.config",
-        "url": "./language-server/schema.tmdgen.config.json"
-      },
-      {
-        "fileMatch": "*.tmd",
-        "url": "./language-server/schema.json"
-      }
+    "activationEvents": [
+        "workspaceContains:**/topmodel*.config"
     ],
-    "languages": [
-      {
-        "id": "yaml",
-        "extensions": [
-          "tmd"
-        ],
-        "filenamePatterns": [
-          "topmodel*.config",
-          "tmdgen*.config"
-        ]
-      }
-    ],
-    "walkthroughs": [
-      {
-        "id": "topmodel.configuration",
-        "title": "Topmodel configuration",
-        "description": "Configuration de topmodel pas à pas",
-        "steps": [
-          {
-            "id": "install.dotnet",
-            "title": "Installer Dotnet",
-            "media": {
-              "markdown": "dotnet.md"
+    "contributes": {
+        "iconThemes": [
+            {
+                "id": "topModel",
+                "label": "TopModel",
+                "path": "./icon-theme.json"
             }
-          },
-          {
-            "id": "install.modgen",
-            "title": "Installation de TopModel.Generator",
-            "description": "Cliquez ici pour lancer la commande d'installation de TopModel.\n[Installer TopModel](command:topmodel.modgen.install)",
-            "media": {
-              "markdown": "modgen.md"
-            },
-            "completionEvents": [
-              "onCommand:topmodel.modgen.install"
-            ]
-          }
-        ]
-      }
-    ],
-    "customEditors": [
-      {
-        "viewType": "topmodel.preview",
-        "displayName": "Topmodel : Preview",
-        "selector": [
-          {
-            "filenamePattern": "*.tmd"
-          }
         ],
-        "priority": "option"
-      }
-    ],
-    "configuration": {
-      "title": "Topmdodel",
-      "properties": {
-        "topmodel.autoUpdate": {
-          "type": "boolean",
-          "default": false,
-          "description": "Met à jour automatiquement topmodel"
+        "menus": {
+            "editor/title": [
+                {
+                    "command": "topmodel.preview",
+                    "group": "navigation",
+                    "when": "resourceExtname==.tmd"
+                }
+            ]
+        },
+        "commands": [
+            {
+                "command": "topmodel.modgen.update",
+                "title": "Mettre à jour TopModel.Generator",
+                "category": "TopModel.Generator"
+            },
+            {
+                "command": "topmodel.modgen",
+                "title": "Lancer la génération du modèle",
+                "category": "TopModel.Generator"
+            },
+            {
+                "command": "topmodel.modgen.watch",
+                "title": "Lancer la génération du modèle en continu",
+                "category": "TopModel.Generator"
+            },
+            {
+                "command": "topmodel.releaseNote",
+                "title": "Ouvrir le changelog",
+                "category": "TopModel"
+            },
+            {
+                "command": "topmodel.preview",
+                "title": "Ouvrir la prévisualisation UML du modèle",
+                "category": "TopModel.Generator",
+                "icon": {
+                    "light": "Preview.svg",
+                    "dark": "Preview_inverse.svg"
+                }
+            }
+        ],
+        "yamlValidation": [
+            {
+                "fileMatch": "topmodel*.config",
+                "url": "./language-server/schema.config.json"
+            },
+            {
+                "fileMatch": "tmdgen*.config",
+                "url": "./language-server/schema.tmdgen.config.json"
+            },
+            {
+                "fileMatch": "*.tmd",
+                "url": "./language-server/schema.json"
+            }
+        ],
+        "languages": [
+            {
+                "id": "yaml",
+                "extensions": [
+                    "tmd"
+                ],
+                "filenamePatterns": [
+                    "topmodel*.config",
+                    "tmdgen*.config"
+                ]
+            }
+        ],
+        "walkthroughs": [
+            {
+                "id": "topmodel.configuration",
+                "title": "Topmodel configuration",
+                "description": "Configuration de topmodel pas à pas",
+                "steps": [
+                    {
+                        "id": "install.dotnet",
+                        "title": "Installer Dotnet",
+                        "media": {
+                            "markdown": "dotnet.md"
+                        }
+                    },
+                    {
+                        "id": "install.modgen",
+                        "title": "Installation de TopModel.Generator",
+                        "description": "Cliquez ici pour lancer la commande d'installation de TopModel.\n[Installer TopModel](command:topmodel.modgen.install)",
+                        "media": {
+                            "markdown": "modgen.md"
+                        },
+                        "completionEvents": [
+                            "onCommand:topmodel.modgen.install"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "customEditors": [
+            {
+                "viewType": "topmodel.preview",
+                "displayName": "Topmodel : Preview",
+                "selector": [
+                    {
+                        "filenamePattern": "*.tmd"
+                    }
+                ],
+                "priority": "option"
+            }
+        ],
+        "configuration": {
+            "title": "Topmdodel",
+            "properties": {
+                "topmodel.autoUpdate": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Met à jour automatiquement topmodel"
+                }
+            }
         }
-      }
+    },
+    "main": "./out/main.js",
+    "scripts": {
+        "build-extension": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
+        "build-preview-assets": "tsc ./src/topmodel-preview.ts --outfile ./out/topmodel-preview.js && cp ./node_modules/mermaid/dist/mermaid.min.js ./out/mermaid.js",
+        "build": "npm run build-extension && npm run build-preview-assets",
+        "lint": "eslint src --ext ts",
+        "package": "vsce package",
+        "extension-watch": "npm run build-extension -- --sourcemap --watch",
+        "preview-watch": "tsc ./src/topmodel-preview.ts --outfile ./out/topmodel-preview.js --watch",
+        "start": "cp ./node_modules/mermaid/dist/mermaid.min.js ./out/mermaid.js && concurrently --kill-others \"npm run preview-watch\" \"npm run extension-watch\"",
+        "vscode:prepublish": "npm run build -- --minify"
+    },
+    "dependencies": {
+        "mermaid": "8.14.0",
+        "mobx": "6.13.1",
+        "open": "8.4.0",
+        "vscode-jsonrpc": "8.2.1",
+        "vscode-languageclient": "9.0.1"
+    },
+    "devDependencies": {
+        "@types/glob": "8.1.0",
+        "@types/node": "20.9.1",
+        "@types/vscode": "1.97.0",
+        "@typescript-eslint/eslint-plugin": "6.11.0",
+        "@typescript-eslint/parser": "6.11.0",
+        "concurrently": "9.1.2",
+        "esbuild": "0.25.0",
+        "eslint": "8.54.0",
+        "glob": "10.3.10",
+        "typescript": "5.8.2",
+        "@vscode/vsce": "3.2.2"
     }
-  },
-  "main": "./out/main.js",
-  "scripts": {
-    "build-extension": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --format=cjs --platform=node",
-    "build-preview-assets": "tsc ./src/topmodel-preview.ts --outfile ./out/topmodel-preview.js && cp ./node_modules/mermaid/dist/mermaid.min.js ./out/mermaid.js",
-    "build": "npm run build-extension && npm run build-preview-assets",
-    "lint": "eslint src --ext ts",
-    "package": "vsce package",
-    "extension-watch": "npm run build-extension -- --sourcemap --watch",
-    "preview-watch": "tsc ./src/topmodel-preview.ts --outfile ./out/topmodel-preview.js --watch",
-    "start": "cp ./node_modules/mermaid/dist/mermaid.min.js ./out/mermaid.js && concurrently --kill-others \"npm run preview-watch\" \"npm run extension-watch\"",
-    "vscode:prepublish": "npm run build -- --minify"
-  },
-  "dependencies": {
-    "mermaid": "8.14.0",
-    "mobx": "6.13.1",
-    "open": "8.4.0",
-    "vscode-jsonrpc": "8.2.1",
-    "vscode-languageclient": "9.0.1"
-  },
-  "devDependencies": {
-    "@types/glob": "8.1.0",
-    "@types/node": "20.9.1",
-    "@types/vscode": "1.97.0",
-    "@typescript-eslint/eslint-plugin": "6.11.0",
-    "@typescript-eslint/parser": "6.11.0",
-    "concurrently": "9.1.2",
-    "esbuild": "0.25.0",
-    "eslint": "8.54.0",
-    "glob": "10.3.10",
-    "typescript": "5.8.2",
-    "@vscode/vsce": "3.2.2"
-  }
 }
