@@ -33,7 +33,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
     {
         var annotations = base.GetAnnotations(classe, tag).ToList();
         var tableAnnotation = new JavaAnnotation("Table", imports: "org.springframework.data.relational.core.mapping.Table")
-            .AddAttribute("name", classe.SqlName.ToLower());
+            .AddAttribute("name", @$"""{classe.SqlName.ToLower()}""");
         annotations.Add(tableAnnotation);
         return annotations;
     }

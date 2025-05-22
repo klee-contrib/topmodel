@@ -59,11 +59,12 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
         var checkSourceNull = false;
         if (
-            (!propertySource.Class.IsPersistent && !propertyTarget.Class.IsPersistent)
+            (propertySource.Class.IsPersistent == propertyTarget.Class.IsPersistent)
              || !(propertySource is AssociationProperty
                 || propertySource is AliasProperty psAlp && psAlp.Property is AssociationProperty
                 || propertyTarget is AssociationProperty
-                || propertySource is AliasProperty ptAlp && ptAlp.Property is AssociationProperty))
+                || propertySource is AliasProperty ptAlp && ptAlp.Property is AssociationProperty)
+        )
         {
             getter = $"{sourceName}.{getterName}()";
         }
