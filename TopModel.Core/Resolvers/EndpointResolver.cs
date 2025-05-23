@@ -13,7 +13,7 @@ internal class EndpointResolver(ModelFile modelFile)
     {
         foreach (var endpoint in modelFile.Endpoints)
         {
-            foreach (var property in endpoint.Params.Where((e, i) => endpoint.Params.Where((p, j) => p.Name == e.Name && j < i).Any()))
+            foreach (var property in endpoint.Params.Where((e, i) => endpoint.Params.Where((p, j) => p.GetParamName() == e.GetParamName() && j < i).Any()))
             {
                 yield return new ModelError(modelFile, $"Le nom '{property.Name}' est déjà utilisé.", property.Decorator is not null ? endpoint.DecoratorReferences.FirstOrDefault(dr => dr.ReferenceName == property.Decorator.Name) : property.GetLocation())
                 {
