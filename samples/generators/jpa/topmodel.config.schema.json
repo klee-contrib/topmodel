@@ -385,7 +385,8 @@
                 "enum": [
                   "none",
                   "sequence",
-                  "identity"
+                  "identity",
+                  "uuid"
                 ],
                 "default": "identity"
               },

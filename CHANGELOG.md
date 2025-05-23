@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.6.6
+
+- [`2082791`](https://github.com/klee-contrib/topmodel/commit/2082791c6cde0b971f19d0034dd650a8c97617e9) - Revert "[Core] Vérification de l'unicité du nom de propriété du décorateur"
+
 ## 2.6.4
 
 - [`6d2c5`](https://github.com/klee-contrib/topmodel/commit/6d2c569ef3f987c9ef1cebf85d5b499ddc842968) [Core] Fix vérification de l'unicité du nom de propriété du endpoint
