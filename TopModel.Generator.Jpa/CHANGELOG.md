@@ -1,3 +1,7 @@
+## 1.6.10
+
+- [f750d](https://github.com/klee-contrib/topmodel/commit/f750de99be706336c994f209870feaa3450f777a) [JPA] Fix imports enums
+
 ## 1.6.9
 
 - [65e08](https://github.com/klee-contrib/topmodel/commit/65e0872c0190bb93f779405f8254c58962d6ad4f) [JPA] Corrections imports & jdbc mode
