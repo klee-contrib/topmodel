@@ -1,5 +1,5 @@
 import { autorun, makeAutoObservable } from "mobx";
-import { commands, ExtensionContext, Position, StatusBarAlignment, StatusBarItem, Terminal, window } from "vscode";
+import { commands, ExtensionContext, Position, StatusBarAlignment, StatusBarItem, window } from "vscode";
 import { Application } from "./application";
 import { TopModelPreviewPanel } from "./preview";
 import { TmdTool } from "./tool";
