@@ -11,3 +11,5 @@ export async function execute(command: string) {
         });
     });
 }
+
+export const isWindows = process.platform === "win32";
