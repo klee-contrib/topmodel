@@ -3,7 +3,7 @@ import { autorun, makeAutoObservable } from "mobx";
 import { commands, ExtensionContext, Terminal, window, workspace } from "vscode";
 import { COMMANDS, COMMANDS_OPTIONS } from "./const";
 import { Status } from "./types";
-import { execute } from "./utils";
+import { execute, isWindows } from "./utils";
 const open = require("open");
 
 export class TmdTool {
@@ -124,12 +124,18 @@ export class TmdTool {
     private async checkInstall() {
         let result;
         try {
-            result = await execute(`dotnet tool list -g | find /C /I "${this.name.toLowerCase()}"`);
+            if(isWindows){
+                result = await execute(`dotnet tool list -g | find /C /I "${this.name.toLowerCase()}"`);
+                this.installed = result === "1\r\n";
+            } else {
+                result = await execute(`dotnet tool list -g | grep -i ${this.name.toLowerCase()} | wc -l` );
+                this.installed = result.trim() === "1" 
+            }
         } catch (error: any) {
             result = "Not Installed";
+            this.installed = false;
         }
 
-        this.installed = result === "1\r\n";
     }
 
     public get updateAvailable(): boolean {
