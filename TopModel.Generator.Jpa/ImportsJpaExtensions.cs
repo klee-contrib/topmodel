@@ -98,7 +98,7 @@ public static class ImportsJpaExtensions
             }
             else if (ap.Class?.IsPersistent == false || ap.Endpoint != null)
             {
-                imports.Add($"{config.GetEnumPackageName(ap.Property.Class, config.GetBestClassTag(ap.Property.Class, tag))}.{config.GetEnumName(apr.Property, apr.Property.Class)}");
+                imports.Add($"{config.GetEnumPackageName(apr.Property.Class, config.GetBestClassTag(ap.Property.Class, tag))}.{config.GetEnumName(apr.Property, apr.Property.Class)}");
             }
             else if (!config.UseJdbc && ap.Class != null && apr.Association.IsPersistent && ap.Class.IsPersistent)
             {
