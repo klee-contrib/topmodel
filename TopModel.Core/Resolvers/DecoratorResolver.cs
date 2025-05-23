@@ -51,15 +51,6 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
     {
         foreach (var decorator in modelFile.Decorators)
         {
-            foreach (var property in decorator.Properties.Where((e, i) => decorator.Properties.Where((p, j) => p.Name == e.Name && j < i).Any()))
-            {
-                yield return new ModelError(modelFile, $"Le nom '{property.Name}' est déjà utilisé.", property.GetLocation())
-                {
-                    IsError = true,
-                    ModelErrorType = ModelErrorType.TMD0003
-                };
-            }
-
             foreach (var templateParam in decorator.TemplateParameters.Where((e, i) => decorator.TemplateParameters.Where((p, j) => p.Name == e.Name && j < i).Any()))
             {
                 yield return new ModelError(decorator, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
