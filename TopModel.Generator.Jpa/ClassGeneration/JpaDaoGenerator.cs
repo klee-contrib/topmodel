@@ -20,11 +20,11 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
 
     protected override string GetFileName(Class classe, string tag)
     {
-        string path = Config.DaosAbstract ? $"Abstract{classe.NamePascal}DAO.java" : $"{classe.NamePascal}DAO.java";
+        string className = GetClassName(classe);
         return Path.Combine(
             Config.OutputDirectory,
             Config.ResolveVariables(Config.DaosPath!, tag, module: classe.Namespace.Module).ToFilePath(),
-            path);
+            $"{className}.java");
     }
 
     protected override void HandleClass(string fileName, Class classe, string tag)
@@ -45,17 +45,22 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
         fw.Write(0, javaClass);
     }
 
+    private string GetClassName(Class classe)
+    {
+        return Config.DaosName != null ? Config.DaosName.Replace("{class}", classe.NamePascal) : $"{(Config.DaosAbstract ? "Abstract" : string.Empty)}{classe.NamePascal}DAO";
+    }
+
     private JavaClass GetJavaClass(Class classe, string tag)
     {
         var packageName = Config.ResolveVariables(
             Config.DaosPath!,
             tag,
             module: classe.Namespace.Module).ToPackageName();
-        var javaClass = new JavaClass($"{classe.NamePascal}DAO")
+        var javaClass = new JavaClass(GetClassName(classe))
         {
             Package = packageName,
             Interface = true,
-            Name = $"{classe.NamePascal}DAO"
+            Visibility = "public"
         };
         javaClass.Imports.Add(classe.GetImport(Config, tag));
 
@@ -104,7 +109,6 @@ public class JpaDaoGenerator(ILogger<JpaDaoGenerator> logger, IFileWriterProvide
         if (Config.DaosAbstract)
         {
             javaClass.Add(new JavaAnnotation("NoRepositoryBean", imports: "org.springframework.data.repository.NoRepositoryBean"));
-            javaClass.Name = $"Abstract{classe.NamePascal}DAO";
         }
 
         return javaClass;

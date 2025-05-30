@@ -90,6 +90,10 @@
       "type": "string",
       "description": "Localisation des DAOs, relative au répertoire de génération."
     },
+    "daosName": {
+      "type": "string",
+      "description": "Template du nom des DAOs. Par défaut, '{class}DAO' si l'option daosAbstract est désactivée, sinon 'Abstract{class}DAO'."
+    },
     "dtosPath": {
       "type": "string",
       "description": "Localisation des classes non persistées du modèle, relative au répertoire de génération. Par défaut, 'javagen:{app:path}/dtos/{module:path}'."

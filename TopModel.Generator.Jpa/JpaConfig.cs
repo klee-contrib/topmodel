@@ -78,7 +78,8 @@ public class JpaConfig : GeneratorConfigBase
 
     public override Dictionary<string, List<string>> TemplateAttributes => new()
     {
-        [nameof(CompositionConverterCanonicalName)] = ["package", "class"]
+        [nameof(CompositionConverterCanonicalName)] = ["package", "class"],
+        [nameof(DaosName)] = ["class"],
     };
 
     /// <summary>
@@ -135,6 +136,11 @@ public class JpaConfig : GeneratorConfigBase
     /// Génération d'interface Abstract avec @NoRepositoryBean permettant de mettre à jour le code généré.
     /// </summary>
     public bool DaosAbstract { get; set; } = false;
+
+    /// <summary>
+    /// Nom des Daos générés.
+    /// </summary>
+    public string? DaosName { get; set; }
 
     /// <summary>
     /// Précise l'interface des Daos générés.

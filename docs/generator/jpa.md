@@ -385,7 +385,11 @@ Il est possible de modifier le comportement de ce générateur avec les configur
 
 ### `daosAbstract`
 
-Ajoute l'annotation `NoRepositoryBean` et renomme l'interface en `Abstract[NomDeLaClasse]DAO`
+Ajoute l'annotation `NoRepositoryBean` et renomme l'interface en `Abstract[NomDeLaClasse]DAO` par défaut
+
+### `daosName`
+
+Permet de surcharger le nom du DAO généré. Placer la valeur `{classe}` dans le nom pour remplacer par le nom de la classe. Par défaut, il s'agit de `{classe}DAO` lorsque `daosAbstract` est à `false`, et `Abstract{classe}DAO` sinon.
 
 ### `DaosInterface`
 
@@ -724,6 +728,14 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
   - l'annotation @NoRepositoryBean ajoutée (org.springframework.data.repository.NoRepositoryBean) permettant de ne pas considérer cette interface comme un DAO
     - il faut donc créer une interface qui en hérite dans le projet
   - le 'daosPath' peut être dans un répertoire de type 'javagen'
+
+- `daosName`
+
+  Nom du DAO à générer.
+
+  _Templating_: `{class}`
+
+  _Valeur par défaut_: `"{class}DAO"` si `daosAbstract` est à `false`, sinon `"Abstract{class}DAO"`
 
 - `daosInterface`
 

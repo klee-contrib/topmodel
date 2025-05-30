@@ -61,7 +61,7 @@ public class JavaClass(string name)
     public string GetDeclaration()
     {
         var sb = new StringBuilder();
-        if (Visibility != null && Visibility != "public")
+        if (Visibility != null)
         {
             sb.Append($"{Visibility} ");
         }

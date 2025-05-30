@@ -10,5 +10,5 @@ import topmodel.jpa.sample.demo.daos.repository.CustomCrudRepository;
 import topmodel.jpa.sample.demo.entities.securite.profil.Profil;
 
 @NoRepositoryBean
-interface AbstractProfilDAO extends CustomCrudRepository<Profil, Integer> {
+public interface AbstractProfilDAO extends CustomCrudRepository<Profil, Integer> {
 }
