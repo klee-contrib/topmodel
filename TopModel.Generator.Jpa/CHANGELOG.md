@@ -1,3 +1,9 @@
+## 1.7.0
+
+- [e2b8](https://github.com/klee-contrib/topmodel/commit/e2b89422256eb8c58f3718229f2258f6d74b6d09) [JPA] Donner la possibilité de définir le nom du dao généré
+
+- [948ae](https://github.com/klee-contrib/topmodel/commit/948aeaab3170a452d58e594a38fa8bc9df7ff4e6) [JPA] Protection contre la nullité dans le cas de certains mappers
+
 ## 1.6.10
 
 - [f750d](https://github.com/klee-contrib/topmodel/commit/f750de99be706336c994f209870feaa3450f777a) [JPA] Fix imports enums

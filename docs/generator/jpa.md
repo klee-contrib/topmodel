@@ -389,7 +389,7 @@ Ajoute l'annotation `NoRepositoryBean` et renomme l'interface en `Abstract[NomDe
 
 ### `daosName`
 
-Permet de surcharger le nom du DAO généré. Placer la valeur `{classe}` dans le nom pour remplacer par le nom de la classe. Par défaut, il s'agit de `{classe}DAO` lorsque `daosAbstract` est à `false`, et `Abstract{classe}DAO` sinon.
+Permet de surcharger le nom du DAO généré. Placer la valeur `{classe}` dans le nom pour remplacer par le nom de la classe. Par défaut, il s'agit de `{classe}DAO` lorsque `daosAbstract` est à `false`, et `Abstract{classe}DAO` sinon. Par exemple, `daosName: "{classe}Repository"` générera `UtilisateurRepository` pour la classe `Utilisateur`.
 
 ### `DaosInterface`
 
