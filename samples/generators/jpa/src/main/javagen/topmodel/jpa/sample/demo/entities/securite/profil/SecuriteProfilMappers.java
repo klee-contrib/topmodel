@@ -84,7 +84,10 @@ public class SecuriteProfilMappers {
 		}
 
 		target.setLibelle(source.getLibelle());
-		target.setDroits(source.getDroits().stream().map(Droit::new).collect(Collectors.toList()));
+		if (source.getDroits() != null) {
+			target.setDroits(source.getDroits().stream().map(Droit::new).collect(Collectors.toList()));
+		}
+
 		return target;
 	}
 }

@@ -63,8 +63,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
              || !(propertySource is AssociationProperty
                 || propertySource is AliasProperty psAlp && psAlp.Property is AssociationProperty
                 || propertyTarget is AssociationProperty
-                || propertySource is AliasProperty ptAlp && ptAlp.Property is AssociationProperty)
-        )
+                || propertySource is AliasProperty ptAlp && ptAlp.Property is AssociationProperty))
         {
             getter = $"{sourceName}.{getterName}()";
         }
@@ -158,6 +157,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     }
                     else
                     {
+                        checkSourceNull = true;
                         if (apTarget.Type.IsToMany())
                         {
                             getter = $@"{sourceName}.{getterName}().stream().map({apTarget.Association.NamePascal}::new).collect(Collectors.toList())";
@@ -167,7 +167,6 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                         {
                             getter = $"new {apTarget.Association.NamePascal}({sourceName}.{getterName}())";
                             fw.AddImport(apTarget.Association.GetImport(Config, tag));
-                            checkSourceNull = true;
                         }
                     }
                 }
