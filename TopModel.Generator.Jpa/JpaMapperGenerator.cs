@@ -192,7 +192,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
                     if (isMultiple)
                     {
-                        checkSourceNull = propertySource.Class.IsPersistent;
+                        checkSourceNull = !propertySource.Class.IsPersistent;
                         getter = $@"{sourceName}.{getterName}(){(!propertySource.Class.IsPersistent ? $".stream().map(src -> {Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.ToCamelCase()}(src, null)).collect(Collectors.toList())" : string.Empty)}";
                         fw.AddImport("java.util.stream.Collectors");
                     }
