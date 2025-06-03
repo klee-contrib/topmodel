@@ -1,3 +1,7 @@
+## 1.7.1
+
+- [19e63c](https://github.com/klee-contrib/topmodel/commit/19e63c6b7bffaa554f87dacd67c429aede256ba7) [JPA] Check source null dans les cas de mappings de compositions
+
 ## 1.7.0
 
 - [e2b8](https://github.com/klee-contrib/topmodel/commit/e2b89422256eb8c58f3718229f2258f6d74b6d09) [JPA] Donner la possibilité de définir le nom du dao généré
