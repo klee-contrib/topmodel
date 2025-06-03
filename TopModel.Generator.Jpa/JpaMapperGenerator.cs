@@ -120,6 +120,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 }
                 else
                 {
+                    checkSourceNull = true;
                     fw.AddImport("java.util.stream.Collectors");
                     fw.AddImport("java.util.Objects");
                     if (Config.EnumsAsEnums && Config.CanClassUseEnums(apSource.Association, prop: apSource.Property, availableClasses: Classes))
@@ -145,6 +146,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     {
                         if (apTarget.Type.IsToMany())
                         {
+                            checkSourceNull = true;
                             getter = $@"{sourceName}.{getterName}().stream().collect(Collectors.toList())";
                             fw.AddImport("java.util.stream.Collectors");
                         }
@@ -187,15 +189,17 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cpMapper.Class, cpMapper));
 
                     var isMultiple = apTarget.Type == AssociationType.OneToMany || apTarget.Type == AssociationType.ManyToMany;
+
                     if (isMultiple)
                     {
+                        checkSourceNull = propertySource.Class.IsPersistent;
                         getter = $@"{sourceName}.{getterName}(){(!propertySource.Class.IsPersistent ? $".stream().map(src -> {Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.ToCamelCase()}(src, null)).collect(Collectors.toList())" : string.Empty)}";
                         fw.AddImport("java.util.stream.Collectors");
                     }
                     else
                     {
-                        getter = $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterName}(), target.get{apTarget.NameByClassPascal}())";
                         checkSourceNull = true;
+                        getter = $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterName}(), target.get{apTarget.NameByClassPascal}())";
                         fw.AddImport(Config.GetMapperImport(cpMapperNs, cpMapperModelPath, tag)!);
                     }
                 }
