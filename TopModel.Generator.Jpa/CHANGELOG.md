@@ -1,3 +1,7 @@
+## 1.7.2
+
+- [3d36a6](https://github.com/klee-contrib/topmodel/commit/3d36a6360c7514e43ed959e673ba7dae8ac00247) [JPA] Fix Check source null dans les cas de mappings de compositions
+
 ## 1.7.1
 
 - [19e63c](https://github.com/klee-contrib/topmodel/commit/19e63c6b7bffaa554f87dacd67c429aede256ba7) [JPA] Check source null dans les cas de mappings de compositions
