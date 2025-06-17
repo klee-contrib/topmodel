@@ -82,7 +82,7 @@ export class Application {
             serverOptions,
             {
                 workspaceFolder: workspace.workspaceFolders?.find((w) => {
-                    return this._configPath.toLowerCase().includes(w.uri.path.toLowerCase());
+                    return this._configPath.toLowerCase().includes(w.uri.fsPath.toLowerCase());
                 }),
             }
         );
