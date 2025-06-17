@@ -68,7 +68,7 @@ public abstract class GeneratorBase<T> : IModelWatcher
 
             if (missingDomains.Any())
             {
-                throw new ModelException($"Pour utiliser le générateur '{Name}', les domaines suivants doivent définir une implémentation pour '{Config.Language}' : {string.Join(", ", missingDomains.Select(d => d.Name).OrderBy(x => x))}.");
+                throw new ModelException($"Pour utiliser le générateur '{Name}', les domaines suivants doivent définir une implémentation pour l'un des langages suivants : '{string.Join(", ", Config.Languages)}' : {string.Join(", ", missingDomains.Select(d => d.Name).OrderBy(x => x))}.");
             }
         }
 

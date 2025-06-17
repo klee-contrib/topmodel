@@ -2,7 +2,7 @@
 
 Un domaine se définit comme un document YAML, dans un fichier de modèle.
 
-Un domaine correspond à un type métier. Chaque champ doit avoir un domaine. Les règles de gestion liées à chaque domaine devront être implémentées dans chaque couche technique. En revanche, il faut par contre décrire ici, dans le modèle, comment chaque domaine va être représenté dans chaque langage, puisque la génération va en avoir besoin.
+Un domaine correspond à un type métier. Chaque champ doit avoir un domaine. Les règles de gestion liées à chaque domaine devront être implémentées dans chaque couche technique. En revanche, il faut décrire ici, dans le modèle, comment chaque domaine va être représenté dans chaque langage, puisque la génération va en avoir besoin.
 
 Un domaine se décrit donc de la façon suivante :
 
@@ -30,7 +30,7 @@ domain:
     type: int
 ```
 
-Les définitions de langages ont toutes le même format, indépendamment du langage choisi. Chaque configuration de générateur choisira une implémentation de domaine qui correspondra à son langage (à priori `csharp`, `java`, `ts`, `sql`...).
+Toutes les définitions de langage suivent un format standard, quel que soit le langage utilisé. Chaque configuration de générateur sélectionne une implémentation de domaine adaptée à son langage, comme `csharp`, `java`, `ts`, `sql`, etc. Bien que chaque générateur ait un langage par défaut, il est possible de le modifier en utilisant l'attribut `language` dans la configuration du générateur. Cet attribut accepte une liste de valeurs, permettant ainsi de définir un ordre de priorité pour les langages d'implémentation. Par exemple, si l'attribut `language` est défini comme `[java21, java8]`, le générateur utilisera `java21` s'il est disponible pour le domaine ; sinon, il utilisera `java8`.
 
 Naturellement, il n'est pas nécessaire de spécifier les langages pour lesquels le domaine n'est pas utilisé (et c'est évidemment obligatoire sinon).
 

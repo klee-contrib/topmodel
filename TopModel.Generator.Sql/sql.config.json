@@ -2,14 +2,26 @@
   "type": "object",
   "description": "Config pour la génération de SQL.",
   "additionalProperties": false,
-  "required": [
-    "outputDirectory",
-    "tags"
-  ],
+  "required": ["outputDirectory", "tags"],
   "properties": {
     "language": {
-      "type": "string",
-      "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Par défaut : 'sql'."
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs",
+          "default": "sql"
+        },
+        {
+          "type": "array",
+          "description": "Langages du générateur, utilisés pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs. Les différentes options sont testées dans l'ordre de définition, la première pour laquelle il existe une implémentation est sélectionnée",
+          "default": "sql",
+          "items": {
+            "type": "string",
+            "description": "Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.",
+            "default": "sql"
+          }
+        }
+      ]
     },
     "tags": {
       "type": "array",
@@ -33,10 +45,7 @@
       "description": "Désactive les générateurs demandés",
       "items": {
         "type": "string",
-        "enum": [
-          "SsdtGen",
-          "ProceduralSqlGen"
-        ]
+        "enum": ["SsdtGen", "ProceduralSqlGen"]
       }
     },
     "outputDirectory": {
@@ -82,11 +91,7 @@
     "targetDBMS": {
       "type": "string",
       "description": "SGBD cible ('postgre' ou 'sqlserver' ou 'oracle').",
-      "enum": [
-        "sqlserver",
-        "postgre",
-        "oracle"
-      ]
+      "enum": ["sqlserver", "postgre", "oracle"]
     },
     "procedural": {
       "type": "object",
@@ -128,11 +133,7 @@
             "mode": {
               "type": "string",
               "description": "Mode de génération des séquences.",
-              "enum": [
-                "none",
-                "sequence",
-                "identity"
-              ],
+              "enum": ["none", "sequence", "identity"],
               "default": "identity"
             },
             "increment": {

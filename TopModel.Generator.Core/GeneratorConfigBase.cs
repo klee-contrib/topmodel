@@ -1,8 +1,10 @@
 ﻿using System.Text.RegularExpressions;
 using Spectre.Console;
 using TopModel.Core;
+using TopModel.Core.Loaders;
 using TopModel.Core.Model.Implementation;
 using TopModel.Utils;
+using YamlDotNet.Serialization;
 
 namespace TopModel.Generator.Core;
 
@@ -31,7 +33,15 @@ public abstract class GeneratorConfigBase
     /// <summary>
     /// Langage du générateur, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.
     /// </summary>
-    public required string Language { get; set; }
+    [YamlIgnore]
+    public string Language { get => Languages.FirstOrDefault()!; set => Languages = [value]; }
+
+    /// <summary>
+    /// Langages du générateur, utilisé en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.
+    /// </summary>
+    [YamlMember(Alias = "language")]
+    [YamlConverter(typeof(StringListTypeConverter))]
+    public IList<string> Languages { get; set; } = [];
 #nullable enable
 
     /// <summary>
@@ -274,7 +284,7 @@ public abstract class GeneratorConfigBase
     /// <returns>Implémentation.</returns>
     public DomainImplementation? GetImplementation(Domain? domain)
     {
-        return domain?.Implementations.GetValueOrDefault(Language);
+        return GetImplementation(domain?.Implementations);
     }
 
     /// <summary>
@@ -284,7 +294,7 @@ public abstract class GeneratorConfigBase
     /// <returns>Implémentation.</returns>
     public DecoratorImplementation? GetImplementation(Decorator? decorator)
     {
-        return decorator?.Implementations.GetValueOrDefault(Language);
+        return GetImplementation(decorator?.Implementations);
     }
 
     /// <summary>
@@ -294,7 +304,7 @@ public abstract class GeneratorConfigBase
     /// <returns>Implémentation.</returns>
     public ConverterImplementation? GetImplementation(Converter? converter)
     {
-        return converter?.Implementations.GetValueOrDefault(Language);
+        return GetImplementation(converter?.Implementations);
     }
 
     /// <summary>
@@ -478,7 +488,7 @@ public abstract class GeneratorConfigBase
         }
 
         var hasMissingVar = false;
-        foreach (var property in GetType().GetProperties().Where(p => p.PropertyType == typeof(string) && p.CanWrite))
+        foreach (var property in GetType().GetProperties().Where(p => p.PropertyType == typeof(string) && p.CanWrite && p.Name != nameof(Language)))
         {
             var value = (string?)property.GetValue(this);
             if (value != null)
@@ -649,5 +659,24 @@ public abstract class GeneratorConfigBase
             (annotation.Target & Target.Dto) > 0 && !IsPersistent(property.Class, tag)
             || (annotation.Target & Target.Persisted) > 0 && IsPersistent(property.Class, tag))
         || (annotation.Target & Target.Api) > 0 && property.Endpoint != null;
+    }
+
+    /// <summary>
+    /// Pour un dictionnaire d'implémentations, retourne la première valeur qui match avec un langages
+    /// </summary>
+    /// <typeparam name="T">Type d'implémentation</typeparam>
+    /// <param name="implementations">Dictionnaire de toutes les implémentations</param>
+    /// <returns>L'implémentation sélectionnée si elle existe</returns>
+    private T? GetImplementation<T>(IDictionary<string, T>? implementations)
+    {
+        foreach (var language in Languages)
+        {
+            if (implementations?.ContainsKey(language) ?? false)
+            {
+                return implementations[language];
+            }
+        }
+
+        return default;
     }
 }
