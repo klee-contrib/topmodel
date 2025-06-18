@@ -172,12 +172,6 @@ internal static class TemplateExtensions
             return string.Empty;
         }
 
-        for (var i = 0; i < templateParameters.Count; i++)
-        {
-            var param = templateParameters[i];
-            input = input.Replace($"{param.Name}", parameterValues.ElementAtOrDefault(i) ?? param.DefaultValue);
-        }
-
         if (input.StartsWith("parent."))
         {
             return ResolveVariable(input["parent.".Length..], p.Parent, templateParameters, parameterValues, config, tag);
@@ -245,7 +239,7 @@ internal static class TemplateExtensions
             "resourceKey" => p.ResourceKey.ToString(),
             "commentResourceKey" => p.CommentResourceKey.ToString(),
             "defaultValue" => p.DefaultValue?.ToString() ?? string.Empty,
-            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: p.Parent.Namespace.Module, tag: tag)
+            var i => i.TryResolveParameters(templateParameters, parameterValues) ?? config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: p.Parent.Namespace.Module, tag: tag)
         }).Transform(input);
 
         return result;
@@ -256,12 +250,6 @@ internal static class TemplateExtensions
         if (input == null || input.Length == 0)
         {
             return string.Empty;
-        }
-
-        for (var i = 0; i < templateParameters.Count; i++)
-        {
-            var param = templateParameters[i];
-            input = input.Replace($"{param.Name}", parameterValues.ElementAtOrDefault(i) ?? param.DefaultValue);
         }
 
         if (input.StartsWith("primaryKey."))
@@ -318,7 +306,7 @@ internal static class TemplateExtensions
             "label" => c.Label ?? string.Empty,
             "pluralName" => c.PluralName ?? string.Empty,
             "module" => c.Namespace.Module ?? string.Empty,
-            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: c.Namespace.Module, tag: tag)
+            var i => i.TryResolveParameters(templateParameters, parameterValues) ?? config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: c.Namespace.Module, tag: tag)
         }).Transform(input);
 
         return result;
@@ -329,12 +317,6 @@ internal static class TemplateExtensions
         if (input == null || input.Length == 0)
         {
             return string.Empty;
-        }
-
-        for (var i = 0; i < templateParameters.Count; i++)
-        {
-            var param = templateParameters[i];
-            input = input.Replace($"{param.Name}", parameterValues.ElementAtOrDefault(i) ?? param.DefaultValue);
         }
 
         if (input.StartsWith("returns."))
@@ -379,7 +361,7 @@ internal static class TemplateExtensions
             "route" => e.Route,
             "description" => e.Description,
             "module" => e.Namespace.Module ?? string.Empty,
-            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: e.Namespace.Module, tag: tag)
+            var i => i.TryResolveParameters(templateParameters, parameterValues) ?? config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: e.Namespace.Module, tag: tag)
         }).Transform(input);
 
         return result;
@@ -400,5 +382,19 @@ internal static class TemplateExtensions
     private static string StringTransform(this string value, Func<string, string> transform)
     {
         return Regex.Replace(value, @"[^./\\]+", match => transform(match.Value));
+    }
+
+    private static string? TryResolveParameters(this string input, IList<TemplateParameter> templateParameters, IList<string> parameterValues)
+    {
+        for (var i = 0; i < templateParameters.Count; i++)
+        {
+            var param = templateParameters[i];
+            if (input == param.Name)
+            {
+                return parameterValues.ElementAtOrDefault(i) ?? param.DefaultValue;
+            }
+        }
+
+        return null;
     }
 }
