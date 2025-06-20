@@ -4,15 +4,8 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class PropertyLoader : ILoader<IProperty>
+public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
 {
-    private readonly ModelConfig _modelConfig;
-
-    public PropertyLoader(ModelConfig modelConfig)
-    {
-        _modelConfig = modelConfig;
-    }
-
     /// <inheritdoc cref="ILoader{T}.Load" />
     public IProperty Load(Parser parser)
     {
@@ -20,7 +13,7 @@ public class PropertyLoader : ILoader<IProperty>
         switch (parser.Current)
         {
             case Scalar { Value: "name" }:
-                var rp = new RegularProperty { UseLegacyRoleName = _modelConfig.UseLegacyRoleNames };
+                var rp = new RegularProperty { UseLegacyRoleName = modelConfig.UseLegacyRoleNames };
 
                 while (parser.Current is not MappingEnd)
                 {
@@ -55,7 +48,7 @@ public class PropertyLoader : ILoader<IProperty>
                             rp.Comment = value!.Value;
                             break;
                         case "trigram":
-                            rp.Trigram = new LocatedString(value);
+                            rp.Trigram = new LocatedString(value!);
                             break;
                         case "customProperties":
                             parser.ConsumeMapping(prop => rp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
@@ -77,7 +70,7 @@ public class PropertyLoader : ILoader<IProperty>
                 var ap = new AssociationProperty
                 {
                     Location = new Reference(s),
-                    UseLegacyRoleName = _modelConfig.UseLegacyRoleNames
+                    UseLegacyRoleName = modelConfig.UseLegacyRoleNames
                 };
 
                 while (parser.Current is not MappingEnd)
@@ -127,7 +120,7 @@ public class PropertyLoader : ILoader<IProperty>
                             ap.PropertyReference = new Reference(value!);
                             break;
                         case "trigram":
-                            ap.Trigram = new LocatedString(value);
+                            ap.Trigram = new LocatedString(value!);
                             break;
                         case "className":
                             ap.ClassName = value!.Value;
@@ -152,7 +145,7 @@ public class PropertyLoader : ILoader<IProperty>
                 var cp = new CompositionProperty
                 {
                     Location = new Reference(s),
-                    UseLegacyRoleName = _modelConfig.UseLegacyRoleNames
+                    UseLegacyRoleName = modelConfig.UseLegacyRoleNames
                 };
 
                 while (parser.Current is not MappingEnd)
@@ -184,7 +177,7 @@ public class PropertyLoader : ILoader<IProperty>
                             cp.Required = value!.Value == "true";
                             break;
                         case "trigram":
-                            cp.Trigram = new LocatedString(value);
+                            cp.Trigram = new LocatedString(value!);
                             break;
                         case "customProperties":
                             parser.ConsumeMapping(prop => cp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
@@ -247,7 +240,7 @@ public class PropertyLoader : ILoader<IProperty>
                 var alp = new AliasProperty
                 {
                     Location = new Reference(s),
-                    UseLegacyRoleName = _modelConfig.UseLegacyRoleNames
+                    UseLegacyRoleName = modelConfig.UseLegacyRoleNames
                 };
 
                 while (parser.Current is not MappingEnd)
@@ -288,7 +281,7 @@ public class PropertyLoader : ILoader<IProperty>
                             alp.Name = value!.Value;
                             break;
                         case "trigram":
-                            alp.Trigram = new LocatedString(value);
+                            alp.Trigram = new LocatedString(value!);
                             break;
                         case "defaultValue":
                             alp.DefaultValue = value!.Value;

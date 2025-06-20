@@ -6,15 +6,8 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class DomainLoader : ILoader<Domain>
+public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
 {
-    private readonly FileChecker _fileChecker;
-
-    public DomainLoader(FileChecker fileChecker)
-    {
-        _fileChecker = fileChecker;
-    }
-
     /// <inheritdoc cref="ILoader{T}.Load" />
     public Domain Load(Parser parser)
     {
@@ -27,7 +20,7 @@ public class DomainLoader : ILoader<Domain>
             switch (prop.Value)
             {
                 case "name":
-                    domain.Name = new LocatedString(value);
+                    domain.Name = new LocatedString(value!);
                     break;
                 case "label":
                     domain.Label = value!.Value;
@@ -54,7 +47,7 @@ public class DomainLoader : ILoader<Domain>
                     domain.MediaType = value!.Value;
                     break;
                 case "parameters":
-                    domain.TemplateParameters = _fileChecker.Deserialize<IList<TemplateParameter>>(parser);
+                    domain.TemplateParameters = fileChecker.Deserialize<IList<TemplateParameter>>(parser);
                     foreach (var param in domain.TemplateParameters)
                     {
                         param.Domain = domain;
@@ -75,10 +68,10 @@ public class DomainLoader : ILoader<Domain>
                                 implementation.GenericType = parser.Consume<Scalar>().Value;
                                 break;
                             case "imports":
-                                implementation.Imports = _fileChecker.Deserialize<List<string>>(parser);
+                                implementation.Imports = fileChecker.Deserialize<List<string>>(parser);
                                 break;
                             case "annotations":
-                                implementation.Annotations = _fileChecker.Deserialize<List<TargetedText>>(parser);
+                                implementation.Annotations = fileChecker.Deserialize<List<TargetedText>>(parser);
                                 break;
                             case "values":
                                 ValueTemplate HandleValueTemplate()
