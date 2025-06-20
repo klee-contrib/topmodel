@@ -30,7 +30,11 @@ public class Converter
 
 #nullable enable
 
-    public Dictionary<string, ConverterImplementation> Implementations { get; set; } = new();
+    public Dictionary<string, ConverterImplementation> Implementations { get; set; } = [];
+
+    public IEnumerable<ParameterReference> ParameterReferences => Implementations.Values
+        .SelectMany(i => i.Text.Parameters)
+        .Where(pr => pr.ReferenceName.IsValidConverterVariable());
 
 #nullable disable
     public ModelFile ModelFile { get; set; }

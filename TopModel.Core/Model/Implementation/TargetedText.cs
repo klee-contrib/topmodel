@@ -2,9 +2,9 @@
 
 public class TargetedText
 {
-    public required string Text { get; set; }
+    public required StringWithParameters Text { get; set; }
 
     public Target Target { get; set; } = Target.Persisted_Dto;
 
-    public List<string> Imports { get; set; } = [];
+    public List<StringWithParameters> Imports { get; set; } = [];
 }

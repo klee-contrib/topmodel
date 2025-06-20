@@ -6,14 +6,14 @@ public class ModelFile
 {
     public Namespace Namespace { get; set; }
 
-    public List<string> Tags { get; set; } = new();
+    public List<string> Tags { get; set; } = [];
 
     public IEnumerable<string> AllTags => Tags
         .Concat(Classes.SelectMany(c => c.OwnTags))
         .Concat(Endpoints.SelectMany(e => e.OwnTags))
         .Distinct();
 
-    public List<Reference> Uses { get; set; } = new();
+    public List<Reference> Uses { get; set; } = [];
 
     public string Name { get; set; }
 
@@ -21,19 +21,20 @@ public class ModelFile
 
     public ModelFileOptions Options { get; set; } = new();
 
-    public List<Class> Classes { get; } = new();
+    public List<Class> Classes { get; } = [];
 
-    public List<Domain> Domains { get; } = new();
+    public List<Domain> Domains { get; } = [];
 
-    public List<Converter> Converters { get; } = new();
+    public List<Converter> Converters { get; } = [];
 
-    public List<Decorator> Decorators { get; } = new();
+    public List<Decorator> Decorators { get; } = [];
 
-    public List<Endpoint> Endpoints { get; } = new();
+    public List<Endpoint> Endpoints { get; } = [];
 
-    public List<DataFlow> DataFlows { get; } = new();
+    public List<DataFlow> DataFlows { get; } = [];
 
-    public IDictionary<Reference, object> References => Domains.SelectMany(d => d.AsDomains.Keys.Select(adn => d.AsDomainReferences.TryGetValue(adn, out var adr) && d.AsDomains.TryGetValue(adn, out var ad) ? (adr as Reference, ad as object) : (null, null)))
+    public IDictionary<Reference, object> References =>
+        Domains.SelectMany(d => d.AsDomains.Keys.Select(adn => d.AsDomainReferences.TryGetValue(adn, out var adr) && d.AsDomains.TryGetValue(adn, out var ad) ? (adr as Reference, ad as object) : (null, null)))
         .Concat(Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object)))
         .Concat(Classes.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
         .Concat(Classes.SelectMany(c => c.DecoratorReferences.SelectMany(dr => dr.ParameterReferences.Select((pr, i) => (pr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName).Decorator?.TemplateParameters.ElementAtOrDefault(i) as object)))))
@@ -80,6 +81,13 @@ public class ModelFile
         .Where(t => t.Item1 is not null && t.Item2 is not null && t.Item2 is not (null, null))
         .DistinctBy(t => t.Item1)
         .ToDictionary(t => t.Item1, t => t.Item2);
+
+    public IList<Reference> AllReferences => References.Keys
+        .Concat(Domains.SelectMany(d => d.ParameterReferences))
+        .Concat(Decorators.SelectMany(d => d.ParameterReferences))
+        .Concat(Converters.SelectMany(d => d.ParameterReferences))
+        .OrderBy(r => r.Start.Line).ThenBy(r => r.Start.Column)
+        .ToList();
 
     public IList<Reference> UselessImports => Uses
         .Where(use => !References.Values.Select(r => r.GetFile().Name)

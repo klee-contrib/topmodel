@@ -2,11 +2,11 @@
 
 public class DecoratorImplementation
 {
-    public string? Extends { get; set; }
+    public StringWithParameters? Extends { get; set; }
 
-    public IList<string> Implements { get; set; } = new List<string>();
+    public IList<StringWithParameters> Implements { get; set; } = [];
 
-    public IList<string> Annotations { get; set; } = new List<string>();
+    public IList<StringWithParameters> Annotations { get; set; } = [];
 
-    public IList<string> Imports { get; set; } = new List<string>();
+    public IList<StringWithParameters> Imports { get; set; } = [];
 }

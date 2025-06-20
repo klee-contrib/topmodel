@@ -62,13 +62,13 @@ public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
                         switch (prop.Value)
                         {
                             case "type":
-                                implementation.Type = parser.Consume<Scalar>().Value;
+                                implementation.Type = new(parser.Consume<Scalar>());
                                 break;
                             case "genericType":
-                                implementation.GenericType = parser.Consume<Scalar>().Value;
+                                implementation.GenericType = new(parser.Consume<Scalar>());
                                 break;
                             case "imports":
-                                implementation.Imports = fileChecker.Deserialize<List<string>>(parser);
+                                implementation.Imports = fileChecker.Deserialize<List<StringWithParameters>>(parser);
                                 break;
                             case "annotations":
                                 implementation.Annotations = fileChecker.Deserialize<List<TargetedText>>(parser);
@@ -85,17 +85,17 @@ public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
                                             switch (prop.Value)
                                             {
                                                 case "value":
-                                                    valueTemplate.Value = parser.Consume<Scalar>().Value;
+                                                    valueTemplate.Value = new(parser.Consume<Scalar>());
                                                     break;
                                                 case "imports":
-                                                    parser.ConsumeSequence(() => valueTemplate.Imports.Add(parser.Consume<Scalar>().Value));
+                                                    parser.ConsumeSequence(() => valueTemplate.Imports.Add(new(parser.Consume<Scalar>())));
                                                     break;
                                             }
                                         });
                                     }
                                     else
                                     {
-                                        valueTemplate.Value = parser.Consume<Scalar>().Value;
+                                        valueTemplate.Value = new(parser.Consume<Scalar>());
                                     }
 
                                     return valueTemplate;

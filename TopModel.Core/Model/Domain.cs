@@ -40,6 +40,19 @@ public class Domain
 
     public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCase(true);
 
+    public IEnumerable<ParameterReference> ParameterReferences => Implementations.Values
+        .SelectMany(i =>
+            (IEnumerable<ParameterReference>)[
+                ..i.Type?.Parameters ?? [],
+                ..i.GenericType?.Parameters ?? [],
+                ..i.Annotations.SelectMany(a => a.Text.Parameters),
+                ..i.Annotations.SelectMany(a => a.Imports.SelectMany(ai => ai.Parameters)),
+                ..i.Imports.SelectMany(a => a.Parameters),
+                ..i.ValueTemplates.Values.SelectMany(a => a.Value.Parameters),
+                ..i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Parameters))
+            ])
+        .Where(pr => pr.ReferenceName.IsValidPropertyVariable(TemplateParameters));
+
 #nullable disable
     public ModelFile ModelFile { get; set; }
 

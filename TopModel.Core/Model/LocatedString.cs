@@ -43,9 +43,19 @@ public class LocatedString(Scalar value) : IComparable
         return 0;
     }
 
+    public bool Contains(char value)
+    {
+        return Value.Contains(value);
+    }
+
     public bool Contains(string value)
     {
         return Value.Contains(value);
+    }
+
+    public bool Contains(string value, StringComparison stringComparison)
+    {
+        return Value.Contains(value, stringComparison);
     }
 
     public bool EndsWith(string end, StringComparison c)
@@ -101,6 +111,11 @@ public class LocatedString(Scalar value) : IComparable
     public override string ToString()
     {
         return Value;
+    }
+
+    public string ToUpper()
+    {
+        return Value.ToUpper();
     }
 
     public string Trim()

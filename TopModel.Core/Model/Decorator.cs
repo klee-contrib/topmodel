@@ -29,6 +29,16 @@ public class Decorator : IPropertyContainer
 
     public IList<TemplateParameter> TemplateParameters { get; set; } = [];
 
+    public IEnumerable<ParameterReference> ParameterReferences => Implementations.Values
+        .SelectMany(i =>
+            (IEnumerable<ParameterReference>)[
+                ..i.Extends?.Parameters ?? [],
+                ..i.Implements.SelectMany(a => a.Parameters),
+                ..i.Annotations.SelectMany(a => a.Parameters),
+                ..i.Imports.SelectMany(a => a.Parameters)
+            ])
+        .Where(pr => pr.ReferenceName.IsValidClassVariable(TemplateParameters) || pr.ReferenceName.IsValidEndpointVariable(TemplateParameters));
+
     internal Reference Location { get; set; }
 
     public override string ToString()
