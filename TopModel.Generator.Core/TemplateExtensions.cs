@@ -22,12 +22,12 @@ internal static class TemplateExtensions
         return result;
     }
 
-    public static string ParseTemplate(this StringWithParameters template, IProperty p, GeneratorConfigBase config, string? tag = null)
+    public static string ParseTemplate(this StringWithVariables template, IProperty p, GeneratorConfigBase config, string? tag = null)
     {
         return template.Value.ParseTemplate(p, config, tag);
     }
 
-    public static string ParseTemplate(this StringWithParameters template, Decorator d, Class c, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
+    public static string ParseTemplate(this StringWithVariables template, Decorator d, Class c, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -43,7 +43,7 @@ internal static class TemplateExtensions
         return result;
     }
 
-    public static string ParseTemplate(this StringWithParameters template, Decorator d, Endpoint e, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
+    public static string ParseTemplate(this StringWithVariables template, Decorator d, Endpoint e, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {

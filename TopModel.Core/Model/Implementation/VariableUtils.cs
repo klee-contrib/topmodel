@@ -6,6 +6,7 @@ internal static class VariableUtils
     internal static readonly string[] DomainProperties = ["mediaType", "length", "scale", "name", "type"];
     internal static readonly string[] EndpointProperties = ["name", "method", "route", "description", "module"];
     internal static readonly string[] PropertyProperties = ["T", "value", "name", "sqlName", "paramName", "trigram", "label", "comment", "required", "resourceKey", "commentResourceKey", "defaultValue"];
+    internal static readonly string[] Transforms = ["camel", "constant", "kebab", "lower", "pascal", "snake", "upper", "flat", "path", "head", "last", "tail"];
 
     public static bool IsValidClassVariable(this string input, IList<TemplateParameter> templateParameters)
     {
@@ -124,5 +125,10 @@ internal static class VariableUtils
         }
 
         return PropertyProperties.Contains(input);
+    }
+
+    public static bool IsValidTransform(this string input)
+    {
+        return Transforms.Contains(input);
     }
 }

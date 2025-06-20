@@ -19,12 +19,12 @@ public class Converter
     /// <summary>
     /// Domains sources du convertisseur
     /// </summary>
-    public IList<Domain> From { get; set; } = new List<Domain>();
+    public IList<Domain> From { get; set; } = [];
 
     /// <summary>
     /// Domains cibles du convertisseur
     /// </summary>
-    public IList<Domain> To { get; set; } = new List<Domain>();
+    public IList<Domain> To { get; set; } = [];
 
     public IEnumerable<(Domain From, Domain To)> Conversions => From.SelectMany(f => To.Select(t => (f, t))).Distinct();
 
@@ -32,9 +32,13 @@ public class Converter
 
     public Dictionary<string, ConverterImplementation> Implementations { get; set; } = [];
 
-    public IEnumerable<ParameterReference> ParameterReferences => Implementations.Values
-        .SelectMany(i => i.Text.Parameters)
+    public IEnumerable<ParameterReference> VariableReferences => Implementations.Values
+        .SelectMany(i => i.Text.Variables)
         .Where(pr => pr.ReferenceName.IsValidConverterVariable());
+
+    public IEnumerable<TransformReference> TransformReferences => Implementations.Values
+         .SelectMany(i => i.Text.Transforms)
+         .Where(pr => pr.ReferenceName.IsValidTransform());
 
 #nullable disable
     public ModelFile ModelFile { get; set; }

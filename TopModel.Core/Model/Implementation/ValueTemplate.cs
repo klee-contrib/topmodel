@@ -5,8 +5,8 @@ public class ValueTemplate
     public const string Default = "$$default$$";
 
 #nullable disable
-    public StringWithParameters Value { get; set; }
+    public StringWithVariables Value { get; set; }
 #nullable enable
 
-    public List<StringWithParameters> Imports { get; set; } = [];
+    public List<StringWithVariables> Imports { get; set; } = [];
 }

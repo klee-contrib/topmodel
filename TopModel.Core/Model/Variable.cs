@@ -7,4 +7,6 @@ public class Variable
     public static Variable PropertyContainer { get; } = new();
 
     public static Variable Converter { get; } = new();
+
+    public static Variable Transform { get; } = new();
 }

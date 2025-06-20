@@ -2,11 +2,11 @@
 
 public class DomainImplementation
 {
-    public StringWithParameters? Type { get; set; }
+    public StringWithVariables? Type { get; set; }
 
-    public StringWithParameters? GenericType { get; set; }
+    public StringWithVariables? GenericType { get; set; }
 
-    public List<StringWithParameters> Imports { get; set; } = [];
+    public List<StringWithVariables> Imports { get; set; } = [];
 
     public List<TargetedText> Annotations { get; set; } = [];
 

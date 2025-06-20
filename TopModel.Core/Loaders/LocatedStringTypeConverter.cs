@@ -9,7 +9,7 @@ internal class LocatedStringTypeConverter : IYamlTypeConverter
     /// <inheritdoc cref="IYamlTypeConverter.Accepts" />
     public bool Accepts(Type type)
     {
-        return type == typeof(LocatedString) || type == typeof(StringWithParameters);
+        return type == typeof(LocatedString) || type == typeof(StringWithVariables);
     }
 
     /// <inheritdoc cref="IYamlTypeConverter.ReadYaml" />
@@ -17,7 +17,7 @@ internal class LocatedStringTypeConverter : IYamlTypeConverter
     {
         return type == typeof(LocatedString)
             ? new LocatedString(parser.Consume<Scalar>())
-            : new StringWithParameters(parser.Consume<Scalar>());
+            : new StringWithVariables(parser.Consume<Scalar>());
     }
 
     /// <inheritdoc cref="IYamlTypeConverter.WriteYaml" />

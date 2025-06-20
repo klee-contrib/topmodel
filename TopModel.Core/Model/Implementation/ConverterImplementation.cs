@@ -5,7 +5,7 @@ public class ConverterImplementation
     /// <summary>
     /// Implémentation du convertisseur. Accepte les templates. Utiliser {value} pour la valeur du paramètre d'entrée, et {to.type} ou {from.type} pour les propriétés du domaine source ou cible
     /// </summary>
-    public required StringWithParameters Text { get; set; }
+    public required StringWithVariables Text { get; set; }
 
     /// <summary>
     /// Imports à ajouter pour utiliser ce décorateur.

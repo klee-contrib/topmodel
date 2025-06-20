@@ -68,7 +68,7 @@ public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
                                 implementation.GenericType = new(parser.Consume<Scalar>());
                                 break;
                             case "imports":
-                                implementation.Imports = fileChecker.Deserialize<List<StringWithParameters>>(parser);
+                                implementation.Imports = fileChecker.Deserialize<List<StringWithVariables>>(parser);
                                 break;
                             case "annotations":
                                 implementation.Annotations = fileChecker.Deserialize<List<TargetedText>>(parser);

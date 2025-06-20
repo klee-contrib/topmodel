@@ -40,18 +40,31 @@ public class Domain
 
     public string CSharpName => Name.Replace("DO_", string.Empty).ToPascalCase(true);
 
-    public IEnumerable<ParameterReference> ParameterReferences => Implementations.Values
+    public IEnumerable<ParameterReference> VariableReferences => Implementations.Values
         .SelectMany(i =>
             (IEnumerable<ParameterReference>)[
-                ..i.Type?.Parameters ?? [],
-                ..i.GenericType?.Parameters ?? [],
-                ..i.Annotations.SelectMany(a => a.Text.Parameters),
-                ..i.Annotations.SelectMany(a => a.Imports.SelectMany(ai => ai.Parameters)),
-                ..i.Imports.SelectMany(a => a.Parameters),
-                ..i.ValueTemplates.Values.SelectMany(a => a.Value.Parameters),
-                ..i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Parameters))
+                ..i.Type?.Variables ?? [],
+                ..i.GenericType?.Variables ?? [],
+                ..i.Annotations.SelectMany(a => a.Text.Variables),
+                ..i.Annotations.SelectMany(a => a.Imports.SelectMany(ai => ai.Variables)),
+                ..i.Imports.SelectMany(a => a.Variables),
+                ..i.ValueTemplates.Values.SelectMany(a => a.Value.Variables),
+                ..i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Variables))
             ])
         .Where(pr => pr.ReferenceName.IsValidPropertyVariable(TemplateParameters));
+
+    public IEnumerable<TransformReference> TransformReferences => Implementations.Values
+        .SelectMany(i =>
+            (IEnumerable<TransformReference>)[
+                ..i.Type?.Transforms ?? [],
+                ..i.GenericType?.Transforms ?? [],
+                ..i.Annotations.SelectMany(a => a.Text.Transforms),
+                ..i.Annotations.SelectMany(a => a.Imports.SelectMany(ai => ai.Transforms)),
+                ..i.Imports.SelectMany(a => a.Transforms),
+                ..i.ValueTemplates.Values.SelectMany(a => a.Value.Transforms),
+                ..i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Transforms))
+            ])
+         .Where(pr => pr.ReferenceName.IsValidTransform());
 
 #nullable disable
     public ModelFile ModelFile { get; set; }

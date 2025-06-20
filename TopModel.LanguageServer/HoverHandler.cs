@@ -51,7 +51,9 @@ public class HoverHandler : HoverHandlerBase
                             ? "Variable prédéfinie pour une proprieté"
                             : v == Variable.PropertyContainer
                                 ? "Variable prédéfinie pour une classe ou un endpoint"
-                                : "Variable préfinie pour un convertisseur",
+                                : v == Variable.Converter
+                                    ? "Variable préfinie pour un convertisseur"
+                                    : "Transformation de variable",
                         _ => string.Empty
                     }))
                 });
