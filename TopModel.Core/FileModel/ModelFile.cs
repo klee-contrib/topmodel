@@ -1,5 +1,7 @@
 ﻿#nullable disable
 
+using TopModel.Core.Model;
+
 namespace TopModel.Core.FileModel;
 
 public class ModelFile
@@ -35,6 +37,9 @@ public class ModelFile
 
     public IDictionary<Reference, object> References =>
         Domains.SelectMany(d => d.AsDomains.Keys.Select(adn => d.AsDomainReferences.TryGetValue(adn, out var adr) && d.AsDomains.TryGetValue(adn, out var ad) ? (adr as Reference, ad as object) : (null, null)))
+        .Concat(Domains.SelectMany(d => d.ParameterReferences.Select(pr => (pr as Reference, d.TemplateParameters.FirstOrDefault(tp => tp.Name == pr.ReferenceName) as object ?? Variable.Property))))
+        .Concat(Decorators.SelectMany(d => d.ParameterReferences.Select(pr => (pr as Reference, d.TemplateParameters.FirstOrDefault(tp => tp.Name == pr.ReferenceName) as object ?? Variable.PropertyContainer))))
+        .Concat(Converters.SelectMany(d => d.ParameterReferences.Select(pr => (pr as Reference, Variable.Converter as object))))
         .Concat(Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object)))
         .Concat(Classes.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
         .Concat(Classes.SelectMany(c => c.DecoratorReferences.SelectMany(dr => dr.ParameterReferences.Select((pr, i) => (pr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName).Decorator?.TemplateParameters.ElementAtOrDefault(i) as object)))))
@@ -81,13 +86,6 @@ public class ModelFile
         .Where(t => t.Item1 is not null && t.Item2 is not null && t.Item2 is not (null, null))
         .DistinctBy(t => t.Item1)
         .ToDictionary(t => t.Item1, t => t.Item2);
-
-    public IList<Reference> AllReferences => References.Keys
-        .Concat(Domains.SelectMany(d => d.ParameterReferences))
-        .Concat(Decorators.SelectMany(d => d.ParameterReferences))
-        .Concat(Converters.SelectMany(d => d.ParameterReferences))
-        .OrderBy(r => r.Start.Line).ThenBy(r => r.Start.Column)
-        .ToList();
 
     public IList<Reference> UselessImports => Uses
         .Where(use => !References.Values.Select(r => r.GetFile().Name)

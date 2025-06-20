@@ -47,6 +47,11 @@ public class HoverHandler : HoverHandlerBase
                         DataFlow d => $"Flux de données '{d.Name}'",
                         (Decorator d, _) => d.Description,
                         TemplateParameter tp => $"**{tp.Name}** ({tp.Comment})",
+                        Variable v => v == Variable.Property
+                            ? "Variable prédéfinie pour une proprieté"
+                            : v == Variable.PropertyContainer
+                                ? "Variable prédéfinie pour une classe ou un endpoint"
+                                : "Variable préfinie pour un convertisseur",
                         _ => string.Empty
                     }))
                 });

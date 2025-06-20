@@ -26,7 +26,7 @@ internal static class VariableUtils
 
         if (input.StartsWith("properties["))
         {
-            return input[input.IndexOf(']')..].IsValidPropertyVariable(templateParameters);
+            return input[(input.IndexOf(']') + 2)..].IsValidPropertyVariable(templateParameters);
         }
 
         if (templateParameters.Any(tp => tp.Name == input))
@@ -70,7 +70,7 @@ internal static class VariableUtils
 
         if (input.StartsWith("params["))
         {
-            return input[input.IndexOf(']')..].IsValidPropertyVariable(templateParameters);
+            return input[(input.IndexOf(']') + 2)..].IsValidPropertyVariable(templateParameters);
         }
 
         if (templateParameters.Any(tp => tp.Name == input))

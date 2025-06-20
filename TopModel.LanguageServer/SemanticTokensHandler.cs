@@ -56,7 +56,7 @@ public class SemanticTokensHandler : SemanticTokensHandlerBase
                 }
             }
 
-            foreach (var reference in file.AllReferences)
+            foreach (var reference in file.References.Keys.OrderBy(r => r.Start.Line).ThenBy(r => r.Start.Column))
             {
                 var type = reference switch
                 {
