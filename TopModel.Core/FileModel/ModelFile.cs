@@ -1,7 +1,5 @@
 ﻿#nullable disable
 
-using TopModel.Core.Model;
-
 namespace TopModel.Core.FileModel;
 
 public class ModelFile

@@ -4,7 +4,7 @@
 
 version: 2.6.6
 custom:
-  ../../../TopModel.Generator.Sql: 21c61b2921c3eceec5d75da02fca4796
+  ../../../TopModel.Generator.Sql: 473f233183df0c8e12dae2c64946838c
 generatedFiles:
   - ./src/01_tables.sql
   - ./src/02_fk_indexes.sql
