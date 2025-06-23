@@ -466,11 +466,19 @@ public class ModelStore
             .Where(c => !duplicateClasses.Select(c => c.Name.Value).Contains(c.Name.Value))
             .ToDictionary(c => c.Name.Value, c => c);
 
-        var referencedEndpoints = dependencies
+        var referencedEndpointsRaw = dependencies
             .SelectMany(m => m.Endpoints)
             .Concat(modelFile.Endpoints)
-            .Distinct()
-            .ToDictionary(d => (string)d.Name, c => c);
+            .Distinct();
+
+        var duplicateEndpoints = referencedEndpointsRaw
+            .GroupBy(c => c.Name.Value)
+            .Where(g => g.Count() > 1)
+            .Select(g => g.OrderByDescending(c => (c.ModelFile == modelFile ? 1_000_000 : 0) + c.Name.Location.Start.Line).First());
+
+        var referencedEndpoints = referencedEndpointsRaw
+            .Where(c => !duplicateEndpoints.Select(c => c.Name.Value).Contains(c.Name.Value))
+            .ToDictionary(c => (string)c.Name, c => c);
 
         var referencedDecorators = dependencies
             .SelectMany(m => m.Decorators)
