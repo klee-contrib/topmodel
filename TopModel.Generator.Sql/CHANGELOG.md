@@ -1,3 +1,7 @@
+## 1.2.0
+
+Compatibilité avec les fallbacks de langage d'implémentation de TopModel 2.7
+
 ## 1.1.1
 
 - [`708248f`](https://github.com/klee-contrib/topmodel/commit/708248f3073167c4ef629824e0c707206bd2f00f) - [SSDT] Fix commentaire de génération avec les mauvais tokens

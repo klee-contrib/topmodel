@@ -8,6 +8,18 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.7.0
+
+- [#462](https://github.com/klee-contrib/topmodel/pull/462) - [Generator.Core] Donner la possibilité d'avoir des fallback l'implémentation des langages
+
+  Vous pouvez désormais spécifier une liste de languages par configuration au lieu d'un seul pour retrouver l'implémentation correspondante à votre domaine ou décorateur. Cela peut servir par exemple si vous générez du code pour PostgreSQL et SQL Server, ou vous avez besoin d'un language `sql` générique et un language `sqlserver` parce que certains types sont différents, pour ne définir que les types spécifiques à SQL Server dans `sqlserver` et laisser le fallback vers `sql` en définissant le `language` de la config SQL Server comme `language: [sqlserver, sql]`
+
+  Cette évolution nécessite une version à jour des générateurs pour être utilisée, car le schéma JSON de chaque configuration de module a été mis à jour.
+
+- [`713292f`](https://github.com/klee-contrib/topmodel/commit/713292fc4b7c5325d62a020badb078fc4634aff6) [Core] Résolutions des paramètres comme les variables prédéfinies (fix [#469](https://github.com/klee-contrib/topmodel/issues/469))
+
+  Cette évolution, en plus de corriger l'issue correspondante, permet également d'utiliser des transformations sur les paramètres.
+
 ## 2.6.6
 
 - [`2082791`](https://github.com/klee-contrib/topmodel/commit/2082791c6cde0b971f19d0034dd650a8c97617e9) - Revert "[Core] Vérification de l'unicité du nom de propriété du décorateur"

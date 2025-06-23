@@ -1,3 +1,7 @@
+## 1.6.0
+
+Compatibilité avec les fallbacks de langage d'implémentation de TopModel 2.7
+
 ## 1.5.2
 
 - [`6b2182b`](https://github.com/klee-contrib/topmodel/commit/6b2182bdb7aaa6574b684e9f5d4af149f2d382ed) - [C#] Fix usings manquants dans les mappers quand on parse une enum.

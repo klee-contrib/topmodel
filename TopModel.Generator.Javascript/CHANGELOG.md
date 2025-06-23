@@ -1,3 +1,8 @@
+## 1.4.0
+
+- Compatibilité avec les fallbacks de langage d'implémentation de TopModel 2.7
+- [#472](https://github.com/klee-contrib/topmodel/pull/472) - Fix résolution des variables dans FetchPath
+
 ## 1.3.2
 
 - [`6c6f2`](https://github.com/klee-contrib/topmodel/commit/6c6f24213f125a88b8a683b5116093faef2825ad) - [JS] {lang} ajouté en trop sur index.ts : Fix [#451](https://github.com/klee-contrib/topmodel/issues/451)

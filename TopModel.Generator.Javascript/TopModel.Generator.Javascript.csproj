@@ -9,7 +9,7 @@
 
   <PropertyGroup>
     <PackageOutputPath>../.nupkg</PackageOutputPath>
-    <Version>1.3.2</Version>
+    <Version>1.4.0</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <Authors>JabX;gideruette</Authors>
     <Description>Générateurs JS/TS pour TopModel</Description>

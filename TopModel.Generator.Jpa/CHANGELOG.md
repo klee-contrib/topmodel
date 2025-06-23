@@ -1,3 +1,7 @@
+## 1.8.0
+
+Compatibilité avec les fallbacks de langage d'implémentation de TopModel 2.7
+
 ## 1.7.2
 
 - [3d36a6](https://github.com/klee-contrib/topmodel/commit/3d36a6360c7514e43ed959e673ba7dae8ac00247) [JPA] Fix Check source null dans les cas de mappings de compositions
