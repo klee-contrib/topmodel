@@ -9,6 +9,8 @@ public class LocatedString(Scalar value) : IComparable
 {
     public string Value { get; init; } = value.Value;
 
+    public int Length => Value.Length;
+
     internal Reference Location { get; } = new Reference(value);
 
     [return: NotNullIfNotNull(nameof(ls))]

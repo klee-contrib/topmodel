@@ -49,9 +49,7 @@ public interface IProperty
         get
         {
             var prop = (this as AliasProperty)?.PersistentProperty ?? this;
-
             var ap = (prop as AssociationProperty) ?? ((prop as AliasProperty)?.Property as AssociationProperty);
-
             var apPk = ap switch
             {
                 { Property: IProperty p } => p,
@@ -59,24 +57,15 @@ public interface IProperty
                 _ => null
             };
 
-            var apPkTrigram = apPk?.Trigram ?? apPk?.Class.Trigram;
-
-            var sqlName = prop switch
-            {
-                AssociationProperty or AliasProperty { Property: AssociationProperty } => apPkTrigram != null ? apPk?.SqlName.Replace($"{apPkTrigram}_", string.Empty) : apPk?.SqlName,
-                { Class.Extends: not null, PrimaryKey: true } => prop.Name.Replace(prop.Class.Name, string.Empty).ToConstantCase(),
-                _ => prop.Name.ToConstantCase()
-            };
-
-            string? prefix = prop.Trigram ?? (apPk != null ? apPkTrigram : prop.Class.Trigram);
-            prefix = !string.IsNullOrWhiteSpace(prefix) ? $"{prefix}_" : string.Empty;
-            var suffix = ap?.Role != null
+            string? trigram = prop.Trigram ?? ap?.Trigram ?? apPk?.Trigram ?? apPk?.Class.Trigram ?? prop.Class.Trigram;
+            trigram = !string.IsNullOrWhiteSpace(trigram) ? $"{trigram}_" : string.Empty;
+            var role = ap?.Role != null
                 ? UseLegacyRoleName
                     ? $"_{ap.Role.Replace(" ", "_").ToUpper()}"
                     : $"_{ap.Role.ToConstantCase()}"
                 : string.Empty;
 
-            return $"{prefix}{sqlName}{suffix}";
+            return $"{trigram}{RawSqlName}{role}";
         }
     }
 
@@ -97,6 +86,28 @@ public interface IProperty
     string CommentResourceKey => $"comments.{CommentResourceProperty.Parent.Namespace.ModuleCamel}.{CommentResourceProperty.Parent.NameCamel}.{CommentResourceProperty.NameCamel}";
 
     bool UseLegacyRoleName { get; init; }
+
+    internal string RawSqlName
+    {
+        get
+        {
+            var prop = (this as AliasProperty)?.PersistentProperty ?? this;
+            var ap = (prop as AssociationProperty) ?? ((prop as AliasProperty)?.Property as AssociationProperty);
+            var apPk = ap switch
+            {
+                { Property: IProperty p } => p,
+                { Association: Class classe } => classe.Properties.FirstOrDefault(),
+                _ => null
+            };
+
+            return prop switch
+            {
+                AssociationProperty or AliasProperty { Property: AssociationProperty } => apPk?.RawSqlName ?? string.Empty,
+                { Class.Extends: not null, PrimaryKey: true } => prop.Name[prop.Class.Name.Length..].ToConstantCase(),
+                _ => prop.Name.ToConstantCase()
+            };
+        }
+    }
 
     IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null);
 }
