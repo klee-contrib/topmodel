@@ -99,7 +99,7 @@ La classe référencée par la composition doit être connue du fichier de modè
 
 Dans le modèle d'une application, il est très courant d'avoir besoin de référencer des propriétés définies dans d'autres objets lorsqu'on construit un nouvel objet. L'exemple le plus courant est le cas des DTOs, qui sont des objets qui vont être utilisés dans l'API publique d'une application et qui sont bien souvent presque identiques à des objets persistés, plutôt réservés à une API "interne".
 
-TopModel permet donc de définir des **alias** de propriétés, qui pourront être utilisés pour **recopier** des définitions déjà écrites par ailleurs dans une une autre classe (ou dans la définition d'un endpoint).
+TopModel permet donc de définir des **alias** de propriétés, qui pourront être utilisés pour **recopier** des définitions déjà écrites par ailleurs dans une autre classe, un autre endpoint, ou un autre décorateur.
 
 Pour se faire, il est possible de définir un `alias` à la place d'une définition de propriété, par exemple :
 
@@ -108,6 +108,14 @@ alias:
   class: MyClass
   property: MyProperty1
 prefix: true
+
+alias:
+  endpoint: MyEndpoint
+  property: MyParameter # Vous pouvez référencer à la fois les paramètres comme la propriété de retour.
+
+alias:
+  decorator: MyDecorator
+  property: MyProperty
 ```
 
 Il est possible de préfixer ou suffixer le nom de la propriété recopiée (`true` est une valeur spéciale qui correspond au nom de la classe), et même de surcharger son libellé, commentaire, caractère obligatoire, domaine, valeur par défaut, caractère readonly...
