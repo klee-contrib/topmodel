@@ -27,7 +27,7 @@ public class EndpointLoader(PropertyLoader propertyLoader) : ILoader<Endpoint>
                     endpoint.Method = value!.Value;
                     break;
                 case "route":
-                    endpoint.Route = new StringWithVariables(value!);
+                    endpoint.RouteWithVariables = new StringWithVariables(value!);
                     break;
                 case "description":
                     endpoint.Description = value!.Value;

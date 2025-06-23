@@ -62,10 +62,10 @@ public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
                         switch (prop.Value)
                         {
                             case "type":
-                                implementation.Type = new(parser.Consume<Scalar>());
+                                implementation.TypeWithVariables = new(parser.Consume<Scalar>());
                                 break;
                             case "genericType":
-                                implementation.GenericType = new(parser.Consume<Scalar>());
+                                implementation.GenericTypeWithVariables = new(parser.Consume<Scalar>());
                                 break;
                             case "imports":
                                 implementation.Imports = fileChecker.Deserialize<List<StringWithVariables>>(parser);

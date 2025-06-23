@@ -33,11 +33,11 @@ public class Converter
     public Dictionary<string, ConverterImplementation> Implementations { get; set; } = [];
 
     public IEnumerable<ParameterReference> VariableReferences => Implementations.Values
-        .SelectMany(i => i.Text.Variables)
+        .SelectMany(i => i.TextWithVariables.Variables)
         .Where(pr => pr.ReferenceName.IsValidConverterVariable());
 
     public IEnumerable<TransformReference> TransformReferences => Implementations.Values
-         .SelectMany(i => i.Text.Transforms)
+         .SelectMany(i => i.TextWithVariables.Transforms)
          .Where(pr => pr.ReferenceName.IsValidTransform());
 
 #nullable disable

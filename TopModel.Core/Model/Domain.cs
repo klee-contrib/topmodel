@@ -43,8 +43,8 @@ public class Domain
     public IEnumerable<ParameterReference> VariableReferences => Implementations.Values
         .SelectMany(i =>
             (IEnumerable<ParameterReference>)[
-                ..i.Type?.Variables ?? [],
-                ..i.GenericType?.Variables ?? [],
+                ..i.TypeWithVariables?.Variables ?? [],
+                ..i.GenericTypeWithVariables?.Variables ?? [],
                 ..i.Annotations.SelectMany(a => a.Text.Variables),
                 ..i.Annotations.SelectMany(a => a.Imports.SelectMany(ai => ai.Variables)),
                 ..i.Imports.SelectMany(a => a.Variables),
@@ -56,8 +56,8 @@ public class Domain
     public IEnumerable<TransformReference> TransformReferences => Implementations.Values
         .SelectMany(i =>
             (IEnumerable<TransformReference>)[
-                ..i.Type?.Transforms ?? [],
-                ..i.GenericType?.Transforms ?? [],
+                ..i.TypeWithVariables?.Transforms ?? [],
+                ..i.GenericTypeWithVariables?.Transforms ?? [],
                 ..i.Annotations.SelectMany(a => a.Text.Transforms),
                 ..i.Annotations.SelectMany(a => a.Imports.SelectMany(ai => ai.Transforms)),
                 ..i.Imports.SelectMany(a => a.Transforms),

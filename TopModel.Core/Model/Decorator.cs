@@ -32,7 +32,7 @@ public class Decorator : IPropertyContainer
     public IEnumerable<ParameterReference> VariableReferences => Implementations.Values
         .SelectMany(i =>
             (IEnumerable<ParameterReference>)[
-                ..i.Extends?.Variables ?? [],
+                ..i.ExtendsWithVariables?.Variables ?? [],
                 ..i.Implements.SelectMany(a => a.Variables),
                 ..i.Annotations.SelectMany(a => a.Variables),
                 ..i.Imports.SelectMany(a => a.Variables)
@@ -42,7 +42,7 @@ public class Decorator : IPropertyContainer
     public IEnumerable<TransformReference> TransformReferences => Implementations.Values
        .SelectMany(i =>
            (IEnumerable<TransformReference>)[
-                ..i.Extends?.Transforms ?? [],
+                ..i.ExtendsWithVariables?.Transforms ?? [],
                 ..i.Implements.SelectMany(a => a.Transforms),
                 ..i.Annotations.SelectMany(a => a.Transforms),
                 ..i.Imports.SelectMany(a => a.Transforms)

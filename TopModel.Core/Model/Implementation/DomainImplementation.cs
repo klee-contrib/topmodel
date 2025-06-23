@@ -2,15 +2,19 @@
 
 public class DomainImplementation
 {
-    public StringWithVariables? Type { get; set; }
+    public string? Type => TypeWithVariables;
 
-    public StringWithVariables? GenericType { get; set; }
+    public string? GenericType => GenericTypeWithVariables;
 
     public List<StringWithVariables> Imports { get; set; } = [];
 
     public List<TargetedText> Annotations { get; set; } = [];
 
     public IDictionary<string, ValueTemplate> ValueTemplates { get; set; } = new Dictionary<string, ValueTemplate>();
+
+    internal StringWithVariables? TypeWithVariables { get; set; }
+
+    internal StringWithVariables? GenericTypeWithVariables { get; set; }
 
     public ValueTemplate? GetValueTemplate(string value)
     {
