@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.7.1
+
+- [`2fb8b73`](https://github.com/klee-contrib/topmodel/commit/2fb8b73ba4487b94628116d001ef2478406584da) - Fix breaking change involontaire sur les générateurs suite à modgen 2.7
+
 ## 2.7.0
 
 - [#462](https://github.com/klee-contrib/topmodel/pull/462) - [Generator.Core] Donner la possibilité d'avoir des fallback l'implémentation des langages

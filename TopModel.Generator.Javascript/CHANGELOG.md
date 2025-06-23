@@ -1,3 +1,7 @@
+## 1.4.1
+
+- [`2fb8b73`](https://github.com/klee-contrib/topmodel/commit/2fb8b73ba4487b94628116d001ef2478406584da) - Fix breaking change involontaire sur les générateurs suite à modgen 2.7
+
 ## 1.4.0
 
 - Compatibilité avec les fallbacks de langage d'implémentation de TopModel 2.7
@@ -16,7 +20,7 @@
 - [`9ad2e0`](https://github.com/klee-contrib/topmodel/commit/8f9b2535d25ca7918176e7f0c3b62c441612a877) - [Angular] : Permettre l'ajout d'un `HttpOptions` lors de la génération d'un service d'upload de fichier
   Fix [#448](https://github.com/klee-contrib/topmodel/issues/448)
 
-- [`e4614`](https://github.com/klee-contrib/topmodel/commit/e4614c7206e701f937cdf17e7fcbfc0d2178280b) - [Angular] Utilisation des  nouvelles api inject() dans la génération des services
+- [`e4614`](https://github.com/klee-contrib/topmodel/commit/e4614c7206e701f937cdf17e7fcbfc0d2178280b) - [Angular] Utilisation des nouvelles api inject() dans la génération des services
   Fix [#413](https://github.com/klee-contrib/topmodel/issues/413)
 
 ## 1.2.0
