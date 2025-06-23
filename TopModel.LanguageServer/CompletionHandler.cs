@@ -8,10 +8,10 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer;
 
-public class CompletionHandler : CompletionHandlerBase
+public class CompletionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelFileCache fileCache, ModelConfig config) : CompletionHandlerBase
 {
-    private static readonly List<char> Separators = new()
-        {
+    private static readonly char[] Separators =
+        [
             ':',
             ',',
             '{',
@@ -28,20 +28,7 @@ public class CompletionHandler : CompletionHandlerBase
             '\n',
             '.',
             '"'
-        };
-
-    private readonly ModelConfig _config;
-    private readonly ILanguageServerFacade _facade;
-    private readonly ModelFileCache _fileCache;
-    private readonly ModelStore _modelStore;
-
-    public CompletionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelFileCache fileCache, ModelConfig config)
-    {
-        _config = config;
-        _facade = facade;
-        _fileCache = fileCache;
-        _modelStore = modelStore;
-    }
+        ];
 
     public override Task<CompletionItem> Handle(CompletionItem request, CancellationToken cancellationToken)
     {
@@ -50,7 +37,7 @@ public class CompletionHandler : CompletionHandlerBase
 
     public override Task<CompletionList> Handle(CompletionParams request, CancellationToken cancellationToken)
     {
-        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var text = fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var currentLine = text.ElementAtOrDefault(request.Position.Line);
 
         if (currentLine == null)
@@ -58,7 +45,7 @@ public class CompletionHandler : CompletionHandlerBase
             return Task.FromResult(new CompletionList());
         }
 
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file == null || currentLine == string.Empty)
         {
             return Task.FromResult(new CompletionList());
@@ -83,16 +70,22 @@ public class CompletionHandler : CompletionHandlerBase
             return Task.FromResult(CompleteDomain(request));
         }
 
-        List<string> classCompleteKeys = new()
-        {
+        List<string> classCompleteKeys =
+        [
             "association",
             "composition",
             "class",
             "extends"
-        };
+        ];
+
         if (classCompleteKeys.Contains(currentKey) && parentKey != currentKey)
         {
             return Task.FromResult(CompleteClass(request, file, useIndex));
+        }
+
+        if (currentKey == "endpoint")
+        {
+            return Task.FromResult(CompleteEndpoint(request, file, useIndex));
         }
 
         // Tags
@@ -108,7 +101,7 @@ public class CompletionHandler : CompletionHandlerBase
         }
 
         // Décorateur
-        else if (currentKey == "decorators")
+        else if (currentKey.Contains("decorator"))
         {
             return Task.FromResult(CompleteDecorator(request, file, useIndex));
         }
@@ -128,17 +121,31 @@ public class CompletionHandler : CompletionHandlerBase
     {
         return new CompletionRegistrationOptions
         {
-            DocumentSelector = _config.GetDocumentSelector()
+            DocumentSelector = config.GetDocumentSelector()
         };
+    }
+
+    private static int GetUseIndex(ModelFile file, string[] text)
+    {
+        if (file.Uses.Count > 0)
+        {
+            return file.Uses.Last().ToRange()!.Start.Line + 1;
+        }
+        else if (text.First().StartsWith('-'))
+        {
+            return 1;
+        }
+
+        return 0;
     }
 
     private CompletionList CompleteClass(CompletionParams request, ModelFile file, int useIndex)
     {
         var searchText = GetSearchText(request);
-        var availableClasses = new HashSet<Class>(_modelStore.GetAvailableClasses(file));
+        var availableClasses = new HashSet<Class>(modelStore.GetAvailableClasses(file));
 
-        return new CompletionList(
-            _modelStore.Classes
+        return new(
+            modelStore.Classes
                 .Where(classe => classe.Name.ToLower().ShouldMatch(searchText))
                 .Select(classe => new CompletionItem
                 {
@@ -150,15 +157,15 @@ public class CompletionHandler : CompletionHandlerBase
                     },
                     InsertText = classe.Name,
                     SortText = availableClasses.Contains(classe) ? "0000" + classe.Name : classe.Name,
-                    TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
+                    TextEdit = new(new TextEdit
                     {
                         NewText = classe.Name,
                         Range = GetCompleteRange(searchText, request)
                     }),
                     AdditionalTextEdits = !availableClasses.Contains(classe) ?
-                        new TextEditContainer(new TextEdit
+                        new(new TextEdit
                         {
-                            NewText = file.Uses.Any() ? $"  - {classe.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {classe.ModelFile.Name}{Environment.NewLine}",
+                            NewText = file.Uses.Count > 0 ? $"  - {classe.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {classe.ModelFile.Name}{Environment.NewLine}",
                             Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
                         })
                         : null
@@ -168,10 +175,10 @@ public class CompletionHandler : CompletionHandlerBase
     private CompletionList CompleteDataFlow(CompletionParams request, ModelFile file, int useIndex)
     {
         var searchText = GetSearchText(request);
-        var availableDataFlows = new HashSet<DataFlow>(_modelStore.GetAvailableDataFlows(file));
+        var availableDataFlows = new HashSet<DataFlow>(modelStore.GetAvailableDataFlows(file));
 
-        return new CompletionList(
-            _modelStore.DataFlows
+        return new(
+            modelStore.DataFlows
                 .Where(dataFlow => dataFlow.Name.ToLower().ShouldMatch(searchText))
                 .OrderBy(dataFlow => dataFlow.Name)
                 .Select(dataFlow => new CompletionItem
@@ -180,15 +187,15 @@ public class CompletionHandler : CompletionHandlerBase
                     Label = availableDataFlows.Contains(dataFlow) ? dataFlow.Name : $"{dataFlow.Name} - ({dataFlow.ModelFile.Name})",
                     InsertText = dataFlow.Name,
                     SortText = availableDataFlows.Contains(dataFlow) ? "0000" + dataFlow.Name : dataFlow.Name,
-                    TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
+                    TextEdit = new(new TextEdit
                     {
                         NewText = dataFlow.Name,
                         Range = GetCompleteRange(searchText, request)
                     }),
                     AdditionalTextEdits = !availableDataFlows.Contains(dataFlow) ?
-                        new TextEditContainer(new TextEdit
+                        new(new TextEdit
                         {
-                            NewText = file.Uses.Any() ? $"  - {dataFlow.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {dataFlow.ModelFile.Name}{Environment.NewLine}",
+                            NewText = file.Uses.Count > 0 ? $"  - {dataFlow.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {dataFlow.ModelFile.Name}{Environment.NewLine}",
                             Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
                         })
                         : null
@@ -198,10 +205,10 @@ public class CompletionHandler : CompletionHandlerBase
     private CompletionList CompleteDecorator(CompletionParams request, ModelFile file, int useIndex)
     {
         var searchText = GetSearchText(request);
-        var availableDecorators = new HashSet<Decorator>(_modelStore.GetAvailableDecorators(file));
+        var availableDecorators = new HashSet<Decorator>(modelStore.GetAvailableDecorators(file));
 
-        return new CompletionList(
-            _modelStore.Decorators
+        return new(
+            modelStore.Decorators
                 .Where(decorator => decorator.Name.ToLower().ShouldMatch(searchText))
                 .OrderBy(decorator => decorator.Name)
                 .Select(decorator => new CompletionItem
@@ -214,15 +221,15 @@ public class CompletionHandler : CompletionHandlerBase
                     },
                     InsertText = decorator.Name,
                     SortText = availableDecorators.Contains(decorator) ? "0000" + decorator.Name : decorator.Name,
-                    TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
+                    TextEdit = new(new TextEdit
                     {
                         NewText = decorator.Name,
                         Range = GetCompleteRange(searchText, request)
                     }),
                     AdditionalTextEdits = !availableDecorators.Contains(decorator) ?
-                        new TextEditContainer(new TextEdit
+                        new(new TextEdit
                         {
-                            NewText = file.Uses.Any() ? $"  - {decorator.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {decorator.ModelFile.Name}{Environment.NewLine}",
+                            NewText = file.Uses.Count > 0 ? $"  - {decorator.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {decorator.ModelFile.Name}{Environment.NewLine}",
                             Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
                         })
                         : null
@@ -232,15 +239,15 @@ public class CompletionHandler : CompletionHandlerBase
     private CompletionList CompleteDomain(CompletionParams request)
     {
         var searchText = GetSearchText(request);
-        return new CompletionList(
-            _modelStore.Domains
+        return new(
+            modelStore.Domains
                 .Where(domain => domain.Key.ToLower().ShouldMatch(searchText))
                 .OrderBy(domain => domain.Key)
                 .Select(domain => new CompletionItem
                 {
                     Kind = CompletionItemKind.EnumMember,
                     Label = domain.Key,
-                    TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
+                    TextEdit = new(new TextEdit
                     {
                         NewText = domain.Key,
                         Range = GetCompleteRange(searchText, request)
@@ -248,11 +255,44 @@ public class CompletionHandler : CompletionHandlerBase
                 }));
     }
 
+    private CompletionList CompleteEndpoint(CompletionParams request, ModelFile file, int useIndex)
+    {
+        var searchText = GetSearchText(request);
+        var availableEndpoints = new HashSet<Endpoint>(modelStore.GetAvailableEndpoints(file));
+
+        return new(
+            modelStore.Endpoints
+                .Where(endpoint => endpoint.Name.ToLower().ShouldMatch(searchText))
+                .Select(endpoint => new CompletionItem
+                {
+                    Kind = CompletionItemKind.Class,
+                    Label = availableEndpoints.Contains(endpoint) ? endpoint.Name : $"{endpoint.Name} - ({endpoint.ModelFile.Name})",
+                    LabelDetails = new()
+                    {
+                        Description = $"{endpoint.Description}"
+                    },
+                    InsertText = endpoint.Name,
+                    SortText = availableEndpoints.Contains(endpoint) ? "0000" + endpoint.Name : endpoint.Name,
+                    TextEdit = new(new TextEdit
+                    {
+                        NewText = endpoint.Name,
+                        Range = GetCompleteRange(searchText, request)
+                    }),
+                    AdditionalTextEdits = !availableEndpoints.Contains(endpoint) ?
+                        new(new TextEdit
+                        {
+                            NewText = file.Uses.Count > 0 ? $"  - {endpoint.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {endpoint.ModelFile.Name}{Environment.NewLine}",
+                            Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
+                        })
+                        : null
+                }));
+    }
+
     private CompletionList CompleteFile(CompletionParams request, ModelFile file)
     {
         var searchText = GetSearchText(request);
-        return new CompletionList(
-            _modelStore.Files.Select(f => f.Name)
+        return new(
+            modelStore.Files.Select(f => f.Name)
                 .Except(file.Uses.Select(u => u.ReferenceName))
                 .Where(name => name != file.Name && name.ToLower().ShouldMatch(searchText))
                 .Select(name => new CompletionItem
@@ -271,16 +311,30 @@ public class CompletionHandler : CompletionHandlerBase
     {
         // Alias, propriété d'association ou propriété de flux de données
         string? className = null;
+        string? endpointName = null;
+        string? decoratorName = null;
         var requestLine = request.Position.Line;
         var isListElement = currentLine.TrimStart().StartsWith('-');
         var isInlineList = currentLine.Contains(':') && currentLine.Split(':')[1].TrimStart().StartsWith('[');
-        var objectRange = isListElement ? GetParentRange(text, requestLine) : GetObjectRange(text, requestLine);
-        var objectLines = text[objectRange.Start..objectRange.End];
+        var (start, end) = isListElement ? GetParentRange(text, requestLine) : GetObjectRange(text, requestLine);
+        var objectLines = text[start..end];
         var searchText = GetSearchText(request);
-        var cl = objectLines.ToList().Find(o => o.Contains("class: ") || o.Contains("association: "));
+        var cl = objectLines.FirstOrDefault(o => o.Contains("class: ") || o.Contains("association: "));
         if (cl != null)
         {
             className = cl.Split(": ")[1].Trim();
+        }
+
+        var ep = objectLines.FirstOrDefault(o => o.Contains("endpoint: "));
+        if (ep != null)
+        {
+            endpointName = ep.Split(": ")[1].Trim();
+        }
+
+        var dc = objectLines.FirstOrDefault(o => o.Contains("decorator: "));
+        if (dc != null)
+        {
+            decoratorName = dc.Split(": ")[1].Trim();
         }
 
         var currentKey = GetCurrentKey(request);
@@ -292,13 +346,34 @@ public class CompletionHandler : CompletionHandlerBase
         {
             "include", "exclude", "property", "activeProperty"
         };
+
         if (!string.IsNullOrEmpty(className) && ((isListElement || isInlineList) && propertyListKeyWords.Contains(currentKey.Key)
-                                || propertyKeyWords.Contains(currentKey.Key)))
+            || propertyKeyWords.Contains(currentKey.Key)))
         {
-            var referencedClasses = _modelStore.GetReferencedClasses(file);
-            if (referencedClasses.TryGetValue(className, out var aliasedClass))
+            var referencedClasses = modelStore.GetReferencedClasses(file);
+            if (referencedClasses.TryGetValue(className, out var referencedClass))
             {
-                return CompleteProperty(request, aliasedClass, false);
+                return CompleteProperty(request, referencedClass, false);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(endpointName) && ((isListElement || isInlineList) && propertyListKeyWords.Contains(currentKey.Key)
+            || propertyKeyWords.Contains(currentKey.Key)))
+        {
+            var referencedEndpoints = modelStore.GetReferencedEndpoints(file);
+            if (referencedEndpoints.TryGetValue(endpointName, out var referencedEndpoint))
+            {
+                return CompleteProperty(request, referencedEndpoint, false);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(decoratorName) && ((isListElement || isInlineList) && propertyListKeyWords.Contains(currentKey.Key)
+            || propertyKeyWords.Contains(currentKey.Key)))
+        {
+            var referencedDecorators = modelStore.GetReferencedDecorators(file);
+            if (referencedDecorators.TryGetValue(decoratorName, out var referencedDecorator))
+            {
+                return CompleteProperty(request, referencedDecorator, false);
             }
         }
 
@@ -345,12 +420,12 @@ public class CompletionHandler : CompletionHandlerBase
                         var isKey = textBefore.LastIndexOf(':') == -1 || textBefore.LastIndexOf(':') < Math.Max(textBefore.LastIndexOf(','), textBefore.LastIndexOf('{'));
                         if (!isKey)
                         {
-                            var parentObjectRange = GetObjectRange(text, parentKey.Line);
-                            var parentObjectLines = text[parentObjectRange.Start..(parentObjectRange.End + 1)];
+                            var (startP, endP) = GetObjectRange(text, parentKey.Line);
+                            var parentObjectLines = text[startP..(endP + 1)];
                             className = parentObjectLines.First(l => l.Contains("class: ")).TrimStart().Split(':')[1].Trim();
                         }
 
-                        var referencedClasses = _modelStore.GetReferencedClasses(file);
+                        var referencedClasses = modelStore.GetReferencedClasses(file);
                         if (referencedClasses.TryGetValue(className, out var aliasedClass))
                         {
                             classe = aliasedClass;
@@ -378,11 +453,11 @@ public class CompletionHandler : CompletionHandlerBase
         return new CompletionList();
     }
 
-    private CompletionList CompleteProperty(CompletionParams request, Class classe, bool includeExtends)
+    private CompletionList CompleteProperty(CompletionParams request, IPropertyContainer container, bool includeExtends)
     {
-        var properties = includeExtends ? classe.ExtendedProperties : classe.Properties;
+        var properties = includeExtends && container is Class classe ? classe.ExtendedProperties : container.Properties;
         var searchText = GetSearchText(request);
-        return new CompletionList(properties
+        return new(properties
             .Where(f => f.Name.ShouldMatch(searchText))
             .Select(f => new CompletionItem
             {
@@ -403,36 +478,36 @@ public class CompletionHandler : CompletionHandlerBase
     private CompletionList CompleteTag(CompletionParams request, ModelFile file)
     {
         var searchText = GetSearchText(request);
-        return new CompletionList(
-            _modelStore.Files.SelectMany(f => f.Tags)
-            .Distinct()
-            .Where(t => !file.Tags.Contains(t))
-            .Where(tag => tag.ShouldMatch(searchText))
-            .Select(tag => new CompletionItem
-            {
-                Kind = CompletionItemKind.Keyword,
-                Label = tag,
-                TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
+        return new(
+            modelStore.Files.SelectMany(f => f.Tags)
+                .Distinct()
+                .Where(t => !file.Tags.Contains(t))
+                .Where(tag => tag.ShouldMatch(searchText))
+                .Select(tag => new CompletionItem
                 {
-                    NewText = tag,
-                    Range = GetCompleteRange(searchText, request)
-                })
-            }));
+                    Kind = CompletionItemKind.Keyword,
+                    Label = tag,
+                    TextEdit = new TextEditOrInsertReplaceEdit(new TextEdit
+                    {
+                        NewText = tag,
+                        Range = GetCompleteRange(searchText, request)
+                    })
+                }));
     }
 
     private OmniSharp.Extensions.LanguageServer.Protocol.Models.Range GetCompleteRange(string searchText, CompletionParams request)
     {
-        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var text = fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var currentLine = text.ElementAtOrDefault(request.Position.Line)!;
         int start, end = currentLine.Length;
-        if (currentLine.Length > 0 && Separators.Exists(currentLine.Contains))
+        if (currentLine.Length > 0 && Array.Exists(Separators, currentLine.Contains))
         {
             var left = currentLine[..request.Position.Character];
-            start = left.LastIndexOfAny(Separators.ToArray()) + 1;
+            start = left.LastIndexOfAny(Separators) + 1;
             var right = currentLine[request.Position.Character..];
-            if (right.IndexOfAny(Separators.ToArray()) >= 0)
+            if (right.IndexOfAny(Separators) >= 0)
             {
-                end = request.Position.Character + right.IndexOfAny(Separators.ToArray());
+                end = request.Position.Character + right.IndexOfAny(Separators);
             }
         }
         else
@@ -441,15 +516,15 @@ public class CompletionHandler : CompletionHandlerBase
         }
 
         return new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(
-                            request.Position.Line,
-                            start,
-                            request.Position.Line,
-                            end);
+            request.Position.Line,
+            start,
+            request.Position.Line,
+            end);
     }
 
     private (string Key, int Line, int End, bool IsKey) GetCurrentKey(CompletionParams request)
     {
-        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var text = fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         return GetCurrentKey(text, request.Position.Line, request.Position.Character);
     }
 
@@ -553,7 +628,7 @@ public class CompletionHandler : CompletionHandlerBase
 
     private (string Key, int Line, int End, bool IsKey) GetParentKey(CompletionParams request)
     {
-        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var text = fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         return GetParentKey(text, request.Position.Line, request.Position.Character);
     }
 
@@ -602,7 +677,7 @@ public class CompletionHandler : CompletionHandlerBase
 
     private (string Object, int Line) GetRootObject(CompletionParams request)
     {
-        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var text = fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var currentLine = text.ElementAtOrDefault(request.Position.Line);
         var requestLine = request.Position.Line;
         var rootLine = currentLine ?? string.Empty;
@@ -628,29 +703,15 @@ public class CompletionHandler : CompletionHandlerBase
 
     private string GetSearchText(CompletionParams request)
     {
-        var text = _fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
+        var text = fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var currentLine = text.ElementAtOrDefault(request.Position.Line)!;
         int start = 0, end = request.Position.Character;
         var left = currentLine[..end];
-        if (currentLine.Length > 0 && Separators.Exists(currentLine.Contains))
+        if (currentLine.Length > 0 && Array.Exists(Separators, currentLine.Contains))
         {
-            start = Math.Min(left.LastIndexOfAny(Separators.ToArray()) + 1, end);
+            start = Math.Min(left.LastIndexOfAny(Separators) + 1, end);
         }
 
         return currentLine[start..end].Trim();
-    }
-
-    private int GetUseIndex(ModelFile file, string[] text)
-    {
-        if (file.Uses.Any())
-        {
-            return file.Uses.Last().ToRange()!.Start.Line + 1;
-        }
-        else if (text.First().StartsWith('-'))
-        {
-            return 1;
-        }
-
-        return 0;
     }
 }

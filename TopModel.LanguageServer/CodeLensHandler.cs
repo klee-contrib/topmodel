@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
+﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
@@ -7,19 +6,8 @@ using TopModel.Core;
 
 namespace TopModel.LanguageServer;
 
-public class CodeLensHandler : CodeLensHandlerBase
+public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config) : CodeLensHandlerBase
 {
-    private readonly ModelConfig _config;
-    private readonly ILanguageServerFacade _facade;
-    private readonly ModelStore _modelStore;
-
-    public CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
-    {
-        _config = config;
-        _facade = facade;
-        _modelStore = modelStore;
-    }
-
     public override Task<CodeLens> Handle(CodeLens request, CancellationToken cancellationToken)
     {
         return Task.FromResult(request);
@@ -27,21 +15,21 @@ public class CodeLensHandler : CodeLensHandlerBase
 
     public override Task<CodeLensContainer?> Handle(CodeLensParams request, CancellationToken cancellationToken)
     {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            return Task.FromResult<CodeLensContainer?>(new CodeLensContainer(file.Classes.Select(clazz =>
+            return Task.FromResult<CodeLensContainer?>(new(file.Classes.Select(clazz =>
                 new CodeLens
                 {
                     Range = clazz.GetLocation().ToRange()!,
                     Command = new Command()
                     {
-                        Title = $"{_modelStore.GetClassReferences(clazz).Count()} references",
+                        Title = $"{modelStore.GetClassReferences(clazz).Count()} references",
                         Name = "topmodel.findRef",
-                        Arguments = new JArray
-                        {
+                        Arguments =
+                        [
                             clazz.GetLocation()!.Start.Line - 1
-                        }
+                        ]
                     }
                 })
                 .Concat(file.Domains.Select(domain => new CodeLens
@@ -49,12 +37,12 @@ public class CodeLensHandler : CodeLensHandlerBase
                     Range = domain.GetLocation().ToRange()!,
                     Command = new Command()
                     {
-                        Title = $"{_modelStore.GetDomainReferences(domain).Count()} references",
+                        Title = $"{modelStore.GetDomainReferences(domain).Count()} references",
                         Name = "topmodel.findRef",
-                        Arguments = new JArray
-                        {
+                        Arguments =
+                        [
                             domain.GetLocation()!.Start.Line - 1
-                        }
+                        ]
                     }
                 }))
                 .Concat(file.Decorators.Select(decorator => new CodeLens
@@ -62,12 +50,12 @@ public class CodeLensHandler : CodeLensHandlerBase
                     Range = decorator.GetLocation().ToRange()!,
                     Command = new Command()
                     {
-                        Title = $"{_modelStore.GetDecoratorReferences(decorator).Count()} references",
+                        Title = $"{modelStore.GetDecoratorReferences(decorator).Count()} references",
                         Name = "topmodel.findRef",
-                        Arguments = new JArray
-                        {
+                        Arguments =
+                        [
                             decorator.GetLocation()!.Start.Line - 1
-                        }
+                        ]
                     }
                 })
                 .Concat(file.DataFlows.Select(dataFlow => new CodeLens
@@ -75,14 +63,27 @@ public class CodeLensHandler : CodeLensHandlerBase
                     Range = dataFlow.GetLocation().ToRange()!,
                     Command = new Command()
                     {
-                        Title = $"{_modelStore.GetDataFlowReferences(dataFlow).Count()} references",
+                        Title = $"{modelStore.GetDataFlowReferences(dataFlow).Count()} references",
                         Name = "topmodel.findRef",
-                        Arguments = new JArray
-                        {
+                        Arguments =
+                        [
                             dataFlow.GetLocation()!.Start.Line - 1
-                        }
+                        ]
                     }
-                })))));
+                })))
+                .Concat(file.Endpoints.Select(endpoint => new CodeLens
+                {
+                    Range = endpoint.GetLocation().ToRange()!,
+                    Command = new()
+                    {
+                        Title = $"{modelStore.GetEndpointReferences(endpoint).Count()} references",
+                        Name = "topmodel.findRef",
+                        Arguments =
+                        [
+                            endpoint.GetLocation()!.Start.Line - 1
+                        ]
+                    }
+                }))));
         }
 
         return Task.FromResult<CodeLensContainer?>(new());
@@ -92,7 +93,7 @@ public class CodeLensHandler : CodeLensHandlerBase
     {
         return new CodeLensRegistrationOptions
         {
-            DocumentSelector = _config.GetDocumentSelector()
+            DocumentSelector = config.GetDocumentSelector()
         };
     }
 }

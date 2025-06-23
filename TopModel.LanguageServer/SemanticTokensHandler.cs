@@ -7,24 +7,13 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer;
 
-public class SemanticTokensHandler : SemanticTokensHandlerBase
+public class SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config) : SemanticTokensHandlerBase
 {
-    private readonly ModelConfig _config;
-    private readonly ILanguageServerFacade _facade;
-    private readonly ModelStore _modelStore;
-
-    public SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
-    {
-        _config = config;
-        _facade = facade;
-        _modelStore = modelStore;
-    }
-
     protected override SemanticTokensRegistrationOptions CreateRegistrationOptions(SemanticTokensCapability capability, ClientCapabilities clientCapabilities)
     {
         return new SemanticTokensRegistrationOptions
         {
-            DocumentSelector = _config.GetDocumentSelector(),
+            DocumentSelector = config.GetDocumentSelector(),
             Legend = new()
             {
                 TokenModifiers = capability.TokenModifiers,
@@ -45,12 +34,12 @@ public class SemanticTokensHandler : SemanticTokensHandlerBase
 
     protected override Task Tokenize(SemanticTokensBuilder builder, ITextDocumentIdentifierParams identifier, CancellationToken cancellationToken)
     {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == identifier.TextDocument.Uri.GetFileSystemPath());
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == identifier.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
             foreach (var reference in file.Uses)
             {
-                if (_modelStore.Files.Any(f => f.Name == reference.ReferenceName))
+                if (modelStore.Files.Any(f => f.Name == reference.ReferenceName))
                 {
                     builder.Push(reference.ToRange()!, SemanticTokenType.Parameter, SemanticTokenModifier.Definition);
                 }
@@ -60,7 +49,7 @@ public class SemanticTokensHandler : SemanticTokensHandlerBase
             {
                 var type = reference switch
                 {
-                    ClassReference or DecoratorReference => SemanticTokenType.Class,
+                    ClassReference or DecoratorReference or EndpointReference => SemanticTokenType.Class,
                     DataFlowReference => SemanticTokenType.Operator,
                     DomainReference => SemanticTokenType.EnumMember,
                     Reference r when r.ReferenceName == "false" => SemanticTokenType.Keyword,

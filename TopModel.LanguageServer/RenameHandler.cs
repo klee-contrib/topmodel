@@ -7,32 +7,21 @@ using TopModel.Core.FileModel;
 
 namespace TopModel.LanguageServer;
 
-public class RenameHandler : RenameHandlerBase
+public class RenameHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config) : RenameHandlerBase
 {
-    private readonly ModelConfig _config;
-    private readonly ILanguageServerFacade _facade;
-    private readonly ModelStore _modelStore;
-
-    public RenameHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
-    {
-        _config = config;
-        _facade = facade;
-        _modelStore = modelStore;
-    }
-
     public override Task<WorkspaceEdit?> Handle(RenameParams request, CancellationToken cancellationToken)
     {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            var references = _modelStore.GetReferencesForPositionInFile(request.Position, file, true);
-            if (references != null && references.All(r => r.Reference.ReferenceName == references.Objet.GetName() || r.Reference is ClassReference))
+            var references = modelStore.GetReferencesForPositionInFile(request.Position, file, true);
+            if (references != null && references.All(r => r.Reference.ReferenceName == references.Objet.GetName() || r.Reference is ClassReference || r.Reference is EndpointReference))
             {
                 return Task.FromResult<WorkspaceEdit?>(new WorkspaceEdit
                 {
                     Changes = references
                         .Where(r => r.Reference.ReferenceName == references.Objet.GetName())
-                        .Select(r => new Location { Uri = new Uri(_facade.GetFilePath(r.File)), Range = r.Reference.ToRange()! })
+                        .Select(r => new Location { Uri = new Uri(facade.GetFilePath(r.File)), Range = r.Reference.ToRange()! })
                         .Select(c => new
                         {
                             c.Uri,
@@ -55,7 +44,7 @@ public class RenameHandler : RenameHandlerBase
     {
         return new RenameRegistrationOptions
         {
-            DocumentSelector = _config.GetDocumentSelector()
+            DocumentSelector = config.GetDocumentSelector()
         };
     }
 }

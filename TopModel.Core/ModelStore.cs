@@ -54,6 +54,11 @@ public class ModelStore
 
     public IEnumerable<Decorator> Decorators => _modelFiles.SelectMany(mf => mf.Value.Decorators).Distinct();
 
+    public IEnumerable<IProperty> Properties => Classes.SelectMany(c => c.Properties)
+        .Concat(Classes.SelectMany(c => c.FromMapperProperties))
+        .Concat(Decorators.SelectMany(c => c.Properties))
+        .Concat(Endpoints.SelectMany(e => e.Properties));
+
     public IEnumerable<ModelFile> Files => _modelFiles.Values;
 
     public IEnumerable<Class> GetAvailableClasses(ModelFile file)
@@ -72,12 +77,36 @@ public class ModelStore
         return GetDependencies(file).SelectMany(m => m.Decorators).Concat(file.Decorators);
     }
 
+    public IEnumerable<Endpoint> GetAvailableEndpoints(ModelFile file)
+    {
+        return GetDependencies(file).SelectMany(m => m.Endpoints).Concat(file.Endpoints);
+    }
+
     public Dictionary<string, Class> GetReferencedClasses(ModelFile modelFile)
     {
-        var dependencies = GetDependencies(modelFile).ToList();
-        return dependencies
+        return GetDependencies(modelFile)
             .SelectMany(m => m.Classes)
             .Concat(modelFile.Classes)
+            .Distinct()
+            .GroupBy(c => c.Name.Value)
+            .ToDictionary(c => c.Key, c => c.First());
+    }
+
+    public Dictionary<string, Decorator> GetReferencedDecorators(ModelFile modelFile)
+    {
+        return GetDependencies(modelFile)
+            .SelectMany(m => m.Decorators)
+            .Concat(modelFile.Decorators)
+            .Distinct()
+            .GroupBy(c => c.Name.Value)
+            .ToDictionary(c => c.Key, c => c.First());
+    }
+
+    public Dictionary<string, Endpoint> GetReferencedEndpoints(ModelFile modelFile)
+    {
+        return GetDependencies(modelFile)
+            .SelectMany(m => m.Endpoints)
+            .Concat(modelFile.Endpoints)
             .Distinct()
             .GroupBy(c => c.Name.Value)
             .ToDictionary(c => c.Key, c => c.First());
@@ -91,7 +120,7 @@ public class ModelStore
         using var scope = _logger.BeginScope(_storeConfig!);
 
         var watchers = _modelWatchers.Select(mw => mw.FullName.Split("@")).GroupBy(split => split[0]).Select(grp => $"{grp.Key}@{{{string.Join(",", grp.Select(split => split[1]))}}}");
-        if (watchers.Count() > 0)
+        if (watchers.Any())
         {
             _logger.LogInformation($"Watchers enregistrés : \n                          - {string.Join("\n                          - ", watchers.OrderBy(x => x))}");
         }
@@ -437,6 +466,20 @@ public class ModelStore
             .Where(c => !duplicateClasses.Select(c => c.Name.Value).Contains(c.Name.Value))
             .ToDictionary(c => c.Name.Value, c => c);
 
+        var referencedEndpointsRaw = dependencies
+            .SelectMany(m => m.Endpoints)
+            .Concat(modelFile.Endpoints)
+            .Distinct();
+
+        var duplicateEndpoints = referencedEndpointsRaw
+            .GroupBy(c => c.Name.Value)
+            .Where(g => g.Count() > 1)
+            .Select(g => g.OrderByDescending(c => (c.ModelFile == modelFile ? 1_000_000 : 0) + c.Name.Location.Start.Line).First());
+
+        var referencedEndpoints = referencedEndpointsRaw
+            .Where(c => !duplicateEndpoints.Select(c => c.Name.Value).Contains(c.Name.Value))
+            .ToDictionary(c => (string)c.Name, c => c);
+
         var referencedDecorators = dependencies
             .SelectMany(m => m.Decorators)
             .Concat(modelFile.Decorators)
@@ -468,7 +511,7 @@ public class ModelStore
         var domainResolver = new DomainResolver(modelFile, Domains, Converters);
         var endpointResolver = new EndpointResolver(modelFile);
         var mapperResolver = new MapperResolver(modelFile, referencedClasses, Converters, _config.UseLegacyAssociationCompositionMappers);
-        var propertyResolver = new PropertyResolver(modelFile, Domains, referencedClasses);
+        var propertyResolver = new PropertyResolver(modelFile, Domains, referencedClasses, referencedEndpoints, referencedDecorators);
 
         foreach (var error in domainResolver.ResolveAsDomains())
         {
