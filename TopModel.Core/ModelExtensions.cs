@@ -98,6 +98,7 @@ public static class ModelExtensions
             Keyword keyword => keyword.ModelFile,
             ClassValue classValue => classValue.Class.ModelFile,
             TemplateParameter templateParameter => templateParameter.Domain?.ModelFile ?? templateParameter.Decorator!.ModelFile,
+            Variable => new ModelFile { Name = string.Empty },
             _ => throw new ArgumentException("Type d'objet non supporté.")
         };
     }

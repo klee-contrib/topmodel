@@ -5,15 +5,8 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class ConverterLoader : ILoader<Converter>
+public class ConverterLoader(FileChecker fileChecker) : ILoader<Converter>
 {
-    private readonly FileChecker _fileChecker;
-
-    public ConverterLoader(FileChecker fileChecker)
-    {
-        _fileChecker = fileChecker;
-    }
-
     /// <inheritdoc cref="ILoader{T}.Load" />
     public Converter Load(Parser parser)
     {
@@ -40,7 +33,7 @@ public class ConverterLoader : ILoader<Converter>
                     });
                     break;
                 default:
-                    converter.Implementations[prop.Value] = _fileChecker.Deserialize<ConverterImplementation>(parser);
+                    converter.Implementations[prop.Value] = fileChecker.Deserialize<ConverterImplementation>(parser);
                     break;
             }
         });

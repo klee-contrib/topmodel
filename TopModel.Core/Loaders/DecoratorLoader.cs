@@ -4,17 +4,8 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class DecoratorLoader : ILoader<Decorator>
+public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader<Decorator>
 {
-    private readonly FileChecker _fileChecker;
-    private readonly PropertyLoader _propertyLoader;
-
-    public DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoader)
-    {
-        _fileChecker = fileChecker;
-        _propertyLoader = propertyLoader;
-    }
-
     /// <inheritdoc cref="ILoader{T}.Load" />
     public Decorator Load(Parser parser)
     {
@@ -27,7 +18,7 @@ public class DecoratorLoader : ILoader<Decorator>
             switch (prop.Value)
             {
                 case "name":
-                    decorator.Name = new LocatedString(value);
+                    decorator.Name = new LocatedString(value!);
                     break;
                 case "description":
                     decorator.Description = value!.Value;
@@ -38,11 +29,11 @@ public class DecoratorLoader : ILoader<Decorator>
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        decorator.Properties.Add(_propertyLoader.Load(parser));
+                        decorator.Properties.Add(propertyLoader.Load(parser));
                     });
                     break;
                 case "parameters":
-                    decorator.TemplateParameters = _fileChecker.Deserialize<IList<TemplateParameter>>(parser);
+                    decorator.TemplateParameters = fileChecker.Deserialize<IList<TemplateParameter>>(parser);
                     foreach (var param in decorator.TemplateParameters)
                     {
                         param.Decorator = decorator;
@@ -50,7 +41,7 @@ public class DecoratorLoader : ILoader<Decorator>
 
                     break;
                 default:
-                    decorator.Implementations[prop.Value] = _fileChecker.Deserialize<DecoratorImplementation>(parser);
+                    decorator.Implementations[prop.Value] = fileChecker.Deserialize<DecoratorImplementation>(parser);
                     break;
             }
         });

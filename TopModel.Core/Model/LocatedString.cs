@@ -1,40 +1,34 @@
-﻿#nullable disable
+﻿using System.Diagnostics.CodeAnalysis;
 using TopModel.Core.FileModel;
 using TopModel.Utils;
 using YamlDotNet.Core.Events;
 
 namespace TopModel.Core;
 
-#pragma warning disable KTA1200
-public class LocatedString : IComparable
+public class LocatedString(Scalar value) : IComparable
 {
-    public LocatedString(Scalar value)
-    {
-        Value = value.Value;
-        Location = new Reference(value);
-    }
+    public string Value { get; init; } = value.Value;
 
-    public string Value { get; init; }
+    internal Reference Location { get; } = new Reference(value);
 
-    internal Reference Location { get; }
-
-    public static implicit operator string(LocatedString ls)
+    [return: NotNullIfNotNull(nameof(ls))]
+    public static implicit operator string?(LocatedString? ls)
     {
         return ls?.Value;
     }
 
-    public static bool operator ==(LocatedString ls1, LocatedString ls2)
+    public static bool operator ==(LocatedString? ls1, LocatedString? ls2)
     {
         return ls1?.Value == ls2?.Value;
     }
 
-    public static bool operator !=(LocatedString ls1, LocatedString ls2)
+    public static bool operator !=(LocatedString? ls1, LocatedString? ls2)
     {
         return ls1?.Value != ls2?.Value;
     }
 
     /// <inheritdoc cref="IComparable.CompareTo" />
-    public int CompareTo(object obj)
+    public int CompareTo(object? obj)
     {
         if (obj is LocatedString ls)
         {
@@ -49,9 +43,19 @@ public class LocatedString : IComparable
         return 0;
     }
 
-    public bool EndsWith(string s)
+    public bool Contains(char value)
     {
-        return Value.EndsWith(s);
+        return Value.Contains(value);
+    }
+
+    public bool Contains(string value)
+    {
+        return Value.Contains(value);
+    }
+
+    public bool Contains(string value, StringComparison stringComparison)
+    {
+        return Value.Contains(value, stringComparison);
     }
 
     public bool EndsWith(string end, StringComparison c)
@@ -59,7 +63,12 @@ public class LocatedString : IComparable
         return Value.EndsWith(end, c);
     }
 
-    public override bool Equals(object obj)
+    public bool EndsWith(string s)
+    {
+        return Value.EndsWith(s);
+    }
+
+    public override bool Equals(object? obj)
     {
         if (obj is LocatedString ls)
         {
@@ -89,18 +98,33 @@ public class LocatedString : IComparable
         return Value.ToKebabCase();
     }
 
-    public string ToPascalCase()
-    {
-        return Value.ToPascalCase();
-    }
-
     public string ToLower()
     {
         return Value.ToLower();
     }
 
+    public string ToPascalCase()
+    {
+        return Value.ToPascalCase();
+    }
+
     public override string ToString()
     {
         return Value;
+    }
+
+    public string ToUpper()
+    {
+        return Value.ToUpper();
+    }
+
+    public string Trim()
+    {
+        return Value.Trim();
+    }
+
+    public string Trim(char value)
+    {
+        return Value.Trim(value);
     }
 }

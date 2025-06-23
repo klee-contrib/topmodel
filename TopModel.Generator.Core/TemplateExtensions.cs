@@ -22,15 +22,20 @@ internal static class TemplateExtensions
         return result;
     }
 
-    public static string ParseTemplate(this string template, Decorator d, Class c, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
+    public static string ParseTemplate(this StringWithVariables template, IProperty p, GeneratorConfigBase config, string? tag = null)
+    {
+        return template.Value.ParseTemplate(p, config, tag);
+    }
+
+    public static string ParseTemplate(this StringWithVariables template, Decorator d, Class c, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
             return template;
         }
 
-        var result = template;
-        foreach (var t in template.ExtractVariables())
+        string result = template;
+        foreach (var t in template.Value.ExtractVariables())
         {
             result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), c, d.TemplateParameters, parameterValues, config, tag));
         }
@@ -38,15 +43,15 @@ internal static class TemplateExtensions
         return result;
     }
 
-    public static string ParseTemplate(this string template, Decorator d, Endpoint e, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
+    public static string ParseTemplate(this StringWithVariables template, Decorator d, Endpoint e, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
             return template;
         }
 
-        var result = template;
-        foreach (var t in template.ExtractVariables())
+        string result = template;
+        foreach (var t in template.Value.ExtractVariables())
         {
             result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), e, d.TemplateParameters, parameterValues, config, tag));
         }
@@ -299,7 +304,7 @@ internal static class TemplateExtensions
 
         var result = (input.Split(':').First() switch
         {
-            "trigram" => c.Trigram,
+            "trigram" => c.Trigram ?? string.Empty,
             "name" => c.Name,
             "sqlName" => c.SqlName,
             "comment" => c.Comment,

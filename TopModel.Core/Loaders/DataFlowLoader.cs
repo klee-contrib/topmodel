@@ -19,7 +19,7 @@ public class DataFlowLoader : ILoader<DataFlow>
             switch (prop.Value)
             {
                 case "name":
-                    dataFlow.Name = new LocatedString(value);
+                    dataFlow.Name = new LocatedString(value!);
                     break;
                 case "target":
                     dataFlow.Target = value!.Value;

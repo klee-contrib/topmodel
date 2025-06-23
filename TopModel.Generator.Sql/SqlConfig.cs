@@ -91,11 +91,11 @@ public class SqlConfig : GeneratorConfigBase
         return false;
     }
 
-    public string GetForeignKeyConstraintName(string tableName, string trigram, string columnName)
+    public string GetForeignKeyConstraintName(string tableName, string? trigram, string columnName)
     {
         return ReplaceCustomVariables(
             ForeignKeyConstraintNamePattern,
-            new Dictionary<string, string>
+            new Dictionary<string, string?>
             {
                 [nameof(tableName)] = tableName,
                 [nameof(trigram)] = trigram,
@@ -122,7 +122,7 @@ public class SqlConfig : GeneratorConfigBase
     {
         return ReplaceCustomVariables(
             UniqueConstraintNamePattern,
-            new Dictionary<string, string>
+            new Dictionary<string, string?>
             {
                 [nameof(tableName)] = tableName,
                 [nameof(columnNames)] = columnNames,
@@ -182,7 +182,7 @@ public class SqlConfig : GeneratorConfigBase
     /// <param name="value">Chaîne templatisé sous la forme de {paramName}.</param>
     /// <param name="variables">Association entre paramName et paramValue.</param>
     /// <returns>Résultat.</returns>
-    private static string ReplaceCustomVariables(string value, Dictionary<string, string> variables)
+    private static string ReplaceCustomVariables(string value, Dictionary<string, string?> variables)
     {
         var buffer = value;
         foreach (var paramName in variables.Keys)

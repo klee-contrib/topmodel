@@ -5,17 +5,8 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class ClassLoader : ILoader<Class>
+public class ClassLoader(ModelConfig modelConfig, PropertyLoader propertyLoader) : ILoader<Class>
 {
-    private readonly ModelConfig _modelConfig;
-    private readonly PropertyLoader _propertyLoader;
-
-    public ClassLoader(ModelConfig modelConfig, PropertyLoader propertyLoader)
-    {
-        _modelConfig = modelConfig;
-        _propertyLoader = propertyLoader;
-    }
-
     /// <inheritdoc cref="ILoader{T}.Load" />
     public Class Load(Parser parser)
     {
@@ -31,10 +22,10 @@ public class ClassLoader : ILoader<Class>
                     parser.ConsumeSequence(() => classe.OwnTags.Add(parser.Consume<Scalar>().Value));
                     break;
                 case "trigram":
-                    classe.Trigram = new LocatedString(value);
+                    classe.Trigram = new LocatedString(value!);
                     break;
                 case "name":
-                    classe.Name = new LocatedString(value);
+                    classe.Name = new LocatedString(value!);
                     break;
                 case "pluralName":
                     classe.PluralName = value!.Value;
@@ -52,7 +43,7 @@ public class ClassLoader : ILoader<Class>
                     classe.Reference = value!.Value == "true";
                     break;
                 case "enum":
-                    classe.EnumOverride = new LocatedString(value);
+                    classe.EnumOverride = new LocatedString(value!);
                     break;
                 case "abstract":
                     classe.Abstract = value!.Value == "true";
@@ -98,7 +89,7 @@ public class ClassLoader : ILoader<Class>
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {
-                        classe.Properties.Add(_propertyLoader.Load(parser));
+                        classe.Properties.Add(propertyLoader.Load(parser));
                     });
                     break;
                 case "unique":
@@ -198,7 +189,7 @@ public class ClassLoader : ILoader<Class>
                                                             switch (prop.Value)
                                                             {
                                                                 case "property":
-                                                                    param.Property = _propertyLoader.Load(parser);
+                                                                    param.Property = propertyLoader.Load(parser);
                                                                     param.Property.PropertyMapping = param;
                                                                     break;
                                                                 case "target":
@@ -262,7 +253,7 @@ public class ClassLoader : ILoader<Class>
         });
 
         classe.Label ??= classe.Name;
-        classe.SqlName ??= (_modelConfig.PluralizeTableNames ? classe.PluralName : classe.Name).ToConstantCase();
+        classe.SqlName ??= (modelConfig.PluralizeTableNames ? classe.PluralName : classe.Name).ToConstantCase();
 
         foreach (var prop in classe.Properties)
         {

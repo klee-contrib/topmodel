@@ -5,34 +5,13 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class ModelFileLoader
+public class ModelFileLoader(ModelConfig config, ClassLoader classLoader, DataFlowLoader dataFlowLoader, FileChecker fileChecker, DecoratorLoader decoratorLoader, ConverterLoader converterLoader, EndpointLoader endpointLoader, DomainLoader domainLoader)
 {
-    private readonly ClassLoader _classLoader;
-    private readonly ModelConfig _config;
-    private readonly ConverterLoader _converterLoader;
-    private readonly DataFlowLoader _dataFlowLoader;
-    private readonly DecoratorLoader _decoratorLoader;
-    private readonly DomainLoader _domainLoader;
-    private readonly EndpointLoader _endpointLoader;
-    private readonly FileChecker _fileChecker;
-
-    public ModelFileLoader(ModelConfig config, ClassLoader classLoader, DataFlowLoader dataFlowLoader, FileChecker fileChecker, DecoratorLoader decoratorLoader, ConverterLoader converterLoader, EndpointLoader endpointLoader, DomainLoader domainLoader)
-    {
-        _classLoader = classLoader;
-        _config = config;
-        _converterLoader = converterLoader;
-        _dataFlowLoader = dataFlowLoader;
-        _decoratorLoader = decoratorLoader;
-        _domainLoader = domainLoader;
-        _endpointLoader = endpointLoader;
-        _fileChecker = fileChecker;
-    }
-
     public ModelFile? LoadModelFile(string filePath, string? content = null)
     {
         content ??= File.ReadAllText(filePath);
 
-        _fileChecker.CheckModelFile(filePath, content);
+        fileChecker.CheckModelFile(filePath, content);
 
         var parser = new Parser(new StringReader(content));
         parser.Consume<StreamStart>();
@@ -46,7 +25,7 @@ public class ModelFileLoader
 
         var file = new ModelFile
         {
-            Name = _config.GetFileName(filePath),
+            Name = config.GetFileName(filePath),
             Path = filePath.ToRelative(),
         };
 
@@ -57,7 +36,7 @@ public class ModelFileLoader
             switch (prop.Value)
             {
                 case "module":
-                    file.Namespace = new Namespace { App = _config.App, Module = value!.Value };
+                    file.Namespace = new Namespace { App = config.App, Module = value!.Value };
                     break;
                 case "tags":
                     parser.ConsumeSequence(() => file.Tags.Add(parser.Consume<Scalar>().Value));
@@ -99,39 +78,39 @@ public class ModelFileLoader
 
             if (scalar.Value == "domain")
             {
-                var domain = _domainLoader.Load(parser);
+                var domain = domainLoader.Load(parser);
                 domain.ModelFile = file;
                 domain.Location = new Reference(scalar);
                 file.Domains.Add(domain);
             }
             else if (scalar.Value == "decorator")
             {
-                var decorator = _decoratorLoader.Load(parser);
+                var decorator = decoratorLoader.Load(parser);
                 decorator.Location = new Reference(scalar);
                 file.Decorators.Add(decorator);
             }
             else if (scalar.Value == "converter")
             {
-                var converter = _converterLoader.Load(parser);
+                var converter = converterLoader.Load(parser);
                 converter.ModelFile = file;
                 converter.Location = new Reference(scalar);
                 file.Converters.Add(converter);
             }
             else if (scalar.Value == "class")
             {
-                var classe = _classLoader.Load(parser);
+                var classe = classLoader.Load(parser);
                 classe.Location = new Reference(scalar);
                 file.Classes.Add(classe);
             }
             else if (scalar.Value == "endpoint")
             {
-                var endpoint = _endpointLoader.Load(parser);
+                var endpoint = endpointLoader.Load(parser);
                 endpoint.Location = new Reference(scalar);
                 file.Endpoints.Add(endpoint);
             }
             else if (scalar.Value == "dataFlow")
             {
-                var dataFlow = _dataFlowLoader.Load(parser);
+                var dataFlow = dataFlowLoader.Load(parser);
                 dataFlow.ModelFile = file;
                 dataFlow.Location = new Reference(scalar);
                 file.DataFlows.Add(dataFlow);

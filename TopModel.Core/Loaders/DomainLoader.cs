@@ -6,15 +6,8 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class DomainLoader : ILoader<Domain>
+public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
 {
-    private readonly FileChecker _fileChecker;
-
-    public DomainLoader(FileChecker fileChecker)
-    {
-        _fileChecker = fileChecker;
-    }
-
     /// <inheritdoc cref="ILoader{T}.Load" />
     public Domain Load(Parser parser)
     {
@@ -27,7 +20,7 @@ public class DomainLoader : ILoader<Domain>
             switch (prop.Value)
             {
                 case "name":
-                    domain.Name = new LocatedString(value);
+                    domain.Name = new LocatedString(value!);
                     break;
                 case "label":
                     domain.Label = value!.Value;
@@ -54,7 +47,7 @@ public class DomainLoader : ILoader<Domain>
                     domain.MediaType = value!.Value;
                     break;
                 case "parameters":
-                    domain.TemplateParameters = _fileChecker.Deserialize<IList<TemplateParameter>>(parser);
+                    domain.TemplateParameters = fileChecker.Deserialize<IList<TemplateParameter>>(parser);
                     foreach (var param in domain.TemplateParameters)
                     {
                         param.Domain = domain;
@@ -69,16 +62,16 @@ public class DomainLoader : ILoader<Domain>
                         switch (prop.Value)
                         {
                             case "type":
-                                implementation.Type = parser.Consume<Scalar>().Value;
+                                implementation.Type = new(parser.Consume<Scalar>());
                                 break;
                             case "genericType":
-                                implementation.GenericType = parser.Consume<Scalar>().Value;
+                                implementation.GenericType = new(parser.Consume<Scalar>());
                                 break;
                             case "imports":
-                                implementation.Imports = _fileChecker.Deserialize<List<string>>(parser);
+                                implementation.Imports = fileChecker.Deserialize<List<StringWithVariables>>(parser);
                                 break;
                             case "annotations":
-                                implementation.Annotations = _fileChecker.Deserialize<List<TargetedText>>(parser);
+                                implementation.Annotations = fileChecker.Deserialize<List<TargetedText>>(parser);
                                 break;
                             case "values":
                                 ValueTemplate HandleValueTemplate()
@@ -92,17 +85,17 @@ public class DomainLoader : ILoader<Domain>
                                             switch (prop.Value)
                                             {
                                                 case "value":
-                                                    valueTemplate.Value = parser.Consume<Scalar>().Value;
+                                                    valueTemplate.Value = new(parser.Consume<Scalar>());
                                                     break;
                                                 case "imports":
-                                                    parser.ConsumeSequence(() => valueTemplate.Imports.Add(parser.Consume<Scalar>().Value));
+                                                    parser.ConsumeSequence(() => valueTemplate.Imports.Add(new(parser.Consume<Scalar>())));
                                                     break;
                                             }
                                         });
                                     }
                                     else
                                     {
-                                        valueTemplate.Value = parser.Consume<Scalar>().Value;
+                                        valueTemplate.Value = new(parser.Consume<Scalar>());
                                     }
 
                                     return valueTemplate;

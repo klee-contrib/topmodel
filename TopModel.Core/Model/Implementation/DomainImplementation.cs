@@ -2,22 +2,22 @@
 
 public class DomainImplementation
 {
-    public string? Type { get; set; }
+    public StringWithVariables? Type { get; set; }
 
-    public string? GenericType { get; set; }
+    public StringWithVariables? GenericType { get; set; }
 
-    public List<string> Imports { get; set; } = new List<string>();
+    public List<StringWithVariables> Imports { get; set; } = [];
 
-    public List<TargetedText> Annotations { get; set; } = new List<TargetedText>();
+    public List<TargetedText> Annotations { get; set; } = [];
 
     public IDictionary<string, ValueTemplate> ValueTemplates { get; set; } = new Dictionary<string, ValueTemplate>();
 
     public ValueTemplate? GetValueTemplate(string value)
     {
-        return ValueTemplates.ContainsKey(value)
-           ? ValueTemplates[value]
-           : ValueTemplates.ContainsKey(ValueTemplate.Default)
-               ? ValueTemplates[ValueTemplate.Default]
-                   : null;
+        return ValueTemplates.TryGetValue(value, out var v)
+           ? v
+           : ValueTemplates.TryGetValue(ValueTemplate.Default, out var v2)
+               ? v2
+               : null;
     }
 }

@@ -4,15 +4,8 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class EndpointLoader : ILoader<Endpoint>
+public class EndpointLoader(PropertyLoader propertyLoader) : ILoader<Endpoint>
 {
-    private readonly PropertyLoader _propertyLoader;
-
-    public EndpointLoader(PropertyLoader propertyLoader)
-    {
-        _propertyLoader = propertyLoader;
-    }
-
     /// <inheritdoc cref="ILoader{T}.Load" />
     public Endpoint Load(Parser parser)
     {
@@ -28,13 +21,13 @@ public class EndpointLoader : ILoader<Endpoint>
                     parser.ConsumeSequence(() => endpoint.OwnTags.Add(parser.Consume<Scalar>().Value));
                     break;
                 case "name":
-                    endpoint.Name = new LocatedString(value);
+                    endpoint.Name = new LocatedString(value!);
                     break;
                 case "method":
                     endpoint.Method = value!.Value;
                     break;
                 case "route":
-                    endpoint.Route = value!.Value;
+                    endpoint.Route = new StringWithVariables(value!);
                     break;
                 case "description":
                     endpoint.Description = value!.Value;
@@ -45,13 +38,13 @@ public class EndpointLoader : ILoader<Endpoint>
                 case "params":
                     parser.ConsumeSequence(() =>
                     {
-                        var property = _propertyLoader.Load(parser);
+                        var property = propertyLoader.Load(parser);
                         property.Endpoint = endpoint;
                         endpoint.Params.Add(property);
                     });
                     break;
                 case "returns":
-                    endpoint.Returns = _propertyLoader.Load(parser);
+                    endpoint.Returns = propertyLoader.Load(parser);
                     endpoint.Returns.Endpoint = endpoint;
                     break;
                 case "decorators":
