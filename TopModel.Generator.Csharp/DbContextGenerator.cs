@@ -228,13 +228,10 @@ public class DbContextGenerator(ILogger<DbContextGenerator> logger, IFileWriterP
                     foreach (var refProp in refValue.Value.ToList())
                     {
                         var prop = refProp.Key is AliasProperty alp ? alp.Property : refProp.Key;
-                        var ap = prop as AssociationProperty;
-
-                        var targetClass = ap != null ? ap.Association : prop.Class;
-                        var targetProp = ap != null ? ap.Property : prop;
+                        var targetClass = prop is AssociationProperty ap ? ap.Association : prop.Class;
 
                         var value = Config.GetValue(refProp.Key, Classes, refProp.Value);
-                        if (value.StartsWith(targetClass.PluralNamePascal))
+                        if (targetClass != null && value.StartsWith(targetClass.PluralNamePascal))
                         {
                             var targetNs = Config.GetNamespace(targetClass, tag);
                             var contextNsSplit = contextNs.Split('.');

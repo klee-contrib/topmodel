@@ -204,9 +204,13 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                     switch (prop)
                     {
                         case "class":
-                            aliasReference.Start = ((Scalar)next).Start;
-                            aliasReference.End = ((Scalar)next).End;
-                            aliasReference.ReferenceName = ((Scalar)next).Value;
+                            aliasReference.ClassReference = new ClassReference((Scalar)next);
+                            break;
+                        case "endpoint":
+                            aliasReference.EndpointReference = new EndpointReference((Scalar)next);
+                            break;
+                        case "decorator":
+                            aliasReference.DecoratorReference = new DecoratorReference((Scalar)next);
                             break;
                         case "include" or "property" when next is Scalar pValue:
                             aliasReference.AddInclude(pValue);
@@ -251,10 +255,10 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                     switch (prop)
                     {
                         case "prefix":
-                            alp.Prefix = value!.Value == "true" ? aliasReference.ReferenceName : value.Value == "false" ? null : value.Value;
+                            alp.Prefix = value!.Value == "true" ? aliasReference.ContainerReference.ReferenceName : value.Value == "false" ? null : value.Value;
                             break;
                         case "suffix":
-                            alp.Suffix = value!.Value == "true" ? aliasReference.ReferenceName : value.Value == "false" ? null : value.Value;
+                            alp.Suffix = value!.Value == "true" ? aliasReference.ContainerReference.ReferenceName : value.Value == "false" ? null : value.Value;
                             break;
                         case "label":
                             alp.Label = value!.Value;
