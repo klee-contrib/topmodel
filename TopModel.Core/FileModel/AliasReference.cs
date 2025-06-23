@@ -2,11 +2,19 @@
 
 namespace TopModel.Core.FileModel;
 
-public class AliasReference : ClassReference
+public class AliasReference
 {
-    public List<Reference> IncludeReferences { get; } = new();
+    public ClassReference? ClassReference { get; set; }
 
-    public List<Reference> ExcludeReferences { get; } = new();
+    public EndpointReference? EndpointReference { get; set; }
+
+    public DecoratorReference? DecoratorReference { get; set; }
+
+    public Reference ContainerReference => ClassReference ?? (EndpointReference as Reference) ?? DecoratorReference!;
+
+    public List<Reference> IncludeReferences { get; } = [];
+
+    public List<Reference> ExcludeReferences { get; } = [];
 
     public void AddExclude(Scalar scalar)
     {

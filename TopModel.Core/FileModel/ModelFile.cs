@@ -60,7 +60,9 @@ public class ModelFile
         .Concat(Properties.OfType<CompositionProperty>().SelectMany(p => p.DomainReference?.ParameterReferences.Select((pr, i) => (pr as Reference, p.Domain?.TemplateParameters.ElementAtOrDefault(i) as object)) ?? []))
         .Concat(Properties.OfType<AliasProperty>().SelectMany(p => new (Reference, object)[]
         {
-            (p.Reference, p.OriginalProperty?.Class),
+            (p.Reference?.ClassReference, p.OriginalProperty?.Class),
+            (p.Reference?.EndpointReference, p.OriginalProperty?.Endpoint),
+            (p.Reference?.DecoratorReference, p.OriginalProperty?.Decorator),
             (p.PropertyReference, p.OriginalProperty),
             (p.DomainReference, p.Domain)
         }))

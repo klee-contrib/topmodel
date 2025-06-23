@@ -7,10 +7,7 @@ public static class ModelExtensions
 {
     public static IEnumerable<(ClassReference Reference, ModelFile File)> GetClassReferences(this ModelStore modelStore, Class classe)
     {
-        return modelStore.Classes.SelectMany(c => c.Properties)
-            .Concat(modelStore.Classes.SelectMany(c => c.FromMapperProperties))
-            .Concat(modelStore.Endpoints.SelectMany(e => e.Properties))
-            .Concat(modelStore.Decorators.SelectMany(d => d.Properties))
+        return modelStore.Properties
             .Where(p =>
                 p is AliasProperty alp && alp.OriginalProperty?.Class == classe
                 || p is AssociationProperty ap && ap.Association == classe
@@ -21,7 +18,7 @@ public static class ModelExtensions
                 {
                     AssociationProperty ap => ap.Reference,
                     CompositionProperty cp => cp.Reference,
-                    AliasProperty alp => alp.Reference!,
+                    AliasProperty alp => alp.Reference!.ClassReference!,
                     _ => null! // Impossible
                 }, File: p.GetFile());
             })
@@ -42,23 +39,28 @@ public static class ModelExtensions
 
     public static IEnumerable<(DecoratorReference Reference, ModelFile File)> GetDecoratorReferences(this ModelStore modelStore, Decorator decorator)
     {
-        return modelStore.Classes.Where(c => c.Decorators.Select(d => d.Decorator).Contains(decorator))
+        return modelStore.Classes
+            .Where(c => c.Decorators.Select(d => d.Decorator).Contains(decorator))
             .Select(c => (
                 Reference: c.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
                 File: c.GetFile()))
-            .Concat(modelStore.Endpoints.Where(e => e.Decorators.Select(d => d.Decorator).Contains(decorator))
+        .Concat(modelStore.Endpoints
+            .Where(e => e.Decorators.Select(d => d.Decorator).Contains(decorator))
             .Select(e => (
                 Reference: e.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
                 File: e.GetFile())))
-            .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
+        .Concat(modelStore.Properties.OfType<AliasProperty>()
+            .Where(alp => alp.OriginalProperty?.Decorator == decorator)
+            .Select(alp => (
+                Reference: alp.Reference?.DecoratorReference!,
+                File: alp.GetFile())))
+        .Where(r => r.Reference is not null)
+        .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 
     public static IEnumerable<(DomainReference Reference, ModelFile File)> GetDomainReferences(this ModelStore modelStore, Domain domain)
     {
-        return modelStore.Classes.SelectMany(c => c.Properties)
-            .Concat(modelStore.Classes.SelectMany(c => c.FromMapperProperties))
-            .Concat(modelStore.Decorators.SelectMany(c => c.Properties))
-            .Concat(modelStore.Endpoints.SelectMany(e => e.Properties))
+        return modelStore.Properties
             .Where(p =>
                 p is RegularProperty rp && rp.Domain == domain
                 || p is AliasProperty alp && alp.DomainReference != null && alp.Domain == domain
@@ -77,6 +79,17 @@ public static class ModelExtensions
             .Concat(modelStore.Domains.Values.SelectMany(d => d.AsDomainReferences.Values.Select(adr => (Reference: adr, File: d.GetFile()))).Where(r => r.Reference.ReferenceName == domain.Name))
             .Where(l => l.Reference is not null)
             .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
+    }
+
+    public static IEnumerable<(EndpointReference Reference, ModelFile File)> GetEndpointReferences(this ModelStore modelStore, Endpoint endpoint)
+    {
+        return modelStore.Properties.OfType<AliasProperty>()
+            .Where(alp => alp.OriginalProperty?.Endpoint == endpoint)
+            .Select(alp => (
+                Reference: alp.Reference?.EndpointReference!,
+                File: alp.GetFile()))
+        .Where(r => r.Reference is not null)
+        .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 
     public static ModelFile GetFile(this object? objet)
@@ -161,7 +174,7 @@ public static class ModelExtensions
         {
             if (alp.OriginalProperty == property)
             {
-                var reference = alp.PropertyReference ?? alp.Reference;
+                var reference = alp.PropertyReference ?? alp.Reference?.ContainerReference;
                 if (reference != null)
                 {
                     yield return (reference, alp.GetFile());

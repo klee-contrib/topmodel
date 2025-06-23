@@ -20,6 +20,7 @@ public static class OmnisharpExtensions
             Domain domain => domain.Name,
             Decorator decorator => decorator.Name,
             DataFlow dataFlow => dataFlow.Name,
+            Endpoint endpoint => endpoint.Name,
             AliasProperty property => property.OriginalProperty?.Name ?? property.Name,
             IProperty property => property.Name,
             _ => null
@@ -43,6 +44,7 @@ public static class OmnisharpExtensions
             .Concat(file.Domains.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
             .Concat(file.Decorators.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
             .Concat(file.DataFlows.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
+            .Concat(file.Endpoints.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
             .Concat(file.Properties.Where(p => p.GetLocation()!.Start.Line - 1 == position.Line));
 
         var definedObject = definedObjects.Count() == 1 ? definedObjects.Single() : null;
@@ -59,6 +61,8 @@ public static class OmnisharpExtensions
                     .Concat(modelStore.GetDecoratorReferences(decorator).Select(d => (Reference: (Reference)d.Reference, d.File))),
                 DataFlow dataFlow => new[] { (Reference: dataFlow.Name.GetLocation()!, File: dataFlow.GetFile()!) }
                     .Concat(modelStore.GetDataFlowReferences(dataFlow).Select(d => (Reference: (Reference)d.Reference, d.File))),
+                Endpoint endpoint => new[] { (Reference: endpoint.Name.GetLocation()!, File: endpoint.GetFile()!) }
+                   .Concat(modelStore.GetEndpointReferences(endpoint).Select(d => (Reference: (Reference)d.Reference, d.File))),
                 IProperty property => new[] { (Reference: property.GetLocation()!, File: property.GetFile()!) }
                     .Concat(modelStore.GetPropertyReferences(property, includeTransitive).Select(d => (d.Reference, d.File))),
                 _ => null!
