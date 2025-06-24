@@ -66,6 +66,8 @@ public class CompositionProperty : IProperty
 
     public bool UseLegacyRoleName { get; init; }
 
+    public Decorator? SourceDecorator { get; set; }
+
 #nullable disable
     public ClassReference Reference { get; set; }
 
@@ -74,15 +76,16 @@ public class CompositionProperty : IProperty
 #nullable enable
     internal DomainReference? DomainReference { get; set; }
 
-    /// <inheritdoc cref="IProperty.CloneWithClassOrEndpoint" />
-    public IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null)
+    /// <inheritdoc cref="IProperty.CloneForDecorator" />
+    public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
     {
         return new CompositionProperty
         {
+            SourceDecorator = Decorator,
             Class = classe,
             Comment = Comment,
             Composition = Composition,
-            Decorator = Decorator,
+            Decorator = decorator,
             Domain = Domain,
             DomainParameters = DomainParameters,
             Endpoint = endpoint,

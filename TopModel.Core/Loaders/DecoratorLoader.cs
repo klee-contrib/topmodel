@@ -1,4 +1,5 @@
-﻿using TopModel.Core.Model.Implementation;
+﻿using TopModel.Core.FileModel;
+using TopModel.Core.Model.Implementation;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
@@ -25,6 +26,29 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                     break;
                 case "preservePropertyCasing":
                     decorator.PreservePropertyCasing = value!.Value == "true";
+                    break;
+                case "decorators":
+                    parser.ConsumeSequence(() =>
+                    {
+                        if (parser.Current is MappingStart)
+                        {
+                            parser.ConsumeMapping(prop =>
+                            {
+                                var decoratorRef = new DecoratorReference(prop);
+
+                                parser.ConsumeSequence(() =>
+                                {
+                                    decoratorRef.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
+                                });
+
+                                decorator.DecoratorReferences.Add(decoratorRef);
+                            });
+                        }
+                        else
+                        {
+                            decorator.DecoratorReferences.Add(new DecoratorReference(parser.Consume<Scalar>()));
+                        }
+                    });
                     break;
                 case "properties":
                     parser.ConsumeSequence(() =>

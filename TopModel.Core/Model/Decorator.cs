@@ -23,6 +23,8 @@ public class Decorator : IPropertyContainer
 
     public Namespace Namespace { get; set; }
 
+    public List<(Decorator Decorator, string[] Parameters)> Decorators { get; } = [];
+
     public IList<IProperty> Properties { get; } = [];
 
     public bool PreservePropertyCasing { get; set; }
@@ -48,6 +50,8 @@ public class Decorator : IPropertyContainer
                 ..i.Imports.SelectMany(a => a.Transforms)
            ])
        .Where(pr => pr.ReferenceName.IsValidTransform());
+
+    public List<DecoratorReference> DecoratorReferences { get; } = [];
 
     internal Reference Location { get; set; }
 

@@ -44,6 +44,11 @@ public static class ModelExtensions
             .Select(c => (
                 Reference: c.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
                 File: c.GetFile()))
+        .Concat(modelStore.Decorators
+            .Where(d => d.Decorators.Select(d => d.Decorator).Contains(decorator))
+            .Select(d => (
+                Reference: d.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
+                File: d.GetFile())))
         .Concat(modelStore.Endpoints
             .Where(e => e.Decorators.Select(d => d.Decorator).Contains(decorator))
             .Select(e => (

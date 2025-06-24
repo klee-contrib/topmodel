@@ -44,7 +44,7 @@ public class JavaConstructorGenerator(JpaConfig config)
                 constructor.AddParameter(parameter);
             }
 
-            if (classe.Extends != null || classe.Decorators.Any(d => Config.GetImplementation(d.Decorator)?.Extends is not null))
+            if (Config.GetClassExtends(classe) != null)
             {
                 constructor.AddBodyLine("super();");
             }
@@ -66,7 +66,7 @@ public class JavaConstructorGenerator(JpaConfig config)
             Visibility = "public",
             Comment = "No arg constructor"
         };
-        if (classe.Extends != null || classe.Decorators.Any(d => Config.GetImplementation(d.Decorator)?.Extends is not null))
+        if (Config.GetClassExtends(classe) != null)
         {
             constructor.AddBodyLine("super();");
         }

@@ -71,9 +71,8 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
     protected virtual void WriteConstuctors(JavaWriter fw, Class classe, string tag)
     {
         if (Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class)))
-            || classe.Extends != null
             || Classes.Any(c => c.Extends == classe)
-            || classe.Decorators.Any(d => Config.GetImplementation(d.Decorator)?.Extends is not null))
+            || Config.GetClassExtends(classe) != null)
         {
             ConstructorGenerator.WriteNoArgConstructor(fw, classe);
         }

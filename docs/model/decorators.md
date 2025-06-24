@@ -2,15 +2,17 @@
 
 Afin d'enrichir de manière plus personnalisée le code généré (en Java et C#), il est possible de définir des décorateurs (`decorator`). On peut y déclarer un ensemble d'interfaces implémentées, une classe étendue (hors TopModel), des annotations à ajouter.
 
-Ces décorateurs s'ajoutent ensuite à la définition d'une classe ou d'un endpoint, sous forme de liste. Les décorateurs ne sont pas automatiquement disponibles dans tous les fichiers comme les domaines, donc il faudra qu'ils soient soit importés, soit définis dans le même fichier (comme une classe).
+Ces décorateurs s'ajoutent ensuite à la définition d'une classe, d'un endpoint ou d'un autre décorateur, sous forme de liste. Les décorateurs ne sont pas automatiquement disponibles dans tous les fichiers comme les domaines, donc il faudra qu'ils soient soit importés, soit définis dans le même fichier (comme une classe).
 
 ## Propriétés
 
 Il est également possible de renseigner des propriétés sur les décorateurs. Il n'y a aucune limitation sur les propriétés que l'on peut définir dans un décorateur (on peut mettre des alias, des compositions...).
 
-Ces propriétés sont ensuite recopiées sur les classes ou les endpoints (en tant que paramètres) décorés (littéralement recopiées, il n'y a pas d'alias vers la propriété du décorateur par exemple). Ce sont par la suite des propriétés à part entière de la classe ou du endpoint, qui peuvent être référencées par la suite sans problème (par exemple dans un alias). Leur "location" est en revanche bien dans le décorateur, donc le hover + la navigation dans l'IDE pointe bien vers la déclaration dans le décorateur.
+Ces propriétés sont ensuite recopiées sur les classes, les endpoints (en tant que paramètres) ou les autres décorateurs décorés (littéralement recopiées, il n'y a pas d'alias vers la propriété du décorateur par exemple). Ce sont par la suite des propriétés à part entière de la classe, de l'endpoint, ou du décorateur, qui peuvent être référencées par la suite sans problème (par exemple dans un alias). Leur "location" est en revanche bien dans le décorateur, donc le hover + la navigation dans l'IDE pointe bien vers la déclaration dans le décorateur.
 
-Elles sont ajoutées en dernier dans la liste des propriétés de la classe ou des paramètres du décorateur (attention du coup à l'erreur de doublon de nom de propriété qui s'affichera sur la propriété du décorateur...)
+Elles sont ajoutées en dernier dans la liste des propriétés de la classe ou du décorateur, et en dernier dans les paramètres de l'endpoint (attention du coup à l'erreur de doublon de nom de propriété qui s'affichera sur la propriété du décorateur...)
+
+Lorsqu'un décorateur avec d'autres décorateurs sera appliqué sur une classe ou un endpoint, l'ensemble des propriétés, des interfaces, des annotations et des imports de toute la "hiérarchie" de décorateur sera bien pris en compte.
 
 ## Exemple pour une classe
 

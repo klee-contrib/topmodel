@@ -168,6 +168,8 @@ public class AssociationProperty : IProperty
 
     public bool PrimaryKey { get; set; }
 
+    public Decorator? SourceDecorator { get; set; }
+
     public Reference? PropertyReference { get; set; }
 
 #nullable disable
@@ -179,15 +181,16 @@ public class AssociationProperty : IProperty
 #nullable enable
 #pragma warning disable KTA1600
 
-    /// <inheritdoc cref="IProperty.CloneWithClassOrEndpoint" />
-    public IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null)
+    /// <inheritdoc cref="IProperty.CloneForDecorator" />
+    public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
     {
         return new AssociationProperty
         {
+            SourceDecorator = Decorator,
             Association = Association,
             Class = classe,
             Comment = Comment,
-            Decorator = Decorator,
+            Decorator = decorator,
             DefaultValue = DefaultValue,
             Endpoint = endpoint,
             Label = Label,

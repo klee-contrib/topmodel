@@ -149,6 +149,8 @@ public class AliasProperty : IProperty
         set => _customProperties = value;
     }
 
+    public Decorator? SourceDecorator { get; set; }
+
     public IProperty? OriginalProperty => _property;
 
     public IProperty? PersistentProperty => (Class?.IsPersistent ?? false)
@@ -181,14 +183,15 @@ public class AliasProperty : IProperty
 
     internal AliasProperty? OriginalAliasProperty { get; private set; }
 
-    /// <inheritdoc cref="IProperty.CloneWithClassOrEndpoint" />
-    public IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null)
+    /// <inheritdoc cref="IProperty.CloneForDecorator" />
+    public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
     {
         var alp = new AliasProperty
         {
+            SourceDecorator = Decorator,
             Class = classe,
             Comment = _comment!,
-            Decorator = Decorator,
+            Decorator = decorator,
             DefaultValue = _defaultValue,
             Endpoint = endpoint,
             Label = _label,
@@ -239,6 +242,7 @@ public class AliasProperty : IProperty
             PropertyReference = includeReference,
             Class = Class,
             Decorator = Decorator,
+            SourceDecorator = SourceDecorator,
             DomainReference = DomainReference,
             Endpoint = Endpoint,
             PrimaryKey = PrimaryKey,
