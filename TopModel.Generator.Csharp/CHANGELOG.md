@@ -1,3 +1,7 @@
+## 1.6.2
+
+Fix bug de génération du DbContext pour un alias de décorateur (modgen 2.8).
+
 ## 1.6.1
 
 - [`2fb8b73`](https://github.com/klee-contrib/topmodel/commit/2fb8b73ba4487b94628116d001ef2478406584da) - Fix breaking change involontaire sur les générateurs suite à modgen 2.7

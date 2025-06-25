@@ -8,6 +8,15 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.8.0
+
+- [`#473`](https://github.com/klee-contrib/topmodel/pull/473) - Alias de propriétés d'endpoint ou de décorateur
+- [`#475`](https://github.com/klee-contrib/topmodel/pull/475) - Décorateurs sur les décorateurs
+
+Ces deux évolutions permettent de généraliser les alias pour qu'on puisse également les définir vers des endpoints et des décorateurs, et de généraliser les décorateurs pour qu'ils puissent être appliqués sur un autre décorateur. Ainsi, les classes, les endpoints et les décorateurs ont tous accès aux mêmes fonctionnalités sur les propriétés qu'ils contiennent.
+
+- [`b4b89af`](https://github.com/klee-contrib/topmodel/commit/b4b89af8cf6c7ae6923b0c18c264251edb75d5ef) - Fix trigramme surchargé d'une association non pris en compte dans un alias vers cette même propriété
+
 ## 2.7.1
 
 - [`2fb8b73`](https://github.com/klee-contrib/topmodel/commit/2fb8b73ba4487b94628116d001ef2478406584da) - Fix breaking change involontaire sur les générateurs suite à modgen 2.7
