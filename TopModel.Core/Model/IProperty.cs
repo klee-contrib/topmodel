@@ -40,6 +40,8 @@ public interface IProperty
 
     Decorator Decorator { get; set; }
 
+    Decorator? SourceDecorator { get; set; }
+
     PropertyMapping PropertyMapping { get; set; }
 
     IPropertyContainer Parent => Class ?? (IPropertyContainer)Endpoint ?? (IPropertyContainer)Decorator ?? PropertyMapping;
@@ -69,16 +71,16 @@ public interface IProperty
         }
     }
 
-    IProperty ResourceProperty => Decorator != null && Parent != Decorator
-       ? Decorator.Properties.First(p => p.Name == Name).ResourceProperty
+    IProperty ResourceProperty => SourceDecorator != null
+       ? SourceDecorator.Properties.First(p => p.Name == Name).ResourceProperty
        : this is AliasProperty alp && alp.Label == alp.OriginalProperty?.Label
        ? alp.OriginalProperty!.ResourceProperty
        : this;
 
     string ResourceKey => $"{ResourceProperty.Parent.Namespace.ModuleCamel}.{ResourceProperty.Parent.NameCamel}.{ResourceProperty.NameCamel}";
 
-    IProperty CommentResourceProperty => Decorator != null && Parent != Decorator
-        ? Decorator.Properties.First(p => p.Name == Name).CommentResourceProperty
+    IProperty CommentResourceProperty => SourceDecorator != null
+        ? SourceDecorator.Properties.First(p => p.Name == Name).CommentResourceProperty
         : this is AliasProperty alp && alp.Comment == alp.OriginalProperty?.Comment
         ? alp.OriginalProperty!.CommentResourceProperty
         : this;
@@ -103,11 +105,11 @@ public interface IProperty
             return prop switch
             {
                 AssociationProperty or AliasProperty { Property: AssociationProperty } => apPk?.RawSqlName ?? string.Empty,
-                { Class.Extends: not null, PrimaryKey: true } => prop.Name[prop.Class.Name.Length..].ToConstantCase(),
+                { Class.Extends: not null, PrimaryKey: true } when prop.Name.StartsWith(prop.Class.Name) => prop.Name[prop.Class.Name.Length..].ToConstantCase(),
                 _ => prop.Name.ToConstantCase()
             };
         }
     }
 
-    IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null);
+    IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null);
 }

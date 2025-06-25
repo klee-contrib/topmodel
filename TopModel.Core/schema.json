@@ -737,6 +737,29 @@
               "type": "boolean",
               "description": "Garde les noms de propriétés tels quels lors de la génération, au lieu de les convertir dans le format du langage cible."
             },
+            "decorators": {
+              "type": "array",
+              "description": "Décorateurs du décorateur",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "description": "Nom du décorateur"
+                  },
+                  {
+                    "type": "object",
+                    "description": "Nom du décorateur",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Paramètre du décorateur"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
             "properties": {
               "type": "array",
               "description": "Liste des propriétés du décorateur.",

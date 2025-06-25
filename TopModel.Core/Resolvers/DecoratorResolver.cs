@@ -10,18 +10,34 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
     /// </summary>
     public void CopyDecoratorProperties()
     {
+        foreach (var decorator in modelFile.Decorators)
+        {
+            if (decorator.Decorators.Count > 0)
+            {
+                foreach (var prop in decorator.Properties.Where(p => p.SourceDecorator is not null).ToList())
+                {
+                    decorator.Properties.Remove(prop);
+                }
+
+                foreach (var prop in decorator.Decorators.SelectMany(d => d.Decorator.Properties))
+                {
+                    decorator.Properties.Add(prop.CloneForDecorator(decorator: decorator));
+                }
+            }
+        }
+
         foreach (var classe in modelFile.Classes)
         {
             if (classe.Decorators.Count > 0)
             {
-                foreach (var prop in classe.Properties.Where(p => p.Decorator is not null).ToList())
+                foreach (var prop in classe.Properties.Where(p => p.SourceDecorator is not null).ToList())
                 {
                     classe.Properties.Remove(prop);
                 }
 
                 foreach (var prop in classe.Decorators.SelectMany(d => d.Decorator.Properties))
                 {
-                    classe.Properties.Add(prop.CloneWithClassOrEndpoint(classe: classe));
+                    classe.Properties.Add(prop.CloneForDecorator(classe: classe));
                 }
             }
         }
@@ -30,14 +46,14 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
         {
             if (endpoint.Decorators.Count > 0)
             {
-                foreach (var prop in endpoint.Params.Where(p => p.Decorator is not null).ToList())
+                foreach (var prop in endpoint.Params.Where(p => p.SourceDecorator is not null).ToList())
                 {
                     endpoint.Params.Remove(prop);
                 }
 
                 foreach (var prop in endpoint.Decorators.SelectMany(d => d.Decorator.Properties))
                 {
-                    endpoint.Params.Add(prop.CloneWithClassOrEndpoint(endpoint: endpoint));
+                    endpoint.Params.Add(prop.CloneForDecorator(endpoint: endpoint));
                 }
             }
         }
@@ -66,6 +82,49 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
             }
         }
 
+        foreach (var decorator in modelFile.Decorators.Where(c => c.DecoratorReferences.Count > 0))
+        {
+            decorator.Decorators.Clear();
+
+            var isError = false;
+            foreach (var decoratorRef in decorator.DecoratorReferences)
+            {
+                if (!referencedDecorators.TryGetValue(decoratorRef.ReferenceName, out var targetDecorator))
+                {
+                    isError = true;
+                    yield return new ModelError(decorator, $"Le décorateur '{decoratorRef.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1008 };
+                }
+                else
+                {
+                    if (decorator.Decorators.Any(d => d.Decorator == targetDecorator))
+                    {
+                        isError = true;
+                        yield return new ModelError(decorator, $"Le décorateur '{decoratorRef.ReferenceName}' est déjà présent dans la liste des décorateurs du décorateur '{decorator}'.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1009 };
+                    }
+                    else
+                    {
+                        if (targetDecorator.Implementations.Any(impl => impl.Value.Extends != null && decorator.Implementations.TryGetValue(impl.Key, out var dImpl) && dImpl.Extends != null))
+                        {
+                            isError = true;
+                            yield return new ModelError(decorator, $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' au décorateur '{decorator}' : seul un 'extends' peut être spécifié.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1010 };
+                        }
+
+                        foreach (var error in CheckDecoratorParameters(decorator, decoratorRef, targetDecorator))
+                        {
+                            yield return error;
+                        }
+
+                        decorator.Decorators.Add((targetDecorator, decoratorRef.ParameterReferences.Select(p => p.ReferenceName).ToArray()));
+                    }
+                }
+            }
+
+            if (isError)
+            {
+                continue;
+            }
+        }
+
         foreach (var classe in modelFile.Classes.Where(c => c.DecoratorReferences.Count > 0))
         {
             classe.Decorators.Clear();
@@ -87,7 +146,7 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
                     }
                     else
                     {
-                        if (decorator.Implementations.Any(impl => impl.Value.Extends != null && (classe.Extends != null || classe.Decorators.Any(d => d.Decorator.Implementations.TryGetValue(impl.Key, out var dImpl) && dImpl.Extends != null))))
+                        if (decorator.Implementations.Concat(decorator.Decorators.SelectMany(d => d.Decorator.Implementations)).Any(impl => impl.Value.Extends != null && (classe.Extends != null || classe.Decorators.Any(d => d.Decorator.Implementations.TryGetValue(impl.Key, out var dImpl) && dImpl.Extends != null))))
                         {
                             isError = true;
                             yield return new ModelError(classe, $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à la classe '{classe}' : seul un 'extends' peut être spécifié.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1010 };

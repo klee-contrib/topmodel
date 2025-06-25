@@ -53,19 +53,22 @@ public class RegularProperty : IProperty
 
     public bool UseLegacyRoleName { get; init; }
 
+    public Decorator? SourceDecorator { get; set; }
+
 #nullable disable
     internal Reference Location { get; set; }
 #nullable enable
 #pragma warning disable KTA1600
 
-    /// <inheritdoc cref="IProperty.CloneWithClassOrEndpoint" />
-    public IProperty CloneWithClassOrEndpoint(Class? classe = null, Endpoint? endpoint = null)
+    /// <inheritdoc cref="IProperty.CloneForDecorator" />
+    public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
     {
         return new RegularProperty
         {
+            SourceDecorator = Decorator,
             Class = classe,
             Comment = Comment,
-            Decorator = Decorator,
+            Decorator = decorator,
             DefaultValue = DefaultValue,
             Domain = Domain,
             DomainParameters = DomainParameters,
