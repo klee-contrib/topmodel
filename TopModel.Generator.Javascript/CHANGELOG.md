@@ -1,3 +1,7 @@
+## 1.4.2
+
+- [`76cd1c8`](https://github.com/klee-contrib/topmodel/commit/76cd1c868e45828d729d39eeb0c859fb5b4dbb02) - [JS] Génération de fillFormData avec un for...of au lieu de data.forEach
+
 ## 1.4.1
 
 - [`2fb8b73`](https://github.com/klee-contrib/topmodel/commit/2fb8b73ba4487b94628116d001ef2478406584da) - Fix breaking change involontaire sur les générateurs suite à modgen 2.7
