@@ -23,6 +23,19 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
         return Config.GetClassFileName(classe, tag);
     }
 
+    protected IEnumerable<JavaMethod> GetGetters(Class classe, string tag)
+    {
+        foreach (var property in classe.Properties.Where(p => !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
+        {
+            var getterPrefix = Config.GetType(property) == "boolean" ? "is" : "get";
+            yield return new JavaMethod(Config.GetType(property), property.NameByClassPascal.WithPrefix(getterPrefix))
+            {
+                Comment = $"Getter for {property.NameByClassCamel}",
+                ReturnComment = $"value of {{@link {classe.GetImport(Config, tag)}#{property.NameByClassCamel} {property.NameByClassCamel}}}"
+            };
+        }
+    }
+
     protected override void HandleClass(string fileName, Class classe, string tag)
     {
         var packageName = Config.GetPackageName(classe, tag);
@@ -42,7 +55,11 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
 
         fw.WriteLine($"public interface {classe.NamePascal} {{");
 
-        WriteGetters(fw, classe, tag);
+        foreach (var getter in GetGetters(classe, tag))
+        {
+            fw.Write(1, getter);
+            fw.WriteLine();
+        }
 
         if (classe.Properties.Any(p => !p.Readonly))
         {
@@ -50,19 +67,6 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
         }
 
         fw.WriteLine("}");
-    }
-
-    protected virtual void WriteGetters(JavaWriter fw, Class classe, string tag)
-    {
-        foreach (var property in classe.Properties.Where(p => !(p is AssociationProperty apo && apo.Association.Reference && (apo.Type == AssociationType.OneToOne || apo.Type == AssociationType.ManyToOne))))
-        {
-            var getterPrefix = Config.GetType(property) == "boolean" ? "is" : "get";
-            fw.WriteLine();
-            fw.WriteDocStart(1, $"Getter for {property.NameByClassCamel}");
-            fw.WriteReturns(1, $"value of {{@link {classe.GetImport(Config, tag)}#{property.NameByClassCamel} {property.NameByClassCamel}}}");
-            fw.WriteDocEnd(1);
-            fw.WriteLine(1, @$"{Config.GetType(property)} {property.NameByClassPascal.WithPrefix(getterPrefix)}();");
-        }
     }
 
     protected virtual void WriteHydrate(JavaWriter fw, Class classe)
@@ -76,7 +80,6 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
             return;
         }
 
-        fw.WriteLine();
         fw.WriteDocStart(1, $"hydrate values of instance");
         foreach (var property in properties)
         {

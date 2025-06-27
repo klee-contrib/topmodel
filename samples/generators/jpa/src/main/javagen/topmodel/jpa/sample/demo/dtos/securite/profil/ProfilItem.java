@@ -8,7 +8,6 @@ import jakarta.annotation.Generated;
 
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface ProfilItem {
-
 	/**
 	 * Getter for id.
 	 *

@@ -1,1 +1,1 @@
-dotnet run --no-launch-profile --project ../TopModel.Generator -s
+dotnet run --no-launch-profile --project ../TopModel.Generator
