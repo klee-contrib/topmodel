@@ -273,7 +273,7 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
     /// <returns>Erreurs.</returns>
     public IEnumerable<ModelError> ResolveNonAliasProperties()
     {
-        foreach (var prop in modelFile.Properties.Where(p => p.Decorator is null || p.Class is null))
+        foreach (var prop in modelFile.Properties.Where(p => p.SourceDecorator is null))
         {
             switch (prop)
             {

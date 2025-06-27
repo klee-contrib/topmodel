@@ -189,13 +189,13 @@ public class ModelStore
                 var referenceErrors = new List<ModelError>();
 
                 var affectedFiles = _pendingUpdates.Select(pu => _modelFiles.TryGetValue(pu, out var mf) ? mf : null).Any(mf => mf?.Domains.Count > 0 || mf?.Converters.Count > 0)
-                    ? _modelFiles.Values
-                    : GetAffectedFiles(_pendingUpdates).Distinct();
+                    ? _modelFiles
+                    : GetAffectedFiles(_pendingUpdates).Distinct().ToDictionary(f => f.Name, f => f);
 
                 IList<ModelFile> sortedFiles = new List<ModelFile>(1);
                 try
                 {
-                    sortedFiles = CoreUtils.Sort(affectedFiles, f => GetDependencies(f).Where(d => affectedFiles.Any(af => af.Name == d.Name)));
+                    sortedFiles = CoreUtils.Sort(affectedFiles.Values, f => GetDependencies(f).Where(d => affectedFiles.ContainsKey(d.Name)));
                 }
 
                 // Dépendance circulaire.
@@ -213,7 +213,7 @@ public class ModelStore
 
                 Parallel.ForEach(_modelWatchers, modelWatcher =>
                 {
-                    modelWatcher.OnErrors(affectedFiles
+                    modelWatcher.OnErrors(affectedFiles.Values
                         .Select(file => (file, errors: referenceErrors.Where(e => e.File == file && !_config.NoWarn.Contains(e.ModelErrorType))))
                         .ToDictionary(i => i.file, i => i.errors));
                 });
