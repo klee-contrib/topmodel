@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.8.1
+
+- [`952b141`](https://github.com/klee-contrib/topmodel/commit/952b14168908323abdc6657f69118b440cc8d9a2) - [Core] Fix bug watch sur les décorateurs + perf du watch quand beaucoup de fichiers affectés
+
 ## 2.8.0
 
 - [`#473`](https://github.com/klee-contrib/topmodel/pull/473) - Alias de propriétés d'endpoint ou de décorateur
