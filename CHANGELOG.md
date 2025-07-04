@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.8.2
+
+- [`a48f500`](https://github.com/klee-contrib/topmodel/commit/a48f5009abebc8a3138dd5b4a4bd7a2d1c9a05ee) - Fix variables par tag non résolues dans les templates d'implémentation
+
 ## 2.8.1
 
 - [`952b141`](https://github.com/klee-contrib/topmodel/commit/952b14168908323abdc6657f69118b440cc8d9a2) - [Core] Fix bug watch sur les décorateurs + perf du watch quand beaucoup de fichiers affectés
