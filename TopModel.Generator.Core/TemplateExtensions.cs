@@ -161,7 +161,7 @@ internal static class TemplateExtensions
             "scale" => domain.Scale?.ToString() ?? string.Empty,
             "name" => domain.Name ?? string.Empty,
             "type" => config.GetImplementation(domain)?.Type ?? string.Empty,
-            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), tag: tag)
+            var i => config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}"), tag: tag)
         }).Transform(input);
     }
 
@@ -249,7 +249,7 @@ internal static class TemplateExtensions
             "resourceKey" => p.ResourceKey.ToString(),
             "commentResourceKey" => p.CommentResourceKey.ToString(),
             "defaultValue" => p.DefaultValue?.ToString() ?? string.Empty,
-            var i => i.TryResolveParameters(templateParameters, parameterValues) ?? config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: p.Parent.Namespace.Module, tag: tag)
+            var i => i.TryResolveParameters(templateParameters, parameterValues) ?? config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}"), module: p.Parent.Namespace.Module, tag: tag)
         }).Transform(input);
 
         return result;
@@ -316,7 +316,7 @@ internal static class TemplateExtensions
             "label" => c.Label ?? string.Empty,
             "pluralName" => c.PluralName ?? string.Empty,
             "module" => c.Namespace.Module ?? string.Empty,
-            var i => i.TryResolveParameters(templateParameters, parameterValues) ?? config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: c.Namespace.Module, tag: tag)
+            var i => i.TryResolveParameters(templateParameters, parameterValues) ?? config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}"), module: c.Namespace.Module, tag: tag)
         }).Transform(input);
 
         return result;
@@ -371,7 +371,7 @@ internal static class TemplateExtensions
             "route" => e.Route,
             "description" => e.Description,
             "module" => e.Namespace.Module ?? string.Empty,
-            var i => i.TryResolveParameters(templateParameters, parameterValues) ?? config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}").Trim('{', '}'), module: e.Namespace.Module, tag: tag)
+            var i => i.TryResolveParameters(templateParameters, parameterValues) ?? config.ResolveVariables(config.ResolveGlobalVariables($@"{{{i}}}"), module: e.Namespace.Module, tag: tag)
         }).Transform(input);
 
         return result;

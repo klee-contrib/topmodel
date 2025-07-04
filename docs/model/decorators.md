@@ -202,7 +202,7 @@ Dans les propriétés d'implémentation :
 - `extends`
 - `imports`
 
-Il est également possible d'utiliser n'importe quelle variable définie dans la configuration (`variable` ou `tagVariable`).
+Il est également possible d'utiliser n'importe quelle variable définie dans la configuration (dans `variables` ou `tagVariables`).
 
 Les templates des domaines des propriétés sont également valorisés.
 

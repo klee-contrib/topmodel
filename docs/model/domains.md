@@ -126,7 +126,7 @@ Dans le cadre d'une composition, il est possible d'utiliser ces variables :
 - `comment`
 - `composition.*` : permet d'accéder à toutes les variables accessibles dans les templates de classe, pour la classe qui fait l'objet de la composition
 
-Il est également possible d'utiliser n'importe quelle variable définie dans la configuration (`variable` ou `tagVariable`).
+Il est également possible d'utiliser n'importe quelle variable définie dans la configuration (dans `variables` ou `tagVariables`).
 
 Le tout dans les propriétés d'implémentation :
 
