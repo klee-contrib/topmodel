@@ -4,7 +4,7 @@
 
 version: 2.8.2
 custom:
-  ../../../TopModel.Generator.Javascript: 8202ccb51cf603ffc46cb041f7dd1329
+  ../../../TopModel.Generator.Javascript: fe827961a12d32351e61b433f3df9c29
 generatedFiles:
   - ./src/appgenerated/api/securite/profil/profil.service.ts
   - ./src/appgenerated/api/securite/utilisateur/utilisateur.service.ts

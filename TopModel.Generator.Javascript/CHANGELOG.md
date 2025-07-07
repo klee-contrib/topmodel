@@ -1,3 +1,7 @@
+## 1.4.3
+
+- [`d4a16e9`](https://github.com/klee-contrib/topmodel/commit/d4a16e9a45cede8403cbaf9d71c1e9da2f2f1983) - [JS] Fix régression fillFormData client angular
+
 ## 1.4.2
 
 - [`76cd1c8`](https://github.com/klee-contrib/topmodel/commit/76cd1c868e45828d729d39eeb0c859fb5b4dbb02) - [JS] Génération de fillFormData avec un for...of au lieu de data.forEach
