@@ -10,7 +10,7 @@ uses:
   - Petstore/Model
 ---
 endpoint:
-  name: addPet
+  name: AddPet
   method: POST
   route: pet
   description: "Add a new pet to the store"
@@ -27,7 +27,7 @@ endpoint:
     comment: Non documenté
 ---
 endpoint:
-  name: deletePet
+  name: DeletePet
   method: DELETE
   route: pet/{petId}
   description: "Deletes a pet"
@@ -38,7 +38,7 @@ endpoint:
       comment: Pet id to delete
 ---
 endpoint:
-  name: findPetsByStatus
+  name: FindPetsByStatus
   method: GET
   route: pet/findByStatus
   description: "Finds Pets by status"
@@ -47,7 +47,7 @@ endpoint:
     - alias:
         class: FindPetsByStatusStatus
         property: Value
-      name: Status
+      name: status
       comment: Status values that need to be considered for filter
   returns:
     composition: Pet
@@ -57,7 +57,7 @@ endpoint:
     comment: Non documenté
 ---
 endpoint:
-  name: findPetsByTags
+  name: FindPetsByTags
   method: GET
   route: pet/findByTags
   description: "Finds Pets by tags"
@@ -74,7 +74,7 @@ endpoint:
     comment: Non documenté
 ---
 endpoint:
-  name: getPetById
+  name: GetPetById
   method: GET
   route: pet/{petId}
   description: "Find pet by ID"
@@ -90,7 +90,7 @@ endpoint:
     comment: Non documenté
 ---
 endpoint:
-  name: updatePet
+  name: UpdatePet
   method: PUT
   route: pet
   description: "Update an existing pet"
@@ -107,7 +107,7 @@ endpoint:
     comment: Non documenté
 ---
 endpoint:
-  name: updatePetWithForm
+  name: UpdatePetWithForm
   method: POST
   route: pet/{petId}
   description: "Updates a pet in the store with form data"
@@ -126,7 +126,7 @@ endpoint:
       comment: Status of pet that needs to be updated
 ---
 endpoint:
-  name: uploadFile
+  name: UploadFile
   method: POST
   route: pet/{petId}/uploadImage
   description: "uploads an image"

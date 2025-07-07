@@ -10,7 +10,7 @@ uses:
   - Petstore/Model
 ---
 endpoint:
-  name: deleteOrder
+  name: DeleteOrder
   method: DELETE
   route: store/order/{orderId}
   description: "Delete purchase order by ID"
@@ -21,18 +21,19 @@ endpoint:
       comment: ID of the order that needs to be deleted
 ---
 endpoint:
-  name: getInventory
+  name: GetInventory
   method: GET
   route: store/inventory
   description: "Returns pet inventories by status"
   preservePropertyCasing: true
   returns:
+    composition: GetGetInventoryResponse
     name: Result
-    domain: DO_ENTIER_MAP
+    required: false
     comment: Non documenté
 ---
 endpoint:
-  name: getOrderById
+  name: GetOrderById
   method: GET
   route: store/order/{orderId}
   description: "Find purchase order by ID"
@@ -48,7 +49,7 @@ endpoint:
     comment: Non documenté
 ---
 endpoint:
-  name: placeOrder
+  name: PlaceOrder
   method: POST
   route: store/order
   description: "Place an order for a pet"

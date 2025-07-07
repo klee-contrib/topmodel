@@ -10,7 +10,7 @@ uses:
   - Petstore/Model
 ---
 endpoint:
-  name: createUser
+  name: CreateUser
   method: POST
   route: user
   description: "Create user"
@@ -22,7 +22,7 @@ endpoint:
       comment: Non documenté
 ---
 endpoint:
-  name: createUsersWithListInput
+  name: CreateUsersWithListInput
   method: POST
   route: user/createWithList
   description: "Creates list of users with given input array"
@@ -40,7 +40,7 @@ endpoint:
     comment: Non documenté
 ---
 endpoint:
-  name: deleteUser
+  name: DeleteUser
   method: DELETE
   route: user/{username}
   description: "Delete user"
@@ -51,7 +51,7 @@ endpoint:
       comment: The name that needs to be deleted
 ---
 endpoint:
-  name: getUserByName
+  name: GetUserByName
   method: GET
   route: user/{username}
   description: "Get user by user name"
@@ -67,7 +67,7 @@ endpoint:
     comment: Non documenté
 ---
 endpoint:
-  name: loginUser
+  name: LoginUser
   method: GET
   route: user/login
   description: "Logs user into the system"
@@ -86,14 +86,14 @@ endpoint:
     comment: Non documenté
 ---
 endpoint:
-  name: logoutUser
+  name: LogoutUser
   method: GET
   route: user/logout
   description: "Logs out current logged in user session"
   preservePropertyCasing: true
 ---
 endpoint:
-  name: updateUser
+  name: UpdateUser
   method: PUT
   route: user/{username}
   description: "Update user"

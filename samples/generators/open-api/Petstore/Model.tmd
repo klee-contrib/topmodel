@@ -52,6 +52,12 @@ class:
     Value2: {Value: "sold"}
 ---
 class:
+  name: GetGetInventoryResponse
+  comment: Non documenté
+  preservePropertyCasing: true
+  properties: []
+---
+class:
   name: Order
   comment: Non documenté
   preservePropertyCasing: true
