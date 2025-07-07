@@ -10,6 +10,17 @@ namespace TopModel.Utils;
 /// </summary>
 public static class ModelUtils
 {
+    /// <summary>
+    /// Applique une transformation sur chaque section (divisée par un séparateur) d'une chaîne de caractères.
+    /// </summary>
+    /// <param name="value">Le texte en entrée.</param>
+    /// <param name="transform">La transformation.</param>
+    /// <returns>Le texte en sortie.</returns>
+    public static string ApplyTransform(this string value, Func<string, string> transform)
+    {
+        return Regex.Replace(value, @"[^./\\]+", match => transform(match.Value));
+    }
+
     public static void CombinePath<T>(string directoryName, T classe, Expression<Func<T, string?>> getter)
     {
         var property = (PropertyInfo)((MemberExpression)getter.Body).Member;
@@ -98,6 +109,16 @@ public static class ModelUtils
     }
 
     /// <summary>
+    /// Met à plat un text en enlevant les séparateurs.
+    /// </summary>
+    /// <param name="text">Le texte en entrée.</param>
+    /// <returns>Le texte en sortie.</returns>
+    public static string ToFlat(this string text)
+    {
+        return Regex.Replace(text, @"[./\\]", string.Empty);
+    }
+
+    /// <summary>
     /// Convertit un text en dash-case.
     /// </summary>
     /// <param name="text">Le texte en entrée.</param>
@@ -155,6 +176,16 @@ public static class ModelUtils
         }
 
         return string.Concat(pascalCase);
+    }
+
+    /// <summary>
+    /// Remplace tous les séparateurs d'un texte par des slashs.
+    /// </summary>
+    /// <param name="text">Le texte en entrée.</param>
+    /// <returns>Le texte en sortie.</returns>
+    public static string ToPath(this string text)
+    {
+        return Regex.Replace(text, @"[./\\]", Path.DirectorySeparatorChar.ToString());
     }
 
     public static string ToRelative(this string path, string? relativeTo = null)

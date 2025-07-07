@@ -89,31 +89,31 @@ internal static class TemplateExtensions
                 switch (transformName)
                 {
                     case "camel":
-                        value = value.StringTransform(v => v.ToCamelCase());
+                        value = value.ApplyTransform(v => v.ToCamelCase());
                         break;
                     case "constant":
-                        value = value.StringTransform(v => v.ToConstantCase());
+                        value = value.ApplyTransform(v => v.ToConstantCase());
                         break;
                     case "kebab":
-                        value = value.StringTransform(v => v.ToKebabCase());
+                        value = value.ApplyTransform(v => v.ToKebabCase());
                         break;
                     case "lower":
-                        value = value.StringTransform(v => v.ToLower());
+                        value = value.ApplyTransform(v => v.ToLower());
                         break;
                     case "pascal":
-                        value = value.StringTransform(v => v.ToPascalCase());
+                        value = value.ApplyTransform(v => v.ToPascalCase());
                         break;
                     case "snake":
-                        value = value.StringTransform(v => v.ToSnakeCase());
+                        value = value.ApplyTransform(v => v.ToSnakeCase());
                         break;
                     case "upper":
-                        value = value.StringTransform(v => v.ToUpper());
+                        value = value.ApplyTransform(v => v.ToUpper());
                         break;
                     case "flat":
-                        value = Regex.Replace(value, @"[./\\]", string.Empty);
+                        value = value.ToFlat();
                         break;
                     case "path":
-                        value = Regex.Replace(value, @"[./\\]", Path.DirectorySeparatorChar.ToString());
+                        value = value.ToPath();
                         break;
                     case "head":
                         value = value.Split('/', '\\', '.').First();
@@ -387,11 +387,6 @@ internal static class TemplateExtensions
         {
             return ResolveVariable(input["to.".Length..], domainTo, config, tag);
         }
-    }
-
-    private static string StringTransform(this string value, Func<string, string> transform)
-    {
-        return Regex.Replace(value, @"[^./\\]+", match => transform(match.Value));
     }
 
     private static string? TryResolveParameters(this string input, IList<TemplateParameter> templateParameters, IList<string> parameterValues)

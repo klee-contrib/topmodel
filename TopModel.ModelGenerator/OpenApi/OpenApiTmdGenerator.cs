@@ -85,7 +85,7 @@ public class OpenApiTmdGenerator : ModelGenerator
 
         using var tmdFileWriter = new TmdWriter(_writerProvider.OpenFileWriter(modelFileName, _logger), tmdFile, Path.GetFullPath(ModelRoot));
         var schemaReferences = GetModuleReferences(modules.SelectMany(m => m));
-        var schemas = _model.GetSchemas().Where(s => schemaReferences.Contains(s.Value));
+        var schemas = _model.GetSchemas().Where(s => schemaReferences.Contains(s.Value)).ToList();
         foreach (var schema in schemas)
         {
             if (!_classesStore.ContainsKey(schema.Value))
@@ -219,9 +219,9 @@ public class OpenApiTmdGenerator : ModelGenerator
                     File = tmdFileEnpoint
                 };
                 tmdFileEnpoint.Endpoints.Add(endPoint);
-                if (!string.IsNullOrEmpty(operation.Value.Summary))
+                if (!string.IsNullOrEmpty(operation.Value.Summary) || !string.IsNullOrEmpty(operation.Value.Description))
                 {
-                    endPoint.Comment = @$"""{operation.Value.Summary}""";
+                    endPoint.Comment = @$"""{operation.Value.Summary ?? operation.Value.Description}""";
                 }
 
                 endPoint.PreservePropertyCasing = _config.PreservePropertyCasing;
@@ -266,7 +266,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                             property = new TmdAliasProperty()
                             {
                                 Alias = enumClass.Properties[0],
-                                Name = $"{param.Name?.ToPascalCase()}",
+                                Name = param.Name,
                                 Class = enumClass
                             };
                         }

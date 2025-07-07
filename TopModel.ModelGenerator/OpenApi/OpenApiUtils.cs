@@ -65,7 +65,7 @@ public static class OpenApiUtils
     {
         if (operation.Value.OperationId != null)
         {
-            return operation.Value.OperationId;
+            return operation.Value.OperationId.ApplyTransform(p => p.ToPascalCase()).ToFlat();
         }
 
         var path = model.GetOperationPath(operation.Value).Replace("api/", string.Empty).Trim('/');
@@ -167,6 +167,17 @@ public static class OpenApiUtils
             .SelectMany(p => p.Value.Operations?.Where(o => o.Value.Tags?.Any() ?? false) ?? [])
             .Where(o => o.Value.RequestBody != null)
             .ToDictionary(r => $"{r.Key.Method.ToPascalCase(strictIfUppercase: true)}{model.GetOperationId(r)}Body", r => r.Value.RequestBody?.Content?.FirstOrDefault().Value.Schema))
+        {
+            if (s.Value != null && !schemas.ContainsKey(s.Key) && !schemas.Values.Any(sc => sc == s.Value))
+            {
+                schemas.Add(s.Key, s.Value);
+            }
+        }
+
+        foreach (var s in model.Paths
+            .SelectMany(p => p.Value.Operations?.Where(o => o.Value.Tags?.Any() ?? false) ?? [])
+            .Where(o => o.Value.Responses?.Any(r => r.Value.Content?.Any() ?? false) ?? false)
+            .ToDictionary(r => $"{r.Key.Method.ToPascalCase(strictIfUppercase: true)}{model.GetOperationId(r)}Response", r => r.Value.Responses?.First().Value.Content?.FirstOrDefault().Value.Schema))
         {
             if (s.Value != null && !schemas.ContainsKey(s.Key) && !schemas.Values.Any(sc => sc == s.Value))
             {

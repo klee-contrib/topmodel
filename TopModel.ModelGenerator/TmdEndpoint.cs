@@ -14,10 +14,12 @@ public class TmdEndpoint
 
     public List<TmdProperty> Properties => Returns != null ? Params.Concat([Returns]).ToList() : Params;
 
-    public List<TmdClass> Dependencies => Properties.OfType<TmdAssociationProperty>().Select(p => p.Association!)
-        .Concat(Properties.OfType<TmdAliasProperty>().Select(a => a.Class))
-        .Concat(Properties.OfType<TmdCompositionProperty>().Where(c => c.Composition != null).Select(c => c.Composition))
-        .ToList();
+    public List<TmdClass> Dependencies =>
+    [
+        ..Properties.OfType<TmdAssociationProperty>().Where(c => c.Association != null).Select(p => p.Association),
+        ..Properties.OfType<TmdAliasProperty>().Where(c => c.Class != null).Select(a => a.Class),
+        ..Properties.OfType<TmdCompositionProperty>().Where(c => c.Composition != null).Select(c => c.Composition),
+    ];
 
     public bool PreservePropertyCasing { get; set; }
 
