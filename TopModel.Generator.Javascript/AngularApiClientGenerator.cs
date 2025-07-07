@@ -80,7 +80,7 @@ public class AngularApiClientGenerator(ILogger<AngularApiClientGenerator> logger
     private fillFormData(data: any, formData: FormData, prefix = """") {
         if (Array.isArray(data)) {
             for (const [i, item] of data.entries()) {
-                fillFormData(item, formData, prefix + (typeof item === ""object"" && !(item instanceof File) ? `[${i}]` : """"));
+                this.fillFormData(item, formData, prefix + (typeof item === ""object"" && !(item instanceof File) ? `[${i}]` : """"));
             }
         } else if (typeof data === ""object"" && !(data instanceof File)) {
             for (const key in data) {
