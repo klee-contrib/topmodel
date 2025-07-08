@@ -7,11 +7,11 @@ namespace TopModel.ModelGenerator.OpenApi;
 
 public static class OpenApiUtils
 {
-    public static string Format(this string? description)
+    public static string Format(this string? description, bool quote = false)
     {
         if (description == null)
         {
-            return string.Empty;
+            return quote ? "\"\"" : string.Empty;
         }
 
         if (description.Contains('"') || description.Contains('\n') || description.Contains(':') || description.Contains('#'))
@@ -22,11 +22,13 @@ public static class OpenApiUtils
                 lines = lines.SkipLast(1).ToArray();
             }
 
-            return $"|{Environment.NewLine}{string.Join(Environment.NewLine, lines.Select(line => $"        {line}"))}";
+            var indent = quote ? "    " : "        ";
+
+            return $"|{Environment.NewLine}{string.Join(Environment.NewLine, lines.Select(line => $"{indent}{line}"))}";
         }
         else
         {
-            return description;
+            return quote ? $"\"{description}\"" : description;
         }
     }
 

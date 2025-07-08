@@ -221,7 +221,7 @@ public class OpenApiTmdGenerator : ModelGenerator
                 tmdFileEnpoint.Endpoints.Add(endPoint);
                 if (!string.IsNullOrEmpty(operation.Value.Summary) || !string.IsNullOrEmpty(operation.Value.Description))
                 {
-                    endPoint.Comment = @$"""{operation.Value.Summary ?? operation.Value.Description}""";
+                    endPoint.Comment = (operation.Value.Summary ?? operation.Value.Description)?.Format(true)!;
                 }
 
                 endPoint.PreservePropertyCasing = _config.PreservePropertyCasing;
@@ -235,6 +235,15 @@ public class OpenApiTmdGenerator : ModelGenerator
                         if (p is TmdCompositionProperty cp)
                         {
                             cp.Composition = _classesStore.Where(c => c.Key == cp.CompositionReference).SingleOrDefault().Value;
+                        }
+
+                        if (p.Comment == TmdProperty.DefaultComment)
+                        {
+                            var description = operation.Value.RequestBody?.Description.Format();
+                            if (!string.IsNullOrEmpty(description))
+                            {
+                                p.Comment = description;
+                            }
                         }
 
                         endPoint.Params.Add(p);
@@ -294,6 +303,12 @@ public class OpenApiTmdGenerator : ModelGenerator
                     if (returns is TmdCompositionProperty cp)
                     {
                         cp.Composition = _classesStore.Where(c => c.Key == cp.CompositionReference).SingleOrDefault().Value;
+                    }
+
+                    var description = operation.Value.Responses?.FirstOrDefault(r => r.Key == "200" || r.Key == "201").Value.Description?.Format();
+                    if (!string.IsNullOrEmpty(description))
+                    {
+                        returns.Comment = description;
                     }
 
                     endPoint.Returns = returns;
