@@ -19,7 +19,7 @@ endpoint:
     - composition: User
       name: body
       required: false
-      comment: Non documenté
+      comment: Created user object
 ---
 endpoint:
   name: CreateUsersWithListInput
@@ -37,7 +37,7 @@ endpoint:
     composition: User
     name: Result
     required: false
-    comment: Non documenté
+    comment: Successful operation
 ---
 endpoint:
   name: DeleteUser
@@ -64,7 +64,7 @@ endpoint:
     composition: User
     name: Result
     required: false
-    comment: Non documenté
+    comment: successful operation
 ---
 endpoint:
   name: LoginUser
@@ -83,7 +83,7 @@ endpoint:
   returns:
     name: Result
     domain: DO_LIBELLE
-    comment: Non documenté
+    comment: successful operation
 ---
 endpoint:
   name: LogoutUser
@@ -102,7 +102,7 @@ endpoint:
     - composition: User
       name: body
       required: false
-      comment: Non documenté
+      comment: Update an existent user in the store
 
     - name: username
       domain: DO_LIBELLE

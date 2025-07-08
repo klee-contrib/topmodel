@@ -30,7 +30,7 @@ endpoint:
     composition: GetGetInventoryResponse
     name: Result
     required: false
-    comment: Non documenté
+    comment: successful operation
 ---
 endpoint:
   name: GetOrderById
@@ -46,7 +46,7 @@ endpoint:
     composition: Order
     name: Result
     required: false
-    comment: Non documenté
+    comment: successful operation
 ---
 endpoint:
   name: PlaceOrder
@@ -63,4 +63,4 @@ endpoint:
     composition: Order
     name: Result
     required: false
-    comment: Non documenté
+    comment: successful operation

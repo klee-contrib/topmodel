@@ -1,5 +1,9 @@
 # TopModel.ModelGenerator (`tmdgen`)
 
+## 1.12.1
+
+- [`24a55fc`](https://github.com/klee-contrib/topmodel/commit/24a55fcaa2f7fc66c7220fd53594eeaf266a0716) - [tmdgen] Descriptions manquantes dans les request et responses bodies
+
 ## 1.12.0
 
 [tmdgen - OpenAPI] Fixes

@@ -19,12 +19,12 @@ endpoint:
     - composition: Pet
       name: body
       required: false
-      comment: Non documenté
+      comment: Create a new pet in the store
   returns:
     composition: Pet
     name: Result
     required: false
-    comment: Non documenté
+    comment: Successful operation
 ---
 endpoint:
   name: DeletePet
@@ -54,7 +54,7 @@ endpoint:
     name: Result
     domain: DO_LIST
     required: false
-    comment: Non documenté
+    comment: successful operation
 ---
 endpoint:
   name: FindPetsByTags
@@ -71,7 +71,7 @@ endpoint:
     name: Result
     domain: DO_LIST
     required: false
-    comment: Non documenté
+    comment: successful operation
 ---
 endpoint:
   name: GetPetById
@@ -87,7 +87,7 @@ endpoint:
     composition: Pet
     name: Result
     required: false
-    comment: Non documenté
+    comment: successful operation
 ---
 endpoint:
   name: UpdatePet
@@ -99,12 +99,12 @@ endpoint:
     - composition: Pet
       name: body
       required: false
-      comment: Non documenté
+      comment: Update an existent pet in the store
   returns:
     composition: Pet
     name: Result
     required: false
-    comment: Non documenté
+    comment: Successful operation
 ---
 endpoint:
   name: UpdatePetWithForm
@@ -147,4 +147,4 @@ endpoint:
     composition: ApiResponse
     name: Result
     required: false
-    comment: Non documenté
+    comment: successful operation
