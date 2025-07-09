@@ -513,6 +513,8 @@ public class ModelStore
         var mapperResolver = new MapperResolver(modelFile, referencedClasses, Converters, _config.UseLegacyAssociationCompositionMappers);
         var propertyResolver = new PropertyResolver(modelFile, Domains, referencedClasses, referencedEndpoints, referencedDecorators);
 
+        domainResolver.ResolveDomainVariables(_config);
+
         foreach (var error in domainResolver.ResolveAsDomains())
         {
             yield return error;
@@ -523,7 +525,7 @@ public class ModelStore
             yield return error;
         }
 
-        foreach (var error in decoratorResolver.ResolveDecorators())
+        foreach (var error in decoratorResolver.ResolveDecorators(_config))
         {
             yield return error;
         }

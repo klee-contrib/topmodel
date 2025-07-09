@@ -15,8 +15,22 @@ var server = await LanguageServer.From(options =>
         .WithServices(services =>
         {
             var fileChecker = new FileChecker();
-            var configFile = new FileInfo(args.Length > 0 ? args[0] : "topmodel.config");
-            var config = fileChecker.Deserialize<ModelConfig>(configFile.OpenText().ReadToEnd()).Init(configFile.DirectoryName!);
+            var file = new FileInfo(args.Length > 0 ? args[0] : "topmodel.config");
+            using var text = file.OpenText();
+            var config = fileChecker.DeserializeConfig(text.ReadToEnd()).Init(file.DirectoryName!);
+
+            foreach (var (configName, genConfigMaps) in config.Generators)
+            {
+                for (var j = 0; j < genConfigMaps.Count(); j++)
+                {
+                    var genConfigMap = genConfigMaps.ElementAt(j);
+                    var number = j + 1;
+
+                    var genConfig = fileChecker.GetWatcherConfigBase(genConfigMap);
+                    genConfig.InitVariables(config.App, number);
+                    config.Configs.Add($"{configName}@{number}", genConfig);
+                }
+            }
 
             services
                 .AddModelStore(fileChecker, config)

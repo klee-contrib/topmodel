@@ -116,6 +116,7 @@ public static class ModelExtensions
             Keyword keyword => keyword.ModelFile,
             ClassValue classValue => classValue.Class.ModelFile,
             TemplateParameter templateParameter => templateParameter.Domain?.ModelFile ?? templateParameter.Decorator!.ModelFile,
+            Variable { TemplateParameter: TemplateParameter templateParameter } => templateParameter.Domain?.ModelFile ?? templateParameter.Decorator!.ModelFile,
             Variable => new ModelFile { Name = string.Empty },
             _ => throw new ArgumentException("Type d'objet non supporté.")
         };
@@ -143,6 +144,7 @@ public static class ModelExtensions
             OneOf<ClassMappings, PropertyMapping> p => p.Match(c => c.GetLocation(), p => p.GetLocation()),
             Converter c => c.Location,
             TemplateParameter t => t.Name.Location,
+            Variable { TemplateParameter: TemplateParameter t } => t.Name.Location,
             _ => null
         };
     }

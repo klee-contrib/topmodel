@@ -27,7 +27,7 @@ public class ReferencesHandler : ReferencesHandlerBase
             var references = _modelStore.GetReferencesForPositionInFile(request.Position, file);
             if (references != null)
             {
-                return Task.FromResult<LocationContainer?>(new LocationContainer(
+                return Task.FromResult<LocationContainer?>(new(
                     references.Select(r => new Location
                     {
                         Uri = new Uri(_facade.GetFilePath(r.File)),

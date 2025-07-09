@@ -38,8 +38,9 @@ public class Decorator : IPropertyContainer
                 ..i.Implements.SelectMany(a => a.Variables),
                 ..i.Annotations.SelectMany(a => a.Variables),
                 ..i.Imports.SelectMany(a => a.Variables)
-            ])
-        .Where(pr => pr.ReferenceName.IsValidClassVariable(TemplateParameters) || pr.ReferenceName.IsValidEndpointVariable(TemplateParameters));
+            ]);
+
+    public Dictionary<string, Variable> Variables { get; } = [];
 
     public IEnumerable<TransformReference> TransformReferences => Implementations.Values
        .SelectMany(i =>

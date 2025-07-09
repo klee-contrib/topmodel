@@ -13,4 +13,6 @@ public class TemplateParameter
     public Decorator? Decorator { get; set; }
 
     public Domain? Domain { get; set; }
+
+    public string Description => $"**{Name}** ({Comment})";
 }

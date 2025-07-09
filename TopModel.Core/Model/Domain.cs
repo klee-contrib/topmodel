@@ -50,8 +50,9 @@ public class Domain
                 ..i.Imports.SelectMany(a => a.Variables),
                 ..i.ValueTemplates.Values.SelectMany(a => a.Value.Variables),
                 ..i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Variables))
-            ])
-        .Where(pr => pr.ReferenceName.IsValidPropertyVariable(TemplateParameters));
+            ]);
+
+    public Dictionary<string, Variable> Variables { get; } = [];
 
     public IEnumerable<TransformReference> TransformReferences => Implementations.Values
         .SelectMany(i =>

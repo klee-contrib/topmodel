@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Model.Implementation;
 using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
@@ -62,11 +63,27 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
     /// <summary>
     /// Résout les décorateurs sur les classes et les endpoints.
     /// </summary>
+    /// <param name="config">La config.</param>
     /// <returns>Erreurs.</returns>
-    public IEnumerable<ModelError> ResolveDecorators()
+    public IEnumerable<ModelError> ResolveDecorators(ModelConfig config)
     {
         foreach (var decorator in modelFile.Decorators)
         {
+            decorator.Variables.Clear();
+
+            foreach (var varName in decorator.VariableReferences)
+            {
+                if (varName.ReferenceName.TryGetClassVariable(config, decorator.TemplateParameters, out var cVariable))
+                {
+                    decorator.Variables.TryAdd(varName.ReferenceName, cVariable);
+                }
+
+                if (varName.ReferenceName.TryGetEndpointVariable(config, decorator.TemplateParameters, out var eVariable))
+                {
+                    decorator.Variables.TryAdd(varName.ReferenceName, eVariable);
+                }
+            }
+
             foreach (var templateParam in decorator.TemplateParameters.Where((e, i) => decorator.TemplateParameters.Where((p, j) => p.Name == e.Name && j < i).Any()))
             {
                 yield return new ModelError(decorator, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
