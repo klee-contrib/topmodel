@@ -20,15 +20,24 @@ public class SecuriteProfilMappers {
 	}
 
 	/**
-	 * Map les champs des classes passées en paramètre dans l'objet target'.
-	 * @param target Instance de 'ProfilRead' (ou null pour créer une nouvelle instance).
+	 * Mapper les champs sources sur une nouvelle instance de la classe.
+	 * @param profil Instance de 'Profil'.
+	 *
+	 * @return Une nouvelle instance de 'ProfilRead' sur laquelle les champs sources ont été mappée.
+	 */
+	public static ProfilRead createProfilRead(Profil profil) {
+		return createProfilRead(profil, new ProfilRead());
+	}
+
+	/**
+	 * Mapper les champs sources sur une nouvelle instance de la classe ou bien sur l'instance passée en paramètres.
 	 * @param profil Instance de 'Profil'.
 	 *
 	 * @return Une nouvelle instance de 'ProfilRead' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée.
 	 */
 	public static ProfilRead createProfilRead(Profil profil, ProfilRead target) {
 		if (target == null) {
-			target = new ProfilRead();
+			throw new IllegalArgumentException("target cannot be null");
 		}
 
 		if (profil == null) {
@@ -47,11 +56,21 @@ public class SecuriteProfilMappers {
 	}
 
 	/**
-	 * Mappe 'Profil' vers 'Profil'.
-	 * @param source Instance de 'Profil'.
-	 * @param target Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
+	 * Mappe 'Profil' vers une nouvelle instance de 'Profil'.
+	 * @param source Instance de 'Profil' à mapper.
 	 *
-	 * @return Une nouvelle instance de 'Profil' ou bien l'instance passée en paramètre dont les champs ont été surchargés.
+	 * @return Nouvelle instance de 'Profil' mappée depuis 'profil'.
+	 */
+	public static Profil toProfil(Profil source) {
+			return toProfil(source, new Profil());
+	}
+
+	/**
+	 * Mappe 'Profil' vers une nouvelle instance ou bien sur l'instance passée en paramètres.
+	 * @param source Instance de 'Profil' à mapper.
+	 * @param target Instance de 'Profil' sur laquelle mapper.
+	 *
+	 * @return Nouvelle instance ou bien l'instance passée en paramètres mappée depuis 'profil'.
 	 */
 	public static Profil toProfil(Profil source, Profil target) {
 		if (source == null) {
@@ -59,7 +78,7 @@ public class SecuriteProfilMappers {
 		}
 
 		if (target == null) {
-			target = new Profil();
+			throw new IllegalArgumentException("target cannot be null");
 		}
 
 		target.setLibelle(source.getLibelle());
@@ -68,11 +87,21 @@ public class SecuriteProfilMappers {
 	}
 
 	/**
-	 * Mappe 'ProfilWrite' vers 'Profil'.
-	 * @param source Instance de 'ProfilWrite'.
-	 * @param target Instance pré-existante de 'Profil'. Une nouvelle instance sera créée si non spécifié.
+	 * Mappe 'Profil' vers une nouvelle instance de 'ProfilWrite'.
+	 * @param source Instance de 'ProfilWrite' à mapper.
 	 *
-	 * @return Une nouvelle instance de 'Profil' ou bien l'instance passée en paramètre dont les champs ont été surchargés.
+	 * @return Nouvelle instance de 'ProfilWrite' mappée depuis 'profil'.
+	 */
+	public static Profil toProfil(ProfilWrite source) {
+			return toProfil(source, new Profil());
+	}
+
+	/**
+	 * Mappe 'Profil' vers une nouvelle instance ou bien sur l'instance passée en paramètres.
+	 * @param source Instance de 'ProfilWrite' à mapper.
+	 * @param target Instance de 'Profil' sur laquelle mapper.
+	 *
+	 * @return Nouvelle instance ou bien l'instance passée en paramètres mappée depuis 'profil'.
 	 */
 	public static Profil toProfil(ProfilWrite source, Profil target) {
 		if (source == null) {
@@ -80,7 +109,7 @@ public class SecuriteProfilMappers {
 		}
 
 		if (target == null) {
-			target = new Profil();
+			throw new IllegalArgumentException("target cannot be null");
 		}
 
 		target.setLibelle(source.getLibelle());

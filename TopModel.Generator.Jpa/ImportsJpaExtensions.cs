@@ -61,7 +61,7 @@ public static class ImportsJpaExtensions
             {
                 yield return $"{config.GetEnumValuePackageName(ap.Association.EnumKey!.Class, tag)}.{ap.Association.NamePascal}";
             }
-            else if (ap.Class?.IsPersistent == false || ap.Endpoint != null)
+            else if (!(ap.Class?.IsPersistent == true))
             {
                 yield return $"{config.GetEnumPackageName(ap.Property.Class, config.GetBestClassTag(ap.Property.Class, tag))}.{config.GetEnumName(ap.Property, ap.Property.Class)}";
             }

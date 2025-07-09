@@ -61,7 +61,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
         _toWrite.Add(new WriterLine() { Line = @$"{javaMethod.Signature}{(hasBody ? " {" : ";")}", Indent = indentationLevel });
         foreach (var bodyLine in javaMethod.Body)
         {
-            _toWrite.Add(new WriterLine() { Line = bodyLine.Line, Indent = bodyLine.Indent + indentationLevel + 1 });
+            _toWrite.Add(new WriterLine() { Line = bodyLine.Line, Indent = bodyLine.Line == string.Empty ? 0 : bodyLine.Indent + indentationLevel + 1 });
         }
 
         if (hasBody)

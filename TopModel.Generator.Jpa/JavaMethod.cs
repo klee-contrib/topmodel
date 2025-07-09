@@ -48,6 +48,12 @@ public class JavaMethod
         return this;
     }
 
+    public JavaMethod AddBodyLine()
+    {
+        Body.Add(new WriterLine() { Line = string.Empty, Indent = 0 });
+        return this;
+    }
+
     public JavaMethod AddBodyLine(string line)
     {
         Body.Add(new WriterLine() { Line = line, Indent = 0 });

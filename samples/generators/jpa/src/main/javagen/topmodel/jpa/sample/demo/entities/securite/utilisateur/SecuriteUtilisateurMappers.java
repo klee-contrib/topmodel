@@ -17,15 +17,24 @@ public class SecuriteUtilisateurMappers {
 	}
 
 	/**
-	 * Map les champs des classes passées en paramètre dans l'objet target'.
-	 * @param target Instance de 'UtilisateurRead' (ou null pour créer une nouvelle instance).
+	 * Mapper les champs sources sur une nouvelle instance de la classe.
+	 * @param utilisateur Instance de 'Utilisateur'.
+	 *
+	 * @return Une nouvelle instance de 'UtilisateurRead' sur laquelle les champs sources ont été mappée.
+	 */
+	public static UtilisateurRead createUtilisateurRead(Utilisateur utilisateur) {
+		return createUtilisateurRead(utilisateur, new UtilisateurRead());
+	}
+
+	/**
+	 * Mapper les champs sources sur une nouvelle instance de la classe ou bien sur l'instance passée en paramètres.
 	 * @param utilisateur Instance de 'Utilisateur'.
 	 *
 	 * @return Une nouvelle instance de 'UtilisateurRead' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée.
 	 */
 	public static UtilisateurRead createUtilisateurRead(Utilisateur utilisateur, UtilisateurRead target) {
 		if (target == null) {
-			target = new UtilisateurRead();
+			throw new IllegalArgumentException("target cannot be null");
 		}
 
 		if (utilisateur == null) {
@@ -53,11 +62,21 @@ public class SecuriteUtilisateurMappers {
 	}
 
 	/**
-	 * Mappe 'UtilisateurWrite' vers 'Utilisateur'.
-	 * @param source Instance de 'UtilisateurWrite'.
-	 * @param target Instance pré-existante de 'Utilisateur'. Une nouvelle instance sera créée si non spécifié.
+	 * Mappe 'Utilisateur' vers une nouvelle instance de 'UtilisateurWrite'.
+	 * @param source Instance de 'UtilisateurWrite' à mapper.
 	 *
-	 * @return Une nouvelle instance de 'Utilisateur' ou bien l'instance passée en paramètre dont les champs ont été surchargés.
+	 * @return Nouvelle instance de 'UtilisateurWrite' mappée depuis 'utilisateur'.
+	 */
+	public static Utilisateur toUtilisateur(UtilisateurWrite source) {
+			return toUtilisateur(source, new Utilisateur());
+	}
+
+	/**
+	 * Mappe 'Utilisateur' vers une nouvelle instance ou bien sur l'instance passée en paramètres.
+	 * @param source Instance de 'UtilisateurWrite' à mapper.
+	 * @param target Instance de 'Utilisateur' sur laquelle mapper.
+	 *
+	 * @return Nouvelle instance ou bien l'instance passée en paramètres mappée depuis 'utilisateur'.
 	 */
 	public static Utilisateur toUtilisateur(UtilisateurWrite source, Utilisateur target) {
 		if (source == null) {
@@ -65,7 +84,7 @@ public class SecuriteUtilisateurMappers {
 		}
 
 		if (target == null) {
-			target = new Utilisateur();
+			throw new IllegalArgumentException("target cannot be null");
 		}
 
 		target.setNom(source.getNom());
