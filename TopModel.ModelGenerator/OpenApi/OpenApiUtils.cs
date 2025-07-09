@@ -1,6 +1,4 @@
-﻿using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Models.Interfaces;
-using Microsoft.OpenApi.Models.References;
+﻿using Microsoft.OpenApi;
 using TopModel.Utils;
 
 namespace TopModel.ModelGenerator.OpenApi;
@@ -41,14 +39,14 @@ public static class OpenApiUtils
 
         return schema?.Items != null
             ? ("list", schema.Items)
-            : schema != null
-            ? schema.Type == JsonSchemaType.Array
-                ? ("list", schema)
-                : ("object", schema)
             : schema?.Type == JsonSchemaType.Object && schema.AdditionalProperties != null
             ? ("map", schema.AdditionalProperties)
             : schema?.Type == JsonSchemaType.Object && schema.AdditionalProperties?.Items != null
             ? ("list-map", schema.AdditionalProperties.Items)
+            : schema != null
+            ? schema.Type == JsonSchemaType.Array
+                ? ("list", schema)
+                : ("object", schema)
             : (null, null);
     }
 
@@ -121,8 +119,8 @@ public static class OpenApiUtils
             return schema.Items?.GetProperties() ?? [];
         }
 
-        return (schema.Properties ?? [])
-            .Concat((schema.AllOf ?? []).Where(a => a.Type == JsonSchemaType.Object).SelectMany(a => a.Properties ?? []))
+        return (schema.Properties ?? new Dictionary<string, IOpenApiSchema>())
+            .Concat((schema.AllOf ?? []).Where(a => a.Type == JsonSchemaType.Object).SelectMany(a => a.Properties ?? new Dictionary<string, IOpenApiSchema>()))
             .ToDictionary(a => a.Key, a => a.Value) ?? [];
     }
 
@@ -148,7 +146,7 @@ public static class OpenApiUtils
 
     public static IDictionary<string, IOpenApiSchema> GetSchemas(this OpenApiDocument model)
     {
-        var schemas = model.Components?.Schemas ?? [];
+        var schemas = model.Components?.Schemas ?? new Dictionary<string, IOpenApiSchema>();
         foreach (var s in model.Components?.RequestBodies?.ToDictionary(r => r.Key, r => r.Value.Content?.FirstOrDefault().Value.Schema) ?? [])
         {
             if (s.Value != null && !schemas.ContainsKey(s.Key) && !schemas.Values.Any(sc => sc == s.Value))

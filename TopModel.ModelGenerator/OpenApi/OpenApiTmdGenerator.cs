@@ -1,8 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Models.Interfaces;
-using Microsoft.OpenApi.Models.References;
+using Microsoft.OpenApi;
 using Microsoft.OpenApi.Reader;
 using TopModel.Utils;
 

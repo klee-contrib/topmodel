@@ -1,6 +1,6 @@
 ﻿#nullable disable
 
-using Microsoft.OpenApi.Models.Interfaces;
+using Microsoft.OpenApi;
 
 namespace TopModel.ModelGenerator;
 
