@@ -25,7 +25,7 @@ public class SecuriteProfilMappersTest {
 
         // WHEN
         // Call the createProfilRead method with the Profil object and a null target
-        ProfilRead profilRead = SecuriteProfilMappers.createProfilRead(profil, null);
+        ProfilRead profilRead = SecuriteProfilMappers.createProfilRead(profil);
 
         // THEN
         // Verify that the ProfilRead object has the same data as the Profil object
@@ -45,10 +45,11 @@ public class SecuriteProfilMappersTest {
 
         // WHEN
         // Call the toProfil method with the source Profil object and a null target
-        Profil target = SecuriteProfilMappers.toProfil(source, null);
+        Profil target = SecuriteProfilMappers.toProfil(source);
 
         // THEN
-        // Verify that the target Profil object has the same data as the source Profil object
+        // Verify that the target Profil object has the same data as the source Profil
+        // object
         assertThat(target.getLibelle()).isEqualTo(source.getLibelle());
         assertThat(target.getDroits()).isEqualTo(source.getDroits());
     }
@@ -63,10 +64,11 @@ public class SecuriteProfilMappersTest {
 
         // WHEN
         // Call the toProfil method with the source ProfilWrite object and a null target
-        Profil target = SecuriteProfilMappers.toProfil(source, null);
+        Profil target = SecuriteProfilMappers.toProfil(source);
 
         // THEN
-        // Verify that the target Profil object has the same data as the source ProfilWrite object
+        // Verify that the target Profil object has the same data as the source
+        // ProfilWrite object
         assertThat(target.getLibelle()).isEqualTo(source.getLibelle());
         assertThat(target.getDroits()).hasSize(source.getDroits().size());
         assertThat(target.getDroits().stream().map(Droit::getCode)).containsAll(source.getDroits());
@@ -86,11 +88,13 @@ public class SecuriteProfilMappersTest {
         target.setDroits(Arrays.asList(Droit.CREATE, Droit.DELETE));
 
         // WHEN
-        // Call the toProfil method with the source Profil object and the target Profil object
+        // Call the toProfil method with the source Profil object and the target Profil
+        // object
         Profil result = SecuriteProfilMappers.toProfil(source, target);
 
         // THEN
-        // Verify that the result Profil object has the same data as the source Profil object
+        // Verify that the result Profil object has the same data as the source Profil
+        // object
         assertThat(result.getLibelle()).isEqualTo(source.getLibelle());
         assertThat(result.getDroits()).isEqualTo(source.getDroits());
     }
@@ -109,11 +113,13 @@ public class SecuriteProfilMappersTest {
         target.setDroits(Arrays.asList(Droit.CREATE, Droit.DELETE));
 
         // WHEN
-        // Call the toProfil method with the source ProfilWrite object and the target Profil object
+        // Call the toProfil method with the source ProfilWrite object and the target
+        // Profil object
         Profil result = SecuriteProfilMappers.toProfil(source, target);
 
         // THEN
-        // Verify that the result Profil object has the same data as the source ProfilWrite object
+        // Verify that the result Profil object has the same data as the source
+        // ProfilWrite object
         assertThat(result.getLibelle()).isEqualTo(source.getLibelle());
         assertThat(result.getDroits()).hasSize(source.getDroits().size());
         assertThat(result.getDroits().stream().map(Droit::getCode)).containsAll(source.getDroits());
@@ -126,18 +132,20 @@ public class SecuriteProfilMappersTest {
         Profil target = new Profil();
 
         // WHEN & THEN
-        // Verify that calling the toProfil method with a null source ProfilWrite object throws an IllegalArgumentException
+        // Verify that calling the toProfil method with a null source ProfilWrite object
+        // throws an IllegalArgumentException
         assertThatThrownBy(() -> {
-            SecuriteProfilMappers.toProfil((ProfilWrite)null, target);
+            SecuriteProfilMappers.toProfil((ProfilWrite) null, target);
         }).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     public void testCreateProfilReadFromNullProfil() {
         // WHEN & THEN
-        // Verify that calling the createProfilRead method with a null source Profil object throws an IllegalArgumentException
+        // Verify that calling the createProfilRead method with a null source Profil
+        // object throws an IllegalArgumentException
         assertThatThrownBy(() -> {
-            SecuriteProfilMappers.createProfilRead(null, null);
+            SecuriteProfilMappers.createProfilRead(null);
         }).isInstanceOf(IllegalArgumentException.class);
     }
 }

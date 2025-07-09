@@ -35,7 +35,7 @@ public class SecuriteUtilisateurMappersTest {
         utilisateur.setTypeUtilisateur(new TypeUtilisateur(TypeUtilisateurCode.ADMIN));
 
         // WHEN
-        UtilisateurRead utilisateurRead = SecuriteUtilisateurMappers.createUtilisateurRead(utilisateur, null);
+        UtilisateurRead utilisateurRead = SecuriteUtilisateurMappers.createUtilisateurRead(utilisateur);
 
         // THEN
         assertThat(utilisateurRead.getId()).isEqualTo(utilisateur.getId());
@@ -62,7 +62,7 @@ public class SecuriteUtilisateurMappersTest {
         source.setTypeUtilisateurCode(TypeUtilisateurCode.ADMIN);
 
         // WHEN
-        Utilisateur target = SecuriteUtilisateurMappers.toUtilisateur(source, null);
+        Utilisateur target = SecuriteUtilisateurMappers.toUtilisateur(source);
 
         // THEN
         assertThat(target.getNom()).isEqualTo(source.getNom());
@@ -78,7 +78,7 @@ public class SecuriteUtilisateurMappersTest {
     public void testToUtilisateurWithNullSource() {
         // WHEN & THEN
         assertThatThrownBy(() -> {
-            SecuriteUtilisateurMappers.toUtilisateur(null, null);
+            SecuriteUtilisateurMappers.toUtilisateur(null);
         }).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -86,7 +86,7 @@ public class SecuriteUtilisateurMappersTest {
     public void testCreateUtilisateurReadWithNullUtilisateur() {
         // WHEN & THEN
         assertThatThrownBy(() -> {
-            SecuriteUtilisateurMappers.createUtilisateurRead(null, null);
+            SecuriteUtilisateurMappers.createUtilisateurRead(null);
         }).isInstanceOf(IllegalArgumentException.class);
     }
 }
