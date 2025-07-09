@@ -9,10 +9,10 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 /// </summary>
 public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> classes, Dictionary<string, string> newableTypes)
 {
-
     public JavaAnnotation EnumAnnotation =>
         new JavaAnnotation("Enumerated", imports: $"{JavaxOrJakarta}.persistence.Enumerated")
             .AddAttribute("value", "EnumType.STRING", $"{JavaxOrJakarta}.persistence.EnumType");
+
     protected IEnumerable<Class> Classes { get; } = classes;
 
     protected JpaConfig Config { get; } = config;
@@ -177,7 +177,6 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
         }
         else
         {
-
             return Config.CanClassUseEnums(property.Class, Classes, property) && property.Class.IsPersistent;
         }
     }

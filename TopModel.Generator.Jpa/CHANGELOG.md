@@ -1,3 +1,8 @@
+## 1.8.3
+
+- [480](https://github.com/klee-contrib/topmodel/pull/480) Ajoute annotation dans le cadre d'un alias sur une enum pour une clé composite
+  fix #478
+
 ## 1.8.2
 
 Prise en compte correcte des `extends` de décorateurs de décorateurs (modgen 2.8).
