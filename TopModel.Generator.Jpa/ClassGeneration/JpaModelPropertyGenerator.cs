@@ -9,6 +9,10 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 /// </summary>
 public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> classes, Dictionary<string, string> newableTypes)
 {
+
+    public JavaAnnotation EnumAnnotation =>
+        new JavaAnnotation("Enumerated", imports: $"{JavaxOrJakarta}.persistence.Enumerated")
+            .AddAttribute("value", "EnumType.STRING", $"{JavaxOrJakarta}.persistence.EnumType");
     protected IEnumerable<Class> Classes { get; } = classes;
 
     protected JpaConfig Config { get; } = config;
@@ -20,10 +24,6 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
     protected virtual JavaAnnotation NotNullAnnotation => new("NotNull", imports: $"{JavaxOrJakarta}.validation.constraints.NotNull");
 
     protected virtual JavaAnnotation ValidAnnotation => new("Valid", imports: $"{JavaxOrJakarta}.validation.Valid");
-
-    protected JavaAnnotation EnumAnnotation =>
-        new JavaAnnotation("Enumerated", imports: $"{JavaxOrJakarta}.persistence.Enumerated")
-            .AddAttribute("value", "EnumType.STRING", $"{JavaxOrJakarta}.persistence.EnumType");
 
     public virtual JavaAnnotation GetColumnAnnotation(IProperty property)
     {
@@ -167,6 +167,19 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
         }
 
         return propertyName.ToPascalCase().WithPrefix("set");
+    }
+
+    public bool ShouldWriteEnumAnnotation(IProperty property)
+    {
+        if (property is AliasProperty ap)
+        {
+            return Config.CanClassUseEnums(ap.Property.Class, Classes, ap.Property) && property.Class.IsPersistent;
+        }
+        else
+        {
+
+            return Config.CanClassUseEnums(property.Class, Classes, property) && property.Class.IsPersistent;
+        }
     }
 
     public virtual void WriteGetter(JavaWriter fw, string tag, IProperty property, int indentLevel = 1)
@@ -343,7 +356,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
             else
             {
                 yield return GetColumnAnnotation(property);
-                if (Config.CanClassUseEnums(property.Property.Class, Classes, property.Property) && property.Class.IsPersistent)
+                if (ShouldWriteEnumAnnotation(property))
                 {
                     yield return EnumAnnotation;
                 }
@@ -368,7 +381,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
                 yield return GetColumnAnnotation(property);
             }
 
-            if (Config.CanClassUseEnums(property.Class, Classes, property))
+            if (ShouldWriteEnumAnnotation(property))
             {
                 yield return EnumAnnotation;
             }
