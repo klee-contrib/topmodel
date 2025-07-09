@@ -1,3 +1,10 @@
+# Changelog JPA
+
+## 1.9.0
+
+- [`a2eddb`](https://github.com/klee-contrib/topmodel/commit/a2eddb5ad2f70481c9de7c07d3d0c2be20cb8935) - [JPA] Mappers : polymorphisme des méthodes générées
+  Fix: [#477](https://github.com/klee-contrib/topmodel/issues/477)
+  
 ## 1.8.3
 
 - [480](https://github.com/klee-contrib/topmodel/pull/480) Ajoute annotation dans le cadre d'un alias sur une enum pour une clé composite
