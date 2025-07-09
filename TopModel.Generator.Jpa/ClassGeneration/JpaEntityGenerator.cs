@@ -192,6 +192,11 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             else
             {
                 annotations.Add(JpaModelPropertyGenerator.GetColumnAnnotation(pk));
+
+                if (JpaModelPropertyGenerator.ShouldWriteEnumAnnotation(pk))
+                {
+                    annotations.Add(JpaModelPropertyGenerator.EnumAnnotation);
+                }
             }
 
             fw.WriteAnnotations(2, annotations);
