@@ -27,9 +27,8 @@ endpoint:
   description: "Returns pet inventories by status"
   preservePropertyCasing: true
   returns:
-    composition: GetGetInventoryResponse
     name: Result
-    required: false
+    domain: DO_ENTIER_MAP
     comment: successful operation
 ---
 endpoint:
