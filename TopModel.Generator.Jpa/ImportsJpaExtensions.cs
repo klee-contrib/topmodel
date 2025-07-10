@@ -6,6 +6,11 @@ public static class ImportsJpaExtensions
 {
     public static string GetImport(this Class classe, JpaConfig config, string tag)
     {
+        if (config.EnumsAsEnums && config.CanClassUseEnums(classe))
+        {
+            return $"{config.GetEnumValuePackageName(classe, config.GetBestClassTag(classe, tag))}.{classe.NamePascal}";
+        }
+
         return $"{config.GetPackageName(classe, config.GetBestClassTag(classe, tag))}.{classe.NamePascal}";
     }
 
