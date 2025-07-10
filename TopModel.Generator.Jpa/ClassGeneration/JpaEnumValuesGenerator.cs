@@ -105,6 +105,7 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         var refs = GetAllValues(classe)
             .ToList();
 
+        var notPkProperties = classe.Properties.Where(p => p != classe.EnumKey);
         foreach (var refValue in refs)
         {
             if (i > 0)
@@ -120,40 +121,54 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
                 fw.WriteDocEnd(1);
             }
 
-            List<string> enumAsString = [$"{refValue.Value[classe.EnumKey!].ToConstantCase()}("];
-            foreach (var prop in classe.Properties.Where(p => p != classe.EnumKey))
+            List<string> enumAsString = [];
+            if (!notPkProperties.Any())
             {
-                var isString = Config.GetType(prop) == "String";
-                var isInt = Config.GetType(prop) == "int";
-                var isBoolean = Config.GetType(prop) == "Boolean";
-                var value = refValue.Value.TryGetValue(prop, out var v) ? v : "null";
-
-                if (prop is AssociationProperty ap && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Property) && r.Value[ap.Property] == value))
+                enumAsString.Add($"{refValue.Value[classe.EnumKey!].ToConstantCase()}");
+            }
+            else
+            {
+                enumAsString.Add($"{refValue.Value[classe.EnumKey!].ToConstantCase()}(");
+                foreach (var prop in notPkProperties)
                 {
-                    fw.AddImport($"{Config.GetEnumValuePackageName(ap.Association.EnumKey!.Class, tag)}.{ap.Association.NamePascal}");
-                    value = ap.Association.NamePascal + "." + value;
-                    isString = false;
-                }
-                else if (Config.CanClassUseEnums(classe, prop: prop))
-                {
-                    value = Config.GetType(prop) + "." + value;
+                    var isString = Config.GetType(prop) == "String";
+                    var isInt = Config.GetType(prop) == "int";
+                    var isBoolean = Config.GetType(prop) == "Boolean";
+                    var value = refValue.Value.TryGetValue(prop, out var v) ? v : "null";
+
+                    if (prop is AssociationProperty ap && ap.Association.Values.Any(r => r.Value.ContainsKey(ap.Property) && r.Value[ap.Property] == value))
+                    {
+                        fw.AddImport($"{Config.GetEnumValuePackageName(ap.Association.EnumKey!.Class, tag)}.{ap.Association.NamePascal}");
+                        value = ap.Association.NamePascal + "." + value;
+                        isString = false;
+                    }
+                    else if (Config.CanClassUseEnums(classe, prop: prop))
+                    {
+                        value = Config.GetType(prop) + "." + value;
+                    }
+
+                    if (Config.TranslateReferences == true && classe.DefaultProperty == prop && !Config.CanClassUseEnums(classe, prop: prop))
+                    {
+                        value = refValue.ResourceKey;
+                    }
+
+                    var quote = isString ? "\"" : string.Empty;
+                    var val = quote + value + quote;
+                    enumAsString.Add($@"{val}{(prop == notPkProperties.Last() ? string.Empty : ", ")}");
                 }
 
-                if (Config.TranslateReferences == true && classe.DefaultProperty == prop && !Config.CanClassUseEnums(classe, prop: prop))
-                {
-                    value = refValue.ResourceKey;
-                }
-
-                var quote = isString ? "\"" : string.Empty;
-                var val = quote + value + quote;
-                enumAsString.Add($@"{val}{(prop == classe.Properties.Last() ? string.Empty : ", ")}");
+                enumAsString.Add($")");
             }
 
-            enumAsString.Add($"){(isLast ? ";" : ",")} ");
+            enumAsString.Add(",");
+
             fw.WriteLine(1, enumAsString.Aggregate(string.Empty, (acc, curr) => acc + curr));
         }
 
-        foreach (var prop in classe.Properties.Where(p => p != classe.EnumKey))
+        fw.WriteLine();
+        fw.WriteLine(1, ";");
+
+        foreach (var prop in notPkProperties)
         {
             fw.WriteLine();
             fw.WriteDocStart(1, $@"{prop.NameByClassPascal}");
@@ -170,10 +185,13 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
             }
         }
 
-        fw.WriteLine();
-        WriteConstructor(classe, fw);
+        if (notPkProperties.Any())
+        {
+            fw.WriteLine();
+            WriteConstructor(classe, fw);
+        }
 
-        foreach (var prop in classe.Properties.Where(p => p != classe.EnumKey))
+        foreach (var prop in notPkProperties)
         {
             fw.WriteLine();
             var fieldName = prop.NameByClassCamel;
@@ -191,7 +209,6 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
             fw.Write(1, method);
         }
 
-        fw.WriteLine();
         fw.WriteLine("}");
     }
 }
