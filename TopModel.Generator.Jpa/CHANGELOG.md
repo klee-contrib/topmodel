@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 1.9.1
+
+- ['484'](https://github.com/klee-contrib/topmodel/pull/484) [JPA] décalage entre le nom du package dans l'import et l'emplacement pour les enumerations
+
 ## 1.9.0
 
 - [`a2eddb`](https://github.com/klee-contrib/topmodel/commit/a2eddb5ad2f70481c9de7c07d3d0c2be20cb8935) - [JPA] Mappers : polymorphisme des méthodes générées
