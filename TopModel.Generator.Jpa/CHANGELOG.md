@@ -1,5 +1,11 @@
 # Changelog JPA
 
+## 1.9.2
+
+- [56b67f](https://github.com/klee-contrib/topmodel/commit/56b67f6d2148bcaf5a97357b97f76d2965dac65b) [Générateur JPA] Problème dans la génération d'enums simples en mode enumsAsEnums
+  Fix [#485](https://github.com/klee-contrib/topmodel/issues/485)
+- [0e4b82](https://github.com/klee-contrib/topmodel/commit/0e4b82d549594a3ac380fb6e1bfd83b8a4a88c01) [JPA] Fix commentaires & ajout annotation @Serial
+
 ## 1.9.1
 
 - ['484'](https://github.com/klee-contrib/topmodel/pull/484) [JPA] décalage entre le nom du package dans l'import et l'emplacement pour les enumerations
