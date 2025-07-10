@@ -4,6 +4,7 @@
 
 package topmodel.jpa.sample.demo.dtos.securite.profil;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -21,11 +22,12 @@ import topmodel.jpa.sample.demo.enums.securite.profil.DroitCode;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class ProfilWrite implements Serializable {
 	/** Serial ID */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Libellé du profil.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getLibelle() Profil#getLibelle()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getLibelle() Profil#getLibelle()}
 	 */
 	@Size(max = 100)
 	@NotNull
@@ -33,7 +35,7 @@ public class ProfilWrite implements Serializable {
 
 	/**
 	 * Liste des droits du profil.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getDroits() Profil#getDroits()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getDroits() Profil#getDroits()}
 	 */
 	@Size(max = 10)
 	private List<DroitCode> droits;

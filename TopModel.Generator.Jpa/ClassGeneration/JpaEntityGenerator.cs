@@ -199,7 +199,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
                 }
             }
 
-            fw.WriteAnnotations(2, annotations);
+            fw.Write(2, annotations);
             fw.WriteLine(2, $"private {JpaModelPropertyGenerator.GetPropertyType(pk)} {JpaModelPropertyGenerator.GetPropertyName(pk)};");
         }
 

@@ -4,6 +4,7 @@
 
 package topmodel.jpa.sample.demo.dtos.securite.utilisateur;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,18 +24,19 @@ import topmodel.jpa.sample.demo.enums.securite.utilisateur.TypeUtilisateurCode;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class UtilisateurRead implements Serializable {
 	/** Serial ID */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Id de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getId() Utilisateur#getId()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getId() Utilisateur#getId()}
 	 */
 	@NotNull
 	private Integer id;
 
 	/**
 	 * Nom de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getNom() Utilisateur#getNom()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getNom() Utilisateur#getNom()}
 	 */
 	@Size(max = 100)
 	@NotNull
@@ -42,7 +44,7 @@ public class UtilisateurRead implements Serializable {
 
 	/**
 	 * Nom de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getPrenom() Utilisateur#getPrenom()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getPrenom() Utilisateur#getPrenom()}
 	 */
 	@Size(max = 100)
 	@NotNull
@@ -50,7 +52,7 @@ public class UtilisateurRead implements Serializable {
 
 	/**
 	 * Email de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getEmail() Utilisateur#getEmail()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getEmail() Utilisateur#getEmail()}
 	 */
 	@Email
 	@Size(max = 50)
@@ -59,48 +61,48 @@ public class UtilisateurRead implements Serializable {
 
 	/**
 	 * Age de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getDateNaissance() Utilisateur#getDateNaissance()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getDateNaissance() Utilisateur#getDateNaissance()}
 	 */
 	private LocalDate dateNaissance;
 
 	/**
 	 * Adresse de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getAdresse() Utilisateur#getAdresse()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getAdresse() Utilisateur#getAdresse()}
 	 */
 	@Size(max = 100)
 	private String adresse;
 
 	/**
 	 * Si l'utilisateur est actif.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getActif() Utilisateur#getActif()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getActif() Utilisateur#getActif()}
 	 */
 	@NotNull
 	private Boolean actif = true;
 
 	/**
 	 * Profil de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getProfil() Utilisateur#getProfil()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getProfilId() Utilisateur#getProfilId()}
 	 */
 	@NotNull
 	private Integer profilId;
 
 	/**
 	 * Type d'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getTypeUtilisateur() Utilisateur#getTypeUtilisateur()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()}
 	 */
 	@NotNull
 	private TypeUtilisateurCode typeUtilisateurCode = TypeUtilisateurCode.GEST;
 
 	/**
 	 * Date de création de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getDateCreation() Utilisateur#getDateCreation()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getDateCreation() Utilisateur#getDateCreation()}
 	 */
 	@NotNull
 	private LocalDateTime dateCreation;
 
 	/**
 	 * Date de modification de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getDateModification() Utilisateur#getDateModification()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getDateModification() Utilisateur#getDateModification()}
 	 */
 	private LocalDateTime dateModification;
 

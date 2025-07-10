@@ -40,7 +40,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     public void Write(int indentationLevel, JavaMethod javaMethod)
     {
         AddImports(javaMethod.Imports);
-        WriteAnnotations(indentationLevel, javaMethod.Annotations);
+        Write(indentationLevel, javaMethod.Annotations);
         if (!string.IsNullOrEmpty(javaMethod.Comment))
         {
             WriteDocStart(indentationLevel, javaMethod.Comment);
@@ -79,7 +79,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     {
         AddImports(javaClass.Imports);
         WriteLine();
-        WriteAnnotations(indentationLevel, javaClass.Annotations);
+        Write(indentationLevel, javaClass.Annotations);
         if (!string.IsNullOrEmpty(javaClass.Comment))
         {
             WriteDocStart(indentationLevel, javaClass.Comment);
@@ -110,7 +110,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// </summary>
     /// <param name="indentationLevel">Niveau d'indentation.</param>
     /// <param name="javaAnnotations">Valeurs à écrire dans le flux.</param>
-    public void WriteAnnotations(int indentationLevel, IEnumerable<JavaAnnotation> javaAnnotations)
+    public void Write(int indentationLevel, IEnumerable<JavaAnnotation> javaAnnotations)
     {
         foreach (var annotation in javaAnnotations.DistinctBy(e => e.Name.Split('(').First()))
         {
@@ -166,7 +166,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     public void WriteConstructor(int indentationLevel, JavaConstructor constructor)
     {
         AddImports(constructor.Imports);
-        WriteAnnotations(indentationLevel, constructor.Annotations);
+        Write(indentationLevel, constructor.Annotations);
         if (!string.IsNullOrEmpty(constructor.Comment))
         {
             WriteDocStart(indentationLevel, constructor.Comment);
@@ -217,7 +217,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     public void WriteField(int indentationLevel, JavaField field)
     {
         AddImports(field.Imports);
-        WriteAnnotations(indentationLevel, field.Annotations);
+        Write(indentationLevel, field.Annotations);
         if (!string.IsNullOrEmpty(field.Comment))
         {
             WriteDocStart(indentationLevel, field.Comment);

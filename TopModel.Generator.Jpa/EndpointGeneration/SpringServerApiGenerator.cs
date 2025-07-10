@@ -68,7 +68,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         AddImports(endpoints, fw, tag);
         fw.WriteLine();
         var javaxOrJakarta = Config.PersistenceMode.ToString().ToLower();
-        fw.WriteAnnotations(0, GetClassAnnotations(endpoints.First().ModelFile));
+        fw.Write(0, GetClassAnnotations(endpoints.First().ModelFile));
         fw.WriteLine($"public interface {className} {{");
 
         foreach (var endpoint in endpoints)

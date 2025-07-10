@@ -4,6 +4,7 @@
 
 package topmodel.jpa.sample.demo.dtos.securite.utilisateur;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 
@@ -22,11 +23,12 @@ import topmodel.jpa.sample.demo.enums.securite.utilisateur.TypeUtilisateurCode;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class UtilisateurWrite implements Serializable {
 	/** Serial ID */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Nom de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getNom() Utilisateur#getNom()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getNom() Utilisateur#getNom()}
 	 */
 	@Size(max = 100)
 	@NotNull
@@ -34,7 +36,7 @@ public class UtilisateurWrite implements Serializable {
 
 	/**
 	 * Nom de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getPrenom() Utilisateur#getPrenom()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getPrenom() Utilisateur#getPrenom()}
 	 */
 	@Size(max = 100)
 	@NotNull
@@ -42,7 +44,7 @@ public class UtilisateurWrite implements Serializable {
 
 	/**
 	 * Email de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getEmail() Utilisateur#getEmail()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getEmail() Utilisateur#getEmail()}
 	 */
 	@Email
 	@Size(max = 50)
@@ -51,34 +53,34 @@ public class UtilisateurWrite implements Serializable {
 
 	/**
 	 * Age de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getDateNaissance() Utilisateur#getDateNaissance()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getDateNaissance() Utilisateur#getDateNaissance()}
 	 */
 	private LocalDate dateNaissance;
 
 	/**
 	 * Adresse de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getAdresse() Utilisateur#getAdresse()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getAdresse() Utilisateur#getAdresse()}
 	 */
 	@Size(max = 100)
 	private String adresse;
 
 	/**
 	 * Si l'utilisateur est actif.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getActif() Utilisateur#getActif()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getActif() Utilisateur#getActif()}
 	 */
 	@NotNull
 	private Boolean actif = true;
 
 	/**
 	 * Profil de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getProfil() Utilisateur#getProfil()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getProfilId() Utilisateur#getProfilId()}
 	 */
 	@NotNull
 	private Integer profilId;
 
 	/**
 	 * Type d'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getTypeUtilisateur() Utilisateur#getTypeUtilisateur()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getTypeUtilisateurCode() Utilisateur#getTypeUtilisateurCode()}
 	 */
 	@NotNull
 	private TypeUtilisateurCode typeUtilisateurCode = TypeUtilisateurCode.GEST;

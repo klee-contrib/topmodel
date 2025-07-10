@@ -86,6 +86,8 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
     protected virtual void WriteStaticMembers(JavaWriter fw, Class classe)
     {
         fw.WriteLine("	/** Serial ID */");
+        var serialAnnotation = new JavaAnnotation("Serial", imports: ["java.io.Serial"]);
+        fw.Write(1, [serialAnnotation]);
         fw.WriteLine(1, "private static final long serialVersionUID = 1L;");
     }
 }

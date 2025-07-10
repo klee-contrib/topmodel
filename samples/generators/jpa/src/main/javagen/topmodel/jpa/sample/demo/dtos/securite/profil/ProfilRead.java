@@ -4,6 +4,7 @@
 
 package topmodel.jpa.sample.demo.dtos.securite.profil;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,18 +25,19 @@ import topmodel.jpa.sample.demo.enums.securite.profil.DroitCode;
 @Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class ProfilRead implements Serializable {
 	/** Serial ID */
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Id technique.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getId() Profil#getId()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getId() Profil#getId()}
 	 */
 	@NotNull
 	private Integer id;
 
 	/**
 	 * Libellé du profil.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getLibelle() Profil#getLibelle()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getLibelle() Profil#getLibelle()}
 	 */
 	@Size(max = 100)
 	@NotNull
@@ -43,21 +45,21 @@ public class ProfilRead implements Serializable {
 
 	/**
 	 * Liste des droits du profil.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getDroits() Profil#getDroits()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getDroits() Profil#getDroits()}
 	 */
 	@Size(max = 10)
 	private List<DroitCode> droits;
 
 	/**
 	 * Date de création de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getDateCreation() Profil#getDateCreation()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getDateCreation() Profil#getDateCreation()}
 	 */
 	@NotNull
 	private LocalDateTime dateCreation;
 
 	/**
 	 * Date de modification de l'utilisateur.
-	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getDateModification() Profil#getDateModification()} 
+	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getDateModification() Profil#getDateModification()}
 	 */
 	private LocalDateTime dateModification;
 

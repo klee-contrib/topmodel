@@ -62,7 +62,7 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         fw.WriteDocEnd(0);
 
         fw.AddImports(Config.GetDecoratorImports(classe, tag).ToList());
-        fw.WriteAnnotations(0, GetAnnotations(classe, tag));
+        fw.Write(0, GetAnnotations(classe, tag));
     }
 
     protected virtual void WriteFieldsEnum(JavaWriter fw, Class classe, string tag)

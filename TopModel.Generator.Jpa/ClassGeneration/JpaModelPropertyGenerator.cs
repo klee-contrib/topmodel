@@ -222,7 +222,8 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
         IEnumerable<JavaAnnotation> annotations = GetAnnotations(property, tag);
         if (property is AliasProperty ap && Classes.Contains(ap.Property.Class))
         {
-            fw.WriteLine(1, $" * Alias of {{@link {ap.Property.Class.GetImport(Config, tag)}#get{GetPropertyName(ap.Property).ToFirstUpper()}() {ap.Property.Class.NamePascal}#get{GetPropertyName(ap.Property).ToFirstUpper()}()}} ");
+            var getter = Config.EnumsAsEnums && Config.CanClassUseEnums(ap.Property.Class) ? string.Empty : $"#{GetGetterName(property)}()";
+            fw.WriteLine(1, $" * Alias of {{@link {ap.Property.Class.GetImport(Config, tag)}{getter} {ap.Property.Class.NamePascal}{getter}}}");
         }
 
         fw.WriteDocEnd(1);
@@ -232,7 +233,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
             annotations = GetDomainAnnotations(property, tag).Concat(annotations).ToList();
         }
 
-        fw.WriteAnnotations(1, annotations);
+        fw.Write(1, annotations);
         string defaultValue = GetDefaultValue(property);
         fw.AddImports(GetDefaultValueImports(property, tag));
         fw.AddImports(property.GetTypeImports(Config, tag));
