@@ -137,6 +137,11 @@ public class FileChecker
         return _deserializer.Deserialize(_serializer.Serialize(genConfigMap), configType)!;
     }
 
+    public WatcherConfigBase GetWatcherConfigBase(IDictionary<string, object> genConfigMap)
+    {
+        return _deserializer.Deserialize<WatcherConfigBase>(_serializer.Serialize(genConfigMap))!;
+    }
+
     private static void Validate(string fileName, JsonSchema schema, string json)
     {
         var errors = schema.Validate(json);

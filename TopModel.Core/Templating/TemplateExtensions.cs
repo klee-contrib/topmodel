@@ -1,12 +1,11 @@
 ﻿using System.Text.RegularExpressions;
-using TopModel.Core;
 using TopModel.Utils;
 
-namespace TopModel.Generator.Core;
+namespace TopModel.Core.Templating;
 
-internal static class TemplateExtensions
+public static class TemplateExtensions
 {
-    public static string ParseTemplate(this string template, IProperty p, GeneratorConfigBase config, string? tag = null)
+    public static string ParseTemplate(this string template, IProperty p, WatcherConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -16,18 +15,18 @@ internal static class TemplateExtensions
         var result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), p, p.Domain?.TemplateParameters ?? [], p.DomainParameters, config, tag));
+            result = result.Replace(t.Value, t.Value.Trim('{', '}').ResolveVariable(p, p.Domain?.TemplateParameters ?? [], p.DomainParameters, config, tag));
         }
 
         return result;
     }
 
-    public static string ParseTemplate(this StringWithVariables template, IProperty p, GeneratorConfigBase config, string? tag = null)
+    public static string ParseTemplate(this StringWithVariables template, IProperty p, WatcherConfigBase config, string? tag = null)
     {
         return template.Value.ParseTemplate(p, config, tag);
     }
 
-    public static string ParseTemplate(this string template, Decorator d, Class c, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
+    public static string ParseTemplate(this string template, Decorator d, Class c, IList<string> parameterValues, WatcherConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -37,18 +36,18 @@ internal static class TemplateExtensions
         string result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), c, d.TemplateParameters, parameterValues, config, tag));
+            result = result.Replace(t.Value, t.Value.Trim('{', '}').ResolveVariable(c, d.TemplateParameters, parameterValues, config, tag));
         }
 
         return result;
     }
 
-    public static string ParseTemplate(this StringWithVariables template, Decorator d, Class c, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
+    public static string ParseTemplate(this StringWithVariables template, Decorator d, Class c, IList<string> parameterValues, WatcherConfigBase config, string? tag = null)
     {
         return template.Value.ParseTemplate(d, c, parameterValues, config, tag);
     }
 
-    public static string ParseTemplate(this StringWithVariables template, Decorator d, Endpoint e, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
+    public static string ParseTemplate(this StringWithVariables template, Decorator d, Endpoint e, IList<string> parameterValues, WatcherConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -58,13 +57,13 @@ internal static class TemplateExtensions
         string result = template;
         foreach (var t in template.Value.ExtractVariables())
         {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), e, d.TemplateParameters, parameterValues, config, tag));
+            result = result.Replace(t.Value, t.Value.Trim('{', '}').ResolveVariable(e, d.TemplateParameters, parameterValues, config, tag));
         }
 
         return result;
     }
 
-    public static string ParseTemplate(this string template, Domain domainFrom, Domain domainTo, GeneratorConfigBase config, string? tag = null)
+    public static string ParseTemplate(this string template, Domain domainFrom, Domain domainTo, WatcherConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -74,7 +73,7 @@ internal static class TemplateExtensions
         var result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, ResolveVariable(t.Value.Trim('{', '}'), domainFrom, domainTo, config, tag));
+            result = result.Replace(t.Value, t.Value.Trim('{', '}').ResolveVariable(domainFrom, domainTo, config, tag));
         }
 
         return result;
@@ -152,7 +151,7 @@ internal static class TemplateExtensions
         return string.Empty;
     }
 
-    private static string ResolveVariable(this string input, Domain domain, GeneratorConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, Domain domain, WatcherConfigBase config, string? tag = null)
     {
         return (input.Split(':').First() switch
         {
@@ -165,7 +164,7 @@ internal static class TemplateExtensions
         }).Transform(input);
     }
 
-    private static string ResolveVariable(this string input, IPropertyContainer container, IList<TemplateParameter> templateParameters, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, IPropertyContainer container, IList<TemplateParameter> templateParameters, IList<string> parameterValues, WatcherConfigBase config, string? tag = null)
     {
         return container switch
         {
@@ -175,7 +174,7 @@ internal static class TemplateExtensions
         };
     }
 
-    private static string ResolveVariable(this string input, IProperty p, IList<TemplateParameter> templateParameters, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, IProperty p, IList<TemplateParameter> templateParameters, IList<string> parameterValues, WatcherConfigBase config, string? tag = null)
     {
         if (input == null || input.Length == 0)
         {
@@ -184,22 +183,22 @@ internal static class TemplateExtensions
 
         if (input.StartsWith("parent."))
         {
-            return ResolveVariable(input["parent.".Length..], p.Parent, templateParameters, parameterValues, config, tag);
+            return input["parent.".Length..].ResolveVariable(p.Parent, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith("class."))
         {
-            return ResolveVariable(input["class.".Length..], p.Parent, templateParameters, parameterValues, config, tag);
+            return input["class.".Length..].ResolveVariable(p.Parent, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith("endpoint."))
         {
-            return ResolveVariable(input["endpoint.".Length..], p.Parent, templateParameters, parameterValues, config, tag);
+            return input["endpoint.".Length..].ResolveVariable(p.Parent, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith("domain."))
         {
-            return ResolveVariable(input["domain.".Length..], p.Domain, config, tag);
+            return input["domain.".Length..].ResolveVariable(p.Domain, config, tag);
         }
 
         if (input.StartsWith($"customProperties."))
@@ -218,7 +217,7 @@ internal static class TemplateExtensions
 
             if (association != null)
             {
-                return ResolveVariable(input["association.".Length..], association, templateParameters, parameterValues, config, tag);
+                return input["association.".Length..].ResolveVariable(association, templateParameters, parameterValues, config, tag);
             }
         }
 
@@ -233,7 +232,7 @@ internal static class TemplateExtensions
 
             if (composition != null)
             {
-                return ResolveVariable(input["composition.".Length..], composition, templateParameters, parameterValues, config, tag);
+                return input["composition.".Length..].ResolveVariable(composition, templateParameters, parameterValues, config, tag);
             }
         }
 
@@ -255,7 +254,7 @@ internal static class TemplateExtensions
         return result;
     }
 
-    private static string ResolveVariable(this string input, Class c, IList<TemplateParameter> templateParameters, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, Class c, IList<TemplateParameter> templateParameters, IList<string> parameterValues, WatcherConfigBase config, string? tag = null)
     {
         if (input == null || input.Length == 0)
         {
@@ -269,7 +268,7 @@ internal static class TemplateExtensions
                 return string.Empty;
             }
 
-            return ResolveVariable(input["primaryKey.".Length..], c.PrimaryKey.FirstOrDefault()!, templateParameters, parameterValues, config, tag);
+            return input["primaryKey.".Length..].ResolveVariable(c.PrimaryKey.FirstOrDefault()!, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith("extends."))
@@ -279,7 +278,7 @@ internal static class TemplateExtensions
                 return string.Empty;
             }
 
-            return ResolveVariable(input["extends.".Length..], c.Extends, templateParameters, parameterValues, config, tag);
+            return input["extends.".Length..].ResolveVariable(c.Extends, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith($"customProperties."))
@@ -299,7 +298,7 @@ internal static class TemplateExtensions
                     return string.Empty;
                 }
 
-                return ResolveVariable(nextInput, c.Properties[index], templateParameters, parameterValues, config, tag);
+                return nextInput.ResolveVariable(c.Properties[index], templateParameters, parameterValues, config, tag);
             }
             else
             {
@@ -322,7 +321,7 @@ internal static class TemplateExtensions
         return result;
     }
 
-    private static string ResolveVariable(this string input, Endpoint e, IList<TemplateParameter> templateParameters, IList<string> parameterValues, GeneratorConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, Endpoint e, IList<TemplateParameter> templateParameters, IList<string> parameterValues, WatcherConfigBase config, string? tag = null)
     {
         if (input == null || input.Length == 0)
         {
@@ -336,7 +335,7 @@ internal static class TemplateExtensions
                 return string.Empty;
             }
 
-            return ResolveVariable(input["returns.".Length..], e.Returns, templateParameters, parameterValues, config, tag);
+            return input["returns.".Length..].ResolveVariable(e.Returns, templateParameters, parameterValues, config, tag);
         }
 
         if (input.StartsWith($"customProperties."))
@@ -356,7 +355,7 @@ internal static class TemplateExtensions
                     return string.Empty;
                 }
 
-                return ResolveVariable(nextInput, e.Params[index], templateParameters, parameterValues, config, tag);
+                return nextInput.ResolveVariable(e.Params[index], templateParameters, parameterValues, config, tag);
             }
             else
             {
@@ -377,15 +376,15 @@ internal static class TemplateExtensions
         return result;
     }
 
-    private static string ResolveVariable(this string input, Domain domainFrom, Domain domainTo, GeneratorConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, Domain domainFrom, Domain domainTo, WatcherConfigBase config, string? tag = null)
     {
         if (input.StartsWith("from."))
         {
-            return ResolveVariable(input["from.".Length..], domainFrom, config, tag);
+            return input["from.".Length..].ResolveVariable(domainFrom, config, tag);
         }
         else
         {
-            return ResolveVariable(input["to.".Length..], domainTo, config, tag);
+            return input["to.".Length..].ResolveVariable(domainTo, config, tag);
         }
     }
 

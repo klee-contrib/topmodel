@@ -33,8 +33,9 @@ public class Converter
     public Dictionary<string, ConverterImplementation> Implementations { get; set; } = [];
 
     public IEnumerable<ParameterReference> VariableReferences => Implementations.Values
-        .SelectMany(i => i.TextWithVariables.Variables)
-        .Where(pr => pr.ReferenceName.IsValidConverterVariable());
+        .SelectMany(i => i.TextWithVariables.Variables);
+
+    public Dictionary<string, Variable> Variables { get; } = [];
 
     public IEnumerable<TransformReference> TransformReferences => Implementations.Values
          .SelectMany(i => i.TextWithVariables.Transforms)

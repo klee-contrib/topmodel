@@ -35,10 +35,10 @@ public class ModelFile
 
     public IDictionary<Reference, object> References =>
         Domains.SelectMany(d => d.AsDomains.Keys.Select(adn => d.AsDomainReferences.TryGetValue(adn, out var adr) && d.AsDomains.TryGetValue(adn, out var ad) ? (adr as Reference, ad as object) : (null, null)))
-        .Concat(Domains.SelectMany(d => d.VariableReferences.Select(pr => (pr as Reference, d.TemplateParameters.FirstOrDefault(tp => tp.Name == pr.ReferenceName) as object ?? Variable.Property))))
-        .Concat(Decorators.SelectMany(d => d.VariableReferences.Select(pr => (pr as Reference, d.TemplateParameters.FirstOrDefault(tp => tp.Name == pr.ReferenceName) as object ?? Variable.PropertyContainer))))
-        .Concat(Converters.SelectMany(d => d.VariableReferences.Select(pr => (pr as Reference, Variable.Converter as object))))
-        .Concat(Domains.SelectMany(d => d.TransformReferences).Concat(Decorators.SelectMany(d => d.TransformReferences)).Concat(Converters.SelectMany(d => d.TransformReferences)).Select(tr => (tr as Reference, Variable.Transform as object)))
+        .Concat(Domains.SelectMany(d => d.VariableReferences.Select(pr => (pr as Reference, d.Variables.TryGetValue(pr.ReferenceName, out var variable) ? variable as object : null))))
+        .Concat(Decorators.SelectMany(d => d.VariableReferences.Select(pr => (pr as Reference, d.Variables.TryGetValue(pr.ReferenceName, out var variable) ? variable as object : null))))
+        .Concat(Converters.SelectMany(d => d.VariableReferences.Select(pr => (pr as Reference, d.Variables.TryGetValue(pr.ReferenceName, out var variable) ? variable as object : null))))
+        .Concat(Domains.SelectMany(d => d.TransformReferences).Concat(Decorators.SelectMany(d => d.TransformReferences)).Concat(Converters.SelectMany(d => d.TransformReferences)).Select(tr => (tr as Reference, new Variable { Description = "Transformation de variable" } as object)))
         .Concat(Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object)))
         .Concat(Classes.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
         .Concat(Classes.SelectMany(c => c.DecoratorReferences.SelectMany(dr => dr.ParameterReferences.Select((pr, i) => (pr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName).Decorator?.TemplateParameters.ElementAtOrDefault(i) as object)))))

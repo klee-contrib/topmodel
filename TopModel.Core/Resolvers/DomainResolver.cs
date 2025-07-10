@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Model.Implementation;
 using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
@@ -48,6 +49,16 @@ internal class DomainResolver(ModelFile modelFile, IDictionary<string, Domain> d
     {
         foreach (var converter in converters)
         {
+            converter.Variables.Clear();
+
+            foreach (var varName in converter.VariableReferences)
+            {
+                if (varName.ReferenceName.TryGetConverterVariable(out var variable))
+                {
+                    converter.Variables.TryAdd(varName.ReferenceName, variable);
+                }
+            }
+
             converter.From.Clear();
             converter.To.Clear();
 
@@ -87,6 +98,26 @@ internal class DomainResolver(ModelFile modelFile, IDictionary<string, Domain> d
             foreach (var f in converter.To)
             {
                 f.ConvertersTo.Add(converter);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Résout les variables dans les domaines.
+    /// </summary>
+    /// <param name="config">Config.</param>
+    public void ResolveDomainVariables(ModelConfig config)
+    {
+        foreach (var domain in modelFile.Domains)
+        {
+            domain.Variables.Clear();
+
+            foreach (var varName in domain.VariableReferences)
+            {
+                if (varName.ReferenceName.TryGetPropertyVariable(config, domain.TemplateParameters, out var variable))
+                {
+                    domain.Variables.TryAdd(varName.ReferenceName, variable);
+                }
             }
         }
     }

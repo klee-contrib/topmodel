@@ -58,9 +58,8 @@ command.SetHandler(
             try
             {
                 fileChecker.CheckConfigFile(file.FullName);
-                using var textToRead = file.OpenText();
-                var text = textToRead.ReadToEnd();
-                var config = fileChecker.DeserializeConfig(text).Init(file.DirectoryName!);
+                using var text = file.OpenText();
+                var config = fileChecker.DeserializeConfig(text.ReadToEnd()).Init(file.DirectoryName!);
                 configs.Add(file.FullName, config);
             }
             catch (ModelException me)
@@ -590,9 +589,9 @@ for (var i = 0; i < configs.Count; i++)
                 try
                 {
                     var genConfig = (GeneratorConfigBase)fileChecker.GetGenConfig(configName, configType, genConfigMap);
+                    genConfig.InitVariables(config.App, number);
 
                     genConfig.ExcludedTags = excludedTags;
-                    genConfig.InitVariables(config.App, number);
 
                     genConfig.TranslateReferences ??= config.I18n.TranslateReferences;
                     genConfig.TranslateProperties ??= config.I18n.TranslateProperties;
@@ -603,6 +602,8 @@ for (var i = 0; i < configs.Count; i++)
                     var instance = Activator.CreateInstance(generator);
                     instance!.GetType().GetMethod("Register")!
                         .Invoke(instance, [services, genConfig, number]);
+
+                    config.Configs.Add($"{configName}@{number}", genConfig);
                 }
                 catch (ModelException me)
                 {
