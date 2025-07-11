@@ -8,6 +8,12 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.8.3
+
+- [`482`](https://github.com/klee-contrib/topmodel/pull/482) TopModel reconnaît maintenant les variables définies dans la configuration dans les templates (globales ou par tag)
+Chaque variable de propriété/classe/endpoint... a maintenant sa propre description au lieu d'une description générique
+Il s'agit d'une évolution non négligeable de TopModel parce que désormais une partie de la configuration des générateurs est remontée dans le Core, en particulier ce qui concernent les variables, les tags et les langages. Cela ouvre la voie pour des fonctionnalités futures là dessus, comme des warnings sur les variables non définies / pas définies dans tous les générateurs par exemple.
+
 ## 2.8.2
 
 - [`a48f500`](https://github.com/klee-contrib/topmodel/commit/a48f5009abebc8a3138dd5b4a4bd7a2d1c9a05ee) - Fix variables par tag non résolues dans les templates d'implémentation
