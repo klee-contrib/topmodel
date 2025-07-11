@@ -174,7 +174,7 @@ public class JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> lo
     {
         var classes = properties.GroupBy(prop => prop.Parent);
         var modules = classes
-            .GroupBy(c => c.Key.Namespace.Module.Split('.').Skip(level).ElementAtOrDefault(0));
+            .GroupBy(c => c.Key.Namespace.Module.Split('.').Skip(level).ElementAtOrDefault(0)?.ToCamelCase());
         var u = 1;
 
         var mainModuleClasses = modules.Where(c => c.Key == null).SelectMany(c => c.Select(p => p.Key.NameCamel)).ToHashSet();
@@ -205,7 +205,7 @@ public class JavascriptResourceGenerator(ILogger<JavascriptResourceGenerator> lo
             }
             else
             {
-                fw.WriteLine(level, $@"{Quote(submodule.Key.Split('.').First().ToCamelCase())}: {{");
+                fw.WriteLine(level, $@"{Quote(submodule.Key)}: {{");
 
                 if (extraSubModuleProperties.TryGetValue(submodule.Key, out var container))
                 {
