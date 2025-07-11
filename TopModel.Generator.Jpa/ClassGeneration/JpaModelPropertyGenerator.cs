@@ -175,6 +175,10 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
         {
             return Config.CanClassUseEnums(ap.Property.Class, Classes, ap.Property) && property.Class.IsPersistent;
         }
+        else if (property is AssociationProperty asp && Config.EnumsAsEnums)
+        {
+            return Config.CanClassUseEnums(asp.Association, Classes) && property.Class.IsPersistent;
+        }
         else
         {
             return Config.CanClassUseEnums(property.Class, Classes, property) && property.Class.IsPersistent;
