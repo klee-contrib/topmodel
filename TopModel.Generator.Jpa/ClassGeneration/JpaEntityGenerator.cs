@@ -105,6 +105,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
         fw.WriteLine();
 
+        WriteClassComment(fw, classe, tag);
         WriteAnnotations(fw, classe, tag);
 
         var extends = Config.GetClassExtends(classe);

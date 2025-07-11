@@ -50,6 +50,7 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
 
         fw.WriteLine();
 
+        WriteClassComment(fw, classe, tag);
         WriteAnnotations(fw, classe, tag);
 
         var extends = Config.GetClassExtends(classe);

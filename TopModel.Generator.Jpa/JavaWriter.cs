@@ -125,7 +125,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// <param name="modifier">Modifier.</param>
     /// <param name="inheritedClass">Classe parente.</param>
     /// <param name="implementingInterfaces">Interfaces implémentées.</param>
-    public void WriteClassDeclaration(string name, string? modifier, string? inheritedClass = null, IList<string>? implementingInterfaces = null)
+    public void WriteClassDeclaration(string name, string? modifier, string? inheritedClass = null, IList<string>? implementingInterfaces = null, string classType = "class")
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -136,11 +136,11 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
 
         if (string.IsNullOrEmpty(modifier))
         {
-            sb.Append($"public class ");
+            sb.Append($"public {classType} ");
         }
         else
         {
-            sb.Append($"public {modifier} class ");
+            sb.Append($"public {modifier} {classType} ");
         }
 
         sb.Append(name);

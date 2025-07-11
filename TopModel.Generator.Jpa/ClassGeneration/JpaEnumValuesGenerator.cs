@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
-using TopModel.Core.FileModel;
-using TopModel.Generator.Core;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -10,7 +8,7 @@ namespace TopModel.Generator.Jpa.ClassGeneration;
 /// Générateur de fichiers de modèles JPA.
 /// </summary>
 public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFileWriterProvider writerProvider)
-    : GeneratorBase<JpaConfig>(logger, writerProvider)
+    : JavaClassGeneratorBase(logger, writerProvider)
 {
     public override string Name => "JpaEnumValuesGen";
 
@@ -19,87 +17,36 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         .SelectMany(f => f.Classes.Where(FilterClass))
         .SelectMany(c => Config.Tags.Intersect(c.Tags).SelectMany(tag => GetEnumProperties(c).Select(p => GetFileName(c, tag)))).Distinct();
 
-    protected bool FilterClass(Class classe)
+    protected override bool FilterClass(Class classe)
     {
         return !classe.Abstract
             && (Config.CanClassUseEnums(classe, Classes.ToList()) || Config.EnumsAsEnums && classe.Enum)
             && classe.Enum;
     }
 
-    protected string GetFileName(Class classe, string tag)
+    protected override string GetFileName(Class classe, string tag)
     {
         return Config.GetEnumValueFileName(classe, tag);
     }
 
-    protected void HandleClass(Class classe, string tag)
-    {
-        WriteEnum(classe, tag);
-    }
-
-    protected override void HandleFiles(IEnumerable<ModelFile> files)
-    {
-        foreach (var file in files)
-        {
-            foreach (var classe in file.Classes.Where(FilterClass))
-            {
-                foreach (var tag in Config.Tags.Intersect(classe.Tags))
-                {
-                    HandleClass(classe, tag);
-                }
-            }
-        }
-    }
-
-    private List<IProperty> GetEnumProperties(Class classe)
-    {
-        List<IProperty> result = [];
-        if (classe.EnumKey != null && Config.CanClassUseEnums(classe, prop: classe.EnumKey) && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, Classes, prop: classe.EnumKey)))
-        {
-            result.Add(classe.EnumKey);
-        }
-
-        var uks = classe.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(classe, Classes, uk.Single()) && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, Classes, prop: classe.EnumKey))).Select(uk => uk.Single());
-        result.AddRange(uks);
-        return result;
-    }
-
-    private void WriteConstructor(Class classe, JavaWriter fw)
-    {
-        // Constructeur
-        fw.WriteDocStart(1, "Enum values constructor");
-        fw.WriteDocEnd(1);
-        var properties = classe.Properties.Where(p => p != classe.EnumKey);
-        var constructor = new JavaConstructor(classe.NamePascal);
-        var methodParams = properties.Select((prop, index) =>
-            {
-                var fieldName = prop.NameByClassCamel;
-                var fieldType = Config.GetType(prop);
-                if (prop is AssociationProperty ap)
-                {
-                    fieldName = $"{ap.NameByClassCamel}";
-                    fieldType = $"{ap.Association.NamePascal}";
-                }
-
-                return new JavaMethodParameter(fieldType, fieldName) { Final = true };
-            });
-        constructor.AddParameters(methodParams);
-        foreach (var param in methodParams)
-        {
-            constructor.AddBodyLine($@"this.{param.Name} = {param.Name};");
-        }
-
-        fw.Write(1, constructor);
-    }
-
-    private void WriteEnum(Class classe, string tag)
+    protected override void HandleClass(string fileName, Class classe, string tag)
     {
         var packageName = Config.GetEnumValuePackageName(classe, tag);
-        using var fw = this.OpenJavaWriter(Config.GetEnumValueFileName(classe, tag), packageName, null);
+        using var fw = this.OpenJavaWriter(fileName, packageName, null);
         fw.WriteLine();
         var codeProperty = classe.EnumKey!;
         fw.WriteDocStart(0, $"Enumération des valeurs possibles de la classe {classe.NamePascal}");
         fw.WriteDocEnd(0);
-        fw.WriteLine($@"public enum {classe.NamePascal} {{");
+
+        WriteAnnotations(fw, classe, tag);
+        if (classe.Extends is not null)
+        {
+            fw.AddImport($"{Config.GetPackageName(classe.Extends, tag)}.{classe.Extends.NamePascal}");
+        }
+
+        var implements = Config.GetClassImplements(classe).ToList();
+
+        fw.WriteClassDeclaration(classe.NamePascal, null, null, implements, "enum");
         var i = 0;
 
         var refs = GetAllValues(classe)
@@ -210,5 +157,46 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
         }
 
         fw.WriteLine("}");
+    }
+
+    private List<IProperty> GetEnumProperties(Class classe)
+    {
+        List<IProperty> result = [];
+        if (classe.EnumKey != null && Config.CanClassUseEnums(classe, prop: classe.EnumKey) && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, Classes, prop: classe.EnumKey)))
+        {
+            result.Add(classe.EnumKey);
+        }
+
+        var uks = classe.UniqueKeys.Where(uk => uk.Count == 1 && Config.CanClassUseEnums(classe, Classes, uk.Single()) && !(classe.Extends != null && Config.CanClassUseEnums(classe.Extends, Classes, prop: classe.EnumKey))).Select(uk => uk.Single());
+        result.AddRange(uks);
+        return result;
+    }
+
+    private void WriteConstructor(Class classe, JavaWriter fw)
+    {
+        // Constructeur
+        fw.WriteDocStart(1, "Enum values constructor");
+        fw.WriteDocEnd(1);
+        var properties = classe.Properties.Where(p => p != classe.EnumKey);
+        var constructor = new JavaConstructor(classe.NamePascal);
+        var methodParams = properties.Select((prop, index) =>
+            {
+                var fieldName = prop.NameByClassCamel;
+                var fieldType = Config.GetType(prop);
+                if (prop is AssociationProperty ap)
+                {
+                    fieldName = $"{ap.NameByClassCamel}";
+                    fieldType = $"{ap.Association.NamePascal}";
+                }
+
+                return new JavaMethodParameter(fieldType, fieldName) { Final = true };
+            });
+        constructor.AddParameters(methodParams);
+        foreach (var param in methodParams)
+        {
+            constructor.AddBodyLine($@"this.{param.Name} = {param.Name};");
+        }
+
+        fw.Write(1, constructor);
     }
 }

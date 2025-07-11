@@ -35,6 +35,7 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
         using var fw = this.OpenJavaWriter(fileName, packageName, null);
 
         fw.WriteLine();
+        WriteClassComment(fw, classe, tag);
         WriteAnnotations(fw, classe, tag);
 
         var extends = Config.GetClassExtends(classe);
