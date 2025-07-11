@@ -1,3 +1,7 @@
+## 1.4.4
+
+- [`82e531a`](https://github.com/klee-contrib/topmodel/commit/82e531a78dc114ed4112ce48c6b6a16fc1e26119) - [JS] Fix groupby submodule dans les traductions sans camelCase
+
 ## 1.4.3
 
 - [`d4a16e9`](https://github.com/klee-contrib/topmodel/commit/d4a16e9a45cede8403cbaf9d71c1e9da2f2f1983) - [JS] Fix régression fillFormData client angular
