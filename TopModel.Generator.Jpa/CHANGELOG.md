@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 1.9.3
+
+- [b0990cf](https://github.com/klee-contrib/topmodel/commit/b0990cf5c38e056728f0454082e4ecf2090153fa) [JPA] Fix annotation Enum pour cas EnumsAsEnum pour un association
+
 ## 1.9.2
 
 - [56b67f](https://github.com/klee-contrib/topmodel/commit/56b67f6d2148bcaf5a97357b97f76d2965dac65b) [Générateur JPA] Problème dans la génération d'enums simples en mode enumsAsEnums
