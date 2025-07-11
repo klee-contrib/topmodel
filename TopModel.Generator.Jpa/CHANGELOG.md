@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 1.9.4
+
+- [7d8ab0a](https://github.com/klee-contrib/topmodel/commit/7d8ab0a512e2fe6afb2485f8ad9e126e027416f6) [JPA] Les décorateurs ne sont pas pris en compte pour les enums dans le mode EnumsAsEnums
+
 ## 1.9.3
 
 - [b0990cf](https://github.com/klee-contrib/topmodel/commit/b0990cf5c38e056728f0454082e4ecf2090153fa) [JPA] Fix annotation Enum pour cas EnumsAsEnum pour un association
