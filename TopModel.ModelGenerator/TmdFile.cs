@@ -14,5 +14,7 @@ public class TmdFile
 
     public string? Path { get; set; }
 
-    public List<TmdFile> Uses => Classes.SelectMany(c => c.Dependencies).Concat(Endpoints.SelectMany(e => e.Dependencies)).Where(c => c.File != null).Select(f => f!.File!).Distinct().OrderBy(u => u.Name).ToList();
+    public List<TmdFile> Uses => Classes.SelectMany(c => c.Dependencies).Where(d => d.File != this).Concat(Endpoints.SelectMany(e => e.Dependencies)).Where(c => c.File != null).Select(f => f!.File!).Distinct().OrderBy(u => u.Name).ToList();
+
+    public List<TmdFile> ExtendedUses => Uses.Concat(Uses.SelectMany(u => u.ExtendedUses)).Distinct().ToList();
 }

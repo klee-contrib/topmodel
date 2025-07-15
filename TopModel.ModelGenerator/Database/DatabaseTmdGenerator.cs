@@ -210,8 +210,8 @@ public abstract class DatabaseTmdGenerator(ILogger<DatabaseTmdGenerator> logger,
         var joinModule = $"{ModuleIndice}_Join";
         foreach (var file in Files.Where(f => f.Module is null && f.Classes.SelectMany(c => c.Dependencies).Any()))
         {
-            var dep = file.Classes.SelectMany(c => c.Dependencies).Select(c => c.File!.Module).Distinct();
-            if (dep.Count() == 1 && dep.First() != null)
+            var dep = file.Classes.SelectMany(c => c.Dependencies).Select(c => c.File!.Module).Where(d => d != null).Distinct();
+            if (dep.Count() == 1)
             {
                 file.Module = dep.First();
             }
@@ -485,7 +485,8 @@ public abstract class DatabaseTmdGenerator(ILogger<DatabaseTmdGenerator> logger,
         foreach (var group in Files.GroupBy(f => f.Module))
         {
             var indice = 1;
-            foreach (var file in group.OrderBy(f => f.Name))
+            var files = group.OrderBy(f => f.ExtendedUses.Count());
+            foreach (var file in files)
             {
                 var mainClass = file.Classes.OrderByDescending(cl => cl.Dependencies.Count + _classes.SelectMany(c => c.Value.Dependencies).Where(c => c == cl).Count()).First();
                 file.Name = (indice < 10 ? "0" : string.Empty) + indice++ + "_" + mainClass.Name;
