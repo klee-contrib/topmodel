@@ -39,8 +39,8 @@ public class Utilisateur {
 	/**
 	 * Id de l'utilisateur.
 	 */
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "UTI_ID", nullable = false, columnDefinition = "int")
 	private Integer id;
 

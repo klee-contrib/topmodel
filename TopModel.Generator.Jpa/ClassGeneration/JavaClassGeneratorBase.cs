@@ -134,6 +134,8 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         {
             JpaModelPropertyGenerator.WriteGetter(fw, tag, property);
         }
+
+        WriteMapIdPropertyGetter(fw, classe, tag);
     }
 
     protected virtual void WriteSetters(JavaWriter fw, Class classe, string tag)
@@ -142,6 +144,8 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
         {
             JpaModelPropertyGenerator.WriteSetter(fw, tag, property);
         }
+
+        WriteMapIdPropertySetter(fw, classe, tag);
     }
 
     protected virtual void WriteToMappers(JavaWriter fw, Class classe, string tag)
@@ -176,6 +180,48 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
             {
                 fw.WriteLine();
             }
+        }
+    }
+
+    private void WriteMapIdPropertyGetter(JavaWriter fw, Class classe, string tag)
+    {
+        if (classe.PrimaryKey.Count() == 1 && classe.PrimaryKey.FirstOrDefault() is AssociationProperty ap)
+        {
+            var propertyType = JpaModelPropertyGenerator.GetPropertyType(ap.Property);
+            fw.WriteLine();
+            string getterName = $"get{ap.NamePascal}";
+            var method = new JavaMethod(propertyType, getterName)
+            {
+                Visibility = "public",
+                Comment = $"Getter for {ap.NameCamel}",
+                ReturnComment = $"value of {{@link {classe.GetImport(Config, tag)}#{ap.NameCamel} {ap.NameCamel}}}"
+            };
+            method.AddBodyLine(@$"return this.{ap.NameCamel};");
+            fw.Write(1, method);
+        }
+    }
+
+    private void WriteMapIdPropertySetter(JavaWriter fw, Class classe, string tag)
+    {
+        if (classe.PrimaryKey.Count() == 1 && classe.PrimaryKey.FirstOrDefault() is AssociationProperty ap)
+        {
+            var propertyName = classe.PrimaryKey.First().NameCamel;
+            var propertyType = JpaModelPropertyGenerator.GetPropertyType(ap.Property);
+            fw.WriteLine();
+            string setterName = $"set{ap.NamePascal}";
+            var method = new JavaMethod("void", setterName)
+            {
+                Visibility = "public",
+                Comment = $"Setter for {propertyName}",
+            }
+            .AddParameter(new JavaMethodParameter(propertyType, propertyName)
+            {
+                Comment = $"Set the value of {{@link {classe.GetImport(Config, tag)}#{propertyName} {propertyName}}}"
+            })
+            ;
+            method.Imports.AddRange(Config.GetDomainImports(ap.Property, tag));
+            method.AddBodyLine(@$"this.{propertyName} = {propertyName};");
+            fw.Write(1, method);
         }
     }
 }

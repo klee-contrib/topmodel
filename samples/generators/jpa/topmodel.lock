@@ -4,7 +4,7 @@
 
 version: 2.8.3
 custom:
-  ../../../TopModel.Generator.Jpa: 050f8a68aeb4ebcdce4dbfd8f91047b3
+  ../../../TopModel.Generator.Jpa: 8cd93f9c937e02e84576dbea22b9387b
 generatedFiles:
   - ./src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/profil/ProfilClient.java
   - ./src/main/javagen/topmodel/jpa/sample/demo/api/client/securite/utilisateur/UtilisateurClient.java

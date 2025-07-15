@@ -42,8 +42,8 @@ public class Profil {
 	/**
 	 * Id technique.
 	 */
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PRO_ID", nullable = false, columnDefinition = "int")
 	private Integer id;
 

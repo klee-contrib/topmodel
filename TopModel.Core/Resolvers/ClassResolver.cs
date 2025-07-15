@@ -30,6 +30,16 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
                     ModelErrorType = ModelErrorType.TMD1029
                 };
             }
+
+            if (classe.PrimaryKey.Count() == 1 && classe.PrimaryKey.First() is AssociationProperty ap && ap.Type != AssociationType.OneToOne)
+            {
+
+                yield return new ModelError(modelFile, $"Pour être la primary key de cette classe, cette association doit être de type oneToOne.", ap.GetLocation())
+                {
+                    IsError = true,
+                    ModelErrorType = ModelErrorType.TMD1029
+                };
+            }
         }
 
         foreach (var classe in modelFile.Classes.Where(c => c.Values.Count > 0 && (c.IsPersistent || c.UniqueKeys.Count > 0)))

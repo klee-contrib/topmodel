@@ -118,6 +118,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
 
         fw.WriteClassDeclaration(classe.NamePascal, null, extends, implements);
 
+        WriteMapIdProperty(fw, classe, tag);
         JpaModelPropertyGenerator.WriteProperties(fw, classe, tag);
         WriteCompositePrimaryKeyClass(fw, classe, tag);
 
@@ -259,6 +260,18 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
         if (Config.MappersInClass)
         {
             ConstructorGenerator.WriteFromMappers(fw, classe, Classes, tag);
+        }
+    }
+
+    protected virtual void WriteMapIdProperty(JavaWriter fw, Class classe, string tag)
+    {
+        if (classe.PrimaryKey.Count() == 1 && classe.PrimaryKey.First() is AssociationProperty ap)
+        {
+            fw.WriteLine();
+            fw.WriteDocStart(1, @$"Identifiant technique mappé avec celui de la classe {{@link {ap.Association.GetImport(Config, tag)}}} {ap.Association.NamePascal}");
+            fw.WriteDocEnd(1);
+            fw.WriteLine(1, JpaModelPropertyGenerator.IdAnnotation);
+            fw.WriteLine(1, $"private {JpaModelPropertyGenerator.GetPropertyType(ap.Property)} {ap.NameCamel};");
         }
     }
 
