@@ -1,5 +1,10 @@
 # TopModel.ModelGenerator (`tmdgen`)
 
+## 1.12.3
+
+- [`85adbf3`](https://github.com/klee-contrib/topmodel/commit/107c04133c7fced949658f791b779141721a328d) - [tmdgen] fix détection du rôle pour une association vers la même classe
+- [`107c041`](https://github.com/klee-contrib/topmodel/commit/107c04133c7fced949658f791b779141721a328d) - [tmdgen] fix uses commençant par "./"
+
 ## 1.12.1
 
 - [`24a55fc`](https://github.com/klee-contrib/topmodel/commit/24a55fcaa2f7fc66c7220fd53594eeaf266a0716) - [tmdgen] Descriptions manquantes dans les request et responses bodies
