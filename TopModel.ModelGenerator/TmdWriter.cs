@@ -50,7 +50,7 @@ public class TmdWriter : IDisposable
             _writer.WriteLine($"uses:");
             foreach (var u in _file.Uses.OrderBy(u => u.Name).Where(u => u.Name != _file.Name && u.Path != null))
             {
-                _writer.WriteLine($"  - {u.Path!.Replace('\\', '/')}");
+                _writer.WriteLine($"  - {u.Path!.Replace('\\', '/').Replace("./", string.Empty)}");
             }
         }
 
