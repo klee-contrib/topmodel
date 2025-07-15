@@ -242,6 +242,13 @@ public abstract class DatabaseTmdGenerator(ILogger<DatabaseTmdGenerator> logger,
         var trashModule = $"{ModuleIndice}_Autres";
         foreach (var file in Files.Where(f => f.Module is null))
         {
+            var modules = file.Classes.SelectMany(c => _classes.Where(cl => cl.Value.Dependencies.Contains(c))).GroupBy(c => c.Value.File?.Module).Where(g => g.Key != null).OrderByDescending(o => o.Count());
+            if (modules.Count() >= 1)
+            {
+                file.Module = modules.First().Key;
+                continue;
+            }
+
             file.Module = trashModule;
         }
     }

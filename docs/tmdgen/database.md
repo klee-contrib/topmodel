@@ -117,7 +117,7 @@ Tout d'abord, après avoir construit les classes, le générateur va essayer de 
 
 ### Fichiers avec dépendance circulaire
 
-Suite à cette première étape, seules les classes avec des dépendances circulaires restent sans fichier. L'algorithme prend alors parmi elles celle qui a le plus de dépendances. Il lui affecte un nouveau fichier, puis l'attribue également à toutes ses dépendances (qui n'ont pas déjà un fichier). Cette opération est répétée tant que toutes les classes n'ont pas toutes été placées dans un fichier.
+Suite à cette première étape, seules les classes avec des dépendances circulaires restent sans fichier. L'algorithme prend alors parmis elles celle qui a le plus de dépendances. Il lui affecte un nouveau fichier, puis l'attribue également à toutes ses dépendances (qui n'ont pas déjà un fichier). Cette opération est répétée tant que toutes les classes n'ont pas toutes été placées dans un fichier.
 
 ### Regroupement en modules
 
