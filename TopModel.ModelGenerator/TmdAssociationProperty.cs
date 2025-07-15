@@ -11,5 +11,5 @@ public class TmdAssociationProperty : TmdRegularProperty
 #nullable enable
     public TmdRegularProperty? ForeignProperty { get; set; }
 
-    public string Role => Association != Class ? Name.Replace(Association!.Trigram.ToPascalCase() + ForeignProperty!.Name, string.Empty) : string.Empty;
+    public string Role => Association != Class ? Name.Replace(Association!.Trigram.ToPascalCase() + ForeignProperty!.Name, string.Empty) : Name.Replace(Association.Properties.OfType<TmdRegularProperty>().Where(p => p.PrimaryKey).First().Name, string.Empty);
 }
