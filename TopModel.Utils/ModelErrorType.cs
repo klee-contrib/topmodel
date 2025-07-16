@@ -233,9 +233,14 @@ public enum ModelErrorType
     TMD1037,
 
     /// <summary>
-    /// Pour être la primary key de cette classe, cette association doit être de type oneToOne.
+    /// Une association doit être de type 'oneToOne' pour être la clé primaire d'une classe.
     /// </summary>
     TMD1038,
+
+    /// <summary>
+    /// Les associations d'une clé primaire composite doivent être de type 'manyToOne'.
+    /// </summary>
+    TMD1039,
 
     /// <summary>
     /// Le flux de données est introuvable dans le fichier ou l'une de ses références.

@@ -33,10 +33,19 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
 
             if (classe.PrimaryKey.Count() == 1 && classe.PrimaryKey.First() is AssociationProperty ap && ap.Type != AssociationType.OneToOne)
             {
-                yield return new ModelError(modelFile, $"Pour être la primary key de cette classe, cette association doit être de type oneToOne.", ap.GetLocation())
+                yield return new ModelError(modelFile, $"Une association doit être de type 'oneToOne' pour être la clé primaire d'une classe.", ap.GetLocation())
                 {
                     IsError = true,
-                    ModelErrorType = ModelErrorType.TMD1029
+                    ModelErrorType = ModelErrorType.TMD1038
+                };
+            }
+
+            if (classe.PrimaryKey.Count() > 1 && classe.PrimaryKey.Any(pk => pk is AssociationProperty ap && ap.Type != AssociationType.ManyToOne))
+            {
+                yield return new ModelError(modelFile, "Les associations d'une clé primaire composite doivent être de type 'manyToOne'.", classe.GetLocation())
+                {
+                    IsError = true,
+                    ModelErrorType = ModelErrorType.TMD1039
                 };
             }
         }
