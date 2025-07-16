@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
+using NeoSmart.AsyncLock;
 using TopModel.Core.FileModel;
 using TopModel.Core.Loaders;
 using TopModel.Core.Resolvers;
@@ -8,19 +9,19 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public class ModelStore
+public class ModelStore : IDisposable
 {
     private readonly ModelConfig _config;
     private readonly IMemoryCache _fsCache;
+
+    private readonly AsyncLock _lockPending = new();
+
     private readonly ILogger<ModelStore> _logger;
     private readonly ModelFileLoader _modelFileLoader;
 
     private readonly Dictionary<string, ModelFile> _modelFiles = [];
     private readonly IEnumerable<IModelWatcher> _modelWatchers;
-    private readonly HashSet<string> _pendingUpdates = [];
-
-    private readonly object _puLock = new();
-
+    private readonly Dictionary<string, string> _pendingFileChanges = [];
     private readonly TranslationStore _translationStore;
 
     private LoggingScope? _storeConfig;
@@ -37,6 +38,8 @@ public class ModelStore
     }
 
     public event Action<bool>? OnResolve;
+
+    public FileSystemWatcher? FileSystemWatcher { get; private set; }
 
     public bool DisableLockfile { get; set; }
 
@@ -60,6 +63,12 @@ public class ModelStore
         .Concat(Endpoints.SelectMany(e => e.Properties));
 
     public IEnumerable<ModelFile> Files => _modelFiles.Values;
+
+    /// <inheritdoc cref="IDisposable.Dispose" />
+    public void Dispose()
+    {
+        FileSystemWatcher?.Dispose();
+    }
 
     public IEnumerable<Class> GetAvailableClasses(ModelFile file)
     {
@@ -112,7 +121,7 @@ public class ModelStore
             .ToDictionary(c => c.Key, c => c.First());
     }
 
-    public IDisposable? LoadFromConfig(bool watch = false, TopModelLock? topModelLock = null, LoggingScope? storeConfig = null)
+    public async Task LoadFromConfig(bool watch = false, TopModelLock? topModelLock = null, LoggingScope? storeConfig = null)
     {
         _storeConfig = storeConfig;
         _topModelLock = topModelLock;
@@ -129,68 +138,86 @@ public class ModelStore
             _logger.LogWarning($"Aucun watcher enregistré pour cette configuration");
         }
 
-        FileSystemWatcher? fsWatcher = null;
         if (watch)
         {
-            fsWatcher = new FileSystemWatcher(_config.ModelRoot, "*.tmd");
-            fsWatcher.Changed += OnFSChangedEvent;
-            fsWatcher.Created += OnFSChangedEvent;
-            fsWatcher.Deleted += OnFSChangedEvent;
-            fsWatcher.Renamed += OnFSChangedEvent;
-            fsWatcher.IncludeSubdirectories = true;
-            fsWatcher.EnableRaisingEvents = true;
+            FileSystemWatcher = new FileSystemWatcher(_config.ModelRoot, "*.tmd");
+            FileSystemWatcher.Changed += OnFileChanged;
+            FileSystemWatcher.Created += OnFileChanged;
+            FileSystemWatcher.Deleted += OnFileChanged;
+            FileSystemWatcher.Renamed += OnFileChanged;
+            FileSystemWatcher.IncludeSubdirectories = true;
+            FileSystemWatcher.EnableRaisingEvents = true;
         }
 
         _modelFiles.Clear();
-        _pendingUpdates.Clear();
+        _pendingFileChanges.Clear();
 
         _logger.LogInformation("Chargement du modèle...");
 
-        var files = Directory.EnumerateFiles(_config.ModelRoot, "*.tmd", SearchOption.AllDirectories);
-
-        lock (_puLock)
+        using (await _lockPending.LockAsync())
         {
-            foreach (var file in files)
+            var files = await Directory.EnumerateFiles(_config.ModelRoot, "*.tmd", SearchOption.AllDirectories).ToAsyncEnumerable()
+                .SelectAwait(async fullPath => await LoadFile(fullPath, WatcherChangeTypes.Created))
+                .ToListAsync();
+
+            await LoadTranslations();
+            await ApplyUpdates(files);
+        }
+    }
+
+    public async Task OnModelFileChange(string fullPath, string content)
+    {
+        await ApplyUpdates([await LoadFile(fullPath, WatcherChangeTypes.Changed, content)]);
+    }
+
+    public async Task WaitForUpdates()
+    {
+        using (await _lockPending.LockAsync())
+        {
+        }
+    }
+
+    private async Task ApplyUpdates(IEnumerable<(string FullPath, string? FileName, ModelFile? ModelFile)> files)
+    {
+        using (await _lockPending.LockAsync())
+        {
+            var pendingFileDeletes = new HashSet<string>();
+
+            foreach (var (fullPath, fileName, modelFile) in files)
             {
-                LoadFile(file);
+                if (fileName != null)
+                {
+                    _pendingFileChanges[fullPath] = fileName;
+
+                    if (modelFile != null)
+                    {
+                        _modelFiles[fileName] = modelFile;
+                    }
+                    else
+                    {
+                        _modelFiles.Remove(fileName);
+                        pendingFileDeletes.Add(fileName);
+                    }
+                }
             }
-        }
 
-        LoadTranslations();
-        TryApplyUpdates();
+            foreach (var modelWatcher in _modelWatchers)
+            {
+                modelWatcher.OnFilesDeleted(pendingFileDeletes);
+            }
 
-        return fsWatcher;
-    }
+            if (_pendingFileChanges.Count == 0)
+            {
+                return;
+            }
 
-    public void OnModelFileChange(string filePath, string? content = null)
-    {
-        _logger.LogInformation(string.Empty);
-        _logger.LogInformation($"Modifié:  {filePath.ToRelative()}");
-
-        lock (_puLock)
-        {
-            LoadFile(filePath, content);
-        }
-
-        TryApplyUpdates();
-    }
-
-    public void TryApplyUpdates()
-    {
-        if (_pendingUpdates.Count == 0)
-        {
-            return;
-        }
-
-        lock (_puLock)
-        {
             try
             {
                 var referenceErrors = new List<ModelError>();
 
-                var affectedFiles = _pendingUpdates.Select(pu => _modelFiles.TryGetValue(pu, out var mf) ? mf : null).Any(mf => mf?.Domains.Count > 0 || mf?.Converters.Count > 0)
+                var affectedFiles = _pendingFileChanges.Values.Select(pu => _modelFiles.TryGetValue(pu, out var mf) ? mf : null).Any(mf => mf?.Domains.Count > 0 || mf?.Converters.Count > 0)
                     ? _modelFiles
-                    : GetAffectedFiles(_pendingUpdates).Distinct().ToDictionary(f => f.Name, f => f);
+                    : GetAffectedFiles(_pendingFileChanges.Values).Distinct().ToDictionary(f => f.Name, f => f);
 
                 IList<ModelFile> sortedFiles = new List<ModelFile>(1);
                 try
@@ -252,8 +279,9 @@ public class ModelStore
                 }
 
                 _logger.LogInformation($"Mise à jour terminée avec succès.");
+                _logger.LogInformation(string.Empty);
 
-                _pendingUpdates.Clear();
+                _pendingFileChanges.Clear();
             }
             catch (Exception e)
             {
@@ -354,35 +382,36 @@ public class ModelStore
         }
     }
 
-    private void LoadFile(string filePath, string? content = null)
+    private async Task<(string FullPath, string? FileName, ModelFile? ModelFile)> LoadFile(string fullPath, WatcherChangeTypes changeType, string? content = null)
     {
+        var fileName = _config.GetFileName(fullPath);
+
         try
         {
-            ModelFile? file = null;
-            if (File.Exists(filePath))
+            if (changeType != WatcherChangeTypes.Deleted)
             {
-                file = _modelFileLoader.LoadModelFile(filePath, content);
+                ModelFile? modelFile = null;
+                if (File.Exists(fullPath))
+                {
+                    modelFile = await _modelFileLoader.LoadModelFile(fullPath, content);
+                }
+
+                if (modelFile != null)
+                {
+                    return (fullPath, modelFile.Name, modelFile);
+                }
             }
 
-            if (file != null)
-            {
-                _modelFiles[file.Name] = file;
-                _pendingUpdates.Add(file.Name);
-            }
-            else
-            {
-                var fileName = _config.GetFileName(filePath);
-                _modelFiles.Remove(fileName);
-                _pendingUpdates.Add(fileName);
-            }
+            return (fullPath, fileName, null);
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
+            return (fullPath, null, null);
         }
     }
 
-    private void LoadTranslations()
+    private async Task LoadTranslations()
     {
         _translationStore.Translations[_config.I18n.DefaultLang] = [];
 
@@ -396,7 +425,7 @@ public class ModelStore
                 var files = Directory.GetFiles(directoryPath, "*.properties", SearchOption.AllDirectories);
                 foreach (var file in files)
                 {
-                    var lines = File.ReadAllLines(file);
+                    var lines = await File.ReadAllLinesAsync(file);
                     foreach (var line in lines)
                     {
                         if (line != null && line != string.Empty)
@@ -411,18 +440,41 @@ public class ModelStore
         }
     }
 
-    private void OnFSChangedEvent(object sender, FileSystemEventArgs e)
+    private void OnFileChanged(object sender, FileSystemEventArgs e)
     {
-        _fsCache.Set(e.FullPath, e, new MemoryCacheEntryOptions()
-            .AddExpirationToken(new CancellationChangeToken(new CancellationTokenSource(TimeSpan.FromMilliseconds(500)).Token))
-            .RegisterPostEvictionCallback((k, v, r, a) =>
+        _fsCache.Set($"{e.FullPath}:{e.ChangeType}", e, new MemoryCacheEntryOptions()
+            .AddExpirationToken(new CancellationChangeToken(new CancellationTokenSource(TimeSpan.FromMilliseconds(50)).Token))
+            .RegisterPostEvictionCallback(async (k, v, r, a) =>
             {
                 if (r != EvictionReason.TokenExpired)
                 {
                     return;
                 }
 
-                OnModelFileChange((string)k);
+                e = (FileSystemEventArgs)v!;
+                var type = e.ChangeType switch
+                {
+                    WatcherChangeTypes.Created => "Créé",
+                    WatcherChangeTypes.Deleted => "Supprimé",
+                    WatcherChangeTypes.Renamed => "Renommé",
+                    _ => "Modifié"
+                };
+
+                _logger.LogInformation($"{type}:  {e.FullPath.ToRelative()}");
+
+                var files = new List<(string, string?, ModelFile?)>();
+
+                if (e is RenamedEventArgs re)
+                {
+                    files.Add(await LoadFile(re.OldFullPath, WatcherChangeTypes.Deleted));
+                    files.Add(await LoadFile(re.FullPath, WatcherChangeTypes.Created));
+                }
+                else
+                {
+                    files.Add(await LoadFile(e.FullPath, e.ChangeType));
+                }
+
+                await ApplyUpdates(files);
             }));
     }
 

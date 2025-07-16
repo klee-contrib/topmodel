@@ -32,8 +32,10 @@ public class SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade 
         return Task.FromResult(new SemanticTokensDocument(RegistrationOptions.Legend));
     }
 
-    protected override Task Tokenize(SemanticTokensBuilder builder, ITextDocumentIdentifierParams identifier, CancellationToken cancellationToken)
+    protected override async Task Tokenize(SemanticTokensBuilder builder, ITextDocumentIdentifierParams identifier, CancellationToken cancellationToken)
     {
+        await modelStore.WaitForUpdates();
+
         var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == identifier.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
@@ -60,7 +62,5 @@ public class SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade 
                 builder.Push(reference.ToRange()!, type, SemanticTokenModifier.Definition);
             }
         }
-
-        return Task.CompletedTask;
     }
 }

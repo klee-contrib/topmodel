@@ -6,22 +6,13 @@ using TopModel.Core;
 
 namespace TopModel.LanguageServer;
 
-public class HoverHandler : HoverHandlerBase
+public class HoverHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config) : HoverHandlerBase
 {
-    private readonly ModelConfig _config;
-    private readonly ILanguageServerFacade _facade;
-    private readonly ModelStore _modelStore;
-
-    public HoverHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
+    public override async Task<Hover?> Handle(HoverParams request, CancellationToken cancellationToken)
     {
-        _config = config;
-        _facade = facade;
-        _modelStore = modelStore;
-    }
+        await modelStore.WaitForUpdates();
 
-    public override Task<Hover?> Handle(HoverParams request, CancellationToken cancellationToken)
-    {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
             var matchedReference = file.References.Keys.SingleOrDefault(reference =>
@@ -31,7 +22,7 @@ public class HoverHandler : HoverHandlerBase
             if (matchedReference != null)
             {
                 var objet = file.References[matchedReference];
-                return Task.FromResult<Hover?>(new Hover
+                return new Hover
                 {
                     Range = matchedReference.ToRange(),
                     Contents = new(new MarkedString(objet switch
@@ -50,18 +41,18 @@ public class HoverHandler : HoverHandlerBase
                         Variable v => v.Description,
                         _ => string.Empty
                     }))
-                });
+                };
             }
         }
 
-        return Task.FromResult<Hover?>(null);
+        return null;
     }
 
     protected override HoverRegistrationOptions CreateRegistrationOptions(HoverCapability capability, ClientCapabilities clientCapabilities)
     {
         return new HoverRegistrationOptions
         {
-            DocumentSelector = _config.GetDocumentSelector()
+            DocumentSelector = config.GetDocumentSelector()
         };
     }
 }

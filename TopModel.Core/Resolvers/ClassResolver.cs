@@ -33,7 +33,6 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
 
             if (classe.PrimaryKey.Count() == 1 && classe.PrimaryKey.First() is AssociationProperty ap && ap.Type != AssociationType.OneToOne)
             {
-
                 yield return new ModelError(modelFile, $"Pour être la primary key de cette classe, cette association doit être de type oneToOne.", ap.GetLocation())
                 {
                     IsError = true,

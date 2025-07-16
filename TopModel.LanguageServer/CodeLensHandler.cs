@@ -13,12 +13,14 @@ public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade
         return Task.FromResult(request);
     }
 
-    public override Task<CodeLensContainer?> Handle(CodeLensParams request, CancellationToken cancellationToken)
+    public override async Task<CodeLensContainer?> Handle(CodeLensParams request, CancellationToken cancellationToken)
     {
+        await modelStore.WaitForUpdates();
+
         var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            return Task.FromResult<CodeLensContainer?>(new(file.Classes.Select(clazz =>
+            return new(file.Classes.Select(clazz =>
                 new CodeLens
                 {
                     Range = clazz.GetLocation().ToRange()!,
@@ -83,10 +85,10 @@ public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade
                             endpoint.GetLocation()!.Start.Line - 1
                         ]
                     }
-                }))));
+                })));
         }
 
-        return Task.FromResult<CodeLensContainer?>(new());
+        return new();
     }
 
     protected override CodeLensRegistrationOptions CreateRegistrationOptions(CodeLensCapability capability, ClientCapabilities clientCapabilities)

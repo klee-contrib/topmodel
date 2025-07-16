@@ -6,44 +6,35 @@ using TopModel.Core;
 
 namespace TopModel.LanguageServer;
 
-public class ReferencesHandler : ReferencesHandlerBase
+public class ReferencesHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config) : ReferencesHandlerBase
 {
-    private readonly ModelConfig _config;
-    private readonly ILanguageServerFacade _facade;
-    private readonly ModelStore _modelStore;
-
-    public ReferencesHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
+    public override async Task<LocationContainer?> Handle(ReferenceParams request, CancellationToken cancellationToken)
     {
-        _config = config;
-        _facade = facade;
-        _modelStore = modelStore;
-    }
+        await modelStore.WaitForUpdates();
 
-    public override Task<LocationContainer?> Handle(ReferenceParams request, CancellationToken cancellationToken)
-    {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
-            var references = _modelStore.GetReferencesForPositionInFile(request.Position, file);
+            var references = modelStore.GetReferencesForPositionInFile(request.Position, file);
             if (references != null)
             {
-                return Task.FromResult<LocationContainer?>(new(
+                return new(
                     references.Select(r => new Location
                     {
-                        Uri = new Uri(_facade.GetFilePath(r.File)),
+                        Uri = new Uri(facade.GetFilePath(r.File)),
                         Range = r.Reference.ToRange()!
-                    })));
+                    }));
             }
         }
 
-        return Task.FromResult<LocationContainer?>(new());
+        return new();
     }
 
     protected override ReferenceRegistrationOptions CreateRegistrationOptions(ReferenceCapability capability, ClientCapabilities clientCapabilities)
     {
         return new ReferenceRegistrationOptions()
         {
-            DocumentSelector = _config.GetDocumentSelector()
+            DocumentSelector = config.GetDocumentSelector()
         };
     }
 }

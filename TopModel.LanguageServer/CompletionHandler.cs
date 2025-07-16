@@ -35,27 +35,29 @@ public class CompletionHandler(ModelStore modelStore, ILanguageServerFacade faca
         return Task.FromResult(request);
     }
 
-    public override Task<CompletionList> Handle(CompletionParams request, CancellationToken cancellationToken)
+    public override async Task<CompletionList> Handle(CompletionParams request, CancellationToken cancellationToken)
     {
+        await modelStore.WaitForUpdates();
+
         var text = fileCache.GetFile(request.TextDocument.Uri.GetFileSystemPath());
         var currentLine = text.ElementAtOrDefault(request.Position.Line);
 
         if (currentLine == null)
         {
-            return Task.FromResult(new CompletionList());
+            return new();
         }
 
         var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file == null || currentLine == string.Empty)
         {
-            return Task.FromResult(new CompletionList());
+            return new();
         }
 
         var reqChar = Math.Min(request.Position.Character, currentLine.Length);
         var rootObject = GetRootObject(request).Object;
         if (rootObject.StartsWith("--"))
         {
-            return Task.FromResult(new CompletionList());
+            return new();
         }
 
         var currentKey = GetCurrentKey(request).Key;
@@ -67,7 +69,7 @@ public class CompletionHandler(ModelStore modelStore, ILanguageServerFacade faca
             || rootObject == "converter"
                 && (currentKey == "to" || currentKey == "from"))
         {
-            return Task.FromResult(CompleteDomain(request));
+            return CompleteDomain(request);
         }
 
         List<string> classCompleteKeys =
@@ -80,40 +82,40 @@ public class CompletionHandler(ModelStore modelStore, ILanguageServerFacade faca
 
         if (classCompleteKeys.Contains(currentKey) && parentKey != currentKey)
         {
-            return Task.FromResult(CompleteClass(request, file, useIndex));
+            return CompleteClass(request, file, useIndex);
         }
 
         if (currentKey == "endpoint")
         {
-            return Task.FromResult(CompleteEndpoint(request, file, useIndex));
+            return CompleteEndpoint(request, file, useIndex);
         }
 
         // Tags
         if (currentKey == "tags")
         {
-            return Task.FromResult(CompleteTag(request, file));
+            return CompleteTag(request, file);
         }
 
         // Use
         if (currentKey == "uses")
         {
-            return Task.FromResult(CompleteFile(request, file));
+            return CompleteFile(request, file);
         }
 
         // Décorateur
         else if (currentKey.Contains("decorator"))
         {
-            return Task.FromResult(CompleteDecorator(request, file, useIndex));
+            return CompleteDecorator(request, file, useIndex);
         }
 
         // DataFlow
         else if (currentKey == "dependsOn")
         {
-            return Task.FromResult(CompleteDataFlow(request, file, useIndex));
+            return CompleteDataFlow(request, file, useIndex);
         }
         else
         {
-            return Task.FromResult(CompleteProperty(request, text, currentLine, file));
+            return CompleteProperty(request, text, currentLine, file);
         }
     }
 

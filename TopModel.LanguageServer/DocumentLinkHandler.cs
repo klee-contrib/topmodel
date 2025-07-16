@@ -1,18 +1,12 @@
 ﻿using OmniSharp.Extensions.LanguageServer.Protocol.Client.Capabilities;
 using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
-using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 
 namespace TopModel.LanguageServer;
 
-public class DocumentLinkHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config, ModelFileCache modelFileCache) : DocumentLinkHandlerBase
+public class DocumentLinkHandler(ModelStore modelStore) : DocumentLinkHandlerBase
 {
-    private readonly ModelConfig _config = config;
-    private readonly ILanguageServerFacade _facade = facade;
-    private readonly ModelFileCache _fileCache = modelFileCache;
-    private readonly ModelStore _modelStore = modelStore;
-
     public override Task<DocumentLink> Handle(DocumentLink request, CancellationToken cancellationToken)
     {
         return Task.FromResult(request);
@@ -20,6 +14,8 @@ public class DocumentLinkHandler(ModelStore modelStore, ILanguageServerFacade fa
 
     public override async Task<DocumentLinkContainer?> Handle(DocumentLinkParams request, CancellationToken cancellationToken)
     {
+        await modelStore.WaitForUpdates();
+
         var lockFile = new FileInfo(Path.GetFullPath(request.TextDocument.Uri.Path.Replace('/', Path.DirectorySeparatorChar).Trim(Path.DirectorySeparatorChar)));
         if (lockFile.Exists)
         {
@@ -45,11 +41,11 @@ public class DocumentLinkHandler(ModelStore modelStore, ILanguageServerFacade fa
                     }
                 }
 
-                return new DocumentLinkContainer(documentLinks);
+                return new(documentLinks);
             }
         }
 
-        return new DocumentLinkContainer();
+        return new();
     }
 
     protected override DocumentLinkRegistrationOptions CreateRegistrationOptions(DocumentLinkCapability capability, ClientCapabilities clientCapabilities)

@@ -94,6 +94,7 @@ public class LoggerProvider : ILoggerProvider
                 message = WriteAction(message, "Supprimé", "maroon");
                 message = WriteAction(message, "Créé", "green");
                 message = WriteAction(message, "Modifié", "teal");
+                message = WriteAction(message, "Renommé", "yellow");
                 if (logLevel != LogLevel.Error && logLevel != LogLevel.Warning)
                 {
                     var split2 = message.Split('/');

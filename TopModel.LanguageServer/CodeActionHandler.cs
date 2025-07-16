@@ -17,8 +17,10 @@ public class CodeActionHandler(ModelStore modelStore, ILanguageServerFacade faca
         return Task.FromResult(request);
     }
 
-    public override Task<CommandOrCodeActionContainer?> Handle(CodeActionParams request, CancellationToken cancellationToken)
+    public override async Task<CommandOrCodeActionContainer?> Handle(CodeActionParams request, CancellationToken cancellationToken)
     {
+        await modelStore.WaitForUpdates();
+
         var modelFile = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         var codeActions = new List<CommandOrCodeAction>();
         if (modelFile != null)
@@ -55,7 +57,7 @@ public class CodeActionHandler(ModelStore modelStore, ILanguageServerFacade faca
             }
         }
 
-        return Task.FromResult<CommandOrCodeActionContainer?>(CommandOrCodeActionContainer.From(codeActions));
+        return CommandOrCodeActionContainer.From(codeActions);
     }
 
     protected static CodeAction GetCodeActionOrganizeImports(CodeActionParams request, ModelFile modelFile)

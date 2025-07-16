@@ -80,6 +80,15 @@ public abstract class GeneratorBase<T> : IModelWatcher
         HandleFiles(handledFiles);
     }
 
+    /// <inheritdoc cref="IModelWatcher.OnFilesDeleted" />
+    public void OnFilesDeleted(IEnumerable<string> fileNames)
+    {
+        foreach (var fileName in fileNames)
+        {
+            Files.Remove(fileName);
+        }
+    }
+
     public IFileWriter OpenFileWriter(string fileName, bool encoderShouldEmitUTF8Identifier = true)
     {
         if (_writerProvider == null)

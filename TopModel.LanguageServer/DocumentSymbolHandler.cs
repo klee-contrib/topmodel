@@ -6,28 +6,19 @@ using TopModel.Core;
 
 namespace TopModel.LanguageServer;
 
-public class DocumentSymbolHandler : DocumentSymbolHandlerBase
+public class DocumentSymbolHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config) : DocumentSymbolHandlerBase
 {
-    private readonly ModelConfig _config;
-    private readonly ILanguageServerFacade _facade;
-    private readonly ModelStore _modelStore;
-
-    public DocumentSymbolHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
+    public async override Task<SymbolInformationOrDocumentSymbolContainer?> Handle(DocumentSymbolParams request, CancellationToken cancellationToken)
     {
-        _config = config;
-        _facade = facade;
-        _modelStore = modelStore;
-    }
+        await modelStore.WaitForUpdates();
 
-    public override Task<SymbolInformationOrDocumentSymbolContainer?> Handle(DocumentSymbolParams request, CancellationToken cancellationToken)
-    {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri);
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri);
         if (file == null)
         {
-            return Task.FromResult<SymbolInformationOrDocumentSymbolContainer?>(new());
+            return new();
         }
 
-        return Task.FromResult<SymbolInformationOrDocumentSymbolContainer?>(new(
+        return new(
             file.Classes.Select(c =>
             {
                 return new SymbolInformation
@@ -113,14 +104,14 @@ public class DocumentSymbolHandler : DocumentSymbolHandlerBase
                 };
             }))
             .Where(d => d.Location.Range != null)
-            .Select(t => new SymbolInformationOrDocumentSymbol(t))));
+            .Select(t => new SymbolInformationOrDocumentSymbol(t)));
     }
 
     protected override DocumentSymbolRegistrationOptions CreateRegistrationOptions(DocumentSymbolCapability capability, ClientCapabilities clientCapabilities)
     {
         return new DocumentSymbolRegistrationOptions
         {
-            DocumentSelector = _config.GetDocumentSelector()
+            DocumentSelector = config.GetDocumentSelector()
         };
     }
 }

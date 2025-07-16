@@ -5,17 +5,8 @@ using TopModel.Core;
 
 namespace TopModel.LanguageServer;
 
-public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpcHandler
+public class MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade) : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpcHandler
 {
-    private readonly ILanguageServerFacade _facade;
-    private readonly ModelStore _modelStore;
-
-    public MermaidHandler(ModelStore modelStore, ILanguageServerFacade facade)
-    {
-        _facade = facade;
-        _modelStore = modelStore;
-    }
-
     public static string GenerateDiagramClasses(IEnumerable<Class> classes)
     {
         string diagram = string.Empty;
@@ -112,19 +103,19 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
 
     public IEnumerable<Class> GetClassesForScope(string uri, MermaidScope scope)
     {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == uri);
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == uri);
         return scope switch
         {
             MermaidScope.File => file?.Classes ?? Enumerable.Empty<Class>(),
-            MermaidScope.Module => _modelStore.Files.Where(f => f.Namespace.Module == file?.Namespace.Module)?.SelectMany(f => f.Classes) ?? Enumerable.Empty<Class>(),
-            MermaidScope.Model => _modelStore.Files.SelectMany(f => f.Classes),
+            MermaidScope.Module => modelStore.Files.Where(f => f.Namespace.Module == file?.Namespace.Module)?.SelectMany(f => f.Classes) ?? Enumerable.Empty<Class>(),
+            MermaidScope.Model => modelStore.Files.SelectMany(f => f.Classes),
             _ => []
         };
     }
 
     public string GetFileName(string uri)
     {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == uri);
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == uri);
         if (file is null)
         {
             return string.Empty;
@@ -135,7 +126,7 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
 
     public string GetModule(string uri)
     {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == uri);
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == uri);
         if (file is null)
         {
             return string.Empty;
@@ -145,9 +136,10 @@ public class MermaidHandler : IRequestHandler<MermaidRequest, Mermaid>, IJsonRpc
     }
 
     /// <inheritdoc cref="IRequestHandler{TRequest, TResponse}.Handle" />
-    public Task<Mermaid> Handle(MermaidRequest request, CancellationToken cancellationToken)
+    public async Task<Mermaid> Handle(MermaidRequest request, CancellationToken cancellationToken)
     {
+        await modelStore.WaitForUpdates();
         var result = GenerateDiagram(request);
-        return Task.FromResult(new Mermaid(result, GetModule(request.Uri), GetFileName(request.Uri), request.Scope));
+        return new Mermaid(result, GetModule(request.Uri), GetFileName(request.Uri), request.Scope);
     }
 }

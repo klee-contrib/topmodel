@@ -6,22 +6,13 @@ using TopModel.Core;
 
 namespace TopModel.LanguageServer;
 
-public class DefinitionHandler : DefinitionHandlerBase
+public class DefinitionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config) : DefinitionHandlerBase
 {
-    private readonly ModelConfig _config;
-    private readonly ILanguageServerFacade _facade;
-    private readonly ModelStore _modelStore;
-
-    public DefinitionHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config)
+    public override async Task<LocationOrLocationLinks?> Handle(DefinitionParams request, CancellationToken cancellationToken)
     {
-        _config = config;
-        _facade = facade;
-        _modelStore = modelStore;
-    }
+        await modelStore.WaitForUpdates();
 
-    public override Task<LocationOrLocationLinks?> Handle(DefinitionParams request, CancellationToken cancellationToken)
-    {
-        var file = _modelStore.Files.SingleOrDefault(f => _facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
+        var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
             var matchedReference = file.References.Keys.SingleOrDefault(reference =>
@@ -34,10 +25,10 @@ public class DefinitionHandler : DefinitionHandlerBase
                 var selectionRange = objet.GetLocation().ToRange();
                 if (selectionRange == null)
                 {
-                    return Task.FromResult<LocationOrLocationLinks?>(new());
+                    return new();
                 }
 
-                return Task.FromResult<LocationOrLocationLinks?>(new(new LocationLink
+                return new(new LocationLink
                 {
                     OriginSelectionRange = matchedReference.ToRange(),
                     TargetRange = objet switch
@@ -47,8 +38,8 @@ public class DefinitionHandler : DefinitionHandlerBase
                         _ => selectionRange with { End = new() { Line = selectionRange.Start.Line, Character = 200 } }
                     },
                     TargetSelectionRange = selectionRange,
-                    TargetUri = _facade.GetFilePath(objet.GetFile())
-                }));
+                    TargetUri = facade.GetFilePath(objet.GetFile())
+                });
             }
 
             var matchedUse = file.Uses.SingleOrDefault(use =>
@@ -57,28 +48,28 @@ public class DefinitionHandler : DefinitionHandlerBase
 
             if (matchedUse != null)
             {
-                var usedFile = _modelStore.Files.SingleOrDefault(f => f.Name == matchedUse.ReferenceName);
+                var usedFile = modelStore.Files.SingleOrDefault(f => f.Name == matchedUse.ReferenceName);
                 if (usedFile != null)
                 {
-                    return Task.FromResult<LocationOrLocationLinks?>(new(new LocationLink
+                    return new(new LocationLink
                     {
                         OriginSelectionRange = matchedReference.ToRange(),
                         TargetRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 5, 200),
                         TargetSelectionRange = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 0, 0),
-                        TargetUri = _facade.GetFilePath(usedFile)
-                    }));
+                        TargetUri = facade.GetFilePath(usedFile)
+                    });
                 }
             }
         }
 
-        return Task.FromResult<LocationOrLocationLinks?>(new());
+        return new();
     }
 
     protected override DefinitionRegistrationOptions CreateRegistrationOptions(DefinitionCapability capability, ClientCapabilities clientCapabilities)
     {
         return new DefinitionRegistrationOptions
         {
-            DocumentSelector = _config.GetDocumentSelector()
+            DocumentSelector = config.GetDocumentSelector()
         };
     }
 }

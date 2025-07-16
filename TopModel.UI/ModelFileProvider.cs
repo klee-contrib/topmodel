@@ -84,6 +84,11 @@ public class ModelFileProvider : IModelWatcher
     {
     }
 
+    /// <inheritdoc cref="IModelWatcher.OnFilesDeleted" />
+    public void OnFilesDeleted(IEnumerable<string> fileNames)
+    {
+    }
+
     /// <inheritdoc cref="IModelWatcher.OnFilesChanged" />
     public void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null)
     {

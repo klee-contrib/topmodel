@@ -7,9 +7,9 @@ namespace TopModel.Core.Loaders;
 
 public class ModelFileLoader(ModelConfig config, ClassLoader classLoader, DataFlowLoader dataFlowLoader, FileChecker fileChecker, DecoratorLoader decoratorLoader, ConverterLoader converterLoader, EndpointLoader endpointLoader, DomainLoader domainLoader)
 {
-    public ModelFile? LoadModelFile(string filePath, string? content = null)
+    public async Task<ModelFile?> LoadModelFile(string filePath, string? content = null)
     {
-        content ??= File.ReadAllText(filePath);
+        content ??= await File.ReadAllTextAsync(filePath);
 
         fileChecker.CheckModelFile(filePath, content);
 

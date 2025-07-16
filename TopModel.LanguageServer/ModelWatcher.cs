@@ -57,4 +57,10 @@ public class ModelWatcher : IModelWatcher
     {
         _facade.SendNotification("filesChanged");
     }
+
+    /// <inheritdoc cref="IModelWatcher.OnFilesDeleted" />
+    public void OnFilesDeleted(IEnumerable<string> fileNames)
+    {
+        _facade.SendNotification("filesChanged");
+    }
 }

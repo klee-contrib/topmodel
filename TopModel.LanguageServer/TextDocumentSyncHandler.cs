@@ -29,22 +29,20 @@ public class TextDocumentSyncHandler : TextDocumentSyncHandlerBase
     public override Task<Unit> Handle(DidOpenTextDocumentParams request, CancellationToken cancellationToken)
     {
         _fileCache.UpdateFile(request.TextDocument.Uri.GetFileSystemPath(), request.TextDocument.Text);
-        _modelStore.TryApplyUpdates();
         return Unit.Task;
     }
 
-    public override Task<Unit> Handle(DidChangeTextDocumentParams request, CancellationToken cancellationToken)
+    public override async Task<Unit> Handle(DidChangeTextDocumentParams request, CancellationToken cancellationToken)
     {
         var filePath = request.TextDocument.Uri.GetFileSystemPath();
         var content = request.ContentChanges.Single().Text;
         _fileCache.UpdateFile(filePath, content);
-        _modelStore.OnModelFileChange(filePath, content);
-        return Unit.Task;
+        await _modelStore.OnModelFileChange(filePath, content);
+        return Unit.Value;
     }
 
     public override Task<Unit> Handle(DidSaveTextDocumentParams request, CancellationToken cancellationToken)
     {
-        _modelStore.OnModelFileChange(request.TextDocument.Uri.GetFileSystemPath());
         return Unit.Task;
     }
 

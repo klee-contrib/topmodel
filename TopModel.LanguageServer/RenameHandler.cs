@@ -9,15 +9,17 @@ namespace TopModel.LanguageServer;
 
 public class RenameHandler(ModelStore modelStore, ILanguageServerFacade facade, ModelConfig config) : RenameHandlerBase
 {
-    public override Task<WorkspaceEdit?> Handle(RenameParams request, CancellationToken cancellationToken)
+    public async override Task<WorkspaceEdit?> Handle(RenameParams request, CancellationToken cancellationToken)
     {
+        await modelStore.WaitForUpdates();
+
         var file = modelStore.Files.SingleOrDefault(f => facade.GetFilePath(f) == request.TextDocument.Uri.GetFileSystemPath());
         if (file != null)
         {
             var references = modelStore.GetReferencesForPositionInFile(request.Position, file, true);
             if (references != null && references.All(r => r.Reference.ReferenceName == references.Objet.GetName() || r.Reference is ClassReference || r.Reference is EndpointReference))
             {
-                return Task.FromResult<WorkspaceEdit?>(new WorkspaceEdit
+                return new WorkspaceEdit
                 {
                     Changes = references
                         .Where(r => r.Reference.ReferenceName == references.Objet.GetName())
@@ -33,11 +35,11 @@ public class RenameHandler(ModelStore modelStore, ILanguageServerFacade facade, 
                         })
                         .GroupBy(t => t.Uri, t => t)
                         .ToDictionary(x => x.Key, x => x.Select(y => y.TextEdit))
-                });
+                };
             }
         }
 
-        return Task.FromResult<WorkspaceEdit?>(null);
+        return null;
     }
 
     protected override RenameRegistrationOptions CreateRegistrationOptions(RenameCapability capability, ClientCapabilities clientCapabilities)

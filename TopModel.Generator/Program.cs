@@ -207,7 +207,7 @@ static (Type Type, string Name) GetIGenRegInterfaceAndName(Type generator)
 }
 
 var dotnetMajor = Environment.Version.Major;
-var disposables = new List<IDisposable>();
+var providers = new List<IDisposable>();
 var loggerProvider = new LoggerProvider();
 var hasErrors = Enumerable.Range(0, configs.Count).Select(_ => false).ToArray();
 var modgenAssemblies = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.ManifestModule.Name).ToHashSet();
@@ -619,7 +619,7 @@ for (var i = 0; i < configs.Count; i++)
     if (!hasError)
     {
         var provider = services.BuildServiceProvider();
-        disposables.Add(provider);
+        providers.Add(provider);
 
         var modelStore = provider.GetRequiredService<ModelStore>();
 
@@ -631,11 +631,7 @@ for (var i = 0; i < configs.Count; i++)
             hasErrors[k] = hasError;
         };
 
-        var watcher = modelStore.LoadFromConfig(watchMode, topModelLock, storeConfig);
-        if (watcher != null)
-        {
-            disposables.Add(watcher);
-        }
+        await modelStore.LoadFromConfig(watchMode, topModelLock, storeConfig);
     }
 }
 
@@ -650,7 +646,7 @@ if (watchMode)
     autoResetEvent.WaitOne();
 }
 
-foreach (var provider in disposables)
+foreach (var provider in providers)
 {
     provider.Dispose();
 }
