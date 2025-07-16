@@ -1,5 +1,17 @@
 # TopModel.ModelGenerator (`tmdgen`)
 
+## 1.12.6
+
+- [`c4c14b4`](https://github.com/klee-contrib/topmodel/commit/c4c14b412019f19e81ad75e507ca4ab61f9f9289) - [tmdgen - SQL] Fix association PK pour qu'elle ait "type: oneToOne" aussi.
+
+## 1.12.5
+
+- [`445175b`](https://github.com/klee-contrib/topmodel/commit/445175b02263cf4bf3b893f3a5a83f729593b4e9) - [tmdgen] amélioration algorithme de regroupement
+
+## 1.12.4
+
+- [`2f054e6`](https://github.com/klee-contrib/topmodel/commit/2f054e6520a0d137b692cde8ab8d0412fbbc51d4) - [tmdgen] amélioration algorithme de regroupement
+
 ## 1.12.3
 
 - [`85adbf3`](https://github.com/klee-contrib/topmodel/commit/107c04133c7fced949658f791b779141721a328d) - [tmdgen] fix détection du rôle pour une association vers la même classe
