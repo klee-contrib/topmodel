@@ -8,11 +8,22 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.9.0
+
+- [`75d77f3`](https://github.com/klee-contrib/topmodel/commit/75d77f3d150492f099aaaf70ef495393457a5a9d) - Refonte mode watch, avec gestion propre des suppressions et renommages
+
+  Si le mode watch de `modgen` n'est en général que peu utilisé, cette refonte va surtout bénéficier à l'extension VSCode qui devrait désormais ne plus être perdue lorsque vous supprimez, renommez ou créez de nouveaux fichiers de modèle 🙂
+
+- [`b65498a`](https://github.com/klee-contrib/topmodel/commit/b65498abdef7ee44da9d091407816f435010676e) - Gestion du cas où l'unique PK est une association
+- [`55b3cac`](https://github.com/klee-contrib/topmodel/commit/55b3cac7e636b92c27952f3f5258a34a4b00bb5a) - [Core] Erreur si association non manyToOne en PK composite
+
+  Ces nouvelles erreurs vérifient que les associations utilisées dans les clés primaires (simple ou composite) dans une classe persistée ont le bon type d'association. En théorie c'est un breaking change, mais en pratique cela ne devait pas fonctionner si ce n'était pas déjà le cas 😉. (PK simple => oneToOne, PK multiple => manyToOne).
+
 ## 2.8.3
 
 - [`482`](https://github.com/klee-contrib/topmodel/pull/482) TopModel reconnaît maintenant les variables définies dans la configuration dans les templates (globales ou par tag)
-Chaque variable de propriété/classe/endpoint... a maintenant sa propre description au lieu d'une description générique
-Il s'agit d'une évolution non négligeable de TopModel parce que désormais une partie de la configuration des générateurs est remontée dans le Core, en particulier ce qui concernent les variables, les tags et les langages. Cela ouvre la voie pour des fonctionnalités futures là dessus, comme des warnings sur les variables non définies / pas définies dans tous les générateurs par exemple.
+  Chaque variable de propriété/classe/endpoint... a maintenant sa propre description au lieu d'une description générique
+  Il s'agit d'une évolution non négligeable de TopModel parce que désormais une partie de la configuration des générateurs est remontée dans le Core, en particulier ce qui concernent les variables, les tags et les langages. Cela ouvre la voie pour des fonctionnalités futures là dessus, comme des warnings sur les variables non définies / pas définies dans tous les générateurs par exemple.
 
 ## 2.8.2
 
