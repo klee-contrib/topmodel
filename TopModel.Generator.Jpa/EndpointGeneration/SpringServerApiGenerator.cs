@@ -157,20 +157,18 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         {
             foreach (var param in endpoint.Params.Where(param => param is CompositionProperty || (param.Domain?.BodyParam ?? false) || (param.Domain?.IsMultipart ?? false)))
             {
-                var ann = string.Empty;
-                JavaAnnotation annotation;
+                var parameter = new JavaMethodParameter(Config.GetType(param), param.GetParamName());
                 if (!(param.Domain?.IsMultipart ?? false))
                 {
-                    annotation = new JavaAnnotation("ModelAttribute", imports: "org.springframework.web.bind.annotation.ModelAttribute");
+                    parameter.AddAnnotation(new JavaAnnotation("ModelAttribute", imports: "org.springframework.web.bind.annotation.ModelAttribute"));
+                    parameter.AddAnnotation(new JavaAnnotation("Valid", imports: Config.JavaxOrJakarta + ".validation.Valid"));
                 }
                 else
                 {
-                    annotation = new JavaAnnotation("RequestPart", imports: "org.springframework.web.bind.annotation.RequestPart", value: @$"""{param.GetParamName()}""")
-                        .AddAttribute("required", param.Required.ToString().ToFirstLower());
+                    parameter.AddAnnotation(new JavaAnnotation("RequestPart", imports: "org.springframework.web.bind.annotation.RequestPart", value: @$"""{param.GetParamName()}""")
+                        .AddAttribute("required", param.Required.ToString().ToFirstLower()));
                 }
 
-                var parameter = new JavaMethodParameter(Config.GetType(param), param.GetParamName());
-                parameter.AddAnnotation(annotation);
                 parameter.Imports.AddRange(param.GetTypeImports(Config, tag));
                 method.AddParameter(parameter);
             }
