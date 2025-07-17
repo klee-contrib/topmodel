@@ -113,7 +113,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// <param name="javaAnnotations">Valeurs à écrire dans le flux.</param>
     public void Write(int indentationLevel, IEnumerable<JavaAnnotation> javaAnnotations)
     {
-        foreach (var annotation in javaAnnotations.OrderBy(j => j.ToString().Length).DistinctBy(e => e.Name.Split('(').First()))
+        foreach (var annotation in javaAnnotations.DistinctBy(e => e.Name.Split('(').First()).OrderBy(j => j.ToString().Length))
         {
             WriteLine(indentationLevel, annotation);
         }
