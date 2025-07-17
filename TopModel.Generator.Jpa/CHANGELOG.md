@@ -1,5 +1,11 @@
 # Changelog JPA
 
+## 1.9.7
+
+- [63834f](https://github.com/klee-contrib/topmodel/commit/63834f3068347784ee9d8db3122318e526113c95) [JPA] Ordre déterministe sur les annotations : de la plus courte à la plus longue. Cette évolution permet d'éviter les modifications d'ordre entre deux versions
+
+- ['486'](https://github.com/klee-contrib/topmodel/pull/486) [JPA] Ajout de l'anotation valid si le parameter est de type ModelAttribute
+
 ## 1.9.6
 
 - [ab2775](https://github.com/klee-contrib/topmodel/commit/ab27750932461a677faa08638f08b95d3c30e70d) [JPA]Fix annotation Id Enums as Enums dans le cas d'une PK composite
