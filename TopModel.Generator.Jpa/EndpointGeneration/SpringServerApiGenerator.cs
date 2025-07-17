@@ -48,50 +48,6 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         return Path.Combine(Config.GetApiPath(file, tag), $"{GetClassName(file.Options.Endpoints.FileName)}.java");
     }
 
-    protected virtual IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
-    {
-        var properties = endpoints.SelectMany(endpoint => endpoint.Params)
-            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
-            .Select(endpoint => endpoint.Returns));
-        return properties.SelectMany(property => property!.GetTypeImports(Config, tag))
-                .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
-                .Select(e => e.Returns).OfType<CompositionProperty>()
-                .SelectMany(c => c.GetKindImports(Config, tag)));
-    }
-
-    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
-    {
-        var className = GetClassName(fileName);
-        var packageName = Config.GetPackageName(endpoints.First(), tag);
-        using var fw = this.OpenJavaWriter(filePath, packageName, null);
-
-        var javaInterface = new JavaClass(className)
-        {
-            Interface = true,
-            Package = packageName,
-        };
-        var annotations = GetClassAnnotations(endpoints.First().ModelFile);
-        javaInterface.AddRange(annotations);
-        javaInterface.AddRange(GetMethods(endpoints, tag));
-        fw.Write(0, javaInterface);
-    }
-
-    protected virtual void WriteMethods(JavaWriter fw, IEnumerable<Endpoint> endpoints, string tag)
-    {
-        foreach (var method in GetMethods(endpoints, tag))
-        {
-            fw.Write(1, method);
-        }
-    }
-
-    protected virtual IEnumerable<JavaMethod> GetMethods(IEnumerable<Endpoint> endpoints, string tag)
-    {
-        foreach (var endpoint in endpoints)
-        {
-            yield return GetMethod(endpoint, tag);
-        }
-    }
-
     protected virtual JavaMethod GetMethod(Endpoint endpoint, string tag)
     {
         var returnType = "void";
@@ -212,5 +168,49 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         }
 
         return method;
+    }
+
+    protected virtual IEnumerable<JavaMethod> GetMethods(IEnumerable<Endpoint> endpoints, string tag)
+    {
+        foreach (var endpoint in endpoints)
+        {
+            yield return GetMethod(endpoint, tag);
+        }
+    }
+
+    protected virtual IEnumerable<string> GetTypeImports(IEnumerable<Endpoint> endpoints, string tag)
+    {
+        var properties = endpoints.SelectMany(endpoint => endpoint.Params)
+            .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
+            .Select(endpoint => endpoint.Returns));
+        return properties.SelectMany(property => property!.GetTypeImports(Config, tag))
+                .Concat(endpoints.Where(endpoint => endpoint.Returns is not null)
+                .Select(e => e.Returns).OfType<CompositionProperty>()
+                .SelectMany(c => c.GetKindImports(Config, tag)));
+    }
+
+    protected override void HandleFile(string filePath, string fileName, string tag, IList<Endpoint> endpoints)
+    {
+        var className = GetClassName(fileName);
+        var packageName = Config.GetPackageName(endpoints.First(), tag);
+        using var fw = this.OpenJavaWriter(filePath, packageName, null);
+
+        var javaInterface = new JavaClass(className)
+        {
+            Interface = true,
+            Package = packageName,
+        };
+        var annotations = GetClassAnnotations(endpoints.First().ModelFile);
+        javaInterface.AddRange(annotations);
+        javaInterface.AddRange(GetMethods(endpoints, tag));
+        fw.Write(0, javaInterface);
+    }
+
+    protected virtual void WriteMethods(JavaWriter fw, IEnumerable<Endpoint> endpoints, string tag)
+    {
+        foreach (var method in GetMethods(endpoints, tag))
+        {
+            fw.Write(1, method);
+        }
     }
 }
