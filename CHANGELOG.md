@@ -8,6 +8,10 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 2.9.1
+
+- [`1344ba6`](https://github.com/klee-contrib/topmodel/commit/1344ba6902202b7c7e16c06a8506ed1274d13392) - Amélioration batching des updates successives en watch
+
 ## 2.9.0
 
 - [`75d77f3`](https://github.com/klee-contrib/topmodel/commit/75d77f3d150492f099aaaf70ef495393457a5a9d) - Refonte mode watch, avec gestion propre des suppressions et renommages
