@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 1.9.5
+
+- [8ff538](https://github.com/klee-contrib/topmodel/commit/8ff538c2e8c5cf43b3eaf2a4b5bef9298660da7e) [JPA] Gestion Enums as Enums dans le cas d'une PK composite
+
 ## 1.9.4
 
 - [7d8ab0a](https://github.com/klee-contrib/topmodel/commit/7d8ab0a512e2fe6afb2485f8ad9e126e027416f6) [JPA] Les décorateurs ne sont pas pris en compte pour les enums dans le mode EnumsAsEnums
