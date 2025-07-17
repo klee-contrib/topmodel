@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 1.9.6
+
+- [ab2775](https://github.com/klee-contrib/topmodel/commit/ab27750932461a677faa08638f08b95d3c30e70d) [JPA]Fix annotation Id Enums as Enums dans le cas d'une PK composite
+
 ## 1.9.5
 
 - [8ff538](https://github.com/klee-contrib/topmodel/commit/8ff538c2e8c5cf43b3eaf2a4b5bef9298660da7e) [JPA] Gestion Enums as Enums dans le cas d'une PK composite
