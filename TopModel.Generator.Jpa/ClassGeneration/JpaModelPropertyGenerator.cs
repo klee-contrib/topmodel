@@ -352,14 +352,6 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
                         yield return new JavaAnnotation("OrderBy", $@"""{property.Association.OrderProperty.NameByClassCamel} ASC""", $"{JavaxOrJakarta}.persistence.OrderBy");
                     }
                 }
-
-                if (property.PrimaryKey)
-                {
-                    foreach (var a in GetIdAnnotations(property))
-                    {
-                        yield return a;
-                    }
-                }
             }
             else
             {
@@ -367,6 +359,14 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
                 if (ShouldWriteEnumAnnotation(property))
                 {
                     yield return EnumAnnotation;
+                }
+            }
+
+            if (property.PrimaryKey)
+            {
+                foreach (var a in GetIdAnnotations(property))
+                {
+                    yield return a;
                 }
             }
         }
