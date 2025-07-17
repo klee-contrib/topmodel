@@ -187,7 +187,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             fw.WriteLine();
             var annotations = new List<JavaAnnotation>();
             annotations.AddRange(JpaModelPropertyGenerator.GetDomainAnnotations(pk, tag));
-            if (pk is AssociationProperty ap)
+            if (pk is AssociationProperty ap && !(Config.CanClassUseEnums(ap.Association) && Config.EnumsAsEnums))
             {
                 annotations.AddRange(JpaModelPropertyGenerator.GetJpaAssociationAnnotations(ap, tag));
             }
