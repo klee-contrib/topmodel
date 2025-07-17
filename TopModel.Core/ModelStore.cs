@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System.Collections.Concurrent;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using NeoSmart.AsyncLock;
@@ -13,15 +14,13 @@ public class ModelStore : IDisposable
 {
     private readonly ModelConfig _config;
     private readonly IMemoryCache _fsCache;
-
-    private readonly AsyncLock _lockPending = new();
-
+    private readonly AsyncLock _lockInit = new();
+    private readonly AsyncLock _lockUpdate = new();
     private readonly ILogger<ModelStore> _logger;
     private readonly ModelFileLoader _modelFileLoader;
-
     private readonly Dictionary<string, ModelFile> _modelFiles = [];
     private readonly IEnumerable<IModelWatcher> _modelWatchers;
-    private readonly Dictionary<string, string> _pendingFileChanges = [];
+    private readonly ConcurrentQueue<(string FullPath, string? FileName, ModelFile? ModelFile)> _pendingUpdates = new();
     private readonly TranslationStore _translationStore;
 
     private LoggingScope? _storeConfig;
@@ -150,11 +149,10 @@ public class ModelStore : IDisposable
         }
 
         _modelFiles.Clear();
-        _pendingFileChanges.Clear();
 
         _logger.LogInformation("Chargement du modèle...");
 
-        using (await _lockPending.LockAsync())
+        using (await _lockInit.LockAsync())
         {
             var files = await Directory.EnumerateFiles(_config.ModelRoot, "*.tmd", SearchOption.AllDirectories).ToAsyncEnumerable()
                 .SelectAwait(async fullPath => await LoadFile(fullPath, WatcherChangeTypes.Created))
@@ -172,22 +170,37 @@ public class ModelStore : IDisposable
 
     public async Task WaitForUpdates()
     {
-        using (await _lockPending.LockAsync())
+        using (await _lockUpdate.LockAsync())
         {
         }
     }
 
-    private async Task ApplyUpdates(IEnumerable<(string FullPath, string? FileName, ModelFile? ModelFile)> files)
+    private async Task ApplyUpdates(IEnumerable<(string FullPath, string? FileName, ModelFile? ModelFile)> updates)
     {
-        using (await _lockPending.LockAsync())
+        using (await _lockInit.LockAsync())
         {
+            foreach (var update in updates)
+            {
+                _pendingUpdates.Enqueue(update);
+            }
+        }
+
+        using (await _lockUpdate.LockAsync())
+        {
+            var files = new List<(string FullPath, string? FileName, ModelFile? ModelFile)>();
+            while (_pendingUpdates.TryDequeue(out var file))
+            {
+                files.Add(file);
+            }
+
+            var pendingFileChanges = new Dictionary<string, string>();
             var pendingFileDeletes = new HashSet<string>();
 
             foreach (var (fullPath, fileName, modelFile) in files)
             {
                 if (fileName != null)
                 {
-                    _pendingFileChanges[fullPath] = fileName;
+                    pendingFileChanges[fullPath] = fileName;
 
                     if (modelFile != null)
                     {
@@ -206,7 +219,7 @@ public class ModelStore : IDisposable
                 modelWatcher.OnFilesDeleted(pendingFileDeletes);
             }
 
-            if (_pendingFileChanges.Count == 0)
+            if (pendingFileChanges.Count == 0)
             {
                 return;
             }
@@ -215,9 +228,9 @@ public class ModelStore : IDisposable
             {
                 var referenceErrors = new List<ModelError>();
 
-                var affectedFiles = _pendingFileChanges.Values.Select(pu => _modelFiles.TryGetValue(pu, out var mf) ? mf : null).Any(mf => mf?.Domains.Count > 0 || mf?.Converters.Count > 0)
+                var affectedFiles = pendingFileChanges.Values.Select(pu => _modelFiles.TryGetValue(pu, out var mf) ? mf : null).Any(mf => mf?.Domains.Count > 0 || mf?.Converters.Count > 0)
                     ? _modelFiles
-                    : GetAffectedFiles(_pendingFileChanges.Values).Distinct().ToDictionary(f => f.Name, f => f);
+                    : GetAffectedFiles(pendingFileChanges.Values).Distinct().ToDictionary(f => f.Name, f => f);
 
                 IList<ModelFile> sortedFiles = new List<ModelFile>(1);
                 try
@@ -281,7 +294,7 @@ public class ModelStore : IDisposable
                 _logger.LogInformation($"Mise à jour terminée avec succès.");
                 _logger.LogInformation(string.Empty);
 
-                _pendingFileChanges.Clear();
+                pendingFileChanges.Clear();
             }
             catch (Exception e)
             {
