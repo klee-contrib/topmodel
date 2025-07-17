@@ -33,10 +33,10 @@ import topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur;
 /**
  * Profil des utilisateurs.
  */
-@Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@EntityListeners(AuditingEntityListener.class)
 @Entity
 @Table(name = "PROFIL")
+@EntityListeners(AuditingEntityListener.class)
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Profil {
 
 	/**
@@ -57,8 +57,8 @@ public class Profil {
 	 * Liste des droits du profil.
 	 */
 	@ManyToMany
-	@JoinTable(name = "PROFIL_DROIT", joinColumns = @JoinColumn(name = "PRO_ID"), inverseJoinColumns = @JoinColumn(name = "DRO_CODE"))
 	@OrderBy("code ASC")
+	@JoinTable(name = "PROFIL_DROIT", joinColumns = @JoinColumn(name = "PRO_ID"), inverseJoinColumns = @JoinColumn(name = "DRO_CODE"))
 	private List<Droit> droits;
 
 	/**

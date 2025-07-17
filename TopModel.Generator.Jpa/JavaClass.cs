@@ -37,6 +37,16 @@ public class JavaClass(string name)
         return this;
     }
 
+    public JavaClass AddRange(IEnumerable<JavaAnnotation> annotations)
+    {
+        foreach (var annotation in annotations)
+        {
+            Add(annotation);
+        }
+
+        return this;
+    }
+
     public JavaClass Add(JavaConstructor constructor)
     {
         Imports.AddRange(constructor.Imports);
@@ -55,6 +65,16 @@ public class JavaClass(string name)
     {
         Imports.AddRange(method.Imports);
         Methods.Add(method);
+        return this;
+    }
+
+    public JavaClass AddRange(IEnumerable<JavaMethod> methods)
+    {
+        foreach (var method in methods)
+        {
+            Add(method);
+        }
+
         return this;
     }
 

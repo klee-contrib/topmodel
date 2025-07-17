@@ -39,7 +39,7 @@ public interface ProfilClient {
 	/**
 	 * Charge le détail d'un Profil.
 	 * @param proId Id technique
-	 * @return Le détail de l'Profil
+	 * @return Le détail du profil
 	 */
 	@PreAuthorize("hasRole('READ')")
 	@GetExchange("/{proId}")

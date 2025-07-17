@@ -22,7 +22,7 @@ export function addProfil(profil: ProfilWrite, options: RequestInit = {}): Promi
  * Charge le détail d'un Profil
  * @param proId Id technique
  * @param options Options pour 'fetch'.
- * @returns Le détail de l'Profil
+ * @returns Le détail du profil
  */
 export function getProfil(proId: number, options: RequestInit = {}): Promise<ProfilRead> {
     return coreFetch("GET", `./api/profils/${proId}`, {}, options);

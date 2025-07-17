@@ -40,7 +40,6 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     public void Write(int indentationLevel, JavaMethod javaMethod)
     {
         AddImports(javaMethod.Imports);
-        Write(indentationLevel, javaMethod.Annotations);
         if (!string.IsNullOrEmpty(javaMethod.Comment))
         {
             WriteDocStart(indentationLevel, javaMethod.Comment);
@@ -57,6 +56,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
             WriteDocEnd(indentationLevel);
         }
 
+        Write(indentationLevel, javaMethod.Annotations);
         var hasBody = javaMethod.Body.Count > 0;
         _toWrite.Add(new WriterLine() { Line = @$"{javaMethod.Signature}{(hasBody ? " {" : ";")}", Indent = indentationLevel });
         foreach (var bodyLine in javaMethod.Body)
@@ -99,6 +99,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
 
         foreach (var method in javaClass.Methods)
         {
+            WriteLine();
             Write(indentationLevel + 1, method);
         }
 
@@ -112,7 +113,7 @@ public class JavaWriter(IFileWriter writer, string packageName) : IDisposable
     /// <param name="javaAnnotations">Valeurs à écrire dans le flux.</param>
     public void Write(int indentationLevel, IEnumerable<JavaAnnotation> javaAnnotations)
     {
-        foreach (var annotation in javaAnnotations.DistinctBy(e => e.Name.Split('(').First()))
+        foreach (var annotation in javaAnnotations.OrderBy(j => j.ToString().Length).DistinctBy(e => e.Name.Split('(').First()))
         {
             WriteLine(indentationLevel, annotation);
         }

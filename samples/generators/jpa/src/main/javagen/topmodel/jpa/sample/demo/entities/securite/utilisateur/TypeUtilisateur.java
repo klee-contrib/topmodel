@@ -22,11 +22,11 @@ import topmodel.jpa.sample.demo.enums.securite.utilisateur.TypeUtilisateurCode;
 /**
  * Type d'utilisateur.
  */
-@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
-@Table(name = "TYPE_UTILISATEUR")
 @Immutable
+@Table(name = "TYPE_UTILISATEUR")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class TypeUtilisateur {
 
 	@Transient
@@ -40,8 +40,8 @@ public class TypeUtilisateur {
 	 * Code du type d'utilisateur.
 	 */
 	@Id
-	@Column(name = "TUT_CODE", nullable = false, length = 10, columnDefinition = "varchar")
 	@Enumerated(EnumType.STRING)
+	@Column(name = "TUT_CODE", nullable = false, length = 10, columnDefinition = "varchar")
 	private TypeUtilisateurCode code;
 
 	/**

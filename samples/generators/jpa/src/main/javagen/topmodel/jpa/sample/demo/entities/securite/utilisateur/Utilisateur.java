@@ -30,9 +30,9 @@ import topmodel.jpa.sample.demo.enums.securite.utilisateur.TypeUtilisateurCode;
 /**
  * Utilisateur de l'application.
  */
-@Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@EntityListeners(AuditingEntityListener.class)
 @Entity
+@EntityListeners(AuditingEntityListener.class)
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Table(name = "UTILISATEUR", uniqueConstraints = {@UniqueConstraint(columnNames = {"UTI_EMAIL"})})
 public class Utilisateur {
 
@@ -83,15 +83,15 @@ public class Utilisateur {
 	/**
 	 * Profil de l'utilisateur.
 	 */
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Profil.class)
 	@JoinColumn(name = "PRO_ID", referencedColumnName = "PRO_ID")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = Profil.class)
 	private Profil profil;
 
 	/**
 	 * Type d'utilisateur.
 	 */
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = TypeUtilisateur.class)
 	@JoinColumn(name = "TUT_CODE", referencedColumnName = "TUT_CODE")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = TypeUtilisateur.class)
 	private TypeUtilisateur typeUtilisateur = new TypeUtilisateur(TypeUtilisateurCode.GEST);
 
 	/**

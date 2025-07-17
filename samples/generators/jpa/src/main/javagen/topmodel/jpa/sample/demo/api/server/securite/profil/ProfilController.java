@@ -21,43 +21,47 @@ import topmodel.jpa.sample.demo.dtos.securite.profil.ProfilItem;
 import topmodel.jpa.sample.demo.dtos.securite.profil.ProfilRead;
 import topmodel.jpa.sample.demo.dtos.securite.profil.ProfilWrite;
 
-@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @RequestMapping("api/profils")
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public interface ProfilController {
 
 	/**
 	 * Ajoute un Profil.
-	 * @param profil Profil à sauvegarder
-	 * @return Profil sauvegardé
+	 * @param profil Profil à sauvegarder.
+	 *
+	 * @return Profil sauvegardé.
 	 */
-	@PreAuthorize("hasRole('CREATE')")
 	@PostMapping(path = "/")
+	@PreAuthorize("hasRole('CREATE')")
 	ProfilRead addProfil(@RequestBody @Valid ProfilWrite profil);
 
 	/**
 	 * Charge le détail d'un Profil.
-	 * @param proId Id technique
-	 * @return Le détail de l'Profil
+	 * @param proId Id technique.
+	 *
+	 * @return Le détail du profil.
 	 */
-	@PreAuthorize("hasRole('READ')")
 	@GetMapping(path = "/{proId}")
+	@PreAuthorize("hasRole('READ')")
 	ProfilRead getProfil(@PathVariable("proId") Integer proId);
 
 	/**
 	 * Liste tous les Profils.
-	 * @return Profils matchant les critères
+	 *
+	 * @return Profils matchant les critères.
 	 */
-	@PreAuthorize("hasRole('READ')")
 	@GetMapping(path = "/")
+	@PreAuthorize("hasRole('READ')")
 	List<ProfilItem> getProfils();
 
 	/**
 	 * Sauvegarde un Profil.
-	 * @param proId Id technique
-	 * @param profil Profil à sauvegarder
-	 * @return Profil sauvegardé
+	 * @param proId Id technique.
+	 * @param profil Profil à sauvegarder.
+	 *
+	 * @return Profil sauvegardé.
 	 */
-	@PreAuthorize("hasRole('UPDATE')")
 	@PutMapping(path = "/{proId}")
+	@PreAuthorize("hasRole('UPDATE')")
 	ProfilRead updateProfil(@PathVariable("proId") Integer proId, @RequestBody @Valid ProfilWrite profil);
 }

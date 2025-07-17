@@ -35,7 +35,7 @@ public partial class ProfilClient(HttpClient client)
     /// Charge le détail d'un Profil.
     /// </summary>
     /// <param name="proId">Id technique.</param>
-    /// <returns>Le détail de l'Profil.</returns>
+    /// <returns>Le détail du profil.</returns>
     public async Task<ProfilRead> GetProfil(int proId)
     {
         await EnsureAuthentication();

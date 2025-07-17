@@ -22,11 +22,11 @@ import topmodel.jpa.sample.demo.enums.securite.profil.TypeDroitCode;
 /**
  * Type de droit.
  */
-@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
-@Table(name = "TYPE_DROIT")
 @Immutable
+@Table(name = "TYPE_DROIT")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class TypeDroit {
 
 	@Transient
@@ -40,8 +40,8 @@ public class TypeDroit {
 	 * Code du type de droit.
 	 */
 	@Id
-	@Column(name = "TDR_CODE", nullable = false, length = 10, columnDefinition = "varchar")
 	@Enumerated(EnumType.STRING)
+	@Column(name = "TDR_CODE", nullable = false, length = 10, columnDefinition = "varchar")
 	private TypeDroitCode code;
 
 	/**

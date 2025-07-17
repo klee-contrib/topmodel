@@ -25,11 +25,11 @@ import topmodel.jpa.sample.demo.enums.securite.profil.DroitCode;
 /**
  * Droits de l'application.
  */
-@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 @Entity
-@Table(name = "DROIT")
 @Immutable
+@Table(name = "DROIT")
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+@Generated("TopModel : https://github.com/klee-contrib/topmodel")
 public class Droit {
 
 	@Transient
@@ -45,8 +45,8 @@ public class Droit {
 	 * Code du droit.
 	 */
 	@Id
-	@Column(name = "DRO_CODE", nullable = false, length = 10, columnDefinition = "varchar")
 	@Enumerated(EnumType.STRING)
+	@Column(name = "DRO_CODE", nullable = false, length = 10, columnDefinition = "varchar")
 	private DroitCode code;
 
 	/**
@@ -58,8 +58,8 @@ public class Droit {
 	/**
 	 * Type de profil pouvant faire l'action.
 	 */
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = TypeDroit.class)
 	@JoinColumn(name = "TDR_CODE", referencedColumnName = "TDR_CODE")
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, targetEntity = TypeDroit.class)
 	private TypeDroit typeDroit;
 
 	/**

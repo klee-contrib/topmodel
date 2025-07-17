@@ -39,8 +39,8 @@ public class ProfilRead implements Serializable {
 	 * Libellé du profil.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.profil.Profil#getLibelle() Profil#getLibelle()}
 	 */
-	@Size(max = 100)
 	@NotNull
+	@Size(max = 100)
 	private String libelle;
 
 	/**

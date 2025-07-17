@@ -45,7 +45,7 @@ endpoint:
   returns:
     composition: ProfilRead
     name: detail # Le nom est obligatoire car c'est une propriété mais il n'est pas utilisé.
-    comment: Le détail de l'Profil
+    comment: Le détail du profil
 ---
 endpoint:
   name: GetProfils

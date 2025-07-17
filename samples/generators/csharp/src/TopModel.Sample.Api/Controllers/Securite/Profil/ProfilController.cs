@@ -23,7 +23,7 @@ public class ProfilController : Controller
     /// Charge le détail d'un Profil
     /// </summary>
     /// <param name="proId">Id technique</param>
-    /// <returns>Le détail de l'Profil</returns>
+    /// <returns>Le détail du profil</returns>
     [HttpGet("api/profils/{proId:int}")]
     public async Task<ProfilRead> GetProfil(int proId)
     {

@@ -28,7 +28,7 @@ export class ProfilService {
     /**
      * @description Charge le détail d'un Profil
      * @param proId Id technique
-     * @returns Le détail de l'Profil
+     * @returns Le détail du profil
      */
     getProfil(proId: number, options: {headers?: HttpHeaders | {[header: string]: string | string[]}; context?: HttpContext; params?: HttpParams | {[param: string]: string | number | boolean | ReadonlyArray<string | number | boolean>}; withCredentials?: boolean; reportProgress?: boolean; transferCache?: {includeHeaders?: string[]} | boolean} = {}): Observable<ProfilRead> {
         return this.http.get<ProfilRead>(`/api/profils/${proId}`, {observe: 'body', ...options});

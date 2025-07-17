@@ -30,16 +30,16 @@ public class UtilisateurWrite implements Serializable {
 	 * Nom de l'utilisateur.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getNom() Utilisateur#getNom()}
 	 */
-	@Size(max = 100)
 	@NotNull
+	@Size(max = 100)
 	private String nom;
 
 	/**
 	 * Nom de l'utilisateur.
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getPrenom() Utilisateur#getPrenom()}
 	 */
-	@Size(max = 100)
 	@NotNull
+	@Size(max = 100)
 	private String prenom;
 
 	/**
@@ -47,8 +47,8 @@ public class UtilisateurWrite implements Serializable {
 	 * Alias of {@link topmodel.jpa.sample.demo.entities.securite.utilisateur.Utilisateur#getEmail() Utilisateur#getEmail()}
 	 */
 	@Email
-	@Size(max = 50)
 	@NotNull
+	@Size(max = 50)
 	private String email;
 
 	/**
