@@ -1,5 +1,10 @@
 # Changelog JPA
 
+## 1.10.0
+
+- [f61389](https://github.com/klee-contrib/topmodel/commit/f61389d0660b6a67051769d3eb22a89f850b59fb) [JPA] Ajout de l'option `openApiAnnotations`
+- [ffe32e](https://github.com/klee-contrib/topmodel/commit/ffe32e982c09818a0bc23cc43b598895cfff7ccb) [JPA] Trim end "/" pour les routes
+
 ## 1.9.7
 
 - [63834f](https://github.com/klee-contrib/topmodel/commit/63834f3068347784ee9d8db3122318e526113c95) [JPA] Ordre déterministe sur les annotations : de la plus courte à la plus longue. Cette évolution permet d'éviter les modifications d'ordre entre deux versions
