@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 
@@ -39,7 +42,8 @@ public interface UtilisateurController {
 	 */
 	@PostMapping(path = "")
 	@PreAuthorize("hasRole('CREATE')")
-	UtilisateurRead addUtilisateur(@RequestBody @Valid UtilisateurWrite utilisateur);
+	@Operation(description = "Ajoute un utilisateur")
+	UtilisateurRead addUtilisateur(@RequestBody @Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Utilisateur à sauvegarder") UtilisateurWrite utilisateur);
 
 	/**
 	 * Supprime un utilisateur.
@@ -48,7 +52,8 @@ public interface UtilisateurController {
 	@DeleteMapping(path = "{utiId}")
 	@PreAuthorize("hasRole('DELETE')")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	void deleteUtilisateur(@PathVariable("utiId") Integer utiId);
+	@Operation(description = "Supprime un utilisateur")
+	void deleteUtilisateur(@PathVariable("utiId") @Parameter(description = "Id de l'utilisateur") Integer utiId);
 
 	/**
 	 * Charge le détail d'un utilisateur.
@@ -58,7 +63,8 @@ public interface UtilisateurController {
 	 */
 	@GetMapping(path = "{utiId}")
 	@PreAuthorize("hasRole('READ')")
-	UtilisateurRead getUtilisateur(@PathVariable("utiId") Integer utiId);
+	@Operation(description = "Charge le détail d'un utilisateur")
+	UtilisateurRead getUtilisateur(@PathVariable("utiId") @Parameter(description = "Id de l'utilisateur") Integer utiId);
 
 	/**
 	 * Recherche des utilisateurs.
@@ -75,7 +81,8 @@ public interface UtilisateurController {
 	 */
 	@GetMapping(path = "")
 	@PreAuthorize("hasRole('READ')")
-	List<UtilisateurItem> searchUtilisateur(@RequestParam(value = "nom", required = false) String nom, @RequestParam(value = "prenom", required = false) String prenom, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "dateNaissance", required = false) LocalDate dateNaissance, @RequestParam(value = "adresse", required = false) String adresse, @RequestParam(value = "actif", required = false) Boolean actif, @RequestParam(value = "profilId", required = false) Integer profilId, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateurCode typeUtilisateurCode);
+	@Operation(description = "Recherche des utilisateurs")
+	List<UtilisateurItem> searchUtilisateur(@RequestParam(value = "nom", required = false) @Parameter(description = "Nom de l'utilisateur") String nom, @RequestParam(value = "prenom", required = false) @Parameter(description = "Nom de l'utilisateur") String prenom, @RequestParam(value = "email", required = false) @Parameter(description = "Email de l'utilisateur") String email, @RequestParam(value = "dateNaissance", required = false) @Parameter(description = "Age de l'utilisateur") LocalDate dateNaissance, @RequestParam(value = "adresse", required = false) @Parameter(description = "Adresse de l'utilisateur") String adresse, @RequestParam(value = "actif", required = false) @Parameter(description = "Si l'utilisateur est actif") Boolean actif, @RequestParam(value = "profilId", required = false) @Parameter(description = "Profil de l'utilisateur") Integer profilId, @RequestParam(value = "typeUtilisateurCode", required = false) @Parameter(description = "Type d'utilisateur") TypeUtilisateurCode typeUtilisateurCode);
 
 	/**
 	 * Sauvegarde un utilisateur.
@@ -86,5 +93,6 @@ public interface UtilisateurController {
 	 */
 	@PutMapping(path = "{utiId}")
 	@PreAuthorize("hasRole('UPDATE')")
-	UtilisateurRead updateUtilisateur(@PathVariable("utiId") Integer utiId, @RequestBody @Valid UtilisateurWrite utilisateur);
+	@Operation(description = "Sauvegarde un utilisateur")
+	UtilisateurRead updateUtilisateur(@PathVariable("utiId") @Parameter(description = "Id de l'utilisateur") Integer utiId, @RequestBody @Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Utilisateur à sauvegarder") UtilisateurWrite utilisateur);
 }
