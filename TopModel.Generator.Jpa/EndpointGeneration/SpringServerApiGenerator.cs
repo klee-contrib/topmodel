@@ -180,7 +180,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
 
                 if (Config.OpenApiAnnotations)
                 {
-                    parameter.AddAnnotation(new JavaAnnotation("Parameter", imports: ["io.swagger.v3.oas.annotations.Parameter"])
+                    parameter.AddAnnotation(new JavaAnnotation("io.swagger.v3.oas.annotations.parameters.RequestBody")
                         .AddAttribute("description", @$"""{bodyParam.Comment}"""));
                 }
 

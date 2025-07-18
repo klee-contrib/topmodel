@@ -42,7 +42,7 @@ public class JpaConfig : GeneratorConfigBase
     /// <summary>
     /// Si les annotation swagger-annotation-jakarta doivent être ajoutées aux interface
     /// </summary>
-    public bool OpenApiAnnotations { get; set; } = false;
+    public bool OpenApiAnnotations { get; set; } = true;
 
     /// <summary>
     /// Mode de génération de l'API ("Client" ou "Server").
