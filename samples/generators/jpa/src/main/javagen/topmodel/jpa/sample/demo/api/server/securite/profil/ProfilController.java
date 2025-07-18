@@ -31,7 +31,7 @@ public interface ProfilController {
 	 *
 	 * @return Profil sauvegardé.
 	 */
-	@PostMapping(path = "/")
+	@PostMapping(path = "")
 	@PreAuthorize("hasRole('CREATE')")
 	ProfilRead addProfil(@RequestBody @Valid ProfilWrite profil);
 
@@ -41,7 +41,7 @@ public interface ProfilController {
 	 *
 	 * @return Le détail du profil.
 	 */
-	@GetMapping(path = "/{proId}")
+	@GetMapping(path = "{proId}")
 	@PreAuthorize("hasRole('READ')")
 	ProfilRead getProfil(@PathVariable("proId") Integer proId);
 
@@ -50,7 +50,7 @@ public interface ProfilController {
 	 *
 	 * @return Profils matchant les critères.
 	 */
-	@GetMapping(path = "/")
+	@GetMapping(path = "")
 	@PreAuthorize("hasRole('READ')")
 	List<ProfilItem> getProfils();
 
@@ -61,7 +61,7 @@ public interface ProfilController {
 	 *
 	 * @return Profil sauvegardé.
 	 */
-	@PutMapping(path = "/{proId}")
+	@PutMapping(path = "{proId}")
 	@PreAuthorize("hasRole('UPDATE')")
 	ProfilRead updateProfil(@PathVariable("proId") Integer proId, @RequestBody @Valid ProfilWrite profil);
 }

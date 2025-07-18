@@ -172,6 +172,11 @@
       "type": "string",
       "description": "Localisation des ressources, relative au répertoire de génération."
     },
+    "openApiAnnotations": {
+      "type": "boolean",
+      "description": "Si les annotation swagger-annotation-jakarta doivent être ajoutées aux interface",
+      "default": "false"
+    },
     "resourcesEncoding": {
       "type": "string",
       "description": "Encodage des fichiers de resource.",

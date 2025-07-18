@@ -37,7 +37,7 @@ public interface UtilisateurController {
 	 *
 	 * @return Utilisateur sauvegardé.
 	 */
-	@PostMapping(path = "/")
+	@PostMapping(path = "")
 	@PreAuthorize("hasRole('CREATE')")
 	UtilisateurRead addUtilisateur(@RequestBody @Valid UtilisateurWrite utilisateur);
 
@@ -45,7 +45,7 @@ public interface UtilisateurController {
 	 * Supprime un utilisateur.
 	 * @param utiId Id de l'utilisateur.
 	 */
-	@DeleteMapping(path = "/{utiId}")
+	@DeleteMapping(path = "{utiId}")
 	@PreAuthorize("hasRole('DELETE')")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	void deleteUtilisateur(@PathVariable("utiId") Integer utiId);
@@ -56,7 +56,7 @@ public interface UtilisateurController {
 	 *
 	 * @return Le détail de l'utilisateur.
 	 */
-	@GetMapping(path = "/{utiId}")
+	@GetMapping(path = "{utiId}")
 	@PreAuthorize("hasRole('READ')")
 	UtilisateurRead getUtilisateur(@PathVariable("utiId") Integer utiId);
 
@@ -73,7 +73,7 @@ public interface UtilisateurController {
 	 *
 	 * @return Utilisateurs matchant les critères.
 	 */
-	@GetMapping(path = "/")
+	@GetMapping(path = "")
 	@PreAuthorize("hasRole('READ')")
 	List<UtilisateurItem> searchUtilisateur(@RequestParam(value = "nom", required = false) String nom, @RequestParam(value = "prenom", required = false) String prenom, @RequestParam(value = "email", required = false) String email, @RequestParam(value = "dateNaissance", required = false) LocalDate dateNaissance, @RequestParam(value = "adresse", required = false) String adresse, @RequestParam(value = "actif", required = false) Boolean actif, @RequestParam(value = "profilId", required = false) Integer profilId, @RequestParam(value = "typeUtilisateurCode", required = false) TypeUtilisateurCode typeUtilisateurCode);
 
@@ -84,7 +84,7 @@ public interface UtilisateurController {
 	 *
 	 * @return Utilisateur sauvegardé.
 	 */
-	@PutMapping(path = "/{utiId}")
+	@PutMapping(path = "{utiId}")
 	@PreAuthorize("hasRole('UPDATE')")
 	UtilisateurRead updateUtilisateur(@PathVariable("utiId") Integer utiId, @RequestBody @Valid UtilisateurWrite utilisateur);
 }

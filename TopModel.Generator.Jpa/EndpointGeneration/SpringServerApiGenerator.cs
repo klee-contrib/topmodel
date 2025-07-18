@@ -96,11 +96,18 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             param.AddAnnotation(pathParamAnnotation);
             param.Comment = routeParam.Comment;
             param.Imports.AddRange(routeParam.GetTypeImports(Config, tag));
-            method.AddParameter(param);
             foreach (var (a, i) in Config.GetDomainAnnotationsAndImports(routeParam, tag))
             {
                 param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
             }
+
+            if (Config.OpenApiAnnotations)
+            {
+                param.AddAnnotation(new JavaAnnotation("Parameter", imports: ["io.swagger.v3.oas.annotations.Parameter"])
+                    .AddAttribute("description", @$"""{routeParam.Comment}"""));
+            }
+
+            method.AddParameter(param);
         }
 
         foreach (var queryParam in endpoint.GetQueryParams())
@@ -115,6 +122,12 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             foreach (var (a, i) in Config.GetDomainAnnotationsAndImports(queryParam, tag))
             {
                 param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
+            }
+
+            if (Config.OpenApiAnnotations)
+            {
+                param.AddAnnotation(new JavaAnnotation("Parameter", imports: ["io.swagger.v3.oas.annotations.Parameter"])
+                    .AddAttribute("description", @$"""{queryParam.Comment}"""));
             }
 
             method.AddParameter(param);
@@ -138,6 +151,12 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
                 }
 
                 parameter.Imports.AddRange(param.GetTypeImports(Config, tag));
+                if (Config.OpenApiAnnotations)
+                {
+                    parameter.AddAnnotation(new JavaAnnotation("Parameter", imports: ["io.swagger.v3.oas.annotations.Parameter"])
+                        .AddAttribute("description", @$"""{param.Comment}"""));
+                }
+
                 method.AddParameter(parameter);
             }
         }
@@ -158,6 +177,13 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
                 }
 
                 parameter.AddAnnotation(new JavaAnnotation("Valid", imports: Config.JavaxOrJakarta + ".validation.Valid"));
+
+                if (Config.OpenApiAnnotations)
+                {
+                    parameter.AddAnnotation(new JavaAnnotation("Parameter", imports: ["io.swagger.v3.oas.annotations.Parameter"])
+                        .AddAttribute("description", @$"""{bodyParam.Comment}"""));
+                }
+
                 method.AddParameter(parameter);
             }
         }
@@ -165,6 +191,13 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
         if (method.ReturnType == "void" || method.ReturnType == "Void")
         {
             method.AddAnnotation(new JavaAnnotation("ResponseStatus", imports: ["org.springframework.web.bind.annotation.ResponseStatus", "org.springframework.http.HttpStatus"], value: "HttpStatus.NO_CONTENT"));
+        }
+
+        if (Config.OpenApiAnnotations)
+        {
+            var operationAnnotation = new JavaAnnotation("Operation", imports: ["io.swagger.v3.oas.annotations.Operation"])
+                .AddAttribute("description", @$"""{endpoint.Description}""");
+            method.AddAnnotation(operationAnnotation);
         }
 
         return method;

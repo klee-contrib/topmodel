@@ -40,6 +40,11 @@ public class JpaConfig : GeneratorConfigBase
     public string ApiPath { get; set; } = "javagen:{app:path}/api/{module:path}";
 
     /// <summary>
+    /// Si les annotation swagger-annotation-jakarta doivent être ajoutées aux interface
+    /// </summary>
+    public bool OpenApiAnnotations { get; set; } = false;
+
+    /// <summary>
     /// Mode de génération de l'API ("Client" ou "Server").
     /// </summary>
     public string? ApiGeneration { get; set; }

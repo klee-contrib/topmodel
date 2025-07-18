@@ -147,52 +147,52 @@ Exemple
 @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class TypeDroit {
 
-	@Transient
-	public static final TypeDroit ADMIN = new TypeDroit(TypeDroitCode.ADMIN);
-	@Transient
-	public static final TypeDroit READ = new TypeDroit(TypeDroitCode.READ);
-	@Transient
-	public static final TypeDroit WRITE = new TypeDroit(TypeDroitCode.WRITE);
+ @Transient
+ public static final TypeDroit ADMIN = new TypeDroit(TypeDroitCode.ADMIN);
+ @Transient
+ public static final TypeDroit READ = new TypeDroit(TypeDroitCode.READ);
+ @Transient
+ public static final TypeDroit WRITE = new TypeDroit(TypeDroitCode.WRITE);
 
-	/**
-	 * Code du type de droit.
-	 */
-	@Id
-	@Column(name = "TDR_CODE", nullable = false, length = 10, columnDefinition = "varchar")
-	@Enumerated(EnumType.STRING)
-	private TypeDroitCode code;
+ /**
+  * Code du type de droit.
+  */
+ @Id
+ @Column(name = "TDR_CODE", nullable = false, length = 10, columnDefinition = "varchar")
+ @Enumerated(EnumType.STRING)
+ private TypeDroitCode code;
 
-	/**
-	 * Libellé du type de droit.
-	 */
-	@Column(name = "TDR_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
-	private String libelle;
+ /**
+  * Libellé du type de droit.
+  */
+ @Column(name = "TDR_LIBELLE", nullable = false, length = 100, columnDefinition = "varchar")
+ private String libelle;
 
-	/**
-	 * No arg constructor.
-	 */
-	public TypeDroit() {
-		// No arg constructor
-	}
+ /**
+  * No arg constructor.
+  */
+ public TypeDroit() {
+  // No arg constructor
+ }
 
-	/**
-	 * Enum constructor.
-	 * @param code Code dont on veut obtenir l'instance.
-	 */
-	public TypeDroit(TypeDroitCode code) {
-		this.code = code;
-		switch(code) {
-		case ADMIN :
-			this.libelle = "securite.profil.typeDroit.values.Admin";
-			break;
-		case READ :
-			this.libelle = "securite.profil.typeDroit.values.Read";
-			break;
-		case WRITE :
-			this.libelle = "securite.profil.typeDroit.values.Write";
-			break;
-		}
-	}
+ /**
+  * Enum constructor.
+  * @param code Code dont on veut obtenir l'instance.
+  */
+ public TypeDroit(TypeDroitCode code) {
+  this.code = code;
+  switch(code) {
+  case ADMIN :
+   this.libelle = "securite.profil.typeDroit.values.Admin";
+   break;
+  case READ :
+   this.libelle = "securite.profil.typeDroit.values.Read";
+   break;
+  case WRITE :
+   this.libelle = "securite.profil.typeDroit.values.Write";
+   break;
+  }
+ }
   /// ... Le reste de la génération est inchangé par rapport aux autres classes
 }
 
@@ -203,18 +203,18 @@ public class TypeDroit {
  * Enumération des valeurs possibles de la propriété Code de la classe TypeDroit.
  */
 public enum TypeDroitCode {
-	/**
-	 * Administration.
-	 */
-	ADMIN,
-	/**
-	 * Lecture.
-	 */
-	READ,
-	/**
-	 * Ecriture.
-	 */
-	WRITE
+ /**
+  * Administration.
+  */
+ ADMIN,
+ /**
+  * Lecture.
+  */
+ READ,
+ /**
+  * Ecriture.
+  */
+ WRITE
 }
 
 ```
@@ -241,39 +241,39 @@ package topmodel.jpa.sample.demo.enums.securite.profil;
  * Enumération des valeurs possibles de la classe TypeDroit.
  */
 public enum TypeDroit {
-	/**
-	 * Lecture.
-	 */
-	READ("securite.profil.typeDroit.values.Read"),
+ /**
+  * Lecture.
+  */
+ READ("securite.profil.typeDroit.values.Read"),
 
-	/**
-	 * Ecriture.
-	 */
-	WRITE("securite.profil.typeDroit.values.Write"),
+ /**
+  * Ecriture.
+  */
+ WRITE("securite.profil.typeDroit.values.Write"),
 
-	/**
-	 * Administration.
-	 */
-	ADMIN("securite.profil.typeDroit.values.Admin");
+ /**
+  * Administration.
+  */
+ ADMIN("securite.profil.typeDroit.values.Admin");
 
-	/**
-	 * Libelle.
-	 */
-	private final String libelle;
+ /**
+  * Libelle.
+  */
+ private final String libelle;
 
-	/**
-	 * Enum values constructor.
-	 */
-	private TypeDroit(final String libelle) {
-		this.libelle = libelle;
-	}
+ /**
+  * Enum values constructor.
+  */
+ private TypeDroit(final String libelle) {
+  this.libelle = libelle;
+ }
 
-	/**
-	 * Getter for libelle.
-	 */
-	public String getLibelle() {
-		return this.libelle;
-	}
+ /**
+  * Getter for libelle.
+  */
+ public String getLibelle() {
+  return this.libelle;
+ }
 
 }
 
@@ -427,14 +427,14 @@ Il s'agit du mode par défaut, soit lorsque la variable `clientApiGeneration` va
 Le générateur créé alors des interfaces contenant des annotations `XXXExchange`, dont il faudra configurer un bean d'implémentation.
 
 ```java
-	@Bean
-	protected UtilisateurApiClient utilisateurApiClient(UtilisateurApiClient restTemplate) {
-		var restClient = RestClient.builder().baseUrl("http://localhost:8080/my-app/api/") //
-				.build();
-		var adapter = RestClientAdapter.create(restClient);
-		var factory = HttpServiceProxyFactory.builderFor(adapter).build();
-		return factory.createClient(UtilisateurApiClient.class);
-	}
+ @Bean
+ protected UtilisateurApiClient utilisateurApiClient(UtilisateurApiClient restTemplate) {
+  var restClient = RestClient.builder().baseUrl("http://localhost:8080/my-app/api/") //
+    .build();
+  var adapter = RestClientAdapter.create(restClient);
+  var factory = HttpServiceProxyFactory.builderFor(adapter).build();
+  return factory.createClient(UtilisateurApiClient.class);
+ }
 ```
 
 ### RestTemplate
@@ -540,6 +540,16 @@ Actuellement, la seule génération de endpoint cliente et serveur qui est gér�
 <dependency>
     <groupId>org.springframework</groupId>
     <artifactId>spring-web</artifactId>
+</dependency>
+```
+
+Si l'option `openApiAnnotations` est activée, les annotations de cette librairie sont utilisées :
+
+```xml
+<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations-jakarta -->
+<dependency>
+    <groupId>io.swagger.core.v3</groupId>
+    <artifactId>swagger-annotations-jakarta</artifactId>
 </dependency>
 ```
 
@@ -808,6 +818,24 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
   _Variables par tag_: **oui** (plusieurs clients/serveurs pourraient être générés si un fichier à plusieurs tags)
 
+- `openApiAnnotations`
+
+  Si les annotation `swagger-annotation-jakarta` doivent être ajoutées aux interface. Nécessite à minima la dépendance :
+
+  ```xml
+    <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations-jakarta -->
+    <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-annotations-jakarta</artifactId>
+    </dependency>
+  ```
+
+  _Templating_: `{module}`
+
+  _Valeur par défaut_: `"javagen:{app}/api/{module}"`
+
+  _Variables par tag_: **oui** (plusieurs clients/serveurs pourraient être générés si un fichier à plusieurs tags)
+
 - `apiGeneration`
 
   Mode de génération de l'API (`"client"` ou `"server"`).
@@ -866,7 +894,7 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
 - `generatedHint`
 
-  Option pour générer l'annotation @Generated("TopModel : https://github.com/klee-contrib/topmodel")
+  Option pour générer l'annotation @Generated("TopModel : <https://github.com/klee-contrib/topmodel>")
 
   _Valeur par défaut_: `true`
 
