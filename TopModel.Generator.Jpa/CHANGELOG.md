@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 1.10.2
+
+- [0ee4d3](https://github.com/klee-contrib/topmodel/commit/0ee4d349c7db207cf7003f117cf9942acc58b7a8) [JPA] Fix default value openApiAnnotations
+
 ## 1.10.1
 
 - [f6bd96](https://github.com/klee-contrib/topmodel/commit/f6bd9633f14aac0df62825038b28ed020544a6bc) [JPA] OpenApiAnnotations : le request body nécessite l'annotation RequestBody
