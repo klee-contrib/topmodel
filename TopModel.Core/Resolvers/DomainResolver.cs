@@ -4,7 +4,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
 
-internal class DomainResolver(ModelFile modelFile, IDictionary<string, Domain> domains, IEnumerable<Converter> converters)
+internal class DomainResolver(ModelFile modelFile, ModelConfig config, IDictionary<string, Domain> domains, IEnumerable<Converter> converters)
 {
     /// <summary>
     /// Résout les `asDomains` sur les domaines.
@@ -106,7 +106,7 @@ internal class DomainResolver(ModelFile modelFile, IDictionary<string, Domain> d
     /// Résout les variables dans les domaines.
     /// </summary>
     /// <param name="config">Config.</param>
-    public void ResolveDomainVariables(ModelConfig config)
+    public void ResolveDomainVariables()
     {
         foreach (var domain in modelFile.Domains)
         {

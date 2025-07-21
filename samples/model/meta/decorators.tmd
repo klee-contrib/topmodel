@@ -4,15 +4,32 @@ tags:
   - entity
 
 ---
+annotation:
+  name: EntityListeners
+  description: Annotation pour EntityListeners.
+  java:
+    - text: EntityListeners(AuditingEntityListener.class)
+      imports:
+        - org.springframework.data.jpa.domain.support.AuditingEntityListener
+        - jakarta.persistence.EntityListeners
+---
+annotation:
+  name: Security
+  description: Annotation pour Security.
+  parameters:
+    - name: permission
+      required: true
+      comment: Permission demandée
+  java:
+    - text: PreAuthorize("{permission}")
+      imports:
+        - org.springframework.security.access.prepost.PreAuthorize
+---
 decorator:
   name: EntityListeners
   description: Date création
-  java:
-    annotations:
-      - EntityListeners(AuditingEntityListener.class)
-    imports:
-      - org.springframework.data.jpa.domain.support.AuditingEntityListener
-      - jakarta.persistence.EntityListeners
+  annotations:
+    - EntityListeners
 
   properties:
     - name: DateCreation
@@ -35,8 +52,5 @@ decorator:
     - name: permission
       required: true
       comment: Permission demandée
-  java:
-    annotations:
-      - PreAuthorize("{permission}")
-    imports:
-      - org.springframework.security.access.prepost.PreAuthorize
+  annotations:
+    - Security: ["{permission}"]

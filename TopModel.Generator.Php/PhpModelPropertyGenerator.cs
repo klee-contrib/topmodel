@@ -173,7 +173,7 @@ public class PhpModelPropertyGenerator(PhpConfig config, IEnumerable<Class> clas
             }
         }
 
-        foreach (var (annotation, _) in config.GetDomainAnnotations(property, tag))
+        foreach (var (annotation, _) in config.GetAnnotations(property, tag))
         {
             fw.WriteLine(1, annotation);
         }

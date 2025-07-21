@@ -35,8 +35,10 @@ public class HoverHandler(ModelStore modelStore, ILanguageServerFacade facade, M
                         AliasProperty p => p.Comment,
                         Domain d => d.Label,
                         Decorator d => d.Description,
-                        DataFlow d => $"Flux de données '{d.Name}'",
                         (Decorator d, _) => d.Description,
+                        Annotation a => a.Description,
+                        (Annotation a, _) => a.Description,
+                        DataFlow d => $"Flux de données '{d.Name}'",
                         TemplateParameter tp => tp.Description,
                         Variable v => v.Description,
                         _ => string.Empty

@@ -54,6 +54,29 @@ public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
                     }
 
                     break;
+                case "annotations":
+                    parser.ConsumeSequence(() =>
+                    {
+                        if (parser.Current is MappingStart)
+                        {
+                            parser.ConsumeMapping(prop =>
+                            {
+                                var annotation = new AnnotationReference(prop);
+
+                                parser.ConsumeSequence(() =>
+                                {
+                                    annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
+                                });
+
+                                domain.AnnotationReferences.Add(annotation);
+                            });
+                        }
+                        else
+                        {
+                            domain.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                        }
+                    });
+                    break;
                 default:
                     var implementation = new DomainImplementation();
 
@@ -69,9 +92,6 @@ public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
                                 break;
                             case "imports":
                                 implementation.Imports = fileChecker.Deserialize<List<StringWithVariables>>(parser);
-                                break;
-                            case "annotations":
-                                implementation.Annotations = fileChecker.Deserialize<List<TargetedText>>(parser);
                                 break;
                             case "values":
                                 ValueTemplate HandleValueTemplate()

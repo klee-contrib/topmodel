@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -49,8 +48,8 @@ public abstract class JavaClassGeneratorBase(ILogger<JavaClassGeneratorBase> log
             yield return Config.GeneratedAnnotation;
         }
 
-        var annotationsAndImports = Config.GetAnnotationsAndImports(classe, tag).Select(a => new JavaAnnotation(a.Annotation, imports: a.Imports.ToArray()));
-        foreach (var a in annotationsAndImports)
+        var annotations = Config.GetAnnotations(classe, tag).Select(a => new JavaAnnotation(a.Annotation, imports: a.Imports.ToArray()));
+        foreach (var a in annotations)
         {
             yield return a;
         }

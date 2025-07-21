@@ -529,6 +529,70 @@
     },
     {
       "type": "object",
+      "description": "Définition d'une annotation",
+      "required": [
+        "annotation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "annotation": {
+          "type": "object",
+          "description": "Annotation.",
+          "required": [
+            "name",
+            "description"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Nom de l'annotation."
+            },
+            "description": {
+              "type": "string",
+              "description": "Description de l'annotation."
+            },
+            "parameters": {
+              "type": "array",
+              "description": "Définitions de paramètres, utilisables dans les templates pour les implémentations.",
+              "items": {
+                "$ref": "#/definitions/parameter"
+              }
+            }
+          },
+          "additionalProperties": {
+            "type": "array",
+            "description": "Implémentation de l'annotation dans un langage",
+            "items": {
+              "type": "object",
+              "description": "Annotation à ajouter",
+              "required": [
+                "text"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "description": "Annotation à ajouter. Peut contenir des variables"
+                },
+                "target": {
+                  "$ref": "#/definitions/target"
+                },
+                "imports": {
+                  "type": "array",
+                  "description": "Liste des imports nécessaires au bon fonctionnement de cette annotation",
+                  "items": {
+                    "type": "string",
+                    "description": "Import nécessaire au bon fonctionnement de l'annotation. Peut contenir des variables"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
       "description": "Définition d'un domaine.",
       "required": [
         "domain"
@@ -578,6 +642,29 @@
               "type": "string",
               "description": "Type de médias (utilisé si retourné par un endpoint)."
             },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations du domaine",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "description": "Nom de l'annotation"
+                  },
+                  {
+                    "type": "object",
+                    "description": "Nom de l'annotation",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Paramètre de l'annotation"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
             "parameters": {
               "type": "array",
               "description": "Définitions de paramètres, utilisables dans les templates pour les implémentations.",
@@ -605,35 +692,6 @@
                 "items": {
                   "type": "string",
                   "description": "Import nécessaire au bon fonctionnement du type. Peut contenir des variables"
-                }
-              },
-              "annotations": {
-                "type": "array",
-                "description": "Annotations à ajouter sur toutes les propriétés de ce domaine (par exemple pour aider l'ORM a mapper le type correctement).",
-                "items": {
-                  "type": "object",
-                  "description": "Annotations à ajouter  (ex : `@CreatedDate`)",
-                  "required": [
-                    "text"
-                  ],
-                  "additionalProperties": false,
-                  "properties": {
-                    "text": {
-                      "type": "string",
-                      "description": "Annotation à ajouter. Peut contenir des variables"
-                    },
-                    "target": {
-                      "$ref": "#/definitions/target"
-                    },
-                    "imports": {
-                      "type": "array",
-                      "description": "Liste des imports nécessaires au bon fonctionnement de cette annotation",
-                      "items": {
-                        "type": "string",
-                        "description": "Import nécessaire au bon fonctionnement de l'annotation. Peut contenir des variables"
-                      }
-                    }
-                  }
                 }
               },
               "values": {
@@ -760,6 +818,29 @@
                 ]
               }
             },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations du décorateur",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "description": "Nom de l'annotation"
+                  },
+                  {
+                    "type": "object",
+                    "description": "Nom de l'annotation",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Paramètre de l'annotation"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
             "properties": {
               "type": "array",
               "description": "Liste des propriétés du décorateur.",
@@ -787,13 +868,6 @@
               "implements": {
                 "type": "array",
                 "description": "Interfaces (hors TopModel) qu'une classe implémentant ce décorateur doit implémenter.",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "annotations": {
-                "type": "array",
-                "description": "Annotations à ajouter sur une classe implémentant ce décorateur.",
                 "items": {
                   "type": "string"
                 }

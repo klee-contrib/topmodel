@@ -48,6 +48,18 @@ public class WorkspaceSymbolHandler(ModelStore modelStore, ILanguageServerFacade
                     Uri = facade.GetFilePath(d.Value.GetFile())
                 }
             };
+        })).Concat(modelStore.Annotations.Select(d =>
+        {
+            return new WorkspaceSymbol
+            {
+                Kind = SymbolKind.Interface,
+                Name = d.Name,
+                Location = new Location
+                {
+                    Range = d.GetLocation().ToRange()!,
+                    Uri = facade.GetFilePath(d.GetFile())
+                }
+            };
         })).Concat(modelStore.Decorators.Select(d =>
         {
             return new WorkspaceSymbol

@@ -28,6 +28,10 @@ public class Domain
 
     public Dictionary<string, Domain> AsDomains { get; set; } = [];
 
+    public List<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
+
+    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+
     public Dictionary<string, DomainReference> AsDomainReferences { get; set; } = [];
 
     public Dictionary<string, DomainImplementation> Implementations { get; set; } = [];
@@ -45,8 +49,6 @@ public class Domain
             (IEnumerable<ParameterReference>)[
                 ..i.Type?.Variables ?? [],
                 ..i.GenericType?.Variables ?? [],
-                ..i.Annotations.SelectMany(a => a.Text.Variables),
-                ..i.Annotations.SelectMany(a => a.Imports.SelectMany(ai => ai.Variables)),
                 ..i.Imports.SelectMany(a => a.Variables),
                 ..i.ValueTemplates.Values.SelectMany(a => a.Value.Variables),
                 ..i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Variables))
@@ -59,8 +61,6 @@ public class Domain
             (IEnumerable<TransformReference>)[
                 ..i.Type?.Transforms ?? [],
                 ..i.GenericType?.Transforms ?? [],
-                ..i.Annotations.SelectMany(a => a.Text.Transforms),
-                ..i.Annotations.SelectMany(a => a.Imports.SelectMany(ai => ai.Transforms)),
                 ..i.Imports.SelectMany(a => a.Transforms),
                 ..i.ValueTemplates.Values.SelectMany(a => a.Value.Transforms),
                 ..i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Transforms))

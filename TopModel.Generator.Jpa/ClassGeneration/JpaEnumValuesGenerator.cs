@@ -44,7 +44,7 @@ public class JpaEnumValuesGenerator(ILogger<JpaEnumValuesGenerator> logger, IFil
             fw.AddImport($"{Config.GetPackageName(classe.Extends, tag)}.{classe.Extends.NamePascal}");
         }
 
-        var implements = Config.GetClassImplements(classe).ToList();
+        var implements = Config.GetClassImplements(classe, tag).ToList();
 
         fw.WriteClassDeclaration(classe.NamePascal, null, null, implements, "enum");
         var i = 0;

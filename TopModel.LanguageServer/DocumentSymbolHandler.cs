@@ -61,6 +61,20 @@ public class DocumentSymbolHandler(ModelStore modelStore, ILanguageServerFacade 
                     }
                 };
             }))
+            .Concat(file.Annotations.Select(d =>
+            {
+                return new SymbolInformation
+                {
+                    Deprecated = false,
+                    Kind = SymbolKind.Interface,
+                    Name = d.Name,
+                    Location = new Location
+                    {
+                        Range = d.GetLocation()?.ToRange()!,
+                        Uri = request.TextDocument.Uri
+                    }
+                };
+            }))
             .Concat(file.Decorators.Select(d =>
             {
                 return new SymbolInformation

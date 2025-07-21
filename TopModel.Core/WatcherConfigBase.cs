@@ -80,6 +80,16 @@ public class WatcherConfigBase
     public virtual string[] PropertiesWithTagVariableSupport => [];
 
     /// <summary>
+    /// Récupère les implémentations de l'annotation pour la config.
+    /// </summary>
+    /// <param name="annotation">Annotation.</param>
+    /// <returns>Implémentations.</returns>
+    public IList<AnnotationImplementation> GetImplementation(Annotation? annotation)
+    {
+        return GetImplementation(annotation?.Implementations) ?? [];
+    }
+
+    /// <summary>
     /// Récupère l'implémentation du domaine pour la config.
     /// </summary>
     /// <param name="domain">Décorateur.</param>
@@ -146,7 +156,7 @@ public class WatcherConfigBase
         }
 
         var hasMissingVar = false;
-        foreach (var property in GetType().GetProperties().Where(p => p.PropertyType == typeof(string) && p.CanWrite && p.Name != nameof(Language)))
+        foreach (var property in GetType().GetProperties().Where(p => p.PropertyType == typeof(string) && p.CanWrite && p.Name != nameof(DefaultLanguage)))
         {
             var value = (string?)property.GetValue(this);
             if (value != null)

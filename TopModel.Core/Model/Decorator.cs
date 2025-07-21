@@ -23,7 +23,7 @@ public class Decorator : IPropertyContainer
 
     public Namespace Namespace { get; set; }
 
-    public List<(Decorator Decorator, string[] Parameters)> Decorators { get; } = [];
+    public List<(Decorator Decorator, StringWithVariables[] Parameters)> Decorators { get; } = [];
 
     public IList<IProperty> Properties { get; } = [];
 
@@ -31,12 +31,15 @@ public class Decorator : IPropertyContainer
 
     public IList<TemplateParameter> TemplateParameters { get; set; } = [];
 
+    public List<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
+
+    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+
     public IEnumerable<ParameterReference> VariableReferences => Implementations.Values
         .SelectMany(i =>
             (IEnumerable<ParameterReference>)[
                 ..i.Extends?.Variables ?? [],
                 ..i.Implements.SelectMany(a => a.Variables),
-                ..i.Annotations.SelectMany(a => a.Variables),
                 ..i.Imports.SelectMany(a => a.Variables)
             ]);
 
@@ -47,7 +50,6 @@ public class Decorator : IPropertyContainer
            (IEnumerable<TransformReference>)[
                 ..i.Extends?.Transforms ?? [],
                 ..i.Implements.SelectMany(a => a.Transforms),
-                ..i.Annotations.SelectMany(a => a.Transforms),
                 ..i.Imports.SelectMany(a => a.Transforms)
            ])
        .Where(pr => pr.ReferenceName.IsValidTransform());

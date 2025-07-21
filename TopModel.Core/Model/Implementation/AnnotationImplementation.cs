@@ -1,6 +1,6 @@
 ﻿namespace TopModel.Core.Model.Implementation;
 
-public class TargetedText
+public class AnnotationImplementation
 {
     public required StringWithVariables Text { get; set; }
 

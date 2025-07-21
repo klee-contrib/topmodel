@@ -30,7 +30,7 @@ public class JavaEnumDtoGenerator(ILogger<JavaEnumDtoGenerator> logger, IFileWri
 
     protected override void WriteConstuctors(JavaWriter fw, Class classe, string tag)
     {
-        ConstructorGenerator.WriteNoArgConstructor(fw, classe);
+        ConstructorGenerator.WriteNoArgConstructor(fw, classe, tag);
         ConstructorGenerator.WriteEnumConstructor(fw, classe, Classes, tag);
     }
 

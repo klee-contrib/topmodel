@@ -42,6 +42,8 @@ public class ModelStore : IDisposable
 
     public bool DisableLockfile { get; set; }
 
+    public IEnumerable<Annotation> Annotations => _modelFiles.SelectMany(mf => mf.Value.Annotations).Distinct();
+
     public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes).Distinct();
 
     public IEnumerable<Endpoint> Endpoints => _modelFiles.SelectMany(mf => mf.Value.Endpoints).Distinct();
@@ -69,6 +71,12 @@ public class ModelStore : IDisposable
         FileSystemWatcher?.Dispose();
     }
 
+    public IEnumerable<Annotation> GetAvailableAnnotations(ModelFile file)
+    {
+        return GetDependencies(file).SelectMany(m => m.Annotations)
+            .Concat(file.Annotations);
+    }
+
     public IEnumerable<Class> GetAvailableClasses(ModelFile file)
     {
         return GetDependencies(file).SelectMany(m => m.Classes)
@@ -88,6 +96,16 @@ public class ModelStore : IDisposable
     public IEnumerable<Endpoint> GetAvailableEndpoints(ModelFile file)
     {
         return GetDependencies(file).SelectMany(m => m.Endpoints).Concat(file.Endpoints);
+    }
+
+    public Dictionary<string, Annotation> GetReferencedAnnotations(ModelFile modelFile)
+    {
+        return GetDependencies(modelFile)
+            .SelectMany(m => m.Annotations)
+            .Concat(modelFile.Annotations)
+            .Distinct()
+            .GroupBy(c => c.Name.Value)
+            .ToDictionary(c => c.Key, c => c.First());
     }
 
     public Dictionary<string, Class> GetReferencedClasses(ModelFile modelFile)
@@ -545,6 +563,12 @@ public class ModelStore : IDisposable
             .Where(c => !duplicateEndpoints.Select(c => c.Name.Value).Contains(c.Name.Value))
             .ToDictionary(c => (string)c.Name, c => c);
 
+        var referencedAnnotations = dependencies
+            .SelectMany(m => m.Annotations)
+            .Concat(modelFile.Annotations)
+            .Distinct()
+            .ToDictionary(d => (string)d.Name, c => c);
+
         var referencedDecorators = dependencies
             .SelectMany(m => m.Decorators)
             .Concat(modelFile.Decorators)
@@ -570,15 +594,21 @@ public class ModelStore : IDisposable
             .Where(c => !duplicateDataFlows.Select(c => c.Name.Value).Contains(c.Name.Value))
             .ToDictionary(c => c.Name.Value, c => c);
 
+        var annotationResolver = new AnnotationResolver(modelFile, _config, referencedAnnotations);
         var classResolver = new ClassResolver(modelFile, referencedClasses);
         var dataFlowResolver = new DataFlowResolver(modelFile, referencedDataFlows, referencedClasses);
-        var decoratorResolver = new DecoratorResolver(modelFile, referencedDecorators);
-        var domainResolver = new DomainResolver(modelFile, Domains, Converters);
+        var decoratorResolver = new DecoratorResolver(modelFile, _config, referencedDecorators);
+        var domainResolver = new DomainResolver(modelFile, _config, Domains, Converters);
         var endpointResolver = new EndpointResolver(modelFile);
         var mapperResolver = new MapperResolver(modelFile, referencedClasses, Converters, _config.UseLegacyAssociationCompositionMappers);
         var propertyResolver = new PropertyResolver(modelFile, Domains, referencedClasses, referencedEndpoints, referencedDecorators);
 
-        domainResolver.ResolveDomainVariables(_config);
+        foreach (var error in annotationResolver.ResolveAnnotations())
+        {
+            yield return error;
+        }
+
+        domainResolver.ResolveDomainVariables();
 
         foreach (var error in domainResolver.ResolveAsDomains())
         {
@@ -590,7 +620,7 @@ public class ModelStore : IDisposable
             yield return error;
         }
 
-        foreach (var error in decoratorResolver.ResolveDecorators(_config))
+        foreach (var error in decoratorResolver.ResolveDecorators())
         {
             yield return error;
         }

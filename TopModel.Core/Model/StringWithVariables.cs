@@ -32,6 +32,11 @@ public class StringWithVariables : LocatedString
             .ToList();
     }
 
+    public StringWithVariables(Reference reference)
+        : this(reference.Scalar)
+    {
+    }
+
     public IEnumerable<ParameterReference> Variables => References.OfType<ParameterReference>();
 
     public IEnumerable<TransformReference> Transforms => References.OfType<TransformReference>();

@@ -19,6 +19,7 @@ public static class OmnisharpExtensions
             Class classe => classe.Name,
             Domain domain => domain.Name,
             Decorator decorator => decorator.Name,
+            Annotation annotation => annotation.Name,
             DataFlow dataFlow => dataFlow.Name,
             Endpoint endpoint => endpoint.Name,
             AliasProperty property => property.OriginalProperty?.Name ?? property.Name,
@@ -41,6 +42,7 @@ public static class OmnisharpExtensions
         }
 
         var definedObjects = file.Classes.Where(c => c.Name.GetLocation()!.Start.Line - 1 == position.Line || c.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>()
+            .Concat(file.Annotations.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
             .Concat(file.Domains.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
             .Concat(file.Decorators.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
             .Concat(file.DataFlows.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
@@ -57,6 +59,8 @@ public static class OmnisharpExtensions
                     .Concat(modelStore.GetClassReferences(classe).Select(c => (Reference: (Reference)c.Reference, c.File))),
                 Domain domain => new[] { (Reference: domain.Name.GetLocation()!, File: domain.GetFile()!) }
                     .Concat(modelStore.GetDomainReferences(domain).Select(d => (Reference: (Reference)d.Reference, d.File))),
+                Annotation annotation => new[] { (Reference: annotation.Name.GetLocation()!, File: annotation.GetFile()!) }
+                    .Concat(modelStore.GetAnnotationReferences(annotation).Select(d => (Reference: (Reference)d.Reference, d.File))),
                 Decorator decorator => new[] { (Reference: decorator.Name.GetLocation()!, File: decorator.GetFile()!) }
                     .Concat(modelStore.GetDecoratorReferences(decorator).Select(d => (Reference: (Reference)d.Reference, d.File))),
                 DataFlow dataFlow => new[] { (Reference: dataFlow.Name.GetLocation()!, File: dataFlow.GetFile()!) }

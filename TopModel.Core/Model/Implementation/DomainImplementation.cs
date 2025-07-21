@@ -8,8 +8,6 @@ public class DomainImplementation
 
     public List<StringWithVariables> Imports { get; set; } = [];
 
-    public List<TargetedText> Annotations { get; set; } = [];
-
     public IDictionary<string, ValueTemplate> ValueTemplates { get; set; } = new Dictionary<string, ValueTemplate>();
 
     public ValueTemplate? GetValueTemplate(string value)

@@ -6,7 +6,5 @@ public class DecoratorImplementation
 
     public IList<StringWithVariables> Implements { get; set; } = [];
 
-    public IList<StringWithVariables> Annotations { get; set; } = [];
-
     public IList<StringWithVariables> Imports { get; set; } = [];
 }

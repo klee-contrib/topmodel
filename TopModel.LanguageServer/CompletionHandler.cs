@@ -108,6 +108,12 @@ public class CompletionHandler(ModelStore modelStore, ILanguageServerFacade faca
             return CompleteDecorator(request, file, useIndex);
         }
 
+        // Annotation
+        else if (currentKey.Contains("annotation"))
+        {
+            return CompleteAnnotation(request, file, useIndex);
+        }
+
         // DataFlow
         else if (currentKey == "dependsOn")
         {
@@ -139,6 +145,40 @@ public class CompletionHandler(ModelStore modelStore, ILanguageServerFacade faca
         }
 
         return 0;
+    }
+
+    private CompletionList CompleteAnnotation(CompletionParams request, ModelFile file, int useIndex)
+    {
+        var searchText = GetSearchText(request);
+        var availableAnnotations = new HashSet<Annotation>(modelStore.GetAvailableAnnotations(file));
+
+        return new(
+            modelStore.Annotations
+                .Where(annotation => annotation.Name.ToLower().ShouldMatch(searchText))
+                .OrderBy(annotation => annotation.Name)
+                .Select(annotation => new CompletionItem
+                {
+                    Kind = CompletionItemKind.Class,
+                    Label = availableAnnotations.Contains(annotation) ? annotation.Name : $"{annotation.Name} - ({annotation.ModelFile.Name})",
+                    LabelDetails = new()
+                    {
+                        Description = $"{annotation.Description}"
+                    },
+                    InsertText = annotation.Name,
+                    SortText = availableAnnotations.Contains(annotation) ? "0000" + annotation.Name : annotation.Name,
+                    TextEdit = new(new TextEdit
+                    {
+                        NewText = annotation.Name,
+                        Range = GetCompleteRange(searchText, request)
+                    }),
+                    AdditionalTextEdits = !availableAnnotations.Contains(annotation) ?
+                        new(new TextEdit
+                        {
+                            NewText = file.Uses.Count > 0 ? $"  - {annotation.ModelFile.Name}{Environment.NewLine}" : $"uses:{Environment.NewLine}  - {annotation.ModelFile.Name}{Environment.NewLine}",
+                            Range = new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(useIndex, 0, useIndex, 0)
+                        })
+                        : null
+                }));
     }
 
     private CompletionList CompleteClass(CompletionParams request, ModelFile file, int useIndex)

@@ -5,6 +5,22 @@ namespace TopModel.Core;
 
 public static class ModelExtensions
 {
+    public static IEnumerable<(AnnotationReference Reference, ModelFile File)> GetAnnotationReferences(this ModelStore modelStore, Annotation annotation)
+    {
+        return modelStore.Domains.Values
+            .Where(c => c.Annotations.Select(d => d.Annotation).Contains(annotation))
+            .Select(c => (
+                Reference: c.AnnotationReferences.First(dr => dr.ReferenceName == annotation.Name),
+                File: c.GetFile()))
+        .Concat(modelStore.Decorators
+            .Where(d => d.Annotations.Select(d => d.Annotation).Contains(annotation))
+            .Select(d => (
+                Reference: d.AnnotationReferences.First(dr => dr.ReferenceName == annotation.Name),
+                File: d.GetFile())))
+        .Where(r => r.Reference is not null)
+        .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
+    }
+
     public static IEnumerable<(ClassReference Reference, ModelFile File)> GetClassReferences(this ModelStore modelStore, Class classe)
     {
         return modelStore.Properties
@@ -111,12 +127,14 @@ public static class ModelExtensions
             Domain domain => domain.ModelFile,
             Converter converter => converter.ModelFile,
             Decorator decorator => decorator.ModelFile,
-            DataFlow dataFlow => dataFlow.ModelFile,
             (Decorator decorator, _) => decorator.ModelFile,
+            Annotation annotation => annotation.ModelFile,
+            (Annotation annotation, _) => annotation.ModelFile,
+            DataFlow dataFlow => dataFlow.ModelFile,
             Keyword keyword => keyword.ModelFile,
             ClassValue classValue => classValue.Class.ModelFile,
-            TemplateParameter templateParameter => templateParameter.Domain?.ModelFile ?? templateParameter.Decorator!.ModelFile,
-            Variable { TemplateParameter: TemplateParameter templateParameter } => templateParameter.Domain?.ModelFile ?? templateParameter.Decorator!.ModelFile,
+            TemplateParameter templateParameter => templateParameter.Domain?.ModelFile ?? templateParameter.Decorator?.ModelFile ?? templateParameter.Annotation!.ModelFile,
+            Variable { TemplateParameter: TemplateParameter templateParameter } => templateParameter.Domain?.ModelFile ?? templateParameter.Decorator?.ModelFile ?? templateParameter.Annotation!.ModelFile,
             Variable => new ModelFile { Name = string.Empty },
             _ => throw new ArgumentException("Type d'objet non supporté.")
         };
@@ -137,6 +155,8 @@ public static class ModelExtensions
             LocatedString l => l.Location,
             Decorator d => d.Location,
             (Decorator d, _) => d.Location,
+            Annotation a => a.Location,
+            (Annotation a, _) => a.Location,
             DataFlow d => d.Location,
             FromMapper m => m.Reference.Location,
             ClassMappings c => c.Name.Location,

@@ -218,12 +218,12 @@ public enum ModelErrorType
     TMD1034,
 
     /// <summary>
-    /// Le domaine/décorateur '{Name}' ne définit que {domain.TemplateParameters.Count} paramètre(s).
+    /// L'annotation/domaine/décorateur '{Name}' ne définit que {domain.TemplateParameters.Count} paramètre(s).
     /// </summary>
     TMD1035,
 
     /// <summary>
-    /// Le domaine/décorateur '{Name}' n'est pas utilisé avec tous ses paramètres obligatoires ({ParameterReferences.Count} au lieu de {TemplateParameters.Count(p => p.Required)} minimum).
+    /// L'annotation/domaine/décorateur '{Name}' n'est pas utilisé avec tous ses paramètres obligatoires ({ParameterReferences.Count} au lieu de {TemplateParameters.Count(p => p.Required)} minimum).
     /// </summary>
     TMD1036,
 
@@ -241,6 +241,16 @@ public enum ModelErrorType
     /// Les associations d'une clé primaire composite doivent être de type 'manyToOne'.
     /// </summary>
     TMD1039,
+
+    /// <summary>
+    /// L'annotation est introuvable dans le fichier.
+    /// </summary>
+    TMD1040,
+
+    /// <summary>
+    /// L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine '{domaine}'.
+    /// </summary>
+    TMD1041,
 
     /// <summary>
     /// Le flux de données est introuvable dans le fichier ou l'une de ses références.

@@ -10,6 +10,8 @@ public class TemplateParameter
 
     public string DefaultValue { get; set; } = string.Empty;
 
+    public Annotation? Annotation { get; set; }
+
     public Decorator? Decorator { get; set; }
 
     public Domain? Domain { get; set; }

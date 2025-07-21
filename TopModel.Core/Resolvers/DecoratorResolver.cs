@@ -4,7 +4,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
 
-internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decorator> referencedDecorators)
+internal class DecoratorResolver(ModelFile modelFile, ModelConfig config, IDictionary<string, Decorator> referencedDecorators)
 {
     /// <summary>
     /// Recopie les propriétés de décorateurs sur les classes et les endpoints.
@@ -63,9 +63,8 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
     /// <summary>
     /// Résout les décorateurs sur les classes et les endpoints.
     /// </summary>
-    /// <param name="config">La config.</param>
     /// <returns>Erreurs.</returns>
-    public IEnumerable<ModelError> ResolveDecorators(ModelConfig config)
+    public IEnumerable<ModelError> ResolveDecorators()
     {
         foreach (var decorator in modelFile.Decorators)
         {
@@ -131,7 +130,7 @@ internal class DecoratorResolver(ModelFile modelFile, IDictionary<string, Decora
                             yield return error;
                         }
 
-                        decorator.Decorators.Add((targetDecorator, decoratorRef.ParameterReferences.Select(p => p.ReferenceName).ToArray()));
+                        decorator.Decorators.Add((targetDecorator, decoratorRef.ParameterReferences.Select(p => new StringWithVariables(p)).ToArray()));
                     }
                 }
             }

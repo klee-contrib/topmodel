@@ -81,10 +81,9 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             mappingAnnotation.AddAttribute("consumes", @$"{{ {string.Join(", ", endpoint.Params.Where(p => p.Domain?.MediaType != null).Select(p => $@"""{p.Domain.MediaType}"""))} }}");
         }
 
-        foreach (var annotation in Config.GetDecoratorAnnotations(endpoint, tag))
+        foreach (var (annotation, imports) in Config.GetAnnotations(endpoint, tag))
         {
-            var imports = Config.GetDecoratorImports(endpoint, tag).ToArray();
-            method.AddAnnotation(new JavaAnnotation(annotation, imports));
+            method.AddAnnotation(new JavaAnnotation(annotation, imports.ToArray()));
         }
 
         method.AddAnnotation(mappingAnnotation);
@@ -96,7 +95,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             param.AddAnnotation(pathParamAnnotation);
             param.Comment = routeParam.Comment;
             param.Imports.AddRange(routeParam.GetTypeImports(Config, tag));
-            foreach (var (a, i) in Config.GetDomainAnnotations(routeParam, tag))
+            foreach (var (a, i) in Config.GetAnnotations(routeParam, tag))
             {
                 param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
             }
@@ -119,7 +118,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             param.AddAnnotation(queryParamAnnotation);
             param.Comment = queryParam.Comment;
             param.Imports.AddRange(queryParam.GetTypeImports(Config, tag));
-            foreach (var (a, i) in Config.GetDomainAnnotations(queryParam, tag))
+            foreach (var (a, i) in Config.GetAnnotations(queryParam, tag))
             {
                 param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
             }
@@ -171,7 +170,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
                 parameter.AddAnnotation(annotation);
                 parameter.Comment = bodyParam.Comment;
                 parameter.Imports.AddRange(bodyParam.GetTypeImports(Config, tag));
-                foreach (var (a, i) in Config.GetDomainAnnotations(bodyParam, tag))
+                foreach (var (a, i) in Config.GetAnnotations(bodyParam, tag))
                 {
                     parameter.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
                 }

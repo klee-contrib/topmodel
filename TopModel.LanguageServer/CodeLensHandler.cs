@@ -34,6 +34,19 @@ public class CodeLensHandler(ModelStore modelStore, ILanguageServerFacade facade
                         ]
                     }
                 })
+                .Concat(file.Annotations.Select(annotation => new CodeLens
+                {
+                    Range = annotation.GetLocation().ToRange()!,
+                    Command = new Command()
+                    {
+                        Title = $"{modelStore.GetAnnotationReferences(annotation).Count()} references",
+                        Name = "topmodel.findRef",
+                        Arguments =
+                        [
+                            annotation.GetLocation()!.Start.Line - 1
+                        ]
+                    }
+                }))
                 .Concat(file.Domains.Select(domain => new CodeLens
                 {
                     Range = domain.GetLocation().ToRange()!,
