@@ -178,12 +178,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             .Distinct();
     }
 
-    public IEnumerable<string> GetDomainAnnotations(IProperty property, string tag)
-    {
-        return GetDomainAnnotationsAndImports(property, tag).Select(a => a.Annotation);
-    }
-
-    public IEnumerable<(string Annotation, IEnumerable<string> Imports)> GetDomainAnnotationsAndImports(IProperty property, string tag)
+    public IEnumerable<(string Annotation, IEnumerable<string> Imports)> GetDomainAnnotations(IProperty property, string tag)
     {
         if (property.Domain is not null)
         {
@@ -204,7 +199,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
                 yield return import;
             }
 
-            foreach (var import in GetDomainAnnotationsAndImports(property, tag).SelectMany(a => a.Imports))
+            foreach (var import in GetDomainAnnotations(property, tag).SelectMany(a => a.Imports))
             {
                 yield return import;
             }

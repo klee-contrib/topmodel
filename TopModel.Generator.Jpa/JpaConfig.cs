@@ -254,7 +254,7 @@ public class JpaConfig : GeneratorConfigBase
 
     public IEnumerable<JavaAnnotation> GetDomainJavaAnnotations(IProperty property, string tag)
     {
-        return GetDomainAnnotationsAndImports(property, tag).Select(a =>
+        return GetDomainAnnotations(property, tag).Select(a =>
         {
             return new JavaAnnotation(name: a.Annotation, imports: a.Imports.ToArray());
         });

@@ -361,7 +361,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 && !sameColumnSet.Contains(property.SqlName))
             {
                 var sqlName = Config.UseLowerCaseSqlNames ? property.SqlName.ToLower() : property.SqlName;
-                if (!Config.GetDomainAnnotations(property, tag).Any(a => a.TrimStart('[').StartsWith("Column")))
+                if (!Config.GetDomainAnnotations(property, tag).Any(a => a.Annotation.TrimStart('[').StartsWith("Column")))
                 {
                     w.WriteAttribute(1, "Column", $@"""{sqlName}""");
                 }
@@ -395,7 +395,7 @@ public class CSharpClassGenerator(ILogger<CSharpClassGenerator> logger, IFileWri
                 w.WriteAttribute(1, "StringLength", $"{property.Domain.Length}");
             }
 
-            foreach (var annotation in Config.GetDomainAnnotations(property, tag))
+            foreach (var (annotation, _) in Config.GetDomainAnnotations(property, tag))
             {
                 w.WriteAttribute(1, annotation);
             }

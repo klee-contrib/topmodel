@@ -96,7 +96,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             param.AddAnnotation(pathParamAnnotation);
             param.Comment = routeParam.Comment;
             param.Imports.AddRange(routeParam.GetTypeImports(Config, tag));
-            foreach (var (a, i) in Config.GetDomainAnnotationsAndImports(routeParam, tag))
+            foreach (var (a, i) in Config.GetDomainAnnotations(routeParam, tag))
             {
                 param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
             }
@@ -119,7 +119,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
             param.AddAnnotation(queryParamAnnotation);
             param.Comment = queryParam.Comment;
             param.Imports.AddRange(queryParam.GetTypeImports(Config, tag));
-            foreach (var (a, i) in Config.GetDomainAnnotationsAndImports(queryParam, tag))
+            foreach (var (a, i) in Config.GetDomainAnnotations(queryParam, tag))
             {
                 param.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
             }
@@ -171,7 +171,7 @@ public class SpringServerApiGenerator(ILogger<SpringServerApiGenerator> logger, 
                 parameter.AddAnnotation(annotation);
                 parameter.Comment = bodyParam.Comment;
                 parameter.Imports.AddRange(bodyParam.GetTypeImports(Config, tag));
-                foreach (var (a, i) in Config.GetDomainAnnotationsAndImports(bodyParam, tag))
+                foreach (var (a, i) in Config.GetDomainAnnotations(bodyParam, tag))
                 {
                     parameter.AddAnnotation(new JavaAnnotation(a, imports: i.ToArray()));
                 }

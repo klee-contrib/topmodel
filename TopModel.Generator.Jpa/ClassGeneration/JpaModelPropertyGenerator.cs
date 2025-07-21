@@ -73,7 +73,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
 
     public virtual IEnumerable<JavaAnnotation> GetDomainAnnotations(IProperty property, string tag)
     {
-        foreach (var (annotation, imports) in Config.GetDomainAnnotationsAndImports(property, tag))
+        foreach (var (annotation, imports) in Config.GetDomainAnnotations(property, tag))
         {
             yield return new JavaAnnotation(name: annotation, imports: imports.ToArray());
         }

@@ -15,17 +15,24 @@ public class WatcherConfigBase
     public required IList<string> Tags { get; set; }
 
     /// <summary>
-    /// Langage du module, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.
-    /// </summary>
-    [YamlIgnore]
-    public string Language { get => Languages.FirstOrDefault()!; set => Languages = [value]; }
-
-    /// <summary>
     /// Langages du module, utilisé en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.
     /// </summary>
-    [YamlMember(Alias = "language")]
     [YamlConverter(typeof(StringListTypeConverter))]
-    public IList<string> Languages { get; set; } = [];
+    public IList<string> Language { get; set; } = [];
+
+    /// <summary>
+    /// Setter pour le language par défaut.
+    /// </summary>
+    public string DefaultLanguage
+    {
+        set
+        {
+            if (Language.Count == 0)
+            {
+                Language.Add(value);
+            }
+        }
+    }
 
     /// <summary>
     /// Variables globales du module.
@@ -280,7 +287,7 @@ public class WatcherConfigBase
     /// <returns>L'implémentation sélectionnée si elle existe</returns>
     private T? GetImplementation<T>(IDictionary<string, T>? implementations)
     {
-        foreach (var language in Languages)
+        foreach (var language in Language)
         {
             if (implementations?.ContainsKey(language) ?? false)
             {

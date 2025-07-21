@@ -14,7 +14,8 @@ public class GeneratorRegistration : IGeneratorRegistration<PhpConfig>
         TrimSlashes(config, c => c.RepositoriesPath);
         TrimSlashes(config, c => c.DtosPath);
 
-        config.Language ??= "php";
+        config.DefaultLanguage = "php";
+
         services.AddGenerator<PhpModelGenerator, PhpConfig>(config, number);
         services.AddGenerator<PhpRepositoryGenerator, PhpConfig>(config, number);
     }

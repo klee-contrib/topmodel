@@ -5,24 +5,9 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Core;
 
-public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
+public abstract class TranslationGeneratorBase<T>(ILogger<TranslationGeneratorBase<T>> logger, TranslationStore translationStore, IFileWriterProvider writerProvider) : GeneratorBase<T>(logger, writerProvider)
     where T : GeneratorConfigBase
 {
-    private readonly TranslationStore _translationStore;
-
-    [Obsolete("Utiliser la surcharge avec le IFileWriterProvider")]
-    public TranslationGeneratorBase(ILogger<TranslationGeneratorBase<T>> logger, TranslationStore translationStore)
-        : base(logger)
-    {
-        _translationStore = translationStore;
-    }
-
-    public TranslationGeneratorBase(ILogger<TranslationGeneratorBase<T>> logger, TranslationStore translationStore, IFileWriterProvider writerProvider)
-        : base(logger, writerProvider)
-    {
-        _translationStore = translationStore;
-    }
-
     public override IEnumerable<string> GeneratedFiles => Config.Tags
         .SelectMany(tag =>
         {
@@ -114,14 +99,14 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
             return [];
         }
 
-        return _translationStore.Translations
+        return translationStore.Translations
             .Select(lang => (lang: lang.Key, file: GetCommentResourceFilePath(property.CommentResourceProperty, tag, lang.Key)!))
             .Where(g => g.file != null);
     }
 
     private IEnumerable<(string Lang, string FilePath)> GetMainResourceFileNames(string tag)
     {
-        return _translationStore.Translations
+        return translationStore.Translations
             .Select(lang => (lang: lang.Key, file: GetMainResourceFilePath(tag, lang.Key)!))
             .Where(g => g.file != null);
     }
@@ -133,7 +118,7 @@ public abstract class TranslationGeneratorBase<T> : GeneratorBase<T>
             return [];
         }
 
-        return _translationStore.Translations
+        return translationStore.Translations
             .Select(lang => (lang: lang.Key, file: GetResourceFilePath(property.ResourceProperty, tag, lang.Key)!))
             .Where(g => g.file != null);
     }

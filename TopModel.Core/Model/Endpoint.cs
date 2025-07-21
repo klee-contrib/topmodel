@@ -20,7 +20,7 @@ public class Endpoint : IPropertyContainer
 
     public string Method { get; set; }
 
-    public string Route => RouteWithVariables;
+    public StringWithVariables Route { get; set; }
 
     public string FullRoute
     {
@@ -56,8 +56,6 @@ public class Endpoint : IPropertyContainer
 #nullable disable
 
     internal Reference Location { get; set; }
-
-    internal StringWithVariables RouteWithVariables { get; set; }
 
     internal List<string> OwnTags { get; set; } = [];
 

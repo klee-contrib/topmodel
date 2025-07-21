@@ -5,20 +5,9 @@ using TopModel.Utils;
 
 namespace TopModel.Generator.Core;
 
-public abstract class MapperGeneratorBase<T> : GeneratorBase<T>
+public abstract class MapperGeneratorBase<T>(ILogger<MapperGeneratorBase<T>> logger, IFileWriterProvider writerProvider) : GeneratorBase<T>(logger, writerProvider)
     where T : GeneratorConfigBase
 {
-    [Obsolete("Utiliser la surcharge avec le IFileWriterProvider")]
-    public MapperGeneratorBase(ILogger<MapperGeneratorBase<T>> logger)
-        : base(logger)
-    {
-    }
-
-    public MapperGeneratorBase(ILogger<MapperGeneratorBase<T>> logger, IFileWriterProvider writerProvider)
-        : base(logger, writerProvider)
-    {
-    }
-
     public override IEnumerable<string> GeneratedFiles =>
         FromMappers.SelectMany(m => Config.Tags.Intersect(GetMapperTags(m)).Select(tag => GetFileName(m, tag)))
         .Concat(ToMappers.SelectMany(m => Config.Tags.Intersect(GetMapperTags(m)).Select(tag => GetFileName(m, tag))))
