@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
 
@@ -36,8 +33,7 @@ public interface ProfilController {
 	 */
 	@PostMapping(path = "")
 	@PreAuthorize("hasRole('CREATE')")
-	@Operation(description = "Ajoute un Profil")
-	ProfilRead addProfil(@RequestBody @Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Profil à sauvegarder") ProfilWrite profil);
+	ProfilRead addProfil(@RequestBody @Valid ProfilWrite profil);
 
 	/**
 	 * Charge le détail d'un Profil.
@@ -47,8 +43,7 @@ public interface ProfilController {
 	 */
 	@GetMapping(path = "{proId}")
 	@PreAuthorize("hasRole('READ')")
-	@Operation(description = "Charge le détail d'un Profil")
-	ProfilRead getProfil(@PathVariable("proId") @Parameter(description = "Id technique") Integer proId);
+	ProfilRead getProfil(@PathVariable("proId") Integer proId);
 
 	/**
 	 * Liste tous les Profils.
@@ -57,7 +52,6 @@ public interface ProfilController {
 	 */
 	@GetMapping(path = "")
 	@PreAuthorize("hasRole('READ')")
-	@Operation(description = "Liste tous les Profils")
 	List<ProfilItem> getProfils();
 
 	/**
@@ -69,6 +63,5 @@ public interface ProfilController {
 	 */
 	@PutMapping(path = "{proId}")
 	@PreAuthorize("hasRole('UPDATE')")
-	@Operation(description = "Sauvegarde un Profil")
-	ProfilRead updateProfil(@PathVariable("proId") @Parameter(description = "Id technique") Integer proId, @RequestBody @Valid @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Profil à sauvegarder") ProfilWrite profil);
+	ProfilRead updateProfil(@PathVariable("proId") Integer proId, @RequestBody @Valid ProfilWrite profil);
 }
