@@ -3,7 +3,7 @@ using TopModel.Core.Model.Implementation;
 
 namespace TopModel.Core;
 
-public class Converter
+public class Converter : IVariableContainer
 {
 #nullable disable
     /// <summary>

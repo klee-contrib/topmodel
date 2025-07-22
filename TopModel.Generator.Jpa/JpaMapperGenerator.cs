@@ -272,7 +272,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             {
                 if (propertySource.Class.ToMappers.Any(t => t.Class == cp.Composition))
                 {
-                    var cpMapper = propertySource.Class.ToMappers.Find(t => t.Class == cp.Composition)!;
+                    var cpMapper = propertySource.Class.ToMappers.Single(t => t.Class == cp.Composition)!;
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cpMapper.Class, cpMapper));
 
                     getter = $"{Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.Value.ToCamelCase()}({sourceName}.{getterName}(), target.get{apSource.NameByClassPascal}())";
@@ -280,7 +280,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 }
                 else if (cp.Composition.FromMappers.Any(f => f.Params.Count == 1 && f.ClassParams.First().Class == apSource.Association))
                 {
-                    var cpMapper = cp.Composition.FromMappers.Find(f => f.Params.Count == 1 && f.ClassParams.First().Class == apSource.Association)!;
+                    var cpMapper = cp.Composition.FromMappers.Single(f => f.Params.Count == 1 && f.ClassParams.First().Class == apSource.Association)!;
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cp.Composition, cpMapper));
 
                     getter = $"{sourceName}.{getterName}()";
@@ -382,7 +382,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             {
                 if (cp.Composition.ToMappers.Any(t => t.Class == apTarget.Association))
                 {
-                    var cpMapper = cp.Composition.ToMappers.Find(t => t.Class == apTarget.Association)!;
+                    var cpMapper = cp.Composition.ToMappers.Single(t => t.Class == apTarget.Association)!;
                     var (cpMapperNs, cpMapperModelPath) = Config.GetMapperLocation((cpMapper.Class, cpMapper));
 
                     var isMultiple = apTarget.Type == AssociationType.OneToMany || apTarget.Type == AssociationType.ManyToMany;

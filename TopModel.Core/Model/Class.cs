@@ -3,7 +3,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public class Class : IPropertyContainer
+public class Class : IPropertyContainer, IAnnotationContainer
 {
     private string? _pluralName;
 
@@ -27,7 +27,9 @@ public class Class : IPropertyContainer
 #nullable enable
     public Class? Extends { get; set; }
 
-    public List<(Decorator Decorator, string[] Parameters)> Decorators { get; } = [];
+    public IList<(Decorator Decorator, StringWithVariables[] Parameters)> Decorators { get; } = [];
+
+    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
 
     public string? Label { get; set; }
 
@@ -60,15 +62,15 @@ public class Class : IPropertyContainer
 
     public bool Enum { get; set; }
 
-    public List<ClassValue> Values { get; } = [];
+    public IList<ClassValue> Values { get; } = [];
 
-    public List<List<IProperty>> UniqueKeys { get; } = [];
+    public IList<IList<IProperty>> UniqueKeys { get; } = [];
 
-    public List<FromMapper> FromMappers { get; } = [];
+    public IList<FromMapper> FromMappers { get; } = [];
 
     public IEnumerable<IProperty> FromMapperProperties => FromMappers.SelectMany(fm => fm.PropertyParams.Select(pp => pp.Property));
 
-    public List<ClassMappings> ToMappers { get; } = [];
+    public IList<ClassMappings> ToMappers { get; } = [];
 
     public Dictionary<string, string> CustomProperties { get; } = [];
 
@@ -92,9 +94,11 @@ public class Class : IPropertyContainer
 
     public Reference? FlagPropertyReference { get; set; }
 
-    public List<DecoratorReference> DecoratorReferences { get; } = [];
+    public IList<DecoratorReference> DecoratorReferences { get; } = [];
 
-    public List<List<Reference>> UniqueKeyReferences { get; } = [];
+    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+
+    public IList<IList<Reference>> UniqueKeyReferences { get; } = [];
 
     public Dictionary<Reference, Dictionary<Reference, string>> ValueReferences { get; } = [];
 
@@ -106,7 +110,7 @@ public class Class : IPropertyContainer
 #nullable disable
     internal Reference Location { get; set; }
 
-    internal List<string> OwnTags { get; set; } = [];
+    internal IList<string> OwnTags { get; set; } = [];
 
     public bool Inherit(Class classe) => this == classe || this.Extends != null && this.Extends.Inherit(classe);
 

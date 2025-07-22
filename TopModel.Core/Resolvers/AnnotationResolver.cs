@@ -6,6 +6,30 @@ namespace TopModel.Core.Resolvers;
 
 public class AnnotationResolver(ModelFile modelFile, ModelConfig config, IDictionary<string, Annotation> referencedAnnotations)
 {
+    public IEnumerable<ModelError> CheckAliasAnnotations()
+    {
+        foreach (var alp in modelFile.Properties.OfType<AliasProperty>())
+        {
+            foreach (var g in alp.Annotations.GroupBy(a => a.Annotation.Name).Where(g => g.Count() > 1))
+            {
+                var annotationRef = alp.AnnotationReferences.FirstOrDefault(ar => ar.ReferenceName == g.Key);
+                if (annotationRef != null)
+                {
+                    yield return new ModelError(alp, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations de la propriété aliasée.", annotationRef) { ModelErrorType = ModelErrorType.TMD1042 };
+                }
+            }
+
+            foreach (var annotation in (alp.Domain?.Annotations ?? []).Intersect(alp.Annotations))
+            {
+                var annotationRef = alp.AnnotationReferences.FirstOrDefault(ar => ar.ReferenceName == annotation.Annotation.Name);
+                if (annotationRef != null)
+                {
+                    yield return new ModelError(alp, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine de la propriété '{alp}'.", annotationRef) { ModelErrorType = ModelErrorType.TMD1042 };
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// Résout les annotations.
     /// </summary>
@@ -39,70 +63,47 @@ public class AnnotationResolver(ModelFile modelFile, ModelConfig config, IDictio
             }
         }
 
-        foreach (var domain in modelFile.Domains.Where(c => c.AnnotationReferences.Count > 0))
+        foreach (var container in modelFile.AnnotationContainers.Where(c => c.AnnotationReferences.Count > 0))
         {
-            domain.Annotations.Clear();
+            var annotationsToResolve = container is AliasProperty alp ? alp.OwnAnnotations : container.Annotations;
+
+            annotationsToResolve.Clear();
 
             var isError = false;
-            foreach (var annotationRef in domain.AnnotationReferences)
+            foreach (var annotationRef in container.AnnotationReferences)
             {
                 if (!referencedAnnotations.TryGetValue(annotationRef.ReferenceName, out var annotation))
                 {
                     isError = true;
-                    yield return new ModelError(domain, $"L'annotation '{annotationRef.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances.", annotationRef) { ModelErrorType = ModelErrorType.TMD1040 };
+                    yield return new ModelError(container, $"L'annotation '{annotationRef.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances.", annotationRef) { ModelErrorType = ModelErrorType.TMD1040 };
                 }
                 else
                 {
-                    if (domain.Annotations.Any(d => d.Annotation == annotation))
+                    if (annotationsToResolve.Any(d => d.Annotation == annotation))
                     {
                         isError = true;
-                        yield return new ModelError(domain, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine '{domain}'.", annotationRef) { ModelErrorType = ModelErrorType.TMD1041 };
+                        yield return new ModelError(container, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations de l'objet.", annotationRef) { ModelErrorType = ModelErrorType.TMD1041 };
                     }
                     else
                     {
-                        foreach (var error in CheckAnnotationParameters(domain, annotationRef, annotation))
+                        if (container is IPropertyContainer propertyContainer && propertyContainer.AllDecorators.Any(d => d.Annotations.Any(a => a.Annotation == annotation)))
+                        {
+                            isError = true;
+                            yield return new ModelError(propertyContainer, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations d'un des décorateurs de l'objet '{propertyContainer}'.", annotationRef) { ModelErrorType = ModelErrorType.TMD1042 };
+                        }
+
+                        if (container is IProperty property && property is not AliasProperty && (property.Domain?.Annotations.Any(d => d.Annotation == annotation) ?? false))
+                        {
+                            isError = true;
+                            yield return new ModelError(property, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine de la propriété '{property}'.", annotationRef) { ModelErrorType = ModelErrorType.TMD1042 };
+                        }
+
+                        foreach (var error in CheckAnnotationParameters(container, annotationRef, annotation))
                         {
                             yield return error;
                         }
 
-                        domain.Annotations.Add((annotation, annotationRef.ParameterReferences.Select(p => new StringWithVariables(p)).ToArray()));
-                    }
-                }
-            }
-
-            if (isError)
-            {
-                continue;
-            }
-        }
-
-        foreach (var decorator in modelFile.Decorators.Where(c => c.AnnotationReferences.Count > 0))
-        {
-            decorator.Annotations.Clear();
-
-            var isError = false;
-            foreach (var annotationRef in decorator.AnnotationReferences)
-            {
-                if (!referencedAnnotations.TryGetValue(annotationRef.ReferenceName, out var annotation))
-                {
-                    isError = true;
-                    yield return new ModelError(decorator, $"L'annotation '{annotationRef.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances.", annotationRef) { ModelErrorType = ModelErrorType.TMD1040 };
-                }
-                else
-                {
-                    if (decorator.Annotations.Any(d => d.Annotation == annotation))
-                    {
-                        isError = true;
-                        yield return new ModelError(decorator, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine '{decorator}'.", annotationRef) { ModelErrorType = ModelErrorType.TMD1041 };
-                    }
-                    else
-                    {
-                        foreach (var error in CheckAnnotationParameters(decorator, annotationRef, annotation))
-                        {
-                            yield return error;
-                        }
-
-                        decorator.Annotations.Add((annotation, annotationRef.ParameterReferences.Select(p => new StringWithVariables(p)).ToArray()));
+                        annotationsToResolve.Add((annotation, annotationRef.ParameterReferences.Select(p => new StringWithVariables(p)).ToArray()));
                     }
                 }
             }

@@ -4,7 +4,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public class Annotation
+public class Annotation : IVariableContainer
 {
 #nullable disable
     public LocatedString Name { get; set; }
@@ -43,4 +43,9 @@ public class Annotation
         .Where(pr => pr.ReferenceName.IsValidTransform());
 
     internal Reference Location { get; set; }
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }

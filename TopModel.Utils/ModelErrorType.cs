@@ -253,6 +253,11 @@ public enum ModelErrorType
     TMD1041,
 
     /// <summary>
+    /// L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine de la propriété '{property}'.
+    /// </summary>
+    TMD1042,
+
+    /// <summary>
     /// Le flux de données est introuvable dans le fichier ou l'une de ses références.
     /// </summary>
     TMD2000,

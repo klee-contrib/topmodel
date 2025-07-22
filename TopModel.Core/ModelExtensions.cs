@@ -7,16 +7,11 @@ public static class ModelExtensions
 {
     public static IEnumerable<(AnnotationReference Reference, ModelFile File)> GetAnnotationReferences(this ModelStore modelStore, Annotation annotation)
     {
-        return modelStore.Domains.Values
+        return modelStore.AnnotationContainers
             .Where(c => c.Annotations.Select(d => d.Annotation).Contains(annotation))
             .Select(c => (
-                Reference: c.AnnotationReferences.First(dr => dr.ReferenceName == annotation.Name),
+                Reference: c.AnnotationReferences.FirstOrDefault(dr => dr.ReferenceName == annotation.Name)!,
                 File: c.GetFile()))
-        .Concat(modelStore.Decorators
-            .Where(d => d.Annotations.Select(d => d.Annotation).Contains(annotation))
-            .Select(d => (
-                Reference: d.AnnotationReferences.First(dr => dr.ReferenceName == annotation.Name),
-                File: d.GetFile())))
         .Where(r => r.Reference is not null)
         .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
@@ -55,21 +50,11 @@ public static class ModelExtensions
 
     public static IEnumerable<(DecoratorReference Reference, ModelFile File)> GetDecoratorReferences(this ModelStore modelStore, Decorator decorator)
     {
-        return modelStore.Classes
+        return modelStore.PropertyContainers
             .Where(c => c.Decorators.Select(d => d.Decorator).Contains(decorator))
             .Select(c => (
                 Reference: c.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
                 File: c.GetFile()))
-        .Concat(modelStore.Decorators
-            .Where(d => d.Decorators.Select(d => d.Decorator).Contains(decorator))
-            .Select(d => (
-                Reference: d.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
-                File: d.GetFile())))
-        .Concat(modelStore.Endpoints
-            .Where(e => e.Decorators.Select(d => d.Decorator).Contains(decorator))
-            .Select(e => (
-                Reference: e.DecoratorReferences.First(dr => dr.ReferenceName == decorator.Name),
-                File: e.GetFile())))
         .Concat(modelStore.Properties.OfType<AliasProperty>()
             .Where(alp => alp.OriginalProperty?.Decorator == decorator)
             .Select(alp => (

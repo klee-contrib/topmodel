@@ -92,6 +92,29 @@
             "defaultValue": {
               "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
             },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations de la propriété",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "description": "Nom de l'annotation"
+                  },
+                  {
+                    "type": "object",
+                    "description": "Nom de l'annotation",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Paramètre de l'annotation"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
             "customProperties": {
               "type": "object",
               "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé.",
@@ -166,6 +189,29 @@
             "property": {
               "type": "string",
               "description": "Propriété de la classe cible à utiliser pour la clé étrangère (au lieu de la clé primaire)."
+            },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations de la propriété",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "description": "Nom de l'annotation"
+                  },
+                  {
+                    "type": "object",
+                    "description": "Nom de l'annotation",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Paramètre de l'annotation"
+                      }
+                    }
+                  }
+                ]
+              }
             },
             "customProperties": {
               "type": "object",
@@ -359,6 +405,29 @@
             "defaultValue": {
               "description": "Surcharge la valeur par défaut de la propriété."
             },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations de la propriété. S'ajoute aux annotations de la propriété originale.",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "description": "Nom de l'annotation"
+                  },
+                  {
+                    "type": "object",
+                    "description": "Nom de l'annotation",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Paramètre de l'annotation"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
             "customProperties": {
               "type": "object",
               "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé. Elles s'ajouteront à celles de la propriété originale (avec remplacement si conflit).",
@@ -408,6 +477,29 @@
             "trigram": {
               "type": "string",
               "description": "Surcharge locale du trigram"
+            },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations de la propriété",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "description": "Nom de l'annotation"
+                  },
+                  {
+                    "type": "object",
+                    "description": "Nom de l'annotation",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Paramètre de l'annotation"
+                      }
+                    }
+                  }
+                ]
+              }
             },
             "customProperties": {
               "type": "object",
@@ -988,6 +1080,29 @@
                 ]
               }
             },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations de la classe",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "description": "Nom de l'annotation"
+                  },
+                  {
+                    "type": "object",
+                    "description": "Nom de l'annotation",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Paramètre de l'annotation"
+                      }
+                    }
+                  }
+                ]
+              }
+            },
             "properties": {
               "type": "array",
               "description": "Liste des propriétés de la classe.",
@@ -1214,6 +1329,29 @@
               "description": "Les paramètres de l'endpoint. Un paramètre, selon son type et sa présence ou non dans la route, sera automatiquement classifié comme 'Route', 'Query' ou 'Body'",
               "items": {
                 "$ref": "#/definitions/property"
+              }
+            },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations du endpoint",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "description": "Nom de l'annotation"
+                  },
+                  {
+                    "type": "object",
+                    "description": "Nom de l'annotation",
+                    "additionalProperties": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "description": "Paramètre de l'annotation"
+                      }
+                    }
+                  }
+                ]
               }
             },
             "customProperties": {

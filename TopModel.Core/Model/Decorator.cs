@@ -4,7 +4,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public class Decorator : IPropertyContainer
+public class Decorator : IPropertyContainer, IAnnotationContainer, IVariableContainer
 {
 #nullable disable
     public LocatedString Name { get; set; }
@@ -23,17 +23,15 @@ public class Decorator : IPropertyContainer
 
     public Namespace Namespace { get; set; }
 
-    public List<(Decorator Decorator, StringWithVariables[] Parameters)> Decorators { get; } = [];
+    public IList<(Decorator Decorator, StringWithVariables[] Parameters)> Decorators { get; } = [];
+
+    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
 
     public IList<IProperty> Properties { get; } = [];
 
     public bool PreservePropertyCasing { get; set; }
 
     public IList<TemplateParameter> TemplateParameters { get; set; } = [];
-
-    public List<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
-
-    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
     public IEnumerable<ParameterReference> VariableReferences => Implementations.Values
         .SelectMany(i =>
@@ -54,7 +52,9 @@ public class Decorator : IPropertyContainer
            ])
        .Where(pr => pr.ReferenceName.IsValidTransform());
 
-    public List<DecoratorReference> DecoratorReferences { get; } = [];
+    public IList<DecoratorReference> DecoratorReferences { get; } = [];
+
+    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
     internal Reference Location { get; set; }
 

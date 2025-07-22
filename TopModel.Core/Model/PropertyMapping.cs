@@ -26,4 +26,8 @@ public class PropertyMapping : IPropertyContainer
     public IList<IProperty> Properties => [Property];
 
     public bool PreservePropertyCasing => false;
+
+    public IList<(Decorator Decorator, StringWithVariables[] Parameters)> Decorators => throw new NotImplementedException();
+
+    public IList<DecoratorReference> DecoratorReferences => throw new NotImplementedException();
 }

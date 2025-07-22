@@ -3,7 +3,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public class Endpoint : IPropertyContainer
+public class Endpoint : IPropertyContainer, IAnnotationContainer
 {
     public Namespace Namespace { get; set; }
 
@@ -47,17 +47,21 @@ public class Endpoint : IPropertyContainer
 
     public Dictionary<string, string> CustomProperties { get; } = [];
 
-    public List<(Decorator Decorator, string[] Parameters)> Decorators { get; } = [];
+    public IList<(Decorator Decorator, StringWithVariables[] Parameters)> Decorators { get; } = [];
+
+    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
 
     public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies();
 
-    public List<DecoratorReference> DecoratorReferences { get; } = [];
+    public IList<DecoratorReference> DecoratorReferences { get; } = [];
+
+    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
 #nullable disable
 
     internal Reference Location { get; set; }
 
-    internal List<string> OwnTags { get; set; } = [];
+    internal IList<string> OwnTags { get; set; } = [];
 
 #nullable enable
 

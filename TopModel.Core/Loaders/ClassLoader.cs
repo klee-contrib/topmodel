@@ -86,6 +86,29 @@ public class ClassLoader(ModelConfig modelConfig, PropertyLoader propertyLoader)
                         }
                     });
                     break;
+                case "annotations":
+                    parser.ConsumeSequence(() =>
+                    {
+                        if (parser.Current is MappingStart)
+                        {
+                            parser.ConsumeMapping(prop =>
+                            {
+                                var annotation = new AnnotationReference(prop);
+
+                                parser.ConsumeSequence(() =>
+                                {
+                                    annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
+                                });
+
+                                classe.AnnotationReferences.Add(annotation);
+                            });
+                        }
+                        else
+                        {
+                            classe.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                        }
+                    });
+                    break;
                 case "properties":
                     parser.ConsumeSequence(() =>
                     {

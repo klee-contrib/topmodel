@@ -42,28 +42,31 @@ public class ModelStore : IDisposable
 
     public bool DisableLockfile { get; set; }
 
-    public IEnumerable<Annotation> Annotations => _modelFiles.SelectMany(mf => mf.Value.Annotations).Distinct();
+    public IEnumerable<ModelFile> Files => _modelFiles.Values;
 
-    public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes).Distinct();
+    public IEnumerable<Annotation> Annotations => Files.SelectMany(mf => mf.Annotations).Distinct();
 
-    public IEnumerable<Endpoint> Endpoints => _modelFiles.SelectMany(mf => mf.Value.Endpoints).Distinct();
+    public IEnumerable<Class> Classes => Files.SelectMany(mf => mf.Classes).Distinct();
 
-    public IEnumerable<DataFlow> DataFlows => _modelFiles.SelectMany(mf => mf.Value.DataFlows).Distinct();
+    public IEnumerable<Endpoint> Endpoints => Files.SelectMany(mf => mf.Endpoints).Distinct();
 
-    public IDictionary<string, Domain> Domains => _modelFiles.SelectMany(mf => mf.Value.Domains)
+    public IEnumerable<DataFlow> DataFlows => Files.SelectMany(mf => mf.DataFlows).Distinct();
+
+    public IDictionary<string, Domain> Domains => Files.SelectMany(mf => mf.Domains)
         .DistinctBy(d => (string)d.Name)
         .ToDictionary(d => (string)d.Name, d => d);
 
-    public IList<Converter> Converters => _modelFiles.SelectMany(mf => mf.Value.Converters).ToList();
+    public IList<Converter> Converters => Files.SelectMany(mf => mf.Converters).ToList();
 
-    public IEnumerable<Decorator> Decorators => _modelFiles.SelectMany(mf => mf.Value.Decorators).Distinct();
+    public IEnumerable<Decorator> Decorators => Files.SelectMany(mf => mf.Decorators).Distinct();
 
-    public IEnumerable<IProperty> Properties => Classes.SelectMany(c => c.Properties)
-        .Concat(Classes.SelectMany(c => c.FromMapperProperties))
-        .Concat(Decorators.SelectMany(c => c.Properties))
-        .Concat(Endpoints.SelectMany(e => e.Properties));
+    public IEnumerable<IProperty> Properties => Files.SelectMany(mf => mf.Properties);
 
-    public IEnumerable<ModelFile> Files => _modelFiles.Values;
+    public IEnumerable<IAnnotationContainer> AnnotationContainers => Files.SelectMany(mf => mf.AnnotationContainers).Distinct();
+
+    public IEnumerable<IPropertyContainer> PropertyContainers => Files.SelectMany(mf => mf.PropertyContainers).Distinct();
+
+    public IEnumerable<IVariableContainer> VariableContainers => Files.SelectMany(mf => mf.VariableContainers).Distinct();
 
     /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
@@ -603,11 +606,6 @@ public class ModelStore : IDisposable
         var mapperResolver = new MapperResolver(modelFile, referencedClasses, Converters, _config.UseLegacyAssociationCompositionMappers);
         var propertyResolver = new PropertyResolver(modelFile, Domains, referencedClasses, referencedEndpoints, referencedDecorators);
 
-        foreach (var error in annotationResolver.ResolveAnnotations())
-        {
-            yield return error;
-        }
-
         domainResolver.ResolveDomainVariables();
 
         foreach (var error in domainResolver.ResolveAsDomains())
@@ -630,6 +628,11 @@ public class ModelStore : IDisposable
             yield return error;
         }
 
+        foreach (var error in annotationResolver.ResolveAnnotations())
+        {
+            yield return error;
+        }
+
         propertyResolver.ResetAliases();
 
         // Résolution des alias des décorateurs
@@ -642,6 +645,11 @@ public class ModelStore : IDisposable
 
         // Résolution des alias des classes et endpoints.
         foreach (var error in propertyResolver.ResolveAliases(alp => alp.Decorator is null && alp.Reference is not null))
+        {
+            yield return error;
+        }
+
+        foreach (var error in annotationResolver.CheckAliasAnnotations())
         {
             yield return error;
         }

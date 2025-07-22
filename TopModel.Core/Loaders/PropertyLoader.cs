@@ -50,6 +50,29 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                         case "trigram":
                             rp.Trigram = new LocatedString(value!);
                             break;
+                        case "annotations":
+                            parser.ConsumeSequence(() =>
+                            {
+                                if (parser.Current is MappingStart)
+                                {
+                                    parser.ConsumeMapping(prop =>
+                                    {
+                                        var annotation = new AnnotationReference(prop);
+
+                                        parser.ConsumeSequence(() =>
+                                        {
+                                            annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
+                                        });
+
+                                        rp.AnnotationReferences.Add(annotation);
+                                    });
+                                }
+                                else
+                                {
+                                    rp.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                                }
+                            });
+                            break;
                         case "customProperties":
                             parser.ConsumeMapping(prop => rp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
                             break;
@@ -125,6 +148,29 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                         case "className":
                             ap.ClassName = value!.Value;
                             break;
+                        case "annotations":
+                            parser.ConsumeSequence(() =>
+                            {
+                                if (parser.Current is MappingStart)
+                                {
+                                    parser.ConsumeMapping(prop =>
+                                    {
+                                        var annotation = new AnnotationReference(prop);
+
+                                        parser.ConsumeSequence(() =>
+                                        {
+                                            annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
+                                        });
+
+                                        ap.AnnotationReferences.Add(annotation);
+                                    });
+                                }
+                                else
+                                {
+                                    ap.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                                }
+                            });
+                            break;
                         case "customProperties":
                             parser.ConsumeMapping(prop => ap.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
                             break;
@@ -178,6 +224,29 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                             break;
                         case "trigram":
                             cp.Trigram = new LocatedString(value!);
+                            break;
+                        case "annotations":
+                            parser.ConsumeSequence(() =>
+                            {
+                                if (parser.Current is MappingStart)
+                                {
+                                    parser.ConsumeMapping(prop =>
+                                    {
+                                        var annotation = new AnnotationReference(prop);
+
+                                        parser.ConsumeSequence(() =>
+                                        {
+                                            annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
+                                        });
+
+                                        cp.AnnotationReferences.Add(annotation);
+                                    });
+                                }
+                                else
+                                {
+                                    cp.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                                }
+                            });
                             break;
                         case "customProperties":
                             parser.ConsumeMapping(prop => cp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
@@ -289,6 +358,29 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                             break;
                         case "defaultValue":
                             alp.DefaultValue = value!.Value;
+                            break;
+                        case "annotations":
+                            parser.ConsumeSequence(() =>
+                            {
+                                if (parser.Current is MappingStart)
+                                {
+                                    parser.ConsumeMapping(prop =>
+                                    {
+                                        var annotation = new AnnotationReference(prop);
+
+                                        parser.ConsumeSequence(() =>
+                                        {
+                                            annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
+                                        });
+
+                                        alp.AnnotationReferences.Add(annotation);
+                                    });
+                                }
+                                else
+                                {
+                                    alp.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                                }
+                            });
                             break;
                         case "customProperties":
                             var customProperties = new Dictionary<string, string>();

@@ -431,7 +431,7 @@ public class CompletionHandler(ModelStore modelStore, ILanguageServerFacade faca
             }
 
             className = nameLine.Split(':')[1].Trim();
-            var classe = file.Classes.Find(c => c.Name == className);
+            var classe = file.Classes.SingleOrDefault(c => c.Name == className);
             if (classe != null)
             {
                 var includeExtends = false;

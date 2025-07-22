@@ -6,14 +6,14 @@ public class ModelFile
 {
     public Namespace Namespace { get; set; }
 
-    public List<string> Tags { get; set; } = [];
+    public IList<string> Tags { get; set; } = [];
 
     public IEnumerable<string> AllTags => Tags
         .Concat(Classes.SelectMany(c => c.OwnTags))
         .Concat(Endpoints.SelectMany(e => e.OwnTags))
         .Distinct();
 
-    public List<Reference> Uses { get; set; } = [];
+    public IList<Reference> Uses { get; set; } = [];
 
     public string Name { get; set; }
 
@@ -21,38 +21,35 @@ public class ModelFile
 
     public ModelFileOptions Options { get; set; } = new();
 
-    public List<Class> Classes { get; } = [];
+    public IList<Class> Classes { get; } = [];
 
-    public List<Annotation> Annotations { get; } = [];
+    public IList<Annotation> Annotations { get; } = [];
 
-    public List<Domain> Domains { get; } = [];
+    public IList<Domain> Domains { get; } = [];
 
-    public List<Converter> Converters { get; } = [];
+    public IList<Converter> Converters { get; } = [];
 
-    public List<Decorator> Decorators { get; } = [];
+    public IList<Decorator> Decorators { get; } = [];
 
-    public List<Endpoint> Endpoints { get; } = [];
+    public IList<Endpoint> Endpoints { get; } = [];
 
-    public List<DataFlow> DataFlows { get; } = [];
+    public IList<DataFlow> DataFlows { get; } = [];
+
+    public IEnumerable<IAnnotationContainer> AnnotationContainers => [.. Domains, .. Decorators, .. Classes, .. Endpoints, .. Properties];
+
+    public IEnumerable<IPropertyContainer> PropertyContainers => [.. Decorators, .. Classes, .. Endpoints];
+
+    public IEnumerable<IVariableContainer> VariableContainers => [.. Annotations, .. Converters, .. Decorators, .. Domains];
 
     public IDictionary<Reference, object> References =>
         Domains.SelectMany(d => d.AsDomains.Keys.Select(adn => d.AsDomainReferences.TryGetValue(adn, out var adr) && d.AsDomains.TryGetValue(adn, out var ad) ? (adr as Reference, ad as object) : (null, null)))
-        .Concat(Annotations.SelectMany(d => d.VariableReferences.Select(pr => (pr as Reference, d.Variables.TryGetValue(pr.ReferenceName, out var variable) ? variable as object : null))))
-        .Concat(Domains.SelectMany(d => d.VariableReferences.Select(pr => (pr as Reference, d.Variables.TryGetValue(pr.ReferenceName, out var variable) ? variable as object : null))))
-        .Concat(Decorators.SelectMany(d => d.VariableReferences.Select(pr => (pr as Reference, d.Variables.TryGetValue(pr.ReferenceName, out var variable) ? variable as object : null))))
-        .Concat(Converters.SelectMany(d => d.VariableReferences.Select(pr => (pr as Reference, d.Variables.TryGetValue(pr.ReferenceName, out var variable) ? variable as object : null))))
-        .Concat(Annotations.SelectMany(d => d.TransformReferences).Concat(Domains.SelectMany(d => d.TransformReferences)).Concat(Decorators.SelectMany(d => d.TransformReferences)).Concat(Converters.SelectMany(d => d.TransformReferences)).Select(tr => (tr as Reference, new Variable { Description = "Transformation de variable" } as object)))
-        .Concat(Decorators.SelectMany(d => d.AnnotationReferences.Select(ar => (ar as Reference, d.Annotations.FirstOrDefault(d => d.Annotation.Name == ar.ReferenceName) as object))))
-        .Concat(Decorators.SelectMany(d => d.AnnotationReferences.SelectMany(ar => ar.ParameterReferences.Select((pr, i) => (pr as Reference, d.Annotations.FirstOrDefault(d => d.Annotation.Name == ar.ReferenceName).Annotation?.TemplateParameters.ElementAtOrDefault(i) as object)))))
-        .Concat(Domains.SelectMany(d => d.AnnotationReferences.Select(ar => (ar as Reference, d.Annotations.FirstOrDefault(d => d.Annotation.Name == ar.ReferenceName) as object))))
-        .Concat(Domains.SelectMany(d => d.AnnotationReferences.SelectMany(ar => ar.ParameterReferences.Select((pr, i) => (pr as Reference, d.Annotations.FirstOrDefault(d => d.Annotation.Name == ar.ReferenceName).Annotation?.TemplateParameters.ElementAtOrDefault(i) as object)))))
+        .Concat(AnnotationContainers.SelectMany(d => d.AnnotationReferences.Select(ar => (ar as Reference, d.Annotations.FirstOrDefault(d => d.Annotation.Name == ar.ReferenceName) as object))))
+        .Concat(AnnotationContainers.SelectMany(d => d.AnnotationReferences.SelectMany(ar => ar.ParameterReferences.Select((pr, i) => (pr as Reference, d.Annotations.FirstOrDefault(d => d.Annotation.Name == ar.ReferenceName).Annotation?.TemplateParameters.ElementAtOrDefault(i) as object)))))
+        .Concat(VariableContainers.SelectMany(d => d.VariableReferences.Select(pr => (pr as Reference, d.Variables.TryGetValue(pr.ReferenceName, out var variable) ? variable as object : null))))
+        .Concat(VariableContainers.SelectMany(d => d.TransformReferences).Select(tr => (tr as Reference, new Variable { Description = "Transformation de variable" } as object)))
+        .Concat(PropertyContainers.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
+        .Concat(PropertyContainers.SelectMany(c => c.DecoratorReferences.SelectMany(dr => dr.ParameterReferences.Select((pr, i) => (pr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName).Decorator?.TemplateParameters.ElementAtOrDefault(i) as object)))))
         .Concat(Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object)))
-        .Concat(Classes.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
-        .Concat(Classes.SelectMany(c => c.DecoratorReferences.SelectMany(dr => dr.ParameterReferences.Select((pr, i) => (pr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName).Decorator?.TemplateParameters.ElementAtOrDefault(i) as object)))))
-        .Concat(Decorators.SelectMany(d => d.DecoratorReferences.Select(dr => (dr as Reference, d.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
-        .Concat(Decorators.SelectMany(d => d.DecoratorReferences.SelectMany(dr => dr.ParameterReferences.Select((pr, i) => (pr as Reference, d.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName).Decorator?.TemplateParameters.ElementAtOrDefault(i) as object)))))
-        .Concat(Endpoints.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
-        .Concat(Endpoints.SelectMany(c => c.DecoratorReferences.SelectMany(dr => dr.ParameterReferences.Select((pr, i) => (pr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName).Decorator?.TemplateParameters.ElementAtOrDefault(i) as object)))))
         .Concat(Endpoints.SelectMany(e => e.Route.Variables.Select(pr => (pr as Reference, e.Params.FirstOrDefault(p => p.GetParamName() == pr.ReferenceName) as object))))
         .Concat(Properties.OfType<RegularProperty>().Select(p => (p.DomainReference as Reference, p.Domain as object)))
         .Concat(Properties.OfType<RegularProperty>().SelectMany(p => p.DomainReference?.ParameterReferences.Select((pr, i) => (pr as Reference, p.Domain?.TemplateParameters.ElementAtOrDefault(i) as object)) ?? []))

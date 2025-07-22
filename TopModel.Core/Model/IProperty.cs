@@ -2,7 +2,7 @@
 
 namespace TopModel.Core;
 
-public interface IProperty
+public interface IProperty : IAnnotationContainer
 {
     string Name { get; }
 

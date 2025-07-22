@@ -134,6 +134,12 @@ public class AliasProperty : IProperty
 
     public string? As { get; set; }
 
+    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations => [.. OriginalProperty?.Annotations ?? [], .. OwnAnnotations];
+
+    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> OwnAnnotations { get; private set; } = [];
+
+    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+
     public Dictionary<string, string> CustomProperties
     {
         get
@@ -206,7 +212,8 @@ public class AliasProperty : IProperty
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName,
             DomainParameters = _domainParameters!,
-            CustomProperties = _customProperties
+            CustomProperties = _customProperties,
+            OwnAnnotations = OwnAnnotations
         };
 
         if (_domain != null)
@@ -257,7 +264,9 @@ public class AliasProperty : IProperty
             OriginalAliasProperty = this,
             UseLegacyRoleName = UseLegacyRoleName,
             DomainParameters = _domainParameters!,
-            CustomProperties = _customProperties
+            CustomProperties = _customProperties,
+            OwnAnnotations = OwnAnnotations,
+            AnnotationReferences = AnnotationReferences
         };
 
         if (_domain != null)

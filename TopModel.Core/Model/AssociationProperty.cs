@@ -66,6 +66,10 @@ public class AssociationProperty : IProperty
 
     public string? DefaultValue { get; set; }
 
+    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
+
+    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+
     public Dictionary<string, string> CustomProperties { get; private set; } = [];
 
     public string Name

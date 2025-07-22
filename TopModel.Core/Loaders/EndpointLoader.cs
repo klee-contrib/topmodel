@@ -70,6 +70,29 @@ public class EndpointLoader(PropertyLoader propertyLoader) : ILoader<Endpoint>
                         }
                     });
                     break;
+                case "annotations":
+                    parser.ConsumeSequence(() =>
+                    {
+                        if (parser.Current is MappingStart)
+                        {
+                            parser.ConsumeMapping(prop =>
+                            {
+                                var annotation = new AnnotationReference(prop);
+
+                                parser.ConsumeSequence(() =>
+                                {
+                                    annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
+                                });
+
+                                endpoint.AnnotationReferences.Add(annotation);
+                            });
+                        }
+                        else
+                        {
+                            endpoint.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                        }
+                    });
+                    break;
                 case "customProperties":
                     parser.ConsumeMapping(prop => endpoint.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
                     break;

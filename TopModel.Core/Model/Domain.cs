@@ -4,7 +4,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public class Domain
+public class Domain : IAnnotationContainer, IVariableContainer
 {
 #nullable disable
     public LocatedString Name { get; set; }
@@ -28,7 +28,7 @@ public class Domain
 
     public Dictionary<string, Domain> AsDomains { get; set; } = [];
 
-    public List<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
+    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
