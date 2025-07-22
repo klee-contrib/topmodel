@@ -232,6 +232,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         var imports = new List<string>();
         var getterName = JpaModelPropertyGenerator.GetGetterName(propertySource);
         var converter = Config.GetConverter(propertySource.Domain, propertyTarget.Domain);
+        var targetType = JpaModelPropertyGenerator.GetPropertyType(propertyTarget);
+        var collector = $"Collectors.to{targetType.Split('<').First()}()";
         if (converter != null && Config.GetImplementation(converter) != null)
         {
             var impl = Config.GetImplementation(converter);
@@ -282,7 +284,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     getter = $"{sourceName}.{getterName}()";
                     if (apSource.Type.IsToMany())
                     {
-                        getter = $"{getter}.stream().map(item -> {Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.create{cp.Composition}(item, null)).collect(Collectors.toList())";
+                        getter = $"{getter}.stream().map(item -> {Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.create{cp.Composition}(item, null)).collect({collector})";
                         imports.Add("java.util.stream.Collectors");
                     }
                     else
@@ -318,11 +320,11 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     imports.Add("java.util.Objects");
                     if (Config.EnumsAsEnums && Config.CanClassUseEnums(apSource.Association, prop: apSource.Property, availableClasses: Classes))
                     {
-                        getter = $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).collect(Collectors.toList())";
+                        getter = $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).collect({collector})";
                     }
                     else
                     {
-                        getter = $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).map({apSource.Association.NamePascal}::get{apSource.Property.NameByClassPascal}).collect(Collectors.toList())";
+                        getter = $"{sourceName}.{getterName}().stream().filter(Objects::nonNull).map({apSource.Association.NamePascal}::get{apSource.Property.NameByClassPascal}).collect({collector})";
                         imports.Add(apSource.Association.GetImport(Config, tag));
                     }
                 }
@@ -340,7 +342,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                         if (apTarget.Type.IsToMany())
                         {
                             checkSourceNull = true;
-                            getter = $@"{sourceName}.{getterName}().stream().collect(Collectors.toList())";
+                            getter = $@"{sourceName}.{getterName}().stream().collect({collector})";
                             imports.Add("java.util.stream.Collectors");
                         }
                         else
@@ -355,7 +357,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                         checkSourceNull = true;
                         if (apTarget.Type.IsToMany())
                         {
-                            getter = $@"{sourceName}.{getterName}().stream().map({apTarget.Association.NamePascal}::new).collect(Collectors.toList())";
+                            getter = $@"{sourceName}.{getterName}().stream().map({apTarget.Association.NamePascal}::new).collect({collector})";
                             imports.Add("java.util.stream.Collectors");
                         }
                         else
@@ -386,7 +388,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     if (isMultiple)
                     {
                         checkSourceNull = !propertySource.Class.IsPersistent;
-                        getter = $@"{sourceName}.{getterName}(){(!propertySource.Class.IsPersistent ? $".stream().map(src -> {Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.ToCamelCase()}(src, null)).collect(Collectors.toList())" : string.Empty)}";
+                        getter = $@"{sourceName}.{getterName}(){(!propertySource.Class.IsPersistent ? $".stream().map(src -> {Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.ToCamelCase()}(src, null)).collect({collector})" : string.Empty)}";
                         imports.Add("java.util.stream.Collectors");
                     }
                     else
