@@ -6,12 +6,12 @@ namespace TopModel.Core.Loaders;
 
 public static class LoaderUtils
 {
-    public static DomainReference ConsumeDomain(this IParser parser, Scalar? value)
+    public static DomainReference ConsumeDomain(this IParser parser, FileChecker fileChecker, Scalar? value)
     {
         if (parser.Current is MappingStart)
         {
             Scalar? name = null;
-            var paramaters = new List<ParameterReference>();
+            var parameters = new Dictionary<ParameterReference, StringWithVariables>();
             parser.ConsumeMapping(prop =>
             {
                 switch (prop.Value)
@@ -20,14 +20,14 @@ public static class LoaderUtils
                         name = parser.Consume<Scalar>();
                         break;
                     case "parameters":
-                        parser.ConsumeSequence(() => paramaters.Add(new ParameterReference(parser.Consume<Scalar>())));
+                        parameters = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser);
                         break;
                 }
             });
 
             if (name != null)
             {
-                return new DomainReference(name) { ParameterReferences = paramaters };
+                return new DomainReference(name) { ParameterReferences = parameters };
             }
             else
             {

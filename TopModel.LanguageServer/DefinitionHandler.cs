@@ -34,7 +34,7 @@ public class DefinitionHandler(ModelStore modelStore, ILanguageServerFacade faca
                     TargetRange = objet switch
                     {
                         Class or Endpoint or Domain => selectionRange with { End = new() { Line = selectionRange.Start.Line + 2, Character = 200 } },
-                        Decorator or (Decorator, _) or Annotation or (Annotation, _) or DataFlow => selectionRange with { End = new() { Line = selectionRange.Start.Line + 1, Character = 200 } },
+                        Decorator or DecoratorInstance or Annotation or AnnotationInstance or DataFlow => selectionRange with { End = new() { Line = selectionRange.Start.Line + 1, Character = 200 } },
                         _ => selectionRange with { End = new() { Line = selectionRange.Start.Line, Character = 200 } }
                     },
                     TargetSelectionRange = selectionRange,

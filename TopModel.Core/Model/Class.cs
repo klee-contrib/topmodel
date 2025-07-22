@@ -27,9 +27,9 @@ public class Class : IPropertyContainer, IAnnotationContainer
 #nullable enable
     public Class? Extends { get; set; }
 
-    public IList<(Decorator Decorator, StringWithVariables[] Parameters)> Decorators { get; } = [];
+    public IList<DecoratorInstance> Decorators { get; } = [];
 
-    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
+    public IList<AnnotationInstance> Annotations { get; } = [];
 
     public string? Label { get; set; }
 
@@ -96,7 +96,7 @@ public class Class : IPropertyContainer, IAnnotationContainer
 
     public IList<DecoratorReference> DecoratorReferences { get; } = [];
 
-    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+    public IList<AnnotationReference> AnnotationReferences { get; } = [];
 
     public IList<IList<Reference>> UniqueKeyReferences { get; } = [];
 

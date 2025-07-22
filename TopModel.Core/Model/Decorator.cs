@@ -23,9 +23,9 @@ public class Decorator : IPropertyContainer, IAnnotationContainer, IVariableCont
 
     public Namespace Namespace { get; set; }
 
-    public IList<(Decorator Decorator, StringWithVariables[] Parameters)> Decorators { get; } = [];
+    public IList<DecoratorInstance> Decorators { get; } = [];
 
-    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
+    public IList<AnnotationInstance> Annotations { get; } = [];
 
     public IList<IProperty> Properties { get; } = [];
 
@@ -39,7 +39,8 @@ public class Decorator : IPropertyContainer, IAnnotationContainer, IVariableCont
                 ..i.Extends?.Variables ?? [],
                 ..i.Implements.SelectMany(a => a.Variables),
                 ..i.Imports.SelectMany(a => a.Variables)
-            ]);
+            ])
+        .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Variables)));
 
     public Dictionary<string, Variable> Variables { get; } = [];
 
@@ -50,7 +51,8 @@ public class Decorator : IPropertyContainer, IAnnotationContainer, IVariableCont
                 ..i.Implements.SelectMany(a => a.Transforms),
                 ..i.Imports.SelectMany(a => a.Transforms)
            ])
-       .Where(pr => pr.ReferenceName.IsValidTransform());
+        .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Transforms)))
+        .Where(pr => pr.ReferenceName.IsValidTransform());
 
     public IList<DecoratorReference> DecoratorReferences { get; } = [];
 

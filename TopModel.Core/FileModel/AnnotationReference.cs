@@ -9,5 +9,5 @@ public class AnnotationReference : Reference
     {
     }
 
-    public IList<ParameterReference> ParameterReferences { get; set; } = [];
+    public Dictionary<ParameterReference, StringWithVariables> ParameterReferences { get; set; } = [];
 }

@@ -53,4 +53,5 @@ decorator:
       required: true
       comment: Permission demandée
   annotations:
-    - Security: ["{permission}"]
+    - Security:
+        permission: "{permission}"

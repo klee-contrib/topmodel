@@ -4,7 +4,7 @@ namespace TopModel.Core;
 
 public interface IAnnotationContainer
 {
-    IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; }
+    IList<AnnotationInstance> Annotations { get; }
 
-    IList<AnnotationReference> AnnotationReferences { get; set; }
+    IList<AnnotationReference> AnnotationReferences { get; }
 }

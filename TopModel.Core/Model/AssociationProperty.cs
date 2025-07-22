@@ -66,7 +66,7 @@ public class AssociationProperty : IProperty
 
     public string? DefaultValue { get; set; }
 
-    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
+    public IList<AnnotationInstance> Annotations { get; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
@@ -168,7 +168,7 @@ public class AssociationProperty : IProperty
 
     public Domain Domain => Type.IsToMany() && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
 
-    public IList<string> DomainParameters => Property?.DomainParameters ?? [];
+    public Dictionary<string, string> DomainParameters => Property?.DomainParameters ?? [];
 
     public bool PrimaryKey { get; set; }
 

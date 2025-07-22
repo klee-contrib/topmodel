@@ -44,15 +44,15 @@ public class ModelFile
     public IDictionary<Reference, object> References =>
         Domains.SelectMany(d => d.AsDomains.Keys.Select(adn => d.AsDomainReferences.TryGetValue(adn, out var adr) && d.AsDomains.TryGetValue(adn, out var ad) ? (adr as Reference, ad as object) : (null, null)))
         .Concat(AnnotationContainers.SelectMany(d => d.AnnotationReferences.Select(ar => (ar as Reference, d.Annotations.FirstOrDefault(d => d.Annotation.Name == ar.ReferenceName) as object))))
-        .Concat(AnnotationContainers.SelectMany(d => d.AnnotationReferences.SelectMany(ar => ar.ParameterReferences.Select((pr, i) => (pr as Reference, d.Annotations.FirstOrDefault(d => d.Annotation.Name == ar.ReferenceName).Annotation?.TemplateParameters.ElementAtOrDefault(i) as object)))))
+        .Concat(AnnotationContainers.SelectMany(d => d.AnnotationReferences.SelectMany(ar => ar.ParameterReferences.Keys.Select((pr, i) => (pr as Reference, d.Annotations.FirstOrDefault(d => d.Annotation.Name == ar.ReferenceName).Annotation?.TemplateParameters.ElementAtOrDefault(i) as object)))))
         .Concat(VariableContainers.SelectMany(d => d.VariableReferences.Select(pr => (pr as Reference, d.Variables.TryGetValue(pr.ReferenceName, out var variable) ? variable as object : null))))
         .Concat(VariableContainers.SelectMany(d => d.TransformReferences).Select(tr => (tr as Reference, new Variable { Description = "Transformation de variable" } as object)))
         .Concat(PropertyContainers.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
-        .Concat(PropertyContainers.SelectMany(c => c.DecoratorReferences.SelectMany(dr => dr.ParameterReferences.Select((pr, i) => (pr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName).Decorator?.TemplateParameters.ElementAtOrDefault(i) as object)))))
+        .Concat(PropertyContainers.SelectMany(c => c.DecoratorReferences.SelectMany(dr => dr.ParameterReferences.Keys.Select((pr, i) => (pr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName).Decorator?.TemplateParameters.ElementAtOrDefault(i) as object)))))
         .Concat(Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object)))
         .Concat(Endpoints.SelectMany(e => e.Route.Variables.Select(pr => (pr as Reference, e.Params.FirstOrDefault(p => p.GetParamName() == pr.ReferenceName) as object))))
         .Concat(Properties.OfType<RegularProperty>().Select(p => (p.DomainReference as Reference, p.Domain as object)))
-        .Concat(Properties.OfType<RegularProperty>().SelectMany(p => p.DomainReference?.ParameterReferences.Select((pr, i) => (pr as Reference, p.Domain?.TemplateParameters.ElementAtOrDefault(i) as object)) ?? []))
+        .Concat(Properties.OfType<RegularProperty>().SelectMany(p => p.DomainReference?.ParameterReferences.Keys.Select((pr, i) => (pr as Reference, p.Domain?.TemplateParameters.ElementAtOrDefault(i) as object)) ?? []))
         .Concat(Properties.OfType<AssociationProperty>().SelectMany(p => new (Reference, object)[]
         {
             (p.Reference, p.Association),
@@ -63,7 +63,7 @@ public class ModelFile
             (p.Reference, p.Composition),
             (p.DomainReference, p.Domain)
         }))
-        .Concat(Properties.OfType<CompositionProperty>().SelectMany(p => p.DomainReference?.ParameterReferences.Select((pr, i) => (pr as Reference, p.Domain?.TemplateParameters.ElementAtOrDefault(i) as object)) ?? []))
+        .Concat(Properties.OfType<CompositionProperty>().SelectMany(p => p.DomainReference?.ParameterReferences.Keys.Select((pr, i) => (pr as Reference, p.Domain?.TemplateParameters.ElementAtOrDefault(i) as object)) ?? []))
         .Concat(Properties.OfType<AliasProperty>().SelectMany(p => new (Reference, object)[]
         {
             (p.Reference?.ClassReference, p.OriginalProperty?.Class),
@@ -76,7 +76,7 @@ public class ModelFile
             .SelectMany(p => p?.Reference?.ExcludeReferences?
                 .Select(er => (er, p?.OriginalProperty?.Class?.Properties?.FirstOrDefault(p => p?.Name == er?.ReferenceName) as object))
             ?? new List<(Reference, object)>()))
-        .Concat(Properties.OfType<AliasProperty>().SelectMany(p => p.DomainReference?.ParameterReferences.Select((pr, i) => (pr as Reference, p.Domain?.TemplateParameters.ElementAtOrDefault(i) as object)) ?? []))
+        .Concat(Properties.OfType<AliasProperty>().SelectMany(p => p.DomainReference?.ParameterReferences.Keys.Select((pr, i) => (pr as Reference, p.Domain?.TemplateParameters.ElementAtOrDefault(i) as object)) ?? []))
         .Concat(Classes.SelectMany(c => new[] { c.DefaultPropertyReference, c.OrderPropertyReference, c.FlagPropertyReference }.Select(r => (r, (object)c.ExtendedProperties.FirstOrDefault(p => p.Name == r?.ReferenceName)))))
         .Concat(Classes.SelectMany(c => c.UniqueKeyReferences.SelectMany(uk => uk).Select(propRef => (propRef, (object)c.Properties.FirstOrDefault(p => p.Name == propRef.ReferenceName)))))
         .Concat(Classes.SelectMany(c => c.ValueReferences.SelectMany(rv => rv.Value).Select(prop => (prop.Key, (object)c.ExtendedProperties.FirstOrDefault(p => p.Name == prop.Key.ReferenceName)))))

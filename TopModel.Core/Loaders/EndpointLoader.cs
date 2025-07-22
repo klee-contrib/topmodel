@@ -4,7 +4,7 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class EndpointLoader(PropertyLoader propertyLoader) : ILoader<Endpoint>
+public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader<Endpoint>
 {
     /// <inheritdoc cref="ILoader{T}.Load" />
     public Endpoint Load(Parser parser)
@@ -54,12 +54,10 @@ public class EndpointLoader(PropertyLoader propertyLoader) : ILoader<Endpoint>
                         {
                             parser.ConsumeMapping(prop =>
                             {
-                                var decorator = new DecoratorReference(prop);
-
-                                parser.ConsumeSequence(() =>
+                                var decorator = new DecoratorReference(prop)
                                 {
-                                    decorator.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
-                                });
+                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                };
 
                                 endpoint.DecoratorReferences.Add(decorator);
                             });
@@ -77,12 +75,10 @@ public class EndpointLoader(PropertyLoader propertyLoader) : ILoader<Endpoint>
                         {
                             parser.ConsumeMapping(prop =>
                             {
-                                var annotation = new AnnotationReference(prop);
-
-                                parser.ConsumeSequence(() =>
+                                var annotation = new AnnotationReference(prop)
                                 {
-                                    annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
-                                });
+                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                };
 
                                 endpoint.AnnotationReferences.Add(annotation);
                             });

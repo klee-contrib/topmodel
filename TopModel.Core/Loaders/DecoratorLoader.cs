@@ -34,12 +34,10 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                         {
                             parser.ConsumeMapping(prop =>
                             {
-                                var decoratorRef = new DecoratorReference(prop);
-
-                                parser.ConsumeSequence(() =>
+                                var decoratorRef = new DecoratorReference(prop)
                                 {
-                                    decoratorRef.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
-                                });
+                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                };
 
                                 decorator.DecoratorReferences.Add(decoratorRef);
                             });
@@ -57,12 +55,10 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                         {
                             parser.ConsumeMapping(prop =>
                             {
-                                var annotation = new AnnotationReference(prop);
-
-                                parser.ConsumeSequence(() =>
+                                var annotation = new AnnotationReference(prop)
                                 {
-                                    annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
-                                });
+                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                };
 
                                 decorator.AnnotationReferences.Add(annotation);
                             });

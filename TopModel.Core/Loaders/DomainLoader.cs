@@ -61,12 +61,10 @@ public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
                         {
                             parser.ConsumeMapping(prop =>
                             {
-                                var annotation = new AnnotationReference(prop);
-
-                                parser.ConsumeSequence(() =>
+                                var annotation = new AnnotationReference(prop)
                                 {
-                                    annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
-                                });
+                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                };
 
                                 domain.AnnotationReferences.Add(annotation);
                             });

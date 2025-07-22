@@ -14,7 +14,7 @@ public interface IPropertyContainer
 
     Namespace Namespace { get; }
 
-    IList<(Decorator Decorator, StringWithVariables[] Parameters)> Decorators { get; }
+    IList<DecoratorInstance> Decorators { get; }
 
     IEnumerable<Decorator> AllDecorators
     {

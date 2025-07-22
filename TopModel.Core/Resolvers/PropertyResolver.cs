@@ -290,7 +290,7 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                     }
 
                     rp.Domain = domain;
-                    rp.DomainParameters = rp.DomainReference.ParameterReferences.Select(p => p.ReferenceName).ToArray();
+                    rp.DomainParameters = rp.DomainReference.ParameterReferences.ToDictionary(pr => pr.Key.ReferenceName, pr => pr.Value.Value);
                     break;
 
                 case AssociationProperty ap:
@@ -338,7 +338,7 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                         }
 
                         cp.Domain = cpDomain;
-                        cp.DomainParameters = cp.DomainReference.ParameterReferences.Select(p => p.ReferenceName).ToArray();
+                        cp.DomainParameters = cp.DomainReference.ParameterReferences.ToDictionary(pr => pr.Key.ReferenceName, pr => pr.Value.Value);
                     }
 
                     break;
@@ -356,7 +356,7 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
                     }
 
                     alp.Domain = aliasDomain;
-                    alp.DomainParameters = alp.DomainReference.ParameterReferences.Select(p => p.ReferenceName).ToArray();
+                    alp.DomainParameters = alp.DomainReference.ParameterReferences.ToDictionary(pr => pr.Key.ReferenceName, pr => pr.Value.Value);
                     break;
             }
         }
@@ -364,24 +364,20 @@ internal class PropertyResolver(ModelFile modelFile, IDictionary<string, Domain>
 
     private static IEnumerable<ModelError> CheckDomainParameters(IProperty property, DomainReference domainRef, Domain domain)
     {
-        if (domainRef.ParameterReferences.Count > domain.TemplateParameters.Count)
+        foreach (var extraParameter in domainRef.ParameterReferences.Keys.Where(pr => !domain.TemplateParameters.Any(tp => tp.Name == pr.ReferenceName)))
         {
-            foreach (var extraParameter in domainRef.ParameterReferences.Skip(domain.TemplateParameters.Count))
-            {
-                yield return new ModelError(
-                        property,
-                        domain.TemplateParameters.Count > 1 ? $"Le domaine '{domain.Name}' ne définit que {domain.TemplateParameters.Count} paramètres." : $"Le domaine '{domain.Name}' ne définit qu'un seul paramètre.",
-                        extraParameter)
-                { ModelErrorType = ModelErrorType.TMD1035 };
-            }
-        }
-
-        if (domainRef.ParameterReferences.Count < domain.TemplateParameters.Count(p => p.Required))
-        {
-            var parametres = domain.TemplateParameters.Skip(domainRef.ParameterReferences.Count).Where(p => p.Required).Select(p => $"'{p.Name}'");
             yield return new ModelError(
                 property,
-                parametres.Count() > 1 ? $"Les paramètres {string.Join(", ", parametres)} du domaine '{domain.Name}' sont obligatoires." : $"Le paramètre {string.Join(", ", parametres)} du domaine '{domain.Name}' est obligatoire.",
+                $"Le paramètre '{extraParameter.ReferenceName}' n'existe pas sur le domaine '{domain.Name}'.",
+                extraParameter)
+            { ModelErrorType = ModelErrorType.TMD1035 };
+        }
+
+        foreach (var missingParameter in domain.TemplateParameters.Where(tp => tp.Required && !domainRef.ParameterReferences.Any(pr => pr.Key.ReferenceName == tp.Name)))
+        {
+            yield return new ModelError(
+                property,
+                $"Le paramètre '{missingParameter.Name}' du domaine '{domain.Name}' est obligatoire.",
                 domainRef)
             { ModelErrorType = ModelErrorType.TMD1036 };
         }

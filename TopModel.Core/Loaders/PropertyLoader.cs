@@ -4,7 +4,7 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
+public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : ILoader<IProperty>
 {
     /// <inheritdoc cref="ILoader{T}.Load" />
     public IProperty Load(Parser parser)
@@ -39,7 +39,7 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                             rp.Readonly = value!.Value == "true";
                             break;
                         case "domain":
-                            rp.DomainReference = parser.ConsumeDomain(value);
+                            rp.DomainReference = parser.ConsumeDomain(fileChecker, value);
                             break;
                         case "defaultValue":
                             rp.DefaultValue = value!.Value;
@@ -57,12 +57,10 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                                 {
                                     parser.ConsumeMapping(prop =>
                                     {
-                                        var annotation = new AnnotationReference(prop);
-
-                                        parser.ConsumeSequence(() =>
+                                        var annotation = new AnnotationReference(prop)
                                         {
-                                            annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
-                                        });
+                                            ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                        };
 
                                         rp.AnnotationReferences.Add(annotation);
                                     });
@@ -155,12 +153,10 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                                 {
                                     parser.ConsumeMapping(prop =>
                                     {
-                                        var annotation = new AnnotationReference(prop);
-
-                                        parser.ConsumeSequence(() =>
+                                        var annotation = new AnnotationReference(prop)
                                         {
-                                            annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
-                                        });
+                                            ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                        };
 
                                         ap.AnnotationReferences.Add(annotation);
                                     });
@@ -211,7 +207,7 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                             cp.Label = value!.Value;
                             break;
                         case "domain":
-                            cp.DomainReference = parser.ConsumeDomain(value);
+                            cp.DomainReference = parser.ConsumeDomain(fileChecker, value);
                             break;
                         case "comment":
                             cp.Comment = value!.Value;
@@ -232,12 +228,10 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                                 {
                                     parser.ConsumeMapping(prop =>
                                     {
-                                        var annotation = new AnnotationReference(prop);
-
-                                        parser.ConsumeSequence(() =>
+                                        var annotation = new AnnotationReference(prop)
                                         {
-                                            annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
-                                        });
+                                            ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                        };
 
                                         cp.AnnotationReferences.Add(annotation);
                                     });
@@ -333,7 +327,7 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                             alp.Label = value!.Value;
                             break;
                         case "domain":
-                            alp.DomainReference = parser.ConsumeDomain(value);
+                            alp.DomainReference = parser.ConsumeDomain(fileChecker, value);
                             break;
                         case "required":
                             alp.Required = value!.Value == "true";
@@ -366,12 +360,10 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                                 {
                                     parser.ConsumeMapping(prop =>
                                     {
-                                        var annotation = new AnnotationReference(prop);
-
-                                        parser.ConsumeSequence(() =>
+                                        var annotation = new AnnotationReference(prop)
                                         {
-                                            annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
-                                        });
+                                            ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                        };
 
                                         alp.AnnotationReferences.Add(annotation);
                                     });

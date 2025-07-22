@@ -218,12 +218,12 @@ public enum ModelErrorType
     TMD1034,
 
     /// <summary>
-    /// L'annotation/domaine/décorateur '{Name}' ne définit que {domain.TemplateParameters.Count} paramètre(s).
+    /// Le paramètre '{extraParameter.ReferenceName}' n'existe pas.
     /// </summary>
     TMD1035,
 
     /// <summary>
-    /// L'annotation/domaine/décorateur '{Name}' n'est pas utilisé avec tous ses paramètres obligatoires ({ParameterReferences.Count} au lieu de {TemplateParameters.Count(p => p.Required)} minimum).
+    /// Le paramètre '{missingParameter.Name}' est obligatoire.
     /// </summary>
     TMD1036,
 

@@ -28,7 +28,7 @@ public class Domain : IAnnotationContainer, IVariableContainer
 
     public Dictionary<string, Domain> AsDomains { get; set; } = [];
 
-    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
+    public IList<AnnotationInstance> Annotations { get; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
@@ -52,7 +52,8 @@ public class Domain : IAnnotationContainer, IVariableContainer
                 ..i.Imports.SelectMany(a => a.Variables),
                 ..i.ValueTemplates.Values.SelectMany(a => a.Value.Variables),
                 ..i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Variables))
-            ]);
+            ])
+        .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Variables)));
 
     public Dictionary<string, Variable> Variables { get; } = [];
 
@@ -65,7 +66,8 @@ public class Domain : IAnnotationContainer, IVariableContainer
                 ..i.ValueTemplates.Values.SelectMany(a => a.Value.Transforms),
                 ..i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Transforms))
             ])
-         .Where(pr => pr.ReferenceName.IsValidTransform());
+        .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Transforms)))
+        .Where(pr => pr.ReferenceName.IsValidTransform());
 
 #nullable disable
     public ModelFile ModelFile { get; set; }

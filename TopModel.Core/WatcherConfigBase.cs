@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Spectre.Console;
-using TopModel.Core.Loaders;
+using TopModel.Core.Loaders.YamlUtils;
 using TopModel.Core.Model.Implementation;
 using TopModel.Core.Templating;
 using YamlDotNet.Serialization;

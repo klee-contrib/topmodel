@@ -19,7 +19,8 @@ endpoint:
   route: /
   description: Ajoute un utilisateur
   decorators:
-    - Security: ["hasRole('CREATE')"]
+    - Security:
+        permission: hasRole('CREATE')
   params:
     - composition: UtilisateurWrite
       comment: Utilisateur à sauvegarder
@@ -35,7 +36,8 @@ endpoint:
   route: /{utiId}
   description: Supprime un utilisateur
   decorators:
-    - Security: ["hasRole('DELETE')"]
+    - Security:
+        permission: hasRole('DELETE')
   params:
     - alias:
         class: Utilisateur
@@ -47,7 +49,8 @@ endpoint:
   route: /{utiId}
   description: Charge le détail d'un utilisateur
   decorators:
-    - Security: ["hasRole('READ')"]
+    - Security:
+        permission: hasRole('READ')
   # Liste des paramètres du endpoint. Ce sont des propriétés de modèle comme pour les classes. Il peut ne pas y en avoir.
   params:
     - alias:
@@ -65,7 +68,8 @@ endpoint:
   route: /
   description: Recherche des utilisateurs
   decorators:
-    - Security: ["hasRole('READ')"]
+    - Security:
+        permission: hasRole('READ')
   params:
     - alias:
         class: Utilisateur
@@ -87,7 +91,8 @@ endpoint:
   route: /{utiId}
   description: Sauvegarde un utilisateur
   decorators:
-    - Security: ["hasRole('UPDATE')"]
+    - Security:
+        permission: hasRole('UPDATE')
   params:
     - alias:
         class: Utilisateur

@@ -35,12 +35,49 @@
               "description": "Nom du domaine."
             },
             "parameters": {
-              "type": "array",
+              "type": "object",
               "description": "Paramètres du domaine.",
-              "items": {
-                "type": "string",
-                "description": "Paramètre de domaine."
+              "additionalProperties": {
+                "type": "string"
               }
+            }
+          }
+        }
+      ]
+    },
+    "annotation": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Nom de l'annotation"
+        },
+        {
+          "type": "object",
+          "description": "Nom de l'annotation",
+          "additionalProperties": {
+            "type": "object",
+            "description": "Paramètres de l'annotation",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "decorator": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Nom du décorateur"
+        },
+        {
+          "type": "object",
+          "description": "Nom du décorateur",
+          "additionalProperties": {
+            "type": "object",
+            "description": "Paramètres du décorateur",
+            "additionalProperties": {
+              "type": "string"
             }
           }
         }
@@ -94,25 +131,9 @@
             },
             "annotations": {
               "type": "array",
-              "description": "Annotations de la propriété",
+              "description": "Annotations de la propriété.",
               "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Nom de l'annotation"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Nom de l'annotation",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "description": "Paramètre de l'annotation"
-                      }
-                    }
-                  }
-                ]
+                "$ref": "#/definitions/annotation"
               }
             },
             "customProperties": {
@@ -192,25 +213,9 @@
             },
             "annotations": {
               "type": "array",
-              "description": "Annotations de la propriété",
+              "description": "Annotations de la propriété.",
               "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Nom de l'annotation"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Nom de l'annotation",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "description": "Paramètre de l'annotation"
-                      }
-                    }
-                  }
-                ]
+                "$ref": "#/definitions/annotation"
               }
             },
             "customProperties": {
@@ -409,23 +414,7 @@
               "type": "array",
               "description": "Annotations de la propriété. S'ajoute aux annotations de la propriété originale.",
               "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Nom de l'annotation"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Nom de l'annotation",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "description": "Paramètre de l'annotation"
-                      }
-                    }
-                  }
-                ]
+                "$ref": "#/definitions/annotation"
               }
             },
             "customProperties": {
@@ -480,25 +469,9 @@
             },
             "annotations": {
               "type": "array",
-              "description": "Annotations de la propriété",
+              "description": "Annotations de la propriété.",
               "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Nom de l'annotation"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Nom de l'annotation",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "description": "Paramètre de l'annotation"
-                      }
-                    }
-                  }
-                ]
+                "$ref": "#/definitions/annotation"
               }
             },
             "customProperties": {
@@ -736,25 +709,9 @@
             },
             "annotations": {
               "type": "array",
-              "description": "Annotations du domaine",
+              "description": "Annotations du domaine.",
               "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Nom de l'annotation"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Nom de l'annotation",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "description": "Paramètre de l'annotation"
-                      }
-                    }
-                  }
-                ]
+                "$ref": "#/definitions/annotation"
               }
             },
             "parameters": {
@@ -889,48 +846,16 @@
             },
             "decorators": {
               "type": "array",
-              "description": "Décorateurs du décorateur",
+              "description": "Décorateurs du décorateur.",
               "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Nom du décorateur"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Nom du décorateur",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "description": "Paramètre du décorateur"
-                      }
-                    }
-                  }
-                ]
+                "$ref": "#/definitions/decorator"
               }
             },
             "annotations": {
               "type": "array",
-              "description": "Annotations du décorateur",
+              "description": "Annotations du décorateur.",
               "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Nom de l'annotation"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Nom de l'annotation",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "description": "Paramètre de l'annotation"
-                      }
-                    }
-                  }
-                ]
+                "$ref": "#/definitions/annotation"
               }
             },
             "properties": {
@@ -1059,48 +984,16 @@
             },
             "decorators": {
               "type": "array",
-              "description": "Décorateurs de la classe",
+              "description": "Décorateurs de la classe.",
               "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Nom du décorateur"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Nom du décorateur",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "description": "Paramètre du décorateur"
-                      }
-                    }
-                  }
-                ]
+                "$ref": "#/definitions/decorator"
               }
             },
             "annotations": {
               "type": "array",
-              "description": "Annotations de la classe",
+              "description": "Annotations de la classe.",
               "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Nom de l'annotation"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Nom de l'annotation",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "description": "Paramètre de l'annotation"
-                      }
-                    }
-                  }
-                ]
+                "$ref": "#/definitions/annotation"
               }
             },
             "properties": {
@@ -1331,27 +1224,18 @@
                 "$ref": "#/definitions/property"
               }
             },
+            "decorators": {
+              "type": "array",
+              "description": "Décorateurs de l'endpoint.",
+              "items": {
+                "$ref": "#/definitions/decorator"
+              }
+            },
             "annotations": {
               "type": "array",
-              "description": "Annotations du endpoint",
+              "description": "Annotations de l'endpoint.",
               "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Nom de l'annotation"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Nom de l'annotation",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "description": "Paramètre de l'annotation"
-                      }
-                    }
-                  }
-                ]
+                "$ref": "#/definitions/annotation"
               }
             },
             "customProperties": {
@@ -1359,29 +1243,6 @@
               "description": "Propriétés d'endpoint personnalisées, pour utilisation dans un générateur personnalisé.",
               "additionalProperties": {
                 "type": [ "string", "boolean", "integer", "number" ]
-              }
-            },
-            "decorators": {
-              "type": "array",
-              "description": "Décorateurs du endpoint",
-              "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Nom du décorateur"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Nom du décorateur",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "description": "Paramètre du décorateur"
-                      }
-                    }
-                  }
-                ]
               }
             }
           }

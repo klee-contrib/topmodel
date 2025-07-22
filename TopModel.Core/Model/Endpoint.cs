@@ -47,9 +47,9 @@ public class Endpoint : IPropertyContainer, IAnnotationContainer
 
     public Dictionary<string, string> CustomProperties { get; } = [];
 
-    public IList<(Decorator Decorator, StringWithVariables[] Parameters)> Decorators { get; } = [];
+    public IList<DecoratorInstance> Decorators { get; } = [];
 
-    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
+    public IList<AnnotationInstance> Annotations { get; } = [];
 
     public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies();
 

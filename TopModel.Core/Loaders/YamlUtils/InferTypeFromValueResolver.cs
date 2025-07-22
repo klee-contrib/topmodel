@@ -2,7 +2,7 @@
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
 
-namespace TopModel.Core.Loaders;
+namespace TopModel.Core.Loaders.YamlUtils;
 
 public class InferTypeFromValueResolver : INodeTypeResolver
 {

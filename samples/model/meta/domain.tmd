@@ -126,7 +126,8 @@ domain:
   name: DO_DATE_CREATION
   label: Date de création
   annotations:
-    - LastDate: ["Created"]
+    - LastDate:
+        change: Created
   csharp:
     type: DateTime
     values:
@@ -151,7 +152,8 @@ domain:
   name: DO_DATE_MODIFICATION
   label: Date de modification
   annotations:
-    - LastDate: ["LastModified"]
+    - LastDate: 
+        change: LastModified
   csharp:
     type: DateTime
     values:

@@ -22,7 +22,7 @@ public interface IProperty : IAnnotationContainer
 
     Domain Domain { get; }
 
-    IList<string> DomainParameters { get; }
+    Dictionary<string, string> DomainParameters { get; }
 
     string Comment { get; }
 

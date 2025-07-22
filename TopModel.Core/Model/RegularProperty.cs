@@ -31,11 +31,11 @@ public class RegularProperty : IProperty
 #nullable disable
     public Domain Domain { get; set; }
 
-    public IList<string> DomainParameters { get; set; } = [];
+    public Dictionary<string, string> DomainParameters { get; set; } = [];
 
     public string Comment { get; set; }
 
-    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
+    public IList<AnnotationInstance> Annotations { get; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 

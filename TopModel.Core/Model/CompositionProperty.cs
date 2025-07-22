@@ -20,7 +20,7 @@ public class CompositionProperty : IProperty
 
     public Domain Domain { get; set; }
 
-    public IList<string> DomainParameters { get; set; } = [];
+    public Dictionary<string, string> DomainParameters { get; set; } = [];
 
     public string Comment { get; set; }
 
@@ -48,7 +48,7 @@ public class CompositionProperty : IProperty
 
     public LocatedString? Trigram { get; set; }
 
-    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations { get; } = [];
+    public IList<AnnotationInstance> Annotations { get; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 

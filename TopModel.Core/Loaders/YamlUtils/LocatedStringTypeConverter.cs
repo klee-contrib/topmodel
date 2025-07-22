@@ -2,33 +2,22 @@
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
 
-namespace TopModel.Core.Loaders;
+namespace TopModel.Core.Loaders.YamlUtils;
 
-public class StringListTypeConverter : IYamlTypeConverter
+internal class LocatedStringTypeConverter : IYamlTypeConverter
 {
     /// <inheritdoc cref="IYamlTypeConverter.Accepts" />
     public bool Accepts(Type type)
     {
-        return false;
+        return type == typeof(LocatedString) || type == typeof(StringWithVariables);
     }
 
     /// <inheritdoc cref="IYamlTypeConverter.ReadYaml" />
     public object? ReadYaml(IParser parser, Type type, ObjectDeserializer rootDeserializer)
     {
-        var result = new List<string>();
-        if (parser.TryConsume<Scalar>(out var language))
-        {
-            result.Add(language.Value);
-        }
-        else if (parser.Current is SequenceStart)
-        {
-            parser.ConsumeSequence(() =>
-            {
-                result.Add(parser.Consume<Scalar>().Value);
-            });
-        }
-
-        return result;
+        return type == typeof(LocatedString)
+            ? new LocatedString(parser.Consume<Scalar>())
+            : new StringWithVariables(parser.Consume<Scalar>());
     }
 
     /// <inheritdoc cref="IYamlTypeConverter.WriteYaml" />

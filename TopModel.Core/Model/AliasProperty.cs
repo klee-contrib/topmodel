@@ -9,7 +9,7 @@ public class AliasProperty : IProperty
     private Dictionary<string, string> _customProperties = [];
     private string? _defaultValue;
     private Domain? _domain;
-    private IList<string>? _domainParameters;
+    private Dictionary<string, string>? _domainParameters;
     private string? _label;
     private string? _name;
 
@@ -112,7 +112,7 @@ public class AliasProperty : IProperty
     }
 #nullable enable
 
-    public IList<string> DomainParameters
+    public Dictionary<string, string> DomainParameters
     {
         get => _domainParameters ?? _property?.DomainParameters ?? [];
         set => _domainParameters = value;
@@ -134,9 +134,9 @@ public class AliasProperty : IProperty
 
     public string? As { get; set; }
 
-    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> Annotations => [.. OriginalProperty?.Annotations ?? [], .. OwnAnnotations];
+    public IList<AnnotationInstance> Annotations => [.. OriginalProperty?.Annotations ?? [], .. OwnAnnotations];
 
-    public IList<(Annotation Annotation, StringWithVariables[] Parameters)> OwnAnnotations { get; private set; } = [];
+    public IList<AnnotationInstance> OwnAnnotations { get; private set; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 

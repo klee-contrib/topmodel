@@ -76,21 +76,21 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             if (container is IProperty p)
             {
                 yield return (
-                    Annotation: implementation.Text.Value.ParseTemplate(p, annotation.TemplateParameters, parameters.Select(p => p.Value), this, tag),
-                    Imports: implementation.Imports.Select(i => i.Value.ParseTemplate(p, annotation.TemplateParameters, parameters.Select(p => p.Value), this, tag)));
+                    Annotation: implementation.Text.Value.ParseTemplate(p, annotation.TemplateParameters, parameters, this, tag),
+                    Imports: implementation.Imports.Select(i => i.Value.ParseTemplate(p, annotation.TemplateParameters, parameters, this, tag)));
             }
             else if (container is IPropertyContainer c)
             {
                 yield return (
-                     Annotation: implementation.Text.Value.ParseTemplate(c, annotation.TemplateParameters, parameters.Select(p => p.Value), this, tag),
-                     Imports: implementation.Imports.Select(i => i.Value.ParseTemplate(c, annotation.TemplateParameters, parameters.Select(p => p.Value), this, tag)));
+                     Annotation: implementation.Text.Value.ParseTemplate(c, annotation.TemplateParameters, parameters, this, tag),
+                     Imports: implementation.Imports.Select(i => i.Value.ParseTemplate(c, annotation.TemplateParameters, parameters, this, tag)));
             }
         }
 
         if (container is IPropertyContainer pc)
         {
             foreach (var annotation in pc.Decorators
-                .SelectMany(d => GetDecoratorAnnotations(pc, d.Decorator, d.Parameters.Select(p => p.Value), tag))
+                .SelectMany(d => GetDecoratorAnnotations(pc, d.Decorator, d.Parameters, tag))
                 .Distinct())
             {
                 yield return annotation;
@@ -102,7 +102,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
             foreach (var (implementation, annotation, parameters) in property.Domain.Annotations.SelectMany(a => GetImplementation(a.Annotation).Select(i => (Implementation: i, a.Annotation, a.Parameters))
                .Where(a => FilterAnnotations(a.Implementation, property, tag))))
             {
-                var resolvedParameters = parameters.Select(p => p.Value.ParseTemplate(property, this, tag)).ToArray();
+                var resolvedParameters = parameters.ToDictionary(p => p.Key, p => p.Value.ParseTemplate(property, this, tag));
                 yield return (
                     Annotation: implementation.Text.Value.ParseTemplate(property, annotation.TemplateParameters, resolvedParameters, this, tag),
                     Imports: implementation.Imports.Select(i => i.Value.ParseTemplate(property, annotation.TemplateParameters, resolvedParameters, this, tag)));
@@ -114,14 +114,14 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     {
         return classe.Extends?.NamePascal
             ?? classe.Decorators
-                .SelectMany(d => GetDecoratorImplementationValues(i => i.Extends, classe, d.Decorator, d.Parameters.Select(p => p.Value), tag))
+                .SelectMany(d => GetDecoratorImplementationValues(i => i.Extends, classe, d.Decorator, d.Parameters, tag))
                 .SingleOrDefault(e => e != null);
     }
 
     public IEnumerable<string> GetClassImplements(Class classe, string tag)
     {
         return classe.Decorators
-            .SelectMany(d => GetDecoratorImplementationValues(i => i.Implements, classe, d.Decorator, d.Parameters.Select(p => p.Value), tag))
+            .SelectMany(d => GetDecoratorImplementationValues(i => i.Implements, classe, d.Decorator, d.Parameters, tag))
             .Distinct();
     }
 
@@ -174,7 +174,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     public IEnumerable<string> GetDecoratorImports(Class classe, string tag)
     {
         foreach (var import in classe.Decorators
-            .SelectMany(d => GetDecoratorImplementationValues(i => i.Imports, classe, d.Decorator, d.Parameters.Select(p => p.Value), tag))
+            .SelectMany(d => GetDecoratorImplementationValues(i => i.Imports, classe, d.Decorator, d.Parameters, tag))
             .Distinct())
         {
             yield return import;
@@ -189,7 +189,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     public IEnumerable<string> GetDecoratorImports(Endpoint endpoint, string tag)
     {
         foreach (var import in endpoint.Decorators
-            .SelectMany(d => GetDecoratorImplementationValues(i => i.Imports, endpoint, d.Decorator, d.Parameters.Select(p => p.Value), tag))
+            .SelectMany(d => GetDecoratorImplementationValues(i => i.Imports, endpoint, d.Decorator, d.Parameters, tag))
             .Distinct())
         {
             yield return import;
@@ -423,11 +423,11 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         || (annotation.Target & Target.Api) > 0 && property.Endpoint != null;
     }
 
-    private IEnumerable<(string Annotation, IEnumerable<string> Imports)> GetDecoratorAnnotations(IPropertyContainer container, Decorator decorator, IEnumerable<string> parameters, string tag)
+    private IEnumerable<(string Annotation, IEnumerable<string> Imports)> GetDecoratorAnnotations(IPropertyContainer container, Decorator decorator, IDictionary<string, string> parameters, string tag)
     {
         foreach (var (implementation, annotation, annotationParameters) in decorator.Annotations.SelectMany(a => GetImplementation(a.Annotation).Select(i => (Implementation: i, a.Annotation, a.Parameters))))
         {
-            var resolvedParameters = annotationParameters.Select(p => p.Value.ParseTemplate(container, decorator.TemplateParameters, parameters, this, tag)).ToArray();
+            var resolvedParameters = annotationParameters.ToDictionary(p => p.Key, p => p.Value.ParseTemplate(container, decorator.TemplateParameters, parameters, this, tag));
             yield return (
                 Annotation: implementation.Text.Value.ParseTemplate(container, annotation.TemplateParameters, resolvedParameters, this, tag),
                 Imports: implementation.Imports.Select(i => i.Value.ParseTemplate(container, annotation.TemplateParameters, resolvedParameters, this, tag)));
@@ -435,14 +435,14 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
         foreach (var subD in decorator.Decorators)
         {
-            foreach (var values in GetDecoratorAnnotations(container, subD.Decorator, subD.Parameters.Select(p => p.Value.ParseTemplate(container, decorator.TemplateParameters, parameters, this, tag)), tag))
+            foreach (var values in GetDecoratorAnnotations(container, subD.Decorator, subD.Parameters.ToDictionary(p => p.Key, p => p.Value.ParseTemplate(container, decorator.TemplateParameters, parameters, this, tag)), tag))
             {
                 yield return values;
             }
         }
     }
 
-    private IEnumerable<string> GetDecoratorImplementationValues(Func<DecoratorImplementation, StringWithVariables?> getter, IPropertyContainer container, Decorator decorator, IEnumerable<string> parameters, string tag)
+    private IEnumerable<string> GetDecoratorImplementationValues(Func<DecoratorImplementation, StringWithVariables?> getter, IPropertyContainer container, Decorator decorator, IDictionary<string, string> parameters, string tag)
     {
         var implementation = GetImplementation(decorator);
         if (implementation != null)
@@ -456,14 +456,14 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
         foreach (var subD in decorator.Decorators)
         {
-            foreach (var values in GetDecoratorImplementationValues(getter, container, subD.Decorator, subD.Parameters.Select(p => p.Value.ParseTemplate(container, decorator.TemplateParameters, parameters, this, tag)), tag))
+            foreach (var values in GetDecoratorImplementationValues(getter, container, subD.Decorator, subD.Parameters.ToDictionary(p => p.Key, p => p.Value.ParseTemplate(container, decorator.TemplateParameters, parameters, this, tag)), tag))
             {
                 yield return values;
             }
         }
     }
 
-    private IEnumerable<string> GetDecoratorImplementationValues(Func<DecoratorImplementation, IEnumerable<StringWithVariables>> getter, IPropertyContainer container, Decorator decorator, IEnumerable<string> parameters, string tag)
+    private IEnumerable<string> GetDecoratorImplementationValues(Func<DecoratorImplementation, IEnumerable<StringWithVariables>> getter, IPropertyContainer container, Decorator decorator, IDictionary<string, string> parameters, string tag)
     {
         var implementation = GetImplementation(decorator);
         if (implementation != null)
@@ -476,7 +476,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
         foreach (var subD in decorator.Decorators)
         {
-            foreach (var values in GetDecoratorImplementationValues(getter, container, subD.Decorator, subD.Parameters.Select(p => p.Value.ParseTemplate(container, decorator.TemplateParameters, parameters, this, tag)), tag))
+            foreach (var values in GetDecoratorImplementationValues(getter, container, subD.Decorator, subD.Parameters.ToDictionary(p => p.Key, p => p.Value.ParseTemplate(container, decorator.TemplateParameters, parameters, this, tag)), tag))
             {
                 yield return values;
             }

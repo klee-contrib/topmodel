@@ -103,7 +103,7 @@ public class AnnotationResolver(ModelFile modelFile, ModelConfig config, IDictio
                             yield return error;
                         }
 
-                        annotationsToResolve.Add((annotation, annotationRef.ParameterReferences.Select(p => new StringWithVariables(p)).ToArray()));
+                        annotationsToResolve.Add(new(annotation, annotationRef.ParameterReferences.ToDictionary(pr => pr.Key.ReferenceName, pr => pr.Value.Value)));
                     }
                 }
             }
@@ -117,24 +117,20 @@ public class AnnotationResolver(ModelFile modelFile, ModelConfig config, IDictio
 
     private static IEnumerable<ModelError> CheckAnnotationParameters(object target, AnnotationReference annotationRef, Annotation annotation)
     {
-        if (annotationRef.ParameterReferences.Count > annotation.TemplateParameters.Count)
+        foreach (var extraParameter in annotationRef.ParameterReferences.Keys.Where(pr => !annotation.TemplateParameters.Any(tp => tp.Name == pr.ReferenceName)))
         {
-            foreach (var extraParameter in annotationRef.ParameterReferences.Skip(annotation.TemplateParameters.Count))
-            {
-                yield return new ModelError(
-                    target,
-                    annotation.TemplateParameters.Count > 1 ? $"L'annotation '{annotation.Name}' ne définit que {annotation.TemplateParameters.Count} paramètres." : $"L'annotation '{annotation.Name}' ne définit qu'un seul paramètre.",
-                    extraParameter)
-                { ModelErrorType = ModelErrorType.TMD1035 };
-            }
-        }
-
-        if (annotationRef.ParameterReferences.Count < annotation.TemplateParameters.Count(p => p.Required))
-        {
-            var parametres = annotation.TemplateParameters.Skip(annotationRef.ParameterReferences.Count).Where(p => p.Required).Select(p => $"'{p.Name}'");
             yield return new ModelError(
                 target,
-                parametres.Count() > 1 ? $"Les paramètres {string.Join(", ", parametres)} de l'annotation '{annotation.Name}' sont obligatoires." : $"Le paramètre {string.Join(", ", parametres)} de l'annotation '{annotation.Name}' est obligatoire.",
+                $"Le paramètre '{extraParameter.ReferenceName}' n'existe pas sur l'annotation '{annotation.Name}'.",
+                extraParameter)
+            { ModelErrorType = ModelErrorType.TMD1035 };
+        }
+
+        foreach (var missingParameter in annotation.TemplateParameters.Where(tp => tp.Required && !annotationRef.ParameterReferences.Any(pr => pr.Key.ReferenceName == tp.Name)))
+        {
+            yield return new ModelError(
+                target,
+                $"Le paramètre '{missingParameter.Name}' de l'annotation '{annotation.Name}' est obligatoire.",
                 annotationRef)
             { ModelErrorType = ModelErrorType.TMD1036 };
         }

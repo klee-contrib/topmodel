@@ -5,7 +5,7 @@ using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class ClassLoader(ModelConfig modelConfig, PropertyLoader propertyLoader) : ILoader<Class>
+public class ClassLoader(ModelConfig modelConfig, FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader<Class>
 {
     /// <inheritdoc cref="ILoader{T}.Load" />
     public Class Load(Parser parser)
@@ -70,12 +70,10 @@ public class ClassLoader(ModelConfig modelConfig, PropertyLoader propertyLoader)
                         {
                             parser.ConsumeMapping(prop =>
                             {
-                                var decorator = new DecoratorReference(prop);
-
-                                parser.ConsumeSequence(() =>
+                                var decorator = new DecoratorReference(prop)
                                 {
-                                    decorator.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
-                                });
+                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                };
 
                                 classe.DecoratorReferences.Add(decorator);
                             });
@@ -93,12 +91,10 @@ public class ClassLoader(ModelConfig modelConfig, PropertyLoader propertyLoader)
                         {
                             parser.ConsumeMapping(prop =>
                             {
-                                var annotation = new AnnotationReference(prop);
-
-                                parser.ConsumeSequence(() =>
+                                var annotation = new AnnotationReference(prop)
                                 {
-                                    annotation.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
-                                });
+                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                };
 
                                 classe.AnnotationReferences.Add(annotation);
                             });
