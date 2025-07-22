@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 1.10.3
+
+- [0eebf](https://github.com/klee-contrib/topmodel/commit/bfb755568ab7314daca369cf7e893866d9a2fdea) [JPA] Correction de la génération de mappers dans le cas Set
+
 ## 1.10.2
 
 - [0ee4d3](https://github.com/klee-contrib/topmodel/commit/0ee4d349c7db207cf7003f117cf9942acc58b7a8) [JPA] Fix default value openApiAnnotations
