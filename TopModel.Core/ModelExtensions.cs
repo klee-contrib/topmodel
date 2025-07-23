@@ -94,8 +94,8 @@ public static class ModelExtensions
             .Select(alp => (
                 Reference: alp.Reference?.EndpointReference!,
                 File: alp.GetFile()))
-        .Where(r => r.Reference is not null)
-        .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
+            .Where(r => r.Reference is not null)
+            .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 
     public static ModelFile GetFile(this object? objet)
@@ -152,6 +152,38 @@ public static class ModelExtensions
             Variable { TemplateParameter: TemplateParameter t } => t.Name.Location,
             _ => null
         };
+    }
+
+    public static IEnumerable<(ParameterReference Reference, ModelFile File)> GetParameterReferences(this ModelStore modelStore, TemplateParameter parameter)
+    {
+        return modelStore.VariableContainers
+            .SelectMany(vc => vc.Variables.Values
+                .Where(v => v.TemplateParameter == parameter)
+                .Select(v => (
+                    Reference: vc.VariableReferences.FirstOrDefault(vr => vr.ReferenceName == v.TemplateParameter!.Name)!,
+                    File: v.GetFile()!)))
+            .Concat(modelStore.AnnotationContainers
+                .SelectMany(ac => ac.Annotations
+                    .SelectMany(a => a.Annotation.TemplateParameters
+                        .Where(tp => tp == parameter)
+                        .Select(tp => (
+                            Reference: ac.AnnotationReferences.FirstOrDefault(ac => ac.ReferenceName == a.Annotation.Name)?.ParameterReferences.Keys.FirstOrDefault(pr => pr.ReferenceName == tp.Name)!,
+                            File: ac.GetFile()!)))))
+            .Concat(modelStore.PropertyContainers
+                .SelectMany(pc => pc.Decorators
+                    .SelectMany(d => d.Decorator.TemplateParameters
+                        .Where(tp => tp == parameter)
+                        .Select(tp => (
+                            Reference: pc.DecoratorReferences.FirstOrDefault(ac => ac.ReferenceName == d.Decorator.Name)?.ParameterReferences.Keys.FirstOrDefault(pr => pr.ReferenceName == tp.Name)!,
+                            File: pc.GetFile()!)))))
+            .Concat(modelStore.Properties
+                .SelectMany(ac => (ac.Domain?.TemplateParameters ?? [])
+                    .Where(tp => tp == parameter)
+                    .Select(tp => (
+                        Reference: ac.DomainReference?.ParameterReferences.Keys.FirstOrDefault(pr => pr.ReferenceName == tp.Name)!,
+                        File: ac.GetFile()!))))
+            .Where(r => r.Reference is not null)
+            .DistinctBy(l => l.File.Name + l.Reference.Start.Line);
     }
 
     public static IEnumerable<(Reference Reference, ModelFile File)> GetPropertyReferences(this ModelStore modelStore, IProperty property, bool includeTransitive = false)

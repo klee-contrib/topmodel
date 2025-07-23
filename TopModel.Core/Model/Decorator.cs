@@ -4,7 +4,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public class Decorator : IPropertyContainer, IAnnotationContainer, IVariableContainer
+public class Decorator : IAnnotationContainer, IPropertyContainer, IVariableContainer
 {
 #nullable disable
     public LocatedString Name { get; set; }
@@ -31,7 +31,7 @@ public class Decorator : IPropertyContainer, IAnnotationContainer, IVariableCont
 
     public bool PreservePropertyCasing { get; set; }
 
-    public IList<TemplateParameter> TemplateParameters { get; set; } = [];
+    public IList<TemplateParameter> TemplateParameters { get; internal set; } = [];
 
     public IEnumerable<ParameterReference> VariableReferences => Implementations.Values
         .SelectMany(i =>

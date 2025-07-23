@@ -1,4 +1,5 @@
-﻿using TopModel.Utils;
+﻿using TopModel.Core.FileModel;
+using TopModel.Utils;
 
 namespace TopModel.Core;
 
@@ -23,6 +24,8 @@ public interface IProperty : IAnnotationContainer
     Domain Domain { get; }
 
     Dictionary<string, string> DomainParameters { get; }
+
+    DomainReference? DomainReference { get; }
 
     string Comment { get; }
 

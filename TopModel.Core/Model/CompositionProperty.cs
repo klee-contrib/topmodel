@@ -72,13 +72,14 @@ public class CompositionProperty : IProperty
 
     public Decorator? SourceDecorator { get; set; }
 
+    public DomainReference? DomainReference { get; set; }
+
 #nullable disable
     public ClassReference Reference { get; set; }
 
     internal Reference Location { get; set; }
-
 #nullable enable
-    internal DomainReference? DomainReference { get; set; }
+#pragma warning disable KTA1600
 
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
     public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)

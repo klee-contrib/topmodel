@@ -36,7 +36,7 @@ public class Domain : IAnnotationContainer, IVariableContainer
 
     public Dictionary<string, DomainImplementation> Implementations { get; set; } = [];
 
-    public IList<TemplateParameter> TemplateParameters { get; set; } = [];
+    public IList<TemplateParameter> TemplateParameters { get; internal set; } = [];
 
     public string? MediaType { get; set; }
 

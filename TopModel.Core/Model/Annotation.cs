@@ -16,7 +16,7 @@ public class Annotation : IVariableContainer
     public string Description { get; set; }
 #nullable enable
 
-    public IList<TemplateParameter> TemplateParameters { get; set; } = [];
+    public IList<TemplateParameter> TemplateParameters { get; internal set; } = [];
 
     public Dictionary<string, IList<AnnotationImplementation>> Implementations { get; set; } = [];
 

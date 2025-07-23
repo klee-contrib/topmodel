@@ -176,6 +176,8 @@ public class AssociationProperty : IProperty
 
     public Reference? PropertyReference { get; set; }
 
+    public DomainReference? DomainReference => null;
+
 #nullable disable
     public ClassReference Reference { get; set; }
 

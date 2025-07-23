@@ -35,6 +35,16 @@ public class ModelFile
 
     public IList<DataFlow> DataFlows { get; } = [];
 
+    public IList<IProperty> Properties => Classes.SelectMany(c => c.Properties)
+        .Concat(Classes.SelectMany(c => c.FromMapperProperties))
+        .Concat(Endpoints.SelectMany(e => e.Params))
+        .Concat(Endpoints.Select(e => e.Returns))
+        .Concat(Decorators.SelectMany(e => e.Properties))
+        .Where(p => p != null)
+        .ToList();
+
+    public IEnumerable<TemplateParameter> Parameters => [.. Annotations.SelectMany(d => d.TemplateParameters), .. Decorators.SelectMany(d => d.TemplateParameters), .. Domains.SelectMany(d => d.TemplateParameters),];
+
     public IEnumerable<IAnnotationContainer> AnnotationContainers => [.. Domains, .. Decorators, .. Classes, .. Endpoints, .. Properties];
 
     public IEnumerable<IPropertyContainer> PropertyContainers => [.. Decorators, .. Classes, .. Endpoints];
@@ -97,14 +107,6 @@ public class ModelFile
     public IList<Reference> UselessImports => Uses
         .Where(use => !References.Values.Select(r => r.GetFile().Name)
             .Contains(use.ReferenceName))
-        .ToList();
-
-    public IList<IProperty> Properties => Classes.SelectMany(c => c.Properties)
-        .Concat(Classes.SelectMany(c => c.FromMapperProperties))
-        .Concat(Endpoints.SelectMany(e => e.Params))
-        .Concat(Endpoints.Select(e => e.Returns))
-        .Concat(Decorators.SelectMany(e => e.Properties))
-        .Where(p => p != null)
         .ToList();
 
     public override string ToString()

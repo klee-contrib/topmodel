@@ -24,6 +24,7 @@ public static class OmnisharpExtensions
             Endpoint endpoint => endpoint.Name,
             AliasProperty property => property.OriginalProperty?.Name ?? property.Name,
             IProperty property => property.Name,
+            TemplateParameter templateParameter => templateParameter.Name,
             _ => null
         };
     }
@@ -47,28 +48,23 @@ public static class OmnisharpExtensions
             .Concat(file.Decorators.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
             .Concat(file.DataFlows.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
             .Concat(file.Endpoints.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line || d.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
+            .Concat(file.Parameters.Where(d => d.Name.GetLocation()!.Start.Line - 1 == position.Line).Cast<object>())
             .Concat(file.Properties.Where(p => p.GetLocation()!.Start.Line - 1 == position.Line));
 
         var definedObject = definedObjects.Count() == 1 ? definedObjects.Single() : null;
 
         return new References(definedObject ?? referencedObject, new[] { definedObject!, referencedObject! }
             .Where(o => o != null)
-            .SelectMany(objet => objet switch
+            .SelectMany<object, (Reference Reference, ModelFile File)>(objet => objet switch
             {
-                Class classe => new[] { (Reference: classe.Name.GetLocation()!, File: classe.GetFile()!) }
-                    .Concat(modelStore.GetClassReferences(classe).Select(c => (Reference: (Reference)c.Reference, c.File))),
-                Domain domain => new[] { (Reference: domain.Name.GetLocation()!, File: domain.GetFile()!) }
-                    .Concat(modelStore.GetDomainReferences(domain).Select(d => (Reference: (Reference)d.Reference, d.File))),
-                Annotation annotation => new[] { (Reference: annotation.Name.GetLocation()!, File: annotation.GetFile()!) }
-                    .Concat(modelStore.GetAnnotationReferences(annotation).Select(d => (Reference: (Reference)d.Reference, d.File))),
-                Decorator decorator => new[] { (Reference: decorator.Name.GetLocation()!, File: decorator.GetFile()!) }
-                    .Concat(modelStore.GetDecoratorReferences(decorator).Select(d => (Reference: (Reference)d.Reference, d.File))),
-                DataFlow dataFlow => new[] { (Reference: dataFlow.Name.GetLocation()!, File: dataFlow.GetFile()!) }
-                    .Concat(modelStore.GetDataFlowReferences(dataFlow).Select(d => (Reference: (Reference)d.Reference, d.File))),
-                Endpoint endpoint => new[] { (Reference: endpoint.Name.GetLocation()!, File: endpoint.GetFile()!) }
-                   .Concat(modelStore.GetEndpointReferences(endpoint).Select(d => (Reference: (Reference)d.Reference, d.File))),
-                IProperty property => new[] { (Reference: property.GetLocation()!, File: property.GetFile()!) }
-                    .Concat(modelStore.GetPropertyReferences(property, includeTransitive).Select(d => (d.Reference, d.File))),
+                Class classe => [(Reference: classe.Name.GetLocation()!, File: classe.GetFile()!), .. modelStore.GetClassReferences(classe)],
+                Domain domain => [(Reference: domain.Name.GetLocation()!, File: domain.GetFile()!), .. modelStore.GetDomainReferences(domain)],
+                Annotation annotation => [(Reference: annotation.Name.GetLocation()!, File: annotation.GetFile()!), .. modelStore.GetAnnotationReferences(annotation)],
+                Decorator decorator => [(Reference: decorator.Name.GetLocation()!, File: decorator.GetFile()!), .. modelStore.GetDecoratorReferences(decorator)],
+                DataFlow dataFlow => [(Reference: dataFlow.Name.GetLocation()!, File: dataFlow.GetFile()!), .. modelStore.GetDataFlowReferences(dataFlow)],
+                Endpoint endpoint => [(Reference: endpoint.Name.GetLocation()!, File: endpoint.GetFile()!), .. modelStore.GetEndpointReferences(endpoint)],
+                IProperty property => [(Reference: property.GetLocation()!, File: property.GetFile()!), .. modelStore.GetPropertyReferences(property, includeTransitive)],
+                TemplateParameter parameter => [(Reference: parameter.GetLocation()!, File: parameter.GetFile()!), .. modelStore.GetParameterReferences(parameter)],
                 _ => null!
             })
             .Distinct());
