@@ -284,7 +284,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     getter = $"{sourceName}.{getterName}()";
                     if (apSource.Type.IsToMany())
                     {
-                        getter = $"{getter}.stream().map(item -> {Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.create{cp.Composition}(item, null)).collect({collector})";
+                        getter = $"{getter}.stream().map({Config.GetMapperName(cpMapperNs, cpMapperModelPath)} :: create{cp.Composition}).collect({collector})";
                         imports.Add("java.util.stream.Collectors");
                     }
                     else
@@ -388,7 +388,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     if (isMultiple)
                     {
                         checkSourceNull = !propertySource.Class.IsPersistent;
-                        getter = $@"{sourceName}.{getterName}(){(!propertySource.Class.IsPersistent ? $".stream().map(src -> {Config.GetMapperName(cpMapperNs, cpMapperModelPath)}.{cpMapper.Name.ToCamelCase()}(src, null)).collect({collector})" : string.Empty)}";
+                        getter = $@"{sourceName}.{getterName}(){(!propertySource.Class.IsPersistent ? $".stream().map({Config.GetMapperName(cpMapperNs, cpMapperModelPath)} :: {cpMapper.Name.ToCamelCase()}).collect({collector})" : string.Empty)}";
                         imports.Add("java.util.stream.Collectors");
                     }
                     else
