@@ -1,5 +1,9 @@
 # Changelog JPA
 
+## 1.10.4
+
+- [5b875](https://github.com/klee-contrib/topmodel/commit/5b87549c1c2adc67e0ac8aba3cd97713ee493608) [JPA] Fix appel mapper avec null
+
 ## 1.10.3
 
 - [0eebf](https://github.com/klee-contrib/topmodel/commit/bfb755568ab7314daca369cf7e893866d9a2fdea) [JPA] Correction de la génération de mappers dans le cas Set
