@@ -48,7 +48,7 @@ public class CompositionProperty : IProperty
 
     public LocatedString? Trigram { get; set; }
 
-    public IList<AnnotationInstance> Annotations { get; } = [];
+    public IList<AnnotationInstance> Annotations { get; private set; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
@@ -101,6 +101,7 @@ public class CompositionProperty : IProperty
             Readonly = Readonly,
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName,
+            Annotations = Annotations
         };
     }
 

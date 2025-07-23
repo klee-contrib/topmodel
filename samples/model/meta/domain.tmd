@@ -12,18 +12,6 @@ annotation:
       imports:
         - jakarta.validation.constraints.Email
 ---
-annotation:
-  name: LastDate
-  description: Date de dernière création/modification
-  parameters:
-    - name: change
-      comment: Type de modification.
-  java:
-    - text: "@{change}Date"
-      target: Persisted
-      imports:
-        - org.springframework.data.annotation.{change}Date
----
 domain:
   name: DO_BOOLEEN
   label: boolean
@@ -121,58 +109,7 @@ domain:
         now: now()
   php:
     type: Date
----
-domain:
-  name: DO_DATE_CREATION
-  label: Date de création
-  annotations:
-    - LastDate:
-        change: Created
-  csharp:
-    type: DateTime
-    values:
-      overrides:
-        now: DateTime.UtcNow
-  java:
-    type: LocalDateTime
-    imports:
-      - java.time.LocalDateTime
-    values:
-      overrides:
-        now: LocalDateTime.now()
-  sql:
-    type: date
-    values:
-      overrides:
-        now: now()
-  php:
-    type: Date
----
-domain:
-  name: DO_DATE_MODIFICATION
-  label: Date de modification
-  annotations:
-    - LastDate: 
-        change: LastModified
-  csharp:
-    type: DateTime
-    values:
-      overrides:
-        now: DateTime.UtcNow
-  java:
-    type: LocalDateTime
-    imports:
-      - java.time.LocalDateTime
-    values:
-      overrides:
-        now: LocalDateTime.now()
-  sql:
-    type: date
-    values:
-      overrides:
-        now: now()
-  php:
-    type: Date
+
 ---
 domain:
   name: DO_EMAIL

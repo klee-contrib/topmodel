@@ -35,7 +35,7 @@ public class RegularProperty : IProperty
 
     public string Comment { get; set; }
 
-    public IList<AnnotationInstance> Annotations { get; } = [];
+    public IList<AnnotationInstance> Annotations { get; private set; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
@@ -85,7 +85,8 @@ public class RegularProperty : IProperty
             Readonly = Readonly,
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName,
-            CustomProperties = CustomProperties
+            CustomProperties = CustomProperties,
+            Annotations = Annotations
         };
     }
 

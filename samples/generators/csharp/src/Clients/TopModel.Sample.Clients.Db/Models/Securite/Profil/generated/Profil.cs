@@ -47,13 +47,13 @@ public partial record Profil
     /// </summary>
     [Column("pro_date_creation")]
     [Required]
-    [Domain(Domains.DateCreation)]
+    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Date de modification de l'utilisateur.
     /// </summary>
     [Column("pro_date_modification")]
-    [Domain(Domains.DateModification)]
+    [Domain(Domains.DateHeure)]
     public DateTime? DateModification { get; set; } = DateTime.UtcNow;
 }

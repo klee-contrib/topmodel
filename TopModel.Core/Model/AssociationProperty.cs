@@ -66,7 +66,7 @@ public class AssociationProperty : IProperty
 
     public string? DefaultValue { get; set; }
 
-    public IList<AnnotationInstance> Annotations { get; } = [];
+    public IList<AnnotationInstance> Annotations { get; private set; } = [];
 
     public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
@@ -207,7 +207,8 @@ public class AssociationProperty : IProperty
             Readonly = Readonly,
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName,
-            CustomProperties = CustomProperties
+            CustomProperties = CustomProperties,
+            Annotations = Annotations
         };
     }
 

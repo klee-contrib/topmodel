@@ -5,6 +5,18 @@ tags:
 
 ---
 annotation:
+  name: LastDate
+  description: Date de dernière création/modification
+  parameters:
+    - name: change
+      comment: Type de modification.
+  java:
+    - text: "@{change}Date"
+      target: Persisted
+      imports:
+        - org.springframework.data.annotation.{change}Date
+---
+annotation:
   name: EntityListeners
   description: Annotation pour EntityListeners.
   java:
@@ -15,7 +27,7 @@ annotation:
 ---
 annotation:
   name: Security
-  description: Annotation pour Security.
+  description: Ajoute une annotation de sécurité sur un endpoint.
   parameters:
     - name: permission
       required: true
@@ -36,22 +48,17 @@ decorator:
       label: Date de création
       required: true
       defaultValue: now
-      domain: DO_DATE_CREATION
+      domain: DO_DATE_HEURE
       comment: Date de création de l'utilisateur.
+      annotations:
+        - LastDate:
+            change: Created
 
     - name: DateModification
       label: Date de modification
       defaultValue: now
-      domain: DO_DATE_MODIFICATION
+      domain: DO_DATE_HEURE
       comment: Date de modification de l'utilisateur.
----
-decorator:
-  name: Security
-  description: Ajoute une annotation de sécurité sur un endpoint.
-  parameters:
-    - name: permission
-      required: true
-      comment: Permission demandée
-  annotations:
-    - Security:
-        permission: "{permission}"
+      annotations:
+        - LastDate:
+            change: LastModified

@@ -18,7 +18,7 @@ endpoint:
   method: POST
   route: /
   description: Ajoute un utilisateur
-  decorators:
+  annotations:
     - Security:
         permission: hasRole('CREATE')
   params:
@@ -35,7 +35,7 @@ endpoint:
   method: DELETE
   route: /{utiId}
   description: Supprime un utilisateur
-  decorators:
+  annotations:
     - Security:
         permission: hasRole('DELETE')
   params:
@@ -48,7 +48,7 @@ endpoint:
   method: GET
   route: /{utiId}
   description: Charge le détail d'un utilisateur
-  decorators:
+  annotations:
     - Security:
         permission: hasRole('READ')
   # Liste des paramètres du endpoint. Ce sont des propriétés de modèle comme pour les classes. Il peut ne pas y en avoir.
@@ -67,7 +67,7 @@ endpoint:
   method: GET
   route: /
   description: Recherche des utilisateurs
-  decorators:
+  annotations:
     - Security:
         permission: hasRole('READ')
   params:
@@ -90,7 +90,7 @@ endpoint:
   method: PUT
   route: /{utiId}
   description: Sauvegarde un utilisateur
-  decorators:
+  annotations:
     - Security:
         permission: hasRole('UPDATE')
   params:

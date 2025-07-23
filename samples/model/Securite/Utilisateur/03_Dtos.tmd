@@ -39,7 +39,6 @@ class:
           - DateCreation
           - DateModification
       defaultValue: null
-      domain: DO_DATE_HEURE
 
   mappers:
     from:

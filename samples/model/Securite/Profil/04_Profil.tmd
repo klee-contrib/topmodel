@@ -18,7 +18,7 @@ endpoint:
   method: POST
   route: /
   description: Ajoute un Profil
-  decorators:
+  annotations:
     - Security:
         permission: hasRole('CREATE')
   params:
@@ -35,7 +35,7 @@ endpoint:
   method: GET
   route: /{proId}
   description: Charge le détail d'un Profil
-  decorators:
+  annotations:
     - Security:
         permission: hasRole('READ')
   # Liste des paramètres du endpoint. Ce sont des propriétés de modèle comme pour les classes. Il peut ne pas y en avoir.
@@ -54,7 +54,7 @@ endpoint:
   method: GET
   route: /
   description: Liste tous les Profils
-  decorators:
+  annotations:
     - Security:
         permission: hasRole('READ')
   returns:
@@ -68,7 +68,7 @@ endpoint:
   method: PUT
   route: /{proId}
   description: Sauvegarde un Profil
-  decorators:
+  annotations:
     - Security:
         permission: hasRole('UPDATE')
   params:
