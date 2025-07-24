@@ -48,6 +48,8 @@ public class SecuriteProfilMappers {
 		target.setLibelle(profil.getLibelle());
 		if (profil.getDroits() != null) {
 			target.setDroits(profil.getDroits().stream().filter(Objects::nonNull).map(Droit::getCode).collect(Collectors.toList()));
+		} else {
+			target.setDroits(null);
 		}
 
 		target.setDateCreation(profil.getDateCreation());
@@ -115,6 +117,8 @@ public class SecuriteProfilMappers {
 		target.setLibelle(source.getLibelle());
 		if (source.getDroits() != null) {
 			target.setDroits(source.getDroits().stream().map(Droit::new).collect(Collectors.toList()));
+		} else {
+			target.setDroits(null);
 		}
 
 		return target;
