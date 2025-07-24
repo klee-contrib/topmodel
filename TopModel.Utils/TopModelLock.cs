@@ -84,11 +84,11 @@ public class TopModelLock : TopModelLockFile
 
         GeneratedFiles = generatedFilesList;
 
-        if (!_config.NoWarn.Contains(ModelErrorType.TMD8001))
+        if (!_config.NoWarn.Contains(ErrorType.TMD1005))
         {
             foreach (var ignoredFile in _config.IgnoredFiles.Select(i => Path.GetFullPath(Path.Combine(_config.ConfigRoot, i.Path)).Replace("\\", "/")).Except(generatedFiles))
             {
-                _logger.LogWarning($"{{TMD8001}} - Le fichier '{ignoredFile.ToRelative(_config.ConfigRoot)}' dans `ignoredFiles` est introuvable.");
+                _logger.LogWarning($"{{TMD1005}} - Le fichier '{ignoredFile.ToRelative(_config.ConfigRoot)}' dans `ignoredFiles` est introuvable.");
             }
         }
 

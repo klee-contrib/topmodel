@@ -16,7 +16,7 @@ public class AnnotationResolver(ModelFile modelFile, ModelConfig config, IDictio
                 var annotationRef = alp.AnnotationReferences.FirstOrDefault(ar => ar.ReferenceName == g.Key);
                 if (annotationRef != null)
                 {
-                    yield return new ModelError(alp, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations de la propriété aliasée.", annotationRef) { ModelErrorType = ModelErrorType.TMD1042 };
+                    yield return new ModelError(ErrorType.TMD2003, alp, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations de la propriété aliasée.", annotationRef);
                 }
             }
 
@@ -25,7 +25,7 @@ public class AnnotationResolver(ModelFile modelFile, ModelConfig config, IDictio
                 var annotationRef = alp.AnnotationReferences.FirstOrDefault(ar => ar.ReferenceName == annotation.Name);
                 if (annotationRef != null)
                 {
-                    yield return new ModelError(alp, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine de la propriété '{alp}'.", annotationRef) { ModelErrorType = ModelErrorType.TMD1042 };
+                    yield return new ModelError(ErrorType.TMD2003, alp, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine de la propriété '{alp}'.", annotationRef);
                 }
             }
         }
@@ -51,12 +51,12 @@ public class AnnotationResolver(ModelFile modelFile, ModelConfig config, IDictio
 
             foreach (var templateParam in annotation.TemplateParameters.Where((e, i) => annotation.TemplateParameters.Where((p, j) => p.Name == e.Name && j < i).Any()))
             {
-                yield return new ModelError(annotation, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
+                yield return new ModelError(ErrorType.TMD0001, annotation, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation());
             }
 
             if (annotation.TemplateParameters.Any() && annotation.Global)
             {
-                yield return new ModelError(annotation, "Une annotation globale ne peut pas définir de paramètres.") { ModelErrorType = ModelErrorType.TMD1045 };
+                yield return new ModelError(ErrorType.TMD2005, annotation, "Une annotation globale ne peut pas définir de paramètres.");
             }
         }
 
@@ -86,27 +86,27 @@ public class AnnotationResolver(ModelFile modelFile, ModelConfig config, IDictio
                 if (!referencedAnnotations.TryGetValue(annotationRef.ReferenceName, out var annotation))
                 {
                     isError = true;
-                    yield return new ModelError(container, $"L'annotation '{annotationRef.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances.", annotationRef) { ModelErrorType = ModelErrorType.TMD1040 };
+                    yield return new ModelError(ErrorType.TMD2001, container, $"L'annotation '{annotationRef.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances.", annotationRef);
                 }
                 else
                 {
                     if (annotationsToResolve.Any(d => d.Annotation == annotation))
                     {
                         isError = true;
-                        yield return new ModelError(container, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations de l'objet.", annotationRef) { ModelErrorType = ModelErrorType.TMD1041 };
+                        yield return new ModelError(ErrorType.TMD2002, container, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations de l'objet.", annotationRef);
                     }
                     else
                     {
                         if (container is IPropertyContainer propertyContainer && propertyContainer.AllDecorators.Any(d => d.Annotations.Any(a => a.Annotation == annotation)))
                         {
                             isError = true;
-                            yield return new ModelError(propertyContainer, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations d'un des décorateurs de l'objet '{propertyContainer}'.", annotationRef) { ModelErrorType = ModelErrorType.TMD1042 };
+                            yield return new ModelError(ErrorType.TMD2003, propertyContainer, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations d'un des décorateurs de l'objet '{propertyContainer}'.", annotationRef);
                         }
 
                         if (container is IProperty property && property is not AliasProperty && (property.Domain?.Annotations.Any(d => d.Annotation == annotation) ?? false))
                         {
                             isError = true;
-                            yield return new ModelError(property, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine de la propriété '{property}'.", annotationRef) { ModelErrorType = ModelErrorType.TMD1042 };
+                            yield return new ModelError(ErrorType.TMD2003, property, $"L'annotation '{annotationRef.ReferenceName}' est déjà présente dans la liste des annotations du domaine de la propriété '{property}'.", annotationRef);
                         }
 
                         if (annotation.Target.Any())
@@ -118,7 +118,7 @@ public class AnnotationResolver(ModelFile modelFile, ModelConfig config, IDictio
                                 || container is Domain or IProperty && !annotation.Target.Contains(Target.Property) && !annotation.Target.Contains(Target.AssociationProperty) && !annotation.Target.Contains(Target.CompositionProperty) && !annotation.Target.Contains(Target.RegularProperty))
                             {
                                 isError = true;
-                                yield return new ModelError(container, $"Impossible d'appliquer l'annotation '{annotationRef.ReferenceName}' à '{container}' : l'annotation ne cible pas le bon type d'objet.", annotationRef) { ModelErrorType = ModelErrorType.TMD1044 };
+                                yield return new ModelError(ErrorType.TMD2004, container, $"Impossible d'appliquer l'annotation '{annotationRef.ReferenceName}' à '{container}' : l'annotation ne cible pas le bon type d'objet.", annotationRef);
                             }
                         }
 
@@ -146,20 +146,12 @@ public class AnnotationResolver(ModelFile modelFile, ModelConfig config, IDictio
     {
         foreach (var extraParameter in annotationRef.ParameterReferences.Keys.Where(pr => !annotation.TemplateParameters.Any(tp => tp.Name == pr.ReferenceName)))
         {
-            yield return new ModelError(
-                target,
-                $"Le paramètre '{extraParameter.ReferenceName}' n'existe pas sur l'annotation '{annotation.Name}'.",
-                extraParameter)
-            { ModelErrorType = ModelErrorType.TMD1035 };
+            yield return new ModelError(ErrorType.TMD0007, target, $"Le paramètre '{extraParameter.ReferenceName}' n'existe pas sur l'annotation '{annotation.Name}'.", extraParameter);
         }
 
         foreach (var missingParameter in annotation.TemplateParameters.Where(tp => tp.Required && !annotationRef.ParameterReferences.Any(pr => pr.Key.ReferenceName == tp.Name)))
         {
-            yield return new ModelError(
-                target,
-                $"Le paramètre '{missingParameter.Name}' de l'annotation '{annotation.Name}' est obligatoire.",
-                annotationRef)
-            { ModelErrorType = ModelErrorType.TMD1036 };
+            yield return new ModelError(ErrorType.TMD0008, target, $"Le paramètre '{missingParameter.Name}' de l'annotation '{annotation.Name}' est obligatoire.", annotationRef);
         }
     }
 }

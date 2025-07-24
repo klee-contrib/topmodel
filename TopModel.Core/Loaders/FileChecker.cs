@@ -96,7 +96,7 @@ public class FileChecker
                 case "noWarn":
                     parser.ConsumeSequence(() =>
                     {
-                        config.NoWarn.Add(Enum.Parse<ModelErrorType>(parser.Consume<Scalar>().Value));
+                        config.NoWarn.Add(Enum.Parse<ErrorType>(parser.Consume<Scalar>().Value));
                     });
                     break;
                 case "pluralizeTableNames":

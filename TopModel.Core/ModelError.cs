@@ -12,16 +12,19 @@ public class ModelError
     private readonly object _objet;
     private readonly Reference? _reference;
 
-    internal ModelError(object objet, string message, Reference? reference = null)
+    internal ModelError(ErrorType errorType, object objet, string message, Reference? reference = null, bool isError = true)
     {
         _message = message;
         _objet = objet;
         _reference = reference;
+
+        ErrorType = errorType;
+        IsError = isError;
     }
 
-    public bool IsError { get; init; } = true;
+    public bool IsError { get; }
 
-    public ModelErrorType ModelErrorType { get; init; } = ModelErrorType.TMD0000;
+    public ErrorType ErrorType { get; }
 
     public ModelFile File => _objet.GetFile();
 
@@ -53,7 +56,7 @@ public class ModelError
         sb.Append(Location?.Position ?? string.Empty);
 
         sb.Append(" - {");
-        sb.Append(ModelErrorType);
+        sb.Append(ErrorType);
         sb.Append("} ");
         sb.Append(Message);
         sb.Append(" (");

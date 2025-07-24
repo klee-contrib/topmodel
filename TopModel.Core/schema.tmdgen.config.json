@@ -81,8 +81,8 @@
         "type": "string",
         "description": "Code du warning (TMDXXXX) à ignorer ",
         "enum": [
-          "TMD8000",
-          "TMD8001"
+          "TMD1004",
+          "TMD1005"
         ]
       }
     },

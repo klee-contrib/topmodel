@@ -17,38 +17,22 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
         {
             foreach (var property in classe.ExtendedProperties.Where((e, i) => classe.ExtendedProperties.Where((p, j) => p.Name == e.Name && j < i).Any()))
             {
-                yield return new ModelError(modelFile, $"Le nom '{property.Name}' est déjà utilisé.", property.Decorator is not null ? classe.DecoratorReferences.FirstOrDefault(dr => dr.ReferenceName == property.Decorator.Name) : property.GetLocation())
-                {
-                    IsError = true,
-                    ModelErrorType = ModelErrorType.TMD0003
-                };
+                yield return new ModelError(ErrorType.TMD0001, modelFile, $"Le nom '{property.Name}' est déjà utilisé.", property.Decorator is not null ? classe.DecoratorReferences.FirstOrDefault(dr => dr.ReferenceName == property.Decorator.Name) : property.GetLocation());
             }
 
             foreach (var property in classe.Properties.OfType<AssociationProperty>().Where(p => (p.Association == classe || p.Association == classe.Extends) && string.IsNullOrEmpty(p.Role)))
             {
-                yield return new ModelError(modelFile, $"Cette association sur la classe '{classe}' doit définir un rôle.", property.Decorator is not null ? classe.DecoratorReferences.FirstOrDefault(dr => dr.ReferenceName == property.Decorator.Name) : property.GetLocation())
-                {
-                    IsError = true,
-                    ModelErrorType = ModelErrorType.TMD1029
-                };
+                yield return new ModelError(ErrorType.TMD3005, modelFile, $"Cette association sur la classe '{classe}' doit définir un rôle.", property.Decorator is not null ? classe.DecoratorReferences.FirstOrDefault(dr => dr.ReferenceName == property.Decorator.Name) : property.GetLocation());
             }
 
             if (classe.PrimaryKey.Count() == 1 && classe.PrimaryKey.First() is AssociationProperty ap && ap.Type != AssociationType.OneToOne)
             {
-                yield return new ModelError(modelFile, $"Une association doit être de type 'oneToOne' pour être la clé primaire d'une classe.", ap.GetLocation())
-                {
-                    IsError = true,
-                    ModelErrorType = ModelErrorType.TMD1038
-                };
+                yield return new ModelError(ErrorType.TMD3006, modelFile, $"Une association doit être de type 'oneToOne' pour être la clé primaire d'une classe.", ap.GetLocation());
             }
 
             if (classe.PrimaryKey.Count() > 1 && classe.PrimaryKey.Any(pk => pk is AssociationProperty ap && ap.Type != AssociationType.ManyToOne))
             {
-                yield return new ModelError(modelFile, "Les associations d'une clé primaire composite doivent être de type 'manyToOne'.", classe.GetLocation())
-                {
-                    IsError = true,
-                    ModelErrorType = ModelErrorType.TMD1039
-                };
+                yield return new ModelError(ErrorType.TMD3007, modelFile, "Les associations d'une clé primaire composite doivent être de type 'manyToOne'.", classe.GetLocation());
             }
         }
 
@@ -75,7 +59,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
                     if (ukValues.IndexOf(ukValue) < i)
                     {
                         var duplicateValue = classe.Values[i];
-                        yield return new ModelError(duplicateValue, $"La valeur viole la contrainte d'unicité [{string.Join(", ", uk.Select(u => u.Name))}]", duplicateValue.Reference) { IsError = true, ModelErrorType = ModelErrorType.TMD1013 };
+                        yield return new ModelError(ErrorType.TMD3012, duplicateValue, $"La valeur viole la contrainte d'unicité [{string.Join(", ", uk.Select(u => u.Name))}]", duplicateValue.Reference);
                     }
                 }
             }
@@ -90,7 +74,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
     {
         foreach (var classe in modelFile.Classes.Where(c => c.Reference && c.ReferenceKey == null))
         {
-            yield return new ModelError(classe, $"La classe '{classe}' doit avoir au moins une propriété non composée et au plus une clé primaire pour être définie comme `reference`.") { ModelErrorType = ModelErrorType.TMD0001 };
+            yield return new ModelError(ErrorType.TMD3002, classe, $"La classe '{classe}' doit avoir au moins une propriété non composée et au plus une clé primaire pour être définie comme `reference`.");
         }
 
         foreach (var classe in modelFile.Classes)
@@ -99,7 +83,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
             {
                 if (classe.EnumOverride == "true" && (classe.Values.Count == 0 || classe.ReferenceKey == null))
                 {
-                    yield return new ModelError(classe, $"La classe '{classe}' doit avoir au moins une propriété non composée, au plus une clé primaire et au moins une `value` pour être définie comme `enum`.", classe.EnumOverride.Location) { ModelErrorType = ModelErrorType.TMD0006 };
+                    yield return new ModelError(ErrorType.TMD3003, classe, $"La classe '{classe}' doit avoir au moins une propriété non composée, au plus une clé primaire et au moins une `value` pour être définie comme `enum`.", classe.EnumOverride.Location);
                 }
                 else
                 {
@@ -113,7 +97,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
 
             if (classe.Extends != null && classe.Enum != classe.Extends.Enum)
             {
-                yield return new ModelError(classe, $"La classe '{classe}' et sa classe parente '{classe.Extends}' doivent toutes les deux être des `enum`.") { ModelErrorType = ModelErrorType.TMD1031 };
+                yield return new ModelError(ErrorType.TMD3010, classe, $"La classe '{classe}' et sa classe parente '{classe.Extends}' doivent toutes les deux être des `enum`.");
             }
         }
     }
@@ -128,25 +112,25 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
         {
             if (classe.Abstract)
             {
-                yield return new ModelError(classe, $"Impossible de définir un 'extends' sur la classe '{classe}' abstraite.", classe.ExtendsReference!) { ModelErrorType = ModelErrorType.TMD1026 };
+                yield return new ModelError(ErrorType.TMD3008, classe, $"Impossible de définir un 'extends' sur la classe '{classe}' abstraite.", classe.ExtendsReference!);
                 continue;
             }
 
             if (!referencedClasses.TryGetValue(classe.ExtendsReference!.ReferenceName, out var extends))
             {
-                yield return new ModelError(classe, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", classe.ExtendsReference!) { ModelErrorType = ModelErrorType.TMD1002 };
+                yield return new ModelError(ErrorType.TMD0002, classe, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", classe.ExtendsReference!);
                 continue;
             }
 
             if (extends.Abstract)
             {
-                yield return new ModelError(classe, $"Impossible de définir la classe '{extends}' abstraite comme 'extends' sur la classe '{classe}'.", classe.ExtendsReference!) { ModelErrorType = ModelErrorType.TMD1026 };
+                yield return new ModelError(ErrorType.TMD3008, classe, $"Impossible de définir la classe '{extends}' abstraite comme 'extends' sur la classe '{classe}'.", classe.ExtendsReference!);
                 continue;
             }
 
             if (extends.PrimaryKey.Count() > 1)
             {
-                yield return new ModelError(classe, $"Impossible de définir la classe '{extends}' comme 'extends' sur la classe '{classe}' car elle a une clé primaire composite.", classe.ExtendsReference!) { ModelErrorType = ModelErrorType.TMD1030 };
+                yield return new ModelError(ErrorType.TMD3009, classe, $"Impossible de définir la classe '{extends}' comme 'extends' sur la classe '{classe}' car elle a une clé primaire composite.", classe.ExtendsReference!);
                 continue;
             }
 
@@ -167,7 +151,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
                 classe.DefaultProperty = classe.ExtendedProperties.FirstOrDefault(fp => fp.Name == classe.DefaultPropertyReference.ReferenceName);
                 if (classe.DefaultProperty == null)
                 {
-                    yield return new ModelError(classe, $"La propriété '{classe.DefaultPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.DefaultPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
+                    yield return new ModelError(ErrorType.TMD0004, classe, $"La propriété '{classe.DefaultPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.DefaultPropertyReference);
                 }
             }
             else
@@ -181,7 +165,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
                 classe.OrderProperty = classe.ExtendedProperties.FirstOrDefault(fp => fp.Name == classe.OrderPropertyReference.ReferenceName);
                 if (classe.OrderProperty == null)
                 {
-                    yield return new ModelError(classe, $"La propriété '{classe.OrderPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.OrderPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
+                    yield return new ModelError(ErrorType.TMD0004, classe, $"La propriété '{classe.OrderPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.OrderPropertyReference);
                 }
             }
             else
@@ -195,7 +179,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
                 classe.FlagProperty = classe.ExtendedProperties.FirstOrDefault(fp => fp.Name == classe.FlagPropertyReference.ReferenceName);
                 if (classe.FlagProperty == null)
                 {
-                    yield return new ModelError(classe, $"La propriété '{classe.FlagPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.FlagPropertyReference) { ModelErrorType = ModelErrorType.TMD1011 };
+                    yield return new ModelError(ErrorType.TMD0004, classe, $"La propriété '{classe.FlagPropertyReference.ReferenceName}' n'existe pas sur la classe '{classe}'.", classe.FlagPropertyReference);
                 }
             }
             else
@@ -254,7 +238,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
 
                     if (property == null)
                     {
-                        yield return new ModelError(classe, $"La propriété '{ukPropRef.ReferenceName}' n'existe pas sur la classe '{classe}'.", ukPropRef) { ModelErrorType = ModelErrorType.TMD1011 };
+                        yield return new ModelError(ErrorType.TMD0004, classe, $"La propriété '{ukPropRef.ReferenceName}' n'existe pas sur la classe '{classe}'.", ukPropRef);
                     }
                     else
                     {
@@ -286,7 +270,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
 
                     if (property == null)
                     {
-                        yield return new ModelError(classe, $"La propriété '{value.Key.ReferenceName}' n'existe pas sur la classe '{classe}'.", value.Key) { ModelErrorType = ModelErrorType.TMD1011 };
+                        yield return new ModelError(ErrorType.TMD0004, classe, $"La propriété '{value.Key.ReferenceName}' n'existe pas sur la classe '{classe}'.", value.Key);
                     }
                     else
                     {
@@ -302,7 +286,7 @@ internal class ClassResolver(ModelFile modelFile, IDictionary<string, Class> ref
 
                 if (missingRequiredProperties.Any())
                 {
-                    yield return new ModelError(classe, $"La valeur '{valueRef.Key.ReferenceName}' n'initialise pas les propriétés obligatoires suivantes : {string.Join(", ", missingRequiredProperties.Select(p => p.Name))}.", valueRef.Key) { ModelErrorType = ModelErrorType.TMD1012 };
+                    yield return new ModelError(ErrorType.TMD3011, classe, $"La valeur '{valueRef.Key.ReferenceName}' n'initialise pas les propriétés obligatoires suivantes : {string.Join(", ", missingRequiredProperties.Select(p => p.Name))}.", valueRef.Key);
                 }
             }
         }

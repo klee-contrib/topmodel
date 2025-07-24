@@ -30,5 +30,5 @@ public class ConfigBase
     /// <summary>
     /// Liste des warnings à ignorer.
     /// </summary>
-    public IList<ModelErrorType> NoWarn { get; set; } = [];
+    public IList<ErrorType> NoWarn { get; set; } = [];
 }

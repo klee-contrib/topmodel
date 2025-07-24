@@ -25,7 +25,7 @@ public class ModelException : LegitException
     /// <param name="reference">Référence éventuelle vers l'erreur (si pas liée à l'objet)</param>
     public ModelException(object objet, string message, Reference? reference = null)
     {
-        ModelError = new ModelError(objet, message, reference);
+        ModelError = new ModelError(ErrorType.TMD0000, objet, message, reference);
     }
 
     public override string Message => ModelError != null ? ModelError.ToString() : base.Message;

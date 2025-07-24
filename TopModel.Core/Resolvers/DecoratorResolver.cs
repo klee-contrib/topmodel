@@ -86,7 +86,7 @@ internal class DecoratorResolver(ModelFile modelFile, ModelConfig config, IDicti
 
             foreach (var templateParam in decorator.TemplateParameters.Where((e, i) => decorator.TemplateParameters.Where((p, j) => p.Name == e.Name && j < i).Any()))
             {
-                yield return new ModelError(decorator, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
+                yield return new ModelError(ErrorType.TMD0001, decorator, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation());
             }
         }
 
@@ -100,14 +100,14 @@ internal class DecoratorResolver(ModelFile modelFile, ModelConfig config, IDicti
                 if (!referencedDecorators.TryGetValue(decoratorRef.ReferenceName, out var targetDecorator))
                 {
                     isError = true;
-                    yield return new ModelError(container, $"Le décorateur '{decoratorRef.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1008 };
+                    yield return new ModelError(ErrorType.TMD0005, container, $"Le décorateur '{decoratorRef.ReferenceName}' est introuvable dans le fichier ou l'une de ses dépendances.", decoratorRef);
                 }
                 else
                 {
                     if (container.Decorators.Any(d => d.Decorator == targetDecorator))
                     {
                         isError = true;
-                        yield return new ModelError(container, $"Le décorateur '{decoratorRef.ReferenceName}' est déjà présent dans la liste des décorateurs de l'objet '{container}'.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1009 };
+                        yield return new ModelError(ErrorType.TMD5001, container, $"Le décorateur '{decoratorRef.ReferenceName}' est déjà présent dans la liste des décorateurs de l'objet '{container}'.", decoratorRef);
                     }
                     else
                     {
@@ -115,14 +115,14 @@ internal class DecoratorResolver(ModelFile modelFile, ModelConfig config, IDicti
                             || container is Class { Extends: not null } && ((IPropertyContainer)targetDecorator).AllDecorators.Any(d => d.Implementations.Any(impl => impl.Value.Extends != null)))
                         {
                             isError = true;
-                            yield return new ModelError(container, $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à '{container}' : seul un 'extends' peut être spécifié.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1010 };
+                            yield return new ModelError(ErrorType.TMD5002, container, $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à '{container}' : seul un 'extends' peut être spécifié.", decoratorRef);
                         }
 
                         var target = targetDecorator.Target;
                         if (target == Target.Endpoint && container is Class || target == Target.Class && container is Endpoint || container is Decorator d && target != null && target != d.Target)
                         {
                             isError = true;
-                            yield return new ModelError(container, $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à '{container}' : le décorateur ne cible pas le bon type d'objet.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1043 };
+                            yield return new ModelError(ErrorType.TMD5003, container, $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à '{container}' : le décorateur ne cible pas le bon type d'objet.", decoratorRef);
                         }
 
                         foreach (var error in CheckDecoratorParameters(container, decoratorRef, targetDecorator))
@@ -149,20 +149,12 @@ internal class DecoratorResolver(ModelFile modelFile, ModelConfig config, IDicti
     {
         foreach (var extraParameter in decoratorRef.ParameterReferences.Keys.Where(pr => !decorator.TemplateParameters.Any(tp => tp.Name == pr.ReferenceName)))
         {
-            yield return new ModelError(
-                container,
-                $"Le paramètre '{extraParameter.ReferenceName}' n'existe pas sur le décorateur '{decorator.Name}'.",
-                extraParameter)
-            { ModelErrorType = ModelErrorType.TMD1035 };
+            yield return new ModelError(ErrorType.TMD0007, container, $"Le paramètre '{extraParameter.ReferenceName}' n'existe pas sur le décorateur '{decorator.Name}'.", extraParameter);
         }
 
         foreach (var missingParameter in decorator.TemplateParameters.Where(tp => tp.Required && !decoratorRef.ParameterReferences.Any(pr => pr.Key.ReferenceName == tp.Name)))
         {
-            yield return new ModelError(
-                container,
-                $"Le paramètre '{missingParameter.Name}' du décorateur '{decorator.Name}' est obligatoire.",
-                decoratorRef)
-            { ModelErrorType = ModelErrorType.TMD1036 };
+            yield return new ModelError(ErrorType.TMD0008, container, $"Le paramètre '{missingParameter.Name}' du décorateur '{decorator.Name}' est obligatoire.", decoratorRef);
         }
     }
 }

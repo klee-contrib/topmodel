@@ -19,7 +19,7 @@ internal class DomainResolver(ModelFile modelFile, ModelConfig config, IDictiona
             {
                 if (!domains.TryGetValue(domainReference.ReferenceName, out var asDomain))
                 {
-                    yield return new ModelError(domain, "Le domaine '{0}' est introuvable.", domainReference) { ModelErrorType = ModelErrorType.TMD1005 };
+                    yield return new ModelError(ErrorType.TMD0003, domain, "Le domaine '{0}' est introuvable.", domainReference);
                     continue;
                 }
 
@@ -28,7 +28,7 @@ internal class DomainResolver(ModelFile modelFile, ModelConfig config, IDictiona
 
             foreach (var templateParam in domain.TemplateParameters.Where((e, i) => domain.TemplateParameters.Where((p, j) => p.Name == e.Name && j < i).Any()))
             {
-                yield return new ModelError(domain, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
+                yield return new ModelError(ErrorType.TMD0001, domain, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation());
             }
         }
     }
@@ -64,7 +64,7 @@ internal class DomainResolver(ModelFile modelFile, ModelConfig config, IDictiona
             {
                 if (!domains.TryGetValue(dom.ReferenceName, out var domain))
                 {
-                    yield return new ModelError(converter, "Le domaine '{0}' est introuvable.", dom) { ModelErrorType = ModelErrorType.TMD1005 };
+                    yield return new ModelError(ErrorType.TMD0003, converter, "Le domaine '{0}' est introuvable.", dom);
                     break;
                 }
 
@@ -75,7 +75,7 @@ internal class DomainResolver(ModelFile modelFile, ModelConfig config, IDictiona
             {
                 if (!domains.TryGetValue(dom.ReferenceName, out var domain))
                 {
-                    yield return new ModelError(converter, "Le domaine '{0}' est introuvable.", dom) { ModelErrorType = ModelErrorType.TMD1005 };
+                    yield return new ModelError(ErrorType.TMD0003, converter, "Le domaine '{0}' est introuvable.", dom);
                     break;
                 }
 
