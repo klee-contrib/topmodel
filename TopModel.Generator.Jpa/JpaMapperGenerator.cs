@@ -502,6 +502,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
                     if (checkSourceNull)
                     {
+                        toMapperMethod.AddBodyLine( $"}} else {{");
+                        toMapperMethod.AddBodyLine(1, $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);");
                         toMapperMethod.AddBodyLine($"}}");
                         toMapperMethod.AddBodyLine();
                     }
