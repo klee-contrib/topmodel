@@ -151,17 +151,10 @@ public class CsharpConfig : GeneratorConfigBase
     /// </summary>
     public string[] MapperTagsOverrides { get; set; } = [];
 
-    [YamlMember(Alias = "mapperLocationPriority")]
-    public string? MapperLocationPriorityParam { get; set; }
-
     /// <summary>
-    /// Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persistent` ou `non-persistent`). Par défaut : "persistent".
+    /// Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persisted` ou `non-persisted`). Par défaut : "persistent".
     /// </summary>
-    public Target MapperLocationPriority => MapperLocationPriorityParam switch
-    {
-        "non-persistent" => Target.Dto,
-        _ => Target.Persisted
-    };
+    public AnnotationConstraint MapperLocationPriority { get; set; } = AnnotationConstraint.Persisted;
 
     /// <summary>
     /// Utilise des enums au lieu de strings pour les PKs de listes de référence statiques. Par défaut : 'true'.
@@ -173,18 +166,10 @@ public class CsharpConfig : GeneratorConfigBase
     /// </summary>
     public bool UseEFComments { get; set; }
 
-    [YamlMember(Alias = "useRecords")]
-    public object? UseRecordsParam { get; set; } = true;
-
     /// <summary>
     /// Utilise des records (mutables) au lieu de classes pour la génération de classes.
     /// </summary>
-    public Target UseRecords => UseRecordsParam switch
-    {
-        true => Target.Persisted_Dto,
-        "dtos-only" => Target.Dto,
-        _ => Target.None
-    };
+    public bool UseRecords { get; set; } = true;
 
     /// <summary>
     /// Utilise les constructeurs principaux pour la génération des classes avec dépendances (clients d'API, accesseurs de références). Par défaut : 'true'.
@@ -348,7 +333,7 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual (Namespace Namespace, string ModelPath) GetMapperLocation((Class Class, FromMapper Mapper) mapper, string tag)
     {
         var pmp = NoPersistence(tag) ? NonPersistentModelPath : PersistentModelPath;
-        if (MapperLocationPriority == Target.Persisted)
+        if (MapperLocationPriority == AnnotationConstraint.Persisted)
         {
             if (mapper.Class.IsPersistent)
             {
@@ -383,7 +368,7 @@ public class CsharpConfig : GeneratorConfigBase
     public virtual (Namespace Namespace, string ModelPath) GetMapperLocation((Class Class, ClassMappings Mapper) mapper, string tag)
     {
         var pmp = NoPersistence(tag) ? NonPersistentModelPath : PersistentModelPath;
-        if (MapperLocationPriority == Target.Persisted)
+        if (MapperLocationPriority == AnnotationConstraint.Persisted)
         {
             if (mapper.Class.IsPersistent)
             {

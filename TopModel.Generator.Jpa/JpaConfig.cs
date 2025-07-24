@@ -103,9 +103,9 @@ public class JpaConfig : GeneratorConfigBase
     public bool GeneratedHint { get; set; } = true;
 
     /// <summary>
-    /// Option pour générer une enum des champs des classes persistées
+    /// Option pour générer une enum des champs des classes persistées ou non persistées.
     /// </summary>
-    public Target FieldsEnum { get; set; } = Target.None;
+    public IEnumerable<AnnotationConstraint> FieldsEnum { get; set; } = [];
 
     /// <summary>
     /// Précise l'interface des fields enum générés.

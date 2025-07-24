@@ -2,7 +2,7 @@
 
 namespace TopModel.Core;
 
-public interface IPropertyContainer
+public interface IPropertyContainer : IAnnotationContainer
 {
     ModelFile ModelFile { get; }
 

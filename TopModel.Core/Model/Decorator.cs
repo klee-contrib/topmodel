@@ -4,7 +4,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public class Decorator : IAnnotationContainer, IPropertyContainer, IVariableContainer
+public class Decorator : IPropertyContainer, IVariableContainer
 {
 #nullable disable
     public LocatedString Name { get; set; }

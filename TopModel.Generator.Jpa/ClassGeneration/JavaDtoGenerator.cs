@@ -61,7 +61,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
             WriteToMappers(fw, classe, tag);
         }
 
-        if ((Config.FieldsEnum & Target.Dto) > 0)
+        if (Config.FieldsEnum.Contains(AnnotationConstraint.NonPersisted))
         {
             WriteFieldsEnum(fw, classe, tag);
         }

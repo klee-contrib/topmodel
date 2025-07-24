@@ -377,15 +377,15 @@
             "default": "true"
           },
           "fieldsEnum": {
-            "type": "string",
-            "description": "Option pour générer une enum des champs des classes persistées",
-            "default": "None",
-            "enum": [
-              "None",
-              "Persisted",
-              "Dto",
-              "Persisted_Dto"
-            ]
+            "type": "array",
+            "description": "Option pour générer une enum des champs des classes persistées ou non persistées",
+            "items": {
+              "type": "string",
+              "enum": [
+                "non-persisted",
+                "persisted"
+              ]
+            }
           },
           "fieldsEnumInterface": {
             "type": "string",

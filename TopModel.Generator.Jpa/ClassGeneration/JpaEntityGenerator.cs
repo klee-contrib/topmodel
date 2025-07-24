@@ -134,7 +134,7 @@ public class JpaEntityGenerator(ILogger<JpaEntityGenerator> logger, IFileWriterP
             WriteToMappers(fw, classe, tag);
         }
 
-        if ((Config.FieldsEnum & Target.Persisted) > 0)
+        if (Config.FieldsEnum.Contains(AnnotationConstraint.Persisted))
         {
             WriteFieldsEnum(fw, classe, tag);
         }

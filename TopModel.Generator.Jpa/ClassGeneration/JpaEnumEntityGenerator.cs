@@ -72,7 +72,7 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
             WriteToMappers(fw, classe, tag);
         }
 
-        if ((Config.FieldsEnum & Target.Persisted) > 0)
+        if (Config.FieldsEnum.Contains(AnnotationConstraint.Persisted))
         {
             WriteFieldsEnum(fw, classe, tag);
         }

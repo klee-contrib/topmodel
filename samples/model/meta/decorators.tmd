@@ -12,7 +12,8 @@ annotation:
       comment: Type de modification.
   java:
     - text: "@{change}Date"
-      target: Persisted
+      when:
+        - persisted
       imports:
         - org.springframework.data.annotation.{change}Date
 ---
@@ -21,6 +22,8 @@ annotation:
   description: Annotation pour EntityListeners.
   java:
     - text: EntityListeners(AuditingEntityListener.class)
+      when:
+        - persisted
       imports:
         - org.springframework.data.jpa.domain.support.AuditingEntityListener
         - jakarta.persistence.EntityListeners

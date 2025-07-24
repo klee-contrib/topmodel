@@ -3,7 +3,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public class Class : IPropertyContainer, IAnnotationContainer
+public class Class : IPropertyContainer
 {
     private string? _pluralName;
 

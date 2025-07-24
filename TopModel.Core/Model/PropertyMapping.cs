@@ -30,4 +30,8 @@ public class PropertyMapping : IPropertyContainer
     public IList<DecoratorInstance> Decorators => throw new NotImplementedException();
 
     public IList<DecoratorReference> DecoratorReferences => throw new NotImplementedException();
+
+    public IList<AnnotationInstance> Annotations => throw new NotImplementedException();
+
+    public IList<AnnotationReference> AnnotationReferences => throw new NotImplementedException();
 }

@@ -412,20 +412,27 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
     private bool FilterAnnotations(AnnotationImplementation annotation, IAnnotationContainer container, string tag)
     {
-        if (container is not IProperty property)
+        return annotation.When.All(ac => ac switch
         {
-            return true;
-        }
-
-        return property.Class != null && !property.Class.Abstract && (
-            (annotation.Target & Target.Dto) > 0 && !IsPersistent(property.Class, tag)
-            || (annotation.Target & Target.Persisted) > 0 && IsPersistent(property.Class, tag))
-        || (annotation.Target & Target.Api) > 0 && property.Endpoint != null;
+            AnnotationConstraint.NonPersisted =>
+                container is Endpoint
+                || container is Class c && !IsPersistent(c, tag)
+                || container is IProperty { Endpoint: not null }
+                || container is IProperty { Class: Class { Abstract: false } pc } && !IsPersistent(pc, tag),
+            AnnotationConstraint.Persisted =>
+                container is Class c && IsPersistent(c, tag)
+                || container is IProperty { Class: Class { Abstract: false } pc } && IsPersistent(pc, tag),
+            AnnotationConstraint.ClassProperty => container is IProperty { Class: Class { Abstract: false } pc },
+            AnnotationConstraint.EndpointParam => container is IProperty { Endpoint: Endpoint e } p && e.Params.Contains(p),
+            AnnotationConstraint.PrimaryKey => container is IProperty { PrimaryKey: true },
+            _ => true
+        });
     }
 
     private IEnumerable<(string Annotation, IEnumerable<string> Imports)> GetDecoratorAnnotations(IPropertyContainer container, Decorator decorator, IDictionary<string, string> parameters, string tag)
     {
-        foreach (var (implementation, annotation, annotationParameters) in decorator.Annotations.SelectMany(a => GetImplementation(a.Annotation).Select(i => (Implementation: i, a.Annotation, a.Parameters))))
+        foreach (var (implementation, annotation, annotationParameters) in decorator.Annotations.SelectMany(a => GetImplementation(a.Annotation).Select(i => (Implementation: i, a.Annotation, a.Parameters)))
+            .Where(f => FilterAnnotations(f.Implementation, container, tag)))
         {
             var resolvedParameters = annotationParameters.ToDictionary(p => p.Key, p => p.Value.ParseTemplate(container, decorator.TemplateParameters, parameters, this, tag));
             yield return (

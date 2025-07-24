@@ -2,20 +2,6 @@
   "$id": "topmodel.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
-    "target": {
-      "type": "string",
-      "description": "Cible de la génération",
-      "enum": [
-        "None",
-        "Persisted",
-        "Dto",
-        "Persisted_Dto",
-        "Api",
-        "Api_Persisted",
-        "Api_Dto",
-        "Api_Dto_Persisted"
-      ]
-    },
     "domain": {
       "oneOf": [
         {
@@ -639,8 +625,13 @@
                   "type": "string",
                   "description": "Annotation à ajouter. Peut contenir des variables"
                 },
-                "target": {
-                  "$ref": "#/definitions/target"
+                "when": {
+                  "type": "array",
+                  "description": "Contraintes sur l'objet cible de l'annotation à respecter pour que l'annotation soit posée dans le code généré.",
+                  "items": {
+                    "type": "string",
+                    "enum": [ "non-persisted", "persisted", "class-property", "endpoint-param", "primary-key" ]
+                  }
                 },
                 "imports": {
                   "type": "array",

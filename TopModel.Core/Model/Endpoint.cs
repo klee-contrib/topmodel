@@ -3,7 +3,7 @@ using TopModel.Utils;
 
 namespace TopModel.Core;
 
-public class Endpoint : IPropertyContainer, IAnnotationContainer
+public class Endpoint : IPropertyContainer
 {
     public Namespace Namespace { get; set; }
 

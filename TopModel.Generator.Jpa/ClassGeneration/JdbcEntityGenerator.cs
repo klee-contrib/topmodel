@@ -120,8 +120,8 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
             WriteToMappers(fw, classe, tag);
         }
 
-        if ((Config.FieldsEnum & Target.Persisted) > 0 && classe.IsPersistent
-            || (Config.FieldsEnum & Target.Dto) > 0 && !classe.IsPersistent)
+        if (Config.FieldsEnum.Contains(AnnotationConstraint.Persisted) && classe.IsPersistent
+            || Config.FieldsEnum.Contains(AnnotationConstraint.NonPersisted) && !classe.IsPersistent)
         {
             WriteFieldsEnum(fw, classe, tag);
         }

@@ -8,7 +8,9 @@ annotation:
   description: Email
   java:
     - text: "@Email"
-      target: Dto
+      when:
+        - class-property
+        - non-persisted
       imports:
         - jakarta.validation.constraints.Email
 ---

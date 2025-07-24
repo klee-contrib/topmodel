@@ -313,9 +313,9 @@ _(en preview, documentation à venir)_
 
 - `mapperLocationPriority`
 
-  Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persistent` ou `non-persistent`).
+  Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persisted` ou `non-persisted`).
 
-  _Valeur par défaut_: `persistent`
+  _Valeur par défaut_: `persisted`
 
 - `enumsForStaticReferences`
 
@@ -325,7 +325,7 @@ _(en preview, documentation à venir)_
 
 - `useRecords`
 
-  Utilise des records (mutables) au lieu de classes pour la génération de classes. Valeurs possibles : `true`, `false` et `dtos-only`.
+  Utilise des records (mutables) au lieu de classes pour la génération de classes.
 
   _Valeur par défaut_: `true`
 
