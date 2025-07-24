@@ -174,6 +174,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
                         if (checkSourceNull)
                         {
+                            mapperWithTarget.AddBodyLine(indent, $"}} else {{");
+                            mapperWithTarget.AddBodyLine(indent + 1, $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);");
                             mapperWithTarget.AddBodyLine(indent, $"}}");
                             mapperWithTarget.AddBodyLine();
                         }
