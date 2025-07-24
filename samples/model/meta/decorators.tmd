@@ -7,8 +7,11 @@ tags:
 annotation:
   name: LastDate
   description: Date de dernière création/modification
+  target:
+    - property
   parameters:
     - name: change
+      required: true
       comment: Type de modification.
   java:
     - text: "@{change}Date"
@@ -20,6 +23,8 @@ annotation:
 annotation:
   name: EntityListeners
   description: Annotation pour EntityListeners.
+  target:
+    - class
   java:
     - text: EntityListeners(AuditingEntityListener.class)
       when:
@@ -31,6 +36,8 @@ annotation:
 annotation:
   name: Security
   description: Ajoute une annotation de sécurité sur un endpoint.
+  target:
+    - endpoint
   parameters:
     - name: permission
       required: true

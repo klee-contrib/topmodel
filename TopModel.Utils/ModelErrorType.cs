@@ -263,6 +263,11 @@ public enum ModelErrorType
     TMD1043,
 
     /// <summary>
+    /// Impossible d'appliquer l'annotation '{annotationRef.ReferenceName}' à '{container}' : l'annotation ne cible pas le bon type d'objet.
+    /// </summary>
+    TMD1044,
+
+    /// <summary>
     /// Le flux de données est introuvable dans le fichier ou l'une de ses références.
     /// </summary>
     TMD2000,

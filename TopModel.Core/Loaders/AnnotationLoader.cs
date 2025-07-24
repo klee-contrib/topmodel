@@ -23,6 +23,9 @@ public class AnnotationLoader(FileChecker fileChecker) : ILoader<Annotation>
                 case "description":
                     annotation.Description = value!.Value;
                     break;
+                case "target":
+                    annotation.Target = fileChecker.Deserialize<IList<Target>>(parser);
+                    break;
                 case "parameters":
                     annotation.TemplateParameters = fileChecker.Deserialize<IList<TemplateParameter>>(parser);
                     foreach (var param in annotation.TemplateParameters)

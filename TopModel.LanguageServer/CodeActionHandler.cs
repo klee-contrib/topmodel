@@ -48,6 +48,9 @@ public class CodeActionHandler(ModelStore modelStore, ILanguageServerFacade faca
                     case ModelErrorType.TMD1008:
                         codeActions.AddRange(GetCodeActionMissingDecoratorImport(request, diagnostic, modelFile));
                         break;
+                    case ModelErrorType.TMD1040:
+                        codeActions.AddRange(GetCodeActionMissingAnnotationImport(request, diagnostic, modelFile));
+                        break;
                     case ModelErrorType.TMD2000:
                         codeActions.AddRange(GetCodeActionMissingDataFlowImport(request, diagnostic, modelFile));
                         break;
@@ -191,6 +194,13 @@ domain:
                 }
             };
         }).ToList();
+    }
+
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingAnnotationImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    {
+        var (decoratorName, useIndex) = GetImport(request, diagnostic, modelFile);
+        return modelStore.Annotations.Where(c => c.Name == decoratorName)
+            .Select(annotationToImport => GetFileImportAction(diagnostic, modelFile, annotationToImport.ModelFile, useIndex));
     }
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingClassImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)

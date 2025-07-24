@@ -71,7 +71,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     public IEnumerable<(string Annotation, IEnumerable<string> Imports)> GetAnnotations(IAnnotationContainer container, string tag)
     {
         foreach (var (implementation, annotation, parameters) in container.Annotations.SelectMany(a => GetImplementation(a.Annotation).Select(i => (Implementation: i, a.Annotation, a.Parameters))
-            .Where(a => FilterAnnotations(a.Implementation, container, tag))))
+            .Where(a => FilterAnnotations(a.Implementation, a.Annotation, container, tag))))
         {
             if (container is IProperty p)
             {
@@ -100,7 +100,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         if (container is IProperty { Domain: not null } property)
         {
             foreach (var (implementation, annotation, parameters) in property.Domain.Annotations.SelectMany(a => GetImplementation(a.Annotation).Select(i => (Implementation: i, a.Annotation, a.Parameters))
-               .Where(a => FilterAnnotations(a.Implementation, property, tag))))
+               .Where(a => FilterAnnotations(a.Implementation, a.Annotation, property, tag))))
             {
                 var resolvedParameters = parameters.ToDictionary(p => p.Key, p => p.Value.ParseTemplate(property, this, tag));
                 yield return (
@@ -410,9 +410,19 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         return $@"""{value}""";
     }
 
-    private bool FilterAnnotations(AnnotationImplementation annotation, IAnnotationContainer container, string tag)
+    private bool FilterAnnotations(AnnotationImplementation implementation, Annotation annotation, IAnnotationContainer container, string tag)
     {
-        return annotation.When.All(ac => ac switch
+        return (annotation.Target.Count == 0 || annotation.Target.Any(t => t switch
+        {
+            Target.Class => container is Class,
+            Target.Endpoint => container is Endpoint,
+            Target.Property => container is IProperty,
+            Target.AssociationProperty => container is AssociationProperty or AliasProperty { Property: AssociationProperty },
+            Target.CompositionProperty => container is CompositionProperty or AliasProperty { Property: CompositionProperty },
+            Target.RegularProperty => container is RegularProperty or AliasProperty { Property: RegularProperty },
+            _ => true
+        }))
+        && implementation.When.All(ac => ac switch
         {
             AnnotationConstraint.NonPersisted =>
                 container is Endpoint
@@ -432,7 +442,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
     private IEnumerable<(string Annotation, IEnumerable<string> Imports)> GetDecoratorAnnotations(IPropertyContainer container, Decorator decorator, IDictionary<string, string> parameters, string tag)
     {
         foreach (var (implementation, annotation, annotationParameters) in decorator.Annotations.SelectMany(a => GetImplementation(a.Annotation).Select(i => (Implementation: i, a.Annotation, a.Parameters)))
-            .Where(f => FilterAnnotations(f.Implementation, container, tag)))
+            .Where(a => FilterAnnotations(a.Implementation, a.Annotation, container, tag)))
         {
             var resolvedParameters = annotationParameters.ToDictionary(p => p.Key, p => p.Value.ParseTemplate(container, decorator.TemplateParameters, parameters, this, tag));
             yield return (

@@ -602,6 +602,14 @@
               "type": "string",
               "description": "Description de l'annotation."
             },
+            "target": {
+              "type": "array",
+              "description": "Si renseigné, limite les objets cibles possibles pour cette annotation à ceux listés ici.",
+              "items": {
+                "type": "string",
+                "enum": [ "class", "endpoint", "property", "regular-property", "association-property", "composition-property" ]
+              }
+            },
             "parameters": {
               "type": "array",
               "description": "Définitions de paramètres, utilisables dans les templates pour les implémentations.",
@@ -627,7 +635,7 @@
                 },
                 "when": {
                   "type": "array",
-                  "description": "Contraintes sur l'objet cible de l'annotation à respecter pour que l'annotation soit posée dans le code généré.",
+                  "description": "Si renseigné, pose des contraintes sur l'objet cible de l'annotation qu'il devra respecter pour qu'elle soit posée dans le code généré.",
                   "items": {
                     "type": "string",
                     "enum": [ "non-persisted", "persisted", "class-property", "endpoint-param", "primary-key" ]
