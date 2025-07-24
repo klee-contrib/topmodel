@@ -43,6 +43,7 @@ annotation:
 decorator:
   name: EntityListeners
   description: Date création
+  target: class
   annotations:
     - EntityListeners
 

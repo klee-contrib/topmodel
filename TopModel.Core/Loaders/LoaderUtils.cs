@@ -1,4 +1,6 @@
-﻿using TopModel.Core.FileModel;
+﻿using System.Reflection;
+using System.Runtime.Serialization;
+using TopModel.Core.FileModel;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
@@ -63,5 +65,20 @@ public static class LoaderUtils
         }
 
         parser.Consume<SequenceEnd>();
+    }
+
+    public static T? ParseEnum<T>(this string? value)
+        where T : struct, Enum
+    {
+        foreach (var field in typeof(T).GetFields())
+        {
+            var attribute = field.GetCustomAttribute<EnumMemberAttribute>();
+            if (attribute?.Value == value)
+            {
+                return (T)field.GetValue(null)!;
+            }
+        }
+
+        return null;
     }
 }

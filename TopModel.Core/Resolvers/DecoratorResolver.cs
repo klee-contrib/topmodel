@@ -126,12 +126,22 @@ internal class DecoratorResolver(ModelFile modelFile, ModelConfig config, IDicti
                             yield return new ModelError(container, $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à '{container}' : seul un 'extends' peut être spécifié.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1010 };
                         }
 
+                        var target = targetDecorator.Target;
+                        if (target == Target.Endpoint && container is Class || target == Target.Class && container is Endpoint || container is Decorator d && target != null && target != d.Target)
+                        {
+                            isError = true;
+                            yield return new ModelError(container, $"Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à '{container}' : le décorateur ne cible pas le bon type d'objet.", decoratorRef) { ModelErrorType = ModelErrorType.TMD1043 };
+                        }
+
                         foreach (var error in CheckDecoratorParameters(container, decoratorRef, targetDecorator))
                         {
                             yield return error;
                         }
 
-                        container.Decorators.Add(new(targetDecorator, decoratorRef.ParameterReferences.ToDictionary(pr => pr.Key.ReferenceName, pr => pr.Value.Value)));
+                        if (!isError)
+                        {
+                            container.Decorators.Add(new(targetDecorator, decoratorRef.ParameterReferences.ToDictionary(pr => pr.Key.ReferenceName, pr => pr.Value.Value)));
+                        }
                     }
                 }
             }

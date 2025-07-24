@@ -14,6 +14,8 @@ public class Decorator : IPropertyContainer, IVariableContainer
     public string NameCamel => Name.Value.ToCamelCase();
 
     public string Description { get; set; }
+
+    public Target? Target { get; set; }
 #nullable enable
 
     public Dictionary<string, DecoratorImplementation> Implementations { get; set; } = [];

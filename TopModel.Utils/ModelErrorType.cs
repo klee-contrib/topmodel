@@ -258,6 +258,11 @@ public enum ModelErrorType
     TMD1042,
 
     /// <summary>
+    /// Impossible d'appliquer le décorateur '{decoratorRef.ReferenceName}' à '{container}' : le décorateur ne cible pas le bon type d'objet.
+    /// </summary>
+    TMD1043,
+
+    /// <summary>
     /// Le flux de données est introuvable dans le fichier ou l'une de ses références.
     /// </summary>
     TMD2000,

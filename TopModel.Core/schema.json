@@ -831,6 +831,11 @@
               "type": "string",
               "description": "Description du décorateur."
             },
+            "target": {
+              "type": "string",
+              "description": "Si renseigné, limite l'usage de ce décorateur aux classes ou aux endpoints.",
+              "enum": [ "class", "endpoint" ]
+            },
             "preservePropertyCasing": {
               "type": "boolean",
               "description": "Garde les noms de propriétés tels quels lors de la génération, au lieu de les convertir dans le format du langage cible."

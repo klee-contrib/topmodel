@@ -27,6 +27,9 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                 case "preservePropertyCasing":
                     decorator.PreservePropertyCasing = value!.Value == "true";
                     break;
+                case "target":
+                    decorator.Target = value!.Value.ParseEnum<Target>();
+                    break;
                 case "decorators":
                     parser.ConsumeSequence(() =>
                     {
