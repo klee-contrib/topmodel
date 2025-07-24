@@ -50,10 +50,14 @@ public class SecuriteUtilisateurMappers {
 		target.setActif(utilisateur.getActif());
 		if (utilisateur.getProfil() != null) {
 			target.setProfilId(utilisateur.getProfil().getId());
+		} else {
+			target.setProfilId(null);
 		}
 
 		if (utilisateur.getTypeUtilisateur() != null) {
 			target.setTypeUtilisateurCode(utilisateur.getTypeUtilisateur().getCode());
+		} else {
+			target.setTypeUtilisateurCode(null);
 		}
 
 		target.setDateCreation(utilisateur.getDateCreation());
@@ -95,6 +99,8 @@ public class SecuriteUtilisateurMappers {
 		target.setActif(source.getActif());
 		if (source.getTypeUtilisateurCode() != null) {
 			target.setTypeUtilisateur(new TypeUtilisateur(source.getTypeUtilisateurCode()));
+		} else {
+			target.setTypeUtilisateur(null);
 		}
 
 		return target;
