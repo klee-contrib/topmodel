@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using TopModel.Core.FileModel;
 using TopModel.Utils;
 using YamlDotNet.Core.Events;
 
-namespace TopModel.Core;
+namespace TopModel.Core.FileModel;
 
 public class LocatedString(Scalar value) : IComparable
 {

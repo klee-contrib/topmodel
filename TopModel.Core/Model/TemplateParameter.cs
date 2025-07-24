@@ -1,4 +1,6 @@
-﻿namespace TopModel.Core;
+﻿using TopModel.Core.FileModel;
+
+namespace TopModel.Core.Model;
 
 public class TemplateParameter
 {

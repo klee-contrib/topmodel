@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
+using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Generator.Jpa.ClassGeneration;
 using TopModel.Utils;
@@ -233,7 +235,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         var getter = string.Empty;
         var imports = new List<string>();
         var getterName = JpaModelPropertyGenerator.GetGetterName(propertySource);
-        var converter = Config.GetConverter(propertySource.Domain, propertyTarget.Domain);
+        var converter = propertySource.Domain.GetConverter(propertyTarget.Domain);
         var targetType = JpaModelPropertyGenerator.GetPropertyType(propertyTarget);
         var collector = $"Collectors.to{targetType.Split('<').First()}()";
         if (converter != null && Config.GetImplementation(converter) != null)

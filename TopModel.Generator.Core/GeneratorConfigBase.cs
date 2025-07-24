@@ -1,8 +1,10 @@
 ﻿using System.Text.RegularExpressions;
 using Spectre.Console;
 using TopModel.Core;
+using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
-using TopModel.Core.Templating;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Core;
@@ -127,7 +129,7 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
 
     public string GetConvertedValue(string value, Domain? fromDomain, Domain? toDomain)
     {
-        var converter = GetConverter(fromDomain, toDomain);
+        var converter = fromDomain.GetConverter(toDomain);
         if (converter != null && fromDomain != null && toDomain != null)
         {
             var text = GetImplementation(converter)?.Text;
@@ -142,21 +144,11 @@ public abstract class GeneratorConfigBase : WatcherConfigBase
         return value;
     }
 
-    public Converter? GetConverter(Domain? fromDomain, Domain? toDomain)
-    {
-        if (fromDomain != null && toDomain != null && fromDomain != toDomain)
-        {
-            return fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
-        }
-
-        return null;
-    }
-
     public IEnumerable<string> GetConverterImports(Domain? fromDomain, Domain? toDomain)
     {
         if (fromDomain != null && toDomain != null && fromDomain != toDomain)
         {
-            var converter = GetConverter(fromDomain, toDomain);
+            var converter = fromDomain.GetConverter(toDomain);
             if (converter != null)
             {
                 var imports = GetImplementation(converter)?.Imports;

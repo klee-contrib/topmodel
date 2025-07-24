@@ -1,7 +1,8 @@
 ﻿using System.Text.RegularExpressions;
-using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 using YamlDotNet.Serialization;
@@ -236,7 +237,7 @@ public class CsharpConfig : GeneratorConfigBase
     {
         if (nullableValueType && fromDomain != null && toDomain != null)
         {
-            var converter = GetConverter(fromDomain, toDomain);
+            var converter = fromDomain.GetConverter(toDomain);
             if (converter != null)
             {
                 var text = GetImplementation(converter)?.Text;

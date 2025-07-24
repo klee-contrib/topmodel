@@ -2,6 +2,8 @@
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Core.Model;
+using TopModel.Core.Utils;
 
 namespace TopModel.LanguageServer;
 

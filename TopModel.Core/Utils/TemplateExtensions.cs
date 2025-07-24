@@ -1,7 +1,8 @@
 ﻿using System.Text.RegularExpressions;
+using TopModel.Core.Model;
 using TopModel.Utils;
 
-namespace TopModel.Core.Templating;
+namespace TopModel.Core.Utils;
 
 public static class TemplateExtensions
 {

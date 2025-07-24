@@ -1,4 +1,4 @@
-﻿using TopModel.Core;
+﻿using TopModel.Core.Model;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Javascript;

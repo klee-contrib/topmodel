@@ -1,6 +1,7 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Utils;
 
 public static class CoreUtils
 {

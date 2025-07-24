@@ -1,7 +1,7 @@
 ﻿#nullable disable
 using TopModel.Core.FileModel;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
 public class PropertyMapping : IPropertyContainer
 {

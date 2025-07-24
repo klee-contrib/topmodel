@@ -1,7 +1,8 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
 public class Class : IPropertyContainer
 {
@@ -84,7 +85,7 @@ public class Class : IPropertyContainer
 
     public string PluralNamePascal => PluralName.ToPascalCase();
 
-    public bool IsPersistent => Properties.Any(p => p.PrimaryKey) || (Extends != null && Extends.IsPersistent);
+    public bool IsPersistent => Properties.Any(p => p.PrimaryKey) || Extends != null && Extends.IsPersistent;
 
     public ClassReference? ExtendsReference { get; set; }
 
@@ -112,7 +113,7 @@ public class Class : IPropertyContainer
 
     internal IList<string> OwnTags { get; set; } = [];
 
-    public bool Inherit(Class classe) => this == classe || this.Extends != null && this.Extends.Inherit(classe);
+    public bool Inherit(Class classe) => this == classe || Extends != null && Extends.Inherit(classe);
 
     public override string ToString()
     {

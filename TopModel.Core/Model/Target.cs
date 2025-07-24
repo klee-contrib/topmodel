@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
 public enum Target
 {

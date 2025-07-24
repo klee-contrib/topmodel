@@ -1,7 +1,7 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Utils;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
 public interface IProperty : IAnnotationContainer
 {
@@ -54,7 +54,7 @@ public interface IProperty : IAnnotationContainer
         get
         {
             var prop = (this as AliasProperty)?.PersistentProperty ?? this;
-            var ap = (prop as AssociationProperty) ?? ((prop as AliasProperty)?.Property as AssociationProperty);
+            var ap = prop as AssociationProperty ?? (prop as AliasProperty)?.Property as AssociationProperty;
             var apPk = ap switch
             {
                 { Property: IProperty p } => p,
@@ -97,7 +97,7 @@ public interface IProperty : IAnnotationContainer
         get
         {
             var prop = (this as AliasProperty)?.PersistentProperty ?? this;
-            var ap = (prop as AssociationProperty) ?? ((prop as AliasProperty)?.Property as AssociationProperty);
+            var ap = prop as AssociationProperty ?? (prop as AliasProperty)?.Property as AssociationProperty;
             var apPk = ap switch
             {
                 { Property: IProperty p } => p,

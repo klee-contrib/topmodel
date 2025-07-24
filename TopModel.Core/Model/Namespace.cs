@@ -1,6 +1,6 @@
 ﻿using TopModel.Utils;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
 public struct Namespace
 {

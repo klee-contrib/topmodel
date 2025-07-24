@@ -1,7 +1,8 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model.Implementation;
+using TopModel.Core.Utils;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
 public class Converter : IVariableContainer
 {

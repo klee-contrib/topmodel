@@ -1,9 +1,8 @@
 ﻿using System.Text.RegularExpressions;
-using TopModel.Core.FileModel;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
-namespace TopModel.Core;
+namespace TopModel.Core.FileModel;
 
 public class StringWithVariables : LocatedString
 {

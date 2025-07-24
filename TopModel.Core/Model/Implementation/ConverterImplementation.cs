@@ -1,4 +1,6 @@
-﻿namespace TopModel.Core.Model.Implementation;
+﻿using TopModel.Core.FileModel;
+
+namespace TopModel.Core.Model.Implementation;
 
 public class ConverterImplementation
 {

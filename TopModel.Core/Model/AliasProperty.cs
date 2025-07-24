@@ -1,7 +1,7 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Utils;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
 public class AliasProperty : IProperty
 {
@@ -65,8 +65,8 @@ public class AliasProperty : IProperty
         ? Name
         : (Prefix?.ToFirstLower() ?? string.Empty)
             + (string.IsNullOrWhiteSpace(Prefix)
-                ? (_name?.ToCamelCase(strictIfUppercase: true) ?? _property?.NameCamel)
-                : (_name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NamePascal))
+                ? _name?.ToCamelCase(strictIfUppercase: true) ?? _property?.NameCamel
+                : _name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NamePascal)
             + (Suffix ?? string.Empty);
 
     public string NameByClassPascal => Class.IsPersistent ? (Prefix?.ToFirstUpper() ?? string.Empty)
@@ -75,8 +75,8 @@ public class AliasProperty : IProperty
 
     public string NameByClassCamel => Class.IsPersistent ? (Prefix?.ToFirstLower() ?? string.Empty)
             + (string.IsNullOrWhiteSpace(Prefix)
-                ? (_name?.ToCamelCase(strictIfUppercase: true) ?? _property?.NameByClassCamel)
-                : (_name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NameByClassPascal))
+                ? _name?.ToCamelCase(strictIfUppercase: true) ?? _property?.NameByClassCamel
+                : _name?.ToPascalCase(strictIfUppercase: true) ?? _property?.NameByClassPascal)
             + (Suffix ?? string.Empty) : NameCamel;
 
     public string? Label
@@ -105,7 +105,7 @@ public class AliasProperty : IProperty
         get
         {
             var domain = _domain ?? _property?.Domain;
-            return As != null ? (domain != null && domain.AsDomains.TryGetValue(As, out var asDomain) ? asDomain : null) : domain;
+            return As != null ? domain != null && domain.AsDomains.TryGetValue(As, out var asDomain) ? asDomain : null : domain;
         }
 
         set => _domain = value;
@@ -159,17 +159,17 @@ public class AliasProperty : IProperty
 
     public IProperty? OriginalProperty => _property;
 
-    public IProperty? PersistentProperty => (Class?.IsPersistent ?? false)
+    public IProperty? PersistentProperty => Class?.IsPersistent ?? false
         ? this
         : OriginalProperty is AliasProperty op
             ? op.PersistentProperty
-            : (OriginalProperty?.Class?.IsPersistent ?? false)
+            : OriginalProperty?.Class?.IsPersistent ?? false
                 ? OriginalProperty
                 : null;
 
     public bool AliasedPrimaryKey => (OriginalProperty is AliasProperty op
         ? op.PrimaryKey || op.AliasedPrimaryKey
-        : (OriginalProperty?.PrimaryKey ?? false))
+        : OriginalProperty?.PrimaryKey ?? false)
         && Prefix == null && Suffix == null;
 
     public AliasReference? Reference { get; set; }

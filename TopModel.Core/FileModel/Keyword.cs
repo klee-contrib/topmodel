@@ -1,6 +1,4 @@
-﻿using TopModel.Core.FileModel;
-
-namespace TopModel.Core;
+﻿namespace TopModel.Core.FileModel;
 
 #nullable disable
 
