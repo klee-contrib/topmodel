@@ -87,15 +87,6 @@ internal class DecoratorResolver(ModelFile modelFile, ModelConfig config, IDicti
             {
                 yield return new ModelError(decorator, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
             }
-
-            foreach (var templateParam in decorator.TemplateParameters.Where(p => !p.Required))
-            {
-                var index = decorator.TemplateParameters.IndexOf(templateParam);
-                if (decorator.TemplateParameters.Any(param => param.Required && decorator.TemplateParameters.IndexOf(param) > index))
-                {
-                    yield return new ModelError(decorator, $"Le paramètre facultatif '{templateParam.Name}' doit être positionné après tous les paramètres obligatoires.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD1037 };
-                }
-            }
         }
 
         foreach (var container in modelFile.PropertyContainers.Where(c => c.DecoratorReferences.Count > 0))

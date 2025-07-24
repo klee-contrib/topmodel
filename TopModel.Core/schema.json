@@ -610,6 +610,10 @@
                 "enum": [ "class", "endpoint", "property", "regular-property", "association-property", "composition-property" ]
               }
             },
+            "global": {
+              "type": "boolean",
+              "description": "Si renseigné, cette annotation sera automatiquement ajoutée à tous les objets ciblés par cette annotation dans le modèle. Le fichier contenant cette annotation sera également automatiquement ajouté en tant que dépendance de tous les fichiers du modèle."
+            },
             "parameters": {
               "type": "array",
               "description": "Définitions de paramètres, utilisables dans les templates pour les implémentations.",

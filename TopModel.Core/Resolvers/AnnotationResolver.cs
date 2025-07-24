@@ -53,23 +53,33 @@ public class AnnotationResolver(ModelFile modelFile, ModelConfig config, IDictio
                 yield return new ModelError(annotation, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
             }
 
-            foreach (var templateParam in annotation.TemplateParameters.Where(p => !p.Required))
+            if (annotation.TemplateParameters.Any() && annotation.Global)
             {
-                var index = annotation.TemplateParameters.IndexOf(templateParam);
-                if (annotation.TemplateParameters.Any(param => param.Required && annotation.TemplateParameters.IndexOf(param) > index))
-                {
-                    yield return new ModelError(annotation, $"Le paramètre facultatif '{templateParam.Name}' doit être positionné après tous les paramètres obligatoires.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD1037 };
-                }
+                yield return new ModelError(annotation, "Une annotation globale ne peut pas définir de paramètres.") { ModelErrorType = ModelErrorType.TMD1045 };
             }
         }
 
-        foreach (var container in modelFile.AnnotationContainers.Where(c => c.AnnotationReferences.Count > 0))
+        foreach (var container in modelFile.AnnotationContainers)
         {
             var annotationsToResolve = container is AliasProperty alp ? alp.OwnAnnotations : container.Annotations;
 
             annotationsToResolve.Clear();
 
             var isError = false;
+
+            foreach (var annotation in referencedAnnotations.Values.Where(a => a.Global))
+            {
+                if (annotation.Target.Count == 0 && container is not Decorator && container is not Domain && container is not AliasProperty
+                    || container is Class && annotation.Target.Contains(Target.Class)
+                    || container is Endpoint && annotation.Target.Contains(Target.Endpoint)
+                    || container is AssociationProperty && (annotation.Target.Contains(Target.Property) || annotation.Target.Contains(Target.AssociationProperty))
+                    || container is CompositionProperty && (annotation.Target.Contains(Target.Property) || annotation.Target.Contains(Target.CompositionProperty))
+                    || container is RegularProperty && (annotation.Target.Contains(Target.Property) || annotation.Target.Contains(Target.RegularProperty)))
+                {
+                    annotationsToResolve.Add(new(annotation, new Dictionary<string, string>()));
+                }
+            }
+
             foreach (var annotationRef in container.AnnotationReferences)
             {
                 if (!referencedAnnotations.TryGetValue(annotationRef.ReferenceName, out var annotation))

@@ -345,11 +345,14 @@ public class ModelStore : IDisposable
 
     private IEnumerable<ModelFile> GetDependencies(ModelFile modelFile)
     {
-        return modelFile.Uses
-            .Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
-            .Where(dep => dep != null)
-            .Concat(Files.Where(f => f != modelFile && f.Converters.Count > 0 && modelFile.Classes.Any(c => c.FromMappers.Count > 0 || c.ToMappers.Count > 0)))
-            .Concat(Files.Where(f => f != modelFile && f.Domains.Count > 0 && (modelFile.Domains.Count == 0 || modelFile.Domains.Any(d => d.AsDomainReferences.Count > 0))));
+        return [
+            ..modelFile.Uses
+                .Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
+                .Where(dep => dep != null),
+            ..Files.Where(f => f != modelFile && f.Converters.Count > 0 && modelFile.Classes.Any(c => c.FromMappers.Count > 0 || c.ToMappers.Count > 0)),
+            ..Files.Where(f => f != modelFile && f.Domains.Count > 0 && (modelFile.Domains.Count == 0 || modelFile.Domains.Any(d => d.AsDomainReferences.Count > 0))),
+            ..Files.Where(f => f != modelFile && f.Annotations.Where(a => a.Global).Any())
+        ];
     }
 
     private IEnumerable<ModelError> GetGlobalErrors()

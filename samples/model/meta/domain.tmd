@@ -6,6 +6,8 @@ tags: []
 annotation:
   name: Email
   description: Email
+  target:
+    - property
   java:
     - text: "@Email"
       when:

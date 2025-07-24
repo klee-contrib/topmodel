@@ -18,6 +18,8 @@ public class Annotation : IVariableContainer
 
     public IList<Target> Target { get; set; } = [];
 
+    public bool Global { get; set; }
+
     public IList<TemplateParameter> TemplateParameters { get; internal set; } = [];
 
     public Dictionary<string, IList<AnnotationImplementation>> Implementations { get; set; } = [];

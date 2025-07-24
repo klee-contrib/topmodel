@@ -228,11 +228,6 @@ public enum ModelErrorType
     TMD1036,
 
     /// <summary>
-    /// Les paramètres obligatoires doivent précéder tous les paramètres faculatifs.
-    /// </summary>
-    TMD1037,
-
-    /// <summary>
     /// Une association doit être de type 'oneToOne' pour être la clé primaire d'une classe.
     /// </summary>
     TMD1038,
@@ -266,6 +261,11 @@ public enum ModelErrorType
     /// Impossible d'appliquer l'annotation '{annotationRef.ReferenceName}' à '{container}' : l'annotation ne cible pas le bon type d'objet.
     /// </summary>
     TMD1044,
+
+    /// <summary>
+    /// Une annotation globale ne peut pas définir de paramètres.
+    /// </summary>
+    TMD1045,
 
     /// <summary>
     /// Le flux de données est introuvable dans le fichier ou l'une de ses références.

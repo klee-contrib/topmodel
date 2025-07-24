@@ -29,15 +29,6 @@ internal class DomainResolver(ModelFile modelFile, ModelConfig config, IDictiona
             {
                 yield return new ModelError(domain, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
             }
-
-            foreach (var templateParam in domain.TemplateParameters.Where(p => !p.Required))
-            {
-                var index = domain.TemplateParameters.IndexOf(templateParam);
-                if (domain.TemplateParameters.Any(param => param.Required && domain.TemplateParameters.IndexOf(param) > index))
-                {
-                    yield return new ModelError(domain, $"Le paramètre facultatif '{templateParam.Name}' doit être positionné après tous les paramètres obligatoires.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD1037 };
-                }
-            }
         }
     }
 
