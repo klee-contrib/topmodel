@@ -181,6 +181,25 @@ La valeur de `primaryKey` n'est **pas recopiée** depuis la définition de la pr
 
 La propriété `defaultValue` permet de définir une valeur par défaut sur toutes les propriétés hors composition. Elle sera être utilisée dans les définitions de classes et d'endpoints générés, à condition que la configuration du générateur en question ne spécifie pas `ignoreDefaultValues: true` (ce qui est le cas par défaut du générateur SQL). Les générateurs utiliseront les [templates de valeurs](./domains.md#templates-de-valeurs) associés à leur implémentation pour la génération.
 
+## Annotations
+
+Une propriété peut recevoir des [annotations](/model/annotations.md), qui seront ajoutées au code généré s'il y a bien une implémentation correspondante au language générée, et que le type d'objet ciblé correspond. Toute annotation ciblant `property` ou `XXX-property` peut être posée sur une propriété (ou son domaine), mais elle ne sera effectivement générée que si le type de propriété correspond (ou qu'elle cible `property`).
+
+```yaml
+properties:
+  - name: DateCreation
+    label: Date de création
+    required: true
+    defaultValue: now
+    domain: DO_DATE_HEURE
+    comment: Date de création de l'utilisateur.
+    annotations:
+      - LastDate:
+          change: Created
+```
+
+Un alias hérite des annotations de la propriété source, ainsi que de son type pour le ciblage. Un alias d'association pourra donc être ciblé par des annotations qui ciblent les associations. Les annotations renseignées sur l'alias lui même seront ajoutées aux annotations existantes.
+
 ## Autres informations de propriétés
 
 - `readonly` : Une propriété readonly ne pourra jamais être la cible d'un [mapper](/model/mappers.md), et ne sera pas ajoutée dans le setter unique d'une [classe abstraite](/model/classes.md#classe-abstraite)

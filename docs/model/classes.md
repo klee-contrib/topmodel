@@ -67,7 +67,7 @@ _Remarque : en particulier, une classe enum, une classe de référence, une clas
 
 ## Décorateurs et mappers
 
-Une classe peut implémenter des **[décorateurs](/model/decorators.md)** et définir des **[mappers](/model/mappers.md)**.
+Une classe peut implémenter des **[annotations](/model/annotations.md)**, des **[décorateurs](/model/decorators.md)** et définir des **[mappers](/model/mappers.md)**.
 
 ## Tags d'une classe
 

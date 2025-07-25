@@ -15,26 +15,27 @@ domain:
   scale: # Nombre de décimales du champ, si applicable.
   asDomains:
     list: DO_ID_LIST # Domaine a utiliser s'il faut transformer le domaine du champ en 'list'.
+  annotations: # Liste d'annotations à devoir ajouter à toute propriété de ce domaine.
   csharp:
     type: int?
-    annotations: # Liste d'annotations à devoir ajouter à toute propriété de ce domaine, si applicable.
-    imports: # Liste d'imports à devoir ajouter à la définition d'une classe qui utilise ce domaine, si applicable.
+    imports: # Liste d'imports à devoir ajouter à la définition d'une classe qui utilise ce domaine.
   ts:
     type: number
-    imports:
-      -  # Chemin de l'import à ajouter pour utiliser le type, si applicable.
+    imports: # Liste d'imports à devoir ajouter à la définition d'une classe qui utilise ce domaine.
   java:
     type: Integer
-    imports: # Chemin des imports à ajouter pour utiliser le type, si applicable.
+    imports: # Liste d'imports à devoir ajouter à la définition d'une classe qui utilise ce domaine.
   sql:
     type: int
 ```
+
+Il n'y a pas besoin de préciser les dépendances aux fichiers contenant des domaines dans `uses` : tous les domaines sont automatiquement accessibles dans tous les fichiers. En revanche, cela implique que tous les fichiers ont une dépendance implicite à tous les fichiers contenant des domaines, ce qui pourrait entraîner des dépendances circulaires entre fichiers (qui ne sont **pas** supportées) involontaires. Par conséquent, et également par soucis de clarté, **il est fortement conseillé de définir tous les domaines dans un unique fichier qui ne contient que ces définitions**.
 
 Toutes les définitions de langage suivent un format standard, quel que soit le langage utilisé. Chaque configuration de générateur sélectionne une implémentation de domaine adaptée à son langage, comme `csharp`, `java`, `ts`, `sql`, etc. Bien que chaque générateur ait un langage par défaut, il est possible de le modifier en utilisant l'attribut `language` dans la configuration du générateur. Cet attribut accepte une liste de valeurs, permettant ainsi de définir un ordre de priorité pour les langages d'implémentation. Par exemple, si l'attribut `language` est défini comme `[java21, java8]`, le générateur utilisera `java21` s'il est disponible pour le domaine ; sinon, il utilisera `java8`.
 
 Naturellement, il n'est pas nécessaire de spécifier les langages pour lesquels le domaine n'est pas utilisé (et c'est évidemment obligatoire sinon).
 
-Il n'y a pas besoin de préciser les dépendances aux fichiers contenant des domaines dans `uses` : tous les domaines sont automatiquement accessibles dans tous les fichiers. En revanche, cela implique que tous les fichiers ont une dépendance implicite à tous les fichiers contenant des domaines, ce qui pourrait entraîner des dépendances circulaires entre fichiers (qui ne sont **pas** supportées) involontaires. Par conséquent, et également par soucis de clarté, **il est fortement conseillé de définir tous les domaines dans un unique fichier qui ne contient que ces définitions**.
+Un domaine peut recevoir des [annotations](/model/annotations.md), qui seront posées sur toutes les propriétés de ce domaine.
 
 Il est possible de définir le `mediaType` du domaine. Cette information pourra être prise en compte par certains générateurs (notamment les générateurs d'API).
 
@@ -74,73 +75,20 @@ domain:
   label: Code
   ts:
     type: number[]
-    genericType: "{type}[]"
+    genericType: "{T}[]"
   csharp:
     type: int[]
-    genericType: "{type}[]"
+    genericType: "{T}[]"
   java:
     type: List<int>
-    genericType: List<{type}>
+    genericType: List<{T}>
     imports:
       - java.util.List
 ```
 
-## Templating
+## Templating et paramètres
 
-Il est possible que certaines propriétés des domaines dépendent de la propriété sur laquelle vous l'ajoutez. Vous pourriez par exemple ajouter une annotation `@Label` dans le code `java` qui aurait besoin du libelle renseigné dans TopModel.
-
-Pour utiliser un attribut de la propriété dans le domaine, il suffit de référencer cette propriété entre accolades :
-
-```yaml
----
-domain:
-  name: DO_ID
-  label: Identifiant
-  java:
-    type: Integer
-    annotations:
-      - text: @Label(\"{label}\")
-        imports:
-          - topmodel.sample.custom.annotation.Label
-```
-
-Le code généré sera ainsi différent selon la propriété sur laquelle vous allez effectivement ajouter ce domaine
-
-Actuellement il est possible d'utiliser ces variables
-
-- `name`
-- `trigram`
-- `label`
-- `comment`
-- `required`
-- `resourceKey`
-- `defaultValue`
-- `customProperties.*`
-- `class.*` ou `parent.*` ou `endpoint.*` : permet d'accéder à toutes les variables accessibles dans les templates de classe, pour l'objet parent de la propriété (la classe ou le endpoint)
-- `domain.*` permet d'accéder à toutes les variables accessibles dans les templates de domaine, pour le domain de la propriété (plus utile pour les décorateurs...)
-
-Dans le cadre d'une composition, il est possible d'utiliser ces variables :
-
-- `name`
-- `label`
-- `comment`
-- `composition.*` : permet d'accéder à toutes les variables accessibles dans les templates de classe, pour la classe qui fait l'objet de la composition
-
-Il est également possible d'utiliser n'importe quelle variable définie dans la configuration (dans `variables` ou `tagVariables`).
-
-Le tout dans les propriétés d'implémentation :
-
-- `type`
-- `annotations`
-- `imports`
-
-Les templates des domaines des propriétés sont également valorisés. Ces variables s'ajoutent à la variable `{T}` utilisée dans les types génériques.
-
-Vous pouvez également utiliser des [transformations](/model/templating.md#transformations) sur vos différentes variables, par exemple pour modifier la casse de leur valeur.
-
-### Paramètres
-
-Il est également possible de définir des paramètres sur un domaine, qui pourront être utilisés dans les templates :
+Comme pour les décorateurs et les annotations, il est possible d'utiliser du [templating](/model/templating.md) dans les annotations, et de définir des paramètres :
 
 ```yaml
 domain:
@@ -153,8 +101,7 @@ domain:
       defaultValue: Test
       comment: Deuxième paramètre.
   csharp:
-    annotations:
-      - text: MyAnnotation("{param1}", "{param2}"))
+    type: GenericType<{param1}, {param2}>
 ```
 
 Ces paramètres pourront être passés lorsqu'on associe un domaine à une propriété, en passant un objet `{name, parameters}` au lieu du nom du domaine :
@@ -164,39 +111,20 @@ properties:
   - name: MyProperty
     domain:
       name: DO_CODE
-      parameters: ["Param1", "Param2"]
+      parameters:
+        param1: Type1
+        param2: Type2
 ```
 
 Tous les paramètres passés doivent être définis au prélable sur le domaine. Les paramètres obligatoires doivent être renseignés avec le domaine, et les paramètres non renseignés le seront avec leur `defaultValue` (qui vaut `""` si non renseignée).
 
-## Spécialisation des annotations
+Les variables (en) et paramètres sont utilisables :
 
-Les annotations peuvent être spécialisées selon la cible de la génération. Il y a actuellement trois cibles possibles, qui sont composables. La propriété `target` de l'annotation peut donc prendre les valeurs suivantes :
-
-- `Persisted`
-- `Dto`
-- `Persisted_Dto`
-- `Api`
-- `Api_Persisted`
-- `Api_Dto`
-- `Api_Dto_Persisted`
-
-Ainsi, les annotations `Dto` ne seront ajoutées que pour les classes non persistées, les annotations `Persisted` ne seront ajoutées que pour les classes persistées etc. Par défaut, la valeur est `Persisted-Dto`.
-
-Ex :
-
-```yaml
-domain:
-  name: DO_ID
-  label: Identifiant
-  java:
-    type: Integer
-    annotations:
-      - text: '@Label("{label:lower}")'
-        imports:
-          - topmodel.sample.custom.annotation.Label
-        target: Dto
-```
+- Dans les paramètres d'annotations
+- Dans les propriétés d'implémentations suivantes :
+  - `type`
+  - `genericType` (qui autorise aussi `{T}` comme vu précédemment)
+  - `imports`
 
 ## Templates de valeurs
 
