@@ -43,9 +43,30 @@ public class AnnotationResolver(ModelFile modelFile, ModelConfig config, IDictio
 
             foreach (var varName in annotation.VariableReferences)
             {
-                if (varName.ReferenceName.TryGetPropertyVariable(config, annotation.TemplateParameters, out var variable))
+                Variable? variable = null;
+
+                if (annotation.Target.Count == 0 || annotation.Target.Contains(Target.Property) || annotation.Target.Contains(Target.AssociationProperty) || annotation.Target.Contains(Target.CompositionProperty) || annotation.Target.Contains(Target.RegularProperty))
+                {
+                    varName.ReferenceName.TryGetPropertyVariable(config, annotation.TemplateParameters, out variable);
+                }
+
+                if (annotation.Target.Count == 0 || annotation.Target.Contains(Target.Class))
+                {
+                    varName.ReferenceName.TryGetClassVariable(config, annotation.TemplateParameters, out variable);
+                }
+
+                if (annotation.Target.Count == 0 || annotation.Target.Contains(Target.Endpoint))
+                {
+                    varName.ReferenceName.TryGetEndpointVariable(config, annotation.TemplateParameters, out variable);
+                }
+
+                if (variable != null)
                 {
                     annotation.Variables.TryAdd(varName.ReferenceName, variable);
+                }
+                else
+                {
+                    yield return new ModelError(ErrorType.TMD0011, annotation, $"La variable '{varName.ReferenceName}' est introuvable.", varName, isError: false);
                 }
             }
 

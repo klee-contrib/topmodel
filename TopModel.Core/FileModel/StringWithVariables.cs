@@ -10,12 +10,14 @@ public class StringWithVariables : LocatedString
         : base(value)
     {
         var isQuoted = value.Style == ScalarStyle.SingleQuoted || value.Style == ScalarStyle.DoubleQuoted ? 1 : 0;
+        char? quote = value.Style == ScalarStyle.SingleQuoted ? '\'' : value.Style == ScalarStyle.DoubleQuoted ? '"' : null;
+
         var regex = new Regex(@"(\{[$a-zA-Z0-9:.\[\]]+\})");
 
         References = regex.Matches(Value).Cast<Match>()
             .SelectMany(match =>
             {
-                var start = new Mark(Location.Start.Index, Location.Start.Line, Location.Start.Column + isQuoted + match.Index + 1);
+                var start = new Mark(Location.Start.Index, Location.Start.Line, Location.Start.Column + isQuoted + match.Index + Value[0..match.Index].Count(c => c == quote) + 1);
                 Mark end;
 
                 return match.Value.Trim('{', '}').Split(':').Select((refName, i) =>

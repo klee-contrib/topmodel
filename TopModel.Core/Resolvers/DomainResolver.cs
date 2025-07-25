@@ -49,6 +49,10 @@ internal class DomainResolver(ModelFile modelFile, ModelConfig config, IDictiona
                 {
                     converter.Variables.TryAdd(varName.ReferenceName, variable);
                 }
+                else
+                {
+                    yield return new ModelError(ErrorType.TMD0011, converter, $"La variable '{varName.ReferenceName}' est introuvable.", varName, isError: false);
+                }
             }
 
             converter.From.Clear();
@@ -98,7 +102,8 @@ internal class DomainResolver(ModelFile modelFile, ModelConfig config, IDictiona
     /// Résout les variables dans les domaines.
     /// </summary>
     /// <param name="config">Config.</param>
-    public void ResolveDomainVariables()
+    /// <returns>Erreurs.</returns>
+    public IEnumerable<ModelError> ResolveDomainVariables()
     {
         foreach (var domain in modelFile.Domains)
         {
@@ -109,6 +114,10 @@ internal class DomainResolver(ModelFile modelFile, ModelConfig config, IDictiona
                 if (varName.ReferenceName.TryGetPropertyVariable(config, domain.TemplateParameters, out var variable))
                 {
                     domain.Variables.TryAdd(varName.ReferenceName, variable);
+                }
+                else
+                {
+                    yield return new ModelError(ErrorType.TMD0011, domain, $"La variable '{varName.ReferenceName}' est introuvable.", varName, isError: false);
                 }
             }
         }

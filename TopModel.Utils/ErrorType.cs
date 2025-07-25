@@ -59,6 +59,11 @@ public enum ErrorType
     /// </summary>
     TMD0010,
 
+    /// <summary>
+    /// La variable {varName.ReferenceName} est introuvable.
+    /// </summary>
+    TMD0011,
+
     #endregion
 
     #region Erreurs de fichiers (1)

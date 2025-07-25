@@ -73,14 +73,25 @@ internal class DecoratorResolver(ModelFile modelFile, ModelConfig config, IDicti
 
             foreach (var varName in decorator.VariableReferences)
             {
-                if (varName.ReferenceName.TryGetClassVariable(config, decorator.TemplateParameters, out var cVariable))
+                Variable? variable = null;
+
+                if (decorator.Target != Target.Endpoint)
                 {
-                    decorator.Variables.TryAdd(varName.ReferenceName, cVariable);
+                    varName.ReferenceName.TryGetClassVariable(config, decorator.TemplateParameters, out variable);
                 }
 
-                if (varName.ReferenceName.TryGetEndpointVariable(config, decorator.TemplateParameters, out var eVariable))
+                if (decorator.Target != Target.Class)
                 {
-                    decorator.Variables.TryAdd(varName.ReferenceName, eVariable);
+                    varName.ReferenceName.TryGetEndpointVariable(config, decorator.TemplateParameters, out variable);
+                }
+
+                if (variable != null)
+                {
+                    decorator.Variables.TryAdd(varName.ReferenceName, variable);
+                }
+                else
+                {
+                    yield return new ModelError(ErrorType.TMD0011, decorator, $"La variable '{varName.ReferenceName}' est introuvable.", varName, isError: false);
                 }
             }
 

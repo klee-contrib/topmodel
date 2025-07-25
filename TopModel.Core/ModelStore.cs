@@ -611,7 +611,10 @@ public class ModelStore : IDisposable
         var mapperResolver = new MapperResolver(modelFile, referencedClasses, Converters, _config.UseLegacyAssociationCompositionMappers);
         var propertyResolver = new PropertyResolver(modelFile, Domains, referencedClasses, referencedEndpoints, referencedDecorators);
 
-        domainResolver.ResolveDomainVariables();
+        foreach (var error in domainResolver.ResolveDomainVariables())
+        {
+            yield return error;
+        }
 
         foreach (var error in domainResolver.ResolveAsDomains())
         {
