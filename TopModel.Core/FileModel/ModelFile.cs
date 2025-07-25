@@ -56,11 +56,11 @@ public class ModelFile
 
     public IDictionary<Reference, object> References =>
         Domains.SelectMany(d => d.AsDomains.Keys.Select(adn => d.AsDomainReferences.TryGetValue(adn, out var adr) && d.AsDomains.TryGetValue(adn, out var ad) ? (adr as Reference, ad as object) : (null, null)))
-        .Concat(AnnotationContainers.SelectMany(d => d.AnnotationReferences.Select(ar => (ar as Reference, d.Annotations.FirstOrDefault(d => d.Annotation.Name == ar.ReferenceName) as object))))
+        .Concat(AnnotationContainers.SelectMany(d => d.AnnotationReferences.Select(ar => (ar as Reference, d.Annotations.Select(a => a.Annotation).FirstOrDefault(d => d.Name == ar.ReferenceName) as object))))
         .Concat(AnnotationContainers.SelectMany(d => d.AnnotationReferences.SelectMany(ar => ar.ParameterReferences.Keys.Select((pr, i) => (pr as Reference, d.Annotations.FirstOrDefault(d => d.Annotation.Name == ar.ReferenceName)?.Annotation.TemplateParameters.ElementAtOrDefault(i) as object)))))
         .Concat(VariableContainers.SelectMany(d => d.VariableReferences.Select(pr => (pr as Reference, d.Variables.TryGetValue(pr.ReferenceName, out var variable) ? variable as object : null))))
         .Concat(VariableContainers.SelectMany(d => d.TransformReferences).Select(tr => (tr as Reference, new Variable { Description = "Transformation de variable" } as object)))
-        .Concat(PropertyContainers.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName) as object))))
+        .Concat(PropertyContainers.SelectMany(c => c.DecoratorReferences.Select(dr => (dr as Reference, c.Decorators.Select(d => d.Decorator).FirstOrDefault(d => d.Name == dr.ReferenceName) as object))))
         .Concat(PropertyContainers.SelectMany(c => c.DecoratorReferences.SelectMany(dr => dr.ParameterReferences.Keys.Select((pr, i) => (pr as Reference, c.Decorators.FirstOrDefault(d => d.Decorator.Name == dr.ReferenceName)?.Decorator.TemplateParameters.ElementAtOrDefault(i) as object)))))
         .Concat(Classes.Select(c => (c.ExtendsReference as Reference, c.Extends as object)))
         .Concat(Endpoints.SelectMany(e => e.Route.Variables.Select(pr => (pr as Reference, e.Params.FirstOrDefault(p => p.GetParamName() == pr.ReferenceName) as object))))

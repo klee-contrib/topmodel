@@ -153,7 +153,7 @@ public class {className} : Controller
                 wd.AppendLine($@"{indent}[Produces(""{mediaType}"")]");
             }
 
-            foreach (var annotation in Config.GetAnnotations(endpoint, tag))
+            foreach (var (annotation, _) in Config.GetAnnotations(endpoint, tag))
             {
                 wd.AppendLine($"{indent}[{annotation}]");
             }
