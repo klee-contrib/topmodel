@@ -12,22 +12,18 @@ Ces propriétés sont ensuite recopiées sur les classes, les endpoints (en tant
 
 Elles sont ajoutées en dernier dans la liste des propriétés de la classe ou du décorateur, et en dernier dans les paramètres de l'endpoint (attention du coup à l'erreur de doublon de nom de propriété qui s'affichera sur la propriété du décorateur...)
 
-Lorsqu'un décorateur avec d'autres décorateurs sera appliqué sur une classe ou un endpoint, l'ensemble des propriétés, des interfaces, des annotations et des imports de toute la "hiérarchie" de décorateur sera bien pris en compte.
+Lorsqu'un décorateur avec d'autres décorateurs sera appliqué sur une classe ou un endpoint, l'ensemble des propriétés, des interfaces et des imports de toute la "hiérarchie" de décorateur sera bien pris en compte.
 
 ## Exemple pour une classe
 
-En Java, nous pouvons ajouter le décorateur EntityListener, pour ajouter l'annotation `EntityListeners` et les imports y afférent :
+En Java, nous pouvons ajouter le décorateur EntityListener, pour ajouter l'[annotation](/model/annotations.md) `EntityListeners` et les propriétés liées :
 
 ```yaml
 decorator:
   name: EntityListeners
   description: Entity Listener pour suivre les évènements de création et de modification
-  java:
-    annotations:
-      - EntityListeners(AuditingEntityListener.class)
-    imports:
-      - org.springframework.data.jpa.domain.support.AuditingEntityListener
-      - jakarta.persistence.EntityListeners
+  annotations:
+    - EntityListeners
   properties:
     - name: dateCreation
       comment: Date de création de l'utilisateur
@@ -91,9 +87,9 @@ decorator:
     - name: policy
       required: true
       comment: Policy d'autorisation.
-  csharp:
-    annotations:
-      - Authorize("{policy}") # Le templating est décrit dans la section suivante.
+  annotations:
+    - Authorize:
+        policy: "{policy}"
   properties:
     - name: AdditionalParam
       domain: DO_BOOLEEN
@@ -105,7 +101,8 @@ endpoint:
   route: /
   description: Get
   decorators:
-    - Authorize: ["interne"] # Les paramètres sont décrits dans la section suivante.
+    - Authorize:
+        policy: interne # Les paramètres sont décrits dans la section suivante.
 ```
 
 Cela générera la route suivante dans un contrôleur :
@@ -125,92 +122,9 @@ _Remarque : les décorateurs d'endpoints ne fonctionnent que pour la génératio
 
 _Remarque 2 : `extends`, `implements` et `generateInterface` ne sont évidemment pas utilisés lorsqu'un endpoint est décoré_
 
-## Templating
+## Templating et paramètres
 
-### Variables
-
-Il est possible que certaines propriétés des décorateurs dépendent de la classe sur laquelle vous l'ajoutez. Vous pourriez par exemple ajouter une interface `java` générique de la classe sur laquelle est ajouté le décorateur.
-
-```java
-/**
- * Utilisateur de l'application.
- */
-@Generated("TopModel : https://github.com/klee-contrib/topmodel")
-@Entity
-@Table(name = "UTILISATEUR")
-@EntityListeners(AuditingEntityListener.class)
-public class Utilisateur implements MonInterface<Utilisateur> {
-}
-```
-
-Ici nous pourrions écrire un décorateur `MonInterfaceUtilisateur` :
-
-```yaml
-decorator:
-  name: MonInterfaceUtilisateur
-  description: Implémente MonInterface pour la classe utilisateur
-  java:
-    annotations:
-      - MonInterface<Utilisateur>
-```
-
-Cela pose un problème évident : ce décorateur n'est utilisable que pour cette classe là.
-Mais TopModel permet de gérer ce type de cas, et de créer des décorateurs plus génériques avec des `templates`.
-
-TopModel peut remplacer la chaîne de caractère `{name}` par le nom de la classe sur lequel est ajouté le générateur. Ainsi :
-
-```yaml
-decorator:
-  name: MonInterface
-  description: Implémente MonInterface pour la classe sur laquelle ce décorateur est ajouté
-  java:
-    implements:
-      - MonInterface<{name}>
-```
-
-Permet de généraliser le comportement du décorateur `MonInterface` à toutes les classes qui voudraient l'utiliser.
-
-Actuellement, il est possible d'utiliser ces variables dans une classe :
-
-- `trigram`
-- `name`
-- `sqlName`
-- `comment`
-- `label`
-- `pluralName`
-- `module`
-- `customProperties.*`
-- `primaryKey.*` permet d'accéder à toutes les variables accessibles dans les templates de propriété, pour la clé primaire de la classe qui fait l'objet du décorateur
-- `properties[i]` permet d'accéder à toutes les variables accessibles dans les templates de propriété, pour la ième propriété de la classe qui fait l'objet du décorateur
-- `extends` permet d'accéder à toutes les variables accessibles dans les templates de calsse, pour la classe parente de la classe qui fait l'objet du décorateur
-
-Et ces variables dans un endpoint :
-
-- `name`
-- `description`
-- `route`
-- `method`
-- `module`
-- `customProperties.*`
-- `returns.*` permet d'accéder à toutes les variables accessibles dans les templates de propriété, pour la propriété définie dans le `returns` du endpoint
-- `params[i].*` permet d'accéder à toutes les variables accessibles dans les templates de propriété, pour le ième param du endpoint qui fait l'objet du décorateur
-
-Dans les propriétés d'implémentation :
-
-- `annotations`
-- `implements`
-- `extends`
-- `imports`
-
-Il est également possible d'utiliser n'importe quelle variable définie dans la configuration (dans `variables` ou `tagVariables`).
-
-Les templates des domaines des propriétés sont également valorisés.
-
-Vous pouvez également utiliser des [transformations](/model/templating.md#transformations) sur vos différentes variables, par exemple pour modifier la casse de leur valeur.
-
-### Paramètres
-
-Il est également possible de définir des paramètres sur un décorateur, qui pourront être utilisés dans les templates :
+Comme pour les domaines et les annotations, il est possible d'utiliser du [templating](/model/templating.md) dans les annotations, et de définir des paramètres :
 
 ```yaml
 decorator:
@@ -233,8 +147,18 @@ Ces paramètres pourront être passés lors de l'instanciation du décorateur :
 class:
   name: MyClass
   decorators:
-    - MyDecorator: ["Param1", "Param2"]
+    - MyDecorator:
+        param1: test
+        param2: hello
     - OtherDecorator
 ```
 
 Tous les paramètres passés doivent être définis au prélable sur le décorateur. Les paramètres obligatoires doivent être renseignés avec le décorateur, et les paramètres non renseignés le seront avec leur `defaultValue` (qui vaut `""` si non renseignée).
+
+Les variables et paramètres sont utilisables :
+
+- Dans les paramètres d'annotations
+- Dans les propriétés d'implémentations suivantes :
+  - `implements`
+  - `extends`
+  - `imports`

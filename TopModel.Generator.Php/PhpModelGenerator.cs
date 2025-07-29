@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core;
+using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -41,8 +42,8 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
 
         WriteAttributes(fw, classe, tag);
 
-        var extends = Config.GetClassExtends(classe);
-        var implements = Config.GetClassImplements(classe);
+        var extends = Config.GetClassExtends(classe, tag);
+        var implements = Config.GetClassImplements(classe, tag);
 
         fw.WriteClassDeclaration(classe.NamePascal, null, extends, implements);
 
@@ -79,7 +80,7 @@ public class PhpModelGenerator(ILogger<PhpModelGenerator> logger, IFileWriterPro
             }
         }
 
-        foreach (var a in Config.GetDecoratorAnnotations(classe, tag))
+        foreach (var (a, _) in Config.GetAnnotations(classe, tag))
         {
             fw.WriteLine(a);
         }

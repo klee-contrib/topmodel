@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
-using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
 using TopModel.Generator.Core;
 using TopModel.Utils;
@@ -103,9 +103,9 @@ public class JpaConfig : GeneratorConfigBase
     public bool GeneratedHint { get; set; } = true;
 
     /// <summary>
-    /// Option pour générer une enum des champs des classes persistées
+    /// Option pour générer une enum des champs des classes persistées ou non persistées.
     /// </summary>
-    public Target FieldsEnum { get; set; } = Target.None;
+    public IEnumerable<AnnotationConstraint> FieldsEnum { get; set; } = [];
 
     /// <summary>
     /// Précise l'interface des fields enum générés.
@@ -254,7 +254,7 @@ public class JpaConfig : GeneratorConfigBase
 
     public IEnumerable<JavaAnnotation> GetDomainJavaAnnotations(IProperty property, string tag)
     {
-        return GetDomainAnnotationsAndImports(property, tag).Select(a =>
+        return GetAnnotations(property, tag).Select(a =>
         {
             return new JavaAnnotation(name: a.Annotation, imports: a.Imports.ToArray());
         });

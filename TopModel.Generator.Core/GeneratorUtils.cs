@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using TopModel.Core;
+using TopModel.Core.Model;
 
 namespace TopModel.Generator.Core;
 

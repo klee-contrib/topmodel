@@ -1,8 +1,9 @@
 ﻿using System.Text;
 using TopModel.Core.FileModel;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
 public class AssociationProperty : IProperty
 {
@@ -65,6 +66,10 @@ public class AssociationProperty : IProperty
     public bool Readonly { get; set; }
 
     public string? DefaultValue { get; set; }
+
+    public IList<AnnotationInstance> Annotations { get; private set; } = [];
+
+    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
     public Dictionary<string, string> CustomProperties { get; private set; } = [];
 
@@ -164,13 +169,15 @@ public class AssociationProperty : IProperty
 
     public Domain Domain => Type.IsToMany() && (Property?.Domain?.AsDomains.TryGetValue(As, out var ld) ?? false) ? ld : Property?.Domain!;
 
-    public IList<string> DomainParameters => Property?.DomainParameters ?? [];
+    public Dictionary<string, string> DomainParameters => Property?.DomainParameters ?? [];
 
     public bool PrimaryKey { get; set; }
 
     public Decorator? SourceDecorator { get; set; }
 
     public Reference? PropertyReference { get; set; }
+
+    public DomainReference? DomainReference => null;
 
 #nullable disable
     public ClassReference Reference { get; set; }
@@ -201,7 +208,8 @@ public class AssociationProperty : IProperty
             Readonly = Readonly,
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName,
-            CustomProperties = CustomProperties
+            CustomProperties = CustomProperties,
+            Annotations = Annotations
         };
     }
 

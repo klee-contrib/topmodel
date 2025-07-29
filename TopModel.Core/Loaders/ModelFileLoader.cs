@@ -1,11 +1,12 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using TopModel.Utils;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class ModelFileLoader(ModelConfig config, ClassLoader classLoader, DataFlowLoader dataFlowLoader, FileChecker fileChecker, DecoratorLoader decoratorLoader, ConverterLoader converterLoader, EndpointLoader endpointLoader, DomainLoader domainLoader)
+public class ModelFileLoader(ModelConfig config, AnnotationLoader annotationLoader, ClassLoader classLoader, DataFlowLoader dataFlowLoader, FileChecker fileChecker, DecoratorLoader decoratorLoader, ConverterLoader converterLoader, EndpointLoader endpointLoader, DomainLoader domainLoader)
 {
     public async Task<ModelFile?> LoadModelFile(string filePath, string? content = null)
     {
@@ -76,7 +77,13 @@ public class ModelFileLoader(ModelConfig config, ClassLoader classLoader, DataFl
             parser.Consume<MappingStart>();
             var scalar = parser.Consume<Scalar>();
 
-            if (scalar.Value == "domain")
+            if (scalar.Value == "annotation")
+            {
+                var annotation = annotationLoader.Load(parser);
+                annotation.Location = new Reference(scalar);
+                file.Annotations.Add(annotation);
+            }
+            else if (scalar.Value == "domain")
             {
                 var domain = domainLoader.Load(parser);
                 domain.ModelFile = file;
@@ -122,6 +129,12 @@ public class ModelFileLoader(ModelConfig config, ClassLoader classLoader, DataFl
 
             parser.Consume<MappingEnd>();
             parser.Consume<DocumentEnd>();
+        }
+
+        foreach (var annotation in file.Annotations)
+        {
+            annotation.ModelFile = file;
+            annotation.Namespace = file.Namespace;
         }
 
         foreach (var classe in file.Classes)

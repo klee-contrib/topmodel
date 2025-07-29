@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core;
+using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
 using TopModel.Utils;
 
@@ -36,14 +36,14 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
         WriteClassComment(fw, classe, tag);
         WriteAnnotations(fw, classe, tag);
 
-        var extends = Config.GetClassExtends(classe);
+        var extends = Config.GetClassExtends(classe, tag);
         if (classe.Extends is not null)
         {
             fw.AddImport($"{Config.GetPackageName(classe.Extends, tag)}.{classe.Extends.NamePascal}");
             fw.AddImport(classe.Extends.GetImport(Config, Config.GetBestClassTag(classe.Extends, tag)));
         }
 
-        var implements = Config.GetClassImplements(classe).ToList();
+        var implements = Config.GetClassImplements(classe, tag).ToList();
 
         implements.Add("Serializable");
         fw.AddImport("java.io.Serializable");
@@ -61,7 +61,7 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
             WriteToMappers(fw, classe, tag);
         }
 
-        if ((Config.FieldsEnum & Target.Dto) > 0)
+        if (Config.FieldsEnum.Contains(AnnotationConstraint.NonPersisted))
         {
             WriteFieldsEnum(fw, classe, tag);
         }
@@ -73,9 +73,9 @@ public class JavaDtoGenerator(ILogger<JavaDtoGenerator> logger, IFileWriterProvi
     {
         if (Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class)))
             || Classes.Any(c => c.Extends == classe)
-            || Config.GetClassExtends(classe) != null)
+            || Config.GetClassExtends(classe, tag) != null)
         {
-            ConstructorGenerator.WriteNoArgConstructor(fw, classe);
+            ConstructorGenerator.WriteNoArgConstructor(fw, classe, tag);
         }
 
         if (Config.MappersInClass)

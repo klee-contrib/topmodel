@@ -1,10 +1,11 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model.Implementation;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
-public class Domain
+public class Domain : IAnnotationContainer, IVariableContainer
 {
 #nullable disable
     public LocatedString Name { get; set; }
@@ -28,11 +29,15 @@ public class Domain
 
     public Dictionary<string, Domain> AsDomains { get; set; } = [];
 
+    public IList<AnnotationInstance> Annotations { get; } = [];
+
+    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+
     public Dictionary<string, DomainReference> AsDomainReferences { get; set; } = [];
 
     public Dictionary<string, DomainImplementation> Implementations { get; set; } = [];
 
-    public IList<TemplateParameter> TemplateParameters { get; set; } = [];
+    public IList<TemplateParameter> TemplateParameters { get; internal set; } = [];
 
     public string? MediaType { get; set; }
 
@@ -43,29 +48,27 @@ public class Domain
     public IEnumerable<ParameterReference> VariableReferences => Implementations.Values
         .SelectMany(i =>
             (IEnumerable<ParameterReference>)[
-                ..i.TypeWithVariables?.Variables ?? [],
-                ..i.GenericTypeWithVariables?.Variables ?? [],
-                ..i.Annotations.SelectMany(a => a.Text.Variables),
-                ..i.Annotations.SelectMany(a => a.Imports.SelectMany(ai => ai.Variables)),
+                ..i.Type?.Variables ?? [],
+                ..i.GenericType?.Variables ?? [],
                 ..i.Imports.SelectMany(a => a.Variables),
                 ..i.ValueTemplates.Values.SelectMany(a => a.Value.Variables),
                 ..i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Variables))
-            ]);
+            ])
+        .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Variables)));
 
     public Dictionary<string, Variable> Variables { get; } = [];
 
     public IEnumerable<TransformReference> TransformReferences => Implementations.Values
         .SelectMany(i =>
             (IEnumerable<TransformReference>)[
-                ..i.TypeWithVariables?.Transforms ?? [],
-                ..i.GenericTypeWithVariables?.Transforms ?? [],
-                ..i.Annotations.SelectMany(a => a.Text.Transforms),
-                ..i.Annotations.SelectMany(a => a.Imports.SelectMany(ai => ai.Transforms)),
+                ..i.Type?.Transforms ?? [],
+                ..i.GenericType?.Transforms ?? [],
                 ..i.Imports.SelectMany(a => a.Transforms),
                 ..i.ValueTemplates.Values.SelectMany(a => a.Value.Transforms),
                 ..i.ValueTemplates.Values.SelectMany(a => a.Imports.SelectMany(vi => vi.Transforms))
             ])
-         .Where(pr => pr.ReferenceName.IsValidTransform());
+        .Concat(AnnotationReferences.SelectMany(a => a.ParameterReferences.Values.SelectMany(v => v.Transforms)))
+        .Where(pr => pr.ReferenceName.IsValidTransform());
 
 #nullable disable
     public ModelFile ModelFile { get; set; }

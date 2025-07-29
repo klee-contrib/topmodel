@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -98,7 +99,7 @@ public class SpringClientApiGenerator(ILogger<SpringClientApiGenerator> logger, 
 
         var method = new JavaMethod("org.springframework.http.ResponseEntity", @$"ResponseEntity<{returnType}>", endpoint.NameCamel);
         {
-            foreach (var annotation in Config.GetDecoratorAnnotations(endpoint, tag))
+            foreach (var (annotation, _) in Config.GetAnnotations(endpoint, tag))
             {
                 fw.WriteLine(1, $"{(annotation.StartsWith('@') ? string.Empty : "@")}{annotation}");
             }

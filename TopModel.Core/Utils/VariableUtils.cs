@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using TopModel.Core.Model;
 
-namespace TopModel.Core.Model.Implementation;
+namespace TopModel.Core.Utils;
 
 internal static class VariableUtils
 {

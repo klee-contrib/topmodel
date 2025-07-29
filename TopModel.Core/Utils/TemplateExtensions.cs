@@ -1,32 +1,17 @@
 ﻿using System.Text.RegularExpressions;
+using TopModel.Core.Model;
 using TopModel.Utils;
 
-namespace TopModel.Core.Templating;
+namespace TopModel.Core.Utils;
 
 public static class TemplateExtensions
 {
     public static string ParseTemplate(this string template, IProperty p, WatcherConfigBase config, string? tag = null)
     {
-        if (string.IsNullOrEmpty(template) || !template.Contains('{'))
-        {
-            return template;
-        }
-
-        var result = template;
-        foreach (var t in template.ExtractVariables())
-        {
-            result = result.Replace(t.Value, t.Value.Trim('{', '}').ResolveVariable(p, p.Domain?.TemplateParameters ?? [], p.DomainParameters, config, tag));
-        }
-
-        return result;
+        return template.ParseTemplate(p, p.Domain?.TemplateParameters ?? [], p.DomainParameters, config, tag);
     }
 
-    public static string ParseTemplate(this StringWithVariables template, IProperty p, WatcherConfigBase config, string? tag = null)
-    {
-        return template.Value.ParseTemplate(p, config, tag);
-    }
-
-    public static string ParseTemplate(this string template, Decorator d, Class c, IList<string> parameterValues, WatcherConfigBase config, string? tag = null)
+    public static string ParseTemplate(this string template, IProperty p, IList<TemplateParameter> templateParameters, IDictionary<string, string> parameterValues, WatcherConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -36,18 +21,13 @@ public static class TemplateExtensions
         string result = template;
         foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, t.Value.Trim('{', '}').ResolveVariable(c, d.TemplateParameters, parameterValues, config, tag));
+            result = result.Replace(t.Value, t.Value.Trim('{', '}').ResolveVariable(p, templateParameters, parameterValues, config, tag));
         }
 
         return result;
     }
 
-    public static string ParseTemplate(this StringWithVariables template, Decorator d, Class c, IList<string> parameterValues, WatcherConfigBase config, string? tag = null)
-    {
-        return template.Value.ParseTemplate(d, c, parameterValues, config, tag);
-    }
-
-    public static string ParseTemplate(this StringWithVariables template, Decorator d, Endpoint e, IList<string> parameterValues, WatcherConfigBase config, string? tag = null)
+    public static string ParseTemplate(this string template, IPropertyContainer c, IList<TemplateParameter> templateParameters, IDictionary<string, string> parameterValues, WatcherConfigBase config, string? tag = null)
     {
         if (string.IsNullOrEmpty(template) || !template.Contains('{'))
         {
@@ -55,9 +35,9 @@ public static class TemplateExtensions
         }
 
         string result = template;
-        foreach (var t in template.Value.ExtractVariables())
+        foreach (var t in template.ExtractVariables())
         {
-            result = result.Replace(t.Value, t.Value.Trim('{', '}').ResolveVariable(e, d.TemplateParameters, parameterValues, config, tag));
+            result = result.Replace(t.Value, t.Value.Trim('{', '}').ResolveVariable(c, templateParameters, parameterValues, config, tag));
         }
 
         return result;
@@ -164,7 +144,7 @@ public static class TemplateExtensions
         }).Transform(input);
     }
 
-    private static string ResolveVariable(this string input, IPropertyContainer container, IList<TemplateParameter> templateParameters, IList<string> parameterValues, WatcherConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, IPropertyContainer container, IList<TemplateParameter> templateParameters, IDictionary<string, string> parameterValues, WatcherConfigBase config, string? tag = null)
     {
         return container switch
         {
@@ -174,7 +154,7 @@ public static class TemplateExtensions
         };
     }
 
-    private static string ResolveVariable(this string input, IProperty p, IList<TemplateParameter> templateParameters, IList<string> parameterValues, WatcherConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, IProperty p, IList<TemplateParameter> templateParameters, IDictionary<string, string> parameterValues, WatcherConfigBase config, string? tag = null)
     {
         if (input == null || input.Length == 0)
         {
@@ -254,7 +234,7 @@ public static class TemplateExtensions
         return result;
     }
 
-    private static string ResolveVariable(this string input, Class c, IList<TemplateParameter> templateParameters, IList<string> parameterValues, WatcherConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, Class c, IList<TemplateParameter> templateParameters, IDictionary<string, string> parameterValues, WatcherConfigBase config, string? tag = null)
     {
         if (input == null || input.Length == 0)
         {
@@ -321,7 +301,7 @@ public static class TemplateExtensions
         return result;
     }
 
-    private static string ResolveVariable(this string input, Endpoint e, IList<TemplateParameter> templateParameters, IList<string> parameterValues, WatcherConfigBase config, string? tag = null)
+    private static string ResolveVariable(this string input, Endpoint e, IList<TemplateParameter> templateParameters, IDictionary<string, string> parameterValues, WatcherConfigBase config, string? tag = null)
     {
         if (input == null || input.Length == 0)
         {
@@ -388,14 +368,13 @@ public static class TemplateExtensions
         }
     }
 
-    private static string? TryResolveParameters(this string input, IList<TemplateParameter> templateParameters, IList<string> parameterValues)
+    private static string? TryResolveParameters(this string input, IList<TemplateParameter> templateParameters, IDictionary<string, string> parameterValues)
     {
-        for (var i = 0; i < templateParameters.Count; i++)
+        foreach (var parameter in templateParameters)
         {
-            var param = templateParameters[i];
-            if (input == param.Name)
+            if (input == parameter.Name)
             {
-                return parameterValues.ElementAtOrDefault(i) ?? param.DefaultValue;
+                return parameterValues.TryGetValue(parameter.Name, out var value) ? value : parameter.DefaultValue;
             }
         }
 

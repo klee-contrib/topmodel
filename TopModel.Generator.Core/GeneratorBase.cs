@@ -2,28 +2,14 @@
 using Microsoft.Extensions.Logging;
 using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Core;
 
-public abstract class GeneratorBase<T> : IModelWatcher
+public abstract class GeneratorBase<T>(ILogger logger, IFileWriterProvider writerProvider) : IModelWatcher
     where T : GeneratorConfigBase
 {
-    private readonly ILogger _logger;
-    private readonly IFileWriterProvider? _writerProvider;
-
-    [Obsolete("Utiliser la surcharge avec le IFileWriterProvider")]
-    protected GeneratorBase(ILogger logger)
-    {
-        _logger = logger;
-    }
-
-    protected GeneratorBase(ILogger logger, IFileWriterProvider writerProvider)
-    {
-        _logger = logger;
-        _writerProvider = writerProvider;
-    }
-
     public abstract string Name { get; }
 
 #nullable disable
@@ -54,8 +40,8 @@ public abstract class GeneratorBase<T> : IModelWatcher
     /// <inheritdoc cref="IModelWatcher.OnFilesChanged" />
     public void OnFilesChanged(IEnumerable<ModelFile> files, LoggingScope? storeConfig = null)
     {
-        using var scope = _logger.BeginScope(((IModelWatcher)this).FullName);
-        using var scope2 = _logger.BeginScope(storeConfig!);
+        using var scope = logger.BeginScope(((IModelWatcher)this).FullName);
+        using var scope2 = logger.BeginScope(storeConfig!);
 
         var handledFiles = files.Where(file => Config.Tags.Intersect(file.AllTags.Except(Config.ExcludedTags)).Any());
 
@@ -68,7 +54,7 @@ public abstract class GeneratorBase<T> : IModelWatcher
 
             if (missingDomains.Any())
             {
-                throw new ModelException($"Pour utiliser le générateur '{Name}', les domaines suivants doivent définir une implémentation pour l'un des langages suivants : '{string.Join(", ", Config.Languages)}' : {string.Join(", ", missingDomains.Select(d => d.Name).OrderBy(x => x))}.");
+                throw new ModelException($"Pour utiliser le générateur '{Name}', les domaines suivants doivent définir une implémentation pour l'un des langages suivants : '{string.Join(", ", Config.Language)}' : {string.Join(", ", missingDomains.Select(d => d.Name).OrderBy(x => x))}.");
             }
         }
 
@@ -91,22 +77,12 @@ public abstract class GeneratorBase<T> : IModelWatcher
 
     public IFileWriter OpenFileWriter(string fileName, bool encoderShouldEmitUTF8Identifier = true)
     {
-        if (_writerProvider == null)
-        {
-            throw new NotImplementedException();
-        }
-
-        return _writerProvider.OpenFileWriter(Path.Combine(Config.OutputDirectory, fileName).Replace("\\", "/"), _logger, encoderShouldEmitUTF8Identifier);
+        return writerProvider.OpenFileWriter(Path.Combine(Config.OutputDirectory, fileName).Replace("\\", "/"), logger, encoderShouldEmitUTF8Identifier);
     }
 
     public IFileWriter OpenFileWriter(string fileName, Encoding encoding)
     {
-        if (_writerProvider == null)
-        {
-            throw new NotImplementedException();
-        }
-
-        return _writerProvider.OpenFileWriter(Path.Combine(Config.OutputDirectory, fileName).Replace("\\", "/"), _logger, encoding);
+        return writerProvider.OpenFileWriter(Path.Combine(Config.OutputDirectory, fileName).Replace("\\", "/"), logger, encoding);
     }
 
     protected IEnumerable<ClassValue> GetAllValues(Class classe)

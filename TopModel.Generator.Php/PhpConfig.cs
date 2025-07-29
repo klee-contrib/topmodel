@@ -1,4 +1,4 @@
-﻿using TopModel.Core;
+﻿using TopModel.Core.Model;
 using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Php;

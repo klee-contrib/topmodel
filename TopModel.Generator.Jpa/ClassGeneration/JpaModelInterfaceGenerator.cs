@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core;
+using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -45,8 +45,8 @@ public class JpaModelInterfaceGenerator(ILogger<JpaModelInterfaceGenerator> logg
         WriteImports(fw, classe, tag);
         fw.WriteLine();
 
-        var extends = Config.GetClassExtends(classe);
-        var implements = Config.GetClassImplements(classe);
+        var extends = Config.GetClassExtends(classe, tag);
+        var implements = Config.GetClassImplements(classe, tag);
 
         if (Config.GeneratedHint)
         {

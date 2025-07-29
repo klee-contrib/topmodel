@@ -1,6 +1,7 @@
-﻿using TopModel.Utils;
+﻿using TopModel.Core.Model;
+using TopModel.Utils;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Utils;
 
 public static class EndpointExtensions
 {

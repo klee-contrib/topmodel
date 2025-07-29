@@ -1,5 +1,5 @@
-﻿using TopModel.Core;
-using TopModel.Core.FileModel;
+﻿using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 

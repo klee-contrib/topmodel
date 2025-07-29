@@ -4,7 +4,7 @@
 
 version: 2.9.1
 custom:
-  ../../../TopModel.Generator.Translation: ff0a3d3d93a9151973d71fbd26dbc7df
+  ../../../TopModel.Generator.Translation: f0f4f3cfda87c605baac3013424cb55c
 generatedFiles:
   - ./i18n/de_DE/out/common_de_DE.properties
   - ./i18n/de_DE/out/securite_de_DE.properties

@@ -1,4 +1,5 @@
-﻿using TopModel.Core;
+﻿using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -173,7 +174,7 @@ public class PhpModelPropertyGenerator(PhpConfig config, IEnumerable<Class> clas
             }
         }
 
-        foreach (var annotation in config.GetDomainAnnotations(property, tag))
+        foreach (var (annotation, _) in config.GetAnnotations(property, tag))
         {
             fw.WriteLine(1, annotation);
         }

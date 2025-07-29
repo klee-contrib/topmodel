@@ -1,4 +1,4 @@
-﻿using TopModel.Core;
+﻿using TopModel.Core.Model;
 using TopModel.Generator.Core;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
@@ -24,7 +24,7 @@ public class JavaEnumConstructorGenerator(JpaConfig config)
         };
         constructor.AddParameter(parameter);
 
-        if (Config.GetClassExtends(classe) != null)
+        if (Config.GetClassExtends(classe, tag) != null)
         {
             constructor.AddBodyLine("super();");
         }

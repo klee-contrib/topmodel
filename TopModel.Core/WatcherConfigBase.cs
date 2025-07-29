@@ -1,8 +1,9 @@
 ﻿using System.Text.RegularExpressions;
 using Spectre.Console;
-using TopModel.Core.Loaders;
+using TopModel.Core.Loaders.YamlUtils;
+using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
-using TopModel.Core.Templating;
+using TopModel.Core.Utils;
 using YamlDotNet.Serialization;
 
 namespace TopModel.Core;
@@ -15,17 +16,24 @@ public class WatcherConfigBase
     public required IList<string> Tags { get; set; }
 
     /// <summary>
-    /// Langage du module, utilisé pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.
-    /// </summary>
-    [YamlIgnore]
-    public string Language { get => Languages.FirstOrDefault()!; set => Languages = [value]; }
-
-    /// <summary>
     /// Langages du module, utilisé en cascade pour choisir l'implémentation correspondante des domaines, décorateurs et convertisseurs.
     /// </summary>
-    [YamlMember(Alias = "language")]
     [YamlConverter(typeof(StringListTypeConverter))]
-    public IList<string> Languages { get; set; } = [];
+    public IList<string> Language { get; set; } = [];
+
+    /// <summary>
+    /// Setter pour le language par défaut.
+    /// </summary>
+    public string DefaultLanguage
+    {
+        set
+        {
+            if (Language.Count == 0)
+            {
+                Language.Add(value);
+            }
+        }
+    }
 
     /// <summary>
     /// Variables globales du module.
@@ -71,6 +79,16 @@ public class WatcherConfigBase
     /// Propriétés qui supportent les variables par tag de la configuration courante.
     /// </summary>
     public virtual string[] PropertiesWithTagVariableSupport => [];
+
+    /// <summary>
+    /// Récupère les implémentations de l'annotation pour la config.
+    /// </summary>
+    /// <param name="annotation">Annotation.</param>
+    /// <returns>Implémentations.</returns>
+    public IList<AnnotationImplementation> GetImplementation(Annotation? annotation)
+    {
+        return GetImplementation(annotation?.Implementations) ?? [];
+    }
 
     /// <summary>
     /// Récupère l'implémentation du domaine pour la config.
@@ -139,7 +157,7 @@ public class WatcherConfigBase
         }
 
         var hasMissingVar = false;
-        foreach (var property in GetType().GetProperties().Where(p => p.PropertyType == typeof(string) && p.CanWrite && p.Name != nameof(Language)))
+        foreach (var property in GetType().GetProperties().Where(p => p.PropertyType == typeof(string) && p.CanWrite && p.Name != nameof(DefaultLanguage)))
         {
             var value = (string?)property.GetValue(this);
             if (value != null)
@@ -280,7 +298,7 @@ public class WatcherConfigBase
     /// <returns>L'implémentation sélectionnée si elle existe</returns>
     private T? GetImplementation<T>(IDictionary<string, T>? implementations)
     {
-        foreach (var language in Languages)
+        foreach (var language in Language)
         {
             if (implementations?.ContainsKey(language) ?? false)
             {

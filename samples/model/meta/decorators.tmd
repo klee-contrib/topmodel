@@ -4,39 +4,72 @@ tags:
   - entity
 
 ---
+annotation:
+  name: LastDate
+  description: Date de dernière création/modification
+  target:
+    - property
+  parameters:
+    - name: change
+      required: true
+      comment: Type de modification.
+  java:
+    - text: "@{change}Date"
+      when:
+        - persisted
+      imports:
+        - org.springframework.data.annotation.{change}Date
+---
+annotation:
+  name: EntityListeners
+  description: Annotation pour EntityListeners.
+  target:
+    - class
+  java:
+    - text: EntityListeners(AuditingEntityListener.class)
+      when:
+        - persisted
+      imports:
+        - org.springframework.data.jpa.domain.support.AuditingEntityListener
+        - jakarta.persistence.EntityListeners
+---
+annotation:
+  name: Security
+  description: Ajoute une annotation de sécurité sur un endpoint.
+  target:
+    - endpoint
+  parameters:
+    - name: permission
+      required: true
+      comment: Permission demandée
+  java:
+    - text: PreAuthorize("{permission}")
+      imports:
+        - org.springframework.security.access.prepost.PreAuthorize
+---
 decorator:
   name: EntityListeners
   description: Date création
-  java:
-    annotations:
-      - EntityListeners(AuditingEntityListener.class)
-    imports:
-      - org.springframework.data.jpa.domain.support.AuditingEntityListener
-      - jakarta.persistence.EntityListeners
+  target: class
+  annotations:
+    - EntityListeners
 
   properties:
     - name: DateCreation
       label: Date de création
       required: true
       defaultValue: now
-      domain: DO_DATE_CREATION
+      domain: DO_DATE_HEURE
       comment: Date de création de l'utilisateur.
+      annotations:
+        - LastDate:
+            change: Created
 
     - name: DateModification
       label: Date de modification
       defaultValue: now
-      domain: DO_DATE_MODIFICATION
+      domain: DO_DATE_HEURE
       comment: Date de modification de l'utilisateur.
----
-decorator:
-  name: Security
-  description: Ajoute une annotation de sécurité sur un endpoint.
-  parameters:
-    - name: permission
-      required: true
-      comment: Permission demandée
-  java:
-    annotations:
-      - PreAuthorize("{permission}")
-    imports:
-      - org.springframework.security.access.prepost.PreAuthorize
+      annotations:
+        - LastDate:
+            change: LastModified

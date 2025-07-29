@@ -3,6 +3,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
+using TopModel.Core.Model;
 
 namespace TopModel.LanguageServer;
 
@@ -35,8 +36,10 @@ public class HoverHandler(ModelStore modelStore, ILanguageServerFacade facade, M
                         AliasProperty p => p.Comment,
                         Domain d => d.Label,
                         Decorator d => d.Description,
+                        DecoratorInstance { Decorator: Decorator d } => d.Description,
+                        Annotation a => a.Description,
+                        AnnotationInstance { Annotation: Annotation a } => a.Description,
                         DataFlow d => $"Flux de données '{d.Name}'",
-                        (Decorator d, _) => d.Description,
                         TemplateParameter tp => tp.Description,
                         Variable v => v.Description,
                         _ => string.Empty

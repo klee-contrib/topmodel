@@ -15,7 +15,7 @@ public class GeneratorRegistration : IGeneratorRegistration<SqlConfig>
     /// <inheritdoc cref="IGeneratorRegistration{T}.Register" />
     public void Register(IServiceCollection services, SqlConfig config, int number)
     {
-        config.Language ??= "sql";
+        config.DefaultLanguage = "sql";
 
         if (config.Ssdt != null)
         {

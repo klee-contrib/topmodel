@@ -51,7 +51,7 @@ public class SemanticTokensHandler(ModelStore modelStore, ILanguageServerFacade 
             {
                 var type = reference switch
                 {
-                    ClassReference or DecoratorReference or EndpointReference => SemanticTokenType.Class,
+                    AnnotationReference or ClassReference or DecoratorReference or EndpointReference => SemanticTokenType.Class,
                     DataFlowReference => SemanticTokenType.Operator,
                     DomainReference => SemanticTokenType.EnumMember,
                     Reference r when r.ReferenceName == "false" => SemanticTokenType.Keyword,

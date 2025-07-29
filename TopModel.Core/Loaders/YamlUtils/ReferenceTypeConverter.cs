@@ -1,34 +1,22 @@
-﻿using YamlDotNet.Core;
+﻿using TopModel.Core.FileModel;
+using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
 
-namespace TopModel.Core.Loaders;
+namespace TopModel.Core.Loaders.YamlUtils;
 
-public class StringListTypeConverter : IYamlTypeConverter
+internal class ReferenceTypeConverter : IYamlTypeConverter
 {
     /// <inheritdoc cref="IYamlTypeConverter.Accepts" />
     public bool Accepts(Type type)
     {
-        return false;
+        return type == typeof(ParameterReference);
     }
 
     /// <inheritdoc cref="IYamlTypeConverter.ReadYaml" />
     public object? ReadYaml(IParser parser, Type type, ObjectDeserializer rootDeserializer)
     {
-        var result = new List<string>();
-        if (parser.TryConsume<Scalar>(out var language))
-        {
-            result.Add(language.Value);
-        }
-        else if (parser.Current is SequenceStart)
-        {
-            parser.ConsumeSequence(() =>
-            {
-                result.Add(parser.Consume<Scalar>().Value);
-            });
-        }
-
-        return result;
+        return new ParameterReference(parser.Consume<Scalar>());
     }
 
     /// <inheritdoc cref="IYamlTypeConverter.WriteYaml" />

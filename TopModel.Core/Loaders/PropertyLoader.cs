@@ -1,10 +1,11 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
+public class PropertyLoader(FileChecker fileChecker, ModelConfig modelConfig) : ILoader<IProperty>
 {
     /// <inheritdoc cref="ILoader{T}.Load" />
     public IProperty Load(Parser parser)
@@ -39,7 +40,7 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                             rp.Readonly = value!.Value == "true";
                             break;
                         case "domain":
-                            rp.DomainReference = parser.ConsumeDomain(value);
+                            rp.DomainReference = parser.ConsumeDomain(fileChecker, value);
                             break;
                         case "defaultValue":
                             rp.DefaultValue = value!.Value;
@@ -49,6 +50,27 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                             break;
                         case "trigram":
                             rp.Trigram = new LocatedString(value!);
+                            break;
+                        case "annotations":
+                            parser.ConsumeSequence(() =>
+                            {
+                                if (parser.Current is MappingStart)
+                                {
+                                    parser.ConsumeMapping(prop =>
+                                    {
+                                        var annotation = new AnnotationReference(prop)
+                                        {
+                                            ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                        };
+
+                                        rp.AnnotationReferences.Add(annotation);
+                                    });
+                                }
+                                else
+                                {
+                                    rp.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                                }
+                            });
                             break;
                         case "customProperties":
                             parser.ConsumeMapping(prop => rp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
@@ -125,6 +147,27 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                         case "className":
                             ap.ClassName = value!.Value;
                             break;
+                        case "annotations":
+                            parser.ConsumeSequence(() =>
+                            {
+                                if (parser.Current is MappingStart)
+                                {
+                                    parser.ConsumeMapping(prop =>
+                                    {
+                                        var annotation = new AnnotationReference(prop)
+                                        {
+                                            ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                        };
+
+                                        ap.AnnotationReferences.Add(annotation);
+                                    });
+                                }
+                                else
+                                {
+                                    ap.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                                }
+                            });
+                            break;
                         case "customProperties":
                             parser.ConsumeMapping(prop => ap.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
                             break;
@@ -165,7 +208,7 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                             cp.Label = value!.Value;
                             break;
                         case "domain":
-                            cp.DomainReference = parser.ConsumeDomain(value);
+                            cp.DomainReference = parser.ConsumeDomain(fileChecker, value);
                             break;
                         case "comment":
                             cp.Comment = value!.Value;
@@ -178,6 +221,27 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                             break;
                         case "trigram":
                             cp.Trigram = new LocatedString(value!);
+                            break;
+                        case "annotations":
+                            parser.ConsumeSequence(() =>
+                            {
+                                if (parser.Current is MappingStart)
+                                {
+                                    parser.ConsumeMapping(prop =>
+                                    {
+                                        var annotation = new AnnotationReference(prop)
+                                        {
+                                            ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                        };
+
+                                        cp.AnnotationReferences.Add(annotation);
+                                    });
+                                }
+                                else
+                                {
+                                    cp.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                                }
+                            });
                             break;
                         case "customProperties":
                             parser.ConsumeMapping(prop => cp.CustomProperties.Add(prop.Value, parser.Consume<Scalar>().Value));
@@ -264,7 +328,7 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                             alp.Label = value!.Value;
                             break;
                         case "domain":
-                            alp.DomainReference = parser.ConsumeDomain(value);
+                            alp.DomainReference = parser.ConsumeDomain(fileChecker, value);
                             break;
                         case "required":
                             alp.Required = value!.Value == "true";
@@ -289,6 +353,27 @@ public class PropertyLoader(ModelConfig modelConfig) : ILoader<IProperty>
                             break;
                         case "defaultValue":
                             alp.DefaultValue = value!.Value;
+                            break;
+                        case "annotations":
+                            parser.ConsumeSequence(() =>
+                            {
+                                if (parser.Current is MappingStart)
+                                {
+                                    parser.ConsumeMapping(prop =>
+                                    {
+                                        var annotation = new AnnotationReference(prop)
+                                        {
+                                            ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                        };
+
+                                        alp.AnnotationReferences.Add(annotation);
+                                    });
+                                }
+                                else
+                                {
+                                    alp.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                                }
+                            });
                             break;
                         case "customProperties":
                             var customProperties = new Dictionary<string, string>();

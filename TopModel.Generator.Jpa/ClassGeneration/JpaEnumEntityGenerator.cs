@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core;
+using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
 using TopModel.Utils;
 
@@ -38,13 +38,13 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
         WriteClassComment(fw, classe, tag);
         WriteAnnotations(fw, classe, tag);
 
-        var extends = Config.GetClassExtends(classe);
+        var extends = Config.GetClassExtends(classe, tag);
         if (classe.Extends is not null)
         {
             fw.AddImport($"{Config.GetPackageName(classe.Extends, tag)}.{classe.Extends.NamePascal}");
         }
 
-        var implements = Config.GetClassImplements(classe).ToList();
+        var implements = Config.GetClassImplements(classe, tag).ToList();
 
         fw.WriteClassDeclaration(classe.NamePascal, null, extends, implements);
         fw.WriteLine();
@@ -72,7 +72,7 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
             WriteToMappers(fw, classe, tag);
         }
 
-        if ((Config.FieldsEnum & Target.Persisted) > 0)
+        if (Config.FieldsEnum.Contains(AnnotationConstraint.Persisted))
         {
             WriteFieldsEnum(fw, classe, tag);
         }
@@ -82,7 +82,7 @@ public class JpaEnumEntityGenerator(ILogger<JpaEnumEntityGenerator> logger, IFil
 
     protected override void WriteConstructors(Class classe, string tag, JavaWriter fw)
     {
-        ConstructorGenerator.WriteNoArgConstructor(fw, classe);
+        ConstructorGenerator.WriteNoArgConstructor(fw, classe, tag);
         ConstructorGenerator.WriteEnumConstructor(fw, classe, Classes, tag);
     }
 

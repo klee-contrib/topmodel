@@ -75,9 +75,9 @@ public class GeneratedFileWriter : IFileWriter
             var ignoredFile = _config.IgnoredFiles.FirstOrDefault(i => Path.GetFullPath(Path.Combine(_config.ConfigRoot, i.Path)).Replace("\\", "/") == FileName.Replace("\\", "/"));
             if (ignoredFile != null)
             {
-                if (!_config.NoWarn.Contains(ModelErrorType.TMD8000))
+                if (!_config.NoWarn.Contains(ErrorType.TMD1004))
                 {
-                    _logger.LogWarning($"{{TMD8000}} - Le fichier '{ignoredFile.Path}' ne sera pas regénéré pour le motif : '{ignoredFile.Comment}'.");
+                    _logger.LogWarning($"{{TMD1004}} - Le fichier '{ignoredFile.Path}' ne sera pas regénéré pour le motif : '{ignoredFile.Comment}'.");
                 }
 
                 return;

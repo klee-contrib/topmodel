@@ -1,4 +1,5 @@
-﻿using TopModel.Core;
+﻿using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -73,7 +74,7 @@ public class JpaModelPropertyGenerator(JpaConfig config, IEnumerable<Class> clas
 
     public virtual IEnumerable<JavaAnnotation> GetDomainAnnotations(IProperty property, string tag)
     {
-        foreach (var (annotation, imports) in Config.GetDomainAnnotationsAndImports(property, tag))
+        foreach (var (annotation, imports) in Config.GetAnnotations(property, tag))
         {
             yield return new JavaAnnotation(name: annotation, imports: imports.ToArray());
         }

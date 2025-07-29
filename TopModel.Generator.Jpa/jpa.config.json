@@ -2,7 +2,7 @@
   "type": "object",
   "description": "Config pour la génération de Jpa.",
   "additionalProperties": false,
-  "required": ["tags", "outputDirectory"],
+  "required": [ "tags", "outputDirectory" ],
   "properties": {
     "language": {
       "oneOf": [
@@ -143,7 +143,7 @@
         {
           "type": "string",
           "description": "Mode de génération de l'API ('Client' ou 'Server')",
-          "enum": ["Client", "Server"]
+          "enum": [ "Client", "Server" ]
         },
         {
           "type": "string",
@@ -158,7 +158,7 @@
           "type": "string",
           "description": "Mode de génération de l'API Client ('Client' ou 'Server')",
           "default": "RestClient",
-          "enum": ["RestTemplate", "RestClient", "FeignClient"]
+          "enum": [ "RestTemplate", "RestClient", "FeignClient" ]
         },
         {
           "type": "string",
@@ -181,7 +181,7 @@
       "type": "string",
       "description": "Encodage des fichiers de resource.",
       "default": "Latin1",
-      "enum": ["Latin1", "UTF8"]
+      "enum": [ "Latin1", "UTF8" ]
     },
     "useJdbc": {
       "type": "boolean",
@@ -210,7 +210,7 @@
       "type": "string",
       "description": "Writer à utiliser pour les flux de données.",
       "default": "jpa",
-      "enum": ["bulk", "jpa"]
+      "enum": [ "bulk", "jpa" ]
     },
     "dataFlowsBulkSize": {
       "type": "number",
@@ -244,10 +244,12 @@
       "default": "true"
     },
     "fieldsEnum": {
-      "type": "string",
-      "description": "Option pour générer une enum des champs des classes persistées",
-      "default": "None",
-      "enum": ["None", "Persisted", "Dto", "Persisted_Dto"]
+      "type": "array",
+      "description": "Option pour générer une enum des champs des classes persistées ou non persistées",
+      "items": {
+        "type": "string",
+        "enum": [ "non-persisted", "persisted" ]
+      }
     },
     "fieldsEnumInterface": {
       "type": "string",
@@ -256,7 +258,7 @@
     "persistenceMode": {
       "type": "string",
       "description": "Mode de génération de la persistence ('Javax' ou 'Jakarta')",
-      "enum": ["javax", "jakarta"]
+      "enum": [ "javax", "jakarta" ]
     },
     "identity": {
       "type": "object",
@@ -265,7 +267,7 @@
         "mode": {
           "type": "string",
           "description": "Mode de génération des séquences.",
-          "enum": ["none", "sequence", "identity", "uuid"],
+          "enum": [ "none", "sequence", "identity", "uuid" ],
           "default": "identity"
         },
         "increment": {

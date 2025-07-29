@@ -1,10 +1,11 @@
 ﻿using TopModel.Core.FileModel;
-using TopModel.Core.Model.Implementation;
+using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
 
-internal class DomainResolver(ModelFile modelFile, IDictionary<string, Domain> domains, IEnumerable<Converter> converters)
+internal class DomainResolver(ModelFile modelFile, ModelConfig config, IDictionary<string, Domain> domains, IEnumerable<Converter> converters)
 {
     /// <summary>
     /// Résout les `asDomains` sur les domaines.
@@ -18,7 +19,7 @@ internal class DomainResolver(ModelFile modelFile, IDictionary<string, Domain> d
             {
                 if (!domains.TryGetValue(domainReference.ReferenceName, out var asDomain))
                 {
-                    yield return new ModelError(domain, "Le domaine '{0}' est introuvable.", domainReference) { ModelErrorType = ModelErrorType.TMD1005 };
+                    yield return new ModelError(ErrorType.TMD0003, domain, "Le domaine '{0}' est introuvable.", domainReference);
                     continue;
                 }
 
@@ -27,16 +28,7 @@ internal class DomainResolver(ModelFile modelFile, IDictionary<string, Domain> d
 
             foreach (var templateParam in domain.TemplateParameters.Where((e, i) => domain.TemplateParameters.Where((p, j) => p.Name == e.Name && j < i).Any()))
             {
-                yield return new ModelError(domain, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
-            }
-
-            foreach (var templateParam in domain.TemplateParameters.Where(p => !p.Required))
-            {
-                var index = domain.TemplateParameters.IndexOf(templateParam);
-                if (domain.TemplateParameters.Any(param => param.Required && domain.TemplateParameters.IndexOf(param) > index))
-                {
-                    yield return new ModelError(domain, $"Le paramètre facultatif '{templateParam.Name}' doit être positionné après tous les paramètres obligatoires.", templateParam.GetLocation()) { ModelErrorType = ModelErrorType.TMD1037 };
-                }
+                yield return new ModelError(ErrorType.TMD0001, domain, $"Le nom '{templateParam.Name}' est déjà utilisé.", templateParam.GetLocation());
             }
         }
     }
@@ -57,6 +49,10 @@ internal class DomainResolver(ModelFile modelFile, IDictionary<string, Domain> d
                 {
                     converter.Variables.TryAdd(varName.ReferenceName, variable);
                 }
+                else
+                {
+                    yield return new ModelError(ErrorType.TMD0011, converter, $"La variable '{varName.ReferenceName}' est introuvable.", varName, isError: false);
+                }
             }
 
             converter.From.Clear();
@@ -72,7 +68,7 @@ internal class DomainResolver(ModelFile modelFile, IDictionary<string, Domain> d
             {
                 if (!domains.TryGetValue(dom.ReferenceName, out var domain))
                 {
-                    yield return new ModelError(converter, "Le domaine '{0}' est introuvable.", dom) { ModelErrorType = ModelErrorType.TMD1005 };
+                    yield return new ModelError(ErrorType.TMD0003, converter, "Le domaine '{0}' est introuvable.", dom);
                     break;
                 }
 
@@ -83,7 +79,7 @@ internal class DomainResolver(ModelFile modelFile, IDictionary<string, Domain> d
             {
                 if (!domains.TryGetValue(dom.ReferenceName, out var domain))
                 {
-                    yield return new ModelError(converter, "Le domaine '{0}' est introuvable.", dom) { ModelErrorType = ModelErrorType.TMD1005 };
+                    yield return new ModelError(ErrorType.TMD0003, converter, "Le domaine '{0}' est introuvable.", dom);
                     break;
                 }
 
@@ -106,7 +102,8 @@ internal class DomainResolver(ModelFile modelFile, IDictionary<string, Domain> d
     /// Résout les variables dans les domaines.
     /// </summary>
     /// <param name="config">Config.</param>
-    public void ResolveDomainVariables(ModelConfig config)
+    /// <returns>Erreurs.</returns>
+    public IEnumerable<ModelError> ResolveDomainVariables()
     {
         foreach (var domain in modelFile.Domains)
         {
@@ -117,6 +114,10 @@ internal class DomainResolver(ModelFile modelFile, IDictionary<string, Domain> d
                 if (varName.ReferenceName.TryGetPropertyVariable(config, domain.TemplateParameters, out var variable))
                 {
                     domain.Variables.TryAdd(varName.ReferenceName, variable);
+                }
+                else
+                {
+                    yield return new ModelError(ErrorType.TMD0011, domain, $"La variable '{varName.ReferenceName}' est introuvable.", varName, isError: false);
                 }
             }
         }

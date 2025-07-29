@@ -18,12 +18,14 @@
         "type": "string",
         "description": "Code du warning (TMDXXXX) à ignorer ",
         "enum": [
-          "TMD8000",
-          "TMD8001",
-          "TMD9001",
-          "TMD9002",
-          "TMD9003",
-          "TMD9004"
+          "TMD0009",
+          "TMD0010",
+          "TMD0011",
+          "TMD1003",
+          "TMD1004",
+          "TMD1005",
+          "TMD3004",
+          "TMD7002"
         ]
       }
     },
@@ -360,10 +362,10 @@
           },
           "mapperLocationPriority": {
             "type": "string",
-            "description": "Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persistent` ou `non-persistent`). Par défaut : 'persistent'",
+            "description": "Détermine le type de classe prioritaire pour déterminer la localisation des mappers générés (`persisted` ou `non-persisted`). Par défaut : 'persisted'",
             "enum": [
-              "persistent",
-              "non-persistent"
+              "persisted",
+              "non-persisted"
             ]
           },
           "enumsForStaticReferences": {
@@ -375,16 +377,8 @@
             "description": "Annote les tables et les colonnes générées par EF avec les commentaires du modèle (nécessite `UseEFMigrations`)."
           },
           "useRecords": {
-            "type": [
-              "string",
-              "boolean"
-            ],
-            "description": "Utilise des records (mutables) au lieu de classes pour la génération de classes. Par défaut : 'true'.",
-            "enum": [
-              true,
-              false,
-              "dtos-only"
-            ]
+            "type": "boolean",
+            "description": "Utilise des records (mutables) au lieu de classes pour la génération de classes. Par défaut : 'true'."
           },
           "usePrimaryConstructors": {
             "type": "boolean",

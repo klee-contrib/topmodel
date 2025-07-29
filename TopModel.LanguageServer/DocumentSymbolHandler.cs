@@ -3,6 +3,7 @@ using OmniSharp.Extensions.LanguageServer.Protocol.Document;
 using OmniSharp.Extensions.LanguageServer.Protocol.Models;
 using OmniSharp.Extensions.LanguageServer.Protocol.Server;
 using TopModel.Core;
+using TopModel.Core.Utils;
 
 namespace TopModel.LanguageServer;
 
@@ -53,6 +54,20 @@ public class DocumentSymbolHandler(ModelStore modelStore, ILanguageServerFacade 
                 {
                     Deprecated = false,
                     Kind = SymbolKind.Struct,
+                    Name = d.Name,
+                    Location = new Location
+                    {
+                        Range = d.GetLocation()?.ToRange()!,
+                        Uri = request.TextDocument.Uri
+                    }
+                };
+            }))
+            .Concat(file.Annotations.Select(d =>
+            {
+                return new SymbolInformation
+                {
+                    Deprecated = false,
+                    Kind = SymbolKind.Interface,
                     Name = d.Name,
                     Location = new Location
                     {

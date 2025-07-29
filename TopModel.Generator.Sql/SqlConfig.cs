@@ -1,4 +1,4 @@
-﻿using TopModel.Core;
+﻿using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Generator.Sql.Procedural;
 using TopModel.Generator.Sql.Ssdt;

@@ -2,6 +2,7 @@
 using System.Text;
 using NJsonSchema;
 using NJsonSchema.Validation;
+using TopModel.Core.Loaders.YamlUtils;
 using TopModel.Utils;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
@@ -31,6 +32,7 @@ public class FileChecker
             .WithNodeTypeResolver(new InferTypeFromValueResolver())
             .WithTypeConverter(new StringListTypeConverter())
             .WithTypeConverter(new LocatedStringTypeConverter())
+            .WithTypeConverter(new ReferenceTypeConverter())
             .IgnoreUnmatchedProperties()
             .Build();
         _serializer = new SerializerBuilder()
@@ -94,7 +96,7 @@ public class FileChecker
                 case "noWarn":
                     parser.ConsumeSequence(() =>
                     {
-                        config.NoWarn.Add(Enum.Parse<ModelErrorType>(parser.Consume<Scalar>().Value));
+                        config.NoWarn.Add(Enum.Parse<ErrorType>(parser.Consume<Scalar>().Value));
                     });
                     break;
                 case "pluralizeTableNames":

@@ -8,6 +8,7 @@ public class Reference
     internal Reference()
     {
         ReferenceName = string.Empty;
+        Scalar = new Scalar(string.Empty);
     }
 
     internal Reference(Scalar scalar)
@@ -15,6 +16,7 @@ public class Reference
         Start = scalar.Start;
         End = scalar.End;
         ReferenceName = scalar.Value;
+        Scalar = scalar;
     }
 
     public Mark Start { get; set; }
@@ -24,4 +26,6 @@ public class Reference
     public string ReferenceName { get; set; }
 
     public string Position => $"[{Start.Line},{Start.Column}]";
+
+    internal Scalar Scalar { get; }
 }

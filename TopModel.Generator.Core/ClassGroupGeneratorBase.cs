@@ -1,24 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using TopModel.Utils;
 
 namespace TopModel.Generator.Core;
 
-public abstract class ClassGroupGeneratorBase<T> : GeneratorBase<T>
+public abstract class ClassGroupGeneratorBase<T>(ILogger<ClassGroupGeneratorBase<T>> logger, IFileWriterProvider writerProvider) : GeneratorBase<T>(logger, writerProvider)
     where T : GeneratorConfigBase
 {
-    [Obsolete("Utiliser la surcharge avec le IFileWriterProvider")]
-    public ClassGroupGeneratorBase(ILogger<ClassGroupGeneratorBase<T>> logger)
-        : base(logger)
-    {
-    }
-
-    public ClassGroupGeneratorBase(ILogger<ClassGroupGeneratorBase<T>> logger, IFileWriterProvider writerProvider)
-        : base(logger, writerProvider)
-    {
-    }
-
     public override List<string> GeneratedFiles => Classes
         .SelectMany(c => Config.Tags.Intersect(c.Tags).SelectMany(tag => GetFileNames(c, tag)))
         .Select(f => f.FileName)

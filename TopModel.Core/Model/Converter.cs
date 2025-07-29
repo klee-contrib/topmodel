@@ -1,9 +1,10 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Core.Model.Implementation;
+using TopModel.Core.Utils;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
-public class Converter
+public class Converter : IVariableContainer
 {
 #nullable disable
     /// <summary>
@@ -33,12 +34,12 @@ public class Converter
     public Dictionary<string, ConverterImplementation> Implementations { get; set; } = [];
 
     public IEnumerable<ParameterReference> VariableReferences => Implementations.Values
-        .SelectMany(i => i.TextWithVariables.Variables);
+        .SelectMany(i => i.Text.Variables);
 
     public Dictionary<string, Variable> Variables { get; } = [];
 
     public IEnumerable<TransformReference> TransformReferences => Implementations.Values
-         .SelectMany(i => i.TextWithVariables.Transforms)
+         .SelectMany(i => i.Text.Transforms)
          .Where(pr => pr.ReferenceName.IsValidTransform());
 
 #nullable disable

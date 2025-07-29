@@ -18,6 +18,7 @@
   - [Classes](/model/classes.md)
   - [Endpoints](/model/endpoints.md)
   - [Mappers](/model/mappers.md)
+  - [Annotations](/model/annotations.md)
   - [Décorateurs](/model/decorators.md)
   - [Flux de données](/model/dataFlows.md)
   - [Multilinguisme](/model/i18n.md)

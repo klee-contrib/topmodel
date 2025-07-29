@@ -1,4 +1,6 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
@@ -17,7 +19,7 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
             {
                 if (!referencedClasses.TryGetValue(mappings.ClassReference.ReferenceName, out var mappedClass))
                 {
-                    yield return new ModelError(classe, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", mappings.ClassReference) { ModelErrorType = ModelErrorType.TMD1002 };
+                    yield return new ModelError(ErrorType.TMD0002, classe, "La classe '{0}' est introuvable dans le fichier ou l'une de ses dépendances.", mappings.ClassReference);
                     continue;
                 }
 
@@ -30,7 +32,7 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
                     var currentProperty = classe.ExtendedProperties.FirstOrDefault(p => p.Name == mapping.Key.ReferenceName);
                     if (currentProperty == null)
                     {
-                        yield return new ModelError(classe, $"La propriété '{{0}}' est introuvable sur la classe '{classe}'.", mapping.Key) { ModelErrorType = ModelErrorType.TMD1004 };
+                        yield return new ModelError(ErrorType.TMD0004, classe, $"La propriété '{{0}}' est introuvable sur la classe '{classe}'.", mapping.Key);
                     }
 
                     if (mapping.Value.ReferenceName == "false")
@@ -41,7 +43,7 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
                     var mappedProperty = mappedClass.ExtendedProperties.FirstOrDefault(p => p.Name == mapping.Value.ReferenceName);
                     if (mappedProperty == null)
                     {
-                        yield return new ModelError(classe, $"La propriété '{{0}}' est introuvable sur la classe '{mappedClass}'.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1004 };
+                        yield return new ModelError(ErrorType.TMD0004, classe, $"La propriété '{{0}}' est introuvable sur la classe '{mappedClass}'.", mapping.Value);
                     }
 
                     if (currentProperty != null && mappedProperty != null)
@@ -64,33 +66,33 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
 
                         if (mappings.To && mappedProperty.Readonly)
                         {
-                            yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1024 };
+                            yield return new ModelError(ErrorType.TMD8008, classe, $"La propriété '{mappedProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.", mapping.Value);
                         }
                         else if (!mappings.To && currentProperty.Readonly)
                         {
-                            yield return new ModelError(classe, $"La propriété '{currentProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.", mapping.Key) { ModelErrorType = ModelErrorType.TMD1024 };
+                            yield return new ModelError(ErrorType.TMD8008, classe, $"La propriété '{currentProperty.Name}' ne peut pas être la cible d'un mapping car elle a été marquée comme 'readonly'.", mapping.Key);
                         }
 
                         if ((sourceCp == null || mappedAp == null)
                             && currentProperty.Domain != mappedProperty.Domain
                             && !converters.Any(c => c.From.Any(cf => cf == (mappings.To ? currentProperty.Domain : mappedProperty.Domain)) && c.To.Any(ct => ct == (mappings.To ? mappedProperty.Domain : currentProperty.Domain))))
                         {
-                            yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine ('{mappedProperty.Domain?.Name}' au lieu de '{currentProperty.Domain?.Name}') et qu'il n'existe pas de convertisseur entre les deux.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1014 };
+                            yield return new ModelError(ErrorType.TMD8001, classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à '{currentProperty.Name}' car elle n'a pas le même domaine ('{mappedProperty.Domain?.Name}' au lieu de '{currentProperty.Domain?.Name}') et qu'il n'existe pas de convertisseur entre les deux.", mapping.Value);
                         }
 
                         if (sourceCp != null)
                         {
                             if (mappedAp == null)
                             {
-                                yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car ce n'est pas une association.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1017 };
+                                yield return new ModelError(ErrorType.TMD8004, classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car ce n'est pas une association.", mapping.Value);
                             }
                             else if (!useLegacyAssociationCompositionMappers && (mappedAp.Type.IsToMany() || sourceCp.Domain != null))
                             {
-                                yield return new ModelError(classe, $"L'association '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car l'association et la composition doivent toutes les deux être simples.", mapping.Value) { ModelErrorType = ModelErrorType.TMD1018 };
+                                yield return new ModelError(ErrorType.TMD8005, classe, $"L'association '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car l'association et la composition doivent toutes les deux être simples.", mapping.Value);
                             }
                             else if (!useLegacyAssociationCompositionMappers && sourceCp.CompositionPrimaryKey?.Domain != mappedAp.Domain && !converters.Any(c => c.From.Any(cf => cf == sourceCp.CompositionPrimaryKey?.Domain) && c.To.Any(ct => ct == mappedAp.Domain)))
                             {
-                                yield return new ModelError(classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la composition '{sourceCp.Composition.Name}' ('{mappedProperty.Domain?.Name}' au lieu de '{sourceCp.CompositionPrimaryKey?.Domain?.Name ?? string.Empty}').", mapping.Value) { ModelErrorType = ModelErrorType.TMD1019 };
+                                yield return new ModelError(ErrorType.TMD8006, classe, $"La propriété '{mappedProperty.Name}' ne peut pas être mappée à la composition '{currentProperty.Name}' car elle n'a pas le même domaine que la composition '{sourceCp.Composition.Name}' ('{mappedProperty.Domain?.Name}' au lieu de '{sourceCp.CompositionPrimaryKey?.Domain?.Name ?? string.Empty}').", mapping.Value);
                             }
                         }
                     }
@@ -106,7 +108,7 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
                         var currentProperty = classe.ExtendedProperties.FirstOrDefault(p => p.Name == mapping.TargetPropertyReference.ReferenceName);
                         if (currentProperty == null)
                         {
-                            yield return new ModelError(classe, $"La propriété '{{0}}' est introuvable sur la classe '{classe}'.", mapping.TargetPropertyReference) { ModelErrorType = ModelErrorType.TMD1004 };
+                            yield return new ModelError(ErrorType.TMD0004, classe, $"La propriété '{{0}}' est introuvable sur la classe '{classe}'.", mapping.TargetPropertyReference);
                         }
 
                         mapping.TargetProperty = currentProperty;
@@ -116,7 +118,7 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
                         var mappedProperty = classe.ExtendedProperties.FirstOrDefault(p => p.Name == mapping.Property.Name);
                         if (mappedProperty == null)
                         {
-                            yield return new ModelError(classe, $"La propriété '{mapping.Property.Name}' est introuvable sur la classe '{classe}'.", mapping.Property.GetLocation()) { ModelErrorType = ModelErrorType.TMD1004 };
+                            yield return new ModelError(ErrorType.TMD0004, classe, $"La propriété '{mapping.Property.Name}' est introuvable sur la classe '{classe}'.", mapping.Property.GetLocation());
                         }
 
                         mapping.TargetProperty = mappedProperty;
@@ -139,18 +141,18 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
 
                         if (targetCp == null && sourceCp != null)
                         {
-                            yield return new ModelError(classe, $"La propriété '{mapping.Property.Name}' ne peut pas être une composition pour définir un mapping vers '{mapping.TargetProperty.Name}'.", mapping.Property.GetLocation()) { ModelErrorType = ModelErrorType.TMD1033 };
+                            yield return new ModelError(ErrorType.TMD8011, classe, $"La propriété '{mapping.Property.Name}' ne peut pas être une composition pour définir un mapping vers '{mapping.TargetProperty.Name}'.", mapping.Property.GetLocation());
                         }
 
                         if (targetCp != null && (sourceCp == null || targetCp.Composition != sourceCp.Composition))
                         {
-                            yield return new ModelError(classe, $"La propriété '{mapping.Property.Name}' doit être une composition de la même classe que '{mapping.TargetProperty.Name}' pour définir un mapping entre les deux.", mapping.Property.GetLocation()) { ModelErrorType = ModelErrorType.TMD1032 };
+                            yield return new ModelError(ErrorType.TMD8010, classe, $"La propriété '{mapping.Property.Name}' doit être une composition de la même classe que '{mapping.TargetProperty.Name}' pour définir un mapping entre les deux.", mapping.Property.GetLocation());
                         }
 
                         if (mapping.Property.Domain != mapping.TargetProperty.Domain
                             && !converters.Any(c => c.From.Any(cf => cf == mapping.Property.Domain) && c.To.Any(ct => ct == mapping.TargetProperty.Domain)))
                         {
-                            yield return new ModelError(classe, $"La propriété '{mapping.Property.Name}' ne peut pas être mappée à '{mapping.TargetProperty.Name}' car elle n'a pas le même domaine ('{mapping.Property.Domain?.Name}' au lieu de '{mapping.TargetProperty.Domain?.Name}') et qu'il n'existe pas de convertisseur entre les deux.", mapping.Property.GetLocation()) { ModelErrorType = ModelErrorType.TMD1014 };
+                            yield return new ModelError(ErrorType.TMD8001, classe, $"La propriété '{mapping.Property.Name}' ne peut pas être mappée à '{mapping.TargetProperty.Name}' car elle n'a pas le même domaine ('{mapping.Property.Domain?.Name}' au lieu de '{mapping.TargetProperty.Domain?.Name}') et qu'il n'existe pas de convertisseur entre les deux.", mapping.Property.GetLocation());
                         }
                     }
                 }
@@ -160,7 +162,7 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
             {
                 foreach (var param in mapper.Params.Where((e, i) => mapper.Params.Where((p, j) => p.GetName() == e.GetName() && j < i).Any()))
                 {
-                    yield return new ModelError(classe, $"Le nom '{param.GetName()}' est déjà utilisé.", param.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
+                    yield return new ModelError(ErrorType.TMD0001, classe, $"Le nom '{param.GetName()}' est déjà utilisé.", param.GetLocation());
                 }
 
                 var mappedProperties = mapper.Params.SelectMany(p => p.Match(
@@ -179,7 +181,7 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
                 foreach (var mapping in mappedProperties.Where((e, i) => mappedProperties.Where((p, j) => p.ReferenceName == e.ReferenceName && j < i).Any()))
                 {
                     hasDoublon = true;
-                    yield return new ModelError(classe, $"La propriété '{mapping.ReferenceName}' est déjà initialisée dans ce mapper.", mapping.Reference) { ModelErrorType = ModelErrorType.TMD1015 };
+                    yield return new ModelError(ErrorType.TMD8002, classe, $"La propriété '{mapping.ReferenceName}' est déjà initialisée dans ce mapper.", mapping.Reference);
                 }
 
                 if (!hasDoublon)
@@ -230,13 +232,13 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
                     {
                         foreach (var mapping in finalMappings.Where((e, i) => finalMappings.Where((p, j) => p.Key == e.Key && j < i).Any()))
                         {
-                            yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Key.Name}' : {string.Join(", ", mapper.ClassParams.SelectMany(p => p.Mappings.Where(m => m.Key == mapping.Key).Select(m => $"'{p.Name}.{m.Value}'")))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
+                            yield return new ModelError(ErrorType.TMD8003, classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapping.Key.Name}' : {string.Join(", ", mapper.ClassParams.SelectMany(p => p.Mappings.Where(m => m.Key == mapping.Key).Select(m => $"'{p.Name}.{m.Value}'")))}.", mapper.GetLocation());
                         }
 
                         foreach (var param in mapper.Params.Where((p, i) => p.GetRequired() && mapper.Params.Where((q, j) => !q.GetRequired() && j < i).Any()))
                         {
                             var previousRequired = mapper.Params.Where((q, j) => !q.GetRequired() && j < mapper.Params.IndexOf(param)).Select(p => p.GetName());
-                            yield return new ModelError(classe, $"Le paramètre '{param.GetName()}' du mapper ne peut pas être obligatoire si l'un des paramètres précédents ({string.Join(", ", previousRequired)}) ne l'est pas.", param.GetLocation()) { ModelErrorType = ModelErrorType.TMD1034 };
+                            yield return new ModelError(ErrorType.TMD8012, classe, $"Le paramètre '{param.GetName()}' du mapper ne peut pas être obligatoire si l'un des paramètres précédents ({string.Join(", ", previousRequired)}) ne l'est pas.", param.GetLocation());
                         }
                     }
                 }
@@ -244,7 +246,7 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
 
             foreach (var mapper in classe.ToMappers.Where((e, i) => classe.ToMappers.Where((p, j) => p.Name == e.Name && j < i).Any()))
             {
-                yield return new ModelError(classe, $"Le nom '{mapper.Name}' est déjà utilisé.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD0003 };
+                yield return new ModelError(ErrorType.TMD0001, classe, $"Le nom '{mapper.Name}' est déjà utilisé.", mapper.GetLocation());
             }
 
             foreach (var mapper in classe.ToMappers.Where(m => m.Class != null))
@@ -286,7 +288,7 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
 
                 foreach (var mapping in mapper.Mappings.Where((e, i) => mapper.Mappings.Where((p, j) => p.Value == e.Value && j < i).Any()))
                 {
-                    yield return new ModelError(classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapper.Class}.{mapping.Value?.Name}' : {string.Join(", ", mapper.Mappings.Where(p => p.Value == mapping.Value).Select(p => $"'{p.Key.Name}'"))}.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1016 };
+                    yield return new ModelError(ErrorType.TMD8003, classe, $"Plusieurs propriétés de la classe peuvent être mappées sur '{mapper.Class}.{mapping.Value?.Name}' : {string.Join(", ", mapper.Mappings.Where(p => p.Value == mapping.Value).Select(p => $"'{p.Key.Name}'"))}.", mapper.GetLocation());
                 }
             }
         }
@@ -298,7 +300,7 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
             {
                 if (!mapper.ClassParams.SelectMany(p => p.Mappings).Any() && !mapper.PropertyParams.Any())
                 {
-                    yield return new ModelError(classe, "Aucun mapping n'a été trouvé sur ce mapper.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1025 };
+                    yield return new ModelError(ErrorType.TMD8009, classe, "Aucun mapping n'a été trouvé sur ce mapper.", mapper.GetLocation());
                 }
             }
 
@@ -306,7 +308,7 @@ internal class MapperResolver(ModelFile modelFile, IDictionary<string, Class> re
             {
                 if (mapper.Mappings.Count == 0)
                 {
-                    yield return new ModelError(classe, "Aucun mapping n'a été trouvé sur ce mapper.", mapper.GetLocation()) { ModelErrorType = ModelErrorType.TMD1025 };
+                    yield return new ModelError(ErrorType.TMD8009, classe, "Aucun mapping n'a été trouvé sur ce mapper.", mapper.GetLocation());
                 }
             }
         }

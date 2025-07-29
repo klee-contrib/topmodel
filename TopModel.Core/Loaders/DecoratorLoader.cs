@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
@@ -27,6 +28,9 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                 case "preservePropertyCasing":
                     decorator.PreservePropertyCasing = value!.Value == "true";
                     break;
+                case "target":
+                    decorator.Target = value!.Value.ParseEnum<Target>();
+                    break;
                 case "decorators":
                     parser.ConsumeSequence(() =>
                     {
@@ -34,12 +38,10 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                         {
                             parser.ConsumeMapping(prop =>
                             {
-                                var decoratorRef = new DecoratorReference(prop);
-
-                                parser.ConsumeSequence(() =>
+                                var decoratorRef = new DecoratorReference(prop)
                                 {
-                                    decoratorRef.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
-                                });
+                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                };
 
                                 decorator.DecoratorReferences.Add(decoratorRef);
                             });
@@ -47,6 +49,27 @@ public class DecoratorLoader(FileChecker fileChecker, PropertyLoader propertyLoa
                         else
                         {
                             decorator.DecoratorReferences.Add(new DecoratorReference(parser.Consume<Scalar>()));
+                        }
+                    });
+                    break;
+                case "annotations":
+                    parser.ConsumeSequence(() =>
+                    {
+                        if (parser.Current is MappingStart)
+                        {
+                            parser.ConsumeMapping(prop =>
+                            {
+                                var annotation = new AnnotationReference(prop)
+                                {
+                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                };
+
+                                decorator.AnnotationReferences.Add(annotation);
+                            });
+                        }
+                        else
+                        {
+                            decorator.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
                         }
                     });
                     break;

@@ -2,20 +2,6 @@
   "$id": "topmodel.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
-    "target": {
-      "type": "string",
-      "description": "Cible de la génération",
-      "enum": [
-        "None",
-        "Persisted",
-        "Dto",
-        "Persisted_Dto",
-        "Api",
-        "Api_Persisted",
-        "Api_Dto",
-        "Api_Dto_Persisted"
-      ]
-    },
     "domain": {
       "oneOf": [
         {
@@ -35,12 +21,49 @@
               "description": "Nom du domaine."
             },
             "parameters": {
-              "type": "array",
+              "type": "object",
               "description": "Paramètres du domaine.",
-              "items": {
-                "type": "string",
-                "description": "Paramètre de domaine."
+              "additionalProperties": {
+                "type": "string"
               }
+            }
+          }
+        }
+      ]
+    },
+    "annotation": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Nom de l'annotation"
+        },
+        {
+          "type": "object",
+          "description": "Nom de l'annotation",
+          "additionalProperties": {
+            "type": "object",
+            "description": "Paramètres de l'annotation",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "decorator": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Nom du décorateur"
+        },
+        {
+          "type": "object",
+          "description": "Nom du décorateur",
+          "additionalProperties": {
+            "type": "object",
+            "description": "Paramètres du décorateur",
+            "additionalProperties": {
+              "type": "string"
             }
           }
         }
@@ -91,6 +114,13 @@
             },
             "defaultValue": {
               "description": "Valeur par défaut de la propriété, dans les classes et les endpoints."
+            },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations de la propriété.",
+              "items": {
+                "$ref": "#/definitions/annotation"
+              }
             },
             "customProperties": {
               "type": "object",
@@ -166,6 +196,13 @@
             "property": {
               "type": "string",
               "description": "Propriété de la classe cible à utiliser pour la clé étrangère (au lieu de la clé primaire)."
+            },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations de la propriété.",
+              "items": {
+                "$ref": "#/definitions/annotation"
+              }
             },
             "customProperties": {
               "type": "object",
@@ -359,6 +396,13 @@
             "defaultValue": {
               "description": "Surcharge la valeur par défaut de la propriété."
             },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations de la propriété. S'ajoute aux annotations de la propriété originale.",
+              "items": {
+                "$ref": "#/definitions/annotation"
+              }
+            },
             "customProperties": {
               "type": "object",
               "description": "Propriétés de propriété personnalisées, pour utilisation dans un générateur personnalisé. Elles s'ajouteront à celles de la propriété originale (avec remplacement si conflit).",
@@ -408,6 +452,13 @@
             "trigram": {
               "type": "string",
               "description": "Surcharge locale du trigram"
+            },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations de la propriété.",
+              "items": {
+                "$ref": "#/definitions/annotation"
+              }
             },
             "customProperties": {
               "type": "object",
@@ -529,6 +580,87 @@
     },
     {
       "type": "object",
+      "description": "Définition d'une annotation",
+      "required": [
+        "annotation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "annotation": {
+          "type": "object",
+          "description": "Annotation.",
+          "required": [
+            "name",
+            "description"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Nom de l'annotation."
+            },
+            "description": {
+              "type": "string",
+              "description": "Description de l'annotation."
+            },
+            "target": {
+              "type": "array",
+              "description": "Si renseigné, limite les objets cibles possibles pour cette annotation à ceux listés ici.",
+              "items": {
+                "type": "string",
+                "enum": [ "class", "endpoint", "property", "regular-property", "association-property", "composition-property" ]
+              }
+            },
+            "global": {
+              "type": "boolean",
+              "description": "Si renseigné, cette annotation sera automatiquement ajoutée à tous les objets ciblés par cette annotation dans le modèle. Le fichier contenant cette annotation sera également automatiquement ajouté en tant que dépendance de tous les fichiers du modèle."
+            },
+            "parameters": {
+              "type": "array",
+              "description": "Définitions de paramètres, utilisables dans les templates pour les implémentations.",
+              "items": {
+                "$ref": "#/definitions/parameter"
+              }
+            }
+          },
+          "additionalProperties": {
+            "type": "array",
+            "description": "Implémentation de l'annotation dans un langage",
+            "items": {
+              "type": "object",
+              "description": "Annotation à ajouter",
+              "required": [
+                "text"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "description": "Annotation à ajouter. Peut contenir des variables"
+                },
+                "when": {
+                  "type": "array",
+                  "description": "Si renseigné, pose des contraintes sur l'objet cible de l'annotation qu'il devra respecter pour qu'elle soit posée dans le code généré.",
+                  "items": {
+                    "type": "string",
+                    "enum": [ "non-persisted", "persisted", "class-property", "endpoint-param", "primary-key" ]
+                  }
+                },
+                "imports": {
+                  "type": "array",
+                  "description": "Liste des imports nécessaires au bon fonctionnement de cette annotation",
+                  "items": {
+                    "type": "string",
+                    "description": "Import nécessaire au bon fonctionnement de l'annotation. Peut contenir des variables"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
       "description": "Définition d'un domaine.",
       "required": [
         "domain"
@@ -578,6 +710,13 @@
               "type": "string",
               "description": "Type de médias (utilisé si retourné par un endpoint)."
             },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations du domaine.",
+              "items": {
+                "$ref": "#/definitions/annotation"
+              }
+            },
             "parameters": {
               "type": "array",
               "description": "Définitions de paramètres, utilisables dans les templates pour les implémentations.",
@@ -605,35 +744,6 @@
                 "items": {
                   "type": "string",
                   "description": "Import nécessaire au bon fonctionnement du type. Peut contenir des variables"
-                }
-              },
-              "annotations": {
-                "type": "array",
-                "description": "Annotations à ajouter sur toutes les propriétés de ce domaine (par exemple pour aider l'ORM a mapper le type correctement).",
-                "items": {
-                  "type": "object",
-                  "description": "Annotations à ajouter  (ex : `@CreatedDate`)",
-                  "required": [
-                    "text"
-                  ],
-                  "additionalProperties": false,
-                  "properties": {
-                    "text": {
-                      "type": "string",
-                      "description": "Annotation à ajouter. Peut contenir des variables"
-                    },
-                    "target": {
-                      "$ref": "#/definitions/target"
-                    },
-                    "imports": {
-                      "type": "array",
-                      "description": "Liste des imports nécessaires au bon fonctionnement de cette annotation",
-                      "items": {
-                        "type": "string",
-                        "description": "Import nécessaire au bon fonctionnement de l'annotation. Peut contenir des variables"
-                      }
-                    }
-                  }
                 }
               },
               "values": {
@@ -733,31 +843,27 @@
               "type": "string",
               "description": "Description du décorateur."
             },
+            "target": {
+              "type": "string",
+              "description": "Si renseigné, limite l'usage de ce décorateur aux classes ou aux endpoints.",
+              "enum": [ "class", "endpoint" ]
+            },
             "preservePropertyCasing": {
               "type": "boolean",
               "description": "Garde les noms de propriétés tels quels lors de la génération, au lieu de les convertir dans le format du langage cible."
             },
             "decorators": {
               "type": "array",
-              "description": "Décorateurs du décorateur",
+              "description": "Décorateurs du décorateur.",
               "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Nom du décorateur"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Nom du décorateur",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "description": "Paramètre du décorateur"
-                      }
-                    }
-                  }
-                ]
+                "$ref": "#/definitions/decorator"
+              }
+            },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations du décorateur.",
+              "items": {
+                "$ref": "#/definitions/annotation"
               }
             },
             "properties": {
@@ -787,13 +893,6 @@
               "implements": {
                 "type": "array",
                 "description": "Interfaces (hors TopModel) qu'une classe implémentant ce décorateur doit implémenter.",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "annotations": {
-                "type": "array",
-                "description": "Annotations à ajouter sur une classe implémentant ce décorateur.",
                 "items": {
                   "type": "string"
                 }
@@ -893,25 +992,16 @@
             },
             "decorators": {
               "type": "array",
-              "description": "Décorateurs de la classe",
+              "description": "Décorateurs de la classe.",
               "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Nom du décorateur"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Nom du décorateur",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "description": "Paramètre du décorateur"
-                      }
-                    }
-                  }
-                ]
+                "$ref": "#/definitions/decorator"
+              }
+            },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations de la classe.",
+              "items": {
+                "$ref": "#/definitions/annotation"
               }
             },
             "properties": {
@@ -1142,34 +1232,25 @@
                 "$ref": "#/definitions/property"
               }
             },
+            "decorators": {
+              "type": "array",
+              "description": "Décorateurs de l'endpoint.",
+              "items": {
+                "$ref": "#/definitions/decorator"
+              }
+            },
+            "annotations": {
+              "type": "array",
+              "description": "Annotations de l'endpoint.",
+              "items": {
+                "$ref": "#/definitions/annotation"
+              }
+            },
             "customProperties": {
               "type": "object",
               "description": "Propriétés d'endpoint personnalisées, pour utilisation dans un générateur personnalisé.",
               "additionalProperties": {
                 "type": [ "string", "boolean", "integer", "number" ]
-              }
-            },
-            "decorators": {
-              "type": "array",
-              "description": "Décorateurs du endpoint",
-              "items": {
-                "oneOf": [
-                  {
-                    "type": "string",
-                    "description": "Nom du décorateur"
-                  },
-                  {
-                    "type": "object",
-                    "description": "Nom du décorateur",
-                    "additionalProperties": {
-                      "type": "array",
-                      "items": {
-                        "type": "string",
-                        "description": "Paramètre du décorateur"
-                      }
-                    }
-                  }
-                ]
               }
             }
           }

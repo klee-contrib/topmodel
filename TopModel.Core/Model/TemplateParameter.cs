@@ -1,4 +1,6 @@
-﻿namespace TopModel.Core;
+﻿using TopModel.Core.FileModel;
+
+namespace TopModel.Core.Model;
 
 public class TemplateParameter
 {
@@ -9,6 +11,8 @@ public class TemplateParameter
     public bool Required { get; set; }
 
     public string DefaultValue { get; set; } = string.Empty;
+
+    public Annotation? Annotation { get; set; }
 
     public Decorator? Decorator { get; set; }
 

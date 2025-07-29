@@ -96,13 +96,13 @@ public partial record Utilisateur
     /// </summary>
     [Column("uti_date_creation")]
     [Required]
-    [Domain(Domains.DateCreation)]
+    [Domain(Domains.DateHeure)]
     public DateTime? DateCreation { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Date de modification de l'utilisateur.
     /// </summary>
     [Column("uti_date_modification")]
-    [Domain(Domains.DateModification)]
+    [Domain(Domains.DateHeure)]
     public DateTime? DateModification { get; set; } = DateTime.UtcNow;
 }

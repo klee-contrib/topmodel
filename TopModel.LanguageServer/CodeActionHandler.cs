@@ -32,24 +32,27 @@ public class CodeActionHandler(ModelStore modelStore, ILanguageServerFacade faca
 
             foreach (var diagnostic in request.Context.Diagnostics.Where(d => !string.IsNullOrEmpty(d.Code)))
             {
-                var modelErrorType = Enum.Parse<ModelErrorType>(diagnostic.Code!);
+                var modelErrorType = Enum.Parse<ErrorType>(diagnostic.Code!);
                 switch (modelErrorType)
                 {
-                    case ModelErrorType.TMD1005:
-                        codeActions.AddRange(GetCodeActionCreateDomain(request, diagnostic));
-                        break;
-                    case ModelErrorType.TMD1002:
+                    case ErrorType.TMD0002:
                         codeActions.AddRange(GetCodeActionMissingClassImport(request, diagnostic, modelFile));
                         codeActions.AddRange(GetCodeActionAddClass(request, diagnostic, modelFile));
                         break;
-                    case ModelErrorType.TMD1006:
-                        codeActions.AddRange(GetCodeActionMissingEndpointImport(request, diagnostic, modelFile));
+                    case ErrorType.TMD0003:
+                        codeActions.AddRange(GetCodeActionCreateDomain(request, diagnostic));
                         break;
-                    case ModelErrorType.TMD1008:
+                    case ErrorType.TMD0005:
                         codeActions.AddRange(GetCodeActionMissingDecoratorImport(request, diagnostic, modelFile));
                         break;
-                    case ModelErrorType.TMD2000:
+                    case ErrorType.TMD2001:
+                        codeActions.AddRange(GetCodeActionMissingAnnotationImport(request, diagnostic, modelFile));
+                        break;
+                    case ErrorType.TMD4002:
                         codeActions.AddRange(GetCodeActionMissingDataFlowImport(request, diagnostic, modelFile));
+                        break;
+                    case ErrorType.TMD0006:
+                        codeActions.AddRange(GetCodeActionMissingEndpointImport(request, diagnostic, modelFile));
                         break;
                     default:
                         break;
@@ -191,6 +194,13 @@ domain:
                 }
             };
         }).ToList();
+    }
+
+    protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingAnnotationImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)
+    {
+        var (decoratorName, useIndex) = GetImport(request, diagnostic, modelFile);
+        return modelStore.Annotations.Where(c => c.Name == decoratorName)
+            .Select(annotationToImport => GetFileImportAction(diagnostic, modelFile, annotationToImport.ModelFile, useIndex));
     }
 
     protected IEnumerable<CommandOrCodeAction> GetCodeActionMissingClassImport(CodeActionParams request, Diagnostic diagnostic, ModelFile modelFile)

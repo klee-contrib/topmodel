@@ -1,10 +1,11 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
 namespace TopModel.Core.Loaders;
 
-public class EndpointLoader(PropertyLoader propertyLoader) : ILoader<Endpoint>
+public class EndpointLoader(FileChecker fileChecker, PropertyLoader propertyLoader) : ILoader<Endpoint>
 {
     /// <inheritdoc cref="ILoader{T}.Load" />
     public Endpoint Load(Parser parser)
@@ -27,7 +28,7 @@ public class EndpointLoader(PropertyLoader propertyLoader) : ILoader<Endpoint>
                     endpoint.Method = value!.Value;
                     break;
                 case "route":
-                    endpoint.RouteWithVariables = new StringWithVariables(value!);
+                    endpoint.Route = new StringWithVariables(value!);
                     break;
                 case "description":
                     endpoint.Description = value!.Value;
@@ -54,12 +55,10 @@ public class EndpointLoader(PropertyLoader propertyLoader) : ILoader<Endpoint>
                         {
                             parser.ConsumeMapping(prop =>
                             {
-                                var decorator = new DecoratorReference(prop);
-
-                                parser.ConsumeSequence(() =>
+                                var decorator = new DecoratorReference(prop)
                                 {
-                                    decorator.ParameterReferences.Add(new ParameterReference(parser.Consume<Scalar>()));
-                                });
+                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                };
 
                                 endpoint.DecoratorReferences.Add(decorator);
                             });
@@ -67,6 +66,27 @@ public class EndpointLoader(PropertyLoader propertyLoader) : ILoader<Endpoint>
                         else
                         {
                             endpoint.DecoratorReferences.Add(new DecoratorReference(parser.Consume<Scalar>()));
+                        }
+                    });
+                    break;
+                case "annotations":
+                    parser.ConsumeSequence(() =>
+                    {
+                        if (parser.Current is MappingStart)
+                        {
+                            parser.ConsumeMapping(prop =>
+                            {
+                                var annotation = new AnnotationReference(prop)
+                                {
+                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                };
+
+                                endpoint.AnnotationReferences.Add(annotation);
+                            });
+                        }
+                        else
+                        {
+                            endpoint.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
                         }
                     });
                     break;

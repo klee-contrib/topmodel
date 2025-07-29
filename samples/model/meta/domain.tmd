@@ -3,6 +3,19 @@ module: Common
 tags: []
 
 ---
+annotation:
+  name: Email
+  description: Email
+  target:
+    - property
+  java:
+    - text: "@Email"
+      when:
+        - class-property
+        - non-persisted
+      imports:
+        - jakarta.validation.constraints.Email
+---
 domain:
   name: DO_BOOLEEN
   label: boolean
@@ -100,78 +113,19 @@ domain:
         now: now()
   php:
     type: Date
----
-domain:
-  name: DO_DATE_CREATION
-  label: Date de création
-  csharp:
-    type: DateTime
-    values:
-      overrides:
-        now: DateTime.UtcNow
-  java:
-    type: LocalDateTime
-    imports:
-      - java.time.LocalDateTime
-    annotations:
-      - text: "@CreatedDate"
-        target: Persisted
-        imports:
-          - org.springframework.data.annotation.CreatedDate
-    values:
-      overrides:
-        now: LocalDateTime.now()
-  sql:
-    type: date
-    values:
-      overrides:
-        now: now()
-  php:
-    type: Date
----
-domain:
-  name: DO_DATE_MODIFICATION
-  label: Date de modification
-  csharp:
-    type: DateTime
-    values:
-      overrides:
-        now: DateTime.UtcNow
-  java:
-    type: LocalDateTime
-    imports:
-      - java.time.LocalDateTime
-    annotations:
-      - text: "@LastModifiedDate"
-        target: Persisted
-        imports:
-          - org.springframework.data.annotation.LastModifiedDate
-          - org.springframework.data.jpa.domain.support.AuditingEntityListener
-    values:
-      overrides:
-        now: LocalDateTime.now()
-  sql:
-    type: date
-    values:
-      overrides:
-        now: now()
-  php:
-    type: Date
+
 ---
 domain:
   name: DO_EMAIL
   label: Email
+  annotations:
+    - Email
   ts:
     type: string
   csharp:
     type: string
   java:
     type: String
-    annotations:
-      - text: "@Email"
-        target: Dto
-        imports:
-          - jakarta.validation.constraints.Email
   sql:
     type: varchar
   length: 50

@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 
 namespace TopModel.UI.Graphing;
 

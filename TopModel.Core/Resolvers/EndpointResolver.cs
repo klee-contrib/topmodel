@@ -1,4 +1,5 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core.Resolvers;
@@ -15,11 +16,7 @@ internal class EndpointResolver(ModelFile modelFile)
         {
             foreach (var property in endpoint.Params.Where((e, i) => endpoint.Params.Where((p, j) => p.GetParamName() == e.GetParamName() && j < i).Any()))
             {
-                yield return new ModelError(modelFile, $"Le nom '{property.Name}' est déjà utilisé.", property.Decorator is not null ? endpoint.DecoratorReferences.FirstOrDefault(dr => dr.ReferenceName == property.Decorator.Name) : property.GetLocation())
-                {
-                    IsError = true,
-                    ModelErrorType = ModelErrorType.TMD0003
-                };
+                yield return new ModelError(ErrorType.TMD0001, modelFile, $"Le nom '{property.Name}' est déjà utilisé.", property.Decorator is not null ? endpoint.DecoratorReferences.FirstOrDefault(dr => dr.ReferenceName == property.Decorator.Name) : property.GetLocation());
             }
 
             foreach (var queryParam in endpoint.GetQueryAndMultipartParams())
@@ -28,7 +25,7 @@ internal class EndpointResolver(ModelFile modelFile)
 
                 if (endpoint.Params.Any(param => !param.IsQueryOrMultipartParam() && endpoint.Params.IndexOf(param) > index))
                 {
-                    yield return new ModelError(endpoint, $"Le paramètre de requête (ou multipart) '{queryParam.GetParamName()}' doit suivre tous les paramètres de route ou de body dans un endpoint.", queryParam.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD9003 };
+                    yield return new ModelError(ErrorType.TMD7002, endpoint, $"Le paramètre de requête (ou multipart) '{queryParam.GetParamName()}' doit suivre tous les paramètres de route ou de body dans un endpoint.", queryParam.GetLocation(), isError: false);
                 }
             }
 
@@ -43,7 +40,7 @@ internal class EndpointResolver(ModelFile modelFile)
 
                     if (param == null)
                     {
-                        yield return new ModelError(endpoint, $"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres. Les valeurs possibles sont : {string.Join(", ", endpoint.Params.Select(p => p.GetParamName()))}.") { ModelErrorType = ModelErrorType.TMD1027 };
+                        yield return new ModelError(ErrorType.TMD7003, endpoint, $"Le endpoint '{endpoint.Name}' définit un paramètre '{routeParamName}' dans sa route qui n'existe pas dans la liste des paramètres. Les valeurs possibles sont : {string.Join(", ", endpoint.Params.Select(p => p.GetParamName()))}.");
                     }
                 }
             }

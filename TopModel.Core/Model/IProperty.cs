@@ -1,8 +1,9 @@
-﻿using TopModel.Utils;
+﻿using TopModel.Core.FileModel;
+using TopModel.Utils;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
-public interface IProperty
+public interface IProperty : IAnnotationContainer
 {
     string Name { get; }
 
@@ -22,7 +23,9 @@ public interface IProperty
 
     Domain Domain { get; }
 
-    IList<string> DomainParameters { get; }
+    Dictionary<string, string> DomainParameters { get; }
+
+    DomainReference? DomainReference { get; }
 
     string Comment { get; }
 
@@ -51,7 +54,7 @@ public interface IProperty
         get
         {
             var prop = (this as AliasProperty)?.PersistentProperty ?? this;
-            var ap = (prop as AssociationProperty) ?? ((prop as AliasProperty)?.Property as AssociationProperty);
+            var ap = prop as AssociationProperty ?? (prop as AliasProperty)?.Property as AssociationProperty;
             var apPk = ap switch
             {
                 { Property: IProperty p } => p,
@@ -94,7 +97,7 @@ public interface IProperty
         get
         {
             var prop = (this as AliasProperty)?.PersistentProperty ?? this;
-            var ap = (prop as AssociationProperty) ?? ((prop as AliasProperty)?.Property as AssociationProperty);
+            var ap = prop as AssociationProperty ?? (prop as AliasProperty)?.Property as AssociationProperty;
             var apPk = ap switch
             {
                 { Property: IProperty p } => p,

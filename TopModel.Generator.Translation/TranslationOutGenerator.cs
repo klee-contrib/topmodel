@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using TopModel.Core;
+using TopModel.Core.Model;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 
@@ -30,7 +31,7 @@ public class TranslationOutGenerator(ILogger<TranslationOutGenerator> logger, Mo
             && !ExistsInStore(lang, p.ResourceKey)
             || !(
                 p.Class?.DefaultProperty == null ||
-                (p.Class?.Values.TrueForAll(r => ExistsInStore(lang, r.ResourceKey)) ?? false)))
+                (p.Class?.Values.All(r => ExistsInStore(lang, r.ResourceKey)) ?? false)))
         {
             return Path.Combine(
                 Config.OutputDirectory,

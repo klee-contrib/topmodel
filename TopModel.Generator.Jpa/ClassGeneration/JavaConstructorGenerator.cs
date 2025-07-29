@@ -1,4 +1,4 @@
-﻿using TopModel.Core;
+﻿using TopModel.Core.Model;
 
 namespace TopModel.Generator.Jpa.ClassGeneration;
 
@@ -44,7 +44,7 @@ public class JavaConstructorGenerator(JpaConfig config)
                 constructor.AddParameter(parameter);
             }
 
-            if (Config.GetClassExtends(classe) != null)
+            if (Config.GetClassExtends(classe, tag) != null)
             {
                 constructor.AddBodyLine("super();");
             }
@@ -58,7 +58,7 @@ public class JavaConstructorGenerator(JpaConfig config)
         }
     }
 
-    public void WriteNoArgConstructor(JavaWriter fw, Class classe)
+    public void WriteNoArgConstructor(JavaWriter fw, Class classe, string tag)
     {
         fw.WriteLine();
         var constructor = new JavaConstructor(classe.NamePascal)
@@ -66,7 +66,7 @@ public class JavaConstructorGenerator(JpaConfig config)
             Visibility = "public",
             Comment = "No arg constructor"
         };
-        if (Config.GetClassExtends(classe) != null)
+        if (Config.GetClassExtends(classe, tag) != null)
         {
             constructor.AddBodyLine("super();");
         }

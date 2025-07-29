@@ -1,7 +1,7 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Utils;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
 public class CompositionProperty : IProperty
 {
@@ -20,7 +20,7 @@ public class CompositionProperty : IProperty
 
     public Domain Domain { get; set; }
 
-    public IList<string> DomainParameters { get; set; } = [];
+    public Dictionary<string, string> DomainParameters { get; set; } = [];
 
     public string Comment { get; set; }
 
@@ -48,6 +48,10 @@ public class CompositionProperty : IProperty
 
     public LocatedString? Trigram { get; set; }
 
+    public IList<AnnotationInstance> Annotations { get; private set; } = [];
+
+    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
+
     public Dictionary<string, string> CustomProperties { get; private set; } = [];
 
     public IProperty? CompositionPrimaryKey
@@ -68,13 +72,14 @@ public class CompositionProperty : IProperty
 
     public Decorator? SourceDecorator { get; set; }
 
+    public DomainReference? DomainReference { get; set; }
+
 #nullable disable
     public ClassReference Reference { get; set; }
 
     internal Reference Location { get; set; }
-
 #nullable enable
-    internal DomainReference? DomainReference { get; set; }
+#pragma warning disable KTA1600
 
     /// <inheritdoc cref="IProperty.CloneForDecorator" />
     public IProperty CloneForDecorator(Class? classe = null, Endpoint? endpoint = null, Decorator? decorator = null)
@@ -96,6 +101,7 @@ public class CompositionProperty : IProperty
             Readonly = Readonly,
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName,
+            Annotations = Annotations
         };
     }
 

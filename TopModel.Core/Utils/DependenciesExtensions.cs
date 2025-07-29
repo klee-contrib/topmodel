@@ -1,4 +1,6 @@
-﻿namespace TopModel.Core;
+﻿using TopModel.Core.Model;
+
+namespace TopModel.Core.Utils;
 
 internal static class DependenciesExtensions
 {

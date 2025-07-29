@@ -36,7 +36,7 @@ public class ModelWatcher : IModelWatcher
                 var loc = error.Location;
                 diagnostics.Add(new()
                 {
-                    Code = error.ModelErrorType.ToString(),
+                    Code = error.ErrorType.ToString(),
                     Severity = error.IsError ? DiagnosticSeverity.Error : DiagnosticSeverity.Warning,
                     Message = error.Message,
                     Range = loc.ToRange()! ?? new OmniSharp.Extensions.LanguageServer.Protocol.Models.Range(0, 0, 0, 0),

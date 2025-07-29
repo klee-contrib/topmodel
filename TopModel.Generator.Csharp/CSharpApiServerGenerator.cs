@@ -3,8 +3,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Logging;
-using TopModel.Core;
 using TopModel.Core.FileModel;
+using TopModel.Core.Model;
+using TopModel.Core.Utils;
 using TopModel.Generator.Core;
 using TopModel.Utils;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -152,7 +153,7 @@ public class {className} : Controller
                 wd.AppendLine($@"{indent}[Produces(""{mediaType}"")]");
             }
 
-            foreach (var annotation in Config.GetDecoratorAnnotations(endpoint, tag))
+            foreach (var (annotation, _) in Config.GetAnnotations(endpoint, tag))
             {
                 wd.AppendLine($"{indent}[{annotation}]");
             }

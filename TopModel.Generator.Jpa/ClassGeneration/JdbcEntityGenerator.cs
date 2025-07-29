@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using TopModel.Core;
+using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
 using TopModel.Utils;
 
@@ -53,13 +53,13 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
         WriteClassComment(fw, classe, tag);
         WriteAnnotations(fw, classe, tag);
 
-        var extends = Config.GetClassExtends(classe);
+        var extends = Config.GetClassExtends(classe, tag);
         if (classe.Extends is not null)
         {
             fw.AddImport($"{Config.GetPackageName(classe.Extends, tag)}.{classe.Extends.NamePascal}");
         }
 
-        var implements = Config.GetClassImplements(classe).ToList();
+        var implements = Config.GetClassImplements(classe, tag).ToList();
 
         if (!classe.IsPersistent)
         {
@@ -97,9 +97,9 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
         if (Config.CanClassUseEnums(classe, Classes)
             || Config.MappersInClass && classe.FromMappers.Any(c => c.ClassParams.All(p => Classes.Contains(p.Class)))
             || Classes.Any(c => c.Extends == classe)
-            || Config.GetClassExtends(classe) != null)
+            || Config.GetClassExtends(classe, tag) != null)
         {
-            ConstructorGenerator.WriteNoArgConstructor(fw, classe);
+            ConstructorGenerator.WriteNoArgConstructor(fw, classe, tag);
         }
 
         if (Config.MappersInClass)
@@ -120,8 +120,8 @@ public class JdbcEntityGenerator(ILogger<JdbcEntityGenerator> logger, IFileWrite
             WriteToMappers(fw, classe, tag);
         }
 
-        if ((Config.FieldsEnum & Target.Persisted) > 0 && classe.IsPersistent
-            || (Config.FieldsEnum & Target.Dto) > 0 && !classe.IsPersistent)
+        if (Config.FieldsEnum.Contains(AnnotationConstraint.Persisted) && classe.IsPersistent
+            || Config.FieldsEnum.Contains(AnnotationConstraint.NonPersisted) && !classe.IsPersistent)
         {
             WriteFieldsEnum(fw, classe, tag);
         }

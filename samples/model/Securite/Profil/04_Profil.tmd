@@ -18,8 +18,9 @@ endpoint:
   method: POST
   route: /
   description: Ajoute un Profil
-  decorators:
-    - Security: ["hasRole('CREATE')"]
+  annotations:
+    - Security:
+        permission: hasRole('CREATE')
   params:
     - composition: ProfilWrite
       comment: Profil à sauvegarder
@@ -34,8 +35,9 @@ endpoint:
   method: GET
   route: /{proId}
   description: Charge le détail d'un Profil
-  decorators:
-    - Security: ["hasRole('READ')"]
+  annotations:
+    - Security:
+        permission: hasRole('READ')
   # Liste des paramètres du endpoint. Ce sont des propriétés de modèle comme pour les classes. Il peut ne pas y en avoir.
   params:
     - alias:
@@ -52,8 +54,9 @@ endpoint:
   method: GET
   route: /
   description: Liste tous les Profils
-  decorators:
-    - Security: ["hasRole('READ')"]
+  annotations:
+    - Security:
+        permission: hasRole('READ')
   returns:
     composition: ProfilItem
     name: ProfilList
@@ -65,8 +68,9 @@ endpoint:
   method: PUT
   route: /{proId}
   description: Sauvegarde un Profil
-  decorators:
-    - Security: ["hasRole('UPDATE')"]
+  annotations:
+    - Security:
+        permission: hasRole('UPDATE')
   params:
     - alias:
         class: Profil

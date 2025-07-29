@@ -574,7 +574,7 @@ identity:
 ## FieldsEnum
 
 Il est possible de générer dans la définition de la classe, la sous-classe (qui est une enum) `Fields`. Il s'agit d'une enumération des champs de la classe, au format const case.
-Il faut pour cela compléter la propriété `fieldsEnum:` A la configuration JPA. Sa valeur détermine dans quelles classes le générateur doit ajouter une enum des champs : aucune (`None`), dans les classes persistées (`Persisted`), dans les classes non persistées (`Dto`), ou les deux (`Persisted_Dto`)
+Il faut pour cela compléter la propriété `fieldsEnum` à la configuration JPA, qui est une liste des types de classes pour laquelle on veut générer cette enum : les classes persistées (avec `"persisted"`) et/ou non persistées (avec `"non-persisted"`).
 
 Il est également possible d'ajouter la référence d'une interface à cette configuration. Cette interface sera implémentée par la classe `Fields`. Vous pourrez ainsi la manipuler plus facilement. Si l'interface en question est suffixée par `<>`, alors elle sera considérée comme générique de la classe persistée.
 
@@ -583,7 +583,7 @@ Exemple :
 La configuration suivante
 
 ```yaml
-fieldsEnum: true
+fieldsEnum: ["persisted"]
 fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<>
 ```
 
@@ -867,12 +867,10 @@ Le générateur créé un fichier de configuration de job par module. Ce job ord
 
 - `fieldsEnum`
 
-  Option pour générer une enum des champs de certaines classes. Les valeurs possibles sont :
+  Option pour générer une enum des champs de certaines classes. Il s'agit d'une liste dont les 2 valeurs possibles sont :
 
-  - `None` : valeur par défaut, ne fait rien
-  - `Persisted` : ajoute l'enum des champs sur les classes persistées
-  - `Dto` : ajoute l'enum des champs sur les classes non persistées
-  - `Persisted_Dto` : ajoute l'enum des champs sur toutes le classes
+  - `persisted` : ajoute l'enum des champs sur les classes persistées
+  - `non-persisted` : ajoute l'enum des champs sur les classes non persistées
 
 - `fieldsEnumInterface`
 
@@ -944,7 +942,7 @@ jpa:
     enumsPath: topmodel/exemple/name/enums # Dossier cible des enums
     apiPath: topmodel/exemple/name/api # Dossier cible des API
     apiGeneration: Server # Mode de génération de l'API (serveur ou client)
-    fieldsEnum: Persisted # Classes  dans lesquelles le générateur doit ajouter une enum des champs : jamais (None), dans les classes persistées (Persisted), dans les classes non persistées (Dto), ou les deux (Persisted_Dto)
+    fieldsEnum: ["persisted"] # Classes dans lesquelles le générateur doit ajouter une enum des champs
     fieldsEnumInterface: topmodel.exemple.utils.IFieldEnum<> # Classe dont doivent hériter ces enum
 ```
 

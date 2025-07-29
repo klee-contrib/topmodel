@@ -1,12 +1,23 @@
 ﻿using OneOf;
+using TopModel.Core.Model;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Utils;
 
 public static class MappingExtensions
 {
     public static string GetComment(this OneOf<ClassMappings, PropertyMapping> mapping)
     {
         return mapping.Match(c => c.Comment ?? $"Instance de '{c.Class.NamePascal}'", p => p.Property.Comment);
+    }
+
+    public static Converter? GetConverter(this Domain? fromDomain, Domain? toDomain)
+    {
+        if (fromDomain != null && toDomain != null && fromDomain != toDomain)
+        {
+            return fromDomain.ConvertersFrom.FirstOrDefault(c => c.From.Contains(fromDomain) && c.To.Contains(toDomain));
+        }
+
+        return null;
     }
 
     public static string GetName(this OneOf<ClassMappings, PropertyMapping> mapping)

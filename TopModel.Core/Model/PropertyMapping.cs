@@ -1,7 +1,7 @@
 ﻿#nullable disable
 using TopModel.Core.FileModel;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
 public class PropertyMapping : IPropertyContainer
 {
@@ -26,4 +26,12 @@ public class PropertyMapping : IPropertyContainer
     public IList<IProperty> Properties => [Property];
 
     public bool PreservePropertyCasing => false;
+
+    public IList<DecoratorInstance> Decorators => throw new NotImplementedException();
+
+    public IList<DecoratorReference> DecoratorReferences => throw new NotImplementedException();
+
+    public IList<AnnotationInstance> Annotations => throw new NotImplementedException();
+
+    public IList<AnnotationReference> AnnotationReferences => throw new NotImplementedException();
 }

@@ -5,7 +5,9 @@ using Microsoft.Extensions.Primitives;
 using NeoSmart.AsyncLock;
 using TopModel.Core.FileModel;
 using TopModel.Core.Loaders;
+using TopModel.Core.Model;
 using TopModel.Core.Resolvers;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
 namespace TopModel.Core;
@@ -42,31 +44,42 @@ public class ModelStore : IDisposable
 
     public bool DisableLockfile { get; set; }
 
-    public IEnumerable<Class> Classes => _modelFiles.SelectMany(mf => mf.Value.Classes).Distinct();
+    public IEnumerable<ModelFile> Files => _modelFiles.Values;
 
-    public IEnumerable<Endpoint> Endpoints => _modelFiles.SelectMany(mf => mf.Value.Endpoints).Distinct();
+    public IEnumerable<Annotation> Annotations => Files.SelectMany(mf => mf.Annotations).Distinct();
 
-    public IEnumerable<DataFlow> DataFlows => _modelFiles.SelectMany(mf => mf.Value.DataFlows).Distinct();
+    public IEnumerable<Class> Classes => Files.SelectMany(mf => mf.Classes).Distinct();
 
-    public IDictionary<string, Domain> Domains => _modelFiles.SelectMany(mf => mf.Value.Domains)
+    public IEnumerable<Endpoint> Endpoints => Files.SelectMany(mf => mf.Endpoints).Distinct();
+
+    public IEnumerable<DataFlow> DataFlows => Files.SelectMany(mf => mf.DataFlows).Distinct();
+
+    public IDictionary<string, Domain> Domains => Files.SelectMany(mf => mf.Domains)
         .DistinctBy(d => (string)d.Name)
         .ToDictionary(d => (string)d.Name, d => d);
 
-    public IList<Converter> Converters => _modelFiles.SelectMany(mf => mf.Value.Converters).ToList();
+    public IList<Converter> Converters => Files.SelectMany(mf => mf.Converters).ToList();
 
-    public IEnumerable<Decorator> Decorators => _modelFiles.SelectMany(mf => mf.Value.Decorators).Distinct();
+    public IEnumerable<Decorator> Decorators => Files.SelectMany(mf => mf.Decorators).Distinct();
 
-    public IEnumerable<IProperty> Properties => Classes.SelectMany(c => c.Properties)
-        .Concat(Classes.SelectMany(c => c.FromMapperProperties))
-        .Concat(Decorators.SelectMany(c => c.Properties))
-        .Concat(Endpoints.SelectMany(e => e.Properties));
+    public IEnumerable<IProperty> Properties => Files.SelectMany(mf => mf.Properties);
 
-    public IEnumerable<ModelFile> Files => _modelFiles.Values;
+    public IEnumerable<IAnnotationContainer> AnnotationContainers => Files.SelectMany(mf => mf.AnnotationContainers).Distinct();
+
+    public IEnumerable<IPropertyContainer> PropertyContainers => Files.SelectMany(mf => mf.PropertyContainers).Distinct();
+
+    public IEnumerable<IVariableContainer> VariableContainers => Files.SelectMany(mf => mf.VariableContainers).Distinct();
 
     /// <inheritdoc cref="IDisposable.Dispose" />
     public void Dispose()
     {
         FileSystemWatcher?.Dispose();
+    }
+
+    public IEnumerable<Annotation> GetAvailableAnnotations(ModelFile file)
+    {
+        return GetDependencies(file).SelectMany(m => m.Annotations)
+            .Concat(file.Annotations);
     }
 
     public IEnumerable<Class> GetAvailableClasses(ModelFile file)
@@ -88,6 +101,16 @@ public class ModelStore : IDisposable
     public IEnumerable<Endpoint> GetAvailableEndpoints(ModelFile file)
     {
         return GetDependencies(file).SelectMany(m => m.Endpoints).Concat(file.Endpoints);
+    }
+
+    public Dictionary<string, Annotation> GetReferencedAnnotations(ModelFile modelFile)
+    {
+        return GetDependencies(modelFile)
+            .SelectMany(m => m.Annotations)
+            .Concat(modelFile.Annotations)
+            .Distinct()
+            .GroupBy(c => c.Name.Value)
+            .ToDictionary(c => c.Key, c => c.First());
     }
 
     public Dictionary<string, Class> GetReferencedClasses(ModelFile modelFile)
@@ -254,7 +277,7 @@ public class ModelStore : IDisposable
                 Parallel.ForEach(_modelWatchers, modelWatcher =>
                 {
                     modelWatcher.OnErrors(affectedFiles.Values
-                        .Select(file => (file, errors: referenceErrors.Where(e => e.File == file && !_config.NoWarn.Contains(e.ModelErrorType))))
+                        .Select(file => (file, errors: referenceErrors.Where(e => e.File == file && !_config.NoWarn.Contains(e.ErrorType))))
                         .ToDictionary(i => i.file, i => i.errors));
                 });
 
@@ -263,7 +286,7 @@ public class ModelStore : IDisposable
                     _logger.LogError(error.ToString());
                 }
 
-                foreach (var error in referenceErrors.Where(e => !e.IsError && !_config.NoWarn.Contains(e.ModelErrorType)))
+                foreach (var error in referenceErrors.Where(e => !e.IsError && !_config.NoWarn.Contains(e.ErrorType)))
                 {
                     _logger.LogWarning(error.ToString());
                 }
@@ -324,11 +347,14 @@ public class ModelStore : IDisposable
 
     private IEnumerable<ModelFile> GetDependencies(ModelFile modelFile)
     {
-        return modelFile.Uses
-            .Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
-            .Where(dep => dep != null)
-            .Concat(Files.Where(f => f != modelFile && f.Converters.Count > 0 && modelFile.Classes.Any(c => c.FromMappers.Count > 0 || c.ToMappers.Count > 0)))
-            .Concat(Files.Where(f => f != modelFile && f.Domains.Count > 0 && (modelFile.Domains.Count == 0 || modelFile.Domains.Any(d => d.AsDomainReferences.Count > 0))));
+        return [
+            ..modelFile.Uses
+                .Select(dep => _modelFiles.TryGetValue(dep.ReferenceName, out var depFile) ? depFile : null!)
+                .Where(dep => dep != null),
+            ..Files.Where(f => f != modelFile && f.Converters.Count > 0 && modelFile.Classes.Any(c => c.FromMappers.Count > 0 || c.ToMappers.Count > 0)),
+            ..Files.Where(f => f != modelFile && f.Domains.Count > 0 && (modelFile.Domains.Count == 0 || modelFile.Domains.Any(d => d.AsDomainReferences.Count > 0))),
+            ..Files.Where(f => f != modelFile && f.Annotations.Where(a => a.Global).Any())
+        ];
     }
 
     private IEnumerable<ModelError> GetGlobalErrors()
@@ -337,7 +363,7 @@ public class ModelStore : IDisposable
         {
             foreach (var domain in g.Skip(1))
             {
-                yield return new ModelError(domain, $"Le domaine '{domain}' est déjà défini") { ModelErrorType = ModelErrorType.TMD0007 };
+                yield return new ModelError(ErrorType.TMD6001, domain, $"Le domaine '{domain}' est déjà défini");
             }
         }
 
@@ -348,7 +374,7 @@ public class ModelStore : IDisposable
             {
                 foreach (var (from, to) in dup.Conversions.Intersect(converter.Conversions))
                 {
-                    yield return new ModelError(converter, $"La définition de la conversion entre {from.Name} et {to.Name} est déjà définie dans un autre converter") { ModelErrorType = ModelErrorType.TMD1022 };
+                    yield return new ModelError(ErrorType.TMD6002, converter, $"La définition de la conversion entre {from.Name} et {to.Name} est déjà définie dans un autre converter");
                 }
             }
         }
@@ -356,17 +382,17 @@ public class ModelStore : IDisposable
         foreach (var classe in Classes.Where(c => c.Trigram != null && Classes.Any(u => u.Trigram == c.Trigram && u != c)))
         {
             var otherClasses = Classes.Where(u => u.Trigram == classe.Trigram && u != classe);
-            yield return new ModelError(classe.ModelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans {(otherClasses.Count() > 1 ? "les classes suivantes : " : "la classe : ")}{string.Join(", ", otherClasses.Select(c => c.Name))}", classe.Trigram.GetLocation()) { IsError = false, ModelErrorType = ModelErrorType.TMD9002 };
+            yield return new ModelError(ErrorType.TMD3004, classe.ModelFile, $"Le trigram '{classe.Trigram}' est déjà utilisé dans {(otherClasses.Count() > 1 ? "les classes suivantes : " : "la classe : ")}{string.Join(", ", otherClasses.Select(c => c.Name))}", classe.Trigram.GetLocation(), isError: false);
         }
 
         foreach (var domain in Domains.Values.Where(domain => !this.GetDomainReferences(domain).Any()))
         {
-            yield return new ModelError(domain, $"Le domaine '{domain.Name}' n'est pas utilisé.") { IsError = false, ModelErrorType = ModelErrorType.TMD9004 };
+            yield return new ModelError(ErrorType.TMD0009, domain, $"Le domaine '{domain.Name}' n'est pas utilisé.", isError: false);
         }
 
         foreach (var decorator in Decorators.Where(decorator => !this.GetDecoratorReferences(decorator).Any()))
         {
-            yield return new ModelError(decorator, $"Le décorateur '{decorator.Name}' n'est pas utilisé.") { IsError = false, ModelErrorType = ModelErrorType.TMD9005 };
+            yield return new ModelError(ErrorType.TMD0010, decorator, $"Le décorateur '{decorator.Name}' n'est pas utilisé.", isError: false);
         }
 
         foreach (var files in Files.GroupBy(file => new { file.Options.Endpoints.FileName, file.Namespace.Module }))
@@ -375,7 +401,7 @@ public class ModelStore : IDisposable
 
             foreach (var endpoint in endpoints.Where((e, i) => files.SelectMany(f => f.Endpoints).Where((p, j) => p.Name == e.Name && j < i).Any()))
             {
-                yield return new ModelError(endpoint, $"Le nom '{endpoint.Name}' est déjà utilisé.", endpoint.Name.GetLocation()) { IsError = true, ModelErrorType = ModelErrorType.TMD0003 };
+                yield return new ModelError(ErrorType.TMD0001, endpoint, $"Le nom '{endpoint.Name}' est déjà utilisé.", endpoint.Name.GetLocation());
             }
 
             if (files.Select(file => file.Options.Endpoints.Prefix).Distinct().Count() > 1)
@@ -384,11 +410,11 @@ public class ModelStore : IDisposable
                 {
                     if (file.Options.Endpoints.Prefix != null)
                     {
-                        yield return new ModelError(file, $"Le préfixe d'endpoint '{file.Options.Endpoints.Prefix}' doit être identique à celui de tous les fichiers de même nom et de même module.", file.Options.Endpoints.Prefix?.GetLocation()) { ModelErrorType = ModelErrorType.TMD1021 };
+                        yield return new ModelError(ErrorType.TMD7001, file, $"Le préfixe d'endpoint '{file.Options.Endpoints.Prefix}' doit être identique à celui de tous les fichiers de même nom et de même module.", file.Options.Endpoints.Prefix?.GetLocation());
                     }
                     else
                     {
-                        yield return new ModelError(file, $"Le fichier ne définit pas de préfixe d'endpoint alors que d'autres fichiers de même nom et de même module le font.") { ModelErrorType = ModelErrorType.TMD1021 };
+                        yield return new ModelError(ErrorType.TMD7001, file, $"Le fichier ne définit pas de préfixe d'endpoint alors que d'autres fichiers de même nom et de même module le font.");
                     }
                 }
             }
@@ -496,7 +522,7 @@ public class ModelStore : IDisposable
         var nonExistingFiles = modelFile.Uses.Where(use => !_modelFiles.TryGetValue(use.ReferenceName, out var _));
         foreach (var use in nonExistingFiles)
         {
-            yield return new ModelError(modelFile, $"Le fichier référencé '{use.ReferenceName}' est introuvable.", use) { ModelErrorType = ModelErrorType.TMD1007 };
+            yield return new ModelError(ErrorType.TMD1001, modelFile, $"Le fichier référencé '{use.ReferenceName}' est introuvable.", use);
         }
 
         var duplicatedUses = modelFile.Uses
@@ -507,7 +533,7 @@ public class ModelStore : IDisposable
 
         foreach (var use in modelFile.Uses.Where(u => duplicatedUses.Contains(u.ReferenceName)).Skip(1))
         {
-            yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' ne doit être spécifié qu'une seule fois", use) { IsError = true, ModelErrorType = ModelErrorType.TMD0002 };
+            yield return new ModelError(ErrorType.TMD1002, modelFile, $"L'import '{use.ReferenceName}' ne doit être spécifié qu'une seule fois", use);
         }
 
         var dependencies = GetDependencies(modelFile).ToList();
@@ -524,7 +550,7 @@ public class ModelStore : IDisposable
 
         foreach (var classe in duplicateClasses.Where(c => c.ModelFile == modelFile))
         {
-            yield return new ModelError(classe, $"La classe '{classe}' est définie plusieurs fois dans le fichier ou une de ses dépendences.", classe.Name.Location) { ModelErrorType = ModelErrorType.TMD0005 };
+            yield return new ModelError(ErrorType.TMD3001, classe, $"La classe '{classe}' est définie plusieurs fois dans le fichier ou une de ses dépendences.", classe.Name.Location);
         }
 
         var referencedClasses = referencedClassesRaw
@@ -545,6 +571,12 @@ public class ModelStore : IDisposable
             .Where(c => !duplicateEndpoints.Select(c => c.Name.Value).Contains(c.Name.Value))
             .ToDictionary(c => (string)c.Name, c => c);
 
+        var referencedAnnotations = dependencies
+            .SelectMany(m => m.Annotations)
+            .Concat(modelFile.Annotations)
+            .Distinct()
+            .ToDictionary(d => (string)d.Name, c => c);
+
         var referencedDecorators = dependencies
             .SelectMany(m => m.Decorators)
             .Concat(modelFile.Decorators)
@@ -563,22 +595,26 @@ public class ModelStore : IDisposable
 
         foreach (var dataFlow in duplicateDataFlows.Where(c => c.ModelFile == modelFile))
         {
-            yield return new ModelError(dataFlow, $"Le flux de données '{dataFlow}' est défini plusieurs fois dans le fichier ou une de ses dépendences.", dataFlow.Name.Location) { ModelErrorType = ModelErrorType.TMD0008 };
+            yield return new ModelError(ErrorType.TMD4001, dataFlow, $"Le flux de données '{dataFlow}' est défini plusieurs fois dans le fichier ou une de ses dépendences.", dataFlow.Name.Location);
         }
 
         var referencedDataFlows = referencedDataFlowsRaw
             .Where(c => !duplicateDataFlows.Select(c => c.Name.Value).Contains(c.Name.Value))
             .ToDictionary(c => c.Name.Value, c => c);
 
+        var annotationResolver = new AnnotationResolver(modelFile, _config, referencedAnnotations);
         var classResolver = new ClassResolver(modelFile, referencedClasses);
         var dataFlowResolver = new DataFlowResolver(modelFile, referencedDataFlows, referencedClasses);
-        var decoratorResolver = new DecoratorResolver(modelFile, referencedDecorators);
-        var domainResolver = new DomainResolver(modelFile, Domains, Converters);
+        var decoratorResolver = new DecoratorResolver(modelFile, _config, referencedDecorators);
+        var domainResolver = new DomainResolver(modelFile, _config, Domains, Converters);
         var endpointResolver = new EndpointResolver(modelFile);
         var mapperResolver = new MapperResolver(modelFile, referencedClasses, Converters, _config.UseLegacyAssociationCompositionMappers);
         var propertyResolver = new PropertyResolver(modelFile, Domains, referencedClasses, referencedEndpoints, referencedDecorators);
 
-        domainResolver.ResolveDomainVariables(_config);
+        foreach (var error in domainResolver.ResolveDomainVariables())
+        {
+            yield return error;
+        }
 
         foreach (var error in domainResolver.ResolveAsDomains())
         {
@@ -590,12 +626,17 @@ public class ModelStore : IDisposable
             yield return error;
         }
 
-        foreach (var error in decoratorResolver.ResolveDecorators(_config))
+        foreach (var error in decoratorResolver.ResolveDecorators())
         {
             yield return error;
         }
 
         foreach (var error in propertyResolver.ResolveNonAliasProperties())
+        {
+            yield return error;
+        }
+
+        foreach (var error in annotationResolver.ResolveAnnotations())
         {
             yield return error;
         }
@@ -612,6 +653,11 @@ public class ModelStore : IDisposable
 
         // Résolution des alias des classes et endpoints.
         foreach (var error in propertyResolver.ResolveAliases(alp => alp.Decorator is null && alp.Reference is not null))
+        {
+            yield return error;
+        }
+
+        foreach (var error in annotationResolver.CheckAliasAnnotations())
         {
             yield return error;
         }
@@ -670,7 +716,7 @@ public class ModelStore : IDisposable
 
         foreach (var use in modelFile.UselessImports.Where(u => dependencies.Any(d => d.Name == u.ReferenceName)))
         {
-            yield return new ModelError(modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use) { IsError = false, ModelErrorType = ModelErrorType.TMD9001 };
+            yield return new ModelError(ErrorType.TMD1003, modelFile, $"L'import '{use.ReferenceName}' n'est pas utilisé.", use, isError: false);
         }
     }
 }

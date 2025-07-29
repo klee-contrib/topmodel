@@ -11,6 +11,7 @@ public static class ServiceExtensions
         services
             .AddMemoryCache()
             .AddSingleton(fileChecker)
+            .AddSingleton<AnnotationLoader>()
             .AddSingleton<ClassLoader>()
             .AddSingleton<ConverterLoader>()
             .AddSingleton<DataFlowLoader>()

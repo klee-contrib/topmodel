@@ -18,12 +18,14 @@
         "type": "string",
         "description": "Code du warning (TMDXXXX) à ignorer ",
         "enum": [
-          "TMD8000",
-          "TMD8001",
-          "TMD9001",
-          "TMD9002",
-          "TMD9003",
-          "TMD9004"
+          "TMD0009",
+          "TMD0010",
+          "TMD0011",
+          "TMD1003",
+          "TMD1004",
+          "TMD1005",
+          "TMD3004",
+          "TMD7002"
         ]
       }
     },
@@ -377,15 +379,15 @@
             "default": "true"
           },
           "fieldsEnum": {
-            "type": "string",
-            "description": "Option pour générer une enum des champs des classes persistées",
-            "default": "None",
-            "enum": [
-              "None",
-              "Persisted",
-              "Dto",
-              "Persisted_Dto"
-            ]
+            "type": "array",
+            "description": "Option pour générer une enum des champs des classes persistées ou non persistées",
+            "items": {
+              "type": "string",
+              "enum": [
+                "non-persisted",
+                "persisted"
+              ]
+            }
           },
           "fieldsEnumInterface": {
             "type": "string",

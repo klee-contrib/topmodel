@@ -1,7 +1,8 @@
 ﻿using TopModel.Core.FileModel;
+using TopModel.Core.Utils;
 using TopModel.Utils;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
 public class Endpoint : IPropertyContainer
 {
@@ -20,7 +21,7 @@ public class Endpoint : IPropertyContainer
 
     public string Method { get; set; }
 
-    public string Route => RouteWithVariables;
+    public StringWithVariables Route { get; set; }
 
     public string FullRoute
     {
@@ -47,19 +48,21 @@ public class Endpoint : IPropertyContainer
 
     public Dictionary<string, string> CustomProperties { get; } = [];
 
-    public List<(Decorator Decorator, string[] Parameters)> Decorators { get; } = [];
+    public IList<DecoratorInstance> Decorators { get; } = [];
+
+    public IList<AnnotationInstance> Annotations { get; } = [];
 
     public IEnumerable<ClassDependency> ClassDependencies => Properties.GetClassDependencies();
 
-    public List<DecoratorReference> DecoratorReferences { get; } = [];
+    public IList<DecoratorReference> DecoratorReferences { get; } = [];
+
+    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
 #nullable disable
 
     internal Reference Location { get; set; }
 
-    internal StringWithVariables RouteWithVariables { get; set; }
-
-    internal List<string> OwnTags { get; set; } = [];
+    internal IList<string> OwnTags { get; set; } = [];
 
 #nullable enable
 

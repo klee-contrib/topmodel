@@ -1,7 +1,7 @@
 ﻿using TopModel.Core.FileModel;
 using TopModel.Utils;
 
-namespace TopModel.Core;
+namespace TopModel.Core.Model;
 
 public class RegularProperty : IProperty
 {
@@ -31,9 +31,13 @@ public class RegularProperty : IProperty
 #nullable disable
     public Domain Domain { get; set; }
 
-    public IList<string> DomainParameters { get; set; } = [];
+    public Dictionary<string, string> DomainParameters { get; set; } = [];
 
     public string Comment { get; set; }
+
+    public IList<AnnotationInstance> Annotations { get; private set; } = [];
+
+    public IList<AnnotationReference> AnnotationReferences { get; set; } = [];
 
     public Dictionary<string, string> CustomProperties { get; private set; } = [];
 
@@ -81,7 +85,8 @@ public class RegularProperty : IProperty
             Readonly = Readonly,
             Trigram = Trigram,
             UseLegacyRoleName = UseLegacyRoleName,
-            CustomProperties = CustomProperties
+            CustomProperties = CustomProperties,
+            Annotations = Annotations
         };
     }
 

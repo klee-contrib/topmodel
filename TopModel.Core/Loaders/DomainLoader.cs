@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using TopModel.Core.FileModel;
+using TopModel.Core.Model;
 using TopModel.Core.Model.Implementation;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
@@ -54,6 +55,27 @@ public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
                     }
 
                     break;
+                case "annotations":
+                    parser.ConsumeSequence(() =>
+                    {
+                        if (parser.Current is MappingStart)
+                        {
+                            parser.ConsumeMapping(prop =>
+                            {
+                                var annotation = new AnnotationReference(prop)
+                                {
+                                    ParameterReferences = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser)
+                                };
+
+                                domain.AnnotationReferences.Add(annotation);
+                            });
+                        }
+                        else
+                        {
+                            domain.AnnotationReferences.Add(new AnnotationReference(parser.Consume<Scalar>()));
+                        }
+                    });
+                    break;
                 default:
                     var implementation = new DomainImplementation();
 
@@ -62,16 +84,13 @@ public class DomainLoader(FileChecker fileChecker) : ILoader<Domain>
                         switch (prop.Value)
                         {
                             case "type":
-                                implementation.TypeWithVariables = new(parser.Consume<Scalar>());
+                                implementation.Type = new(parser.Consume<Scalar>());
                                 break;
                             case "genericType":
-                                implementation.GenericTypeWithVariables = new(parser.Consume<Scalar>());
+                                implementation.GenericType = new(parser.Consume<Scalar>());
                                 break;
                             case "imports":
                                 implementation.Imports = fileChecker.Deserialize<List<StringWithVariables>>(parser);
-                                break;
-                            case "annotations":
-                                implementation.Annotations = fileChecker.Deserialize<List<TargetedText>>(parser);
                                 break;
                             case "values":
                                 ValueTemplate HandleValueTemplate()

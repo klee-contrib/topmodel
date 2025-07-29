@@ -1,4 +1,6 @@
-﻿using TopModel.Core.FileModel;
+﻿using System.Reflection;
+using System.Runtime.Serialization;
+using TopModel.Core.FileModel;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 
@@ -6,12 +8,12 @@ namespace TopModel.Core.Loaders;
 
 public static class LoaderUtils
 {
-    public static DomainReference ConsumeDomain(this IParser parser, Scalar? value)
+    public static DomainReference ConsumeDomain(this IParser parser, FileChecker fileChecker, Scalar? value)
     {
         if (parser.Current is MappingStart)
         {
             Scalar? name = null;
-            var paramaters = new List<ParameterReference>();
+            var parameters = new Dictionary<ParameterReference, StringWithVariables>();
             parser.ConsumeMapping(prop =>
             {
                 switch (prop.Value)
@@ -20,14 +22,14 @@ public static class LoaderUtils
                         name = parser.Consume<Scalar>();
                         break;
                     case "parameters":
-                        parser.ConsumeSequence(() => paramaters.Add(new ParameterReference(parser.Consume<Scalar>())));
+                        parameters = fileChecker.Deserialize<Dictionary<ParameterReference, StringWithVariables>>(parser);
                         break;
                 }
             });
 
             if (name != null)
             {
-                return new DomainReference(name) { ParameterReferences = paramaters };
+                return new DomainReference(name) { ParameterReferences = parameters };
             }
             else
             {
@@ -63,5 +65,20 @@ public static class LoaderUtils
         }
 
         parser.Consume<SequenceEnd>();
+    }
+
+    public static T? ParseEnum<T>(this string? value)
+        where T : struct, Enum
+    {
+        foreach (var field in typeof(T).GetFields())
+        {
+            var attribute = field.GetCustomAttribute<EnumMemberAttribute>();
+            if (attribute?.Value == value)
+            {
+                return (T)field.GetValue(null)!;
+            }
+        }
+
+        return null;
     }
 }
