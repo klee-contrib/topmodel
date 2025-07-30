@@ -120,7 +120,7 @@ public class UtilisateurRead implements Serializable {
 	 * @return Une nouvelle instance de 'UtilisateurRead'.
 	 */
 	public UtilisateurRead(Utilisateur utilisateur) {
-		SecuriteUtilisateurMappers.createUtilisateurRead(utilisateur, this);
+		SecuriteUtilisateurMappers.mapUtilisateurRead(utilisateur, this);
 	}
 
 	/**

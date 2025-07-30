@@ -84,7 +84,7 @@ public class ProfilRead implements Serializable {
 	 * @return Une nouvelle instance de 'ProfilRead'.
 	 */
 	public ProfilRead(Profil profil) {
-		SecuriteProfilMappers.createProfilRead(profil, this);
+		SecuriteProfilMappers.mapProfilRead(profil, this);
 	}
 
 	/**

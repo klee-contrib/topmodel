@@ -17,22 +17,23 @@ public class SecuriteUtilisateurMappers {
 	}
 
 	/**
-	 * Mapper les champs sources sur une nouvelle instance de la classe.
-	 * @param utilisateur Instance de 'Utilisateur'.
+	 * Crée une nouvelle instance de la classe 'UtilisateurRead' en mappant les champs sources.
+	 * @param utilisateur Instance de 'Utilisateur' source.
 	 *
-	 * @return Une nouvelle instance de 'UtilisateurRead' sur laquelle les champs sources ont été mappée.
+	 * @return Une nouvelle instance de 'UtilisateurRead' sur laquelle les champs sources ont été mappés.
 	 */
 	public static UtilisateurRead createUtilisateurRead(Utilisateur utilisateur) {
-		return createUtilisateurRead(utilisateur, new UtilisateurRead());
+		return mapUtilisateurRead(utilisateur, new UtilisateurRead());
 	}
 
 	/**
-	 * Mapper les champs sources sur une nouvelle instance de la classe ou bien sur l'instance passée en paramètres.
-	 * @param utilisateur Instance de 'Utilisateur'.
+	 * Mappe les champs sources sur l'instance de la classe 'UtilisateurRead' passée en paramètre.
+	 * @param utilisateur Instance de 'Utilisateur' source.
+	 * @param target Instance de 'UtilisateurRead' cible.
 	 *
-	 * @return Une nouvelle instance de 'UtilisateurRead' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée.
+	 * @return L'instance de 'UtilisateurRead' passée en paramètres sur lesquels les champs sources ont été mappés.
 	 */
-	public static UtilisateurRead createUtilisateurRead(Utilisateur utilisateur, UtilisateurRead target) {
+	public static UtilisateurRead mapUtilisateurRead(Utilisateur utilisateur, UtilisateurRead target) {
 		if (target == null) {
 			throw new IllegalArgumentException("target cannot be null");
 		}
