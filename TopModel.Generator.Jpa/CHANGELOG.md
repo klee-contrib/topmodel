@@ -1,5 +1,11 @@
 # Changelog JPA
 
+## 3.0.0
+
+Compatibilité avec TopModel 3
+
+La propriété `fieldsEnum` est désormais une liste, dont les éléments peuvent être `persisted` et/ou `non-persisted`.
+
 ## 1.11.0
 
 - [#488](https://github.com/klee-contrib/topmodel/pull/488) - In java mapper for list set target to null if source is null

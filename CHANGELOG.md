@@ -8,6 +8,206 @@ Changelogs des modules :
 - [`sql`](./TopModel.Generator.Sql/CHANGELOG.md)
 - [`translation`](./TopModel.Generator.Translation/CHANGELOG.md)
 
+## 3.0.0
+
+_Remarque : Etant une version majeure, l'ensemble des modules de générateurs doivent être aussi mis à jour. Leurs versions ont toutes été montées à 3.0 également, pour suivre la version majeure de TopModel (on a donc sauté toutes les versions "2.x" 😁)_
+
+[#489](https://github.com/klee-contrib/topmodel/pull/489) - TopModel 3.0, maintenant avec des annotations !
+
+Le contenu de la version est décrit en détail dans la PR associée 🙂
+
+Pour résumer, cette nouvelle version introduit un nouvel objet dans TopModel, l'**annotation**, dont le but est de centraliser les annotations qu'on écrit aujourd'hui dans les implémentations de domaines et de décorateurs dans un objet TopModel dédié, qui peut être posé ensuite dans ces mêmes domaines et décorateurs, mais aussi directement sur les classes, endpoints et propriétés.
+
+### Breaking changes et guide de migration
+
+#### Les annotations ne sont plus définies dans les domaines et décorateurs
+
+Avant, pour un domaine :
+
+```yaml
+---
+domain:
+  name: DO_EMAIL
+  label: Email
+  java:
+    type: String
+    annotations:
+      - text: "@Email"
+        target: Api_Dto
+        imports:
+          - jakarta.validation.constraints.Email
+```
+
+après
+
+```yaml
+---
+annotation:
+  name: Email
+  description: Email
+  java:
+    - text: "@Email"
+      when:
+        - non-persisted
+      imports:
+        - jakarta.validation.constraints.Email
+---
+domain:
+  name: DO_EMAIL
+  label: Email
+  annotations:
+    - Email
+  java:
+    type: string
+```
+
+Les équivalences entre `target` et `when` sont :
+
+- `Persisted` => `persisted`
+- `Dto` => `non-persisted` + `class-property`
+- `Api` => `endpoint-param`
+- `Api_Dto` => `non-persisted`
+- `Persisted_Dto` => `class-property`
+
+Avant, pour un décorateur :
+
+```yaml
+---
+decorator:
+  name: EntityListeners
+  description: ######
+  java:
+    annotations:
+      - EntityListeners(AuditingEntityListener.class)
+    imports:
+      - org.springframework.data.jpa.domain.support.AuditingEntityListener
+      - jakarta.persistence.EntityListeners
+  properties:
+    ####
+```
+
+après
+
+```yaml
+---
+annotation:
+  name: EntityListeners
+  description: Annotation pour EntityListeners.
+  java:
+    - text: EntityListeners(AuditingEntityListener.class)
+      when:
+        - persisted
+      imports:
+        - org.springframework.data.jpa.domain.support.AuditingEntityListener
+        - jakarta.persistence.EntityListeners
+---
+decorator:
+  name: EntityListeners
+  description: ######
+  annotations:
+    - EntityListeners
+  properties:
+    ####
+```
+
+Si votre décorateur existant ne définit que des annotations, alors vous feriez mieux de le remplacer par une annotation :
+
+Avant :
+
+```yaml
+---
+decorator:
+  name: AllowAnonymous
+  description: Bypass l'authentification
+  csharp:
+    annotations:
+      - AllowAnomymous
+---
+endpoint:
+  #####
+  decorators:
+    - AllowAnonymous
+```
+
+après :
+
+```yaml
+---
+annotation:
+  name: AllowAnonymous
+  description: Bypass l'authentification
+  csharp:
+    - text: AllowAnomymous
+---
+endpoint:
+  #####
+  annotations:
+    - AllowAnonymous
+```
+
+#### Les paramètres des décorateurs/domaines (et maintenant annotations) sont désormais nommés à l'instanciation
+
+Avant :
+
+```yaml
+---
+endpoint:
+  ####
+  decorators:
+    - Security: [admin]
+```
+
+après
+
+```yaml
+---
+endpoint:
+  ####
+  annotations: # Ce décorateur se transformera probablement en annotation ;)
+    - Security:
+        policy: admin
+```
+
+A noter que vous pouvez passer vos paramètres de domaines ou de décorateurs à vos annotations si besoin, par exemple :
+
+```yaml
+annotation:
+  name: Description
+  description: Description d'un champ
+  parameters:
+    - name: value
+      required: true
+      comment: Valeur
+   java:
+     - text: "@Description({value})"
+ ---
+ domain:
+   name: DO_DESCRIPTION
+   parameters:
+    - name: description
+      required: true
+      comment: Description
+   annotations:
+    - Length:
+         value: "{description}"
+```
+
+#### Les codes d'erreurs ont été renumérotés
+
+Cela impacte les warnings précisés dans `noWarn`, les correspondances ancien/nouveau codes sont les suivantes :
+
+- `TMD8000` => `TMD1004`
+- `TMD8001` => `TMD1005`
+- `TMD9001` => `TMD1003`
+- `TMD9002` => `TMD3004`
+- `TMD9003` => `TMD7002`
+- `TMD9004` => `TMD0009`
+- `TMD9005` => `TMD0010`
+
+#### Les configs des générateurs JPA et C# ont été impactées
+
+Cela concerne la valeur de la propriété `fieldsEnum` (JPA) et `useRecords` (C#).
+
 ## 2.9.1
 
 - [`1344ba6`](https://github.com/klee-contrib/topmodel/commit/1344ba6902202b7c7e16c06a8506ed1274d13392) - Amélioration batching des updates successives en watch
@@ -103,9 +303,9 @@ Ces deux évolutions permettent de généraliser les alias pour qu'on puisse ég
         - org.springframework.security.access.prepost.PreAuthorize
   ```
 
-  Les paramètres dans les templates sont référencés par leur nom et non plus leurs numéros. De nouvelles vérifications sont faites à l'utilisation pour vérifier que les paramètres existent, et que les paramètres obligatoires (nouveauté !) sont bien renseignés. Vous devriez donc avoir des erreurs à la mise à jour qui vous demandera de définir les paramètres que vous utilisez déjà.
+Les paramètres dans les templates sont référencés par leur nom et non plus leurs numéros. De nouvelles vérifications sont faites à l'utilisation pour vérifier que les paramètres existent, et que les paramètres obligatoires (nouveauté !) sont bien renseignés. Vous devriez donc avoir des erreurs à la mise à jour qui vous demandera de définir les paramètres que vous utilisez déjà.
 
-  Cela n'a pas d'impact sur le code généré.
+Cela n'a pas d'impact sur le code généré.
 
 ## 2.5.3
 
@@ -897,14 +1097,16 @@ Breaking change :
   targetFramework: angular
   ```
 
-  devient :
+````
 
-  ```yaml
-  entityMode: untyped # ou "typed" pour retrouver les types d'entités type "focus" (valeur par défaut)
-  apiMode: angular # ou "vanilla" pour avoir des clients en JS purs (valeur par défaut)
-  ```
+devient :
 
-  De plus, **les `StoreNode` ne sont plus générés**. En effet, ils sont spécifiques à l'implémentation Focus et ne sont pas utiles dans le cas général. Il est possible de remplacer par `StoreNode<XXXEntityType>` comme ce qui est déjà fait pour `FormNode`.
+```yaml
+entityMode: untyped # ou "typed" pour retrouver les types d'entités type "focus" (valeur par défaut)
+apiMode: angular # ou "vanilla" pour avoir des clients en JS purs (valeur par défaut)
+```
+
+De plus, **les `StoreNode` ne sont plus générés**. En effet, ils sont spécifiques à l'implémentation Focus et ne sont pas utiles dans le cas général. Il est possible de remplacer par `StoreNode<XXXEntityType>` comme ce qui est déjà fait pour `FormNode`.
 
 - [#262](https://github.com/klee-contrib/topmodel/pull/262) - [JPA] Suppression des constructeur par recopie et des constructeurs tous arguments
 
@@ -1961,3 +2163,4 @@ Un nouveau warning a été ajouté pour détecter les doublons de trigramme. Les
 ## 1.0.0
 
 Version initiale.
+````

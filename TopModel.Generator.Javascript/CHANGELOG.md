@@ -1,3 +1,7 @@
+## 3.0.0
+
+Compatibilité avec TopModel 3
+
 ## 1.4.4
 
 - [`82e531a`](https://github.com/klee-contrib/topmodel/commit/82e531a78dc114ed4112ce48c6b6a16fc1e26119) - [JS] Fix groupby submodule dans les traductions sans camelCase

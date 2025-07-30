@@ -1,3 +1,7 @@
+## 3.0.0
+
+Compatibilité avec TopModel 3
+
 ## 1.2.1
 
 - [`4048f2b`](https://github.com/klee-contrib/topmodel/commit/4048f2b4f3a577b582fd579b451b133bf4288b66) - [sqlgen] Pas de clé d'unicité sur les oneToOne primary key

@@ -1,3 +1,9 @@
+## 3.0.0
+
+Compatibilité avec TopModel 3
+
+La propriété `mapperLocationPriority` vaut désormais `non-persisted` ou `persisted`.
+
 ## 1.6.2
 
 Fix bug de génération du DbContext pour un alias de décorateur (modgen 2.8).

@@ -2,7 +2,7 @@
 # ATTENTION CE FICHIER EST GENERE AUTOMATIQUEMENT !
 #
 
-version: 2.9.1
+version: 3.0.0
 custom:
   ../../../TopModel.Generator.Php: f9bda3f5b374572e1fd3e6d774cd792b
 generatedFiles:

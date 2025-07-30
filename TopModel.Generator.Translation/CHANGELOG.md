@@ -1,3 +1,7 @@
+## 3.0.0
+
+Compatibilité avec TopModel 3
+
 ## 1.2.0
 
 Compatibilité avec les fallbacks de langage d'implémentation de TopModel 2.7
