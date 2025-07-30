@@ -1,5 +1,15 @@
 # Changelog JPA
 
+## 1.11.0
+
+- [#488](https://github.com/klee-contrib/topmodel/pull/488) - In java mapper for list set target to null if source is null
+- [`42c8290`](https://github.com/klee-contrib/topmodel/commit/42c8290e904853149a80dfc3010582830988ccfe) - [JPA] Mapper "from" sources/target en public, nommé "mapXXX"
+
+  La méthode `mapXXX` remplace la méthode `createXXX` avec target qui existait déjà.
+
+  - Avec `mapperInClass: false`, elle était privée, donc aucun breaking change
+  - Avec `mapperInClass: true`, elle était publique, donc c'est un **petit breaking change** puisqu'elle change de nom.
+
 ## 1.10.4
 
 - [5b875](https://github.com/klee-contrib/topmodel/commit/5b87549c1c2adc67e0ac8aba3cd97713ee493608) [JPA] Fix appel mapper avec null
@@ -57,7 +67,7 @@
 
 - [`a2eddb`](https://github.com/klee-contrib/topmodel/commit/a2eddb5ad2f70481c9de7c07d3d0c2be20cb8935) - [JPA] Mappers : polymorphisme des méthodes générées
   Fix: [#477](https://github.com/klee-contrib/topmodel/issues/477)
-  
+
 ## 1.8.3
 
 - [480](https://github.com/klee-contrib/topmodel/pull/480) Ajoute annotation dans le cadre d'un alias sur une enum pour une clé composite

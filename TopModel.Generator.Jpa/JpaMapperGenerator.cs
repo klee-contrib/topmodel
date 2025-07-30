@@ -42,54 +42,37 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         {
             Static = true,
             Visibility = "public",
-            ReturnComment = $"Une nouvelle instance de '{classe.NamePascal}' sur laquelle les champs sources ont été mappée",
-            Comment = "Mapper les champs sources sur une nouvelle instance de la classe",
+            ReturnComment = $"Une nouvelle instance de '{classe.NamePascal}' sur laquelle les champs sources ont été mappés",
+            Comment = $"Crée une nouvelle instance de la classe '{classe.NamePascal}' en mappant les champs sources.",
         };
 
-        foreach (var param in mapper.ClassParams)
-        {
-            var methodParameter = new JavaMethodParameter(param.Class.NamePascal, param.Name.ToCamelCase())
-            {
-                Comment = param.Comment ?? $"Instance de '{param.Class.NamePascal}'"
-            };
-            methodParameter.Imports.Add(param.Class.GetImport(Config, tag));
-            fromMapperMethod.AddParameter(methodParameter);
-        }
+        fromMapperMethod.AddParameters(GetFromMappersParameters(classe, mapper, tag));
 
-        foreach (var param in mapper.PropertyParams)
-        {
-            var methodParameter = new JavaMethodParameter(Config.GetType(param.Property, Classes, useClassForAssociation: UseClassForAssociation(param.Property, classe)), param.Property.NameCamel)
-            {
-                Comment = param.Property.Comment
-            };
-            methodParameter.Imports.AddRange(param.Property.GetTypeImports(Config, tag));
-            fromMapperMethod.AddParameter(methodParameter);
-        }
-
-        fromMapperMethod.AddBodyLine($"return create{classe.NamePascal}({string.Join(", ", fromMapperMethod.Parameters.Select(p => p.Name))}, new {classe.NamePascal}());");
+        fromMapperMethod.AddBodyLine($"return map{classe.NamePascal}({string.Join(", ", fromMapperMethod.Parameters.Select(p => p.Name))}, new {classe.NamePascal}());");
         return fromMapperMethod;
     }
 
     protected virtual JavaMethod GetFromMapperWithTarget(Class classe, FromMapper mapper, string tag)
     {
-        var mapperWithTarget = GetFromMapperNoTarget(classe, mapper, tag);
-        if (!Config.MappersInClass)
+        var fromMapperMethod = new JavaMethod(classe.NamePascal, $"map{classe.NamePascal}")
         {
-            mapperWithTarget.Visibility = "private";
-        }
+            Static = true,
+            Visibility = "public",
+            ReturnComment = $"L'instance de '{classe.NamePascal}' passée en paramètres sur lesquels les champs sources ont été mappés",
+            Comment = $"Mappe les champs sources sur l'instance de la classe '{classe.NamePascal}' passée en paramètre",
+        };
 
-        mapperWithTarget.Body.Clear();
-        mapperWithTarget.Parameters.Add(new JavaMethodParameter(classe.NamePascal, "target"));
-        mapperWithTarget.ReturnComment = $"Une nouvelle instance de '{classe.NamePascal}' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée";
-        mapperWithTarget.Comment = "Mapper les champs sources sur une nouvelle instance de la classe ou bien sur l'instance passée en paramètres";
-        if (Config.MappersInClass)
+        fromMapperMethod.AddParameters(GetFromMappersParameters(classe, mapper, tag));
+        fromMapperMethod.AddParameter(new JavaMethodParameter(classe.NamePascal, "target")
         {
-            mapperWithTarget.AddBodyLine("if (target == null) {");
-            mapperWithTarget.AddBodyLine(1, $"throw new IllegalArgumentException(\"target cannot be null\");");
-            mapperWithTarget.AddBodyLine("}");
-        }
+            Comment = $"Instance de '{classe.NamePascal}' cible"
+        });
 
-        mapperWithTarget.AddBodyLine();
+        fromMapperMethod.AddBodyLine("if (target == null) {");
+        fromMapperMethod.AddBodyLine(1, $"throw new IllegalArgumentException(\"target cannot be null\");");
+        fromMapperMethod.AddBodyLine("}");
+
+        fromMapperMethod.AddBodyLine();
 
         var hydrate = string.Empty;
         if (classe.Abstract)
@@ -103,10 +86,10 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         {
             if (param.Required && !classe.Abstract)
             {
-                mapperWithTarget.AddBodyLine($"if ({param.Name.ToCamelCase()} == null) {{");
-                mapperWithTarget.AddBodyLine(1, $"throw new IllegalArgumentException(\"{param.Name} cannot be null\");");
-                mapperWithTarget.AddBodyLine("}");
-                mapperWithTarget.AddBodyLine();
+                fromMapperMethod.AddBodyLine($"if ({param.Name.ToCamelCase()} == null) {{");
+                fromMapperMethod.AddBodyLine(1, $"throw new IllegalArgumentException(\"{param.Name} cannot be null\");");
+                fromMapperMethod.AddBodyLine("}");
+                fromMapperMethod.AddBodyLine();
             }
         }
 
@@ -119,10 +102,10 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     continue;
                 }
 
-                mapperWithTarget.AddBodyLine($"if ({param.Property.NameCamel} == null) {{");
-                mapperWithTarget.AddBodyLine(1, $"throw new IllegalArgumentException(\"{param.Property.NameCamel} cannot be null\");");
-                mapperWithTarget.AddBodyLine("}");
-                mapperWithTarget.AddBodyLine();
+                fromMapperMethod.AddBodyLine($"if ({param.Property.NameCamel} == null) {{");
+                fromMapperMethod.AddBodyLine(1, $"throw new IllegalArgumentException(\"{param.Property.NameCamel} cannot be null\");");
+                fromMapperMethod.AddBodyLine("}");
+                fromMapperMethod.AddBodyLine();
             }
         }
 
@@ -132,7 +115,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             var indent = 0;
             if (!param.Required)
             {
-                mapperWithTarget.AddBodyLine(indent, $"if ({param.Name.ToCamelCase()} != null) {{");
+                fromMapperMethod.AddBodyLine(indent, $"if ({param.Name.ToCamelCase()} != null) {{");
                 indent++;
             }
 
@@ -141,7 +124,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                 var propertyTarget = mapping.Key;
                 var propertySource = mapping.Value!;
                 var (getter, checkSourceNull, imports) = GetSourceGetter(propertySource, propertyTarget, classe, param.Name.ToCamelCase(), tag);
-                mapperWithTarget.Imports.AddRange(imports);
+                fromMapperMethod.Imports.AddRange(imports);
                 var propertyTargetName = JpaModelPropertyGenerator.GetPropertyName(propertyTarget);
                 if (classe.Abstract)
                 {
@@ -169,17 +152,17 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
                     {
                         if (checkSourceNull)
                         {
-                            mapperWithTarget.AddBodyLine(indent, $"if ({param.Name}.{JpaModelPropertyGenerator.GetGetterName(propertySource)}() != null) {{");
+                            fromMapperMethod.AddBodyLine(indent, $"if ({param.Name}.{JpaModelPropertyGenerator.GetGetterName(propertySource)}() != null) {{");
                         }
 
-                        mapperWithTarget.AddBodyLine(indent + (checkSourceNull ? 1 : 0), $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});");
+                        fromMapperMethod.AddBodyLine(indent + (checkSourceNull ? 1 : 0), $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}({getter});");
 
                         if (checkSourceNull)
                         {
-                            mapperWithTarget.AddBodyLine(indent, $"}} else {{");
-                            mapperWithTarget.AddBodyLine(indent + 1, $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);");
-                            mapperWithTarget.AddBodyLine(indent, $"}}");
-                            mapperWithTarget.AddBodyLine();
+                            fromMapperMethod.AddBodyLine(indent, $"}} else {{");
+                            fromMapperMethod.AddBodyLine(indent + 1, $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);");
+                            fromMapperMethod.AddBodyLine(indent, $"}}");
+                            fromMapperMethod.AddBodyLine();
                         }
                     }
                 }
@@ -187,8 +170,8 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
             if (!param.Required)
             {
-                mapperWithTarget.AddBodyLine(indent - 1, "}");
-                mapperWithTarget.AddBodyLine();
+                fromMapperMethod.AddBodyLine(indent - 1, "}");
+                fromMapperMethod.AddBodyLine();
             }
         }
 
@@ -215,19 +198,19 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
             }
             else
             {
-                mapperWithTarget.AddBodyLine($"target.{JpaModelPropertyGenerator.GetSetterName(param.TargetProperty)}({param.Property.NameCamel});");
+                fromMapperMethod.AddBodyLine($"target.{JpaModelPropertyGenerator.GetSetterName(param.TargetProperty)}({param.Property.NameCamel});");
             }
         }
 
         if (classe.Abstract)
         {
             hydrate += ");";
-            mapperWithTarget.AddBodyLine(1, hydrate);
+            fromMapperMethod.AddBodyLine(1, hydrate);
         }
 
-        mapperWithTarget.AddBodyLine("return target;");
+        fromMapperMethod.AddBodyLine("return target;");
 
-        return mapperWithTarget;
+        return fromMapperMethod;
     }
 
     protected virtual (string Getter, bool CheckSourceNull, IEnumerable<string> Imports) GetSourceGetter(IProperty propertySource, IProperty propertyTarget, Class classe, string sourceName, string tag)
@@ -504,7 +487,7 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
 
                     if (checkSourceNull)
                     {
-                        toMapperMethod.AddBodyLine( $"}} else {{");
+                        toMapperMethod.AddBodyLine($"}} else {{");
                         toMapperMethod.AddBodyLine(1, $"target.{JpaModelPropertyGenerator.GetSetterName(propertyTarget)}(null);");
                         toMapperMethod.AddBodyLine($"}}");
                         toMapperMethod.AddBodyLine();
@@ -598,5 +581,28 @@ public class JpaMapperGenerator(ILogger<JpaMapperGenerator> logger, IFileWriterP
         fw.Write(1, GetToMapperMethodNoTarget(classe, mapper, tag));
         fw.WriteLine();
         fw.Write(1, GetToMapperMethodWithTarget(classe, mapper, tag));
+    }
+
+    private IEnumerable<JavaMethodParameter> GetFromMappersParameters(Class classe, FromMapper mapper, string tag)
+    {
+        foreach (var param in mapper.ClassParams)
+        {
+            var methodParameter = new JavaMethodParameter(param.Class.NamePascal, param.Name.ToCamelCase())
+            {
+                Comment = param.Comment ?? $"Instance de '{param.Class.NamePascal}' source"
+            };
+            methodParameter.Imports.Add(param.Class.GetImport(Config, tag));
+            yield return methodParameter;
+        }
+
+        foreach (var param in mapper.PropertyParams)
+        {
+            var methodParameter = new JavaMethodParameter(Config.GetType(param.Property, Classes, useClassForAssociation: UseClassForAssociation(param.Property, classe)), param.Property.NameCamel)
+            {
+                Comment = param.Property.Comment
+            };
+            methodParameter.Imports.AddRange(param.Property.GetTypeImports(Config, tag));
+            yield return methodParameter;
+        }
     }
 }

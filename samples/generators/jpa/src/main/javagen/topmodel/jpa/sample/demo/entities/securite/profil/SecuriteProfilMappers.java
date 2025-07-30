@@ -20,22 +20,23 @@ public class SecuriteProfilMappers {
 	}
 
 	/**
-	 * Mapper les champs sources sur une nouvelle instance de la classe.
-	 * @param profil Instance de 'Profil'.
+	 * Crée une nouvelle instance de la classe 'ProfilRead' en mappant les champs sources.
+	 * @param profil Instance de 'Profil' source.
 	 *
-	 * @return Une nouvelle instance de 'ProfilRead' sur laquelle les champs sources ont été mappée.
+	 * @return Une nouvelle instance de 'ProfilRead' sur laquelle les champs sources ont été mappés.
 	 */
 	public static ProfilRead createProfilRead(Profil profil) {
-		return createProfilRead(profil, new ProfilRead());
+		return mapProfilRead(profil, new ProfilRead());
 	}
 
 	/**
-	 * Mapper les champs sources sur une nouvelle instance de la classe ou bien sur l'instance passée en paramètres.
-	 * @param profil Instance de 'Profil'.
+	 * Mappe les champs sources sur l'instance de la classe 'ProfilRead' passée en paramètre.
+	 * @param profil Instance de 'Profil' source.
+	 * @param target Instance de 'ProfilRead' cible.
 	 *
-	 * @return Une nouvelle instance de 'ProfilRead' ou bien l'instance passée en paramètres sur lesquels les champs sources ont été mappée.
+	 * @return L'instance de 'ProfilRead' passée en paramètres sur lesquels les champs sources ont été mappés.
 	 */
-	public static ProfilRead createProfilRead(Profil profil, ProfilRead target) {
+	public static ProfilRead mapProfilRead(Profil profil, ProfilRead target) {
 		if (target == null) {
 			throw new IllegalArgumentException("target cannot be null");
 		}

@@ -51,7 +51,7 @@ public class JavaConstructorGenerator(JpaConfig config)
 
             var (mapperNs, mapperModelPath) = Config.GetMapperLocation(fromMapper);
             constructor.Imports.Add(Config.GetMapperImport(mapperNs, mapperModelPath, tag)!);
-            constructor.AddBodyLine($"{Config.GetMapperName(mapperNs, mapperModelPath)}.create{classe.NamePascal}({string.Join(", ", mapper.ClassParams.Select(p => p.Name.ToCamelCase()).Concat(mapper.PropertyParams.Select(p => p.Property.NameCamel)))}, this);");
+            constructor.AddBodyLine($"{Config.GetMapperName(mapperNs, mapperModelPath)}.map{classe.NamePascal}({string.Join(", ", mapper.ClassParams.Select(p => p.Name.ToCamelCase()).Concat(mapper.PropertyParams.Select(p => p.Property.NameCamel)))}, this);");
             constructor.ReturnComment = $"Une nouvelle instance de '{classe.NamePascal}'";
             fw.WriteLine();
             fw.Write(1, constructor);
