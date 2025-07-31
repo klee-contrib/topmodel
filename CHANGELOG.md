@@ -206,7 +206,7 @@ Cela impacte les warnings précisés dans `noWarn`, les correspondances ancien/n
 
 #### Les configs des générateurs JPA et C# ont été impactées
 
-Cela concerne la valeur de la propriété `fieldsEnum` (JPA) et `useRecords` (C#).
+Cela concerne la valeur des propriétés `fieldsEnum` (JPA), `useRecords` et `mapperLocationPriority` (C#).
 
 ## 2.9.1
 

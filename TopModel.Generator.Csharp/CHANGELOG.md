@@ -3,6 +3,7 @@
 Compatibilité avec TopModel 3
 
 La propriété `mapperLocationPriority` vaut désormais `non-persisted` ou `persisted`.
+La propriété `useRecords` ne peut plus valoir que `true` ou `false`.
 
 ## 1.6.2
 
