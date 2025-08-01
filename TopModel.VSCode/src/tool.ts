@@ -8,7 +8,7 @@ const open = require("open");
 
 export class TmdTool {
     currentVersion?: string;
-    latestVersion?: string;
+    versions: string[] = [];
     error?: string;
     installed?: boolean;
     status?: Status;
@@ -28,6 +28,14 @@ export class TmdTool {
                 this._terminal = undefined;
             }
         });
+    }
+
+    get latestVersion() {
+        if (this.versions.length == 0) {
+            return undefined;
+        }
+
+        return this.versions[this.versions.length - 1];
     }
 
     get statusText(): string {
@@ -81,7 +89,7 @@ export class TmdTool {
         const req = request(options, (res) => {
             res.on("data", async (response) => {
                 const { versions }: { versions: string[] } = JSON.parse(response);
-                this.latestVersion = versions[versions.length - 1];
+                this.versions = versions;
             });
         });
 
@@ -124,18 +132,17 @@ export class TmdTool {
     private async checkInstall() {
         let result;
         try {
-            if(isWindows){
+            if (isWindows) {
                 result = await execute(`dotnet tool list -g | find /C /I "${this.name.toLowerCase()}"`);
                 this.installed = result === "1\r\n";
             } else {
-                result = await execute(`dotnet tool list -g | grep -i ${this.name.toLowerCase()} | wc -l` );
-                this.installed = result.trim() === "1" 
+                result = await execute(`dotnet tool list -g | grep -i ${this.name.toLowerCase()} | wc -l`);
+                this.installed = result.trim() === "1";
             }
         } catch (error: any) {
             result = "Not Installed";
             this.installed = false;
         }
-
     }
 
     public get updateAvailable(): boolean {
