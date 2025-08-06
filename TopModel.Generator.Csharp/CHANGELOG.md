@@ -1,3 +1,9 @@
+## 3.1.0
+
+- [`5c8bb57`](https://github.com/klee-contrib/topmodel/commit/5c8bb577a7a623af452837717c1974e53c597cc0) - [C#] useCancellationTokens
+
+  Cette nouvelle option permet de générer les clients et les contrôleurs pour les endpoints avec des CancellationTokens.
+
 ## 3.0.0
 
 Compatibilité avec TopModel 3
